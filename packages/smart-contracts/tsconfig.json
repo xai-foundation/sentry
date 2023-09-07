@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@xai-vanguard-node/core": ["../core/src/index.ts"]
+    }
+  },
+  "references": [
+    {
+      "path": "../core"
+    }
+  ]
+}

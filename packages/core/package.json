@@ -1,0 +1,16 @@
+{
+  "name": "@xai-vanguard-node/core",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "lint": "eslint . --ext .ts,.tsx"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@chainsafe/bls": "^7.1.2"
+  }
+}
