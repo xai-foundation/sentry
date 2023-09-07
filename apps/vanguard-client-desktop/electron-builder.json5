@@ -3,9 +3,9 @@
  */
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "appId": "YourAppID",
+  "appId": "VanguardClient",
   "asar": true,
-  "productName": "YourAppName",
+  "productName": "Vanguard Client",
   "directories": {
     "output": "release/${version}"
   },
@@ -20,14 +20,7 @@
     "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
   },
   "win": {
-    "target": [
-      {
-        "target": "nsis",
-        "arch": [
-          "x64"
-        ]
-      }
-    ],
+    "target": "portable"
     "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
   },
   "nsis": {
