@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "lint": "pnpm recursive run lint"
+    "lint": "pnpm recursive run lint",
+    "build": "pnpm recursive run build"
   },
   "keywords": [],
   "author": "",
