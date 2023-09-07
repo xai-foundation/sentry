@@ -3,9 +3,9 @@
  */
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "appId": "VanguardClient",
+  "appId": "YourAppID",
   "asar": true,
-  "productName": "Vanguard Client",
+  "productName": "VanguardClient",
   "directories": {
     "output": "release/${version}"
   },
