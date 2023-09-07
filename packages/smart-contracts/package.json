@@ -6,8 +6,6 @@
     "lint": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
-    "@arbitrum/nitro-contracts": "github:OffchainLabs/nitro-contracts#semver:1.0.2",
-    "@nomiclabs/hardhat-etherscan": "^3.1.7",
     "@xai-vanguard-node/core": "workspace:*"
   },
   "devDependencies": {
