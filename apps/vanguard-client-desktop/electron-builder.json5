@@ -20,7 +20,9 @@
     "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
   },
   "win": {
-    "target": "portable"
+    "target": [
+      "portable"
+    ],
     "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
   },
   "nsis": {
