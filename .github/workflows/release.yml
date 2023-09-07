@@ -44,15 +44,18 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v2
 
+      - name: Remove builder-debug.yml files
+        run: |
+          rm -f release-macos-latest/builder-debug.yml
+          rm -f release-ubuntu-latest/builder-debug.yml
+          rm -f release-windows-latest/builder-debug.yml
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
             release-macos-latest/* 
-            !release-macos-latest/builder-debug.yml
             release-ubuntu-latest/*
-            !release-ubuntu-latest/builder-debug.yml
             release-windows-latest/*
-            !release-windows-latest/builder-debug.yml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
