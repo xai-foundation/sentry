@@ -1,7 +1,10 @@
-import { contextBridge, ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer, shell } from 'electron'
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer))
+contextBridge.exposeInMainWorld('electron', {
+  openExternal: (url: string) => ipcRenderer.send('open-external', url)
+});
 
 // `exposeInMainWorld` can't detect attributes and methods of `prototype`, manually patching it.
 function withPrototype(obj: Record<string, any>) {
@@ -85,6 +88,7 @@ function useLoading() {
   z-index: 9;
 }
     `
+    
   const oStyle = document.createElement('style')
   const oDiv = document.createElement('div')
 
@@ -115,3 +119,4 @@ window.onmessage = ev => {
 }
 
 setTimeout(removeLoading, 4999)
+
