@@ -36,7 +36,7 @@ jobs:
           name: release-vanguard-client-desktop-${{ matrix.os }}
           path: apps/vanguard-client-desktop/release
 
-      - name: Zip and upload cli artifacts
+      - name: zip cli artifacts
         run: |
           cd apps/cli/release
           zip release-cli-macos.zip vanguard-node-cli-macos
@@ -44,21 +44,21 @@ jobs:
           zip release-cli-win.zip vanguard-node-cli-win.exe
         if: matrix.os == 'ubuntu-latest'
 
-      - name: Upload zipped cli artifacts
+      - name: Upload macos cli
         uses: actions/upload-artifact@v2
         with:
           name: vanguard-node-cli-macos
           path: apps/cli/release/release-cli-macos.zip
         if: matrix.os == 'ubuntu-latest'
 
-      - name: Upload zipped cli artifacts
+      - name: Upload linux cli
         uses: actions/upload-artifact@v2
         with:
           name: vanguard-node-cli-linux
           path: apps/cli/release/release-cli-linux.zip
         if: matrix.os == 'ubuntu-latest'
 
-      - name: Upload zipped cli artifacts
+      - name: Upload windows cli
         uses: actions/upload-artifact@v2
         with:
           name: vanguard-node-cli-win
