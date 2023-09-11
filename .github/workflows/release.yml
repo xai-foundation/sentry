@@ -9,7 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -30,40 +30,25 @@ jobs:
       - name: Build monorepo
         run: pnpm run build
 
-      - name: Upload vanguard-client-desktop artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: release-vanguard-client-desktop-${{ matrix.os }}
-          path: apps/vanguard-client-desktop/release
+      # - name: Upload vanguard-client-desktop artifacts
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: release-vanguard-client-desktop-${{ matrix.os }}
+      #     path: apps/vanguard-client-desktop/release
 
       - name: zip cli artifacts
         run: |
           cd apps/cli/release
-          zip release-cli-macos.zip vanguard-node-cli-macos
-          zip release-cli-linux.zip vanguard-node-cli-linux
-          zip release-cli-win.zip vanguard-node-cli-win.exe
+          zip vanguard-node-cli-macos.zip vanguard-node-cli-macos
+          zip vanguard-node-cli-linux.zip vanguard-node-cli-linux
+          zip vanguard-node-cli-windows.zip vanguard-node-cli-win.exe
         if: matrix.os == 'ubuntu-latest'
 
-      - name: Upload macos cli
+      - name: Upload cli artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: vanguard-node-cli-macos
-          path: apps/cli/release/release-cli-macos.zip
-        if: matrix.os == 'ubuntu-latest'
-
-      - name: Upload linux cli
-        uses: actions/upload-artifact@v2
-        with:
-          name: vanguard-node-cli-linux
-          path: apps/cli/release/release-cli-linux.zip
-        if: matrix.os == 'ubuntu-latest'
-
-      - name: Upload windows cli
-        uses: actions/upload-artifact@v2
-        with:
-          name: vanguard-node-cli-win
-          path: apps/cli/release/release-cli-win.zip
-        if: matrix.os == 'ubuntu-latest'
+          name: release-cli-${{ matrix.os }}
+          path: apps/cli/release
 
   release:
     needs: build
@@ -80,8 +65,8 @@ jobs:
             release-vanguard-client-desktop-macos-latest/vanguard-client-macos.dmg
             release-vanguard-client-desktop-ubuntu-latest/vanguard-client-linux.AppImage
             release-vanguard-client-desktop-windows-latest/vanguard-client-windows.exe
-            vanguard-node-cli-macos/vanguard-node-cli-macos.zip
-            vanguard-node-cli-linux/vanguard-node-cli-linux.zip
-            vanguard-node-cli-win/vanguard-node-cli-win.zip
+            release-cli-linux-latest/vanguard-node-cli-macos.zip
+            release-cli-linux-latest/vanguard-node-cli-linux.zip
+            release-cli-linux-latest/vanguard-node-cli-windows.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
