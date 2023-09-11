@@ -54,9 +54,9 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            release-macos-latest/vanguard-client-macos.dmg
-            release-ubuntu-latest/vanguard-client-linux.AppImage
-            release-windows-latest/vanguard-client-windows.exe
+            release-vanguard-client-desktop-macos-latest/vanguard-client-macos.dmg
+            release-vanguard-client-desktop-linux-latest/vanguard-client-linux.AppImage
+            release-vanguard-client-desktop-windows-latest/vanguard-client-windows.exe
             release-cli-macos-latest/vanguard-node-cli-macos
             release-cli-ubuntu-latest/vanguard-node-cli-linux
             release-cli-windows-latest/vanguard-node-cli-win.exe
