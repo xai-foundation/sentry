@@ -55,7 +55,7 @@ jobs:
         with:
           files: |
             release-vanguard-client-desktop-macos-latest/vanguard-client-macos.dmg
-            release-vanguard-client-desktop-linux-latest/vanguard-client-linux.AppImage
+            release-vanguard-client-desktop-ubuntu-latest/vanguard-client-linux.AppImage
             release-vanguard-client-desktop-windows-latest/vanguard-client-windows.exe
             release-cli-macos-latest/vanguard-node-cli-macos
             release-cli-ubuntu-latest/vanguard-node-cli-linux
