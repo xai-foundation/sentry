@@ -1,0 +1,28 @@
+{
+  "name": "@xai-vanguard-node/vanguard-node-cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "bin": "dist/index.js",
+  "scripts": {
+    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
+    "build": "tsc && pkg ."
+   },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@xai-vanguard-node/core": "workspace:*"
+  },
+  "devDependencies": {
+    "pkg": "^5.8.1"
+   },
+  "pkg": {
+    "targets": [
+      "node18-linux-x64",
+      "node18-macos-x64",
+      "node18-win-x64"
+    ],
+    "outputPath": "release"
+  }
+}

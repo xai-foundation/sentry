@@ -5,12 +5,17 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "lint": "eslint . --ext .ts,.tsx"
+    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
+    "lint": "eslint . --ext .ts,.tsx",
+    "build": "tsc"
   },
   "keywords": [],
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
     "@chainsafe/bls": "^7.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.6.0"
   }
 }

@@ -11,3 +11,5 @@ yarn-error.log*
 # Generated Outputs
 dist
 build
+
+**/*.DS_Store

@@ -1,0 +1,4 @@
+dist
+release
+tsconfig.tsbuildinfo
+node_modules

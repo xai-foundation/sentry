@@ -30,11 +30,17 @@ jobs:
       - name: Build monorepo
         run: pnpm run build
 
-      - name: Upload artifacts
+      - name: Upload vanguard-client-desktop artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: release-${{ matrix.os }}
+          name: release-vanguard-client-desktop-${{ matrix.os }}
           path: apps/vanguard-client-desktop/release/0.1.0
+
+      - name: Upload cli artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: release-cli-${{ matrix.os }}
+          path: apps/cli/release
 
   release:
     needs: build
@@ -44,19 +50,13 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v2
 
-      - name: Remove builder-debug.yml files
-        run: |
-          rm -f release-macos-latest/builder-debug.yml
-          rm -f release-ubuntu-latest/builder-debug.yml
-          rm -f release-windows-latest/builder-debug.yml
-          rm -rf */**.blockmap
-
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            release-macos-latest/* 
+            release-macos-latest/vanguard-client-macos.dmg 
             release-ubuntu-latest/*
             release-windows-latest/*
+            release-cli-ubuntu-latest/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -7,7 +7,7 @@
   "asar": true,
   "productName": "VanguardClient",
   "directories": {
-    "output": "release/${version}"
+    "output": "release"
   },
   "files": [
     "dist",
@@ -17,13 +17,13 @@
     "target": [
       "dmg"
     ],
-    "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
+    "artifactName": "vanguard-client-macos.${ext}"
   },
   "win": {
     "target": [
       "portable"
     ],
-    "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
+    "artifactName": "vanguard-client-windows.${ext}"
   },
   "nsis": {
     "oneClick": false,
@@ -35,6 +35,6 @@
     "target": [
       "AppImage"
     ],
-    "artifactName": "${productName}-Linux-${version}.${ext}"
+    "artifactName": "vanguard-client-linux.${ext}"
   }
 }
