@@ -80,8 +80,8 @@ jobs:
             release-vanguard-client-desktop-macos-latest/vanguard-client-macos.dmg
             release-vanguard-client-desktop-ubuntu-latest/vanguard-client-linux.AppImage
             release-vanguard-client-desktop-windows-latest/vanguard-client-windows.exe
-            vanguard-node-cli-macos.zip
-            vanguard-node-cli-linux.zip
-            vanguard-node-cli-win.zip
+            vanguard-node-cli-macos/vanguard-node-cli-macos.zip
+            vanguard-node-cli-linux/vanguard-node-cli-linux.zip
+            vanguard-node-cli-win/vanguard-node-cli-win.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
