@@ -36,11 +36,23 @@ jobs:
           name: release-vanguard-client-desktop-${{ matrix.os }}
           path: apps/vanguard-client-desktop/release
 
-      - name: Upload cli artifacts
+      - name: Zip and upload cli artifacts
+        run: |
+          cd apps/cli/release
+          zip release-cli-macos.zip vanguard-node-cli-macos
+          zip release-cli-linux.zip vanguard-node-cli-linux
+          zip release-cli-win.zip vanguard-node-cli-win.exe
         uses: actions/upload-artifact@v2
+        if: matrix.os == 'ubuntu-latest'
         with:
-          name: release-cli-${{ matrix.os }}
-          path: apps/cli/release
+          name: vanguard-node-cli-macos
+          path: apps/cli/release/release-cli-macos.zip
+        with:
+          name: vanguard-node-cli-linux
+          path: apps/cli/release/release-cli-linux.zip
+        with:
+          name: vanguard-node-cli-win
+          path: apps/cli/release/release-cli-win.zip
 
   release:
     needs: build
@@ -57,8 +69,8 @@ jobs:
             release-vanguard-client-desktop-macos-latest/vanguard-client-macos.dmg
             release-vanguard-client-desktop-ubuntu-latest/vanguard-client-linux.AppImage
             release-vanguard-client-desktop-windows-latest/vanguard-client-windows.exe
-            release-cli-macos-latest/vanguard-node-cli-macos
-            release-cli-ubuntu-latest/vanguard-node-cli-linux
-            release-cli-windows-latest/vanguard-node-cli-win.exe
+            vanguard-node-cli-macos.zip
+            vanguard-node-cli-linux.zip
+            vanguard-node-cli-win.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
