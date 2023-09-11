@@ -106,5 +106,9 @@ contract Referee {
     function verifySignature(bytes32 hash, bytes memory signature) public view returns (bool) {
         return hash.toEthSignedMessageHash().recover(signature) == address(uint160(uint256(keccak256(challengerPublicKey))));
     }
+
+    function hashClaim(Claim memory _claim) returns (memory bytes) {
+        
+    }
 }
 

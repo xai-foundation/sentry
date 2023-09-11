@@ -49,7 +49,7 @@ jobs:
           rm -f release-macos-latest/builder-debug.yml
           rm -f release-ubuntu-latest/builder-debug.yml
           rm -f release-windows-latest/builder-debug.yml
-          rm -rf **.blockmap
+          rm -rf */**.blockmap
 
       - name: Release
         uses: softprops/action-gh-release@v1
