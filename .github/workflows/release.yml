@@ -42,17 +42,28 @@ jobs:
           zip release-cli-macos.zip vanguard-node-cli-macos
           zip release-cli-linux.zip vanguard-node-cli-linux
           zip release-cli-win.zip vanguard-node-cli-win.exe
-        uses: actions/upload-artifact@v2
         if: matrix.os == 'ubuntu-latest'
+
+      - name: Upload zipped cli artifacts
+        uses: actions/upload-artifact@v2
         with:
           name: vanguard-node-cli-macos
           path: apps/cli/release/release-cli-macos.zip
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Upload zipped cli artifacts
+        uses: actions/upload-artifact@v2
         with:
           name: vanguard-node-cli-linux
           path: apps/cli/release/release-cli-linux.zip
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Upload zipped cli artifacts
+        uses: actions/upload-artifact@v2
         with:
           name: vanguard-node-cli-win
           path: apps/cli/release/release-cli-win.zip
+        if: matrix.os == 'ubuntu-latest'
 
   release:
     needs: build
