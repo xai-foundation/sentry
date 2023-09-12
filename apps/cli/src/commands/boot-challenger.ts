@@ -27,13 +27,13 @@ export function bootChallenger(cli: Vorpal) {
             const walletKeyPrompt: Vorpal.PromptObject = {
                 type: 'password',
                 name: 'walletKey',
-                message: 'Enter the secret key of the wallet that the challenger wants to use:',
+                message: 'Enter the private key of the wallet that the challenger wants to use:',
                 mask: '*'
             };
             const {walletKey} = await this.prompt(walletKeyPrompt);
 
             if (!walletKey || walletKey.length < 1) {
-                throw new Error("No wallet key passed in. Please provide a valid wallet key.")
+                throw new Error("No private key passed in. Please provide a valid private key.")
             }
 
             const { address } = getSignerFromPrivateKey(walletKey);
