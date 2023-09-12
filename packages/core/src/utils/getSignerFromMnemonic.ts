@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { getProvider } from './getProvider';
 
 /**
  * Creates an ethers signer from a given Mnemonic object and index.
@@ -9,7 +10,7 @@ import { ethers } from 'ethers';
 export function getSignerFromMnemonic(mnemonic: string, index: number): { signer: ethers.Signer, address: string, privateKey: string } {
     const path = `m/44'/60'/0'/0/${index}`;
     const wallet = ethers.HDNodeWallet.fromMnemonic(ethers.Mnemonic.fromPhrase(mnemonic), path)
-    const signer = new ethers.Wallet(wallet.privateKey);
+    const signer = new ethers.Wallet(wallet.privateKey, getProvider());
 
     return { signer, address: wallet.address, privateKey: wallet.privateKey };
 }

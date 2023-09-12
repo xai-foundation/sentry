@@ -1,5 +1,5 @@
 import * as Vorpal from "vorpal";
-import { createBlsKeyPair as coreCreateBlsKeyPair } from "@xai-vanguard-node/core";
+import { createBlsKeyPair, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
 
 /**
  * Starts a runtime of the challenger.
@@ -21,8 +21,24 @@ export function bootChallenger(cli: Vorpal) {
                 throw new Error("No secret key passed in. Please generate one with  'create-bls-key-pair'.")
             }
 
-            const { publicKeyHex } = await coreCreateBlsKeyPair(secretKey);
+            const { publicKeyHex } = await createBlsKeyPair(secretKey);
             this.log(`Public Key of the Challenger: ${publicKeyHex}`);
+
+            const walletKeyPrompt: Vorpal.PromptObject = {
+                type: 'password',
+                name: 'walletKey',
+                message: 'Enter the secret key of the wallet that the challenger wants to use:',
+                mask: '*'
+            };
+            const {walletKey} = await this.prompt(walletKeyPrompt);
+
+            if (!walletKey || walletKey.length < 1) {
+                throw new Error("No wallet key passed in. Please provide a valid wallet key.")
+            }
+
+            const { address } = getSignerFromPrivateKey(walletKey);
+            this.log(`Address of the Wallet: ${address}`);
+
             this.log('The challenger is now listening for assertions...');
         });
 }
