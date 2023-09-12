@@ -1,8 +1,12 @@
-import {createBlsKeyPair} from "@xai-vanguard-node/core";
+import * as Vorpal from 'vorpal';
+import { createBlsKeyPair } from './commands/create-bls-key-pair';
 
+const cli = new Vorpal();
 
-console.log("Stealing all your info and sending to the Shadow Government");
+// entrypoints to each of the commands
+createBlsKeyPair(cli);
 
-setInterval(() => {
-    console.log("Lol why did you run this, idiot!");
-}, 1000)
+cli
+    .delimiter('vanguard-node$')
+    .show()
+    .log('\nType "help" to display a list of actions.');

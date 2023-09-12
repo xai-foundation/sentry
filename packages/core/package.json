@@ -13,7 +13,7 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
-    "@chainsafe/bls": "^7.1.2"
+    "@noble/curves": "^1.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.6.0"
