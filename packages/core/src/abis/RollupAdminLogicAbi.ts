@@ -1,4 +1,4 @@
-export const RollupUserLogicAbi = [
+export const RollupAdminLogicAbi = [
     {
       "anonymous": false,
       "inputs": [

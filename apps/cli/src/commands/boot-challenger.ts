@@ -1,5 +1,5 @@
 import * as Vorpal from "vorpal";
-import { createBlsKeyPair, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
+import { createBlsKeyPair, getSignerFromPrivateKey, listenForAssertions } from "@xai-vanguard-node/core";
 
 /**
  * Starts a runtime of the challenger.
@@ -39,6 +39,11 @@ export function bootChallenger(cli: Vorpal) {
             const { address } = getSignerFromPrivateKey(walletKey);
             this.log(`Address of the Wallet: ${address}`);
 
+            listenForAssertions((nodeNum, blockHash, sendRoot, event) => {
+                console.log(`Assertion confirmed: nodeNum: ${nodeNum.toString()}, blockHash: ${blockHash.toString()}, sendRoot: ${sendRoot.toString()}`);
+                console.log(event);
+            })
             this.log('The challenger is now listening for assertions...');
+            return new Promise((resolve, reject) => {}); // Keep the command alive
         });
 }
