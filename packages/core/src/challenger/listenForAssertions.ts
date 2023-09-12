@@ -25,7 +25,7 @@ export function listenForAssertions(callback: (nodeNum: any, blockHash: any, sen
         // if the nodeNum has not been seen before, call the callback and add it to the map
         if (!nodeNumMap[nodeNum]) {
             nodeNumMap[nodeNum] = true;
-            callback(nodeNum, blockHash, sendRoot, event);
+            void callback(nodeNum, blockHash, sendRoot, event);
         }
     });
 }
