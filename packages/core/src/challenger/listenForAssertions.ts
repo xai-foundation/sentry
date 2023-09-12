@@ -1,3 +1,3 @@
-async function listenForAssertions() {
+export async function listenForAssertions() {
 
 }
