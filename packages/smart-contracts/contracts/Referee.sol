@@ -1,10 +1,8 @@
 pragma solidity ^0.8.21;
 
-import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@arbitrum/nitro-contracts/src/rollup/RollupUserLogic.sol";
+import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 
-contract Referee {
-    using ECDSA for bytes32;
+contract Referee is AccessControl {
 
     // The Challenger's public key of their registered BLS-Pair
     bytes public challengerPublicKey;
@@ -12,103 +10,95 @@ contract Referee {
     // the address of the rollup, so we can get assertions
     address public rollupUserLogic;
 
-    struct Claim {
-        address watchtower;
-        bytes32 assertionId;
-        bytes32 challenge;
-        uint256 timestamp;
+    // Define roles
+    bytes32 public constant CHALLENGER_ROLE = keccak256("CHALLENGER_ROLE");
+
+    struct Challenge {
+        uint64 assertionId;
+        uint64 predecessorAssertionId;
+        bytes32 assertionStateRoot;
+        uint64 assertionTimestamp; // equal to the block number the assertion was made on in the rollup protocol
+        bytes challengerSignedHash;
+        bytes activeChallengerPublicKey; // The challengerPublicKey that was active at the time of challenge submission
     }
 
-    mapping(bytes32 => Claim) public claims;
+    mapping(uint64 => Challenge) public challenges;
 
     // Define events
-    event ChallengeSubmitted(bytes32 indexed assertionId, bytes32 indexed predecessorAssertionId, bytes32 stateRoot, uint256 timestamp, bytes signature);
-    event ClaimRegistered(address indexed watchtower, bytes32 indexed assertionId, bytes32 challenge);
-    event ClaimRedeemed(address indexed watchtower, bytes32 indexed assertionId, bytes32 challenge, uint256 timestamp, bytes32 successorAssertionId)
+    event ChallengeSubmitted(Challenge challenge);
 
-    constructor(bytes _challengerPublicKey, address _rollUpUserLogic) {
-        challengerPublicKey = _challengerPublicKey;
+    constructor(address _rollUpUserLogic) {
         rollupUserLogic = _rollUpUserLogic;
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setRoleAdmin(CHALLENGER_ROLE, DEFAULT_ADMIN_ROLE);
     }
 
+    /**
+     * @notice Sets the challengerPublicKey.
+     * @param _challengerPublicKey The public key of the challenger.
+     */
+    function setChallengerPublicKey(bytes _challengerPublicKey) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        challengerPublicKey = _challengerPublicKey;
+    }
+
+    /**
+     * @notice Submits a challenge to the contract.
+     * @dev This function verifies the caller is the challenger, checks if an assertion hasn't already been submitted for this ID,
+     * gets the node information from the rollup, verifies the data inside the hash matched the data pulled from the rollup contract,
+     * adds the challenge to the mapping, and emits the ChallengeSubmitted event.
+     * @param _assertionId The ID of the assertion.
+     * @param _predecessorAssertionId The ID of the predecessor assertion.
+     * @param _assertionStateRoot The state root of the assertion.
+     * @param _assertionTimestamp The timestamp of the assertion.
+     * @param _challengerSignedHash The signed hash from the challenger.
+     */
     function submitChallenge(
-        bytes32 _assertionId,
-        bytes32 _predecessorAssertionId,
-        bytes32 _stateRoot,
-        bytes32 _timestamp,
-        bytes _signature
-    ) public {
+        uint64 _assertionId,
+        uint64 _predecessorAssertionId,
+        bytes32 _assertionStateRoot,
+        uint64 _assertionTimestamp,
+        bytes _challengerSignedHash
+    ) public onlyRole(CHALLENGER_ROLE) {
+
+        // verify the caller is the challenger
+        // TODO, probably do this in a modifier with access control
 
         // check an assertion hasn't already been submitted for this ID
-        // TODO
+        require(challenges[_assertionId].assertionId == 0, "Assertion already submitted");
 
-        // create a hash of the challenge
-        bytes32 challengeHash = keccak256(abi.encodePacked(_assertionId, _predecessorAssertionId, _stateRoot, _timestamp));
+        // get the node information from the rollup.
+        RollupUserLogic.Node memory node = RollupUserLogic(rollupUserLogic).getNodeStorage(assertionId);
 
-        // Verify the signature
-        require(
-            verifyChallengerSignature(challengeHash, _signature),
-            "Invalid signature"
-        );
+        // verify the data inside the hash matched the data pulled from the rollup contract
+        require(node.prevNum == predecessorAssertionId, "The _predecessorAssertionId is incorrect.");
+        require(node.stateHash == _assertionStateRoot, "The _assertionStateRoot is incorrect.");
+        require(node.createdAtBlock == _assertionTimestamp, "The _assertionTimestamp did not match the block this assertion was created at.");
 
-        // get the node information from the rollup
-        RollupUserLogic.Node memory node = RollupUserLogic(rollupUserLogic).getNodeStorage(_assertionId);
-
-        // verify the challengeHash is valid
-        require(node.prevNum == _predecessorAssertionId, "The _predecessorAssertionId is incorrect.");
-        require(node.stateHash == _stateRoot, "The _stateRoot is incorrect.");
-        require(node.createdAtBlock == _timestamp, "The _timestamp did not match the block this assertion was created at.");
-
-        // Register the claim
-        registerClaim(msg.sender, _assertionId, challengeHash);
-
-        // Emit the event
-        emit ChallengeSubmitted(_assertionId, _predecessorAssertionId, _stateRoot, _timestamp, _signature);
-    }
-
-    function registerClaim(
-        address _watchtower,
-        bytes32 _assertionId,
-        bytes32 _challenge
-    ) public {
-        Claim memory newClaim = Claim({
-            watchtower: _watchtower,
+        // add challenge to the mapping
+        challenges[_assertionId] = Challenge({
             assertionId: _assertionId,
-            challenge: _challenge,
-            timestamp: block.timestamp
+            predecessorAssertionId: _predecessorAssertionId,
+            assertionStateRoot: _assertionStateRoot,
+            assertionTimestamp: _assertionTimestamp,
+            challengerSignedHash: _challengerSignedHash,
+            activeChallengerPublicKey: challengerPublicKey // Store the active challengerPublicKey at the time of challenge submission
         });
 
-        claims[_assertionId] = newClaim;
-
-        // Emit the event
-        emit ClaimRegistered(_watchtower, _assertionId, _challenge);
+        // emit the event
+        emit ChallengeSubmitted(assertionId, predecessorAssertionId, stateRoot, assertionTimestamp, _signedHash);
     }
 
-    function redeemClaim(
-        address _watchtower,
-        bytes32 _assertionId,
-        bytes32 _challenge,
-        uint256 _timestamp,
-        bytes32 _successorAssertionId
-    ) public {
-        Claim memory claim = claims[_assertionId];
-
-        require(claim.watchtower == _watchtower, "Invalid watchtower");
-        require(claim.challenge == _challenge, "Invalid challenge");
-        require(claim.timestamp < _timestamp, "Invalid timestamp");
-
-        // Add your logic here to verify the successor assertion and pay the reward
-
-        // Emit the event
-        emit ClaimRedeemed(_watchtower, _assertionId, _challenge, _timestamp, _successorAssertionId);
+    /**
+     * @notice A public view function to look up challenges.
+     * @param _challengeId The ID of the challenge to look up.
+     * @return The challenge corresponding to the given ID.
+     */
+    function getChallenge(uint64 _challengeId) public view returns (Challenge memory) {
+        return challenges[_challengeId];
     }
-
-    function verifySignature(bytes32 hash, bytes memory signature) public view returns (bool) {
-        return hash.toEthSignedMessageHash().recover(signature) == address(uint160(uint256(keccak256(challengerPublicKey))));
-    }
-
-    function hashClaim(Claim memory _claim) returns (memory bytes) {
-        
-    }
+    
 }
+
+
+
 
