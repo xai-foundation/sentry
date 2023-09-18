@@ -1,6 +1,7 @@
 import { ethers } from "ethers";
 import { getProvider } from "../utils/getProvider";
 import { config } from "../config";
+import { RefereeAbi } from "../abis";
 
 /**
  * Lists all addresses that have a particular role in the Referee contract.
@@ -16,11 +17,7 @@ export async function listAddressesForRole(
     const provider = getProvider();
 
     // Create a contract instance
-    const contract = new ethers.Contract(config.refereeContractAddress, [
-        // The ABI of the getRoleMemberCount and getRoleMember functions
-        "function getRoleMemberCount(bytes32 role) public view returns (uint256)",
-        "function getRoleMember(bytes32 role, uint256 index) public view returns (address)",
-    ], provider);
+    const contract = new ethers.Contract(config.refereeContractAddress, RefereeAbi, provider);
 
     // Calculate the role hash
     const roleHash = ethers.keccak256(ethers.toUtf8Bytes(role));

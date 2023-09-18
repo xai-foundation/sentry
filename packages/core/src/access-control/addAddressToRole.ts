@@ -1,5 +1,6 @@
 import { ethers } from "ethers";
 import { config } from "../config";
+import { RefereeAbi } from "../abis";
 
 /**
  * Adds a role to an address in the Referee contract.
@@ -16,11 +17,7 @@ export async function addAddressToRole(
 ): Promise<ethers.ContractTransaction> {
     
     // Create a contract instance
-    const contract = new ethers.Contract(config.refereeContractAddress, [
-        // The ABI of the grantRole and hasRole functions
-        "function grantRole(bytes32 role, address account) public",
-        "function hasRole(bytes32 role, address account) public view returns (bool)",
-    ], signer);
+    const contract = new ethers.Contract(config.refereeContractAddress, RefereeAbi, signer);
 
     // Calculate the role hash
     const roleHash = ethers.keccak256(ethers.toUtf8Bytes(role));
