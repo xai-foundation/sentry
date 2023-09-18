@@ -1,6 +1,7 @@
 pragma solidity ^0.8.21;
 
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
+import "./nitro-contracts/rollup/IRollupCore.sol";
 
 contract Referee is AccessControl {
 
@@ -37,7 +38,7 @@ contract Referee is AccessControl {
      * @notice Sets the challengerPublicKey.
      * @param _challengerPublicKey The public key of the challenger.
      */
-    function setChallengerPublicKey(bytes _challengerPublicKey) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setChallengerPublicKey(bytes memory _challengerPublicKey) public onlyRole(DEFAULT_ADMIN_ROLE) {
         challengerPublicKey = _challengerPublicKey;
     }
 
@@ -57,7 +58,7 @@ contract Referee is AccessControl {
         uint64 _predecessorAssertionId,
         bytes32 _assertionStateRoot,
         uint64 _assertionTimestamp,
-        bytes _challengerSignedHash
+        bytes memory _challengerSignedHash
     ) public onlyRole(CHALLENGER_ROLE) {
 
         // verify the caller is the challenger
@@ -67,10 +68,10 @@ contract Referee is AccessControl {
         require(challenges[_assertionId].assertionId == 0, "Assertion already submitted");
 
         // get the node information from the rollup.
-        RollupUserLogic.Node memory node = RollupUserLogic(rollupUserLogic).getNodeStorage(assertionId);
+        Node memory node = IRollupCore(rollupUserLogic).getNode(_assertionId);
 
         // verify the data inside the hash matched the data pulled from the rollup contract
-        require(node.prevNum == predecessorAssertionId, "The _predecessorAssertionId is incorrect.");
+        require(node.prevNum == _predecessorAssertionId, "The _predecessorAssertionId is incorrect.");
         require(node.stateHash == _assertionStateRoot, "The _assertionStateRoot is incorrect.");
         require(node.createdAtBlock == _assertionTimestamp, "The _assertionTimestamp did not match the block this assertion was created at.");
 
@@ -85,7 +86,7 @@ contract Referee is AccessControl {
         });
 
         // emit the event
-        emit ChallengeSubmitted(assertionId, predecessorAssertionId, stateRoot, assertionTimestamp, _signedHash);
+        emit ChallengeSubmitted(challenges[_assertionId]);
     }
 
     /**

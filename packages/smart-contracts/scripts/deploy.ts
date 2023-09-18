@@ -17,7 +17,6 @@ async function main() {
   // save the referee contract address into core/src/config.ts by reading the ts file,
   // finding the key of the 'refereeContractAddress' and replacing the string next to it
   // TODO
-
 }
 
 // We recommend this pattern to be able to use async/await everywhere

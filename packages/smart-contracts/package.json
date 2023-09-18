@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "license": "UNLICENSED",
   "scripts": {
-    "lint": "eslint . --ext .ts,.tsx"
+    "lint": "eslint . --ext .ts,.tsx",
+    "build": "hardhat compile"
   },
   "dependencies": {
-    "@xai-vanguard-node/core": "workspace:*"
+    "@xai-vanguard-node/core": "workspace:*",
+    "@openzeppelin/contracts-upgradeable": "4.9.3"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",
