@@ -17,7 +17,7 @@ export async function listAddressesForRole(
     const provider = getProvider();
 
     // Create a contract instance
-    const contract = new ethers.Contract(config.refereeContractAddress, RefereeAbi, provider);
+    const contract = new ethers.Contract(config.refereeAddress, RefereeAbi, provider);
 
     // Calculate the role hash
     const roleHash = ethers.keccak256(ethers.toUtf8Bytes(role));

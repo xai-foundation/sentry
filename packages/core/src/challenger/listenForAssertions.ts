@@ -14,7 +14,7 @@ export function listenForAssertions(callback: (nodeNum: any, blockHash: any, sen
     const provider = getProvider();
 
     // create an instance of the rollup contract
-    const rollupContract = new ethers.Contract(config.rollupProtocolContract, RollupAdminLogicAbi, {provider});
+    const rollupContract = new ethers.Contract(config.rollupAddress, RollupAdminLogicAbi, {provider});
 
     // create a map to keep track of nodeNums that have called the callback
     const nodeNumMap: { [nodeNum: string]: boolean } = {};

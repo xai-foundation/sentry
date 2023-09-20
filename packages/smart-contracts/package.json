@@ -4,11 +4,13 @@
   "license": "UNLICENSED",
   "scripts": {
     "lint": "eslint . --ext .ts,.tsx",
-    "build": "hardhat compile"
+    "build": "hardhat compile",
+    "deploy": "hardhat run scripts/deploy.ts"
   },
   "dependencies": {
+    "@openzeppelin/contracts-upgradeable": "4.9.3",
     "@xai-vanguard-node/core": "workspace:*",
-    "@openzeppelin/contracts-upgradeable": "4.9.3"
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",

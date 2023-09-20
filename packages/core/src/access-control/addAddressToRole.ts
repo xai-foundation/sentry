@@ -17,7 +17,7 @@ export async function addAddressToRole(
 ): Promise<ethers.ContractTransaction> {
     
     // Create a contract instance
-    const contract = new ethers.Contract(config.refereeContractAddress, RefereeAbi, signer);
+    const contract = new ethers.Contract(config.refereeAddress, RefereeAbi, signer);
 
     // Calculate the role hash
     const roleHash = ethers.keccak256(ethers.toUtf8Bytes(role));

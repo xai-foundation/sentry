@@ -10,21 +10,23 @@ import { addChallenger } from './commands/access-control/add-challenger';
 import { getListOfAdmins } from './commands/access-control/get-list-of-admins';
 import { getListOfChallengers } from './commands/access-control/get-list-of-challengers';
 import { getRefereeContractAddress } from './commands/get-referee-address';
+import { setChallengerPublicKey } from './commands/set-challenger-public-key';
 
 const cli = new Vorpal();
 
 // entrypoints to each of the commands
-createBlsKeyPair(cli);
-bootChallenger(cli);
-createMnemonic(cli);
-getPrivateKeyFromMnemonic(cli);
-getPublicKeyFromPrivateKey(cli);
-mockChallengeAssertion(cli);
 addAdmin(cli);
 addChallenger(cli);
+bootChallenger(cli);
+createBlsKeyPair(cli);
+createMnemonic(cli);
 getListOfAdmins(cli);
 getListOfChallengers(cli);
+getPrivateKeyFromMnemonic(cli);
+getPublicKeyFromPrivateKey(cli);
 getRefereeContractAddress(cli);
+mockChallengeAssertion(cli);
+setChallengerPublicKey(cli);
 
 cli
     .delimiter('vanguard-node$')

@@ -1,196 +1,474 @@
 export const RefereeAbi = [
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "challengerPublicKey",
-        "outputs": [
-            {
-                "name": "",
-                "type": "bytes"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [],
-        "name": "rollupUserLogic",
-        "outputs": [
-            {
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [
-            {
-                "name": "",
-                "type": "uint64"
-            }
-        ],
-        "name": "challenges",
-        "outputs": [
-            {
-                "name": "assertionId",
-                "type": "uint64"
-            },
-            {
-                "name": "predecessorAssertionId",
-                "type": "uint64"
-            },
-            {
-                "name": "assertionStateRoot",
-                "type": "bytes32"
-            },
-            {
-                "name": "assertionTimestamp",
-                "type": "uint64"
-            },
-            {
-                "name": "challengerSignedHash",
-                "type": "bytes"
-            },
-            {
-                "name": "activeChallengerPublicKey",
-                "type": "bytes"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "constant": false,
-        "inputs": [
-            {
-                "name": "_challengerPublicKey",
-                "type": "bytes"
-            }
-        ],
-        "name": "setChallengerPublicKey",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "constant": false,
-        "inputs": [
-            {
-                "name": "_assertionId",
-                "type": "uint64"
-            },
-            {
-                "name": "_predecessorAssertionId",
-                "type": "uint64"
-            },
-            {
-                "name": "_assertionStateRoot",
-                "type": "bytes32"
-            },
-            {
-                "name": "_assertionTimestamp",
-                "type": "uint64"
-            },
-            {
-                "name": "_challengerSignedHash",
-                "type": "bytes"
-            }
-        ],
-        "name": "submitChallenge",
-        "outputs": [],
-        "payable": false,
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "constant": true,
-        "inputs": [
-            {
-                "name": "_challengeId",
-                "type": "uint64"
-            }
-        ],
-        "name": "getChallenge",
-        "outputs": [
-            {
-                "name": "",
-                "type": "tuple",
-                "components": [
-                    {
-                        "name": "assertionId",
-                        "type": "uint64"
-                    },
-                    {
-                        "name": "predecessorAssertionId",
-                        "type": "uint64"
-                    },
-                    {
-                        "name": "assertionStateRoot",
-                        "type": "bytes32"
-                    },
-                    {
-                        "name": "assertionTimestamp",
-                        "type": "uint64"
-                    },
-                    {
-                        "name": "challengerSignedHash",
-                        "type": "bytes"
-                    },
-                    {
-                        "name": "activeChallengerPublicKey",
-                        "type": "bytes"
-                    }
-                ]
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "anonymous": false,
-        "inputs": [
-            {
-                "indexed": false,
-                "name": "challenge",
-                "type": "tuple",
-                "components": [
-                    {
-                        "name": "assertionId",
-                        "type": "uint64"
-                    },
-                    {
-                        "name": "predecessorAssertionId",
-                        "type": "uint64"
-                    },
-                    {
-                        "name": "assertionStateRoot",
-                        "type": "bytes32"
-                    },
-                    {
-                        "name": "assertionTimestamp",
-                        "type": "uint64"
-                    },
-                    {
-                        "name": "challengerSignedHash",
-                        "type": "bytes"
-                    },
-                    {
-                        "name": "activeChallengerPublicKey",
-                        "type": "bytes"
-                    }
-                ]
-            }
-        ],
-        "name": "ChallengeSubmitted",
-        "type": "event"
-    }
+  {
+    "type": "constructor",
+    "stateMutability": "undefined",
+    "payable": false,
+    "inputs": []
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ChallengeSubmitted",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "challengeNumber",
+        "indexed": true
+      },
+      {
+        "type": "tuple",
+        "name": "challenge",
+        "indexed": false,
+        "components": [
+          {
+            "type": "uint64",
+            "name": "assertionId"
+          },
+          {
+            "type": "uint64",
+            "name": "predecessorAssertionId"
+          },
+          {
+            "type": "bytes32",
+            "name": "assertionStateRoot"
+          },
+          {
+            "type": "uint64",
+            "name": "assertionTimestamp"
+          },
+          {
+            "type": "bytes",
+            "name": "challengerSignedHash"
+          },
+          {
+            "type": "bytes",
+            "name": "activeChallengerPublicKey"
+          },
+          {
+            "type": "address",
+            "name": "rollupUsed"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ChallengerPublicKeyChanged",
+    "inputs": [
+      {
+        "type": "bytes",
+        "name": "newChallengerPublicKey",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "RoleAdminChanged",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "role",
+        "indexed": true
+      },
+      {
+        "type": "bytes32",
+        "name": "previousAdminRole",
+        "indexed": true
+      },
+      {
+        "type": "bytes32",
+        "name": "newAdminRole",
+        "indexed": true
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "RoleGranted",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "role",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "account",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "sender",
+        "indexed": true
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "RoleRevoked",
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "role",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "account",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "sender",
+        "indexed": true
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "RollupAddressChanged",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "newRollupAddress",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "CHALLENGER_ROLE",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "bytes32",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "DEFAULT_ADMIN_ROLE",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "bytes32",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "challengeCounter",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "challengerPublicKey",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "bytes",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "challenges",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint64",
+        "name": "assertionId"
+      },
+      {
+        "type": "uint64",
+        "name": "predecessorAssertionId"
+      },
+      {
+        "type": "bytes32",
+        "name": "assertionStateRoot"
+      },
+      {
+        "type": "uint64",
+        "name": "assertionTimestamp"
+      },
+      {
+        "type": "bytes",
+        "name": "challengerSignedHash"
+      },
+      {
+        "type": "bytes",
+        "name": "activeChallengerPublicKey"
+      },
+      {
+        "type": "address",
+        "name": "rollupUsed"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getChallenge",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint64",
+        "name": "_challengeId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple",
+        "name": "",
+        "components": [
+          {
+            "type": "uint64",
+            "name": "assertionId"
+          },
+          {
+            "type": "uint64",
+            "name": "predecessorAssertionId"
+          },
+          {
+            "type": "bytes32",
+            "name": "assertionStateRoot"
+          },
+          {
+            "type": "uint64",
+            "name": "assertionTimestamp"
+          },
+          {
+            "type": "bytes",
+            "name": "challengerSignedHash"
+          },
+          {
+            "type": "bytes",
+            "name": "activeChallengerPublicKey"
+          },
+          {
+            "type": "address",
+            "name": "rollupUsed"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getRoleAdmin",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "role"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bytes32",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "grantRole",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "role"
+      },
+      {
+        "type": "address",
+        "name": "account"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "hasRole",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "role"
+      },
+      {
+        "type": "address",
+        "name": "account"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bool",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "renounceRole",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "role"
+      },
+      {
+        "type": "address",
+        "name": "account"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "revokeRole",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "role"
+      },
+      {
+        "type": "address",
+        "name": "account"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "rollupAddress",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "setChallengerPublicKey",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes",
+        "name": "_challengerPublicKey"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "setRollupAddress",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "_rollupAddress"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "submitChallenge",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint64",
+        "name": "_assertionId"
+      },
+      {
+        "type": "uint64",
+        "name": "_predecessorAssertionId"
+      },
+      {
+        "type": "bytes32",
+        "name": "_assertionStateRoot"
+      },
+      {
+        "type": "uint64",
+        "name": "_assertionTimestamp"
+      },
+      {
+        "type": "bytes",
+        "name": "_challengerSignedHash"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "supportsInterface",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes4",
+        "name": "interfaceId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bool",
+        "name": ""
+      }
+    ]
+  }
 ];

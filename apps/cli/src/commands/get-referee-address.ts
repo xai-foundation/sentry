@@ -9,7 +9,7 @@ export function getRefereeContractAddress(cli: Vorpal) {
     cli
         .command('get-referee-contract-address', 'Fetches the referee contract address.')
         .action(async function (this: Vorpal.CommandInstance) {
-            const refereeContractAddress = config.refereeContractAddress;
+            const refereeContractAddress = config.refereeAddress;
             this.log(`Referee Contract Address: ${refereeContractAddress}`);
         });
 }

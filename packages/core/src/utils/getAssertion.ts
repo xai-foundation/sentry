@@ -41,7 +41,7 @@ export interface AssertionNode {
  */
 export async function getAssertion(assertionId: number): Promise<AssertionNode> {
     const provider = getProvider();
-    const rollupContract = new ethers.Contract(config.rollupProtocolContract, RollupAdminLogicAbi, provider);
+    const rollupContract = new ethers.Contract(config.rollupAddress, RollupAdminLogicAbi, provider);
     const [
         stateHash,
         challengeHash,

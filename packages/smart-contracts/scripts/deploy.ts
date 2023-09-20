@@ -1,22 +1,39 @@
 import { ethers } from "hardhat";
+import { extractAbi } from "../utils/exportAbi";
+import { safeVerify } from "../utils/safeVerify";
+import { writeToConfig } from "../utils/writeToConfig";
+import { config } from "@xai-vanguard-node/core";
+
+const options = {
+  admins: [
+    "0xc32493515E3537E55a323B3F0aF1AC4ED0E71BF4" // Christopher
+  ]
+}
 
 async function main() {
-  const challengerPublicKey = "0x123..."; // replace with actual public key
-  const rollUpUserLogicAddress = "0xabc..."; // replace with actual address
 
+  console.log("Deploying Referee...");
   const Referee = await ethers.getContractFactory("Referee");
-  const referee = await Referee.deploy(challengerPublicKey, rollUpUserLogicAddress);
+  const referee = await Referee.deploy();
+  await referee.deploymentTransaction();
+  const address = await referee.getAddress();
 
-  await referee.deployed();
+  console.log("Referee deployed to:", await referee.getAddress());
 
-  console.log("Referee deployed to:", referee.address);
+  // Set the rollupAddress
+  await referee.setRollupAddress(config.rollupAddress)
 
-  // write the ABI of referee into core/src/abi/RefereeAbi.ts
-  // TODO
+  // Export the ABI of referee
+  await extractAbi("Referee", referee);
+  console.log("Referee Abi exported");
 
-  // save the referee contract address into core/src/config.ts by reading the ts file,
-  // finding the key of the 'refereeContractAddress' and replacing the string next to it
-  // TODO
+  // Update the referee contract address in the config
+  writeToConfig({ refereeAddress: address });
+  console.log("Referee contract address updated in the config");
+
+  // Verify the contract
+  await safeVerify({ contract: referee });
+  console.log("Referee contract verified");
 }
 
 // We recommend this pattern to be able to use async/await everywhere
