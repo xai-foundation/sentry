@@ -29,5 +29,5 @@ export async function challengerHashAssertion(
     const keyBuffer = Buffer.from(challengerBlsSecretKey, 'hex');
     const hexKey = keyBuffer.toString('hex');
     const signature = await bls.sign(validMessageHash, hexKey);
-    return Buffer.from(signature).toString('hex');
+    return "0x" + Buffer.from(signature).toString('hex');
 }

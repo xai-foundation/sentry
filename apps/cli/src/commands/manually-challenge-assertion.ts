@@ -1,9 +1,9 @@
 import * as Vorpal from "vorpal";
-import { challengerHashAssertion, getAssertion } from "@xai-vanguard-node/core";
+import { getAssertion, getSignerFromPrivateKey, submitAssertionToReferee } from "@xai-vanguard-node/core";
 
-export function mockChallengeAssertion(cli: Vorpal) {
+export function manuallyChallengeAssertion(cli: Vorpal) {
     cli
-        .command('mock-challenge-assertion', 'Takes in the BLS secret key and an assertion ID, looks up that assertion and spits out all the data (nicely formatted) from the assertion, including what JS type each of the fields are. Then it hashes the data using challengerHashAssertion and returns the hash.')
+        .command('manually-challenge-assertion', 'Takes in the BLS secret key and an assertion ID, looks up that assertion and spits out all the data (nicely formatted) from the assertion, including what JS type each of the fields are. Then it hashes the data using challengerHashAssertion and returns the hash. After it will attempt to submit the assertion to the referee.')
         .action(async function (this: Vorpal.CommandInstance) {
             const secretKeyPrompt: Vorpal.PromptObject = {
                 type: 'password',
@@ -20,6 +20,14 @@ export function mockChallengeAssertion(cli: Vorpal) {
             };
             const { assertionId } = await this.prompt(assertionIdPrompt);
 
+            const challengerPrivateKeyPrompt = {
+                type: 'password',
+                name: 'privateKey',
+                message: 'Enter the private key of an challenger wallet:',
+                mask: '*'
+            };
+            const {privateKey} = await this.prompt(challengerPrivateKeyPrompt);
+
             this.log(`Looking up the assertion information for ID: ${assertionId}...`);
             const assertionNode = await getAssertion(assertionId);
             this.log(`Assertion data retrieved. Here are the details:`);
@@ -27,14 +35,19 @@ export function mockChallengeAssertion(cli: Vorpal) {
                 const assertionKey = key as keyof typeof assertionNode;
                 this.log(`${assertionKey} (${typeof (assertionNode[assertionKey])}): ${assertionNode[assertionKey]}`);
             });
-            this.log(`Starting the hashing process...`);
-            const hash = await challengerHashAssertion(
+
+            this.log(`Submitting Hash to chain for assertion '${assertionId}'.`);
+
+            // get a signer of the private key
+            const {signer} = getSignerFromPrivateKey(privateKey);
+
+            await submitAssertionToReferee(
                 secretKey,
                 assertionId,
-                assertionNode.prevNum,
-                assertionNode.stateHash,
-                assertionNode.createdAtBlock,
+                assertionNode,
+                signer,
             );
-            this.log(`Hashing complete: ${hash}`);
+
+            this.log(`Assertion successfuly submitted.`);
         });
 }

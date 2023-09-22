@@ -4,7 +4,7 @@ import { bootChallenger } from './commands/boot-challenger';
 import { createMnemonic } from './commands/create-mnemonic';
 import { getPrivateKeyFromMnemonic } from './commands/get-private-key-from-memonic';
 import { getPublicKeyFromPrivateKey } from './commands/get-public-key-from-private-key';
-import { mockChallengeAssertion } from './commands/mock-challenge-assertion';
+import { manuallyChallengeAssertion } from './commands/manually-challenge-assertion';
 import { addAdmin } from './commands/access-control/add-admin';
 import { addChallenger } from './commands/access-control/add-challenger';
 import { getListOfAdmins } from './commands/access-control/get-list-of-admins';
@@ -29,7 +29,7 @@ getListOfChallengers(cli);
 getPrivateKeyFromMnemonic(cli);
 getPublicKeyFromPrivateKey(cli);
 getRefereeContractAddress(cli);
-mockChallengeAssertion(cli);
+manuallyChallengeAssertion(cli);
 setChallengerPublicKey(cli);
 
 cli

@@ -1,5 +1,5 @@
 import * as Vorpal from "vorpal";
-import { challengerHashAssertion, createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions } from "@xai-vanguard-node/core";
+import { createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee } from "@xai-vanguard-node/core";
 
 /**
  * Starts a runtime of the challenger.
@@ -36,22 +36,21 @@ export function bootChallenger(cli: Vorpal) {
                 throw new Error("No private key passed in. Please provide a valid private key.")
             }
 
-            const { address } = getSignerFromPrivateKey(walletKey);
+            const { address, signer } = getSignerFromPrivateKey(walletKey);
             this.log(`Address of the Wallet: ${address}`);
 
             // start a listener for the assertions coming in
             listenForAssertions(async (nodeNum, blockHash, sendRoot, event) => {
                 this.log(`Assertion confirmed ${nodeNum}. Looking up the assertion information...`);
                 const assertionNode = await getAssertion(nodeNum);
-                this.log(`Assertion data retrieved. Starting the hashing process...`);
-                const hash = await challengerHashAssertion(
+                this.log(`Assertion data retrieved. Starting the submission process...`);
+                await submitAssertionToReferee(
                     secretKey,
                     nodeNum,
-                    assertionNode.prevNum,
-                    assertionNode.stateHash,
-                    assertionNode.createdAtBlock,
+                    assertionNode,
+                    signer,
                 );
-                this.log(`Hashing complete: ${hash}`);
+                this.log(`Submitted assertion: ${nodeNum}`);
             })
 
             this.log('The challenger is now listening for assertions...');

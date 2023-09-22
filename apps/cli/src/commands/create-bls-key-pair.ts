@@ -17,7 +17,7 @@ export function createBlsKeyPair(cli: Vorpal) {
             if (secretKey) {
                 this.log(`Public Key: ${publicKeyHex}`);
             } else {
-                this.log(`Secret Key: ${secretKeyHex}\nPublic Key: ${publicKeyHex}\nPlease secure your secret key safely. It will be lost when the application closes.`);
+                this.log(`Secret Key: ${secretKeyHex}\nPublic Key: 0x${publicKeyHex}\nPlease secure your secret key safely. It will be lost when the application closes.`);
             }
         });
 }
