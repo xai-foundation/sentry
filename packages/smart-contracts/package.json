@@ -4,7 +4,6 @@
   "license": "UNLICENSED",
   "scripts": {
     "lint": "eslint . --ext .ts,.tsx",
-    "build": "hardhat compile",
     "deploy": "hardhat run scripts/deploy.ts"
   },
   "dependencies": {
