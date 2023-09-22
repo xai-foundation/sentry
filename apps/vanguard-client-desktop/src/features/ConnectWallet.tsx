@@ -1,6 +1,5 @@
 import {RiKey2Line} from "react-icons/ri";
 import {FiGift, FiGitCommit} from "react-icons/fi";
-import {Link} from "@tanstack/react-router";
 
 const body = [
 	{
