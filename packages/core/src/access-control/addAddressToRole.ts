@@ -19,8 +19,13 @@ export async function addAddressToRole(
     // Create a contract instance
     const contract = new ethers.Contract(config.refereeAddress, RefereeAbi, signer);
 
+    // Check to see the role exists on the contract
+    if (contract[role] === undefined) {
+        throw new Error(`role ${role} does not exist on the referee`);
+    }
+
     // Calculate the role hash
-    const roleHash = ethers.keccak256(ethers.toUtf8Bytes(role));
+    const roleHash = await contract[role]();
 
     // Check if the address already has the role
     const hasRole = await contract.hasRole(roleHash, address);

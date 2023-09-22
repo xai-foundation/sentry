@@ -311,6 +311,48 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
+    "name": "getRoleMember",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "role"
+      },
+      {
+        "type": "uint256",
+        "name": "index"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "address",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getRoleMemberCount",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": "role"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "grantRole",
     "constant": false,
     "payable": false,

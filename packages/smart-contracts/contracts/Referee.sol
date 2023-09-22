@@ -3,7 +3,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
 import "./nitro-contracts/rollup/IRollupCore.sol";
 
-contract Referee is AccessControl {
+contract Referee is AccessControlEnumerable {
 
     // Define roles
     bytes32 public constant CHALLENGER_ROLE = keccak256("CHALLENGER_ROLE");

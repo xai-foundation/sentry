@@ -6,7 +6,8 @@ import { config } from "@xai-vanguard-node/core";
 
 const options = {
   admins: [
-    "0xc32493515E3537E55a323B3F0aF1AC4ED0E71BF4" // Christopher
+    "0xc32493515E3537E55a323B3F0aF1AC4ED0E71BF4", // Christopher
+    "0xd942EBC67d2C91Eb1a0757345D55A48F953D585b" // Avo
   ]
 }
 
@@ -30,6 +31,13 @@ async function main() {
   // Update the referee contract address in the config
   writeToConfig({ refereeAddress: address });
   console.log("Referee contract address updated in the config");
+
+  // Add admins to the contract
+  const adminRole = await referee.DEFAULT_ADMIN_ROLE();
+  for (const address of options.admins) {
+    await referee.grantRole(adminRole, address);
+    console.log(`Granted admin role to ${address}`);
+  }
 
   // Verify the contract
   await safeVerify({ contract: referee });

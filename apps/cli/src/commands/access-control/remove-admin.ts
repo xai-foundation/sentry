@@ -12,13 +12,14 @@ export function removeAdmin(cli: Vorpal) {
             const {address} = await this.prompt({
                 type: 'input',
                 name: 'address',
-                message: 'Address to be removed from the DEFAULT_ADMIN_ROLE.' 
+                message: 'Address to be removed from the DEFAULT_ADMIN_ROLE:' 
             });
 
             const {privateKey} = await this.prompt({
-                type: 'input',
+                type: 'password',
                 name: 'privateKey',
-                message: 'Private key of the current admin address. Must have DEFAULT_ADMIN_ROLE. Check by calling get-list-of-admins.'
+                message: 'Private key of the current admin address. Must have DEFAULT_ADMIN_ROLE. Check by calling get-list-of-admins:',
+                mask: '*',
             });
 
             if (!address || !privateKey) {

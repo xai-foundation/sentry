@@ -12,13 +12,14 @@ export function removeChallenger(cli: Vorpal) {
             const {address} = await this.prompt({
                 type: 'input',
                 name: 'address',
-                message: 'Address to be removed from the CHALLENGER_ROLE.' 
+                message: 'Address to be removed from the CHALLENGER_ROLE:' 
             });
 
             const {privateKey} = await this.prompt({
-                type: 'input',
+                type: 'password',
                 name: 'privateKey',
-                message: 'Private key of the current challenger address. Must have CHALLENGER_ROLE. Check by calling get-list-of-challengers.'
+                message: 'Private key of the current challenger address. Must have CHALLENGER_ROLE. Check by calling get-list-of-challengers:',
+                mask: '*',
             });
 
             if (!address || !privateKey) {

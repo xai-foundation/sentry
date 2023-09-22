@@ -12,13 +12,14 @@ export function addChallenger(cli: Vorpal) {
             const {address} = await this.prompt({
                 type: 'input',
                 name: 'address',
-                message: 'Address to be added to the CHALLENGER_ROLE.' 
+                message: 'Address to be added to the CHALLENGER_ROLE:' 
             });
 
             const {privateKey} = await this.prompt({
-                type: 'input',
+                type: 'password',
                 name: 'privateKey',
-                message: 'Private key of the admin address. Must have admin role. Check by calling get-list-of-admins.'
+                message: 'Private key of the admin address. Must have admin role. Check by calling get-list-of-admins:',
+                mask: '*',
             });
 
             if (!address || !privateKey) {

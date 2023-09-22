@@ -11,12 +11,16 @@ import { getListOfAdmins } from './commands/access-control/get-list-of-admins';
 import { getListOfChallengers } from './commands/access-control/get-list-of-challengers';
 import { getRefereeContractAddress } from './commands/get-referee-address';
 import { setChallengerPublicKey } from './commands/set-challenger-public-key';
+import { removeAdmin } from './commands/access-control/remove-admin';
+import { removeChallenger } from './commands/access-control/remove-challenger';
 
 const cli = new Vorpal();
 
 // entrypoints to each of the commands
 addAdmin(cli);
 addChallenger(cli);
+removeAdmin(cli);
+removeChallenger(cli);
 bootChallenger(cli);
 createBlsKeyPair(cli);
 createMnemonic(cli);

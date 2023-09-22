@@ -7,10 +7,12 @@ import { RefereeAbi } from "../abis";
  * Lists all addresses that have a particular role in the Referee contract.
  *
  * @param role - The role to list addresses for.
+ * @param callback - Optional callback function to handle addresses as they are retrieved.
  * @returns The addresses that have the given role.
  */
 export async function listAddressesForRole(
-    role: string
+    role: string,
+    callback?: (address: string) => void
 ): Promise<string[]> {
 
     // Get the provider
@@ -19,8 +21,13 @@ export async function listAddressesForRole(
     // Create a contract instance
     const contract = new ethers.Contract(config.refereeAddress, RefereeAbi, provider);
 
+    // check to see the role exists on the contract
+    if (contract[role] === undefined) {
+        throw new Error(`role ${role} does not exist on the referee`);
+    }
+
     // Calculate the role hash
-    const roleHash = ethers.keccak256(ethers.toUtf8Bytes(role));
+    const roleHash = await contract[role]();
 
     // Get the number of members
     const memberCount = await contract.getRoleMemberCount(roleHash);
@@ -30,6 +37,9 @@ export async function listAddressesForRole(
     for (let i = 0; i < memberCount; i++) {
         const address = await contract.getRoleMember(roleHash, i);
         addresses.push(address);
+        if (callback) {
+            callback(address);
+        }
     }
 
     return addresses;
