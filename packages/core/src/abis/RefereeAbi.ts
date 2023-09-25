@@ -8,6 +8,40 @@ export const RefereeAbi = [
   {
     "type": "event",
     "anonymous": false,
+    "name": "Approval",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "owner",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "operator",
+        "indexed": true
+      },
+      {
+        "type": "bool",
+        "name": "approved",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "AssertionCheckingToggled",
+    "inputs": [
+      {
+        "type": "bool",
+        "name": "newState",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "ChallengeSubmitted",
     "inputs": [
       {
@@ -60,6 +94,18 @@ export const RefereeAbi = [
       {
         "type": "bytes",
         "name": "newChallengerPublicKey",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "NodeLicenseAddressChanged",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "newNodeLicenseAddress",
         "indexed": false
       }
     ]
@@ -292,6 +338,48 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
+    "name": "getOperatorAtIndex",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "owner"
+      },
+      {
+        "type": "uint256",
+        "name": "index"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "address",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getOperatorCount",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "owner"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "getRoleAdmin",
     "constant": true,
     "stateMutability": "view",
@@ -393,6 +481,57 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
+    "name": "isApprovedForOperator",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "owner"
+      },
+      {
+        "type": "address",
+        "name": "operator"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bool",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "isCheckingAssertions",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "bool",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "nodeLicenseAddress",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "renounceRole",
     "constant": false,
     "payable": false,
@@ -441,6 +580,23 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
+    "name": "setApprovalForOperator",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "operator"
+      },
+      {
+        "type": "bool",
+        "name": "approved"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "setChallengerPublicKey",
     "constant": false,
     "payable": false,
@@ -454,6 +610,19 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
+    "name": "setNodeLicenseAddress",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "_nodeLicenseAddress"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "setRollupAddress",
     "constant": false,
     "payable": false,
@@ -461,6 +630,19 @@ export const RefereeAbi = [
       {
         "type": "address",
         "name": "_rollupAddress"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "submitAssertionToChallenge",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "licenseId"
       }
     ],
     "outputs": []
@@ -512,5 +694,13 @@ export const RefereeAbi = [
         "name": ""
       }
     ]
+  },
+  {
+    "type": "function",
+    "name": "toggleAssertionChecking",
+    "constant": false,
+    "payable": false,
+    "inputs": [],
+    "outputs": []
   }
 ];

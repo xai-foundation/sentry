@@ -8,7 +8,8 @@ const options = {
   admins: [
     "0xc32493515E3537E55a323B3F0aF1AC4ED0E71BF4", // Christopher
     "0xd942EBC67d2C91Eb1a0757345D55A48F953D585b" // Avo
-  ]
+  ],
+  fundsReceiver: "0xc32493515E3537E55a323B3F0aF1AC4ED0E71BF4" // Christopher
 }
 
 async function main() {
@@ -41,7 +42,7 @@ async function main() {
 
   console.log("Deploying NodeLicense...");
   const NodeLicense = await ethers.getContractFactory("NodeLicense");
-  const nodeLicense = await NodeLicense.deploy();
+  const nodeLicense = await NodeLicense.deploy(options.fundsReceiver);
   await nodeLicense.deploymentTransaction();
   const nodeLicenseAddress = await nodeLicense.getAddress();
 
@@ -62,7 +63,7 @@ async function main() {
   // Verify the contracts
   await Promise.all([
     safeVerify({ contract: referee }),
-    safeVerify({ contract: nodeLicense })
+    safeVerify({ contract: nodeLicense, constructorArgs: [options.fundsReceiver] })
   ]);
   console.log("Referee and NodeLicense contracts verified");
 }

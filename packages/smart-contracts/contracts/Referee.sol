@@ -27,7 +27,7 @@ contract Referee is AccessControlEnumerable {
     mapping(uint256 => Challenge) public challenges;
 
     // Toggle for assertion checking
-    bool public isCheckingAssertions = false;
+    bool public isCheckingAssertions = true;
 
     // Mapping from owner to operator approvals
     mapping (address => EnumerableSet.AddressSet) private _operatorApprovals;
@@ -159,11 +159,12 @@ contract Referee is AccessControlEnumerable {
         // check the challengerPublicKey is set
         require(challengerPublicKey.length != 0, "Challenger public key must be set before submitting a challenge");
 
-        // get the node information from the rollup.
-        Node memory node = IRollupCore(rollupAddress).getNode(_assertionId);
-
         // verify the data inside the hash matched the data pulled from the rollup contract
         if (isCheckingAssertions) {
+
+            // get the node information from the rollup.
+            Node memory node = IRollupCore(rollupAddress).getNode(_assertionId);
+
             require(node.prevNum == _predecessorAssertionId, "The _predecessorAssertionId is incorrect.");
             require(node.stateHash == _assertionStateRoot, "The _assertionStateRoot is incorrect.");
             require(node.createdAtBlock == _assertionTimestamp, "The _assertionTimestamp did not match the block this assertion was created at.");
