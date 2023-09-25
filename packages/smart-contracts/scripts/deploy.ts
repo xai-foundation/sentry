@@ -17,9 +17,9 @@ async function main() {
   const Referee = await ethers.getContractFactory("Referee");
   const referee = await Referee.deploy();
   await referee.deploymentTransaction();
-  const address = await referee.getAddress();
+  const refereeAddress = await referee.getAddress();
 
-  console.log("Referee deployed to:", await referee.getAddress());
+  console.log("Referee deployed to:", refereeAddress);
 
   // Set the rollupAddress
   await referee.setRollupAddress(config.rollupAddress)
@@ -29,7 +29,7 @@ async function main() {
   console.log("Referee Abi exported");
 
   // Update the referee contract address in the config
-  writeToConfig({ refereeAddress: address });
+  writeToConfig({ refereeAddress });
   console.log("Referee contract address updated in the config");
 
   // Add admins to the contract
@@ -39,9 +39,32 @@ async function main() {
     console.log(`Granted admin role to ${address}`);
   }
 
-  // Verify the contract
-  await safeVerify({ contract: referee });
-  console.log("Referee contract verified");
+  console.log("Deploying NodeLicense...");
+  const NodeLicense = await ethers.getContractFactory("NodeLicense");
+  const nodeLicense = await NodeLicense.deploy();
+  await nodeLicense.deploymentTransaction();
+  const nodeLicenseAddress = await nodeLicense.getAddress();
+
+  console.log("NodeLicense deployed to:", nodeLicenseAddress);
+
+  // Set the nodeLicenseAddress in the Referee contract
+  await referee.setNodeLicenseAddress(nodeLicenseAddress);
+  console.log("NodeLicense address set in the Referee contract");
+
+  // Export the ABI of NodeLicense
+  await extractAbi("NodeLicense", nodeLicense);
+  console.log("NodeLicense Abi exported");
+
+  // Update the NodeLicense contract address in the config
+  writeToConfig({ nodeLicenseAddress });
+  console.log("NodeLicense contract address updated in the config");
+
+  // Verify the contracts
+  await Promise.all([
+    safeVerify({ contract: referee }),
+    safeVerify({ contract: nodeLicense })
+  ]);
+  console.log("Referee and NodeLicense contracts verified");
 }
 
 // We recommend this pattern to be able to use async/await everywhere
@@ -50,4 +73,5 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
+
 
