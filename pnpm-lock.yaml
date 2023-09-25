@@ -123,6 +123,9 @@ importers:
 
   packages/smart-contracts:
     dependencies:
+      '@openzeppelin/contracts':
+        specifier: 4.9.3
+        version: 4.9.3
       '@openzeppelin/contracts-upgradeable':
         specifier: 4.9.3
         version: 4.9.3
