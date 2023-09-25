@@ -121,7 +121,17 @@ contract Referee is AccessControlEnumerable {
      * @return The address of the operator.
      */
     function getOperatorAtIndex(address owner, uint256 index) public view returns (address) {
+        require(index < getOperatorCount(owner), "Index out of bounds");
         return _operatorApprovals[owner].at(index);
+    }
+
+    /**
+     * @notice Get the count of operators for a particular address.
+     * @param owner The address of the owner.
+     * @return The count of operators.
+     */
+    function getOperatorCount(address owner) public view returns (uint256) {
+        return _operatorApprovals[owner].length();
     }
 
     /**
