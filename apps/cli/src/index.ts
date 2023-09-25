@@ -13,6 +13,8 @@ import { getRefereeContractAddress } from './commands/get-referee-address';
 import { setChallengerPublicKey } from './commands/set-challenger-public-key';
 import { removeAdmin } from './commands/access-control/remove-admin';
 import { removeChallenger } from './commands/access-control/remove-challenger';
+import { getAssertionCheckingStatus } from './commands/get-assertion-checking-status';
+import { toggleAssertionCheckingCommand } from './commands/toggle-assertion-checking';
 
 const cli = new Vorpal();
 
@@ -31,6 +33,8 @@ getPublicKeyFromPrivateKey(cli);
 getRefereeContractAddress(cli);
 manuallyChallengeAssertion(cli);
 setChallengerPublicKey(cli);
+getAssertionCheckingStatus(cli);
+toggleAssertionCheckingCommand(cli);
 
 cli
     .delimiter('vanguard-node$')
