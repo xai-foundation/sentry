@@ -11,7 +11,7 @@ import {SiGitbook} from "react-icons/si";
  */
 function Sidebar() {
     return (
-        <div className="fixed h-screen w-64 bg-transparent border-r border-gray-400 text-gray-600 p-5">
+        <div className="sticky h-screen w-64 bg-white border-r border-gray-400 text-gray-600 p-5 z-10">
             <div className="mb-5">
                 <h2 className="text-gray-400 text-base mb-2 uppercase">Vanguard Node</h2>
                 <Link to="/home" className="flex items-center mb-2 text-gray-600 hover:text-gray-400 cursor-pointer">
