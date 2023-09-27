@@ -15,12 +15,16 @@ import { removeAdmin } from './commands/access-control/remove-admin';
 import { removeChallenger } from './commands/access-control/remove-challenger';
 import { setChallengerPublicKey } from './commands/set-challenger-public-key';
 import { toggleAssertionCheckingCommand } from './commands/toggle-assertion-checking';
+import { addOperator } from './commands/operator-control/add-operator';
+import { removeOperator } from './commands/operator-control/remove-operator';
+import { listOperators } from './commands/operator-control/list-operators';
 
 const cli = new Vorpal();
 
 // entrypoints to each of the commands
 addAdmin(cli);
 addChallenger(cli);
+addOperator(cli);
 bootChallenger(cli);
 createBlsKeyPair(cli);
 createMnemonic(cli);
@@ -31,8 +35,10 @@ getPrivateKeyFromMnemonic(cli);
 getPublicKeyFromPrivateKey(cli);
 getRefereeContractAddress(cli);
 manuallyChallengeAssertion(cli);
+listOperators(cli);
 removeAdmin(cli);
 removeChallenger(cli);
+removeOperator(cli);
 setChallengerPublicKey(cli);
 toggleAssertionCheckingCommand(cli);
 

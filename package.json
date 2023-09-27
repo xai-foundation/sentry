@@ -6,7 +6,9 @@
   "scripts": {
     "lint": "pnpm recursive run lint",
     "clean": "pnpm recursive run clean",
-    "build": "pnpm recursive run build"
+    "build": "pnpm recursive run build",
+    "cli": "pnpm -r -filter @xai-vanguard-node/core run build && pnpm -r -filter @xai-vanguard-node/vanguard-node-cli run compile && pnpm -r -filter @xai-vanguard-node/vanguard-node-cli run start",
+    "deploy-smart-contracts": "pnpm -r -filter @xai-vanguard-node/core run build && pnpm -r -filter @xai-vanguard-node/smart-contracts run deploy"
   },
   "keywords": [],
   "author": "",

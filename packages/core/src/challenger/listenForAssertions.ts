@@ -21,7 +21,7 @@ export function listenForAssertions(callback: (nodeNum: any, blockHash: any, sen
 
     // listen for the NodeConfirmed event
     rollupContract.on("NodeConfirmed", (nodeNum, blockHash, sendRoot, event) => {
-        
+
         // if the nodeNum has not been seen before, call the callback and add it to the map
         if (!nodeNumMap[nodeNum]) {
             nodeNumMap[nodeNum] = true;

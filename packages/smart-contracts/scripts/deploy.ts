@@ -29,10 +29,6 @@ async function main() {
   await extractAbi("Referee", referee);
   console.log("Referee Abi exported");
 
-  // Update the referee contract address in the config
-  writeToConfig({ refereeAddress });
-  console.log("Referee contract address updated in the config");
-
   // Add admins to the contract
   const adminRole = await referee.DEFAULT_ADMIN_ROLE();
   for (const address of options.admins) {
@@ -56,9 +52,9 @@ async function main() {
   await extractAbi("NodeLicense", nodeLicense);
   console.log("NodeLicense Abi exported");
 
-  // Update the NodeLicense contract address in the config
-  writeToConfig({ nodeLicenseAddress });
-  console.log("NodeLicense contract address updated in the config");
+  // Update the referee and NodeLicense contract addresses in the config
+  writeToConfig({ refereeAddress, nodeLicenseAddress });
+  console.log("Referee and NodeLicense contract addresses updated in the config");
 
   // Verify the contracts
   await Promise.all([
@@ -74,5 +70,6 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
+
 
 
