@@ -38,7 +38,7 @@ export function ConnectWallet() {
 	}
 
 	return (
-		<div className="relative w-full h-screen flex flex-col justify-center items-center gap-20">
+		<div className="relative w-full h-screen flex flex-col items-center gap-20 pt-52">
 			<div className="flex flex-col justify-center items-center gap-2 z-10">
 				<h1 className="text-[40px] font-bold uppercase tracking-widest">Connect your wallet</h1>
 				<p className="text-lg text-[#525252] max-w-[508px] text-center">
@@ -63,7 +63,7 @@ export function ConnectWallet() {
 			</div>
 
 			<video
-				className="absolute bottom-0 w-full object-cover"
+				className="absolute bottom-[-15rem] w-full object-cover"
 				autoPlay
 				loop
 				muted

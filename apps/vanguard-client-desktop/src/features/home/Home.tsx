@@ -1,6 +1,6 @@
 export function Home() {
 	return (
-		<div>
+		<div className="w-full h-screen flex flex-col justify-center items-center">
 			<h1>Home</h1>
 		</div>
 	)

@@ -2,6 +2,7 @@ import {RootRoute, Route, Router} from "@tanstack/react-router";
 import {Root} from ".";
 import {ConnectWallet} from "../ConnectWallet.tsx";
 import {Home} from "../home/Home.tsx";
+import {NoLicenses} from "../licenses/NoLicenses.tsx";
 import {Licenses} from "../licenses/Licenses.tsx";
 
 // Create a root route
