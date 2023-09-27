@@ -1,5 +1,6 @@
 import {RiKey2Line} from "react-icons/ri";
 import {FiGift, FiGitCommit} from "react-icons/fi";
+import {Link} from "@tanstack/react-router";
 
 const body = [
 	{
@@ -48,12 +49,19 @@ export function ConnectWallet() {
 			</div>
 
 			<div className="flex flex-col justify-center items-center gap-4 z-10">
-				<button
-					onClick={() => alert("lol you thought we had functionality")}
-					className="w-96 bg-[#F30919] text-white p-4 uppercase font-semibold"
+				{/*<button*/}
+				{/*	onClick={() => alert("lol you thought we had functionality")}*/}
+				{/*	className="w-96 bg-[#F30919] text-white p-4 uppercase font-semibold"*/}
+				{/*>*/}
+				{/*	Connect Wallet*/}
+				{/*</button>*/}
+
+				<Link
+					to="/licenses"
+					className="w-96 bg-[#F30919] flex justify-center items-center text-white p-4 uppercase font-semibold cursor-pointer"
 				>
 					Connect Wallet
-				</button>
+				</Link>
 
 				<p className="text-xs text-[#525252]">This will open WalletConnect in a browser</p>
 			</div>
