@@ -3,7 +3,7 @@ import {HasLicenses} from "./HasLicenses.tsx";
 import {NoLicenses} from "./NoLicenses.tsx";
 
 export function Licenses() {
-	const [number, setNumber] = useState<number>(1);
+	const [number, setNumber] = useState<number>(0);
 
 	return (
 		<div className="w-full h-screen">

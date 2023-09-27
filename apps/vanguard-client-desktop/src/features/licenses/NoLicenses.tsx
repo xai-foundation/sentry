@@ -41,8 +41,8 @@ export function NoLicenses({number, setNumber}: NoLicensesProps) {
 	}
 
 	return (
-		<div className="w-full h-screen flex flex-col justify-center items-center">
-			<div className="flex flex-col justify-center items-center gap-4">
+		<div className="w-full h-auto flex flex-col justify-center items-center">
+			<div className="absolute bottom-0 top-0 flex flex-col justify-center items-center gap-4 mb-16">
 				<AiFillWarning className="w-16 h-16 text-[#D4D4D4]"/>
 				<p className="text-xl font-semibold">You don’t own any licenses</p>
 				<p className="text-base text-[#525252]">Buy a license to start participating in network
