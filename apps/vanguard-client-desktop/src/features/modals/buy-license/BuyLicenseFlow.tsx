@@ -1,4 +1,6 @@
-import {Dispatch, SetStateAction} from "react";
+import {Dispatch, SetStateAction, useState} from "react";
+import {XaiCheckbox} from "../../../components/checkbox/XaiCheckbox.tsx";
+import {ImCheckmark} from "react-icons/im";
 
 const payWithBody = [
 	{
@@ -29,25 +31,14 @@ interface BuyLicenseFlowProps {
 }
 
 export function BuyLicenseFlow({setPurchaseSuccess}: BuyLicenseFlowProps) {
+	const [termsChecked, setTermsChecked] = useState<boolean>(false);
+	const [investmentsChecked, setInvestmentsChecked] = useState<boolean>(false);
 
+	const [payWith, setPayWith] = useState({
+		eth: true,
+		arb: false,
+	});
 
-	function getPayWith() {
-		return payWithBody.map((item, i) => {
-			return (
-				<div className="flex flex-row items-center justify-between" key={`currency-${i}`}>
-					<div className="flex flex-row items-center gap-2">
-						<input type={"radio"}/>
-						<span>{item.currency}</span>
-						<span className="text-[#A3A3A3] text-sm">{item.abbr}</span>
-					</div>
-					<div className="flex flex-row items-center gap-1">
-						<span>{item.price} {item.abbr}</span>
-						<span className="text-[#A3A3A3]">per license</span>
-					</div>
-				</div>
-			)
-		})
-	}
 
 	function getOrderTotal() {
 		return orderTotalBody.map((item, i) => {
@@ -94,7 +85,55 @@ export function BuyLicenseFlow({setPurchaseSuccess}: BuyLicenseFlowProps) {
 				</div>
 
 				<div>
-					{getPayWith()}
+					<div className="flex flex-row items-center justify-between">
+						<div className="flex flex-row items-center gap-2">
+							<div
+								onClick={() => setPayWith({eth: true, arb: false})}
+								className={`flex justify-center items-center w-5 h-5 cursor-pointer border rounded-full ${payWith.eth ? "border-0" : "border-[#A3A3A3]"} ${payWith.eth ? "bg-[#F30919]" : "bg-white"}`}
+							>
+								{payWith.eth ? <ImCheckmark color={"white"} size={12}/> : null}
+							</div>
+							<div className="flex flex-row gap-1">
+								{payWithBody[0].currency}
+							</div>
+							<span className="text-[#A3A3A3] text-sm">
+								{payWithBody[0].abbr}
+							</span>
+						</div>
+						<div className="flex flex-row items-center gap-1">
+							<span>
+								{payWithBody[0].price} {payWithBody[0].abbr}
+							</span>
+							<span className="text-[#A3A3A3]">
+								per license
+							</span>
+						</div>
+					</div>
+
+					<div className="flex flex-row items-center justify-between">
+						<div className="flex flex-row items-center gap-2">
+							<div
+								onClick={() => setPayWith({eth: false, arb: true})}
+								className={`flex justify-center items-center w-5 h-5 cursor-pointer border rounded-full ${payWith.arb ? "border-0" : "border-[#A3A3A3]"} ${payWith.arb ? "bg-[#F30919]" : "bg-white"}`}
+							>
+								{payWith.arb ? <ImCheckmark color={"white"} size={12}/> : null}
+							</div>
+							<div className="flex flex-row gap-1">
+								{payWithBody[1].currency}
+							</div>
+							<span className="text-[#A3A3A3] text-sm">
+								{payWithBody[1].abbr}
+							</span>
+						</div>
+						<div className="flex flex-row items-center gap-1">
+							<span>
+								{payWithBody[1].price} {payWithBody[1].abbr}
+							</span>
+							<span className="text-[#A3A3A3]">
+								per license
+							</span>
+						</div>
+					</div>
 				</div>
 			</div>
 
@@ -153,36 +192,36 @@ export function BuyLicenseFlow({setPurchaseSuccess}: BuyLicenseFlowProps) {
 						</div>
 					</div>
 
-					<div>
-						<div className="w-full flex flex-row items-center gap-2 text-sm">
-							<input type={"checkbox"}/>
-							<div className="flex flex-row gap-1">
-								I agree to the
-								<a
-									className="cursor-pointer text-[#F30919]"
-									onClick={() => window.electron.openExternal("https://www.youtube.com/watch?v=dQw4w9WgXcQ")}>
-									Terms of Service
-								</a>
-								and the
-								<a
-									className="cursor-pointer text-[#F30919]"
-									onClick={() => window.electron.openExternal("https://www.youtube.com/watch?v=dQw4w9WgXcQ")}>
-									Privacy Policy
-								</a>
-							</div>
-						</div>
-						<div className="w-full flex flex-row items-center gap-2 text-sm">
-							<input type={"checkbox"}/>
-							<div className="flex flex-row gap-1">
-								I understand that Xai Vanguard Nodes are
-								<a
-									className="cursor-pointer text-[#F30919]"
-									onClick={() => window.electron.openExternal("https://www.youtube.com/watch?v=dQw4w9WgXcQ")}>
-									not investments
-								</a>
-							</div>
-						</div>
-					</div>
+					<XaiCheckbox
+						onClick={() => setTermsChecked(!termsChecked)}
+						condition={termsChecked}
+					>
+						I agree to the
+						<a
+							className="cursor-pointer text-[#F30919]"
+							onClick={() => window.electron.openExternal("https://www.youtube.com/watch?v=dQw4w9WgXcQ")}>
+							Terms of Service
+						</a>
+						and the
+						<a
+							className="cursor-pointer text-[#F30919]"
+							onClick={() => window.electron.openExternal("https://www.youtube.com/watch?v=dQw4w9WgXcQ")}>
+							Privacy Policy
+						</a>
+					</XaiCheckbox>
+
+
+					<XaiCheckbox
+						onClick={() => setInvestmentsChecked(!investmentsChecked)}
+						condition={investmentsChecked}
+					>
+						I understand that Xai Vanguard Nodes are
+						<a
+							className="cursor-pointer text-[#F30919]"
+							onClick={() => window.electron.openExternal("https://www.youtube.com/watch?v=dQw4w9WgXcQ")}>
+							not investments
+						</a>
+					</XaiCheckbox>
 				</div>
 
 				<div>
