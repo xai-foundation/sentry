@@ -14,7 +14,7 @@ function Sidebar() {
         <div className="sticky h-screen w-64 bg-white border-r border-gray-200 text-gray-600 p-5 z-10">
             <div className="mb-5">
                 <h2 className="text-gray-400 text-base mb-2 uppercase">Vanguard Node</h2>
-                <Link to="/home" className="flex items-center mb-2 text-gray-600 hover:text-gray-400 cursor-pointer">
+                <Link to="/" className="flex items-center mb-2 text-gray-600 hover:text-gray-400 cursor-pointer">
                     <FiGitCommit className="mr-2" /> Home
                 </Link>
 
@@ -41,13 +41,6 @@ function Sidebar() {
                 <a onClick={() => window.electron.openExternal('https://twitter.com/xai_games')} className="flex items-center mb-2 text-gray-600 hover:text-gray-400 cursor-pointer">
                     <RiTwitterXFill className="mr-2" /> X
                 </a>
-            </div>
-
-            <div className="mt-5">
-                <h2 className="text-gray-400 text-base mb-2 uppercase">Dev Links</h2>
-                <Link to="/" className="flex items-center mb-2 text-gray-600 hover:text-gray-400 cursor-pointer">
-                    Connect Wallet
-                </Link>
             </div>
         </div>
     );

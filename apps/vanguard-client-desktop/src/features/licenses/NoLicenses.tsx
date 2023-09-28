@@ -17,11 +17,10 @@ const noLicenseCopy = [
 ]
 
 interface NoLicensesProps {
-	number: number
-	setNumber: Dispatch<SetStateAction<number>>
+	setShowModal: Dispatch<SetStateAction<boolean>>
 }
 
-export function NoLicenses({number, setNumber}: NoLicensesProps) {
+export function NoLicenses({setShowModal}: NoLicensesProps) {
 
 	function getLicenseContent() {
 		return noLicenseCopy.map((item, i) => {
@@ -42,25 +41,25 @@ export function NoLicenses({number, setNumber}: NoLicensesProps) {
 
 	return (
 		<div className="w-full h-auto flex flex-col justify-center items-center">
-			<div className="absolute bottom-0 top-0 flex flex-col justify-center items-center gap-4 mb-16">
+			<div className="absolute w-auto bottom-0 top-0 flex flex-col justify-center items-center gap-4">
 				<AiFillWarning className="w-16 h-16 text-[#D4D4D4]"/>
 				<p className="text-xl font-semibold">You don’t own any licenses</p>
 				<p className="text-base text-[#525252]">Buy a license to start participating in network
 					challenges</p>
 
 				<button
-					onClick={() => setNumber(number + 1)}
+					onClick={() => setShowModal(true)}
 					className="w-52 bg-[#F30919] text-white p-4 uppercase font-semibold mt-2"
 				>
 					Buy Now
 				</button>
 			</div>
 
-			<div className="absolute bottom-12 flex flex-col justify-center items-center gap-6 text-2xl">
+			<div className="absolute bottom-0 mb-24 flex flex-col justify-center items-center gap-6 text-2xl">
 				<h3 className="font-semibold">
 					How licensing works
 				</h3>
-				<div className="flex flex-row justify-center items-center gap-10 p-6 z-10">
+				<div className="flex flex-row justify-center items-center gap-10 p-6">
 					{getLicenseContent()}
 				</div>
 			</div>

@@ -1,4 +1,51 @@
-export function HasLicenses() {
+import {Dispatch, SetStateAction} from "react";
+
+const dummyLicenses = [
+	{
+		number: 1,
+		license: "Xai Vanguard Node License",
+		date: "2023-09-26",
+		receipt: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+	},
+	// {
+	// 	number: 2,
+	// 	license: "Xai Vanguard Node License",
+	// 	date: "2023-09-27",
+	// 	receipt: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+	// },
+	// {
+	// 	number: 3,
+	// 	license: "Xai Vanguard Node License",
+	// 	date: "2023-09-28",
+	// 	receipt: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+	// },
+]
+
+interface HasLicensesProps {
+	setShowModal: Dispatch<SetStateAction<boolean>>;
+}
+
+export function HasLicenses({setShowModal}: HasLicensesProps) {
+	function getLicenses() {
+		return dummyLicenses.map((item, i: number) => {
+			return (
+				<tr className="bg-[#FAFAFA] flex px-8 text-sm" key={`license-${i}`}>
+					<td className="w-12 px-4 py-2">{item.number}</td>
+					<td className="w-1/4 px-4 py-2">{item.license}</td>
+					<td className="w-1/6 px-4 py-2">{item.date}</td>
+					<td className="w-1/6 px-4 py-2">
+						<a
+							className="text-[#F30919] cursor-pointer"
+							onClick={() => window.electron.openExternal(item.receipt)}
+						>
+							View
+						</a>
+					</td>
+				</tr>
+			)
+		})
+	}
+
 	return (
 		<div className="w-full flex flex-col gap-8">
 			<div className="px-8 py-9">
@@ -8,7 +55,7 @@ export function HasLicenses() {
 						Purchase additional licenses to increase the number of claims submitted per challenge
 					</p>
 					<button
-						onClick={() => alert("no")}
+						onClick={() => setShowModal(true)}
 						className="w-48 bg-[#F30919] text-sm text-white p-2 uppercase font-semibold"
 					>
 						Buy Now
@@ -27,19 +74,7 @@ export function HasLicenses() {
 					</tr>
 					</thead>
 					<tbody>
-					<tr className="bg-[#FAFAFA] flex px-8 text-sm">
-						<td className="w-12 px-4 py-2">1</td>
-						<td className="w-1/4 px-4 py-2">Xai Vanguard Node License</td>
-						<td className="w-1/6 px-4 py-2">2023-09-26</td>
-						<td className="w-1/6 px-4 py-2">
-							<a
-								className="text-[#F30919] cursor-pointer"
-								onClick={() => window.electron.openExternal("https://www.youtube.com/watch?v=dQw4w9WgXcQ")}
-							>
-								View
-							</a>
-						</td>
-					</tr>
+					{getLicenses()}
 					<tr className="text-[#A3A3A3] text-sm flex px-8">
 						<td className="w-12 px-4 py-2">-</td>
 						<td className="w-1/4 px-4 py-2">Empty License Slot</td>
