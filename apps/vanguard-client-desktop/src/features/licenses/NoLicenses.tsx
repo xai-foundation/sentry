@@ -55,7 +55,7 @@ export function NoLicenses({setShowModal}: NoLicensesProps) {
 				</button>
 			</div>
 
-			<div className="absolute bottom-0 mb-24 flex flex-col justify-center items-center gap-6 text-2xl">
+			<div className="absolute bottom-0 flex flex-col justify-center items-center gap-6 text-2xl">
 				<h3 className="font-semibold">
 					How licensing works
 				</h3>

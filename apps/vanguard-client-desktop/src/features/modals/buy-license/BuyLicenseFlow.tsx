@@ -1,28 +1,24 @@
 import {Dispatch, SetStateAction, useState} from "react";
 import {XaiCheckbox} from "../../../components/checkbox/XaiCheckbox.tsx";
 import {ImCheckmark} from "react-icons/im";
+import {XaiNumberInput} from "../../../components/input/XaiNumberInput.tsx";
 
 const payWithBody = [
 	{
 		currency: "Ethereum",
 		abbr: "ETH",
 		price: "0.00051",
-	},
-	{
-		currency: "Arbitrum",
-		abbr: "ARB",
-		price: "51.8",
-	},
+	}
 ]
 
 const orderTotalBody = [
 	{
 		item: "1 Xai Vanguard Node License",
-		price: "0.00061 ETH",
+		price: 0.00061,
 	},
 	{
 		item: "Gas Fee (5%)",
-		price: "0.000031 ETH",
+		price: 0.000031,
 	},
 ]
 
@@ -33,11 +29,8 @@ interface BuyLicenseFlowProps {
 export function BuyLicenseFlow({setPurchaseSuccess}: BuyLicenseFlowProps) {
 	const [termsChecked, setTermsChecked] = useState<boolean>(false);
 	const [investmentsChecked, setInvestmentsChecked] = useState<boolean>(false);
-
-	const [payWith, setPayWith] = useState({
-		eth: true,
-		arb: false,
-	});
+	const [payWith, setPayWith] = useState({eth: true, arb: false});
+	const [amount, setAmount] = useState<number>(0);
 
 
 	function getOrderTotal() {
@@ -89,7 +82,7 @@ export function BuyLicenseFlow({setPurchaseSuccess}: BuyLicenseFlowProps) {
 						<div className="flex flex-row items-center gap-2">
 							<div
 								onClick={() => setPayWith({eth: true, arb: false})}
-								className={`flex justify-center items-center w-5 h-5 cursor-pointer border rounded-full ${payWith.eth ? "border-0" : "border-[#A3A3A3]"} ${payWith.eth ? "bg-[#F30919]" : "bg-white"}`}
+								className={`flex justify-center items-center w-5 h-5 cursor-pointer border rounded-full ${payWith.eth ? "border-0 bg-[#F30919]" : "border-[#A3A3A3] bg-white"}`}
 							>
 								{payWith.eth ? <ImCheckmark color={"white"} size={12}/> : null}
 							</div>
@@ -110,30 +103,32 @@ export function BuyLicenseFlow({setPurchaseSuccess}: BuyLicenseFlowProps) {
 						</div>
 					</div>
 
-					<div className="flex flex-row items-center justify-between">
-						<div className="flex flex-row items-center gap-2">
-							<div
-								onClick={() => setPayWith({eth: false, arb: true})}
-								className={`flex justify-center items-center w-5 h-5 cursor-pointer border rounded-full ${payWith.arb ? "border-0" : "border-[#A3A3A3]"} ${payWith.arb ? "bg-[#F30919]" : "bg-white"}`}
-							>
-								{payWith.arb ? <ImCheckmark color={"white"} size={12}/> : null}
-							</div>
-							<div className="flex flex-row gap-1">
-								{payWithBody[1].currency}
-							</div>
-							<span className="text-[#A3A3A3] text-sm">
-								{payWithBody[1].abbr}
-							</span>
-						</div>
-						<div className="flex flex-row items-center gap-1">
-							<span>
-								{payWithBody[1].price} {payWithBody[1].abbr}
-							</span>
-							<span className="text-[#A3A3A3]">
-								per license
-							</span>
-						</div>
-					</div>
+					{/*<div className="flex flex-row items-center justify-between">*/}
+					{/*	<div className="flex flex-row items-center gap-2">*/}
+					{/*		<div*/}
+					{/*			onClick={() => setPayWith({eth: false, arb: true})}*/}
+					{/*			className={`flex justify-center items-center w-5 h-5 cursor-pointer border rounded-full ${payWith.arb ? "border-0 bg-[#F30919]" : "border-[#A3A3A3] bg-white"}`}*/}
+					{/*		>*/}
+					{/*			{payWith.arb ? <ImCheckmark color={"white"} size={12}/> : null}*/}
+					{/*		</div>*/}
+					{/*		<div className="flex flex-row gap-1">*/}
+					{/*			{payWithBody[1].currency}*/}
+					{/*		</div>*/}
+					{/*		<span className="text-[#A3A3A3] text-sm">*/}
+					{/*			{payWithBody[1].abbr}*/}
+					{/*		</span>*/}
+					{/*	</div>*/}
+					{/*	<div className="flex flex-row items-center gap-1">*/}
+					{/*		<span>*/}
+					{/*			{payWithBody[1].price} {payWithBody[1].abbr}*/}
+					{/*		</span>*/}
+					{/*		<span className="text-[#A3A3A3]">*/}
+					{/*			per license*/}
+					{/*		</span>*/}
+					{/*	</div>*/}
+					{/*</div>*/}
+
+
 				</div>
 			</div>
 
@@ -149,7 +144,10 @@ export function BuyLicenseFlow({setPurchaseSuccess}: BuyLicenseFlowProps) {
 				</div>
 
 				<div>
-					<input className="w-full h-12 border border-gray-200" type={"number"}/>
+					<XaiNumberInput
+						amount={amount}
+						setAmount={setAmount}
+					/>
 				</div>
 			</div>
 
@@ -173,7 +171,7 @@ export function BuyLicenseFlow({setPurchaseSuccess}: BuyLicenseFlowProps) {
 							<span className="">You will pay</span>
 						</div>
 						<div className="flex flex-row items-center gap-1">
-							<span>{orderTotalBody[0].price + orderTotalBody[1].price}</span>
+							<span>{orderTotalBody[0].price + orderTotalBody[1].price} {payWithBody[0].abbr}</span>
 						</div>
 					</div>
 				</div>
@@ -227,7 +225,8 @@ export function BuyLicenseFlow({setPurchaseSuccess}: BuyLicenseFlowProps) {
 				<div>
 					<button
 						onClick={() => setPurchaseSuccess(true)}
-						className="w-full h-16 bg-[#F30919] text-sm text-white p-2 uppercase font-semibold"
+						className={`w-full h-16 ${investmentsChecked && termsChecked ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
+						disabled={!investmentsChecked && !termsChecked}
 					>
 						Buy License
 					</button>
