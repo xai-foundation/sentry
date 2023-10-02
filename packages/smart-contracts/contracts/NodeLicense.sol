@@ -114,6 +114,16 @@ contract NodeLicense is ERC721Enumerable, AccessControl {
     function supportsInterface(bytes4 interfaceId) public view override(ERC721Enumerable, AccessControl) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
+
+    /**
+     * @notice Overrides the transfer function of the ERC721 contract to make the token non-transferable.
+     * @param from The current owner of the token.
+     * @param to The address to receive the token.
+     * @param tokenId The token id.
+     */
+    function _transfer(address from, address to, uint256 tokenId) internal override {
+        revert("NodeLicense: transfer is not allowed");
+    }
 }
 
 
