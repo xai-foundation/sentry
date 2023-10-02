@@ -6,12 +6,12 @@ import { config } from '../config';
  * Mints NodeLicense tokens if the signer has enough balance and the amount is less than the maximum mint amount.
  * @param amount - The amount of tokens to mint.
  * @param signer - The signer to interact with the contract.
- * @returns An array of minted NFT IDs and the transaction receipt.
+ * @returns An object containing an array of minted NFT IDs, the transaction receipt, and the price paid.
  */
 export async function mintNodeLicenses(
     amount: number,
     signer: ethers.Signer
-): Promise<{ mintedNftIds: number[], txReceipt: ethers.TransactionReceipt }> {
+): Promise<{ mintedNftIds: bigint[], txReceipt: ethers.TransactionReceipt, pricePaid: bigint }> {
 
     // Create an instance of the NodeLicense contract
     const nodeLicenseContract = new ethers.Contract(config.nodeLicenseAddress, NodeLicenseAbi, signer);
@@ -47,19 +47,30 @@ export async function mintNodeLicenses(
     }
 
     // Mint the tokens, passing the price as the msg.value
-    const mintTx = await nodeLicenseContract.mint({ value: price }, amount);
-
+    const mintTx = await nodeLicenseContract.mint(amount, { value: price },);
     // Wait for the transaction to be mined and get the receipt
     const txReceipt = await mintTx.wait();
 
-    // Get the minted NFT IDs from the "Transfer" events in the transaction receipt
-    const mintedNftIds = txReceipt.events
-        ?.map((event: ethers.Log) => nodeLicenseContract.interface.parseLog({
-            ...event,
-            topics: [...event.topics],
-        }))
-        .filter((event: ethers.LogDescription) => event.name === 'Transfer')
-        .map((event: ethers.LogDescription) => event.args?.tokenId.toNumber()) ?? [];
+    // Get the "Transfer" events from the transaction receipt logs
+    const transferEvents = txReceipt.logs.filter((log: ethers.Log) => log.topics[0] === ethers.id("Transfer(address,address,uint256)"));
 
-    return { mintedNftIds, txReceipt };
+    // Extract the mintedNftIds from the transfer events
+    const mintedNftIds = transferEvents.map((event: ethers.EventLog) => {
+        // Parse the event log using the contract interface
+        const parsedLog = nodeLicenseContract.interface.parseLog({
+            topics: [...event.topics],
+            data: event.data
+        });
+
+        // Check if parsedLog is not null before accessing args
+        if (parsedLog) {
+            // Return the tokenId from the parsed log
+            return parsedLog.args.tokenId;
+        }
+
+        // Return a default value or throw an error if parsedLog is null
+        throw new Error('Failed to parse log. Please double check your transaction when through on chain.');
+    });
+
+    return { mintedNftIds, txReceipt, pricePaid: price };
 }

@@ -1,11 +1,11 @@
 import * as Vorpal from "vorpal";
-import { getSignerFromPrivateKey, toggleAssertionChecking } from "@xai-vanguard-node/core";
+import { getSignerFromPrivateKey, toggleAssertionChecking as coreToggleAssertionChecking } from "@xai-vanguard-node/core";
 
 /**
  * Function to toggle the assertion checking in the Referee contract.
  * @param {Vorpal} cli - The Vorpal instance to attach the command to.
  */
-export function toggleAssertionCheckingCommand(cli: Vorpal) {
+export function toggleAssertionChecking(cli: Vorpal) {
     cli
         .command('toggle-assertion-checking', 'Toggles the assertion checking.')
         .action(async function (this: Vorpal.CommandInstance) {
@@ -20,7 +20,7 @@ export function toggleAssertionCheckingCommand(cli: Vorpal) {
             const { signer } = getSignerFromPrivateKey(privateKey);
 
             // Call the toggleAssertionChecking function
-            await toggleAssertionChecking(signer);
+            await coreToggleAssertionChecking(signer);
 
             this.log(`Assertion checking toggled.`);
         });

@@ -13,10 +13,10 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
-    "@noble/curves": "^1.2.0",
-    "ethers": "^6.7.1"
+    "@noble/curves": "^1.2.0"
   },
   "devDependencies": {
     "@types/node": "^20.6.0"
   }
 }
+

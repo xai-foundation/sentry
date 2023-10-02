@@ -14,10 +14,13 @@ import { manuallyChallengeAssertion } from './commands/manually-challenge-assert
 import { removeAdmin } from './commands/access-control/remove-admin';
 import { removeChallenger } from './commands/access-control/remove-challenger';
 import { setChallengerPublicKey } from './commands/set-challenger-public-key';
-import { toggleAssertionCheckingCommand } from './commands/toggle-assertion-checking';
+import { toggleAssertionChecking } from './commands/toggle-assertion-checking';
 import { addOperator } from './commands/operator-control/add-operator';
 import { removeOperator } from './commands/operator-control/remove-operator';
 import { listOperators } from './commands/operator-control/list-operators';
+import { mintNodeLicenses } from "./commands/mint-node-licenses";
+import { getNodeLicenseContractAddress } from './commands/get-node-license-address';
+import { listNodeLicenses } from './commands/list-node-licenses';
 
 const cli = new Vorpal();
 
@@ -40,7 +43,10 @@ removeAdmin(cli);
 removeChallenger(cli);
 removeOperator(cli);
 setChallengerPublicKey(cli);
-toggleAssertionCheckingCommand(cli);
+toggleAssertionChecking(cli);
+mintNodeLicenses(cli);
+getNodeLicenseContractAddress(cli);
+listNodeLicenses(cli);
 
 cli
     .delimiter('vanguard-node$')
