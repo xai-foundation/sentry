@@ -1,14 +1,41 @@
-export const RefereeAbi = [
+export const NodeLicenseAbi = [
   {
     "type": "constructor",
     "stateMutability": "undefined",
     "payable": false,
-    "inputs": []
+    "inputs": [
+      {
+        "type": "address",
+        "name": "_fundsReceiver"
+      }
+    ]
   },
   {
     "type": "event",
     "anonymous": false,
     "name": "Approval",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "owner",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "approved",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "tokenId",
+        "indexed": true
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ApprovalForAll",
     "inputs": [
       {
         "type": "address",
@@ -30,82 +57,11 @@ export const RefereeAbi = [
   {
     "type": "event",
     "anonymous": false,
-    "name": "AssertionCheckingToggled",
-    "inputs": [
-      {
-        "type": "bool",
-        "name": "newState",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "ChallengeSubmitted",
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "challengeNumber",
-        "indexed": true
-      },
-      {
-        "type": "tuple",
-        "name": "challenge",
-        "indexed": false,
-        "components": [
-          {
-            "type": "uint64",
-            "name": "assertionId"
-          },
-          {
-            "type": "uint64",
-            "name": "predecessorAssertionId"
-          },
-          {
-            "type": "bytes32",
-            "name": "assertionStateRoot"
-          },
-          {
-            "type": "uint64",
-            "name": "assertionTimestamp"
-          },
-          {
-            "type": "bytes",
-            "name": "challengerSignedHash"
-          },
-          {
-            "type": "bytes",
-            "name": "activeChallengerPublicKey"
-          },
-          {
-            "type": "address",
-            "name": "rollupUsed"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "ChallengerPublicKeyChanged",
-    "inputs": [
-      {
-        "type": "bytes",
-        "name": "newChallengerPublicKey",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "NodeLicenseAddressChanged",
+    "name": "FundsReceiverChanged",
     "inputs": [
       {
         "type": "address",
-        "name": "newNodeLicenseAddress",
+        "name": "newFundsReceiver",
         "indexed": false
       }
     ]
@@ -179,18 +135,28 @@ export const RefereeAbi = [
   {
     "type": "event",
     "anonymous": false,
-    "name": "RollupAddressChanged",
+    "name": "Transfer",
     "inputs": [
       {
         "type": "address",
-        "name": "newRollupAddress",
-        "indexed": false
+        "name": "from",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "to",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "tokenId",
+        "indexed": true
       }
     ]
   },
   {
     "type": "function",
-    "name": "CHALLENGER_ROLE",
+    "name": "ADMIN_ROLE",
     "constant": true,
     "stateMutability": "view",
     "payable": false,
@@ -198,6 +164,20 @@ export const RefereeAbi = [
     "outputs": [
       {
         "type": "bytes32",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "BASE_PRICE",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256",
         "name": ""
       }
     ]
@@ -218,7 +198,7 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
-    "name": "challengeCounter",
+    "name": "MAX_MINT_AMOUNT",
     "constant": true,
     "stateMutability": "view",
     "payable": false,
@@ -232,136 +212,38 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
-    "name": "challengerPublicKey",
+    "name": "MAX_SUPPLY",
     "constant": true,
     "stateMutability": "view",
     "payable": false,
     "inputs": [],
     "outputs": [
       {
-        "type": "bytes",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "challenges",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
         "type": "uint256",
         "name": ""
       }
-    ],
-    "outputs": [
-      {
-        "type": "uint64",
-        "name": "assertionId"
-      },
-      {
-        "type": "uint64",
-        "name": "predecessorAssertionId"
-      },
-      {
-        "type": "bytes32",
-        "name": "assertionStateRoot"
-      },
-      {
-        "type": "uint64",
-        "name": "assertionTimestamp"
-      },
-      {
-        "type": "bytes",
-        "name": "challengerSignedHash"
-      },
-      {
-        "type": "bytes",
-        "name": "activeChallengerPublicKey"
-      },
-      {
-        "type": "address",
-        "name": "rollupUsed"
-      }
     ]
   },
   {
     "type": "function",
-    "name": "getChallenge",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint64",
-        "name": "_challengeId"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "tuple",
-        "name": "",
-        "components": [
-          {
-            "type": "uint64",
-            "name": "assertionId"
-          },
-          {
-            "type": "uint64",
-            "name": "predecessorAssertionId"
-          },
-          {
-            "type": "bytes32",
-            "name": "assertionStateRoot"
-          },
-          {
-            "type": "uint64",
-            "name": "assertionTimestamp"
-          },
-          {
-            "type": "bytes",
-            "name": "challengerSignedHash"
-          },
-          {
-            "type": "bytes",
-            "name": "activeChallengerPublicKey"
-          },
-          {
-            "type": "address",
-            "name": "rollupUsed"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getOperatorAtIndex",
-    "constant": true,
-    "stateMutability": "view",
+    "name": "approve",
+    "constant": false,
     "payable": false,
     "inputs": [
       {
         "type": "address",
-        "name": "owner"
+        "name": "to"
       },
       {
         "type": "uint256",
-        "name": "index"
+        "name": "tokenId"
       }
     ],
-    "outputs": [
-      {
-        "type": "address",
-        "name": ""
-      }
-    ]
+    "outputs": []
   },
   {
     "type": "function",
-    "name": "getOperatorCount",
+    "name": "balanceOf",
     "constant": true,
     "stateMutability": "view",
     "payable": false,
@@ -374,6 +256,39 @@ export const RefereeAbi = [
     "outputs": [
       {
         "type": "uint256",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "fundsReceiver",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getApproved",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "tokenId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "address",
         "name": ""
       }
     ]
@@ -393,48 +308,6 @@ export const RefereeAbi = [
     "outputs": [
       {
         "type": "bytes32",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getRoleMember",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role"
-      },
-      {
-        "type": "uint256",
-        "name": "index"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "address",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getRoleMemberCount",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
         "name": ""
       }
     ]
@@ -481,7 +354,7 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
-    "name": "isApprovedForOperator",
+    "name": "isApprovedForAll",
     "constant": true,
     "stateMutability": "view",
     "payable": false,
@@ -504,28 +377,66 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
-    "name": "isCheckingAssertions",
+    "name": "mint",
+    "constant": false,
+    "stateMutability": "payable",
+    "payable": true,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "_amount"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "name",
     "constant": true,
     "stateMutability": "view",
     "payable": false,
     "inputs": [],
     "outputs": [
       {
-        "type": "bool",
+        "type": "string",
         "name": ""
       }
     ]
   },
   {
     "type": "function",
-    "name": "nodeLicenseAddress",
+    "name": "ownerOf",
     "constant": true,
     "stateMutability": "view",
     "payable": false,
-    "inputs": [],
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "tokenId"
+      }
+    ],
     "outputs": [
       {
         "type": "address",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "price",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "_amount"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
         "name": ""
       }
     ]
@@ -566,21 +477,53 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
-    "name": "rollupAddress",
-    "constant": true,
-    "stateMutability": "view",
+    "name": "safeTransferFrom",
+    "constant": false,
     "payable": false,
-    "inputs": [],
-    "outputs": [
+    "inputs": [
       {
         "type": "address",
-        "name": ""
+        "name": "from"
+      },
+      {
+        "type": "address",
+        "name": "to"
+      },
+      {
+        "type": "uint256",
+        "name": "tokenId"
       }
-    ]
+    ],
+    "outputs": []
   },
   {
     "type": "function",
-    "name": "setApprovalForOperator",
+    "name": "safeTransferFrom",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "from"
+      },
+      {
+        "type": "address",
+        "name": "to"
+      },
+      {
+        "type": "uint256",
+        "name": "tokenId"
+      },
+      {
+        "type": "bytes",
+        "name": "data"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "setApprovalForAll",
     "constant": false,
     "payable": false,
     "inputs": [
@@ -597,81 +540,13 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
-    "name": "setChallengerPublicKey",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes",
-        "name": "_challengerPublicKey"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "setNodeLicenseAddress",
+    "name": "setFundsReceiver",
     "constant": false,
     "payable": false,
     "inputs": [
       {
         "type": "address",
-        "name": "_nodeLicenseAddress"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "setRollupAddress",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "_rollupAddress"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "submitAssertionToChallenge",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "licenseId"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "submitChallenge",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint64",
-        "name": "_assertionId"
-      },
-      {
-        "type": "uint64",
-        "name": "_predecessorAssertionId"
-      },
-      {
-        "type": "bytes32",
-        "name": "_assertionStateRoot"
-      },
-      {
-        "type": "uint64",
-        "name": "_assertionTimestamp"
-      },
-      {
-        "type": "bytes",
-        "name": "_challengerSignedHash"
+        "name": "_newFundsReceiver"
       }
     ],
     "outputs": []
@@ -697,10 +572,112 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
-    "name": "toggleAssertionChecking",
-    "constant": false,
+    "name": "symbol",
+    "constant": true,
+    "stateMutability": "view",
     "payable": false,
     "inputs": [],
+    "outputs": [
+      {
+        "type": "string",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "tokenByIndex",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "index"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "tokenOfOwnerByIndex",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "owner"
+      },
+      {
+        "type": "uint256",
+        "name": "index"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "tokenURI",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "_tokenId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "string",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "totalSupply",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "transferFrom",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "from"
+      },
+      {
+        "type": "address",
+        "name": "to"
+      },
+      {
+        "type": "uint256",
+        "name": "tokenId"
+      }
+    ],
     "outputs": []
   }
 ];

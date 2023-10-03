@@ -1,9 +1,12 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
+import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import "./nitro-contracts/rollup/IRollupCore.sol";
+import "./NodeLicense.sol";
 
 contract Referee is AccessControlEnumerable {
+    using EnumerableSet for EnumerableSet.AddressSet;
 
     // Define roles
     bytes32 public constant CHALLENGER_ROLE = keccak256("CHALLENGER_ROLE");
@@ -14,11 +17,20 @@ contract Referee is AccessControlEnumerable {
     // the address of the rollup, so we can get assertions
     address public rollupAddress;
 
+    // the address of the NodeLicense NFT
+    address public nodeLicenseAddress;
+
     // Counter for the challenges
     uint256 public challengeCounter = 0;
 
     // mapping to store all of the challenges
     mapping(uint256 => Challenge) public challenges;
+
+    // Toggle for assertion checking
+    bool public isCheckingAssertions = true;
+
+    // Mapping from owner to operator approvals
+    mapping (address => EnumerableSet.AddressSet) private _operatorApprovals;
 
     struct Challenge {
         uint64 assertionId;
@@ -34,10 +46,21 @@ contract Referee is AccessControlEnumerable {
     event ChallengeSubmitted(uint256 indexed challengeNumber, Challenge challenge);
     event RollupAddressChanged(address newRollupAddress);
     event ChallengerPublicKeyChanged(bytes newChallengerPublicKey);
+    event NodeLicenseAddressChanged(address newNodeLicenseAddress);
+    event AssertionCheckingToggled(bool newState);
+    event Approval(address indexed owner, address indexed operator, bool approved);
 
     constructor() {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setRoleAdmin(CHALLENGER_ROLE, DEFAULT_ADMIN_ROLE);
+    }
+
+    /**
+     * @notice Toggles the assertion checking.
+     */
+    function toggleAssertionChecking() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        isCheckingAssertions = !isCheckingAssertions;
+        emit AssertionCheckingToggled(isCheckingAssertions);
     }
 
     /**
@@ -56,6 +79,59 @@ contract Referee is AccessControlEnumerable {
     function setRollupAddress(address _rollupAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
         rollupAddress = _rollupAddress;
         emit RollupAddressChanged(_rollupAddress);
+    }
+
+    /**
+     * @notice Sets the nodeLicenseAddress.
+     * @param _nodeLicenseAddress The address of the NodeLicense NFT.
+     */
+    function setNodeLicenseAddress(address _nodeLicenseAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        nodeLicenseAddress = _nodeLicenseAddress;
+        emit NodeLicenseAddressChanged(_nodeLicenseAddress);
+    }
+
+    /**
+     * @notice Approve or remove `operator` to submit assertions on behalf of `msg.sender`.
+     * @param operator The operator to be approved or removed.
+     * @param approved Represents the status of the approval to be set.
+     */
+    function setApprovalForOperator(address operator, bool approved) external {
+        if (approved) {
+            _operatorApprovals[msg.sender].add(operator);
+        } else {
+            _operatorApprovals[msg.sender].remove(operator);
+        }
+        emit Approval(msg.sender, operator, approved);
+    }
+
+    /**
+     * @notice Check if `operator` is approved to submit assertions on behalf of `owner`.
+     * @param owner The address of the owner.
+     * @param operator The address of the operator to query.
+     * @return Whether the operator is approved.
+     */
+    function isApprovedForOperator(address owner, address operator) public view returns (bool) {
+        return _operatorApprovals[owner].contains(operator);
+    }
+
+    /**
+     * @notice Get the approved operator at a given index of the owner.
+     * @param owner The address of the owner.
+     * @param index The index of the operator to query.
+     * @return The address of the operator.
+     */
+    function getOperatorAtIndex(address owner, uint256 index) public view returns (address) {
+        require(index < getOperatorCount(owner), "Index out of bounds");
+        return _operatorApprovals[owner].at(index);
+    }
+
+    /**
+     * @notice Get the count of operators for a particular address.
+     * @param owner The address of the owner.
+     * @return The count of operators.
+     */
+    function getOperatorCount(address owner) public view returns (uint256) {
+        return _operatorApprovals[owner].length();
     }
 
     /**
@@ -83,13 +159,16 @@ contract Referee is AccessControlEnumerable {
         // check the challengerPublicKey is set
         require(challengerPublicKey.length != 0, "Challenger public key must be set before submitting a challenge");
 
-        // get the node information from the rollup.
-        Node memory node = IRollupCore(rollupAddress).getNode(_assertionId);
-
         // verify the data inside the hash matched the data pulled from the rollup contract
-        require(node.prevNum == _predecessorAssertionId, "The _predecessorAssertionId is incorrect.");
-        require(node.stateHash == _assertionStateRoot, "The _assertionStateRoot is incorrect.");
-        require(node.createdAtBlock == _assertionTimestamp, "The _assertionTimestamp did not match the block this assertion was created at.");
+        if (isCheckingAssertions) {
+
+            // get the node information from the rollup.
+            Node memory node = IRollupCore(rollupAddress).getNode(_assertionId);
+
+            require(node.prevNum == _predecessorAssertionId, "The _predecessorAssertionId is incorrect.");
+            require(node.stateHash == _assertionStateRoot, "The _assertionStateRoot is incorrect.");
+            require(node.createdAtBlock == _assertionTimestamp, "The _assertionTimestamp did not match the block this assertion was created at.");
+        }
 
         // increment the challenge counter
         challengeCounter++;
@@ -117,7 +196,21 @@ contract Referee is AccessControlEnumerable {
     function getChallenge(uint64 _challengeId) public view returns (Challenge memory) {
         return challenges[_challengeId];
     }
+
+    /**
+     * @notice Submits an assertion to a challenge.
+     * @dev This function can only be called by the owner of a NodeLicense or addresses they have approved on this contract.
+     * @param licenseId The ID of the NodeLicense.
+     */
+    function submitAssertionToChallenge(uint256 licenseId) public {
+        require(
+            NodeLicense(nodeLicenseAddress).ownerOf(licenseId) == msg.sender || isApprovedForOperator(NodeLicense(nodeLicenseAddress).ownerOf(licenseId), msg.sender),
+            "Caller must be the owner of the NodeLicense or an approved operator"
+        );
+        // TODO: Implement the logic to submit an assertion to a challenge
+    }
     
 }
+
 
 

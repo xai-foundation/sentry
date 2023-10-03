@@ -8,9 +8,9 @@ importers:
 
   .:
     dependencies:
-      '@openzeppelin/contracts':
-        specifier: ^4.9.3
-        version: 4.9.3
+      ethers:
+        specifier: ^6.7.1
+        version: 6.7.1
     devDependencies:
       '@typescript-eslint/eslint-plugin':
         specifier: ^6.6.0
@@ -113,9 +113,6 @@ importers:
       '@noble/curves':
         specifier: ^1.2.0
         version: 1.2.0
-      ethers:
-        specifier: ^6.7.1
-        version: 6.7.1
     devDependencies:
       '@types/node':
         specifier: ^20.6.0
@@ -123,6 +120,9 @@ importers:
 
   packages/smart-contracts:
     dependencies:
+      '@openzeppelin/contracts':
+        specifier: 4.9.3
+        version: 4.9.3
       '@openzeppelin/contracts-upgradeable':
         specifier: 4.9.3
         version: 4.9.3
