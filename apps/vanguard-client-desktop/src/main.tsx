@@ -1,13 +1,11 @@
 // main.tsx
 import {StrictMode} from 'react'
 import ReactDOM from 'react-dom/client'
-import {RouterProvider} from '@tanstack/react-router'
-import {router} from './features/router'
+import {AppRoutes} from './features/router'
 import {EthereumClient, w3mConnectors, w3mProvider} from '@web3modal/ethereum'
 import {Web3Modal} from '@web3modal/react'
 import {configureChains, createConfig, WagmiConfig} from 'wagmi'
 import {arbitrum, mainnet} from 'wagmi/chains'
-import { AppRoutes } from './features/router'
 import "./index.css";
 
 const chains = [arbitrum, mainnet]
