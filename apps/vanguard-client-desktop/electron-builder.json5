@@ -4,10 +4,12 @@
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
   "appId": "YourAppID",
+  "includeSubNodeModules": true,
   "asar": true,
   "productName": "VanguardClient",
   "directories": {
-    "output": "release"
+    "output": "release",
+    
   },
   "files": [
     "dist",
