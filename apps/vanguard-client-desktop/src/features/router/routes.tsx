@@ -1,30 +1,22 @@
-import {RootRoute, Route, Router} from "@tanstack/react-router";
-import {Root} from ".";
-import {Licenses} from "../licenses/Licenses.tsx";
-import {Homepage} from "../home/Homepage.tsx";
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Licenses } from "../licenses/Licenses.tsx";
+import { Homepage } from "../home/Homepage.tsx";
+import Sidebar from "../sidebar/SidebarRoot";
 
-// Create a root route
-export const rootRoute = new RootRoute({
-	component: Root,
-});
-
-export const indexRoute = new Route({
-	getParentRoute: () => rootRoute,
-	path: "/",
-	component: Homepage,
-});
-
-export const licensesRoute = new Route({
-	getParentRoute: () => rootRoute,
-	path: "/licenses",
-	component: Licenses,
-});
-
-// Create the route tree using your routes
-const routeTree = rootRoute.addChildren([
-	indexRoute,
-	licensesRoute
-]); // Include the homeRoute in the route tree
-
-// Create the router using your route tree
-export const router = new Router({routeTree});
+export function AppRoutes() {
+  return (
+    <Router>
+      <div className="flex">
+        <div className="w-64 h-screen">
+          <Sidebar/>
+        </div>
+        <div className="flex-grow">
+          <Routes>
+            <Route path="/" element={<Homepage />} />
+            <Route path="/licenses" element={<Licenses />} />
+          </Routes>
+        </div>
+      </div>
+    </Router>
+  );
+}

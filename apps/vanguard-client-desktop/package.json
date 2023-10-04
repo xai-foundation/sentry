@@ -1,5 +1,5 @@
 {
-  "name": "vanguard-client-desktop",
+  "name": "@xai-vanguard-node/vanguard-client-desktop",
   "productName": "Vanguard Client",
   "private": true,
   "version": "0.1.0",
@@ -10,10 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tanstack/react-router": "0.0.1-beta.185",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.11.0",
+    "react-router-dom": "^6.16.0",
     "tailwindcss": "^3.3.3"
   },
   "devDependencies": {
