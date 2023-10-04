@@ -53,25 +53,25 @@ export function ConnectWallet({setConnected}: ConnectWalletProps) {
 
 	return (
 		<div className="relative w-full h-screen max-h-screen flex flex-col items-center gap-20 pt-52 overflow-hidden">
-			<div className="flex flex-col justify-center items-center gap-2 z-10">
+			<div className="flex flex-col justify-center items-center gap-2">
 				<h1 className="text-[40px] font-bold uppercase tracking-widest">Connect your wallet</h1>
 				<p className="text-lg text-[#525252] max-w-[508px] text-center">
 					Start your Xai Vanguard Node by connecting your wallet, and begin participating in network
 					challenges
 				</p>
+				<div className="mt-8">
+					<Web3Button/>
+				</div>
 			</div>
 
-			<div className="flex flex-col justify-center items-center gap-4 z-10">
-				<Web3Button/>
-				<p className="text-xs text-[#525252]">This will open WalletConnect in a browser</p>
-			</div>
 
-			<div className="flex flex-row justify-center items-center gap-32 z-10">
+
+			<div className="flex flex-row justify-center items-center gap-32">
 				{getBody()}
 			</div>
 
 			<video
-				className="absolute bottom-[-15rem] w-full object-cover"
+				className="absolute bottom-[-15rem] w-full object-cover -z-10"
 				autoPlay
 				loop
 				muted
