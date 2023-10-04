@@ -26,13 +26,28 @@ contract Referee is AccessControlEnumerable {
     // mapping to store all of the challenges
     mapping(uint256 => Challenge) public challenges;
 
+    // Mapping to store all of the submissions
+    mapping(uint256 => mapping(uint256 => Submission)) public submissions;
+
     // Toggle for assertion checking
     bool public isCheckingAssertions = true;
 
     // Mapping from owner to operator approvals
     mapping (address => EnumerableSet.AddressSet) private _operatorApprovals;
 
+    // Mapping to track rollup assertions (combination of the assertionId and the rollupAddress used, because we allow switching the rollupAddress, and can't assume assertionIds are unique.)
+    mapping (bytes32 => bool) public rollupAssertionTracker;
+
+    // Struct for the submissions
+    struct Submission {
+        bool submitted;
+        uint256 nodeLicenseId;
+        bytes successorStateRoot;
+    }
+
+    // Struct for the challenges
     struct Challenge {
+        bool openForSubmissions; // when the next challenge is submitted for the following assertion, this will be closed.
         uint64 assertionId;
         uint64 predecessorAssertionId;
         bytes32 assertionStateRoot;
@@ -44,6 +59,7 @@ contract Referee is AccessControlEnumerable {
 
     // Define events
     event ChallengeSubmitted(uint256 indexed challengeNumber, Challenge challenge);
+    event AssertionSubmitted(uint256 indexed challengeId, uint256 indexed nodeLicenseId);
     event RollupAddressChanged(address newRollupAddress);
     event ChallengerPublicKeyChanged(bytes newChallengerPublicKey);
     event NodeLicenseAddressChanged(address newNodeLicenseAddress);
@@ -159,6 +175,12 @@ contract Referee is AccessControlEnumerable {
         // check the challengerPublicKey is set
         require(challengerPublicKey.length != 0, "Challenger public key must be set before submitting a challenge");
 
+        // check the assertionId and rollupAddress combo haven't been submitted yet
+        bytes32 comboHash = keccak256(abi.encodePacked(_assertionId, rollupAddress));
+        require(!rollupAssertionTracker[comboHash], "This assertionId and rollupAddress combo has already been submitted");
+        rollupAssertionTracker[comboHash] = true;
+
+
         // verify the data inside the hash matched the data pulled from the rollup contract
         if (isCheckingAssertions) {
 
@@ -175,6 +197,7 @@ contract Referee is AccessControlEnumerable {
 
         // add challenge to the mapping
         challenges[challengeCounter] = Challenge({
+            openForSubmissions: true,
             assertionId: _assertionId,
             predecessorAssertionId: _predecessorAssertionId,
             assertionStateRoot: _assertionStateRoot,
@@ -200,17 +223,81 @@ contract Referee is AccessControlEnumerable {
     /**
      * @notice Submits an assertion to a challenge.
      * @dev This function can only be called by the owner of a NodeLicense or addresses they have approved on this contract.
-     * @param licenseId The ID of the NodeLicense.
+     * @param _nodeLicenseId The ID of the NodeLicense.
      */
-    function submitAssertionToChallenge(uint256 licenseId) public {
+    function submitAssertionToChallenge(
+        uint256 _nodeLicenseId,
+        uint256 _challengeId,
+        bytes memory _successorStateRoot
+    ) public {
         require(
-            NodeLicense(nodeLicenseAddress).ownerOf(licenseId) == msg.sender || isApprovedForOperator(NodeLicense(nodeLicenseAddress).ownerOf(licenseId), msg.sender),
+            isApprovedForOperator(NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId), msg.sender) || NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId) == msg.sender,
             "Caller must be the owner of the NodeLicense or an approved operator"
         );
-        // TODO: Implement the logic to submit an assertion to a challenge
+
+        // Check the challenge is open for submissions
+        require(challenges[_challengeId].openForSubmissions, "Challenge is not open for submissions");
+        
+        // Check that _nodeLicenseId hasn't already been submitted for this challenge
+        require(!submissions[_challengeId][_nodeLicenseId].submitted, "_nodeLicenseId has already been submitted for this challenge");
+
+        // Store the assertionSubmission to a map
+        submissions[_challengeId][_nodeLicenseId] = Submission({
+            submitted: true,
+            nodeLicenseId: _nodeLicenseId,
+            successorStateRoot: _successorStateRoot
+        });
+
+        // Emit the AssertionSubmitted event
+        emit AssertionSubmitted(_challengeId, _nodeLicenseId);
     }
-    
+
+    /**
+     * @notice Claims a reward for a successful assertion.
+     * @dev This function looks up the submission, checks if the challenge is closed for submissions, and if valid for a payout, sends a reward.
+     * @param _nodeLicenseId The ID of the NodeLicense.
+     * @param _challengeId The ID of the challenge.
+     */
+    function claimReward(
+        uint256 _nodeLicenseId,
+        uint256 _challengeId
+    ) public {
+        // Look up the submission
+        Submission memory submission = submissions[_challengeId][_nodeLicenseId];
+        require(submission.submitted, "No submission found for this NodeLicense and challenge");
+
+        // Check if the challenge is closed for submissions
+        Challenge memory challenge = challenges[_challengeId];
+        require(!challenge.openForSubmissions, "Challenge is still open for submissions");
+
+        // Check if we are valid for a payout
+        (bool isBelowThreshold, , ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, submission.successorStateRoot);
+        require(isBelowThreshold, "Not valid for a payout");
+
+        // TODO: Send a reward
+    }
+
+    /**
+     * @notice Creates an assertion hash and determines if the hash payout is below the threshold.
+     * @dev This function creates a hash of the _nodeLicenseId, _challengeId, challengerSignedHash from the challenge, and _newStateRoot.
+     * It then converts the hash to a number and checks if it is below the threshold.
+     * The threshold is calculated as the maximum uint256 value divided by the number of NodeLicenses that have been minted.
+     * @param _nodeLicenseId The ID of the NodeLicense.
+     * @param _challengeId The ID of the challenge.
+     * @param _successorStateRoot The successor state root.
+     * @return A tuple containing a boolean indicating if the hash is below the threshold, the assertionHash, and the threshold.
+     */
+    function createAssertionHashAndCheckPayout(
+        uint256 _nodeLicenseId,
+        uint256 _challengeId,
+        bytes memory _successorStateRoot
+    ) public view returns (bool, bytes32, uint256) {
+        bytes memory _challengerSignedHash = challenges[_challengeId].challengerSignedHash;
+        bytes32 assertionHash = keccak256(abi.encodePacked(_nodeLicenseId, _challengeId, _challengerSignedHash, _successorStateRoot));
+        uint256 hashNumber = uint256(assertionHash);
+        uint256 totalSupply = NodeLicense(nodeLicenseAddress).totalSupply();
+        require(totalSupply > 0, "No NodeLicenses have been minted yet");
+        uint256 threshold = type(uint256).max / totalSupply;
+        return (hashNumber < threshold, assertionHash, threshold);
+    }
 }
-
-
-
