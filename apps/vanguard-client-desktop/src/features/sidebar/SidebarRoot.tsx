@@ -1,4 +1,4 @@
-import {Link} from "@tanstack/react-router";
+import { Link } from 'react-router-dom';
 import {FaDiscord} from 'react-icons/fa';
 import {FiGitCommit} from "react-icons/fi";
 import {RiKey2Line, RiTwitterXFill} from "react-icons/ri";

@@ -7,6 +7,7 @@ import {EthereumClient, w3mConnectors, w3mProvider} from '@web3modal/ethereum'
 import {Web3Modal} from '@web3modal/react'
 import {configureChains, createConfig, WagmiConfig} from 'wagmi'
 import {arbitrum, mainnet} from 'wagmi/chains'
+import { AppRoutes } from './features/router'
 import "./index.css";
 
 const chains = [arbitrum, mainnet]
@@ -27,7 +28,7 @@ if (!rootElement.innerHTML) {
 	root.render(
 		<StrictMode>
 			<WagmiConfig config={wagmiConfig}>
-				<RouterProvider router={router}/>
+				<AppRoutes />
 			</WagmiConfig>
 
 			<Web3Modal projectId={projectId} ethereumClient={ethereumClient}/>
