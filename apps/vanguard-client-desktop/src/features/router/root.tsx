@@ -1,4 +1,4 @@
-import { Outlet } from "@tanstack/react-router";
+import {Outlet} from "@tanstack/react-router";
 import Sidebar from "../sidebar/SidebarRoot";
 
 /**
@@ -7,14 +7,14 @@ import Sidebar from "../sidebar/SidebarRoot";
  * and the Outlet fills the remainder of the right side of the screen.
  */
 export function Root() {
-    return (
-        <div className="flex">
-            <div className="w-64 h-screen">
-                <Sidebar />
-            </div>
-            <div className="flex-grow">
-                <Outlet />
-            </div>
-        </div>
-    )
+	return (
+		<div className="flex">
+			<div className="w-64 h-screen">
+				<Sidebar/>
+			</div>
+			<div className="flex-grow">
+				<Outlet/>
+			</div>
+		</div>
+	)
 }

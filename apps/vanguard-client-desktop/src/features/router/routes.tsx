@@ -1,8 +1,7 @@
 import {RootRoute, Route, Router} from "@tanstack/react-router";
 import {Root} from ".";
-import {ConnectWallet} from "../ConnectWallet.tsx";
-import {Home} from "../home/Home.tsx";
 import {Licenses} from "../licenses/Licenses.tsx";
+import {Homepage} from "../home/Homepage.tsx";
 
 // Create a root route
 export const rootRoute = new RootRoute({
@@ -12,13 +11,7 @@ export const rootRoute = new RootRoute({
 export const indexRoute = new Route({
 	getParentRoute: () => rootRoute,
 	path: "/",
-	component: ConnectWallet,
-});
-
-export const homeRoute = new Route({
-	getParentRoute: () => rootRoute,
-	path: "/home",
-	component: Home,
+	component: Homepage,
 });
 
 export const licensesRoute = new Route({
@@ -30,7 +23,6 @@ export const licensesRoute = new Route({
 // Create the route tree using your routes
 const routeTree = rootRoute.addChildren([
 	indexRoute,
-	homeRoute,
 	licensesRoute
 ]); // Include the homeRoute in the route tree
 
