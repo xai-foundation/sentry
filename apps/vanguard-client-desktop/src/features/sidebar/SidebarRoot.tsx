@@ -4,6 +4,7 @@ import {FiGitCommit} from "react-icons/fi";
 import {RiKey2Line, RiTwitterXFill} from "react-icons/ri";
 import {AiOutlineCloudUpload} from "react-icons/ai";
 import {SiGitbook} from "react-icons/si";
+import {Web3Button} from "@web3modal/react";
 
 /**
  * Sidebar component
@@ -41,6 +42,12 @@ function Sidebar() {
                 <a onClick={() => window.electron.openExternal('https://twitter.com/xai_games')} className="flex items-center mb-2 text-gray-600 hover:text-gray-400 cursor-pointer">
                     <RiTwitterXFill className="mr-2" /> X
                 </a>
+            </div>
+
+
+            {/*		todo: for dev purposes only, delete once persisting storage is implemented		*/}
+            <div className="absolute bottom-0 left-0 p-4">
+                <Web3Button/>
             </div>
         </div>
     );
