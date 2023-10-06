@@ -50,7 +50,7 @@ docker run --rm -it -u 0 -v ~/arbitrum:/home/user/.arbitrum -p 0.0.0.0:8547:8547
 --metrics-server.addr="0.0.0.0" \
 --metrics-server.port=6070 \
 --node.data-availability.enable=true \
---node.data-availability.parent-chain-node-url=${parent_chain_rpc_url} \
+--node.data-availability.parent-chain-node-url="${parent_chain_rpc_url}" \
 --node.data-availability.request-timeout=5s \
 --node.data-availability.rest-aggregator.enable=true \
 --node.data-availability.rest-aggregator.urls="https://testnet-das-mirror.xai-chain.net/" \
