@@ -25,6 +25,9 @@ import { setRollupAddress } from './commands/set-rollup-address';
 import { getListOfKycAdmins } from './commands/access-control/get-list-of-kyc-admins';
 import { addKycAdmin } from './commands/access-control/add-kyc-admin';
 import { removeKycAdmin } from './commands/access-control/remove-kyc-admin';
+import { listKycStatuses } from './commands/kyc/list-kyc-status';
+import { checkKycStatus } from './commands/kyc/check-kyc-status';
+import { setKycStatus } from './commands/kyc/set-kyc-status';
 
 const cli = new Vorpal();
 
@@ -55,6 +58,9 @@ setRollupAddress(cli);
 getListOfKycAdmins(cli);
 addKycAdmin(cli);
 removeKycAdmin(cli);
+listKycStatuses(cli);
+checkKycStatus(cli);
+setKycStatus(cli);
 
 cli
     .delimiter('vanguard-node$')

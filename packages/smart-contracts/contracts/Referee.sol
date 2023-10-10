@@ -40,7 +40,7 @@ contract Referee is AccessControlEnumerable {
     mapping (bytes32 => bool) public rollupAssertionTracker;
 
     // Mapping to track KYC'd wallets
-    mapping (address => bool) public kycStatus;
+    EnumerableSet.AddressSet private kycWallets;
 
     // Struct for the submissions
     struct Submission {
@@ -161,7 +161,7 @@ contract Referee is AccessControlEnumerable {
      * @param wallet The wallet to be added.
      */
     function addKycWallet(address wallet) external onlyRole(KYC_ADMIN_ROLE) {
-        kycStatus[wallet] = true;
+        kycWallets.add(wallet);
         emit KycStatusChanged(wallet, true);
     }
 
@@ -170,7 +170,7 @@ contract Referee is AccessControlEnumerable {
      * @param wallet The wallet to be removed.
      */
     function removeKycWallet(address wallet) external onlyRole(KYC_ADMIN_ROLE) {
-        kycStatus[wallet] = false;
+        kycWallets.remove(wallet);
         emit KycStatusChanged(wallet, false);
     }
 
@@ -180,7 +180,25 @@ contract Referee is AccessControlEnumerable {
      * @return Whether the wallet is KYC'd.
      */
     function isKycApproved(address wallet) public view returns (bool) {
-        return kycStatus[wallet];
+        return kycWallets.contains(wallet);
+    }
+
+    /**
+     * @notice Get the KYC'd wallet at a given index.
+     * @param index The index of the wallet to query.
+     * @return The address of the wallet.
+     */
+    function getKycWalletAtIndex(uint256 index) public view returns (address) {
+        require(index < getKycWalletCount(), "Index out of bounds");
+        return kycWallets.at(index);
+    }
+
+    /**
+     * @notice Get the count of KYC'd wallets.
+     * @return The count of KYC'd wallets.
+     */
+    function getKycWalletCount() public view returns (uint256) {
+        return kycWallets.length();
     }
 
     /**
