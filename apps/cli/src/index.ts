@@ -28,40 +28,42 @@ import { removeKycAdmin } from './commands/access-control/remove-kyc-admin';
 import { listKycStatuses } from './commands/kyc/list-kyc-status';
 import { checkKycStatus } from './commands/kyc/check-kyc-status';
 import { setKycStatus } from './commands/kyc/set-kyc-status';
-import { totalSupply } from './commands/total-supply';
+import { totalSupply } from './commands/xai-token/total-supply';
+import { getBalancesForAddresses } from './commands/xai-token/get-balances';
 
 const cli = new Vorpal();
 
 // entrypoints to each of the commands
 addAdmin(cli);
 addChallenger(cli);
+addKycAdmin(cli);
 addOperator(cli);
 bootChallenger(cli);
+checkKycStatus(cli);
 createBlsKeyPair(cli);
 createMnemonic(cli);
 getAssertionCheckingStatus(cli);
+getBalancesForAddresses(cli);
 getListOfAdmins(cli);
 getListOfChallengers(cli);
+getListOfKycAdmins(cli);
+getNodeLicenseContractAddress(cli);
 getPrivateKeyFromMnemonic(cli);
 getPublicKeyFromPrivateKey(cli);
 getRefereeContractAddress(cli);
-manuallyChallengeAssertion(cli);
+listKycStatuses(cli);
+listNodeLicenses(cli);
 listOperators(cli);
+manuallyChallengeAssertion(cli);
+mintNodeLicenses(cli);
 removeAdmin(cli);
 removeChallenger(cli);
+removeKycAdmin(cli);
 removeOperator(cli);
 setChallengerPublicKey(cli);
-toggleAssertionChecking(cli);
-mintNodeLicenses(cli);
-getNodeLicenseContractAddress(cli);
-listNodeLicenses(cli);
-setRollupAddress(cli);
-getListOfKycAdmins(cli);
-addKycAdmin(cli);
-removeKycAdmin(cli);
-listKycStatuses(cli);
-checkKycStatus(cli);
 setKycStatus(cli);
+setRollupAddress(cli);
+toggleAssertionChecking(cli);
 totalSupply(cli);
 
 cli
