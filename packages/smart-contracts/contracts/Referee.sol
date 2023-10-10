@@ -10,6 +10,7 @@ contract Referee is AccessControlEnumerable {
 
     // Define roles
     bytes32 public constant CHALLENGER_ROLE = keccak256("CHALLENGER_ROLE");
+    bytes32 public constant KYC_ADMIN_ROLE = keccak256("KYC_ADMIN_ROLE");
 
     // The Challenger's public key of their registered BLS-Pair
     bytes public challengerPublicKey;
@@ -38,6 +39,9 @@ contract Referee is AccessControlEnumerable {
     // Mapping to track rollup assertions (combination of the assertionId and the rollupAddress used, because we allow switching the rollupAddress, and can't assume assertionIds are unique.)
     mapping (bytes32 => bool) public rollupAssertionTracker;
 
+    // Mapping to track KYC'd wallets
+    mapping (address => bool) public kycStatus;
+
     // Struct for the submissions
     struct Submission {
         bool submitted;
@@ -65,10 +69,12 @@ contract Referee is AccessControlEnumerable {
     event NodeLicenseAddressChanged(address newNodeLicenseAddress);
     event AssertionCheckingToggled(bool newState);
     event Approval(address indexed owner, address indexed operator, bool approved);
+    event KycStatusChanged(address indexed wallet, bool isKycApproved);
 
     constructor() {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setRoleAdmin(CHALLENGER_ROLE, DEFAULT_ADMIN_ROLE);
+        _setRoleAdmin(KYC_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
     }
 
     /**
@@ -148,6 +154,33 @@ contract Referee is AccessControlEnumerable {
      */
     function getOperatorCount(address owner) public view returns (uint256) {
         return _operatorApprovals[owner].length();
+    }
+
+    /**
+     * @notice Add a wallet to the KYC'd list.
+     * @param wallet The wallet to be added.
+     */
+    function addKycWallet(address wallet) external onlyRole(KYC_ADMIN_ROLE) {
+        kycStatus[wallet] = true;
+        emit KycStatusChanged(wallet, true);
+    }
+
+    /**
+     * @notice Remove a wallet from the KYC'd list.
+     * @param wallet The wallet to be removed.
+     */
+    function removeKycWallet(address wallet) external onlyRole(KYC_ADMIN_ROLE) {
+        kycStatus[wallet] = false;
+        emit KycStatusChanged(wallet, false);
+    }
+
+    /**
+     * @notice Check the KYC status of a wallet.
+     * @param wallet The wallet to check.
+     * @return Whether the wallet is KYC'd.
+     */
+    function isKycApproved(address wallet) public view returns (bool) {
+        return kycStatus[wallet];
     }
 
     /**
@@ -269,6 +302,10 @@ contract Referee is AccessControlEnumerable {
         // Check if the challenge is closed for submissions
         Challenge memory challenge = challenges[_challengeId];
         require(!challenge.openForSubmissions, "Challenge is still open for submissions");
+
+        // Check if the owner of the NodeLicense is KYC'd
+        address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
+        require(isKycApproved(owner), "Owner of the NodeLicense is not KYC'd");
 
         // Check if we are valid for a payout
         (bool isBelowThreshold, , ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, submission.successorStateRoot);

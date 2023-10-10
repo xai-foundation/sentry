@@ -22,6 +22,9 @@ import { mintNodeLicenses } from "./commands/mint-node-licenses";
 import { getNodeLicenseContractAddress } from './commands/get-node-license-address';
 import { listNodeLicenses } from './commands/list-node-licenses';
 import { setRollupAddress } from './commands/set-rollup-address';
+import { getListOfKycAdmins } from './commands/access-control/get-list-of-kyc-admins';
+import { addKycAdmin } from './commands/access-control/add-kyc-admin';
+import { removeKycAdmin } from './commands/access-control/remove-kyc-admin';
 
 const cli = new Vorpal();
 
@@ -49,6 +52,9 @@ mintNodeLicenses(cli);
 getNodeLicenseContractAddress(cli);
 listNodeLicenses(cli);
 setRollupAddress(cli);
+getListOfKycAdmins(cli);
+addKycAdmin(cli);
+removeKycAdmin(cli);
 
 cli
     .delimiter('vanguard-node$')
