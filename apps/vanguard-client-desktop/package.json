@@ -1,6 +1,6 @@
 {
   "name": "@xai-vanguard-node/vanguard-client-desktop",
-  "productName": "Vanguard Client",
+  "productName": "Xai Sentry Node",
   "private": true,
   "version": "0.1.0",
   "scripts": {

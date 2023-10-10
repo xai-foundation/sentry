@@ -1,8 +1,8 @@
 import {RiKey2Line} from "react-icons/ri";
 import {FiGift, FiGitCommit} from "react-icons/fi";
 import {Dispatch, SetStateAction, useEffect} from "react";
-import {Web3Button} from "@web3modal/react";
 import {useAccount} from 'wagmi'
+import {WalletConnectButton} from "../../components/buttons/WalletConnectButton.tsx";
 
 const body = [
 	{
@@ -59,11 +59,11 @@ export function ConnectWallet({setConnected}: ConnectWalletProps) {
 					Start your Xai Vanguard Node by connecting your wallet, and begin participating in network
 					challenges
 				</p>
-				<div className="mt-8">
-					<Web3Button/>
+				<div className="flex flex-col justify-center items-center mt-8 gap-2">
+					<WalletConnectButton className="w-[27.25rem] h-16"/>
+					<p className="text-xs text-[#525252]">This will open WalletConnect in a browser</p>
 				</div>
 			</div>
-
 
 
 			<div className="flex flex-row justify-center items-center gap-32">
