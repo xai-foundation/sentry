@@ -21,6 +21,7 @@ import { listOperators } from './commands/operator-control/list-operators';
 import { mintNodeLicenses } from "./commands/mint-node-licenses";
 import { getNodeLicenseContractAddress } from './commands/get-node-license-address';
 import { listNodeLicenses } from './commands/list-node-licenses';
+import { setRollupAddress } from './commands/set-rollup-address';
 
 const cli = new Vorpal();
 
@@ -47,6 +48,7 @@ toggleAssertionChecking(cli);
 mintNodeLicenses(cli);
 getNodeLicenseContractAddress(cli);
 listNodeLicenses(cli);
+setRollupAddress(cli);
 
 cli
     .delimiter('vanguard-node$')
