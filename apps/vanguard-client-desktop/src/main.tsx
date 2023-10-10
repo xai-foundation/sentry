@@ -7,6 +7,7 @@ import {Web3Modal} from '@web3modal/react'
 import {configureChains, createConfig, WagmiConfig} from 'wagmi'
 import {arbitrum, mainnet} from 'wagmi/chains'
 import "./index.css";
+import {MetaMaskProvider} from "@metamask/sdk-react";
 
 const chains = [arbitrum, mainnet]
 const projectId = '8f5121741edc292ac7e4203b648d61e2'
@@ -26,7 +27,19 @@ if (!rootElement.innerHTML) {
 	root.render(
 		<StrictMode>
 			<WagmiConfig config={wagmiConfig}>
-				<AppRoutes />
+				<MetaMaskProvider debug={false} sdkOptions={{
+					logging: {
+						developerMode: false,
+					},
+					checkInstallationImmediately: false, // This will automatically connect to MetaMask on page load
+					dappMetadata: {
+						name: "Xai Sentry Node",
+						url: window.location.host,
+					}
+				}}>
+
+					<AppRoutes/>
+				</MetaMaskProvider>
 			</WagmiConfig>
 
 			<Web3Modal projectId={projectId} ethereumClient={ethereumClient}/>

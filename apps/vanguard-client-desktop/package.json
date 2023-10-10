@@ -10,8 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@web3modal/react": "^2.7.1",
+    "@metamask/sdk-react": "^0.8.0",
     "@web3modal/ethereum": "^2.7.1",
+    "@web3modal/react": "^2.7.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.11.0",

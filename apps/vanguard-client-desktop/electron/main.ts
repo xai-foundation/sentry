@@ -27,7 +27,7 @@ function createWindow() {
 		height: 900,
 		minWidth: 1440,
 		minHeight: 900,
-		icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
+		icon: path.join(process.env.VITE_PUBLIC, 'xai-logo.svg'),
 		webPreferences: {
 			preload: path.join(__dirname, 'preload.js'),
 			nodeIntegration: true,
