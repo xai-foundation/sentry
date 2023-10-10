@@ -28,6 +28,7 @@ import { removeKycAdmin } from './commands/access-control/remove-kyc-admin';
 import { listKycStatuses } from './commands/kyc/list-kyc-status';
 import { checkKycStatus } from './commands/kyc/check-kyc-status';
 import { setKycStatus } from './commands/kyc/set-kyc-status';
+import { totalSupply } from './commands/total-supply';
 
 const cli = new Vorpal();
 
@@ -61,6 +62,7 @@ removeKycAdmin(cli);
 listKycStatuses(cli);
 checkKycStatus(cli);
 setKycStatus(cli);
+totalSupply(cli);
 
 cli
     .delimiter('vanguard-node$')
