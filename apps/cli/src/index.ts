@@ -29,6 +29,8 @@ import { setKycStatus } from './commands/kyc/set-kyc-status';
 import { totalSupply } from './commands/xai-token/total-supply';
 import { getBalancesForAddresses } from './commands/xai-token/get-balances';
 import { getAllContractAddresses } from './commands/get-contract-addresses';
+import { checkWhitelist } from './commands/xai-token/check-whitelist';
+import { changeWhitelistStatus } from './commands/xai-token/change-whitelist-status';
 
 const cli = new Vorpal();
 
@@ -63,6 +65,8 @@ setRollupAddress(cli);
 toggleAssertionChecking(cli);
 totalSupply(cli);
 getAllContractAddresses(cli);
+checkWhitelist(cli);
+changeWhitelistStatus(cli);
 
 cli
     .delimiter('vanguard-node$')
