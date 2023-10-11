@@ -6,3 +6,5 @@ export * from "./config";
 export * from "./node";
 export * from "./node-license";
 export * from "./utils";
+export * from "./kyc";
+export * from "./xai-token";

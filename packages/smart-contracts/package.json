@@ -7,9 +7,10 @@
     "deploy": "hardhat run scripts/deploy.ts"
   },
   "dependencies": {
-    "@openzeppelin/contracts-upgradeable": "4.9.3",
     "@openzeppelin/contracts": "4.9.3",
+    "@openzeppelin/contracts-upgradeable": "4.9.3",
     "@xai-vanguard-node/core": "workspace:*",
+    "csv": "^6.3.5",
     "dotenv": "^16.3.1"
   },
   "devDependencies": {

@@ -42,6 +42,23 @@ export const RefereeAbi = [
   {
     "type": "event",
     "anonymous": false,
+    "name": "AssertionSubmitted",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "challengeId",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "nodeLicenseId",
+        "indexed": true
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "ChallengeSubmitted",
     "inputs": [
       {
@@ -54,6 +71,10 @@ export const RefereeAbi = [
         "name": "challenge",
         "indexed": false,
         "components": [
+          {
+            "type": "bool",
+            "name": "openForSubmissions"
+          },
           {
             "type": "uint64",
             "name": "assertionId"
@@ -94,6 +115,23 @@ export const RefereeAbi = [
       {
         "type": "bytes",
         "name": "newChallengerPublicKey",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "KycStatusChanged",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "wallet",
+        "indexed": true
+      },
+      {
+        "type": "bool",
+        "name": "isKycApproved",
         "indexed": false
       }
     ]
@@ -218,6 +256,33 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
+    "name": "KYC_ADMIN_ROLE",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "bytes32",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "addKycWallet",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "wallet"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "challengeCounter",
     "constant": true,
     "stateMutability": "view",
@@ -258,6 +323,10 @@ export const RefereeAbi = [
     ],
     "outputs": [
       {
+        "type": "bool",
+        "name": "openForSubmissions"
+      },
+      {
         "type": "uint64",
         "name": "assertionId"
       },
@@ -289,6 +358,58 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
+    "name": "claimReward",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "_nodeLicenseId"
+      },
+      {
+        "type": "uint256",
+        "name": "_challengeId"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "createAssertionHashAndCheckPayout",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "_nodeLicenseId"
+      },
+      {
+        "type": "uint256",
+        "name": "_challengeId"
+      },
+      {
+        "type": "bytes",
+        "name": "_successorStateRoot"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bool",
+        "name": ""
+      },
+      {
+        "type": "bytes32",
+        "name": ""
+      },
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "getChallenge",
     "constant": true,
     "stateMutability": "view",
@@ -304,6 +425,10 @@ export const RefereeAbi = [
         "type": "tuple",
         "name": "",
         "components": [
+          {
+            "type": "bool",
+            "name": "openForSubmissions"
+          },
           {
             "type": "uint64",
             "name": "assertionId"
@@ -333,6 +458,39 @@ export const RefereeAbi = [
             "name": "rollupUsed"
           }
         ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getKycWalletAtIndex",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "index"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "address",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getKycWalletCount",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
       }
     ]
   },
@@ -518,6 +676,25 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
+    "name": "isKycApproved",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "wallet"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bool",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "nodeLicenseAddress",
     "constant": true,
     "stateMutability": "view",
@@ -529,6 +706,19 @@ export const RefereeAbi = [
         "name": ""
       }
     ]
+  },
+  {
+    "type": "function",
+    "name": "removeKycWallet",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "wallet"
+      }
+    ],
+    "outputs": []
   },
   {
     "type": "function",
@@ -574,6 +764,25 @@ export const RefereeAbi = [
     "outputs": [
       {
         "type": "address",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "rollupAssertionTracker",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bytes32",
+        "name": ""
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bool",
         "name": ""
       }
     ]
@@ -636,13 +845,52 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
+    "name": "submissions",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      },
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bool",
+        "name": "submitted"
+      },
+      {
+        "type": "uint256",
+        "name": "nodeLicenseId"
+      },
+      {
+        "type": "bytes",
+        "name": "successorStateRoot"
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "submitAssertionToChallenge",
     "constant": false,
     "payable": false,
     "inputs": [
       {
         "type": "uint256",
-        "name": "licenseId"
+        "name": "_nodeLicenseId"
+      },
+      {
+        "type": "uint256",
+        "name": "_challengeId"
+      },
+      {
+        "type": "bytes",
+        "name": "_successorStateRoot"
       }
     ],
     "outputs": []
