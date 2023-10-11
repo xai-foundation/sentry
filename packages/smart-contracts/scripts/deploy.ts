@@ -3,6 +3,8 @@ import { extractAbi } from "../utils/exportAbi";
 import { safeVerify } from "../utils/safeVerify";
 import { writeToConfig } from "../utils/writeToConfig";
 import { config } from "@xai-vanguard-node/core";
+import { parse } from "csv/sync";
+import fs from "fs";
 
 const options = {
   admins: [
@@ -13,6 +15,9 @@ const options = {
 }
 
 async function main() {
+
+  const deployer = (await ethers.getSigners())[0];
+  const deployerAddress = await deployer.getAddress();
 
   console.log("Deploying Xai...");
   const Xai = await ethers.getContractFactory("Xai");
@@ -50,7 +55,7 @@ async function main() {
   const refereeAdminRole = await referee.DEFAULT_ADMIN_ROLE();
   for (const address of options.admins) {
     await referee.grantRole(refereeAdminRole, address);
-    console.log(`Granted admin role to ${address}`);
+    console.log(`Granted admin role to ${address} on Referee`);
   }
 
   console.log("Deploying esXai...");
@@ -95,10 +100,31 @@ async function main() {
   writeToConfig({ refereeAddress, nodeLicenseAddress, esXaiAddress, xaiAddress });
   console.log("Referee, NodeLicense, esXai, and xai contract addresses updated in the config");
 
-  // denounce the admin role of the deployer on every contract
-  const deployer = (await ethers.getSigners())[0];
-  const deployerAddress = await deployer.getAddress();
+  // Grant the deployer the minter role on Xai and esXai
+  const xaiMinterRole = await xai.MINTER_ROLE();
+  await xai.grantRole(xaiMinterRole, deployerAddress);
+  console.log(`Granted minter role to ${deployerAddress} on Xai`);
 
+  const esXaiMinterRole = await esXai.MINTER_ROLE();
+  await esXai.grantRole(esXaiMinterRole, deployerAddress);
+  console.log(`Granted minter role to ${deployerAddress} on esXai`);
+
+  // Read the csv from initialXaiMints.csv, and mint the corresponding amounts to each address in the CSV
+  const initialMints = parse(fs.readFileSync('initialXaiMints.csv'), {columns: true});
+  for (const mint of initialMints) {
+    await xai.mint(mint.address, mint.xai);
+    console.log(`Minted ${mint.xai} Xai to ${mint.address}`);
+    await esXai.mint(mint.address, mint.esXai);
+    console.log(`Minted ${mint.esXai} esXai to ${mint.address}`);
+  }
+
+  // Denounce the Minter role
+  await xai.renounceRole(xaiMinterRole, deployerAddress);
+  console.log(`Renounced minter role of ${deployerAddress} on Xai`);
+  await esXai.renounceRole(esXaiMinterRole, deployerAddress);
+  console.log(`Renounced minter role of ${deployerAddress} on esXai`);
+
+  // denounce the admin role of the deployer on every contract  
   await referee.renounceRole(refereeAdminRole, deployerAddress);
   console.log(`Renounced admin role of ${deployerAddress} on Referee`);
   await esXai.renounceRole(esXaiAdminRole, deployerAddress);

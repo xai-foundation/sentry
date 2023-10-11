@@ -9,7 +9,6 @@ import { getListOfAdmins } from './commands/access-control/get-list-of-admins';
 import { getListOfChallengers } from './commands/access-control/get-list-of-challengers';
 import { getPrivateKeyFromMnemonic } from './commands/get-private-key-from-memonic';
 import { getPublicKeyFromPrivateKey } from './commands/get-public-key-from-private-key';
-import { getRefereeContractAddress } from './commands/get-referee-address';
 import { manuallyChallengeAssertion } from './commands/manually-challenge-assertion';
 import { removeAdmin } from './commands/access-control/remove-admin';
 import { removeChallenger } from './commands/access-control/remove-challenger';
@@ -19,7 +18,6 @@ import { addOperator } from './commands/operator-control/add-operator';
 import { removeOperator } from './commands/operator-control/remove-operator';
 import { listOperators } from './commands/operator-control/list-operators';
 import { mintNodeLicenses } from "./commands/mint-node-licenses";
-import { getNodeLicenseContractAddress } from './commands/get-node-license-address';
 import { listNodeLicenses } from './commands/list-node-licenses';
 import { setRollupAddress } from './commands/set-rollup-address';
 import { getListOfKycAdmins } from './commands/access-control/get-list-of-kyc-admins';
@@ -30,6 +28,7 @@ import { checkKycStatus } from './commands/kyc/check-kyc-status';
 import { setKycStatus } from './commands/kyc/set-kyc-status';
 import { totalSupply } from './commands/xai-token/total-supply';
 import { getBalancesForAddresses } from './commands/xai-token/get-balances';
+import { getAllContractAddresses } from './commands/get-contract-addresses';
 
 const cli = new Vorpal();
 
@@ -47,10 +46,8 @@ getBalancesForAddresses(cli);
 getListOfAdmins(cli);
 getListOfChallengers(cli);
 getListOfKycAdmins(cli);
-getNodeLicenseContractAddress(cli);
 getPrivateKeyFromMnemonic(cli);
 getPublicKeyFromPrivateKey(cli);
-getRefereeContractAddress(cli);
 listKycStatuses(cli);
 listNodeLicenses(cli);
 listOperators(cli);
@@ -65,6 +62,7 @@ setKycStatus(cli);
 setRollupAddress(cli);
 toggleAssertionChecking(cli);
 totalSupply(cli);
+getAllContractAddresses(cli);
 
 cli
     .delimiter('vanguard-node$')
