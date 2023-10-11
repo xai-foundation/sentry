@@ -1,8 +1,6 @@
 import {RiKey2Line} from "react-icons/ri";
 import {FiGift, FiGitCommit} from "react-icons/fi";
-import {Dispatch, SetStateAction, useEffect} from "react";
-import {useAccount} from 'wagmi'
-import {WalletConnectButton} from "../../components/buttons/WalletConnectButton.tsx";
+import {Dispatch, SetStateAction} from "react";
 
 const body = [
 	{
@@ -27,13 +25,13 @@ interface ConnectWalletProps {
 }
 
 export function ConnectWallet({setConnected}: ConnectWalletProps) {
-	const {isConnected} = useAccount()
-
-	useEffect(() => {
-		if (isConnected) {
-			setConnected(true);
-		}
-	}, [isConnected, setConnected])
+	// const {isConnected} = useAccount()
+	//
+	// useEffect(() => {
+	// 	if (isConnected) {
+	// 		setConnected(true);
+	// 	}
+	// }, [isConnected, setConnected])
 
 	function getBody() {
 		return body.map((item, i) => {
@@ -48,7 +46,6 @@ export function ConnectWallet({setConnected}: ConnectWalletProps) {
 				</div>
 			)
 		})
-
 	}
 
 	return (
@@ -60,7 +57,12 @@ export function ConnectWallet({setConnected}: ConnectWalletProps) {
 					challenges
 				</p>
 				<div className="flex flex-col justify-center items-center mt-8 gap-2">
-					<WalletConnectButton className="w-[27.25rem] h-16"/>
+					<button
+						className={`w-full bg-[#F30919] text-white p-3 uppercase font-semibold mt-2`}
+						onClick={() => setConnected(true)}
+					>
+						Connect Wallet
+					</button>
 					<p className="text-xs text-[#525252]">This will open WalletConnect in a browser</p>
 				</div>
 			</div>

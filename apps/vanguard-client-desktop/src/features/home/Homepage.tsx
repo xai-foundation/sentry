@@ -8,9 +8,7 @@ export function Homepage() {
 	return (
 		<div className="w-full h-screen">
 			{connected ? (
-				<Home
-					setConnected={setConnected}
-				/>
+				<Home/>
 			) : (
 				<ConnectWallet
 					setConnected={setConnected}

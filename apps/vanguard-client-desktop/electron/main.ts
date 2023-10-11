@@ -30,8 +30,6 @@ function createWindow() {
 		icon: path.join(process.env.VITE_PUBLIC, 'xai-logo.svg'),
 		webPreferences: {
 			preload: path.join(__dirname, 'preload.js'),
-			nodeIntegration: true,
-			contextIsolation: false,
 		},
 	})
 
