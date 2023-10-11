@@ -1,18 +1,18 @@
 import * as Vorpal from "vorpal";
-import { removeAddressFromRole, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
+import { addAddressToRole, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
 
 /**
- * Function to remove a challenger from the Referee contract.
+ * Function to add a KYC admin to the Referee contract.
  * @param cli - Vorpal instance
  */
-export function removeChallenger(cli: Vorpal) {
+export function addKycAdmin(cli: Vorpal) {
     cli
-        .command('remove-challenger', 'Removes an address from the DEFAULT_CHALLENGER_ROLE in the Referee contract.')
+        .command('add-kyc-admin', 'Adds an address to the KYC_ADMIN_ROLE in the Referee contract.')
         .action(async function (this: Vorpal.CommandInstance) {
             const {address} = await this.prompt({
                 type: 'input',
                 name: 'address',
-                message: 'Address to be removed from the CHALLENGER_ROLE:' 
+                message: 'Address to be added to the KYC_ADMIN_ROLE:' 
             });
 
             const {privateKey} = await this.prompt({
@@ -27,14 +27,14 @@ export function removeChallenger(cli: Vorpal) {
                 return;
             }
 
-            this.log(`Removing address ${address} from the CHALLENGER_ROLE...`);
+            this.log(`Adding address ${address} to the KYC_ADMIN_ROLE...`);
 
             // Create a signer with the private key
             const { signer } = getSignerFromPrivateKey(privateKey);
 
-            // Call the removeAddressFromRole function to remove the address from the DEFAULT_CHALLENGER_ROLE
-            await removeAddressFromRole(signer, 'CHALLENGER_ROLE', address);
+            // Call the addAddressToRole function to add the address to the KYC_ADMIN_ROLE
+            await addAddressToRole(signer, 'KYC_ADMIN_ROLE', address);
 
-            this.log(`Address ${address} has been removed from the CHALLENGER_ROLE.`);
+            this.log(`Address ${address} has been added to the KYC_ADMIN_ROLE.`);
         });
 }
