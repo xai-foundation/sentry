@@ -1,12 +1,10 @@
 import {Blockpass} from "../../components/blockpass/Blockpass.tsx";
-import * as everything from "@xai-vanguard-node/core";
 // import {useOperator} from "../operator/useOperator";
 // import {useStorage} from "../storage/useStorage";
 
 export function Home() {
 	// const {loading, privateKey, error} = useOperator();
 	// const {data} = useStorage();
-console.log(everything);
 
 	return (
 		<div className="w-full h-screen flex justify-center items-center">
