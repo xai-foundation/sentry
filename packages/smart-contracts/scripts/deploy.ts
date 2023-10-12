@@ -124,6 +124,13 @@ async function main() {
   await esXai.renounceRole(esXaiMinterRole, deployerAddress);
   console.log(`Renounced minter role of ${deployerAddress} on esXai`);
 
+  // Read the csv from tierUpload.csv, and add the pricing tiers to NodeLicense
+  const tiers = parse(fs.readFileSync('tierUpload.csv'), {columns: true});
+  for (const tier of tiers) {
+    await nodeLicense.setOrAddPricingTier(tier.tierIndex, ethers.parseEther(tier.unitCostinEth.toString()), tier.quantityBeforeNextTier);
+    console.log(`Added tier ${tier.tierIndex} with unit cost ${tier.unitCostinEth} and quantity ${tier.quantityBeforeNextTier} to NodeLicense`);
+  }
+
   // denounce the admin role of the deployer on every contract  
   await referee.renounceRole(refereeAdminRole, deployerAddress);
   console.log(`Renounced admin role of ${deployerAddress} on Referee`);
