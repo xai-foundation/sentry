@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { config } from '../config';
+import { config } from '../config.js';
 
 // global storage of providers
 const providers: { [url: string]: ethers.JsonRpcProvider } = {};

@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { getProvider } from './getProvider';
+import { getProvider } from './getProvider.js';
 
 /**
  * Creates an ethers signer from a given Mnemonic object and index.

@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
-import { RefereeAbi } from '../abis';
-import { config } from '../config';
+import { RefereeAbi } from '../abis/index.js';
+import { config } from '../config.js';
 
 /**
  * Removes an operator from the Referee contract.

@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { config, RefereeAbi } from "..";
+import { config, RefereeAbi } from "../index.js";
 
 /**
  * Sets the rollup address in the Referee contract.

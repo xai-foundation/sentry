@@ -1,7 +1,7 @@
 import {ethers} from "ethers";
-import { RollupAdminLogicAbi } from "../abis";
-import { getProvider } from "../utils";
-import { config } from "../config";
+import { RollupAdminLogicAbi } from "../abis/RollupAdminLogicAbi.js";
+import { getProvider } from "../utils/getProvider.js";
+import { config } from "../config.js";
 
 /**
  * Listens for NodeConfirmed events and triggers a callback function when the event is emitted.

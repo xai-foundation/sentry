@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
-import { RollupAdminLogicAbi } from "../abis";
-import { config } from "../config";
-import { getProvider } from ".";
+import { RollupAdminLogicAbi } from "../abis/index.js";
+import { config } from "../config.js";
+import { getProvider } from "./index.js";
 
 /**
  * Node structure returned by the getNodeStorage function.

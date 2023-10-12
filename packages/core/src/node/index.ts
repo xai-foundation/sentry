@@ -1,3 +1,3 @@
-export * from "./addOperator";
-export * from "./removeOperator";
-export * from "./listOperators";
+export * from "./addOperator.js";
+export * from "./removeOperator.js";
+export * from "./listOperators.js";

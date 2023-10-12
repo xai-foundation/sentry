@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
-import { RollupAdminLogicAbi } from "../abis";
-import { config } from "../config";
-import { getProvider } from "../utils";
+import { RollupAdminLogicAbi } from "../abis/RollupAdminLogicAbi.js";
+import { config } from "../config.js";
+import { getProvider } from "../utils/getProvider.js";
 
 /**
  * Fetches the value of isCheckingAssertions.

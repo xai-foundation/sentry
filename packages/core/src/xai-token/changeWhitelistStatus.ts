@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
-import { esXaiAbi } from "../abis";
-import { config } from "../config";
+import { esXaiAbi } from "../abis/index.js";
+import { config } from "../config.js";
 
 /**
  * Changes the whitelist status of an object of wallets in the esXai contract.

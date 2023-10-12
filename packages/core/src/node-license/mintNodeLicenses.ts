@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
-import { NodeLicenseAbi } from '../abis';
-import { config } from '../config';
+import { NodeLicenseAbi } from '../abis/index.js';
+import { config } from '../config.js';
 
 /**
  * Mints NodeLicense tokens if the signer has enough balance and the amount is less than the maximum mint amount.

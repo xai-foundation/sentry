@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
-import { getProvider } from "../utils/getProvider";
-import { config } from "../config";
-import { esXaiAbi } from "../abis";
+import { getProvider } from "../utils/getProvider.js";
+import { config } from "../config.js";
+import { esXaiAbi } from "../abis/index.js";
 
 /**
  * Lists all whitelisted addresses in the esXai contract.
