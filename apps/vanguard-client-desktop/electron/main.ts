@@ -1,4 +1,4 @@
-import {app, BrowserWindow, ipcMain, shell} from 'electron'
+import { app, BrowserWindow, ipcMain, shell, safeStorage } from 'electron'
 import path from 'node:path'
 
 // The built directory structure
@@ -19,6 +19,22 @@ const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 
 ipcMain.on('open-external', (_, url) => {
 	void shell.openExternal(url);
+});
+
+ipcMain.handle('encrypt-string', async (_, plainText) => {
+	return await safeStorage.encryptString(plainText);
+});
+
+ipcMain.handle('decrypt-string', async (_, encrypted) => {
+	return await safeStorage.decryptString(encrypted);
+});
+
+ipcMain.handle('is-encryption-available', () => {
+	return safeStorage.isEncryptionAvailable();
+});
+
+ipcMain.handle('get-user-data-path', () => {
+	return app.getPath('home');
 });
 
 function createWindow() {

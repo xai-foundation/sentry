@@ -46,6 +46,9 @@ importers:
 
   apps/vanguard-client-desktop:
     dependencies:
+      '@xai-vanguard-node/core':
+        specifier: ^1.0.0
+        version: link:../../packages/core
       react:
         specifier: ^18.2.0
         version: 18.2.0
