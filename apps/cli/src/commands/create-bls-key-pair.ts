@@ -1,5 +1,4 @@
-import * as Vorpal from "vorpal";
-import { createBlsKeyPair as coreCreateBlsKeyPair } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { createBlsKeyPair as coreCreateBlsKeyPair } from "@xai-vanguard-node/core";
 
 export function createBlsKeyPair(cli: Vorpal) {
     cli

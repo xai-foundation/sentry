@@ -1,5 +1,4 @@
-import * as Vorpal from "vorpal";
-import { listWhitelistAddresses as coreListWhitelistAddresses } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { listWhitelistAddresses as coreListWhitelistAddresses } from "@xai-vanguard-node/core";
 
 /**
  * Function to list all whitelisted addresses in the esXai contract.

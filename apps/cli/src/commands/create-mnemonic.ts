@@ -1,6 +1,5 @@
 
-import * as Vorpal from "vorpal";
-import { createMnemonic as coreCreateMnemonic } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { createMnemonic as coreCreateMnemonic } from "@xai-vanguard-node/core";
 
 export function createMnemonic(cli: Vorpal) {
     cli
