@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
-import { config } from "../config";
-import { RefereeAbi } from "../abis";
+import { config } from "../config.js";
+import { RefereeAbi } from "../abis/index.js";
 
 /**
  * Adds a role to an address in the Referee contract.

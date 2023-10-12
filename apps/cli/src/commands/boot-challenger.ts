@@ -1,5 +1,4 @@
-import * as Vorpal from "vorpal";
-import { createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee } from "@xai-vanguard-node/core";
 
 /**
  * Starts a runtime of the challenger.

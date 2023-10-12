@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
-import { getProvider } from "../utils";
-import { config } from "../config";
-import { RefereeAbi } from "../abis";
+import { getProvider } from "../utils/getProvider.js";
+import { config } from "../config.js";
+import { RefereeAbi } from "../abis/RefereeAbi.js";
 
 /**
  * Checks the KYC status of an array of wallets in the Referee contract.

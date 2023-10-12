@@ -1,11 +1,11 @@
-import {Dispatch, SetStateAction, useState} from "react";
+import {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {XaiCheckbox} from "../../../components/checkbox/XaiCheckbox.tsx";
 import {ImCheckmark} from "react-icons/im";
 import {XaiNumberInput} from "../../../components/input/XaiNumberInput.tsx";
 
 const payWithBody = [
 	{
-		currency: "Ethereum",
+		currency: "Arbitrum One",
 		abbr: "ETH",
 		price: "0.00051",
 	}
@@ -29,8 +29,17 @@ interface BuyLicenseFlowProps {
 export function BuyLicenseFlow({setPurchaseSuccess}: BuyLicenseFlowProps) {
 	const [termsChecked, setTermsChecked] = useState<boolean>(false);
 	const [investmentsChecked, setInvestmentsChecked] = useState<boolean>(false);
+	const [ready, setReady] = useState<boolean>(false);
 	const [payWith, setPayWith] = useState({eth: true, arb: false});
 	const [amount, setAmount] = useState<number>(0);
+
+	useEffect(() => {
+		if (termsChecked && investmentsChecked) {
+			setReady(true)
+		} else {
+			setReady(false);
+		}
+	}, [termsChecked, investmentsChecked])
 
 
 	function getOrderTotal() {
@@ -226,7 +235,7 @@ export function BuyLicenseFlow({setPurchaseSuccess}: BuyLicenseFlowProps) {
 					<button
 						onClick={() => setPurchaseSuccess(true)}
 						className={`w-full h-16 ${investmentsChecked && termsChecked ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
-						disabled={!investmentsChecked && !termsChecked}
+						disabled={!ready}
 					>
 						Buy License
 					</button>

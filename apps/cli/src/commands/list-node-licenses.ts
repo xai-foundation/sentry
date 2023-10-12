@@ -1,5 +1,4 @@
-import * as Vorpal from "vorpal";
-import { listNodeLicenses as listNodeLicensesCore } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { listNodeLicenses as listNodeLicensesCore } from "@xai-vanguard-node/core";
 
 /**
  * Function to list all NodeLicense token IDs owned by a particular address.

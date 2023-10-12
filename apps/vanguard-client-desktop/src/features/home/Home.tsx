@@ -1,24 +1,45 @@
-import {Dispatch, SetStateAction} from "react";
+import { useState, useEffect } from "react";
+import {Blockpass} from "../../components/blockpass/Blockpass.tsx";
+import {useOperator} from "../operator/useOperator";
+import {useStorage} from "../storage/useStorage";
 
-interface HomeProps {
-	connected: boolean
-	setConnected: Dispatch<SetStateAction<boolean>>
-}
+export function Home() {
+	const {loading, privateKey, error} = useOperator();
+	const {data, setData, getFilePath} = useStorage();
+	const [inputValue, setInputValue] = useState('');
+	const [filePath, setFilePath] = useState('');
 
-export function Home({connected, setConnected}: HomeProps) {
+	useEffect(() => {
+		const fetchFilePath = async () => {
+			const path = await getFilePath();
+			setFilePath(path);
+		};
+		fetchFilePath();
+	}, [getFilePath]);
+
+	const handleInputChange = (event) => {
+		setInputValue(event.target.value);
+	};
+
+	const handleSetData = () => {
+		setData({...data, arbitraryField: inputValue});
+	};
+
 	return (
 		<div className="w-full h-screen flex justify-center items-center">
-
-			{/*		todo: for dev purposes only, delete once persisting storage is implemented		*/}
-			<div className="absolute right-0 top-0 p-4">
-				<button
-					onClick={() => setConnected(!connected)}
-				>
-					Go to Connect Wallet
-				</button>
+			<div className="absolute flex flex-col gap-4 right-0 top-0 p-4">
+				<h1>Home</h1>
+				<p className="text-gray-700">File Path: {filePath}</p>
+				
+				{loading ? <p className="text-gray-500">Loading...</p> : null}
+				<p className="text-gray-700">Private Key: {privateKey ? privateKey : 'N/A'}</p>
+				{error ? <p className="text-red-500">Error: {error.message}</p> : null}
+				{error ? <pre className="text-red-500">{error.stack}</pre> : null}
+				<input type="text" value={inputValue} onChange={handleInputChange} className="mt-2 p-2 border rounded" placeholder="Enter arbitrary data" />
+				<button onClick={handleSetData} className="mt-2 p-2 bg-blue-500 text-white rounded">Set Data</button>
 			</div>
 
-			<h1>Home</h1>
+			<Blockpass/>
 		</div>
 	)
 }

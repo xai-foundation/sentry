@@ -1,5 +1,4 @@
-import * as Vorpal from "vorpal";
-import { config, getSignerFromPrivateKey, RefereeAbi, setChallengerPublicKey as coreSetChallengerPublicKey } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { config, getSignerFromPrivateKey, RefereeAbi, setChallengerPublicKey as coreSetChallengerPublicKey } from "@xai-vanguard-node/core";
 
 /**
  * Function to set the challenger public key in the Referee contract.

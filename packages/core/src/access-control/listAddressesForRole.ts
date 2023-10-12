@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
-import { getProvider } from "../utils/getProvider";
-import { config } from "../config";
-import { RefereeAbi } from "../abis";
+import { getProvider } from "../utils/getProvider.js";
+import { config } from "../config.js";
+import { RefereeAbi } from "../abis/index.js";
 
 /**
  * Lists all addresses that have a particular role in the Referee contract.

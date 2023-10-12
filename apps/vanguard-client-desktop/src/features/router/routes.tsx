@@ -1,7 +1,7 @@
 import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import { Licenses } from "../licenses/Licenses.tsx";
 import { Homepage } from "../home/Homepage.tsx";
-import Sidebar from "../sidebar/SidebarRoot";
+import {Sidebar} from "../sidebar";
 
 export function AppRoutes() {
   return (

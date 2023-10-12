@@ -1,6 +1,5 @@
 import {RiKey2Line} from "react-icons/ri";
 import {FiGift, FiGitCommit} from "react-icons/fi";
-import {Link} from "react-router-dom";
 import {Dispatch, SetStateAction} from "react";
 
 const body = [
@@ -22,11 +21,17 @@ const body = [
 ]
 
 interface ConnectWalletProps {
-	connected: boolean;
 	setConnected: Dispatch<SetStateAction<boolean>>;
 }
 
-export function ConnectWallet({connected, setConnected}: ConnectWalletProps) {
+export function ConnectWallet({setConnected}: ConnectWalletProps) {
+	// const {isConnected} = useAccount()
+	//
+	// useEffect(() => {
+	// 	if (isConnected) {
+	// 		setConnected(true);
+	// 	}
+	// }, [isConnected, setConnected])
 
 	function getBody() {
 		return body.map((item, i) => {
@@ -41,46 +46,34 @@ export function ConnectWallet({connected, setConnected}: ConnectWalletProps) {
 				</div>
 			)
 		})
-
 	}
 
 	return (
 		<div className="relative w-full h-screen max-h-screen flex flex-col items-center gap-20 pt-52 overflow-hidden">
-
-			{/*		todo: for dev purposes only, delete once persisting storage is implemented		*/}
-			<div className="absolute right-0 top-0 p-4">
-				<button
-					onClick={() => setConnected(!connected)}
-				>
-					Go to Home
-				</button>
-			</div>
-
-			<div className="flex flex-col justify-center items-center gap-2 z-10">
+			<div className="flex flex-col justify-center items-center gap-2">
 				<h1 className="text-[40px] font-bold uppercase tracking-widest">Connect your wallet</h1>
 				<p className="text-lg text-[#525252] max-w-[508px] text-center">
 					Start your Xai Vanguard Node by connecting your wallet, and begin participating in network
 					challenges
 				</p>
+				<div className="flex flex-col justify-center items-center mt-8 gap-2">
+					<button
+						className={`w-full bg-[#F30919] text-white p-3 uppercase font-semibold mt-2`}
+						onClick={() => setConnected(true)}
+					>
+						Connect Wallet
+					</button>
+					<p className="text-xs text-[#525252]">This will open WalletConnect in a browser</p>
+				</div>
 			</div>
 
-			<div className="flex flex-col justify-center items-center gap-4 z-10">
-				<Link
-					to="/licenses"
-					className="w-96 bg-[#F30919] flex justify-center items-center text-white p-4 uppercase font-semibold cursor-pointer"
-				>
-					Connect Wallet
-				</Link>
 
-				<p className="text-xs text-[#525252]">This will open WalletConnect in a browser</p>
-			</div>
-
-			<div className="flex flex-row justify-center items-center gap-32 z-10">
+			<div className="flex flex-row justify-center items-center gap-32">
 				{getBody()}
 			</div>
 
 			<video
-				className="absolute bottom-[-15rem] w-full object-cover"
+				className="absolute bottom-[-15rem] w-full object-cover -z-10"
 				autoPlay
 				loop
 				muted

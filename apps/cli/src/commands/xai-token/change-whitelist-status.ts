@@ -1,5 +1,4 @@
-import * as Vorpal from "vorpal";
-import { changeWhitelistStatus as coreChangeWhitelistStatus, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { changeWhitelistStatus as coreChangeWhitelistStatus, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
 
 /**
  * Function to change the whitelist status of a list of wallets in the esXai contract.

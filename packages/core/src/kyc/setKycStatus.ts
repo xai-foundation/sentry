@@ -1,8 +1,8 @@
 import { ethers } from "ethers";
-import { getProvider } from "../utils";
-import { config } from "../config";
-import { RefereeAbi } from "../abis";
-import { checkKycStatus } from "./checkKycStatus";
+import { getProvider } from "../utils/index.js";
+import { config } from "../config.js";
+import { RefereeAbi } from "../abis/index.js";
+import { checkKycStatus } from "./checkKycStatus.js";
 
 /**
  * Sets the KYC status of an object of wallets in the Referee contract.

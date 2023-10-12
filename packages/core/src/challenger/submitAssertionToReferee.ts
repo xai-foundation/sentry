@@ -1,8 +1,8 @@
-import { challengerHashAssertion } from './challengerHashAssertion';
+import { challengerHashAssertion } from './challengerHashAssertion.js';
 import { ethers } from 'ethers';
-import { AssertionNode } from '../utils/getAssertion';
-import { RefereeAbi } from '../abis';
-import { config } from '../config';
+import { AssertionNode } from '../utils/getAssertion.js';
+import { RefereeAbi } from '../abis/index.js';
+import { config } from '../config.js';
 
 /**
  * Submits an assertion to the Referee contract.

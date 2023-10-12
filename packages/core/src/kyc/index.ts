@@ -1,3 +1,3 @@
-export * from "./listKycStatuses";
-export * from "./checkKycStatus";
-export * from "./setKycStatus";
+export * from "./listKycStatuses.js";
+export * from "./checkKycStatus.js";
+export * from "./setKycStatus.js";

@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
-import { NodeLicenseAbi } from '../abis';
-import { config } from '../config';
-import { getProvider } from '../utils/getProvider';
+import { NodeLicenseAbi } from '../abis/NodeLicenseAbi.js';
+import { config } from '../config.js';
+import { getProvider } from '../utils/getProvider.js';
 
 /**
  * Fetches all NodeLicense token IDs owned by a given address.

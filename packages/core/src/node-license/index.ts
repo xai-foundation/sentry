@@ -1,2 +1,2 @@
-export * from "./mintNodeLicenses";
-export * from "./listNodeLicenses";
+export * from "./mintNodeLicenses.js";
+export * from "./listNodeLicenses.js";

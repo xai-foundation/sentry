@@ -1,3 +1,3 @@
-export * from "./setChallengerPublicKey";
-export * from "./setRollupAddress";
-export * from "./toggleAssertionChecking";
+export * from "./setChallengerPublicKey.js";
+export * from "./setRollupAddress.js";
+export * from "./toggleAssertionChecking.js";

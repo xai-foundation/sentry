@@ -1,4 +1,4 @@
-import * as Vorpal from "vorpal";
+import Vorpal from "vorpal";
 import { addAddressToRole, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
 
 /**

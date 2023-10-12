@@ -6,10 +6,9 @@
   "appId": "YourAppID",
   "includeSubNodeModules": true,
   "asar": true,
-  "productName": "VanguardClient",
+  "productName": "Xai Sentry Node",
   "directories": {
     "output": "release",
-    
   },
   "files": [
     "dist",
@@ -19,13 +18,15 @@
     "target": [
       "dmg"
     ],
-    "artifactName": "vanguard-client-macos.${ext}"
+    "artifactName": "vanguard-client-macos.${ext}",
+    "icon": "public/xai.png"
   },
   "win": {
     "target": [
       "portable"
     ],
-    "artifactName": "vanguard-client-windows.${ext}"
+    "artifactName": "vanguard-client-windows.${ext}",
+    "icon": "public/xai.png"
   },
   "nsis": {
     "oneClick": false,

@@ -18,7 +18,7 @@ export function BuyLicenseModal({number, setNumber, setShowModal}: BuyLicenseMod
 			<div
 				className="absolute top-0 w-full h-16 flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
 				<span>Buy license</span>
-				<div className="cursor-pointer" onClick={() => setShowModal(false)}>
+				<div className="cursor-pointer z-10" onClick={() => setShowModal(false)}>
 					<AiOutlineClose/>
 				</div>
 			</div>

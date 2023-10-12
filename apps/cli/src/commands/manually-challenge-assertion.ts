@@ -1,5 +1,4 @@
-import * as Vorpal from "vorpal";
-import { getAssertion, getSignerFromPrivateKey, submitAssertionToReferee } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { getAssertion, getSignerFromPrivateKey, submitAssertionToReferee } from "@xai-vanguard-node/core";
 
 export function manuallyChallengeAssertion(cli: Vorpal) {
     cli

@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
-import { XaiAbi, esXaiAbi } from '../abis';
-import { config } from '../config';
-import { getProvider } from '../utils/getProvider';
+import { XaiAbi, esXaiAbi } from '../abis/index.js';
+import { config } from '../config.js';
+import { getProvider } from '../utils/getProvider.js';
 
 /**
  * Returns the balance of Xai and esXai for an array of addresses.
