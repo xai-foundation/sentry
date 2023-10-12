@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain, shell, safeStorage } from 'electron'
-import path from 'node:path'
+import fs from "fs";
+import path from "path";
 
 // The built directory structure
 //
@@ -36,6 +37,31 @@ ipcMain.handle('is-encryption-available', () => {
 ipcMain.handle('get-user-data-path', () => {
 	return app.getPath('home');
 });
+
+ipcMain.handle('fs-writeFileSync', (_, path, data) => {
+	fs.writeFileSync(path, data);
+});
+
+ipcMain.handle('fs-unlinkSync', (_, path) => {
+	fs.unlinkSync(path);
+});
+
+ipcMain.handle('fs-readFileSync', (_, path, encoding?) => {
+	return fs.readFileSync(path, encoding);
+});
+
+ipcMain.handle('fs-existsSync', (_, path) => {
+	return fs.existsSync(path);
+});
+
+ipcMain.handle('path-join', (_, ...paths) => {
+	return path.join(...paths);
+});
+
+ipcMain.handle('buffer-from', (_, str, encoding) => {
+	return Buffer.from(str, encoding);
+});
+
 
 function createWindow() {
 	win = new BrowserWindow({

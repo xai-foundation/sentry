@@ -2,11 +2,11 @@ import { ethers } from 'ethers';
 import { useState, useEffect, useRef } from 'react';
 import { useStorage } from '../storage/useStorage';
 import { createMnemonic, getSignerFromMnemonic, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
-const { ipcRenderer } = window.require('electron');
 
 interface IUseOperatorResponse {
     signer?: ethers.Signer;
     privateKey?: string;
+    publicKey?: string;
     importPrivateKey: (privateKey: string) => Promise<void>
     // regenerate: () => Promise<void>
     error?: Error;
@@ -21,9 +21,15 @@ interface IUseOperatorResponse {
 export function useOperator(): IUseOperatorResponse {
 
     const [loading, setLoading] = useState(true);
+    const [privateKey, setPrivateKey] = useState<string>();
+    const [publicKey, setPublicKey] = useState<string>();
     const signerRef = useRef<any>();
     const [error, setError] = useState<Error>();
-    const {data, loading: storageLoading, setData} = useStorage();
+
+    const getOperatorFilePath = async () => {
+        return await window.ipcRenderer.invoke('path-join', await window.ipcRenderer.invoke('get-user-data-path'), ".sentry-operator");
+    };
+
 
     useEffect(() => {
 
@@ -31,17 +37,25 @@ export function useOperator(): IUseOperatorResponse {
 
             setLoading(true);
 
+            const path = await getOperatorFilePath();
+
+            // check to see the file exists
+            const fileExists = await window.ipcRenderer.invoke('fs-existsSync', path);
+
             // check to see if we have a private key saved in storage
-            if (data?.encryptedPrivateKey) {
-                // Convert the encrypted private key string to a buffer
-                const encryptedBuffer: Buffer = Buffer.from(data.encryptedPrivateKey, 'hex');
+            if (fileExists) {
+
+                // read the file from the disk
+                const data: Buffer = await window.ipcRenderer.invoke('fs-readFileSync', path);
 
                 // Decrypt the encrypted private key using the ipcRenderer
-                const decryptedPrivateKey: string = await ipcRenderer.invoke('decrypt-string', encryptedBuffer);
+                const decryptedPrivateKey: string = await window.ipcRenderer.invoke('decrypt-string', data);
+                setPrivateKey(decryptedPrivateKey);
 
                 // get the signer from the decrypter private key
                 const {signer} = getSignerFromPrivateKey(decryptedPrivateKey);
                 signerRef.current = signer;
+                setPublicKey(await signer.getAddress())
 
                 setLoading(false);
                 return;
@@ -52,7 +66,7 @@ export function useOperator(): IUseOperatorResponse {
 
             do {
                 // check to see if the encryption is available
-                encryptionAvailable = await ipcRenderer.invoke("is-encryption-available");
+                encryptionAvailable = await window.ipcRenderer.invoke("is-encryption-available");
                 attempts++;
 
                 // if it is not available, wait for a second and try again
@@ -70,36 +84,32 @@ export function useOperator(): IUseOperatorResponse {
             const {phrase} = createMnemonic();
 
             // get the private key from index 0 of the mnemonic
-            const { privateKey, signer } = await getSignerFromMnemonic(phrase, 0);
+            const { privateKey, signer, address } = await getSignerFromMnemonic(phrase, 0);
+            setPrivateKey(privateKey);
+            setPublicKey(address);
 
             // set the signer on the ref
             signerRef.current = signer;
 
             // encrypt the private key
-            const encrypted: Buffer = await ipcRenderer.invoke('encrypt-string', privateKey);
+            const encrypted: Buffer = await window.ipcRenderer.invoke('encrypt-string', privateKey);
 
-            // convert the buffer to a string
-            const encryptedString: string = encrypted.toString('hex');
-
-            // save the encryptedString to disk
-            setData({
-                ...data,
-                encryptedPrivateKey: encryptedString,
-            });
+            // save to disk
+            await window.ipcRenderer.invoke('fs-writeFileSync', path, encrypted)
 
             setLoading(false);
         }
 
-        if (!storageLoading) {
             startup()
                 .catch(setError)
-        }
-    }, [ipcRenderer, storageLoading])
+    }, [window.ipcRenderer])
 
     const importPrivateKey = async (privateKey: string) => {
         
         // set loading to true
         setLoading(true);
+
+        const path = await getOperatorFilePath();
 
         try {
             // get the signer from the private key
@@ -109,16 +119,10 @@ export function useOperator(): IUseOperatorResponse {
             signerRef.current = signer;
 
             // encrypt the private key
-            const encrypted: Buffer = await ipcRenderer.invoke('encrypt-string', privateKey);
-
-            // convert the buffer to a string
-            const encryptedString: string = encrypted.toString('hex');
-
-            // save the encryptedString to disk
-            setData({
-                ...data,
-                encryptedPrivateKey: encryptedString,
-            });
+            const encrypted: Buffer = await window.ipcRenderer.invoke('encrypt-string', privateKey);
+            
+            // save to disk
+            await window.ipcRenderer.invoke('fs-writeFileSync', path, encrypted)
             
         } catch (error) {
             setError(error as Error);
@@ -134,6 +138,8 @@ export function useOperator(): IUseOperatorResponse {
         loading,
         signer: signerRef?.current,
         importPrivateKey,
+        privateKey,
+        publicKey
     };
 }
 
