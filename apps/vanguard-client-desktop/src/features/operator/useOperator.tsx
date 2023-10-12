@@ -1,6 +1,5 @@
 import { ethers } from 'ethers';
 import { useState, useEffect, useRef } from 'react';
-import { useStorage } from '../storage/useStorage';
 import { createMnemonic, getSignerFromMnemonic, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
 
 interface IUseOperatorResponse {

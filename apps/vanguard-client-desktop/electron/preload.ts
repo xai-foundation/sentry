@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer, safeStorage } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 
 
 // --------- Expose some API to the Renderer process ---------
