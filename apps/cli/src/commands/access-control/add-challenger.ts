@@ -1,5 +1,4 @@
-import * as Vorpal from "vorpal";
-import { addAddressToRole, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { addAddressToRole, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
 
 /**
  * Function to add a challenger to the Referee contract.

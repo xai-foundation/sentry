@@ -7,6 +7,10 @@ export const NodeLicenseAbi = [
       {
         "type": "address",
         "name": "_fundsReceiver"
+      },
+      {
+        "type": "uint256",
+        "name": "_maxSupply"
       }
     ]
   },
@@ -62,6 +66,18 @@ export const NodeLicenseAbi = [
       {
         "type": "address",
         "name": "newFundsReceiver",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "MaxSupplyChanged",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "newMaxSupply",
         "indexed": false
       }
     ]
@@ -170,20 +186,6 @@ export const NodeLicenseAbi = [
   },
   {
     "type": "function",
-    "name": "BASE_PRICE",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
     "name": "DEFAULT_ADMIN_ROLE",
     "constant": true,
     "stateMutability": "view",
@@ -192,34 +194,6 @@ export const NodeLicenseAbi = [
     "outputs": [
       {
         "type": "bytes32",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "MAX_MINT_AMOUNT",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "MAX_SUPPLY",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256",
         "name": ""
       }
     ]
@@ -377,6 +351,20 @@ export const NodeLicenseAbi = [
   },
   {
     "type": "function",
+    "name": "maxSupply",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "mint",
     "constant": false,
     "stateMutability": "payable",
@@ -438,6 +426,29 @@ export const NodeLicenseAbi = [
       {
         "type": "uint256",
         "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "pricingTiers",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "price"
+      },
+      {
+        "type": "uint256",
+        "name": "quantity"
       }
     ]
   },
@@ -547,6 +558,40 @@ export const NodeLicenseAbi = [
       {
         "type": "address",
         "name": "_newFundsReceiver"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "setMaxSupply",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "_newMaxSupply"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "setOrAddPricingTier",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "_index"
+      },
+      {
+        "type": "uint256",
+        "name": "_price"
+      },
+      {
+        "type": "uint256",
+        "name": "_quantity"
       }
     ],
     "outputs": []

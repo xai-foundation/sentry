@@ -17,7 +17,7 @@ export function Home() {
 		fetchFilePath();
 	}, [getFilePath]);
 
-	const handleInputChange = (event) => {
+	const handleInputChange = (event: any) => {
 		setInputValue(event.target.value);
 	};
 

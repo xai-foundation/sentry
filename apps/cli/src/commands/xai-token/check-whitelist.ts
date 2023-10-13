@@ -1,5 +1,4 @@
-import * as Vorpal from "vorpal";
-import { checkWhitelist as coreCheckWhitelist } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { checkWhitelist as coreCheckWhitelist } from "@xai-vanguard-node/core";
 
 /**
  * Function to check the whitelist status of a list of wallets in the esXai contract.

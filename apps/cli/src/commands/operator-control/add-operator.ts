@@ -1,5 +1,4 @@
-import * as Vorpal from "vorpal";
-import { addOperatorToReferee, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { addOperatorToReferee, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
 
 /**
  * Function to add an operator to the Referee contract.

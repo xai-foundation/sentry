@@ -1,5 +1,4 @@
-import * as Vorpal from "vorpal";
-import { listOperatorsForAddress } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { listOperatorsForAddress } from "@xai-vanguard-node/core";
 
 /**
  * Function to list all operators for a particular address in the Referee contract.
