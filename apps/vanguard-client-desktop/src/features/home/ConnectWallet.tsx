@@ -73,13 +73,13 @@ export function ConnectWallet({setConnected}: ConnectWalletProps) {
 			</div>
 
 			<video
-				className="absolute bottom-[-15rem] w-full object-cover -z-10"
+				className="absolute bottom-[-10rem] w-full object-cover -z-10"
 				autoPlay
 				loop
 				muted
 				playsInline
 			>
-				<source src="https://cdn.xai.games/v3-vanguard/vanguard-bg.mp4" type="video/mp4"/>
+				<source src="/public/videos/node-bg-4k.mp4" type="video/mp4"/>
 			</video>
 		</div>
 	)
