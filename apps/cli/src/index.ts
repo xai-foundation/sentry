@@ -17,8 +17,8 @@ import { toggleAssertionChecking } from './commands/toggle-assertion-checking.js
 import { addOperator } from './commands/operator-control/add-operator.js';
 import { removeOperator } from './commands/operator-control/remove-operator.js';
 import { listOperators } from './commands/operator-control/list-operators.js';
-import { mintNodeLicenses } from "./commands/mint-node-licenses.js";
-import { listNodeLicenses } from './commands/list-node-licenses.js';
+import { mintNodeLicenses } from "./commands/licenses/mint-node-licenses.js";
+import { listNodeLicenses } from './commands/licenses/list-node-licenses.js';
 import { setRollupAddress } from './commands/set-rollup-address.js';
 import { getListOfKycAdmins } from './commands/access-control/get-list-of-kyc-admins.js';
 import { addKycAdmin } from './commands/access-control/add-kyc-admin.js';
