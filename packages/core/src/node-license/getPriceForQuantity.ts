@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 import { NodeLicenseAbi } from '../abis/index.js';
 import { config } from '../config.js';
 import { getProvider } from '../utils/getProvider.js';
+import { listTiers } from './listTiers.js';
 
 /**
  * Pricing tier structure.
@@ -28,7 +29,7 @@ export async function getPriceForQuantity(quantity: number): Promise<{ price: bi
     const totalSupply = await nodeLicenseContract.totalSupply();
 
     // Get the pricing tiers
-    const tiers = await nodeLicenseContract.listTiers();
+    const tiers = await listTiers()
 
     // Initialize the price
     let price: bigint = 0n;
