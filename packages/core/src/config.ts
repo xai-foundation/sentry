@@ -2,9 +2,9 @@ export const config = {
   "arbitrumBlockExplorer": "https://arbiscan.io",
   "arbitrumGoerliBlockExplorer": "https://goerli.arbiscan.io",
   "defaultRpcUrl": "https://goerli-rollup.arbitrum.io/rpc",
-  "esXaiAddress": "0x21d28544774E1117A3Fec624b466B7D1C76Ffb1A",
-  "nodeLicenseAddress": "0x893301158723f3e5b737cbcbA21d3A5026F27690",
-  "refereeAddress": "0xb79CeFd698039cC60f4b47C1675976FE39eCa76E",
+  "esXaiAddress": "0x0016F6caaffa8392A9DA71B4ebf67bA0C88b79a8",
+  "nodeLicenseAddress": "0x4e1f11e6A8d39C5a53a3d5691b753b7d5856c1B0",
+  "refereeAddress": "0x4a9DD4AA5B703269E47d9B4b58470EBda4732fbA",
   "rollupAddress": "0x082742561295f6e1b43c4f5d1e2d52d7FfE082f1",
-  "xaiAddress": "0xFb171e41f41515E8da290aC59732BaaA14703d1E"
+  "xaiAddress": "0xEA1E6ca5555ce412118827C3b25ec4CFb0C09B8d"
 };
