@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {ChangeEvent, useEffect, useState} from "react";
 import {useOperator} from "./useOperator.tsx";
 import {useStorage} from "../storage";
 import {AiOutlineClose} from "react-icons/ai";
@@ -14,12 +14,13 @@ export function Operator() {
 		const fetchFilePath = async () => {
 			const path = await getFilePath();
 			setFilePath(path);
+			console.log(filePath);
 		};
 		void fetchFilePath();
-	}, [getFilePath]);
+	}, [filePath, getFilePath]);
 
 
-	const handleInputChange = (event: any) => {
+	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setInputValue(event.target.value);
 	};
 
@@ -74,7 +75,8 @@ export function Operator() {
 							type="text"
 							value={inputValue}
 							onChange={handleInputChange}
-							className="w-96 mt-2 p-2 border rounded" placeholder="Enter Operator Private Key (no functionality)"
+							className="w-96 mt-2 p-2 border rounded"
+							placeholder="Enter Operator Private Key (no functionality)"
 						/>
 						<button onClick={handleSetData} className=" w-96 mt-2 p-2 bg-blue-500 text-white rounded">
 							Set Data
@@ -107,7 +109,6 @@ export function Operator() {
 					</button>
 				</div>
 			</div>
-
 		</div>
 	)
 }
