@@ -1,6 +1,5 @@
 import {RiKey2Line} from "react-icons/ri";
 import {FiGift, FiGitCommit} from "react-icons/fi";
-import {Dispatch, SetStateAction} from "react";
 import {AiFillInfoCircle} from "react-icons/ai";
 
 const body = [
@@ -41,12 +40,7 @@ const sentryBody = [
 	},
 ]
 
-
-interface ConnectWalletProps {
-	setConnected: Dispatch<SetStateAction<boolean>>;
-}
-
-export function GetSentryNode({setConnected}: ConnectWalletProps) {
+export function GetSentryNode() {
 	function getBody() {
 		return body.map((item, i) => {
 			return (
@@ -92,12 +86,12 @@ export function GetSentryNode({setConnected}: ConnectWalletProps) {
 				<div className="flex items-center mt-4 gap-[3.375rem]">
 					<button
 						className={`w-[27.25rem] bg-[#F30919] flex justify-center items-center gap-2 text-lg text-white py-5 font-semibold mt-2`}
-						onClick={() => setConnected(true)}
+						// onClick={() => setConnected(true)}
 					>
 						<RiKey2Line className="w-5 h-5"/>
 						Purchase Key
 					</button>
-					<p className="text-xl text-[#F30919]">I already own a key</p>
+					<p className="text-xl text-[#F30919] cursor-pointer" onClick={() => alert("own key click")}>I already own a key</p>
 				</div>
 
 				<div className="flex flex-row items-center mt-[4.375rem] gap-[2rem]">
