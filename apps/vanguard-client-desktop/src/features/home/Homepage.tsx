@@ -1,18 +1,16 @@
 import {useState} from "react";
-import {ConnectWallet} from "./ConnectWallet.tsx";
 import {Home} from "./Home.tsx";
+import {GetSentryNode} from "./v2/GetSentryNode.tsx";
 
 export function Homepage() {
 	const [connected, setConnected] = useState<boolean>(false);
 
 	return (
-		<div className="w-full h-screen">
+		<div>
 			{connected ? (
 				<Home/>
 			) : (
-				<ConnectWallet
-					setConnected={setConnected}
-				/>
+				<GetSentryNode setConnected={setConnected}/>
 			)}
 		</div>
 	)
