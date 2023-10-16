@@ -4,6 +4,7 @@ import {FiGitCommit} from "react-icons/fi";
 import {RiKey2Line, RiTwitterXFill} from "react-icons/ri";
 import {AiOutlineCloudUpload} from "react-icons/ai";
 import {SiGitbook} from "react-icons/si";
+import {HiOutlineDesktopComputer} from "react-icons/hi";
 
 /**
  * Sidebar component
@@ -54,6 +55,16 @@ export function Sidebar() {
 						<RiTwitterXFill className="mr-2"/> X
 					</a>
 				</div>
+
+				<div>
+					<h2 className="text-gray-400 text-base mb-2 uppercase">Dev Links</h2>
+					<Link
+						to="/operator"
+						className="flex items-center mb-2 text-gray-600 hover:text-gray-400 cursor-pointer">
+						<HiOutlineDesktopComputer className="mr-2"/> Operator
+					</Link>
+				</div>
+
 			</div>
 		</div>
 	);
