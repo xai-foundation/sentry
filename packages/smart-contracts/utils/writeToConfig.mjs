@@ -9,16 +9,16 @@ let isConfigWritten = false;
  * @param newConfig - The new configuration object to be merged with the existing one.
  * @throws {Error} If the function is called more than once during the runtime.
  */
-export function writeToConfig(newConfig: object): void {
+export function writeToConfig(newConfig) {
     if (isConfigWritten) {
         throw new Error('writeToConfig can only be called once per runtime.');
     }
     
     // Merge the existing and new config objects
-    const updatedConfig = { ...config, ...newConfig } as Record<string, any>;
+    const updatedConfig = { ...config, ...newConfig };
 
     // Sort the keys of the updated config object in alphabetical order
-    const sortedConfig = Object.keys(updatedConfig).sort().reduce((result: Record<string, any>, key) => {
+    const sortedConfig = Object.keys(updatedConfig).sort().reduce((result, key) => {
         result[key] = updatedConfig[key];
         return result;
     }, {});
@@ -29,7 +29,7 @@ export function writeToConfig(newConfig: object): void {
     console.log("new config", updatedConfigStr);
 
     // Determine the path to the config file dynamically
-    const configFilePath = path.resolve(__dirname, '../../core/src/config.ts');
+    const configFilePath = path.resolve(process.cwd(), '../core/src/config.ts');
 
     // Write the updated config string to the config file
     fs.writeFileSync(configFilePath, updatedConfigStr, 'utf8');
