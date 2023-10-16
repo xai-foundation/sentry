@@ -1,10 +1,11 @@
-import { ethers } from "hardhat";
-import { extractAbi } from "../utils/exportAbi";
-import { safeVerify } from "../utils/safeVerify";
-import { writeToConfig } from "../utils/writeToConfig";
+import hardhat from "hardhat";
+import { extractAbi } from "../utils/exportAbi.mjs";
+import { safeVerify } from "../utils/safeVerify.mjs";
+import { writeToConfig } from "../utils/writeToConfig.mjs";
 import { config } from "@xai-vanguard-node/core";
 import { parse } from "csv/sync";
 import fs from "fs";
+const { ethers } = hardhat;
 
 const options = {
   admins: [
@@ -15,6 +16,7 @@ const options = {
 }
 
 async function main() {
+  console.log("starting");
 
   const deployer = (await ethers.getSigners())[0];
   const deployerAddress = await deployer.getAddress();

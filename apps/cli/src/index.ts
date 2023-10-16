@@ -17,8 +17,8 @@ import { toggleAssertionChecking } from './commands/toggle-assertion-checking.js
 import { addOperator } from './commands/operator-control/add-operator.js';
 import { removeOperator } from './commands/operator-control/remove-operator.js';
 import { listOperators } from './commands/operator-control/list-operators.js';
-import { mintNodeLicenses } from "./commands/mint-node-licenses.js";
-import { listNodeLicenses } from './commands/list-node-licenses.js';
+import { mintNodeLicenses } from "./commands/licenses/mint-node-licenses.js";
+import { listNodeLicenses } from './commands/licenses/list-node-licenses.js';
 import { setRollupAddress } from './commands/set-rollup-address.js';
 import { getListOfKycAdmins } from './commands/access-control/get-list-of-kyc-admins.js';
 import { addKycAdmin } from './commands/access-control/add-kyc-admin.js';
@@ -31,6 +31,9 @@ import { getBalancesForAddresses } from './commands/xai-token/get-balances.js';
 import { getAllContractAddresses } from './commands/get-contract-addresses.js';
 import { checkWhitelist } from './commands/xai-token/check-whitelist.js';
 import { changeWhitelistStatus } from './commands/xai-token/change-whitelist-status.js';
+import { getPriceForQuantity } from './commands/licenses/get-price-for-quantity.js';
+import { listTiers } from './commands/licenses/list-tiers.js';
+import { getTotalSupplyAndCap } from './commands/licenses/get-total-supply-and-cap-of-licenses.js';
 
 const cli = new Vorpal();
 
@@ -67,6 +70,9 @@ totalSupply(cli);
 getAllContractAddresses(cli);
 checkWhitelist(cli);
 changeWhitelistStatus(cli);
+getPriceForQuantity(cli);
+listTiers(cli);
+getTotalSupplyAndCap(cli);
 
 cli
     .delimiter('vanguard-node$')

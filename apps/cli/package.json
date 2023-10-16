@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.js",
-  "bin": "dist/index.js",
+  "bin": "build/vanguard-node-cli.js",
   "type": "module",
   "scripts": {
-    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
+    "clean": "rimraf dist && rimraf release && rimraf build && rimraf tsconfig.tsbuildinfo",
     "lint": "eslint . --ext .ts,.tsx",
-    "build": "tsc && pkg .",
+    "transpile": "esbuild --bundle --outfile=./build/vanguard-node-cli.js --platform=node dist/index.js",
+    "build": "tsc && npm run transpile && pkg ./build/vanguard-node-cli.js --targets=node18-linux-x64,node18-macos-x64,node18-win-x64 --out-path=release",
     "compile": "tsc",
     "start": "node dist/index.js"
   },
@@ -21,14 +22,7 @@
   },
   "devDependencies": {
     "@types/vorpal": "^1.12.2",
+    "esbuild": "^0.19.4",
     "pkg": "^5.8.1"
-  },
-  "pkg": {
-    "targets": [
-      "node18-linux-x64",
-      "node18-macos-x64",
-      "node18-win-x64"
-    ],
-    "outputPath": "release"
   }
 }

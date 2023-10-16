@@ -71,14 +71,17 @@ contract NodeLicense is ERC721Enumerable, AccessControl {
         uint256 totalSupply = _tokenIds.current();
         uint256 totalCost = 0;
         uint256 remaining = _amount;
+        uint256 tierSum = 0;
 
         for (uint256 i = 0; i < pricingTiers.length; i++) {
-            uint256 availableInThisTier = pricingTiers[i].quantity > totalSupply
-                ? pricingTiers[i].quantity - totalSupply
+            tierSum += pricingTiers[i].quantity;
+            uint256 availableInThisTier = tierSum > totalSupply
+                ? tierSum - totalSupply
                 : 0;
 
             if (remaining <= availableInThisTier) {
                 totalCost += remaining * pricingTiers[i].price;
+                remaining = 0;
                 break;
             } else {
                 totalCost += availableInThisTier * pricingTiers[i].price;
@@ -87,7 +90,7 @@ contract NodeLicense is ERC721Enumerable, AccessControl {
             }
         }
 
-        require(remaining == 0, "Not enough tokens available for sale");
+        require(remaining == 0, "Not enough licenses available for sale");
 
         return totalCost;
     }
