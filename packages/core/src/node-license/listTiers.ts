@@ -6,7 +6,7 @@ import { getProvider } from '../utils/getProvider.js';
 /**
  * Pricing tier structure.
  */
-interface Tier {
+export interface Tier {
     price: bigint;
     quantity: bigint;
 }

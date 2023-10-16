@@ -31,6 +31,8 @@ import { getBalancesForAddresses } from './commands/xai-token/get-balances.js';
 import { getAllContractAddresses } from './commands/get-contract-addresses.js';
 import { checkWhitelist } from './commands/xai-token/check-whitelist.js';
 import { changeWhitelistStatus } from './commands/xai-token/change-whitelist-status.js';
+import { getPriceForQuantity } from './commands/licenses/get-price-for-quantity.js';
+import { listTiers } from './commands/licenses/list-tiers.js';
 
 const cli = new Vorpal();
 
@@ -67,6 +69,8 @@ totalSupply(cli);
 getAllContractAddresses(cli);
 checkWhitelist(cli);
 changeWhitelistStatus(cli);
+getPriceForQuantity(cli);
+listTiers(cli);
 
 cli
     .delimiter('vanguard-node$')
