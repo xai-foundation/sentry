@@ -71,7 +71,8 @@ export function GetSentryNode() {
 	}
 
 	return (
-		<div className="max-w-[1920px] flex flex-row items-center justify-between px-[5.125rem] pt-[5.625rem] overflow-hidden">
+		<div
+			className="max-w-[1920px] flex flex-row items-center justify-between px-[5.125rem] pt-[5.625rem] overflow-hidden">
 			<div className="flex flex-col">
 				<h1 className="text-[40px] font-bold uppercase tracking-widest">
 					Get a Xai Sentry Node
@@ -86,15 +87,20 @@ export function GetSentryNode() {
 				<div className="flex items-center mt-4 gap-[3.375rem]">
 					<button
 						className={`w-[27.25rem] bg-[#F30919] flex justify-center items-center gap-2 text-lg text-white py-5 font-semibold mt-2`}
-						// onClick={() => setConnected(true)}
+						onClick={() => alert("Be patient")}
 					>
 						<RiKey2Line className="w-5 h-5"/>
 						Purchase Key
 					</button>
-					<p className="text-xl text-[#F30919] cursor-pointer" onClick={() => alert("own key click")}>I already own a key</p>
+					<p
+						className="text-xl text-[#F30919] cursor-pointer"
+						onClick={() => alert("Good for you.")}
+					>
+						I already own a key
+					</p>
 				</div>
 
-				<div className="flex flex-row items-center mt-[4.375rem] gap-[2rem]">
+				<div className="flex flex-row items-center mt-[4.375rem]">
 					{getBody()}
 				</div>
 			</div>
@@ -132,7 +138,7 @@ export function GetSentryNode() {
 				muted
 				playsInline
 			>
-				<source src="/public/videos/node-bg-4k.mp4" type="video/mp4"/>
+				<source src="/videos/node-bg-4k.mp4" type="video/mp4"/>
 			</video>
 		</div>
 	)
