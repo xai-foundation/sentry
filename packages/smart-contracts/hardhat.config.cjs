@@ -1,11 +1,9 @@
-import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
-import * as dotenv from "dotenv";
-import { config as coreConfig } from "../core/src/config";
+require("@nomicfoundation/hardhat-toolbox");
+const dotenv = require("dotenv");
 
 dotenv.config();
 
-const config: HardhatUserConfig = {
+const config = {
   defaultNetwork: "arbitrumGoerli",
   solidity: {
     version: "0.8.9",
@@ -24,16 +22,16 @@ const config: HardhatUserConfig = {
       gasPrice: 20000000000,
     },
     arbitrumGoerli: {
-      url: coreConfig.defaultRpcUrl,
+      url: "https://goerli-rollup.arbitrum.io/rpc",
       accounts: { mnemonic: process.env.MNEMONIC },
       gasPrice: 20000000000,
     },
   },
   etherscan: {
     apiKey: {
-      arbitrumGoerli: process.env.ARBISCAN_API_KEY as string
+      arbitrumGoerli: process.env.ARBISCAN_API_KEY
     }
   }
 };
 
-export default config;
+module.exports = config;

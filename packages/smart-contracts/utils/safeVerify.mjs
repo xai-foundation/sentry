@@ -1,19 +1,11 @@
-import { network, run } from "hardhat";
-import { BaseContract } from "ethers";
-
-/**
- * Interface for the arguments of safeVerify function.
- */
-interface SafeVerifyArgs {
-    contract: BaseContract;
-    constructorArgs?: any[];
-}
+import hardhat from "hardhat";
+const { network, run } = hardhat;
 
 /**
  * Verifies the contract on chain using Hardhat.
  * @param args - The arguments for the function.
  */
-export async function safeVerify({contract, constructorArgs = []}: SafeVerifyArgs): Promise<void> {
+export async function safeVerify({contract, constructorArgs = []}) {
 
     const deploymentTransaction = contract.deploymentTransaction();
 

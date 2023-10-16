@@ -6,7 +6,7 @@ import { getProvider } from '../utils/getProvider.js';
 /**
  * Pricing tier structure.
  */
-interface Tier {
+export interface Tier {
     price: bigint;
     quantity: bigint;
 }
@@ -28,7 +28,7 @@ export async function listTiers(callback?: (tier: Tier) => void): Promise<Tier[]
     const tiers: Tier[] = [];
 
     // Get the total number of pricing tiers
-    const totalTiers = await nodeLicenseContract.pricingTiers.length;
+    const totalTiers = await nodeLicenseContract.getPricingTiersLength();
 
     // Loop through the totalTiers and fetch each tier
     for (let i = 0; i < totalTiers; i++) {

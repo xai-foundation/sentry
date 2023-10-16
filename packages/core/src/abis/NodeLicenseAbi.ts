@@ -7,10 +7,6 @@ export const NodeLicenseAbi = [
       {
         "type": "address",
         "name": "_fundsReceiver"
-      },
-      {
-        "type": "uint256",
-        "name": "_maxSupply"
       }
     ]
   },
@@ -66,18 +62,6 @@ export const NodeLicenseAbi = [
       {
         "type": "address",
         "name": "newFundsReceiver",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "MaxSupplyChanged",
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "newMaxSupply",
         "indexed": false
       }
     ]
@@ -269,6 +253,49 @@ export const NodeLicenseAbi = [
   },
   {
     "type": "function",
+    "name": "getPricingTier",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "_index"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple",
+        "name": "",
+        "components": [
+          {
+            "type": "uint256",
+            "name": "price"
+          },
+          {
+            "type": "uint256",
+            "name": "quantity"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getPricingTiersLength",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "getRoleAdmin",
     "constant": true,
     "stateMutability": "view",
@@ -431,29 +458,6 @@ export const NodeLicenseAbi = [
   },
   {
     "type": "function",
-    "name": "pricingTiers",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": "price"
-      },
-      {
-        "type": "uint256",
-        "name": "quantity"
-      }
-    ]
-  },
-  {
-    "type": "function",
     "name": "renounceRole",
     "constant": false,
     "payable": false,
@@ -558,19 +562,6 @@ export const NodeLicenseAbi = [
       {
         "type": "address",
         "name": "_newFundsReceiver"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "setMaxSupply",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "_newMaxSupply"
       }
     ],
     "outputs": []

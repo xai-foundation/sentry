@@ -2,9 +2,9 @@
   "name": "@xai-vanguard-node/smart-contracts",
   "version": "1.0.0",
   "license": "UNLICENSED",
+  "type": "module",
   "scripts": {
-    "lint": "eslint . --ext .ts,.tsx",
-    "deploy": "hardhat run scripts/deploy.ts"
+    "deploy": "hardhat run scripts/deploy.mjs"
   },
   "dependencies": {
     "@openzeppelin/contracts": "4.9.3",

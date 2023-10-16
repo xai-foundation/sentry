@@ -12,5 +12,6 @@ yarn-error.log*
 # Generated Outputs
 dist
 build
+**/tsconfig.tsbuildinfo
 
 **/*.DS_Store
