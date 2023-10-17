@@ -10,22 +10,21 @@ import { config } from '../config.js';
  */
 export async function mintNodeLicenses(
     amount: number,
-    signer: ethers.Signer
+    signer: ethers.Signer,
+    referralAddress?: string,
 ): Promise<{ mintedNftIds: bigint[], txReceipt: ethers.TransactionReceipt, pricePaid: bigint }> {
+
+    // check to see if the referralAddress is equal to the signer.
+    const signerAddress = await signer.getAddress();
+    if (referralAddress === signerAddress) {
+        throw new Error('Referral address cannot be the same as the signer address');
+    }
 
     // Create an instance of the NodeLicense contract
     const nodeLicenseContract = new ethers.Contract(config.nodeLicenseAddress, NodeLicenseAbi, signer);
 
-    // Get the maximum mint amount
-    const maxMintAmount = await nodeLicenseContract.MAX_MINT_AMOUNT();
-
-    // Check if the amount is less than the maximum mint amount
-    if (amount > maxMintAmount) {
-        throw new Error(`Amount exceeds the maximum mint amount of ${maxMintAmount}`);
-    }
-
     // Get the price for minting the specified amount of tokens
-    const price = await nodeLicenseContract.price(amount);
+    const price = await nodeLicenseContract.price(amount, referralAddress ? referralAddress : ethers.ZeroAddress);
 
     // Get the signer's provider
     const provider = signer.provider;
@@ -47,7 +46,8 @@ export async function mintNodeLicenses(
     }
 
     // Mint the tokens, passing the price as the msg.value
-    const mintTx = await nodeLicenseContract.mint(amount, { value: price },);
+    const mintTx = await nodeLicenseContract.mint(amount, referralAddress ? referralAddress : ethers.ZeroAddress, { value: price });
+
     // Wait for the transaction to be mined and get the receipt
     const txReceipt = await mintTx.wait();
 
