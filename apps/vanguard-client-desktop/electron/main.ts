@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, shell, safeStorage } from 'electron'
-import fs from "fs";
-import path from "path";
+import fs from 'fs';
+import path from 'path';
+import express from 'express';
 
 // The built directory structure
 //
@@ -104,6 +105,14 @@ app.on('activate', () => {
 	if (BrowserWindow.getAllWindows().length === 0) {
 		createWindow()
 	}
+})
+
+// When the app is ready, we are going to start a local web server to deploy the web-connect project
+app.on('ready', () => {
+	const server = express();
+	const publicWebPath = path.join(process.env.VITE_PUBLIC, '/web');
+	server.use(express.static(publicWebPath));
+	server.listen(7555);
 })
 
 app.whenReady().then(createWindow)

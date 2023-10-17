@@ -5,14 +5,16 @@
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
+    "moduleResolution": "bundler",
     "skipLibCheck": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "declarationMap": true,
 
     /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
     "jsx": "react-jsx",
 
     /* Linting */
@@ -24,17 +26,13 @@
     "composite": true,
 
     "paths": {
-      "@xai-vanguard-node/core": ["../../packages/core"],
-      "@xai-vanguard-node/ui": ["../../packages/ui"]
+      "@xai-vanguard-node/core": ["../core"]
     }
   },
-  "include": ["src", "electron"],
+  "include": ["src"],
   "references": [
     {
-      "path": "./tsconfig.node.json"
-    },
-    {
-      "path": "../../packages/core"
-    },
+      "path": "../core"
+    }
   ]
 }
