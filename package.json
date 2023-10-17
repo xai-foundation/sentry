@@ -6,9 +6,10 @@
   "scripts": {
     "lint": "pnpm recursive run lint",
     "clean": "pnpm recursive run clean",
-    "build": "pnpm recursive run build",
+    "build": "pnpm recursive --filter '!@xai-vanguard-node/vanguard-client-desktop' run build && pnpm -r -filter  @xai-vanguard-node/vanguard-client-desktop run build",
     "cli": "pnpm -r -filter @xai-vanguard-node/core run build && pnpm -r -filter @xai-vanguard-node/vanguard-node-cli run compile && pnpm -r -filter @xai-vanguard-node/vanguard-node-cli run start",
-    "desktop": "pnpm -r -filter @xai-vanguard-node/core run build && pnpm -r -filter @xai-vanguard-node/vanguard-client-desktop run dev",
+    "desktop": "pnpm -r -filter @xai-vanguard-node/web-connect run build && pnpm -r -filter @xai-vanguard-node/core run build && pnpm -r -filter @xai-vanguard-node/vanguard-client-desktop run dev",
+    "web": "pnpm -r -filter @xai-vanguard-node/core run build && pnpm -r -filter @xai-vanguard-node/web-connect run dev",
     "deploy-smart-contracts": "pnpm -r -filter @xai-vanguard-node/core run build && pnpm -r -filter @xai-vanguard-node/smart-contracts run deploy"
   },
   "keywords": [],
@@ -22,6 +23,8 @@
     "@typescript-eslint/parser": "^6.6.0",
     "eslint": "^8.48.0",
     "rimraf": "5.0.1",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "copyfiles": "2.4.1",
+    "concurrently": "8.2.1"
   }
 }

@@ -1,6 +1,7 @@
 import {RiKey2Line} from "react-icons/ri";
 import {FiGift, FiGitCommit} from "react-icons/fi";
 import {Dispatch, SetStateAction} from "react";
+import {TestInput} from "@xai-vanguard-node/ui";
 
 const body = [
 	{
@@ -56,6 +57,7 @@ export function ConnectWallet({setConnected}: ConnectWalletProps) {
 					Start your Xai Vanguard Node by connecting your wallet, and begin participating in network
 					challenges
 				</p>
+				<TestInput/>
 				<div className="flex flex-col justify-center items-center mt-8 gap-2">
 					<button
 						className={`w-full bg-[#F30919] text-white p-3 uppercase font-semibold mt-2`}
