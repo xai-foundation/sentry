@@ -64,6 +64,9 @@ importers:
       '@xai-vanguard-node/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@xai-vanguard-node/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       crypto-js:
         specifier: 4.1.1
         version: 4.1.1
@@ -149,6 +152,9 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
+      react-router-dom:
+        specifier: ^6.16.0
+        version: 6.16.0(react-dom@18.2.0)(react@18.2.0)
       tailwindcss:
         specifier: ^3.3.3
         version: 3.3.3

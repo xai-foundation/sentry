@@ -23,12 +23,8 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@xai-vanguard-node/core": [
-        "../../packages/core"
-      ],
-      "@xai-vanguard-node/ui": [
-        "../../packages/ui"
-      ]
+      "@xai-vanguard-node/core": ["../../packages/core"],
+      "@xai-vanguard-node/ui": ["../../packages/ui/src"]
     }
   },
   "include": [

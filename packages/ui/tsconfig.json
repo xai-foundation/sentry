@@ -7,7 +7,6 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "skipLibCheck": true,
-    "outDir": "./dist",
     "rootDir": "./src",
     "declaration": true,
     "declarationMap": true,

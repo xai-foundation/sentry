@@ -14,6 +14,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    "rootDir": "",
 
     /* Linting */
     "strict": true,
@@ -25,7 +26,7 @@
 
     "paths": {
       "@xai-vanguard-node/core": ["../../packages/core"],
-      "@xai-vanguard-node/ui": ["../../packages/ui"]
+      "@xai-vanguard-node/ui": ["../../packages/ui/src"]
     }
   },
   "include": ["src", "electron"],
@@ -35,6 +36,9 @@
     },
     {
       "path": "../../packages/core"
+    },
+    {
+      "path": "../../packages/ui"
     },
   ]
 }
