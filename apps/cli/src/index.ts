@@ -35,6 +35,8 @@ import { getPriceForQuantity } from './commands/licenses/get-price-for-quantity.
 import { listTiers } from './commands/licenses/list-tiers.js';
 import { getTotalSupplyAndCap } from './commands/licenses/get-total-supply-and-cap-of-licenses.js';
 import { getReferralRewards } from './commands/licenses/get-referral-rewards.js';
+import { getReferralDiscountAndRewardPercentages } from './commands/licenses/get-referral-discount-and-reward-percentages.js';
+import { setReferralDiscountAndRewardPercentages } from './commands/licenses/set-referral-discount-and-reward-percentages.js';
 
 const cli = new Vorpal();
 
@@ -75,6 +77,8 @@ getPriceForQuantity(cli);
 listTiers(cli);
 getTotalSupplyAndCap(cli);
 getReferralRewards(cli);
+getReferralDiscountAndRewardPercentages(cli);
+setReferralDiscountAndRewardPercentages(cli);
 
 cli
     .delimiter('vanguard-node$')
