@@ -10,8 +10,6 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-dist-electron
-release
 *.local
 
 # Editor directories and files
@@ -24,6 +22,3 @@ release
 *.njsproj
 *.sln
 *.sw?
-
-# Remove the web directory in public
-public/web

@@ -24,12 +24,19 @@ contract NodeLicense is ERC721Enumerable, AccessControl {
     // Define the pricing table
     Tier[] private pricingTiers;
 
-    event FundsReceiverChanged(address newFundsReceiver);
+    uint256 public referralDiscountPercentage;
+    uint256 public referralRewardPercentage;
+
+    event ReferralReward(address indexed buyer, address indexed referralAddress, uint256 amount);
 
     constructor(
-        address payable _fundsReceiver
+        address payable _fundsReceiver,
+        uint256 _referralDiscountPercentage,
+        uint256 _referralRewardPercentage
     ) ERC721("Vanguard Node License", "VNL") {
         fundsReceiver = _fundsReceiver;
+        referralDiscountPercentage = _referralDiscountPercentage;
+        referralRewardPercentage = _referralRewardPercentage;
         _setupRole(ADMIN_ROLE, msg.sender);
     }
 
@@ -44,13 +51,21 @@ contract NodeLicense is ERC721Enumerable, AccessControl {
     /**
      * @notice Mints new NodeLicense tokens.
      * @param _amount The amount of tokens to mint.
+     * @param _referralAddress The referral address.
      */
-    function mint(uint256 _amount) public payable {
+    function mint(uint256 _amount, address _referralAddress) public payable {
         require(
             _tokenIds.current() + _amount <= maxSupply,
             "Exceeds maxSupply"
         );
-        require(msg.value >= price(_amount), "Ether value sent is not correct");
+        require(
+            _referralAddress != msg.sender,
+            "Referral address cannot be the sender's address"
+        );
+
+        uint256 finalPrice = price(_amount, _referralAddress);
+
+        require(msg.value >= finalPrice, "Ether value sent is not correct");
 
         for (uint256 i = 0; i < _amount; i++) {
             _tokenIds.increment();
@@ -58,16 +73,25 @@ contract NodeLicense is ERC721Enumerable, AccessControl {
             _mint(msg.sender, newItemId);
         }
 
+        // Calculate the referral reward
+        uint256 referralReward = 0;
+        if (_referralAddress != address(0)) {
+            referralReward = finalPrice * referralRewardPercentage / 100;
+            payable(_referralAddress).transfer(referralReward);
+            emit ReferralReward(msg.sender, _referralAddress, referralReward);
+        }
+
         // Transfer the funds to the fundsReceiver
-        fundsReceiver.transfer(msg.value);
+        fundsReceiver.transfer(msg.value - referralReward);
     }
 
     /**
      * @notice Calculates the price for minting NodeLicense tokens.
      * @param _amount The amount of tokens to mint.
+     * @param _referralAddress The referral address.
      * @return The price in wei.
      */
-    function price(uint256 _amount) public view returns (uint256) {
+    function price(uint256 _amount, address _referralAddress) public view returns (uint256) {
         uint256 totalSupply = _tokenIds.current();
         uint256 totalCost = 0;
         uint256 remaining = _amount;
@@ -92,6 +116,11 @@ contract NodeLicense is ERC721Enumerable, AccessControl {
 
         require(remaining == 0, "Not enough licenses available for sale");
 
+        // Apply discount if referral address is not the sender
+        if (_referralAddress != address(0)) {
+            totalCost = totalCost * (100 - referralDiscountPercentage) / 100;
+        }
+
         return totalCost;
     }
 
@@ -103,7 +132,19 @@ contract NodeLicense is ERC721Enumerable, AccessControl {
         address payable _newFundsReceiver
     ) external onlyRole(ADMIN_ROLE) {
         fundsReceiver = _newFundsReceiver;
-        emit FundsReceiverChanged(_newFundsReceiver);
+    }
+
+    /**
+     * @notice Sets the referral discount and reward percentages.
+     * @param _referralDiscountPercentage The referral discount percentage.
+     * @param _referralRewardPercentage The referral reward percentage.
+     */
+    function setReferralPercentages(
+        uint256 _referralDiscountPercentage,
+        uint256 _referralRewardPercentage
+    ) external onlyRole(ADMIN_ROLE) {
+        referralDiscountPercentage = _referralDiscountPercentage;
+        referralRewardPercentage = _referralRewardPercentage;
     }
 
     /**
@@ -152,9 +193,9 @@ contract NodeLicense is ERC721Enumerable, AccessControl {
         address ownerAddress = ownerOf(_tokenId);
         string memory svg = string(
             abi.encodePacked(
-                "<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><text x='10' y='50' font-size='20'>",
+                "<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' style='background-color:black;'><text x='10' y='50' font-size='20' fill='white'>",
                 _tokenId.toString(),
-                "</text><text x='10' y='90' font-size='15' textLength='100' lengthAdjust='spacingAndGlyphs'>",
+                "</text><text x='10' y='90' font-size='15' textLength='100' lengthAdjust='spacingAndGlyphs' fill='white'>",
                 Strings.toHexString(uint160(ownerAddress)),
                 "</text></svg>"
             )

@@ -12,12 +12,12 @@ const options = {
     "0xc32493515E3537E55a323B3F0aF1AC4ED0E71BF4", // Christopher
     "0xd942EBC67d2C91Eb1a0757345D55A48F953D585b" // Avo
   ],
-  fundsReceiver: "0xc32493515E3537E55a323B3F0aF1AC4ED0E71BF4" // Christopher
+  fundsReceiver: "0xc32493515E3537E55a323B3F0aF1AC4ED0E71BF4", // Christopher
+  referralDiscountPercentage: 10,
+  referralRewardPercentage: 2
 }
 
 async function main() {
-  console.log("starting");
-
   const deployer = (await ethers.getSigners())[0];
   const deployerAddress = await deployer.getAddress();
 
@@ -77,7 +77,7 @@ async function main() {
     await esXai.grantRole(esXaiAdminRole, address);
     console.log(`Granted admin role to ${address} on esXai`);
   }
-  
+
   // Add minter role to the referee
   const minterRole = await esXai.MINTER_ROLE();
   await esXai.grantRole(minterRole, refereeAddress);
@@ -85,8 +85,8 @@ async function main() {
 
   console.log("Deploying NodeLicense...");
   const NodeLicense = await ethers.getContractFactory("NodeLicense");
-  const nodeLicense = await NodeLicense.deploy(options.fundsReceiver);
-  await nodeLicense.deploymentTransaction();
+  const nodeLicense = await NodeLicense.deploy(options.fundsReceiver, options.referralDiscountPercentage, options.referralRewardPercentage);
+  const { blockNumber: nodeLicenseDeployedBlockNumber } = await nodeLicense.deploymentTransaction();
   const nodeLicenseAddress = await nodeLicense.getAddress();
   console.log("NodeLicense deployed to:", nodeLicenseAddress);
 
@@ -99,7 +99,13 @@ async function main() {
   console.log("NodeLicense Abi exported");
 
   // Update the referee, NodeLicense, esXai, and xai contract addresses in the config
-  writeToConfig({ refereeAddress, nodeLicenseAddress, esXaiAddress, xaiAddress });
+  writeToConfig({
+    refereeAddress,
+    nodeLicenseAddress,
+    esXaiAddress,
+    xaiAddress,
+    nodeLicenseDeployedBlockNumber,
+  });
   console.log("Referee, NodeLicense, esXai, and xai contract addresses updated in the config");
 
   // Grant the deployer the minter role on Xai and esXai
@@ -112,7 +118,7 @@ async function main() {
   console.log(`Granted minter role to ${deployerAddress} on esXai`);
 
   // Read the csv from initialXaiMints.csv, and mint the corresponding amounts to each address in the CSV
-  const initialMints = parse(fs.readFileSync('initialXaiMints.csv'), {columns: true});
+  const initialMints = parse(fs.readFileSync('initialXaiMints.csv'), { columns: true });
   for (const mint of initialMints) {
     await xai.mint(mint.address, mint.xai);
     console.log(`Minted ${mint.xai} Xai to ${mint.address}`);
@@ -127,7 +133,7 @@ async function main() {
   console.log(`Renounced minter role of ${deployerAddress} on esXai`);
 
   // Read the csv from tierUpload.csv, and add the pricing tiers to NodeLicense
-  const tiers = parse(fs.readFileSync('tierUpload.csv'), {columns: true});
+  const tiers = parse(fs.readFileSync('tierUpload.csv'), { columns: true });
   for (const tier of tiers) {
     await nodeLicense.setOrAddPricingTier(tier.tierIndex, ethers.parseEther(tier.unitCostinEth.toString()), tier.quantityBeforeNextTier);
     console.log(`Added tier ${tier.tierIndex} with unit cost ${tier.unitCostinEth} and quantity ${tier.quantityBeforeNextTier} to NodeLicense`);
@@ -146,7 +152,7 @@ async function main() {
     safeVerify({ contract: xai }),
     safeVerify({ contract: referee }),
     safeVerify({ contract: esXai, constructorArgs: [xaiAddress] }),
-    safeVerify({ contract: nodeLicense, constructorArgs: [options.fundsReceiver] }),
+    safeVerify({ contract: nodeLicense, constructorArgs: [options.fundsReceiver, options.referralDiscountPercentage, options.referralRewardPercentage] }),
   ]);
   console.log("Contracts verified.");
 }
