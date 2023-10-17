@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "clean": "rimraf dist && rimraf dist-electron && rimraf release && rimraf tsconfig.tsbuildinfo",
-    "build": "tsc && vite build && electron-builder",
+    "build": "tsc --build && vite build && electron-builder",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
