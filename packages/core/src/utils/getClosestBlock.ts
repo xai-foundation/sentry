@@ -5,7 +5,7 @@ import { ethers } from "ethers";
  * This function is used to get the closest block to a given timestamp.
  * It uses a binary search algorithm to traverse the block numbers and find the one we want.
  * The function was adapted from the article at https://medium.com/@hanyi.lol/how-to-get-a-block-number-by-timestamp-fefde4c69162
- * @param {number} timestamp - The timestamp to find the closest block for.
+ * @param {number} timestamp - The timestamp to find the closest block for. This should be in seconds
  * @returns {Promise<{closestBlock: ethers.providers.Block, previousBlock: ethers.providers.Block, nextBlock: ethers.providers.Block}>} - The closest block and its adjacent blocks.
  */
 export default async function getClosestBlock(timestamp: number): Promise<{closestBlock: ethers.Block, previousBlock: ethers.Block, nextBlock: ethers.Block}> {

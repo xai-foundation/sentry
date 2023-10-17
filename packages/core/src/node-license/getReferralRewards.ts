@@ -3,6 +3,8 @@ import { NodeLicenseAbi } from '../abis/index.js';
 import { config } from '../config.js';
 import { getProvider } from '../utils/getProvider.js';
 import getClosestBlock from '../utils/getClosestBlock.js';
+import { BlockTag } from 'ethers';
+import { findEventTopic } from '../utils/findEventTopic.js';
 
 /**
  * Structure for referral rewards.
@@ -26,7 +28,7 @@ export interface ReferralReward {
  * @param callback - Optional callback function that is called whenever a new set of logs is fetched.
  * @returns An object of addresses to their referral rewards.
  */
-export async function getReferralRewards(startTimestamp?: number, endTimestamp?: number, buyerAddress?: string, referralAddress?: string, callback?: (logs: ethers.Log[]) => void): Promise<{ [key: string]: ReferralReward }> {
+export async function getReferralRewards(fromTimestamp?: number, toTimestamp?: number, buyerAddress?: string, referralAddress?: string, callback?: (logs?: ethers.Log[], from?: BlockTag, to?: BlockTag) => void): Promise<{ [key: string]: ReferralReward }> {
 
     // Get the provider
     const provider = getProvider();
@@ -37,15 +39,15 @@ export async function getReferralRewards(startTimestamp?: number, endTimestamp?:
     // Initialize an object to store the referral rewards
     const rewards: { [key: string]: ReferralReward } = {};
 
-    // Get the filter for ReferralReward events
-    const filter = nodeLicenseContract.filters.ReferralReward(buyerAddress || null, referralAddress || null, null);
-
+    // Get the topic id for ReferralReward events
+    const referalRewardTopic = findEventTopic(NodeLicenseAbi, "ReferralReward");
+    
     // Define the block range for fetching logs
     const blockRange = 1000;
 
     // Get the start and end blocks
-    const startBlock = startTimestamp ? (await getClosestBlock(startTimestamp)).closestBlock.number : config.nodeLicenseDeployedBlockNumber;
-    const endBlock = endTimestamp ? (await getClosestBlock(endTimestamp)).closestBlock.number : await provider.getBlockNumber();
+    const startBlock = fromTimestamp ? (await getClosestBlock(fromTimestamp)).closestBlock.number : config.nodeLicenseDeployedBlockNumber;
+    const endBlock = toTimestamp ? (await getClosestBlock(toTimestamp)).closestBlock.number : await provider.getBlockNumber();
 
     // Initialize an array to store the logs
     let logs: ethers.Log[] = [];
@@ -53,7 +55,7 @@ export async function getReferralRewards(startTimestamp?: number, endTimestamp?:
     // Fetch the logs in batches of 1000 blocks
     for (let i = startBlock; i <= endBlock; i += blockRange) {
         const blockFilter: Filter | FilterByBlockHash = {
-            ...filter,
+            topics: [referalRewardTopic],
             fromBlock: i,
             toBlock: Math.min(i + blockRange - 1, endBlock),
             address: config.nodeLicenseAddress
@@ -67,7 +69,7 @@ export async function getReferralRewards(startTimestamp?: number, endTimestamp?:
 
         // Call the callback function if it is provided
         if (callback) {
-            callback(batchLogs);
+            callback(batchLogs, blockFilter.fromBlock, blockFilter.toBlock);
         }
     }
 

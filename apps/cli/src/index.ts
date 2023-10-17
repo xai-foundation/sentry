@@ -34,6 +34,7 @@ import { changeWhitelistStatus } from './commands/xai-token/change-whitelist-sta
 import { getPriceForQuantity } from './commands/licenses/get-price-for-quantity.js';
 import { listTiers } from './commands/licenses/list-tiers.js';
 import { getTotalSupplyAndCap } from './commands/licenses/get-total-supply-and-cap-of-licenses.js';
+import { getReferralRewards } from './commands/licenses/get-referral-rewards.js';
 
 const cli = new Vorpal();
 
@@ -73,6 +74,7 @@ changeWhitelistStatus(cli);
 getPriceForQuantity(cli);
 listTiers(cli);
 getTotalSupplyAndCap(cli);
+getReferralRewards(cli);
 
 cli
     .delimiter('vanguard-node$')

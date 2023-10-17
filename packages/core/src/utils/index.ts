@@ -5,3 +5,4 @@ export * from "./getSignerFromPrivateKey.js";
 export * from "./getProvider.js";
 export * from "./getAssertion.js";
 export * from "./getClosestBlock.js";
+export * from "./findEventTopic.js";
