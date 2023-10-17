@@ -31,7 +31,7 @@ export function Sidebar() {
 					<h2 className="text-gray-400 text-[12px] mb-2 uppercase">Sentry Node</h2>
 
 					<Link
-						to="/licenses"
+						to="/keys"
 						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
 					>
 						<RiKey2Line size={15}/> Keys

@@ -17,7 +17,7 @@ export function XaiNumberInput({amount, setAmount}: XaiNumberInput) {
 	return (
 		<div className="relative">
 			<span
-				onClick={() => amount > 0 ? setAmount(amount - 1) : null}
+				onClick={() => amount > 1 ? setAmount(amount - 1) : null}
 				className="absolute top-4 left-4 cursor-pointer select-none">
 				<AiOutlineMinus/>
 			</span>

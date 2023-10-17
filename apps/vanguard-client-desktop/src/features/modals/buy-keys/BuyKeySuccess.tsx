@@ -1,13 +1,13 @@
 import {FaCircleCheck} from "react-icons/fa6";
 import {Dispatch, SetStateAction} from "react";
 
-interface BuyLicenseSuccessProps {
+interface BuyKeySuccessProps {
 	number: number;
 	setNumber: Dispatch<SetStateAction<number>>;
 	setShowModal: Dispatch<SetStateAction<boolean>>;
 }
 
-export function BuyLicenseSuccess({number, setNumber, setShowModal}: BuyLicenseSuccessProps) {
+export function BuyKeySuccess({number, setNumber, setShowModal}: BuyKeySuccessProps) {
 	return (
 		<div className="w-auto h-auto">
 			<div className="absolute top-0 bottom-0 left-0 right-0 m-auto flex flex-col justify-center items-center gap-4">
