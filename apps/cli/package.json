@@ -17,7 +17,7 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
-    "@xai-vanguard-node/core": "^1.0.0",
+    "@xai-vanguard-node/core": "workspace:*",
     "cli-table3": "^0.6.3",
     "date-prompt": "^1.0.0",
     "vorpal": "^1.12.0"
