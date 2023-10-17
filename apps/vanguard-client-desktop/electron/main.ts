@@ -65,10 +65,10 @@ ipcMain.handle('buffer-from', (_, str, encoding) => {
 
 function createWindow() {
 	win = new BrowserWindow({
-		width: 1440,
-		height: 900,
-		minWidth: 1440,
-		minHeight: 900,
+		width: 1650,
+		height: 960,
+		minWidth: 1650,
+		minHeight: 960,
 		icon: path.join(process.env.VITE_PUBLIC, 'xai-logo.svg'),
 		webPreferences: {
 			preload: path.join(__dirname, 'preload.js'),

@@ -6,7 +6,7 @@ const body = [
 	{
 		icon: <RiKey2Line className="w-8 h-8 text-[#FF5E69] mb-2"/>,
 		header: "Purchase keys",
-		body: "The more keys you own, the more rewards you will earn",
+		body: "The more keys you own, the more esXAI you will earn",
 	},
 	{
 		icon: <FiGitCommit className="w-8 h-8 text-[#FF5E69] mb-2"/>,
@@ -15,8 +15,8 @@ const body = [
 	},
 	{
 		icon: <FiGift className="w-8 h-8 text-[#FF5E69] mb-2"/>,
-		header: "Earn network rewards",
-		body: "Over time you will earn rewards from network challenges",
+		header: "Earn esXAI",
+		body: "Over time you will earn esXAI from network challenges",
 	},
 ]
 
@@ -46,7 +46,7 @@ export function GetSentryNode() {
 			return (
 				<div
 					key={`connect-wallet-content-${i}`}
-					className="w-72 flex flex-col"
+					className="w-[272px] flex flex-col"
 				>
 					{item.icon}
 					<p className="text-lg font-semibold mt-2">{item.header}</p>
@@ -82,9 +82,9 @@ export function GetSentryNode() {
 					Get started
 				</span>
 				<span className="text-lg text-[#525252]">
-					Purchase a key to begin earning rewards
+					Purchase a key to begin earning esXAI
 				</span>
-				<div className="flex items-center mt-4 gap-[3.375rem]">
+				<div className="flex items-center mt-4 gap-[3rem]">
 					<button
 						className={`w-[27.25rem] bg-[#F30919] flex justify-center items-center gap-2 text-lg text-white py-5 font-semibold mt-2`}
 						onClick={() => alert("Be patient")}
@@ -93,7 +93,7 @@ export function GetSentryNode() {
 						Purchase Key
 					</button>
 					<p
-						className="text-xl text-[#F30919] cursor-pointer"
+						className="text-xl text-[#F30919] cursor-pointer font-semibold"
 						onClick={() => alert("Good for you.")}
 					>
 						I already own a key
@@ -107,20 +107,20 @@ export function GetSentryNode() {
 
 			<div>
 				<div className="w-[436px] p-[2rem] bg-[#F5F5F5]">
-					<span className="flex items-center font-semibold gap-2 mb-4">
-						<AiFillInfoCircle size={18} className="text-lg text-[#A3A3A3]"/>
+					<p className="flex items-center font-semibold gap-2 mb-4 text-lg">
+						<AiFillInfoCircle size={18} className="text-[#A3A3A3]"/>
 						What is a Sentry Node?
-					</span>
+					</p>
 
 					<div className="flex flex-col items-center gap-[24px]">
 						{getSentryNodeBody()}
 					</div>
 
-					<p className="mt-[14px] text-[15px] text-[#525252]">
+					<p className="mt-[14px] text-[14px] text-[#525252]">
 						Want to learn more about Sentry Node technical specifications?
 
 						<a
-							onClick={() => window.electron.openExternal('https://www.youtube.com/watch?v=dQw4w9WgXcQ')}
+							onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/xai-protocol/sentry-nodes-explained")}
 							className="text-[#F30919] ml-1 cursor-pointer"
 						>
 							Learn more

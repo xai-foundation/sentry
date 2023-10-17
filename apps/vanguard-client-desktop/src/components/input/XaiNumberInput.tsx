@@ -25,7 +25,7 @@ export function XaiNumberInput({amount, setAmount}: XaiNumberInput) {
 			<input
 				type="text"
 				value={amount || 0}
-				className="w-full h-12 border border-gray-200 text-center hover:cursor-text hover:bg-white hover:border-gray-300 hover:outline-none"
+				className="w-full h-12 border border-[#A3A3A3] text-center hover:cursor-text hover:bg-white hover:border-gray-300 hover:outline-none"
 				onChange={handleInputChange}
 			/>
 
