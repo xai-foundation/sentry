@@ -66,9 +66,9 @@ ipcMain.handle('buffer-from', (_, str, encoding) => {
 
 function createWindow() {
 	win = new BrowserWindow({
-		width: 1440,
-		height: 900,
-		minWidth: 1440,
+		width: 1920,
+		height: 1080,
+		minWidth: 1024,
 		minHeight: 900,
 		icon: path.join(process.env.VITE_PUBLIC, 'xai-logo.svg'),
 		webPreferences: {
