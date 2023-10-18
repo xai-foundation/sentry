@@ -27,3 +27,4 @@ release
 
 # Remove the web directory in public
 public/web
+tsconfig.node.tsbuildinfo
