@@ -17,7 +17,7 @@ export function XaiNumberInput({amount, setAmount}: XaiNumberInput) {
 	return (
 		<div className="relative">
 			<span
-				onClick={() => amount > 0 ? setAmount(amount - 1) : null}
+				onClick={() => amount > 1 ? setAmount(amount - 1) : null}
 				className="absolute top-4 left-4 cursor-pointer select-none">
 				<AiOutlineMinus/>
 			</span>
@@ -25,7 +25,7 @@ export function XaiNumberInput({amount, setAmount}: XaiNumberInput) {
 			<input
 				type="text"
 				value={amount || 0}
-				className="w-full h-12 border border-gray-200 text-center hover:cursor-text hover:bg-white hover:border-gray-300 hover:outline-none"
+				className="w-full h-12 border border-[#A3A3A3] text-center hover:cursor-text hover:bg-white hover:border-gray-300 hover:outline-none"
 				onChange={handleInputChange}
 			/>
 

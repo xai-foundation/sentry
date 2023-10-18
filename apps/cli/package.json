@@ -9,7 +9,7 @@
     "clean": "rimraf dist && rimraf release && rimraf build && rimraf tsconfig.tsbuildinfo",
     "lint": "eslint . --ext .ts,.tsx",
     "transpile": "esbuild --bundle --outfile=./build/vanguard-node-cli.js --platform=node dist/index.js",
-    "build": "tsc && npm run transpile && pkg ./build/vanguard-node-cli.js --targets=node18-linux-x64,node18-macos-x64,node18-win-x64 --out-path=release",
+    "build": "npm run compile && npm run transpile && pkg ./build/vanguard-node-cli.js --targets=node18-linux-x64,node18-macos-x64,node18-win-x64 --out-path=release",
     "compile": "tsc",
     "start": "node dist/index.js"
   },
@@ -17,7 +17,7 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
-    "@xai-vanguard-node/core": "^1.0.0",
+    "@xai-vanguard-node/core": "workspace:*",
     "cli-table3": "^0.6.3",
     "date-prompt": "^1.0.0",
     "vorpal": "^1.12.0"
