@@ -3,6 +3,7 @@ import {FiGift, FiGitCommit} from "react-icons/fi";
 import {AiFillInfoCircle} from "react-icons/ai";
 import {ViewKeysModal} from "../modals/view-keys/ViewKeysModal.tsx";
 import {useState} from "react";
+import {ConnectWalletModal} from "../modals/connect-wallet/ConnectWalletModal.tsx";
 
 const body = [
 	{
@@ -44,6 +45,7 @@ const sentryBody = [
 
 export function GetSentryNode() {
 	const [showModal, setShowModal] = useState<boolean>(false);
+	const [showConnectedModal, setShowConnectedModal] = useState<boolean>(false);
 
 	function getBody() {
 		return body.map((item, i) => {
@@ -81,6 +83,10 @@ export function GetSentryNode() {
 			{showModal && (
 				<ViewKeysModal setShowModal={setShowModal}/>
 			)}
+			
+			{showConnectedModal && (
+				<ConnectWalletModal setShowConnectedModal={setShowConnectedModal}/>
+			)}
 
 			<div className="flex flex-col">
 				<h1 className="text-[40px] font-bold uppercase tracking-widest">
@@ -96,7 +102,7 @@ export function GetSentryNode() {
 				<div className="flex items-center mt-4 gap-[3rem]">
 					<button
 						className={`w-[27.25rem] bg-[#F30919] flex justify-center items-center gap-2 text-lg text-white py-5 font-semibold mt-2`}
-						onClick={() => alert("Be patient")}
+						onClick={() => setShowConnectedModal(true)}
 					>
 						<RiKey2Line className="w-5 h-5"/>
 						Purchase Key

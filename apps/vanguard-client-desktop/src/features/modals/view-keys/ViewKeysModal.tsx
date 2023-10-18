@@ -9,7 +9,6 @@ interface ViewKeysModalProps {
 
 export function ViewKeysModal({setShowModal}: ViewKeysModalProps) {
 	const [addWallet, setAddWallet] = useState<boolean>(false);
-	// const [connectWallet, setConnectWallet] = useState<boolean>(false);
 
 	return (
 		<div
