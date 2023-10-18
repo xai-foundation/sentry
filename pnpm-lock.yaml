@@ -181,27 +181,11 @@ importers:
         specifier: ^4.4.5
         version: 4.4.9
 
-  packages/core:
+  infrastructure/smart-contracts:
     dependencies:
-      '@noble/curves':
-        specifier: ^1.2.0
-        version: 1.2.0
-    devDependencies:
-      '@types/node':
-        specifier: ^20.6.0
-        version: 20.6.0
-
-  packages/smart-contracts:
-    dependencies:
-      '@openzeppelin/contracts':
-        specifier: 4.9.3
-        version: 4.9.3
-      '@openzeppelin/contracts-upgradeable':
-        specifier: 4.9.3
-        version: 4.9.3
       '@xai-vanguard-node/core':
         specifier: workspace:*
-        version: link:../core
+        version: link:../../packages/core
       csv:
         specifier: ^6.3.5
         version: 6.3.5
@@ -212,12 +196,28 @@ importers:
       '@nomicfoundation/hardhat-toolbox':
         specifier: ^3.0.0
         version: 3.0.0(@nomicfoundation/hardhat-chai-matchers@2.0.2)(@nomicfoundation/hardhat-ethers@3.0.4)(@nomicfoundation/hardhat-network-helpers@1.0.9)(@nomicfoundation/hardhat-verify@1.1.1)(@typechain/ethers-v6@0.4.3)(@typechain/hardhat@8.0.3)(@types/chai@4.3.6)(@types/mocha@10.0.1)(@types/node@20.6.0)(chai@4.3.8)(ethers@6.7.1)(hardhat-gas-reporter@1.0.9)(hardhat@2.17.2)(solidity-coverage@0.8.4)(ts-node@10.9.1)(typechain@8.3.1)(typescript@5.2.2)
+      '@openzeppelin/contracts':
+        specifier: 4.9.3
+        version: 4.9.3
+      '@openzeppelin/contracts-upgradeable':
+        specifier: 4.9.3
+        version: 4.9.3
       '@openzeppelin/hardhat-upgrades':
         specifier: ^2.3.3
         version: 2.3.3(@nomicfoundation/hardhat-ethers@3.0.4)(@nomicfoundation/hardhat-verify@1.1.1)(ethers@6.7.1)(hardhat@2.17.2)
       hardhat:
         specifier: ^2.17.2
         version: 2.17.2(ts-node@10.9.1)(typescript@5.2.2)
+
+  packages/core:
+    dependencies:
+      '@noble/curves':
+        specifier: ^1.2.0
+        version: 1.2.0
+    devDependencies:
+      '@types/node':
+        specifier: ^20.6.0
+        version: 20.6.0
 
   packages/ui:
     dependencies:
@@ -299,7 +299,7 @@ packages:
   /@aws-sdk/util-utf8-browser@3.259.0:
     resolution: {integrity: sha512-UvFa/vR+e19XookZF8RzFZBrw2EUkQWxiBW0yYQAhvk3C+QVGl0H3ouca8LDBlBfQKXwmW3huo/59H8rwb1wJw==}
     dependencies:
-      tslib: 2.4.0
+      tslib: 2.6.2
     dev: true
 
   /@babel/code-frame@7.22.13:
@@ -1950,11 +1950,11 @@ packages:
 
   /@openzeppelin/contracts-upgradeable@4.9.3:
     resolution: {integrity: sha512-jjaHAVRMrE4UuZNfDwjlLGDxTHWIOwTJS2ldnc278a0gevfXfPr8hxKEVBGFBE96kl2G3VHDZhUimw/+G3TG2A==}
-    dev: false
+    dev: true
 
   /@openzeppelin/contracts@4.9.3:
     resolution: {integrity: sha512-He3LieZ1pP2TNt5JbkPA4PNT9WC3gOTOlDcFGJW4Le4QKqwmiNJCRt44APfxMxvq7OugU/cqYuPcSBzOw38DAg==}
-    dev: false
+    dev: true
 
   /@openzeppelin/defender-admin-client@1.49.0(debug@4.3.4):
     resolution: {integrity: sha512-ka+GTbsnGO6j1R2AGj027uu29es/EBVs3VjJStb+7u/1lNhx1xSRS11JBD0a0GNhrwqsKU4czIemlIKMlUzhhQ==}

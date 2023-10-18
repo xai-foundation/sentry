@@ -5,7 +5,7 @@ import { writeToConfig } from "../utils/writeToConfig.mjs";
 import { config } from "@xai-vanguard-node/core";
 import { parse } from "csv/sync";
 import fs from "fs";
-const { ethers } = hardhat;
+const { ethers, upgrades } = hardhat;
 
 const options = {
   admins: [
@@ -62,8 +62,7 @@ async function main() {
 
   console.log("Deploying esXai...");
   const EsXai = await ethers.getContractFactory("esXai");
-  const esXai = await EsXai.deploy(xaiAddress);
-  await esXai.deploymentTransaction();
+  const esXai = await upgrades.deployProxy(EsXai, [xaiAddress], { deployer: deployer });
   const esXaiAddress = await esXai.getAddress();
   console.log("esXai deployed to:", esXaiAddress);
 
@@ -151,7 +150,7 @@ async function main() {
   await Promise.all([
     safeVerify({ contract: xai }),
     safeVerify({ contract: referee }),
-    safeVerify({ contract: esXai, constructorArgs: [xaiAddress] }),
+    safeVerify({ contract: esXai }),
     safeVerify({ contract: nodeLicense, constructorArgs: [options.fundsReceiver, options.referralDiscountPercentage, options.referralRewardPercentage] }),
   ]);
   console.log("Contracts verified.");

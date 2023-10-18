@@ -13,14 +13,16 @@ import "./Xai.sol";
  * @dev Implementation of the esXai
  */
 contract esXai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgradeable {
-    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    Xai private _xai;
+
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
+
     EnumerableSetUpgradeable.AddressSet private _whitelist;
+    bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    address private _xai;
 
     event WhitelistUpdated(address account, bool isAdded);
 
-    function initialize (Xai xai) public initializer {
+    function initialize (address xai) public initializer {
         __ERC20_init("esXai", "esXAI");
         __ERC20Burnable_init();
         __AccessControl_init();
@@ -35,7 +37,7 @@ contract esXai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgra
      * @param amount The amount of Xai to convert.
      */
     function convert(uint256 amount) public {
-        _xai.burnFrom(msg.sender, amount);
+        Xai(_xai).burnFrom(msg.sender, amount);
         _mint(msg.sender, amount);
     }
 
@@ -52,7 +54,7 @@ contract esXai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgra
      * @dev Function to change the Xai contract address
      * @param newXai The new Xai contract address.
      */
-    function changeXaiAddress(Xai newXai) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function changeXaiAddress(address newXai) public onlyRole(DEFAULT_ADMIN_ROLE) {
         _xai = newXai;
     }
 

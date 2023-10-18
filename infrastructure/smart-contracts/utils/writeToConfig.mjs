@@ -29,7 +29,7 @@ export function writeToConfig(newConfig) {
     console.log("new config", updatedConfigStr);
 
     // Determine the path to the config file dynamically
-    const configFilePath = path.resolve(process.cwd(), '../core/src/config.ts');
+    const configFilePath = path.resolve(process.cwd(), '../../packages/core/src/config.ts');
 
     // Write the updated config string to the config file
     fs.writeFileSync(configFilePath, updatedConfigStr, 'utf8');

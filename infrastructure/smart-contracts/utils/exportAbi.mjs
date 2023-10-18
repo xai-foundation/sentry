@@ -18,13 +18,13 @@ export async function extractAbi(contractName, contract) {
     const abi = JSON.parse(contract.interface.formatJson());
 
     // Define the path to the ABI file
-    const abiFilePath = path.resolve(process.cwd(), '../core/src/abis', `${camelCaseContractName}Abi.ts`);
+    const abiFilePath = path.resolve(process.cwd(), '../../packages/core/src/abis', `${camelCaseContractName}Abi.ts`);
 
     // Write the ABI to the file
     fs.writeFileSync(abiFilePath, `export const ${camelCaseContractName}Abi = ${JSON.stringify(abi, null, 2)};`, 'utf8');
 
     // Define the path to the index file
-    const indexFilePath = path.resolve(process.cwd(), '../core/src/abis', 'index.ts');
+    const indexFilePath = path.resolve(process.cwd(), '../../packages/core/src/abis', 'index.ts');
 
     // Read the contents of the index file
     let indexFileContents = fs.readFileSync(indexFilePath, 'utf8').split('\n');
