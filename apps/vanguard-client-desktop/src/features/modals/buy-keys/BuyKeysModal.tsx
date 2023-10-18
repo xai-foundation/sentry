@@ -1,6 +1,6 @@
 import {AiOutlineClose} from "react-icons/ai";
 import {Dispatch, SetStateAction, useState} from "react";
-import {BuyKeySuccess} from "./BuyKeySuccess.tsx";
+import {BuyKeysSuccess} from "./BuyKeysSuccess.tsx";
 import {BuyKeysFlow} from "./BuyKeysFlow.tsx";
 
 interface BuyKeysModalProps {
@@ -24,7 +24,7 @@ export function BuyKeysModal({number, setNumber, setShowModal}: BuyKeysModalProp
 			</div>
 
 			{purchaseSuccess ? (
-				<BuyKeySuccess
+				<BuyKeysSuccess
 					number={number}
 					setNumber={setNumber}
 					setShowModal={setShowModal}

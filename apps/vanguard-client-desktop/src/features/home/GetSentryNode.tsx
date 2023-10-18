@@ -1,6 +1,8 @@
 import {RiKey2Line} from "react-icons/ri";
 import {FiGift, FiGitCommit} from "react-icons/fi";
 import {AiFillInfoCircle} from "react-icons/ai";
+import {ViewKeysModal} from "../modals/view-keys/ViewKeysModal.tsx";
+import {useState} from "react";
 
 const body = [
 	{
@@ -41,6 +43,8 @@ const sentryBody = [
 ]
 
 export function GetSentryNode() {
+	const [showModal, setShowModal] = useState<boolean>(false);
+
 	function getBody() {
 		return body.map((item, i) => {
 			return (
@@ -73,6 +77,11 @@ export function GetSentryNode() {
 	return (
 		<div
 			className="max-w-[1920px] flex flex-row items-center justify-between px-[5.125rem] pt-[5.625rem] overflow-hidden">
+
+			{showModal && (
+				<ViewKeysModal setShowModal={setShowModal}/>
+			)}
+
 			<div className="flex flex-col">
 				<h1 className="text-[40px] font-bold uppercase tracking-widest">
 					Get a Xai Sentry Node
@@ -94,7 +103,7 @@ export function GetSentryNode() {
 					</button>
 					<p
 						className="text-xl text-[#F30919] cursor-pointer font-semibold"
-						onClick={() => alert("Good for you.")}
+						onClick={() => setShowModal(true)}
 					>
 						I already own a key
 					</p>

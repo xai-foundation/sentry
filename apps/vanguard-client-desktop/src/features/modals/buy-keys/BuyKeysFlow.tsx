@@ -1,5 +1,5 @@
 import {Dispatch, SetStateAction, useState} from "react";
-import {XaiNumberInput} from "../../../components/input/XaiNumberInput.tsx";
+import {XaiNumberInput} from "@xai-vanguard-node/ui";
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {BiLinkExternal} from "react-icons/bi";
 import {AiOutlineInfoCircle} from "react-icons/ai";
