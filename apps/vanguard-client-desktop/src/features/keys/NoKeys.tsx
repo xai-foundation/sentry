@@ -70,9 +70,9 @@ export function NoKeys({setShowModal}: NoKeysProps) {
 					</a>
 				</p>
 
-				<div className="flex flex-col justify-center items-center mt-12">
+				<div className="flex flex-col justify-center items-center mt-24">
 					<h3 className="text-lg font-semibold">
-						How keys works
+						How keys work
 					</h3>
 					<div className="flex flex-row justify-center items-center gap-10 p-6">
 						{getKeyContent()}

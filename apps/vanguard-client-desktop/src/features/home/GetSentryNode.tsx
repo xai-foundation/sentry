@@ -1,9 +1,9 @@
 import {RiKey2Line} from "react-icons/ri";
 import {FiGift, FiGitCommit} from "react-icons/fi";
 import {AiFillInfoCircle} from "react-icons/ai";
-import {ViewKeysModal} from "../modals/view-keys/ViewKeysModal.tsx";
+import {ViewKeysModal} from "./modals/view-keys/ViewKeysModal.tsx";
 import {useState} from "react";
-import {ConnectWalletModal} from "../modals/connect-wallet/ConnectWalletModal.tsx";
+import {ConnectWalletModal} from "./modals/connect-wallet/ConnectWalletModal.tsx";
 
 const body = [
 	{
@@ -83,7 +83,7 @@ export function GetSentryNode() {
 			{showModal && (
 				<ViewKeysModal setShowModal={setShowModal}/>
 			)}
-			
+
 			{showConnectedModal && (
 				<ConnectWalletModal setShowConnectedModal={setShowConnectedModal}/>
 			)}

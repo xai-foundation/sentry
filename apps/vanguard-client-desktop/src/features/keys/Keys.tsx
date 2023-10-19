@@ -1,16 +1,15 @@
 import {useState} from "react";
 import {HasKeys} from "./HasKeys.tsx";
 import {NoKeys} from "./NoKeys.tsx";
-import {BuyKeysModal} from "../modals/buy-keys/BuyKeysModal.tsx";
+import {BuyKeysModal} from "./modals/buy-keys/BuyKeysModal.tsx";
+import {ActionsRequiredModalManager} from "../home/modals/actions-required/ActionsRequiredModalManager.tsx";
 
 export function Keys() {
 	const [number, setNumber] = useState<number>(0);
-	const [showModal, setShowModal] = useState<boolean>(false);
+	const [showBuyModal, setShowBuyModal] = useState<boolean>(false);
 
 	return (
 		<div className="w-full h-screen">
-
-			{/*		Keys Header		*/}
 			<div
 				className="sticky top-0 flex flex-row items-center w-full h-16 border-b border-gray-200 pl-10 gap-2 bg-white">
 				<h2 className="text-lg">Keys</h2>
@@ -19,21 +18,23 @@ export function Keys() {
 				</p>
 			</div>
 
-			{showModal && (
+			<ActionsRequiredModalManager/>
+
+			{showBuyModal && (
 				<BuyKeysModal
 					number={number}
 					setNumber={setNumber}
-					setShowModal={setShowModal}
+					setShowModal={setShowBuyModal}
 				/>
 			)}
 
 			{number ? (
 				<HasKeys
-					setShowModal={setShowModal}
+					setShowModal={setShowBuyModal}
 				/>
 			) : (
 				<NoKeys
-					setShowModal={setShowModal}
+					setShowModal={setShowBuyModal}
 				/>
 			)}
 		</div>
