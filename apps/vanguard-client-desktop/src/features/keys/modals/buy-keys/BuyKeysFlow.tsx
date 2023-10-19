@@ -20,8 +20,10 @@ interface BuyKeysFlowProps {
 export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 	const [amount, setAmount] = useState<number>(1);
 	const [promo, setPromo] = useState<boolean>(false);
-	const [applyDiscount, setApplyDiscount] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState('');
+
+	const [discountApplied, setDiscountApplied] = useState<boolean>(false);
+	const [discountError, setDiscountError] = useState<boolean>(false);
 
 	// Calculate 5% of the number
 	const discountPrice = (5 / 100) * payWithBody[0].price;
@@ -33,8 +35,12 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 	};
 
 	const handleSubmit = () => {
+		setDiscountError(false);
 		if (inputValue === "IDONTWANNAPAYFULLPRICE") {
-			setApplyDiscount(true);
+			setDiscountApplied(true);
+		} else {
+			setDiscountError(true);
+			setInputValue("");
 		}
 	};
 
@@ -60,7 +66,7 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 					<span>{discount.item}</span>
 
 					<a
-						onClick={() => setApplyDiscount(false)}
+						onClick={() => setDiscountApplied(false)}
 						className="text-[#F30919] ml-1 cursor-pointer"
 					>
 						Remove
@@ -127,7 +133,7 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 						{payWithBody[0].price} {payWithBody[0].abbr} per key
 					</p>
 
-					{applyDiscount && (
+					{discountApplied && (
 						<>
 							{getDiscount()}
 							<p className="text-[13px] text-[#A3A3A3] mb-4">
@@ -155,8 +161,11 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 								<input
 									type="text"
 									value={inputValue}
-									onChange={(e) => setInputValue(e.target.value)}
-									className="w-full my-2 p-2 border border-[#A3A3A3]"
+									onChange={(e) => {
+										setInputValue(e.target.value)
+										setDiscountError(false);
+									}}
+									className={`w-full my-2 p-2 border ${discountError ? "border-[#AB0914]": "border-[#A3A3A3]"}`}
 									placeholder="Enter promo code"
 								/>
 
@@ -167,6 +176,10 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 									Apply
 								</button>
 							</div>
+
+							{discountError && (
+								<p className="text-[14px] text-[#AB0914]">Invalid referral address</p>
+							)}
 						</div>
 					) : (
 						<p className="text-[15px] py-2">
@@ -186,7 +199,7 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 						</div>
 						<div className="flex flex-row items-center gap-1 font-semibold">
 							<span>
-								{applyDiscount
+								{discountApplied
 									? Number((payWithBody[0].price * amount) - (discountPrice * amount)).toFixed(8)
 									: Number(payWithBody[0].price * amount).toFixed(8)}
 							</span>
