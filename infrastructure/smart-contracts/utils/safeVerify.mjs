@@ -27,13 +27,24 @@ export async function safeVerify({contract, constructorArgs = []}) {
     const contractAddress = await contract.getAddress();
     console.log(`Verifying contract ${contractAddress} on network ${network.name}`);
 
-    try {
-        await run("verify:verify", {
-            address: contractAddress,
-            constructorArguments: constructorArgs,
-        });
-        console.log(`Contract ${contractAddress} successfully verified`);
-    } catch (error) {
-        console.error(`Failed to verify contract ${contractAddress}:`, error);
+    for (let i = 0; i < 5; i++) {
+        try {
+            await run("verify:verify", {
+                address: contractAddress,
+                constructorArguments: constructorArgs,
+            });
+            console.log(`Contract ${contractAddress} successfully verified`);
+            return;
+        } catch (error) {
+            console.error(`Attempt ${i+1} failed to verify contract ${contractAddress}:`, error);
+            if (i < 4) {
+                const waitTime = Math.floor(Math.random() * (20 - 5 + 1)) + 5; // Random time between 5 and 20 seconds
+                console.log(`Waiting for ${waitTime} seconds before next attempt...`);
+                await new Promise(resolve => setTimeout(resolve, waitTime * 1000));
+            }
+        }
     }
+
+    console.error(`Contract verification failed for ${contractAddress}.`);
+
 }

@@ -1,24 +1,5 @@
 export const NodeLicenseAbi = [
   {
-    "type": "constructor",
-    "stateMutability": "undefined",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "_fundsReceiver"
-      },
-      {
-        "type": "uint256",
-        "name": "_referralDiscountPercentage"
-      },
-      {
-        "type": "uint256",
-        "name": "_referralRewardPercentage"
-      }
-    ]
-  },
-  {
     "type": "event",
     "anonymous": false,
     "name": "Approval",
@@ -58,6 +39,18 @@ export const NodeLicenseAbi = [
       {
         "type": "bool",
         "name": "approved",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Initialized",
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "version",
         "indexed": false
       }
     ]
@@ -370,6 +363,27 @@ export const NodeLicenseAbi = [
         "name": ""
       }
     ]
+  },
+  {
+    "type": "function",
+    "name": "initialize",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "_fundsReceiver"
+      },
+      {
+        "type": "uint256",
+        "name": "_referralDiscountPercentage"
+      },
+      {
+        "type": "uint256",
+        "name": "_referralRewardPercentage"
+      }
+    ],
+    "outputs": []
   },
   {
     "type": "function",

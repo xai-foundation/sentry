@@ -2,25 +2,31 @@
 
 pragma solidity ^0.8.0;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 import "./Xai.sol";
 
 /**
  * @title esXai
  * @dev Implementation of the esXai
  */
-contract esXai is ERC20, ERC20Burnable, AccessControl {
+contract esXai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgradeable {
+
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
+
+    EnumerableSetUpgradeable.AddressSet private _whitelist;
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    Xai private _xai;
-    using EnumerableSet for EnumerableSet.AddressSet;
-    EnumerableSet.AddressSet private _whitelist;
+    address private _xai;
 
     event WhitelistUpdated(address account, bool isAdded);
 
-    constructor (Xai xai) ERC20("esXai", "esXAI") {
+    function initialize (address xai) public initializer {
+        __ERC20_init("esXai", "esXAI");
+        __ERC20Burnable_init();
+        __AccessControl_init();
+
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setRoleAdmin(MINTER_ROLE, DEFAULT_ADMIN_ROLE);
         _xai = xai;
@@ -31,7 +37,7 @@ contract esXai is ERC20, ERC20Burnable, AccessControl {
      * @param amount The amount of Xai to convert.
      */
     function convert(uint256 amount) public {
-        _xai.burnFrom(msg.sender, amount);
+        Xai(_xai).burnFrom(msg.sender, amount);
         _mint(msg.sender, amount);
     }
 
@@ -48,7 +54,7 @@ contract esXai is ERC20, ERC20Burnable, AccessControl {
      * @dev Function to change the Xai contract address
      * @param newXai The new Xai contract address.
      */
-    function changeXaiAddress(Xai newXai) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function changeXaiAddress(address newXai) public onlyRole(DEFAULT_ADMIN_ROLE) {
         _xai = newXai;
     }
 
