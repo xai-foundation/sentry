@@ -1,8 +1,8 @@
-import {Dispatch, SetStateAction, useState} from "react";
+import {ChangeEvent, Dispatch, SetStateAction, useState} from "react";
 import {XaiNumberInput} from "@xai-vanguard-node/ui";
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {BiLinkExternal} from "react-icons/bi";
-import {AiOutlineInfoCircle} from "react-icons/ai";
+import {AiOutlineClose, AiOutlineInfoCircle} from "react-icons/ai";
 import {MdVerifiedUser} from "react-icons/md";
 
 const payWithBody = [
@@ -19,6 +19,24 @@ interface BuyKeysFlowProps {
 
 export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 	const [amount, setAmount] = useState<number>(1);
+	const [promo, setPromo] = useState<boolean>(false);
+	const [applyDiscount, setApplyDiscount] = useState<boolean>(false);
+	const [inputValue, setInputValue] = useState('');
+
+	// Calculate 5% of the number
+	const discountPrice = (5 / 100) * payWithBody[0].price;
+
+	const discount = {
+		item: "Discount (5%)",
+		abbr: "ETH",
+		price: discountPrice * -1,
+	};
+
+	const handleSubmit = () => {
+		if (inputValue === "IDONTWANNAPAYFULLPRICE") {
+			setApplyDiscount(true);
+		}
+	};
 
 	function getOrderTotal() {
 		return payWithBody.map((item, i) => {
@@ -28,11 +46,32 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 						<span className="">{amount} x {item.item}</span>
 					</div>
 					<div className="flex flex-row items-center gap-1">
-						<span>{item.price * amount} {item.abbr}</span>
+						<span className="font-semibold">{Number(item.price * amount).toFixed(6)} {item.abbr}</span>
 					</div>
 				</div>
 			)
 		})
+	}
+
+	function getDiscount() {
+		return (
+			<div className="flex flex-row items-center justify-between text-[15px]">
+				<div className="flex flex-row items-center gap-2">
+					<span>{discount.item}</span>
+
+					<a
+						onClick={() => setApplyDiscount(false)}
+						className="text-[#F30919] ml-1 cursor-pointer"
+					>
+						Remove
+					</a>
+
+				</div>
+				<div className="flex flex-row items-center gap-1">
+					<span className="text-[#2A803D] font-semibold">{discount.price * amount} {discount.abbr}</span>
+				</div>
+			</div>
+		)
 	}
 
 	return (
@@ -84,34 +123,82 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 
 				<div className="px-6">
 					{getOrderTotal()}
-
 					<p className="text-[13px] text-[#A3A3A3] mb-4">
 						{payWithBody[0].price} {payWithBody[0].abbr} per key
 					</p>
 
+					{applyDiscount && (
+						<>
+							{getDiscount()}
+							<p className="text-[13px] text-[#A3A3A3] mb-4">
+								0xBAbeCC…dd65cd85
+							</p>
+						</>
+
+					)}
+
 					<hr className="my-2"/>
 
-					<p className="text-[15px] py-2">
-						<a
-							onClick={() => window.electron.openExternal('https://www.youtube.com/watch?v=dQw4w9WgXcQ')}
-							className="text-[#F30919] ml-1 cursor-pointer"
-						>
-							+ Add promo code
-						</a>
-					</p>
+					{/*		Promo section		*/}
+					{promo ? (
+						<div>
+							<div
+								className="w-full h-auto flex flex-row justify-between items-center text-[15px] text-[#525252] mt-2 py-2">
+								<span>Add promo code</span>
+								<div className="cursor-pointer z-10" onClick={() => setPromo(false)}>
+									<AiOutlineClose/>
+								</div>
+							</div>
+
+							<div className="flex gap-2 items-center">
+
+								<input
+									type="text"
+									value={inputValue}
+									onChange={(e) => setInputValue(e.target.value)}
+									className="w-full my-2 p-2 border border-[#A3A3A3]"
+									placeholder="Enter promo code"
+								/>
+
+								<button
+									onClick={() => handleSubmit()}
+									className="flex flex-row justify-center items-center w-[92px] p-2 bg-[#F30919] text-[15px] text-white font-semibold uppercase"
+								>
+									Apply
+								</button>
+							</div>
+						</div>
+					) : (
+						<p className="text-[15px] py-2">
+							<a
+								onClick={() => setPromo(true)}
+								className="text-[#F30919] ml-1 cursor-pointer"
+							>
+								+ Add promo code
+							</a>
+						</p>
+					)}
 
 					<hr className="my-2"/>
 					<div className="flex flex-row items-center justify-between">
 						<div className="flex flex-row items-center gap-2 text-lg">
 							<span className="">You pay</span>
 						</div>
-						<div className="flex flex-row items-center gap-1">
-							<span>{payWithBody[0].price * amount} {payWithBody[0].abbr}</span>
+						<div className="flex flex-row items-center gap-1 font-semibold">
+							<span>
+								{applyDiscount
+									? Number((payWithBody[0].price * amount) - (discountPrice * amount)).toFixed(8)
+									: Number(payWithBody[0].price * amount).toFixed(8)}
+							</span>
+							<span>
+								{payWithBody[0].abbr}
+							</span>
 						</div>
 					</div>
 				</div>
 			</div>
 
+			{/*		Banner section		*/}
 			<div className="absolute bottom-0 left-0 w-full flex flex-col gap-4 px-6">
 				<div className="flex flex-col gap-2 bg-[#DCFCE6] p-6">
 					<span className="flex flex-row gap-1 items-center font-semibold">
@@ -125,7 +212,7 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 					</p>
 				</div>
 
-
+				{/*		CTA		*/}
 				<div className="pb-6 font-semibold">
 					<button
 						onClick={() => setPurchaseSuccess(true)}
