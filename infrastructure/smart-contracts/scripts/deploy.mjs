@@ -5,7 +5,8 @@ import { writeToConfig } from "../utils/writeToConfig.mjs";
 import { config } from "@xai-vanguard-node/core";
 import { parse } from "csv/sync";
 import fs from "fs";
-const { ethers } = hardhat;
+import {getImplementationAddress} from "../utils/getImplementationAddress.mjs"
+const { ethers, upgrades } = hardhat;
 
 const options = {
   admins: [
@@ -23,8 +24,8 @@ async function main() {
 
   console.log("Deploying Xai...");
   const Xai = await ethers.getContractFactory("Xai");
-  const xai = await Xai.deploy();
-  await xai.deploymentTransaction();
+  const xai = await upgrades.deployProxy(Xai, [], { deployer: deployer });
+  const { blockNumber: xaiDeployedBlockNumber } = await xai.deploymentTransaction();
   const xaiAddress = await xai.getAddress();
   console.log("Xai deployed to:", xaiAddress);
 
@@ -41,8 +42,8 @@ async function main() {
 
   console.log("Deploying Referee...");
   const Referee = await ethers.getContractFactory("Referee");
-  const referee = await Referee.deploy();
-  await referee.deploymentTransaction();
+  const referee = await upgrades.deployProxy(Referee, [], { deployer: deployer });
+  const { blockNumber: refereeDeployedBlockNumber } = await referee.deploymentTransaction();
   const refereeAddress = await referee.getAddress();
   console.log("Referee deployed to:", refereeAddress);
 
@@ -62,8 +63,8 @@ async function main() {
 
   console.log("Deploying esXai...");
   const EsXai = await ethers.getContractFactory("esXai");
-  const esXai = await EsXai.deploy(xaiAddress);
-  await esXai.deploymentTransaction();
+  const esXai = await upgrades.deployProxy(EsXai, [xaiAddress], { deployer: deployer });
+  const { blockNumber: esXaiDeployedBlockNumber } = await esXai.deploymentTransaction();
   const esXaiAddress = await esXai.getAddress();
   console.log("esXai deployed to:", esXaiAddress);
 
@@ -85,7 +86,7 @@ async function main() {
 
   console.log("Deploying NodeLicense...");
   const NodeLicense = await ethers.getContractFactory("NodeLicense");
-  const nodeLicense = await NodeLicense.deploy(options.fundsReceiver, options.referralDiscountPercentage, options.referralRewardPercentage);
+  const nodeLicense = await upgrades.deployProxy(NodeLicense, [options.fundsReceiver, options.referralDiscountPercentage, options.referralRewardPercentage], { deployer: deployer });
   const { blockNumber: nodeLicenseDeployedBlockNumber } = await nodeLicense.deploymentTransaction();
   const nodeLicenseAddress = await nodeLicense.getAddress();
   console.log("NodeLicense deployed to:", nodeLicenseAddress);
@@ -101,10 +102,17 @@ async function main() {
   // Update the referee, NodeLicense, esXai, and xai contract addresses in the config
   writeToConfig({
     refereeAddress,
+    refereeImplementationAddress: await getImplementationAddress(referee),
+    refereeDeployedBlockNumber,
     nodeLicenseAddress,
-    esXaiAddress,
-    xaiAddress,
+    nodeLicenseImplementationAddress: await getImplementationAddress(nodeLicense),
     nodeLicenseDeployedBlockNumber,
+    esXaiAddress,
+    esXaiImplementationAddress: await getImplementationAddress(esXai),
+    esXaiDeployedBlockNumber,
+    xaiAddress,
+    xaiImplementationAddress: await getImplementationAddress(xai),
+    xaiDeployedBlockNumber
   });
   console.log("Referee, NodeLicense, esXai, and xai contract addresses updated in the config");
 
@@ -151,8 +159,8 @@ async function main() {
   await Promise.all([
     safeVerify({ contract: xai }),
     safeVerify({ contract: referee }),
-    safeVerify({ contract: esXai, constructorArgs: [xaiAddress] }),
-    safeVerify({ contract: nodeLicense, constructorArgs: [options.fundsReceiver, options.referralDiscountPercentage, options.referralRewardPercentage] }),
+    safeVerify({ contract: esXai }),
+    safeVerify({ contract: nodeLicense }),
   ]);
   console.log("Contracts verified.");
 }

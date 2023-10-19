@@ -1,16 +1,5 @@
 export const esXaiAbi = [
   {
-    "type": "constructor",
-    "stateMutability": "undefined",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "xai"
-      }
-    ]
-  },
-  {
     "type": "event",
     "anonymous": false,
     "name": "Approval",
@@ -28,6 +17,18 @@ export const esXaiAbi = [
       {
         "type": "uint256",
         "name": "value",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Initialized",
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "version",
         "indexed": false
       }
     ]
@@ -447,6 +448,19 @@ export const esXaiAbi = [
         "name": ""
       }
     ]
+  },
+  {
+    "type": "function",
+    "name": "initialize",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "xai"
+      }
+    ],
+    "outputs": []
   },
   {
     "type": "function",

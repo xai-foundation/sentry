@@ -1,11 +1,5 @@
 export const RefereeAbi = [
   {
-    "type": "constructor",
-    "stateMutability": "undefined",
-    "payable": false,
-    "inputs": []
-  },
-  {
     "type": "event",
     "anonymous": false,
     "name": "Approval",
@@ -115,6 +109,18 @@ export const RefereeAbi = [
       {
         "type": "bytes",
         "name": "newChallengerPublicKey",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Initialized",
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "version",
         "indexed": false
       }
     ]
@@ -636,6 +642,14 @@ export const RefereeAbi = [
         "name": ""
       }
     ]
+  },
+  {
+    "type": "function",
+    "name": "initialize",
+    "constant": false,
+    "payable": false,
+    "inputs": [],
+    "outputs": []
   },
   {
     "type": "function",

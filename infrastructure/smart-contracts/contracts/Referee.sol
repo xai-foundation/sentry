@@ -1,12 +1,13 @@
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/access/AccessControlEnumerable.sol";
-import "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 import "./nitro-contracts/rollup/IRollupCore.sol";
 import "./NodeLicense.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract Referee is AccessControlEnumerable {
-    using EnumerableSet for EnumerableSet.AddressSet;
+contract Referee is Initializable, AccessControlEnumerableUpgradeable {
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
     // Define roles
     bytes32 public constant CHALLENGER_ROLE = keccak256("CHALLENGER_ROLE");
@@ -22,7 +23,7 @@ contract Referee is AccessControlEnumerable {
     address public nodeLicenseAddress;
 
     // Counter for the challenges
-    uint256 public challengeCounter = 0;
+    uint256 public challengeCounter;
 
     // mapping to store all of the challenges
     mapping(uint256 => Challenge) public challenges;
@@ -31,16 +32,16 @@ contract Referee is AccessControlEnumerable {
     mapping(uint256 => mapping(uint256 => Submission)) public submissions;
 
     // Toggle for assertion checking
-    bool public isCheckingAssertions = true;
+    bool public isCheckingAssertions;
 
     // Mapping from owner to operator approvals
-    mapping (address => EnumerableSet.AddressSet) private _operatorApprovals;
+    mapping (address => EnumerableSetUpgradeable.AddressSet) private _operatorApprovals;
 
     // Mapping to track rollup assertions (combination of the assertionId and the rollupAddress used, because we allow switching the rollupAddress, and can't assume assertionIds are unique.)
     mapping (bytes32 => bool) public rollupAssertionTracker;
 
     // Mapping to track KYC'd wallets
-    EnumerableSet.AddressSet private kycWallets;
+    EnumerableSetUpgradeable.AddressSet private kycWallets;
 
     // Struct for the submissions
     struct Submission {
@@ -71,7 +72,8 @@ contract Referee is AccessControlEnumerable {
     event Approval(address indexed owner, address indexed operator, bool approved);
     event KycStatusChanged(address indexed wallet, bool isKycApproved);
 
-    constructor() {
+    function initialize() public initializer {
+        __AccessControlEnumerable_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setRoleAdmin(CHALLENGER_ROLE, DEFAULT_ADMIN_ROLE);
         _setRoleAdmin(KYC_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
