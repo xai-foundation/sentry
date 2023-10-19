@@ -4,7 +4,8 @@
   "license": "UNLICENSED",
   "type": "module",
   "scripts": {
-    "deploy": "hardhat run scripts/deploy.mjs"
+    "deploy": "hardhat run scripts/deploy.mjs",
+    "clean": "rimraf artifacts && rimraf cache"
   },
   "dependencies": {
     "@xai-vanguard-node/core": "workspace:*",

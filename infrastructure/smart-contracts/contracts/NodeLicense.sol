@@ -1,14 +1,14 @@
 pragma solidity ^0.8.0;
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
-import "@openzeppelin/contracts/utils/Base64.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/Base64Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-contract NodeLicense is ERC721Enumerable, AccessControl {
-    using Strings for uint256;
-    using Counters for Counters.Counter;
-    Counters.Counter private _tokenIds;
+contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
+    using StringsUpgradeable for uint256;
+    using CountersUpgradeable for CountersUpgradeable.Counter;
+    CountersUpgradeable.Counter private _tokenIds;
 
     address payable public fundsReceiver;
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -29,11 +29,13 @@ contract NodeLicense is ERC721Enumerable, AccessControl {
 
     event ReferralReward(address indexed buyer, address indexed referralAddress, uint256 amount);
 
-    constructor(
+    function initialize(
         address payable _fundsReceiver,
         uint256 _referralDiscountPercentage,
         uint256 _referralRewardPercentage
-    ) ERC721("Vanguard Node License", "VNL") {
+    ) public initializer {
+        __ERC721_init("Vanguard Node License", "VNL");
+        __AccessControl_init();
         fundsReceiver = _fundsReceiver;
         referralDiscountPercentage = _referralDiscountPercentage;
         referralRewardPercentage = _referralRewardPercentage;
@@ -196,12 +198,12 @@ contract NodeLicense is ERC721Enumerable, AccessControl {
                 "<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' style='background-color:black;'><text x='10' y='50' font-size='20' fill='white'>",
                 _tokenId.toString(),
                 "</text><text x='10' y='90' font-size='15' textLength='100' lengthAdjust='spacingAndGlyphs' fill='white'>",
-                Strings.toHexString(uint160(ownerAddress)),
+                StringsUpgradeable.toHexString(uint160(ownerAddress)),
                 "</text></svg>"
             )
         );
-        string memory image = Base64.encode(bytes(svg));
-        string memory json = Base64.encode(
+        string memory image = Base64Upgradeable.encode(bytes(svg));
+        string memory json = Base64Upgradeable.encode(
             bytes(
                 string(
                     abi.encodePacked(
@@ -210,7 +212,7 @@ contract NodeLicense is ERC721Enumerable, AccessControl {
                         '", "description": "A NodeLicense token", "image": "data:image/svg+xml;base64,',
                         image,
                         '", "owner": "',
-                        Strings.toHexString(uint160(ownerAddress)),
+                        StringsUpgradeable.toHexString(uint160(ownerAddress)),
                         '"}'
                     )
                 )
@@ -226,7 +228,7 @@ contract NodeLicense is ERC721Enumerable, AccessControl {
      */
     function supportsInterface(
         bytes4 interfaceId
-    ) public view override(ERC721Enumerable, AccessControl) returns (bool) {
+    ) public view override(ERC721EnumerableUpgradeable, AccessControlUpgradeable) returns (bool) {
         return super.supportsInterface(interfaceId);
     }
 

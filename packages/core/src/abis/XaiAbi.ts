@@ -1,11 +1,5 @@
 export const XaiAbi = [
   {
-    "type": "constructor",
-    "stateMutability": "undefined",
-    "payable": false,
-    "inputs": []
-  },
-  {
     "type": "event",
     "anonymous": false,
     "name": "Approval",
@@ -23,6 +17,18 @@ export const XaiAbi = [
       {
         "type": "uint256",
         "name": "value",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "Initialized",
+    "inputs": [
+      {
+        "type": "uint8",
+        "name": "version",
         "indexed": false
       }
     ]
@@ -353,6 +359,14 @@ export const XaiAbi = [
         "name": ""
       }
     ]
+  },
+  {
+    "type": "function",
+    "name": "initialize",
+    "constant": false,
+    "payable": false,
+    "inputs": [],
+    "outputs": []
   },
   {
     "type": "function",
