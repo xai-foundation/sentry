@@ -11,20 +11,18 @@ export function ConnectWalletModal({setShowConnectedModal}: ConnectWalletModalPr
 	const [connectWallet, setConnectWallet] = useState<boolean>(false);
 
 	useEffect(() => {
-		// Function to set loading to true after 2 seconds
 		const setLoadingTrueAfterDelay = () => {
 			setTimeout(() => {
 				setConnectWallet(true);
-			}, 2000); // 2000 milliseconds (2 seconds)
+			}, 4000);
 		};
 
-		// Call the function when the component mounts
 		setLoadingTrueAfterDelay();
 	}, []);
 
 	return (
 		<div
-			className="absolute top-0 right-0 left-0 bottom-0 m-auto w-auto h-auto flex flex-col justify-start items-center z-20">
+			className="absolute top-0 right-0 left-0 bottom-0 m-auto w-auto h-auto flex flex-col justify-start items-center z-30">
 			<div className="w-full h-full bg-white opacity-70"/>
 			<div
 				className="absolute top-0 right-0 left-0 bottom-0 m-auto flex flex-col justify-start items-center w-[506px] h-[216px] border border-gray-200 bg-white">

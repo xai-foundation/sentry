@@ -3,10 +3,12 @@ import {HasKeys} from "./HasKeys.tsx";
 import {NoKeys} from "./NoKeys.tsx";
 import {BuyKeysModal} from "./modals/buy-keys/BuyKeysModal.tsx";
 import {ActionsRequiredModalManager} from "../home/modals/actions-required/ActionsRequiredModalManager.tsx";
+import {ViewKeysModal} from "../home/modals/view-keys/ViewKeysModal.tsx";
 
 export function Keys() {
 	const [number, setNumber] = useState<number>(0);
 	const [showBuyModal, setShowBuyModal] = useState<boolean>(false);
+	const [showViewModal, setShowViewModal] = useState<boolean>(false);
 
 	return (
 		<div className="w-full h-screen">
@@ -30,13 +32,20 @@ export function Keys() {
 				/>
 			)}
 
+			{showViewModal && (
+				<ViewKeysModal
+					setShowModal={setShowViewModal}
+				/>
+			)}
+
 			{number ? (
 				<HasKeys
 					setShowModal={setShowBuyModal}
 				/>
 			) : (
 				<NoKeys
-					setShowModal={setShowBuyModal}
+					setShowBuyModal={setShowBuyModal}
+					setShowViewModal={setShowViewModal}
 				/>
 			)}
 		</div>

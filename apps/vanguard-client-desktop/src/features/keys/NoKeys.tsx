@@ -18,10 +18,11 @@ const noKeysCopy = [
 ]
 
 interface NoKeysProps {
-	setShowModal: Dispatch<SetStateAction<boolean>>
+	setShowBuyModal: Dispatch<SetStateAction<boolean>>
+	setShowViewModal: Dispatch<SetStateAction<boolean>>
 }
 
-export function NoKeys({setShowModal}: NoKeysProps) {
+export function NoKeys({setShowBuyModal, setShowViewModal}: NoKeysProps) {
 
 	function getKeyContent() {
 		return noKeysCopy.map((item, i) => {
@@ -52,7 +53,7 @@ export function NoKeys({setShowModal}: NoKeysProps) {
 				</p>
 
 				<button
-					onClick={() => setShowModal(true)}
+					onClick={() => setShowBuyModal(true)}
 					className="flex justify-center items-center gap-1 text-[15px] text-white bg-[#F30919] font-semibold mt-2 px-6 py-3"
 				>
 					<RiKey2Line className="w-5 h-5"/>
@@ -63,7 +64,7 @@ export function NoKeys({setShowModal}: NoKeysProps) {
 					Already own a key?
 
 					<a
-						onClick={() => window.electron.openExternal('http://localhost:7555/')}
+						onClick={() => setShowViewModal(true)}
 						className="text-[#F30919] ml-1 cursor-pointer"
 					>
 						Add wallet to Xai Client
