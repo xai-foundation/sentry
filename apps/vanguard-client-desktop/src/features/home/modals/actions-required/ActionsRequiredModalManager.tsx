@@ -3,6 +3,7 @@ import {AiFillWarning} from "react-icons/ai";
 import {ActionsRequiredModal} from "./ActionsRequiredModal.tsx";
 import {BuyKeysModal} from "../../../keys/modals/buy-keys/BuyKeysModal.tsx";
 import {ViewKeysModal} from "../view-keys/ViewKeysModal.tsx";
+import {ConnectWalletModal} from "../connect-wallet/ConnectWalletModal.tsx";
 
 export function ActionsRequiredModalManager() {
 	const [number, setNumber] = useState<number>(0);
@@ -10,6 +11,7 @@ export function ActionsRequiredModalManager() {
 	const [showActionsModal, setShowActionsModal] = useState<boolean>(false);
 	const [showBuyModal, setShowBuyModal] = useState<boolean>(false);
 	const [showViewModal, setShowViewModal] = useState<boolean>(false);
+	const [showConnectedModal, setShowConnectedModal] = useState<boolean>(false);
 
 	return (
 		<div>
@@ -48,6 +50,10 @@ export function ActionsRequiredModalManager() {
 				<ViewKeysModal
 					setShowModal={setShowViewModal}
 				/>
+			)}
+
+			{showConnectedModal && (
+				<ConnectWalletModal setShowConnectedModal={setShowConnectedModal}/>
 			)}
 		</div>
 	)

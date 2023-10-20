@@ -42,7 +42,7 @@ export function ConnectWalletModal({setShowConnectedModal}: ConnectWalletModalPr
 						<span className="text-xl font-semibold">Wallet connected</span>
 						<span className="text-[15px]">Transaction ID:
 						<a
-							onClick={() => window.electron.openExternal('https://www.youtube.com/watch?v=dQw4w9WgXcQ')}
+							onClick={() => window.electron.openExternal('http://localhost:7555/')}
 							className="text-[#F30919] ml-1 cursor-pointer"
 						>
 							129019028

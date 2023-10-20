@@ -63,7 +63,7 @@ export function NoKeys({setShowModal}: NoKeysProps) {
 					Already own a key?
 
 					<a
-						onClick={() => window.electron.openExternal('https://www.youtube.com/watch?v=dQw4w9WgXcQ')}
+						onClick={() => window.electron.openExternal('http://localhost:7555/')}
 						className="text-[#F30919] ml-1 cursor-pointer"
 					>
 						Add wallet to Xai Client

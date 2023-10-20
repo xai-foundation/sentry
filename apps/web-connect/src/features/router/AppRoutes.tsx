@@ -1,5 +1,5 @@
 import { Route, HashRouter as Router, Routes } from 'react-router-dom';
-import Sandbox from '../sandbox/Sandbox';
+import {Sandbox} from "../sandbox";
 
 export function AppRoutes() {
   return (

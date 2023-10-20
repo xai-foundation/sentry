@@ -228,7 +228,10 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 				{/*		CTA		*/}
 				<div className="pb-6 font-semibold">
 					<button
-						onClick={() => setPurchaseSuccess(true)}
+						onClick={() => {
+							window.electron.openExternal('http://localhost:7555/')
+							setPurchaseSuccess(true)
+						}}
 						className={`w-full h-16 flex flex-row justify-center items-center gap-1 bg-[#F30919] text-lg text-white`}
 					>
 						Confirm purchase <BiLinkExternal/>

@@ -5,19 +5,19 @@ const dummyLicenses = [
 		number: 1,
 		license: "Xai Vanguard Node Key",
 		date: "2023-09-26",
-		receipt: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+		receipt: "http://localhost:7555/",
 	},
 	// {
 	// 	number: 2,
 	// 	license: "Xai Vanguard Node Key",
 	// 	date: "2023-09-27",
-	// 	receipt: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+	// 	receipt: "http://localhost:7555/",
 	// },
 	// {
 	// 	number: 3,
 	// 	license: "Xai Vanguard Node Key",
 	// 	date: "2023-09-28",
-	// 	receipt: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+	// 	receipt: "http://localhost:7555/",
 	// },
 ]
 

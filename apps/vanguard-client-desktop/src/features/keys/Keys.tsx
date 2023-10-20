@@ -18,7 +18,9 @@ export function Keys() {
 				</p>
 			</div>
 
-			<ActionsRequiredModalManager/>
+			{!number && (
+				<ActionsRequiredModalManager/>
+			)}
 
 			{showBuyModal && (
 				<BuyKeysModal

@@ -41,7 +41,7 @@ export function ActionsRequiredFlow({setAddWallet}: ActionsRequiredFlowProps) {
 				</span>
 
 				<button
-					onClick={() => window.electron.openExternal('https://www.youtube.com/watch?v=dQw4w9WgXcQ')}
+					onClick={() => window.electron.openExternal('http://localhost:7555/')}
 					className="w-full h-12 flex flex-row justify-center items-center gap-1 bg-[#F30919] text-[15px] text-white font-semibold"
 				>
 					Connect wallet <BiLinkExternal/>
