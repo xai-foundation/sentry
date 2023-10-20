@@ -4,6 +4,7 @@ import {AiFillInfoCircle} from "react-icons/ai";
 import {ViewKeysModal} from "./modals/view-keys/ViewKeysModal.tsx";
 import {useState} from "react";
 import {BuyKeysModal} from "../keys/modals/buy-keys/BuyKeysModal.tsx";
+import {ConnectWalletModal} from "./modals/connect-wallet/ConnectWalletModal.tsx";
 
 const body = [
 	{
@@ -47,6 +48,7 @@ export function GetSentryNode() {
 	const [number, setNumber] = useState<number>(0);
 	const [showBuyModal, setShowBuyModal] = useState<boolean>(false);
 	const [showViewModal, setShowViewModal] = useState<boolean>(false);
+	const [showConnectedModal, setShowConnectedModal] = useState<boolean>(false);
 
 	function getBody() {
 		return body.map((item, i) => {
@@ -81,8 +83,16 @@ export function GetSentryNode() {
 		<div
 			className="max-w-[1920px] flex flex-row items-center justify-between px-[5.125rem] pt-[5.625rem] overflow-hidden">
 
+			{showConnectedModal && (
+				<ConnectWalletModal
+					setShowConnectedModal={setShowConnectedModal}
+				/>
+			)}
+
 			{showViewModal && (
-				<ViewKeysModal setShowModal={setShowViewModal}/>
+				<ViewKeysModal
+					setShowModal={setShowViewModal}
+				/>
 			)}
 
 			{showBuyModal && (
@@ -107,14 +117,20 @@ export function GetSentryNode() {
 				<div className="flex items-center mt-4 gap-[3rem]">
 					<button
 						className={`w-[27.25rem] bg-[#F30919] flex justify-center items-center gap-2 text-lg text-white py-5 font-semibold mt-2`}
-						onClick={() => setShowBuyModal(true)}
+						onClick={() => {
+							setShowBuyModal(true);
+							setShowViewModal(false);
+						}}
 					>
 						<RiKey2Line className="w-5 h-5"/>
 						Purchase Key
 					</button>
 					<p
 						className="text-xl text-[#F30919] cursor-pointer font-semibold"
-						onClick={() => setShowViewModal(true)}
+						onClick={() => {
+							setShowViewModal(true);
+							setShowBuyModal(false);
+						}}
 					>
 						I already own a key
 					</p>
