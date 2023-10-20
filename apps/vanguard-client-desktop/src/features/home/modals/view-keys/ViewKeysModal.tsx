@@ -1,7 +1,6 @@
 import {AiOutlineClose} from "react-icons/ai";
 import {Dispatch, SetStateAction, useState} from "react";
 import {ViewKeysFlow} from "./ViewKeysFlow.tsx";
-import {ViewKeySuccess} from "./ViewKeysSuccess.tsx";
 import {ConnectWalletModal} from "../connect-wallet/ConnectWalletModal.tsx";
 
 interface ViewKeysModalProps {
@@ -9,7 +8,6 @@ interface ViewKeysModalProps {
 }
 
 export function ViewKeysModal({setShowModal}: ViewKeysModalProps) {
-	const [addWallet, setAddWallet] = useState<boolean>(false);
 	const [showConnectedModal, setShowConnectedModal] = useState<boolean>(false);
 
 	return (
@@ -30,17 +28,10 @@ export function ViewKeysModal({setShowModal}: ViewKeysModalProps) {
 					</div>
 				</div>
 
-				{addWallet ? (
-					<ViewKeySuccess
-						setShowModal={setShowModal}
-					/>
-				) : (
-					<ViewKeysFlow
-						setAddWallet={setAddWallet}
-						setShowConnectedModal={setShowConnectedModal}
-						// setConnectWallet={setConnectWallet}
-					/>
-				)}
+				<ViewKeysFlow
+					setShowModal={setShowModal}
+					setShowConnectedModal={setShowConnectedModal}
+				/>
 			</div>
 		</div>
 	)
