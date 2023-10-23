@@ -1,12 +1,24 @@
 import {FaCircleCheck} from "react-icons/fa6";
+import {AiOutlineClose} from "react-icons/ai";
+import {Dispatch, SetStateAction} from "react";
 
-export function WalletConnectedModal() {
+interface WalletConnectedModalProps {
+	setShowConnectedModal: Dispatch<SetStateAction<boolean>>;
+}
+
+export function WalletConnectedModal({setShowConnectedModal}: WalletConnectedModalProps) {
 	return (
 		<div
 			className="absolute top-0 right-0 left-0 bottom-0 m-auto w-auto h-auto flex flex-col justify-start items-center z-30">
 			<div className="w-full h-full bg-white opacity-90"/>
 			<div
 				className="absolute top-0 right-0 left-0 bottom-0 m-auto flex flex-col justify-start items-center w-[506px] h-[190px] border border-gray-200 bg-white">
+				<div
+					className="absolute top-0 right-0 h-16 flex flex-row justify-between items-center text-lg px-6">
+					<div className="cursor-pointer z-10" onClick={() => setShowConnectedModal(false)}>
+						<AiOutlineClose/>
+					</div>
+				</div>
 				<div
 					className="absolute top-0 bottom-0 left-0 right-0 m-auto flex flex-col justify-center items-center gap-4">
 					<FaCircleCheck color={"#16A34A"} size={32}/>

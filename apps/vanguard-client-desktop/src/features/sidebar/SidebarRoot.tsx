@@ -1,5 +1,5 @@
 import {Link, useNavigate} from 'react-router-dom';
-import {FaDiscord} from 'react-icons/fa';
+import {FaDiscord, FaIcons} from 'react-icons/fa';
 import {FiGitCommit} from "react-icons/fi";
 import {RiKey2Line, RiTwitterXFill} from "react-icons/ri";
 import {AiOutlineCloudUpload} from "react-icons/ai";
@@ -84,6 +84,12 @@ export function Sidebar() {
 						className="flex items-center mb-1 text-[15px text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
 					>
 						<HiOutlineDesktopComputer size={15}/> Operator
+					</Link>
+					<Link
+						to="/demo"
+						className="flex items-center mb-1 text-[15px text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
+					>
+						<FaIcons size={15}/> Demo
 					</Link>
 				</div>
 			</div>
