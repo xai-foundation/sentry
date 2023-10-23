@@ -1,4 +1,4 @@
-import {Dispatch, SetStateAction} from "react";
+import {ChangeEvent, Dispatch, SetStateAction} from "react";
 import {AiOutlineMinus, AiOutlinePlus} from "react-icons/ai";
 
 interface XaiNumberInput {
@@ -7,33 +7,41 @@ interface XaiNumberInput {
 }
 
 export function XaiNumberInput({amount, setAmount}: XaiNumberInput) {
-
-	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		// Remove non-numeric characters using a regular expression
+	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
 		const numericInput = event.target.value.replace(/[^0-9]/g, "");
-		setAmount(parseInt(numericInput));
+		let newAmount = parseInt(numericInput);
+
+		if (isNaN(newAmount)) {
+			newAmount = 1;
+		} else if (newAmount < 1) {
+			newAmount = 1;
+		} else if (newAmount > 5000) {
+			newAmount = 5000;
+		}
+
+		setAmount(newAmount);
 	};
 
 	return (
 		<div className="relative">
-			<span
-				onClick={() => amount > 1 ? setAmount(amount - 1) : null}
-				className="absolute top-4 left-4 cursor-pointer select-none">
+			<div
+				onClick={() => amount > 1 ? setAmount(amount - 1) : 1}
+				className="absolute w-12 h-full flex justify-center items-center top-0 left-0 cursor-pointer select-none">
 				<AiOutlineMinus/>
-			</span>
+			</div>
 
 			<input
 				type="text"
-				value={amount || 0}
+				value={amount}
 				className="w-full h-12 border border-[#A3A3A3] text-center hover:cursor-text hover:bg-white hover:border-gray-300 hover:outline-none"
 				onChange={handleInputChange}
 			/>
 
-			<span
-				onClick={() => setAmount(amount + 1)}
-				className="absolute top-4 right-4 cursor-pointer select-none">
+			<div
+				onClick={() => setAmount(amount < 5000 ? amount + 1 : 5000)}
+				className="absolute w-12 h-full flex justify-center items-center top-0 right-0 cursor-pointer select-none">
 				<AiOutlinePlus/>
-			</span>
+			</div>
 		</div>
 	);
 }

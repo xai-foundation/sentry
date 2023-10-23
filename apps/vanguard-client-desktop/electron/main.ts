@@ -24,11 +24,11 @@ ipcMain.on('open-external', (_, url) => {
 });
 
 ipcMain.handle('encrypt-string', async (_, plainText) => {
-	return await safeStorage.encryptString(plainText);
+	return safeStorage.encryptString(plainText);
 });
 
 ipcMain.handle('decrypt-string', async (_, encrypted) => {
-	return await safeStorage.decryptString(encrypted);
+	return safeStorage.decryptString(encrypted);
 });
 
 ipcMain.handle('is-encryption-available', () => {
@@ -70,6 +70,7 @@ function createWindow() {
 		height: 1080,
 		minWidth: 1024,
 		minHeight: 900,
+		autoHideMenuBar: true,
 		icon: path.join(process.env.VITE_PUBLIC, 'xai-logo.svg'),
 		webPreferences: {
 			preload: path.join(__dirname, 'preload.js'),
