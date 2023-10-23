@@ -237,7 +237,7 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 				<div className="pb-6 font-semibold">
 					<button
 						onClick={() => {
-							window.electron.openExternal('http://localhost:7555/')
+							window.electron.openExternal(`http://localhost:7555/?amount=${amount}`)
 							setPurchaseSuccess(true)
 						}}
 						className={`w-full h-16 flex flex-row justify-center items-center gap-1 bg-[#F30919] text-lg text-white`}
