@@ -1,13 +1,10 @@
 import {AiOutlineClose} from "react-icons/ai";
-import {Dispatch, SetStateAction} from "react";
 import {ViewKeysFlow} from "./ViewKeysFlow.tsx";
+import {useSetAtom} from "jotai";
+import {drawerStateAtom} from "../../../drawer/DrawerManager";
 
-interface ViewKeysModalProps {
-	setShowViewModal: Dispatch<SetStateAction<boolean>>;
-	setShowContinueInBrowserModal: Dispatch<SetStateAction<boolean>>;
-}
-
-export function ViewKeysModal({setShowViewModal, setShowContinueInBrowserModal}: ViewKeysModalProps) {
+export function ViewKeysModal() {
+	const setDrawerState = useSetAtom(drawerStateAtom);
 
 	return (
 			<div
@@ -15,14 +12,14 @@ export function ViewKeysModal({setShowViewModal, setShowContinueInBrowserModal}:
 				<div
 					className="absolute top-0 w-full h-16 flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
 					<span>View keys in wallet</span>
-					<div className="cursor-pointer z-10" onClick={() => setShowViewModal(false)}>
+					<div className="cursor-pointer z-10" onClick={() => setDrawerState(null)}>
 						<AiOutlineClose/>
 					</div>
 				</div>
 
 				<ViewKeysFlow
-					setShowViewModal={setShowViewModal}
-					setShowContinueInBrowserModal={setShowContinueInBrowserModal}
+					setShowViewModal={() => {}}
+					setShowContinueInBrowserModal={() => {}}
 				/>
 			</div>
 	)
