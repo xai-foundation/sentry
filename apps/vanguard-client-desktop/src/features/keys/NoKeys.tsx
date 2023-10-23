@@ -50,7 +50,7 @@ export function NoKeys({setShowBuyModal, setShowViewModal}: NoKeysProps) {
 					You do not own any keys
 				</p>
 				<p className="text-lg text-[#525252]">
-					Purchase a key to be able to begin accruing rewards
+					Purchase a key to be able to begin accruing esXAI
 				</p>
 
 				<button
