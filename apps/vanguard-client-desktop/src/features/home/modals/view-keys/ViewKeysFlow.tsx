@@ -5,11 +5,11 @@ import {FaCircleCheck} from "react-icons/fa6";
 import {useNavigate} from "react-router-dom";
 
 interface ViewKeysFlowProps {
-	setShowModal: Dispatch<SetStateAction<boolean>>;
-	setShowConnectedModal: Dispatch<SetStateAction<boolean>>;
+	setShowViewModal: Dispatch<SetStateAction<boolean>>;
+	setShowContinueInBrowserModal: Dispatch<SetStateAction<boolean>>;
 }
 
-export function ViewKeysFlow({setShowModal, setShowConnectedModal}: ViewKeysFlowProps) {
+export function ViewKeysFlow({setShowViewModal, setShowContinueInBrowserModal}: ViewKeysFlowProps) {
 	const [ownerAddress, setOwnerAddress] = useState('');
 	const [ownerAddressError, setOwnerAddressError] = useState({
 		errorResult: "",
@@ -69,7 +69,7 @@ export function ViewKeysFlow({setShowModal, setShowConnectedModal}: ViewKeysFlow
 	//todo: confirm this logic works
 	if (!loading && success) {
 		setTimeout(() => {
-			setShowModal(false);
+			setShowViewModal(false);
 			navigate("/keys")
 		}, 4000);
 
@@ -118,8 +118,8 @@ export function ViewKeysFlow({setShowModal, setShowConnectedModal}: ViewKeysFlow
 
 						<button
 							onClick={() => {
+								setShowContinueInBrowserModal(true)
 								window.electron.openExternal('http://localhost:7555/')
-								setShowConnectedModal(true)
 							}}
 							className="w-full h-12 flex flex-row justify-center items-center gap-1 bg-[#F30919] text-[15px] text-white font-semibold"
 						>

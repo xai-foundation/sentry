@@ -3,10 +3,11 @@ import {Dispatch, SetStateAction} from "react";
 import {ViewKeysFlow} from "./ViewKeysFlow.tsx";
 
 interface ViewKeysModalProps {
-	setShowModal: Dispatch<SetStateAction<boolean>>;
+	setShowViewModal: Dispatch<SetStateAction<boolean>>;
+	setShowContinueInBrowserModal: Dispatch<SetStateAction<boolean>>;
 }
 
-export function ViewKeysModal({setShowModal}: ViewKeysModalProps) {
+export function ViewKeysModal({setShowViewModal, setShowContinueInBrowserModal}: ViewKeysModalProps) {
 
 	return (
 			<div
@@ -14,14 +15,14 @@ export function ViewKeysModal({setShowModal}: ViewKeysModalProps) {
 				<div
 					className="absolute top-0 w-full h-16 flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
 					<span>View keys in wallet</span>
-					<div className="cursor-pointer z-10" onClick={() => setShowModal(false)}>
+					<div className="cursor-pointer z-10" onClick={() => setShowViewModal(false)}>
 						<AiOutlineClose/>
 					</div>
 				</div>
 
 				<ViewKeysFlow
-					setShowModal={setShowModal}
-					setShowConnectedModal={setShowModal}
+					setShowViewModal={setShowViewModal}
+					setShowContinueInBrowserModal={setShowContinueInBrowserModal}
 				/>
 			</div>
 	)

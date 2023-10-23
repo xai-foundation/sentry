@@ -4,11 +4,13 @@ import {NoKeys} from "./NoKeys.tsx";
 import {BuyKeysModal} from "./modals/buy-keys/BuyKeysModal.tsx";
 import {ActionsRequiredModalManager} from "../home/modals/actions-required/ActionsRequiredModalManager.tsx";
 import {ViewKeysModal} from "../home/modals/view-keys/ViewKeysModal.tsx";
+import {ContinueInBrowserModal} from "../home/modals/ContinueInBrowserModal.tsx";
 
 export function Keys() {
 	const [number, setNumber] = useState<number>(0);
 	const [showBuyModal, setShowBuyModal] = useState<boolean>(false);
 	const [showViewModal, setShowViewModal] = useState<boolean>(false);
+	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
 
 	return (
 		<div className="w-full h-screen">
@@ -34,8 +36,13 @@ export function Keys() {
 
 			{showViewModal && (
 				<ViewKeysModal
-					setShowModal={setShowViewModal}
+					setShowViewModal={setShowViewModal}
+					setShowContinueInBrowserModal={setShowContinueInBrowserModal}
 				/>
+			)}
+
+			{showContinueInBrowserModal && (
+				<ContinueInBrowserModal setShowContinueInBrowserModal={setShowContinueInBrowserModal}/>
 			)}
 
 			{number ? (

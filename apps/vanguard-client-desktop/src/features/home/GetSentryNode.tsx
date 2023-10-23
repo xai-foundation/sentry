@@ -4,7 +4,7 @@ import {AiFillInfoCircle} from "react-icons/ai";
 import {ViewKeysModal} from "./modals/view-keys/ViewKeysModal.tsx";
 import {useState} from "react";
 import {BuyKeysModal} from "../keys/modals/buy-keys/BuyKeysModal.tsx";
-import {ConnectWalletModal} from "./modals/connect-wallet/ConnectWalletModal.tsx";
+import {ContinueInBrowserModal} from "./modals/ContinueInBrowserModal.tsx";
 
 const body = [
 	{
@@ -48,7 +48,7 @@ export function GetSentryNode() {
 	const [number, setNumber] = useState<number>(0);
 	const [showBuyModal, setShowBuyModal] = useState<boolean>(false);
 	const [showViewModal, setShowViewModal] = useState<boolean>(false);
-	const [showConnectedModal, setShowConnectedModal] = useState<boolean>(false);
+	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
 
 	function getBody() {
 		return body.map((item, i) => {
@@ -83,15 +83,16 @@ export function GetSentryNode() {
 		<div
 			className="max-w-[1920px] flex flex-row items-center justify-between px-[5.125rem] pt-[5.625rem] overflow-hidden">
 
-			{showConnectedModal && (
-				<ConnectWalletModal
-					setShowConnectedModal={setShowConnectedModal}
+			{showContinueInBrowserModal && (
+				<ContinueInBrowserModal
+					setShowContinueInBrowserModal={setShowContinueInBrowserModal}
 				/>
 			)}
 
 			{showViewModal && (
 				<ViewKeysModal
-					setShowModal={setShowViewModal}
+					setShowViewModal={setShowViewModal}
+					setShowContinueInBrowserModal={setShowContinueInBrowserModal}
 				/>
 			)}
 
