@@ -24,6 +24,7 @@ interface NoKeysProps {
 
 export function NoKeys({setShowBuyModal, setShowViewModal}: NoKeysProps) {
 
+	{/*		todo: Avo told me I can turn this off	*/}
 	// function getKeyContent() {
 	// 	return noKeysCopy.map((item, i) => {
 	// 		return (

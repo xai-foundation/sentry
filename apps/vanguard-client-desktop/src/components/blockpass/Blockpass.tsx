@@ -19,7 +19,7 @@ export function Blockpass() {
 
 	return (
 		<button
-			className="w-64 bg-[#F30919] text-white p-4 uppercase font-semibold mt-2"
+			className="w-auto h-auto bg-[#F30919] text-white p-4 uppercase font-semibold"
 			id="blockpass-kyc-connect"
 		>
 			Verify with Blockpass
