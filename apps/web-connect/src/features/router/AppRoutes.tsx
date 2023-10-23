@@ -1,11 +1,11 @@
-import { Route, HashRouter as Router, Routes } from 'react-router-dom';
-import {Sandbox} from "../sandbox";
+import {HashRouter as Router, Route, Routes} from 'react-router-dom';
+import {Checkout} from "../checkout";
 
 export function AppRoutes() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Sandbox/>} />
+        <Route path="/" element={<Checkout/>} />
       </Routes>
     </Router>
   );
