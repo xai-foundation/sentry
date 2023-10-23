@@ -137,60 +137,68 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 						<>
 							{getDiscount()}
 							<p className="text-[13px] text-[#A3A3A3] mb-4">
-								0xBAbeCC…dd65cd85
+								IDONTWANNAPAYFULLPRICE
 							</p>
 						</>
 
 					)}
 
-					<hr className="my-2"/>
 
 					{/*		Promo section		*/}
-					{promo ? (
-						<div>
-							<div
-								className="w-full h-auto flex flex-row justify-between items-center text-[15px] text-[#525252] mt-2 py-2">
-								<span>Add promo code</span>
-								<div className="cursor-pointer z-10" onClick={() => setPromo(false)}>
-									<AiOutlineClose/>
-								</div>
-							</div>
 
-							<div className="flex gap-2 items-center">
+					{!discountApplied && (
+						<>
+					<hr className="my-2"/>
+							{
+								promo ? (
+									<div>
+										<div
+											className="w-full h-auto flex flex-row justify-between items-center text-[15px] text-[#525252] mt-2 py-2">
+											<span>Add promo code</span>
+											<div className="cursor-pointer z-10" onClick={() => setPromo(false)}>
+												<AiOutlineClose/>
+											</div>
+										</div>
 
-								<input
-									type="text"
-									value={inputValue}
-									onChange={(e) => {
-										setInputValue(e.target.value)
-										setDiscountError(false);
-									}}
-									className={`w-full my-2 p-2 border ${discountError ? "border-[#AB0914]": "border-[#A3A3A3]"}`}
-									placeholder="Enter promo code"
-								/>
+										<div className="flex gap-2 items-center">
 
-								<button
-									onClick={() => handleSubmit()}
-									className="flex flex-row justify-center items-center w-[92px] p-2 bg-[#F30919] text-[15px] text-white font-semibold uppercase"
-								>
-									Apply
-								</button>
-							</div>
+											<input
+												type="text"
+												value={inputValue}
+												onChange={(e) => {
+													setInputValue(e.target.value)
+													setDiscountError(false);
+												}}
+												className={`w-full my-2 p-2 border ${discountError ? "border-[#AB0914]" : "border-[#A3A3A3]"}`}
+												placeholder="Enter promo code"
+											/>
 
-							{discountError && (
-								<p className="text-[14px] text-[#AB0914]">Invalid referral address</p>
-							)}
-						</div>
-					) : (
-						<p className="text-[15px] py-2">
-							<a
-								onClick={() => setPromo(true)}
-								className="text-[#F30919] ml-1 cursor-pointer"
-							>
-								+ Add promo code
-							</a>
-						</p>
+											<button
+												onClick={() => handleSubmit()}
+												className="flex flex-row justify-center items-center w-[92px] p-2 bg-[#F30919] text-[15px] text-white font-semibold uppercase"
+											>
+												Apply
+											</button>
+										</div>
+
+										{discountError && (
+											<p className="text-[14px] text-[#AB0914]">Invalid referral address</p>
+										)}
+									</div>
+								) : (
+									<p className="text-[15px] py-2">
+										<a
+											onClick={() => setPromo(true)}
+											className="text-[#F30919] ml-1 cursor-pointer"
+										>
+											+ Add promo code
+										</a>
+									</p>
+								)
+							}
+						</>
 					)}
+
 
 					<hr className="my-2"/>
 					<div className="flex flex-row items-center justify-between">
