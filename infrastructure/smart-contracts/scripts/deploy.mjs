@@ -6,7 +6,7 @@ import { config } from "@xai-vanguard-node/core";
 import { parse } from "csv/sync";
 import fs from "fs";
 import {getImplementationAddress} from "../utils/getImplementationAddress.mjs"
-import { formatEther } from "ethers";
+import { parseEther } from "ethers";
 const { ethers, upgrades } = hardhat;
 
 const options = {
@@ -129,9 +129,9 @@ async function main() {
   // Read the csv from initialXaiMints.csv, and mint the corresponding amounts to each address in the CSV
   const initialMints = parse(fs.readFileSync('initialXaiMints.csv'), { columns: true });
   for (const mint of initialMints) {
-    await xai.mint(mint.address, formatEther(mint.xai));
+    await xai.mint(mint.address, parseEther(mint.xai));
     console.log(`Minted ${mint.xai} Xai to ${mint.address}`);
-    await esXai.mint(mint.address, formatEther(mint.esXai));
+    await esXai.mint(mint.address, parseEther(mint.esXai));
     console.log(`Minted ${mint.esXai} esXai to ${mint.address}`);
   }
 

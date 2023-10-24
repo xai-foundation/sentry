@@ -1,18 +1,20 @@
-export const config = {
+export let config = {
   "arbitrumBlockExplorer": "https://arbiscan.io",
   "arbitrumGoerliBlockExplorer": "https://goerli.arbiscan.io",
   "defaultRpcUrl": "https://frequent-damp-star.arbitrum-goerli.quiknode.pro/c1b565106ebecad49a9e7a938d084543187755e4/",
-  "esXaiAddress": "0x7B61a7D46A998885175EeaC42dd6B748b2E42F5E",
-  "esXaiDeployedBlockNumber": 49192844,
+  "esXaiAddress": "0xB224D6599CDE47c17d2051d90Dd0aD527baAe94C",
+  "esXaiDeployedBlockNumber": 50253686,
   "esXaiImplementationAddress": "0x07905bb78792e8dc41472d78fb116be23f365517",
-  "nodeLicenseAddress": "0x35fA1c45CCc846092Dd3C4e3e6ACb91d4fbF9F60",
-  "nodeLicenseDeployedBlockNumber": 49192869,
+  "nodeLicenseAddress": "0x6Fe195f88f60da56A6a5Dd7f48dCE32f5B7E8212",
+  "nodeLicenseDeployedBlockNumber": 50253705,
   "nodeLicenseImplementationAddress": "0x9744d499c33d745cb4cd0feddbb05ff2cff80ea8",
-  "refereeAddress": "0x5c291fe4Ad47aDadF7a7155b2011888a16aCFE99",
-  "refereeDeployedBlockNumber": 49192822,
+  "refereeAddress": "0x82A648a512Bb59600beCBd9E9B576a7d6a05aB8c",
+  "refereeDeployedBlockNumber": 50253668,
   "refereeImplementationAddress": "0x2b784bf8f299b66524cfc0b4f80ac806625f5509",
   "rollupAddress": "0x082742561295f6e1b43c4f5d1e2d52d7FfE082f1",
-  "xaiAddress": "0x47DE61D1eC7f5f58baA4Ff08301791E5AA848DC7",
-  "xaiDeployedBlockNumber": 49192805,
+  "xaiAddress": "0xc57A77D6EE557906B8AF7Da162AB7dB26eE7eB2C",
+  "xaiDeployedBlockNumber": 50253657,
   "xaiImplementationAddress": "0x0bd8ce521e337bc10c3fa891bb68aa411de37941"
 };
+
+export function setConfig(_config: any) { config = _config; }
