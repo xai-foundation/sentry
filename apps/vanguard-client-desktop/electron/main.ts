@@ -68,7 +68,7 @@ function createWindow() {
 	win = new BrowserWindow({
 		width: 1920,
 		height: 1080,
-		minWidth: 1024,
+		minWidth: 1650,
 		minHeight: 900,
 		autoHideMenuBar: true,
 		icon: path.join(process.env.VITE_PUBLIC, 'xai-logo.svg'),

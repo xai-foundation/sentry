@@ -82,8 +82,7 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 
 	return (
 		// Buy State
-		<div className="w-full flex flex-col gap-8 mt-12">
-
+		<div className="w-full flex flex-col gap-8">
 			{/*		Top of buy		*/}
 			<div className="flex flex-col gap-2 px-6 pt-8">
 				<div className="flex flex-row items-center gap-2">
@@ -140,17 +139,13 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 								IDONTWANNAPAYFULLPRICE
 							</p>
 						</>
-
 					)}
 
-
 					{/*		Promo section		*/}
-
 					{!discountApplied && (
 						<>
-					<hr className="my-2"/>
-							{
-								promo ? (
+							<hr className="my-2"/>
+							{promo ? (
 									<div>
 										<div
 											className="w-full h-auto flex flex-row justify-between items-center text-[15px] text-[#525252] mt-2 py-2">
@@ -199,7 +194,6 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 						</>
 					)}
 
-
 					<hr className="my-2"/>
 					<div className="flex flex-row items-center justify-between">
 						<div className="flex flex-row items-center gap-2 text-lg">
@@ -220,7 +214,7 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 			</div>
 
 			{/*		Banner section		*/}
-			<div className="absolute bottom-0 left-0 w-full flex flex-col gap-4 px-6">
+			<div className="w-full flex flex-col gap-4 px-6">
 				<div className="flex flex-col gap-2 bg-[#DCFCE6] p-6">
 					<span className="flex flex-row gap-1 items-center font-semibold">
 						<MdVerifiedUser size={22} color={"#38A349"}/> Purchase will be completed on <p
@@ -240,7 +234,7 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 							window.electron.openExternal(`http://localhost:7555/?amount=${amount}`)
 							setPurchaseSuccess(true)
 						}}
-						className={`w-full h-16 flex flex-row justify-center items-center gap-1 bg-[#F30919] text-lg text-white`}
+						className={"w-full h-16 flex flex-row justify-center items-center gap-1 bg-[#F30919] text-lg text-white"}
 					>
 						Confirm purchase <BiLinkExternal/>
 					</button>
