@@ -78,7 +78,7 @@ export function GetSentryNode() {
 
 	return (
 		<div
-			className="max-w-[1920px] flex flex-row items-center justify-between px-[5.125rem] pt-[5.625rem] overflow-hidden">
+			className="w-full flex flex-row items-center justify-between px-[2.8rem] pt-[5.625rem] overflow-hidden">
 			{showContinueInBrowserModal && (
 				<ContinueInBrowserModal
 					setShowContinueInBrowserModal={setShowContinueInBrowserModal}
@@ -117,29 +117,29 @@ export function GetSentryNode() {
 				</div>
 			</div>
 
-			<div>
-				<div className="w-[436px] p-[2rem] bg-[#F5F5F5]">
-					<p className="flex items-center font-semibold gap-2 mb-4 text-lg">
-						<AiFillInfoCircle size={18} className="text-[#A3A3A3]"/>
-						What is a Sentry Node?
-					</p>
+			{/*<div>*/}
+			{/*	<div className="w-[436px] p-[2rem] bg-[#F5F5F5]">*/}
+			{/*		<p className="flex items-center font-semibold gap-2 mb-4 text-lg">*/}
+			{/*			<AiFillInfoCircle size={18} className="text-[#A3A3A3]"/>*/}
+			{/*			What is a Sentry Node?*/}
+			{/*		</p>*/}
 
-					<div className="flex flex-col items-center gap-[24px]">
-						{getSentryNodeBody()}
-					</div>
+			{/*		<div className="flex flex-col items-center gap-[24px]">*/}
+			{/*			{getSentryNodeBody()}*/}
+			{/*		</div>*/}
 
-					<p className="mt-[14px] text-[14px] text-[#525252]">
-						Want to learn more about Sentry Node technical specifications?
+			{/*		<p className="mt-[14px] text-[14px] text-[#525252]">*/}
+			{/*			Want to learn more about Sentry Node technical specifications?*/}
 
-						<a
-							onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/xai-protocol/sentry-nodes-explained")}
-							className="text-[#F30919] ml-1 cursor-pointer"
-						>
-							Learn more
-						</a>
-					</p>
-				</div>
-			</div>
+			{/*			<a*/}
+			{/*				onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/xai-protocol/sentry-nodes-explained")}*/}
+			{/*				className="text-[#F30919] ml-1 cursor-pointer"*/}
+			{/*			>*/}
+			{/*				Learn more*/}
+			{/*			</a>*/}
+			{/*		</p>*/}
+			{/*	</div>*/}
+			{/*</div>*/}
 
 			<video
 				className="fixed bottom-[-10rem] left-0 w-screen object-cover -z-10"

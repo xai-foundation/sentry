@@ -1,4 +1,6 @@
 import {Dispatch, SetStateAction} from "react";
+import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
+import {useSetAtom} from "jotai";
 
 const dummyLicenses = [
 	{
@@ -21,11 +23,9 @@ const dummyLicenses = [
 	// },
 ]
 
-interface HasLicensesProps {
-	setShowModal: Dispatch<SetStateAction<boolean>>;
-}
+export function HasKeys() {
+	const setDrawerState = useSetAtom(drawerStateAtom);
 
-export function HasKeys({setShowModal}: HasLicensesProps) {
 	function getKeys() {
 		return dummyLicenses.map((item, i: number) => {
 			return (
@@ -55,7 +55,7 @@ export function HasKeys({setShowModal}: HasLicensesProps) {
 						Purchase additional keys to increase the number of claims submitted per challenge
 					</p>
 					<button
-						onClick={() => setShowModal(true)}
+						onClick={() => setDrawerState(DrawerView.BuyKeys)}
 						className="w-48 bg-[#F30919] text-sm text-white p-2 uppercase font-semibold"
 					>
 						Buy Now

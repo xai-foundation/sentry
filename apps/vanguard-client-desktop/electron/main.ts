@@ -68,8 +68,9 @@ function createWindow() {
 	win = new BrowserWindow({
 		width: 1920,
 		height: 1080,
-		minWidth: 1024,
+		minWidth: 1600,
 		minHeight: 900,
+		maxWidth: 1920,
 		icon: path.join(process.env.VITE_PUBLIC, 'xai-logo.svg'),
 		webPreferences: {
 			preload: path.join(__dirname, 'preload.js'),
