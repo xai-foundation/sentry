@@ -4,7 +4,7 @@ import electron from 'vite-plugin-electron/simple'
 import react from '@vitejs/plugin-react'
 import svgr from "vite-plugin-svgr";
 import tailwindcss from "tailwindcss";
-import * as autoprefixer from 'autoprefixer';
+import autoprefixer from 'autoprefixer';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -24,7 +24,7 @@ export default defineConfig({
 		postcss: {
 			plugins: [
 				tailwindcss,
-				autoprefixer({}) as any,
+				// autoprefixer({}) as any,
 			],
 		},
 	},
