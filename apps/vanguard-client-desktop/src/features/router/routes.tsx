@@ -1,22 +1,27 @@
-import { HashRouter as Router, Route, Routes } from 'react-router-dom';
-import { Licenses } from "../licenses/Licenses.tsx";
-import { Homepage } from "../home/Homepage.tsx";
+import {HashRouter as Router, Route, Routes} from 'react-router-dom';
 import {Sidebar} from "../sidebar";
+import {GetSentryNode} from "../home/GetSentryNode.tsx";
+import {Keys} from "../keys/Keys.tsx";
+import {Operator} from "../operator/Operator.tsx";
+import {SentryWallet} from "../home/SentryWallet.tsx";
 
 export function AppRoutes() {
-  return (
-    <Router>
-      <div className="flex">
-        <div className="w-64 h-screen">
-          <Sidebar/>
-        </div>
-        <div className="flex-grow">
-          <Routes>
-            <Route path="/" element={<Homepage />} />
-            <Route path="/licenses" element={<Licenses />} />
-          </Routes>
-        </div>
-      </div>
-    </Router>
-  );
+	return (
+		<Router>
+			<div className="w-full h-screen flex">
+				<Sidebar/>
+
+				<div className="max-w-[1686px] flex-grow">
+					<Routes>
+						<Route path="/" element={<GetSentryNode/>}/>
+
+						<Route path="/keys" element={<Keys/>}/>
+						<Route path="/sentry-wallet" element={<SentryWallet/>}/>
+
+						<Route path="/operator" element={<Operator/>}/>
+					</Routes>
+				</div>
+			</div>
+		</Router>
+	);
 }

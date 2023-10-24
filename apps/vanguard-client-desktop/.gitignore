@@ -24,3 +24,9 @@ release
 *.njsproj
 *.sln
 *.sw?
+
+# Remove the web directory in public
+public/web
+tsconfig.node.tsbuildinfo
+vite.config.js
+vite.config.d.ts

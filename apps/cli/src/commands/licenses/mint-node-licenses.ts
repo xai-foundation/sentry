@@ -1,4 +1,5 @@
-import Vorpal from "vorpal";import { ethers } from "ethers";
+import Vorpal from "vorpal";
+import { ethers } from "ethers";
 import { getSignerFromPrivateKey, mintNodeLicenses as coreMintNodeLicenses } from "@xai-vanguard-node/core";
 
 export function mintNodeLicenses(cli: Vorpal) {
@@ -20,24 +21,30 @@ export function mintNodeLicenses(cli: Vorpal) {
             };
             const { privateKey } = await this.prompt(privateKeyPrompt);
 
+            const referralAddressPrompt: Vorpal.PromptObject = {
+                type: 'input',
+                name: 'referralAddress',
+                message: 'Enter the referral address (optional):',
+            };
+            const { referralAddress } = await this.prompt(referralAddressPrompt);
+
             this.log(`Minting ${amount} NodeLicense tokens...`);
 
             // get a signer of the private key
             const {signer} = getSignerFromPrivateKey(privateKey);
 
             try {
-                const { mintedNftIds, txReceipt, pricePaid } = await coreMintNodeLicenses(
+                const { mintedNftIds, pricePaid } = await coreMintNodeLicenses(
                     Number(amount),
                     signer,
+                    referralAddress,
                 );
 
                 this.log(`Tokens successfully minted. Here are the details:`);
-                mintedNftIds.forEach((id, index) => {
+                mintedNftIds.forEach((id) => {
                     this.log(`Minted ID: ${id}`);
                 });
                 
-                
-
                 // Convert pricePaid from wei to eth using ethers utils
                 const pricePaidInEth = ethers.formatEther(pricePaid);
                 this.log(`Price Paid for Minting (in ETH): ${pricePaidInEth}`);
@@ -48,4 +55,5 @@ export function mintNodeLicenses(cli: Vorpal) {
             }
         });
 }
+
 

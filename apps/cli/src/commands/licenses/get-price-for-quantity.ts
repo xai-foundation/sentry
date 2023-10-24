@@ -1,5 +1,6 @@
 import Vorpal from "vorpal";
 import { getPriceForQuantity as getPriceForQuantityCore } from "@xai-vanguard-node/core";
+import {ethers} from "ethers";
 
 /**
  * Function to estimate the price of a node purchase.
@@ -16,7 +17,9 @@ export function getPriceForQuantity(cli: Vorpal) {
             });
             this.log(`Estimating price for ${quantity} nodes...`);
             const { price, nodesAtEachPrice } = await getPriceForQuantityCore(Number(quantity));
-            this.log(`Estimated price: ${price}`);
-            this.log(`Nodes at each price: ${JSON.stringify(nodesAtEachPrice)}`);
+            this.log(`Estimated Total Price: ${ethers.formatEther(price)} eth`);
+            nodesAtEachPrice.forEach((tier) => {
+                this.log(`Price Per License: ${ethers.formatEther(tier.pricePer)} eth, Quantity: ${tier.quantity.toString()}, Total Price for Tier: ${ethers.formatEther(tier.totalPriceForTier)} eth`);
+            });
         });
 }

@@ -7,8 +7,9 @@ import { listTiers } from './listTiers.js';
 /**
  * Pricing tier structure.
  */
-interface Tier {
-    price: bigint;
+export interface CheckoutTierSummary {
+    pricePer: bigint;
+    totalPriceForTier: bigint;
     quantity: bigint;
 }
 
@@ -17,7 +18,7 @@ interface Tier {
  * @param quantity - The quantity of NodeLicenses.
  * @returns An object containing the price for the given quantity of NodeLicenses and a list of how many nodes are at each price.
  */
-export async function getPriceForQuantity(quantity: number): Promise<{ price: bigint, nodesAtEachPrice: Tier[] }> {
+export async function getPriceForQuantity(quantity: number): Promise<{ price: bigint, nodesAtEachPrice: CheckoutTierSummary[] }> {
 
     // Get the provider
     const provider = getProvider();
@@ -25,8 +26,11 @@ export async function getPriceForQuantity(quantity: number): Promise<{ price: bi
     // Create an instance of the NodeLicense contract
     const nodeLicenseContract = new ethers.Contract(config.nodeLicenseAddress, NodeLicenseAbi, provider);
 
+    // Get the price from the price() function in NodeLicense contract
+    const contractPrice = await nodeLicenseContract.price(quantity, ethers.ZeroAddress);
+
     // Get the total supply of NodeLicenses
-    const totalSupply = await nodeLicenseContract.totalSupply();
+    let totalSupply = await nodeLicenseContract.totalSupply();
 
     // Get the pricing tiers
     const tiers = await listTiers()
@@ -35,24 +39,27 @@ export async function getPriceForQuantity(quantity: number): Promise<{ price: bi
     let price: bigint = 0n;
 
     // Initialize the list of how many nodes are at each price
-    const nodesAtEachPrice: Tier[] = [];
+    const nodesAtEachPrice: CheckoutTierSummary[] = [];
 
     // Calculate the price based on the tiers and the total supply
+    let tierSum: bigint = 0n;
     for (const tier of tiers) {
-        if (totalSupply + quantity <= tier.quantity) {
-            price = tier.price * BigInt(quantity);
-            nodesAtEachPrice.push({ price: tier.price, quantity: BigInt(quantity) });
+        tierSum += tier.quantity;
+        const availableInThisTier = tierSum > totalSupply
+            ? tierSum - totalSupply
+            : 0n;
+
+        if (BigInt(quantity) <= availableInThisTier) {
+            price += tier.price * BigInt(quantity);
+            nodesAtEachPrice.push({ pricePer: tier.price, quantity: BigInt(quantity), totalPriceForTier: tier.price * BigInt(quantity) });
             break;
-        } else if (totalSupply < tier.quantity) {
-            const quantityInTier = tier.quantity - totalSupply;
-            price += tier.price * BigInt(quantityInTier);
-            nodesAtEachPrice.push({ price: tier.price, quantity: BigInt(quantityInTier) });
-            quantity -= Number(quantityInTier);
+        } else {
+            price += availableInThisTier * tier.price;
+            nodesAtEachPrice.push({ pricePer: tier.price, quantity: availableInThisTier, totalPriceForTier: tier.price * availableInThisTier });
+            quantity -= Number(availableInThisTier);
+            totalSupply += availableInThisTier;
         }
     }
-
-    // Get the price from the price() function in NodeLicense contract
-    const contractPrice = await nodeLicenseContract.price(quantity);
 
     // Check if the calculated price and contract price match
     if (price !== contractPrice) {

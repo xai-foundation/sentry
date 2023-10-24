@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, shell, safeStorage } from 'electron'
-import fs from "fs";
-import path from "path";
+import fs from 'fs';
+import path from 'path';
+import express from 'express';
 
 // The built directory structure
 //
@@ -65,9 +66,9 @@ ipcMain.handle('buffer-from', (_, str, encoding) => {
 
 function createWindow() {
 	win = new BrowserWindow({
-		width: 1440,
-		height: 900,
-		minWidth: 1440,
+		width: 1920,
+		height: 1080,
+		minWidth: 1024,
 		minHeight: 900,
 		icon: path.join(process.env.VITE_PUBLIC, 'xai-logo.svg'),
 		webPreferences: {
@@ -104,6 +105,14 @@ app.on('activate', () => {
 	if (BrowserWindow.getAllWindows().length === 0) {
 		createWindow()
 	}
+})
+
+// When the app is ready, we are going to start a local web server to deploy the web-connect project
+app.on('ready', () => {
+	const server = express();
+	const publicWebPath = path.join(process.env.VITE_PUBLIC, '/web');
+	server.use(express.static(publicWebPath));
+	server.listen(7555);
 })
 
 app.whenReady().then(createWindow)

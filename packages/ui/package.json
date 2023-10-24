@@ -1,0 +1,27 @@
+{
+  "name": "@xai-vanguard-node/ui",
+  "version": "0.0.0",
+  "description": "",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo"
+  },
+  "dependencies": {
+    "react-icons": "^4.11.0"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tailwindcss": "^3.3.3"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED"
+}

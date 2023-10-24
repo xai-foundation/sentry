@@ -1,0 +1,22 @@
+{
+  "name": "@xai-vanguard-node/smart-contracts",
+  "version": "1.0.0",
+  "license": "UNLICENSED",
+  "type": "module",
+  "scripts": {
+    "deploy": "hardhat run scripts/deploy.mjs",
+    "clean": "rimraf artifacts && rimraf cache"
+  },
+  "dependencies": {
+    "@xai-vanguard-node/core": "workspace:*",
+    "csv": "^6.3.5",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "@openzeppelin/contracts": "4.9.3",
+    "@openzeppelin/contracts-upgradeable": "4.9.3",
+    "@openzeppelin/hardhat-upgrades": "^2.3.3",
+    "@nomicfoundation/hardhat-toolbox": "^3.0.0",
+    "hardhat": "^2.17.2"
+  }
+}
