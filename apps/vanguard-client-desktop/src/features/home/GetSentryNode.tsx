@@ -1,10 +1,10 @@
 import {RiKey2Line} from "react-icons/ri";
 import {FiGift, FiGitCommit} from "react-icons/fi";
 import {AiFillInfoCircle} from "react-icons/ai";
-import {ViewKeysModal} from "./modals/view-keys/ViewKeysModal.tsx";
 import {useState} from "react";
-import {BuyKeysModal} from "../keys/modals/buy-keys/BuyKeysModal.tsx";
 import {ContinueInBrowserModal} from "./modals/ContinueInBrowserModal.tsx";
+import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
+import {useSetAtom} from "jotai";
 
 const body = [
 	{
@@ -22,8 +22,7 @@ const body = [
 		header: "Earn esXAI",
 		body: "Over time you will earn esXAI from network challenges",
 	},
-]
-
+];
 
 const sentryBody = [
 	{
@@ -42,12 +41,10 @@ const sentryBody = [
 		header: "Can be run on computers or the cloud",
 		body: "Sentry Nodes can be run on any laptop, desktop, or even on cloud instances",
 	},
-]
+];
 
 export function GetSentryNode() {
-	const [number, setNumber] = useState<number>(0);
-	const [showBuyModal, setShowBuyModal] = useState<boolean>(false);
-	const [showViewModal, setShowViewModal] = useState<boolean>(false);
+	const setDrawerState = useSetAtom(drawerStateAtom);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
 
 	function getBody() {
@@ -61,8 +58,8 @@ export function GetSentryNode() {
 					<p className="text-lg font-semibold mt-2">{item.header}</p>
 					<p className="text-base text-[#525252]">{item.body}</p>
 				</div>
-			)
-		})
+			);
+		});
 	}
 
 	function getSentryNodeBody() {
@@ -75,32 +72,16 @@ export function GetSentryNode() {
 					<p className="text-base font-semibold">{item.header}</p>
 					<p className="text-[15px] text-[#525252]">{item.body}</p>
 				</div>
-			)
-		})
+			);
+		});
 	}
 
 	return (
 		<div
-			className="max-w-[1920px] flex flex-row items-center justify-between px-[5.125rem] pt-[5.625rem] overflow-hidden">
-
+			className="w-full flex flex-row items-center justify-between px-[2.8rem] pt-[5.625rem] overflow-hidden">
 			{showContinueInBrowserModal && (
 				<ContinueInBrowserModal
 					setShowContinueInBrowserModal={setShowContinueInBrowserModal}
-				/>
-			)}
-
-			{showViewModal && (
-				<ViewKeysModal
-					setShowViewModal={setShowViewModal}
-					setShowContinueInBrowserModal={setShowContinueInBrowserModal}
-				/>
-			)}
-
-			{showBuyModal && (
-				<BuyKeysModal
-					number={number}
-					setNumber={setNumber}
-					setShowModal={setShowBuyModal}
 				/>
 			)}
 
@@ -118,20 +99,14 @@ export function GetSentryNode() {
 				<div className="flex items-center mt-4 gap-[3rem]">
 					<button
 						className={`w-[27.25rem] bg-[#F30919] flex justify-center items-center gap-2 text-lg text-white py-5 font-semibold mt-2`}
-						onClick={() => {
-							setShowBuyModal(true);
-							setShowViewModal(false);
-						}}
+						onClick={() => setDrawerState(DrawerView.BuyKeys)}
 					>
 						<RiKey2Line className="w-5 h-5"/>
 						Purchase Key
 					</button>
 					<p
 						className="text-xl text-[#F30919] cursor-pointer font-semibold"
-						onClick={() => {
-							setShowViewModal(true);
-							setShowBuyModal(false);
-						}}
+						onClick={() => setDrawerState(DrawerView.ViewKeys)}
 					>
 						I already own a key
 					</p>
@@ -142,31 +117,29 @@ export function GetSentryNode() {
 				</div>
 			</div>
 
-			<div>
-				<div className="w-[436px] p-[2rem] bg-[#F5F5F5]">
-					<p className="flex items-center font-semibold gap-2 mb-4 text-lg">
-						<AiFillInfoCircle size={18} className="text-[#A3A3A3]"/>
-						What is a Sentry Node?
-					</p>
+			{/*<div>*/}
+			{/*	<div className="w-[436px] p-[2rem] bg-[#F5F5F5]">*/}
+			{/*		<p className="flex items-center font-semibold gap-2 mb-4 text-lg">*/}
+			{/*			<AiFillInfoCircle size={18} className="text-[#A3A3A3]"/>*/}
+			{/*			What is a Sentry Node?*/}
+			{/*		</p>*/}
 
-					<div className="flex flex-col items-center gap-[24px]">
-						{getSentryNodeBody()}
-					</div>
+			{/*		<div className="flex flex-col items-center gap-[24px]">*/}
+			{/*			{getSentryNodeBody()}*/}
+			{/*		</div>*/}
 
-					<p className="mt-[14px] text-[14px] text-[#525252]">
-						Want to learn more about Sentry Node technical specifications?
+			{/*		<p className="mt-[14px] text-[14px] text-[#525252]">*/}
+			{/*			Want to learn more about Sentry Node technical specifications?*/}
 
-						<a
-							onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/xai-protocol/sentry-nodes-explained")}
-							className="text-[#F30919] ml-1 cursor-pointer"
-						>
-							Learn more
-						</a>
-					</p>
-
-				</div>
-			</div>
-
+			{/*			<a*/}
+			{/*				onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/xai-protocol/sentry-nodes-explained")}*/}
+			{/*				className="text-[#F30919] ml-1 cursor-pointer"*/}
+			{/*			>*/}
+			{/*				Learn more*/}
+			{/*			</a>*/}
+			{/*		</p>*/}
+			{/*	</div>*/}
+			{/*</div>*/}
 
 			<video
 				className="fixed bottom-[-10rem] left-0 w-screen object-cover -z-10"
@@ -178,5 +151,5 @@ export function GetSentryNode() {
 				<source src="/videos/node-bg-4k.mp4" type="video/mp4"/>
 			</video>
 		</div>
-	)
+	);
 }

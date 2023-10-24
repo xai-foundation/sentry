@@ -1,6 +1,7 @@
 import {AiFillWarning} from "react-icons/ai";
-import {Dispatch, SetStateAction} from "react";
+import {useSetAtom} from "jotai";
 import {RiKey2Line} from "react-icons/ri";
+import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 
 // const noKeysCopy = [
 // 	{
@@ -17,12 +18,8 @@ import {RiKey2Line} from "react-icons/ri";
 // 	},
 // ]
 
-interface NoKeysProps {
-	setShowBuyModal: Dispatch<SetStateAction<boolean>>
-	setShowViewModal: Dispatch<SetStateAction<boolean>>
-}
-
-export function NoKeys({setShowBuyModal, setShowViewModal}: NoKeysProps) {
+export function NoKeys() {
+	const setDrawerState = useSetAtom(drawerStateAtom);
 
 	{/*		todo: Avo told me I can turn this off	*/}
 	// function getKeyContent() {
@@ -54,7 +51,7 @@ export function NoKeys({setShowBuyModal, setShowViewModal}: NoKeysProps) {
 				</p>
 
 				<button
-					onClick={() => setShowBuyModal(true)}
+					onClick={() => setDrawerState(DrawerView.BuyKeys)}
 					className="flex justify-center items-center gap-1 text-[15px] text-white bg-[#F30919] font-semibold mt-2 px-6 py-3"
 				>
 					<RiKey2Line className="w-5 h-5"/>
@@ -65,7 +62,7 @@ export function NoKeys({setShowBuyModal, setShowViewModal}: NoKeysProps) {
 					Already own a key?
 
 					<a
-						onClick={() => setShowViewModal(true)}
+						onClick={() => setDrawerState(DrawerView.ViewKeys)}
 						className="text-[#F30919] ml-1 cursor-pointer"
 					>
 						Add wallet to Xai Client

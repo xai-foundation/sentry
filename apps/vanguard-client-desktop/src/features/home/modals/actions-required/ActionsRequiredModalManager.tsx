@@ -46,16 +46,16 @@ export function ActionsRequiredModalManager() {
 				/>
 			)}
 
-			{showViewModal && (
-				<ViewKeysModal
-					setShowViewModal={setShowViewModal}
-					setShowContinueInBrowserModal={setShowContinueInBrowserModal}
-				/>
-			)}
+			{/*{showViewModal && (*/}
+			{/*	<ViewKeysModal*/}
+			{/*		setShowViewModal={setShowViewModal}*/}
+			{/*		setShowContinueInBrowserModal={setShowContinueInBrowserModal}*/}
+			{/*	/>*/}
+			{/*)}*/}
 
 			{showContinueInBrowserModal && (
 				<ContinueInBrowserModal setShowContinueInBrowserModal={setShowContinueInBrowserModal}/>
 			)}
 		</div>
-	)
+	);
 }
