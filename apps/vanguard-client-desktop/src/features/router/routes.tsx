@@ -6,27 +6,33 @@ import {Operator} from "../operator/Operator.tsx";
 import {SentryWallet} from "../home/SentryWallet.tsx";
 import {Demo} from "../demo/Demo.tsx";
 import {DrawerManager} from "../drawer/DrawerManager";
+import {QueryClient, QueryClientProvider} from "react-query";
 
 export function AppRoutes() {
+
+	const queryClient = new QueryClient();
+
 	return (
 		<Router>
-			<div className="w-full h-screen flex">
-				<Sidebar/>
+			<QueryClientProvider client={queryClient}>
+				<div className="w-full h-screen flex">
+					<Sidebar/>
 
-				<div className="max-w-[1686px] flex-grow">
-					<Routes>
-						<Route path="/" element={<GetSentryNode/>}/>
+					<div className="max-w-[1686px] flex-grow">
+						<Routes>
+							<Route path="/" element={<GetSentryNode/>}/>
 
-						<Route path="/keys" element={<Keys/>}/>
-						<Route path="/sentry-wallet" element={<SentryWallet/>}/>
+							<Route path="/keys" element={<Keys/>}/>
+							<Route path="/sentry-wallet" element={<SentryWallet/>}/>
 
-						<Route path="/operator" element={<Operator/>}/>
-						<Route path="/demo" element={<Demo/>}/>
-					</Routes>
+							<Route path="/operator" element={<Operator/>}/>
+							<Route path="/demo" element={<Demo/>}/>
+						</Routes>
+					</div>
+
+					<DrawerManager/>
 				</div>
-
-				<DrawerManager/>
-			</div>
+			</QueryClientProvider>
 		</Router>
 	);
 }

@@ -4,14 +4,7 @@ import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {BiLinkExternal, BiLoaderAlt} from "react-icons/bi";
 import {AiOutlineClose, AiOutlineInfoCircle} from "react-icons/ai";
 import {MdVerifiedUser} from "react-icons/md";
-
-const payWithBody = [
-	{
-		item: "Xai Sentry Node Key",
-		abbr: "ETH",
-		price: 0.000641,
-	}
-]
+import {useGetPriceForQuantity} from "../../hooks/useGetPriceForQuantity.ts";
 
 interface BuyKeysFlowProps {
 	setPurchaseSuccess: Dispatch<SetStateAction<boolean>>;
@@ -22,17 +15,18 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 	const [discountApplied, setDiscountApplied] = useState<boolean>(false);
 	const [discountError, setDiscountError] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState('');
-	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [promo, setPromo] = useState<boolean>(false);
+	const price = 0.00061;
+
+	const {isLoading} = useGetPriceForQuantity(amount);
+
+	// if (data) {
+	// 	price = Number(ethers.formatEther(data?.price));
+	// }
 
 
-	// todo: delete once real data is implemented
-	console.log(setIsLoading);
-
-	const discountPrice = (5 / 100) * payWithBody[0].price;
+	const discountPrice = (5 / 100) * price;
 	const discount = {
-		item: "Discount (5%)",
-		abbr: "ETH",
 		price: discountPrice * -1,
 	};
 
@@ -45,42 +39,6 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 			setInputValue("");
 		}
 	};
-
-	function getOrderTotal() {
-		return payWithBody.map((item, i) => {
-			return (
-				<div className="flex flex-row items-center justify-between text-[15px]" key={`order-total-${i}`}>
-					<div className="flex flex-row items-center gap-2">
-						<span className="">{amount} x {item.item}</span>
-					</div>
-					<div className="flex flex-row items-center gap-1">
-						<span className="font-semibold">{Number(item.price * amount).toFixed(6)} {item.abbr}</span>
-					</div>
-				</div>
-			)
-		})
-	}
-
-	function getDiscount() {
-		return (
-			<div className="flex flex-row items-center justify-between text-[15px]">
-				<div className="flex flex-row items-center gap-2">
-					<span>{discount.item}</span>
-
-					<a
-						onClick={() => setDiscountApplied(false)}
-						className="text-[#F30919] ml-1 cursor-pointer"
-					>
-						Remove
-					</a>
-
-				</div>
-				<div className="flex flex-row items-center gap-1">
-					<span className="text-[#2A803D] font-semibold">{discount.price * amount} {discount.abbr}</span>
-				</div>
-			</div>
-		)
-	}
 
 	return (
 		// Buy State
@@ -137,14 +95,38 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 							</div>
 
 							<div className="px-6">
-								{getOrderTotal()}
+								<div className="flex flex-row items-center justify-between text-[15px]">
+									<div className="flex flex-row items-center gap-2">
+										<span className="">{amount} x Xai Sentry Node Key</span>
+									</div>
+									<div className="flex flex-row items-center gap-1">
+										<span className="font-semibold">{price} ETH</span>
+									</div>
+								</div>
 								<p className="text-[13px] text-[#A3A3A3] mb-4">
-									{payWithBody[0].price} {payWithBody[0].abbr} per key
+									{price} ETH per key
 								</p>
 
 								{discountApplied && (
 									<>
-										{getDiscount()}
+										<div className="flex flex-row items-center justify-between text-[15px]">
+											<div className="flex flex-row items-center gap-2">
+												<span>Discount (5%)</span>
+
+												<a
+													onClick={() => setDiscountApplied(false)}
+													className="text-[#F30919] ml-1 cursor-pointer"
+												>
+													Remove
+												</a>
+
+											</div>
+											<div className="flex flex-row items-center gap-1">
+												<span className="text-[#2A803D] font-semibold">
+													{discount.price * amount} ETH
+												</span>
+											</div>
+										</div>
 										<p className="text-[13px] text-[#A3A3A3] mb-4">
 											IDONTWANNAPAYFULLPRICE
 										</p>
@@ -201,8 +183,7 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 													+ Add promo code
 												</a>
 											</p>
-										)
-										}
+										)}
 									</>
 								)}
 
@@ -212,14 +193,12 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 										<span className="">You pay</span>
 									</div>
 									<div className="flex flex-row items-center gap-1 font-semibold">
-							<span>
-								{discountApplied
-									? Number((payWithBody[0].price * amount) - (discountPrice * amount)).toFixed(8)
-									: Number(payWithBody[0].price * amount).toFixed(8)}
-							</span>
 										<span>
-								{payWithBody[0].abbr}
-							</span>
+											{discountApplied
+												? Number(price - (discountPrice * amount)).toFixed(8)
+												: price}
+										</span>
+										<span>ETH</span>
 									</div>
 								</div>
 							</div>
