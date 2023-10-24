@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { config } from '@xai-vanguard-node/core';
+import { config, setConfig } from '@xai-vanguard-node/core';
 
 /**
  * Updates the configuration file with the provided config object.
@@ -18,10 +18,12 @@ export function writeToConfig(newConfig) {
     }, {});
 
     // override the current config in memory
-    config = sortedConfig;
+    setConfig(config);
 
     // Convert the sorted config object to a string
-    const updatedConfigStr = `export const config = ${JSON.stringify(sortedConfig, null, 2)};`;
+    let updatedConfigStr = `export let config = ${JSON.stringify(sortedConfig, null, 2)};`;
+    updatedConfigStr += "\n\n";
+    updatedConfigStr += "export function setConfig(_config: any) { config = _config; }";
     console.log("New config written", updatedConfigStr);
 
     // Determine the path to the config file dynamically
