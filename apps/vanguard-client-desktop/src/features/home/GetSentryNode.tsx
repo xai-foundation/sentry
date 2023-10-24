@@ -1,6 +1,5 @@
 import {RiKey2Line} from "react-icons/ri";
 import {FiGift, FiGitCommit} from "react-icons/fi";
-import {AiFillInfoCircle} from "react-icons/ai";
 import {useState} from "react";
 import {ContinueInBrowserModal} from "./modals/ContinueInBrowserModal.tsx";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
@@ -24,24 +23,24 @@ const body = [
 	},
 ];
 
-const sentryBody = [
-	{
-		header: "Observation node",
-		body: "The Sentry Node is an observation node that monitors the Xai rollup protocol",
-	},
-	{
-		header: "Solves the verifiers dilemma",
-		body: "If an incorrect block is proposed, the node will raise the alarm by whatever means the operator chooses",
-	},
-	{
-		header: "Sentry Nodes can receive network rewards",
-		body: "As long as the node is running, a probabilistic algorithm determines if nodes will receive network rewards",
-	},
-	{
-		header: "Can be run on computers or the cloud",
-		body: "Sentry Nodes can be run on any laptop, desktop, or even on cloud instances",
-	},
-];
+// const sentryBody = [
+// 	{
+// 		header: "Observation node",
+// 		body: "The Sentry Node is an observation node that monitors the Xai rollup protocol",
+// 	},
+// 	{
+// 		header: "Solves the verifiers dilemma",
+// 		body: "If an incorrect block is proposed, the node will raise the alarm by whatever means the operator chooses",
+// 	},
+// 	{
+// 		header: "Sentry Nodes can receive network rewards",
+// 		body: "As long as the node is running, a probabilistic algorithm determines if nodes will receive network rewards",
+// 	},
+// 	{
+// 		header: "Can be run on computers or the cloud",
+// 		body: "Sentry Nodes can be run on any laptop, desktop, or even on cloud instances",
+// 	},
+// ];
 
 export function GetSentryNode() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -62,19 +61,19 @@ export function GetSentryNode() {
 		});
 	}
 
-	function getSentryNodeBody() {
-		return sentryBody.map((item, i) => {
-			return (
-				<div
-					key={`connect-wallet-content-${i}`}
-					className="flex flex-col gap-2"
-				>
-					<p className="text-base font-semibold">{item.header}</p>
-					<p className="text-[15px] text-[#525252]">{item.body}</p>
-				</div>
-			);
-		});
-	}
+	// function getSentryNodeBody() {
+	// 	return sentryBody.map((item, i) => {
+	// 		return (
+	// 			<div
+	// 				key={`connect-wallet-content-${i}`}
+	// 				className="flex flex-col gap-2"
+	// 			>
+	// 				<p className="text-base font-semibold">{item.header}</p>
+	// 				<p className="text-[15px] text-[#525252]">{item.body}</p>
+	// 			</div>
+	// 		);
+	// 	});
+	// }
 
 	return (
 		<div
