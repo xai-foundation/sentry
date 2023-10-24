@@ -1,12 +1,12 @@
 import {ChangeEvent, Dispatch, SetStateAction, useState} from "react";
 import {BiLinkExternal} from "react-icons/bi";
 
-interface ViewKeysFlowProps {
+interface ActionsRequiredFlowProps {
 	setAddWallet: Dispatch<SetStateAction<boolean>>;
 	// setConnectWallet: Dispatch<SetStateAction<boolean>>;
 }
 
-export function ViewKeysFlow({setAddWallet}: ViewKeysFlowProps) {
+export function ActionsRequiredFlow({setAddWallet}: ActionsRequiredFlowProps) {
 	const [inputValue, setInputValue] = useState('');
 
 	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -41,7 +41,7 @@ export function ViewKeysFlow({setAddWallet}: ViewKeysFlowProps) {
 				</span>
 
 				<button
-					onClick={() => window.electron.openExternal('https://www.youtube.com/watch?v=dQw4w9WgXcQ')}
+					onClick={() => window.electron.openExternal('http://localhost:7555/')}
 					className="w-full h-12 flex flex-row justify-center items-center gap-1 bg-[#F30919] text-[15px] text-white font-semibold"
 				>
 					Connect wallet <BiLinkExternal/>

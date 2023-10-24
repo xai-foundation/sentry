@@ -4,6 +4,8 @@ import {GetSentryNode} from "../home/GetSentryNode.tsx";
 import {Keys} from "../keys/Keys.tsx";
 import {Operator} from "../operator/Operator.tsx";
 import {SentryWallet} from "../home/SentryWallet.tsx";
+import {Demo} from "../demo/Demo.tsx";
+import {DrawerManager} from "../drawer/DrawerManager";
 
 export function AppRoutes() {
 	return (
@@ -19,8 +21,11 @@ export function AppRoutes() {
 						<Route path="/sentry-wallet" element={<SentryWallet/>}/>
 
 						<Route path="/operator" element={<Operator/>}/>
+						<Route path="/demo" element={<Demo/>}/>
 					</Routes>
 				</div>
+
+				<DrawerManager/>
 			</div>
 		</Router>
 	);

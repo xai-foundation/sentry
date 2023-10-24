@@ -1,31 +1,31 @@
 import {Dispatch, SetStateAction} from "react";
+import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
+import {useSetAtom} from "jotai";
 
 const dummyLicenses = [
 	{
 		number: 1,
 		license: "Xai Vanguard Node Key",
 		date: "2023-09-26",
-		receipt: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+		receipt: "http://localhost:7555/",
 	},
 	// {
 	// 	number: 2,
 	// 	license: "Xai Vanguard Node Key",
 	// 	date: "2023-09-27",
-	// 	receipt: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+	// 	receipt: "http://localhost:7555/",
 	// },
 	// {
 	// 	number: 3,
 	// 	license: "Xai Vanguard Node Key",
 	// 	date: "2023-09-28",
-	// 	receipt: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+	// 	receipt: "http://localhost:7555/",
 	// },
 ]
 
-interface HasLicensesProps {
-	setShowModal: Dispatch<SetStateAction<boolean>>;
-}
+export function HasKeys() {
+	const setDrawerState = useSetAtom(drawerStateAtom);
 
-export function HasKeys({setShowModal}: HasLicensesProps) {
 	function getKeys() {
 		return dummyLicenses.map((item, i: number) => {
 			return (
@@ -55,7 +55,7 @@ export function HasKeys({setShowModal}: HasLicensesProps) {
 						Purchase additional keys to increase the number of claims submitted per challenge
 					</p>
 					<button
-						onClick={() => setShowModal(true)}
+						onClick={() => setDrawerState(DrawerView.BuyKeys)}
 						className="w-48 bg-[#F30919] text-sm text-white p-2 uppercase font-semibold"
 					>
 						Buy Now
