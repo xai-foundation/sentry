@@ -15,8 +15,8 @@ export function XaiNumberInput({amount, setAmount}: XaiNumberInput) {
 			newAmount = 1;
 		} else if (newAmount < 1) {
 			newAmount = 1;
-		} else if (newAmount > 5000) {
-			newAmount = 5000;
+		} else if (newAmount > 50000) {
+			newAmount = 50000;
 		}
 
 		setAmount(newAmount);
@@ -38,7 +38,7 @@ export function XaiNumberInput({amount, setAmount}: XaiNumberInput) {
 			/>
 
 			<div
-				onClick={() => setAmount(amount < 5000 ? amount + 1 : 5000)}
+				onClick={() => setAmount(amount < 5000 ? amount + 1 : 50000)}
 				className="absolute w-12 h-full flex justify-center items-center top-0 right-0 cursor-pointer select-none">
 				<AiOutlinePlus/>
 			</div>

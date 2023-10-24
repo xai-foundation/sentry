@@ -17,13 +17,13 @@ export function SentryWallet() {
 	const [showBuyModal, setShowBuyModal] = useState<boolean>(false);
 	const [showViewModal, setShowViewModal] = useState<boolean>(false);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
-	const {loading, privateKey} = useOperator();
+	const {loading, publicKey} = useOperator();
 
 	const [copied, setCopied] = useState<boolean>(false);
 
 	function copyPrivateKey() {
-		if (privateKey && navigator.clipboard) {
-			navigator.clipboard.writeText(privateKey)
+		if (publicKey && navigator.clipboard) {
+			navigator.clipboard.writeText(publicKey)
 				.then(() => {
 					setCopied(true);
 					setTimeout(() => {
@@ -54,7 +54,7 @@ export function SentryWallet() {
 
 					<div className="flex flex-row items-center gap-2 text-[#A3A3A3] text-[15px]">
 						<p>
-							{loading ? "Loading..." : privateKey}
+							{loading ? "Loading..." : publicKey}
 						</p>
 
 						<div
