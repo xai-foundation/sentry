@@ -12,7 +12,11 @@ provider "google" {
 }
 
 locals {
-  startup_script = file("${path.module}/startup_script.tpl")
+  startup_script = file("${path.module}/scripts/startup_script.tpl")
+}
+
+resource "google_compute_address" "default" {
+  name = "node-static-ip"
 }
 
 resource "google_compute_instance" "default" {
@@ -28,7 +32,7 @@ resource "google_compute_instance" "default" {
   network_interface {
     network = "default"
     access_config {
-      // Ephemeral IP
+      nat_ip = google_compute_address.default.address
     }
   }
   metadata_startup_script = local.startup_script
@@ -43,7 +47,7 @@ resource "google_compute_firewall" "default" {
 
   allow {
     protocol = "tcp"
-    ports    = ["8547", "9642"]
+    ports    = ["8547", "9642", "8548"]
   }
 
   source_ranges = ["0.0.0.0/0"]
@@ -54,7 +58,7 @@ output "instance_ip" {
 }
 
 output "websocket_url" {
-  value = "ws://${google_compute_instance.default.network_interface[0].access_config[0].nat_ip}:9642"
+  value = "ws://${google_compute_instance.default.network_interface[0].access_config[0].nat_ip}:8548"
 }
 
 output "http_url" {
@@ -66,7 +70,7 @@ locals {
 # URL Information
 
 Instance IP: ${google_compute_instance.default.network_interface[0].access_config[0].nat_ip}
-Websocket URL: ws://${google_compute_instance.default.network_interface[0].access_config[0].nat_ip}:9642
+Websocket URL: ws://${google_compute_instance.default.network_interface[0].access_config[0].nat_ip}:8548
 HTTP URL: http://${google_compute_instance.default.network_interface[0].access_config[0].nat_ip}:8547
 EOF
 }
