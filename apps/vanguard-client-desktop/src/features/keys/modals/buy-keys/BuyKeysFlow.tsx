@@ -5,6 +5,8 @@ import {BiLinkExternal, BiLoaderAlt} from "react-icons/bi";
 import {AiOutlineClose, AiOutlineInfoCircle} from "react-icons/ai";
 import {MdVerifiedUser} from "react-icons/md";
 import {useGetPriceForQuantity} from "../../hooks/useGetPriceForQuantity.ts";
+import {ethers} from "ethers";
+import {useGetTotalSupplyAndCap} from "../../hooks/useGetTotalSupplyAndCap.ts";
 
 interface BuyKeysFlowProps {
 	setPurchaseSuccess: Dispatch<SetStateAction<boolean>>;
@@ -16,19 +18,24 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 	const [discountError, setDiscountError] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState('');
 	const [promo, setPromo] = useState<boolean>(false);
-	const price = 0.00061;
+	const {data: getPriceData, isLoading} = useGetPriceForQuantity(amount);
+	const {data: getTotalData, isLoading: isTotalLoading} = useGetTotalSupplyAndCap();
 
-	const {isLoading} = useGetPriceForQuantity(amount);
+	// Setting default values so TS doesn't give me shit.
+	let price = 0;
+	let discountPrice = 0;
+	let maxSupply = 0;
 
-	// if (data) {
-	// 	price = Number(ethers.formatEther(data?.price));
-	// }
+	if (getPriceData) {
+		console.log("tier", getPriceData.nodesAtEachPrice);
 
+		price = Number(ethers.formatEther(getPriceData.price));
+		discountPrice = ((5 / 100) * price) * -1;
+	}
 
-	const discountPrice = (5 / 100) * price;
-	const discount = {
-		price: discountPrice * -1,
-	};
+	if (getTotalData) {
+		maxSupply = Number(getTotalData.maxSupply);
+	}
 
 	const handleSubmit = () => {
 		setDiscountError(false);
@@ -68,12 +75,13 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 					<XaiNumberInput
 						amount={amount}
 						setAmount={setAmount}
+						maxSupply={maxSupply}
 					/>
 				</div>
 			</div>
 
 			{/*		Order Total section		*/}
-			{isLoading
+			{isLoading || isTotalLoading
 				? (
 					<div className="w-full absolute top-0 bottom-0 flex flex-col justify-center items-center">
 						<BiLoaderAlt className="animate-spin" color={"#A3A3A3"} size={32}/>
@@ -123,7 +131,7 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 											</div>
 											<div className="flex flex-row items-center gap-1">
 												<span className="text-[#2A803D] font-semibold">
-													{discount.price * amount} ETH
+													{discountPrice} ETH
 												</span>
 											</div>
 										</div>
@@ -195,7 +203,7 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 									<div className="flex flex-row items-center gap-1 font-semibold">
 										<span>
 											{discountApplied
-												? Number(price - (discountPrice * amount)).toFixed(8)
+												? Number(price - discountPrice)
 												: price}
 										</span>
 										<span>ETH</span>
