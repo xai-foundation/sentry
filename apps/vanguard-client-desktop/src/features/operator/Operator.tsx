@@ -46,12 +46,6 @@ export function Operator() {
 		}
 	}
 
-	function getShortenedPrivateKey(privateKey: string) {
-		const firstFiveChars = privateKey.slice(0, 4);
-		const lastThreeChars = privateKey.slice(-4);
-		return `${firstFiveChars}...${lastThreeChars}`;
-	}
-
 	if (error) {
 		alert(`Error: ${error.message}`)
 	}
@@ -89,8 +83,7 @@ export function Operator() {
 				<div>
 					{loading
 						? <p className="text-gray-500">Loading...</p>
-						: <p className="text-gray-700">Embedded
-							Operator: {privateKey ? getShortenedPrivateKey(privateKey) : 'N/A'}</p>
+						: <p className="text-gray-700">Embedded Operator: {privateKey}</p>
 					}
 				</div>
 				<div className="flex gap-4">
