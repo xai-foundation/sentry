@@ -1,0 +1,19 @@
+{
+  "name": "@xai-vanguard-node/cloud_functions",
+  "version": "1.0.0",
+  "description": "Cloud functions for a Xai Node running on GCP.",
+  "main": "build/cloud_functions.js",
+  "scripts": {
+    "build": "npm run compile && pnpm run transpile",
+    "compile": "tsc",
+    "transpile": "esbuild --bundle --outfile=./build/cloud_functions.js --platform=node dist/index.js",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@xai-vanguard-node/core": "workspace:*",
+    "@google-cloud/functions-framework": "^3.3.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.4"
+  }
+}
