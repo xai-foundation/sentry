@@ -4,9 +4,10 @@ import {AiOutlineMinus, AiOutlinePlus} from "react-icons/ai";
 interface XaiNumberInput {
 	amount: number;
 	setAmount: Dispatch<SetStateAction<number>>;
+	maxSupply: number;
 }
 
-export function XaiNumberInput({amount, setAmount}: XaiNumberInput) {
+export function XaiNumberInput({amount, setAmount, maxSupply}: XaiNumberInput) {
 	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
 		const numericInput = event.target.value.replace(/[^0-9]/g, "");
 		let newAmount = parseInt(numericInput);
@@ -15,8 +16,8 @@ export function XaiNumberInput({amount, setAmount}: XaiNumberInput) {
 			newAmount = 1;
 		} else if (newAmount < 1) {
 			newAmount = 1;
-		} else if (newAmount > 50000) {
-			newAmount = 50000;
+		} else if (newAmount > maxSupply) {
+			newAmount = maxSupply;
 		}
 
 		setAmount(newAmount);
@@ -38,7 +39,7 @@ export function XaiNumberInput({amount, setAmount}: XaiNumberInput) {
 			/>
 
 			<div
-				onClick={() => setAmount(amount < 5000 ? amount + 1 : 50000)}
+				onClick={() => setAmount(amount < maxSupply ? amount + 1 : maxSupply)}
 				className="absolute w-12 h-full flex justify-center items-center top-0 right-0 cursor-pointer select-none">
 				<AiOutlinePlus/>
 			</div>
