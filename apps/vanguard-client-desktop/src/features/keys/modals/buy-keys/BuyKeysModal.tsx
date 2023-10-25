@@ -1,13 +1,10 @@
 import {AiOutlineClose} from "react-icons/ai";
-import {useState} from "react";
-import {BuyKeysSuccess} from "./BuyKeysSuccess.tsx";
 import {BuyKeysFlow} from "./BuyKeysFlow.tsx";
 import {drawerStateAtom} from "../../../drawer/DrawerManager";
 import {useSetAtom} from "jotai";
 
 export function BuyKeysModal() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const [purchaseSuccess, setPurchaseSuccess] = useState<boolean>(false);
 
 	return (
 		<div className="w-full h-full flex flex-col justify-start items-center border border-gray-200 z-20 bg-white">
@@ -19,13 +16,7 @@ export function BuyKeysModal() {
 				</div>
 			</div>
 
-			{purchaseSuccess ? (
-				<BuyKeysSuccess/>
-			) : (
-				<BuyKeysFlow
-					setPurchaseSuccess={setPurchaseSuccess}
-				/>
-			)}
+			<BuyKeysFlow/>
 		</div>
 	)
 }

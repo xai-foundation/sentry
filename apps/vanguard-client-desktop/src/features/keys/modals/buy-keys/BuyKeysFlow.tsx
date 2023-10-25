@@ -1,4 +1,4 @@
-import {Dispatch, SetStateAction, useState} from "react";
+import {useState} from "react";
 import {XaiNumberInput} from "@xai-vanguard-node/ui";
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {BiLinkExternal, BiLoaderAlt} from "react-icons/bi";
@@ -8,11 +8,7 @@ import {useGetPriceForQuantity} from "../../hooks/useGetPriceForQuantity.ts";
 import {ethers} from "ethers";
 import {useGetTotalSupplyAndCap} from "../../hooks/useGetTotalSupplyAndCap.ts";
 
-interface BuyKeysFlowProps {
-	setPurchaseSuccess: Dispatch<SetStateAction<boolean>>;
-}
-
-export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
+export function BuyKeysFlow() {
 	const [amount, setAmount] = useState<number>(1);
 	const [discountApplied, setDiscountApplied] = useState<boolean>(false);
 	const [discountError, setDiscountError] = useState<boolean>(false);
@@ -265,7 +261,6 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 					<button
 						onClick={() => {
 							window.electron.openExternal(`http://localhost:7555/?amount=${amount}`)
-							setPurchaseSuccess(true)
 						}}
 						className={"w-full h-16 flex flex-row justify-center items-center gap-1 bg-[#F30919] text-lg text-white"}
 					>
