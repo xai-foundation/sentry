@@ -1,17 +1,11 @@
 import {AiOutlineClose} from "react-icons/ai";
-import {Dispatch, SetStateAction, useState} from "react";
+import {useState} from "react";
 import {BuyKeysSuccess} from "./BuyKeysSuccess.tsx";
 import {BuyKeysFlow} from "./BuyKeysFlow.tsx";
 import {drawerStateAtom} from "../../../drawer/DrawerManager";
 import {useSetAtom} from "jotai";
 
-interface BuyKeysModalProps {
-	number: number;
-	setNumber: Dispatch<SetStateAction<number>>;
-	setShowModal: Dispatch<SetStateAction<boolean>>;
-}
-
-export function BuyKeysModal({number, setNumber, setShowModal}: BuyKeysModalProps) {
+export function BuyKeysModal() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const [purchaseSuccess, setPurchaseSuccess] = useState<boolean>(false);
 
@@ -26,11 +20,7 @@ export function BuyKeysModal({number, setNumber, setShowModal}: BuyKeysModalProp
 			</div>
 
 			{purchaseSuccess ? (
-				<BuyKeysSuccess
-					number={number}
-					setNumber={setNumber}
-					setShowModal={setShowModal}
-				/>
+				<BuyKeysSuccess/>
 			) : (
 				<BuyKeysFlow
 					setPurchaseSuccess={setPurchaseSuccess}

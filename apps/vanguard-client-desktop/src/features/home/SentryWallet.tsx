@@ -13,12 +13,14 @@ import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.tsx";
 
 export function SentryWallet() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
-
 	const [number, setNumber] = useState<number>(0);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
 	const {loading, publicKey} = useOperator();
-
 	const [copied, setCopied] = useState<boolean>(false);
+
+	//todo: delete once we add real data
+	console.log(setNumber);
+
 
 	function copyPrivateKey() {
 		if (publicKey && navigator.clipboard) {

@@ -1,4 +1,3 @@
-import {Dispatch, SetStateAction} from "react";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useSetAtom} from "jotai";
 
@@ -9,18 +8,6 @@ const dummyLicenses = [
 		date: "2023-09-26",
 		receipt: "http://localhost:7555/",
 	},
-	// {
-	// 	number: 2,
-	// 	license: "Xai Vanguard Node Key",
-	// 	date: "2023-09-27",
-	// 	receipt: "http://localhost:7555/",
-	// },
-	// {
-	// 	number: 3,
-	// 	license: "Xai Vanguard Node Key",
-	// 	date: "2023-09-28",
-	// 	receipt: "http://localhost:7555/",
-	// },
 ]
 
 export function HasKeys() {
