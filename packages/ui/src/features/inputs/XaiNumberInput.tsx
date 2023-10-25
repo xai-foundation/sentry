@@ -39,7 +39,7 @@ export function XaiNumberInput({amount, setAmount, maxSupply}: XaiNumberInput) {
 			/>
 
 			<div
-				onClick={() => setAmount(amount < 5000 ? amount + 1 : maxSupply)}
+				onClick={() => setAmount(amount < maxSupply ? amount + 1 : maxSupply)}
 				className="absolute w-12 h-full flex justify-center items-center top-0 right-0 cursor-pointer select-none">
 				<AiOutlinePlus/>
 			</div>
