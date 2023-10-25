@@ -28,7 +28,7 @@ export function PurchaseCompleteModal({setShowPurchaseCompleteModal}: PurchaseCo
 							onClick={() => window.electron.openExternal('http://localhost:7555/')}
 							className="text-[#F30919] ml-1 cursor-pointer"
 						>
-							129019028 (dummy data)
+							129019028
 						</a>
 					</span>
 				</div>
