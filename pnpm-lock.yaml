@@ -167,6 +167,12 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
+      react-icons:
+        specifier: ^4.11.0
+        version: 4.11.0(react@18.2.0)
+      react-query:
+        specifier: ^3.39.3
+        version: 3.39.3(react-dom@18.2.0)(react@18.2.0)
       react-router-dom:
         specifier: ^6.16.0
         version: 6.16.0(react-dom@18.2.0)(react@18.2.0)
@@ -198,6 +204,9 @@ importers:
       vite:
         specifier: ^4.4.5
         version: 4.4.9
+      vite-plugin-svgr:
+        specifier: ^3.2.0
+        version: 3.3.0(typescript@5.2.2)(vite@4.4.9)
 
   infrastructure/smart-contracts:
     dependencies:
@@ -5461,7 +5470,7 @@ packages:
     resolution: {integrity: sha512-Kv5nKlh6yRrdrGvxeJ2e5y2eRUpkUosIW4A2AS38zwSz27zu7ufDwQPi5Jhs3XAlGNetl3bmnGhQsMtkKJnj3w==}
     dependencies:
       no-case: 3.0.4
-      tslib: 2.4.0
+      tslib: 2.6.2
     dev: true
 
   /dotenv-expand@5.1.0:
@@ -7982,7 +7991,7 @@ packages:
   /lower-case@2.0.2:
     resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
     dependencies:
-      tslib: 2.4.0
+      tslib: 2.6.2
     dev: true
 
   /lowercase-keys@2.0.0:
@@ -8419,7 +8428,7 @@ packages:
     resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
     dependencies:
       lower-case: 2.0.2
-      tslib: 2.4.0
+      tslib: 2.6.2
     dev: true
 
   /node-abi@3.47.0:
@@ -9935,7 +9944,7 @@ packages:
     resolution: {integrity: sha512-LAOh4z89bGQvl9pFfNF8V146i7o7/CqFPbqzYgP+yYzDIDeS9HaNFtXABamRW+AQzEVODcvE79ljJ+8a9YSdMg==}
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.4.0
+      tslib: 2.6.2
     dev: true
 
   /solc@0.7.3(debug@4.3.4):

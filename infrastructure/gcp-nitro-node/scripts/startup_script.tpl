@@ -33,14 +33,11 @@ if [ ! -d "/opt/arbitrum" ]; then
     sudo mkdir -p /opt/arbitrum
 fi
 
-# Create an alias for the arbitrum directory
-echo "export ARBITRUM_DIR=$(realpath /opt/arbitrum)" | sudo tee -a /etc/profile
-
 # Change the owner of the directory to the current user and group
-sudo chown -R $(whoami):$(id -gn) $ARBITRUM_DIR
+sudo chown -R $(whoami):$(id -gn) /opt/arbitrum
 
 # Change the permissions of the directory so that any user can edit files in it
-sudo chmod -R a+rwX $ARBITRUM_DIR
+sudo chmod -R a+rwX /opt/arbitrum
 
 # Check if the docker container is running
 if docker ps | grep -q 'offchainlabs/nitro-node:v2.1.0-72ccc0c'; then
@@ -49,7 +46,7 @@ if docker ps | grep -q 'offchainlabs/nitro-node:v2.1.0-72ccc0c'; then
 fi
 
 # Create a JSON file with the configuration parameters
-cat > $ARBITRUM_DIR/config.json <<EOF
+cat > /opt/arbitrum/config.json <<EOF
 {
     "chain": {
         "id": 47279324479,
@@ -85,7 +82,7 @@ cat > $ARBITRUM_DIR/config.json <<EOF
         },
         "data-availability": {
             "enable": true,
-            "parent-chain-node-url": "${parent_chain_rpc_url}",
+            "parent-chain-node-url": "https://frequent-damp-star.arbitrum-goerli.quiknode.pro/c1b565106ebecad49a9e7a938d084543187755e4/",
             "request-timeout": "5s",
             "rest-aggregator": {
                 "enable": true,
@@ -112,7 +109,7 @@ cat > $ARBITRUM_DIR/config.json <<EOF
     },
     "parent-chain": {
         "connection": {
-            "url": "${parent_chain_rpc_url}"
+            "url": "https://frequent-damp-star.arbitrum-goerli.quiknode.pro/c1b565106ebecad49a9e7a938d084543187755e4/"
         },
         "id": 421613
     },
@@ -133,10 +130,11 @@ cat > $ARBITRUM_DIR/config.json <<EOF
             "arb"
         ],
         "port": 8548,
-        "rpcprefix": "/ws"
+        "rpcprefix": "/ws",
+        "origins": "*"
     }
 }
 EOF
 
 # Run the docker container with the configuration file
-docker run --rm -it -v $ARBITRUM_DIR:/home/user/.arbitrum -p 0.0.0.0:8547:8547 -p 0.0.0.0:8548:8548 offchainlabs/nitro-node:v2.1.0-72ccc0c --conf.file $ARBITRUM_DIR/config.json --metrics
+docker run --rm -v /opt/arbitrum:/home/user/.arbitrum -p 0.0.0.0:8547:8547 -p 0.0.0.0:8548:8548 -p 0.0.0.0:9642:9642 offchainlabs/nitro-node:v2.1.0-72ccc0c --conf.file /home/user/.arbitrum/config.json --metrics --ws.port=8548 --ws.addr=0.0.0.0 --ws.origins=*

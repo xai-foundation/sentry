@@ -3,13 +3,14 @@ import {BiLinkExternal, BiLoaderAlt} from "react-icons/bi";
 import {listNodeLicenses} from "@xai-vanguard-node/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useNavigate} from "react-router-dom";
+import {useSetAtom} from "jotai/index";
+import {drawerStateAtom} from "../../../drawer/DrawerManager.tsx";
 
 interface ViewKeysFlowProps {
-	setShowViewModal: Dispatch<SetStateAction<boolean>>;
 	setShowContinueInBrowserModal: Dispatch<SetStateAction<boolean>>;
 }
 
-export function ViewKeysFlow({setShowViewModal, setShowContinueInBrowserModal}: ViewKeysFlowProps) {
+export function ViewKeysFlow({setShowContinueInBrowserModal}: ViewKeysFlowProps) {
 	const [ownerAddress, setOwnerAddress] = useState('');
 	const [ownerAddressError, setOwnerAddressError] = useState({
 		errorResult: "",
@@ -18,6 +19,8 @@ export function ViewKeysFlow({setShowViewModal, setShowContinueInBrowserModal}: 
 
 	const [loading, setLoading] = useState<boolean>(false)
 	const [success, setSuccess] = useState<boolean>(false)
+
+	const setDrawerState = useSetAtom(drawerStateAtom);
 	const navigate = useNavigate();
 
 	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -69,7 +72,7 @@ export function ViewKeysFlow({setShowViewModal, setShowContinueInBrowserModal}: 
 	//todo: confirm this logic works
 	if (!loading && success) {
 		setTimeout(() => {
-			setShowViewModal(false);
+			setDrawerState(null);
 			navigate("/keys")
 		}, 4000);
 
