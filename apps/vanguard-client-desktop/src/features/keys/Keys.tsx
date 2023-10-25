@@ -11,6 +11,9 @@ export function Keys() {
 	const [number, setNumber] = useState<number>(0);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
 
+	//todo: delete once we add real data
+	console.log(setNumber);
+
 	return (
 		<div className="w-full h-screen">
 			<div className="flex flex-row justify-between items-center border-b border-gray-200 pl-10 pr-2">
