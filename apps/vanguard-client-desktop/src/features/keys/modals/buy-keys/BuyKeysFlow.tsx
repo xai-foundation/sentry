@@ -27,8 +27,6 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 	let maxSupply = 0;
 
 	if (getPriceData) {
-		console.log("tier", getPriceData.nodesAtEachPrice.length);
-
 		price = Number(ethers.formatEther(getPriceData.price));
 		discountPrice = ((5 / 100) * price) * -1;
 	}
