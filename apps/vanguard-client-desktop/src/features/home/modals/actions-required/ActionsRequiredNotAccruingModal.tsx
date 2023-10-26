@@ -7,7 +7,8 @@ import {SquareCard} from "../../../../components/SquareCard";
 import {SentryActiveCard} from "./SentryActiveCard";
 import {InsufficientFundsCard} from "./InsufficientFundsCard";
 import {AssignedKeysCard} from "./AssignedKeysCard";
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {KycRequiredCard} from "./KycRequiredCard";
 
 export function ActionsRequiredNotAccruingModal() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -19,6 +20,21 @@ export function ActionsRequiredNotAccruingModal() {
 		funded: false,
 		keys: false,
 	});
+	const [kycState, setKycState] = useState<"required" | "pending" | "done">("required");
+
+	useEffect(() => {
+		function setDone() {
+			setKycState("done");
+		}
+
+		if (kycState === "pending") {
+			setTimeout(() => {
+				setDone();
+			}, 3000);
+		}
+	}, [kycState]);
+
+	const accruing = testState.active && testState.funded && testState.keys;
 
 	return (
 		<div className="w-full h-full flex flex-col justify-start border border-gray-200 z-20 bg-white">
@@ -33,46 +49,89 @@ export function ActionsRequiredNotAccruingModal() {
 			</div>
 
 			<div className="p-5">
-				{(testState.active && testState.funded && testState.keys) ? (
-					<SquareCard className="bg-[#DCFCE7]">
-						<IconLabel
-							icon={AiFillCheckCircle}
-							color="#16A34A"
-							title="You are currently accruing esXAI"
+				<div>
+					{accruing ? (
+						<SquareCard className="bg-[#DCFCE7]">
+							<IconLabel
+								icon={AiFillCheckCircle}
+								color="#16A34A"
+								title="You are currently accruing esXAI"
+							/>
+							<p className="text-[15px] text-[#15803D] mt-2">
+								Keep your Sentry Wallet running 24/7 to continue accruing esXAI.
+							</p>
+						</SquareCard>
+					) : (
+						<SquareCard>
+							<IconLabel
+								icon={IoMdCloseCircle}
+								color="#F59E28"
+								title="You are currently not accruing esXAI"
+							/>
+							<p className="text-[15px] text-[#924012] mt-2">
+								Complete the steps below to begin accruing esXAI token rewards.
+							</p>
+						</SquareCard>
+					)}
+
+					<div className="flex flex-col gap-3 mt-3">
+						<SentryActiveCard
+							active={testState.active}
+							setActive={() => setTestState((_state) => {
+								return {..._state, active: true}
+							})}
 						/>
-						<p className="text-[15px] text-[#15803D] mt-2">
-							Keep your Sentry Wallet running 24/7 to continue accruing esXAI.
-						</p>
-					</SquareCard>
-				) : (
-					<SquareCard>
-						<IconLabel
-							icon={IoMdCloseCircle}
-							color="#F59E28"
-							title="You are currently not accruing esXAI"
+
+						<InsufficientFundsCard
+							funded={testState.funded}
+							setFunded={() => setTestState((_state) => {
+								return {..._state, funded: true}
+							})}
 						/>
-						<p className="text-[15px] text-[#924012] mt-2">
-							Complete the steps below to begin accruing esXAI token rewards.
-						</p>
-					</SquareCard>
-				)}
 
-				<div className="flex flex-col gap-3 mt-3">
-					<SentryActiveCard
-						active={testState.active}
-						setActive={() => setTestState((_state) => {return {..._state, active: true}})}
-					/>
-
-					<InsufficientFundsCard
-						funded={testState.funded}
-						setFunded={() => setTestState((_state) => {return {..._state, funded: true}})}
-					/>
-
-					<AssignedKeysCard
-						keys={testState.keys}
-						setKeys={() => setTestState((_state) => {return {..._state, keys: true}})}
-					/>
+						<AssignedKeysCard
+							keys={testState.keys}
+							setKeys={() => setTestState((_state) => {
+								return {..._state, keys: true}
+							})}
+						/>
+					</div>
 				</div>
+
+				{accruing && (
+					<div className="mt-8">
+						{kycState === "done" ? (
+							<SquareCard className="bg-[#DCFCE7]">
+								<IconLabel
+									icon={AiFillCheckCircle}
+									color="#16A34A"
+									title="You can claim esXAI"
+								/>
+								<p className="text-[15px] text-[#15803D] mt-2">
+									You have successfully completed your KYC on all wallets assigned to the Sentry.
+								</p>
+							</SquareCard>
+						) : (
+							<SquareCard>
+								<IconLabel
+									icon={IoMdCloseCircle}
+									color="#F59E28"
+									title="At least one wallet has unclaimable esXAI"
+								/>
+								<p className="text-[15px] text-[#924012] mt-2">
+									Complete KYC for all of the below wallets to be able to claim esXAI.
+								</p>
+							</SquareCard>
+						)}
+
+						<div className="mt-3">
+							<KycRequiredCard
+								kycState={kycState}
+								setKycState={setKycState}
+							/>
+						</div>
+					</div>
+				)}
 			</div>
 		</div>
 	);

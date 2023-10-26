@@ -9,10 +9,10 @@ interface IconLabelProps {
 export function IconLabel({icon: Icon, color, title}: IconLabelProps) {
 
 	return (
-		<span className="flex flex-row gap-1 items-center font-semibold">
+		<span className="flex flex-row gap-2 items-center font-semibold text-[14px]">
 			<Icon
 				// @ts-ignore
-				size={22}
+				size={20}
 				color={color}
 			/>
 			{title}

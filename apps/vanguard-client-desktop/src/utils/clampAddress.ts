@@ -1,3 +1,3 @@
-export function clampAddress(address: string): string {
-	return address.slice(0, 8) + "..." + address.slice(-8);
+export function clampAddress(address: string, lead: number = 8): string {
+	return address.slice(0, lead) + "..." + address.slice(lead * -1);
 }
