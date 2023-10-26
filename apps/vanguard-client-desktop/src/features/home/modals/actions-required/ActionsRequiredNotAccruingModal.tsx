@@ -38,11 +38,25 @@ export function ActionsRequiredNotAccruingModal() {
 
 	return (
 		<div className="w-full h-full flex flex-col justify-start border border-gray-200 z-20 bg-white">
-			<div
-				className="w-full h-16 flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
-				<div className="flex flex-row gap-2 items-center">
-					<AiFillWarning className="w-7 h-7 text-[#F59E28]"/> <span>Actions required</span>
-				</div>
+			<div className="w-full h-16 flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
+				{!accruing && kycState === "required" && (
+					<div className="flex flex-row gap-2 items-center">
+						<AiFillWarning className="w-7 h-7 text-[#F59E28]"/> <span>Actions required</span>
+					</div>
+				)}
+
+				{accruing && kycState !== "done" && (
+					<div className="flex flex-row gap-2 items-center">
+						<AiFillWarning className="w-7 h-7 text-[#F59E28]"/> <span>Next Step: Complete KYC</span>
+					</div>
+				)}
+
+				{accruing && kycState === "done" && (
+					<div className="flex flex-row gap-2 items-center">
+						<AiFillCheckCircle className="w-5 h-5 text-[#16A34A] mt-1"/> <span>esXAI is being claimed</span>
+					</div>
+				)}
+
 				<div className="cursor-pointer z-10" onClick={() => setDrawerState(null)}>
 					<AiOutlineClose/>
 				</div>
