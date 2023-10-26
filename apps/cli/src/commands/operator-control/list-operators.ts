@@ -1,4 +1,5 @@
-import Vorpal from "vorpal";import { listOperatorsForAddress } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";
+import { listOperatorsForAddress } from "@xai-vanguard-node/core";
 
 /**
  * Function to list all operators for a particular address in the Referee contract.
@@ -14,12 +15,8 @@ export function listOperators(cli: Vorpal) {
                 message: 'Please enter the address to list operators for:'
             });
             this.log(`Fetching all operators for address ${address}...`);
-            const operators = await listOperatorsForAddress(address);
-            this.log(`Operators retrieved. Here are the details:`);
-            operators.forEach((operator: string, index: number) => {
+            await listOperatorsForAddress(address, (operator: string, index: number) => {
                 this.log(`Operator ${index + 1}: ${operator}`);
             });
         });
 }
-
-

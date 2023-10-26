@@ -12,7 +12,7 @@ import { RefereeAbi } from "../abis/index.js";
  */
 export async function listOperatorsForAddress(
     ownerAddress: string,
-    callback?: (operator: string) => void
+    callback?: (operator: string, index: number) => void
 ): Promise<string[]> {
 
     // Get the provider
@@ -30,7 +30,7 @@ export async function listOperatorsForAddress(
         const operator = await contract.getOperatorAtIndex(ownerAddress, i);
         operators.push(operator);
         if (callback) {
-            callback(operator);
+            callback(operator, i);
         }
     }
 
