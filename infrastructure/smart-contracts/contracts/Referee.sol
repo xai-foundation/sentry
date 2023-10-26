@@ -37,6 +37,9 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping from owner to operator approvals
     mapping (address => EnumerableSetUpgradeable.AddressSet) private _operatorApprovals;
 
+    // Mapping from operator to owners
+    mapping (address => EnumerableSetUpgradeable.AddressSet) private _ownersForOperator;
+
     // Mapping to track rollup assertions (combination of the assertionId and the rollupAddress used, because we allow switching the rollupAddress, and can't assume assertionIds are unique.)
     mapping (bytes32 => bool) public rollupAssertionTracker;
 
@@ -122,8 +125,10 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     function setApprovalForOperator(address operator, bool approved) external {
         if (approved) {
             _operatorApprovals[msg.sender].add(operator);
+            _ownersForOperator[operator].add(msg.sender);
         } else {
             _operatorApprovals[msg.sender].remove(operator);
+            _ownersForOperator[operator].remove(msg.sender);
         }
         emit Approval(msg.sender, operator, approved);
     }
@@ -156,6 +161,26 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
      */
     function getOperatorCount(address owner) public view returns (uint256) {
         return _operatorApprovals[owner].length();
+    }
+
+    /**
+     * @notice Get the owner who has approved a specific operator at a given index.
+     * @param operator The operator to query.
+     * @param index The index of the owner to query.
+     * @return The address of the owner.
+     */
+    function getOwnerForOperatorAtIndex(address operator, uint256 index) public view returns (address) {
+        require(index < _ownersForOperator[operator].length(), "Index out of bounds");
+        return _ownersForOperator[operator].at(index);
+    }
+
+    /**
+     * @notice Get the count of owners for a particular operator.
+     * @param operator The operator to query.
+     * @return The count of owners.
+     */
+    function getOwnerCountForOperator(address operator) public view returns (uint256) {
+        return _ownersForOperator[operator].length();
     }
 
     /**
