@@ -4,7 +4,12 @@ import {IoMdCloseCircle} from "react-icons/io";
 import {LuExternalLink} from "react-icons/lu";
 import {AiFillCheckCircle} from "react-icons/ai";
 
-export function AssignedKeysCard({keys, setKeys}) {
+interface AssignedKeysCardProps {
+	keys: boolean;
+	setKeys: () => void
+}
+
+export function AssignedKeysCard({keys, setKeys}: AssignedKeysCardProps) {
 	return (
 		<SquareCard className="bg-[#F5F5F5]">
 			{keys ? (

@@ -4,7 +4,12 @@ import {BiPlay} from "react-icons/bi";
 import {IoMdCloseCircle} from "react-icons/io";
 import {AiFillCheckCircle} from "react-icons/ai";
 
-export function SentryActiveCard({active, setActive}) {
+interface SentryActiveCardProps {
+	active: boolean;
+	setActive: () => void
+}
+
+export function SentryActiveCard({active, setActive}: SentryActiveCardProps) {
 	return (
 		<SquareCard className="bg-[#F5F5F5]">
 			{active ? (

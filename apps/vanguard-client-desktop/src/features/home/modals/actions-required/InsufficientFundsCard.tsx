@@ -7,7 +7,12 @@ import {FaEthereum} from "react-icons/fa";
 import {AiFillCheckCircle} from "react-icons/ai";
 import {useOperator} from "../../../operator";
 
-export function InsufficientFundsCard({funded, setFunded}) {
+interface InsufficientFundsCardProps {
+	funded: boolean;
+	setFunded: () => void
+}
+
+export function InsufficientFundsCard({funded, setFunded}: InsufficientFundsCardProps) {
 	const {loading: isLoadingOperator, publicKey} = useOperator();
 
 	return (
@@ -33,7 +38,7 @@ export function InsufficientFundsCard({funded, setFunded}) {
 					<div
 						className="h-[48px] px-3 w-full border border-[#A3A3A3] flex flex-row items-center gap-2 justify-between bg-white mt-3">
 						<span className="text-[14px] leading-[14px] text-[#525252]">
-							{isLoadingOperator ? "Loading..." : clampAddress(publicKey)}
+							{isLoadingOperator || !publicKey ? "Loading..." : clampAddress(publicKey)}
 						</span>
 
 						<PiCopy

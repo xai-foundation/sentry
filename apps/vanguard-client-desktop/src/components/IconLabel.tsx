@@ -11,6 +11,7 @@ export function IconLabel({icon: Icon, color, title}: IconLabelProps) {
 	return (
 		<span className="flex flex-row gap-1 items-center font-semibold">
 			<Icon
+				// @ts-ignore
 				size={22}
 				color={color}
 			/>

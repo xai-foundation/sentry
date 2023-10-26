@@ -1,8 +1,7 @@
 import {useSetAtom} from "jotai";
-import {drawerStateAtom, DrawerView} from "../../../drawer/DrawerManager";
+import {drawerStateAtom} from "../../../drawer/DrawerManager";
 import {AiFillCheckCircle, AiFillWarning, AiOutlineClose} from "react-icons/ai";
 import {IoMdCloseCircle} from "react-icons/io";
-import {useBalance} from "../../../../hooks/useBalance";
 import {IconLabel} from "../../../../components/IconLabel";
 import {SquareCard} from "../../../../components/SquareCard";
 import {SentryActiveCard} from "./SentryActiveCard";
