@@ -4,16 +4,17 @@
   "description": "Cloud functions for a Xai Node running on GCP.",
   "main": "build/cloud_functions.js",
   "scripts": {
-    "build": "npm run compile && pnpm run transpile",
+    "build": "npm run compile && pnpm run transpile && pnpm run zip",
     "compile": "tsc",
     "transpile": "esbuild --bundle --outfile=./build/cloud_functions.js --platform=node dist/index.js",
-    "start": "node dist/index.js"
+    "zip": "zip -r ../gcp-nitro-node/cloud_functions.zip package.json build/"
   },
   "dependencies": {
     "@xai-vanguard-node/core": "workspace:*",
     "@google-cloud/functions-framework": "^3.3.0"
   },
   "devDependencies": {
-    "esbuild": "^0.19.4"
+    "esbuild": "^0.19.4",
+    "zip": "1.2.0"
   }
 }
