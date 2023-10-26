@@ -45,7 +45,7 @@ export function ConnectWallet() {
 							<p className="text-3xl font-semibold">
 								Connect Wallet
 							</p>
-							<p className="text-lg text-[#525252] max-w-[590px]">
+							<p className="text-lg text-[#525252] max-w-[590px] text-center">
 								This enables viewing purchased Xai Sentry Keys in the Xai Client.
 								<br/>
 								After connecting your wallet, you will redirected back to the client.
