@@ -7,13 +7,10 @@
     "build": "npm run compile && pnpm run transpile && pnpm run zip",
     "compile": "tsc",
     "transpile": "esbuild --bundle --outfile=./build/cloud_functions.js --platform=node dist/index.js",
-    "zip": "zip -r ../gcp-nitro-node/cloud_functions.zip package.json build/"
-  },
-  "dependencies": {
-    "@xai-vanguard-node/core": "workspace:*",
-    "@google-cloud/functions-framework": "^3.3.0"
+    "zip": "cp cloud.package.json build/package.json && zip -r -o ../gcp-nitro-node/cloud_functions.zip build/"
   },
   "devDependencies": {
+    "@types/express": "4.17.20",
     "esbuild": "^0.19.4",
     "zip": "1.2.0"
   }

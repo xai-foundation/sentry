@@ -1,5 +1,6 @@
-import functions from "@google-cloud/functions-framework";
 
-functions.http("health", (_, res) => {
+import { Request, Response } from 'express';
+
+export const health = (_: Request, res: Response) => {
     res.sendStatus(200);
-})
+}
