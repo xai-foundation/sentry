@@ -122,7 +122,7 @@ export function ViewKeysFlow({setShowContinueInBrowserModal}: ViewKeysFlowProps)
 						<button
 							onClick={() => {
 								setShowContinueInBrowserModal(true)
-								window.electron.openExternal('http://localhost:7555/')
+								window.electron.openExternal('http://localhost:7555/connect-wallet')
 							}}
 							className="w-full h-12 flex flex-row justify-center items-center gap-1 bg-[#F30919] text-[15px] text-white font-semibold"
 						>
