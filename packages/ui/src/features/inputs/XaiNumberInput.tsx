@@ -4,10 +4,10 @@ import {AiOutlineMinus, AiOutlinePlus} from "react-icons/ai";
 interface XaiNumberInput {
 	amount: number;
 	setAmount: Dispatch<SetStateAction<number>>;
-	maxSupply: number;
+	maxSupply?: number;
 }
 
-export function XaiNumberInput({amount, setAmount, maxSupply}: XaiNumberInput) {
+export function XaiNumberInput({amount, setAmount, maxSupply = 50000}: XaiNumberInput) {
 	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
 		const numericInput = event.target.value.replace(/[^0-9]/g, "");
 		let newAmount = parseInt(numericInput);
