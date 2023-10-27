@@ -9,6 +9,7 @@ import {InsufficientFundsCard} from "./InsufficientFundsCard";
 import {AssignedKeysCard} from "./AssignedKeysCard";
 import {useEffect, useState} from "react";
 import {KycRequiredCard} from "./KycRequiredCard";
+import {BarStepItem} from "../../../../components/BarStepItem";
 
 export function ActionsRequiredNotAccruingModal() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -90,54 +91,32 @@ export function ActionsRequiredNotAccruingModal() {
 					)}
 
 					<div className="flex flex-col">
-						<div className="flex">
-							<div className="w-6 flex justify-end flex flex-row flex-wrap">
-								<div className="w-[2px] bg-[#D4D4D4] h-full"/>
+						<BarStepItem>
+							<SentryActiveCard
+								active={testState.active}
+								setActive={() => setTestState((_state) => {
+									return {..._state, active: true}
+								})}
+							/>
+						</BarStepItem>
 
-								<div className="h-[2px] bg-[#D4D4D4] w-1/2 mt-[33px]"/>
-							</div>
+						<BarStepItem>
+							<InsufficientFundsCard
+								funded={testState.funded}
+								setFunded={() => setTestState((_state) => {
+									return {..._state, funded: true}
+								})}
+							/>
+						</BarStepItem>
 
-							<div className="flex-1 mt-3">
-								<SentryActiveCard
-									active={testState.active}
-									setActive={() => setTestState((_state) => {
-										return {..._state, active: true}
-									})}
-								/>
-							</div>
-						</div>
-
-						<div className="flex">
-							<div className="w-6 flex justify-end flex flex-row flex-wrap">
-								<div className="w-[2px] bg-[#D4D4D4] h-full"/>
-
-								<div className="h-[2px] bg-[#D4D4D4] w-1/2 mt-[33px]"/>
-							</div>
-							<div className="flex-1 mt-3">
-								<InsufficientFundsCard
-									funded={testState.funded}
-									setFunded={() => setTestState((_state) => {
-										return {..._state, funded: true}
-									})}
-								/>
-							</div>
-						</div>
-
-						<div className="flex">
-							<div className="w-6 flex justify-end flex flex-row flex-wrap">
-								<div className="w-[2px] bg-[#D4D4D4] h-[35px]"/>
-
-								<div className="h-[2px] bg-[#D4D4D4] w-1/2 mt-[33px]"/>
-							</div>
-							<div className="flex-1 mt-3">
-								<AssignedKeysCard
-									keys={testState.keys}
-									setKeys={() => setTestState((_state) => {
-										return {..._state, keys: true}
-									})}
-								/>
-							</div>
-						</div>
+						<BarStepItem lastItem={true}>
+							<AssignedKeysCard
+								keys={testState.keys}
+								setKeys={() => setTestState((_state) => {
+									return {..._state, keys: true}
+								})}
+							/>
+						</BarStepItem>
 					</div>
 				</div>
 
@@ -167,12 +146,12 @@ export function ActionsRequiredNotAccruingModal() {
 							</SquareCard>
 						)}
 
-						<div className="mt-3">
+						<BarStepItem lastItem={true}>
 							<KycRequiredCard
 								kycState={kycState}
 								setKycState={setKycState}
 							/>
-						</div>
+						</BarStepItem>
 					</div>
 				)}
 			</div>

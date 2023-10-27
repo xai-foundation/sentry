@@ -12,7 +12,7 @@ export function BarStepItem({children, lastItem}: BarStepItemProps) {
 				<div
 					className={classNames("w-[2px] bg-[#D4D4D4]", {
 						"h-full": !lastItem,
-						"[h-[35px]": lastItem,
+						"h-[35px]": lastItem,
 					})}
 				/>
 
