@@ -28,7 +28,7 @@ export function BuyKeysFlow() {
 	}
 
 	if (getTotalData) {
-		maxSupply = Number(getTotalData.maxSupply);
+		maxSupply = Number(getTotalData.maxSupply) - Number(getTotalData.totalSupply);
 	}
 
 	const handleSubmit = () => {

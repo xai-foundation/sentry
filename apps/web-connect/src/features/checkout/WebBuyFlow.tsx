@@ -45,7 +45,7 @@ export function WebBuyFlow({setPurchase}: WebBuyFlowProps) {
 	}
 
 	if (getTotalData) {
-		maxSupply = Number(getTotalData.maxSupply);
+		maxSupply = Number(getTotalData.maxSupply) - Number(getTotalData.totalSupply);
 	}
 
 	useEffect(() => {
