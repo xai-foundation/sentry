@@ -5,6 +5,7 @@ interface BarStepItemProps extends PropsWithChildren {
 	lastItem?: boolean;
 }
 
+// use these inside of a flex-column!!
 export function BarStepItem({children, lastItem}: BarStepItemProps) {
 	return (
 		<div className="flex">
