@@ -1,11 +1,13 @@
 import classNames from "classnames";
 import {atom, useAtomValue} from "jotai";
-import {ActionsRequiredModal} from "../home/modals/actions-required/ActionsRequiredModal";
+import {ActionsRequiredBuyModal} from "../home/modals/actions-required/ActionsRequiredBuyModal";
 import {BuyKeysModal} from "../keys/modals/buy-keys/BuyKeysModal";
 import {ViewKeysModal} from "../home/modals/view-keys/ViewKeysModal";
+import {ActionsRequiredNotAccruingModal} from "../home/modals/actions-required/ActionsRequiredNotAccruingModal";
 
 export enum DrawerView {
-	ActionsRequired,
+	ActionsRequiredBuy,
+	ActionsRequiredNotAccruing,
 	BuyKeys,
 	ViewKeys,
 }
@@ -21,8 +23,12 @@ export function DrawerManager() {
 				"hidden": drawerState === null,
 			})}
 		>
-			{drawerState === DrawerView.ActionsRequired && (
-				<ActionsRequiredModal/>
+			{drawerState === DrawerView.ActionsRequiredBuy && (
+				<ActionsRequiredBuyModal/>
+			)}
+
+			{drawerState === DrawerView.ActionsRequiredNotAccruing && (
+				<ActionsRequiredNotAccruingModal/>
 			)}
 
 			{drawerState === DrawerView.BuyKeys && (

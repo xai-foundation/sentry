@@ -43,7 +43,8 @@ export function SentryWallet() {
 		<div className="w-full h-screen">
 			<div
 				className="sticky top-0 flex flex-col items-center w-full h-auto bg-white z-10">
-				<div className="flex flex-row justify-between items-center w-full py-3 gap-2 border-b border-gray-200 pl-10">
+				<div
+					className="flex flex-row justify-between items-center w-full py-3 gap-2 border-b border-gray-200 pl-10">
 					<div className="flex flex-row items-center gap-2">
 						<h2 className="text-lg font-semibold">Sentry Wallet</h2>
 
@@ -87,10 +88,10 @@ export function SentryWallet() {
 						<div className="flex gap-4 bg-[#FFFBEB] p-2 z-10">
 							<div className="flex flex-row gap-2 items-center">
 								<AiFillWarning className="w-7 h-7 text-[#F59E28]"/>
-								<span className="text-[#B45317] text-[15px] font-semibold">Actions required</span>
+								<span className="text-[#B45317] text-[15px] font-semibold">Actions required (N A)</span>
 							</div>
 							<button
-								onClick={() => setDrawerState(DrawerView.ActionsRequired)}
+								onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}
 								className={`flex flex-row justify-center items-center py-1 px-4 gap-1 bg-[#F30919] text-[15px] text-white font-semibold`}
 							>
 								Resolve
@@ -128,12 +129,9 @@ export function SentryWallet() {
 				</div>
 			</div>
 
-			{
-				showContinueInBrowserModal && (
-					<ContinueInBrowserModal setShowContinueInBrowserModal={setShowContinueInBrowserModal}/>
-				)
-			}
-
+			{showContinueInBrowserModal && (
+				<ContinueInBrowserModal setShowContinueInBrowserModal={setShowContinueInBrowserModal}/>
+			)}
 
 			<div className="w-full h-auto flex flex-col justify-center items-center">
 				<div className="absolute top-0 bottom-0 flex flex-col justify-center items-center gap-4">

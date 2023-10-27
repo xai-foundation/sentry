@@ -11,6 +11,11 @@ export function Keys() {
 	const [number, setNumber] = useState<number>(0);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
 
+	// get operator
+	// const operator = useOperator();
+
+	// get connected keys
+
 	//todo: delete once we add real data
 	console.log(setNumber);
 
@@ -28,10 +33,10 @@ export function Keys() {
 					<div className="flex gap-4 bg-[#FFFBEB] p-2 z-10">
 						<div className="flex flex-row gap-2 items-center">
 							<AiFillWarning className="w-7 h-7 text-[#F59E28]"/>
-							<span className="text-[#B45317] text-[15px] font-semibold">Actions required</span>
+							<span className="text-[#B45317] text-[15px] font-semibold">Actions required (Buy)</span>
 						</div>
 						<button
-							onClick={() => setDrawerState(DrawerView.ActionsRequired)}
+							onClick={() => setDrawerState(DrawerView.ActionsRequiredBuy)}
 							className={`flex flex-row justify-center items-center py-1 px-4 gap-1 bg-[#F30919] text-[15px] text-white font-semibold`}
 						>
 							Resolve
