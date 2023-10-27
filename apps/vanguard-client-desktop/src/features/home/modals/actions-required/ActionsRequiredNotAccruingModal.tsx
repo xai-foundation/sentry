@@ -38,7 +38,8 @@ export function ActionsRequiredNotAccruingModal() {
 
 	return (
 		<div className="w-full h-full flex flex-col justify-start border border-gray-200 z-20 bg-white">
-			<div className="w-full h-16 flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
+			<div
+				className="w-full h-16 flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
 				{!accruing && kycState === "required" && (
 					<div className="flex flex-row gap-2 items-center">
 						<AiFillWarning className="w-7 h-7 text-[#F59E28]"/> <span>Actions required</span>
@@ -88,27 +89,55 @@ export function ActionsRequiredNotAccruingModal() {
 						</SquareCard>
 					)}
 
-					<div className="flex flex-col gap-3 mt-3">
-						<SentryActiveCard
-							active={testState.active}
-							setActive={() => setTestState((_state) => {
-								return {..._state, active: true}
-							})}
-						/>
+					<div className="flex flex-col">
+						<div className="flex">
+							<div className="w-6 flex justify-end flex flex-row flex-wrap">
+								<div className="w-[2px] bg-[#D4D4D4] h-full"/>
 
-						<InsufficientFundsCard
-							funded={testState.funded}
-							setFunded={() => setTestState((_state) => {
-								return {..._state, funded: true}
-							})}
-						/>
+								<div className="h-[2px] bg-[#D4D4D4] w-1/2 mt-[33px]"/>
+							</div>
 
-						<AssignedKeysCard
-							keys={testState.keys}
-							setKeys={() => setTestState((_state) => {
-								return {..._state, keys: true}
-							})}
-						/>
+							<div className="flex-1 mt-3">
+								<SentryActiveCard
+									active={testState.active}
+									setActive={() => setTestState((_state) => {
+										return {..._state, active: true}
+									})}
+								/>
+							</div>
+						</div>
+
+						<div className="flex">
+							<div className="w-6 flex justify-end flex flex-row flex-wrap">
+								<div className="w-[2px] bg-[#D4D4D4] h-full"/>
+
+								<div className="h-[2px] bg-[#D4D4D4] w-1/2 mt-[33px]"/>
+							</div>
+							<div className="flex-1 mt-3">
+								<InsufficientFundsCard
+									funded={testState.funded}
+									setFunded={() => setTestState((_state) => {
+										return {..._state, funded: true}
+									})}
+								/>
+							</div>
+						</div>
+
+						<div className="flex">
+							<div className="w-6 flex justify-end flex flex-row flex-wrap">
+								<div className="w-[2px] bg-[#D4D4D4] h-[35px]"/>
+
+								<div className="h-[2px] bg-[#D4D4D4] w-1/2 mt-[33px]"/>
+							</div>
+							<div className="flex-1 mt-3">
+								<AssignedKeysCard
+									keys={testState.keys}
+									setKeys={() => setTestState((_state) => {
+										return {..._state, keys: true}
+									})}
+								/>
+							</div>
+						</div>
 					</div>
 				</div>
 
