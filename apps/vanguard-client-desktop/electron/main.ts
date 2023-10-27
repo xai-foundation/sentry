@@ -112,7 +112,10 @@ app.on('activate', () => {
 app.on('ready', () => {
 	const server = express();
 	const publicWebPath = path.join(process.env.VITE_PUBLIC, '/web');
-	server.use(express.static(publicWebPath));
+	server.use(express.static(publicWebPath)); // takes dir, makes root
+	server.get("/*", (_, res) => {
+		res.sendFile(path.join(publicWebPath, "index.html")) // force web to load index.html
+	})
 	server.listen(7555);
 })
 

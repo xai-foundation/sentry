@@ -28,7 +28,7 @@ export function BuyKeysFlow() {
 	}
 
 	if (getTotalData) {
-		maxSupply = Number(getTotalData.maxSupply);
+		maxSupply = Number(getTotalData.maxSupply) - Number(getTotalData.totalSupply);
 	}
 
 	const handleSubmit = () => {
@@ -124,25 +124,6 @@ export function BuyKeysFlow() {
 							<div className="px-6">
 								{getKeys()}
 
-								{getPriceData!.nodesAtEachPrice.length > 1 && (
-
-									<div className="w-full flex flex-col bg-[#F5F5F5] px-5 py-4 gap-2 mb-4">
-										<div className="flex items-center gap-2 font-semibold">
-											<AiFillInfoCircle className="w-[20px] h-[20px] text-[#3B82F6]"/>
-											<p className="text-[15px]">
-												Prices may vary
-											</p>
-										</div>
-										<p className="text-sm">
-											Xai Sentry Node Key prices vary depending on the quantity of remaining
-											supply.
-											In general, as the quantity of available keys decreases, the price of a key
-											will
-											increase.
-										</p>
-									</div>
-								)}
-
 								{discountApplied && (
 									<>
 										<div className="flex flex-row items-center justify-between text-[15px]">
@@ -167,6 +148,24 @@ export function BuyKeysFlow() {
 											IDONTWANNAPAYFULLPRICE
 										</p>
 									</>
+								)}
+
+								{getPriceData!.nodesAtEachPrice.length > 1 && (
+									<div className="w-full flex flex-col bg-[#F5F5F5] px-5 py-4 gap-2 mb-4">
+										<div className="flex items-center gap-2 font-semibold">
+											<AiFillInfoCircle className="w-[20px] h-[20px] text-[#3B82F6]"/>
+											<p className="text-[15px]">
+												Prices may vary
+											</p>
+										</div>
+										<p className="text-sm">
+											Xai Sentry Node Key prices vary depending on the quantity of remaining
+											supply.
+											In general, as the quantity of available keys decreases, the price of a key
+											will
+											increase.
+										</p>
+									</div>
 								)}
 
 								{/*		Promo section		*/}
