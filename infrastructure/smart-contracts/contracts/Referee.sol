@@ -258,7 +258,6 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         require(!rollupAssertionTracker[comboHash], "This assertionId and rollupAddress combo has already been submitted");
         rollupAssertionTracker[comboHash] = true;
 
-
         // verify the data inside the hash matched the data pulled from the rollup contract
         if (isCheckingAssertions) {
 
@@ -269,9 +268,6 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
             require(node.stateHash == _assertionStateRoot, "The _assertionStateRoot is incorrect.");
             require(node.createdAtBlock == _assertionTimestamp, "The _assertionTimestamp did not match the block this assertion was created at.");
         }
-
-        // increment the challenge counter
-        challengeCounter++;
 
         // add challenge to the mapping
         challenges[challengeCounter] = Challenge({
@@ -285,6 +281,9 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
             rollupUsed: rollupAddress // Store the rollup address used for this challenge
         });
 
+        // increment the challenge counter
+        challengeCounter++;
+
         // emit the event
         emit ChallengeSubmitted(challengeCounter, challenges[challengeCounter]);
     }
@@ -295,7 +294,18 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
      * @return The challenge corresponding to the given ID.
      */
     function getChallenge(uint64 _challengeId) public view returns (Challenge memory) {
+        require(_challengeId < challengeCounter, "challenge with this id, has not been created.");
         return challenges[_challengeId];
+    }
+
+    /**
+     * @notice Get the challenge at a given index.
+     * @param index The index of the challenge to query.
+     * @return The challenge corresponding to the given index.
+     */
+    function getChallengeAtIndex(uint256 index) public view returns (Challenge memory) {
+        require(index <= challengeCounter, "Index out of bounds");
+        return challenges[index];
     }
 
     /**

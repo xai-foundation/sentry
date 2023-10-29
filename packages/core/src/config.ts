@@ -1,7 +1,7 @@
 export let config = {
   "arbitrumBlockExplorer": "https://arbiscan.io",
   "arbitrumGoerliBlockExplorer": "https://goerli.arbiscan.io",
-  "defaultRpcUrl": "https://frequent-damp-star.arbitrum-goerli.quiknode.pro/c1b565106ebecad49a9e7a938d084543187755e4/",
+  "defaultRpcUrl": "https://goerli-rollup.arbitrum.io/rpc/",
   "esXaiAddress": "0xB9064b6539Ae35043C9Cf19A2a59313b9a0EbA3b",
   "esXaiDeployedBlockNumber": 51071371,
   "esXaiImplementationAddress": "0x07905bb78792e8dc41472d78fb116be23f365517",

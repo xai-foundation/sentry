@@ -7,9 +7,9 @@ import { config } from "../config.js";
  * Listens for NodeConfirmed events and triggers a callback function when the event is emitted.
  * Keeps a map of nodeNums that have called the callback to ensure uniqueness.
  * @param callback - The callback function to be triggered when NodeConfirmed event is emitted.
- * @returns void
+ * @returns A function that can be called to stop listening for the event.
  */
-export function listenForAssertions(callback: (nodeNum: any, blockHash: any, sendRoot: any, event: any) => void): void {
+export function listenForAssertions(callback: (nodeNum: any, blockHash: any, sendRoot: any, event: any) => void): () => void {
     // get a provider for the arb one network
     const provider = getProvider();
 
@@ -28,4 +28,9 @@ export function listenForAssertions(callback: (nodeNum: any, blockHash: any, sen
             void callback(nodeNum, blockHash, sendRoot, event);
         }
     });
+
+    // return a function that can be used to stop listening for the event
+    return () => {
+        rollupContract.removeAllListeners("NodeConfirmed");
+    };
 }
