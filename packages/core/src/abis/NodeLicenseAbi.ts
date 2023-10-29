@@ -167,20 +167,6 @@ export const NodeLicenseAbi = [
   },
   {
     "type": "function",
-    "name": "ADMIN_ROLE",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "bytes32",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
     "name": "DEFAULT_ADMIN_ROLE",
     "constant": true,
     "stateMutability": "view",
