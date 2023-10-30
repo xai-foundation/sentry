@@ -39,6 +39,11 @@ export function SentryWallet() {
 		}
 	}
 
+	function assignFromNewWallet() {
+		window.electron.openExternal("http://localhost:7555/assign-wallet");
+		setDrawerState(DrawerView.ViewKeys);
+	}
+
 	return (
 		<div className="w-full h-screen">
 			<div
@@ -144,7 +149,7 @@ export function SentryWallet() {
 					</p>
 
 					<button
-						onClick={() => setDrawerState(DrawerView.ViewKeys)}
+						onClick={assignFromNewWallet}
 						className="flex justify-center items-center gap-1 text-[15px] text-white bg-[#F30919] font-semibold mt-2 px-6 py-3"
 					>
 						Assign keys from new wallet

@@ -10,6 +10,11 @@ interface AssignedKeysCardProps {
 }
 
 export function AssignedKeysCard({keys, setKeys}: AssignedKeysCardProps) {
+	function onSetKeys() {
+		window.electron.openExternal("http://localhost:7555/assign-wallet");
+		setKeys();
+	}
+
 	return (
 		<SquareCard className="bg-[#F5F5F5]">
 			{keys ? (
@@ -31,7 +36,7 @@ export function AssignedKeysCard({keys, setKeys}: AssignedKeysCardProps) {
 					</p>
 
 					<button
-						onClick={setKeys}
+						onClick={onSetKeys}
 						className="w-full flex justify-center items-center gap-1 text-[15px] text-white bg-[#F30919] font-semibold mt-4 px-6 py-2"
 					>
 						Assign keys from new wallet
