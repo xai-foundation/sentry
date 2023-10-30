@@ -1,5 +1,5 @@
 import {PropsWithChildren} from "react";
-import * as classNames from "classnames";
+import classNames from "classnames";
 
 interface BarStepItemProps extends PropsWithChildren {
 	lastItem?: boolean;
@@ -9,7 +9,7 @@ interface BarStepItemProps extends PropsWithChildren {
 export function BarStepItem({children, lastItem}: BarStepItemProps) {
 	return (
 		<div className="flex">
-			<div className="w-6 flex justify-end flex flex-row flex-wrap">
+			<div className="w-6 flex justify-end flex-row flex-wrap">
 				<div
 					className={classNames("w-[2px] bg-[#D4D4D4]", {
 						"h-full": !lastItem,
