@@ -10,17 +10,29 @@ import {FaEthereum} from "react-icons/fa";
 import {MdRefresh} from "react-icons/md";
 import {useAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.tsx";
+import {FaPlay} from "react-icons/fa6";
+import {IoIosArrowDown} from "react-icons/io";
+
+const dropdownBody = [
+	"item1",
+	"item2",
+	"item3",
+	"item4",
+]
 
 export function SentryWallet() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
-	const [number, setNumber] = useState<number>(0);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
-	const {loading, publicKey} = useOperator();
+	const {loading, publicKey, signer} = useOperator();
 	const [copied, setCopied] = useState<boolean>(false);
 
-	//todo: delete once we add real data
-	console.log(setNumber);
+	// update / swap this out with actual number of keys user owns
+	const [number, setNumber] = useState<number>(0);
+	// update this with actual state of Operator
+	const [running, setRunning] = useState<boolean>(false);
 
+	// dropdown state
+	const [isOpen, setIsOpen] = useState<boolean>(false);
 
 	function copyPrivateKey() {
 		if (publicKey && navigator.clipboard) {
@@ -39,6 +51,28 @@ export function SentryWallet() {
 		}
 	}
 
+	async function pauseSentry() {
+		if (signer) {
+			// await operatorRuntime(signer, undefined, (log) => console.log(log));
+			console.log("pause", signer);
+		}
+		setRunning(false);
+	}
+
+	async function startSentry() {
+		if (signer) {
+			// await operatorRuntime(signer, undefined, (log) => console.log(log));
+			console.log("start", signer);
+		}
+		setRunning(true);
+	}
+
+	function getDropdownItems() {
+		return dropdownBody.map((item, i) => (
+			<p className={`item-${i}`}>{item}</p>
+		))
+	}
+
 	return (
 		<div className="w-full h-screen">
 			<div
@@ -48,12 +82,20 @@ export function SentryWallet() {
 					<div className="flex flex-row items-center gap-2">
 						<h2 className="text-lg font-semibold">Sentry Wallet</h2>
 
-						<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
-							No ETH
-						</p>
-						<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
-							No Keys Assigned
-						</p>
+						{running ? (
+							<>
+								<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
+									No ETH
+								</p>
+								<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
+									No Keys Assigned
+								</p>
+							</>
+						) : (
+							<p className="border border-[#F5F5F5] bg-[#F5F5F5] text-[#A3A3A3] text-xs font-semibold uppercase rounded-full px-2">
+								Stopped
+							</p>
+						)}
 
 						<div className="flex flex-row items-center gap-2 text-[#A3A3A3] text-[15px]">
 							<p>
@@ -74,13 +116,23 @@ export function SentryWallet() {
 							<HiOutlineDotsVertical/>
 						</div>
 
-						<button
-							onClick={() => window.electron.openExternal('http://localhost:7555/')}
-							className="ml-4 flex flex-row justify-center items-center gap-1 text-[15px] border border-[#E5E5E5] px-4 py-2"
-						>
-							<GiPauseButton className="h-[15px]"/>
-							Pause Sentry
-						</button>
+						{running ? (
+							<button
+								onClick={() => pauseSentry()}
+								className="ml-4 flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
+							>
+								<GiPauseButton className="h-[15px]"/>
+								Pause Sentry
+							</button>
+						) : (
+							<button
+								onClick={() => startSentry()}
+								className="ml-4 flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
+							>
+								<FaPlay className="h-[15px]"/>
+								Start Sentry
+							</button>
+						)}
 					</div>
 
 
@@ -133,36 +185,104 @@ export function SentryWallet() {
 				<ContinueInBrowserModal setShowContinueInBrowserModal={setShowContinueInBrowserModal}/>
 			)}
 
-			<div className="w-full h-auto flex flex-col justify-center items-center">
-				<div className="absolute top-0 bottom-0 flex flex-col justify-center items-center gap-4">
-					<AiFillWarning className="w-16 h-16 text-[#F59E28]"/>
-					<p className="text-2xl font-semibold">
-						Keys not assigned
-					</p>
-					<p className="text-lg text-[#525252]">
-						Add wallets to assign keys to the Sentry
-					</p>
 
-					<button
-						onClick={() => setDrawerState(DrawerView.ViewKeys)}
-						className="flex justify-center items-center gap-1 text-[15px] text-white bg-[#F30919] font-semibold mt-2 px-6 py-3"
+			{/*		Keys	*/}
+			{number ? (
+				<>
+					<div className="w-full h-auto flex flex-col py-3 pl-10">
+						<p className="text-sm uppercase text-[#A3A3A3] mb-2">
+							View Wallet
+						</p>
+						<div className="flex flex-row gap-2">
+
+							<div>
+
+								<div
+									onClick={() => setIsOpen(!isOpen)}
+									className="flex items-center justify-between w-[538px] border border-[#A3A3A3] p-2"
+								>
+									<p>{publicKey}</p>
+									<IoIosArrowDown
+										className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
+									/>
+
+								</div>
+
+								{isOpen && (
+									<div
+										className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3] p-2 gap-4">
+										{getDropdownItems()}
+									</div>
+								)}
+							</div>
+
+							<button
+								onClick={() => alert("Copy")}
+								className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
+							>
+								<PiCopy className="h-[15px]"/>
+								Copy address
+							</button>
+
+							<button
+								onClick={() => window.electron.openExternal('http://localhost:7555/assign-wallet')}
+								className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
+							>
+								Assign keys from new wallet
+								<BiLinkExternal className="h-[15px]"/>
+							</button>
+
+							<button
+								onClick={() => alert("Unassign")}
+								className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
+							>
+								Unassign this wallet
+								<BiLinkExternal className="h-[15px]"/>
+							</button>
+						</div>
+					</div>
+				</>
+			) : (
+				<>
+					<div className="w-full h-auto flex flex-col justify-center items-center">
+						<div className="absolute top-0 bottom-0 flex flex-col justify-center items-center gap-4">
+							<AiFillWarning className="w-16 h-16 text-[#F59E28]"/>
+							<p className="text-2xl font-semibold">
+								Keys not assigned
+							</p>
+							<p className="text-lg text-[#525252]">
+								Add wallets to assign keys to the Sentry
+							</p>
+
+							<button
+								onClick={() => setDrawerState(DrawerView.ViewKeys)}
+								className="flex justify-center items-center gap-1 text-[15px] text-white bg-[#F30919] font-semibold mt-2 px-6 py-3"
+							>
+								Assign keys from new wallet
+								<BiLinkExternal className="w-5 h-5"/>
+							</button>
+
+							<p className="text-[15px] text-[#525252] mt-2">
+								Don't own any keys?
+
+								<a
+									onClick={() => setDrawerState(DrawerView.BuyKeys)}
+									className="text-[#F30919] ml-1 cursor-pointer"
+								>
+									Purchase keys
+								</a>
+							</p>
+						</div>
+					</div>
+
+					<div
+						className="absolute bottom-0 right-0 p-4 cursor-pointer"
+						onClick={() => setNumber(1)}
 					>
-						Assign keys from new wallet
-						<BiLinkExternal className="w-5 h-5"/>
-					</button>
-
-					<p className="text-[15px] text-[#525252] mt-2">
-						Don't own any keys?
-
-						<a
-							onClick={() => setDrawerState(DrawerView.BuyKeys)}
-							className="text-[#F30919] ml-1 cursor-pointer"
-						>
-							Purchase keys
-						</a>
-					</p>
-				</div>
-			</div>
+						+1 Key
+					</div>
+				</>
+			)}
 		</div>
 	)
 }
