@@ -2,9 +2,9 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./nitro-contracts/rollup/IRollupCore.sol";
 import "./NodeLicense.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -63,6 +63,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         bytes challengerSignedHash;
         bytes activeChallengerPublicKey; // The challengerPublicKey that was active at the time of challenge submission
         address rollupUsed; // The rollup address used for this challenge
+        uint256 createdTimestamp; // used to determine if a node license is eligible to submit
     }
 
     // Define events
@@ -278,7 +279,8 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
             assertionTimestamp: _assertionTimestamp,
             challengerSignedHash: _challengerSignedHash,
             activeChallengerPublicKey: challengerPublicKey, // Store the active challengerPublicKey at the time of challenge submission
-            rollupUsed: rollupAddress // Store the rollup address used for this challenge
+            rollupUsed: rollupAddress, // Store the rollup address used for this challenge
+            createdTimestamp: block.timestamp
         });
 
         // increment the challenge counter
@@ -391,5 +393,15 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         require(totalSupply > 0, "No NodeLicenses have been minted yet");
         uint256 threshold = type(uint256).max / totalSupply;
         return (hashNumber < threshold, assertionHash, threshold);
+    }
+
+    /**
+     * @notice Returns the submission for a given challenge and NodeLicense.
+     * @param _challengeId The ID of the challenge.
+     * @param _nodeLicenseId The ID of the NodeLicense.
+     * @return The submission for the given challenge and NodeLicense.
+     */
+    function getSubmissionForChallenge(uint256 _challengeId, uint256 _nodeLicenseId) public view returns (Submission memory) {
+        return submissions[_challengeId][_nodeLicenseId];
     }
 }

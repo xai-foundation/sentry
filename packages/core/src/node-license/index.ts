@@ -5,3 +5,4 @@ export * from "./listTiers.js";
 export * from "./getTotalSupplyAndCap.js";
 export * from "./getReferralRewards.js";
 export * from "./getDiscountAndRewardForReferrals.js";
+export * from "./getMintTimestamp.js";

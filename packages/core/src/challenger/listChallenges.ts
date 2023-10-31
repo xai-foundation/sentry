@@ -15,6 +15,7 @@ export interface Challenge {
     challengerSignedHash: string;
     activeChallengerPublicKey: string;
     rollupUsed: string;
+    createdTimestamp: bigint; // in seconds
 }
 
 /**
@@ -35,13 +36,13 @@ export async function listChallenges(
     const refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, provider);
 
     // Get the count of challenges
-    const challengeCount = await refereeContract.challengeCounter();
+    const challengeCount: bigint = await refereeContract.challengeCounter();
 
     // Initialize an array to store the challenges
     const challenges: Challenge[] = [];
 
     // Loop through the challenge count in reverse order and fetch each challenge
-    for (let i = challengeCount - 1; i >= 0; i--) {
+    for (let i = challengeCount - BigInt(1); i >= 0; i--) {
         const challenge = await refereeContract.getChallenge(i);
         if (openForSubmissions && !challenge.openForSubmissions) {
             break;
