@@ -11,7 +11,6 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     CountersUpgradeable.Counter private _tokenIds;
 
     address payable public fundsReceiver;
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
     uint256 public maxSupply; // Maximum number of licenses that can be minted
 
@@ -42,7 +41,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         fundsReceiver = _fundsReceiver;
         referralDiscountPercentage = _referralDiscountPercentage;
         referralRewardPercentage = _referralRewardPercentage;
-        _setupRole(ADMIN_ROLE, msg.sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     /**
@@ -138,7 +137,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      */
     function setFundsReceiver(
         address payable _newFundsReceiver
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         fundsReceiver = _newFundsReceiver;
     }
 
@@ -150,7 +149,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     function setReferralPercentages(
         uint256 _referralDiscountPercentage,
         uint256 _referralRewardPercentage
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         referralDiscountPercentage = _referralDiscountPercentage;
         referralRewardPercentage = _referralRewardPercentage;
     }
@@ -161,7 +160,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @param _price The price of the tier.
      * @param _quantity The quantity of the tier.
      */
-    function setOrAddPricingTier(uint256 _index, uint256 _price, uint256 _quantity) external onlyRole(ADMIN_ROLE) {
+    function setOrAddPricingTier(uint256 _index, uint256 _price, uint256 _quantity) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (_index < pricingTiers.length) {
             // Subtract the quantity of the old tier from maxSupply
             maxSupply -= pricingTiers[_index].quantity;
