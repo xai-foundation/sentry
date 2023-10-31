@@ -96,6 +96,10 @@ export const RefereeAbi = [
           {
             "type": "address",
             "name": "rollupUsed"
+          },
+          {
+            "type": "uint256",
+            "name": "createdTimestamp"
           }
         ]
       }
@@ -359,6 +363,10 @@ export const RefereeAbi = [
       {
         "type": "address",
         "name": "rollupUsed"
+      },
+      {
+        "type": "uint256",
+        "name": "createdTimestamp"
       }
     ]
   },
@@ -462,6 +470,67 @@ export const RefereeAbi = [
           {
             "type": "address",
             "name": "rollupUsed"
+          },
+          {
+            "type": "uint256",
+            "name": "createdTimestamp"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getChallengeAtIndex",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "index"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple",
+        "name": "",
+        "components": [
+          {
+            "type": "bool",
+            "name": "openForSubmissions"
+          },
+          {
+            "type": "uint64",
+            "name": "assertionId"
+          },
+          {
+            "type": "uint64",
+            "name": "predecessorAssertionId"
+          },
+          {
+            "type": "bytes32",
+            "name": "assertionStateRoot"
+          },
+          {
+            "type": "uint64",
+            "name": "assertionTimestamp"
+          },
+          {
+            "type": "bytes",
+            "name": "challengerSignedHash"
+          },
+          {
+            "type": "bytes",
+            "name": "activeChallengerPublicKey"
+          },
+          {
+            "type": "address",
+            "name": "rollupUsed"
+          },
+          {
+            "type": "uint256",
+            "name": "createdTimestamp"
           }
         ]
       }
@@ -642,6 +711,43 @@ export const RefereeAbi = [
       {
         "type": "uint256",
         "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getSubmissionForChallenge",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "_challengeId"
+      },
+      {
+        "type": "uint256",
+        "name": "_nodeLicenseId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple",
+        "name": "",
+        "components": [
+          {
+            "type": "bool",
+            "name": "submitted"
+          },
+          {
+            "type": "uint256",
+            "name": "nodeLicenseId"
+          },
+          {
+            "type": "bytes",
+            "name": "successorStateRoot"
+          }
+        ]
       }
     ]
   },

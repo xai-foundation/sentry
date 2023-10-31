@@ -37,6 +37,7 @@ import { getTotalSupplyAndCap } from './commands/licenses/get-total-supply-and-c
 import { getReferralRewards } from './commands/licenses/get-referral-rewards.js';
 import { getReferralDiscountAndRewardPercentages } from './commands/licenses/get-referral-discount-and-reward-percentages.js';
 import { setReferralDiscountAndRewardPercentages } from './commands/licenses/set-referral-discount-and-reward-percentages.js';
+import { bootOperator } from './commands/operator-control/operator-runtime.js';
 
 const cli = new Vorpal();
 
@@ -79,6 +80,7 @@ getTotalSupplyAndCap(cli);
 getReferralRewards(cli);
 getReferralDiscountAndRewardPercentages(cli);
 setReferralDiscountAndRewardPercentages(cli);
+bootOperator(cli);
 
 cli
     .delimiter('vanguard-node$')
