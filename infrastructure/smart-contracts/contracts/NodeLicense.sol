@@ -26,6 +26,9 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     uint256 public referralDiscountPercentage;
     uint256 public referralRewardPercentage;
 
+    // Mapping from token ID to minting timestamp
+    mapping (uint256 => uint256) private _mintTimestamps;
+
     event ReferralReward(address indexed buyer, address indexed referralAddress, uint256 amount);
 
     function initialize(
@@ -72,6 +75,9 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             _tokenIds.increment();
             uint256 newItemId = _tokenIds.current();
             _mint(msg.sender, newItemId);
+
+            // Record the minting timestamp
+            _mintTimestamps[newItemId] = block.timestamp;
         }
 
         // Calculate the referral reward
@@ -177,6 +183,16 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     function getPricingTier(uint256 _index) public view returns (Tier memory) {
         require(_index < pricingTiers.length, "Index out of bounds");
         return pricingTiers[_index];
+    }
+
+    /**
+     * @notice Returns the timestamp at which the token was minted.
+     * @param _tokenId The ID of the token.
+     * @return The minting timestamp.
+     */
+    function getMintTimestamp(uint256 _tokenId) public view returns (uint256) {
+        require(_exists(_tokenId), "ERC721Metadata: Query for nonexistent token");
+        return _mintTimestamps[_tokenId];
     }
 
     /**

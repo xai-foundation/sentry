@@ -366,43 +366,23 @@
       "kind": "transparent"
     },
     {
-      "address": "0xf4214219D2AA4B4aAab5912cC5E13D88016230b8",
-      "txHash": "0x6cda87d28241b9109c573fcb07c117e3dc88ff5207e15b08cb0b470a7097de09",
+      "address": "0x10f3E3778eaBE38Ed561052d429B31c5c2faCc59",
+      "txHash": "0x7bdec11a80d0a8c4c98bbd9034d551f146ca32056b053e7c942f199444001daf",
       "kind": "transparent"
     },
     {
-      "address": "0x0CF9F5658C84381ABaaD354374a24358DEDFe85A",
-      "txHash": "0xfe21c07c2e1c5e1e123fd57b1dd337fcb44a405c1e77d7bed3c330ee9b8a2e7b",
+      "address": "0xCf9a2c4b4264b704A852609211C4c81E86dcD698",
+      "txHash": "0xf2df47e4c27976f770791364f86b3040424903a6763891b36600d1c4bd8bae2e",
       "kind": "transparent"
     },
     {
-      "address": "0xfD80E95d5A878396A00cEa5ae1c0d21640d67fD5",
-      "txHash": "0xdc9eebc1062ee38781bb177f0f4e0f1c582c450aaffad21c9a5525e33ee949a6",
+      "address": "0xF177184Be7c89c3246e279a0d9FE14B2aDE5FdbC",
+      "txHash": "0x169c68f3101f333498e7645e7a477f61117147ed3a1e670de03a9e7a69a588cb",
       "kind": "transparent"
     },
     {
-      "address": "0xe2609a52C038bAD113e8E939378DdB6db986de4D",
-      "txHash": "0x808db38aae3969ba1af082a08b5df3d56bcba6e7caaae33e71864d6de8964581",
-      "kind": "transparent"
-    },
-    {
-      "address": "0xC8A7FCaF19947ddFcDa705e8B6962Dc4Ccec5Cd1",
-      "txHash": "0x131ce997b09409904f584d4c83d31a13bc98c3b7f95f6dea7f8478b8968271a3",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x49D9a29faCFb71c395e4871c84D4bDB4953BF144",
-      "txHash": "0x32d4c0bfd9c751af2971f37afc013138a247836aacc36ca47fa1fcdb7b6a4830",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x2501E0d00761d0931c334Fbf14f6c3fb737B88cE",
-      "txHash": "0x578f4261989eba5309b946a8daff2ec2cf2ad912a04f73e91ab1e23a6bed1175",
-      "kind": "transparent"
-    },
-    {
-      "address": "0x8FbEAd06a0E0259d42481cd361539Fc2bFD0deeB",
-      "txHash": "0x13496c2c659f351fceedf5997c04b9c429fd4305edbf0a6f322d3845154ed5b1",
+      "address": "0x59BF0e0f44E51DF8E7D5b1fa982e0Ad8E0f1F31c",
+      "txHash": "0x62186c58c6bf4906c80a69bc3988764c9ba1d43a9cdf71e3e55dcfc9029a010d",
       "kind": "transparent"
     }
   ],
@@ -1894,9 +1874,382 @@
         "namespaces": {}
       }
     },
-    "9522b70660cccd2f3f9e2ddb8b25f10eeef24ceac8f72f3a73f00d47ee6818a3": {
-      "address": "0x3F9D01E99c759EF38710E1F095ca7a35efF1Da15",
-      "txHash": "0x14c18c23874f1e63153dd3d6870ab94d8247324143688d8bd423f8e6f87fb1f1",
+    "06c370a00e487090fe565e2be3bc00bb9c9b1d1c8368ce587db5ad5179b524d8": {
+      "address": "0xfb7AD5601d57C07A8CE495B88b77C82E5A97ee12",
+      "txHash": "0x734b973991e1345587ccbd7252275868ab24713952a9b9f0716e6c79f0cd8f5b",
+      "layout": {
+        "solcVersion": "0.8.9",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)179_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:62"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:260"
+          },
+          {
+            "label": "_roleMembers",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_mapping(t_bytes32,t_struct(AddressSet)4340_storage)",
+            "contract": "AccessControlEnumerableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlEnumerableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol:76"
+          },
+          {
+            "label": "challengerPublicKey",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_bytes_storage",
+            "contract": "Referee",
+            "src": "contracts/Referee.sol:17"
+          },
+          {
+            "label": "rollupAddress",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_address",
+            "contract": "Referee",
+            "src": "contracts/Referee.sol:20"
+          },
+          {
+            "label": "nodeLicenseAddress",
+            "offset": 0,
+            "slot": "203",
+            "type": "t_address",
+            "contract": "Referee",
+            "src": "contracts/Referee.sol:23"
+          },
+          {
+            "label": "challengeCounter",
+            "offset": 0,
+            "slot": "204",
+            "type": "t_uint256",
+            "contract": "Referee",
+            "src": "contracts/Referee.sol:26"
+          },
+          {
+            "label": "challenges",
+            "offset": 0,
+            "slot": "205",
+            "type": "t_mapping(t_uint256,t_struct(Challenge)5332_storage)",
+            "contract": "Referee",
+            "src": "contracts/Referee.sol:29"
+          },
+          {
+            "label": "submissions",
+            "offset": 0,
+            "slot": "206",
+            "type": "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(Submission)5313_storage))",
+            "contract": "Referee",
+            "src": "contracts/Referee.sol:32"
+          },
+          {
+            "label": "isCheckingAssertions",
+            "offset": 0,
+            "slot": "207",
+            "type": "t_bool",
+            "contract": "Referee",
+            "src": "contracts/Referee.sol:35"
+          },
+          {
+            "label": "_operatorApprovals",
+            "offset": 0,
+            "slot": "208",
+            "type": "t_mapping(t_address,t_struct(AddressSet)4340_storage)",
+            "contract": "Referee",
+            "src": "contracts/Referee.sol:38"
+          },
+          {
+            "label": "_ownersForOperator",
+            "offset": 0,
+            "slot": "209",
+            "type": "t_mapping(t_address,t_struct(AddressSet)4340_storage)",
+            "contract": "Referee",
+            "src": "contracts/Referee.sol:41"
+          },
+          {
+            "label": "rollupAssertionTracker",
+            "offset": 0,
+            "slot": "210",
+            "type": "t_mapping(t_bytes32,t_bool)",
+            "contract": "Referee",
+            "src": "contracts/Referee.sol:44"
+          },
+          {
+            "label": "kycWallets",
+            "offset": 0,
+            "slot": "211",
+            "type": "t_struct(AddressSet)4340_storage",
+            "contract": "Referee",
+            "src": "contracts/Referee.sol:47"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_bytes32)dyn_storage": {
+            "label": "bytes32[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_bytes_storage": {
+            "label": "bytes",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_struct(AddressSet)4340_storage)": {
+            "label": "mapping(address => struct EnumerableSetUpgradeable.AddressSet)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_bool)": {
+            "label": "mapping(bytes32 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(AddressSet)4340_storage)": {
+            "label": "mapping(bytes32 => struct EnumerableSetUpgradeable.AddressSet)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)179_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_uint256)": {
+            "label": "mapping(bytes32 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_mapping(t_uint256,t_struct(Submission)5313_storage))": {
+            "label": "mapping(uint256 => mapping(uint256 => struct Referee.Submission))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Challenge)5332_storage)": {
+            "label": "mapping(uint256 => struct Referee.Challenge)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_struct(Submission)5313_storage)": {
+            "label": "mapping(uint256 => struct Referee.Submission)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(AddressSet)4340_storage": {
+            "label": "struct EnumerableSetUpgradeable.AddressSet",
+            "members": [
+              {
+                "label": "_inner",
+                "type": "t_struct(Set)4025_storage",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Challenge)5332_storage": {
+            "label": "struct Referee.Challenge",
+            "members": [
+              {
+                "label": "openForSubmissions",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "assertionId",
+                "type": "t_uint64",
+                "offset": 1,
+                "slot": "0"
+              },
+              {
+                "label": "predecessorAssertionId",
+                "type": "t_uint64",
+                "offset": 9,
+                "slot": "0"
+              },
+              {
+                "label": "assertionStateRoot",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "assertionTimestamp",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "challengerSignedHash",
+                "type": "t_bytes_storage",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "activeChallengerPublicKey",
+                "type": "t_bytes_storage",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "rollupUsed",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "5"
+              },
+              {
+                "label": "createdTimestamp",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "6"
+              }
+            ],
+            "numberOfBytes": "224"
+          },
+          "t_struct(RoleData)179_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Set)4025_storage": {
+            "label": "struct EnumerableSetUpgradeable.Set",
+            "members": [
+              {
+                "label": "_values",
+                "type": "t_array(t_bytes32)dyn_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_indexes",
+                "type": "t_mapping(t_bytes32,t_uint256)",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Submission)5313_storage": {
+            "label": "struct Referee.Submission",
+            "members": [
+              {
+                "label": "submitted",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "nodeLicenseId",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "successorStateRoot",
+                "type": "t_bytes_storage",
+                "offset": 0,
+                "slot": "2"
+              }
+            ],
+            "numberOfBytes": "96"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "0966b78164fcbf7b6625488512562331bc86ded3732025ae05557185f51e1fdb": {
+      "address": "0x9281384FC315bfF9d3CEE3851BA7D907a9B65180",
+      "txHash": "0x5e134acdb266961a5610b312f0e3d86ae75c95ef4c45dfe02558f3388c3862e8",
       "layout": {
         "solcVersion": "0.8.9",
         "storage": [
@@ -2067,15 +2420,15 @@
             "slot": "253",
             "type": "t_uint256",
             "contract": "NodeLicense",
-            "src": "contracts/NodeLicense.sol:15"
+            "src": "contracts/NodeLicense.sol:16"
           },
           {
             "label": "pricingTiers",
             "offset": 0,
             "slot": "254",
-            "type": "t_array(t_struct(Tier)4657_storage)dyn_storage",
+            "type": "t_array(t_struct(Tier)4662_storage)dyn_storage",
             "contract": "NodeLicense",
-            "src": "contracts/NodeLicense.sol:24"
+            "src": "contracts/NodeLicense.sol:25"
           },
           {
             "label": "referralDiscountPercentage",
@@ -2083,7 +2436,7 @@
             "slot": "255",
             "type": "t_uint256",
             "contract": "NodeLicense",
-            "src": "contracts/NodeLicense.sol:26"
+            "src": "contracts/NodeLicense.sol:27"
           },
           {
             "label": "referralRewardPercentage",
@@ -2091,7 +2444,15 @@
             "slot": "256",
             "type": "t_uint256",
             "contract": "NodeLicense",
-            "src": "contracts/NodeLicense.sol:27"
+            "src": "contracts/NodeLicense.sol:28"
+          },
+          {
+            "label": "_mintTimestamps",
+            "offset": 0,
+            "slot": "257",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "NodeLicense",
+            "src": "contracts/NodeLicense.sol:31"
           }
         ],
         "types": {
@@ -2103,7 +2464,7 @@
             "label": "address payable",
             "numberOfBytes": "20"
           },
-          "t_array(t_struct(Tier)4657_storage)dyn_storage": {
+          "t_array(t_struct(Tier)4662_storage)dyn_storage": {
             "label": "struct NodeLicense.Tier[]",
             "numberOfBytes": "32"
           },
@@ -2197,7 +2558,7 @@
             ],
             "numberOfBytes": "64"
           },
-          "t_struct(Tier)4657_storage": {
+          "t_struct(Tier)4662_storage": {
             "label": "struct NodeLicense.Tier",
             "members": [
               {
