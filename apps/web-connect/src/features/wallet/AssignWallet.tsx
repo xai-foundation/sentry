@@ -6,7 +6,7 @@ export function AssignWallet() {
 	const {address} = useAccount()
 	const navigate = useNavigate();
 
-	function getShortenedPrivateKey(address: string) {
+	function getShortenedWallet(address: string) {
 		const firstFiveChars = address.slice(0, 5);
 		const lastThreeChars = address.slice(-5);
 		return `${firstFiveChars}...${lastThreeChars}`;
@@ -39,12 +39,11 @@ export function AssignWallet() {
 							your wallet, you will redirected back to the client.
 						</p>
 						{address ? (
-
 							<button
 								onClick={() => alert("Assign wallet")}
 								className="w-[672px] bg-[#F30919] text-white p-4 font-semibold m-8"
 							>
-								Assign wallet to Sentry ({getShortenedPrivateKey(address)})
+								Assign wallet to Sentry ({getShortenedWallet(address)})aa
 							</button>
 						) : (
 							<div className="m-8">
