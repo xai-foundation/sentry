@@ -1,7 +1,7 @@
 import {AiFillWarning, AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
 import {useState} from "react";
 import {ContinueInBrowserModal} from "./modals/ContinueInBrowserModal.tsx";
-import {BiLinkExternal} from "react-icons/bi";
+import {BiDownload, BiLinkExternal, BiUpload} from "react-icons/bi";
 import {useOperator} from "../operator";
 import {PiCopy} from "react-icons/pi";
 import {HiOutlineDotsVertical} from "react-icons/hi";
@@ -12,12 +12,13 @@ import {useAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.tsx";
 import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
+import {operatorRuntime} from "@xai-vanguard-node/core";
 
 const dropdownBody = [
-	"item1",
-	"item2",
-	"item3",
-	"item4",
+	"0x1a2b3c4d5e6f7g8h9i0j1a2b3c4d5e6f7g8h9i0j",
+	"0x2a2b3c4d5e6f7g8h9i0j2a2b3c4d5e6f7g8h9i0j",
+	"0x3a2b3c4d5e6f7g8h9i0j3a2b3c4d5e6f7g8h9i0j",
+	"All",
 ]
 
 export function SentryWallet() {
@@ -32,9 +33,12 @@ export function SentryWallet() {
 	const [running, setRunning] = useState<boolean>(false);
 
 	// dropdown state
+	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
+	let stopFunction: () => Promise<void>;
 
-	function copyPrivateKey() {
+
+	function copyPublicKey() {
 		if (publicKey && navigator.clipboard) {
 			navigator.clipboard.writeText(publicKey)
 				.then(() => {
@@ -51,20 +55,26 @@ export function SentryWallet() {
 		}
 	}
 
-	async function pauseSentry() {
-		if (signer) {
-			// await operatorRuntime(signer, undefined, (log) => console.log(log));
-			console.log("pause", signer);
+	async function startSentry() {
+		if (signer && number > 0) {
+			// @ts-ignore
+			stopFunction = await operatorRuntime(signer, undefined, (log) => console.log(log));
+			setRunning(true);
+			// @ts-ignore
+			return new Promise((resolve, reject) => {
+			}); // Keep the command alive
 		}
-		setRunning(false);
 	}
 
-	async function startSentry() {
-		if (signer) {
-			// await operatorRuntime(signer, undefined, (log) => console.log(log));
-			console.log("start", signer);
+	async function pauseSentry() {
+		if (stopFunction) {
+			await stopFunction();
+			setRunning(false);
 		}
-		setRunning(true);
+		if (!stopFunction) {
+			console.warn("stopFunction is undefined!")
+		}
+		setRunning(false);
 	}
 
 	function getDropdownItems() {
@@ -103,7 +113,7 @@ export function SentryWallet() {
 							</p>
 
 							<div
-								onClick={() => copyPrivateKey()}
+								onClick={() => copyPublicKey()}
 								className="cursor-pointer"
 							>
 								{copied
@@ -113,7 +123,30 @@ export function SentryWallet() {
 
 
 							<AiOutlineInfoCircle/>
-							<HiOutlineDotsVertical/>
+
+							<div
+								className="relative cursor-pointer"
+								onClick={() => setIsMoreOptionsOpen(!isMoreOptionsOpen)}
+							>
+								<HiOutlineDotsVertical/>
+								{isMoreOptionsOpen && (
+									<div
+										className="absolute flex flex-col items-center top-8 right-0 w-[210px] bg-white border border-[#E5E5E5] text-black">
+										<div
+											onClick={() => setDrawerState(DrawerView.ExportSentry)}
+											className="w-full flex justify-center items-center gap-1 py-2 cursor-pointer hover:bg-gray-100"
+										>
+											<BiUpload className="h-[16px]"/> Export Sentry Wallet
+										</div>
+										<div
+											onClick={() => setDrawerState(DrawerView.ImportSentry)}
+											className="w-full flex justify-center items-center gap-1 py-2 cursor-pointer hover:bg-gray-100"
+										>
+											<BiDownload className="h-[16px]"/> Import Sentry Wallet
+										</div>
+									</div>
+								)}
+							</div>
 						</div>
 
 						{running ? (
@@ -127,7 +160,8 @@ export function SentryWallet() {
 						) : (
 							<button
 								onClick={() => startSentry()}
-								className="ml-4 flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
+								className={`ml-4 flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2 ${!number ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : ''}`}
+								disabled={!number}
 							>
 								<FaPlay className="h-[15px]"/>
 								Start Sentry
@@ -217,10 +251,14 @@ export function SentryWallet() {
 							</div>
 
 							<button
-								onClick={() => alert("Copy")}
+								onClick={() => copyPublicKey()}
 								className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 							>
-								<PiCopy className="h-[15px]"/>
+
+								{copied
+									? (<AiOutlineCheck className="h-[15px]"/>)
+									: (<PiCopy className="h-[15px]"/>)
+								}
 								Copy address
 							</button>
 
@@ -233,7 +271,7 @@ export function SentryWallet() {
 							</button>
 
 							<button
-								onClick={() => alert("Unassign")}
+								onClick={() => window.electron.openExternal("https://xai.games/")}
 								className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 							>
 								Unassign this wallet

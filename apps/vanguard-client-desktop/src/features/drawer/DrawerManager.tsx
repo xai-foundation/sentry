@@ -4,12 +4,16 @@ import {ActionsRequiredBuyModal} from "../home/modals/actions-required/ActionsRe
 import {BuyKeysModal} from "../keys/modals/buy-keys/BuyKeysModal";
 import {ViewKeysModal} from "../home/modals/view-keys/ViewKeysModal";
 import {ActionsRequiredNotAccruingModal} from "../home/modals/actions-required/ActionsRequiredNotAccruingModal";
+import {ExportSentryModal} from "../home/modals/ExportSentryModal.tsx";
+import {ImportSentryModal} from "../home/modals/ImportSentryModal.tsx";
 
 export enum DrawerView {
 	ActionsRequiredBuy,
 	ActionsRequiredNotAccruing,
 	BuyKeys,
 	ViewKeys,
+	ImportSentry,
+	ExportSentry,
 }
 
 export const drawerStateAtom = atom<DrawerView | null>(null);
@@ -38,6 +42,17 @@ export function DrawerManager() {
 			{drawerState === DrawerView.ViewKeys && (
 				<ViewKeysModal/>
 			)}
+
+
+			{drawerState === DrawerView.ImportSentry && (
+				<ImportSentryModal/>
+			)}
+
+
+			{drawerState === DrawerView.ExportSentry && (
+				<ExportSentryModal/>
+			)}
+
 		</div>
 	);
 }
