@@ -30,15 +30,5 @@
     }
   },
   "include": ["src", "electron"],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    },
-    {
-      "path": "../../packages/core"
-    },
-    {
-      "path": "../../packages/ui"
-    },
-  ]
+  
 }
