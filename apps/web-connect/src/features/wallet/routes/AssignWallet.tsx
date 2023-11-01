@@ -3,6 +3,7 @@ import {useNavigate} from "react-router-dom";
 import {useAccount} from "wagmi";
 
 export function AssignWallet() {
+	const {} = useAssignWalletToOperator();
 	const {address} = useAccount()
 	const navigate = useNavigate();
 
@@ -36,14 +37,14 @@ export function AssignWallet() {
 						</p>
 						<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
 							This will assign all purchased keys in your wallet to the Sentry Wallet. After assigning
-							your wallet, you will redirected back to the client.
+							your wallet, you will be redirected back to the client.
 						</p>
 						{address ? (
 							<button
 								onClick={() => alert("Assign wallet")}
 								className="w-[672px] bg-[#F30919] text-white p-4 font-semibold m-8"
 							>
-								Assign wallet to Sentry ({getShortenedWallet(address)})aa
+								Assign wallet to Sentry ({getShortenedWallet(address)})
 							</button>
 						) : (
 							<div className="m-8">

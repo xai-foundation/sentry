@@ -1,8 +1,8 @@
 import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom';
 import {QueryClient, QueryClientProvider} from "react-query";
 import {Checkout} from "../checkout";
-import {ConnectWallet} from "../wallet/ConnectWallet.tsx";
-import {AssignWallet} from "../wallet/AssignWallet.tsx";
+import {ConnectWallet} from "../wallet/routes/ConnectWallet.tsx";
+import {AssignWallet} from "../wallet/routes/AssignWallet.tsx";
 
 export function AppRoutes() {
 	const queryClient = new QueryClient();
