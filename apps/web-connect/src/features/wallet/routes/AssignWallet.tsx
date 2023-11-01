@@ -1,11 +1,25 @@
 import {MdVerifiedUser} from "react-icons/md";
-import {useNavigate} from "react-router-dom";
-import {useAccount} from "wagmi";
+import {useNavigate, useParams} from "react-router-dom";
+import {useAccount, useContractWrite} from "wagmi";
+import {config, RefereeAbi} from "@xai-vanguard-node/core";
 
 export function AssignWallet() {
-	const {} = useAssignWalletToOperator();
-	const {address} = useAccount()
 	const navigate = useNavigate();
+	const params = useParams<{operatorAddress: string}>();
+	const {address} = useAccount();
+
+	const {isLoading, isSuccess, write, error} = useContractWrite({
+		address: config.refereeAddress,
+		abi: RefereeAbi,
+		functionName: "setApprovalForOperator",
+		args: [params.operatorAddress, true],
+		onSuccess(data) {
+			console.log("Success", data)
+		},
+		onError(error) {
+			console.log("Error", error);
+		},
+	});
 
 	function getShortenedWallet(address: string) {
 		const firstFiveChars = address.slice(0, 5);
@@ -31,7 +45,7 @@ export function AssignWallet() {
 				<div
 					className="flex flex-col justify-center items-center w-[744px] border border-gray-200 bg-white m-4 p-12">
 					<div
-						className="flex flex-col justify-center items-center gap-2">
+						className="flex flex-col justify-center items-center gap-2 w-full overflow-hidden">
 						<p className="text-3xl font-semibold">
 							Assign wallet
 						</p>
@@ -39,10 +53,21 @@ export function AssignWallet() {
 							This will assign all purchased keys in your wallet to the Sentry Wallet. After assigning
 							your wallet, you will be redirected back to the client.
 						</p>
+						{isSuccess && (
+							<p className="text-center break-words w-full mt-4 text-green-500">
+								Assignment successful. You should be redirected to the desktop app shortly.
+							</p>
+						)}
+						{error && (
+							<p className="text-center break-words w-full mt-4 text-red-500">
+								{error.message}
+							</p>
+						)}
 						{address ? (
 							<button
-								onClick={() => alert("Assign wallet")}
-								className="w-[672px] bg-[#F30919] text-white p-4 font-semibold m-8"
+								onClick={write}
+								disabled={isLoading || isSuccess}
+								className="w-full bg-[#F30919] text-white p-4 font-semibold m-8 disabled:bg-slate-400"
 							>
 								Assign wallet to Sentry ({getShortenedWallet(address)})
 							</button>
