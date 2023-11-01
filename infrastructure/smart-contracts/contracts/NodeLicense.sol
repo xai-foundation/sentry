@@ -11,7 +11,6 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     CountersUpgradeable.Counter private _tokenIds;
 
     address payable public fundsReceiver;
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
     uint256 public maxSupply; // Maximum number of licenses that can be minted
 
@@ -27,6 +26,9 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     uint256 public referralDiscountPercentage;
     uint256 public referralRewardPercentage;
 
+    // Mapping from token ID to minting timestamp
+    mapping (uint256 => uint256) private _mintTimestamps;
+
     event ReferralReward(address indexed buyer, address indexed referralAddress, uint256 amount);
 
     function initialize(
@@ -39,7 +41,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         fundsReceiver = _fundsReceiver;
         referralDiscountPercentage = _referralDiscountPercentage;
         referralRewardPercentage = _referralRewardPercentage;
-        _setupRole(ADMIN_ROLE, msg.sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     /**
@@ -73,6 +75,9 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             _tokenIds.increment();
             uint256 newItemId = _tokenIds.current();
             _mint(msg.sender, newItemId);
+
+            // Record the minting timestamp
+            _mintTimestamps[newItemId] = block.timestamp;
         }
 
         // Calculate the referral reward
@@ -132,7 +137,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      */
     function setFundsReceiver(
         address payable _newFundsReceiver
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         fundsReceiver = _newFundsReceiver;
     }
 
@@ -144,7 +149,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     function setReferralPercentages(
         uint256 _referralDiscountPercentage,
         uint256 _referralRewardPercentage
-    ) external onlyRole(ADMIN_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         referralDiscountPercentage = _referralDiscountPercentage;
         referralRewardPercentage = _referralRewardPercentage;
     }
@@ -155,7 +160,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @param _price The price of the tier.
      * @param _quantity The quantity of the tier.
      */
-    function setOrAddPricingTier(uint256 _index, uint256 _price, uint256 _quantity) external onlyRole(ADMIN_ROLE) {
+    function setOrAddPricingTier(uint256 _index, uint256 _price, uint256 _quantity) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (_index < pricingTiers.length) {
             // Subtract the quantity of the old tier from maxSupply
             maxSupply -= pricingTiers[_index].quantity;
@@ -178,6 +183,16 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     function getPricingTier(uint256 _index) public view returns (Tier memory) {
         require(_index < pricingTiers.length, "Index out of bounds");
         return pricingTiers[_index];
+    }
+
+    /**
+     * @notice Returns the timestamp at which the token was minted.
+     * @param _tokenId The ID of the token.
+     * @return The minting timestamp.
+     */
+    function getMintTimestamp(uint256 _tokenId) public view returns (uint256) {
+        require(_exists(_tokenId), "ERC721Metadata: Query for nonexistent token");
+        return _mintTimestamps[_tokenId];
     }
 
     /**

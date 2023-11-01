@@ -90,7 +90,13 @@ async function main() {
   const nodeLicense = await upgrades.deployProxy(NodeLicense, [options.fundsReceiver, options.referralDiscountPercentage, options.referralRewardPercentage], { deployer: deployer });
   const { blockNumber: nodeLicenseDeployedBlockNumber } = await nodeLicense.deploymentTransaction();
   const nodeLicenseAddress = await nodeLicense.getAddress();
-  console.log("NodeLicense deployed to:", nodeLicenseAddress);
+
+  // Add admins to the node license
+  const nodeLicenseAdminRole = await nodeLicense.DEFAULT_ADMIN_ROLE();
+  for (const address of options.admins) {
+    await nodeLicense.grantRole(nodeLicenseAdminRole, address);
+    console.log(`Granted admin role to ${address} on Node License`);
+  }
 
   // Set the nodeLicenseAddress in the Referee contract
   await referee.setNodeLicenseAddress(nodeLicenseAddress);
@@ -150,6 +156,8 @@ async function main() {
 
   // denounce the admin role of the deployer on every contract  
   await referee.renounceRole(refereeAdminRole, deployerAddress);
+  console.log(`Renounced admin role of ${deployerAddress} on Referee`);
+  await nodeLicense.renounceRole(nodeLicenseAdminRole, deployerAddress);
   console.log(`Renounced admin role of ${deployerAddress} on Referee`);
   await esXai.renounceRole(esXaiAdminRole, deployerAddress);
   console.log(`Renounced admin role of ${deployerAddress} on esXai`);

@@ -8,3 +8,4 @@ export * from "./node-license/index.js";
 export * from "./utils/index.js";
 export * from "./kyc/index.js";
 export * from "./xai-token/index.js";
+export * from "./operator/index.js";

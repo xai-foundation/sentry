@@ -167,20 +167,6 @@ export const NodeLicenseAbi = [
   },
   {
     "type": "function",
-    "name": "ADMIN_ROLE",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "bytes32",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
     "name": "DEFAULT_ADMIN_ROLE",
     "constant": true,
     "stateMutability": "view",
@@ -258,6 +244,25 @@ export const NodeLicenseAbi = [
     "outputs": [
       {
         "type": "address",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getMintTimestamp",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "_tokenId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
         "name": ""
       }
     ]
