@@ -1,8 +1,20 @@
 {
-    "compilerOptions": {
-        "target": "es2020",
-        "module": "commonjs",
-        "strict": true,
-        "forceConsistentCasingInFileNames": true,
-    }
+    "extends": "./packages/tsconfig/tsconfig.base.json",
+    "references": [
+        {
+            "path": "./apps/cli/tsconfig.json"
+        },
+        {
+            "path": "./apps/vanguard-client-desktop/tsconfig.json"
+        },
+        {
+            "path": "./apps/web-connect/tsconfig.json"
+        },
+        {
+            "path": "./packages/core/tsconfig.json"
+        },
+        {
+            "path": "./packages/ui/tsconfig.json"
+        }
+    ]
 }

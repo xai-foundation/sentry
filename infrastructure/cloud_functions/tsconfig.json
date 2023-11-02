@@ -1,25 +1,29 @@
 {
-    "extends": "../../tsconfig.json",
-    "compilerOptions": {
-      "outDir": "./dist",
-      "rootDir": "./src",
-      "declaration": true,
-      "declarationMap": true,
-      "sourceMap": true,
-      "composite": true,
-      "module": "NodeNext",
-      "moduleResolution": "NodeNext",
-      "paths": {
-        "@xai-vanguard-node/core": ["../../packages/core"]
-      }
-    },
-    "include": [
-      "src/"
-    ],
-    "exclude": ["node_modules"],
-    "references": [
-      {
-        "path": "../../packages/core"
-      }
-    ]
-  }
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "composite": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "paths": {
+      "@xai-vanguard-node/core": [
+        "../../packages/core"
+      ]
+    }
+  },
+  "include": [
+    "src/"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "references": [
+    {
+      "path": "../../packages/core"
+    }
+  ]
+}
