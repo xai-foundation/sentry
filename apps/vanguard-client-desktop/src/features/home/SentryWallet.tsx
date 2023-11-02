@@ -78,7 +78,7 @@ export function SentryWallet() {
 
 	function getDropdownItems() {
 		return dropdownBody.map((item, i) => (
-			<p className={`item-${i}`}>{item}</p>
+			<p className="p-2 cursor-pointer hover:bg-gray-100" key={`sentry-item-${i}`}>{item}</p>
 		))
 	}
 
@@ -227,23 +227,20 @@ export function SentryWallet() {
 							View Wallet
 						</p>
 						<div className="flex flex-row gap-2">
-
 							<div>
-
 								<div
 									onClick={() => setIsOpen(!isOpen)}
-									className="flex items-center justify-between w-[538px] border border-[#A3A3A3] p-2"
+									className={`flex items-center justify-between w-[538px] border-[#A3A3A3] border-r border-l border-t ${!isOpen ? "border-b" : null} border-[#A3A3A3] p-2`}
 								>
 									<p>{publicKey}</p>
 									<IoIosArrowDown
 										className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
 									/>
-
 								</div>
 
 								{isOpen && (
 									<div
-										className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3] p-2 gap-4">
+										className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3]">
 										{getDropdownItems()}
 									</div>
 								)}
@@ -312,6 +309,7 @@ export function SentryWallet() {
 						</div>
 					</div>
 
+					{/*		todo: debug tool - delete this		*/}
 					<div
 						className="absolute bottom-0 right-0 p-4 cursor-pointer"
 						onClick={() => setNumber(1)}
