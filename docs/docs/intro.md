@@ -1,47 +1,29 @@
 ---
-sidebar_position: 1
+sidebar_position: 0
 ---
 
-# Tutorial Intro
+# Introduction
 
-Let's discover **Docusaurus in less than 5 minutes**.
+Welcome to the **Xai Sentry Nodes documentation**. This guide will help you understand the core concepts and functionalities of Xai Sentry Nodes.
 
 ## Getting Started
 
-Get started by **creating a new site**.
-
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+Start by **exploring the core modules** of Xai Sentry Nodes.
 
 ### What you'll need
 
-- [Node.js](https://nodejs.org/en/download/) version 18.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+- Familiarity with [Node.js](https://nodejs.org/en/download/) and TypeScript.
+- Basic understanding of decentralized systems and blockchain technology.
 
-## Generate a new site
+## Core Modules
 
-Generate a new Docusaurus site using the **classic template**.
+Understand the core modules of Xai Sentry Nodes. Each module is documented in detail to provide a comprehensive understanding of its functionality and usage.
 
-The classic template will automatically be added to your project after you run the command:
+## Start Exploring
 
-```bash
-npm init docusaurus@latest my-website classic
-```
+Dive into the documentation and start exploring the different interfaces, type aliases, and enums used in Xai Sentry Nodes.
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+The documentation is designed to be interactive and easy to navigate, allowing you to understand and utilize the Xai Sentry Nodes effectively.
 
-The command also installs all necessary dependencies you need to run Docusaurus.
+Feel free to edit and contribute to the documentation to improve its quality and comprehensiveness.
 
-## Start your site
-
-Run the development server:
-
-```bash
-cd my-website
-npm run start
-```
-
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
-
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
