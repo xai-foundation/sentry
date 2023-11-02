@@ -36,7 +36,12 @@ const config: Config = {
       {
         entryPoints: ['../packages/core/src/index.ts'],
         tsconfig: '../packages/core/tsconfig.json',
-        out: 'core'
+        out: 'core',
+        sidebar: {
+          categoryLabel: "Core",
+          position: 1,
+          collapsed: true
+        }
       },
     ],
   ],
