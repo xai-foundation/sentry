@@ -1,38 +1,9 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../tsconfig/tsconfig.vite.json",
   "compilerOptions": {
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "moduleResolution": "bundler",
-    "skipLibCheck": true,
-    "rootDir": "./src",
-    "outDir": "./dist",
-    "declaration": true,
-    "declarationMap": true,
-
-    /* Bundler mode */
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "react-jsx",
-
-    /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-
-    "composite": true,
-
+    "baseUrl": ".",
     "paths": {
-      "@xai-vanguard-node/core": ["../core"]
+      "@/*": ["./src/*"]
     }
-  },
-  "include": ["src"],
-  "references": [
-    {
-      "path": "../core"
-    }
-  ]
+  }
 }

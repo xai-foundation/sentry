@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-import { getProvider } from "../utils/index.js";
 import { config } from "../config.js";
 import { RefereeAbi } from "../abis/index.js";
 import { checkKycStatus } from "./checkKycStatus.js";
