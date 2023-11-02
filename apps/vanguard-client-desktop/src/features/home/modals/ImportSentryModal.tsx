@@ -27,7 +27,10 @@ export function ImportSentryModal() {
 
 	const handleSetData = () => {
 		if (inputValue !== "") {
-			void importPrivateKey(inputValue);
+			importPrivateKey(inputValue).then(() => {
+				alert("Refresh your app to see the changes")
+				setDrawerState(null)
+			});
 		}
 	};
 
@@ -47,7 +50,7 @@ export function ImportSentryModal() {
 					<div
 						className="absolute top-0 bottom-0 left-0 right-0 m-auto flex flex-col justify-center items-center gap-4">
 						<BiLoaderAlt className="animate-spin" color={"#A3A3A3"} size={32}/>
-						<span className="text-lg">Loading private key...</span>
+						<span className="text-lg">Importing Sentry Wallet...</span>
 					</div>
 
 				) : (
@@ -73,7 +76,7 @@ export function ImportSentryModal() {
 								/>
 
 								<button
-									onClick={() => handleSetData}
+									onClick={handleSetData}
 									className="w-full flex justify-center items-center gap-1 text-[15px] text-white bg-[#F30919] font-semibold mt-3 px-6 py-3"
 								>
 									Confirm import
@@ -83,7 +86,7 @@ export function ImportSentryModal() {
 							<p className="text-[15px] text-[#525252] mt-3">
 								Want to run a cloud instance?
 								<a
-									onClick={() => window.open("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/xai-protocol/sentry-nodes-explained/who-can-operate-a-sentry")}
+									onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/xai-protocol/sentry-nodes-explained/who-can-operate-a-sentry")}
 									className="text-[#F30919] ml-1 cursor-pointer"
 								>
 									Learn more

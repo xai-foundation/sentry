@@ -37,7 +37,6 @@ export function SentryWallet() {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	let stopFunction: () => Promise<void>;
 
-
 	function copyPublicKey() {
 		if (publicKey && navigator.clipboard) {
 			navigator.clipboard.writeText(publicKey)

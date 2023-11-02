@@ -89,7 +89,7 @@ export function ExportSentryModal() {
 							<p className="text-[15px] text-[#525252] mt-2">
 								Want to run a cloud instance?
 								<a
-									onClick={() => window.open("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/xai-protocol/sentry-nodes-explained/who-can-operate-a-sentry")}
+									onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/xai-protocol/sentry-nodes-explained/who-can-operate-a-sentry")}
 									className="text-[#F30919] ml-1 cursor-pointer"
 								>
 									Learn more
