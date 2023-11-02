@@ -1,61 +1,62 @@
-import { contextBridge, ipcRenderer } from 'electron'
-
+import {contextBridge, ipcRenderer} from 'electron';
+// import {useSetAtom} from "jotai";
+// import {assignedWalletModalAtom} from "../src/components/DeepLinkManager";
 
 // --------- Expose some API to the Renderer process ---------
 contextBridge.exposeInMainWorld('ipcRenderer', withPrototype(ipcRenderer))
 
 contextBridge.exposeInMainWorld(
-  'electron',
-  {
-    openExternal: (url: string) => ipcRenderer.send('open-external', url),
-  }
+	'electron',
+	{
+		openExternal: (url: string) => ipcRenderer.send('open-external', url),
+	}
 );
 
 // `exposeInMainWorld` can't detect attributes and methods of `prototype`, manually patching it.
 function withPrototype(obj: Record<string, any>) {
-  const protos = Object.getPrototypeOf(obj)
+	const protos = Object.getPrototypeOf(obj)
 
-  for (const [key, value] of Object.entries(protos)) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) continue
+	for (const [key, value] of Object.entries(protos)) {
+		if (Object.prototype.hasOwnProperty.call(obj, key)) continue
 
-    if (typeof value === 'function') {
-      // Some native APIs, like `NodeJS.EventEmitter['on']`, don't work in the Renderer process. Wrapping them into a function.
-      obj[key] = function (...args: any) {
-        return value.call(obj, ...args)
-      }
-    } else {
-      obj[key] = value
-    }
-  }
-  return obj
+		if (typeof value === 'function') {
+			// Some native APIs, like `NodeJS.EventEmitter['on']`, don't work in the Renderer process. Wrapping them into a function.
+			obj[key] = function (...args: any) {
+				return value.call(obj, ...args)
+			}
+		} else {
+			obj[key] = value
+		}
+	}
+	return obj
 }
 
 // --------- Preload scripts loading ---------
 function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
-  return new Promise(resolve => {
-    if (condition.includes(document.readyState)) {
-      resolve(true)
-    } else {
-      document.addEventListener('readystatechange', () => {
-        if (condition.includes(document.readyState)) {
-          resolve(true)
-        }
-      })
-    }
-  })
+	return new Promise(resolve => {
+		if (condition.includes(document.readyState)) {
+			resolve(true)
+		} else {
+			document.addEventListener('readystatechange', () => {
+				if (condition.includes(document.readyState)) {
+					resolve(true)
+				}
+			})
+		}
+	})
 }
 
 const safeDOM = {
-  append(parent: HTMLElement, child: HTMLElement) {
-    if (!Array.from(parent.children).find(e => e === child)) {
-      parent.appendChild(child)
-    }
-  },
-  remove(parent: HTMLElement, child: HTMLElement) {
-    if (Array.from(parent.children).find(e => e === child)) {
-      parent.removeChild(child)
-    }
-  },
+	append(parent: HTMLElement, child: HTMLElement) {
+		if (!Array.from(parent.children).find(e => e === child)) {
+			parent.appendChild(child)
+		}
+	},
+	remove(parent: HTMLElement, child: HTMLElement) {
+		if (Array.from(parent.children).find(e => e === child)) {
+			parent.removeChild(child)
+		}
+	},
 }
 
 /**
@@ -65,8 +66,8 @@ const safeDOM = {
  * https://matejkustec.github.io/SpinThatShit
  */
 function useLoading() {
-  const className = `loaders-css__square-spin`
-  const styleContent = `
+	const className = `loaders-css__square-spin`
+	const styleContent = `
 @keyframes square-spin {
   25% { transform: perspective(100px) rotateX(180deg) rotateY(0); }
   50% { transform: perspective(100px) rotateX(180deg) rotateY(180deg); }
@@ -94,34 +95,44 @@ function useLoading() {
 }
     `
 
-  const oStyle = document.createElement('style')
-  const oDiv = document.createElement('div')
+	const oStyle = document.createElement('style')
+	const oDiv = document.createElement('div')
 
-  oStyle.id = 'app-loading-style'
-  oStyle.innerHTML = styleContent
-  oDiv.className = 'app-loading-wrap'
-  oDiv.innerHTML = `<div class="${className}"><div></div></div>`
+	oStyle.id = 'app-loading-style'
+	oStyle.innerHTML = styleContent
+	oDiv.className = 'app-loading-wrap'
+	oDiv.innerHTML = `<div class="${className}"><div></div></div>`
 
-  return {
-    appendLoading() {
-      safeDOM.append(document.head, oStyle)
-      safeDOM.append(document.body, oDiv)
-    },
-    removeLoading() {
-      safeDOM.remove(document.head, oStyle)
-      safeDOM.remove(document.body, oDiv)
-    },
-  }
+	return {
+		appendLoading() {
+			safeDOM.append(document.head, oStyle)
+			safeDOM.append(document.body, oDiv)
+		},
+		removeLoading() {
+			safeDOM.remove(document.head, oStyle)
+			safeDOM.remove(document.body, oDiv)
+		},
+	}
 }
 
 // ----------------------------------------------------------------------
 
-const { appendLoading, removeLoading } = useLoading()
+const {appendLoading, removeLoading} = useLoading();
 domReady().then(appendLoading)
 
 window.onmessage = ev => {
-  ev.data.payload === 'removeLoading' && removeLoading()
+	ev.data.payload === 'removeLoading' && removeLoading()
 }
 
 setTimeout(removeLoading, 4999)
 
+contextBridge.exposeInMainWorld('deeplinks', {
+	assignedWallet: (callback: (_event, value) => void) => ipcRenderer.on("assigned-wallet", callback),
+});
+
+// ipcRenderer.on("test", (event, url) => {
+// 	const setAssignedWalletModalState = useSetAtom(assignedWalletModalAtom);
+// 	console.log(event);
+// 	// alert(url);
+// 	setAssignedWalletModalState(url);
+// });

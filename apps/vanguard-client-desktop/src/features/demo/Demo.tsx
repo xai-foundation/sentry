@@ -31,12 +31,11 @@ export function Demo() {
 				/>
 			)}
 
-
 			{showPurchaseCompleteModal && (
 				<PurchaseCompleteModal
 					setShowPurchaseCompleteModal={setShowPurchaseCompleteModal}
 				/>
 			)}
 		</div>
-	)
+	);
 }

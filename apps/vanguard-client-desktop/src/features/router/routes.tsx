@@ -7,15 +7,16 @@ import {SentryWallet} from "../home/SentryWallet.tsx";
 import {Demo} from "../demo/Demo.tsx";
 import {DrawerManager} from "../drawer/DrawerManager";
 import {QueryClient, QueryClientProvider} from "react-query";
+import {DeepLinkManager} from "../../components/DeepLinkManager";
 
 export function AppRoutes() {
-
 	const queryClient = new QueryClient();
 
 	return (
 		<Router>
 			<QueryClientProvider client={queryClient}>
 				<div className="w-full h-screen flex">
+					<DeepLinkManager/>
 					<Sidebar/>
 
 					<div className="max-w-[1686px] flex-grow">

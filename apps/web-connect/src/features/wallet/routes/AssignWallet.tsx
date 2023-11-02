@@ -9,12 +9,15 @@ export function AssignWallet() {
 	const {address} = useAccount();
 
 	const {isLoading, isSuccess, write, error} = useContractWrite({
-		address: config.refereeAddress,
+		address: config.refereeAddress as `0x${string}`,
 		abi: RefereeAbi,
 		functionName: "setApprovalForOperator",
 		args: [params.operatorAddress, true],
 		onSuccess(data) {
-			console.log("Success", data)
+			console.log("Success2 ", data);
+			// navigate("xai-sentry://test");
+			// window.open("xai-sentry://test");
+			window.location = `xai-sentry://test?txHash=${data.hash}` as unknown as Location;
 		},
 		onError(error) {
 			console.log("Error", error);
@@ -65,7 +68,7 @@ export function AssignWallet() {
 						)}
 						{address ? (
 							<button
-								onClick={write}
+								onClick={() => write()}
 								disabled={isLoading || isSuccess}
 								className="w-full bg-[#F30919] text-white p-4 font-semibold m-8 disabled:bg-slate-400"
 							>

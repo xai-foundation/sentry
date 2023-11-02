@@ -51,11 +51,6 @@ export function SentryWallet() {
 		}
 	}
 
-	function assignFromNewWallet() {
-		window.electron.openExternal("http://localhost:7555/assign-wallet");
-		setDrawerState(DrawerView.ViewKeys);
-	}
-
 	async function pauseSentry() {
 		if (signer) {
 			// await operatorRuntime(signer, undefined, (log) => console.log(log));
