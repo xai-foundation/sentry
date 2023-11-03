@@ -145,7 +145,8 @@ if (isWindows) {
 				win.focus();
 			}
 			// the commandLine is array of strings in which last element is deep link url
-			dialog.showErrorBox('Welcome Back', `You arrived from: ${commandLine.pop()}`);
+			// dialog.showErrorBox('Welcome Back', `You arrived from: ${commandLine.pop()}`);
+			win?.webContents.send("assigned-wallet", commandLine.pop());
 		})
 
 		// Create mainWindow, load the rest of the app, etc...
@@ -156,9 +157,16 @@ if (isWindows) {
 	app.whenReady().then(createWindow);
 	app.on('open-url', (event, url) => {
 		console.log("event:", event);
-		dialog.showErrorBox('Welcome Back', `You arrived from: ${url}`);
-		win?.webContents.send("assigned-wallet", url);
-		// ipcMain.handle("assignedWallet", () => url);
+
+		const fullProtocol = "xai-sentry://";
+		const instruction = url.slice(fullProtocol.length, url.indexOf("?"));
+
+		switch(instruction) {
+			case "assigned-wallet":
+				const txHash = url.slice(url.indexOf("=") + 1);
+				win?.webContents.send("assigned-wallet", txHash);
+				break;
+		}
 	});
 }
 

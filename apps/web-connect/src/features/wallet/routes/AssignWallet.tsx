@@ -17,7 +17,7 @@ export function AssignWallet() {
 			console.log("Success2 ", data);
 			// navigate("xai-sentry://test");
 			// window.open("xai-sentry://test");
-			window.location = `xai-sentry://test?txHash=${data.hash}` as unknown as Location;
+			window.location = `xai-sentry://assigned-wallet?txHash=${data.hash}` as unknown as Location;
 		},
 		onError(error) {
 			console.log("Error", error);

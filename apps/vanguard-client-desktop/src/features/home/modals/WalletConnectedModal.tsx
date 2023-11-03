@@ -1,12 +1,15 @@
 import {FaCircleCheck} from "react-icons/fa6";
 import {AiOutlineClose} from "react-icons/ai";
-import {Dispatch, SetStateAction} from "react";
+import {useProvider} from "../../../hooks/useProvider";
 
 interface WalletConnectedModalProps {
-	setShowConnectedModal: Dispatch<SetStateAction<boolean>>;
+	txHash: string;
+	onClose: () => void;
 }
 
-export function WalletConnectedModal({setShowConnectedModal}: WalletConnectedModalProps) {
+export function WalletConnectedModal({txHash, onClose}: WalletConnectedModalProps) {
+	const {data: providerData} = useProvider();
+
 	return (
 		<div
 			className="absolute top-0 right-0 left-0 bottom-0 m-auto w-auto h-auto flex flex-col justify-start items-center z-30">
@@ -15,7 +18,7 @@ export function WalletConnectedModal({setShowConnectedModal}: WalletConnectedMod
 				className="absolute top-0 right-0 left-0 bottom-0 m-auto flex flex-col justify-start items-center w-[506px] h-[190px] border border-gray-200 bg-white">
 				<div
 					className="absolute top-0 right-0 h-16 flex flex-row justify-between items-center text-lg px-6">
-					<div className="cursor-pointer z-10" onClick={() => setShowConnectedModal(false)}>
+					<div className="cursor-pointer z-10" onClick={onClose}>
 						<AiOutlineClose/>
 					</div>
 				</div>
@@ -25,10 +28,10 @@ export function WalletConnectedModal({setShowConnectedModal}: WalletConnectedMod
 					<span className="text-xl font-semibold">Wallet connected</span>
 					<span className="text-[15px]">Transaction ID:
 						<a
-							onClick={() => window.electron.openExternal('http://localhost:7555/')}
+							onClick={() => window.electron.openExternal(`${providerData.blockExplorer}/tx/${txHash}`)}
 							className="text-[#F30919] ml-1 cursor-pointer"
 						>
-							129019028
+							{txHash}
 						</a>
 					</span>
 				</div>

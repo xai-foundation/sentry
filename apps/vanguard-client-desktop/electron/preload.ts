@@ -127,7 +127,7 @@ window.onmessage = ev => {
 setTimeout(removeLoading, 4999)
 
 contextBridge.exposeInMainWorld('deeplinks', {
-	assignedWallet: (callback: (_event, value) => void) => ipcRenderer.on("assigned-wallet", callback),
+	assignedWallet: (callback: (_event, txHash) => void) => ipcRenderer.on("assigned-wallet", callback),
 });
 
 // ipcRenderer.on("test", (event, url) => {

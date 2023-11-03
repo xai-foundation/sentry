@@ -1,37 +1,26 @@
-// import {atom, useAtomValue} from "jotai";
-// import {useEffect} from "react";
-// import {ipcRenderer} from "electron";
-
-// export const assignedWalletModalAtom = atom<string | null>(null);
+import {WalletConnectedModal} from "../features/home/modals/WalletConnectedModal";
+import {useState} from "react";
 
 export function DeepLinkManager() {
-	// const assignedWalletModalState = useAtomValue(assignedWalletModalAtom);
-	//
-	// useEffect(() => {
-	// 	if (assignedWalletModalState !== null) {
-	// 		alert("assignedWalletModalState: " + assignedWalletModalState);
-	// 	}
-	// }, [assignedWalletModalState]);
+	const [assignedWallet, setAssignedWallet] = useState<{show: boolean, txHash: string}>({show: false, txHash: ""});
 
-	(window as any).deeplinks?.assignedWallet((_event, value) => {
+	(window as any).deeplinks?.assignedWallet((_event, txHash) => {
 		console.log("event:", _event);
-		alert("NEW VALUE: " + JSON.stringify(value));
-		// const oldValue = Number(counter.innerText)
-		// const newValue = oldValue + value
-		// counter.innerText = newValue.toString()
-	})
+		setAssignedWallet({show: true, txHash});
+	});
 
-	// useEffect(() => {
-	// 	listen();
-	// }, []);
-	//
-	// function listen() {
-	// 	ipcRenderer.on("test", function (e, data) {
-	// 		console.log("e: ", e)
-	// 		// console.log("Message received: ", data)
-	// 		alert("COMPONENT DATA: " + JSON.stringify(data));
-	// 	});
-	// }
+	function onCloseWalletConnectedModal() {
+		setAssignedWallet({show: false, txHash: ""});
+	}
 
-	return null
+	return (
+		<>
+			{assignedWallet.show && (
+				<WalletConnectedModal
+					txHash={assignedWallet.txHash}
+					onClose={onCloseWalletConnectedModal}
+				/>
+			)}
+		</>
+	);
 }
