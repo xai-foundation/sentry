@@ -1,5 +1,5 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../packages/tsconfig/tsconfig.vite.json",
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
@@ -25,21 +25,10 @@
 
     "composite": true,
 
+    "baseUrl": ".",
     "paths": {
-      "@xai-vanguard-node/core": ["../../packages/core"],
-      "@xai-vanguard-node/ui": ["../../packages/ui/src"]
+      "@/*": ["./src/*"],
+      "@xai-vanguard-node/*": ["../../packages/*/src"]
     }
-  },
-  "include": ["src", "electron"],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    },
-    {
-      "path": "../../packages/core"
-    },
-    {
-      "path": "../../packages/ui"
-    },
-  ]
+  }
 }

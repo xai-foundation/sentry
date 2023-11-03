@@ -52,7 +52,7 @@ export function Keys() {
 			{number ? (
 				<HasKeys/>
 			) : (
-				<NoKeys/>
+				<NoKeys setNumber={setNumber}/>
 			)}
 		</div>
 	)

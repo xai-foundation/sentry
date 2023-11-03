@@ -5,7 +5,8 @@ import {useGetTotalSupplyAndCap} from "./hooks/useGetTotalSupplyAndCap.ts";
 import {useGetPriceForQuantity} from "./hooks/useGetPriceForQuantity.ts";
 import {BiLoaderAlt} from "react-icons/bi";
 import {AiFillInfoCircle, AiOutlineClose} from "react-icons/ai";
-import {XaiCheckbox} from "@xai-vanguard-node/ui/dist/features/checkbox/XaiCheckbox";
+import {XaiCheckbox} from "@xai-vanguard-node/ui/src/features/checkbox/XaiCheckbox.tsx";
+
 
 interface WebBuyFlowProps {
 	setPurchase: Dispatch<SetStateAction<boolean>>;
