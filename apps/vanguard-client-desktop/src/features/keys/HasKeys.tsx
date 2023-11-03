@@ -4,49 +4,63 @@ import {AiOutlineCheck, AiOutlineInfoCircle, AiOutlineMinus, AiOutlinePlus} from
 import {useState} from "react";
 import {useOperator} from "@/features/operator";
 import {IoIosArrowDown} from "react-icons/io";
-import {useAtom, useSetAtom} from "jotai/index";
+import {useSetAtom} from "jotai/index";
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager.tsx";
+import {FaCircle, FaRegCircle} from "react-icons/fa";
 
 const dummyLicenses = [
 	{
-		keyId: 1,
 		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
 		status: "KYC required",
 		accruedEsxai: "0.0234",
 		openseaUrl: "https://xai.games/",
 	},
 	{
-		keyId: 2,
 		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
 		status: "KYC required",
 		accruedEsxai: "0",
 		openseaUrl: "https://xai.games/",
 	},
 	{
-		keyId: 3,
 		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
 		status: "KYC required",
 		accruedEsxai: "0.2398",
 		openseaUrl: "https://xai.games/",
 	},
 	{
-		keyId: 4,
 		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-		status: "KYC required",
+		status: "Wallet not assigned",
+		accruedEsxai: "0.00239",
+		openseaUrl: "https://xai.games/",
+	},
+	{
+		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
+		status: "Waiting for challenge",
 		accruedEsxai: "0.00123",
 		openseaUrl: "https://xai.games/",
 	},
 	{
-		keyId: 5,
 		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-		status: "KYC required",
+		status: "Submitting claim",
+		accruedEsxai: "0.00239",
+		openseaUrl: "https://xai.games/",
+	},
+	{
+		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
+		status: "Checking claim",
+		accruedEsxai: "0.00239",
+		openseaUrl: "https://xai.games/",
+	},
+	{
+		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
+		status: "Claim submitted",
 		accruedEsxai: "0.00239",
 		openseaUrl: "https://xai.games/",
 	},
 ]
 
 const dropdownBody = [
-	"0x1a2b3c4d5e6f7g8h9i0j1a2b3c4d5e6f7g8h9i0j",
+	"0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
 	"Fake data lol",
 ]
 
@@ -59,12 +73,53 @@ export function HasKeys() {
 	function getKeys() {
 		return dummyLicenses.map((item, i: number) => {
 			const isEven = i % 2 === 0;
+			let status;
+
+			switch (item.status) {
+				case "KYC required":
+					status = (
+						<p className="flex items-center gap-1">
+							<FaCircle size={8} color={"#EAB32B"}/>
+							KYC required
+							<a onClick={() => alert("KYC")} className="text-[#F30919] ml-1 cursor-pointer">
+								Begin KYC
+							</a>
+						</p>
+					);
+					break;
+				case "Wallet not assigned":
+					status = (
+						<p className="flex items-center gap-1">
+							<FaRegCircle size={8}/>
+							Wallet not assigned
+							<a onClick={() => alert("Assign")} className="text-[#F30919] ml-1 cursor-pointer">
+								Assign
+							</a>
+						</p>
+					);
+					break;
+				case 'Waiting for challenge':
+					status = "Waiting for challenge"
+					break;
+				case 'Submitting claim':
+					status = "Submitting claim"
+					break;
+				case 'Checking claim':
+					status = "Checking claim"
+					break;
+				case 'Claim submitted':
+					status = "Claim submitted"
+					break;
+
+				default:
+					status = null;
+			}
 
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
-					<td className="w-full max-w-[70px] px-4 py-2">{item.keyId}</td>
+					<td className="w-full max-w-[70px] px-4 py-2">{i + 1}</td>
 					<td className="w-full max-w-[360px] px-4 py-2">{item.ownerAddress}</td>
-					<td className="w-full max-w-[360px] px-4 py-2">{item.status}</td>
+					<td className="w-full max-w-[360px] px-4 py-2 text-[#A3A3A3]">{status}</td>
 					<td className="w-full max-w-[150px] px-4 py-2 text-right">{item.accruedEsxai}</td>
 					<td
 						className="w-full max-w-[150px] px-4 py-2 text-[#F30919] cursor-pointer"
@@ -186,7 +241,6 @@ export function HasKeys() {
 						<td className="w-full max-w-[70px] px-4 py-2">-</td>
 						<td className="w-full max-w-[360px] px-4 py-2">Empty Key Slot</td>
 					</tr>
-
 					</tbody>
 				</table>
 			</div>
