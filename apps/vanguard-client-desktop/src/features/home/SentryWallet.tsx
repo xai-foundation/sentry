@@ -1,5 +1,5 @@
 import {AiFillWarning, AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {ContinueInBrowserModal} from "./modals/ContinueInBrowserModal.tsx";
 import {BiLinkExternal} from "react-icons/bi";
 import {useOperator} from "../operator";
@@ -12,6 +12,10 @@ import {useAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.tsx";
 import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
+import {AssignKeysFromNewWallet} from "../../components/AssignKeysFromNewWallet";
+import {useListOwnersForOperator} from "../../hooks/useListOwnersForOperator";
+import {listOwnersForOperator} from "@xai-vanguard-node/core";
+import {useListNodeLicenses} from "../../hooks/useListNodeLicenses";
 
 const dropdownBody = [
 	"item1",
@@ -23,7 +27,16 @@ const dropdownBody = [
 export function SentryWallet() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
-	const {loading, publicKey: operatorAddress, signer} = useOperator();
+	const {loading: isOperatorLoading, publicKey: operatorAddress, signer} = useOperator();
+	const {loading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
+	const {loading: isListNodeLicensesLoading, data: listNodeLicensesData} = useListNodeLicenses(listOwnersData);
+
+	console.log("isListOwnersLoading:", isListOwnersLoading);
+	console.log("listOwnersData:", listOwnersData);
+
+	console.log("isListNodeLicensesLoading:", isListNodeLicensesLoading);
+	console.log("listNodeLicensesData:", listNodeLicensesData);
+
 	const [copied, setCopied] = useState<boolean>(false);
 
 	// update / swap this out with actual number of keys user owns
@@ -74,7 +87,7 @@ export function SentryWallet() {
 	}
 
 	return (
-		<div className="w-full h-screen">
+		<div className="w-full h-full flex flex-col">
 			<div
 				className="sticky top-0 flex flex-col items-center w-full h-auto bg-white z-10">
 				<div
@@ -99,7 +112,7 @@ export function SentryWallet() {
 
 						<div className="flex flex-row items-center gap-2 text-[#A3A3A3] text-[15px]">
 							<p>
-								{loading ? "Loading..." : operatorAddress}
+								{isOperatorLoading ? "Loading..." : operatorAddress}
 							</p>
 
 							<div
@@ -241,50 +254,16 @@ export function SentryWallet() {
 				</>
 			) : (
 				<>
-					<div className="w-full h-auto flex flex-col justify-center items-center">
-						<div className="absolute top-0 bottom-0 flex flex-col justify-center items-center gap-4">
-							<AiFillWarning className="w-16 h-16 text-[#F59E28]"/>
-							<p className="text-2xl font-semibold">
-								Keys not assigned
-							</p>
-							<p className="text-lg text-[#525252]">
-								Add wallets to assign keys to the Sentry
-							</p>
-
-							<button
-								onClick={() => setDrawerState(DrawerView.ViewKeys)}
-								className="flex justify-center items-center gap-1 text-[15px] text-white bg-[#F30919] font-semibold mt-2 px-6 py-3"
-							>
-								Assign keys from new wallet
-								<BiLinkExternal className="w-5 h-5"/>
-							</button>
-
-							<p className="text-[15px] text-[#525252] mt-2">
-								Don't own any keys?
-
-								<a
-									onClick={() => setDrawerState(DrawerView.BuyKeys)}
-									className="text-[#F30919] ml-1 cursor-pointer"
-								>
-									Purchase keys
-								</a>
-							</p>
-
-
-							<button
-								onClick={() => window.electron.openExternal(`http://localhost:7555/assign-wallet/${operatorAddress}`)}
-							>
-								Test Assign link
-							</button>
-						</div>
+					<div className="w-full flex-1 flex flex-col justify-center items-center">
+						<AssignKeysFromNewWallet/>
 					</div>
 
-					<div
-						className="absolute bottom-0 right-0 p-4 cursor-pointer"
-						onClick={() => setNumber(1)}
-					>
-						+1 Key
-					</div>
+					{/*<div*/}
+					{/*	className="absolute bottom-0 right-0 p-4 cursor-pointer"*/}
+					{/*	onClick={() => setNumber(1)}*/}
+					{/*>*/}
+					{/*	+1 Key*/}
+					{/*</div>*/}
 				</>
 			)}
 		</div>
