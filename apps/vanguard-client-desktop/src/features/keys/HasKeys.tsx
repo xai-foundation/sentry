@@ -1,30 +1,24 @@
-import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
-import {PiCopy} from "react-icons/pi";
 import {AiOutlineCheck, AiOutlineInfoCircle, AiOutlineMinus, AiOutlinePlus} from "react-icons/ai";
+import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager.tsx";
+import {FaRegCircle} from "react-icons/fa";
+import {IoIosArrowDown} from "react-icons/io";
+import {PiCopy} from "react-icons/pi";
+import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {useState} from "react";
 import {useOperator} from "@/features/operator";
-import {IoIosArrowDown} from "react-icons/io";
 import {useSetAtom} from "jotai/index";
-import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager.tsx";
-import {FaCircle, FaRegCircle} from "react-icons/fa";
+import {GreenPulse, YellowPulse} from "@/features/keys/StatusIconPulse.tsx";
 
 const dummyLicenses = [
 	{
 		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-		status: "KYC required",
+		status: "Claiming rewards when available",
 		accruedEsxai: "0.0234",
 		openseaUrl: "https://xai.games/",
-	},
-	{
+	}, {
 		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
 		status: "KYC required",
-		accruedEsxai: "0",
-		openseaUrl: "https://xai.games/",
-	},
-	{
-		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-		status: "KYC required",
-		accruedEsxai: "0.2398",
+		accruedEsxai: "0.0234",
 		openseaUrl: "https://xai.games/",
 	},
 	{
@@ -76,12 +70,20 @@ export function HasKeys() {
 			let status;
 
 			switch (item.status) {
+				case "Claiming rewards when available":
+					status = (
+						<p className="flex items-center gap-2">
+							<GreenPulse/>
+							Claiming rewards when available
+						</p>
+					);
+					break;
 				case "KYC required":
 					status = (
-						<p className="flex items-center gap-1">
-							<FaCircle size={8} color={"#EAB32B"}/>
+						<p className="flex items-center gap-2">
+							<YellowPulse/>
 							KYC required
-							<a onClick={() => alert("KYC")} className="text-[#F30919] ml-1 cursor-pointer">
+							<a onClick={() => alert("KYC")} className="text-[#F30919] cursor-pointer">
 								Begin KYC
 							</a>
 						</p>
@@ -89,10 +91,10 @@ export function HasKeys() {
 					break;
 				case "Wallet not assigned":
 					status = (
-						<p className="flex items-center gap-1">
+						<p className="flex items-center gap-2">
 							<FaRegCircle size={8}/>
 							Wallet not assigned
-							<a onClick={() => alert("Assign")} className="text-[#F30919] ml-1 cursor-pointer">
+							<a onClick={() => alert("Assign")} className="text-[#F30919] cursor-pointer">
 								Assign
 							</a>
 						</p>

@@ -1,11 +1,11 @@
-import {Link, useNavigate} from 'react-router-dom';
-import {FaDiscord, FaIcons} from 'react-icons/fa';
-import {FiGitCommit} from "react-icons/fi";
-import {RiKey2Line, RiTwitterXFill} from "react-icons/ri";
 import {AiOutlineCloudUpload} from "react-icons/ai";
-import {SiGitbook} from "react-icons/si";
+import {FaDiscord, FaIcons, FaRegCircle} from 'react-icons/fa';
 import {HiOutlineDesktopComputer} from "react-icons/hi";
+import {Link, useNavigate} from 'react-router-dom';
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
+import {RiKey2Line, RiTwitterXFill} from "react-icons/ri";
+import {SiGitbook} from "react-icons/si";
+import {GreenPulse, YellowPulse} from "@/features/keys/StatusIconPulse.tsx";
 
 /**
  * Sidebar component
@@ -41,7 +41,13 @@ export function Sidebar() {
 						to="/sentry-wallet"
 						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
 					>
-						<FiGitCommit size={15}/> Sentry Wallet
+						<div className="w-[15px] h-[15px] flex justify-center items-center">
+							{/*<FaRegCircle size={8}/>*/}
+							{/*<GreenPulse/>*/}
+							<YellowPulse/>
+						</div>
+
+						Sentry Wallet
 					</Link>
 				</div>
 
