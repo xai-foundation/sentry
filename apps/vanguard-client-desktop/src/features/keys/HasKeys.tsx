@@ -4,6 +4,8 @@ import {AiOutlineCheck, AiOutlineInfoCircle, AiOutlineMinus, AiOutlinePlus} from
 import {useState} from "react";
 import {useOperator} from "@/features/operator";
 import {IoIosArrowDown} from "react-icons/io";
+import {useAtom, useSetAtom} from "jotai/index";
+import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager.tsx";
 
 const dummyLicenses = [
 	{
@@ -49,6 +51,7 @@ const dropdownBody = [
 ]
 
 export function HasKeys() {
+	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {publicKey} = useOperator();
 	const [copied, setCopied] = useState<boolean>(false);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -59,12 +62,12 @@ export function HasKeys() {
 
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
-					<td className="w-[70px] px-4 py-2">{item.keyId}</td>
-					<td className="w-[360px] px-4 py-2">{item.ownerAddress}</td>
-					<td className="w-[360px] px-4 py-2">{item.status}</td>
-					<td className="w-[150px] px-4 py-2 text-right">{item.accruedEsxai}</td>
+					<td className="w-full max-w-[70px] px-4 py-2">{item.keyId}</td>
+					<td className="w-full max-w-[360px] px-4 py-2">{item.ownerAddress}</td>
+					<td className="w-full max-w-[360px] px-4 py-2">{item.status}</td>
+					<td className="w-full max-w-[150px] px-4 py-2 text-right">{item.accruedEsxai}</td>
 					<td
-						className="w-[150px] px-4 py-2 text-[#F30919] cursor-pointer"
+						className="w-full max-w-[150px] px-4 py-2 text-[#F30919] cursor-pointer"
 						onClick={() => window.electron.openExternal(item.openseaUrl)}
 					>
 						View
@@ -104,10 +107,10 @@ export function HasKeys() {
 					View Wallet
 				</p>
 				<div className="flex flex-row gap-2">
-					<div>
+					<div className="w-full max-w-[695px]">
 						<div
 							onClick={() => setIsOpen(!isOpen)}
-							className={`flex items-center justify-between w-[695px] text-[15px] border-r border-l border-t ${!isOpen ? "border-b" : null} border-[#A3A3A3] p-2`}
+							className={`flex items-center justify-between w-full text-[15px] border-r border-l border-t ${!isOpen ? "border-b" : null} border-[#A3A3A3] p-2`}
 						>
 							<p>
 								All wallets (1)
@@ -119,7 +122,7 @@ export function HasKeys() {
 
 						{isOpen && (
 							<div
-								className="absolute flex flex-col w-[695px] border-r border-l border-b border-[#A3A3A3] bg-white">
+								className="absolute flex flex-col w-full max-w-[695px] border-r border-l border-b border-[#A3A3A3] bg-white">
 								{getDropdownItems()}
 							</div>
 						)}
@@ -134,7 +137,7 @@ export function HasKeys() {
 					</button>
 
 					<button
-						onClick={() => window.electron.openExternal('http://localhost:7555/assign-wallet')}
+						onClick={() => setDrawerState(DrawerView.ViewKeys)}
 						className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 					>
 						<AiOutlinePlus className="h-[15px]"/>
@@ -142,7 +145,7 @@ export function HasKeys() {
 					</button>
 
 					<button
-						onClick={() => window.electron.openExternal("https://xai.games/")}
+						onClick={() => alert("Does nothing")}
 						className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 					>
 						<AiOutlineMinus className="h-[15px]"/>
@@ -168,11 +171,11 @@ export function HasKeys() {
 				<table className="w-full bg-white">
 					<thead className="text-[#A3A3A3]">
 					<tr className="flex text-left text-[12px] uppercase px-8">
-						<th className="w-[70px] px-4 py-2">Key Id</th>
-						<th className="w-[360px] px-4 py-2">Owner Address</th>
-						<th className="w-[360px] px-4 py-2">Status</th>
-						<th className="w-[150px] px-4 py-2 text-right">Accrued esXai</th>
-						<th className="w-[150px] px-4 py-2">Opensea Url</th>
+						<th className="w-full max-w-[70px] px-4 py-2">Key Id</th>
+						<th className="w-full max-w-[360px] px-4 py-2">Owner Address</th>
+						<th className="w-full max-w-[360px] px-4 py-2">Status</th>
+						<th className="w-full max-w-[150px] px-4 py-2 text-right">Accrued esXai</th>
+						<th className="w-full max-w-[150px] px-4 py-2">Opensea Url</th>
 					</tr>
 					</thead>
 					<tbody>
@@ -180,8 +183,8 @@ export function HasKeys() {
 					{getKeys()}
 
 					<tr className="text-[#A3A3A3] text-sm flex px-8">
-						<td className="w-[70px] px-4 py-2">-</td>
-						<td className="w-[360px] px-4 py-2">Empty Key Slot</td>
+						<td className="w-full max-w-[70px] px-4 py-2">-</td>
+						<td className="w-full max-w-[360px] px-4 py-2">Empty Key Slot</td>
 					</tr>
 
 					</tbody>
