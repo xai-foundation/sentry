@@ -14,11 +14,37 @@ import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
 import {operatorRuntime} from "@xai-vanguard-node/core";
 
+const dummySentryWalletData = [
+	{
+		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
+		status: "Waiting for challenge",
+		accruedEsxai: "0.00123",
+		openseaUrl: "https://xai.games/",
+	},
+	{
+		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
+		status: "Submitting claim",
+		accruedEsxai: "0.00239",
+		openseaUrl: "https://xai.games/",
+	},
+	{
+		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
+		status: "Checking claim",
+		accruedEsxai: "0.00239",
+		openseaUrl: "https://xai.games/",
+	},
+	{
+		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
+		status: "Claim submitted",
+		accruedEsxai: "0.00239",
+		openseaUrl: "https://xai.games/",
+	},
+]
+
 const dropdownBody = [
-	"0x1a2b3c4d5e6f7g8h9i0j1a2b3c4d5e6f7g8h9i0j",
-	"0x2a2b3c4d5e6f7g8h9i0j2a2b3c4d5e6f7g8h9i0j",
-	"0x3a2b3c4d5e6f7g8h9i0j3a2b3c4d5e6f7g8h9i0j",
+	"0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
 	"All",
+	"Fake data lol",
 ]
 
 export function SentryWallet() {
@@ -80,6 +106,20 @@ export function SentryWallet() {
 		return dropdownBody.map((item, i) => (
 			<p className="p-2 cursor-pointer hover:bg-gray-100" key={`sentry-item-${i}`}>{item}</p>
 		))
+	}
+
+	function getKeys() {
+		return dummySentryWalletData.map((item, i: number) => {
+			const isEven = i % 2 === 0;
+
+			return (
+				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
+					<td className="w-full max-w-[70px] px-4 py-2">{i + 1}</td>
+					<td className="w-full max-w-[390px] px-4 py-2">{item.ownerAddress}</td>
+					<td className="w-full max-w-[390px] px-4 py-2 text-[#A3A3A3]">{item.status}</td>
+				</tr>
+			)
+		})
 	}
 
 	return (
@@ -222,57 +262,80 @@ export function SentryWallet() {
 			{/*		Keys	*/}
 			{number ? (
 				<>
-					<div className="w-full h-auto flex flex-col py-3 pl-10">
-						<p className="text-sm uppercase text-[#A3A3A3] mb-2">
-							View Wallet
-						</p>
-						<div className="flex flex-row gap-2">
-							<div>
-								<div
-									onClick={() => setIsOpen(!isOpen)}
-									className={`flex items-center justify-between w-[538px] border-[#A3A3A3] border-r border-l border-t ${!isOpen ? "border-b" : null} border-[#A3A3A3] p-2`}
-								>
-									<p>{publicKey}</p>
-									<IoIosArrowDown
-										className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
-									/>
+					<div>
+						<div className="w-full h-auto flex flex-col py-3 pl-10">
+							<p className="text-sm uppercase text-[#A3A3A3] mb-2">
+								View Wallet
+							</p>
+							<div className="flex flex-row gap-2">
+								<div>
+									<div
+										onClick={() => setIsOpen(!isOpen)}
+										className={`flex items-center justify-between w-[538px] border-[#A3A3A3] border-r border-l border-t ${!isOpen ? "border-b" : null} border-[#A3A3A3] p-2`}
+									>
+										<p>{publicKey}</p>
+										<IoIosArrowDown
+											className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
+										/>
+									</div>
+
+									{isOpen && (
+										<div
+											className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3]">
+											{getDropdownItems()}
+										</div>
+									)}
 								</div>
 
-								{isOpen && (
-									<div
-										className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3]">
-										{getDropdownItems()}
-									</div>
-								)}
+								<button
+									onClick={() => copyPublicKey()}
+									className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
+								>
+
+									{copied
+										? (<AiOutlineCheck className="h-[15px]"/>)
+										: (<PiCopy className="h-[15px]"/>)
+									}
+									Copy address
+								</button>
+
+								<button
+									onClick={() => window.electron.openExternal('http://localhost:7555/assign-wallet')}
+									className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
+								>
+									Assign keys from new wallet
+									<BiLinkExternal className="h-[15px]"/>
+								</button>
+
+								<button
+									onClick={() => window.electron.openExternal("https://xai.games/")}
+									className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
+								>
+									Unassign this wallet
+									<BiLinkExternal className="h-[15px]"/>
+								</button>
 							</div>
 
-							<button
-								onClick={() => copyPublicKey()}
-								className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
-							>
+						</div>
+						<div className="w-full">
+							<table className="w-full bg-white">
+								<thead className="text-[#A3A3A3]">
+								<tr className="flex text-left text-[12px] uppercase px-8">
+									<th className="w-full max-w-[70px] px-4 py-2">Key Id</th>
+									<th className="w-full max-w-[390px] px-4 py-2">Owner Address</th>
+									<th className="w-full max-w-[390px] px-4 py-2">Claim Status</th>
+								</tr>
+								</thead>
+								<tbody>
 
-								{copied
-									? (<AiOutlineCheck className="h-[15px]"/>)
-									: (<PiCopy className="h-[15px]"/>)
-								}
-								Copy address
-							</button>
+								{getKeys()}
 
-							<button
-								onClick={() => window.electron.openExternal('http://localhost:7555/assign-wallet')}
-								className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
-							>
-								Assign keys from new wallet
-								<BiLinkExternal className="h-[15px]"/>
-							</button>
-
-							<button
-								onClick={() => window.electron.openExternal("https://xai.games/")}
-								className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
-							>
-								Unassign this wallet
-								<BiLinkExternal className="h-[15px]"/>
-							</button>
+								<tr className="text-[#A3A3A3] text-sm flex px-8">
+									<td className="w-full max-w-[70px] px-4 py-2">-</td>
+									<td className="w-full max-w-[390px] px-4 py-2">Empty Key Slot</td>
+								</tr>
+								</tbody>
+							</table>
 						</div>
 					</div>
 				</>

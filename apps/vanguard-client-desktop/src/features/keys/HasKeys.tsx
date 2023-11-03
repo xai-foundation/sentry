@@ -7,7 +7,7 @@ import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {useState} from "react";
 import {useOperator} from "@/features/operator";
 import {useSetAtom} from "jotai/index";
-import {GreenPulse, YellowPulse} from "@/features/keys/StatusIconPulse.tsx";
+import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse.tsx";
 
 const dummyLicenses = [
 	{
@@ -15,7 +15,20 @@ const dummyLicenses = [
 		status: "Claiming rewards when available",
 		accruedEsxai: "0.0234",
 		openseaUrl: "https://xai.games/",
-	}, {
+	},
+	{
+		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
+		status: "Claiming rewards when available",
+		accruedEsxai: "0.0234",
+		openseaUrl: "https://xai.games/",
+	},
+	{
+		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
+		status: "KYC required",
+		accruedEsxai: "0.0234",
+		openseaUrl: "https://xai.games/",
+	},
+	{
 		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
 		status: "KYC required",
 		accruedEsxai: "0.0234",
@@ -29,25 +42,7 @@ const dummyLicenses = [
 	},
 	{
 		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-		status: "Waiting for challenge",
-		accruedEsxai: "0.00123",
-		openseaUrl: "https://xai.games/",
-	},
-	{
-		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-		status: "Submitting claim",
-		accruedEsxai: "0.00239",
-		openseaUrl: "https://xai.games/",
-	},
-	{
-		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-		status: "Checking claim",
-		accruedEsxai: "0.00239",
-		openseaUrl: "https://xai.games/",
-	},
-	{
-		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-		status: "Claim submitted",
+		status: "Wallet not assigned",
 		accruedEsxai: "0.00239",
 		openseaUrl: "https://xai.games/",
 	},
