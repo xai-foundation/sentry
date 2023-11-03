@@ -8,6 +8,7 @@ import {useState} from "react";
 import {useOperator} from "@/features/operator";
 import {useSetAtom} from "jotai/index";
 import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse.tsx";
+import {BlockPassKYC} from "@/components/blockpass/Blockpass.tsx";
 
 const dummyLicenses = [
 	{
@@ -78,9 +79,7 @@ export function HasKeys() {
 						<p className="flex items-center gap-2">
 							<YellowPulse/>
 							KYC required
-							<a onClick={() => alert("KYC")} className="text-[#F30919] cursor-pointer">
-								Begin KYC
-							</a>
+							<BlockPassKYC/>
 						</p>
 					);
 					break;
@@ -89,7 +88,9 @@ export function HasKeys() {
 						<p className="flex items-center gap-2">
 							<FaRegCircle size={8}/>
 							Wallet not assigned
-							<a onClick={() => alert("Assign")} className="text-[#F30919] cursor-pointer">
+							<a
+								onClick={() => window.electron.openExternal('http://localhost:7555/assign-wallet')}
+								className="text-[#F30919] cursor-pointer">
 								Assign
 							</a>
 						</p>
@@ -222,12 +223,12 @@ export function HasKeys() {
 			<div className="w-full">
 				<table className="w-full bg-white">
 					<thead className="text-[#A3A3A3]">
-					<tr className="flex text-left text-[12px] uppercase px-8">
-						<th className="w-full max-w-[70px] px-4 py-2">Key Id</th>
-						<th className="w-full max-w-[360px] px-4 py-2">Owner Address</th>
-						<th className="w-full max-w-[360px] px-4 py-2">Status</th>
-						<th className="w-full max-w-[150px] px-4 py-2 text-right">Accrued esXai</th>
-						<th className="w-full max-w-[150px] px-4 py-2">Opensea Url</th>
+					<tr className="flex text-left text-[12px] px-8">
+						<th className="w-full max-w-[70px] px-4 py-2">KEY ID</th>
+						<th className="w-full max-w-[360px] px-4 py-2">OWNER ADDRESS</th>
+						<th className="w-full max-w-[360px] px-4 py-2">STATUS</th>
+						<th className="w-full max-w-[150px] px-4 py-2 text-right">ACCRUED esXAI</th>
+						<th className="w-full max-w-[150px] px-4 py-2">OPENSEA URL</th>
 					</tr>
 					</thead>
 					<tbody>

@@ -28,7 +28,6 @@ export function ImportSentryModal() {
 	const handleSetData = () => {
 		if (inputValue !== "") {
 			importPrivateKey(inputValue).then(() => {
-				alert("Refresh your app to see the changes")
 				setDrawerState(null)
 			});
 		}

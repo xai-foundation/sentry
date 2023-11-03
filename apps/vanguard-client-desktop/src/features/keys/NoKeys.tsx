@@ -89,7 +89,7 @@ export function NoKeys({setNumber}: NoKeysProps) {
 			{/*		todo: debug tool - delete this		*/}
 			<div
 				className="absolute bottom-0 right-0 p-4 cursor-pointer"
-				onClick={() => setNumber(1)}
+				onClick={() => setNumber(6)}
 			>
 				+1 Key
 			</div>

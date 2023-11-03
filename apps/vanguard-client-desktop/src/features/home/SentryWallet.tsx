@@ -199,8 +199,7 @@ export function SentryWallet() {
 						) : (
 							<button
 								onClick={() => startSentry()}
-								className={`ml-4 flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2 ${!number ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : ''}`}
-								disabled={!number}
+								className="ml-4 flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 							>
 								<FaPlay className="h-[15px]"/>
 								Start Sentry
@@ -281,7 +280,7 @@ export function SentryWallet() {
 
 									{isOpen && (
 										<div
-											className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3]">
+											className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3] bg-white">
 											{getDropdownItems()}
 										</div>
 									)}
@@ -352,7 +351,7 @@ export function SentryWallet() {
 							</p>
 
 							<button
-								onClick={() => setDrawerState(DrawerView.ViewKeys)}
+								onClick={() => window.electron.openExternal('http://localhost:7555/assign-wallet')}
 								className="flex justify-center items-center gap-1 text-[15px] text-white bg-[#F30919] font-semibold mt-2 px-6 py-3"
 							>
 								Assign keys from new wallet

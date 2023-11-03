@@ -36,8 +36,10 @@ export function ViewKeysFlow({setShowContinueInBrowserModal}: ViewKeysFlowProps)
 
 		try {
 			const res = await listNodeLicenses(ownerAddress);
+			console.log(res)
 
 			if (res.length >= 1) {
+				setLoading(false);
 				setSuccess(true);
 			} else {
 				setLoading(false);
