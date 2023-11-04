@@ -28,7 +28,7 @@ export function WalletConnectedModal({txHash, onClose}: WalletConnectedModalProp
 					<span className="text-xl font-semibold text-center">Wallet assigned</span>
 					<span className="text-[15px] text-center">Transaction ID:
 						<a
-							onClick={() => window.electron.openExternal(`${providerData.blockExplorer}/tx/${txHash}`)}
+							onClick={() => window.electron.openExternal(`${providerData?.blockExplorer}/tx/${txHash}`)}
 							className="text-[#F30919] ml-1 cursor-pointer"
 						>
 							{txHash.slice(0, 10) + "..."}

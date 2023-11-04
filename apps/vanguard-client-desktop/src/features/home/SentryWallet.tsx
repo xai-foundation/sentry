@@ -1,5 +1,5 @@
 import {AiFillWarning, AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {ContinueInBrowserModal} from "./modals/ContinueInBrowserModal.tsx";
 import {BiDownload, BiLinkExternal, BiUpload} from "react-icons/bi";
 import {useOperator} from "../operator";
@@ -19,40 +19,8 @@ import {operatorRuntime} from "@xai-vanguard-node/core";
 import {WalletConnectedModal} from "@/features/home/modals/WalletConnectedModal";
 import {useQueryClient} from "react-query";
 
-const dummySentryWalletData = [
-	{
-		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-		status: "Waiting for challenge",
-		accruedEsxai: "0.00123",
-		openseaUrl: "https://xai.games/",
-	},
-	{
-		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-		status: "Submitting claim",
-		accruedEsxai: "0.00239",
-		openseaUrl: "https://xai.games/",
-	},
-	{
-		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-		status: "Checking claim",
-		accruedEsxai: "0.00239",
-		openseaUrl: "https://xai.games/",
-	},
-	{
-		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-		status: "Claim submitted",
-		accruedEsxai: "0.00239",
-		openseaUrl: "https://xai.games/",
-	},
-]
-
-const dropdownBody = [
-	"0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-	"All",
-	"Fake data lol",
-]
-
 export function SentryWallet() {
+	// todo -> split up
 	const queryClient = useQueryClient();
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
@@ -126,7 +94,7 @@ export function SentryWallet() {
 	}
 
 	function getDropdownItems() {
-		return listOwnersData.owners.map((wallet, i) => (
+		return listOwnersData!.owners.map((wallet, i) => (
 			<p
 				onClick={() => {
 					setSelectedWallet(wallet);
@@ -145,13 +113,13 @@ export function SentryWallet() {
 
 		// Get keys from every assigned wallet if "All" is selected in the drop down
 		if (selectedWallet === null) {
-			Object.keys(listNodeLicensesData.licenses).map((owner) => {
-				listNodeLicensesData.licenses[owner].forEach((license) => {
+			Object.keys(listNodeLicensesData!.licenses).map((owner) => {
+				listNodeLicensesData!.licenses[owner].forEach((license) => {
 					keysWithOwners.push({owner, key: license});
 				});
 			});
 		} else {
-			listNodeLicensesData.licenses[selectedWallet].forEach((license) => {
+			listNodeLicensesData!.licenses[selectedWallet].forEach((license) => {
 				keysWithOwners.push({owner: selectedWallet, key: license});
 			});
 		}
@@ -316,7 +284,7 @@ export function SentryWallet() {
 					<div className="flex flex-row items-center w-full py-3 pl-10 gap-1">
 						<h2 className="font-semibold">Assigned Keys</h2>
 						<p className="text-sm bg-gray-100 px-2 rounded-2xl text-gray-500">
-							{loading ? "Loading..." : `${listNodeLicensesData.totalLicenses} key${listNodeLicensesData.totalLicenses === 1 ? "" : "s"} in ${listOwnersData.owners.length} wallet${listOwnersData.length === 1 ? "" : "s"}`}
+							{loading ? "Loading..." : `${listNodeLicensesData!.totalLicenses} key${listNodeLicensesData!.totalLicenses === 1 ? "" : "s"} in ${listOwnersData!.owners.length} wallet${listOwnersData!.owners.length === 1 ? "" : "s"}`}
 						</p>
 						<AiOutlineInfoCircle className="text-[#A3A3A3]"/>
 					</div>
@@ -327,7 +295,7 @@ export function SentryWallet() {
 				)}
 
 				{/*		Keys	*/}
-				{listOwnersData?.owners?.length > 3 ? (
+				{listOwnersData && listOwnersData.owners && listOwnersData.owners.length > 3 ? (
 					<>
 						<div>
 							<div className="w-full h-auto flex flex-col py-3 pl-10">

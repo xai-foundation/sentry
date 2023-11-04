@@ -1,5 +1,3 @@
-import {FaCircleCheck} from "react-icons/fa6";
-
 export function AssignWalletTransactionInProgressModal() {
 
 	return (

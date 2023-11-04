@@ -5,11 +5,8 @@ import {AiFillWarning} from "react-icons/ai";
 import {useOperator} from "../features/operator";
 import {useState} from "react";
 import {AssignWalletTransactionInProgressModal} from "../features/home/modals/AssignWalletTransactionInProgressModal";
-import {WalletConnectedModal} from "../features/home/modals/WalletConnectedModal";
-import {useQueryClient} from "react-query";
 
 export function AssignKeysFromNewWallet() {
-	const queryClient = useQueryClient();
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {loading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const [showInProgress, setShowInProgress] = useState(false);
