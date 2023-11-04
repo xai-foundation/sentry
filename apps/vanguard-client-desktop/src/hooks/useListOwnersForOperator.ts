@@ -5,7 +5,6 @@ export function useListOwnersForOperator(sentryAddress: string) {
 	return useQuery({
 		queryKey: ["ownersForOperator", sentryAddress],
 		queryFn: async () => {
-			console.log("querying listOwnersForOperator")
 			const owners = await listOwnersForOperator(sentryAddress);
 			return {owners};
 		},

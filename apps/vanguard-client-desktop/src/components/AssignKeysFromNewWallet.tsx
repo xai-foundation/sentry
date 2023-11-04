@@ -6,27 +6,29 @@ import {useOperator} from "../features/operator";
 import {useState} from "react";
 import {AssignWalletTransactionInProgressModal} from "../features/home/modals/AssignWalletTransactionInProgressModal";
 import {WalletConnectedModal} from "../features/home/modals/WalletConnectedModal";
+import {useQueryClient} from "react-query";
 
 export function AssignKeysFromNewWallet() {
+	const queryClient = useQueryClient();
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {loading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const [showInProgress, setShowInProgress] = useState(false);
-	const [assignedWallet, setAssignedWallet] = useState<{show: boolean, txHash: string}>({show: false, txHash: ""});
-
-	(window as any).deeplinks?.assignedWallet((_event, txHash) => {
-		console.log("event:", _event);
-		setShowInProgress(false);
-		setAssignedWallet({show: true, txHash});
-	});
+	// const [assignedWallet, setAssignedWallet] = useState<{show: boolean, txHash: string}>({show: false, txHash: ""});
+	//
+	// (window as any).deeplinks?.assignedWallet((_event, txHash) => {
+	// 	setShowInProgress(false);
+	// 	setAssignedWallet({show: true, txHash});
+	// });
 
 	function startAssignment() {
 		setShowInProgress(true);
 		window.electron.openExternal(`http://localhost:7555/assign-wallet/${operatorAddress}`);
 	}
 
-	function onCloseWalletConnectedModal() {
-		setAssignedWallet({show: false, txHash: ""});
-	}
+	// function onCloseWalletConnectedModal() {
+	// 	setAssignedWallet({show: false, txHash: ""});
+	// 	queryClient.invalidateQueries({queryKey: ["ownersForOperator", operatorAddress]});
+	// }
 
 	return (
 		<>
@@ -34,12 +36,12 @@ export function AssignKeysFromNewWallet() {
 				<AssignWalletTransactionInProgressModal/>
 			)}
 
-			{assignedWallet.show && (
-				<WalletConnectedModal
-					txHash={assignedWallet.txHash}
-					onClose={onCloseWalletConnectedModal}
-				/>
-			)}
+			{/*{assignedWallet.show && (*/}
+			{/*	<WalletConnectedModal*/}
+			{/*		txHash={assignedWallet.txHash}*/}
+			{/*		onClose={onCloseWalletConnectedModal}*/}
+			{/*	/>*/}
+			{/*)}*/}
 
 			<div className="flex flex-col justify-center items-center gap-4">
 				<AiFillWarning className="w-16 h-16 text-[#F59E28]"/>
