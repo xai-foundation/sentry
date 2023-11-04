@@ -67,6 +67,7 @@ export function SentryWallet() {
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 
+	console.log("listNodeLicensesData:", listNodeLicensesData);
 	(window as any).deeplinks?.assignedWallet((_event, txHash) => {
 		setAssignedWallet({show: true, txHash});
 	});
@@ -140,18 +141,22 @@ export function SentryWallet() {
 	}
 
 	function getKeys() {
-		const keys = [];
+		const keysWithOwners: Array<{ owner: string, key: bigint }> = [];
 
 		// Get keys from every assigned wallet if "All" is selected in the drop down
 		if (selectedWallet === null) {
-			Object.values(listNodeLicensesData.licenses).map((ownerKeys) => {
-				keys.concat(ownerKeys);
+			Object.keys(listNodeLicensesData.licenses).map((owner) => {
+				listNodeLicensesData.licenses[owner].forEach((license) => {
+					keysWithOwners.push({owner, key: license});
+				});
 			});
 		} else {
-			keys.concat(listNodeLicensesData.licenses[selectedWallet]);
+			listNodeLicensesData.licenses[selectedWallet].forEach((license) => {
+				keysWithOwners.push({owner: selectedWallet, key: license});
+			});
 		}
 
-		if (keys.length === 0) {
+		if (keysWithOwners.length === 0) {
 			return (
 				<tr className="bg-white flex px-8 text-sm">
 					<td colSpan={3} className="w-full text-center">No keys found.</td>
@@ -159,13 +164,13 @@ export function SentryWallet() {
 			);
 		}
 
-		return keys.map((key, i: number) => {
+		return keysWithOwners.map((keyWithOwner, i: number) => {
 			const isEven = i % 2 === 0;
 
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
-					<td className="w-full max-w-[70px] px-4 py-2">{i + 1}</td>
-					<td className="w-full max-w-[390px] px-4 py-2">{key}</td>
+					<td className="w-full max-w-[70px] px-4 py-2">{keyWithOwner.key.toString()}</td>
+					<td className="w-full max-w-[390px] px-4 py-2">{keyWithOwner.owner.toString()}</td>
 					<td className="w-full max-w-[390px] px-4 py-2 text-[#A3A3A3]">Placeholder</td>
 				</tr>
 			);
