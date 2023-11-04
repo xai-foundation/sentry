@@ -237,6 +237,16 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     }
 
     /**
+     * @notice Returns the minting timestamp of a NodeLicense token.
+     * @param _tokenId The ID of the token.
+     * @return The minting timestamp.
+     */
+    function getMintTimestamp(uint256 _tokenId) public view returns (uint256) {
+        require(_exists(_tokenId), "ERC721Metadata: Query for nonexistent token");
+        return _mintTimestamps[_tokenId];
+    }
+
+    /**
      * @notice Overrides the supportsInterface function of the AccessControl contract.
      * @param interfaceId The interface id.
      * @return A boolean value indicating whether the contract supports the given interface.

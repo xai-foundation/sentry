@@ -5,6 +5,8 @@ import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeab
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./nitro-contracts/rollup/IRollupCore.sol";
 import "./NodeLicense.sol";
+import "./Xai.sol";
+import "./esXai.sol";
 
 contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -21,6 +23,10 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
 
     // the address of the NodeLicense NFT
     address public nodeLicenseAddress;
+
+    // contract addresses for esXai and xai
+    address public esXaiAddress;
+    address public xaiAddress;
 
     // Counter for the challenges
     uint256 public challengeCounter;
@@ -46,6 +52,9 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping to track KYC'd wallets
     EnumerableSetUpgradeable.AddressSet private kycWallets;
 
+    // Emissions Schedule determining how much should be emitted each challenge
+    uint256[] public emissionSchedule;
+
     // Struct for the submissions
     struct Submission {
         bool submitted;
@@ -64,6 +73,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         bytes activeChallengerPublicKey; // The challengerPublicKey that was active at the time of challenge submission
         address rollupUsed; // The rollup address used for this challenge
         uint256 createdTimestamp; // used to determine if a node license is eligible to submit
+        uint256 totalSupplyAtChallengeStart; // keep track of what the total supply is when the challenge starts
     }
 
     // Define events
@@ -76,11 +86,26 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     event Approval(address indexed owner, address indexed operator, bool approved);
     event KycStatusChanged(address indexed wallet, bool isKycApproved);
 
-    function initialize() public initializer {
+    function initialize(address _esXaiAddress, address _xaiAddress) public initializer {
         __AccessControlEnumerable_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setRoleAdmin(CHALLENGER_ROLE, DEFAULT_ADMIN_ROLE);
         _setRoleAdmin(KYC_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
+
+        // Set the esXai and xai addresses
+        esXaiAddress = _esXaiAddress;
+        xaiAddress = _xaiAddress;
+    }
+
+    /**
+     * @notice Returns the combined total supply of esXai and Xai.
+     * @dev This function fetches the total supply of esXai and Xai tokens and returns their sum.
+     * @return uint256 The combined total supply of esXai and Xai.
+     */
+    function getCombinedTotalSupply() public view returns (uint256) {
+        uint256 esXaiSupply = esXai(esXaiAddress).totalSupply();
+        uint256 xaiSupply = Xai(xaiAddress).totalSupply();
+        return esXaiSupply + xaiSupply;
     }
 
     /**
@@ -280,7 +305,8 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
             challengerSignedHash: _challengerSignedHash,
             activeChallengerPublicKey: challengerPublicKey, // Store the active challengerPublicKey at the time of challenge submission
             rollupUsed: rollupAddress, // Store the rollup address used for this challenge
-            createdTimestamp: block.timestamp
+            createdTimestamp: block.timestamp,
+            totalSupplyAtChallengeStart: NodeLicense(nodeLicenseAddress).totalSupply()
         });
 
         // increment the challenge counter
@@ -375,7 +401,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
      * @notice Creates an assertion hash and determines if the hash payout is below the threshold.
      * @dev This function creates a hash of the _nodeLicenseId, _challengeId, challengerSignedHash from the challenge, and _newStateRoot.
      * It then converts the hash to a number and checks if it is below the threshold.
-     * The threshold is calculated as the maximum uint256 value divided by the number of NodeLicenses that have been minted.
+     * The threshold is calculated as the maximum uint256 value divided by 100 and then multiplied by the total supply of NodeLicenses.
      * @param _nodeLicenseId The ID of the NodeLicense.
      * @param _challengeId The ID of the challenge.
      * @param _successorStateRoot The successor state root.
@@ -389,9 +415,16 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         bytes memory _challengerSignedHash = challenges[_challengeId].challengerSignedHash;
         bytes32 assertionHash = keccak256(abi.encodePacked(_nodeLicenseId, _challengeId, _challengerSignedHash, _successorStateRoot));
         uint256 hashNumber = uint256(assertionHash);
-        uint256 totalSupply = NodeLicense(nodeLicenseAddress).totalSupply();
-        require(totalSupply > 0, "No NodeLicenses have been minted yet");
-        uint256 threshold = type(uint256).max / totalSupply;
+        uint256 totalSupply = challenges[_challengeId].totalSupplyAtChallengeStart;
+        require(challenges[_challengeId].totalSupplyAtChallengeStart > 0, "No NodeLicenses have been minted when this challenge started");
+        uint256 threshold = (type(uint256).max / 100) * challenges[_challengeId].totalSupplyAtChallengeStart;
+
+        // Get the minting timestamp of the nodeLicenseId
+        uint256 mintTimestamp = NodeLicense(nodeLicenseAddress).getMintTimestamp(_nodeLicenseId);
+
+        // Check if the nodeLicenseId is eligible for a payout
+        require(mintTimestamp < challenges[_challengeId].createdTimestamp, "NodeLicense is not eligible for a payout on this challenge, it was minted after it started");
+
         return (hashNumber < threshold, assertionHash, threshold);
     }
 
