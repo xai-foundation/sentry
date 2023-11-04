@@ -14,6 +14,10 @@ export function useListNodeLicenses(walletAddresses: string[] = []) {
 
 			return {
 				licenses: mapping,
+				totalLicenses: Object.keys(mapping).reduce((acc: number, wallet: string) => {
+					acc += mapping[wallet].length;
+					return acc;
+				}, 0),
 			}
 		},
 		cacheTime: 0,

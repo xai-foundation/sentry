@@ -14,7 +14,6 @@ import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
 import {AssignKeysFromNewWallet} from "../../components/AssignKeysFromNewWallet";
 import {useListOwnersForOperator} from "../../hooks/useListOwnersForOperator";
-import {listOwnersForOperator} from "@xai-vanguard-node/core";
 import {useListNodeLicenses} from "../../hooks/useListNodeLicenses";
 import {operatorRuntime} from "@xai-vanguard-node/core";
 
@@ -55,14 +54,13 @@ export function SentryWallet() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
 	const {loading: isOperatorLoading, publicKey: operatorAddress, signer} = useOperator();
-	const {loading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
-	const {loading: isListNodeLicensesLoading, data: listNodeLicensesData} = useListNodeLicenses(listOwnersData);
+	const {isLoading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
+	const {isLoading: isListNodeLicensesLoading, data: listNodeLicensesData} = useListNodeLicenses(listOwnersData?.owners);
 
-	console.log("isListOwnersLoading:", isListOwnersLoading);
-	console.log("listOwnersData:", listOwnersData);
+	console.log("operator:", isOperatorLoading);
+	console.log("LIST OWNERS:", isListOwnersLoading);
+	console.log("GET KEYS:", isListNodeLicensesLoading);
 
-	console.log("isListNodeLicensesLoading:", isListNodeLicensesLoading);
-	console.log("listNodeLicensesData:", listNodeLicensesData);
 
 	const [copied, setCopied] = useState<boolean>(false);
 
@@ -261,7 +259,7 @@ export function SentryWallet() {
 				<div className="flex flex-row items-center w-full py-3 pl-10 gap-1">
 					<h2 className="font-semibold">Assigned Keys</h2>
 					<p className="text-sm bg-gray-100 px-2 rounded-2xl text-gray-500">
-						{number} keys in 0 (placeholder) wallets
+						{(isOperatorLoading || isListNodeLicensesLoading || isListOwnersLoading) ? "Loading..." : `${listNodeLicensesData.totalLicenses} key${listNodeLicensesData.totalLicenses === 1 ? "" : "s"} in ${listOwnersData.owners.length} wallet${listOwnersData.length === 1 ? "" : "s"}`}
 					</p>
 					<AiOutlineInfoCircle className="text-[#A3A3A3]"/>
 				</div>
