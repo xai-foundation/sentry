@@ -29,6 +29,6 @@
     "paths": {
       "@/*": ["./src/*"],
       "@xai-vanguard-node/*": ["../../packages/*/src"]
-    },
-  },
+    }
+  }
 }
