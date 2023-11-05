@@ -9,12 +9,11 @@
 
     /* Bundler mode */
     "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
+    // "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "rootDir": "",
 
     /* Linting */
     "strict": true,
@@ -30,5 +29,13 @@
       "@/*": ["./src/*"],
       "@xai-vanguard-node/*": ["../../packages/*/src"]
     }
-  }
+  },
+  "references": [
+    {
+        "path": "../../packages/core/tsconfig.json"
+    },
+    {
+        "path": "../../packages/ui/tsconfig.json"
+    }
+  ]
 }

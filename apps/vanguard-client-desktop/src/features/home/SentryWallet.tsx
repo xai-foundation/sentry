@@ -1,6 +1,6 @@
 import {AiFillWarning, AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
 import {useState} from "react";
-import {ContinueInBrowserModal} from "./modals/ContinueInBrowserModal.tsx";
+import {ContinueInBrowserModal} from "./modals/ContinueInBrowserModal.js";
 import {BiDownload, BiLinkExternal, BiUpload} from "react-icons/bi";
 import {useOperator} from "../operator";
 import {PiCopy} from "react-icons/pi";
@@ -9,7 +9,7 @@ import {GiPauseButton} from "react-icons/gi";
 import {FaEthereum} from "react-icons/fa";
 import {MdRefresh} from "react-icons/md";
 import {useAtom} from "jotai";
-import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.tsx";
+import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.js";
 import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
 import {AssignKeysFromNewWallet} from "../../components/AssignKeysFromNewWallet";

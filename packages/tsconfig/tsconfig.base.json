@@ -11,6 +11,7 @@
         "esModuleInterop": true,
         "noEmit": false,
         "strict": true,
+        "composite": true
     },
     "exclude": [
         "node_modules",

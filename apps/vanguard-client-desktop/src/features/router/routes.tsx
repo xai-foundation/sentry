@@ -1,10 +1,10 @@
 import {HashRouter as Router, Route, Routes} from 'react-router-dom';
 import {Sidebar} from "../sidebar";
-import {GetSentryNode} from "../home/GetSentryNode.tsx";
-import {Keys} from "../keys/Keys.tsx";
-import {Operator} from "../operator/Operator.tsx";
-import {SentryWallet} from "../home/SentryWallet.tsx";
-import {Demo} from "../demo/Demo.tsx";
+import {GetSentryNode} from "../home/GetSentryNode.js";
+import {Keys} from "../keys/Keys.js";
+import {Operator} from "../operator/Operator.js";
+import {SentryWallet} from "../home/SentryWallet.js";
+import {Demo} from "../demo/Demo.js";
 import {DrawerManager} from "../drawer/DrawerManager";
 import {QueryClient, QueryClientProvider} from "react-query";
 import {DeepLinkManager} from "../../components/DeepLinkManager";

@@ -1,7 +1,7 @@
 import {useState} from "react";
-import {HasKeys} from "./HasKeys.tsx";
-import {NoKeys} from "./NoKeys.tsx";
-import {ContinueInBrowserModal} from "../home/modals/ContinueInBrowserModal.tsx";
+import {HasKeys} from "./HasKeys.js";
+import {NoKeys} from "./NoKeys.js";
+import {ContinueInBrowserModal} from "../home/modals/ContinueInBrowserModal.js";
 import {AiFillWarning} from "react-icons/ai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useAtom} from "jotai";

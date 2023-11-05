@@ -1,6 +1,6 @@
 import {useState} from "react";
-import {Blockpass} from "../../components/blockpass/Blockpass.tsx";
-import {PurchaseCompleteModal} from "../home/modals/PurchaseCompleteModal.tsx";
+import {Blockpass} from "../../components/blockpass/Blockpass.js";
+import {PurchaseCompleteModal} from "../home/modals/PurchaseCompleteModal.js";
 
 export function Demo() {
 	// const [showConnectedModal, setShowConnectedModal] = useState<boolean>(false);

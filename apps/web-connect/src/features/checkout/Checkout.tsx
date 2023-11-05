@@ -1,7 +1,7 @@
-import {WebBuyFlow} from "./WebBuyFlow.tsx";
+import {WebBuyFlow} from "./WebBuyFlow.js";
 import {useState} from "react";
 import {MdVerifiedUser} from "react-icons/md";
-import {WebBuyFlowSuccess} from "./WebBuyFlowSuccess.tsx";
+import {WebBuyFlowSuccess} from "./WebBuyFlowSuccess.js";
 
 export function Checkout() {
 	const [purchase, setPurchase] = useState(false);

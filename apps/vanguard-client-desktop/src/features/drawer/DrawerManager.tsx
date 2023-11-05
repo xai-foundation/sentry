@@ -4,8 +4,8 @@ import {ActionsRequiredBuyModal} from "../home/modals/actions-required/ActionsRe
 import {BuyKeysModal} from "../keys/modals/buy-keys/BuyKeysModal";
 import {ViewKeysModal} from "../home/modals/view-keys/ViewKeysModal";
 import {ActionsRequiredNotAccruingModal} from "../home/modals/actions-required/ActionsRequiredNotAccruingModal";
-import {ExportSentryModal} from "../home/modals/ExportSentryModal.tsx";
-import {ImportSentryModal} from "../home/modals/ImportSentryModal.tsx";
+import {ExportSentryModal} from "../home/modals/ExportSentryModal.js";
+import {ImportSentryModal} from "../home/modals/ImportSentryModal.js";
 
 export enum DrawerView {
 	ActionsRequiredBuy,
