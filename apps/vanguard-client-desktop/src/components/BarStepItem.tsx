@@ -1,5 +1,5 @@
 import {PropsWithChildren} from "react";
-import classNames from "classNames"
+import classNames from "classnames"
 
 interface BarStepItemProps extends PropsWithChildren {
 	lastItem?: boolean;
