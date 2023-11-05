@@ -5,6 +5,7 @@
     "emitDecoratorMetadata": true,
     "strictPropertyInitialization": false,
     "sourceRoot": "src",
+    "rootDir": "src",
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
