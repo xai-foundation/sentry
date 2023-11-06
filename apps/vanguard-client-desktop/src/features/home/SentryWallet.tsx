@@ -65,6 +65,8 @@ export function SentryWallet() {
 
 	const stopFunction = useRef<OperatorRuntimeFunction>();
 	const [sentryRunning, setSentryRunning] = useState<boolean>(false);
+
+	//@ts-ignore - remove once we find somewhere to use status
 	const [status, setStatus] = useState<NodeLicenseStatusMap>();
 
 	useEffect(() => {
@@ -138,8 +140,6 @@ export function SentryWallet() {
 			)
 		})
 	}
-
-	console.log(status);
 
 	return (
 		<div className="w-full h-screen">
