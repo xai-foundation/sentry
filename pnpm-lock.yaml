@@ -70,6 +70,9 @@ importers:
       '@xai-vanguard-node/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@xai-vanguard-node/web-connect':
+        specifier: workspace:*
+        version: link:../web-connect
       classnames:
         specifier: ^2.3.2
         version: 2.3.2
