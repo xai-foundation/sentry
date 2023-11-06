@@ -1,5 +1,5 @@
 import {AiFillWarning, AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {ContinueInBrowserModal} from "./modals/ContinueInBrowserModal.tsx";
 import {BiDownload, BiLinkExternal, BiUpload} from "react-icons/bi";
 import {useOperator} from "../operator";
@@ -12,7 +12,7 @@ import {useAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.tsx";
 import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
-import {operatorRuntime} from "@xai-vanguard-node/core";
+import {NodeLicenseStatusMap, operatorRuntime} from "@xai-vanguard-node/core";
 
 const dummySentryWalletData = [
 	{
@@ -47,6 +47,8 @@ const dropdownBody = [
 	"Fake data lol",
 ]
 
+type OperatorRuntimeFunction = () => Promise<void>
+
 export function SentryWallet() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
@@ -55,14 +57,15 @@ export function SentryWallet() {
 
 	// update / swap this out with actual number of keys user owns
 	const [number, setNumber] = useState<number>(0);
-	// update this with actual state of Operator
-	const [running, setRunning] = useState<boolean>(false);
 
 	// dropdown state
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [selectedWallet, setSelectedWallet] = useState<string>("");
-	let stopFunction: () => Promise<void>;
+
+	const stopFunction = useRef<OperatorRuntimeFunction>();
+	const [sentryRunning, setSentryRunning] = useState<boolean>(false);
+	const [status, setStatus] = useState<NodeLicenseStatusMap>();
 
 	useEffect(() => {
 		setSelectedWallet(dropdownBody[0]);
@@ -85,27 +88,27 @@ export function SentryWallet() {
 		}
 	}
 
-	async function startSentry() {
-		if (signer && number > 0) {
-			// @ts-ignore
-			stopFunction = await operatorRuntime(signer, undefined, (log) => console.log(log));
-			setRunning(true);
-			// @ts-ignore
-			return new Promise((resolve, reject) => {
-			}); // Keep the command alive
+	const startSentry = async () => {
+		if (signer) {
+			try {
+				stopFunction.current = await operatorRuntime(signer, setStatus, console.log);
+				setSentryRunning(true);
+			} catch (error) {
+				console.error('Error starting the operator runtime:', error);
+			}
 		}
-	}
+	};
 
-	async function pauseSentry() {
-		if (stopFunction) {
-			await stopFunction();
-			setRunning(false);
+	const pauseSentry = async () => {
+		if (stopFunction.current) {
+			try {
+				await stopFunction.current();
+				setSentryRunning(false);
+			} catch (error) {
+				console.error('Error stopping the operator runtime:', error);
+			}
 		}
-		if (!stopFunction) {
-			console.warn("stopFunction is undefined!")
-		}
-		setRunning(false);
-	}
+	};
 
 	function getDropdownItems() {
 		return dropdownBody.map((item, i) => (
@@ -136,6 +139,8 @@ export function SentryWallet() {
 		})
 	}
 
+	console.log(status);
+
 	return (
 		<div className="w-full h-screen">
 			<div
@@ -145,7 +150,7 @@ export function SentryWallet() {
 					<div className="flex flex-row items-center gap-2">
 						<h2 className="text-lg font-semibold">Sentry Wallet</h2>
 
-						{running ? (
+						{sentryRunning ? (
 							<>
 								<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
 									No ETH
@@ -202,7 +207,7 @@ export function SentryWallet() {
 							</div>
 						</div>
 
-						{running ? (
+						{sentryRunning ? (
 							<button
 								onClick={() => pauseSentry()}
 								className="ml-4 flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
