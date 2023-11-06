@@ -21,6 +21,5 @@ export function useListNodeLicenses(walletAddresses: string[] = []) {
 			}
 		},
 		cacheTime: 0,
-		enabled: walletAddresses.length > 0,
 	});
 }

@@ -24,18 +24,19 @@ export function SentryWallet() {
 	const queryClient = useQueryClient();
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
+
 	const {loading: isOperatorLoading, publicKey: operatorAddress, signer} = useOperator();
 	const {isLoading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
 	const {
 		isLoading: isListNodeLicensesLoading,
 		data: listNodeLicensesData
 	} = useListNodeLicenses(listOwnersData?.owners);
+
 	const loading = isOperatorLoading || isListOwnersLoading || isListNodeLicensesLoading;
 	const [copied, setCopied] = useState<boolean>(false);
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 
-	console.log("listNodeLicensesData:", listNodeLicensesData);
 	(window as any).deeplinks?.assignedWallet((_event, txHash) => {
 		setAssignedWallet({show: true, txHash});
 	});
