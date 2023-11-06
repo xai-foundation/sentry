@@ -1,5 +1,5 @@
 import {AiFillWarning, AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {ContinueInBrowserModal} from "./modals/ContinueInBrowserModal.tsx";
 import {BiDownload, BiLinkExternal, BiUpload} from "react-icons/bi";
 import {useOperator} from "../operator";
@@ -42,8 +42,8 @@ const dummySentryWalletData = [
 ]
 
 const dropdownBody = [
-	"0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
 	"All",
+	"0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
 	"Fake data lol",
 ]
 
@@ -61,11 +61,16 @@ export function SentryWallet() {
 	// dropdown state
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
+	const [selectedWallet, setSelectedWallet] = useState<string>("");
 	let stopFunction: () => Promise<void>;
 
+	useEffect(() => {
+		setSelectedWallet(dropdownBody[0]);
+	}, []);
+
 	function copyPublicKey() {
-		if (publicKey && navigator.clipboard) {
-			navigator.clipboard.writeText(publicKey)
+		if (selectedWallet && navigator.clipboard) {
+			navigator.clipboard.writeText(selectedWallet)
 				.then(() => {
 					setCopied(true);
 					setTimeout(() => {
@@ -104,7 +109,16 @@ export function SentryWallet() {
 
 	function getDropdownItems() {
 		return dropdownBody.map((item, i) => (
-			<p className="p-2 cursor-pointer hover:bg-gray-100" key={`sentry-item-${i}`}>{item}</p>
+			<p
+				key={`sentry-item-${i}`}
+				className="p-2 cursor-pointer hover:bg-gray-100"
+				onClick={() => {
+					setSelectedWallet(item);
+					setIsOpen(false);
+				}}
+			>
+				{item}
+			</p>
 		))
 	}
 
@@ -272,7 +286,7 @@ export function SentryWallet() {
 										onClick={() => setIsOpen(!isOpen)}
 										className={`flex items-center justify-between w-[538px] border-[#A3A3A3] border-r border-l border-t ${!isOpen ? "border-b" : null} border-[#A3A3A3] p-2`}
 									>
-										<p>{publicKey}</p>
+										<p>{selectedWallet}</p>
 										<IoIosArrowDown
 											className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
 										/>
@@ -288,15 +302,13 @@ export function SentryWallet() {
 
 								<button
 									onClick={() => copyPublicKey()}
-									className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
+									className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] ${selectedWallet === "All" ? 'text-[#D4D4D4] cursor-not-allowed' : ""} px-4 py-2`}
+									disabled={selectedWallet === "All"}
 								>
-
-									{copied
-										? (<AiOutlineCheck className="h-[15px]"/>)
-										: (<PiCopy className="h-[15px]"/>)
-									}
+									{copied ? <AiOutlineCheck className="h-[15px]"/> : <PiCopy className="h-[15px]"/>}
 									Copy address
 								</button>
+
 
 								<button
 									onClick={() => window.electron.openExternal('http://localhost:7555/assign-wallet')}
@@ -308,7 +320,8 @@ export function SentryWallet() {
 
 								<button
 									onClick={() => window.electron.openExternal("https://xai.games/")}
-									className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
+									className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] ${selectedWallet === "All" ? 'text-[#D4D4D4] cursor-not-allowed' : ""} px-4 py-2`}
+									disabled={selectedWallet === "All"}
 								>
 									Unassign this wallet
 									<BiLinkExternal className="h-[15px]"/>
