@@ -1,5 +1,5 @@
 import {PropsWithChildren} from "react";
-import * as classNames from "classnames";
+import classNames from "classnames"
 
 interface SquareCardProps extends PropsWithChildren {
 	className?: string;

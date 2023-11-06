@@ -5,7 +5,7 @@ import {Link, useNavigate} from 'react-router-dom';
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {RiKey2Line, RiTwitterXFill} from "react-icons/ri";
 import {SiGitbook} from "react-icons/si";
-import {YellowPulse} from "@/features/keys/StatusPulse.tsx";
+import {YellowPulse} from "@/features/keys/StatusPulse.js";
 
 /**
  * Sidebar component

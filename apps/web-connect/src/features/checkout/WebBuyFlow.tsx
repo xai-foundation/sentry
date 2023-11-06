@@ -1,11 +1,11 @@
 import {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {XaiNumberInput} from "@xai-vanguard-node/ui";
 import {ethers} from "ethers";
-import {useGetTotalSupplyAndCap} from "./hooks/useGetTotalSupplyAndCap.ts";
-import {useGetPriceForQuantity} from "./hooks/useGetPriceForQuantity.ts";
+import {useGetTotalSupplyAndCap} from "./hooks/useGetTotalSupplyAndCap.js";
+import {useGetPriceForQuantity} from "./hooks/useGetPriceForQuantity.js";
 import {BiLoaderAlt} from "react-icons/bi";
 import {AiFillInfoCircle, AiOutlineClose} from "react-icons/ai";
-import {XaiCheckbox} from "@xai-vanguard-node/ui/src/features/checkbox/XaiCheckbox.tsx";
+import {XaiCheckbox} from "@xai-vanguard-node/ui/src/features/checkbox/XaiCheckbox.js";
 
 
 interface WebBuyFlowProps {

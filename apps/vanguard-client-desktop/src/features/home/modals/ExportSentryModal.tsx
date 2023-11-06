@@ -1,6 +1,6 @@
 import {AiOutlineCheck, AiOutlineClose} from "react-icons/ai";
 import {useSetAtom} from "jotai/index";
-import {drawerStateAtom} from "../../drawer/DrawerManager.tsx";
+import {drawerStateAtom} from "../../drawer/DrawerManager.js";
 import {useOperator} from "../../operator";
 import {PiCopy} from "react-icons/pi";
 import {useState} from "react";

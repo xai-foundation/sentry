@@ -1,6 +1,6 @@
 import {AiOutlineClose} from "react-icons/ai";
 import {useSetAtom} from "jotai/index";
-import {drawerStateAtom} from "../../drawer/DrawerManager.tsx";
+import {drawerStateAtom} from "../../drawer/DrawerManager.js";
 import {useOperator} from "../../operator";
 import {ChangeEvent, useEffect, useState} from "react";
 import {BiLoaderAlt} from "react-icons/bi";

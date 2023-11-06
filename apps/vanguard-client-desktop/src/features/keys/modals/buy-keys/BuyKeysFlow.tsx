@@ -4,9 +4,9 @@ import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {BiLinkExternal, BiLoaderAlt} from "react-icons/bi";
 import {AiFillInfoCircle, AiOutlineClose, AiOutlineInfoCircle} from "react-icons/ai";
 import {MdVerifiedUser} from "react-icons/md";
-import {useGetPriceForQuantity} from "../../hooks/useGetPriceForQuantity.ts";
+import {useGetPriceForQuantity} from "../../hooks/useGetPriceForQuantity.js";
 import {ethers} from "ethers";
-import {useGetTotalSupplyAndCap} from "../../hooks/useGetTotalSupplyAndCap.ts";
+import {useGetTotalSupplyAndCap} from "../../hooks/useGetTotalSupplyAndCap.js";
 
 export function BuyKeysFlow() {
 	const [amount, setAmount] = useState<number>(1);
