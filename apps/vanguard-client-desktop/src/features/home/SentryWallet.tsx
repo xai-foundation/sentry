@@ -296,7 +296,7 @@ export function SentryWallet() {
 				)}
 
 				{/*		Keys	*/}
-				{listOwnersData && listOwnersData.owners && listOwnersData.owners.length > 3 ? (
+				{listOwnersData && listOwnersData.owners && listOwnersData.owners.length > 0 ? (
 					<>
 						<div>
 							<div className="w-full h-auto flex flex-col py-3 pl-10">
