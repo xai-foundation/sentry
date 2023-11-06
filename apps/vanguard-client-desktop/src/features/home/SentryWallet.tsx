@@ -66,7 +66,6 @@ export function SentryWallet() {
 		}
 	}
 
-
 	function copySelectedWallet() {
 		void navigator.clipboard.writeText(selectedWallet!);
 	}
@@ -74,6 +73,8 @@ export function SentryWallet() {
 	const startSentry = async () => {
 		if (signer) {
 			try {
+				// todo: fix this
+				//@ts-ignore
 				stopFunction.current = await operatorRuntime(signer, setStatus, console.log);
 				setSentryRunning(true);
 			} catch (error) {
