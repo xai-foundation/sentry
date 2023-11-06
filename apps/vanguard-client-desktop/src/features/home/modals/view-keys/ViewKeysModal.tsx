@@ -1,8 +1,8 @@
 import {AiOutlineClose} from "react-icons/ai";
-import {ViewKeysFlow} from "./ViewKeysFlow.tsx";
+import {ViewKeysFlow} from "./ViewKeysFlow.js";
 import {useSetAtom} from "jotai";
 import {drawerStateAtom} from "../../../drawer/DrawerManager";
-import {ContinueInBrowserModal} from "../ContinueInBrowserModal.tsx";
+import {ContinueInBrowserModal} from "../ContinueInBrowserModal.js";
 import {useState} from "react";
 
 export function ViewKeysModal() {

@@ -4,7 +4,7 @@ import {listNodeLicenses} from "@xai-vanguard-node/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useNavigate} from "react-router-dom";
 import {useSetAtom} from "jotai/index";
-import {drawerStateAtom} from "../../../drawer/DrawerManager.tsx";
+import {drawerStateAtom} from "../../../drawer/DrawerManager.js";
 
 interface ViewKeysFlowProps {
 	setShowContinueInBrowserModal: Dispatch<SetStateAction<boolean>>;

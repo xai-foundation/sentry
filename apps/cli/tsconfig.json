@@ -4,12 +4,13 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "strictPropertyInitialization": false,
-    "sourceRoot": "src",
+    "rootDir": "src",
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "@vanguard-node/*": ["../../packages/*/src"]
     }
-  }
+  },
+
 }

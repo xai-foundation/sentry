@@ -1,7 +1,7 @@
 import {useState} from "react";
-import {HasKeys} from "./HasKeys.tsx";
-import {NoKeys} from "./NoKeys.tsx";
-import {ContinueInBrowserModal} from "../home/modals/ContinueInBrowserModal.tsx";
+import {HasKeys} from "./HasKeys.js";
+import {NoKeys} from "./NoKeys.js";
+import {ContinueInBrowserModal} from "../home/modals/ContinueInBrowserModal.js";
 import {AiFillWarning} from "react-icons/ai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useAtom} from "jotai";
@@ -10,14 +10,6 @@ export function Keys() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const [number, setNumber] = useState<number>(0);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
-
-	// get operator
-	// const operator = useOperator();
-
-	// get connected keys
-
-	//todo: delete once we add real data
-	console.log(setNumber);
 
 	return (
 		<div className="w-full h-screen">

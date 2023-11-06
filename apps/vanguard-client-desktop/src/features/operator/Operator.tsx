@@ -1,5 +1,5 @@
 import {ChangeEvent, useEffect, useState} from "react";
-import {useOperator} from "./useOperator.tsx";
+import {useOperator} from "./useOperator.js";
 import {useStorage} from "../storage";
 import {AiOutlineClose} from "react-icons/ai";
 

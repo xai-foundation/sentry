@@ -27,6 +27,9 @@ importers:
       eslint:
         specifier: ^8.48.0
         version: 8.48.0
+      eslint-plugin-only-warn:
+        specifier: ^1.1.0
+        version: 1.1.0
       rimraf:
         specifier: 5.0.1
         version: 5.0.1
@@ -67,6 +70,9 @@ importers:
       '@xai-vanguard-node/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@xai-vanguard-node/web-connect':
+        specifier: workspace:*
+        version: link:../web-connect
       classnames:
         specifier: ^2.3.2
         version: 2.3.2
@@ -131,6 +137,9 @@ importers:
       eslint:
         specifier: ^8.48.0
         version: 8.48.0
+      eslint-plugin-only-warn:
+        specifier: ^1.1.0
+        version: 1.1.0
       eslint-plugin-react-hooks:
         specifier: ^4.6.0
         version: 4.6.0(eslint@8.48.0)
@@ -9318,6 +9327,11 @@ packages:
       optionator: 0.8.3
     optionalDependencies:
       source-map: 0.2.0
+    dev: true
+
+  /eslint-plugin-only-warn@1.1.0:
+    resolution: {integrity: sha512-2tktqUAT+Q3hCAU0iSf4xAN1k9zOpjK5WO8104mB0rT/dGhOa09582HN5HlbxNbPRZ0THV7nLGvzugcNOSjzfA==}
+    engines: {node: '>=6'}
     dev: true
 
   /eslint-plugin-react-hooks@4.6.0(eslint@8.48.0):
