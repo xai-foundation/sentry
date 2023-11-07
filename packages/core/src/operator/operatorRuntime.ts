@@ -2,12 +2,12 @@ import { ethers } from "ethers";
 import { Challenge, RefereeAbi, config, getMintTimestamp, getSubmissionForChallenge, listChallenges, listNodeLicenses, listOwnersForOperator, listenForChallenges, submitAssertionToChallenge } from "../index.js";
 
 export enum NodeLicenseStatus {
-    WAITING_IN_QUEUE, // waiting to do an action, but in a queue
-    FETCHING_MINT_TIMESTAMP,
-    WAITING_FOR_NEXT_CHALLENGE,
-    CHECKING_MINT_TIMESTAMP_ELIGIBILITY,
-    CHECKING_IF_ELIGIBLE_FOR_PAYOUT,
-    SUBMITTING_ASSERTION_TO_CHALLENGE,
+    WAITING_IN_QUEUE = "Waiting in Queue", // waiting to do an action, but in a queue
+    FETCHING_MINT_TIMESTAMP = "Fetching Mint Timestamp",
+    WAITING_FOR_NEXT_CHALLENGE = "Waiting for Next Challenge",
+    CHECKING_MINT_TIMESTAMP_ELIGIBILITY = "Checking Mint Timestamp Eligibility",
+    CHECKING_IF_ELIGIBLE_FOR_PAYOUT = "Checking if Eligible for Payout",
+    SUBMITTING_ASSERTION_TO_CHALLENGE = "Submitting Assertion to Challenge",
 }
 
 export interface NodeLicenseInformation {
