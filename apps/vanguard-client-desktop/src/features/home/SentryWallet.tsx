@@ -12,7 +12,7 @@ import {useAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.js";
 import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
-import {NodeLicenseStatusMap, operatorRuntime} from "@xai-vanguard-node/core";
+import {NodeLicenseStatus, NodeLicenseStatusMap, operatorRuntime} from "@xai-vanguard-node/core";
 import {AssignKeysFromNewWallet} from "@/components/AssignKeysFromNewWallet";
 import {useListOwnersForOperator} from "@/hooks/useListOwnersForOperator";
 import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
@@ -45,8 +45,6 @@ export function SentryWallet() {
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const stopFunction = useRef<OperatorRuntimeFunction>();
 	const [sentryRunning, setSentryRunning] = useState<boolean>(false);
-
-	//@ts-ignore - remove once we find somewhere to use status
 	const [status, setStatus] = useState<NodeLicenseStatusMap>();
 
 	function copyPublicKey() {
@@ -70,11 +68,30 @@ export function SentryWallet() {
 		void navigator.clipboard.writeText(selectedWallet!);
 	}
 
+	function getStatusString(status) {
+		switch (status) {
+			case NodeLicenseStatus.WAITING_IN_QUEUE:
+				return "Waiting in queue";
+			case NodeLicenseStatus.FETCHING_MINT_TIMESTAMP:
+				return "Fetching mint timestamp";
+			case NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE:
+				return "Waiting for next challenge";
+			case NodeLicenseStatus.CHECKING_MINT_TIMESTAMP_ELIGIBILITY:
+				return "Checking mint timestamp eligibility";
+			case NodeLicenseStatus.CHECKING_IF_ELIGIBLE_FOR_PAYOUT:
+				return "Checking if eligible for payout";
+			case NodeLicenseStatus.SUBMITTING_ASSERTION_TO_CHALLENGE:
+				return "Submitting assertion to challenge";
+			default:
+				return "Unknown Status";
+		}
+	}
+
 	const startSentry = async () => {
 		if (signer) {
 			try {
-				// todo: fix this
-				//@ts-ignore
+				// todo: ethers issue is back
+				// @ts-ignore
 				stopFunction.current = await operatorRuntime(signer, setStatus, console.log);
 				setSentryRunning(true);
 			} catch (error) {
@@ -112,7 +129,7 @@ export function SentryWallet() {
 	function getKeys() {
 		const keysWithOwners: Array<{ owner: string, key: bigint }> = [];
 
-		// Get keys from every assigned wallet if "All" is selected in the drop down
+		// Get keys from every assigned wallet if "All" is selected in the drop-down
 		if (selectedWallet === null) {
 			Object.keys(listNodeLicensesData!.licenses).map((owner) => {
 				listNodeLicensesData!.licenses[owner].forEach((license) => {
@@ -135,12 +152,16 @@ export function SentryWallet() {
 
 		return keysWithOwners.map((keyWithOwner, i: number) => {
 			const isEven = i % 2 === 0;
+			const statusArray = status ? Array.from(status.entries()) : [];
+			const currentStatus = statusArray[i] ? statusArray[i][1] : null;
 
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
 					<td className="w-full max-w-[70px] px-4 py-2">{keyWithOwner.key.toString()}</td>
 					<td className="w-full max-w-[390px] px-4 py-2">{keyWithOwner.owner.toString()}</td>
-					<td className="w-full max-w-[390px] px-4 py-2 text-[#A3A3A3]">Placeholder</td>
+					<td className="w-full max-w-[390px] px-4 py-2 text-[#A3A3A3]">
+						{currentStatus ? getStatusString(currentStatus.status) : "Sentry not running"}
+					</td>
 				</tr>
 			);
 		});
@@ -309,7 +330,7 @@ export function SentryWallet() {
 											onClick={() => setIsOpen(!isOpen)}
 											className={`flex items-center justify-between w-[538px] border-[#A3A3A3] border-r border-l border-t ${!isOpen ? "border-b" : null} border-[#A3A3A3] p-2`}
 										>
-											<p>{selectedWallet || "All"}</p>
+											<p>{selectedWallet || `All assigned wallets (${listOwnersData.owners.length})`}</p>
 											<IoIosArrowDown
 												className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
 											/>
