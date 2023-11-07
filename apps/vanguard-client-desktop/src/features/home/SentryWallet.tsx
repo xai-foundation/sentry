@@ -157,7 +157,7 @@ export function SentryWallet() {
 
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
-					<td className="w-full max-w-[70px] px-4 py-2">{keyWithOwner.key.toString()}</td>
+					<td className="w-fit px-4 py-2">{keyWithOwner.key.toString()}</td>
 					<td className="w-full max-w-[390px] px-4 py-2">{keyWithOwner.owner.toString()}</td>
 					<td className="w-full max-w-[390px] px-4 py-2 text-[#A3A3A3]">
 						{currentStatus ? getStatusString(currentStatus.status) : "Sentry not running"}
@@ -389,7 +389,7 @@ export function SentryWallet() {
 								<table className="w-full bg-white">
 									<thead className="text-[#A3A3A3]">
 									<tr className="flex text-left text-[12px] uppercase px-8">
-										<th className="w-full max-w-[70px] px-4 py-2">Key Id</th>
+										<th className="w-fit px-4 py-2">Key Id</th>
 										<th className="w-full max-w-[390px] px-4 py-2">Owner Address</th>
 										<th className="w-full max-w-[390px] px-4 py-2">Claim Status</th>
 									</tr>
