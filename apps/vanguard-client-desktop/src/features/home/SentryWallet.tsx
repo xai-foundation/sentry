@@ -12,7 +12,7 @@ import {useAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.js";
 import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
-import {NodeLicenseStatus, NodeLicenseStatusMap, operatorRuntime} from "@xai-vanguard-node/core";
+import {NodeLicenseStatusMap, operatorRuntime} from "@xai-vanguard-node/core";
 import {AssignKeysFromNewWallet} from "@/components/AssignKeysFromNewWallet";
 import {useListOwnersForOperator} from "@/hooks/useListOwnersForOperator";
 import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
@@ -66,25 +66,6 @@ export function SentryWallet() {
 
 	function copySelectedWallet() {
 		void navigator.clipboard.writeText(selectedWallet!);
-	}
-
-	function getStatusString(status) {
-		switch (status) {
-			case NodeLicenseStatus.WAITING_IN_QUEUE:
-				return "Waiting in queue";
-			case NodeLicenseStatus.FETCHING_MINT_TIMESTAMP:
-				return "Fetching mint timestamp";
-			case NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE:
-				return "Waiting for next challenge";
-			case NodeLicenseStatus.CHECKING_MINT_TIMESTAMP_ELIGIBILITY:
-				return "Checking mint timestamp eligibility";
-			case NodeLicenseStatus.CHECKING_IF_ELIGIBLE_FOR_PAYOUT:
-				return "Checking if eligible for payout";
-			case NodeLicenseStatus.SUBMITTING_ASSERTION_TO_CHALLENGE:
-				return "Submitting assertion to challenge";
-			default:
-				return "Unknown Status";
-		}
 	}
 
 	const startSentry = async () => {
@@ -160,7 +141,7 @@ export function SentryWallet() {
 					<td className="w-fit px-4 py-2">{keyWithOwner.key.toString()}</td>
 					<td className="w-full max-w-[390px] px-4 py-2">{keyWithOwner.owner.toString()}</td>
 					<td className="w-full max-w-[390px] px-4 py-2 text-[#A3A3A3]">
-						{currentStatus ? getStatusString(currentStatus.status) : "Sentry not running"}
+						{currentStatus ? currentStatus.status : "Sentry not running"}
 					</td>
 				</tr>
 			);
