@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "target": "ESNext",
+        "sourceMap": true,
+        "declaration": true,
+        "declarationMap": true,
+        "noEmitOnError": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "noEmit": false,
+        "strict": true,
+        "composite": true
+    },
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

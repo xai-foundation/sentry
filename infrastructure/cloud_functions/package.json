@@ -4,7 +4,6 @@
   "description": "Cloud functions for a Xai Node running on GCP.",
   "main": "build/cloud_functions.js",
   "scripts": {
-    "build": "npm run compile && pnpm run transpile && pnpm run zip",
     "compile": "tsc",
     "transpile": "esbuild --bundle --outfile=./build/cloud_functions.js --platform=node dist/index.js",
     "zip": "cp cloud.package.json build/package.json && zip -r -o ../gcp-nitro-node/cloud_functions.zip build/"

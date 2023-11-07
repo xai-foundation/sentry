@@ -1,6 +1,6 @@
 import {FaCircleCheck} from "react-icons/fa6";
 import {useSetAtom} from "jotai";
-import {drawerStateAtom} from "../../../drawer/DrawerManager.tsx";
+import {drawerStateAtom} from "../../../drawer/DrawerManager.js";
 
 export function BuyKeysSuccess() {
 	const setDrawerState = useSetAtom(drawerStateAtom);

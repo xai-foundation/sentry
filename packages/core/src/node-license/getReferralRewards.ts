@@ -30,6 +30,10 @@ export interface ReferralReward {
  */
 export async function getReferralRewards(fromTimestamp?: number, toTimestamp?: number, buyerAddress?: string, referralAddress?: string, callback?: (logs?: ethers.Log[], from?: BlockTag, to?: BlockTag) => void): Promise<{ [key: string]: ReferralReward }> {
 
+    if (buyerAddress || referralAddress) {
+        throw new Error("Buyer Address and Referral Address, not yet supported.");
+    }
+
     // Get the provider
     const provider = getProvider();
 

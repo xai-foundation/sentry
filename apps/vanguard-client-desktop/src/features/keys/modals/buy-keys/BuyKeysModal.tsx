@@ -1,5 +1,5 @@
 import {AiOutlineClose} from "react-icons/ai";
-import {BuyKeysFlow} from "./BuyKeysFlow.tsx";
+import {BuyKeysFlow} from "./BuyKeysFlow.js";
 import {drawerStateAtom} from "../../../drawer/DrawerManager";
 import {useSetAtom} from "jotai";
 

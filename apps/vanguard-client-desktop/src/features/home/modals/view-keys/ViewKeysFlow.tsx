@@ -4,7 +4,7 @@ import {listNodeLicenses} from "@xai-vanguard-node/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useNavigate} from "react-router-dom";
 import {useSetAtom} from "jotai/index";
-import {drawerStateAtom} from "../../../drawer/DrawerManager.tsx";
+import {drawerStateAtom} from "../../../drawer/DrawerManager.js";
 
 interface ViewKeysFlowProps {
 	setShowContinueInBrowserModal: Dispatch<SetStateAction<boolean>>;
@@ -36,8 +36,10 @@ export function ViewKeysFlow({setShowContinueInBrowserModal}: ViewKeysFlowProps)
 
 		try {
 			const res = await listNodeLicenses(ownerAddress);
+			console.log(res)
 
 			if (res.length >= 1) {
+				setLoading(false);
 				setSuccess(true);
 			} else {
 				setLoading(false);

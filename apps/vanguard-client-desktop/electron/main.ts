@@ -1,7 +1,10 @@
 import { app, BrowserWindow, ipcMain, shell, safeStorage } from 'electron'
+import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import express from 'express';
+
+const isWindows = os.platform() === "win32";
 
 // The built directory structure
 //
@@ -18,6 +21,15 @@ process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.
 let win: BrowserWindow | null
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
+
+const protocolUrl = 'xai-sentry';
+if (process.defaultApp) {
+	if (process.argv.length >= 2) {
+		app.setAsDefaultProtocolClient(protocolUrl, process.execPath, [path.resolve(process.argv[1])]);
+	}
+} else {
+	app.setAsDefaultProtocolClient(protocolUrl);
+}
 
 ipcMain.on('open-external', (_, url) => {
 	void shell.openExternal(url);
@@ -62,7 +74,6 @@ ipcMain.handle('path-join', (_, ...paths) => {
 ipcMain.handle('buffer-from', (_, str, encoding) => {
 	return Buffer.from(str, encoding);
 });
-
 
 function createWindow() {
 	win = new BrowserWindow({
@@ -119,4 +130,43 @@ app.on('ready', () => {
 	server.listen(7555);
 })
 
-app.whenReady().then(createWindow)
+// Windows deep-link
+if (isWindows) {
+	const gotTheLock = app.requestSingleInstanceLock();
+	if (!gotTheLock) {
+		app.quit();
+	} else {
+		app.on('second-instance', (event, commandLine) => {
+			console.log("event:", event);
+
+			// Someone tried to run a second instance, we should focus our window.
+			if (win) {
+				if (win.isMinimized()) win.restore();
+				win.focus();
+			}
+			// the commandLine is array of strings in which last element is deep link url
+			// dialog.showErrorBox('Welcome Back', `You arrived from: ${commandLine.pop()}`);
+			win?.webContents.send("assigned-wallet", commandLine.pop());
+		})
+
+		// Create mainWindow, load the rest of the app, etc...
+		app.whenReady().then(createWindow);
+	}
+} else {
+	// Mac deep-link
+	app.whenReady().then(createWindow);
+	app.on('open-url', (event, url) => {
+		console.log("event:", event);
+
+		const fullProtocol = "xai-sentry://";
+		const instruction = url.slice(fullProtocol.length, url.indexOf("?"));
+
+		switch(instruction) {
+			case "assigned-wallet":
+				const txHash = url.slice(url.indexOf("=") + 1);
+				win?.webContents.send("assigned-wallet", txHash);
+				break;
+		}
+	});
+}
+

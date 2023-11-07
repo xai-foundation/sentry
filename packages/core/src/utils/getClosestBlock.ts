@@ -16,7 +16,6 @@ export default async function getClosestBlock(timestamp: number): Promise<{close
     let maxBlockNumber = await provider.getBlockNumber();
     let closestBlockNumber = Math.floor((maxBlockNumber + minBlockNumber) / 2)
     let closestBlock = await provider.getBlock(closestBlockNumber);
-    let foundExactBlock = false
 
     while (minBlockNumber <= maxBlockNumber) {
         if (!closestBlock) {
@@ -24,7 +23,6 @@ export default async function getClosestBlock(timestamp: number): Promise<{close
         }
 
         if (closestBlock.timestamp === timestamp) {
-            foundExactBlock = true
             break;
         } else if (closestBlock.timestamp > timestamp) {
             maxBlockNumber = closestBlockNumber - 1

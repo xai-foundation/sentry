@@ -1,44 +1,19 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../../packages/tsconfig/tsconfig.vite.json",
   "compilerOptions": {
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "lib": [
-      "ES2020",
-      "DOM",
-      "DOM.Iterable"
-    ],
-    "module": "ESNext",
-    "skipLibCheck": true,
-    /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-    /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "outDir": "dist",
     "paths": {
-      "@xai-vanguard-node/core": ["../../packages/core"],
-      "@xai-vanguard-node/ui": ["../../packages/ui/src"]
+      "@/*": ["./src/*"],
+      "@xai-vanguard-node/*": ["../../packages/*/src"]
     }
   },
-  "include": [
-    "src"
-  ],
   "references": [
     {
-      "path": "./tsconfig.node.json"
+        "path": "../../packages/core/tsconfig.json"
     },
     {
-      "path": "../../packages/core"
-    },
-    {
-      "path": "../../packages/ui"
-    },
+        "path": "../../packages/ui/tsconfig.json"
+    }
   ]
 }
