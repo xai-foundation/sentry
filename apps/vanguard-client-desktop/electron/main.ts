@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell, safeStorage } from 'electron'
+import {app, BrowserWindow, ipcMain, shell, safeStorage} from 'electron'
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
@@ -18,7 +18,7 @@ const isWindows = os.platform() === "win32";
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
 
-let win: BrowserWindow | null
+let win: BrowserWindow | null;
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 
@@ -146,7 +146,9 @@ if (isWindows) {
 			}
 			// the commandLine is array of strings in which last element is deep link url
 			// dialog.showErrorBox('Welcome Back', `You arrived from: ${commandLine.pop()}`);
-			win?.webContents.send("assigned-wallet", commandLine.pop());
+
+			// win?.webContents.send("assigned-wallet", commandLine.pop());
+			handleDeeplink(event, commandLine.pop());
 		})
 
 		// Create mainWindow, load the rest of the app, etc...
@@ -155,18 +157,22 @@ if (isWindows) {
 } else {
 	// Mac deep-link
 	app.whenReady().then(createWindow);
-	app.on('open-url', (event, url) => {
-		console.log("event:", event);
-
-		const fullProtocol = "xai-sentry://";
-		const instruction = url.slice(fullProtocol.length, url.indexOf("?"));
-
-		switch(instruction) {
-			case "assigned-wallet":
-				const txHash = url.slice(url.indexOf("=") + 1);
-				win?.webContents.send("assigned-wallet", txHash);
-				break;
-		}
-	});
+	app.on('open-url', handleDeeplink);
 }
 
+function handleDeeplink(_, url) {
+	const fullProtocol = "xai-sentry://";
+	const instruction = url.slice(fullProtocol.length, url.indexOf("?"));
+	let txHash: string;
+
+	switch (instruction) {
+		case "assigned-wallet":
+			txHash = url.slice(url.indexOf("=") + 1);
+			win?.webContents.send("assigned-wallet", txHash);
+			break;
+		case "unassigned-wallet":
+			txHash = url.slice(url.indexOf("=") + 1);
+			win?.webContents.send("unassigned-wallet", txHash);
+			break;
+	}
+}

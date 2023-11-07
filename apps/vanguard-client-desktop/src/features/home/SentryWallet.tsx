@@ -17,6 +17,7 @@ import {AssignKeysFromNewWallet} from "@/components/AssignKeysFromNewWallet";
 import {useListOwnersForOperator} from "@/hooks/useListOwnersForOperator";
 import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
 import {WalletConnectedModal} from "@/features/home/modals/WalletConnectedModal";
+import {WalletDisconnectedModal} from "@/features/home/modals/WalletDisconnectedModal";
 import {useQueryClient} from "react-query";
 
 type OperatorRuntimeFunction = () => Promise<void>
@@ -26,7 +27,6 @@ export function SentryWallet() {
 	const queryClient = useQueryClient();
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
-
 	const {loading: isOperatorLoading, publicKey: operatorAddress, signer} = useOperator();
 	const {isLoading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
 	const {isLoading: isListNodeLicensesLoading, data: listNodeLicensesData} = useListNodeLicenses(listOwnersData?.owners);
@@ -34,10 +34,17 @@ export function SentryWallet() {
 
 	const [copied, setCopied] = useState<boolean>(false);
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
+	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 
+	// assign wallet
 	(window as any).deeplinks?.assignedWallet((_event, txHash) => {
 		setAssignedWallet({show: true, txHash});
+	});
+
+	// un-assign wallet
+	(window as any).deeplinks?.unassignedWallet((_event, txHash) => {
+		setUnassignedWallet({show: true, txHash});
 	});
 
 	// dropdown state
@@ -150,6 +157,7 @@ export function SentryWallet() {
 
 	function onCloseWalletConnectedModal() {
 		setAssignedWallet({show: false, txHash: ""});
+		setUnassignedWallet({show: false, txHash: ""});
 		void queryClient.invalidateQueries({queryKey: ["ownersForOperator", operatorAddress]});
 	}
 
@@ -161,6 +169,13 @@ export function SentryWallet() {
 					onClose={onCloseWalletConnectedModal}
 				/>
 			)}
+
+				{unassignedWallet.show && (
+					<WalletDisconnectedModal
+						txHash={unassignedWallet.txHash}
+						onClose={onCloseWalletConnectedModal}
+					/>
+				)}
 
 			<div className="w-full h-full flex flex-col">
 				<div
@@ -357,10 +372,10 @@ export function SentryWallet() {
 
 									<button
 										disabled={selectedWallet === null}
-										onClick={() => window.electron.openExternal("https://xai.games/")}
+										onClick={() => window.electron.openExternal(`http://localhost:7555/unassign-wallet/${operatorAddress}`)}
 										className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] ${selectedWallet === null ? 'text-[#D4D4D4] cursor-not-allowed' : ""} px-4 py-2`}
 									>
-										Unassign this wallet
+										Un-assign this wallet
 										<BiLinkExternal className="h-[15px]"/>
 									</button>
 								</div>
