@@ -55,6 +55,9 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     // Emissions Schedule determining how much should be emitted each challenge
     uint256[] public emissionSchedule;
 
+    // This value keeps track of how many token are not ye tminted but are allocated by the referee. This should be used in calculating the total supply for emissions
+    uint256 private _allocatedTokens;
+
     // Struct for the submissions
     struct Submission {
         bool submitted;
@@ -98,14 +101,14 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     /**
-     * @notice Returns the combined total supply of esXai and Xai.
-     * @dev This function fetches the total supply of esXai and Xai tokens and returns their sum.
-     * @return uint256 The combined total supply of esXai and Xai.
+     * @notice Returns the combined total supply of esXai Xai, and the unminted allocated tokens.
+     * @dev This function fetches the total supply of esXai, Xai, and unminted allocated tokens and returns their sum.
+     * @return uint256 The combined total supply of esXai, Xai, and the unminted allocated tokens.
      */
     function getCombinedTotalSupply() public view returns (uint256) {
         uint256 esXaiSupply = esXai(esXaiAddress).totalSupply();
         uint256 xaiSupply = Xai(xaiAddress).totalSupply();
-        return esXaiSupply + xaiSupply;
+        return esXaiSupply + xaiSupply + _allocatedTokens;
     }
 
     /**
@@ -252,6 +255,37 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
      */
     function getKycWalletCount() public view returns (uint256) {
         return kycWallets.length();
+    }
+
+    /**
+     * @notice Calculate the daily emissions of Xai tokens.
+     * @dev This function calculates the daily emissions of Xai tokens based on the current total supply and the maximum supply.
+     * The emission rate is halved for every doubling of the total supply over half of the maximum supply.
+     * The base emission rate is calculated as the maximum supply divided by the product of 5 and 365 (representing 5 years).
+     * If the total supply is less than or equal to half of the maximum supply, the base emission rate is returned.
+     * If the total supply is more than half of the maximum supply, the base emission rate is halved for each doubling of the total supply over half of the maximum supply.
+     * For example, given a maximum supply of 2,500,000,000 tokens:
+     * - If the total supply is 0 (≤ 1,250,000,000), the daily emission is 1,712,328.7671232900 (2,500,000,000 / 2).
+     * - If the total supply is 1,875,000,000 (halfway between 1,250,000,000 and 2,500,000,000), the daily emission is halved to 684,932.
+     * - If the total supply is 2,125,000,000 (halfway between 1,875,000,000 and 2,500,000,000), the daily emission is halved again to 342,466.
+     * @return The daily emissions of Xai tokens.
+     */
+    function calculateDailyEmissions() public view returns (uint256) {
+        uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
+        uint256 totalSupply = getCombinedTotalSupply();
+        uint256 baseEmission = maxSupply / (5 * 365); // Emission over 5 years
+        uint256 baseSupply = maxSupply / 2;
+        uint256 supplyDifference = totalSupply - baseSupply;
+
+        if (totalSupply <= baseSupply) {
+            return baseEmission;
+        } else {
+            // Calculate the number of halving periods that have passed
+            uint256 periods = supplyDifference / (baseSupply / 2);
+            
+            // Halve the base emission for each period that has passed
+            return baseEmission / (2 ** periods);
+        }
     }
 
     /**
