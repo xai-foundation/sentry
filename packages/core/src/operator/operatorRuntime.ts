@@ -11,6 +11,7 @@ export enum NodeLicenseStatus {
 }
 
 export interface NodeLicenseInformation {
+    ownerPublicKey: string
     status: NodeLicenseStatus;
 }
 
@@ -63,6 +64,7 @@ export async function operatorRuntime(
         const licensesOfOwner = await listNodeLicenses(owner, (tokenId) => {
             logFunction(`Fetched node license ${tokenId.toString()} for owner ${owner}.`);
             nodeLicenseStatusMap.set(tokenId, {
+                ownerPublicKey: owner,
                 status: NodeLicenseStatus.WAITING_IN_QUEUE,
             });
             safeStatusCallback();
@@ -78,11 +80,13 @@ export async function operatorRuntime(
     for (const nodeLicenseId of nodeLicenseIds) {
         logFunction(`Fetching mint timestamp for nodeLicenseId ${nodeLicenseId}.`);
         nodeLicenseStatusMap.set(nodeLicenseId, {
+            ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
             status: NodeLicenseStatus.FETCHING_MINT_TIMESTAMP,
         });
         safeStatusCallback();
         mintTimestamps[nodeLicenseId.toString()] = await getMintTimestamp(nodeLicenseId);
         nodeLicenseStatusMap.set(nodeLicenseId, {
+            ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
             status: NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE,
         });
         safeStatusCallback();
@@ -101,6 +105,7 @@ export async function operatorRuntime(
         // Update the status of each license to 'waiting in queue'
         nodeLicenseIds.forEach(nodeLicenseId => {
             nodeLicenseStatusMap.set(nodeLicenseId, {
+                ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
                 status: NodeLicenseStatus.WAITING_IN_QUEUE,
             });
         });
@@ -111,12 +116,14 @@ export async function operatorRuntime(
 
             // check the nodeLicense is eligible to submit to this challenge, it must have been minted before the challenge was opened.
             nodeLicenseStatusMap.set(nodeLicenseId, {
+                ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
                 status: NodeLicenseStatus.CHECKING_MINT_TIMESTAMP_ELIGIBILITY,
             });
             safeStatusCallback();
             if (challenge.createdTimestamp <= mintTimestamps[nodeLicenseId.toString()]) {
                 logFunction(`nodeLicenseId ${nodeLicenseId} is not eligible for challenge ${challengeNumber}.`);
                 nodeLicenseStatusMap.set(nodeLicenseId, {
+                    ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
                     status: NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE,
                 });
                 safeStatusCallback();
@@ -125,6 +132,7 @@ export async function operatorRuntime(
 
             // check to see if this nodeLicense would be eligible for a claim, if they are not, then go to next license.
             nodeLicenseStatusMap.set(nodeLicenseId, {
+                ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
                 status: NodeLicenseStatus.CHECKING_IF_ELIGIBLE_FOR_PAYOUT,
             });
             safeStatusCallback();
@@ -132,6 +140,7 @@ export async function operatorRuntime(
             if (!eligibleForClaim) {
                 logFunction(`nodeLicenseId ${nodeLicenseId} is not going to receive a reward for entering the challenge ${challengeNumber}, thus not submmiting an assertion.`);
                 nodeLicenseStatusMap.set(nodeLicenseId, {
+                    ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
                     status: NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE,
                 });
                 safeStatusCallback();
@@ -143,6 +152,7 @@ export async function operatorRuntime(
             if (submitted) {
                 logFunction(`nodeLicenseId ${nodeLicenseId} has already submitted for challenge ${challengeNumber}.`);
                 nodeLicenseStatusMap.set(nodeLicenseId, {
+                    ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
                     status: NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE,
                 });
                 safeStatusCallback();
@@ -154,6 +164,7 @@ export async function operatorRuntime(
             await submitAssertionToChallenge(nodeLicenseId, challengeNumber, challenge.assertionStateRoot, signer);
             logFunction(`Submitted claim for nodeLicenseId ${nodeLicenseId} to challenge ${challengeNumber}.`);
             nodeLicenseStatusMap.set(nodeLicenseId, {
+                ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
                 status: NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE,
             });
             safeStatusCallback();
