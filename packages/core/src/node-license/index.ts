@@ -9,3 +9,4 @@ export * from "./getMintTimestamp.js";
 export * from "./listenForNewLicenses.js";
 export * from "./getOwnerOfNodeLicense.js";
 export * from "./getOperatorsForNodeLicense.js";
+export * from "./setOrAddPricingTiers.js";

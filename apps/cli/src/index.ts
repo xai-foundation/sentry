@@ -38,6 +38,7 @@ import { getReferralRewards } from './commands/licenses/get-referral-rewards.js'
 import { getReferralDiscountAndRewardPercentages } from './commands/licenses/get-referral-discount-and-reward-percentages.js';
 import { setReferralDiscountAndRewardPercentages } from './commands/licenses/set-referral-discount-and-reward-percentages.js';
 import { bootOperator } from './commands/operator-control/operator-runtime.js';
+import { setOrAddPricingTiersCommand } from './commands/licenses/set-or-add-pricing-tiers.js';
 
 const cli = new Vorpal();
 
@@ -81,6 +82,7 @@ getReferralRewards(cli);
 getReferralDiscountAndRewardPercentages(cli);
 setReferralDiscountAndRewardPercentages(cli);
 bootOperator(cli);
+setOrAddPricingTiersCommand(cli);
 
 cli
     .delimiter('vanguard-node$')
