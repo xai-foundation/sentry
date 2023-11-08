@@ -8,7 +8,7 @@ export const nodeLicenseStatusMapAtom = atom<NodeLicenseStatusMap>(new Map<bigin
 export const runtimeLogsAtom = atom<string[]>([]);
 
 export function useOperatorRuntime() {
-	const {signer} = useOperator();
+	const {getSigner} = useOperator();
 	const [sentryRunning, setSentryRunning] = useAtom(sentryRunningAtom);
 	const [nodeLicenseStatusMap, setNodeLicenseStatusMap] = useAtom(nodeLicenseStatusMapAtom);
 	const [runtimeLogs, setRuntimeLogs] = useAtom(runtimeLogsAtom);
@@ -24,11 +24,11 @@ export function useOperatorRuntime() {
 	}
 
 	async function startRuntime() {
-		if (signer && !sentryRunning && stop === undefined) {
+		if (getSigner && !sentryRunning && stop === undefined) {
 			setSentryRunning(true);
 
 			// @ts-ignore
-			stop = await operatorRuntime(signer, setNodeLicenseStatusMap, writeLog);
+			stop = await operatorRuntime(getSigner(), setNodeLicenseStatusMap, writeLog);
 		}
 	}
 
@@ -45,7 +45,7 @@ export function useOperatorRuntime() {
 	}
 
 	return {
-		startRuntime: signer && startRuntime,
+		startRuntime: getSigner && startRuntime,
 		stopRuntime: stop && stopRuntime,
 		sentryRunning,
 		nodeLicenseStatusMap,
