@@ -3,7 +3,7 @@ import {BuyKeysFlow} from "./BuyKeysFlow.js";
 import {drawerStateAtom} from "../../../drawer/DrawerManager";
 import {useSetAtom} from "jotai";
 
-export function BuyKeysModal() {
+export function BuyKeysDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 
 	return (

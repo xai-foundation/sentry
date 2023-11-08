@@ -4,7 +4,7 @@ import {IoMdCloseCircle} from "react-icons/io";
 import {useSetAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../../../drawer/DrawerManager";
 
-export function ActionsRequiredBuyModal() {
+export function ActionsRequiredBuyDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 
 	return (

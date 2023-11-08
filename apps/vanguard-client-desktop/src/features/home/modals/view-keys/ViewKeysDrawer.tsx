@@ -5,7 +5,7 @@ import {drawerStateAtom} from "../../../drawer/DrawerManager";
 import {ContinueInBrowserModal} from "../ContinueInBrowserModal.js";
 import {useState} from "react";
 
-export function ViewKeysModal() {
+export function ViewKeysDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const [isOpen, setIsOpen] = useState<boolean>(false)
 

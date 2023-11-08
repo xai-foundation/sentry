@@ -5,13 +5,15 @@ import {useOperator} from "../../operator";
 import {ChangeEvent, useEffect, useState} from "react";
 import {BiLoaderAlt} from "react-icons/bi";
 import {useStorage} from "../../storage";
+import {ImportSentryAlertModal} from "@/features/home/modals/ImportSentryAlertModal";
 
-export function ImportSentryModal() {
+export function ImportSentryDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {loading, importPrivateKey} = useOperator();
 	const [filePath, setFilePath] = useState('');
 	const {getFilePath} = useStorage();
 	const [inputValue, setInputValue] = useState('');
+	const [showModal, setShowModal] = useState<boolean>(false);
 
 	useEffect(() => {
 		const fetchFilePath = async () => {
@@ -25,16 +27,26 @@ export function ImportSentryModal() {
 		setInputValue(event.target.value);
 	};
 
-	const handleSetData = () => {
+	const handleButton = () => {
 		if (inputValue !== "") {
-			importPrivateKey(inputValue).then(() => {
-				setDrawerState(null)
-			});
+			setShowModal(true);
 		}
+	}
+
+	const handleSetData = () => {
+		importPrivateKey(inputValue).then(() => {
+			setDrawerState(null)
+		});
 	};
 
 	return (
 		<div>
+			{showModal && (
+				<ImportSentryAlertModal
+					setShowModal={setShowModal}
+					onSuccess={handleSetData}
+				/>
+			)}
 			<div
 				className="absolute top-0 right-0 w-[30rem] h-screen flex flex-col justify-start items-center border border-gray-200 z-20 bg-white">
 				<div
@@ -75,7 +87,7 @@ export function ImportSentryModal() {
 								/>
 
 								<button
-									onClick={handleSetData}
+									onClick={handleButton}
 									className="w-full flex justify-center items-center gap-1 text-[15px] text-white bg-[#F30919] font-semibold mt-3 px-6 py-3"
 								>
 									Confirm import

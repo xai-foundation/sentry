@@ -6,12 +6,12 @@ import {IconLabel} from "../../../../components/IconLabel";
 import {SquareCard} from "../../../../components/SquareCard";
 import {SentryActiveCard} from "./SentryActiveCard";
 import {InsufficientFundsCard} from "./InsufficientFundsCard";
-import {AssignedKeysCard} from "./AssignedKeysCard";
+import {AssignedKeysDrawer} from "./AssignedKeysDrawer";
 import {useEffect, useState} from "react";
 import {KycRequiredCard} from "./KycRequiredCard";
 import {BarStepItem} from "../../../../components/BarStepItem";
 
-export function ActionsRequiredNotAccruingModal() {
+export function ActionsRequiredNotAccruingDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 
 	// const {isLoading, data: balance, error} = useBalance("0xB065D33B024F87c07E7AaC14E87b5d76e3162647"); // spencer test wallet
@@ -110,7 +110,7 @@ export function ActionsRequiredNotAccruingModal() {
 						</BarStepItem>
 
 						<BarStepItem lastItem={true}>
-							<AssignedKeysCard
+							<AssignedKeysDrawer
 								keys={testState.keys}
 								setKeys={() => setTestState((_state) => {
 									return {..._state, keys: true}

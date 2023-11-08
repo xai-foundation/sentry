@@ -72,7 +72,20 @@ export function SentryWallet() {
 	}
 
 	function copySelectedWallet() {
-		void navigator.clipboard.writeText(selectedWallet!);
+		if (selectedWallet && navigator.clipboard) {
+			navigator.clipboard.writeText(selectedWallet)
+				.then(() => {
+					setCopied(true);
+					setTimeout(() => {
+						setCopied(false);
+					}, 2000);
+				})
+				.catch(err => {
+					console.error('Unable to copy to clipboard: ', err);
+				});
+		} else {
+			console.error('Clipboard API not available, unable to copy to clipboard');
+		}
 	}
 
 	const startSentry = async () => {
