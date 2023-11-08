@@ -186,7 +186,7 @@ export function SentryWallet() {
 	}
 
 	function getEthFundsTextColor(): string {
-		if (balance?.wei >= recommendedValue) {
+		if (balance?.wei !== undefined && balance.wei >= recommendedValue) {
 			return "text-[#38A349]";
 		}
 

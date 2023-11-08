@@ -8,7 +8,7 @@ import {BiLoaderAlt} from "react-icons/bi";
 
 export function ExportSentryDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const {loading, privateKey} = useOperator();
+	const {isLoading, privateKey} = useOperator();
 	const [copied, setCopied] = useState<boolean>(false);
 
 	function copyPrivateKey() {
@@ -54,7 +54,7 @@ export function ExportSentryDrawer() {
 					</div>
 				</div>
 
-				{loading ? (
+				{isLoading ? (
 					<div
 						className="absolute top-0 bottom-0 left-0 right-0 m-auto flex flex-col justify-center items-center gap-4">
 						<BiLoaderAlt className="animate-spin" color={"#A3A3A3"} size={32}/>

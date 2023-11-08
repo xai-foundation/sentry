@@ -4,7 +4,7 @@ import {useStorage} from "../storage";
 import {AiOutlineClose} from "react-icons/ai";
 
 export function Operator() {
-	const {loading, privateKey, importPrivateKey, error} = useOperator();
+	const {isLoading, privateKey, importPrivateKey, error} = useOperator();
 	const {getFilePath} = useStorage();
 	const [inputValue, setInputValue] = useState('');
 	const [filePath, setFilePath] = useState('');
@@ -84,7 +84,7 @@ export function Operator() {
 
 			<div className="w-full flex justify-between items-center gap-4 p-4">
 				<div>
-					{loading
+					{isLoading
 						? <p className="text-gray-500">Loading...</p>
 						: <p className="text-gray-700">Embedded Operator: {privateKey}</p>
 					}

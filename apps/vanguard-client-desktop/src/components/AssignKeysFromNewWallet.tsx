@@ -8,7 +8,7 @@ import {AssignWalletTransactionInProgressModal} from "../features/home/modals/As
 
 export function AssignKeysFromNewWallet() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const {loading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
+	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const [showInProgress, setShowInProgress] = useState(false);
 	// const [assignedWallet, setAssignedWallet] = useState<{show: boolean, txHash: string}>({show: false, txHash: ""});
 	//
