@@ -1,4 +1,4 @@
-import classNames from "classnames"
+import classNames from "classnames";
 import {atom, useAtomValue} from "jotai";
 import {ActionsRequiredBuyDrawer} from "../home/modals/actions-required/ActionsRequiredBuyDrawer";
 import {BuyKeysDrawer} from "../keys/modals/buy-keys/BuyKeysDrawer";

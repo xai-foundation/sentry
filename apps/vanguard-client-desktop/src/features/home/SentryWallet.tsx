@@ -19,6 +19,12 @@ import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
 import {WalletConnectedModal} from "@/features/home/modals/WalletConnectedModal";
 import {WalletDisconnectedModal} from "@/features/home/modals/WalletDisconnectedModal";
 import {useQueryClient} from "react-query";
+import {useBalance} from "@/hooks/useBalance";
+import {ethers} from "ethers";
+import classNames from "classnames";
+
+// TODO -> replace with dynamic value later
+const recommendedValue = ethers.parseEther("0.005");
 
 type OperatorRuntimeFunction = () => Promise<void>
 
@@ -27,7 +33,9 @@ export function SentryWallet() {
 	const queryClient = useQueryClient();
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
-	const {loading: isOperatorLoading, publicKey: operatorAddress, signer} = useOperator();
+	const {isLoading: isOperatorLoading, publicKey: operatorAddress, signer} = useOperator();
+	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
+
 	const {isLoading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
 	const {isLoading: isListNodeLicensesLoading, data: listNodeLicensesData} = useListNodeLicenses(listOwnersData?.owners);
 	const loading = isOperatorLoading || isListOwnersLoading || isListNodeLicensesLoading;
@@ -36,6 +44,7 @@ export function SentryWallet() {
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
 	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
+	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
 
 	// assign wallet
 	(window as any).deeplinks?.assignedWallet((_event, txHash) => {
@@ -47,12 +56,14 @@ export function SentryWallet() {
 		setUnassignedWallet({show: true, txHash});
 	});
 
-	// dropdown state
-	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const stopFunction = useRef<OperatorRuntimeFunction>();
 	const [sentryRunning, setSentryRunning] = useState<boolean>(false);
 	const [status, setStatus] = useState<NodeLicenseStatusMap>();
+
+	function onRefreshEthBalance() {
+		queryClient.invalidateQueries({queryKey: ["balance", operatorAddress]});
+	}
 
 	function copyPublicKey() {
 		if (operatorAddress && navigator.clipboard) {
@@ -174,6 +185,14 @@ export function SentryWallet() {
 		void queryClient.invalidateQueries({queryKey: ["ownersForOperator", operatorAddress]});
 	}
 
+	function getEthFundsTextColor(): string {
+		if (balance?.wei >= recommendedValue) {
+			return "text-[#38A349]";
+		}
+
+		return "text-[#F59E28]";
+	}
+
 	return (
 		<>
 			{assignedWallet.show && (
@@ -198,11 +217,14 @@ export function SentryWallet() {
 						<div className="flex flex-row items-center gap-2">
 							<h2 className="text-lg font-semibold">Sentry Wallet</h2>
 
+							{balance?.wei === 0n && (
+								<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
+									No ETH
+								</p>
+							)}
+
 							{sentryRunning ? (
 								<>
-									<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
-										No ETH
-									</p>
 									<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
 										No Keys Assigned
 									</p>
@@ -301,14 +323,21 @@ export function SentryWallet() {
 						<div className="flex justify-center items-center gap-4">
 							<div className="flex justify-center items-center gap-1">
 								<FaEthereum className="w-6 h-6"/>
-								<p className="text-[#F29E0D] text-2xl font-semibold">0 ETH</p>
+								<p className={classNames(getEthFundsTextColor(), "text-2xl font-semibold")}>{(balance == undefined) ? "" : (balance.ethString === "0.0" ? "0" : balance.ethString)} ETH</p>
 							</div>
-							<a
-								onClick={() => alert("nothing yet")}
-								className="flex items-center text-[15px] text-[#F30919] gap-1 cursor-pointer"
-							>
-								<MdRefresh/> Refresh
-							</a>
+							{isBalanceLoading ? (
+								<span className="flex items-center text-[15px] text-[#A3A3A3] select-none"
+								>
+									Refreshing
+								</span>
+							) : (
+								<a
+									onClick={onRefreshEthBalance}
+									className="flex items-center text-[15px] text-[#F30919] gap-1 cursor-pointer select-none"
+								>
+									<MdRefresh/> Refresh
+								</a>
+							)}
 						</div>
 					</div>
 

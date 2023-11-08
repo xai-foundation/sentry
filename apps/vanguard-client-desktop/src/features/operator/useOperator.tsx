@@ -9,7 +9,7 @@ interface IUseOperatorResponse {
     importPrivateKey: (privateKey: string) => Promise<void>
     // regenerate: () => Promise<void>
     error?: Error;
-    loading: boolean;
+    isLoading: boolean;
 }
 
 /**
@@ -134,7 +134,7 @@ export function useOperator(): IUseOperatorResponse {
 
     return {
         error,
-        loading,
+        isLoading: loading,
         signer: signerRef?.current,
         importPrivateKey,
         privateKey,
