@@ -6,7 +6,7 @@ import {PiCopy} from "react-icons/pi";
 import {useState} from "react";
 import {BiLoaderAlt} from "react-icons/bi";
 
-export function ExportSentryModal() {
+export function ExportSentryDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {loading, privateKey} = useOperator();
 	const [copied, setCopied] = useState<boolean>(false);

@@ -9,7 +9,7 @@ interface AssignedKeysCardProps {
 	setKeys: () => void
 }
 
-export function AssignedKeysCard({keys, setKeys}: AssignedKeysCardProps) {
+export function AssignedKeysDrawer({keys, setKeys}: AssignedKeysCardProps) {
 	function onSetKeys() {
 		window.electron.openExternal("http://localhost:7555/assign-wallet");
 		setKeys();
