@@ -1,15 +1,15 @@
-import { useSetAtom} from "jotai";
+import {useSetAtom} from "jotai";
 import {drawerStateAtom} from "../../../drawer/DrawerManager";
 import {AiFillCheckCircle, AiFillWarning, AiOutlineClose} from "react-icons/ai";
 import {IoMdCloseCircle} from "react-icons/io";
-import {IconLabel} from "../../../../components/IconLabel";
-import {SquareCard} from "../../../../components/SquareCard";
+import {IconLabel} from "@/components/IconLabel";
+import {SquareCard} from "@/components/SquareCard";
 import {SentryActiveCard} from "./SentryActiveCard";
 import {InsufficientFundsCard} from "./InsufficientFundsCard";
 import {AssignedKeysDrawer} from "./AssignedKeysDrawer";
 import {useEffect, useState} from "react";
 import {KycRequiredCard} from "./KycRequiredCard";
-import {BarStepItem} from "../../../../components/BarStepItem";
+import {BarStepItem} from "@/components/BarStepItem";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 
 export function ActionsRequiredNotAccruingDrawer() {

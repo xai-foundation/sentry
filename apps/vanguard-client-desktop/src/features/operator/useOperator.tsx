@@ -1,9 +1,12 @@
 import { ethers } from "ethers";
 import { useState, useEffect, useRef } from 'react';
 import { createMnemonic, getSignerFromMnemonic, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
+import { atom, useAtom } from "jotai";
+
+export const privateKeyAtom = atom<string | undefined>(undefined);
 
 interface IUseOperatorResponse {
-    signer?: ethers.Signer;
+    getSigner?: () => ethers.Signer;
     privateKey?: string;
     publicKey?: string;
     importPrivateKey: (privateKey: string) => Promise<void>
@@ -12,15 +15,16 @@ interface IUseOperatorResponse {
     isLoading: boolean;
 }
 
+let startupRunning = false;
+
 /**
- * Custom hook
+ * Hook for working with the locally saved operator
  * @param props - The props for the hook.
  * @returns The response from the hook.
  */
 export function useOperator(): IUseOperatorResponse {
 
-    const [loading, setLoading] = useState(true);
-    const [privateKey, setPrivateKey] = useState<string>();
+    const [privateKey, setPrivateKey] = useAtom(privateKeyAtom);
     const [publicKey, setPublicKey] = useState<string>();
     const signerRef = useRef<any>();
     const [error, setError] = useState<Error>();
@@ -33,8 +37,6 @@ export function useOperator(): IUseOperatorResponse {
     useEffect(() => {
 
         async function startup() {
-
-            setLoading(true);
 
             const path = await getOperatorFilePath();
 
@@ -51,12 +53,11 @@ export function useOperator(): IUseOperatorResponse {
                 const decryptedPrivateKey: string = await window.ipcRenderer.invoke('decrypt-string', data);
                 setPrivateKey(decryptedPrivateKey);
 
-                // get the signer from the decrypter private key
-                const {signer} = getSignerFromPrivateKey(decryptedPrivateKey);
-                signerRef.current = signer;
-                setPublicKey(await signer.getAddress())
+                // // get the signer from the decrypter private key
+                // const {signer} = getSignerFromPrivateKey(decryptedPrivateKey);
+                // signerRef.current = signer;
+                // setPublicKey(await signer.getAddress())
 
-                setLoading(false);
                 return;
             }
 
@@ -83,59 +84,59 @@ export function useOperator(): IUseOperatorResponse {
             const {phrase} = createMnemonic();
 
             // get the private key from index 0 of the mnemonic
-            const { privateKey, signer, address } = await getSignerFromMnemonic(phrase, 0);
+            const { privateKey } = await getSignerFromMnemonic(phrase, 0);
             setPrivateKey(privateKey);
-            setPublicKey(address);
-
-            // set the signer on the ref
-            signerRef.current = signer;
 
             // encrypt the private key
             const encrypted: Buffer = await window.ipcRenderer.invoke('encrypt-string', privateKey);
 
             // save to disk
             await window.ipcRenderer.invoke('fs-writeFileSync', path, encrypted)
-
-            setLoading(false);
         }
 
-            startup()
-                .catch(setError)
+
+            if (!privateKey && !startupRunning) {
+                startupRunning = true;
+                startup()
+                    .catch(setError)
+                    .finally(() => {
+                        startupRunning = false;
+                    })
+            }
+
     }, [window.ipcRenderer])
 
-    const importPrivateKey = async (privateKey: string) => {
+    useEffect(() => {
+        if (privateKey) {
+            const {signer, address} = getSignerFromPrivateKey(privateKey);
+            signerRef.current = signer;
+            setPublicKey(address)
+        }
+    }, [privateKey])
 
-        // set loading to true
-        setLoading(true);
+    const importPrivateKey = async (_privateKey: string) => {
 
         const path = await getOperatorFilePath();
 
         try {
-            // get the signer from the private key
-            const { signer } = getSignerFromPrivateKey(privateKey);
-
-            // set the signer on the ref
-            signerRef.current = signer;
-
             // encrypt the private key
-            const encrypted: Buffer = await window.ipcRenderer.invoke('encrypt-string', privateKey);
+            const encrypted: Buffer = await window.ipcRenderer.invoke('encrypt-string', _privateKey);
 
             // save to disk
             await window.ipcRenderer.invoke('fs-writeFileSync', path, encrypted)
 
+            setPrivateKey(_privateKey);
+
         } catch (error) {
             setError(error as Error);
-        } finally {
-            // set loading to false
-            setLoading(false);
         }
     };
 
 
     return {
         error,
-        isLoading: loading,
-        signer: signerRef?.current,
+        isLoading: !privateKey || !publicKey || !signerRef.current,
+        getSigner: () => signerRef?.current,
         importPrivateKey,
         privateKey,
         publicKey

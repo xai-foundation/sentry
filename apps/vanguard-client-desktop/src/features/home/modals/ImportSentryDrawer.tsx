@@ -10,6 +10,7 @@ import {ImportSentryAlertModal} from "@/features/home/modals/ImportSentryAlertMo
 export function ImportSentryDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {isLoading, importPrivateKey} = useOperator();
+	// @ts-ignore
 	const [filePath, setFilePath] = useState('');
 	const {getFilePath} = useStorage();
 	const [inputValue, setInputValue] = useState('');
@@ -21,7 +22,7 @@ export function ImportSentryDrawer() {
 			setFilePath(path);
 		};
 		void fetchFilePath();
-	}, [filePath, getFilePath]);
+	}, [getFilePath]);
 
 	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setInputValue(event.target.value);
