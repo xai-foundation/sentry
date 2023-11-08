@@ -34,7 +34,7 @@ export function SentryWallet() {
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
 
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress, signer} = useOperator();
-	const {isLoading: isBalanceLoading, data: balance} = useBalance(operatorAddress);
+	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
 
 	const {isLoading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
 	const {isLoading: isListNodeLicensesLoading, data: listNodeLicensesData} = useListNodeLicenses(listOwnersData?.owners);
@@ -53,6 +53,10 @@ export function SentryWallet() {
 	const stopFunction = useRef<OperatorRuntimeFunction>();
 	const [sentryRunning, setSentryRunning] = useState<boolean>(false);
 	const [status, setStatus] = useState<NodeLicenseStatusMap>();
+
+	function onRefreshEthBalance() {
+		queryClient.invalidateQueries({queryKey: ["balance", operatorAddress]});
+	}
 
 	function copyPublicKey() {
 		if (operatorAddress && navigator.clipboard) {
@@ -185,11 +189,14 @@ export function SentryWallet() {
 						<div className="flex flex-row items-center gap-2">
 							<h2 className="text-lg font-semibold">Sentry Wallet</h2>
 
+							{balance?.wei === 0n && (
+								<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
+									No ETH
+								</p>
+							)}
+
 							{sentryRunning ? (
 								<>
-									<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
-										No ETH
-									</p>
 									<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
 										No Keys Assigned
 									</p>
@@ -288,14 +295,21 @@ export function SentryWallet() {
 						<div className="flex justify-center items-center gap-4">
 							<div className="flex justify-center items-center gap-1">
 								<FaEthereum className="w-6 h-6"/>
-								<p className={classNames(getEthFundsTextColor(), "text-2xl font-semibold")}>{(isBalanceLoading || balance == undefined) ? "" : (balance.ethString === "0.0" ? "0" : balance.ethString)} ETH</p>
+								<p className={classNames(getEthFundsTextColor(), "text-2xl font-semibold")}>{(balance == undefined) ? "" : (balance.ethString === "0.0" ? "0" : balance.ethString)} ETH</p>
 							</div>
-							<a
-								onClick={() => alert("nothing yet")}
-								className="flex items-center text-[15px] text-[#F30919] gap-1 cursor-pointer"
-							>
-								<MdRefresh/> Refresh
-							</a>
+							{isBalanceLoading ? (
+								<span className="flex items-center text-[15px] text-[#A3A3A3] select-none"
+								>
+									Refreshing
+								</span>
+							) : (
+								<a
+									onClick={onRefreshEthBalance}
+									className="flex items-center text-[15px] text-[#F30919] gap-1 cursor-pointer select-none"
+								>
+									<MdRefresh/> Refresh
+								</a>
+							)}
 						</div>
 					</div>
 
