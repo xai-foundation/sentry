@@ -7,8 +7,6 @@ interface ImportSentryAlertModalProps {
 }
 
 export function RemoveWalletModal({setShowModal, onSuccess}: ImportSentryAlertModalProps) {
-
-
 	return (
 		<div
 			className="absolute top-0 right-0 left-0 bottom-0 m-auto w-auto h-auto flex flex-col justify-start items-center z-30">
@@ -30,7 +28,7 @@ export function RemoveWalletModal({setShowModal, onSuccess}: ImportSentryAlertMo
 						You will stop tracking all esXAI accrued on this wallet
 					</p>
 
-					<div className="flex gap-8 my-4">
+					<div className="flex gap-8 mt-4">
 						<button
 							onClick={() => onSuccess()}
 							className="w-fit h-auto text-[15px] text-[#F30919] px-4 py-3 font-semibold"
@@ -44,7 +42,6 @@ export function RemoveWalletModal({setShowModal, onSuccess}: ImportSentryAlertMo
 							No, take me back
 						</button>
 					</div>
-
 				</div>
 			</div>
 		</div>

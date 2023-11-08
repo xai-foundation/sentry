@@ -22,13 +22,13 @@ export function ImportSentryAlertModal({setShowModal, onSuccess}: ImportSentryAl
 				<div className="w-full h-full flex flex-col justify-center items-center gap-2">
 					<AiFillWarning className="w-16 h-16 text-[#F59E28]"/>
 					<p className="text-[15px] font-semibold">
-						Are you sure you want to connect a new Sentry Wallet?
+						Are you sure you want to import a new Sentry Wallet?
 					</p>
 					<p className="text-[#525252] text-[15px]">
-						Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+						Your old Sentry Wallet will be overwritten
 					</p>
 
-					<div className="flex gap-8 my-4">
+					<div className="flex gap-8 mt-4">
 						<button
 							onClick={() => onSuccess()}
 							className="w-fit h-auto text-[15px] text-[#F30919] px-4 py-3 font-semibold"
@@ -42,7 +42,6 @@ export function ImportSentryAlertModal({setShowModal, onSuccess}: ImportSentryAl
 							No, take me back
 						</button>
 					</div>
-
 				</div>
 			</div>
 		</div>

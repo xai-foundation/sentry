@@ -38,14 +38,14 @@ export function Demo() {
 			{showImportSentryAlertModal && (
 				<ImportSentryAlertModal
 					setShowModal={setShowImportSentryAlertModal}
-					onSuccess={() => alert("lol")}
+					onSuccess={() => alert("imported sentry!")}
 				/>
 			)}
 
 			{showRemoveWalletModal && (
 				<RemoveWalletModal
 					setShowModal={setShowRemoveWalletModal}
-					onSuccess={() => alert("lol")}
+					onSuccess={() => alert("removed wallet!")}
 				/>
 			)}
 
