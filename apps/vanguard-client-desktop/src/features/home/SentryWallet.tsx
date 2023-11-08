@@ -202,17 +202,17 @@ export function SentryWallet() {
 
 							{balance?.wei === 0n && (
 								<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
-									No ETH
+									NO ETH
 								</p>
 							)}
 
-							{sentryRunning ? (
-								<>
-									<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
-										No Keys Assigned
-									</p>
-								</>
-							) : (
+							{listNodeLicensesData && listNodeLicensesData.totalLicenses === 0 && (
+								<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
+									No Keys Assigned
+								</p>
+							)}
+
+							{!sentryRunning && (
 								<p className="border border-[#F5F5F5] bg-[#F5F5F5] text-[#A3A3A3] text-xs font-semibold uppercase rounded-full px-2">
 									Stopped
 								</p>
