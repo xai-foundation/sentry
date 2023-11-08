@@ -1,4 +1,4 @@
-import {useAtomValue, useSetAtom} from "jotai";
+import { useSetAtom} from "jotai";
 import {drawerStateAtom} from "../../../drawer/DrawerManager";
 import {AiFillCheckCircle, AiFillWarning, AiOutlineClose} from "react-icons/ai";
 import {IoMdCloseCircle} from "react-icons/io";

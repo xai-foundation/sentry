@@ -1,5 +1,5 @@
 import {AiFillWarning, AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
-import {useRef, useState} from "react";
+import {useState} from "react";
 import {ContinueInBrowserModal} from "@/features/home/modals/ContinueInBrowserModal";
 import {BiDownload, BiLinkExternal, BiUpload} from "react-icons/bi";
 import {useOperator} from "../operator";
@@ -8,11 +8,10 @@ import {HiOutlineDotsVertical} from "react-icons/hi";
 import {GiPauseButton} from "react-icons/gi";
 import {FaEthereum} from "react-icons/fa";
 import {MdRefresh} from "react-icons/md";
-import {atom, useAtom} from "jotai";
+import {useAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.js";
 import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
-import {NodeLicenseStatusMap, operatorRuntime} from "@xai-vanguard-node/core";
 import {AssignKeysFromNewWallet} from "@/components/AssignKeysFromNewWallet";
 import {useListOwnersForOperator} from "@/hooks/useListOwnersForOperator";
 import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
@@ -27,23 +26,27 @@ import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 // TODO -> replace with dynamic value later
 const recommendedValue = ethers.parseEther("0.005");
 
-type OperatorRuntimeFunction = () => Promise<void>
-
 export function SentryWallet() {
 	// todo -> split up
 	const queryClient = useQueryClient();
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
-	const {isLoading: isOperatorLoading, publicKey: operatorAddress, signer} = useOperator();
+	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
 
 	const {isLoading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
-	const {isLoading: isListNodeLicensesLoading, data: listNodeLicensesData} = useListNodeLicenses(listOwnersData?.owners);
+	const {
+		isLoading: isListNodeLicensesLoading,
+		data: listNodeLicensesData
+	} = useListNodeLicenses(listOwnersData?.owners);
 	const loading = isOperatorLoading || isListOwnersLoading || isListNodeLicensesLoading;
 
 	const [copied, setCopied] = useState<boolean>(false);
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
-	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
+	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({
+		show: false,
+		txHash: ""
+	});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
 	const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -185,12 +188,12 @@ export function SentryWallet() {
 				/>
 			)}
 
-				{unassignedWallet.show && (
-					<WalletDisconnectedModal
-						txHash={unassignedWallet.txHash}
-						onClose={onCloseWalletConnectedModal}
-					/>
-				)}
+			{unassignedWallet.show && (
+				<WalletDisconnectedModal
+					txHash={unassignedWallet.txHash}
+					onClose={onCloseWalletConnectedModal}
+				/>
+			)}
 
 			<div className="w-full h-full flex flex-col">
 				<div
