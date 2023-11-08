@@ -2,11 +2,11 @@ import {useQuery} from "react-query";
 import {getWalletBalance as getWalletBalanceCore} from "@xai-vanguard-node/core";
 import {ethers} from "ethers";
 
-export function useBalance(address: string) {
+export function useBalance(address: string | undefined) {
 	return useQuery({
 		queryKey: ["balance", address],
 		queryFn: async () => {
-			const wei = await getWalletBalanceCore(address);
+			const wei = await getWalletBalanceCore(address!);
 
 			console.log("new balance:", wei);
 			return {
@@ -16,6 +16,6 @@ export function useBalance(address: string) {
 		},
 		staleTime: Infinity,
 		cacheTime: 0,
-		enabled: address?.length > 0,
+		enabled: address != undefined && address.length > 0,
 	});
 }

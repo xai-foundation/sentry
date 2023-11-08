@@ -9,7 +9,7 @@ import {ImportSentryAlertModal} from "@/features/home/modals/ImportSentryAlertMo
 
 export function ImportSentryDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const {loading, importPrivateKey} = useOperator();
+	const {isLoading, importPrivateKey} = useOperator();
 	const [filePath, setFilePath] = useState('');
 	const {getFilePath} = useStorage();
 	const [inputValue, setInputValue] = useState('');
@@ -57,7 +57,7 @@ export function ImportSentryDrawer() {
 					</div>
 				</div>
 
-				{loading ? (
+				{isLoading ? (
 					<div
 						className="absolute top-0 bottom-0 left-0 right-0 m-auto flex flex-col justify-center items-center gap-4">
 						<BiLoaderAlt className="animate-spin" color={"#A3A3A3"} size={32}/>

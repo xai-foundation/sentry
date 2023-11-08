@@ -13,7 +13,7 @@ interface InsufficientFundsCardProps {
 }
 
 export function InsufficientFundsCard({funded, setFunded}: InsufficientFundsCardProps) {
-	const {loading: isLoadingOperator, publicKey} = useOperator();
+	const {isLoading: isLoadingOperator, publicKey} = useOperator();
 
 	return (
 		<SquareCard className="bg-[#F5F5F5]">
