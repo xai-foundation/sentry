@@ -41,7 +41,8 @@ export function SentryWallet() {
 	} = useListNodeLicenses(listOwnersData?.owners);
 	const loading = isOperatorLoading || isListOwnersLoading || isListNodeLicensesLoading;
 
-	const [copied, setCopied] = useState<boolean>(false);
+	const [copiedOperator, setCopiedOperator] = useState<boolean>(false);
+	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
 	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({
 		show: false,
@@ -71,10 +72,10 @@ export function SentryWallet() {
 		if (operatorAddress && navigator.clipboard) {
 			navigator.clipboard.writeText(operatorAddress)
 				.then(() => {
-					setCopied(true);
+					setCopiedOperator(true);
 					setTimeout(() => {
-						setCopied(false);
-					}, 2000);
+						setCopiedOperator(false);
+					}, 1500);
 				})
 				.catch(err => {
 					console.error('Unable to copy to clipboard: ', err);
@@ -88,10 +89,10 @@ export function SentryWallet() {
 		if (selectedWallet && navigator.clipboard) {
 			navigator.clipboard.writeText(selectedWallet)
 				.then(() => {
-					setCopied(true);
+					setCopiedSelectedWallet(true);
 					setTimeout(() => {
-						setCopied(false);
-					}, 2000);
+						setCopiedSelectedWallet(false);
+					}, 1500);
 				})
 				.catch(err => {
 					console.error('Unable to copy to clipboard: ', err);
@@ -230,7 +231,7 @@ export function SentryWallet() {
 									onClick={() => copyPublicKey()}
 									className="cursor-pointer"
 								>
-									{copied
+									{copiedOperator
 										? (<AiOutlineCheck/>)
 										: (<PiCopy/>)}
 								</div>
@@ -383,7 +384,7 @@ export function SentryWallet() {
 										className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] ${selectedWallet === null ? 'text-[#D4D4D4] cursor-not-allowed' : ""} px-4 py-2`}
 									>
 
-										{copied
+										{copiedSelectedWallet
 											? (<AiOutlineCheck className="h-[15px]"/>)
 											: (<PiCopy className="h-[15px]"/>)
 										}
