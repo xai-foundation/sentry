@@ -1,11 +1,11 @@
 import {ChangeEvent, useEffect, useState} from "react";
-import {useOperator} from "./useOperator.tsx";
+import {useOperator} from "./useOperator.js";
 import {useStorage} from "../storage";
 import {AiOutlineClose} from "react-icons/ai";
 
 export function Operator() {
-	const {loading, privateKey, error} = useOperator();
-	const {data, setData, getFilePath} = useStorage();
+	const {loading, privateKey, importPrivateKey, error} = useOperator();
+	const {getFilePath} = useStorage();
 	const [inputValue, setInputValue] = useState('');
 	const [filePath, setFilePath] = useState('');
 	const [openImport, setOpenImport] = useState<boolean>(false);
@@ -14,18 +14,18 @@ export function Operator() {
 		const fetchFilePath = async () => {
 			const path = await getFilePath();
 			setFilePath(path);
-			console.log(filePath);
 		};
 		void fetchFilePath();
 	}, [filePath, getFilePath]);
-
 
 	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setInputValue(event.target.value);
 	};
 
 	const handleSetData = () => {
-		setData({...data, arbitraryField: inputValue});
+		if (inputValue !== "") {
+			importPrivateKey(inputValue).then(() => setOpenImport(false));
+		}
 	};
 
 	function importOperator() {
@@ -46,12 +46,6 @@ export function Operator() {
 		}
 	}
 
-	function getShortenedPrivateKey(privateKey: string) {
-		const firstFiveChars = privateKey.slice(0, 4);
-		const lastThreeChars = privateKey.slice(-4);
-		return `${firstFiveChars}...${lastThreeChars}`;
-	}
-
 	if (error) {
 		alert(`Error: ${error.message}`)
 	}
@@ -66,9 +60,12 @@ export function Operator() {
 
 			{/*		Temp Import Modal	*/}
 			{openImport && (
-				<div className="absolute top-0 right-0 bottom-0 left-0 m-auto w-[500px] h-48 z-10 bg-gray-100">
-					<div className="absolute top-0 right-0 cursor-pointer p-4" onClick={() => setOpenImport(false)}>
-						<AiOutlineClose/>
+				<div className="absolute top-0 right-0 bottom-0 left-0 m-auto w-fit h-fit z-10 bg-gray-100 p-4">
+					<div>
+						<p>Import Operator</p>
+						<div className="absolute top-0 right-0 cursor-pointer p-4" onClick={() => setOpenImport(false)}>
+							<AiOutlineClose/>
+						</div>
 					</div>
 					<div className="w-full h-full flex flex-col justify-center items-center">
 						<input
@@ -76,10 +73,10 @@ export function Operator() {
 							value={inputValue}
 							onChange={handleInputChange}
 							className="w-96 mt-2 p-2 border rounded"
-							placeholder="Enter Operator Private Key (no functionality)"
+							placeholder="Enter operator private key"
 						/>
 						<button onClick={handleSetData} className=" w-96 mt-2 p-2 bg-blue-500 text-white rounded">
-							Set Data
+							Set Operator
 						</button>
 					</div>
 				</div>
@@ -89,8 +86,7 @@ export function Operator() {
 				<div>
 					{loading
 						? <p className="text-gray-500">Loading...</p>
-						: <p className="text-gray-700">Embedded
-							Operator: {privateKey ? getShortenedPrivateKey(privateKey) : 'N/A'}</p>
+						: <p className="text-gray-700">Embedded Operator: {privateKey}</p>
 					}
 				</div>
 				<div className="flex gap-4">
@@ -109,6 +105,7 @@ export function Operator() {
 					</button>
 				</div>
 			</div>
+			<p className="p-4">If importing a new operator, refresh app to display new private key</p>
 		</div>
 	)
 }

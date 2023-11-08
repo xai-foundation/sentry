@@ -1,7 +1,10 @@
-import { app, BrowserWindow, ipcMain, shell, safeStorage } from 'electron'
+import {app, BrowserWindow, ipcMain, shell, safeStorage} from 'electron'
+import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import express from 'express';
+
+const isWindows = os.platform() === "win32";
 
 // The built directory structure
 //
@@ -15,9 +18,18 @@ import express from 'express';
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
 
-let win: BrowserWindow | null
+let win: BrowserWindow | null;
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
+
+const protocolUrl = 'xai-sentry';
+if (process.defaultApp) {
+	if (process.argv.length >= 2) {
+		app.setAsDefaultProtocolClient(protocolUrl, process.execPath, [path.resolve(process.argv[1])]);
+	}
+} else {
+	app.setAsDefaultProtocolClient(protocolUrl);
+}
 
 ipcMain.on('open-external', (_, url) => {
 	void shell.openExternal(url);
@@ -63,7 +75,6 @@ ipcMain.handle('buffer-from', (_, str, encoding) => {
 	return Buffer.from(str, encoding);
 });
 
-
 function createWindow() {
 	win = new BrowserWindow({
 		width: 1920,
@@ -76,6 +87,9 @@ function createWindow() {
 			preload: path.join(__dirname, 'preload.js'),
 		},
 	})
+
+	// Disable the menu bar (alt-key)
+	win.setMenu(null);
 
 	// Test active push message to Renderer-process.
 	win.webContents.on('did-finish-load', () => {
@@ -112,8 +126,56 @@ app.on('activate', () => {
 app.on('ready', () => {
 	const server = express();
 	const publicWebPath = path.join(process.env.VITE_PUBLIC, '/web');
-	server.use(express.static(publicWebPath));
+	server.use(express.static(publicWebPath)); // takes dir, makes root
+	server.get("/*", (_, res) => {
+		res.sendFile(path.join(publicWebPath, "index.html")) // force web to load index.html
+	})
 	server.listen(7555);
 })
 
-app.whenReady().then(createWindow)
+// Windows deep-link
+if (isWindows) {
+	const gotTheLock = app.requestSingleInstanceLock();
+	if (!gotTheLock) {
+		app.quit();
+	} else {
+		app.on('second-instance', (event, commandLine) => {
+			console.log("event:", event);
+
+			// Someone tried to run a second instance, we should focus our window.
+			if (win) {
+				if (win.isMinimized()) win.restore();
+				win.focus();
+			}
+			// the commandLine is array of strings in which last element is deep link url
+			// dialog.showErrorBox('Welcome Back', `You arrived from: ${commandLine.pop()}`);
+
+			// win?.webContents.send("assigned-wallet", commandLine.pop());
+			handleDeeplink(event, commandLine.pop());
+		})
+
+		// Create mainWindow, load the rest of the app, etc...
+		app.whenReady().then(createWindow);
+	}
+} else {
+	// Mac deep-link
+	app.whenReady().then(createWindow);
+	app.on('open-url', handleDeeplink);
+}
+
+function handleDeeplink(_, url) {
+	const fullProtocol = "xai-sentry://";
+	const instruction = url.slice(fullProtocol.length, url.indexOf("?"));
+	let txHash: string;
+
+	switch (instruction) {
+		case "assigned-wallet":
+			txHash = url.slice(url.indexOf("=") + 1);
+			win?.webContents.send("assigned-wallet", txHash);
+			break;
+		case "unassigned-wallet":
+			txHash = url.slice(url.indexOf("=") + 1);
+			win?.webContents.send("unassigned-wallet", txHash);
+			break;
+	}
+}

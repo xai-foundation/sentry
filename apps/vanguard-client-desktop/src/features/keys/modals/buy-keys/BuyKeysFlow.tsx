@@ -1,34 +1,35 @@
-import {Dispatch, SetStateAction, useState} from "react";
+import {useState} from "react";
 import {XaiNumberInput} from "@xai-vanguard-node/ui";
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {BiLinkExternal, BiLoaderAlt} from "react-icons/bi";
-import {AiOutlineClose, AiOutlineInfoCircle} from "react-icons/ai";
+import {AiFillInfoCircle, AiOutlineClose, AiOutlineInfoCircle} from "react-icons/ai";
 import {MdVerifiedUser} from "react-icons/md";
-import {useGetPriceForQuantity} from "../../hooks/useGetPriceForQuantity.ts";
+import {useGetPriceForQuantity} from "../../hooks/useGetPriceForQuantity.js";
+import {ethers} from "ethers";
+import {useGetTotalSupplyAndCap} from "../../hooks/useGetTotalSupplyAndCap.js";
 
-interface BuyKeysFlowProps {
-	setPurchaseSuccess: Dispatch<SetStateAction<boolean>>;
-}
-
-export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
+export function BuyKeysFlow() {
 	const [amount, setAmount] = useState<number>(1);
 	const [discountApplied, setDiscountApplied] = useState<boolean>(false);
 	const [discountError, setDiscountError] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState('');
 	const [promo, setPromo] = useState<boolean>(false);
-	const price = 0.00061;
+	const {data: getPriceData, isLoading} = useGetPriceForQuantity(amount);
+	const {data: getTotalData, isLoading: isTotalLoading} = useGetTotalSupplyAndCap();
 
-	const {isLoading} = useGetPriceForQuantity(amount);
+	// Setting default values so TS doesn't give me shit.
+	let price = 0;
+	let discountPrice = 0;
+	let maxSupply = 0;
 
-	// if (data) {
-	// 	price = Number(ethers.formatEther(data?.price));
-	// }
+	if (getPriceData) {
+		price = Number(ethers.formatEther(getPriceData.price));
+		discountPrice = ((5 / 100) * price) * -1;
+	}
 
-
-	const discountPrice = (5 / 100) * price;
-	const discount = {
-		price: discountPrice * -1,
-	};
+	if (getTotalData) {
+		maxSupply = Number(getTotalData.maxSupply) - Number(getTotalData.totalSupply);
+	}
 
 	const handleSubmit = () => {
 		setDiscountError(false);
@@ -40,9 +41,34 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 		}
 	};
 
+	function getKeys() {
+		if (!getPriceData) {
+			return
+		}
+
+		return getPriceData.nodesAtEachPrice.map((item, i) => {
+			return (
+				<div key={`get-keys-${i}`}>
+					<div className="flex flex-row items-center justify-between text-[15px]">
+						<div className="flex flex-row items-center gap-2">
+							<span className="">{Number(item.quantity)} x Xai Sentry Node Key</span>
+						</div>
+						<div className="flex flex-row items-center gap-1">
+							<span
+								className="font-semibold">{Number(ethers.formatEther(item.totalPriceForTier))} ETH</span>
+						</div>
+					</div>
+					<p className="text-[13px] text-[#A3A3A3] mb-4">
+						{Number(ethers.formatEther(item.pricePer))} ETH per key
+					</p>
+				</div>
+			)
+		})
+	}
+
 	return (
 		// Buy State
-		<div className="w-full flex flex-col gap-8">
+		<div className="w-full flex flex-col gap-8 overflow-scroll">
 			{/*		Top of buy		*/}
 			<div className="flex flex-col gap-2 px-6 pt-8">
 				<div className="flex flex-row items-center gap-2">
@@ -68,14 +94,15 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 					<XaiNumberInput
 						amount={amount}
 						setAmount={setAmount}
+						maxSupply={maxSupply}
 					/>
 				</div>
 			</div>
 
 			{/*		Order Total section		*/}
-			{isLoading
+			{isLoading || isTotalLoading
 				? (
-					<div className="w-full absolute top-0 bottom-0 flex flex-col justify-center items-center">
+					<div className="w-full h-screen flex flex-col justify-center items-center">
 						<BiLoaderAlt className="animate-spin" color={"#A3A3A3"} size={32}/>
 						<p>Updating total...</p>
 					</div>
@@ -95,17 +122,7 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 							</div>
 
 							<div className="px-6">
-								<div className="flex flex-row items-center justify-between text-[15px]">
-									<div className="flex flex-row items-center gap-2">
-										<span className="">{amount} x Xai Sentry Node Key</span>
-									</div>
-									<div className="flex flex-row items-center gap-1">
-										<span className="font-semibold">{price} ETH</span>
-									</div>
-								</div>
-								<p className="text-[13px] text-[#A3A3A3] mb-4">
-									{price} ETH per key
-								</p>
+								{getKeys()}
 
 								{discountApplied && (
 									<>
@@ -123,7 +140,7 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 											</div>
 											<div className="flex flex-row items-center gap-1">
 												<span className="text-[#2A803D] font-semibold">
-													{discount.price * amount} ETH
+													{discountPrice} ETH
 												</span>
 											</div>
 										</div>
@@ -131,6 +148,24 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 											IDONTWANNAPAYFULLPRICE
 										</p>
 									</>
+								)}
+
+								{getPriceData!.nodesAtEachPrice.length > 1 && (
+									<div className="w-full flex flex-col bg-[#F5F5F5] px-5 py-4 gap-2 mb-4">
+										<div className="flex items-center gap-2 font-semibold">
+											<AiFillInfoCircle className="w-[20px] h-[20px] text-[#3B82F6]"/>
+											<p className="text-[15px]">
+												Prices may vary
+											</p>
+										</div>
+										<p className="text-sm">
+											Xai Sentry Node Key prices vary depending on the quantity of remaining
+											supply.
+											In general, as the quantity of available keys decreases, the price of a key
+											will
+											increase.
+										</p>
+									</div>
 								)}
 
 								{/*		Promo section		*/}
@@ -195,7 +230,7 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 									<div className="flex flex-row items-center gap-1 font-semibold">
 										<span>
 											{discountApplied
-												? Number(price - (discountPrice * amount)).toFixed(8)
+												? Number(price - discountPrice)
 												: price}
 										</span>
 										<span>ETH</span>
@@ -207,7 +242,7 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 				)}
 
 			{/*		Banner section		*/}
-			<div className="absolute bottom-0 w-full flex flex-col gap-4 px-6">
+			<div className="w-full flex flex-col gap-4 px-6">
 				<div className="flex flex-col gap-2 bg-[#DCFCE6] p-6">
 					<span className="flex flex-row gap-1 items-center font-semibold">
 						<MdVerifiedUser size={22} color={"#38A349"}/> Purchase will be completed on <p
@@ -225,7 +260,6 @@ export function BuyKeysFlow({setPurchaseSuccess}: BuyKeysFlowProps) {
 					<button
 						onClick={() => {
 							window.electron.openExternal(`http://localhost:7555/?amount=${amount}`)
-							setPurchaseSuccess(true)
 						}}
 						className={"w-full h-16 flex flex-row justify-center items-center gap-1 bg-[#F30919] text-lg text-white"}
 					>

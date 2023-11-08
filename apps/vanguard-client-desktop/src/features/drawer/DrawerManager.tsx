@@ -1,13 +1,19 @@
 import classNames from "classnames";
 import {atom, useAtomValue} from "jotai";
-import {ActionsRequiredModal} from "../home/modals/actions-required/ActionsRequiredModal";
-import {BuyKeysModal} from "../keys/modals/buy-keys/BuyKeysModal";
-import {ViewKeysModal} from "../home/modals/view-keys/ViewKeysModal";
+import {ActionsRequiredBuyDrawer} from "../home/modals/actions-required/ActionsRequiredBuyDrawer";
+import {BuyKeysDrawer} from "../keys/modals/buy-keys/BuyKeysDrawer";
+import {ViewKeysDrawer} from "../home/modals/view-keys/ViewKeysDrawer";
+import {ActionsRequiredNotAccruingDrawer} from "../home/modals/actions-required/ActionsRequiredNotAccruingDrawer";
+import {ExportSentryDrawer} from "../home/modals/ExportSentryDrawer";
+import {ImportSentryDrawer} from "../home/modals/ImportSentryDrawer";
 
 export enum DrawerView {
-	ActionsRequired,
+	ActionsRequiredBuy,
+	ActionsRequiredNotAccruing,
 	BuyKeys,
 	ViewKeys,
+	ImportSentry,
+	ExportSentry,
 }
 
 export const drawerStateAtom = atom<DrawerView | null>(null);
@@ -21,16 +27,28 @@ export function DrawerManager() {
 				"hidden": drawerState === null,
 			})}
 		>
-			{drawerState === DrawerView.ActionsRequired && (
-				<ActionsRequiredModal/>
+			{drawerState === DrawerView.ActionsRequiredBuy && (
+				<ActionsRequiredBuyDrawer/>
+			)}
+
+			{drawerState === DrawerView.ActionsRequiredNotAccruing && (
+				<ActionsRequiredNotAccruingDrawer/>
 			)}
 
 			{drawerState === DrawerView.BuyKeys && (
-				<BuyKeysModal/>
+				<BuyKeysDrawer/>
 			)}
 
 			{drawerState === DrawerView.ViewKeys && (
-				<ViewKeysModal/>
+				<ViewKeysDrawer/>
+			)}
+
+			{drawerState === DrawerView.ImportSentry && (
+				<ImportSentryDrawer/>
+			)}
+
+			{drawerState === DrawerView.ExportSentry && (
+				<ExportSentryDrawer/>
 			)}
 		</div>
 	);

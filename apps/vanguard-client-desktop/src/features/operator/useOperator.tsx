@@ -1,4 +1,4 @@
-import { ethers } from 'ethers';
+import { ethers } from "ethers";
 import { useState, useEffect, useRef } from 'react';
 import { createMnemonic, getSignerFromMnemonic, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
 
@@ -9,7 +9,7 @@ interface IUseOperatorResponse {
     importPrivateKey: (privateKey: string) => Promise<void>
     // regenerate: () => Promise<void>
     error?: Error;
-    loading: boolean;
+    isLoading: boolean;
 }
 
 /**
@@ -78,7 +78,7 @@ export function useOperator(): IUseOperatorResponse {
                     throw new Error("Encryption not available after 5 seconds");
                 }
             } while (!encryptionAvailable);
-        
+
             // generate a mneomnic for the signer
             const {phrase} = createMnemonic();
 
@@ -104,7 +104,7 @@ export function useOperator(): IUseOperatorResponse {
     }, [window.ipcRenderer])
 
     const importPrivateKey = async (privateKey: string) => {
-        
+
         // set loading to true
         setLoading(true);
 
@@ -119,10 +119,10 @@ export function useOperator(): IUseOperatorResponse {
 
             // encrypt the private key
             const encrypted: Buffer = await window.ipcRenderer.invoke('encrypt-string', privateKey);
-            
+
             // save to disk
             await window.ipcRenderer.invoke('fs-writeFileSync', path, encrypted)
-            
+
         } catch (error) {
             setError(error as Error);
         } finally {
@@ -134,7 +134,7 @@ export function useOperator(): IUseOperatorResponse {
 
     return {
         error,
-        loading,
+        isLoading: loading,
         signer: signerRef?.current,
         importPrivateKey,
         privateKey,

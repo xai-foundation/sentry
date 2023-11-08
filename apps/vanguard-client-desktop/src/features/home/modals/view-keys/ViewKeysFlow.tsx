@@ -3,13 +3,14 @@ import {BiLinkExternal, BiLoaderAlt} from "react-icons/bi";
 import {listNodeLicenses} from "@xai-vanguard-node/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useNavigate} from "react-router-dom";
+import {useSetAtom} from "jotai/index";
+import {drawerStateAtom} from "../../../drawer/DrawerManager.js";
 
 interface ViewKeysFlowProps {
-	setShowViewModal: Dispatch<SetStateAction<boolean>>;
 	setShowContinueInBrowserModal: Dispatch<SetStateAction<boolean>>;
 }
 
-export function ViewKeysFlow({setShowViewModal, setShowContinueInBrowserModal}: ViewKeysFlowProps) {
+export function ViewKeysFlow({setShowContinueInBrowserModal}: ViewKeysFlowProps) {
 	const [ownerAddress, setOwnerAddress] = useState('');
 	const [ownerAddressError, setOwnerAddressError] = useState({
 		errorResult: "",
@@ -18,6 +19,8 @@ export function ViewKeysFlow({setShowViewModal, setShowContinueInBrowserModal}: 
 
 	const [loading, setLoading] = useState<boolean>(false)
 	const [success, setSuccess] = useState<boolean>(false)
+
+	const setDrawerState = useSetAtom(drawerStateAtom);
 	const navigate = useNavigate();
 
 	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -33,8 +36,10 @@ export function ViewKeysFlow({setShowViewModal, setShowContinueInBrowserModal}: 
 
 		try {
 			const res = await listNodeLicenses(ownerAddress);
+			console.log(res)
 
 			if (res.length >= 1) {
+				setLoading(false);
 				setSuccess(true);
 			} else {
 				setLoading(false);
@@ -69,7 +74,7 @@ export function ViewKeysFlow({setShowViewModal, setShowContinueInBrowserModal}: 
 	//todo: confirm this logic works
 	if (!loading && success) {
 		setTimeout(() => {
-			setShowViewModal(false);
+			setDrawerState(null);
 			navigate("/keys")
 		}, 4000);
 
@@ -119,7 +124,7 @@ export function ViewKeysFlow({setShowViewModal, setShowContinueInBrowserModal}: 
 						<button
 							onClick={() => {
 								setShowContinueInBrowserModal(true)
-								window.electron.openExternal('http://localhost:7555/')
+								window.electron.openExternal('http://localhost:7555/connect-wallet')
 							}}
 							className="w-full h-12 flex flex-row justify-center items-center gap-1 bg-[#F30919] text-[15px] text-white font-semibold"
 						>

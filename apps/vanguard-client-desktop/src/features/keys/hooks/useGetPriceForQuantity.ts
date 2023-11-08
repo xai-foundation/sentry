@@ -6,5 +6,5 @@ export function useGetPriceForQuantity(quantity: number) {
 		queryKey: ["price-for-quantity", quantity],
 		queryFn: () => getPriceForQuantityCore(Number(quantity)),
 		cacheTime: 0,
-	})
+	});
 }
