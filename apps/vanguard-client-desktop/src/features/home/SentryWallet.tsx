@@ -18,6 +18,12 @@ import {useListOwnersForOperator} from "@/hooks/useListOwnersForOperator";
 import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
 import {WalletConnectedModal} from "@/features/home/modals/WalletConnectedModal";
 import {useQueryClient} from "react-query";
+import {useBalance} from "@/hooks/useBalance";
+import {ethers} from "ethers";
+import classNames from "classnames";
+
+// TODO -> replace with dynamic value later
+const recommendedValue = ethers.parseEther("0.005");
 
 type OperatorRuntimeFunction = () => Promise<void>
 
@@ -27,7 +33,9 @@ export function SentryWallet() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
 
-	const {loading: isOperatorLoading, publicKey: operatorAddress, signer} = useOperator();
+	const {isLoading: isOperatorLoading, publicKey: operatorAddress, signer} = useOperator();
+	const {isLoading: isBalanceLoading, data: balance} = useBalance(operatorAddress);
+
 	const {isLoading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
 	const {isLoading: isListNodeLicensesLoading, data: listNodeLicensesData} = useListNodeLicenses(listOwnersData?.owners);
 	const loading = isOperatorLoading || isListOwnersLoading || isListNodeLicensesLoading;
@@ -40,8 +48,7 @@ export function SentryWallet() {
 		setAssignedWallet({show: true, txHash});
 	});
 
-	// dropdown state
-	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false);
+	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const stopFunction = useRef<OperatorRuntimeFunction>();
 	const [sentryRunning, setSentryRunning] = useState<boolean>(false);
@@ -151,6 +158,14 @@ export function SentryWallet() {
 	function onCloseWalletConnectedModal() {
 		setAssignedWallet({show: false, txHash: ""});
 		void queryClient.invalidateQueries({queryKey: ["ownersForOperator", operatorAddress]});
+	}
+
+	function getEthFundsTextColor(): string {
+		if (balance?.wei >= recommendedValue) {
+			return "text-[#38A349]";
+		}
+
+		return "text-[#F59E28]";
 	}
 
 	return (
@@ -273,7 +288,7 @@ export function SentryWallet() {
 						<div className="flex justify-center items-center gap-4">
 							<div className="flex justify-center items-center gap-1">
 								<FaEthereum className="w-6 h-6"/>
-								<p className="text-[#F29E0D] text-2xl font-semibold">0 ETH</p>
+								<p className={classNames(getEthFundsTextColor(), "text-2xl font-semibold")}>{(isBalanceLoading || balance == undefined) ? "" : (balance.ethString === "0.0" ? "0" : balance.ethString)} ETH</p>
 							</div>
 							<a
 								onClick={() => alert("nothing yet")}
