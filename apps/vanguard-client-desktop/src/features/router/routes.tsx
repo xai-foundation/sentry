@@ -8,6 +8,7 @@ import {Demo} from "../demo/Demo.js";
 import {DrawerManager} from "../drawer/DrawerManager";
 import {QueryClient, QueryClientProvider} from "react-query";
 import {DeepLinkManager} from "../../components/DeepLinkManager";
+import {ModalManager} from "@/features/modal/ModalManager";
 
 export function AppRoutes() {
 	const queryClient = new QueryClient();
@@ -31,6 +32,7 @@ export function AppRoutes() {
 						</Routes>
 					</div>
 
+					<ModalManager/>
 					<DrawerManager/>
 				</div>
 			</QueryClientProvider>
