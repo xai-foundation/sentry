@@ -6,3 +6,6 @@ export * from "./getTotalSupplyAndCap.js";
 export * from "./getReferralRewards.js";
 export * from "./getDiscountAndRewardForReferrals.js";
 export * from "./getMintTimestamp.js";
+export * from "./listenForNewLicenses.js";
+export * from "./getOwnerOfNodeLicense.js";
+export * from "./getOperatorsForNodeLicense.js";
