@@ -17,6 +17,7 @@ import {AssignKeysFromNewWallet} from "@/components/AssignKeysFromNewWallet";
 import {useListOwnersForOperator} from "@/hooks/useListOwnersForOperator";
 import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
 import {WalletConnectedModal} from "@/features/home/modals/WalletConnectedModal";
+import {WalletDisconnectedModal} from "@/features/home/modals/WalletDisconnectedModal";
 import {useQueryClient} from "react-query";
 import {useBalance} from "@/hooks/useBalance";
 import {ethers} from "ethers";
@@ -32,7 +33,6 @@ export function SentryWallet() {
 	const queryClient = useQueryClient();
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
-
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress, signer} = useOperator();
 	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
 
@@ -42,13 +42,20 @@ export function SentryWallet() {
 
 	const [copied, setCopied] = useState<boolean>(false);
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
+	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
+	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
 
+	// assign wallet
 	(window as any).deeplinks?.assignedWallet((_event, txHash) => {
 		setAssignedWallet({show: true, txHash});
 	});
 
-	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
+	// un-assign wallet
+	(window as any).deeplinks?.unassignedWallet((_event, txHash) => {
+		setUnassignedWallet({show: true, txHash});
+	});
+
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const stopFunction = useRef<OperatorRuntimeFunction>();
 	const [sentryRunning, setSentryRunning] = useState<boolean>(false);
@@ -76,7 +83,20 @@ export function SentryWallet() {
 	}
 
 	function copySelectedWallet() {
-		void navigator.clipboard.writeText(selectedWallet!);
+		if (selectedWallet && navigator.clipboard) {
+			navigator.clipboard.writeText(selectedWallet)
+				.then(() => {
+					setCopied(true);
+					setTimeout(() => {
+						setCopied(false);
+					}, 2000);
+				})
+				.catch(err => {
+					console.error('Unable to copy to clipboard: ', err);
+				});
+		} else {
+			console.error('Clipboard API not available, unable to copy to clipboard');
+		}
 	}
 
 	const startSentry = async () => {
@@ -161,6 +181,7 @@ export function SentryWallet() {
 
 	function onCloseWalletConnectedModal() {
 		setAssignedWallet({show: false, txHash: ""});
+		setUnassignedWallet({show: false, txHash: ""});
 		void queryClient.invalidateQueries({queryKey: ["ownersForOperator", operatorAddress]});
 	}
 
@@ -180,6 +201,13 @@ export function SentryWallet() {
 					onClose={onCloseWalletConnectedModal}
 				/>
 			)}
+
+				{unassignedWallet.show && (
+					<WalletDisconnectedModal
+						txHash={unassignedWallet.txHash}
+						onClose={onCloseWalletConnectedModal}
+					/>
+				)}
 
 			<div className="w-full h-full flex flex-col">
 				<div
@@ -386,10 +414,10 @@ export function SentryWallet() {
 
 									<button
 										disabled={selectedWallet === null}
-										onClick={() => window.electron.openExternal("https://xai.games/")}
+										onClick={() => window.electron.openExternal(`http://localhost:7555/unassign-wallet/${operatorAddress}`)}
 										className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] ${selectedWallet === null ? 'text-[#D4D4D4] cursor-not-allowed' : ""} px-4 py-2`}
 									>
-										Unassign this wallet
+										Un-assign this wallet
 										<BiLinkExternal className="h-[15px]"/>
 									</button>
 								</div>
