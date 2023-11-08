@@ -21,7 +21,7 @@ export function ImportSentryDrawer() {
 			setFilePath(path);
 		};
 		void fetchFilePath();
-	}, [filePath, getFilePath]);
+	}, [getFilePath]);
 
 	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setInputValue(event.target.value);
