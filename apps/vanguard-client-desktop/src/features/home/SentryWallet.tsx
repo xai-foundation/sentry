@@ -8,7 +8,7 @@ import {HiOutlineDotsVertical} from "react-icons/hi";
 import {GiPauseButton} from "react-icons/gi";
 import {FaEthereum} from "react-icons/fa";
 import {MdRefresh} from "react-icons/md";
-import {useAtom} from "jotai";
+import {atom, useAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.js";
 import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
@@ -22,6 +22,7 @@ import {useQueryClient} from "react-query";
 import {useBalance} from "@/hooks/useBalance";
 import {ethers} from "ethers";
 import classNames from "classnames";
+import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 
 // TODO -> replace with dynamic value later
 const recommendedValue = ethers.parseEther("0.005");
@@ -45,6 +46,9 @@ export function SentryWallet() {
 	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
+	const [isOpen, setIsOpen] = useState<boolean>(false);
+
+	const {startRuntime, stopRuntime, sentryRunning, nodeLicenseStatusMap} = useOperatorRuntime();
 
 	// assign wallet
 	(window as any).deeplinks?.assignedWallet((_event, txHash) => {
@@ -55,11 +59,6 @@ export function SentryWallet() {
 	(window as any).deeplinks?.unassignedWallet((_event, txHash) => {
 		setUnassignedWallet({show: true, txHash});
 	});
-
-	const [isOpen, setIsOpen] = useState<boolean>(false);
-	const stopFunction = useRef<OperatorRuntimeFunction>();
-	const [sentryRunning, setSentryRunning] = useState<boolean>(false);
-	const [status, setStatus] = useState<NodeLicenseStatusMap>();
 
 	function onRefreshEthBalance() {
 		queryClient.invalidateQueries({queryKey: ["balance", operatorAddress]});
@@ -99,30 +98,6 @@ export function SentryWallet() {
 		}
 	}
 
-	const startSentry = async () => {
-		if (signer) {
-			try {
-				// todo: ethers issue is back
-				// @ts-ignore
-				stopFunction.current = await operatorRuntime(signer, setStatus, console.log);
-				setSentryRunning(true);
-			} catch (error) {
-				console.error('Error starting the operator runtime:', error);
-			}
-		}
-	};
-
-	const pauseSentry = async () => {
-		if (stopFunction.current) {
-			try {
-				await stopFunction.current();
-				setSentryRunning(false);
-			} catch (error) {
-				console.error('Error stopping the operator runtime:', error);
-			}
-		}
-	};
-
 	function getDropdownItems() {
 		return listOwnersData!.owners.map((wallet, i) => (
 			<p
@@ -140,6 +115,7 @@ export function SentryWallet() {
 
 	function getKeys() {
 		const keysWithOwners: Array<{ owner: string, key: bigint }> = [];
+		const statusArray = nodeLicenseStatusMap ? Array.from(nodeLicenseStatusMap.entries()) : [];
 
 		// Get keys from every assigned wallet if "All" is selected in the drop-down
 		if (selectedWallet === null) {
@@ -164,15 +140,22 @@ export function SentryWallet() {
 
 		return keysWithOwners.map((keyWithOwner, i: number) => {
 			const isEven = i % 2 === 0;
-			const statusArray = status ? Array.from(status.entries()) : [];
 			const currentStatus = statusArray[i] ? statusArray[i][1] : null;
+
+			let displayString = "Sentry not running";
+
+			if (currentStatus) {
+				displayString = currentStatus.status;
+			} else if (sentryRunning) {
+				displayString = "Sentry booting...";
+			}
 
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
 					<td className="w-fit px-4 py-2">{keyWithOwner.key.toString()}</td>
 					<td className="w-full max-w-[390px] px-4 py-2">{keyWithOwner.owner.toString()}</td>
 					<td className="w-full max-w-[390px] px-4 py-2 text-[#A3A3A3]">
-						{currentStatus ? currentStatus.status : "Sentry not running"}
+						{displayString}
 					</td>
 				</tr>
 			);
@@ -279,7 +262,7 @@ export function SentryWallet() {
 
 							{sentryRunning ? (
 								<button
-									onClick={() => pauseSentry()}
+									onClick={stopRuntime}
 									className="ml-4 flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 								>
 									<GiPauseButton className="h-[15px]"/>
@@ -287,7 +270,7 @@ export function SentryWallet() {
 								</button>
 							) : (
 								<button
-									onClick={() => startSentry()}
+									onClick={startRuntime}
 									className="ml-4 flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 								>
 									<FaPlay className="h-[15px]"/>
@@ -297,7 +280,7 @@ export function SentryWallet() {
 						</div>
 
 						{/*		todo: swapped number with listNodeLicensesData, check if correct param	*/}
-						{!listNodeLicensesData?.licenses && drawerState === null && (
+						{(!listNodeLicensesData?.licenses || !sentryRunning) && drawerState === null && (
 							<div className="flex gap-4 bg-[#FFFBEB] p-2 z-10">
 								<div className="flex flex-row gap-2 items-center">
 									<AiFillWarning className="w-7 h-7 text-[#F59E28]"/>

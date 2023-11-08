@@ -1,4 +1,4 @@
-import {useSetAtom} from "jotai";
+import {useAtomValue, useSetAtom} from "jotai";
 import {drawerStateAtom} from "../../../drawer/DrawerManager";
 import {AiFillCheckCircle, AiFillWarning, AiOutlineClose} from "react-icons/ai";
 import {IoMdCloseCircle} from "react-icons/io";
@@ -10,14 +10,13 @@ import {AssignedKeysDrawer} from "./AssignedKeysDrawer";
 import {useEffect, useState} from "react";
 import {KycRequiredCard} from "./KycRequiredCard";
 import {BarStepItem} from "../../../../components/BarStepItem";
+import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 
 export function ActionsRequiredNotAccruingDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-
-	// const {isLoading, data: balance, error} = useBalance("0xB065D33B024F87c07E7AaC14E87b5d76e3162647"); // spencer test wallet
+	const {sentryRunning} = useOperatorRuntime();
 
 	const [testState, setTestState] = useState({
-		active: false,
 		funded: false,
 		keys: false,
 	});
@@ -35,7 +34,7 @@ export function ActionsRequiredNotAccruingDrawer() {
 		}
 	}, [kycState]);
 
-	const accruing = testState.active && testState.funded && testState.keys;
+	const accruing = sentryRunning && testState.funded && testState.keys;
 
 	return (
 		<div className="w-full h-full flex flex-col justify-start border border-gray-200 z-20 bg-white">
@@ -92,12 +91,7 @@ export function ActionsRequiredNotAccruingDrawer() {
 
 					<div className="flex flex-col">
 						<BarStepItem>
-							<SentryActiveCard
-								active={testState.active}
-								setActive={() => setTestState((_state) => {
-									return {..._state, active: true}
-								})}
-							/>
+							<SentryActiveCard/>
 						</BarStepItem>
 
 						<BarStepItem>
