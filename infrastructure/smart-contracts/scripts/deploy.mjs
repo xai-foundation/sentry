@@ -111,7 +111,25 @@ async function main() {
   await extractAbi("NodeLicense", nodeLicense);
   console.log("NodeLicense Abi exported");
 
-  // Update the referee, NodeLicense, esXai, and xai contract addresses in the config
+  console.log("Deploying GasSubsidy...");
+  const GasSubsidy = await ethers.getContractFactory("GasSubsidy");
+  const gasSubsidy = await upgrades.deployProxy(GasSubsidy, [], { deployer: deployer });
+  const { blockNumber: gasSubsidyDeployedBlockNumber } = await gasSubsidy.deploymentTransaction();
+  const gasSubsidyAddress = await gasSubsidy.getAddress();
+  console.log("GasSubsidy deployed to:", gasSubsidyAddress);
+
+  // Export the ABI of GasSubsidy
+  await extractAbi("GasSubsidy", gasSubsidy);
+  console.log("GasSubsidy Abi exported");
+
+  // Add transfer admins to the GasSubsidy
+  const gasSubsidyTransferRole = await gasSubsidy.TRANSFER_ROLE();
+  for (const address of options.transferAdmins) {
+    await gasSubsidy.grantRole(gasSubsidyTransferRole, address);
+    console.log(`Granted transfer role to ${address} on GasSubsidy`);
+  }
+
+  // Update the referee, NodeLicense, esXai, xai, and GasSubsidy contract addresses in the config
   writeToConfig({
     refereeAddress,
     refereeImplementationAddress: await getImplementationAddress(referee),
@@ -124,9 +142,12 @@ async function main() {
     esXaiDeployedBlockNumber,
     xaiAddress,
     xaiImplementationAddress: await getImplementationAddress(xai),
-    xaiDeployedBlockNumber
+    xaiDeployedBlockNumber,
+    gasSubsidyAddress,
+    gasSubsidyImplementationAddress: await getImplementationAddress(gasSubsidy),
+    gasSubsidyDeployedBlockNumber
   });
-  console.log("Referee, NodeLicense, esXai, and xai contract addresses updated in the config");
+  console.log("Referee, NodeLicense, esXai, xai, and GasSubsidy contract addresses updated in the config");
 
   // Grant the deployer the minter role on Xai and esXai
   const xaiMinterRole = await xai.MINTER_ROLE();
@@ -163,7 +184,7 @@ async function main() {
   await referee.renounceRole(refereeAdminRole, deployerAddress);
   console.log(`Renounced admin role of ${deployerAddress} on Referee`);
   await nodeLicense.renounceRole(nodeLicenseAdminRole, deployerAddress);
-  console.log(`Renounced admin role of ${deployerAddress} on Referee`);
+  console.log(`Renounced admin role of ${deployerAddress} on NodeLicense`);
   await esXai.renounceRole(esXaiAdminRole, deployerAddress);
   console.log(`Renounced admin role of ${deployerAddress} on esXai`);
   await xai.renounceRole(xaiAdminRole, deployerAddress);
@@ -175,6 +196,7 @@ async function main() {
     safeVerify({ contract: referee }),
     safeVerify({ contract: esXai }),
     safeVerify({ contract: nodeLicense }),
+    safeVerify({ contract: gasSubsidy }),
   ]);
   console.log("Contracts verified.");
 }

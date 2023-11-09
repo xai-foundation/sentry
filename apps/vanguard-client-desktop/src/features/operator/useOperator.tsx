@@ -29,7 +29,6 @@ export function useOperator(): IUseOperatorResponse {
         return await window.ipcRenderer.invoke('path-join', await window.ipcRenderer.invoke('get-user-data-path'), ".sentry-operator");
     };
 
-
     useEffect(() => {
 
         async function startup() {
