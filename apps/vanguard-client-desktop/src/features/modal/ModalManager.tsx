@@ -23,6 +23,7 @@ export function ModalManager() {
 		setDrawerState(null);
 		setModalState(ModalView.PurchaseSuccessful);
 	});
+
 	return (
 		<div className={classNames("w-full h-full fixed z-10", {
 			"hidden": modalState === null,

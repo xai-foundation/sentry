@@ -22,7 +22,6 @@ import {useBalance} from "@/hooks/useBalance";
 import {ethers} from "ethers";
 import classNames from "classnames";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
-import {PurchaseCompleteModal} from "@/features/home/modals/PurchaseCompleteModal";
 
 // TODO -> replace with dynamic value later
 const recommendedValue = ethers.parseEther("0.005");

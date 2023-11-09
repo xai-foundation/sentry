@@ -15,9 +15,10 @@ interface WebBuyKeysOrderTotalProps {
 	onClick: () => void;
 	getPriceData: PriceDataInterface | undefined;
 	isPriceLoading: boolean;
+	error: Error | null;
 }
 
-export function WebBuyKeysOrderTotal({onClick, getPriceData, isPriceLoading}: WebBuyKeysOrderTotalProps) {
+export function WebBuyKeysOrderTotal({onClick, getPriceData, isPriceLoading, error}: WebBuyKeysOrderTotalProps) {
 	const {isLoading: isTotalLoading} = useGetTotalSupplyAndCap();
 	const [discountApplied, setDiscountApplied] = useState<boolean>(false);
 	const [discountError, setDiscountError] = useState<boolean>(false);
@@ -245,6 +246,12 @@ export function WebBuyKeysOrderTotal({onClick, getPriceData, isPriceLoading}: We
 								>
 									Confirm purchase
 								</button>
+
+								{error && (
+									<p className="text-center break-words w-full mt-4 text-red-500">
+										{error.message}
+									</p>
+								)}
 							</div>
 						</div>
 					</>

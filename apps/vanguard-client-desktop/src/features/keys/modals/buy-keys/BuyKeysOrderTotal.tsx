@@ -38,7 +38,7 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 	};
 
 	function getKeys() {
-		if (!getPriceData || !getPriceData.nodesAtEachPrice) {
+		if (!getPriceData) {
 			return
 		}
 
@@ -64,7 +64,7 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 
 	return (
 		<>
-			{isPriceLoading || isTotalLoading
+			{isPriceLoading || isTotalLoading || !getPriceData
 				? (
 					<div className="w-full h-screen flex flex-col justify-center items-center">
 						<BiLoaderAlt className="animate-spin" color={"#A3A3A3"} size={32}/>
@@ -114,7 +114,7 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 									</>
 								)}
 
-								{getPriceData!.nodesAtEachPrice.length > 1 && (
+								{getPriceData.nodesAtEachPrice.length > 1 && (
 									<div className="w-full flex flex-col bg-[#F5F5F5] px-5 py-4 gap-2 mb-4">
 										<div className="flex items-center gap-2 font-semibold">
 											<AiFillInfoCircle className="w-[20px] h-[20px] text-[#3B82F6]"/>

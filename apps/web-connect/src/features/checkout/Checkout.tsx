@@ -1,12 +1,14 @@
 import {useEffect, useState} from "react";
 import {MdVerifiedUser} from "react-icons/md";
-import {WebBuyFlowSuccess} from "./WebBuyFlowSuccess.js";
 import {WebBuyKeysQuantity} from "@/features/checkout/WebBuyKeysQuantity";
 import {WebBuyKeysOrderTotal} from "@/features/checkout/WebBuyKeysOrderTotal";
 import {useGetPriceForQuantity} from "@/features/checkout/hooks/useGetPriceForQuantity";
 import {useContractWrite} from "wagmi";
 import {config, NodeLicenseAbi} from "@xai-vanguard-node/core";
 import {ethers} from "ethers";
+import {BiLoaderAlt} from "react-icons/bi";
+import {FaCircleCheck} from "react-icons/fa6";
+import {useProvider} from "@/features/checkout/hooks/useProvider";
 
 export function Checkout() {
 	const queryString = window.location.search;
@@ -14,6 +16,7 @@ export function Checkout() {
 	const prefilledAmount = queryParams.get("quantity");
 	const [quantity, setQuantity] = useState<number>(1);
 	const {data: getPriceData, isLoading: isPriceLoading} = useGetPriceForQuantity(quantity);
+	const {data: providerData} = useProvider();
 
 	useEffect(() => {
 		if (prefilledAmount) {
@@ -23,7 +26,7 @@ export function Checkout() {
 
 
 	// const {isLoading, isSuccess, write, error, data} = useContractWrite({
-	const {isSuccess, data, isLoading, write, error, isError} = useContractWrite({
+	const {isLoading, isSuccess, write, error, data} = useContractWrite({
 		address: config.nodeLicenseAddress as `0x${string}`,
 		abi: NodeLicenseAbi,
 		functionName: "mint",
@@ -37,13 +40,9 @@ export function Checkout() {
 		},
 	});
 
-
-	useEffect(() => {
-		console.log("isSuccess", isSuccess);
-		console.log("isLoading", isLoading);
-		console.log("error", error);
-		console.log("isError", isError);
-	}, [isSuccess, isLoading, error, isError]);
+	function returnToClient() {
+		window.location = `xai-sentry://purchase-successful?txHash=${data?.hash}` as unknown as Location;
+	}
 
 	return (
 		<div>
@@ -59,13 +58,43 @@ export function Checkout() {
 					</p>
 				</div>
 
-				{isLoading && !error || isSuccess
-					? <WebBuyFlowSuccess
-						isLoading={isLoading}
-						isSuccess={isSuccess}
-						data={data}
-					/>
-					: <div className="w-[744px] h-auto flex flex-col justify-center border border-[#E5E5E5] m-4">
+				{isLoading && (
+					<div className="w-[744px] h-[208px] flex flex-col justify-center border border-[#E5E5E5] m-4">
+						<div className="w-full h-[390px] flex flex-col justify-center items-center gap-2">
+							<BiLoaderAlt className="animate-spin" color={"#A3A3A3"} size={32}/>
+							<p>Processing transaction...</p>
+						</div>
+					</div>
+				)}
+
+				{isSuccess && (
+					<div
+						className="flex flex-col justify-center items-center w-[744px] h-[320px] border border-gray-200 bg-white m-4">
+						<div
+							className="flex flex-col justify-center items-center gap-2">
+							<FaCircleCheck color={"#16A34A"} size={64}/>
+							<span className="text-2xl font-semibold mt-2">Purchase successful</span>
+							<p className="text-[15px]">Transaction ID:
+								<a
+									onClick={() => window.open(`${providerData?.blockExplorer}/tx/${data?.hash}`)}
+									className="text-[#F30919] ml-1 cursor-pointer"
+								>
+									{data?.hash.slice(0, 10) + "..."}
+								</a>
+							</p>
+
+							<button
+								onClick={returnToClient}
+								className="w-[436px] bg-[#F30919] text-white p-4 font-semibold mt-8"
+							>
+								Return to Xai Client
+							</button>
+						</div>
+					</div>
+				)}
+
+				{!isLoading && !isSuccess && (
+					<div className="w-[744px] h-auto flex flex-col justify-center border border-[#E5E5E5] m-4">
 						<div className="w-full flex justify-center items-center border-b border-[#E5E5E5] px-6 py-4">
 							<span className="text-3xl py-2 px-6 font-semibold">Your purchase is ready</span>
 						</div>
@@ -91,9 +120,10 @@ export function Checkout() {
 							onClick={write}
 							getPriceData={getPriceData}
 							isPriceLoading={isPriceLoading}
+							error={error}
 						/>
 					</div>
-				}
+				)}
 			</div>
 
 
