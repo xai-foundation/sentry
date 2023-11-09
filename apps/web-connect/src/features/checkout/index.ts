@@ -1,1 +1,1 @@
-export * from "./Checkout.tsx";
+export * from "./Checkout.js";

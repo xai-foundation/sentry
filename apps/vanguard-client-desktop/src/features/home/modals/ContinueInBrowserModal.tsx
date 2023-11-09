@@ -8,7 +8,7 @@ export function ContinueInBrowserModal({setShowContinueInBrowserModal}: ConnectW
 	return (
 		<div
 			className="absolute top-0 right-0 left-0 bottom-0 m-auto w-auto h-auto flex flex-col justify-start items-center z-30">
-			<div className="w-full h-full bg-white opacity-90"/>
+			<div className="w-full h-full bg-white opacity-75"/>
 			<div
 				className="absolute top-0 right-0 left-0 bottom-0 m-auto flex flex-col justify-start items-center w-[506px] h-[190px] border border-gray-200 bg-white">
 				<div

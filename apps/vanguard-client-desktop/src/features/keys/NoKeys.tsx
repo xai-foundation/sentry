@@ -2,6 +2,7 @@ import {AiFillWarning} from "react-icons/ai";
 import {useSetAtom} from "jotai";
 import {RiKey2Line} from "react-icons/ri";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
+import {Dispatch, SetStateAction} from "react";
 
 // const noKeysCopy = [
 // 	{
@@ -18,10 +19,15 @@ import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 // 	},
 // ]
 
-export function NoKeys() {
+interface NoKeysProps {
+	setNumber: Dispatch<SetStateAction<number>>;
+}
+
+export function NoKeys({setNumber}: NoKeysProps) {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 
-	{/*		todo: Avo told me I can turn this off	*/}
+	{/*		todo: Avo told me I can turn this off	*/
+	}
 	// function getKeyContent() {
 	// 	return noKeysCopy.map((item, i) => {
 	// 		return (
@@ -78,6 +84,14 @@ export function NoKeys() {
 				{/*		{getKeyContent()}*/}
 				{/*	</div>*/}
 				{/*</div>*/}
+			</div>
+
+			{/*		todo: debug tool - delete this		*/}
+			<div
+				className="absolute bottom-0 right-0 p-4 cursor-pointer"
+				onClick={() => setNumber(6)}
+			>
+				+1 Key
 			</div>
 		</div>
 	)

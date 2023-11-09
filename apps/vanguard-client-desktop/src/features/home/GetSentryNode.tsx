@@ -1,7 +1,7 @@
 import {RiKey2Line} from "react-icons/ri";
 import {FiGift, FiGitCommit} from "react-icons/fi";
 import {useState} from "react";
-import {ContinueInBrowserModal} from "./modals/ContinueInBrowserModal.tsx";
+import {ContinueInBrowserModal} from "./modals/ContinueInBrowserModal.js";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useSetAtom} from "jotai";
 
