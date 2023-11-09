@@ -1,8 +1,8 @@
-import { ethers } from 'ethers';
-import { NodeLicenseAbi } from '../abis/index.js';
-import { config } from '../config.js';
-import { getProvider } from '../utils/getProvider.js';
-import { listTiers } from './listTiers.js';
+import {ethers} from 'ethers';
+import {NodeLicenseAbi} from '../abis/index.js';
+import {config} from '../config.js';
+import {getProvider} from '../utils/getProvider.js';
+import {listTiers} from './listTiers.js';
 
 /**
  * Pricing tier structure.

@@ -46,7 +46,6 @@ export function SentryWallet() {
 	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
 	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
-	const [purchaseSuccessful, setPurchaseSuccessful] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
 	const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -63,10 +62,7 @@ export function SentryWallet() {
 		setUnassignedWallet({show: true, txHash});
 	});
 
-	// un-assign wallet
-	(window as any).deeplinks?.purchaseSuccessful((_event, txHash) => {
-		setPurchaseSuccessful({show: true, txHash});
-	});
+
 
 	function onRefreshEthBalance() {
 		queryClient.invalidateQueries({queryKey: ["balance", operatorAddress]});
@@ -195,13 +191,6 @@ export function SentryWallet() {
 
 			{unassignedWallet.show && (
 				<WalletDisconnectedModal
-					txHash={unassignedWallet.txHash}
-					onClose={onCloseWalletConnectedModal}
-				/>
-			)}
-
-			{purchaseSuccessful.show && (
-				<PurchaseCompleteModal
 					txHash={unassignedWallet.txHash}
 					onClose={onCloseWalletConnectedModal}
 				/>

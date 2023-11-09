@@ -1,14 +1,16 @@
 import {FaCircleCheck} from "react-icons/fa6";
 import {AiOutlineClose} from "react-icons/ai";
 import {useProvider} from "@/hooks/useProvider";
+import {useSetAtom} from "jotai";
+import {modalStateAtom} from "@/features/modal/ModalManager";
 
 interface PurchaseCompleteModalProps {
 	txHash: string;
-	onClose: () => void;
 }
 
-export function PurchaseCompleteModal({txHash, onClose}: PurchaseCompleteModalProps) {
+export function PurchaseCompleteModal({txHash}: PurchaseCompleteModalProps) {
 	const {data: providerData} = useProvider();
+	const setModalState = useSetAtom(modalStateAtom);
 
 	return (
 		<div
@@ -18,7 +20,7 @@ export function PurchaseCompleteModal({txHash, onClose}: PurchaseCompleteModalPr
 				className="absolute top-0 right-0 left-0 bottom-0 m-auto flex flex-col justify-start items-center w-[506px] h-[216px] border border-gray-200 bg-white">
 				<div
 					className="absolute top-0 right-0 h-16 flex flex-row justify-between items-center text-lg px-6">
-					<div className="cursor-pointer z-10" onClick={onClose}>
+					<div className="cursor-pointer z-10" onClick={() => setModalState(null)}>
 						<AiOutlineClose/>
 					</div>
 				</div>

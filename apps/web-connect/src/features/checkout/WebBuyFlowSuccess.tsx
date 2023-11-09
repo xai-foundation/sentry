@@ -1,25 +1,23 @@
 import {BiLoaderAlt} from "react-icons/bi";
-import {useEffect, useState} from "react";
 import {FaCircleCheck} from "react-icons/fa6";
+import {useProvider} from "@/features/checkout/hooks/useProvider";
 
-export function WebBuyFlowSuccess() {
-	const [isLoading, setIsLoading] = useState<boolean>(true);
-	const data = 12345678 // placeholder value until we hook up contract call
+interface WebBuyFlowSuccessProps {
+	isLoading: boolean;
+	isSuccess: boolean;
+	data: any;
+}
 
-	useEffect(() => {
-		setTimeout(() => {
-			setIsLoading(false);
-		}, 3000);
-	}, [])
+export function WebBuyFlowSuccess({isLoading, isSuccess, data}: WebBuyFlowSuccessProps) {
+	const {data: providerData} = useProvider();
 
 	function returnToClient() {
-		// window.location = `xai-sentry://purchase-successful?txHash=${data?.hash}` as unknown as Location;
-		window.location = `xai-sentry://purchase-successful?txHash=${data}` as unknown as Location;
+		window.location = `xai-sentry://purchase-successful?txHash=${data.hash}` as unknown as Location;
 	}
 
 	return (
 		<>
-			{isLoading ? (
+			{isLoading && !isSuccess ? (
 				<div className="w-[744px] h-[208px] flex flex-col justify-center border border-[#E5E5E5] m-4">
 					<div className="w-full h-[390px] flex flex-col justify-center items-center gap-2">
 						<BiLoaderAlt className="animate-spin" color={"#A3A3A3"} size={32}/>
@@ -35,10 +33,10 @@ export function WebBuyFlowSuccess() {
 						<span className="text-2xl font-semibold mt-2">Purchase successful</span>
 						<span className="text-[15px]">Transaction ID:
 						<a
-							onClick={() => window.open('http://localhost:7555/')}
+							onClick={() => window.open(`${providerData?.blockExplorer}/tx/${data.hash}`)}
 							className="text-[#F30919] ml-1 cursor-pointer"
 						>
-							{data}
+							{data.hash.slice(0, 10) + "..."}
 						</a>
 					</span>
 

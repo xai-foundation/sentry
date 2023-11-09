@@ -1,26 +1,41 @@
 import classNames from "classnames";
-import {atom, useAtomValue} from "jotai";
+import {atom, useAtom, useSetAtom} from "jotai";
 import {ExitAlertModal} from "@/features/home/modals/ExitAlertModal";
+import {useState} from "react";
+import {PurchaseCompleteModal} from "@/features/home/modals/PurchaseCompleteModal";
+import {drawerStateAtom} from "@/features/drawer/DrawerManager";
 
 export enum ModalView {
 	Exit,
+	PurchaseSuccessful,
 }
 
 export const modalStateAtom = atom<ModalView | null>(null);
 
 export function ModalManager() {
-	const modalState = useAtomValue(modalStateAtom);
+	const [modalState, setModalState] = useAtom(modalStateAtom);
+	const setDrawerState = useSetAtom(drawerStateAtom);
+	const [purchaseSuccessful, setPurchaseSuccessful] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
 
+	// un-assign wallet
+	(window as any).deeplinks?.purchaseSuccessful((_event, txHash) => {
+		setPurchaseSuccessful({show: true, txHash});
+		setDrawerState(null);
+		setModalState(ModalView.PurchaseSuccessful);
+	});
 	return (
-		<div
-			className={classNames("w-[28rem] min-w-[28rem] h-screen relative z-10", {
-				"hidden": modalState === null,
-			})}
-		>
+		<div className={classNames("w-full h-full fixed z-10", {
+			"hidden": modalState === null,
+		})}>
 			{modalState === ModalView.Exit && (
 				<ExitAlertModal onSuccess={() => alert("wow")}/>
 			)}
 
+			{modalState === ModalView.PurchaseSuccessful && (
+				<PurchaseCompleteModal
+					txHash={purchaseSuccessful.txHash}
+				/>
+			)}
 		</div>
 	);
 }

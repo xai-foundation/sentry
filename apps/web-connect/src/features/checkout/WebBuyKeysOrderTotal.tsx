@@ -1,29 +1,32 @@
 import {BiLoaderAlt} from "react-icons/bi";
 import {AiFillInfoCircle, AiOutlineClose} from "react-icons/ai";
-import {useGetPriceForQuantity} from "@/features/checkout/hooks/useGetPriceForQuantity";
 import {useGetTotalSupplyAndCap} from "@/features/checkout/hooks/useGetTotalSupplyAndCap";
-import {Dispatch, SetStateAction, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {ethers} from "ethers";
 import {XaiCheckbox} from "@xai-vanguard-node/ui/dist/src/features/checkbox/XaiCheckbox";
+import {CheckoutTierSummary} from "@xai-vanguard-node/core";
 
-interface WebBuyKeysOrderTotalProps {
-	quantity: number;
-	setPurchase: Dispatch<SetStateAction<boolean>>;
+interface PriceDataInterface {
+	price: bigint,
+	nodesAtEachPrice: CheckoutTierSummary[]
 }
 
-export function WebBuyKeysOrderTotal({quantity, setPurchase}: WebBuyKeysOrderTotalProps) {
-	const {data: getPriceData, isLoading: isPriceLoading} = useGetPriceForQuantity(quantity);
+interface WebBuyKeysOrderTotalProps {
+	onClick: () => void;
+	getPriceData: PriceDataInterface | undefined;
+	isPriceLoading: boolean;
+}
+
+export function WebBuyKeysOrderTotal({onClick, getPriceData, isPriceLoading}: WebBuyKeysOrderTotalProps) {
 	const {isLoading: isTotalLoading} = useGetTotalSupplyAndCap();
 	const [discountApplied, setDiscountApplied] = useState<boolean>(false);
 	const [discountError, setDiscountError] = useState<boolean>(false);
 	const [promo, setPromo] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState('');
-
+	const [price, setPrice] = useState<{ price: number, discount: number }>({price: 0, discount: 0});
 	const [terms, setTerms] = useState<boolean>(false);
 	const [investments, setInvestments] = useState<boolean>(false);
 	const ready = terms && investments;
-
-	const [price, setPrice] = useState<{ price: number, discount: number}>({price: 0, discount: 0});
 
 	useEffect(() => {
 		if (getPriceData) {
@@ -71,7 +74,7 @@ export function WebBuyKeysOrderTotal({quantity, setPurchase}: WebBuyKeysOrderTot
 
 	return (
 		<div>
-			{isPriceLoading || isTotalLoading
+			{isPriceLoading || isTotalLoading || !getPriceData
 				? (
 					<div className="w-full h-[390px] flex flex-col justify-center items-center gap-2">
 						<BiLoaderAlt className="animate-spin" color={"#A3A3A3"} size={32}/>
@@ -236,7 +239,7 @@ export function WebBuyKeysOrderTotal({quantity, setPurchase}: WebBuyKeysOrderTot
 
 							<div>
 								<button
-									onClick={() => setPurchase(true)}
+									onClick={() => onClick()}
 									className={`w-full h-16 ${investments && terms ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 									disabled={!ready}
 								>
