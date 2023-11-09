@@ -8,7 +8,8 @@ export function useListOwnersForOperator(sentryAddress: string | undefined) {
 			const owners = await listOwnersForOperator(sentryAddress!);
 			return {owners};
 		},
-		cacheTime: 0,
+		staleTime: 10000,
+		cacheTime: Infinity,
 		enabled: !!sentryAddress,
 	});
 }

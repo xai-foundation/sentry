@@ -15,9 +15,9 @@ export function Keys() {
 		<div className="w-full h-screen">
 			<div className="flex flex-row justify-between items-center border-b border-gray-200 pl-10 pr-2">
 				<div className="sticky top-0 flex flex-row items-center h-16 gap-2 bg-white">
-					<h2 className="text-lg">Keys</h2>
+					<h2 className="text-lg font-semibold">Keys</h2>
 					<p className="text-sm bg-gray-100 pl-2 pr-2 rounded-2xl text-gray-500">
-						{number} keys in 1 wallet
+						X keys in Y wallet
 					</p>
 				</div>
 
