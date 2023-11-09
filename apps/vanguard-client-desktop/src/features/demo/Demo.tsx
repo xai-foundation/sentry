@@ -1,12 +1,9 @@
 import {useState} from "react";
-import {Blockpass} from "../../components/blockpass/Blockpass.js";
-import {PurchaseCompleteModal} from "../home/modals/PurchaseCompleteModal.js";
+import {Blockpass} from "@/components/blockpass/Blockpass";
 import {RemoveWalletModal} from "@/features/home/modals/RemoveWalletModal";
 import {ImportSentryAlertModal} from "@/features/home/modals/ImportSentryAlertModal";
 
 export function Demo() {
-	// const [showConnectedModal, setShowConnectedModal] = useState<boolean>(false);
-	const [showPurchaseCompleteModal, setShowPurchaseCompleteModal] = useState<boolean>(false);
 	const [showRemoveWalletModal, setShowRemoveWalletModal] = useState<boolean>(false);
 	const [showImportSentryAlertModal, setShowImportSentryAlertModal] = useState<boolean>(false);
 
@@ -26,13 +23,6 @@ export function Demo() {
 				Open Remove Wallet Modal
 			</button>
 
-			<button
-				onClick={() => setShowPurchaseCompleteModal(true)}
-				className="w-auto h-auto bg-[#F30919] text-white p-4 uppercase font-semibold"
-			>
-				Open Purchase Complete Modal
-			</button>
-
 			<Blockpass/>
 
 			{showImportSentryAlertModal && (
@@ -46,12 +36,6 @@ export function Demo() {
 				<RemoveWalletModal
 					setShowModal={setShowRemoveWalletModal}
 					onSuccess={() => alert("removed wallet!")}
-				/>
-			)}
-
-			{showPurchaseCompleteModal && (
-				<PurchaseCompleteModal
-					setShowPurchaseCompleteModal={setShowPurchaseCompleteModal}
 				/>
 			)}
 		</div>

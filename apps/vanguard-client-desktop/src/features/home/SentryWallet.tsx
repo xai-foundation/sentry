@@ -44,10 +44,7 @@ export function SentryWallet() {
 	const [copiedOperator, setCopiedOperator] = useState<boolean>(false);
 	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
-	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({
-		show: false,
-		txHash: ""
-	});
+	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
 	const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -63,6 +60,8 @@ export function SentryWallet() {
 	(window as any).deeplinks?.unassignedWallet((_event, txHash) => {
 		setUnassignedWallet({show: true, txHash});
 	});
+
+
 
 	function onRefreshEthBalance() {
 		queryClient.invalidateQueries({queryKey: ["balance", operatorAddress]});
