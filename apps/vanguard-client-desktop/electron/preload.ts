@@ -129,6 +129,7 @@ setTimeout(removeLoading, 4999)
 contextBridge.exposeInMainWorld('deeplinks', {
 	assignedWallet: (callback: (_event, txHash) => void) => ipcRenderer.on("assigned-wallet", callback),
 	unassignedWallet: (callback: (_event, txHash) => void) => ipcRenderer.on("unassigned-wallet", callback),
+	purchaseSuccessful: (callback: (_event, txHash) => void) => ipcRenderer.on("purchase-successful", callback),
 });
 
 // ipcRenderer.on("test", (event, url) => {

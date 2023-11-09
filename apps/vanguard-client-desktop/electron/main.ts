@@ -1,4 +1,4 @@
-import {app, BrowserWindow, dialog, ipcMain, safeStorage, shell} from 'electron'
+import {app, BrowserWindow, ipcMain, safeStorage, shell} from 'electron'
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
@@ -103,18 +103,18 @@ function createWindow() {
 		win.loadFile(path.join(process.env.DIST, 'index.html'))
 	}
 
-	win.on('close', (e) => {
-		const choice = dialog.showMessageBoxSync({
-			type: 'question',
-			buttons: ['Yes', 'No'],
-			title: 'Confirm',
-			message: 'Are you sure you want to quit? You will stop accruing rewards once you exit the client.'
-		});
-
-		if (choice === 1) {
-			e.preventDefault();
-		}
-	});
+	// win.on('close', (e) => {
+	// 	const choice = dialog.showMessageBoxSync({
+	// 		type: 'question',
+	// 		buttons: ['Yes', 'No'],
+	// 		title: 'Confirm',
+	// 		message: 'Are you sure you want to quit? You will stop accruing rewards once you exit the client.'
+	// 	});
+	//
+	// 	if (choice === 1) {
+	// 		e.preventDefault();
+	// 	}
+	// });
 }
 
 // Quit when all windows are closed, except on macOS. There, it's common
@@ -189,6 +189,10 @@ function handleDeeplink(_, url) {
 		case "unassigned-wallet":
 			txHash = url.slice(url.indexOf("=") + 1);
 			win?.webContents.send("unassigned-wallet", txHash);
+			break;
+		case "purchase-successful":
+			txHash = url.slice(url.indexOf("=") + 1);
+			win?.webContents.send("purchase-successful", txHash);
 			break;
 	}
 }

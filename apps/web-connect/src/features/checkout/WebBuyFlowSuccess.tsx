@@ -4,12 +4,18 @@ import {FaCircleCheck} from "react-icons/fa6";
 
 export function WebBuyFlowSuccess() {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
+	const data = 12345678 // placeholder value until we hook up contract call
 
 	useEffect(() => {
 		setTimeout(() => {
 			setIsLoading(false);
 		}, 3000);
 	}, [])
+
+	function returnToClient() {
+		// window.location = `xai-sentry://purchase-successful?txHash=${data?.hash}` as unknown as Location;
+		window.location = `xai-sentry://purchase-successful?txHash=${data}` as unknown as Location;
+	}
 
 	return (
 		<>
@@ -32,12 +38,12 @@ export function WebBuyFlowSuccess() {
 							onClick={() => window.open('http://localhost:7555/')}
 							className="text-[#F30919] ml-1 cursor-pointer"
 						>
-							129019028
+							{data}
 						</a>
 					</span>
 
 						<button
-							onClick={() => alert("Return to Xai")}
+							onClick={() => returnToClient}
 							className="w-[436px] bg-[#F30919] text-white p-4 font-semibold mt-8"
 						>
 							Return to Xai Client

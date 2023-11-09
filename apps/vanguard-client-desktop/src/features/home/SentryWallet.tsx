@@ -22,6 +22,7 @@ import {useBalance} from "@/hooks/useBalance";
 import {ethers} from "ethers";
 import classNames from "classnames";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
+import {PurchaseCompleteModal} from "@/features/home/modals/PurchaseCompleteModal";
 
 // TODO -> replace with dynamic value later
 const recommendedValue = ethers.parseEther("0.005");
@@ -44,10 +45,8 @@ export function SentryWallet() {
 	const [copiedOperator, setCopiedOperator] = useState<boolean>(false);
 	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
-	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({
-		show: false,
-		txHash: ""
-	});
+	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
+	const [purchaseSuccessful, setPurchaseSuccessful] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
 	const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -62,6 +61,11 @@ export function SentryWallet() {
 	// un-assign wallet
 	(window as any).deeplinks?.unassignedWallet((_event, txHash) => {
 		setUnassignedWallet({show: true, txHash});
+	});
+
+	// un-assign wallet
+	(window as any).deeplinks?.purchaseSuccessful((_event, txHash) => {
+		setPurchaseSuccessful({show: true, txHash});
 	});
 
 	function onRefreshEthBalance() {
@@ -191,6 +195,13 @@ export function SentryWallet() {
 
 			{unassignedWallet.show && (
 				<WalletDisconnectedModal
+					txHash={unassignedWallet.txHash}
+					onClose={onCloseWalletConnectedModal}
+				/>
+			)}
+
+			{purchaseSuccessful.show && (
+				<PurchaseCompleteModal
 					txHash={unassignedWallet.txHash}
 					onClose={onCloseWalletConnectedModal}
 				/>
