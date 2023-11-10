@@ -22,6 +22,7 @@ import {useBalance} from "@/hooks/useBalance";
 import {ethers} from "ethers";
 import classNames from "classnames";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
+import {Tooltip} from "@/features/keys/Tooltip";
 
 // TODO -> replace with dynamic value later
 const recommendedValue = ethers.parseEther("0.005");
@@ -60,7 +61,6 @@ export function SentryWallet() {
 	(window as any).deeplinks?.unassignedWallet((_event, txHash) => {
 		setUnassignedWallet({show: true, txHash});
 	});
-
 
 
 	function onRefreshEthBalance() {
@@ -235,8 +235,12 @@ export function SentryWallet() {
 										: (<PiCopy/>)}
 								</div>
 
-
-								<AiOutlineInfoCircle/>
+								<Tooltip
+									header={"Sentry Wallet is encrypted on your device"}
+									body={"This wallet is exportable and EVM compatible."}
+								>
+									<AiOutlineInfoCircle className="text-[#A3A3A3]"/>
+								</Tooltip>
 
 								<div
 									className="relative cursor-pointer"
@@ -303,7 +307,12 @@ export function SentryWallet() {
 					<div className="flex flex-col items-start w-full border-b border-gray-200 gap-2 py-2 pl-10">
 						<div className="flex items-center gap-1">
 							<h2 className="font-semibold">Sentry Wallet Balance</h2>
-							<AiOutlineInfoCircle className="text-[#A3A3A3]"/>
+							<Tooltip
+								header={"Funds in ETH required"}
+								body={"Sentry Wallet balance is used to pay gas fees for automatically claiming accrued esXAI."}
+							>
+								<AiOutlineInfoCircle className="text-[#A3A3A3]"/>
+							</Tooltip>
 						</div>
 
 						<div className="flex justify-center items-center gap-4">
@@ -332,7 +341,13 @@ export function SentryWallet() {
 						<p className="text-sm bg-gray-100 px-2 rounded-2xl text-gray-500">
 							{loading ? "Loading..." : `${listNodeLicensesData!.totalLicenses} key${listNodeLicensesData!.totalLicenses === 1 ? "" : "s"} in ${listOwnersData!.owners.length} wallet${listOwnersData!.owners.length === 1 ? "" : "s"}`}
 						</p>
-						<AiOutlineInfoCircle className="text-[#A3A3A3]"/>
+						<Tooltip
+							header={"Purchased keys must be assigned to Sentry Wallet"}
+							body={"To assign keys, connect all wallets containing Sentry Keys."}
+							body2={"The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry."}
+						>
+							<AiOutlineInfoCircle className="text-[#A3A3A3]"/>
+						</Tooltip>
 					</div>
 				</div>
 

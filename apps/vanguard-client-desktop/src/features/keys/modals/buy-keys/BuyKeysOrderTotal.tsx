@@ -4,6 +4,7 @@ import {useGetPriceForQuantity} from "@/features/keys/hooks/useGetPriceForQuanti
 import {useGetTotalSupplyAndCap} from "@/features/keys/hooks/useGetTotalSupplyAndCap";
 import {useEffect, useState} from "react";
 import {ethers} from "ethers";
+import {Tooltip} from "@/features/keys/Tooltip";
 
 interface BuyKeysOrderTotalProps {
 	quantity: number;
@@ -77,10 +78,14 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 								<div className="w-full">
 									<hr/>
 								</div>
-								<div className="w-12 flex flex-row text-sm uppercase text-[#A3A3A3] mt-4 px-6">
+								<div className="w-12 flex flex-row text-sm text-[#A3A3A3] mt-4 px-6">
 									<p className="flex items-center gap-1">
-										Total
-										<AiOutlineInfoCircle size={16}/>
+										TOTAL
+										<Tooltip
+											body={"All purchases must be made in Arbitrum ETH"}
+										>
+											<AiOutlineInfoCircle size={16}/>
+										</Tooltip>
 									</p>
 								</div>
 							</div>

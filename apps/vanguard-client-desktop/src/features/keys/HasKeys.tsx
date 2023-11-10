@@ -9,6 +9,7 @@ import {useOperator} from "@/features/operator";
 import {useSetAtom} from "jotai/index";
 import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse.js";
 import {BlockPassKYC} from "@/components/blockpass/Blockpass";
+import {Tooltip} from "@/features/keys/Tooltip";
 
 const dummyLicenses = [
 	{
@@ -210,7 +211,12 @@ export function HasKeys() {
 			<div className="flex flex-col pl-10">
 				<div className="flex items-center gap-1 text-[15px] text-[#525252]">
 					<p>Accrued network esXAI</p>
-					<AiOutlineInfoCircle size={16} color={"#A3A3A3"}/>
+					<Tooltip
+						header={"Each key will accrue esXAI"}
+						body={"This value is the sum of all esXAI accrued for the selected wallet. If esXAI has already been claimed, it will not be reflected in this value."}
+					>
+						<AiOutlineInfoCircle size={16} color={"#A3A3A3"}/>
+					</Tooltip>
 				</div>
 				<div className="flex items-center gap-2 font-semibold">
 					<XaiLogo/>
