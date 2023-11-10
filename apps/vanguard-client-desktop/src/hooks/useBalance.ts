@@ -8,7 +8,6 @@ export function useBalance(address: string | undefined) {
 		queryFn: async () => {
 			const wei = await getWalletBalanceCore(address!);
 
-			console.log("new balance:", wei);
 			return {
 				wei,
 				ethString: ethers.formatEther(wei),

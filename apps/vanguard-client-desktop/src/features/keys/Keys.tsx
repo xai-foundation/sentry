@@ -5,11 +5,22 @@ import {ContinueInBrowserModal} from "../home/modals/ContinueInBrowserModal.js";
 import {AiFillWarning} from "react-icons/ai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useAtom} from "jotai";
+import {useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
+import {useOperator} from "@/features/operator";
+import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
 
 export function Keys() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
-	const [number, setNumber] = useState<number>(0);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
+
+	const {publicKey} = useOperator();
+	const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey);
+	console.log("ownersLoading:", ownersLoading);
+	console.log("owners:", owners);
+
+	const {isLoading, licensesMap} = useListNodeLicensesWithCallback(owners);
+	console.log("isLoading:", isLoading);
+	console.log("licensesMap:", licensesMap);
 
 	return (
 		<div className="w-full h-screen">
@@ -21,7 +32,7 @@ export function Keys() {
 					</p>
 				</div>
 
-				{!number && drawerState === null && (
+				{drawerState === null && (
 					<div className="flex gap-4 bg-[#FFFBEB] p-2 z-10">
 						<div className="flex flex-row gap-2 items-center">
 							<AiFillWarning className="w-7 h-7 text-[#F59E28]"/>
@@ -41,10 +52,10 @@ export function Keys() {
 				<ContinueInBrowserModal setShowContinueInBrowserModal={setShowContinueInBrowserModal}/>
 			)}
 
-			{number ? (
-				<HasKeys/>
+			{true ? (
+				<HasKeys licensesMap={licensesMap}/>
 			) : (
-				<NoKeys setNumber={setNumber}/>
+				<NoKeys setNumber={() =>{}}/>
 			)}
 		</div>
 	)

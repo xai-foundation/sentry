@@ -5,7 +5,6 @@ export function useListNodeLicenses(walletAddresses: string[] = []) {
 	return useQuery({
 		queryKey: ["licensesForWallets", walletAddresses],
 		queryFn: async () => {
-			console.log("inner loading:", walletAddresses);
 			const mapping: Record<string, bigint[]> = {};
 
 			await Promise.all(walletAddresses.map(async (walletAddress) => {
