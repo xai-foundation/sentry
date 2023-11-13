@@ -1,5 +1,5 @@
 import Vorpal from "vorpal";
-import { config } from "@xai-vanguard-node/core";
+import { config } from "@sentry/core";
 
 /**
  * Function to get all contract addresses from the config and log them in the console.

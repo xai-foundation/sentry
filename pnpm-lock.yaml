@@ -39,7 +39,7 @@ importers:
 
   apps/cli:
     dependencies:
-      '@xai-vanguard-node/core':
+      '@sentry/core':
         specifier: workspace:*
         version: link:../../packages/core
       cli-table3:
@@ -62,15 +62,15 @@ importers:
         specifier: ^5.8.1
         version: 5.8.1
 
-  apps/vanguard-client-desktop:
+  apps/sentry-client-desktop:
     dependencies:
-      '@xai-vanguard-node/core':
+      '@sentry/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@xai-vanguard-node/ui':
+      '@sentry/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@xai-vanguard-node/web-connect':
+      '@sentry/web-connect':
         specifier: workspace:*
         version: link:../web-connect
       classnames:
@@ -164,10 +164,10 @@ importers:
       '@web3modal/wagmi':
         specifier: ^3.1.0
         version: 3.1.0(@types/react@18.2.21)(@wagmi/core@1.4.5)(typescript@5.2.2)(viem@1.15.1)
-      '@xai-vanguard-node/core':
+      '@sentry/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@xai-vanguard-node/ui':
+      '@sentry/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       react:
@@ -277,7 +277,7 @@ importers:
 
   infrastructure/smart-contracts:
     dependencies:
-      '@xai-vanguard-node/core':
+      '@sentry/core':
         specifier: workspace:*
         version: link:../../packages/core
       csv:

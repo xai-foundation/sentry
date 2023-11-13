@@ -1,11 +1,11 @@
 import {Dispatch, SetStateAction, useEffect, useState} from "react";
-import {XaiNumberInput} from "@xai-vanguard-node/ui";
+import {XaiNumberInput} from "@sentry/ui";
 import {ethers} from "ethers";
 import {useGetTotalSupplyAndCap} from "./hooks/useGetTotalSupplyAndCap.js";
 import {useGetPriceForQuantity} from "./hooks/useGetPriceForQuantity.js";
 import {BiLoaderAlt} from "react-icons/bi";
 import {AiFillInfoCircle, AiOutlineClose} from "react-icons/ai";
-import {XaiCheckbox} from "@xai-vanguard-node/ui/src/features/checkbox/XaiCheckbox.js";
+import {XaiCheckbox} from "@sentry/ui/src/features/checkbox/XaiCheckbox.js";
 
 
 interface WebBuyFlowProps {
@@ -284,7 +284,7 @@ export function WebBuyFlow({setPurchase}: WebBuyFlowProps) {
 											onClick={() => setInvestments(!investments)}
 											condition={investments}
 										>
-											I understand that Xai Vanguard Nodes are
+											I understand that Xai sentry Nodes are
 											<a
 												className="cursor-pointer text-[#F30919]"
 												onClick={() => window.open("https://www.youtube.com/watch?v=dQw4w9WgXcQ")}>

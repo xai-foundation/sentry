@@ -1,4 +1,4 @@
-import Vorpal from "vorpal";import { getSignerFromPrivateKey } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { getSignerFromPrivateKey } from "@sentry/core";
 
 /**
  * Takes in a private key and returns the public key associated with that.

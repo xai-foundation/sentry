@@ -30,18 +30,18 @@ jobs:
       - name: Build monorepo
         run: pnpm run build
 
-      - name: Upload vanguard-client-desktop artifacts
+      - name: Upload sentry-client-desktop artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: release-vanguard-client-desktop-${{ matrix.os }}
-          path: apps/vanguard-client-desktop/release
+          name: release-sentry-client-desktop-${{ matrix.os }}
+          path: apps/sentry-client-desktop/release
 
       - name: zip cli artifacts
         run: |
           cd apps/cli/release
-          zip vanguard-node-cli-macos.zip vanguard-node-cli-macos
-          zip vanguard-node-cli-linux.zip vanguard-node-cli-linux
-          zip vanguard-node-cli-windows.zip vanguard-node-cli-win.exe
+          zip sentry-node-cli-macos.zip sentry-node-cli-macos
+          zip sentry-node-cli-linux.zip sentry-node-cli-linux
+          zip sentry-node-cli-windows.zip sentry-node-cli-win.exe
         if: matrix.os == 'ubuntu-latest'
 
       - name: Upload cli artifacts
@@ -62,11 +62,11 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            release-vanguard-client-desktop-macos-latest/vanguard-client-macos.dmg
-            release-vanguard-client-desktop-ubuntu-latest/vanguard-client-linux.AppImage
-            release-vanguard-client-desktop-windows-latest/vanguard-client-windows.exe
-            release-cli-ubuntu-latest/vanguard-node-cli-macos.zip
-            release-cli-ubuntu-latest/vanguard-node-cli-linux.zip
-            release-cli-ubuntu-latest/vanguard-node-cli-windows.zip
+            release-sentry-client-desktop-macos-latest/sentry-client-macos.dmg
+            release-sentry-client-desktop-ubuntu-latest/sentry-client-linux.AppImage
+            release-sentry-client-desktop-windows-latest/sentry-client-windows.exe
+            release-cli-ubuntu-latest/sentry-node-cli-macos.zip
+            release-cli-ubuntu-latest/sentry-node-cli-linux.zip
+            release-cli-ubuntu-latest/sentry-node-cli-windows.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
