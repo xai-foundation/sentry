@@ -146,8 +146,10 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 												<div
 													className="w-full h-auto flex flex-row justify-between items-center text-[15px] text-[#525252] mt-2 py-2">
 													<span>Add promo code</span>
-													<div className="cursor-pointer z-10"
-														 onClick={() => setPromo(false)}>
+													<div
+														className="cursor-pointer z-10"
+														onClick={() => setPromo(false)}
+													>
 														<AiOutlineClose/>
 													</div>
 												</div>

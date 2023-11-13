@@ -1,4 +1,4 @@
-import {XaiNumberInput} from "@xai-vanguard-node/ui";
+import {XaiNumberInput} from "@sentry/ui";
 import {Dispatch, SetStateAction} from "react";
 import {useGetTotalSupplyAndCap} from "@/features/keys/hooks/useGetTotalSupplyAndCap";
 
@@ -9,7 +9,7 @@ interface BuyKeysQuantityProps {
 
 export function BuyKeysQuantity({quantity, setQuantity}: BuyKeysQuantityProps) {
 	const {data: getTotalData} = useGetTotalSupplyAndCap();
-	let maxSupply = getTotalData ? Number(getTotalData.maxSupply) - Number(getTotalData.totalSupply) : 0;
+	const maxSupply = getTotalData ? Number(getTotalData.maxSupply) - Number(getTotalData.totalSupply) : 0;
 
 	return (
 		<div>

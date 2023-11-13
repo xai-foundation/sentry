@@ -1,4 +1,4 @@
-import {XaiNumberInput} from "@xai-vanguard-node/ui";
+import {XaiNumberInput} from "@sentry/ui";
 import {Dispatch, SetStateAction} from "react";
 import {useGetTotalSupplyAndCap} from "@/features/checkout/hooks/useGetTotalSupplyAndCap";
 
@@ -9,7 +9,7 @@ interface WebBuyKeysQuantityProps {
 
 export function WebBuyKeysQuantity({quantity, setQuantity}: WebBuyKeysQuantityProps) {
 	const {data: getTotalData} = useGetTotalSupplyAndCap();
-	let maxSupply = getTotalData ? Number(getTotalData.maxSupply) - Number(getTotalData.totalSupply) : 0;
+	const maxSupply = getTotalData ? Number(getTotalData.maxSupply) - Number(getTotalData.totalSupply) : 0;
 
 	return (
 		<div className="flex flex-row items-center gap-4">
