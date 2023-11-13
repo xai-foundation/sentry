@@ -1,5 +1,5 @@
 {
-  "name": "@xai-vanguard-node/cloud_functions",
+  "name": "@sentry/cloud_functions",
   "version": "1.0.0",
   "description": "Cloud functions for a Xai Node running on GCP.",
   "main": "build/cloud_functions.js",

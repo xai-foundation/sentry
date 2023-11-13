@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { config, setConfig } from '@xai-vanguard-node/core';
+import { config, setConfig } from '@sentry/core';
 
 /**
  * Updates the configuration file with the provided config object.

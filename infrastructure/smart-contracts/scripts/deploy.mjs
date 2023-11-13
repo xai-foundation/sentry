@@ -2,7 +2,7 @@ import hardhat from "hardhat";
 import { extractAbi } from "../utils/exportAbi.mjs";
 import { safeVerify } from "../utils/safeVerify.mjs";
 import { writeToConfig } from "../utils/writeToConfig.mjs";
-import { config } from "@xai-vanguard-node/core";
+import { config } from "@sentry/core";
 import { parse } from "csv/sync";
 import fs from "fs";
 import {getImplementationAddress} from "../utils/getImplementationAddress.mjs"

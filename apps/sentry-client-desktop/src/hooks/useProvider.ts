@@ -1,5 +1,5 @@
 import {useQuery} from "react-query";
-import {getProvider} from "@xai-vanguard-node/core";
+import {getProvider} from "@sentry/core";
 
 export function useProvider() {
 	return useQuery({

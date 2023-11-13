@@ -12,7 +12,7 @@ import {useAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.js";
 import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
-import {NodeLicenseStatusMap, operatorRuntime} from "@xai-vanguard-node/core";
+import {NodeLicenseStatusMap, operatorRuntime} from "@sentry/core";
 import {AssignKeysFromNewWallet} from "@/components/AssignKeysFromNewWallet";
 import {useListOwnersForOperator} from "@/hooks/useListOwnersForOperator";
 import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";

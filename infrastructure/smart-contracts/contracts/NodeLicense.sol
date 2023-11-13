@@ -38,7 +38,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         uint256 _referralDiscountPercentage,
         uint256 _referralRewardPercentage
     ) public initializer {
-        __ERC721_init("Vanguard Node License", "VNL");
+        __ERC721_init("Sentry Node License", "SNL");
         __AccessControl_init();
         fundsReceiver = _fundsReceiver;
         referralDiscountPercentage = _referralDiscountPercentage;

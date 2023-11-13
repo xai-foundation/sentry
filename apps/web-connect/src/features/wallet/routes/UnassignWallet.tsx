@@ -1,7 +1,7 @@
 import {MdVerifiedUser} from "react-icons/md";
 import {useNavigate, useParams} from "react-router-dom";
 import {useAccount, useContractWrite} from "wagmi";
-import {config, RefereeAbi} from "@xai-vanguard-node/core";
+import {config, RefereeAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 
 export function UnassignWallet() {

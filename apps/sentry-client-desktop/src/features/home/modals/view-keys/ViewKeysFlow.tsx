@@ -1,6 +1,6 @@
 import {ChangeEvent, Dispatch, SetStateAction, useState} from "react";
 import {BiLinkExternal, BiLoaderAlt} from "react-icons/bi";
-import {listNodeLicenses} from "@xai-vanguard-node/core";
+import {listNodeLicenses} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useNavigate} from "react-router-dom";
 import {useSetAtom} from "jotai/index";

@@ -1,5 +1,5 @@
 import {useQuery} from "react-query";
-import {listNodeLicenses} from "@xai-vanguard-node/core";
+import {listNodeLicenses} from "@sentry/core";
 
 export function useListNodeLicenses(walletAddresses: string[] = []) {
 	return useQuery({
