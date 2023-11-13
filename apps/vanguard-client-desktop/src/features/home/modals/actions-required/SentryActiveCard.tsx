@@ -22,6 +22,7 @@ export function SentryActiveCard() {
 						icon={IoMdCloseCircle}
 						color="#F59E28"
 						title="Sentry Wallet inactive"
+						info={true}
 					/>
 
 					<p className="text-[15px] text-[#525252] mt-3">
