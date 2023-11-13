@@ -85,6 +85,6 @@ bootOperator(cli);
 setOrAddPricingTiersCommand(cli);
 
 cli
-    .delimiter('vanguard-node$')
+    .delimiter('sentry-node$')
     .show()
     .log('\nType "help" to display a list of actions.');

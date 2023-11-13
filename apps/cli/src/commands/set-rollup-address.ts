@@ -1,4 +1,4 @@
-import Vorpal from "vorpal";import { getSignerFromPrivateKey, setRollupAddress as coreSetRollupAddress } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { getSignerFromPrivateKey, setRollupAddress as coreSetRollupAddress } from "@sentry/core";
 
 /**
  * Function to set the rollup address in the Referee contract.

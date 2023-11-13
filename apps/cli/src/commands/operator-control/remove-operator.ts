@@ -1,4 +1,4 @@
-import Vorpal from "vorpal";import { removeOperatorFromReferee, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { removeOperatorFromReferee, getSignerFromPrivateKey } from "@sentry/core";
 
 /**
  * Function to remove an operator from the Referee contract.

@@ -1,4 +1,4 @@
-import Vorpal from "vorpal";import { getTotalSupply } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { getTotalSupply } from "@sentry/core";
 
 export function totalSupply(cli: Vorpal) {
     cli

@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
 import { useState, useEffect, useRef } from 'react';
-import { createMnemonic, getSignerFromMnemonic, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
+import { createMnemonic, getSignerFromMnemonic, getSignerFromPrivateKey } from "@sentry/core";
 
 interface IUseOperatorResponse {
     signer?: ethers.Signer;

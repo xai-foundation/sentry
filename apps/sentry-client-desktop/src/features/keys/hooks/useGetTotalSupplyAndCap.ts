@@ -1,5 +1,5 @@
 import {useQuery} from "react-query";
-import {getTotalSupplyAndCap} from "@xai-vanguard-node/core";
+import {getTotalSupplyAndCap} from "@sentry/core";
 
 export function useGetTotalSupplyAndCap() {
 	return useQuery({

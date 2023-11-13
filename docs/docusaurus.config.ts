@@ -16,7 +16,7 @@ const config: Config = {
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'xai-foundation', // Usually your GitHub org/user name.
-  projectName: 'vanguard-node', // Usually your repo name.
+  projectName: 'sentry-node', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',

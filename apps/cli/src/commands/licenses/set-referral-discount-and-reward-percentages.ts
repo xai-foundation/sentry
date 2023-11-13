@@ -1,5 +1,5 @@
 import Vorpal from "vorpal";
-import { getSignerFromPrivateKey, setDiscountAndRewardForReferrals } from "@xai-vanguard-node/core";
+import { getSignerFromPrivateKey, setDiscountAndRewardForReferrals } from "@sentry/core";
 
 /**
  * Function to set the referral discount and reward percentages in the NodeLicense contract.

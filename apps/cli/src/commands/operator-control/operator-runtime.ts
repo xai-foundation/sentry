@@ -1,5 +1,5 @@
 import Vorpal from "vorpal";
-import { getSignerFromPrivateKey, operatorRuntime } from "@xai-vanguard-node/core";
+import { getSignerFromPrivateKey, operatorRuntime } from "@sentry/core";
 
 /**
  * Starts a runtime of the operator.

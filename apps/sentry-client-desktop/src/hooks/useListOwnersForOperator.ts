@@ -1,5 +1,5 @@
 import {useQuery} from "react-query";
-import {listOwnersForOperator} from "@xai-vanguard-node/core";
+import {listOwnersForOperator} from "@sentry/core";
 
 export function useListOwnersForOperator(sentryAddress: string | undefined) {
 	return useQuery({

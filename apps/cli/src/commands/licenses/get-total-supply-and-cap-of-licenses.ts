@@ -1,5 +1,5 @@
 import Vorpal from "vorpal";
-import { getTotalSupplyAndCap as getTotalSupplyAndCapCore } from "@xai-vanguard-node/core";
+import { getTotalSupplyAndCap as getTotalSupplyAndCapCore } from "@sentry/core";
 
 /**
  * Function to get the total supply and max supply of NodeLicense tokens.

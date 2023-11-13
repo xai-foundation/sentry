@@ -1,4 +1,4 @@
-import Vorpal from "vorpal";import { removeAddressFromRole, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { removeAddressFromRole, getSignerFromPrivateKey } from "@sentry/core";
 
 /**
  * Function to remove an admin from the Referee contract.

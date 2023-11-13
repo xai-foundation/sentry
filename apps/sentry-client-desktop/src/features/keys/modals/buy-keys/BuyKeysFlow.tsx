@@ -1,5 +1,5 @@
 import {useState} from "react";
-import {XaiNumberInput} from "@xai-vanguard-node/ui";
+import {XaiNumberInput} from "@sentry/ui";
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {BiLinkExternal, BiLoaderAlt} from "react-icons/bi";
 import {AiFillInfoCircle, AiOutlineClose, AiOutlineInfoCircle} from "react-icons/ai";
