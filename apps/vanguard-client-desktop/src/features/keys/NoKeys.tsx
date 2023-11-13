@@ -19,11 +19,7 @@ import {Dispatch, SetStateAction} from "react";
 // 	},
 // ]
 
-interface NoKeysProps {
-	setNumber: Dispatch<SetStateAction<number>>;
-}
-
-export function NoKeys({setNumber}: NoKeysProps) {
+export function NoKeys() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 
 	{/*		todo: Avo told me I can turn this off	*/
@@ -84,14 +80,6 @@ export function NoKeys({setNumber}: NoKeysProps) {
 				{/*		{getKeyContent()}*/}
 				{/*	</div>*/}
 				{/*</div>*/}
-			</div>
-
-			{/*		todo: debug tool - delete this		*/}
-			<div
-				className="absolute bottom-0 right-0 p-4 cursor-pointer"
-				onClick={() => setNumber(6)}
-			>
-				+1 Key
 			</div>
 		</div>
 	)

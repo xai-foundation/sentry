@@ -153,8 +153,6 @@ if (isWindows) {
 		app.quit();
 	} else {
 		app.on('second-instance', (event, commandLine) => {
-			console.log("event:", event);
-
 			// Someone tried to run a second instance, we should focus our window.
 			if (win) {
 				if (win.isMinimized()) win.restore();

@@ -9,6 +9,7 @@ import {useOperator} from "@/features/operator";
 import {useSetAtom} from "jotai/index";
 import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse.js";
 import {BlockPassKYC} from "@/components/blockpass/Blockpass";
+import {LicenseMap} from "@/hooks/useListNodeLicensesWithCallback";
 import {Tooltip} from "@/features/keys/Tooltip";
 
 const dummyLicenses = [
@@ -48,17 +49,18 @@ const dummyLicenses = [
 		accruedEsxai: "0.00239",
 		openseaUrl: "https://xai.games/",
 	},
-]
+];
 
-const dropdownBody = [
-	"0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-	"Fake data lol",
-]
+interface HasKeysProps {
+	licensesMap: LicenseMap,
+}
 
-export function HasKeys() {
+export function HasKeys({licensesMap}: HasKeysProps) {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {publicKey} = useOperator();
-	const [copied, setCopied] = useState<boolean>(false);
+
+	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
+	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 
 	function getKeys() {
@@ -131,14 +133,14 @@ export function HasKeys() {
 		})
 	}
 
-	function copyPublicKey() {
-		if (publicKey && navigator.clipboard) {
-			navigator.clipboard.writeText(publicKey)
+	function copySelectedWallet() {
+		if (selectedWallet && navigator.clipboard) {
+			navigator.clipboard.writeText(selectedWallet)
 				.then(() => {
-					setCopied(true);
+					setCopiedSelectedWallet(true);
 					setTimeout(() => {
-						setCopied(false);
-					}, 2000);
+						setCopiedSelectedWallet(false);
+					}, 1500);
 				})
 				.catch(err => {
 					console.error('Unable to copy to clipboard: ', err);
@@ -148,12 +150,6 @@ export function HasKeys() {
 		}
 	}
 
-	function getDropdownItems() {
-		return dropdownBody.map((item, i) => (
-			<p className="p-2 cursor-pointer hover:bg-gray-100" key={`key-item-${i}`}>{item}</p>
-		))
-	}
-
 	return (
 		<div className="w-full flex flex-col gap-4">
 			<div className="w-full h-auto flex flex-col py-3 pl-10">
@@ -161,14 +157,12 @@ export function HasKeys() {
 					View Wallet
 				</p>
 				<div className="flex flex-row gap-2">
-					<div className="w-full max-w-[695px]">
+					<div>
 						<div
 							onClick={() => setIsOpen(!isOpen)}
-							className={`flex items-center justify-between w-full text-[15px] border-r border-l border-t ${!isOpen ? "border-b" : null} border-[#A3A3A3] p-2`}
+							className={`flex items-center justify-between w-[538px] border-[#A3A3A3] border-r border-l border-t ${!isOpen ? "border-b" : null} border-[#A3A3A3] p-2`}
 						>
-							<p>
-								All wallets (1)
-							</p>
+							<p>{selectedWallet || `All wallets (${Object.keys(licensesMap).length})`}</p>
 							<IoIosArrowDown
 								className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
 							/>
@@ -176,22 +170,36 @@ export function HasKeys() {
 
 						{isOpen && (
 							<div
-								className="absolute flex flex-col w-full max-w-[695px] border-r border-l border-b border-[#A3A3A3] bg-white">
-								{getDropdownItems()}
+								className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3] bg-white">
+								<p
+									onClick={() => {
+										setSelectedWallet(null);
+										setIsOpen(false);
+									}}
+									className="p-2 cursor-pointer hover:bg-gray-100"
+								>
+									All
+								</p>
+								{/*{getDropdownItems()}*/}
 							</div>
 						)}
 					</div>
 
 					<button
-						onClick={() => copyPublicKey()}
-						className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
+						disabled={selectedWallet === null}
+						onClick={copySelectedWallet}
+						className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] ${selectedWallet === null ? 'text-[#D4D4D4] cursor-not-allowed' : ""} px-4 py-2`}
 					>
-						{copied ? (<AiOutlineCheck className="h-[15px]"/>) : (<PiCopy className="h-[15px]"/>)}
+
+						{copiedSelectedWallet
+							? (<AiOutlineCheck className="h-[15px]"/>)
+							: (<PiCopy className="h-[15px]"/>)
+						}
 						Copy address
 					</button>
 
 					<button
-						onClick={() => setDrawerState(DrawerView.ViewKeys)}
+						onClick={() => {}}
 						className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 					>
 						<AiOutlinePlus className="h-[15px]"/>
@@ -199,8 +207,9 @@ export function HasKeys() {
 					</button>
 
 					<button
-						onClick={() => alert("Does nothing")}
-						className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
+						disabled={selectedWallet === null}
+						onClick={() => {}}
+						className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] ${selectedWallet === null ? 'text-[#D4D4D4] cursor-not-allowed' : ""} px-4 py-2`}
 					>
 						<AiOutlineMinus className="h-[15px]"/>
 						Remove wallet
