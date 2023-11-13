@@ -10,7 +10,7 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "paths": {
-      "@xai-vanguard-node/core": [
+      "@sentry/core": [
         "../../packages/core"
       ]
     }

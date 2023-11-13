@@ -1,6 +1,6 @@
 import Vorpal from "vorpal";
 import { ethers } from "ethers";
-import { getSignerFromPrivateKey, mintNodeLicenses as coreMintNodeLicenses } from "@xai-vanguard-node/core";
+import { getSignerFromPrivateKey, mintNodeLicenses as coreMintNodeLicenses } from "@sentry/core";
 
 export function mintNodeLicenses(cli: Vorpal) {
     cli

@@ -1,4 +1,4 @@
-import Vorpal from "vorpal";import { setKycStatus as coreSetKycStatus, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { setKycStatus as coreSetKycStatus, getSignerFromPrivateKey } from "@sentry/core";
 
 /**
  * Function to set the KYC status of a list of wallets in the Referee contract.

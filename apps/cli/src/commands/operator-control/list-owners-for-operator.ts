@@ -1,5 +1,5 @@
 import Vorpal from "vorpal";
-import { listOwnersForOperator } from "@xai-vanguard-node/core";
+import { listOwnersForOperator } from "@sentry/core";
 
 /**
  * Function to list all owners for a particular operator in the Referee contract.

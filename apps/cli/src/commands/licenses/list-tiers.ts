@@ -1,5 +1,5 @@
 import Vorpal from "vorpal";
-import { listTiers as listTiersCore, Tier } from "@xai-vanguard-node/core";
+import { listTiers as listTiersCore, Tier } from "@sentry/core";
 
 /**
  * Function to list all pricing tiers for node licenses.

@@ -1,4 +1,5 @@
-import Vorpal from "vorpal";import { config } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";
+import { config } from "@sentry/core";
 
 /**
  * Function to get all contract addresses from the config and log them in the console.
@@ -13,7 +14,8 @@ export function getAllContractAddresses(cli: Vorpal) {
                 "Node License Address": config.nodeLicenseAddress,
                 "Referee Address": config.refereeAddress,
                 "Rollup Address": config.rollupAddress,
-                "XAI Address": config.xaiAddress
+                "XAI Address": config.xaiAddress,
+                "Gas Subsidy Contract": config.gasSubsidyAddress
             };
             for (const [name, address] of Object.entries(addresses)) {
                 this.log(`${name}: ${address}`);

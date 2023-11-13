@@ -1,4 +1,4 @@
-import Vorpal from "vorpal";import { getIsCheckingAssertions } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { getIsCheckingAssertions } from "@sentry/core";
 
 export function getAssertionCheckingStatus(cli: Vorpal) {
     cli

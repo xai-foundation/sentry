@@ -1,5 +1,5 @@
 import Vorpal from "vorpal";
-import { getPriceForQuantity as getPriceForQuantityCore } from "@xai-vanguard-node/core";
+import { getPriceForQuantity as getPriceForQuantityCore } from "@sentry/core";
 import {ethers} from "ethers";
 
 /**

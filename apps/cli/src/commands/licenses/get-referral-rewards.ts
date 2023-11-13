@@ -1,5 +1,5 @@
 import Vorpal from "vorpal";
-import { getReferralRewards as getReferralRewardsCore, ReferralReward } from "@xai-vanguard-node/core";
+import { getReferralRewards as getReferralRewardsCore, ReferralReward } from "@sentry/core";
 import Table from 'cli-table3';
 import { ethers } from "ethers";
 import datePrompt from "date-prompt";

@@ -5,7 +5,7 @@
             "path": "./apps/cli/tsconfig.json"
         },
         {
-            "path": "./apps/vanguard-client-desktop/tsconfig.json"
+            "path": "./apps/sentry-client-desktop/tsconfig.json"
         },
         {
             "path": "./apps/web-connect/tsconfig.json"
