@@ -1,5 +1,5 @@
 import {useQuery} from "react-query";
-import {getPriceForQuantity as getPriceForQuantityCore} from "@xai-vanguard-node/core";
+import {getPriceForQuantity as getPriceForQuantityCore} from "@sentry/core";
 
 export function useGetPriceForQuantity(quantity: number) {
 	return useQuery({

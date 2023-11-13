@@ -1,3 +1,4 @@
+export * from "./GasSubsidyAbi.js";
 export * from "./NodeLicenseAbi.js";
 export * from "./RefereeAbi.js";
 export * from "./RollupAdminLogicAbi.js";

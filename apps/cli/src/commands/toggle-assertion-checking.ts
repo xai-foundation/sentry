@@ -1,4 +1,4 @@
-import Vorpal from "vorpal";import { getSignerFromPrivateKey, toggleAssertionChecking as coreToggleAssertionChecking } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { getSignerFromPrivateKey, toggleAssertionChecking as coreToggleAssertionChecking } from "@sentry/core";
 
 /**
  * Function to toggle the assertion checking in the Referee contract.

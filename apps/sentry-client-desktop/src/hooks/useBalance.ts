@@ -1,5 +1,5 @@
 import {useQuery} from "react-query";
-import {getWalletBalance as getWalletBalanceCore} from "@xai-vanguard-node/core";
+import {getWalletBalance as getWalletBalanceCore} from "@sentry/core";
 import {ethers} from "ethers";
 
 export function useBalance(address: string | undefined) {

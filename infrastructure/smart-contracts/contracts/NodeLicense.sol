@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: UNLICENSED
+
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts-upgradeable/token/ERC721/extensions/ERC721EnumerableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
@@ -36,7 +38,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         uint256 _referralDiscountPercentage,
         uint256 _referralRewardPercentage
     ) public initializer {
-        __ERC721_init("Vanguard Node License", "VNL");
+        __ERC721_init("Sentry Node License", "SNL");
         __AccessControl_init();
         fundsReceiver = _fundsReceiver;
         referralDiscountPercentage = _referralDiscountPercentage;

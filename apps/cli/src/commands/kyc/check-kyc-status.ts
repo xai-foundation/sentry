@@ -1,4 +1,4 @@
-import Vorpal from "vorpal";import { checkKycStatus as coreCheckKycStatus } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { checkKycStatus as coreCheckKycStatus } from "@sentry/core";
 
 /**
  * Function to check the KYC status of a list of wallets in the Referee contract.

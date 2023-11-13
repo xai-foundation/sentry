@@ -1,4 +1,4 @@
-import Vorpal from "vorpal";import { getBalances } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { getBalances } from "@sentry/core";
 
 /**
  * Function to get the balances of a list of addresses.

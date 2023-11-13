@@ -1,9 +1,8 @@
 import { ethers } from "ethers";
 import { useState, useEffect, useRef } from 'react';
-import { createMnemonic, getSignerFromMnemonic, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
 import { atom, useAtom } from "jotai";
-
 export const privateKeyAtom = atom<string | undefined>(undefined);
+import { createMnemonic, getSignerFromMnemonic, getSignerFromPrivateKey } from "@sentry/core";
 
 interface IUseOperatorResponse {
     getSigner?: () => ethers.Signer;
@@ -32,7 +31,6 @@ export function useOperator(): IUseOperatorResponse {
     const getOperatorFilePath = async () => {
         return await window.ipcRenderer.invoke('path-join', await window.ipcRenderer.invoke('get-user-data-path'), ".sentry-operator");
     };
-
 
     useEffect(() => {
 

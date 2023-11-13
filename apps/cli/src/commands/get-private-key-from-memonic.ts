@@ -1,4 +1,4 @@
-import Vorpal from "vorpal";import { getSignerFromMnemonic } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { getSignerFromMnemonic } from "@sentry/core";
 
 export function getPrivateKeyFromMnemonic(cli: Vorpal) {
     cli

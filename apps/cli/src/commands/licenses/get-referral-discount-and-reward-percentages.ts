@@ -1,5 +1,5 @@
 import Vorpal from "vorpal";
-import { getDiscountAndRewardForReferrals as getDiscountAndRewardForReferralsCore } from "@xai-vanguard-node/core";
+import { getDiscountAndRewardForReferrals as getDiscountAndRewardForReferralsCore } from "@sentry/core";
 
 /**
  * Function to get the referral discount and reward percentages.
