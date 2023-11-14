@@ -297,7 +297,7 @@ export function SentryWallet() {
 						</div>
 
 						{/*		todo: swapped number with listNodeLicensesData, check if correct param	*/}
-						{!listNodeLicensesData?.licenses && drawerState === null && (
+						{listNodeLicensesData?.licenses && drawerState === null && (
 							<div className="flex gap-4 bg-[#FFFBEB] p-2 z-10">
 								<div className="flex flex-row gap-2 items-center">
 									<AiFillWarning className="w-7 h-7 text-[#F59E28]"/>

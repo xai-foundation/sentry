@@ -56,6 +56,13 @@ export function HasKeys({licensesMap}: HasKeysProps) {
 	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 
+	// function getLicenseListForTable(): Array<bigint> {
+	// 	if () {
+	//
+	// 	}
+	//
+	// }
+
 	function getKeys() {
 		return dummyLicenses.map((item, i: number) => {
 			const isEven = i % 2 === 0;
