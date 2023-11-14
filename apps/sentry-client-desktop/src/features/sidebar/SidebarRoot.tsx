@@ -6,6 +6,7 @@ import {RiKey2Line, RiTwitterXFill} from "react-icons/ri";
 import {SiGitbook} from "react-icons/si";
 import {YellowPulse} from "@/features/keys/StatusPulse.js";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
+import {IoGiftOutline} from "react-icons/io5";
 
 /**
  * Sidebar component
@@ -14,8 +15,6 @@ import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 export function Sidebar() {
 	const navigate = useNavigate();
 	const {sentryRunning} = useOperatorRuntime();
-
-	// const [sentryAttentionRequired, setSentryAttentionRequired] = useState<boolean>(true);
 
 	return (
 		<div
@@ -38,7 +37,6 @@ export function Sidebar() {
 					>
 						<RiKey2Line size={15}/> Keys
 					</Link>
-
 					<Link
 						to="/sentry-wallet"
 						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
@@ -51,6 +49,12 @@ export function Sidebar() {
 						</div>
 
 						Sentry Wallet
+					</Link>
+					<Link
+						to="/redeem"
+						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
+					>
+						<IoGiftOutline size={15}/> Redeem
 					</Link>
 				</div>
 

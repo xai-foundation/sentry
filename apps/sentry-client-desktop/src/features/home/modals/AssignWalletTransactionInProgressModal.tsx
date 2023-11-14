@@ -1,4 +1,9 @@
+import {AiOutlineClose} from "react-icons/ai";
+import {useSetAtom} from "jotai";
+import {modalStateAtom} from "@/features/modal/ModalManager";
+
 export function AssignWalletTransactionInProgressModal() {
+	const setModalState = useSetAtom(modalStateAtom);
 
 	return (
 		<div
@@ -6,6 +11,14 @@ export function AssignWalletTransactionInProgressModal() {
 			<div className="w-full h-full bg-white opacity-75"/>
 			<div
 				className="absolute top-0 right-0 left-0 bottom-0 m-auto flex flex-col justify-start items-center w-[506px] h-[190px] border border-gray-200 bg-white">
+
+				<div
+					className="absolute top-0 right-0 h-16 flex flex-row justify-between items-center text-lg px-6">
+					<div className="cursor-pointer z-10" onClick={() => setModalState(null)}>
+						<AiOutlineClose/>
+					</div>
+				</div>
+
 				<div
 					className="absolute top-0 bottom-0 left-0 right-0 m-auto flex flex-col justify-center items-center gap-4">
 

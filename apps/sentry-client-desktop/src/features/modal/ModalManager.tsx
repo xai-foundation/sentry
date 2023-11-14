@@ -4,10 +4,12 @@ import {ExitAlertModal} from "@/features/home/modals/ExitAlertModal";
 import {useState} from "react";
 import {PurchaseCompleteModal} from "@/features/home/modals/PurchaseCompleteModal";
 import {drawerStateAtom} from "@/features/drawer/DrawerManager";
+import {AssignWalletTransactionInProgressModal} from "@/features/home/modals/AssignWalletTransactionInProgressModal";
 
 export enum ModalView {
 	Exit,
 	PurchaseSuccessful,
+	TransactionInProgress
 }
 
 export const modalStateAtom = atom<ModalView | null>(null);
@@ -36,6 +38,10 @@ export function ModalManager() {
 				<PurchaseCompleteModal
 					txHash={purchaseSuccessful.txHash}
 				/>
+			)}
+
+			{modalState === ModalView.TransactionInProgress && (
+				<AssignWalletTransactionInProgressModal/>
 			)}
 		</div>
 	);
