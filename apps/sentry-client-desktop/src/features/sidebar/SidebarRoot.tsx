@@ -1,6 +1,5 @@
 import {AiOutlineCloudUpload} from "react-icons/ai";
 import {FaDiscord, FaIcons} from 'react-icons/fa';
-import {HiOutlineDesktopComputer} from "react-icons/hi";
 import {Link, useNavigate} from 'react-router-dom';
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {RiKey2Line, RiTwitterXFill} from "react-icons/ri";
@@ -18,7 +17,6 @@ export function Sidebar() {
 		<div
 			className="sticky h-full w-[14.625rem] min-w-[14.625rem] bg-white border-r border-gray-200 text-[15px] p-4 z-10">
 			<div className="h-full flex flex-col gap-5">
-
 				<div
 					className="flex items-center gap-2 text-base font-semibold cursor-pointer"
 					onClick={() => navigate("/")}
@@ -85,12 +83,6 @@ export function Sidebar() {
 
 				<div>
 					<h2 className="text-gray-400 text-[12px] mb-2 uppercase">Dev Links</h2>
-					<Link
-						to="/operator"
-						className="flex items-center mb-1 text-[15px text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
-					>
-						<HiOutlineDesktopComputer size={15}/> Operator
-					</Link>
 					<Link
 						to="/demo"
 						className="flex items-center mb-1 text-[15px text-gray-600 hover:text-gray-400 cursor-pointer gap-2"

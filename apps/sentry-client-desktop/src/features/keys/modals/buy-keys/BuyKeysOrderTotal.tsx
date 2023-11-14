@@ -83,6 +83,7 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 										TOTAL
 										<Tooltip
 											body={"All purchases must be made in Arbitrum ETH"}
+											minWidth={337}
 										>
 											<AiOutlineInfoCircle size={16}/>
 										</Tooltip>

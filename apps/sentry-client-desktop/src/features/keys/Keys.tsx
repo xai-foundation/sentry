@@ -34,6 +34,7 @@ export function Keys() {
 					<Tooltip
 						header={"Xai Client can track keys only from added wallets"}
 						body={"If you own keys in additional wallets, add them to the client."}
+						minWidth={452}
 					>
 						<AiOutlineInfoCircle size={16} className="text-[#A3A3A3]"/>
 					</Tooltip>

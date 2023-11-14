@@ -6,10 +6,14 @@ interface IconLabelProps {
 	icon: React.FC;
 	color: string;
 	title: string;
-	info?: boolean;
+	tooltip?: boolean;
+	header?: string;
+	body?: string;
+	body2?: string;
+	position?: "left" | "right";
 }
 
-export function IconLabel({icon: Icon, color, title, info}: IconLabelProps) {
+export function IconLabel({icon: Icon, color, title, tooltip, header, body, body2, position}: IconLabelProps) {
 
 	return (
 		<span className="flex flex-row gap-2 items-center font-semibold text-[14px]">
@@ -19,10 +23,12 @@ export function IconLabel({icon: Icon, color, title, info}: IconLabelProps) {
 				color={color}
 			/>
 			{title}
-			{info &&
+			{tooltip &&
                 <Tooltip
-                    header={"Your Sentry Wallet is inactive"}
-                    body={"esXAI cannot be accrued while your Sentry Wallet is inactive."}
+                    header={header}
+                    body={body}
+                    body2={body2}
+                    position={position}
                 >
                     <AiOutlineInfoCircle size={16} className="text-[#A3A3A3]"/>
                 </Tooltip>
