@@ -1,10 +1,11 @@
 import {AiOutlineCloudUpload} from "react-icons/ai";
-import {FaDiscord, FaIcons} from 'react-icons/fa';
+import {FaDiscord, FaIcons, FaRegCircle} from 'react-icons/fa';
 import {Link, useNavigate} from 'react-router-dom';
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {RiKey2Line, RiTwitterXFill} from "react-icons/ri";
 import {SiGitbook} from "react-icons/si";
 import {YellowPulse} from "@/features/keys/StatusPulse.js";
+import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 
 /**
  * Sidebar component
@@ -12,6 +13,9 @@ import {YellowPulse} from "@/features/keys/StatusPulse.js";
  */
 export function Sidebar() {
 	const navigate = useNavigate();
+	const {sentryRunning} = useOperatorRuntime();
+
+	// const [sentryAttentionRequired, setSentryAttentionRequired] = useState<boolean>(true);
 
 	return (
 		<div
@@ -40,9 +44,10 @@ export function Sidebar() {
 						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
 					>
 						<div className="w-[15px] h-[15px] flex justify-center items-center">
-							{/*<FaRegCircle size={8}/>*/}
-							{/*<GreenPulse/>*/}
-							<YellowPulse/>
+							{sentryRunning
+								? <YellowPulse/>
+								// <GreenPulse />
+								: <FaRegCircle size={8}/>}
 						</div>
 
 						Sentry Wallet

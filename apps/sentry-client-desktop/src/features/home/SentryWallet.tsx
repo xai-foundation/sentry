@@ -1,5 +1,5 @@
 import {AiFillWarning, AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
-import {useRef, useState} from "react";
+import {useState} from "react";
 import {ContinueInBrowserModal} from "@/features/home/modals/ContinueInBrowserModal";
 import {BiDownload, BiLinkExternal, BiUpload} from "react-icons/bi";
 import {useOperator} from "../operator";
@@ -12,7 +12,7 @@ import {useAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.js";
 import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
-import {NodeLicenseStatusMap, operatorRuntime} from "@sentry/core";
+import {NodeLicenseStatusMap} from "@sentry/core";
 import {AssignKeysFromNewWallet} from "@/components/AssignKeysFromNewWallet";
 import {useListOwnersForOperator} from "@/hooks/useListOwnersForOperator";
 import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
@@ -23,18 +23,17 @@ import {useBalance} from "@/hooks/useBalance";
 import {ethers} from "ethers";
 import classNames from "classnames";
 import {Tooltip} from "@/features/keys/Tooltip";
+import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 
 // TODO -> replace with dynamic value later
 const recommendedValue = ethers.parseEther("0.005");
-
-type OperatorRuntimeFunction = () => Promise<void>
 
 export function SentryWallet() {
 	// todo -> split up
 	const queryClient = useQueryClient();
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
-	const {isLoading: isOperatorLoading, publicKey: operatorAddress, getSigner} = useOperator();
+	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
 
 	const {isLoading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
@@ -46,6 +45,8 @@ export function SentryWallet() {
 	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
+	const {startRuntime, stopRuntime, sentryRunning} = useOperatorRuntime();
+
 
 	// assign wallet
 	(window as any).deeplinks?.assignedWallet((_event, txHash) => {
@@ -58,8 +59,6 @@ export function SentryWallet() {
 	});
 
 	const [isOpen, setIsOpen] = useState<boolean>(false);
-	const stopFunction = useRef<OperatorRuntimeFunction>();
-	const [sentryRunning, setSentryRunning] = useState<boolean>(false);
 	const [status, setStatus] = useState<NodeLicenseStatusMap>();
 
 	function onRefreshEthBalance() {
@@ -99,29 +98,6 @@ export function SentryWallet() {
 			console.error('Clipboard API not available, unable to copy to clipboard');
 		}
 	}
-
-	const startSentry = async () => {
-		if (getSigner) {
-			try {
-				//@ts-ignore
-				stopFunction.current = await operatorRuntime(getSigner(), setStatus, console.log);
-				setSentryRunning(true);
-			} catch (error) {
-				console.error('Error starting the operator runtime:', error);
-			}
-		}
-	};
-
-	const pauseSentry = async () => {
-		if (stopFunction.current) {
-			try {
-				await stopFunction.current();
-				setSentryRunning(false);
-			} catch (error) {
-				console.error('Error stopping the operator runtime:', error);
-			}
-		}
-	};
 
 	function getDropdownItems() {
 		return listOwnersData!.owners.map((wallet, i) => (
@@ -283,7 +259,7 @@ export function SentryWallet() {
 
 							{sentryRunning ? (
 								<button
-									onClick={() => pauseSentry()}
+									onClick={stopRuntime}
 									className="ml-4 flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 								>
 									<GiPauseButton className="h-[15px]"/>
@@ -291,7 +267,7 @@ export function SentryWallet() {
 								</button>
 							) : (
 								<button
-									onClick={() => startSentry()}
+									onClick={startRuntime}
 									className="ml-4 flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 								>
 									<FaPlay className="h-[15px]"/>
