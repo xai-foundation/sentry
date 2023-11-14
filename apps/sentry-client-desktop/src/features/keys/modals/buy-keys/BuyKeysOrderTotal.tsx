@@ -201,9 +201,9 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 									</div>
 									<div className="flex flex-row items-center gap-1 font-semibold">
 										<span>
-											{price.discount
-												? Number(price.price - price.discount)
-												: price.price}
+											{discountApplied
+												? Number(price.price + price.discount)
+												: Number(price.price)}
 										</span>
 										<span>ETH</span>
 									</div>
