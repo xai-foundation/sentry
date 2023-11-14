@@ -33,7 +33,7 @@ export function SentryWallet() {
 	const queryClient = useQueryClient();
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
-	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
+	const {isLoading: isOperatorLoading, publicKey: operatorAddress, getSigner} = useOperator();
 	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
 
 	const {isLoading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);

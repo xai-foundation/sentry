@@ -1,12 +1,9 @@
 import {AiOutlineCheck, AiOutlineInfoCircle, AiOutlineMinus, AiOutlinePlus} from "react-icons/ai";
-import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager.js";
 import {FaRegCircle} from "react-icons/fa";
 import {IoIosArrowDown} from "react-icons/io";
 import {PiCopy} from "react-icons/pi";
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {useState} from "react";
-import {useOperator} from "@/features/operator";
-import {useSetAtom} from "jotai/index";
 import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse.js";
 import {BlockPassKYC} from "@/components/blockpass/Blockpass";
 import {LicenseMap} from "@/hooks/useListNodeLicensesWithCallback";
@@ -56,12 +53,16 @@ interface HasKeysProps {
 }
 
 export function HasKeys({licensesMap}: HasKeysProps) {
-	const setDrawerState = useSetAtom(drawerStateAtom);
-	const {publicKey} = useOperator();
-
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
+
+	// function getLicenseListForTable(): Array<bigint> {
+	// 	if () {
+	//
+	// 	}
+	//
+	// }
 
 	function getKeys() {
 		return dummyLicenses.map((item, i: number) => {
