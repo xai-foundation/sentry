@@ -219,7 +219,11 @@ export function SentryWallet() {
 									className="cursor-pointer"
 								>
 									{copied
-										? (<AiOutlineCheck/>)
+										? (
+											<Tooltip body={"Copied!"} minWidth={73} position={"right"}>
+												<PiCopy/>
+											</Tooltip>
+										)
 										: (<PiCopy/>)}
 								</div>
 
@@ -298,6 +302,9 @@ export function SentryWallet() {
 							<Tooltip
 								header={"Funds in ETH required"}
 								body={"Sentry Wallet balance is used to pay gas fees for automatically claiming accrued esXAI."}
+								banner={true}
+								bannerTitle={"Recommended minimum balance"}
+								bannerValue={"0.05 ETH"}
 							>
 								<AiOutlineInfoCircle className="text-[#A3A3A3]"/>
 							</Tooltip>

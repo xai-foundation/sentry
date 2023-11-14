@@ -8,7 +8,7 @@ export function BuyKeysFlow() {
 	const [quantity, setQuantity] = useState<number>(1);
 
 	return (
-		<div className="w-full flex flex-col gap-8 overflow-scroll">
+		<div className="relative w-full flex flex-col gap-8">
 			{/*		Top of buy		*/}
 			<div className="flex flex-col gap-2 px-6 pt-8">
 				<div className="flex flex-row items-center gap-2">

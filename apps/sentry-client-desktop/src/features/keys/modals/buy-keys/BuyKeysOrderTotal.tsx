@@ -43,31 +43,33 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 			return
 		}
 
-		return getPriceData.nodesAtEachPrice.map((item, i) => {
-			return (
-				<div key={`get-keys-${i}`}>
-					<div className="flex flex-row items-center justify-between text-[15px]">
-						<div className="flex flex-row items-center gap-2">
-							<span className="">{Number(item.quantity)} x Xai Sentry Node Key</span>
+		return getPriceData.nodesAtEachPrice
+			.filter(item => Number(item.quantity) !== 0)
+			.map((item, i) => {
+				return (
+					<div key={`get-keys-${i}`}>
+						<div className="flex flex-row items-center justify-between text-[15px]">
+							<div className="flex flex-row items-center gap-2">
+								<span className="">{Number(item.quantity)} x Xai Sentry Node Key</span>
+							</div>
+							<div className="flex flex-row items-center gap-1">
+								<span
+									className="font-semibold">{Number(ethers.formatEther(item.totalPriceForTier))} ETH</span>
+							</div>
 						</div>
-						<div className="flex flex-row items-center gap-1">
-							<span
-								className="font-semibold">{Number(ethers.formatEther(item.totalPriceForTier))} ETH</span>
-						</div>
+						<p className="text-[13px] text-[#A3A3A3] mb-4">
+							{Number(ethers.formatEther(item.pricePer))} ETH per key
+						</p>
 					</div>
-					<p className="text-[13px] text-[#A3A3A3] mb-4">
-						{Number(ethers.formatEther(item.pricePer))} ETH per key
-					</p>
-				</div>
-			)
-		})
+				);
+			});
 	}
 
 	return (
 		<>
 			{isPriceLoading || isTotalLoading || !getPriceData
 				? (
-					<div className="w-full h-screen flex flex-col justify-center items-center">
+					<div className="w-full h-screen max-h-[380px] flex flex-col justify-center items-center">
 						<BiLoaderAlt className="animate-spin" color={"#A3A3A3"} size={32}/>
 						<p>Updating total...</p>
 					</div>
@@ -84,6 +86,7 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 										<Tooltip
 											body={"All purchases must be made in Arbitrum ETH"}
 											minWidth={337}
+											position={"right"}
 										>
 											<AiOutlineInfoCircle size={16}/>
 										</Tooltip>
