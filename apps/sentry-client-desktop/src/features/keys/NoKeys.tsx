@@ -2,7 +2,6 @@ import {AiFillWarning} from "react-icons/ai";
 import {useSetAtom} from "jotai";
 import {RiKey2Line} from "react-icons/ri";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
-import {Dispatch, SetStateAction} from "react";
 
 // const noKeysCopy = [
 // 	{

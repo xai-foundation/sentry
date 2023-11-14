@@ -33,7 +33,7 @@ export function SentryWallet() {
 	const queryClient = useQueryClient();
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
-	const {isLoading: isOperatorLoading, publicKey: operatorAddress, signer} = useOperator();
+	const {isLoading: isOperatorLoading, publicKey: operatorAddress, getSigner} = useOperator();
 	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
 
 	const {isLoading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
@@ -100,11 +100,11 @@ export function SentryWallet() {
 	}
 
 	const startSentry = async () => {
-		if (signer) {
+		if (getSigner) {
 			try {
 				// todo: ethers issue is back
 				// @ts-ignore
-				stopFunction.current = await operatorRuntime(signer, setStatus, console.log);
+				stopFunction.current = await operatorRuntime(getSigner(), setStatus, console.log);
 				setSentryRunning(true);
 			} catch (error) {
 				console.error('Error starting the operator runtime:', error);

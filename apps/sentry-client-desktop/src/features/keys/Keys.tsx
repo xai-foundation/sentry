@@ -55,7 +55,7 @@ export function Keys() {
 			{true ? (
 				<HasKeys licensesMap={licensesMap}/>
 			) : (
-				<NoKeys setNumber={() =>{}}/>
+				<NoKeys/>
 			)}
 		</div>
 	)
