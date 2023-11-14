@@ -12,7 +12,6 @@ import {useAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.js";
 import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
-import {NodeLicenseStatusMap} from "@sentry/core";
 import {AssignKeysFromNewWallet} from "@/components/AssignKeysFromNewWallet";
 import {useListOwnersForOperator} from "@/hooks/useListOwnersForOperator";
 import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
@@ -33,7 +32,7 @@ export function SentryWallet() {
 	const queryClient = useQueryClient();
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
-	const {isLoading: isOperatorLoading, publicKey: operatorAddress, getSigner} = useOperator();
+	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
 
 	const {isLoading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
@@ -45,7 +44,7 @@ export function SentryWallet() {
 	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
-	const {startRuntime, stopRuntime, sentryRunning} = useOperatorRuntime();
+	const {startRuntime, stopRuntime, sentryRunning, nodeLicenseStatusMap} = useOperatorRuntime();
 
 
 	// assign wallet
@@ -59,7 +58,6 @@ export function SentryWallet() {
 	});
 
 	const [isOpen, setIsOpen] = useState<boolean>(false);
-	const [status, setStatus] = useState<NodeLicenseStatusMap>();
 
 	function onRefreshEthBalance() {
 		queryClient.invalidateQueries({queryKey: ["balance", operatorAddress]});
@@ -140,7 +138,7 @@ export function SentryWallet() {
 
 		return keysWithOwners.map((keyWithOwner, i: number) => {
 			const isEven = i % 2 === 0;
-			const statusArray = status ? Array.from(status.entries()) : [];
+			const statusArray = nodeLicenseStatusMap ? Array.from(nodeLicenseStatusMap.entries()) : [];
 			const currentStatus = statusArray[i] ? statusArray[i][1] : null;
 
 			return (
