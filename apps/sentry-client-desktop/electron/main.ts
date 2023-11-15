@@ -149,6 +149,7 @@ app.on('ready', () => {
 // Windows deep-link
 if (isWindows) {
 	const gotTheLock = app.requestSingleInstanceLock();
+
 	if (!gotTheLock) {
 		app.quit();
 	} else {
@@ -158,21 +159,31 @@ if (isWindows) {
 				if (win.isMinimized()) win.restore();
 				win.focus();
 			}
-			// the commandLine is array of strings in which last element is deep link url
-			// dialog.showErrorBox('Welcome Back', `You arrived from: ${commandLine.pop()}`);
 
-			// win?.webContents.send("assigned-wallet", commandLine.pop());
-			handleDeeplink(event, commandLine.pop());
-		})
+			// the commandLine is an array of strings in which the last element is the deep link URL
+			handleDeeplink(event, commandLine[commandLine.length - 1]);
+		});
 
 		// Create mainWindow, load the rest of the app, etc...
-		app.whenReady().then(createWindow);
+		app.whenReady().then(() => {
+			createWindow();
+
+			// Handle deep-linking for the first instance
+			const {argv} = process;
+			if (argv.length >= 2) {
+				handleDeeplink(null, argv[argv.length - 1]);
+			}
+		});
 	}
 } else {
 	// Mac deep-link
 	app.whenReady().then(createWindow);
-	app.on('open-url', handleDeeplink);
+	app.on('open-url', (event, url) => {
+		event.preventDefault();
+		handleDeeplink(event, url);
+	});
 }
+
 
 function handleDeeplink(_, url) {
 	const fullProtocol = "xai-sentry://";
