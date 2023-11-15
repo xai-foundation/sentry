@@ -137,6 +137,20 @@ export const XaiAbi = [
   },
   {
     "type": "function",
+    "name": "MAX_SUPPLY",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "MINTER_ROLE",
     "constant": true,
     "stateMutability": "view",

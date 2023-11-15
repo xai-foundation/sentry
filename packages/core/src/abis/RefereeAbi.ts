@@ -100,6 +100,22 @@ export const RefereeAbi = [
           {
             "type": "uint256",
             "name": "createdTimestamp"
+          },
+          {
+            "type": "uint256",
+            "name": "totalSupplyOfNodesAtChallengeStart"
+          },
+          {
+            "type": "uint256",
+            "name": "rewardAmountForClaimers"
+          },
+          {
+            "type": "uint256",
+            "name": "amountForGasSubsidy"
+          },
+          {
+            "type": "uint256",
+            "name": "numberOfEligibleClaimers"
           }
         ]
       }
@@ -293,6 +309,24 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
+    "name": "calculateChallengeEmissionAndTier",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      },
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "challengeCounter",
     "constant": true,
     "stateMutability": "view",
@@ -367,6 +401,22 @@ export const RefereeAbi = [
       {
         "type": "uint256",
         "name": "createdTimestamp"
+      },
+      {
+        "type": "uint256",
+        "name": "totalSupplyOfNodesAtChallengeStart"
+      },
+      {
+        "type": "uint256",
+        "name": "rewardAmountForClaimers"
+      },
+      {
+        "type": "uint256",
+        "name": "amountForGasSubsidy"
+      },
+      {
+        "type": "uint256",
+        "name": "numberOfEligibleClaimers"
       }
     ]
   },
@@ -415,9 +465,33 @@ export const RefereeAbi = [
       {
         "type": "bytes32",
         "name": ""
-      },
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "esXaiAddress",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
       {
-        "type": "uint256",
+        "type": "address",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "gasSubsidyRecipient",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address",
         "name": ""
       }
     ]
@@ -474,6 +548,22 @@ export const RefereeAbi = [
           {
             "type": "uint256",
             "name": "createdTimestamp"
+          },
+          {
+            "type": "uint256",
+            "name": "totalSupplyOfNodesAtChallengeStart"
+          },
+          {
+            "type": "uint256",
+            "name": "rewardAmountForClaimers"
+          },
+          {
+            "type": "uint256",
+            "name": "amountForGasSubsidy"
+          },
+          {
+            "type": "uint256",
+            "name": "numberOfEligibleClaimers"
           }
         ]
       }
@@ -531,8 +621,38 @@ export const RefereeAbi = [
           {
             "type": "uint256",
             "name": "createdTimestamp"
+          },
+          {
+            "type": "uint256",
+            "name": "totalSupplyOfNodesAtChallengeStart"
+          },
+          {
+            "type": "uint256",
+            "name": "rewardAmountForClaimers"
+          },
+          {
+            "type": "uint256",
+            "name": "amountForGasSubsidy"
+          },
+          {
+            "type": "uint256",
+            "name": "numberOfEligibleClaimers"
           }
         ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getCombinedTotalSupply",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
       }
     ]
   },
@@ -746,6 +866,10 @@ export const RefereeAbi = [
           {
             "type": "bytes",
             "name": "successorStateRoot"
+          },
+          {
+            "type": "bool",
+            "name": "claimed"
           }
         ]
       }
@@ -796,7 +920,24 @@ export const RefereeAbi = [
     "name": "initialize",
     "constant": false,
     "payable": false,
-    "inputs": [],
+    "inputs": [
+      {
+        "type": "address",
+        "name": "_esXaiAddress"
+      },
+      {
+        "type": "address",
+        "name": "_xaiAddress"
+      },
+      {
+        "type": "address",
+        "name": "_gasSubsidyAddress"
+      },
+      {
+        "type": "uint256",
+        "name": "gasSubsidyPercentage_"
+      }
+    ],
     "outputs": []
   },
   {
@@ -1033,6 +1174,10 @@ export const RefereeAbi = [
       {
         "type": "bytes",
         "name": "successorStateRoot"
+      },
+      {
+        "type": "bool",
+        "name": "claimed"
       }
     ]
   },
@@ -1112,5 +1257,19 @@ export const RefereeAbi = [
     "payable": false,
     "inputs": [],
     "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "xaiAddress",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address",
+        "name": ""
+      }
+    ]
   }
 ];

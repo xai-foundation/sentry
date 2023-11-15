@@ -98,11 +98,12 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     event Approval(address indexed owner, address indexed operator, bool approved);
     event KycStatusChanged(address indexed wallet, bool isKycApproved);
 
-    function initialize(address _esXaiAddress, address _xaiAddress, uint256 gasSubsidyPercentage_) public initializer {
+    function initialize(address _esXaiAddress, address _xaiAddress, address _gasSubsidyAddress, uint256 gasSubsidyPercentage_) public initializer {
         __AccessControlEnumerable_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setRoleAdmin(CHALLENGER_ROLE, DEFAULT_ADMIN_ROLE);
         _setRoleAdmin(KYC_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
+        gasSubsidyRecipient = _gasSubsidyAddress;
         _gasSubsidyPercentage = gasSubsidyPercentage_;
 
         // Set the esXai and xai addresses
