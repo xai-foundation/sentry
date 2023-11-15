@@ -25,7 +25,7 @@ export function SentryActiveCard() {
 						tooltip={true}
 						header={"Your Sentry Wallet is inactive"}
 						body={"esXAI cannot be accrued while your Sentry Wallet is inactive."}
-						position={"right"}
+						position={"end"}
 					/>
 
 					<p className="text-[15px] text-[#525252] mt-3">

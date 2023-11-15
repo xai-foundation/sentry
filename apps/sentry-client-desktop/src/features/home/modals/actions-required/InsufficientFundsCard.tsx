@@ -33,7 +33,7 @@ export function InsufficientFundsCard({funded, setFunded}: InsufficientFundsCard
 						tooltip={true}
 						header={"Funds in Arb ETH required."}
 						body={"Sentry Wallet balance is used to pay gas for automatically claiming esXAI for each key."}
-						position={"right"}
+						position={"end"}
 					/>
 
 					<p className="text-[15px] text-[#525252] mt-3">
@@ -61,7 +61,7 @@ export function InsufficientFundsCard({funded, setFunded}: InsufficientFundsCard
 							<Tooltip
 								header={"Set it and forget it"}
 								body={"Based on the number of license keys that are currently assigned to the Sentry, this amount will cover gas fees for up to a month."}
-								position={"right"}
+								position={"end"}
 							>
 								<AiOutlineInfoCircle size={16} className="text-[#A3A3A3]"/>
 							</Tooltip>

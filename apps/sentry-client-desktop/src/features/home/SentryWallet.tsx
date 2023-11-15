@@ -21,8 +21,8 @@ import {useQueryClient} from "react-query";
 import {useBalance} from "@/hooks/useBalance";
 import {ethers} from "ethers";
 import classNames from "classnames";
-import {Tooltip} from "@/features/keys/Tooltip";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
+import {Tooltip} from "@/features/keys/Tooltip";
 
 // TODO -> replace with dynamic value later
 const recommendedValue = ethers.parseEther("0.005");
@@ -220,7 +220,7 @@ export function SentryWallet() {
 								>
 									{copied
 										? (
-											<Tooltip body={"Copied!"} minWidth={73} position={"right"}>
+											<Tooltip body={"Copied!"} width={73} position={"end"}>
 												<PiCopy/>
 											</Tooltip>
 										)
@@ -230,6 +230,7 @@ export function SentryWallet() {
 								<Tooltip
 									header={"Sentry Wallet is encrypted on your device"}
 									body={"This wallet is exportable and EVM compatible."}
+									width={350}
 								>
 									<AiOutlineInfoCircle className="text-[#A3A3A3]"/>
 								</Tooltip>

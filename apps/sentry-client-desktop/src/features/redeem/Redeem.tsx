@@ -48,7 +48,7 @@ export function Redeem() {
 					{/*<Tooltip*/}
 					{/*	header={"There's a tooltip here"}*/}
 					{/*	body={"I didn't get copy for it."}*/}
-					{/*	minWidth={452}*/}
+					{/*	width={452}*/}
 					{/*>*/}
 					{/*	<AiOutlineInfoCircle size={16} className="text-[#A3A3A3]"/>*/}
 					{/*</Tooltip>*/}

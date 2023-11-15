@@ -69,7 +69,7 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 		<>
 			{isPriceLoading || isTotalLoading || !getPriceData
 				? (
-					<div className="w-full h-screen max-h-[380px] flex flex-col justify-center items-center">
+					<div className="w-full h-full flex flex-col justify-center items-center">
 						<BiLoaderAlt className="animate-spin" color={"#A3A3A3"} size={32}/>
 						<p>Updating total...</p>
 					</div>
@@ -85,8 +85,8 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 										TOTAL
 										<Tooltip
 											body={"All purchases must be made in Arbitrum ETH"}
-											minWidth={337}
-											position={"right"}
+											width={337}
+											position={"end"}
 										>
 											<AiOutlineInfoCircle size={16}/>
 										</Tooltip>
