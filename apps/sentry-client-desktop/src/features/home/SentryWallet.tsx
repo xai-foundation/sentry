@@ -24,7 +24,7 @@ import {ethers} from "ethers";
 import classNames from "classnames";
 
 // TODO -> replace with dynamic value later
-const recommendedValue = ethers.parseEther("0.005");
+export const recommendedFundingBalance = ethers.parseEther("0.005");
 
 type OperatorRuntimeFunction = () => Promise<void>
 
@@ -192,7 +192,7 @@ export function SentryWallet() {
 	}
 
 	function getEthFundsTextColor(): string {
-		if (balance?.wei !== undefined && balance.wei >= recommendedValue) {
+		if (balance?.wei !== undefined && balance.wei >= recommendedFundingBalance) {
 			return "text-[#38A349]";
 		}
 

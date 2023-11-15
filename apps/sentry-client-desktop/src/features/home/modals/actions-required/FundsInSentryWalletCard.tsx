@@ -4,16 +4,35 @@ import {SquareCard} from "../../../../components/SquareCard";
 import {IoMdCloseCircle} from "react-icons/io";
 import {PiCopy} from "react-icons/pi";
 import {FaEthereum} from "react-icons/fa";
-import {AiFillCheckCircle} from "react-icons/ai";
+import {AiFillCheckCircle, AiOutlineCheck} from "react-icons/ai";
 import {useOperator} from "../../../operator";
+import {useBalance} from "@/hooks/useBalance";
+import {recommendedFundingBalance} from "@/features/home/SentryWallet";
+import {useState} from "react";
 
-interface InsufficientFundsCardProps {
-	funded: boolean;
-	setFunded: () => void
-}
+export function FundsInSentryWalletCard() {
+	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
+	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
+	const [copied, setCopied] = useState(false);
 
-export function InsufficientFundsCard({funded, setFunded}: InsufficientFundsCardProps) {
-	const {isLoading: isLoadingOperator, publicKey} = useOperator();
+	const funded = balance && balance.wei !== undefined && balance.wei >= recommendedFundingBalance;
+
+	function copyAddress() {
+		if (operatorAddress && navigator.clipboard) {
+			navigator.clipboard.writeText(operatorAddress)
+				.then(() => {
+					setCopied(true);
+					setTimeout(() => {
+						setCopied(false);
+					}, 2000);
+				})
+				.catch(err => {
+					console.error('Unable to copy to clipboard: ', err);
+				});
+		} else {
+			console.error('Clipboard API not available, unable to copy to clipboard');
+		}
+	}
 
 	return (
 		<SquareCard className="bg-[#F5F5F5]">
@@ -38,13 +57,21 @@ export function InsufficientFundsCard({funded, setFunded}: InsufficientFundsCard
 					<div
 						className="h-[48px] px-3 w-full border border-[#A3A3A3] flex flex-row items-center gap-2 justify-between bg-white mt-3">
 						<span className="text-[14px] leading-[14px] text-[#525252]">
-							{isLoadingOperator || !publicKey ? "Loading..." : clampAddress(publicKey)}
+							{isOperatorLoading || !operatorAddress ? "Loading..." : clampAddress(operatorAddress)}
 						</span>
 
-						<PiCopy
+						<div
+							onClick={copyAddress}
 							className="text-[#525252] w-[20px] h-[20px] cursor-pointer"
-							onClick={setFunded}
-						/>
+						>
+							{copied
+								? (<AiOutlineCheck/>)
+								: (<PiCopy/>)}
+						</div>
+						{/*<PiCopy*/}
+						{/*	className="text-[#525252] w-[20px] h-[20px] cursor-pointer"*/}
+						{/*	onClick={copyAddress}*/}
+						{/*/>*/}
 					</div>
 
 					<div className="mt-3 flex flex-row gap-1 justify-between">
