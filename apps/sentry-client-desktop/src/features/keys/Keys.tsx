@@ -15,7 +15,7 @@ export function Keys() {
 	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
 
 	const {publicKey} = useOperator();
-	const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey);
+	const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey, true);
 
 	// todo arbitrary list of manual-adds []
 	const combinedOwners = [...owners];
@@ -55,19 +55,19 @@ export function Keys() {
 				<ContinueInBrowserModal setShowContinueInBrowserModal={setShowContinueInBrowserModal}/>
 			)}
 
-			{(ownersLoading || owners?.length === 0 || licensesLoading) ? (
-				<div className="w-full h-full flex-1 flex flex-col justify-center items-center">
-					<h3 className="text-center">Loading...</h3>
-				</div>
+			{!ownersLoading && !kycStatusesLoading && !licensesLoading && keyCount === 0 ? (
+				<NoKeys/>
 			) : (
 				<>
-					{keyCount > 0 ? (
+					{(ownersLoading || licensesLoading) || keyCount === 0 ? (
+						<div className="w-full h-full flex-1 flex flex-col justify-center items-center">
+							<h3 className="text-center">Loading...</h3>
+						</div>
+					) : (
 						<HasKeys
 							licensesMap={licensesMap}
 							statusMap={statusMap}
 						/>
-					) : (
-						<NoKeys/>
 					)}
 				</>
 			)}
