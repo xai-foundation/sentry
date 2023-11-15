@@ -77,7 +77,7 @@ export function GetSentryNode() {
 
 	return (
 		<div
-			className="w-full flex flex-row items-center justify-between px-[2.8rem] pt-[5.625rem] overflow-hidden">
+			className="w-full flex flex-row items-center justify-between px-[2.8rem] pt-[5.625rem]">
 			{showContinueInBrowserModal && (
 				<ContinueInBrowserModal
 					setShowContinueInBrowserModal={setShowContinueInBrowserModal}

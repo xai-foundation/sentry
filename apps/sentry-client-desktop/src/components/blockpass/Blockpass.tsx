@@ -19,10 +19,10 @@ export function Blockpass() {
 
 	return (
 		<button
-			className="w-auto h-auto bg-[#F30919] text-white p-4 uppercase font-semibold"
+			className="w-full flex justify-center items-center gap-1 text-[15px] text-white bg-[#F30919] font-semibold mt-4 px-6 py-2"
 			id="blockpass-kyc-connect"
 		>
-			Verify with Blockpass
+			Begin KYC
 		</button>
 	);
 }

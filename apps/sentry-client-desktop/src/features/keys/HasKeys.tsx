@@ -9,6 +9,7 @@ import {BlockPassKYC} from "@/components/blockpass/Blockpass";
 import {getLicensesList, LicenseList, LicenseMap} from "@/hooks/useListNodeLicensesWithCallback";
 import {config} from "@sentry/core";
 import {StatusMap} from "@/hooks/useKycStatusesWithCallback";
+import {Tooltip} from "@/features/keys/Tooltip";
 
 const dummyLicenses = [
 	{
@@ -59,16 +60,8 @@ export function HasKeys({licensesMap, statusMap}: HasKeysProps) {
 	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 
-	// function getLicenseListForTable(): Array<bigint> {
-	// 	if () {
-	//
-	// 	}
-	//
-	// }
-
 	function renderKeys() {
 		let licenses: LicenseList = [];
-		console.log("selectedWallet:", selectedWallet)
 		if (!selectedWallet) {
 			licenses = getLicensesList(licensesMap);
 		} else {
@@ -84,6 +77,7 @@ export function HasKeys({licensesMap, statusMap}: HasKeysProps) {
 			const keyString = keyWithOwner.key.toString();
 			const owner = keyWithOwner.owner.toString();
 			const status = statusMap[owner];
+			console.log("key w/ owner:", keyWithOwner);
 
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
@@ -284,7 +278,12 @@ export function HasKeys({licensesMap, statusMap}: HasKeysProps) {
 			<div className="flex flex-col pl-10">
 				<div className="flex items-center gap-1 text-[15px] text-[#525252]">
 					<p>Accrued network esXAI</p>
-					<AiOutlineInfoCircle size={16} color={"#A3A3A3"}/>
+					<Tooltip
+						header={"Each key will accrue esXAI"}
+						body={"This value is the sum of all esXAI accrued for the selected wallet. If esXAI has already been claimed, it will not be reflected in this value."}
+					>
+						<AiOutlineInfoCircle size={16} color={"#A3A3A3"}/>
+					</Tooltip>
 				</div>
 				<div className="flex items-center gap-2 font-semibold">
 					<XaiLogo/>

@@ -1,15 +1,14 @@
-import {drawerStateAtom, DrawerView} from "../features/drawer/DrawerManager";
+import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
 import {BiLinkExternal} from "react-icons/bi";
 import {useSetAtom} from "jotai";
 import {AiFillWarning} from "react-icons/ai";
-import {useOperator} from "../features/operator";
-import {useState} from "react";
-import {AssignWalletTransactionInProgressModal} from "../features/home/modals/AssignWalletTransactionInProgressModal";
+import {useOperator} from "@/features/operator";
+import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 
 export function AssignKeysFromNewWallet() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
+	const setModalState = useSetAtom(modalStateAtom);
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
-	const [showInProgress, setShowInProgress] = useState(false);
 	// const [assignedWallet, setAssignedWallet] = useState<{show: boolean, txHash: string}>({show: false, txHash: ""});
 	//
 	// (window as any).deeplinks?.assignedWallet((_event, txHash) => {
@@ -18,7 +17,7 @@ export function AssignKeysFromNewWallet() {
 	// });
 
 	function startAssignment() {
-		setShowInProgress(true);
+		setModalState(ModalView.TransactionInProgress)
 		window.electron.openExternal(`http://localhost:7555/assign-wallet/${operatorAddress}`);
 	}
 
@@ -29,10 +28,6 @@ export function AssignKeysFromNewWallet() {
 
 	return (
 		<>
-			{showInProgress && (
-				<AssignWalletTransactionInProgressModal/>
-			)}
-
 			{/*{assignedWallet.show && (*/}
 			{/*	<WalletConnectedModal*/}
 			{/*		txHash={assignedWallet.txHash}*/}

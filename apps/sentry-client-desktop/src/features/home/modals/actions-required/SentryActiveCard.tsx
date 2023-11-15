@@ -1,5 +1,5 @@
-import {IconLabel} from "../../../../components/IconLabel";
-import {SquareCard} from "../../../../components/SquareCard";
+import {IconLabel} from "@/components/IconLabel";
+import {SquareCard} from "@/components/SquareCard";
 import {BiPlay} from "react-icons/bi";
 import {IoMdCloseCircle} from "react-icons/io";
 import {AiFillCheckCircle} from "react-icons/ai";
@@ -22,6 +22,10 @@ export function SentryActiveCard() {
 						icon={IoMdCloseCircle}
 						color="#F59E28"
 						title="Sentry Wallet inactive"
+						tooltip={true}
+						header={"Your Sentry Wallet is inactive"}
+						body={"esXAI cannot be accrued while your Sentry Wallet is inactive."}
+						position={"end"}
 					/>
 
 					<p className="text-[15px] text-[#525252] mt-3">

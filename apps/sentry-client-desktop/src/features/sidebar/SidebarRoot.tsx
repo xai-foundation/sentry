@@ -1,11 +1,12 @@
 import {AiOutlineCloudUpload} from "react-icons/ai";
-import {FaDiscord, FaIcons} from 'react-icons/fa';
-import {HiOutlineDesktopComputer} from "react-icons/hi";
+import {FaDiscord, FaIcons, FaRegCircle} from 'react-icons/fa';
 import {Link, useNavigate} from 'react-router-dom';
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {RiKey2Line, RiTwitterXFill} from "react-icons/ri";
 import {SiGitbook} from "react-icons/si";
 import {YellowPulse} from "@/features/keys/StatusPulse.js";
+import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
+import {IoGiftOutline} from "react-icons/io5";
 
 /**
  * Sidebar component
@@ -13,12 +14,12 @@ import {YellowPulse} from "@/features/keys/StatusPulse.js";
  */
 export function Sidebar() {
 	const navigate = useNavigate();
+	const {sentryRunning} = useOperatorRuntime();
 
 	return (
 		<div
 			className="sticky h-full w-[14.625rem] min-w-[14.625rem] bg-white border-r border-gray-200 text-[15px] p-4 z-10">
 			<div className="h-full flex flex-col gap-5">
-
 				<div
 					className="flex items-center gap-2 text-base font-semibold cursor-pointer"
 					onClick={() => navigate("/")}
@@ -36,18 +37,24 @@ export function Sidebar() {
 					>
 						<RiKey2Line size={15}/> Keys
 					</Link>
-
 					<Link
 						to="/sentry-wallet"
 						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
 					>
 						<div className="w-[15px] h-[15px] flex justify-center items-center">
-							{/*<FaRegCircle size={8}/>*/}
-							{/*<GreenPulse/>*/}
-							<YellowPulse/>
+							{sentryRunning
+								? <YellowPulse/>
+								// <GreenPulse />
+								: <FaRegCircle size={8}/>}
 						</div>
 
 						Sentry Wallet
+					</Link>
+					<Link
+						to="/redeem"
+						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
+					>
+						<IoGiftOutline size={15}/> Redeem
 					</Link>
 				</div>
 
@@ -85,12 +92,6 @@ export function Sidebar() {
 
 				<div>
 					<h2 className="text-gray-400 text-[12px] mb-2 uppercase">Dev Links</h2>
-					<Link
-						to="/operator"
-						className="flex items-center mb-1 text-[15px text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
-					>
-						<HiOutlineDesktopComputer size={15}/> Operator
-					</Link>
 					<Link
 						to="/demo"
 						className="flex items-center mb-1 text-[15px text-gray-600 hover:text-gray-400 cursor-pointer gap-2"

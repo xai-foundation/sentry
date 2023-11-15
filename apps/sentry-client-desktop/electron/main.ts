@@ -188,5 +188,9 @@ function handleDeeplink(_, url) {
 			txHash = url.slice(url.indexOf("=") + 1);
 			win?.webContents.send("unassigned-wallet", txHash);
 			break;
+		case "purchase-successful":
+			txHash = url.slice(url.indexOf("=") + 1);
+			win?.webContents.send("purchase-successful", txHash);
+			break;
 	}
 }
