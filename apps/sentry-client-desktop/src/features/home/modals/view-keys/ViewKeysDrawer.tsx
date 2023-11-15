@@ -12,7 +12,7 @@ export function ViewKeysDrawer() {
 	return (
 		<div>
 			<div
-				className="absolute top-0 right-0 w-[30rem] h-screen flex flex-col justify-start items-center border border-gray-200 z-20 bg-white">
+				className="h-full flex flex-col justify-start items-center">
 				<div
 					className="absolute top-0 w-full h-16 flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
 					<span>View keys in wallet</span>
