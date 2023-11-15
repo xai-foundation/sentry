@@ -33,7 +33,7 @@ export function AssignedKeysDrawer({keys, setKeys}: AssignedKeysCardProps) {
 						header={"Purchased keys must be assigned to Sentry Wallet"}
 						body={"To assign keys, connect all wallets containing Sentry Keys"}
 						body2={"The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry."}
-						position={"right"}
+						position={"end"}
 					/>
 
 					<p className="text-[15px] text-[#525252] mt-3">

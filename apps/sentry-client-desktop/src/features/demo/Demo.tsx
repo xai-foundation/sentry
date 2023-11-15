@@ -3,6 +3,8 @@ import {RemoveWalletModal} from "@/features/home/modals/RemoveWalletModal";
 import {ImportSentryAlertModal} from "@/features/home/modals/ImportSentryAlertModal";
 import {useSetAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
+import {Tooltip} from "@/features/keys/Tooltip";
+import {AiFillInfoCircle} from "react-icons/ai";
 
 export function Demo() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -11,6 +13,14 @@ export function Demo() {
 
 	return (
 		<div className="h-full flex justify-center items-center gap-4">
+
+			<Tooltip
+				header={"Sentry Wallet is encrypted on your device"}
+				body={"This wallet is exportable and EVM compatible."}
+			>
+				<AiFillInfoCircle/>
+			</Tooltip>
+
 			<button
 				onClick={() => setDrawerState(DrawerView.ActionsRequiredCompleteKyc)}
 				className="w-auto h-auto bg-[#F30919] text-white p-4 uppercase font-semibold"

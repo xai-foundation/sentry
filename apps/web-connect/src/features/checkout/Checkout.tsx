@@ -79,7 +79,7 @@ export function Checkout() {
 									onClick={() => window.open(`${providerData?.blockExplorer}/tx/${data?.hash}`)}
 									className="text-[#F30919] ml-1 cursor-pointer"
 								>
-									{data?.hash.slice(0, 10) + "..."}
+									{data?.hash}
 								</a>
 							</p>
 

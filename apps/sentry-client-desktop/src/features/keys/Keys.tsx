@@ -26,7 +26,7 @@ export function Keys() {
 	return (
 		<div className="w-full h-screen">
 			<div className="flex flex-row justify-between items-center border-b border-gray-200 pl-10 pr-2">
-				<div className="sticky top-0 flex flex-row items-center h-16 gap-2 bg-white">
+				<div className="top-0 flex flex-row items-center h-16 gap-2 bg-white">
 					<h2 className="text-lg font-semibold">Keys</h2>
 					<p className="text-sm bg-gray-100 pl-2 pr-2 rounded-2xl text-gray-500">
 						X keys in Y wallet
@@ -34,7 +34,7 @@ export function Keys() {
 					<Tooltip
 						header={"Xai Client can track keys only from added wallets"}
 						body={"If you own keys in additional wallets, add them to the client."}
-						minWidth={452}
+						width={452}
 					>
 						<AiOutlineInfoCircle size={16} className="text-[#A3A3A3]"/>
 					</Tooltip>

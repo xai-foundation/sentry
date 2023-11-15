@@ -25,7 +25,7 @@ export function DrawerManager() {
 
 	return (
 		<div
-			className={classNames("w-[28rem] min-w-[28rem] h-screen relative z-10", {
+			className={classNames("w-[28rem] min-w-[28rem] h-screen relative z-10 bg-white border border-gray-200 overflow-y-scroll", {
 				"hidden": drawerState === null,
 			})}
 		>
