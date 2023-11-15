@@ -10,7 +10,7 @@ interface IconLabelProps {
 	header?: string;
 	body?: string;
 	body2?: string;
-	position?: "left" | "right";
+	position?: "start" | "end";
 }
 
 export function IconLabel({icon: Icon, color, title, tooltip, header, body, body2, position}: IconLabelProps) {

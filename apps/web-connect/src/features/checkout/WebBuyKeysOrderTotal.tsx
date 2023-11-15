@@ -53,24 +53,26 @@ export function WebBuyKeysOrderTotal({onClick, getPriceData, isPriceLoading, err
 			return
 		}
 
-		return getPriceData.nodesAtEachPrice.map((item, i) => {
-			return (
-				<div key={`get-keys-${i}`}>
-					<div className="flex flex-row items-center justify-between text-[15px]">
-						<div className="flex flex-row items-center gap-2">
-							<span className="">{Number(item.quantity)} x Xai Sentry Node Key</span>
+		return getPriceData.nodesAtEachPrice
+			.filter(item => Number(item.quantity) !== 0)
+			.map((item, i) => {
+				return (
+					<div key={`get-keys-${i}`}>
+						<div className="flex flex-row items-center justify-between text-[15px]">
+							<div className="flex flex-row items-center gap-2">
+								<span className="">{Number(item.quantity)} x Xai Sentry Node Key</span>
+							</div>
+							<div className="flex flex-row items-center gap-1">
+								<span
+									className="font-semibold">{Number(ethers.formatEther(item.totalPriceForTier))} ETH</span>
+							</div>
 						</div>
-						<div className="flex flex-row items-center gap-1">
-							<span
-								className="font-semibold">{Number(ethers.formatEther(item.totalPriceForTier))} ETH</span>
-						</div>
+						<p className="text-[13px] text-[#A3A3A3] mb-4">
+							{Number(ethers.formatEther(item.pricePer))} ETH per key
+						</p>
 					</div>
-					<p className="text-[13px] text-[#A3A3A3] mb-4">
-						{Number(ethers.formatEther(item.pricePer))} ETH per key
-					</p>
-				</div>
-			)
-		})
+				);
+			});
 	}
 
 	return (
@@ -196,9 +198,9 @@ export function WebBuyKeysOrderTotal({onClick, getPriceData, isPriceLoading, err
 									</div>
 									<div className="flex flex-row items-center gap-1 font-semibold">
 										<span>
-											{price.discount
-												? Number(price.price - price.discount)
-												: price.price}
+											{discountApplied
+												? Number(price.price + price.discount)
+												: Number(price.price)}
 										</span>
 										<span>ETH</span>
 									</div>

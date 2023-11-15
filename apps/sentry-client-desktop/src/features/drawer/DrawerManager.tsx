@@ -6,10 +6,12 @@ import {ViewKeysDrawer} from "../home/modals/view-keys/ViewKeysDrawer";
 import {ActionsRequiredNotAccruingDrawer} from "../home/modals/actions-required/ActionsRequiredNotAccruingDrawer";
 import {ExportSentryDrawer} from "../home/modals/ExportSentryDrawer";
 import {ImportSentryDrawer} from "../home/modals/ImportSentryDrawer";
+import {ActionsRequiredCompleteKyc} from "@/features/home/modals/actions-required/ActionsRequiredCompleteKyc";
 
 export enum DrawerView {
 	ActionsRequiredBuy,
 	ActionsRequiredNotAccruing,
+	ActionsRequiredCompleteKyc,
 	BuyKeys,
 	ViewKeys,
 	ImportSentry,
@@ -23,7 +25,7 @@ export function DrawerManager() {
 
 	return (
 		<div
-			className={classNames("w-[28rem] min-w-[28rem] h-screen relative z-10", {
+			className={classNames("w-[28rem] min-w-[28rem] h-screen relative z-10 bg-white border border-gray-200 overflow-y-scroll", {
 				"hidden": drawerState === null,
 			})}
 		>
@@ -33,6 +35,10 @@ export function DrawerManager() {
 
 			{drawerState === DrawerView.ActionsRequiredNotAccruing && (
 				<ActionsRequiredNotAccruingDrawer/>
+			)}
+
+			{drawerState === DrawerView.ActionsRequiredCompleteKyc && (
+				<ActionsRequiredCompleteKyc/>
 			)}
 
 			{drawerState === DrawerView.BuyKeys && (

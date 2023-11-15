@@ -4,13 +4,14 @@ import {clampAddress} from "../../../../utils/clampAddress";
 import {IoMdCloseCircle} from "react-icons/io";
 import {BsHourglassBottom} from "react-icons/bs";
 import {AiFillCheckCircle} from "react-icons/ai";
+import {Blockpass} from "@/components/blockpass/Blockpass";
 
 interface KycRequiredCardProps {
 	kycState: "required" | "pending" | "done";
 	setKycState: (newState: "pending" | "done") => void;
 }
 
-export function KycRequiredCard({kycState, setKycState}: KycRequiredCardProps) {
+export function KycRequiredCard({kycState}: KycRequiredCardProps) {
 
 	return (
 		<SquareCard className="bg-[#F5F5F5]">
@@ -26,12 +27,8 @@ export function KycRequiredCard({kycState, setKycState}: KycRequiredCardProps) {
 						180 days remaining for esXAI to be claimed
 					</p>
 
-					<button
-						onClick={() => setKycState("pending")}
-						className="w-full flex justify-center items-center gap-1 text-[15px] text-white bg-[#F30919] font-semibold mt-4 px-6 py-2"
-					>
-						Begin KYC
-					</button>
+					{/*	onClick={() => setKycState("pending")}*/}
+					<Blockpass/>
 				</>
 			)}
 
