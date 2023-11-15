@@ -46,8 +46,8 @@ export function useListNodeLicensesWithCallback(wallets: string[] = []) {
 	}
 }
 
-export function getLicensesList(_licenses) {
-	const keysWithOwners: Array<{ owner: string, key: bigint }> = [];
+export function getLicensesList(_licenses): LicenseList {
+	const keysWithOwners: LicenseList = [];
 
 	Object.keys(_licenses).map((owner) => {
 		_licenses[owner].forEach((license) => {

@@ -3,22 +3,26 @@ import {NoKeys} from "./NoKeys.js";
 import {AiFillWarning, AiOutlineInfoCircle} from "react-icons/ai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useAtom} from "jotai";
-import {useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
+import {getLicensesList, useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
 import {useOperator} from "@/features/operator";
 import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
+import {useKycStatusesWithCallback} from "@/hooks/useKycStatusesWithCallback";
 import {Tooltip} from "@/features/keys/Tooltip";
 
 export function Keys() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 
 	const {publicKey} = useOperator();
-	const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey);
-	console.log("ownersLoading:", ownersLoading);
-	console.log("owners:", owners);
+	const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey, true);
 
-	const {isLoading, licensesMap} = useListNodeLicensesWithCallback(owners);
-	console.log("isLoading:", isLoading);
-	console.log("licensesMap:", licensesMap);
+	// todo arbitrary list of manual-adds []
+	const combinedOwners = [...owners];
+
+	const {isLoading: kycStatusesLoading, statusMap} = useKycStatusesWithCallback(combinedOwners);
+	console.log("statusMap:", statusMap);
+	const {isLoading: licensesLoading, licensesMap} = useListNodeLicensesWithCallback(combinedOwners);
+
+	const keyCount = getLicensesList(licensesMap).length;
 
 	return (
 		<div className="w-full h-screen">
@@ -26,7 +30,7 @@ export function Keys() {
 				<div className="top-0 flex flex-row items-center h-16 gap-2 bg-white">
 					<h2 className="text-lg font-semibold">Keys</h2>
 					<p className="text-sm bg-gray-100 pl-2 pr-2 rounded-2xl text-gray-500">
-						X keys in Y wallet
+						{keyCount} key{keyCount === 1 ? "" : "s"} in {owners.length} wallet{owners.length === 1 ? "" : "s"}
 					</p>
 					<Tooltip
 						header={"Xai Client can track keys only from added wallets"}
@@ -53,10 +57,21 @@ export function Keys() {
 				)}
 			</div>
 
-			{true ? (
-				<HasKeys licensesMap={licensesMap}/>
-			) : (
+			{!ownersLoading && !kycStatusesLoading && !licensesLoading && keyCount === 0 ? (
 				<NoKeys/>
+			) : (
+				<>
+					{(ownersLoading || licensesLoading) || keyCount === 0 ? (
+						<div className="w-full h-full flex-1 flex flex-col justify-center items-center">
+							<h3 className="text-center">Loading...</h3>
+						</div>
+					) : (
+						<HasKeys
+							licensesMap={licensesMap}
+							statusMap={statusMap}
+						/>
+					)}
+				</>
 			)}
 		</div>
 	)

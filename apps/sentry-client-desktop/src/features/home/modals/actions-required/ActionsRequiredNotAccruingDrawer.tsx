@@ -5,7 +5,7 @@ import {IoMdCloseCircle} from "react-icons/io";
 import {IconLabel} from "@/components/IconLabel";
 import {SquareCard} from "@/components/SquareCard";
 import {SentryActiveCard} from "./SentryActiveCard";
-import {InsufficientFundsCard} from "./InsufficientFundsCard";
+import {FundsInSentryWalletCard} from "./FundsInSentryWalletCard";
 import {AssignedKeysDrawer} from "./AssignedKeysDrawer";
 import {useEffect, useState} from "react";
 import {KycRequiredCard} from "./KycRequiredCard";
@@ -95,12 +95,7 @@ export function ActionsRequiredNotAccruingDrawer() {
 						</BarStepItem>
 
 						<BarStepItem>
-							<InsufficientFundsCard
-								funded={testState.funded}
-								setFunded={() => setTestState((_state) => {
-									return {..._state, funded: true}
-								})}
-							/>
+							<FundsInSentryWalletCard/>
 						</BarStepItem>
 
 						<BarStepItem lastItem={true}>

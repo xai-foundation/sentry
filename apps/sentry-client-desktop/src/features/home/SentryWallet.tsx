@@ -25,7 +25,7 @@ import {Tooltip} from "@/features/keys/Tooltip";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 
 // TODO -> replace with dynamic value later
-const recommendedValue = ethers.parseEther("0.005");
+export const recommendedFundingBalance = ethers.parseEther("0.005");
 
 export function SentryWallet() {
 	// todo -> split up
@@ -35,12 +35,18 @@ export function SentryWallet() {
 	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
 
 	const {isLoading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
-	const {isLoading: isListNodeLicensesLoading, data: listNodeLicensesData} = useListNodeLicenses(listOwnersData?.owners);
+	const {
+		isLoading: isListNodeLicensesLoading,
+		data: listNodeLicensesData
+	} = useListNodeLicenses(listOwnersData?.owners);
 	const loading = isOperatorLoading || isListOwnersLoading || isListNodeLicensesLoading;
 
 	const [copied, setCopied] = useState<boolean>(false);
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
-	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
+	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({
+		show: false,
+		txHash: ""
+	});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
 	const {startRuntime, stopRuntime, sentryRunning, nodeLicenseStatusMap} = useOperatorRuntime();
@@ -161,7 +167,7 @@ export function SentryWallet() {
 	}
 
 	function getEthFundsTextColor(): string {
-		if (balance?.wei !== undefined && balance.wei >= recommendedValue) {
+		if (balance?.wei !== undefined && balance.wei >= recommendedFundingBalance) {
 			return "text-[#38A349]";
 		}
 
