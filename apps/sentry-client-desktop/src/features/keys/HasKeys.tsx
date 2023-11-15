@@ -6,7 +6,9 @@ import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {useState} from "react";
 import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse.js";
 import {BlockPassKYC} from "@/components/blockpass/Blockpass";
-import {LicenseMap} from "@/hooks/useListNodeLicensesWithCallback";
+import {getLicensesList, LicenseList, LicenseMap} from "@/hooks/useListNodeLicensesWithCallback";
+import {config} from "@sentry/core";
+import {StatusMap} from "@/hooks/useKycStatusesWithCallback";
 
 const dummyLicenses = [
 	{
@@ -49,9 +51,10 @@ const dummyLicenses = [
 
 interface HasKeysProps {
 	licensesMap: LicenseMap,
+	statusMap: StatusMap,
 }
 
-export function HasKeys({licensesMap}: HasKeysProps) {
+export function HasKeys({licensesMap, statusMap}: HasKeysProps) {
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -63,7 +66,53 @@ export function HasKeys({licensesMap}: HasKeysProps) {
 	//
 	// }
 
-	function getKeys() {
+	function renderKeys() {
+		let licenses: LicenseList = [];
+		console.log("selectedWallet:", selectedWallet)
+		if (!selectedWallet) {
+			licenses = getLicensesList(licensesMap);
+		} else {
+			if (licensesMap[selectedWallet]) {
+				licenses = licensesMap[selectedWallet].map((license) => {
+					return {owner: selectedWallet, key: license};
+				});
+			}
+		}
+
+		return licenses.map((keyWithOwner, i) => {
+			const isEven = i % 2 === 0;
+			const keyString = keyWithOwner.key.toString();
+			const owner = keyWithOwner.owner.toString();
+			const status = statusMap[owner];
+
+			return (
+				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
+					<td className="w-full max-w-[70px] px-4 py-2">{keyString}</td>
+					<td className="w-full max-w-[360px] px-4 py-2">{owner}</td>
+					<td className="w-full max-w-[360px] px-4 py-2 text-[#A3A3A3]">
+						{!status ? (
+							<p className="flex items-center gap-2">
+								<YellowPulse/>
+								KYC required
+								<BlockPassKYC/>
+							</p>
+						) : (
+							<span>KYC GOOD</span>
+						)}
+					</td>
+					<td className="w-full max-w-[150px] px-4 py-2 text-right">ACCRUED ESXAI</td>
+					<td className="w-full max-w-[150px] px-4 py-2 text-[#F30919]">
+						<span
+							className="cursor-pointer"
+							onClick={() => window.electron.openExternal(`https://testnets.opensea.io/assets/arbitrum-goerli/${config.nodeLicenseAddress}/${keyString}`)}
+						>
+							View
+						</span>
+					</td>
+				</tr>
+			);
+		});
+
 		return dummyLicenses.map((item, i: number) => {
 			const isEven = i % 2 === 0;
 			let status;
@@ -133,6 +182,21 @@ export function HasKeys({licensesMap}: HasKeysProps) {
 		})
 	}
 
+	function getDropdownItems() {
+		return Object.keys(statusMap).map((wallet, i) => (
+			<p
+				onClick={() => {
+					setSelectedWallet(wallet);
+					setIsOpen(false);
+				}}
+				className="p-2 cursor-pointer hover:bg-gray-100"
+				key={`sentry-item-${i}`}
+			>
+				{wallet}
+			</p>
+		));
+	}
+
 	function copySelectedWallet() {
 		if (selectedWallet && navigator.clipboard) {
 			navigator.clipboard.writeText(selectedWallet)
@@ -162,7 +226,7 @@ export function HasKeys({licensesMap}: HasKeysProps) {
 							onClick={() => setIsOpen(!isOpen)}
 							className={`flex items-center justify-between w-[538px] border-[#A3A3A3] border-r border-l border-t ${!isOpen ? "border-b" : null} border-[#A3A3A3] p-2`}
 						>
-							<p>{selectedWallet || `All wallets (${Object.keys(licensesMap).length})`}</p>
+							<p>{selectedWallet || `All wallets (${Object.keys(statusMap).length})`}</p>
 							<IoIosArrowDown
 								className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
 							/>
@@ -180,7 +244,7 @@ export function HasKeys({licensesMap}: HasKeysProps) {
 								>
 									All
 								</p>
-								{/*{getDropdownItems()}*/}
+								{getDropdownItems()}
 							</div>
 						)}
 					</div>
@@ -225,7 +289,7 @@ export function HasKeys({licensesMap}: HasKeysProps) {
 				<div className="flex items-center gap-2 font-semibold">
 					<XaiLogo/>
 					<p className="text-3xl">
-						{dummyLicenses[0].accruedEsxai} esXAI
+						SOME esXAI
 					</p>
 				</div>
 			</div>
@@ -243,7 +307,7 @@ export function HasKeys({licensesMap}: HasKeysProps) {
 					</thead>
 					<tbody>
 
-					{getKeys()}
+					{renderKeys()}
 
 					<tr className="text-[#A3A3A3] text-sm flex px-8">
 						<td className="w-full max-w-[70px] px-4 py-2">-</td>

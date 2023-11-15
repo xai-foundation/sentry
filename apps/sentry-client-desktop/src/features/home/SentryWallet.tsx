@@ -37,12 +37,18 @@ export function SentryWallet() {
 	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
 
 	const {isLoading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
-	const {isLoading: isListNodeLicensesLoading, data: listNodeLicensesData} = useListNodeLicenses(listOwnersData?.owners);
+	const {
+		isLoading: isListNodeLicensesLoading,
+		data: listNodeLicensesData
+	} = useListNodeLicenses(listOwnersData?.owners);
 	const loading = isOperatorLoading || isListOwnersLoading || isListNodeLicensesLoading;
 
 	const [copied, setCopied] = useState<boolean>(false);
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
-	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
+	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({
+		show: false,
+		txHash: ""
+	});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
 
@@ -202,12 +208,12 @@ export function SentryWallet() {
 				/>
 			)}
 
-				{unassignedWallet.show && (
-					<WalletDisconnectedModal
-						txHash={unassignedWallet.txHash}
-						onClose={onCloseWalletConnectedModal}
-					/>
-				)}
+			{unassignedWallet.show && (
+				<WalletDisconnectedModal
+					txHash={unassignedWallet.txHash}
+					onClose={onCloseWalletConnectedModal}
+				/>
+			)}
 
 			<div className="w-full h-full flex flex-col">
 				<div
