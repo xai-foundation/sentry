@@ -1,8 +1,10 @@
-import {IconLabel} from "../../../../components/IconLabel";
-import {SquareCard} from "../../../../components/SquareCard";
+import {IconLabel} from "@/components/IconLabel";
+import {SquareCard} from "@/components/SquareCard";
 import {IoMdCloseCircle} from "react-icons/io";
 import {LuExternalLink} from "react-icons/lu";
 import {AiFillCheckCircle} from "react-icons/ai";
+import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
+import {useSetAtom} from "jotai";
 
 interface AssignedKeysCardProps {
 	keys: boolean;
@@ -10,7 +12,10 @@ interface AssignedKeysCardProps {
 }
 
 export function AssignedKeysDrawer({keys, setKeys}: AssignedKeysCardProps) {
+	const setModalState = useSetAtom(modalStateAtom);
+
 	function onSetKeys() {
+		setModalState(ModalView.TransactionInProgress)
 		window.electron.openExternal("http://localhost:7555/assign-wallet");
 		setKeys();
 	}

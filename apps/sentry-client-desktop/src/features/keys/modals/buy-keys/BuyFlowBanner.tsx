@@ -1,11 +1,15 @@
 import {MdVerifiedUser} from "react-icons/md";
 import {BiLinkExternal} from "react-icons/bi";
+import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
+import {useSetAtom} from "jotai";
 
 interface BuyFlowBanner {
 	quantity: number;
 }
 
 export function BuyFlowBanner({quantity}: BuyFlowBanner) {
+	const setModalState = useSetAtom(modalStateAtom);
+
 	return (
 		<div className="w-full flex flex-col gap-4 px-6">
 			<div className="flex flex-col gap-2 bg-[#DCFCE6] p-6">
@@ -24,6 +28,7 @@ export function BuyFlowBanner({quantity}: BuyFlowBanner) {
 			<div className="pb-6 font-semibold">
 				<button
 					onClick={() => {
+						setModalState(ModalView.TransactionInProgress)
 						window.electron.openExternal(`http://localhost:7555/?quantity=${quantity}`)
 					}}
 					className={"w-full h-16 flex flex-row justify-center items-center gap-1 bg-[#F30919] text-lg text-white"}

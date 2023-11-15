@@ -1,16 +1,14 @@
-import {ChangeEvent, Dispatch, SetStateAction, useState} from "react";
+import {ChangeEvent, useState} from "react";
 import {BiLinkExternal, BiLoaderAlt} from "react-icons/bi";
 import {listNodeLicenses} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useNavigate} from "react-router-dom";
-import {useSetAtom} from "jotai/index";
+import {useSetAtom} from "jotai";
 import {drawerStateAtom} from "../../../drawer/DrawerManager.js";
+import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 
-interface ViewKeysFlowProps {
-	setShowContinueInBrowserModal: Dispatch<SetStateAction<boolean>>;
-}
 
-export function ViewKeysFlow({setShowContinueInBrowserModal}: ViewKeysFlowProps) {
+export function ViewKeysFlow() {
 	const [ownerAddress, setOwnerAddress] = useState('');
 	const [ownerAddressError, setOwnerAddressError] = useState({
 		errorResult: "",
@@ -21,6 +19,7 @@ export function ViewKeysFlow({setShowContinueInBrowserModal}: ViewKeysFlowProps)
 	const [success, setSuccess] = useState<boolean>(false)
 
 	const setDrawerState = useSetAtom(drawerStateAtom);
+	const setModalState = useSetAtom(modalStateAtom);
 	const navigate = useNavigate();
 
 	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -122,7 +121,7 @@ export function ViewKeysFlow({setShowContinueInBrowserModal}: ViewKeysFlowProps)
 
 						<button
 							onClick={() => {
-								setShowContinueInBrowserModal(true)
+								setModalState(ModalView.TransactionInProgress)
 								window.electron.openExternal('http://localhost:7555/connect-wallet')
 							}}
 							className="w-full h-12 flex flex-row justify-center items-center gap-1 bg-[#F30919] text-[15px] text-white font-semibold"

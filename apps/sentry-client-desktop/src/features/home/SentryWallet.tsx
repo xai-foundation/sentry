@@ -1,6 +1,5 @@
 import {AiFillWarning, AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
 import {useState} from "react";
-import {ContinueInBrowserModal} from "@/features/home/modals/ContinueInBrowserModal";
 import {BiDownload, BiLinkExternal, BiUpload} from "react-icons/bi";
 import {useOperator} from "../operator";
 import {PiCopy} from "react-icons/pi";
@@ -8,7 +7,7 @@ import {HiOutlineDotsVertical} from "react-icons/hi";
 import {GiPauseButton} from "react-icons/gi";
 import {FaEthereum} from "react-icons/fa";
 import {MdRefresh} from "react-icons/md";
-import {useAtom} from "jotai";
+import {useAtom, useSetAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.js";
 import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
@@ -23,6 +22,7 @@ import {ethers} from "ethers";
 import classNames from "classnames";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {Tooltip} from "@/features/keys/Tooltip";
+import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 
 // TODO -> replace with dynamic value later
 const recommendedValue = ethers.parseEther("0.005");
@@ -31,7 +31,6 @@ export function SentryWallet() {
 	// todo -> split up
 	const queryClient = useQueryClient();
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
-	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
 
@@ -45,15 +44,17 @@ export function SentryWallet() {
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
 	const {startRuntime, stopRuntime, sentryRunning, nodeLicenseStatusMap} = useOperatorRuntime();
-
+	const setModalState = useSetAtom(modalStateAtom);
 
 	// assign wallet
 	(window as any).deeplinks?.assignedWallet((_event, txHash) => {
+		setModalState(null)
 		setAssignedWallet({show: true, txHash});
 	});
 
 	// un-assign wallet
 	(window as any).deeplinks?.unassignedWallet((_event, txHash) => {
+		setModalState(null)
 		setUnassignedWallet({show: true, txHash});
 	});
 
@@ -219,12 +220,9 @@ export function SentryWallet() {
 									className="cursor-pointer"
 								>
 									{copied
-										? (
-											<Tooltip body={"Copied!"} width={73} position={"end"}>
-												<PiCopy/>
-											</Tooltip>
-										)
-										: (<PiCopy/>)}
+										? (<AiOutlineCheck className="h-[15px]"/>)
+										: (<PiCopy className="h-[15px]"/>)
+									}
 								</div>
 
 								<Tooltip
@@ -347,10 +345,6 @@ export function SentryWallet() {
 					</div>
 				</div>
 
-				{showContinueInBrowserModal && (
-					<ContinueInBrowserModal setShowContinueInBrowserModal={setShowContinueInBrowserModal}/>
-				)}
-
 				{/*		Keys	*/}
 				{listOwnersData && listOwnersData.owners && listOwnersData.owners.length > 0 ? (
 					<>
@@ -402,7 +396,10 @@ export function SentryWallet() {
 									</button>
 
 									<button
-										onClick={() => window.electron.openExternal(`http://localhost:7555/assign-wallet/${operatorAddress}`)}
+										onClick={() => {
+											setModalState(ModalView.TransactionInProgress)
+											window.electron.openExternal(`http://localhost:7555/assign-wallet/${operatorAddress}`)
+										}}
 										className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 									>
 										Assign keys from new wallet

@@ -19,7 +19,7 @@ export function ModalManager() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const [purchaseSuccessful, setPurchaseSuccessful] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
 
-	// un-assign wallet
+	// purchase success modal
 	(window as any).deeplinks?.purchaseSuccessful((_event, txHash) => {
 		setPurchaseSuccessful({show: true, txHash});
 		setDrawerState(null);
@@ -27,7 +27,7 @@ export function ModalManager() {
 	});
 
 	return (
-		<div className={classNames("w-full h-full fixed z-10", {
+		<div className={classNames("w-full h-full fixed z-30", {
 			"hidden": modalState === null,
 		})}>
 			{modalState === ModalView.Exit && (
