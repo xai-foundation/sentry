@@ -12,7 +12,7 @@ import {useState} from "react";
 
 export function FundsInSentryWalletCard() {
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
-	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
+	const {data: balance} = useBalance(operatorAddress);
 	const [copied, setCopied] = useState(false);
 
 	const funded = balance && balance.wei !== undefined && balance.wei >= recommendedFundingBalance;
