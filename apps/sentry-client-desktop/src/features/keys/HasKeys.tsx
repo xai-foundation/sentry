@@ -34,8 +34,8 @@ export function HasKeys({licensesMap, statusMap}: HasKeysProps) {
 				});
 			}
 		}
-
-		return licenses.map((keyWithOwner, i) => {
+		
+		return licenses.sort((a, b) => Number(a.key) - Number(b.key)).map((keyWithOwner, i) => {
 			const isEven = i % 2 === 0;
 			const keyString = keyWithOwner.key.toString();
 			const owner = keyWithOwner.owner.toString();
