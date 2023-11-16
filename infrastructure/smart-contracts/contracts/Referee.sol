@@ -82,6 +82,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         bytes activeChallengerPublicKey; // The challengerPublicKey that was active at the time of challenge submission
         address rollupUsed; // The rollup address used for this challenge
         uint256 createdTimestamp; // used to determine if a node license is eligible to submit
+        uint256 closeTimestamp; // used to determine reward expiry
         uint256 totalSupplyOfNodesAtChallengeStart; // keep track of what the total supply opf nodes is when the challenge starts
         uint256 rewardAmountForClaimers; // this is how much esXai should be allocated to the claimers
         uint256 amountForGasSubsidy; // this is how much Xai was minted for the gas subsidy
@@ -90,6 +91,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
 
     // Define events
     event ChallengeSubmitted(uint256 indexed challengeNumber, Challenge challenge);
+    event ChallengeClosed(uint256 indexed challengeNumber, Challenge challenge);
     event AssertionSubmitted(uint256 indexed challengeId, uint256 indexed nodeLicenseId);
     event RollupAddressChanged(address newRollupAddress);
     event ChallengerPublicKeyChanged(bytes newChallengerPublicKey);
@@ -359,6 +361,13 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         // add the amount that will be given to claimers to the allocated field variable amount, so we can track how much esXai is owed
         _allocatedTokens += rewardAmountForClaimers;
 
+        // close the previous challenge with the start of the next challenge
+        if (challengeCounter > 0) {
+            challenges[challengeCounter - 1].openForSubmissions = false;
+            challenges[challengeCounter - 1].closeTimestamp = block.timestamp;
+            emit ChallengeClosed(challengeCounter - 1, challenges[challengeCounter - 1]);
+        }
+
         // add challenge to the mapping
         challenges[challengeCounter] = Challenge({
             openForSubmissions: true,
@@ -370,17 +379,18 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
             activeChallengerPublicKey: challengerPublicKey, // Store the active challengerPublicKey at the time of challenge submission
             rollupUsed: rollupAddress, // Store the rollup address used for this challenge
             createdTimestamp: block.timestamp,
+            closeTimestamp: 0,
             totalSupplyOfNodesAtChallengeStart: NodeLicense(nodeLicenseAddress).totalSupply(), // we need to store how many nodes were created for the 1% odds
             rewardAmountForClaimers: rewardAmountForClaimers,
             amountForGasSubsidy: amountForGasSubsidy,
             numberOfEligibleClaimers: 0
         });
 
+        // emit the events
+        emit ChallengeSubmitted(challengeCounter, challenges[challengeCounter]);   
+
         // increment the challenge counter
         challengeCounter++;
-
-        // emit the event
-        emit ChallengeSubmitted(challengeCounter, challenges[challengeCounter]);
     }
 
     /**
