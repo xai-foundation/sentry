@@ -36,7 +36,7 @@ export function Checkout() {
 			window.location = `xai-sentry://purchase-successful?txHash=${data.hash}` as unknown as Location;
 		},
 		onError(error) {
-			console.log("Error", error);
+			console.warn("Error", error);
 		},
 	});
 

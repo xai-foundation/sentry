@@ -1,12 +1,11 @@
 import {ChangeEvent, useState} from "react";
 import {BiLinkExternal, BiLoaderAlt} from "react-icons/bi";
-import {listNodeLicenses} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
-import {useNavigate} from "react-router-dom";
 import {useSetAtom} from "jotai";
-import {drawerStateAtom} from "../../../drawer/DrawerManager.js";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
-
+import {useStorage} from "@/features/storage";
+import {useNavigate} from "react-router-dom";
+import {drawerStateAtom} from "@/features/drawer/DrawerManager";
 
 export function ViewKeysFlow() {
 	const [ownerAddress, setOwnerAddress] = useState('');
@@ -21,6 +20,7 @@ export function ViewKeysFlow() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
 	const navigate = useNavigate();
+	const {data, setData} = useStorage();
 
 	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setOwnerAddress(event.target.value);
@@ -33,28 +33,40 @@ export function ViewKeysFlow() {
 	async function onAddWallet() {
 		setLoading(true);
 
-		try {
-			const res = await listNodeLicenses(ownerAddress);
+		const addressRegex = /^(0x)?[0-9a-fA-F]{40}$/;
+		const isValidMetamaskAddress = addressRegex.test(ownerAddress);
 
-			if (res.length >= 1) {
-				setLoading(false);
-				setSuccess(true);
-			} else {
-				setLoading(false);
-				setOwnerAddressError({
-					errorResult: "No keys found in provided wallet",
-					error: true,
-				});
-			}
-
-		} catch (e) {
-			setLoading(false);
+		// Return if input added isn't a valid address
+		if (!isValidMetamaskAddress) {
 			setOwnerAddressError({
-				errorResult: "Invalid public key",
+				errorResult: "Invalid address",
 				error: true,
 			});
-			console.error("Invalid public key", e);
+			setLoading(false);
+			return
 		}
+
+		// Return if wallet already exists inside of addedWallets array
+		if (data?.addedWallets?.includes(ownerAddress)) {
+			setOwnerAddressError({
+				errorResult: "Wallet already added",
+				error: true,
+			});
+			setLoading(false);
+			return
+		}
+
+		const userWallets = data?.addedWallets || [];
+		userWallets.push(ownerAddress);
+
+		setData({
+			...data,
+			addedWallets: userWallets
+		});
+
+		setLoading(false);
+		setSuccess(true);
+
 	}
 
 	// Load State
@@ -74,7 +86,7 @@ export function ViewKeysFlow() {
 		setTimeout(() => {
 			setDrawerState(null);
 			navigate("/keys")
-		}, 4000);
+		}, 3000);
 
 		return (
 			<div
@@ -91,9 +103,9 @@ export function ViewKeysFlow() {
 			<div>
 				<div className="w-full flex flex-col gap-8 mt-12">
 					<div className="flex flex-col gap-2 px-6 pt-8">
-				<span className="text-[15px] text-[#525252] mt-2">
-					Enter the the public key of the wallet you want to view keys for
-				</span>
+						<p className="text-[15px] text-[#525252] mt-2">
+							Enter the the public key of the wallet you want to view keys for
+						</p>
 
 						<input
 							type="text"
@@ -115,9 +127,9 @@ export function ViewKeysFlow() {
 							Add wallet
 						</button>
 
-						<span className="text-[15px] text-[#525252] mt-8">
-					Or connect wallet to view all keys in the wallet
-				</span>
+						<p className="text-[15px] text-[#525252] mt-8">
+							Or connect wallet to view all keys in the wallet
+						</p>
 
 						<button
 							onClick={() => {

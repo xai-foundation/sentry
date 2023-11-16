@@ -1,13 +1,15 @@
-import { useState, useEffect } from 'react';
+import {useEffect, useState} from 'react';
 
-export type IData = Partial<{}>
+export type IData = Partial<{
+	addedWallets: string[];
+}>
 
 interface IUseStorageResponse {
-    data?: IData;
-    setData: (data: IData) => void;
-    removeData: () => void;
-    loading: boolean;
-    getFilePath: () => Promise<string>;
+	data?: IData;
+	setData: (data: IData) => void;
+	removeData: () => void;
+	loading: boolean;
+	getFilePath: () => Promise<string>;
 }
 
 /**
@@ -18,56 +20,56 @@ interface IUseStorageResponse {
  * @returns The response from the hook.
  */
 export function useStorage(): IUseStorageResponse {
-    const [data, setData] = useState<IData>();
-    const [loading, setLoading] = useState<boolean>(false);
+	const [data, setData] = useState<IData>();
+	const [loading, setLoading] = useState<boolean>(false);
 
-    const getFilePath = async () => {
-        return await window.ipcRenderer.invoke('path-join', await window.ipcRenderer.invoke('get-user-data-path'), "sentry-node-config.json");
-    };
+	const getFilePath = async () => {
+		return await window.ipcRenderer.invoke('path-join', await window.ipcRenderer.invoke('get-user-data-path'), "sentry-node-config.json");
+	};
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            const filePath = await getFilePath();
-            const fileExists = await window.ipcRenderer.invoke('fs-existsSync', filePath);
-            if (fileExists) {
-                const rawData: any = await window.ipcRenderer.invoke('fs-readFileSync', filePath);
-                setData(JSON.parse(rawData.toString()));
-            } else {
-                // If the data is null on disk, save an empty {} to it.
-                await window.ipcRenderer.invoke('fs-writeFileSync', filePath, JSON.stringify({}));
-                setData({});
-            }
-            setLoading(false);
-        };
-        fetchData();
-    }, []);
+	useEffect(() => {
+		const fetchData = async () => {
+			setLoading(true);
+			const filePath = await getFilePath();
+			const fileExists = await window.ipcRenderer.invoke('fs-existsSync', filePath);
+			if (fileExists) {
+				const rawData: any = await window.ipcRenderer.invoke('fs-readFileSync', filePath, "utf8");
+				setData(JSON.parse(rawData.toString()));
+			} else {
+				// If the data is null on disk, save an empty {} to it.
+				await window.ipcRenderer.invoke('fs-writeFileSync', filePath, JSON.stringify({}));
+				setData({});
+			}
+			setLoading(false);
+		};
+		fetchData();
+	}, []);
 
-    const setDataToFile = async (newData: any) => {
-        setLoading(true);
-        try {
-            const filePath = await getFilePath();
-            await window.ipcRenderer.invoke('fs-writeFileSync', filePath, JSON.stringify(newData));
-            setData(newData);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
+	const setDataToFile = async (newData: IData) => {
+		setLoading(true);
+		try {
+			const filePath = await getFilePath();
+			await window.ipcRenderer.invoke('fs-writeFileSync', filePath, JSON.stringify(newData));
+			setData(newData);
+		} catch (error) {
+			console.error(error);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-    const removeData = async () => {
-        setLoading(true);
-        try {
-            const filePath = await getFilePath();
-            await window.ipcRenderer.invoke('fs-unlinkSync', filePath);
-            setData(undefined);
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setLoading(false);
-        }
-    };
+	const removeData = async () => {
+		setLoading(true);
+		try {
+			const filePath = await getFilePath();
+			await window.ipcRenderer.invoke('fs-unlinkSync', filePath);
+			setData(undefined);
+		} catch (error) {
+			console.error(error);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-    return { data, setData: setDataToFile, removeData, loading, getFilePath };
+	return {data, setData: setDataToFile, removeData, loading, getFilePath};
 }

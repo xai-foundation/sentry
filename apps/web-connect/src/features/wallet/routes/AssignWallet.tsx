@@ -20,7 +20,7 @@ export function AssignWallet() {
 			window.location = `xai-sentry://assigned-wallet?txHash=${data.hash}` as unknown as Location;
 		},
 		onError(error) {
-			console.log("Error", error);
+			console.warn("Error", error);
 		},
 	});
 
