@@ -4,9 +4,14 @@ import {Link, useNavigate} from 'react-router-dom';
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {RiKey2Line, RiTwitterXFill} from "react-icons/ri";
 import {SiGitbook} from "react-icons/si";
-import {YellowPulse} from "@/features/keys/StatusPulse.js";
+import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse.js";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {IoGiftOutline} from "react-icons/io5";
+import {recommendedFundingBalance} from "@/features/home/SentryWallet";
+import {useBalance} from "@/hooks/useBalance";
+import {useOperator} from "@/features/operator";
+import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
+import {useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
 
 /**
  * Sidebar component
@@ -15,6 +20,11 @@ import {IoGiftOutline} from "react-icons/io5";
 export function Sidebar() {
 	const navigate = useNavigate();
 	const {sentryRunning} = useOperatorRuntime();
+	const {publicKey: operatorAddress} = useOperator();
+	const {data: balance} = useBalance(operatorAddress);
+	const funded = balance && balance.wei !== undefined && balance.wei >= recommendedFundingBalance;
+	const {owners} = useListOwnersForOperatorWithCallback(operatorAddress, true);
+	const {licensesMap} = useListNodeLicensesWithCallback(owners);
 
 	return (
 		<div
@@ -43,8 +53,9 @@ export function Sidebar() {
 					>
 						<div className="w-[15px] h-[15px] flex justify-center items-center">
 							{sentryRunning
-								? <YellowPulse/>
-								// <GreenPulse />
+								? sentryRunning && Object.keys(licensesMap).length > 0 && funded
+									? <GreenPulse/>
+									: <YellowPulse/>
 								: <FaRegCircle size={8}/>}
 						</div>
 
