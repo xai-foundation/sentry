@@ -1,4 +1,4 @@
-import Vorpal from "vorpal";import { listAddressesForRole } from "@xai-vanguard-node/core";
+import Vorpal from "vorpal";import { listAddressesForRole } from "@sentry/core";
 
 export function getListOfChallengers(cli: Vorpal) {
     cli

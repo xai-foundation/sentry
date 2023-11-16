@@ -1,5 +1,5 @@
 {
-  "name": "@xai-vanguard-node/smart-contracts",
+  "name": "@sentry/smart-contracts",
   "version": "1.0.0",
   "license": "UNLICENSED",
   "type": "module",
@@ -8,7 +8,7 @@
     "clean": "rimraf artifacts && rimraf cache"
   },
   "dependencies": {
-    "@xai-vanguard-node/core": "workspace:*",
+    "@sentry/core": "workspace:*",
     "csv": "^6.3.5",
     "dotenv": "^16.3.1"
   },

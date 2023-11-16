@@ -1,5 +1,5 @@
 import Vorpal from "vorpal";
-import { getSignerFromPrivateKey, setOrAddPricingTiers } from "@xai-vanguard-node/core";
+import { getSignerFromPrivateKey, setOrAddPricingTiers } from "@sentry/core";
 
 /**
  * Function to set or add pricing tiers for node licenses.

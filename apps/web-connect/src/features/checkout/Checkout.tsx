@@ -4,7 +4,7 @@ import {WebBuyKeysQuantity} from "@/features/checkout/WebBuyKeysQuantity";
 import {WebBuyKeysOrderTotal} from "@/features/checkout/WebBuyKeysOrderTotal";
 import {useGetPriceForQuantity} from "@/features/checkout/hooks/useGetPriceForQuantity";
 import {useContractWrite} from "wagmi";
-import {config, NodeLicenseAbi} from "@xai-vanguard-node/core";
+import {config, NodeLicenseAbi} from "@sentry/core";
 import {ethers} from "ethers";
 import {BiLoaderAlt} from "react-icons/bi";
 import {FaCircleCheck} from "react-icons/fa6";
@@ -79,7 +79,7 @@ export function Checkout() {
 									onClick={() => window.open(`${providerData?.blockExplorer}/tx/${data?.hash}`)}
 									className="text-[#F30919] ml-1 cursor-pointer"
 								>
-									{data?.hash.slice(0, 10) + "..."}
+									{data?.hash}
 								</a>
 							</p>
 

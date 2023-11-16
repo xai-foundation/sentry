@@ -5,7 +5,7 @@
     "outDir": "dist",
     "paths": {
       "@/*": ["./src/*"],
-      "@xai-vanguard-node/*": ["../../packages/*/src"]
+      "@sentry/*": ["../../packages/*/src"]
     }
   },
   "references": [

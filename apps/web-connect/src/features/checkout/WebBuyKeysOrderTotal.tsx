@@ -3,12 +3,12 @@ import {AiFillInfoCircle, AiOutlineClose} from "react-icons/ai";
 import {useGetTotalSupplyAndCap} from "@/features/checkout/hooks/useGetTotalSupplyAndCap";
 import {useEffect, useState} from "react";
 import {ethers} from "ethers";
-import {XaiCheckbox} from "@xai-vanguard-node/ui/dist/src/features/checkbox/XaiCheckbox";
-import {CheckoutTierSummary} from "@xai-vanguard-node/core";
+import {CheckoutTierSummary} from "@sentry/core";
+import {XaiCheckbox} from "@sentry/ui";
 
 interface PriceDataInterface {
-	price: bigint,
-	nodesAtEachPrice: CheckoutTierSummary[]
+	price: bigint;
+	nodesAtEachPrice: Array<CheckoutTierSummary>;
 }
 
 interface WebBuyKeysOrderTotalProps {
@@ -53,24 +53,26 @@ export function WebBuyKeysOrderTotal({onClick, getPriceData, isPriceLoading, err
 			return
 		}
 
-		return getPriceData.nodesAtEachPrice.map((item: any, i: number) => {
-			return (
-				<div key={`get-keys-${i}`}>
-					<div className="flex flex-row items-center justify-between text-[15px]">
-						<div className="flex flex-row items-center gap-2">
-							<span className="">{Number(item.quantity)} x Xai Sentry Node Key</span>
+		return getPriceData.nodesAtEachPrice
+			.filter(item => Number(item.quantity) !== 0)
+			.map((item, i) => {
+				return (
+					<div key={`get-keys-${i}`}>
+						<div className="flex flex-row items-center justify-between text-[15px]">
+							<div className="flex flex-row items-center gap-2">
+								<span className="">{Number(item.quantity)} x Xai Sentry Node Key</span>
+							</div>
+							<div className="flex flex-row items-center gap-1">
+								<span
+									className="font-semibold">{Number(ethers.formatEther(item.totalPriceForTier))} ETH</span>
+							</div>
 						</div>
-						<div className="flex flex-row items-center gap-1">
-							<span
-								className="font-semibold">{Number(ethers.formatEther(item.totalPriceForTier))} ETH</span>
-						</div>
+						<p className="text-[13px] text-[#A3A3A3] mb-4">
+							{Number(ethers.formatEther(item.pricePer))} ETH per key
+						</p>
 					</div>
-					<p className="text-[13px] text-[#A3A3A3] mb-4">
-						{Number(ethers.formatEther(item.pricePer))} ETH per key
-					</p>
-				</div>
-			)
-		})
+				);
+			});
 	}
 
 	return (
@@ -142,8 +144,10 @@ export function WebBuyKeysOrderTotal({onClick, getPriceData, isPriceLoading, err
 												<div
 													className="w-full h-auto flex flex-row justify-between items-center text-[15px] text-[#525252] mt-2 py-2">
 													<span>Add promo code</span>
-													<div className="cursor-pointer z-10"
-														 onClick={() => setPromo(false)}>
+													<div
+														className="cursor-pointer z-10"
+														onClick={() => setPromo(false)}
+													>
 														<AiOutlineClose/>
 													</div>
 												</div>
@@ -194,9 +198,9 @@ export function WebBuyKeysOrderTotal({onClick, getPriceData, isPriceLoading, err
 									</div>
 									<div className="flex flex-row items-center gap-1 font-semibold">
 										<span>
-											{price.discount
-												? Number(price.price - price.discount)
-												: price.price}
+											{discountApplied
+												? Number(price.price + price.discount)
+												: Number(price.price)}
 										</span>
 										<span>ETH</span>
 									</div>

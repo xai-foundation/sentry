@@ -1,7 +1,7 @@
 import {MdVerifiedUser} from "react-icons/md";
 import {useNavigate, useParams} from "react-router-dom";
 import {useAccount, useContractWrite} from "wagmi";
-import {config, RefereeAbi} from "@xai-vanguard-node/core";
+import {config, RefereeAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 
 export function AssignWallet() {
@@ -15,7 +15,6 @@ export function AssignWallet() {
 		functionName: "setApprovalForOperator",
 		args: [params.operatorAddress, true],
 		onSuccess(data) {
-			console.log("Success2 ", data);
 			// navigate("xai-sentry://test");
 			// window.open("xai-sentry://test");
 			window.location = `xai-sentry://assigned-wallet?txHash=${data.hash}` as unknown as Location;

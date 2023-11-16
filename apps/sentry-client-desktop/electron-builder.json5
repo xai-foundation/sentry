@@ -1,0 +1,49 @@
+/**
+ * @see https://www.electron.build/configuration/configuration
+ */
+{
+  "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
+  "appId": "YourAppID",
+  "includeSubNodeModules": true,
+  "asar": true,
+  "productName": "Xai Sentry Node",
+  "directories": {
+    "output": "release",
+  },
+  "files": [
+    "dist",
+    "dist-electron"
+  ],
+  "mac": {
+    "target": [
+      "dmg"
+    ],
+    "artifactName": "sentry-client-macos.${ext}",
+    "icon": "public/xai.png"
+  },
+  "win": {
+    "target": [
+      "portable"
+    ],
+    "artifactName": "sentry-client-windows.${ext}",
+    "icon": "public/xai.png"
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true,
+    "deleteAppDataOnUninstall": false
+  },
+  "linux": {
+    "target": [
+      "AppImage"
+    ],
+    "artifactName": "sentry-client-linux.${ext}"
+  },
+  "protocols": [
+    {
+      name: "Xai Sentry",
+      schemes: ["xai-sentry"]
+    }
+  ]
+}

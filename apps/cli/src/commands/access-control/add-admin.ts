@@ -1,5 +1,5 @@
 import Vorpal from "vorpal";
-import { addAddressToRole, getSignerFromPrivateKey } from "@xai-vanguard-node/core";
+import { addAddressToRole, getSignerFromPrivateKey } from "@sentry/core";
 
 /**
  * Function to add an admin to the Referee contract.
