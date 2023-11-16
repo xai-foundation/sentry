@@ -7,6 +7,8 @@ import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeab
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./nitro-contracts/rollup/IRollupCore.sol";
 import "./NodeLicense.sol";
+import "./Xai.sol";
+import "./esXai.sol";
 
 contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -24,8 +26,15 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     // the address of the NodeLicense NFT
     address public nodeLicenseAddress;
 
+    // contract addresses for esXai and xai
+    address public esXaiAddress;
+    address public xaiAddress;
+
     // Counter for the challenges
     uint256 public challengeCounter;
+
+    // This is the address where we sent the Xai emission to for the gas subsidy
+    address public gasSubsidyRecipient;
 
     // mapping to store all of the challenges
     mapping(uint256 => Challenge) public challenges;
@@ -48,11 +57,18 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping to track KYC'd wallets
     EnumerableSetUpgradeable.AddressSet private kycWallets;
 
+    // This value keeps track of how many token are not ye tminted but are allocated by the referee. This should be used in calculating the total supply for emissions
+    uint256 private _allocatedTokens;
+
+    // This is the percentage of each challenge emission to be given to the gas subsidy. Should be a whole number like 15% = 15
+    uint256 private _gasSubsidyPercentage;
+
     // Struct for the submissions
     struct Submission {
         bool submitted;
         uint256 nodeLicenseId;
         bytes successorStateRoot;
+        bool claimed;
     }
 
     // Struct for the challenges
@@ -66,10 +82,16 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         bytes activeChallengerPublicKey; // The challengerPublicKey that was active at the time of challenge submission
         address rollupUsed; // The rollup address used for this challenge
         uint256 createdTimestamp; // used to determine if a node license is eligible to submit
+        uint256 closeTimestamp; // used to determine reward expiry
+        uint256 totalSupplyOfNodesAtChallengeStart; // keep track of what the total supply opf nodes is when the challenge starts
+        uint256 rewardAmountForClaimers; // this is how much esXai should be allocated to the claimers
+        uint256 amountForGasSubsidy; // this is how much Xai was minted for the gas subsidy
+        uint256 numberOfEligibleClaimers; // how many submitters are eligible for claiming, used to determine the reward amount
     }
 
     // Define events
     event ChallengeSubmitted(uint256 indexed challengeNumber, Challenge challenge);
+    event ChallengeClosed(uint256 indexed challengeNumber, Challenge challenge);
     event AssertionSubmitted(uint256 indexed challengeId, uint256 indexed nodeLicenseId);
     event RollupAddressChanged(address newRollupAddress);
     event ChallengerPublicKeyChanged(bytes newChallengerPublicKey);
@@ -78,11 +100,28 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     event Approval(address indexed owner, address indexed operator, bool approved);
     event KycStatusChanged(address indexed wallet, bool isKycApproved);
 
-    function initialize() public initializer {
+    function initialize(address _esXaiAddress, address _xaiAddress, address _gasSubsidyAddress, uint256 gasSubsidyPercentage_) public initializer {
         __AccessControlEnumerable_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setRoleAdmin(CHALLENGER_ROLE, DEFAULT_ADMIN_ROLE);
         _setRoleAdmin(KYC_ADMIN_ROLE, DEFAULT_ADMIN_ROLE);
+        gasSubsidyRecipient = _gasSubsidyAddress;
+        _gasSubsidyPercentage = gasSubsidyPercentage_;
+
+        // Set the esXai and xai addresses
+        esXaiAddress = _esXaiAddress;
+        xaiAddress = _xaiAddress;
+    }
+
+    /**
+     * @notice Returns the combined total supply of esXai Xai, and the unminted allocated tokens.
+     * @dev This function fetches the total supply of esXai, Xai, and unminted allocated tokens and returns their sum.
+     * @return uint256 The combined total supply of esXai, Xai, and the unminted allocated tokens.
+     */
+    function getCombinedTotalSupply() public view returns (uint256) {
+        uint256 esXaiSupply = esXai(esXaiAddress).totalSupply();
+        uint256 xaiSupply = Xai(xaiAddress).totalSupply();
+        return esXaiSupply + xaiSupply + _allocatedTokens;
     }
 
     /**
@@ -232,6 +271,41 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     /**
+     * @notice Calculate the emission and tier for a challenge.
+     * @dev This function uses a halving formula to determine the emission tier and challenge emission.
+     * The formula is as follows: 
+     * 1. Start with the max supply divided by 2 as the initial emission tier.
+     * 2. The challenge emission is the emission tier divided by 17520.
+     * 3. While the total supply is less than the emission tier, halve the emission tier and challenge emission.
+     * 4. The function returns the challenge emission and the emission tier.
+     * 
+     * For example, if the max supply is 2,500,000,000:
+     * - Tier 1: 1,250,000,000 (max supply / 2), Challenge Emission: 71,428 (emission tier / 17520)
+     * - Tier 2: 625,000,000 (emission tier / 2), Challenge Emission: 35,714 (challenge emission / 2)
+     * - Tier 3: 312,500,000 (emission tier / 2), Challenge Emission: 17,857 (challenge emission / 2)
+     * - Tier 4: 156,250,000 (emission tier / 2), Challenge Emission: 8,928 (challenge emission / 2)
+     * - Tier 5: 78,125,000 (emission tier / 2), Challenge Emission: 4,464 (challenge emission / 2)
+     * 
+     * @return uint256 The challenge emission.
+     * @return uint256 The emission tier.
+     */
+    function calculateChallengeEmissionAndTier() public view returns (uint256, uint256) {
+        uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
+        uint256 totalSupply = getCombinedTotalSupply();
+        
+        // determine which tier we are in based on the halving formula
+        uint256 emissionTier = maxSupply / 2;
+        uint256 challengeEmission = emissionTier / 17520;
+        while (totalSupply < emissionTier) {
+            emissionTier = (emissionTier / 2) + emissionTier;
+            challengeEmission = challengeEmission / 2;
+        }
+
+        // determine what the size of the emission is based on each challenge having an estimated static length
+        return (challengeEmission, emissionTier);
+    }
+
+    /**
      * @notice Submits a challenge to the contract.
      * @dev This function verifies the caller is the challenger, checks if an assertion hasn't already been submitted for this ID,
      * gets the node information from the rollup, verifies the data inside the hash matched the data pulled from the rollup contract,
@@ -272,6 +346,28 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
             require(node.createdAtBlock == _assertionTimestamp, "The _assertionTimestamp did not match the block this assertion was created at.");
         }
 
+        // we need to determine how much token will be emitted
+        (uint256 challengeEmission,) = calculateChallengeEmissionAndTier();
+
+        // mint part of this for the gas subsidy contract
+        uint256 amountForGasSubsidy = (challengeEmission * _gasSubsidyPercentage) / 100;
+
+        // mint xai for the gas subsidy
+        Xai(xaiAddress).mint(gasSubsidyRecipient, amountForGasSubsidy);
+
+        // the remaining part of the emission should be tracked and later allocated when claimed
+        uint256 rewardAmountForClaimers = challengeEmission - amountForGasSubsidy;
+
+        // add the amount that will be given to claimers to the allocated field variable amount, so we can track how much esXai is owed
+        _allocatedTokens += rewardAmountForClaimers;
+
+        // close the previous challenge with the start of the next challenge
+        if (challengeCounter > 0) {
+            challenges[challengeCounter - 1].openForSubmissions = false;
+            challenges[challengeCounter - 1].closeTimestamp = block.timestamp;
+            emit ChallengeClosed(challengeCounter - 1, challenges[challengeCounter - 1]);
+        }
+
         // add challenge to the mapping
         challenges[challengeCounter] = Challenge({
             openForSubmissions: true,
@@ -282,14 +378,19 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
             challengerSignedHash: _challengerSignedHash,
             activeChallengerPublicKey: challengerPublicKey, // Store the active challengerPublicKey at the time of challenge submission
             rollupUsed: rollupAddress, // Store the rollup address used for this challenge
-            createdTimestamp: block.timestamp
+            createdTimestamp: block.timestamp,
+            closeTimestamp: 0,
+            totalSupplyOfNodesAtChallengeStart: NodeLicense(nodeLicenseAddress).totalSupply(), // we need to store how many nodes were created for the 1% odds
+            rewardAmountForClaimers: rewardAmountForClaimers,
+            amountForGasSubsidy: amountForGasSubsidy,
+            numberOfEligibleClaimers: 0
         });
+
+        // emit the events
+        emit ChallengeSubmitted(challengeCounter, challenges[challengeCounter]);   
 
         // increment the challenge counter
         challengeCounter++;
-
-        // emit the event
-        emit ChallengeSubmitted(challengeCounter, challenges[challengeCounter]);
     }
 
     /**
@@ -337,8 +438,17 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         submissions[_challengeId][_nodeLicenseId] = Submission({
             submitted: true,
             nodeLicenseId: _nodeLicenseId,
-            successorStateRoot: _successorStateRoot
+            successorStateRoot: _successorStateRoot,
+            claimed: false
         });
+
+        // Check the user is actually eligible for receiving a reward, do not count them in numberOfEligibleClaimers if they are not able to receive a reward
+        (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _successorStateRoot);
+
+        // Keep track of how many submissions submitted were eligible for the reward
+        if (hashEligible) {
+            challenges[_challengeId].numberOfEligibleClaimers++;
+        }
 
         // Emit the AssertionSubmitted event
         emit AssertionSubmitted(_challengeId, _nodeLicenseId);
@@ -366,44 +476,64 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
         require(isKycApproved(owner), "Owner of the NodeLicense is not KYC'd");
 
-        // Check if we are valid for a payout
-        (bool isBelowThreshold, , ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, submission.successorStateRoot);
-        require(isBelowThreshold, "Not valid for a payout");
+        // Check if the submission has already been claimed
+        require(!submission.claimed, "This submission has already been claimed");
 
-        // TODO: Send a reward
+        // Check if we are valid for a payout
+        (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, submission.successorStateRoot);
+        require(hashEligible, "Not valid for a payout");
+
+        // Take the amount that was allocated for the rewards and divide it by the number of claimers
+        uint256 reward = challenges[_challengeId].rewardAmountForClaimers / challenges[_challengeId].numberOfEligibleClaimers;
+
+        // mark the submission as claimed
+        submissions[_challengeId][_nodeLicenseId].claimed = true;
+
+        // Mint the reward to the owner of the nodeLicense
+        esXai(esXaiAddress).mint(owner, reward);
     }
 
     /**
      * @notice Creates an assertion hash and determines if the hash payout is below the threshold.
      * @dev This function creates a hash of the _nodeLicenseId, _challengeId, challengerSignedHash from the challenge, and _newStateRoot.
      * It then converts the hash to a number and checks if it is below the threshold.
-     * The threshold is calculated as the maximum uint256 value divided by the number of NodeLicenses that have been minted.
+     * The threshold is calculated as the maximum uint256 value divided by 100 and then multiplied by the total supply of NodeLicenses.
      * @param _nodeLicenseId The ID of the NodeLicense.
      * @param _challengeId The ID of the challenge.
      * @param _successorStateRoot The successor state root.
-     * @return A tuple containing a boolean indicating if the hash is below the threshold, the assertionHash, and the threshold.
+     * @return A tuple containing a boolean indicating if the hash is eligible, the assertionHash, and the threshold.
      */
     function createAssertionHashAndCheckPayout(
         uint256 _nodeLicenseId,
         uint256 _challengeId,
         bytes memory _successorStateRoot
-    ) public view returns (bool, bytes32, uint256) {
-        bytes memory _challengerSignedHash = challenges[_challengeId].challengerSignedHash;
-        bytes32 assertionHash = keccak256(abi.encodePacked(_nodeLicenseId, _challengeId, _challengerSignedHash, _successorStateRoot));
+    ) public view returns (bool, bytes32) {
+
+        require(challenges[_challengeId].totalSupplyOfNodesAtChallengeStart > 0, "No NodeLicenses have been minted when this challenge started");
+
+        // Get the minting timestamp of the nodeLicenseId
+        uint256 mintTimestamp = NodeLicense(nodeLicenseAddress).getMintTimestamp(_nodeLicenseId);
+
+        // Check if the nodeLicenseId is eligible for a payout
+        require(mintTimestamp < challenges[_challengeId].createdTimestamp, "NodeLicense is not eligible for a payout on this challenge, it was minted after it started");
+
+        bytes32 assertionHash = keccak256(abi.encodePacked(_nodeLicenseId, _challengeId, challenges[_challengeId].challengerSignedHash, _successorStateRoot));
         uint256 hashNumber = uint256(assertionHash);
-        uint256 totalSupply = NodeLicense(nodeLicenseAddress).totalSupply();
-        require(totalSupply > 0, "No NodeLicenses have been minted yet");
-        uint256 threshold = type(uint256).max / totalSupply;
-        return (hashNumber < threshold, assertionHash, threshold);
+
+        return (hashNumber % 100 == 0, assertionHash);
     }
 
     /**
-     * @notice Returns the submission for a given challenge and NodeLicense.
-     * @param _challengeId The ID of the challenge.
+     * @notice Returns the submissions for a given array of challenges and a NodeLicense.
+     * @param _challengeIds An array of challenge IDs.
      * @param _nodeLicenseId The ID of the NodeLicense.
-     * @return The submission for the given challenge and NodeLicense.
+     * @return An array of submissions for the given challenges and NodeLicense.
      */
-    function getSubmissionForChallenge(uint256 _challengeId, uint256 _nodeLicenseId) public view returns (Submission memory) {
-        return submissions[_challengeId][_nodeLicenseId];
+    function getSubmissionsForChallenges(uint256[] memory _challengeIds, uint256 _nodeLicenseId) public view returns (Submission[] memory) {
+        Submission[] memory submissionsArray = new Submission[](_challengeIds.length);
+        for (uint i = 0; i < _challengeIds.length; i++) {
+            submissionsArray[i] = submissions[_challengeIds[i]][_nodeLicenseId];
+        }
+        return submissionsArray;
     }
 }

@@ -21,7 +21,8 @@ const options = {
   ],
   fundsReceiver: "0xc32493515E3537E55a323B3F0aF1AC4ED0E71BF4", // Christopher
   referralDiscountPercentage: 10,
-  referralRewardPercentage: 2
+  referralRewardPercentage: 2,
+  gasSubsidyPercentage: 15, // 15 = 15%
 }
 
 async function main() {
@@ -46,9 +47,38 @@ async function main() {
     console.log(`Granted admin role to ${address} on Xai`);
   }
 
+  console.log("Deploying esXai...");
+  const EsXai = await ethers.getContractFactory("esXai");
+  const esXai = await upgrades.deployProxy(EsXai, [xaiAddress], { deployer: deployer });
+  const { blockNumber: esXaiDeployedBlockNumber } = await esXai.deploymentTransaction();
+  const esXaiAddress = await esXai.getAddress();
+  console.log("esXai deployed to:", esXaiAddress);
+
+  // Export the ABI of esXai
+  await extractAbi("esXai", esXai);
+  console.log("esXai Abi exported");
+
+  console.log("Deploying GasSubsidy...");
+  const GasSubsidy = await ethers.getContractFactory("GasSubsidy");
+  const gasSubsidy = await upgrades.deployProxy(GasSubsidy, [], { deployer: deployer });
+  const { blockNumber: gasSubsidyDeployedBlockNumber } = await gasSubsidy.deploymentTransaction();
+  const gasSubsidyAddress = await gasSubsidy.getAddress();
+  console.log("GasSubsidy deployed to:", gasSubsidyAddress);
+
+  // Export the ABI of GasSubsidy
+  await extractAbi("GasSubsidy", gasSubsidy);
+  console.log("GasSubsidy Abi exported");
+
+  // Add transfer admins to the GasSubsidy
+  const gasSubsidyTransferRole = await gasSubsidy.TRANSFER_ROLE();
+  for (const address of options.transferAdmins) {
+    await gasSubsidy.grantRole(gasSubsidyTransferRole, address);
+    console.log(`Granted transfer role to ${address} on GasSubsidy`);
+  }
+
   console.log("Deploying Referee...");
   const Referee = await ethers.getContractFactory("Referee");
-  const referee = await upgrades.deployProxy(Referee, [], { deployer: deployer });
+  const referee = await upgrades.deployProxy(Referee, [esXaiAddress, xaiAddress, gasSubsidyAddress, options.gasSubsidyPercentage], { deployer: deployer });
   const { blockNumber: refereeDeployedBlockNumber } = await referee.deploymentTransaction();
   const refereeAddress = await referee.getAddress();
   console.log("Referee deployed to:", refereeAddress);
@@ -66,17 +96,6 @@ async function main() {
     await referee.grantRole(refereeAdminRole, address);
     console.log(`Granted admin role to ${address} on Referee`);
   }
-
-  console.log("Deploying esXai...");
-  const EsXai = await ethers.getContractFactory("esXai");
-  const esXai = await upgrades.deployProxy(EsXai, [xaiAddress], { deployer: deployer });
-  const { blockNumber: esXaiDeployedBlockNumber } = await esXai.deploymentTransaction();
-  const esXaiAddress = await esXai.getAddress();
-  console.log("esXai deployed to:", esXaiAddress);
-
-  // Export the ABI of esXai
-  await extractAbi("esXai", esXai);
-  console.log("esXai Abi exported");
 
   // Add admins to the esXai
   const esXaiAdminRole = await esXai.DEFAULT_ADMIN_ROLE();
@@ -110,24 +129,6 @@ async function main() {
   // Export the ABI of NodeLicense
   await extractAbi("NodeLicense", nodeLicense);
   console.log("NodeLicense Abi exported");
-
-  console.log("Deploying GasSubsidy...");
-  const GasSubsidy = await ethers.getContractFactory("GasSubsidy");
-  const gasSubsidy = await upgrades.deployProxy(GasSubsidy, [], { deployer: deployer });
-  const { blockNumber: gasSubsidyDeployedBlockNumber } = await gasSubsidy.deploymentTransaction();
-  const gasSubsidyAddress = await gasSubsidy.getAddress();
-  console.log("GasSubsidy deployed to:", gasSubsidyAddress);
-
-  // Export the ABI of GasSubsidy
-  await extractAbi("GasSubsidy", gasSubsidy);
-  console.log("GasSubsidy Abi exported");
-
-  // Add transfer admins to the GasSubsidy
-  const gasSubsidyTransferRole = await gasSubsidy.TRANSFER_ROLE();
-  for (const address of options.transferAdmins) {
-    await gasSubsidy.grantRole(gasSubsidyTransferRole, address);
-    console.log(`Granted transfer role to ${address} on GasSubsidy`);
-  }
 
   // Update the referee, NodeLicense, esXai, xai, and GasSubsidy contract addresses in the config
   writeToConfig({

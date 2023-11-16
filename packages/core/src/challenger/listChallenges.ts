@@ -26,8 +26,8 @@ export interface Challenge {
  */
 export async function listChallenges(
     openForSubmissions?: boolean,
-    callback?: (challengeNumber: bigint, challenge: Challenge) => void,
-): Promise<Challenge[]> {
+    callback?: (challengeNumber: bigint, challenge: Challenge) => Promise<void>,
+): Promise<Array<[bigint, Challenge]>> {
 
     // Get the provider
     const provider = getProvider();
@@ -39,7 +39,7 @@ export async function listChallenges(
     const challengeCount: bigint = await refereeContract.challengeCounter();
 
     // Initialize an array to store the challenges
-    const challenges: Challenge[] = [];
+    const challenges: Array<[bigint, Challenge]> = [];
 
     // Loop through the challenge count in reverse order and fetch each challenge
     for (let i = challengeCount - BigInt(1); i >= 0; i--) {
@@ -47,9 +47,9 @@ export async function listChallenges(
         if (openForSubmissions && !challenge.openForSubmissions) {
             break;
         }
-        challenges.push(challenge);
+        challenges.push([i + BigInt(0), challenge]);
         if (callback) {
-            callback(BigInt(i), challenge);
+            await callback(BigInt(i), challenge);
         }
     }
 
