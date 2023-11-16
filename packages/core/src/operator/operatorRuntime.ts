@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { Challenge, RefereeAbi, config, getMintTimestamp, getSubmissionForChallenge, listChallenges, listNodeLicenses, listOwnersForOperator, listenForChallenges, submitAssertionToChallenge } from "../index.js";
+import { Challenge, RefereeAbi, claimReward, config, getMintTimestamp, getSubmissionsForChallenges, listChallenges, listNodeLicenses, listOwnersForOperator, listenForChallenges, submitAssertionToChallenge } from "../index.js";
 
 export enum NodeLicenseStatus {
     WAITING_IN_QUEUE = "Waiting in Queue", // waiting to do an action, but in a queue
@@ -8,11 +8,12 @@ export enum NodeLicenseStatus {
     CHECKING_MINT_TIMESTAMP_ELIGIBILITY = "Checking Mint Timestamp Eligibility",
     CHECKING_IF_ELIGIBLE_FOR_PAYOUT = "Checking if Eligible for Payout",
     SUBMITTING_ASSERTION_TO_CHALLENGE = "Submitting Assertion to Challenge",
+    QUERYING_FOR_UNCLAIMED_SUBMISSIONS = "Querying for Unclaimed Submissions"
 }
 
 export interface NodeLicenseInformation {
     ownerPublicKey: string
-    status: NodeLicenseStatus;
+    status: string | NodeLicenseStatus;
 }
 
 export type NodeLicenseStatusMap = Map<bigint, NodeLicenseInformation>;
@@ -148,7 +149,7 @@ export async function operatorRuntime(
             }
 
             // check to see if this nodeLicense has already submitted, if we have, then go to next license
-            const {submitted} = await getSubmissionForChallenge(challengeNumber, nodeLicenseId);
+            const [_, {submitted}] = await getSubmissionsForChallenges([challengeNumber], nodeLicenseId);
             if (submitted) {
                 logFunction(`nodeLicenseId ${nodeLicenseId} has already submitted for challenge ${challengeNumber}.`);
                 nodeLicenseStatusMap.set(nodeLicenseId, {
@@ -171,22 +172,71 @@ export async function operatorRuntime(
         }
     }
 
+    async function processClaimForChallenge(challengeNumber: bigint, nodeLicenseId: bigint) {
+        logFunction(`Claiming Submission for Challenge '${challengeNumber}'.`);
+        nodeLicenseStatusMap.set(nodeLicenseId, {
+            ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
+            status: `Claiming Submission for Challenge '${challengeNumber}'`,
+        });
+        safeStatusCallback();
+        
+        await claimReward(nodeLicenseId, challengeNumber, signer);
+    }
+
     // start a listener for new challenges
     const challengeNumberMap: { [challengeNumber: string]: boolean } = {};
-    function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge) {
-        logFunction(`Received new challenge with number: ${challengeNumber}.`);
-        if (!challengeNumberMap[challengeNumber.toString()]) {
-            logFunction(`Processing new challenge with number: ${challengeNumber}.`);
-            challengeNumberMap[challengeNumber.toString()] = true;
-            processNewChallenge(challengeNumber, challenge);
+    async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge) {
+
+        if (challenge.openForSubmissions) {
+            logFunction(`Received new challenge with number: ${challengeNumber}.`);
+            if (!challengeNumberMap[challengeNumber.toString()]) {
+                logFunction(`Processing new challenge with number: ${challengeNumber}.`);
+                challengeNumberMap[challengeNumber.toString()] = true;
+                await processNewChallenge(challengeNumber, challenge);
+            }
+        } else {
+            logFunction(`Found challenge with number: ${challengeNumber}. It was closed for submissions.`);
         }
+
     }
     const closeChallengeListener = await listenForChallenges(listenForChallengesCallback);
     logFunction(`Started listener for new challenges.`);
 
     // find any open challenges
     logFunction(`Processing open challenges.`);
-    void listChallenges(true, listenForChallengesCallback);
+    const challenges = await listChallenges(false, listenForChallengesCallback);
+
+    // iterate over all the challenges that are closed to see if any are available for claiming
+    const closedChallengeIds = challenges.filter(([_, challenge]) => !challenge.openForSubmissions).map(([challengeNumber]) => challengeNumber);
+    for (const nodeLicenseId of nodeLicenseIds) {
+        const beforeStatus = nodeLicenseStatusMap.get(nodeLicenseId)!.status;
+        nodeLicenseStatusMap.set(nodeLicenseId, {
+            ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
+            status: NodeLicenseStatus.QUERYING_FOR_UNCLAIMED_SUBMISSIONS,
+        });
+        safeStatusCallback();
+        getSubmissionsForChallenges(closedChallengeIds, nodeLicenseId, async (submission, index) => {
+
+            const challengeId = closedChallengeIds[index];
+
+            nodeLicenseStatusMap.set(nodeLicenseId, {
+                ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
+                status: `Checking Submission for Challenge '${challengeId}'`,
+            });
+            safeStatusCallback();
+
+            // call the process claim and update statuses/logs accoridngly
+            if (submission.submitted && !submission.claimed) {
+                await processClaimForChallenge(challengeId, nodeLicenseId);
+            }
+        });
+
+        nodeLicenseStatusMap.set(nodeLicenseId, {
+            ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
+            status: beforeStatus,
+        });
+        safeStatusCallback();
+    }
 
     async function stop() {
         closeChallengeListener();

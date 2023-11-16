@@ -524,12 +524,16 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     /**
-     * @notice Returns the submission for a given challenge and NodeLicense.
-     * @param _challengeId The ID of the challenge.
+     * @notice Returns the submissions for a given array of challenges and a NodeLicense.
+     * @param _challengeIds An array of challenge IDs.
      * @param _nodeLicenseId The ID of the NodeLicense.
-     * @return The submission for the given challenge and NodeLicense.
+     * @return An array of submissions for the given challenges and NodeLicense.
      */
-    function getSubmissionForChallenge(uint256 _challengeId, uint256 _nodeLicenseId) public view returns (Submission memory) {
-        return submissions[_challengeId][_nodeLicenseId];
+    function getSubmissionsForChallenges(uint256[] memory _challengeIds, uint256 _nodeLicenseId) public view returns (Submission[] memory) {
+        Submission[] memory submissionsArray = new Submission[](_challengeIds.length);
+        for (uint i = 0; i < _challengeIds.length; i++) {
+            submissionsArray[i] = submissions[_challengeIds[i]][_nodeLicenseId];
+        }
+        return submissionsArray;
     }
 }
