@@ -6,20 +6,13 @@ import {IconLabel} from "@/components/IconLabel";
 import {SquareCard} from "@/components/SquareCard";
 import {SentryActiveCard} from "./SentryActiveCard";
 import {FundsInSentryWalletCard} from "./FundsInSentryWalletCard";
-import {AssignedKeysDrawer} from "./AssignedKeysDrawer";
+import {AssignedKeysCard} from "./AssignedKeysCard";
 import {useEffect, useState} from "react";
 import {KycRequiredCard} from "./KycRequiredCard";
 import {BarStepItem} from "@/components/BarStepItem";
-import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 
 export function ActionsRequiredNotAccruingDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const {sentryRunning} = useOperatorRuntime();
-
-	const [testState, setTestState] = useState({
-		funded: false,
-		keys: false,
-	});
 	const [kycState, setKycState] = useState<"required" | "pending" | "done">("required");
 
 	useEffect(() => {
@@ -34,7 +27,7 @@ export function ActionsRequiredNotAccruingDrawer() {
 		}
 	}, [kycState]);
 
-	const accruing = sentryRunning && testState.funded && testState.keys;
+	const accruing = false;
 
 	return (
 		<div className="h-full flex flex-col justify-start items-center">
@@ -99,12 +92,7 @@ export function ActionsRequiredNotAccruingDrawer() {
 						</BarStepItem>
 
 						<BarStepItem lastItem={true}>
-							<AssignedKeysDrawer
-								keys={testState.keys}
-								setKeys={() => setTestState((_state) => {
-									return {..._state, keys: true}
-								})}
-							/>
+							<AssignedKeysCard/>
 						</BarStepItem>
 					</div>
 				</div>

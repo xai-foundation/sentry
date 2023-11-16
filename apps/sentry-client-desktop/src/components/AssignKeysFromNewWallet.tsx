@@ -17,7 +17,7 @@ export function AssignKeysFromNewWallet() {
 	// });
 
 	function startAssignment() {
-		setModalState(ModalView.TransactionInProgress)
+		setModalState(ModalView.TransactionInProgress);
 		window.electron.openExternal(`http://localhost:7555/assign-wallet/${operatorAddress}`);
 	}
 
