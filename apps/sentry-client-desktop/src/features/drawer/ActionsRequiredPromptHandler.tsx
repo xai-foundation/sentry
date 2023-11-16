@@ -1,19 +1,13 @@
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
 import {AiFillWarning} from "react-icons/ai";
 import {useSetAtom} from "jotai";
-import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
-import {useBalance} from "@/hooks/useBalance";
-import {useOperator} from "@/features/operator";
-import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
-import {useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
-import {recommendedFundingBalance} from "@/features/home/SentryWallet";
-import {useAccruing} from "@/hooks/useAccruing";
+import {useAccruingInfo} from "@/hooks/useAccruingInfo";
 
 export function ActionsRequiredPromptHandler() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const accruing = useAccruing();
+	const {accruing, kycRequired} = useAccruingInfo();
 
-	if (!accruing) {
+	if (!accruing || kycRequired) {
 		return (
 			<div className="flex gap-4 bg-[#FFFBEB] p-2 z-10">
 				<div className="flex flex-row gap-2 items-center">
