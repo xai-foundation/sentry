@@ -1,54 +1,16 @@
 import {AiOutlineCheck, AiOutlineInfoCircle, AiOutlineMinus, AiOutlinePlus} from "react-icons/ai";
-import {FaRegCircle} from "react-icons/fa";
 import {IoIosArrowDown} from "react-icons/io";
 import {PiCopy} from "react-icons/pi";
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {useState} from "react";
-import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse.js";
+import {YellowPulse} from "@/features/keys/StatusPulse.js";
 import {BlockPassKYC} from "@/components/blockpass/Blockpass";
 import {getLicensesList, LicenseList, LicenseMap} from "@/hooks/useListNodeLicensesWithCallback";
 import {config} from "@sentry/core";
 import {StatusMap} from "@/hooks/useKycStatusesWithCallback";
 import {Tooltip} from "@/features/keys/Tooltip";
-
-const dummyLicenses = [
-	{
-		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-		status: "Claiming rewards when available",
-		accruedEsxai: "0.0234",
-		openseaUrl: "https://xai.games/",
-	},
-	{
-		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-		status: "Claiming rewards when available",
-		accruedEsxai: "0.0234",
-		openseaUrl: "https://xai.games/",
-	},
-	{
-		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-		status: "KYC required",
-		accruedEsxai: "0.0234",
-		openseaUrl: "https://xai.games/",
-	},
-	{
-		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-		status: "KYC required",
-		accruedEsxai: "0.0234",
-		openseaUrl: "https://xai.games/",
-	},
-	{
-		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-		status: "Wallet not assigned",
-		accruedEsxai: "0.00239",
-		openseaUrl: "https://xai.games/",
-	},
-	{
-		ownerAddress: "0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85",
-		status: "Wallet not assigned",
-		accruedEsxai: "0.00239",
-		openseaUrl: "https://xai.games/",
-	},
-];
+import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
+import {useSetAtom} from "jotai/index";
 
 interface HasKeysProps {
 	licensesMap: LicenseMap,
@@ -56,6 +18,7 @@ interface HasKeysProps {
 }
 
 export function HasKeys({licensesMap, statusMap}: HasKeysProps) {
+	const setDrawerState = useSetAtom(drawerStateAtom);
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -71,13 +34,12 @@ export function HasKeys({licensesMap, statusMap}: HasKeysProps) {
 				});
 			}
 		}
-
-		return licenses.map((keyWithOwner, i) => {
+		
+		return licenses.sort((a, b) => Number(a.key) - Number(b.key)).map((keyWithOwner, i) => {
 			const isEven = i % 2 === 0;
 			const keyString = keyWithOwner.key.toString();
 			const owner = keyWithOwner.owner.toString();
 			const status = statusMap[owner];
-			console.log("key w/ owner:", keyWithOwner);
 
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
@@ -106,74 +68,6 @@ export function HasKeys({licensesMap, statusMap}: HasKeysProps) {
 				</tr>
 			);
 		});
-
-		return dummyLicenses.map((item, i: number) => {
-			const isEven = i % 2 === 0;
-			let status;
-
-			switch (item.status) {
-				case "Claiming rewards when available":
-					status = (
-						<p className="flex items-center gap-2">
-							<GreenPulse/>
-							Claiming rewards when available
-						</p>
-					);
-					break;
-				case "KYC required":
-					status = (
-						<p className="flex items-center gap-2">
-							<YellowPulse/>
-							KYC required
-							<BlockPassKYC/>
-						</p>
-					);
-					break;
-				case "Wallet not assigned":
-					status = (
-						<p className="flex items-center gap-2">
-							<FaRegCircle size={8}/>
-							Wallet not assigned
-							<a
-								onClick={() => window.electron.openExternal('http://localhost:7555/assign-wallet')}
-								className="text-[#F30919] cursor-pointer">
-								Assign
-							</a>
-						</p>
-					);
-					break;
-				case 'Waiting for challenge':
-					status = "Waiting for challenge"
-					break;
-				case 'Submitting claim':
-					status = "Submitting claim"
-					break;
-				case 'Checking claim':
-					status = "Checking claim"
-					break;
-				case 'Claim submitted':
-					status = "Claim submitted"
-					break;
-
-				default:
-					status = null;
-			}
-
-			return (
-				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
-					<td className="w-full max-w-[70px] px-4 py-2">{i + 1}</td>
-					<td className="w-full max-w-[360px] px-4 py-2">{item.ownerAddress}</td>
-					<td className="w-full max-w-[360px] px-4 py-2 text-[#A3A3A3]">{status}</td>
-					<td className="w-full max-w-[150px] px-4 py-2 text-right">{item.accruedEsxai}</td>
-					<td
-						className="w-full max-w-[150px] px-4 py-2 text-[#F30919] cursor-pointer"
-						onClick={() => window.electron.openExternal(item.openseaUrl)}
-					>
-						View
-					</td>
-				</tr>
-			)
-		})
 	}
 
 	function getDropdownItems() {
@@ -257,7 +151,7 @@ export function HasKeys({licensesMap, statusMap}: HasKeysProps) {
 					</button>
 
 					<button
-						onClick={() => {}}
+						onClick={() => setDrawerState(DrawerView.ViewKeys)}
 						className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 					>
 						<AiOutlinePlus className="h-[15px]"/>
@@ -266,7 +160,8 @@ export function HasKeys({licensesMap, statusMap}: HasKeysProps) {
 
 					<button
 						disabled={selectedWallet === null}
-						onClick={() => {}}
+						onClick={() => {
+						}}
 						className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] ${selectedWallet === null ? 'text-[#D4D4D4] cursor-not-allowed' : ""} px-4 py-2`}
 					>
 						<AiOutlineMinus className="h-[15px]"/>

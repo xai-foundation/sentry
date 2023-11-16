@@ -2,27 +2,15 @@ import {AiOutlineClose} from "react-icons/ai";
 import {useSetAtom} from "jotai";
 import {drawerStateAtom} from "../../drawer/DrawerManager.js";
 import {useOperator} from "../../operator";
-import {ChangeEvent, useEffect, useState} from "react";
+import {ChangeEvent, useState} from "react";
 import {BiLoaderAlt} from "react-icons/bi";
-import {useStorage} from "../../storage";
 import {ImportSentryAlertModal} from "@/features/home/modals/ImportSentryAlertModal";
 
 export function ImportSentryDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {isLoading, importPrivateKey} = useOperator();
-	// @ts-ignore
-	const [filePath, setFilePath] = useState('');
-	const {getFilePath} = useStorage();
 	const [inputValue, setInputValue] = useState('');
 	const [showModal, setShowModal] = useState<boolean>(false);
-
-	useEffect(() => {
-		const fetchFilePath = async () => {
-			const path = await getFilePath();
-			setFilePath(path);
-		};
-		void fetchFilePath();
-	}, [getFilePath]);
 
 	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setInputValue(event.target.value);
