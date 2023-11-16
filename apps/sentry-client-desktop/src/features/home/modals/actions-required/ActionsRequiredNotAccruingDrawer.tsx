@@ -7,45 +7,39 @@ import {SquareCard} from "@/components/SquareCard";
 import {SentryActiveCard} from "./SentryActiveCard";
 import {FundsInSentryWalletCard} from "./FundsInSentryWalletCard";
 import {AssignedKeysCard} from "./AssignedKeysCard";
-import {useEffect, useState} from "react";
 import {KycRequiredCard} from "./KycRequiredCard";
 import {BarStepItem} from "@/components/BarStepItem";
+import {useAccruing} from "@/hooks/useAccruing";
+import {useOperator} from "@/features/operator";
+import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
+import {useKycStatusesWithCallback} from "@/hooks/useKycStatusesWithCallback";
 
 export function ActionsRequiredNotAccruingDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const [kycState, setKycState] = useState<"required" | "pending" | "done">("required");
 
-	useEffect(() => {
-		function setDone() {
-			setKycState("done");
-		}
-
-		if (kycState === "pending") {
-			setTimeout(() => {
-				setDone();
-			}, 3000);
-		}
-	}, [kycState]);
-
-	const accruing = false;
+	const {publicKey} = useOperator();
+	const {owners} = useListOwnersForOperatorWithCallback(publicKey, true);
+	const {statusMap} = useKycStatusesWithCallback(owners);
+	const requiresAtLeastOneKyc = statusMap && Object.values(statusMap).filter((status) => !status).length > 0
+	const accruing = useAccruing();
 
 	return (
 		<div className="h-full flex flex-col justify-start items-center">
 			<div
 				className="w-full h-16 flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
-				{!accruing && kycState === "required" && (
+				{!accruing && requiresAtLeastOneKyc && (
 					<div className="flex flex-row gap-2 items-center">
 						<AiFillWarning className="w-7 h-7 text-[#F59E28]"/> <span>Actions required</span>
 					</div>
 				)}
 
-				{accruing && kycState !== "done" && (
+				{accruing && requiresAtLeastOneKyc && (
 					<div className="flex flex-row gap-2 items-center">
 						<AiFillWarning className="w-7 h-7 text-[#F59E28]"/> <span>Next Step: Complete KYC</span>
 					</div>
 				)}
 
-				{accruing && kycState === "done" && (
+				{accruing && !requiresAtLeastOneKyc && (
 					<div className="flex flex-row gap-2 items-center">
 						<AiFillCheckCircle className="w-5 h-5 text-[#16A34A] mt-1"/> <span>esXAI is being claimed</span>
 					</div>
@@ -99,7 +93,8 @@ export function ActionsRequiredNotAccruingDrawer() {
 
 				{accruing && (
 					<div className="mt-8">
-						{kycState === "done" ? (
+						{/*{kycState === "done" ? (*/}
+						{false ? (
 							<SquareCard className="bg-[#DCFCE7]">
 								<IconLabel
 									icon={AiFillCheckCircle}
@@ -124,10 +119,7 @@ export function ActionsRequiredNotAccruingDrawer() {
 						)}
 
 						<BarStepItem lastItem={true}>
-							<KycRequiredCard
-								kycState={kycState}
-								setKycState={setKycState}
-							/>
+							<KycRequiredCard/>
 						</BarStepItem>
 					</div>
 				)}

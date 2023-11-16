@@ -5,7 +5,7 @@ import {IoMdCloseCircle} from "react-icons/io";
 import {PiCopy} from "react-icons/pi";
 import {FaEthereum} from "react-icons/fa";
 import {AiFillCheckCircle, AiOutlineCheck} from "react-icons/ai";
-import {useOperator} from "../../../operator";
+import {useOperator} from "@/features/operator";
 import {useBalance} from "@/hooks/useBalance";
 import {recommendedFundingBalance} from "@/features/home/SentryWallet";
 import {useState} from "react";

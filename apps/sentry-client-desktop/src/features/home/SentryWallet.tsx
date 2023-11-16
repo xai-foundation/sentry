@@ -23,6 +23,7 @@ import classNames from "classnames";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {Tooltip} from "@/features/keys/Tooltip";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
+import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
@@ -283,22 +284,26 @@ export function SentryWallet() {
 							)}
 						</div>
 
-						{/*		todo: swapped number with listNodeLicensesData, check if correct param	*/}
-						{listNodeLicensesData?.licenses && drawerState === null && (
-							<div className="flex gap-4 bg-[#FFFBEB] p-2 z-10">
-								<div className="flex flex-row gap-2 items-center">
-									<AiFillWarning className="w-7 h-7 text-[#F59E28]"/>
-									<span
-										className="text-[#B45317] text-[15px] font-semibold">Actions required (N A)</span>
-								</div>
-								<button
-									onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}
-									className={`flex flex-row justify-center items-center py-1 px-4 gap-1 bg-[#F30919] text-[15px] text-white font-semibold`}
-								>
-									Resolve
-								</button>
-							</div>
+						{drawerState === null && (
+							<ActionsRequiredPromptHandler/>
 						)}
+
+						{/*		todo: swapped number with listNodeLicensesData, check if correct param	*/}
+						{/*{listNodeLicensesData?.licenses && drawerState === null && (*/}
+						{/*	<div className="flex gap-4 bg-[#FFFBEB] p-2 z-10">*/}
+						{/*		<div className="flex flex-row gap-2 items-center">*/}
+						{/*			<AiFillWarning className="w-7 h-7 text-[#F59E28]"/>*/}
+						{/*			<span*/}
+						{/*				className="text-[#B45317] text-[15px] font-semibold">Actions required (N A)</span>*/}
+						{/*		</div>*/}
+						{/*		<button*/}
+						{/*			onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}*/}
+						{/*			className={`flex flex-row justify-center items-center py-1 px-4 gap-1 bg-[#F30919] text-[15px] text-white font-semibold`}*/}
+						{/*		>*/}
+						{/*			Resolve*/}
+						{/*		</button>*/}
+						{/*	</div>*/}
+						{/*)}*/}
 					</div>
 
 					<div className="flex flex-col items-start w-full border-b border-gray-200 gap-2 py-2 pl-10">

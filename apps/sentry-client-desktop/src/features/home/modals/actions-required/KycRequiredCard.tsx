@@ -6,12 +6,9 @@ import {BsHourglassBottom} from "react-icons/bs";
 import {AiFillCheckCircle} from "react-icons/ai";
 import {Blockpass} from "@/components/blockpass/Blockpass";
 
-interface KycRequiredCardProps {
-	kycState: "required" | "pending" | "done";
-	setKycState: (newState: "pending" | "done") => void;
-}
+export function KycRequiredCard() {
 
-export function KycRequiredCard({kycState}: KycRequiredCardProps) {
+	const kycState = "pending";
 
 	return (
 		<SquareCard className="bg-[#F5F5F5]">
