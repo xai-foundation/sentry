@@ -5,7 +5,7 @@ import {IoMdCloseCircle} from "react-icons/io";
 import {IconLabel} from "@/components/IconLabel";
 import {SquareCard} from "@/components/SquareCard";
 import {SentryActiveCard} from "./SentryActiveCard";
-import {AssignedKeysDrawer} from "./AssignedKeysDrawer";
+import {AssignedKeysCard} from "./AssignedKeysCard";
 import {useEffect, useState} from "react";
 import {KycRequiredCard} from "./KycRequiredCard";
 import {BarStepItem} from "@/components/BarStepItem";
@@ -99,12 +99,7 @@ export function ActionsRequiredCompleteKyc() {
 						</BarStepItem>
 
 						<BarStepItem lastItem={true}>
-							<AssignedKeysDrawer
-								keys={testState.keys}
-								setKeys={() => setTestState((_state) => {
-									return {..._state, keys: true}
-								})}
-							/>
+							<AssignedKeysCard/>
 						</BarStepItem>
 					</div>
 				</div>

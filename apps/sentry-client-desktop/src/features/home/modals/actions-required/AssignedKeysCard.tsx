@@ -3,21 +3,26 @@ import {SquareCard} from "../../../../components/SquareCard";
 import {IoMdCloseCircle} from "react-icons/io";
 import {LuExternalLink} from "react-icons/lu";
 import {AiFillCheckCircle} from "react-icons/ai";
+import {useOperator} from "@/features/operator";
+import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
+import {useSetAtom} from "jotai";
+import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
+import {useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
 
-interface AssignedKeysCardProps {
-	keys: boolean;
-	setKeys: () => void
-}
+export function AssignedKeysCard() {
+	const setModalState = useSetAtom(modalStateAtom);
+	const {publicKey: operatorAddress} = useOperator();
+	const {owners} = useListOwnersForOperatorWithCallback(operatorAddress, true);
+	const {licensesMap} = useListNodeLicensesWithCallback(owners);
 
-export function AssignedKeysDrawer({keys, setKeys}: AssignedKeysCardProps) {
 	function onSetKeys() {
-		window.electron.openExternal("http://localhost:7555/assign-wallet");
-		setKeys();
+		setModalState(ModalView.TransactionInProgress);
+		window.electron.openExternal(`http://localhost:7555/assign-wallet/${operatorAddress}`);
 	}
 
 	return (
 		<SquareCard className="bg-[#F5F5F5]">
-			{keys ? (
+			{Object.keys(licensesMap).length > 0 ? (
 				<IconLabel
 					icon={AiFillCheckCircle}
 					color="#16A34A"

@@ -6,7 +6,7 @@ import {IconLabel} from "@/components/IconLabel";
 import {SquareCard} from "@/components/SquareCard";
 import {SentryActiveCard} from "./SentryActiveCard";
 import {FundsInSentryWalletCard} from "./FundsInSentryWalletCard";
-import {AssignedKeysDrawer} from "./AssignedKeysDrawer";
+import {AssignedKeysCard} from "./AssignedKeysCard";
 import {useEffect, useState} from "react";
 import {KycRequiredCard} from "./KycRequiredCard";
 import {BarStepItem} from "@/components/BarStepItem";
@@ -99,7 +99,7 @@ export function ActionsRequiredNotAccruingDrawer() {
 						</BarStepItem>
 
 						<BarStepItem lastItem={true}>
-							<AssignedKeysDrawer
+							<AssignedKeysCard
 								keys={testState.keys}
 								setKeys={() => setTestState((_state) => {
 									return {..._state, keys: true}

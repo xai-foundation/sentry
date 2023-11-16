@@ -23,7 +23,7 @@ export function Keys() {
 
 	const {isLoading: kycStatusesLoading, statusMap} = useKycStatusesWithCallback(combinedOwners);
 	console.log("statusMap:", statusMap);
-	const {isLoading: licensesLoading, licensesMap} = useListNodeLicensesWithCallback(combinedOwners);
+	const {isLoading: licensesLoading,  licensesMap} = useListNodeLicensesWithCallback(combinedOwners);
 
 	const keyCount = getLicensesList(licensesMap).length;
 
@@ -68,7 +68,7 @@ export function Keys() {
 				<NoKeys/>
 			) : (
 				<>
-					{(ownersLoading || licensesLoading) || keyCount === 0 ? (
+					{Object.keys(licensesMap).length === 0 || keyCount === 0 ? (
 						<div className="w-full h-full flex-1 flex flex-col justify-center items-center">
 							<h3 className="text-center">Loading...</h3>
 						</div>
