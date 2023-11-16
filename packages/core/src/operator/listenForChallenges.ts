@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { RefereeAbi } from "../abis/RefereeAbi.js";
 import { getProvider } from "../utils/getProvider.js";
 import { config } from "../config.js";
-import { Challenge } from "../challenger/listChallenges.js";
+import { Challenge } from "../index.js";
 
 /**
  * Listens for ChallengeSubmitted events and triggers a callback function when the event is emitted.
