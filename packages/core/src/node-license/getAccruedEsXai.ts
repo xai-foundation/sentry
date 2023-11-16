@@ -2,7 +2,7 @@ import { Submission, getSubmissionsForChallenges, listChallenges } from "../inde
 
 export interface GetAccruedEsXaiResponse {
     submissions: Submission[],
-    totalAccruedEsXai: bigint
+    totalAccruedEsXai: bigint,
 }
 
 /**
@@ -45,3 +45,40 @@ export async function getAccruedEsXai(
     return res;
 }
 
+export type GetAccruedEsXaiBulkResponse = { [nodeLicenseId: string]: GetAccruedEsXaiResponse };
+
+/**
+ * Fetches the accrued EsXai for a list of node license IDs in bulk.
+ * @param nodeLicenseIds - The list of node license IDs.
+ * @param callback - Optional callback function to handle the response as it accumulates.
+ * @returns An object mapping node license IDs to their respective accrued EsXai and the submissions.
+ */
+export async function getAccruedEsXaiBulk(
+    nodeLicenseIds: bigint[],
+    callback?: (response: GetAccruedEsXaiResponse, nodeLicenseId: bigint) => Promise<void>,
+): Promise<GetAccruedEsXaiBulkResponse> {
+
+    // create an object to store the responses
+    const responses: { [nodeLicenseId: string]: GetAccruedEsXaiResponse } = {};
+
+    // iterate over each node license ID
+    for (const nodeLicenseId of nodeLicenseIds) {
+        
+        // define a new callback function to pass into getAccruedEsXai
+        const newCallback = async (response: GetAccruedEsXaiResponse) => {
+            
+            // update the responses object
+            responses[nodeLicenseId.toString()] = { ...response };
+
+            // call the callback from getAccruedEsXaiBulk
+            if (callback) {
+                await callback({ ...response }, nodeLicenseId);
+            }
+        };
+
+        // get the accrued EsXai for the current node license ID
+        await getAccruedEsXai(nodeLicenseId, newCallback);
+    }
+
+    return responses;
+}
