@@ -8,19 +8,20 @@ import {useOperator} from "@/features/operator";
 import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
 import {useKycStatusesWithCallback} from "@/hooks/useKycStatusesWithCallback";
 import {Tooltip} from "@/features/keys/Tooltip";
+import {useStorage} from "@/features/storage";
 
 export function Keys() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 
 	const {publicKey} = useOperator();
 	const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey, true);
+	const {data} = useStorage();
 
 	// todo arbitrary list of manual-adds []
-	const combinedOwners = [...owners];
+	const combinedOwners = [...owners, ...(data?.addedWallets || [])];
 
 	const {isLoading: kycStatusesLoading, statusMap} = useKycStatusesWithCallback(combinedOwners);
-	console.log("statusMap:", statusMap);
-	const {isLoading: licensesLoading,  licensesMap} = useListNodeLicensesWithCallback(combinedOwners);
+	const {isLoading: licensesLoading, licensesMap} = useListNodeLicensesWithCallback(combinedOwners);
 
 	const keyCount = getLicensesList(licensesMap).length;
 

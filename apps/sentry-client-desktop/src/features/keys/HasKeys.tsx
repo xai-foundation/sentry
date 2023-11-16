@@ -9,6 +9,8 @@ import {getLicensesList, LicenseList, LicenseMap} from "@/hooks/useListNodeLicen
 import {config} from "@sentry/core";
 import {StatusMap} from "@/hooks/useKycStatusesWithCallback";
 import {Tooltip} from "@/features/keys/Tooltip";
+import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
+import {useSetAtom} from "jotai/index";
 
 interface HasKeysProps {
 	licensesMap: LicenseMap,
@@ -16,6 +18,7 @@ interface HasKeysProps {
 }
 
 export function HasKeys({licensesMap, statusMap}: HasKeysProps) {
+	const setDrawerState = useSetAtom(drawerStateAtom);
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -37,7 +40,6 @@ export function HasKeys({licensesMap, statusMap}: HasKeysProps) {
 			const keyString = keyWithOwner.key.toString();
 			const owner = keyWithOwner.owner.toString();
 			const status = statusMap[owner];
-			console.log("key w/ owner:", keyWithOwner);
 
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
@@ -149,7 +151,7 @@ export function HasKeys({licensesMap, statusMap}: HasKeysProps) {
 					</button>
 
 					<button
-						onClick={() => {}}
+						onClick={() => setDrawerState(DrawerView.ViewKeys)}
 						className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 					>
 						<AiOutlinePlus className="h-[15px]"/>
@@ -158,7 +160,8 @@ export function HasKeys({licensesMap, statusMap}: HasKeysProps) {
 
 					<button
 						disabled={selectedWallet === null}
-						onClick={() => {}}
+						onClick={() => {
+						}}
 						className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] ${selectedWallet === null ? 'text-[#D4D4D4] cursor-not-allowed' : ""} px-4 py-2`}
 					>
 						<AiOutlineMinus className="h-[15px]"/>
