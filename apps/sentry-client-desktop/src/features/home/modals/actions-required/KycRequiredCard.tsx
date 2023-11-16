@@ -1,17 +1,17 @@
-import {SquareCard} from "../../../../components/SquareCard";
-import {IconLabel} from "../../../../components/IconLabel";
-import {clampAddress} from "../../../../utils/clampAddress";
+import {SquareCard} from "@/components/SquareCard";
+import {IconLabel} from "@/components/IconLabel";
+import {clampAddress} from "@/utils/clampAddress";
 import {IoMdCloseCircle} from "react-icons/io";
 import {BsHourglassBottom} from "react-icons/bs";
 import {AiFillCheckCircle} from "react-icons/ai";
 import {Blockpass} from "@/components/blockpass/Blockpass";
 
 export function KycRequiredCard() {
-
-	const kycState = "pending";
+	const kycState: "pending" | "required" | "done" = "pending";
 
 	return (
 		<SquareCard className="bg-[#F5F5F5]">
+			{/*@ts-ignore*/}
 			{kycState === "required" && (
 				<>
 					<IconLabel
@@ -37,6 +37,7 @@ export function KycRequiredCard() {
 				/>
 			)}
 
+			{/*@ts-ignore*/}
 			{kycState === "done" && (
 				<IconLabel
 					icon={AiFillCheckCircle}

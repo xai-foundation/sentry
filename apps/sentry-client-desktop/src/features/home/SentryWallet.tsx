@@ -1,4 +1,4 @@
-import {AiFillWarning, AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
+import {AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
 import {useState} from "react";
 import {BiDownload, BiLinkExternal, BiUpload} from "react-icons/bi";
 import {useOperator} from "../operator";
@@ -287,23 +287,6 @@ export function SentryWallet() {
 						{drawerState === null && (
 							<ActionsRequiredPromptHandler/>
 						)}
-
-						{/*		todo: swapped number with listNodeLicensesData, check if correct param	*/}
-						{/*{listNodeLicensesData?.licenses && drawerState === null && (*/}
-						{/*	<div className="flex gap-4 bg-[#FFFBEB] p-2 z-10">*/}
-						{/*		<div className="flex flex-row gap-2 items-center">*/}
-						{/*			<AiFillWarning className="w-7 h-7 text-[#F59E28]"/>*/}
-						{/*			<span*/}
-						{/*				className="text-[#B45317] text-[15px] font-semibold">Actions required (N A)</span>*/}
-						{/*		</div>*/}
-						{/*		<button*/}
-						{/*			onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}*/}
-						{/*			className={`flex flex-row justify-center items-center py-1 px-4 gap-1 bg-[#F30919] text-[15px] text-white font-semibold`}*/}
-						{/*		>*/}
-						{/*			Resolve*/}
-						{/*		</button>*/}
-						{/*	</div>*/}
-						{/*)}*/}
 					</div>
 
 					<div className="flex flex-col items-start w-full border-b border-gray-200 gap-2 py-2 pl-10">
@@ -443,11 +426,6 @@ export function SentryWallet() {
 											<td colSpan={3} className="w-full text-center">Loading...</td>
 										</tr>
 									) : getKeys()}
-
-									{/*<tr className="text-[#A3A3A3] text-sm flex px-8">*/}
-									{/*	<td className="w-full max-w-[70px] px-4 py-2">-</td>*/}
-									{/*	<td className="w-full max-w-[390px] px-4 py-2">Empty Key Slot</td>*/}
-									{/*</tr>*/}
 									</tbody>
 								</table>
 							</div>
