@@ -10,7 +10,7 @@ import {config} from "@sentry/core";
 import {StatusMap} from "@/hooks/useKycStatusesWithCallback";
 import {Tooltip} from "@/features/keys/Tooltip";
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
-import {useSetAtom} from "jotai/index";
+import {useSetAtom} from "jotai";
 
 interface HasKeysProps {
 	licensesMap: LicenseMap,
@@ -34,7 +34,7 @@ export function HasKeys({licensesMap, statusMap}: HasKeysProps) {
 				});
 			}
 		}
-		
+
 		return licenses.sort((a, b) => Number(a.key) - Number(b.key)).map((keyWithOwner, i) => {
 			const isEven = i % 2 === 0;
 			const keyString = keyWithOwner.key.toString();
@@ -47,11 +47,11 @@ export function HasKeys({licensesMap, statusMap}: HasKeysProps) {
 					<td className="w-full max-w-[360px] px-4 py-2">{owner}</td>
 					<td className="w-full max-w-[360px] px-4 py-2 text-[#A3A3A3]">
 						{!status ? (
-							<p className="flex items-center gap-2">
+							<div className="flex items-center gap-2">
 								<YellowPulse/>
 								KYC required
 								<BlockPassKYC/>
-							</p>
+							</div>
 						) : (
 							<span>KYC GOOD</span>
 						)}
@@ -200,13 +200,7 @@ export function HasKeys({licensesMap, statusMap}: HasKeysProps) {
 					</tr>
 					</thead>
 					<tbody>
-
 					{renderKeys()}
-
-					<tr className="text-[#A3A3A3] text-sm flex px-8">
-						<td className="w-full max-w-[70px] px-4 py-2">-</td>
-						<td className="w-full max-w-[360px] px-4 py-2">Empty Key Slot</td>
-					</tr>
 					</tbody>
 				</table>
 			</div>
