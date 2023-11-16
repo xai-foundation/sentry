@@ -53,6 +53,81 @@ export const RefereeAbi = [
   {
     "type": "event",
     "anonymous": false,
+    "name": "ChallengeClosed",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "challengeNumber",
+        "indexed": true
+      },
+      {
+        "type": "tuple",
+        "name": "challenge",
+        "indexed": false,
+        "components": [
+          {
+            "type": "bool",
+            "name": "openForSubmissions"
+          },
+          {
+            "type": "uint64",
+            "name": "assertionId"
+          },
+          {
+            "type": "uint64",
+            "name": "predecessorAssertionId"
+          },
+          {
+            "type": "bytes32",
+            "name": "assertionStateRoot"
+          },
+          {
+            "type": "uint64",
+            "name": "assertionTimestamp"
+          },
+          {
+            "type": "bytes",
+            "name": "challengerSignedHash"
+          },
+          {
+            "type": "bytes",
+            "name": "activeChallengerPublicKey"
+          },
+          {
+            "type": "address",
+            "name": "rollupUsed"
+          },
+          {
+            "type": "uint256",
+            "name": "createdTimestamp"
+          },
+          {
+            "type": "uint256",
+            "name": "closeTimestamp"
+          },
+          {
+            "type": "uint256",
+            "name": "totalSupplyOfNodesAtChallengeStart"
+          },
+          {
+            "type": "uint256",
+            "name": "rewardAmountForClaimers"
+          },
+          {
+            "type": "uint256",
+            "name": "amountForGasSubsidy"
+          },
+          {
+            "type": "uint256",
+            "name": "numberOfEligibleClaimers"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "ChallengeSubmitted",
     "inputs": [
       {
@@ -100,6 +175,10 @@ export const RefereeAbi = [
           {
             "type": "uint256",
             "name": "createdTimestamp"
+          },
+          {
+            "type": "uint256",
+            "name": "closeTimestamp"
           },
           {
             "type": "uint256",
@@ -404,6 +483,10 @@ export const RefereeAbi = [
       },
       {
         "type": "uint256",
+        "name": "closeTimestamp"
+      },
+      {
+        "type": "uint256",
         "name": "totalSupplyOfNodesAtChallengeStart"
       },
       {
@@ -551,6 +634,10 @@ export const RefereeAbi = [
           },
           {
             "type": "uint256",
+            "name": "closeTimestamp"
+          },
+          {
+            "type": "uint256",
             "name": "totalSupplyOfNodesAtChallengeStart"
           },
           {
@@ -621,6 +708,10 @@ export const RefereeAbi = [
           {
             "type": "uint256",
             "name": "createdTimestamp"
+          },
+          {
+            "type": "uint256",
+            "name": "closeTimestamp"
           },
           {
             "type": "uint256",
@@ -836,14 +927,14 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
-    "name": "getSubmissionForChallenge",
+    "name": "getSubmissionsForChallenges",
     "constant": true,
     "stateMutability": "view",
     "payable": false,
     "inputs": [
       {
-        "type": "uint256",
-        "name": "_challengeId"
+        "type": "uint256[]",
+        "name": "_challengeIds"
       },
       {
         "type": "uint256",
@@ -852,7 +943,7 @@ export const RefereeAbi = [
     ],
     "outputs": [
       {
-        "type": "tuple",
+        "type": "tuple[]",
         "name": "",
         "components": [
           {
