@@ -9,37 +9,30 @@ import {FundsInSentryWalletCard} from "./FundsInSentryWalletCard";
 import {AssignedKeysCard} from "./AssignedKeysCard";
 import {KycRequiredCard} from "./KycRequiredCard";
 import {BarStepItem} from "@/components/BarStepItem";
-import {useAccruing} from "@/hooks/useAccruing";
-import {useOperator} from "@/features/operator";
-import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
-import {useKycStatusesWithCallback} from "@/hooks/useKycStatusesWithCallback";
+import {useAccruingInfo} from "@/hooks/useAccruingInfo";
 
 export function ActionsRequiredNotAccruingDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 
-	const {publicKey} = useOperator();
-	const {owners} = useListOwnersForOperatorWithCallback(publicKey, true);
-	const {statusMap} = useKycStatusesWithCallback(owners);
-	const requiresAtLeastOneKyc = statusMap && Object.values(statusMap).filter((status) => !status).length > 0
-	const accruing = useAccruing();
+	const {accruing, kycRequired} = useAccruingInfo();
 
 	return (
 		<div className="h-full flex flex-col justify-start items-center">
 			<div
 				className="w-full h-16 flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
-				{!accruing && requiresAtLeastOneKyc && (
+				{!accruing && kycRequired && (
 					<div className="flex flex-row gap-2 items-center">
 						<AiFillWarning className="w-7 h-7 text-[#F59E28]"/> <span>Actions required</span>
 					</div>
 				)}
 
-				{accruing && requiresAtLeastOneKyc && (
+				{accruing && kycRequired && (
 					<div className="flex flex-row gap-2 items-center">
 						<AiFillWarning className="w-7 h-7 text-[#F59E28]"/> <span>Next Step: Complete KYC</span>
 					</div>
 				)}
 
-				{accruing && !requiresAtLeastOneKyc && (
+				{accruing && !kycRequired && (
 					<div className="flex flex-row gap-2 items-center">
 						<AiFillCheckCircle className="w-5 h-5 text-[#16A34A] mt-1"/> <span>esXAI is being claimed</span>
 					</div>

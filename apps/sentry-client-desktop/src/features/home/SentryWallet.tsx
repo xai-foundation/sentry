@@ -314,7 +314,7 @@ export function SentryWallet() {
 								body={"Sentry Wallet balance is used to pay gas fees for automatically claiming accrued esXAI."}
 								banner={true}
 								bannerTitle={"Recommended minimum balance"}
-								bannerValue={"0.05 ETH"}
+								bannerValue={"0.005 ETH"}
 							>
 								<AiOutlineInfoCircle className="text-[#A3A3A3]"/>
 							</Tooltip>

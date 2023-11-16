@@ -81,7 +81,7 @@ export function FundsInSentryWalletCard() {
 
 						<div className="flex flex-row items-center gap-1">
 							<FaEthereum className="w-4 h-4 mb-[-2px]"/>
-							<p className="text-[#525252] text-[14px] font-semibold">0.05 ETH</p>
+							<p className="text-[#525252] text-[14px] font-semibold">0.005 ETH</p>
 						</div>
 					</div>
 				</>
