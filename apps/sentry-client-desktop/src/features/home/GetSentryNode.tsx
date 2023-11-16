@@ -1,7 +1,5 @@
 import {RiKey2Line} from "react-icons/ri";
 import {FiGift, FiGitCommit} from "react-icons/fi";
-import {useState} from "react";
-import {ContinueInBrowserModal} from "./modals/ContinueInBrowserModal.js";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useSetAtom} from "jotai";
 
@@ -44,7 +42,6 @@ const body = [
 
 export function GetSentryNode() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
 
 	function getBody() {
 		return body.map((item, i) => {
@@ -76,14 +73,7 @@ export function GetSentryNode() {
 	// }
 
 	return (
-		<div
-			className="w-full flex flex-row items-center justify-between px-[2.8rem] pt-[5.625rem]">
-			{showContinueInBrowserModal && (
-				<ContinueInBrowserModal
-					setShowContinueInBrowserModal={setShowContinueInBrowserModal}
-				/>
-			)}
-
+		<div className="w-full flex flex-row items-center justify-between px-[2.8rem] pt-[5.625rem]">
 			<div className="flex flex-col">
 				<h1 className="text-[40px] font-bold uppercase tracking-widest">
 					Get a Xai Sentry Node

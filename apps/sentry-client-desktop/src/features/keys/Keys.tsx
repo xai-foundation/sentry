@@ -1,7 +1,5 @@
-import {useState} from "react";
 import {HasKeys} from "./HasKeys.js";
 import {NoKeys} from "./NoKeys.js";
-import {ContinueInBrowserModal} from "../home/modals/ContinueInBrowserModal.js";
 import {AiFillWarning, AiOutlineInfoCircle} from "react-icons/ai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useAtom} from "jotai";
@@ -13,7 +11,6 @@ import {Tooltip} from "@/features/keys/Tooltip";
 
 export function Keys() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
-	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
 
 	const {publicKey} = useOperator();
 	const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey, true);
@@ -59,10 +56,6 @@ export function Keys() {
 					</div>
 				)}
 			</div>
-
-			{showContinueInBrowserModal && (
-				<ContinueInBrowserModal setShowContinueInBrowserModal={setShowContinueInBrowserModal}/>
-			)}
 
 			{!ownersLoading && !kycStatusesLoading && !licensesLoading && keyCount === 0 ? (
 				<NoKeys/>

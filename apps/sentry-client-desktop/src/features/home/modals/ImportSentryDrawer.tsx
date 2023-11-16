@@ -1,5 +1,5 @@
 import {AiOutlineClose} from "react-icons/ai";
-import {useSetAtom} from "jotai/index";
+import {useSetAtom} from "jotai";
 import {drawerStateAtom} from "../../drawer/DrawerManager.js";
 import {useOperator} from "../../operator";
 import {ChangeEvent, useEffect, useState} from "react";
