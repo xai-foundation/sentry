@@ -188,16 +188,6 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     }
 
     /**
-     * @notice Returns the timestamp at which the token was minted.
-     * @param _tokenId The ID of the token.
-     * @return The minting timestamp.
-     */
-    function getMintTimestamp(uint256 _tokenId) public view returns (uint256) {
-        require(_exists(_tokenId), "ERC721Metadata: Query for nonexistent token");
-        return _mintTimestamps[_tokenId];
-    }
-
-    /**
      * @notice Returns the metadata of a NodeLicense token.
      * @param _tokenId The ID of the token.
      * @return The token metadata.
@@ -236,6 +226,16 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             )
         );
         return string(abi.encodePacked("data:application/json;base64,", json));
+    }
+
+    /**
+     * @notice Returns the minting timestamp of a NodeLicense token.
+     * @param _tokenId The ID of the token.
+     * @return The minting timestamp.
+     */
+    function getMintTimestamp(uint256 _tokenId) public view returns (uint256) {
+        require(_exists(_tokenId), "ERC721Metadata: Query for nonexistent token");
+        return _mintTimestamps[_tokenId];
     }
 
     /**

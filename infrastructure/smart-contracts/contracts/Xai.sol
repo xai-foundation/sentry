@@ -12,6 +12,7 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
  */
 contract Xai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgradeable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
+    uint256 public constant MAX_SUPPLY = 2500000000 * 10**18; // Max supply of 2,500,000,000 tokens
 
     function initialize() public initializer {
         __ERC20_init("Xai", "XAI");
@@ -29,6 +30,7 @@ contract Xai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgrade
      * @return A boolean that indicates if the operation was successful.
      */
     function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) returns (bool) {
+        require(totalSupply() + amount <= MAX_SUPPLY, "Cannot mint beyond max supply");
         _mint(to, amount);
         return true;
     }

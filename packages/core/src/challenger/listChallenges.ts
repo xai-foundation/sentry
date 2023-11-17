@@ -2,21 +2,7 @@ import { ethers } from 'ethers';
 import { RefereeAbi } from '../abis/RefereeAbi.js';
 import { config } from '../config.js';
 import { getProvider } from '../utils/getProvider.js';
-
-/**
- * Interface for the Challenge struct in the Referee contract.
- */
-export interface Challenge {
-    openForSubmissions: boolean;
-    assertionId: bigint;
-    predecessorAssertionId: bigint;
-    assertionStateRoot: string;
-    assertionTimestamp: bigint;
-    challengerSignedHash: string;
-    activeChallengerPublicKey: string;
-    rollupUsed: string;
-    createdTimestamp: bigint; // in seconds
-}
+import { getChallenge, Challenge } from "../index.js";
 
 /**
  * Fetches all Challenges from the Referee contract.
@@ -26,8 +12,8 @@ export interface Challenge {
  */
 export async function listChallenges(
     openForSubmissions?: boolean,
-    callback?: (challengeNumber: bigint, challenge: Challenge) => void,
-): Promise<Challenge[]> {
+    callback?: (challengeNumber: bigint, challenge: Challenge) => Promise<void>,
+): Promise<Array<[bigint, Challenge]>> {
 
     // Get the provider
     const provider = getProvider();
@@ -39,17 +25,17 @@ export async function listChallenges(
     const challengeCount: bigint = await refereeContract.challengeCounter();
 
     // Initialize an array to store the challenges
-    const challenges: Challenge[] = [];
+    const challenges: Array<[bigint, Challenge]> = [];
 
     // Loop through the challenge count in reverse order and fetch each challenge
     for (let i = challengeCount - BigInt(1); i >= 0; i--) {
-        const challenge = await refereeContract.getChallenge(i);
+        const challenge = await getChallenge(i);
         if (openForSubmissions && !challenge.openForSubmissions) {
             break;
         }
-        challenges.push(challenge);
+        challenges.push([i + BigInt(0), challenge]);
         if (callback) {
-            callback(BigInt(i), challenge);
+            await callback(BigInt(i), challenge);
         }
     }
 
