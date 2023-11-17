@@ -9,7 +9,8 @@ import {AssignWalletTransactionInProgressModal} from "@/features/home/modals/Ass
 export enum ModalView {
 	Exit,
 	PurchaseSuccessful,
-	TransactionInProgress
+	TransactionInProgress,
+	RemoveWallet
 }
 
 export const modalStateAtom = atom<ModalView | null>(null);
