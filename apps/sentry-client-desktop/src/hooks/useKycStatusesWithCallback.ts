@@ -4,7 +4,6 @@ import {checkKycStatus} from "@sentry/core";
 export type StatusMap = Record<string, boolean>;
 
 export function useKycStatusesWithCallback(wallets: string[] = []) {
-
 	const [loading, setLoading] = useState(false);
 	const [statuses, setStatuses] = useState<StatusMap>({});
 

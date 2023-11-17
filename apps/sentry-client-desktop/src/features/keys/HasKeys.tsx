@@ -12,18 +12,32 @@ import {Tooltip} from "@/features/keys/Tooltip";
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
 import {useSetAtom} from "jotai";
 import {RemoveWalletModal} from "@/features/home/modals/RemoveWalletModal";
+import {WalletAssignedMap} from "@/features/keys/Keys";
+import {FaRegCircle} from "react-icons/fa";
+import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
+import {useOperator} from "@/features/operator";
 
 interface HasKeysProps {
 	licensesMap: LicenseMap,
 	statusMap: StatusMap,
+	isWalletAssignedMap: WalletAssignedMap,
 }
 
-export function HasKeys({licensesMap, statusMap}: HasKeysProps) {
+export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysProps) {
 	const setDrawerState = useSetAtom(drawerStateAtom);
+	const setModalState = useSetAtom(modalStateAtom);
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [isRemoveWalletOpen, setIsRemoveWalletOpen] = useState<boolean>(false);
+	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
+
+	function startAssignment() {
+		if (!isOperatorLoading) {
+			setModalState(ModalView.TransactionInProgress);
+			window.electron.openExternal(`http://localhost:7555/assign-wallet/${operatorAddress}`);
+		}
+	}
 
 	function renderKeys() {
 		let licenses: LicenseList = [];
@@ -42,20 +56,37 @@ export function HasKeys({licensesMap, statusMap}: HasKeysProps) {
 			const keyString = keyWithOwner.key.toString();
 			const owner = keyWithOwner.owner.toString();
 			const status = statusMap[owner];
+			const isAssigned = isWalletAssignedMap[owner];
+
+			console.log(isAssigned)
 
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
 					<td className="w-full max-w-[70px] px-4 py-2">{keyString}</td>
 					<td className="w-full max-w-[360px] px-4 py-2">{owner}</td>
 					<td className="w-full max-w-[360px] px-4 py-2 text-[#A3A3A3]">
-						{!status ? (
+
+						{!isAssigned ? (
 							<div className="flex items-center gap-2">
-								<YellowPulse/>
-								KYC required
-								<BlockPassKYC/>
+								<FaRegCircle size={8}/>
+								Wallet not assigned
+								<a
+									onClick={() => startAssignment()}
+									className="text-[#F30919] cursor-pointer"
+								>
+									Assign
+								</a>
 							</div>
 						) : (
-							<span>KYC GOOD</span>
+							!status ? (
+								<div className="flex items-center gap-2">
+									<YellowPulse/>
+									KYC required
+									<BlockPassKYC/>
+								</div>
+							) : (
+								<span>KYC GOOD</span>
+							)
 						)}
 					</td>
 					<td className="w-full max-w-[150px] px-4 py-2 text-right">ACCRUED ESXAI</td>
