@@ -13,7 +13,6 @@ import {useAccruingInfo} from "@/hooks/useAccruingInfo";
 
 export function ActionsRequiredNotAccruingDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-
 	const {accruing, kycRequired} = useAccruingInfo();
 
 	return (

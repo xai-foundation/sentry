@@ -1,21 +1,18 @@
-import {IconLabel} from "../../../../components/IconLabel";
-import {clampAddress} from "../../../../utils/clampAddress";
-import {SquareCard} from "../../../../components/SquareCard";
+import {IconLabel} from "@/components/IconLabel";
+import {clampAddress} from "@/utils/clampAddress";
+import {SquareCard} from "@/components/SquareCard";
 import {IoMdCloseCircle} from "react-icons/io";
 import {PiCopy} from "react-icons/pi";
 import {FaEthereum} from "react-icons/fa";
 import {AiFillCheckCircle, AiOutlineCheck} from "react-icons/ai";
 import {useOperator} from "@/features/operator";
-import {useBalance} from "@/hooks/useBalance";
-import {recommendedFundingBalance} from "@/features/home/SentryWallet";
 import {useState} from "react";
+import {useSentryLogic} from "@/hooks/useSentryLogic";
 
 export function FundsInSentryWalletCard() {
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
-	const {data: balance} = useBalance(operatorAddress);
 	const [copied, setCopied] = useState(false);
-
-	const funded = balance && balance.wei !== undefined && balance.wei >= recommendedFundingBalance;
+	const {funded} = useSentryLogic();
 
 	function copyAddress() {
 		if (operatorAddress && navigator.clipboard) {
