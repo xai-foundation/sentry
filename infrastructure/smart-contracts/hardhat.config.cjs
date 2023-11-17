@@ -19,12 +19,18 @@ const config = {
     xai: {
       url: "https://testnet.xai-chain.net/rpc",
       chainId: 47279324479,
-      accounts: { mnemonic: process.env.MNEMONIC },
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+        count: 30,
+      },
       gasPrice: 20000000000,
     },
     arbitrumGoerli: {
       url: "https://goerli-rollup.arbitrum.io/rpc",
-      accounts: { mnemonic: process.env.MNEMONIC },
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+        count: 30,
+      },
       gasPrice: 20000000000,
     },
   },

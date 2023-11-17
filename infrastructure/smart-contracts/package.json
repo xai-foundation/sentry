@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "deploy": "hardhat run scripts/deploy.mjs",
+    "test": "hardhat test",
     "clean": "rimraf artifacts && rimraf cache"
   },
   "dependencies": {
