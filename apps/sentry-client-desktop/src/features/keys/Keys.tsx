@@ -9,6 +9,7 @@ import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOper
 import {useKycStatusesWithCallback} from "@/hooks/useKycStatusesWithCallback";
 import {Tooltip} from "@/features/keys/Tooltip";
 import {useStorage} from "@/features/storage";
+import {RiKey2Line} from "react-icons/ri";
 
 export type WalletAssignedMap = Record<string, boolean>;
 
@@ -49,6 +50,14 @@ export function Keys() {
 					>
 						<AiOutlineInfoCircle size={16} className="text-[#A3A3A3]"/>
 					</Tooltip>
+
+					<button
+						className="flex justify-center items-center text-[15px] border border-[#E5E5E5] ml-2 py-2 px-3 gap-1"
+						onClick={() => setDrawerState(DrawerView.BuyKeys)}
+					>
+						<RiKey2Line size={18}/>
+						<p>Purchase keys</p>
+					</button>
 				</div>
 
 				{drawerState === null && (
