@@ -24,6 +24,7 @@ export function RemoveWalletModal({onClose, selectedWallet}: ImportSentryAlertMo
 			// setSuccess(false)
 			// onClose();
 
+			// todo: find a better way to do this
 			window.location.reload();
 		}, 2000);
 

@@ -66,7 +66,6 @@ export function ViewKeysFlow() {
 
 		setLoading(false);
 		setSuccess(true);
-
 	}
 
 	// Load State
