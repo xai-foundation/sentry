@@ -24,6 +24,7 @@ import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {Tooltip} from "@/features/keys/Tooltip";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
+import {useSentryLogic} from "@/hooks/useSentryLogic";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
@@ -46,6 +47,7 @@ export function SentryWallet() {
 	const {startRuntime, stopRuntime, sentryRunning, nodeLicenseStatusMap} = useOperatorRuntime();
 	const setModalState = useSetAtom(modalStateAtom);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
+	const {assignedKeys} = useSentryLogic();
 
 	// assign wallet
 	(window as any).deeplinks?.assignedWallet((_event, txHash) => {
@@ -59,7 +61,6 @@ export function SentryWallet() {
 		setSelectedWallet(null);
 		setUnassignedWallet({show: true, txHash});
 	});
-
 
 	function onRefreshEthBalance() {
 		queryClient.invalidateQueries({queryKey: ["balance", operatorAddress]});
@@ -199,13 +200,15 @@ export function SentryWallet() {
 								</p>
 							)}
 
-							{sentryRunning ? (
+							{sentryRunning && !assignedKeys && (
 								<>
 									<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
 										No Keys Assigned
 									</p>
 								</>
-							) : (
+							)}
+
+							{!sentryRunning && (
 								<p className="border border-[#F5F5F5] bg-[#F5F5F5] text-[#A3A3A3] text-xs font-semibold uppercase rounded-full px-2">
 									Stopped
 								</p>
