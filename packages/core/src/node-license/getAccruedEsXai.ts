@@ -55,7 +55,7 @@ export type GetAccruedEsXaiBulkResponse = { [nodeLicenseId: string]: GetAccruedE
  */
 export async function getAccruedEsXaiBulk(
     nodeLicenseIds: bigint[],
-    callback?: (response: GetAccruedEsXaiResponse, nodeLicenseId: bigint) => Promise<void>,
+    callback?: (response: GetAccruedEsXaiBulkResponse) => Promise<void>,
 ): Promise<GetAccruedEsXaiBulkResponse> {
 
     // create an object to store the responses
@@ -72,7 +72,7 @@ export async function getAccruedEsXaiBulk(
 
             // call the callback from getAccruedEsXaiBulk
             if (callback) {
-                await callback({ ...response }, nodeLicenseId);
+                await callback(responses);
             }
         };
 
