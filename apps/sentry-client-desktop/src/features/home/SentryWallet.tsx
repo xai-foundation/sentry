@@ -361,7 +361,7 @@ export function SentryWallet() {
 
 										{isOpen && (
 											<div
-												className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3] bg-white">
+												className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3] bg-white z-10">
 												<p
 													onClick={() => {
 														setSelectedWallet(null);

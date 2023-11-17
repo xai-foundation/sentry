@@ -1,8 +1,11 @@
 import {useEffect, useState} from 'react';
+import {atom, useAtom} from 'jotai';
+
+const dataAtom = atom<IData | undefined>(undefined);
 
 export type IData = Partial<{
 	addedWallets: string[];
-}>
+}>;
 
 interface IUseStorageResponse {
 	data?: IData;
@@ -16,15 +19,14 @@ interface IUseStorageResponse {
  * Custom hook to save a JSON object to disk in the user directory,
  * and provides a result of what is currently stored to disk in the hook,
  * as well as a function to set new values and remove values.
- * @param props - The props for the hook.
  * @returns The response from the hook.
  */
 export function useStorage(): IUseStorageResponse {
-	const [data, setData] = useState<IData>();
+	const [data, setData] = useAtom(dataAtom);
 	const [loading, setLoading] = useState<boolean>(false);
 
 	const getFilePath = async () => {
-		return await window.ipcRenderer.invoke('path-join', await window.ipcRenderer.invoke('get-user-data-path'), "sentry-node-config.json");
+		return await window.ipcRenderer.invoke('path-join', await window.ipcRenderer.invoke('get-user-data-path'), 'sentry-node-config.json');
 	};
 
 	useEffect(() => {
@@ -33,7 +35,7 @@ export function useStorage(): IUseStorageResponse {
 			const filePath = await getFilePath();
 			const fileExists = await window.ipcRenderer.invoke('fs-existsSync', filePath);
 			if (fileExists) {
-				const rawData: any = await window.ipcRenderer.invoke('fs-readFileSync', filePath, "utf8");
+				const rawData = await window.ipcRenderer.invoke('fs-readFileSync', filePath, 'utf8');
 				setData(JSON.parse(rawData.toString()));
 			} else {
 				// If the data is null on disk, save an empty {} to it.
@@ -42,8 +44,8 @@ export function useStorage(): IUseStorageResponse {
 			}
 			setLoading(false);
 		};
-		fetchData();
-	}, []);
+		void fetchData();
+	}, [setData]);
 
 	const setDataToFile = async (newData: IData) => {
 		setLoading(true);
