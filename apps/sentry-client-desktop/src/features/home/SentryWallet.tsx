@@ -1,4 +1,4 @@
-import {AiFillWarning, AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
+import {AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
 import {useState} from "react";
 import {BiDownload, BiLinkExternal, BiUpload} from "react-icons/bi";
 import {useOperator} from "../operator";
@@ -24,6 +24,7 @@ import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {Tooltip} from "@/features/keys/Tooltip";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
+import {useSentryLogic} from "@/hooks/useSentryLogic";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
@@ -34,24 +35,19 @@ export function SentryWallet() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
-
 	const {isLoading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
-	const {
-		isLoading: isListNodeLicensesLoading,
-		data: listNodeLicensesData
-	} = useListNodeLicenses(listOwnersData?.owners);
+	const {isLoading: isListNodeLicensesLoading, data: listNodeLicensesData} = useListNodeLicenses(listOwnersData?.owners);
 	const loading = isOperatorLoading || isListOwnersLoading || isListNodeLicensesLoading;
 
 	const [copied, setCopied] = useState<boolean>(false);
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
-	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({
-		show: false,
-		txHash: ""
-	});
+	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
 	const {startRuntime, stopRuntime, sentryRunning, nodeLicenseStatusMap} = useOperatorRuntime();
 	const setModalState = useSetAtom(modalStateAtom);
+	const [isOpen, setIsOpen] = useState<boolean>(false);
+	const {hasAssignedKeys} = useSentryLogic();
 
 	// assign wallet
 	(window as any).deeplinks?.assignedWallet((_event, txHash) => {
@@ -62,10 +58,9 @@ export function SentryWallet() {
 	// un-assign wallet
 	(window as any).deeplinks?.unassignedWallet((_event, txHash) => {
 		setModalState(null)
+		setSelectedWallet(null);
 		setUnassignedWallet({show: true, txHash});
 	});
-
-	const [isOpen, setIsOpen] = useState<boolean>(false);
 
 	function onRefreshEthBalance() {
 		queryClient.invalidateQueries({queryKey: ["balance", operatorAddress]});
@@ -205,13 +200,15 @@ export function SentryWallet() {
 								</p>
 							)}
 
-							{sentryRunning ? (
+							{sentryRunning && !hasAssignedKeys && (
 								<>
 									<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
 										No Keys Assigned
 									</p>
 								</>
-							) : (
+							)}
+
+							{!sentryRunning && (
 								<p className="border border-[#F5F5F5] bg-[#F5F5F5] text-[#A3A3A3] text-xs font-semibold uppercase rounded-full px-2">
 									Stopped
 								</p>
@@ -287,23 +284,6 @@ export function SentryWallet() {
 						{drawerState === null && (
 							<ActionsRequiredPromptHandler/>
 						)}
-
-						{/*		todo: swapped number with listNodeLicensesData, check if correct param	*/}
-						{/*{listNodeLicensesData?.licenses && drawerState === null && (*/}
-						{/*	<div className="flex gap-4 bg-[#FFFBEB] p-2 z-10">*/}
-						{/*		<div className="flex flex-row gap-2 items-center">*/}
-						{/*			<AiFillWarning className="w-7 h-7 text-[#F59E28]"/>*/}
-						{/*			<span*/}
-						{/*				className="text-[#B45317] text-[15px] font-semibold">Actions required (N A)</span>*/}
-						{/*		</div>*/}
-						{/*		<button*/}
-						{/*			onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}*/}
-						{/*			className={`flex flex-row justify-center items-center py-1 px-4 gap-1 bg-[#F30919] text-[15px] text-white font-semibold`}*/}
-						{/*		>*/}
-						{/*			Resolve*/}
-						{/*		</button>*/}
-						{/*	</div>*/}
-						{/*)}*/}
 					</div>
 
 					<div className="flex flex-col items-start w-full border-b border-gray-200 gap-2 py-2 pl-10">
@@ -378,7 +358,7 @@ export function SentryWallet() {
 
 										{isOpen && (
 											<div
-												className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3] bg-white">
+												className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3] bg-white z-10">
 												<p
 													onClick={() => {
 														setSelectedWallet(null);
@@ -443,11 +423,6 @@ export function SentryWallet() {
 											<td colSpan={3} className="w-full text-center">Loading...</td>
 										</tr>
 									) : getKeys()}
-
-									{/*<tr className="text-[#A3A3A3] text-sm flex px-8">*/}
-									{/*	<td className="w-full max-w-[70px] px-4 py-2">-</td>*/}
-									{/*	<td className="w-full max-w-[390px] px-4 py-2">Empty Key Slot</td>*/}
-									{/*</tr>*/}
 									</tbody>
 								</table>
 							</div>

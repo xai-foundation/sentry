@@ -10,6 +10,8 @@ import {useKycStatusesWithCallback} from "@/hooks/useKycStatusesWithCallback";
 import {Tooltip} from "@/features/keys/Tooltip";
 import {useStorage} from "@/features/storage";
 
+export type WalletAssignedMap = Record<string, boolean>;
+
 export function Keys() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 
@@ -17,8 +19,15 @@ export function Keys() {
 	const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey, true);
 	const {data} = useStorage();
 
-	// todo arbitrary list of manual-adds []
-	const combinedOwners = [...owners, ...(data?.addedWallets || [])];
+	// if wallet in data?.addedWallets is also in owners, filter out the dupes
+	// if wallet is in data?.addedWallets but not in owners, show "Assign Wallet"
+	const combinedOwners = [...new Set([...owners, ...(data?.addedWallets || [])])]
+		.filter((wallet, index, array) => array.indexOf(wallet) === index)
+
+	const isWalletAssignedMap = combinedOwners.reduce((result, wallet) => {
+		result[wallet] = owners.includes(wallet);
+		return result;
+	}, {});
 
 	const {isLoading: kycStatusesLoading, statusMap} = useKycStatusesWithCallback(combinedOwners);
 	const {isLoading: licensesLoading, licensesMap} = useListNodeLicensesWithCallback(combinedOwners);
@@ -70,6 +79,7 @@ export function Keys() {
 						<HasKeys
 							licensesMap={licensesMap}
 							statusMap={statusMap}
+							isWalletAssignedMap={isWalletAssignedMap}
 						/>
 					)}
 				</>

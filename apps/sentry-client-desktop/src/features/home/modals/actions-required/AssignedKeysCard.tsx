@@ -1,19 +1,17 @@
-import {IconLabel} from "../../../../components/IconLabel";
-import {SquareCard} from "../../../../components/SquareCard";
+import {IconLabel} from "@/components/IconLabel";
+import {SquareCard} from "@/components/SquareCard";
 import {IoMdCloseCircle} from "react-icons/io";
 import {LuExternalLink} from "react-icons/lu";
 import {AiFillCheckCircle} from "react-icons/ai";
 import {useOperator} from "@/features/operator";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {useSetAtom} from "jotai";
-import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
-import {useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
+import {useSentryLogic} from "@/hooks/useSentryLogic";
 
 export function AssignedKeysCard() {
 	const setModalState = useSetAtom(modalStateAtom);
 	const {publicKey: operatorAddress} = useOperator();
-	const {owners} = useListOwnersForOperatorWithCallback(operatorAddress, true);
-	const {licensesMap} = useListNodeLicensesWithCallback(owners);
+	const {hasAssignedKeys} = useSentryLogic();
 
 	function onSetKeys() {
 		setModalState(ModalView.TransactionInProgress);
@@ -22,7 +20,7 @@ export function AssignedKeysCard() {
 
 	return (
 		<SquareCard className="bg-[#F5F5F5]">
-			{Object.keys(licensesMap).length > 0 ? (
+			{hasAssignedKeys ? (
 				<IconLabel
 					icon={AiFillCheckCircle}
 					color="#16A34A"

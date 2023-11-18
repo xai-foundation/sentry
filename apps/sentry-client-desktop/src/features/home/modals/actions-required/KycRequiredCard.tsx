@@ -1,18 +1,23 @@
-import {SquareCard} from "../../../../components/SquareCard";
-import {IconLabel} from "../../../../components/IconLabel";
-import {clampAddress} from "../../../../utils/clampAddress";
+import {SquareCard} from "@/components/SquareCard";
+import {IconLabel} from "@/components/IconLabel";
+import {clampAddress} from "@/utils/clampAddress";
 import {IoMdCloseCircle} from "react-icons/io";
 import {BsHourglassBottom} from "react-icons/bs";
 import {AiFillCheckCircle} from "react-icons/ai";
 import {Blockpass} from "@/components/blockpass/Blockpass";
 
-export function KycRequiredCard() {
+interface KycRequiredCardProps {
+	wallet: string;
+	status: boolean;
+}
 
-	const kycState = "pending";
+export function KycRequiredCard({wallet, status}: KycRequiredCardProps) {
+
+	// todo write to disk when user opens KYC prompt and check against this new map for the false & true below
 
 	return (
 		<SquareCard className="bg-[#F5F5F5]">
-			{kycState === "required" && (
+			{!status && false && (
 				<>
 					<IconLabel
 						icon={IoMdCloseCircle}
@@ -29,7 +34,7 @@ export function KycRequiredCard() {
 				</>
 			)}
 
-			{kycState === "pending" && (
+			{!status && true && (
 				<IconLabel
 					icon={BsHourglassBottom}
 					color="#F59E28"
@@ -37,11 +42,11 @@ export function KycRequiredCard() {
 				/>
 			)}
 
-			{kycState === "done" && (
+			{status && (
 				<IconLabel
 					icon={AiFillCheckCircle}
 					color="#16A34A"
-					title={`KYC complete: ${clampAddress("0x0000000000000000000000000000000000000000", 5)}`}
+					title={`KYC complete: ${clampAddress(wallet, 5)}`}
 				/>
 			)}
 		</SquareCard>

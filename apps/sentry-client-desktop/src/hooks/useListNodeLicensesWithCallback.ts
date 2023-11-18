@@ -1,13 +1,15 @@
 import {useEffect, useState} from "react";
 import {listNodeLicenses} from "@sentry/core";
+import {atom, useAtom} from "jotai";
 
 export type LicenseMap = Record<string, bigint[]>;
 export type LicenseList = Array<{ owner: string, key: bigint }>;
 
-export function useListNodeLicensesWithCallback(wallets: string[] = []) {
+export const licensesAtom = atom<LicenseMap>({});
 
+export function useListNodeLicensesWithCallback(wallets: string[] = []) {
 	const [loading, setLoading] = useState(false);
-	const [licenses, setLicenses] = useState<LicenseMap>({});
+	const [licenses, setLicenses] = useAtom(licensesAtom);
 
 	useEffect(() => {
 		if (wallets.length > 0) {

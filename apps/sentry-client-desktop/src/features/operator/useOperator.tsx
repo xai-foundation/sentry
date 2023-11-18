@@ -1,8 +1,9 @@
 import { ethers } from "ethers";
 import { useState, useEffect, useRef } from 'react';
 import { atom, useAtom } from "jotai";
-export const privateKeyAtom = atom<string | undefined>(undefined);
 import { createMnemonic, getSignerFromMnemonic, getSignerFromPrivateKey } from "@sentry/core";
+
+export const privateKeyAtom = atom<string | undefined>(undefined);
 
 interface IUseOperatorResponse {
     getSigner?: () => ethers.Signer;

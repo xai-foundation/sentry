@@ -9,15 +9,18 @@ export function useSentryLogic() {
 	const [licenses] = useAtom(licensesAtom);
 	const {publicKey: operatorAddress} = useOperator();
 	const {data: balance} = useBalance(operatorAddress);
-	const [assignedKeys, setAssignedKeys] = useState(Object.keys(licenses).length > 0);
+	const [hasAssignedKeys, setHasAssignedKeys] = useState(Object.keys(licenses).length > 0);
 	const [funded, setFunded] = useState<boolean | undefined>(
 		balance && balance.wei !== undefined && balance.wei >= recommendedFundingBalance
 	);
 
 	useEffect(() => {
-		setAssignedKeys(Object.keys(licenses).length > 0);
+		setHasAssignedKeys(Object.keys(licenses).length > 0);
 		setFunded(balance && balance.wei !== undefined && balance.wei >= recommendedFundingBalance);
 	}, [licenses, balance]);
 
-	return {assignedKeys, funded};
+	return {
+		hasAssignedKeys,
+		funded,
+	};
 }

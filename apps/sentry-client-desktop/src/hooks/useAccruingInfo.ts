@@ -15,13 +15,15 @@ export function useAccruingInfo() {
 	const {licensesMap} = useListNodeLicensesWithCallback(owners);
 
 	const {statusMap} = useKycStatusesWithCallback(owners);
-	const kycRequired = statusMap && Object.values(statusMap).filter((status) => !status).length > 0
+	const kycRequired = owners?.length > 0 && statusMap && Object.values(statusMap).filter((status) => !status).length > 0
 
 	const funded = balance && balance.wei !== undefined && balance.wei >= recommendedFundingBalance;
 	const accruing = sentryRunning && funded && Object.keys(licensesMap).length > 0;
 
 	return {
 		accruing,
+		owners,
+		statusMap,
 		kycRequired,
 	}
 }
