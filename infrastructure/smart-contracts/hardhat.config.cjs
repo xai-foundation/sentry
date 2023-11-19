@@ -11,11 +11,15 @@ const config = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200
+        runs: 200,
+        details: {
+          yul: true
+        }
       }
     }
   },
   networks: {
+    
     xai: {
       url: "https://testnet.xai-chain.net/rpc",
       chainId: 47279324479,

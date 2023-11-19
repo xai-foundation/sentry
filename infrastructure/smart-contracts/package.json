@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "deploy": "hardhat run scripts/deploy.mjs",
-    "test": "hardhat test",
+    "test": "hardhat test --network hardhat",
+    "coverage": "hardhat coverage --network hardhat --solcoverjs ./.solcover.cjs --temp artifacts --testfiles \"./test/**/*.mjs\"",
     "clean": "rimraf artifacts && rimraf cache"
   },
   "dependencies": {
@@ -18,6 +19,9 @@
     "@openzeppelin/contracts-upgradeable": "4.9.3",
     "@openzeppelin/hardhat-upgrades": "^2.3.3",
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",
-    "hardhat": "^2.17.2"
+    "@nomicfoundation/hardhat-network-helpers": "1.0.9",
+    "hardhat": "^2.17.2",
+    "chai": "4.3.10",
+    "shelljs": "0.8.5"
   }
 }
