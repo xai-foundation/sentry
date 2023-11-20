@@ -13,7 +13,6 @@ import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
 import {AssignKeysFromNewWallet} from "@/components/AssignKeysFromNewWallet";
 import {useListOwnersForOperator} from "@/hooks/useListOwnersForOperator";
-import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
 import {WalletConnectedModal} from "@/features/home/modals/WalletConnectedModal";
 import {WalletDisconnectedModal} from "@/features/home/modals/WalletDisconnectedModal";
 import {useQueryClient} from "react-query";
@@ -25,6 +24,7 @@ import {Tooltip} from "@/features/keys/Tooltip";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
 import {useSentryLogic} from "@/hooks/useSentryLogic";
+import {getLicensesList, useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
@@ -36,8 +36,8 @@ export function SentryWallet() {
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
 	const {isLoading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
-	
-	const {isLoading: isListNodeLicensesLoading, data: listNodeLicensesData} = useListNodeLicenses(listOwnersData?.owners);
+	const {isLoading: isListNodeLicensesLoading, licensesMap} = useListNodeLicensesWithCallback(listOwnersData?.owners);
+	const keyCount = getLicensesList(licensesMap).length;
 	const loading = isOperatorLoading || isListOwnersLoading || isListNodeLicensesLoading;
 
 	const [copied, setCopied] = useState<boolean>(false);
@@ -121,13 +121,13 @@ export function SentryWallet() {
 
 		// Get keys from every assigned wallet if "All" is selected in the drop-down
 		if (selectedWallet === null) {
-			Object.keys(listNodeLicensesData!.licenses).map((owner) => {
-				listNodeLicensesData!.licenses[owner].forEach((license) => {
+			Object.keys(licensesMap).map((owner) => {
+				licensesMap[owner].forEach((license) => {
 					keysWithOwners.push({owner, key: license});
 				});
 			});
 		} else {
-			listNodeLicensesData!.licenses[selectedWallet].forEach((license) => {
+			licensesMap[selectedWallet].forEach((license) => {
 				keysWithOwners.push({owner: selectedWallet, key: license});
 			});
 		}
@@ -331,7 +331,7 @@ export function SentryWallet() {
 					<div className="flex flex-row items-center w-full py-3 pl-10 gap-1">
 						<h2 className="font-semibold">Assigned Keys</h2>
 						<p className="text-sm bg-gray-100 px-2 rounded-2xl text-gray-500">
-							{loading ? "Loading..." : `${listNodeLicensesData!.totalLicenses} key${listNodeLicensesData!.totalLicenses === 1 ? "" : "s"} in ${listOwnersData!.owners.length} wallet${listOwnersData!.owners.length === 1 ? "" : "s"}`}
+							{loading ? "Loading..." : `${keyCount} key${keyCount === 1 ? "" : "s"} in ${listOwnersData!.owners.length} wallet${listOwnersData!.owners.length === 1 ? "" : "s"}`}
 						</p>
 						<Tooltip
 							header={"Purchased keys must be assigned to Sentry Wallet"}

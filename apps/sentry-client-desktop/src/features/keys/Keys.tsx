@@ -21,8 +21,6 @@ export function Keys() {
 	const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey, true);
 	const {data} = useStorage();
 
-	// if wallet in data?.addedWallets is also in owners, filter out the dupes
-	// if wallet is in data?.addedWallets but not in owners, show "Assign Wallet"
 	const combinedOwners = [...new Set([...owners, ...(data?.addedWallets || [])])]
 		.filter((wallet, index, array) => array.indexOf(wallet) === index)
 
