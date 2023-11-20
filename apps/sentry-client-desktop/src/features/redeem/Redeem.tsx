@@ -1,6 +1,7 @@
 import {AiFillWarning} from "react-icons/ai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useAtom} from "jotai";
+import {RiKey2Line} from "react-icons/ri";
 
 const noKeysCopy = [
 	{
@@ -42,6 +43,14 @@ export function Redeem() {
 			<div className="flex flex-row justify-between items-center border-b border-gray-200 pl-10 pr-2">
 				<div className="sticky top-0 flex flex-row items-center h-16 gap-2 bg-white">
 					<h2 className="text-lg font-semibold">Redeem Rewards</h2>
+
+					<button
+						className="flex justify-center items-center text-[15px] border border-[#E5E5E5] ml-2 py-2 px-3 gap-1"
+						onClick={() => setDrawerState(DrawerView.BuyKeys)}
+					>
+						<RiKey2Line size={18}/>
+						<p>Purchase keys</p>
+					</button>
 				</div>
 
 				{drawerState === null && (

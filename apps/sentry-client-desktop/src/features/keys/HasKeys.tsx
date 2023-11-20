@@ -58,8 +58,6 @@ export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysPr
 			const status = statusMap[owner];
 			const isAssigned = isWalletAssignedMap[owner];
 
-			console.log(isAssigned)
-
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
 					<td className="w-full max-w-[70px] px-4 py-2">{keyString}</td>
