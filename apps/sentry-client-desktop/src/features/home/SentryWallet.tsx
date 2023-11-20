@@ -12,7 +12,6 @@ import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.js";
 import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
 import {AssignKeysFromNewWallet} from "@/components/AssignKeysFromNewWallet";
-import {useListOwnersForOperator} from "@/hooks/useListOwnersForOperator";
 import {WalletConnectedModal} from "@/features/home/modals/WalletConnectedModal";
 import {WalletDisconnectedModal} from "@/features/home/modals/WalletDisconnectedModal";
 import {useQueryClient} from "react-query";
@@ -25,6 +24,7 @@ import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
 import {useSentryLogic} from "@/hooks/useSentryLogic";
 import {getLicensesList, useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
+import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
@@ -35,8 +35,9 @@ export function SentryWallet() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
-	const {isLoading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
-	const {isLoading: isListNodeLicensesLoading, licensesMap} = useListNodeLicensesWithCallback(listOwnersData?.owners);
+	const {isLoading: isListOwnersLoading, owners} = useListOwnersForOperatorWithCallback(operatorAddress, true);
+	const {isLoading: isListNodeLicensesLoading, licensesMap} = useListNodeLicensesWithCallback(owners);
+
 	const keyCount = getLicensesList(licensesMap).length;
 	const loading = isOperatorLoading || isListOwnersLoading || isListNodeLicensesLoading;
 
@@ -102,7 +103,7 @@ export function SentryWallet() {
 	}
 
 	function getDropdownItems() {
-		return listOwnersData!.owners.map((wallet, i) => (
+		return owners.map((wallet, i) => (
 			<p
 				onClick={() => {
 					setSelectedWallet(wallet);
@@ -331,7 +332,7 @@ export function SentryWallet() {
 					<div className="flex flex-row items-center w-full py-3 pl-10 gap-1">
 						<h2 className="font-semibold">Assigned Keys</h2>
 						<p className="text-sm bg-gray-100 px-2 rounded-2xl text-gray-500">
-							{loading ? "Loading..." : `${keyCount} key${keyCount === 1 ? "" : "s"} in ${listOwnersData!.owners.length} wallet${listOwnersData!.owners.length === 1 ? "" : "s"}`}
+							{loading ? "Loading..." : `${keyCount} key${keyCount === 1 ? "" : "s"} in ${owners.length} wallet${owners.length === 1 ? "" : "s"}`}
 						</p>
 						<Tooltip
 							header={"Purchased keys must be assigned to Sentry Wallet"}
@@ -344,7 +345,7 @@ export function SentryWallet() {
 				</div>
 
 				{/*		Keys	*/}
-				{listOwnersData && listOwnersData.owners && listOwnersData.owners.length > 0 ? (
+				{owners && owners.length > 0 ? (
 					<>
 						<div>
 							<div className="w-full h-auto flex flex-col py-3 pl-10">
@@ -357,7 +358,7 @@ export function SentryWallet() {
 											onClick={() => setIsOpen(!isOpen)}
 											className={`flex items-center justify-between w-[538px] border-[#A3A3A3] border-r border-l border-t ${!isOpen ? "border-b" : null} border-[#A3A3A3] p-2`}
 										>
-											<p>{selectedWallet || `All assigned wallets (${listOwnersData.owners.length})`}</p>
+											<p>{selectedWallet || `All assigned wallets (${owners.length})`}</p>
 											<IoIosArrowDown
 												className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
 											/>
