@@ -36,6 +36,7 @@ export function SentryWallet() {
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
 	const {isLoading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
+	
 	const {isLoading: isListNodeLicensesLoading, data: listNodeLicensesData} = useListNodeLicenses(listOwnersData?.owners);
 	const loading = isOperatorLoading || isListOwnersLoading || isListNodeLicensesLoading;
 
@@ -146,7 +147,7 @@ export function SentryWallet() {
 
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
-					<td className="w-fit px-4 py-2">{keyWithOwner.key.toString()}</td>
+					<td className="w-full max-w-[70px] px-4 py-2">{keyWithOwner.key.toString()}</td>
 					<td className="w-full max-w-[390px] px-4 py-2">{keyWithOwner.owner.toString()}</td>
 					<td className="w-full max-w-[390px] px-4 py-2 text-[#A3A3A3]">
 						{currentStatus ? currentStatus.status : "Sentry not running"}
@@ -194,7 +195,7 @@ export function SentryWallet() {
 						<div className="flex flex-row items-center gap-2">
 							<h2 className="text-lg font-semibold">Sentry Wallet</h2>
 
-							{balance?.wei === 0n && (
+							{sentryRunning && balance?.wei === 0n && (
 								<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
 									No ETH
 								</p>
@@ -211,6 +212,12 @@ export function SentryWallet() {
 							{!sentryRunning && (
 								<p className="border border-[#F5F5F5] bg-[#F5F5F5] text-[#A3A3A3] text-xs font-semibold uppercase rounded-full px-2">
 									Stopped
+								</p>
+							)}
+
+							{sentryRunning && assignedKeys && balance?.wei !== 0n && (
+								<p className="border border-[#22C55E] bg-[#F0FDF4] text-[#16A34A] text-xs font-semibold uppercase rounded-full px-2">
+									Active
 								</p>
 							)}
 
@@ -412,7 +419,7 @@ export function SentryWallet() {
 								<table className="w-full bg-white">
 									<thead className="text-[#A3A3A3]">
 									<tr className="flex text-left text-[12px] uppercase px-8">
-										<th className="w-fit px-4 py-2">Key Id</th>
+										<th className="w-full max-w-[70px] px-4 py-2">Key Id</th>
 										<th className="w-full max-w-[390px] px-4 py-2">Owner Address</th>
 										<th className="w-full max-w-[390px] px-4 py-2">Claim Status</th>
 									</tr>
