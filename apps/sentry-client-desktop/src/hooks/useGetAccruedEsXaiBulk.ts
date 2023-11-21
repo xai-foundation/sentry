@@ -17,9 +17,7 @@ export function useGetAccruedEsXaiBulk(keys: bigint[] = []) {
 	async function getBalances() {
 		setLoading(true);
 
-		console.log("about to call;", keys)
-		const res = await getAccruedEsXaiBulk(keys, async (response, nodeLicenseId) => {
-			console.log("cb");
+			await getAccruedEsXaiBulk(keys, async (response, nodeLicenseId) => {
 			let updatedBalance = balances[nodeLicenseId] || {};
 			updatedBalance = response;
 
@@ -30,7 +28,6 @@ export function useGetAccruedEsXaiBulk(keys: bigint[] = []) {
 				}
 			});
 		});
-		console.log("res:", res);
 
 		setLoading(false);
 	}

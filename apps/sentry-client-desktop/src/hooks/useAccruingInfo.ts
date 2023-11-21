@@ -18,7 +18,6 @@ export function useAccruingInfo() {
 
 	const {statusMap} = useKycStatusesWithCallback(owners);
 	const {balances} = useGetAccruedEsXaiBulk(Object.values(licensesMap));
-	console.log("balances;", balances);
 	const kycRequired = owners?.length > 0 && statusMap && Object.values(statusMap).filter((status) => !status).length > 0 && Object.values(balances).filter((res: GetAccruedEsXaiResponse) => res.totalAccruedEsXai > BigInt(0));
 
 	const funded = balance && balance.wei !== undefined && balance.wei >= recommendedFundingBalance;
