@@ -1,6 +1,10 @@
-import {useEffect} from "react";
+import {PropsWithChildren, useEffect} from "react";
 
-export function Blockpass() {
+interface BlockpassProps {
+	onClick: () => void;
+}
+
+export function Blockpass({onClick = () => {}, children = "Begin KYC"}: PropsWithChildren<BlockpassProps>) {
 	useEffect(() => {
 		// Check if BlockpassKYCConnect is defined on the window object
 		if ((window as any).BlockpassKYCConnect) {
@@ -21,8 +25,9 @@ export function Blockpass() {
 		<button
 			className="w-full flex justify-center items-center gap-1 text-[15px] text-white bg-[#F30919] font-semibold mt-4 px-6 py-2"
 			id="blockpass-kyc-connect"
+			onClick={onClick}
 		>
-			Begin KYC
+			{children}
 		</button>
 	);
 }
