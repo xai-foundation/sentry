@@ -1,5 +1,6 @@
 import {listOwnersForOperator, operatorRuntime, listNodeLicenses} from "@sentry/core";
-import {stakeOnNewNode0} from "./AssertionData.mjs";
+import {winningHashForNodeLicense0} from "./AssertionData.mjs";
+import { expect } from "chai";
 
 /**
  * @title Runtime Tests
@@ -30,6 +31,7 @@ export function RuntimeTests(deployInfrastructure) {
                     const nodeLicenseMap = new Map(nodeLicenses.map(license => [license, false]));
 
                     const _stop = await operatorRuntime(operator, (_status) => {
+                        // console.log(_status.forEach(console.log));
                         _status.forEach((_, key) => {
                             if (nodeLicenses.includes(key)) {
                                 // set the nodeLicense to true, meaning it was connected
@@ -51,49 +53,68 @@ export function RuntimeTests(deployInfrastructure) {
             })
 
             it("Check the Operator is capable of detecting and processing claims for it.", async function() {
-                const {operator, referee, rollupController, rollupContract} = await deployInfrastructure();
+                const {challenger, referee, operator, publicKeyHex, esXai, addr1} = await deployInfrastructure();
 
-                // Define the types of the parameters
-                const types = [
-                    'tuple(tuple(tuple(bytes32[2] bytes32Vals, uint64[2] u64Vals) globalState, uint8 machineStatus) beforeState, tuple(tuple(bytes32[2] bytes32Vals, uint64[2] u64Vals) globalState, uint8 machineStatus) afterState, uint64 numBlocks)',
-                    'bytes32',
-                    'uint256'
-                ];
-
-                const functionSignature = 'stakeOnNewNode(tuple,bytes32,uint256)';
-                const functionSelector = ethers.id(functionSignature).slice(0, 10);
-                console.log(functionSignature);
-
-                // Encode the parameters
-                const encodedParameters = ethers.AbiCoder.defaultAbiCoder().encode(types, stakeOnNewNode0);
 
                 // submit an assertion to the referee, starting a challenge
-                await rollupContract.connect(rollupController).stakeOnNewNode(stakeOnNewNode0);
+                await referee.connect(challenger).submitChallenge(
+                    100,
+                    99,
+                    winningHashForNodeLicense0,
+                    0,
+                    publicKeyHex
+                );
+
+                // check to see the challenge is open for submissions
+                const {openForSubmissions} = await referee.getChallenge(0);
+                expect(openForSubmissions).to.be.eq(true);
 
                 // submit a claim for the assertion
+                await referee.connect(operator).submitAssertionToChallenge(1,0,winningHashForNodeLicense0);
                 
+                // get the submission back to see it was created
+                const [{submitted, successorStateRoot, claimed}] = await referee.getSubmissionsForChallenges([0], 1);
+                expect(submitted).to.be.eq(true)
+                expect(claimed).to.be.eq(false);
+
+                // // check to see if the submission was eligible for a payout
+                const [payoutEligible] = await referee.createAssertionHashAndCheckPayout(1, 0, successorStateRoot);
+                expect(payoutEligible).to.be.eq(true);
 
                 // submit another assertion to end the previous challenge
+                await referee.connect(challenger).submitChallenge(
+                    101,
+                    100,
+                    winningHashForNodeLicense0, // doesn't matter that its the same
+                    0,
+                    publicKeyHex
+                );
+
+                // check to see the previous challenge closed
+                const {openForSubmissions: openForSubmissionsAfter, numberOfEligibleClaimers} = await referee.getChallenge(0);
+                expect(openForSubmissionsAfter).to.be.eq(false);
+                expect(numberOfEligibleClaimers).to.be.eq(BigInt(1));
+
+                // get the esXai balance of the addr1 prior to claiming
+                const balanceBefore = await esXai.balanceOf(await addr1.getAddress());
 
                 // start the runtime, and see that the challenge is claimed
+                // start the operator and wait to see the operator update the license that was added
+                const stop = await new Promise(async (resolve, reject) => {
 
+                    const _stop = await operatorRuntime(operator);
+
+                    resolve(_stop);
+                });
+
+                // stop the operator
+                await stop();
+
+                // expect to see esXai balance increased
+                const balanceAfter = await esXai.balanceOf(await addr1.getAddress());
+                expect(balanceAfter).to.be.gt(balanceBefore);
             })
-
-            it("Check the Operator is capable of claiming rewards that are now claimable since it was last turned on", async function() {
-                const {operator, referee} = await deployInfrastructure();
-                
-            })
-
-            it("Check the Operator is capable of processing at least 10 challenges", async function() {
-                // TODO
-            })
-
-            it("Check the Operator is capable of claiming when a challenge closes", async function() {
-                // TODO
-            })
-
         })
-
 
 
     }

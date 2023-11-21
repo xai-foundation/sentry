@@ -1,3 +1,15 @@
+// works for challenge id 0
+export const winningHashForNodeLicense0 = "0x0000000000000000000000000000000000000000000000000000000000000025"
+
+// // find a successor state root that will be eligible
+// let stateRoot = BigInt("0x0000000000000000000000000000000000000000000000000000000000000000");
+// let payoutEligible = false;
+// while (!payoutEligible) {
+//     stateRoot += BigInt(1);
+//     [payoutEligible] = await referee.createAssertionHashAndCheckPayout(1, 0, "0x" + stateRoot.toString(16).padStart(64, '0'));
+// }
+// console.log(`Eligible payout found with stateRoot: ${stateRoot.toString(16).padStart(64, '0')}`);
+
 // https://goerli.arbiscan.io/tx/0x9da8c5633f1838fba87030fba227ad225d1ca0531e4587e03c317eb1333e486f
 export const stakeOnNewNode0 = [
 

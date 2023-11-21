@@ -290,13 +290,14 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
      * @return uint256 The emission tier.
      */
     function calculateChallengeEmissionAndTier() public view returns (uint256, uint256) {
+
         uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
         uint256 totalSupply = getCombinedTotalSupply();
-        
+
         // determine which tier we are in based on the halving formula
         uint256 emissionTier = maxSupply / 2;
         uint256 challengeEmission = emissionTier / 17520;
-        while (totalSupply < emissionTier) {
+        while (totalSupply > emissionTier) {
             emissionTier = (emissionTier / 2) + emissionTier;
             challengeEmission = challengeEmission / 2;
         }

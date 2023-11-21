@@ -2,7 +2,7 @@ import {NodeLicenseTests} from "./NodeLicense.mjs";
 import { parse } from "csv/sync";
 import fs from "fs";
 import { XaiTests } from "./Xai.mjs";
-import { config } from "@sentry/core";
+import { config, createBlsKeyPair } from "@sentry/core";
 import { RuntimeTests } from "./Runtime.mjs";
 
 describe("Fixture Tests", function () {
@@ -59,8 +59,8 @@ describe("Fixture Tests", function () {
         await referee.setRollupAddress(rollupAddress);
 
         // Attach a contract of the Rollup Contract
-        const RollupUserLogic = await ethers.getContractFactory("RollupUserLogic");
-        const rollupContract = await RollupUserLogic.attach(rollupAddress);
+        // const RollupUserLogic = await ethers.getContractFactory("RollupUserLogic");
+        const rollupContract = await ethers.getContractAt("RollupUserLogic", rollupAddress);
 
         // Deploy Node License
         const NodeLicense = await ethers.getContractFactory("NodeLicense");
@@ -69,23 +69,32 @@ describe("Fixture Tests", function () {
         const nodeLicense = await upgrades.deployProxy(NodeLicense, [await fundsReceiver.getAddress(), referralDiscountPercentage, referralRewardPercentage], { deployer: deployer });
         await nodeLicense.waitForDeployment();
 
+        // Set the Node License Address
+        await referee.setNodeLicenseAddress(await nodeLicense.getAddress());
+
         // Read the csv from tierUpload.csv, and add the pricing tiers to NodeLicense
         const tiers = parse(fs.readFileSync('tierUpload.csv'), { columns: true });
         for (const tier of tiers) {
             await nodeLicense.setOrAddPricingTier(tier.tierIndex, ethers.parseEther(tier.unitCostInEth.toString()), tier.quantityBeforeNextTier);
         }
 
+        // set a Challenger Public key
+        const {secretKeyHex, publicKeyHex} = await createBlsKeyPair("29dba7dc550c653b085e9c067d2b6c3b0859096204b6892c697982ed52e720f5");
+        await referee.setChallengerPublicKey("0x" + publicKeyHex);
+
         // Setup Xai roles
         const xaiAdminRole = await xai.DEFAULT_ADMIN_ROLE();
         await xai.grantRole(xaiAdminRole, await xaiDefaultAdmin.getAddress());
         const xaiMinterRole = await xai.MINTER_ROLE();
         await xai.grantRole(xaiMinterRole, await xaiMinter.getAddress());
+        await xai.grantRole(xaiMinterRole, await referee.getAddress());
 
         // Setup esXai Roles
         const esXaiAdminRole = await esXai.DEFAULT_ADMIN_ROLE();
         await esXai.grantRole(esXaiAdminRole, await esXaiDefaultAdmin.getAddress());
         const esXaiMinterRole = await xai.MINTER_ROLE();
         await esXai.grantRole(esXaiMinterRole, await esXaiMinter.getAddress());
+        await esXai.grantRole(esXaiMinterRole, await referee.getAddress());
 
         // Setup Node License Roles 
         const nodeLicenseAdminRole = await nodeLicense.DEFAULT_ADMIN_ROLE();
@@ -97,13 +106,16 @@ describe("Fixture Tests", function () {
         const gasSubsidyTransferRole = await gasSubsidy.TRANSFER_ROLE();
         await gasSubsidy.grantRole(gasSubsidyTransferRole, await gasSubsidyTransferAdmin.getAddress());
 
+        // Set the Rollup Address on Referee
+        await referee.setRollupAddress
+
         // Setup Referee Roles
         const refereeAdminRole = await referee.DEFAULT_ADMIN_ROLE();
         await referee.grantRole(refereeAdminRole, refereeDefaultAdmin.getAddress());
         const challengerRole = await referee.CHALLENGER_ROLE();
         await referee.grantRole(challengerRole, await challenger.getAddress());
         const kycAdminRole = await referee.KYC_ADMIN_ROLE();
-        await referee.grantRole(kycAdminRole, await kycAdmin.getAddress());        
+        await referee.grantRole(kycAdminRole, await kycAdmin.getAddress());   
 
         // Renounce the default admin role of the deployer
         await referee.renounceRole(refereeAdminRole, await deployer.getAddress());
@@ -136,12 +148,7 @@ describe("Fixture Tests", function () {
         await referee.connect(addr1).setApprovalForOperator(await operator.getAddress(), true);
 
         // Impersonate the rollup controller
-        const rollupControllerAddress = "0x6347446605e6f6680addb7c4ff55da299ecd2e69";
-        await network.provider.request({
-            method: "hardhat_impersonateAccount",
-            params: [rollupControllerAddress],
-        });
-        const rollupController = await ethers.getSigner(rollupControllerAddress);
+        const rollupController = await ethers.getImpersonatedSigner("0x6347446605e6f6680addb7c4ff55da299ecd2e69");
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
@@ -176,6 +183,8 @@ describe("Fixture Tests", function () {
             rollupController,
 
             tiers,
+            secretKeyHex,
+            publicKeyHex: "0x" + publicKeyHex,
 
             referee,
             nodeLicense,
