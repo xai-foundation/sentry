@@ -3,7 +3,7 @@ import {IoIosArrowDown} from "react-icons/io";
 import {PiCopy} from "react-icons/pi";
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {useState} from "react";
-import {YellowPulse} from "@/features/keys/StatusPulse.js";
+import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse.js";
 import {BlockPassKYC} from "@/components/blockpass/Blockpass";
 import {getLicensesList, LicenseList, LicenseMap} from "@/hooks/useListNodeLicensesWithCallback";
 import {config} from "@sentry/core";
@@ -17,6 +17,7 @@ import {FaRegCircle} from "react-icons/fa";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {useOperator} from "@/features/operator";
 import {useStorage} from "@/features/storage";
+import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 
 interface HasKeysProps {
 	licensesMap: LicenseMap,
@@ -33,6 +34,7 @@ export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysPr
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [isRemoveWalletOpen, setIsRemoveWalletOpen] = useState<boolean>(false);
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
+	const {startRuntime, sentryRunning} = useOperatorRuntime();
 
 	function startAssignment() {
 		if (!isOperatorLoading) {
@@ -72,11 +74,7 @@ export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysPr
 			const owner = keyWithOwner.owner.toString();
 			const status = statusMap[owner];
 			const isAssigned = isWalletAssignedMap[owner];
-
-			console.log("data:", data);
-			console.log("owner:", owner);
 			const kycStarted = (data?.kycStartedWallets || []).indexOf(owner) > -1;
-			console.log("kycStarted:", kycStarted);
 
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
@@ -84,7 +82,19 @@ export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysPr
 					<td className="w-full max-w-[360px] px-4 py-2">{owner}</td>
 					<td className="w-full max-w-[360px] px-4 py-2 text-[#A3A3A3]">
 
-						{!isAssigned ? (
+						{!sentryRunning && (
+							<div className="flex items-center gap-2">
+								Sentry not running
+								<a
+									onClick={startRuntime}
+									className="text-[#F30919] cursor-pointer"
+								>
+									Start
+								</a>
+							</div>
+						)}
+
+						{sentryRunning && !isAssigned ? (
 							<div className="flex items-center gap-2">
 								<FaRegCircle size={8}/>
 								Wallet not assigned
@@ -116,8 +126,32 @@ export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysPr
 								<span>KYC GOOD</span>
 							)
 						)}
+
+						{sentryRunning && isAssigned && !status && (
+							<div className="flex items-center gap-2">
+								<YellowPulse/>
+								KYC required
+								<BlockPassKYC/>
+							</div>
+						)}
+
+						{/*		KYC Status Pending here	*/}
+						{/*{sentryRunning && isAssigned && !status && (*/}
+						{/*	<div className="flex items-center gap-2">*/}
+						{/*		<YellowPulse/>*/}
+						{/*		KYC pending*/}
+						{/*	</div>*/}
+						{/*)}*/}
+
+						{sentryRunning && isAssigned && status && (
+							<div className="flex items-center gap-2">
+								<GreenPulse/> Claiming rewards when available
+							</div>
+						)}
+
+
 					</td>
-					<td className="w-full max-w-[150px] px-4 py-2 text-right">ACCRUED ESXAI</td>
+					<td className="w-full max-w-[150px] px-4 py-2 text-right">ACCRUED esXAI</td>
 					<td className="w-full max-w-[150px] px-4 py-2 text-[#F30919]">
 						<span
 							className="cursor-pointer"
