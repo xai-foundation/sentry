@@ -25,6 +25,7 @@ import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPro
 import {useSentryLogic} from "@/hooks/useSentryLogic";
 import {getLicensesList, useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
 import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
+import {useListOwnersForOperator} from "@/hooks/useListOwnersForOperator";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
@@ -35,20 +36,13 @@ export function SentryWallet() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
-<<<<<<< HEAD
-	const {isLoading: isListOwnersLoading, isFetching: isListOwnersFetching, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
-	const {
-		isLoading: isListNodeLicensesLoading,
-		data: listNodeLicensesData
-	} = useListNodeLicenses(listOwnersData?.owners);
-	const loading = isOperatorLoading || isListOwnersLoading || isListOwnersFetching || isListNodeLicensesLoading;
-=======
+
+	// TODO connect the refresh button on the x keys in y wallets text and query-ify these so we know when it's been cache cleared
 	const {isLoading: isListOwnersLoading, owners} = useListOwnersForOperatorWithCallback(operatorAddress, true);
 	const {isLoading: isListNodeLicensesLoading, licensesMap} = useListNodeLicensesWithCallback(owners);
+	const loading = isOperatorLoading || isListOwnersLoading || isListNodeLicensesLoading;
 
 	const keyCount = getLicensesList(licensesMap).length;
-	const loading = isOperatorLoading || isListOwnersLoading || isListNodeLicensesLoading;
->>>>>>> fb-keys-statuses
 
 	const [copied, setCopied] = useState<boolean>(false);
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
