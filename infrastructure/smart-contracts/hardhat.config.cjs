@@ -19,7 +19,16 @@ const config = {
     }
   },
   networks: {
-    
+    hardhat: {
+      forking: {
+        url: "https://frequent-damp-star.arbitrum-goerli.quiknode.pro/c1b565106ebecad49a9e7a938d084543187755e4/",
+        blockNumber: 56122197,
+      },
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+        count: 30,
+      },
+    },  
     xai: {
       url: "https://testnet.xai-chain.net/rpc",
       chainId: 47279324479,

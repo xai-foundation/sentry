@@ -2,6 +2,8 @@ import {NodeLicenseTests} from "./NodeLicense.mjs";
 import { parse } from "csv/sync";
 import fs from "fs";
 import { XaiTests } from "./Xai.mjs";
+import { config } from "@sentry/core";
+import { RuntimeTests } from "./Runtime.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -27,6 +29,8 @@ describe("Fixture Tests", function () {
             nodeLicenseDefaultAdmin,
             addr1,
             addr2,
+            addr3,
+            operator,
         ] = await ethers.getSigners();
 
         // Deploy Xai
@@ -49,6 +53,14 @@ describe("Fixture Tests", function () {
         const gasSubsidyPercentage = BigInt(15);
         const referee = await upgrades.deployProxy(Referee, [await esXai.getAddress(), await xai.getAddress(), await gasSubsidy.getAddress(), gasSubsidyPercentage], { deployer: deployer });
         await referee.waitForDeployment();
+
+        // Set Rollup Address
+        const rollupAddress = config.rollupAddress;
+        await referee.setRollupAddress(rollupAddress);
+
+        // Attach a contract of the Rollup Contract
+        const RollupUserLogic = await ethers.getContractFactory("RollupUserLogic");
+        const rollupContract = await RollupUserLogic.attach(rollupAddress);
 
         // Deploy Node License
         const NodeLicense = await ethers.getContractFactory("NodeLicense");
@@ -91,7 +103,7 @@ describe("Fixture Tests", function () {
         const challengerRole = await referee.CHALLENGER_ROLE();
         await referee.grantRole(challengerRole, await challenger.getAddress());
         const kycAdminRole = await referee.KYC_ADMIN_ROLE();
-        await referee.grantRole(kycAdminRole, await kycAdmin.getAddress());
+        await referee.grantRole(kycAdminRole, await kycAdmin.getAddress());        
 
         // Renounce the default admin role of the deployer
         await referee.renounceRole(refereeAdminRole, await deployer.getAddress());
@@ -101,7 +113,47 @@ describe("Fixture Tests", function () {
         await xai.renounceRole(xaiAdminRole, await deployer.getAddress());
 
         // Transfer the Proxy Admin Ownership
-        await upgrades.admin.transferProxyAdminOwnership(await upgrader.getAddress(), deployer);
+        // TODO figure out why this doesn't work
+        // await upgrades.admin.transferProxyAdminOwnership(await upgrader.getAddress(), deployer);
+
+        // Mint addr1 a node license
+        let price = await nodeLicense.price(1, ethers.ZeroAddress);
+        await nodeLicense.connect(addr1).mint(1, ethers.ZeroAddress, {value: price});
+
+        // Mint addr2 10 node licenses
+        price = await nodeLicense.price(10, ethers.ZeroAddress);
+        await nodeLicense.connect(addr2).mint(10, ethers.ZeroAddress, {value: price});
+
+        // Mint addr3 a node license
+        price = await nodeLicense.price(1, ethers.ZeroAddress);
+        await nodeLicense.connect(addr3).mint(1, ethers.ZeroAddress, {value: price});
+
+        // KYC addr1 and addr 2, but not addr 3
+        await referee.connect(kycAdmin).addKycWallet(await addr1.getAddress());
+        await referee.connect(kycAdmin).addKycWallet(await addr2.getAddress());
+
+        // Add addr 1 to the operator
+        await referee.connect(addr1).setApprovalForOperator(await operator.getAddress(), true);
+
+        // Impersonate the rollup controller
+        const rollupControllerAddress = "0x6347446605e6f6680addb7c4ff55da299ecd2e69";
+        await network.provider.request({
+            method: "hardhat_impersonateAccount",
+            params: [rollupControllerAddress],
+        });
+        const rollupController = await ethers.getSigner(rollupControllerAddress);
+
+        config.esXaiAddress = await esXai.getAddress();
+        config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
+        config.gasSubsidyAddress = await gasSubsidy.getAddress();
+        config.gasSubsidyDeployedBlockNumber = (await gasSubsidy.deploymentTransaction()).blockNumber;
+        config.nodeLicenseAddress = await nodeLicense.getAddress();
+        config.nodeLicenseDeployedBlockNumber = (await nodeLicense.deploymentTransaction()).blockNumber;
+        config.refereeAddress = await referee.getAddress();
+        config.refereeDeployedBlockNumber = (await referee.deploymentTransaction()).blockNumber;
+        config.xaiAddress = await xai.getAddress();
+        config.xaiDeployedBlockNumber = (await xai.deploymentTransaction()).blockNumber;
+        config.defaultRpcUrl = "http://localhost:8545/";
 
         return {
             deployer,
@@ -119,6 +171,9 @@ describe("Fixture Tests", function () {
             nodeLicenseDefaultAdmin,
             addr1,
             addr2,
+            addr3,
+            operator,
+            rollupController,
 
             tiers,
 
@@ -126,11 +181,13 @@ describe("Fixture Tests", function () {
             nodeLicense,
             gasSubsidy,
             esXai,
-            xai
+            xai,
+            rollupContract
         };
     }
 
     describe("Xai", XaiTests(deployInfrastructure).bind(this));
     describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
+    describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));
 
 })
