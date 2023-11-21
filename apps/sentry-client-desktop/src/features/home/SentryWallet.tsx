@@ -25,7 +25,6 @@ import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPro
 import {useSentryLogic} from "@/hooks/useSentryLogic";
 import {getLicensesList, useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
 import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
-import {useListOwnersForOperator} from "@/hooks/useListOwnersForOperator";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
@@ -226,7 +225,7 @@ export function SentryWallet() {
 								</p>
 							)}
 
-							{sentryRunning && assignedKeys && balance?.wei !== 0n && (
+							{sentryRunning && hasAssignedKeys && balance?.wei !== 0n && (
 								<p className="border border-[#22C55E] bg-[#F0FDF4] text-[#16A34A] text-xs font-semibold uppercase rounded-full px-2">
 									Active
 								</p>
