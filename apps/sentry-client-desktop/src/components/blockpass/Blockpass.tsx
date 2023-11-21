@@ -1,7 +1,7 @@
 import {PropsWithChildren, useEffect} from "react";
 
 interface BlockpassProps {
-	onClick: () => void;
+	onClick?: () => void;
 }
 
 export function Blockpass({onClick = () => {}, children = "Begin KYC"}: PropsWithChildren<BlockpassProps>) {
