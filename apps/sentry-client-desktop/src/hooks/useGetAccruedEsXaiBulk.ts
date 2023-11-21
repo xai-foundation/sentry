@@ -12,12 +12,14 @@ export function useGetAccruedEsXaiBulk(keys: bigint[] = []) {
 		if (keys.length > 0) {
 			void getBalances();
 		}
-	}, [JSON.stringify(keys)]);
+	}, [JSON.stringify(keys.map(k => k.toString()))]);
 
 	async function getBalances() {
 		setLoading(true);
 
-		await getAccruedEsXaiBulk(keys, async (response, nodeLicenseId) => {
+		console.log("about to call;", keys)
+		const res = await getAccruedEsXaiBulk(keys, async (response, nodeLicenseId) => {
+			console.log("cb");
 			let updatedBalance = balances[nodeLicenseId] || {};
 			updatedBalance = response;
 
@@ -26,8 +28,9 @@ export function useGetAccruedEsXaiBulk(keys: bigint[] = []) {
 					..._balances,
 					[nodeLicenseId]: updatedBalance,
 				}
-			})
+			});
 		});
+		console.log("res:", res);
 
 		setLoading(false);
 	}
