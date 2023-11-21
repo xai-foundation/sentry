@@ -16,6 +16,7 @@ import {WalletAssignedMap} from "@/features/keys/Keys";
 import {FaRegCircle} from "react-icons/fa";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {useOperator} from "@/features/operator";
+import {useStorage} from "@/features/storage";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 
 interface HasKeysProps {
@@ -27,6 +28,7 @@ interface HasKeysProps {
 export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysProps) {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
+	const {data, setData} = useStorage();
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -39,6 +41,19 @@ export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysPr
 			setModalState(ModalView.TransactionInProgress);
 			window.electron.openExternal(`http://localhost:7555/assign-wallet/${operatorAddress}`);
 		}
+	}
+
+	function onStartKyc(wallet) {
+		console.log("hello???");
+		const kycStartedWallets = data?.kycStartedWallets || [];
+		if (kycStartedWallets.indexOf(wallet) < 0) {
+			kycStartedWallets.push(wallet);
+		}
+
+		setData({
+			...data,
+			kycStartedWallets,
+		});
 	}
 
 	function renderKeys() {
@@ -59,6 +74,7 @@ export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysPr
 			const owner = keyWithOwner.owner.toString();
 			const status = statusMap[owner];
 			const isAssigned = isWalletAssignedMap[owner];
+			const kycStarted = (data?.kycStartedWallets || []).indexOf(owner) > -1;
 
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
@@ -78,7 +94,7 @@ export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysPr
 							</div>
 						)}
 
-						{sentryRunning && !isAssigned && (
+						{sentryRunning && !isAssigned ? (
 							<div className="flex items-center gap-2">
 								<FaRegCircle size={8}/>
 								Wallet not assigned
@@ -89,6 +105,26 @@ export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysPr
 									Assign
 								</a>
 							</div>
+						) : (
+							!status ? (
+								<>
+									{!kycStarted ? (
+										<div className="flex items-center gap-2">
+											<YellowPulse/>
+											KYC required
+											<BlockPassKYC onClick={() => onStartKyc(owner)}/>
+										</div>
+									) : (
+										<div className="flex items-center gap-2">
+											<YellowPulse/>
+											KYC required
+											<BlockPassKYC>Continue</BlockPassKYC>
+										</div>
+									)}
+								</>
+							) : (
+								<span>KYC GOOD</span>
+							)
 						)}
 
 						{sentryRunning && isAssigned && !status && (

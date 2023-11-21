@@ -19,7 +19,7 @@ export function useListNodeLicenses(walletAddresses: string[] = []) {
 				}, 0),
 			}
 		},
-		staleTime: 10000,
+		staleTime: Infinity,
 		cacheTime: Infinity,
 	});
 }

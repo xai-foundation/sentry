@@ -7,3 +7,4 @@ export * from "./getAssertion.js";
 export * from "./getClosestBlock.js";
 export * from "./findEventTopic.js";
 export * from "./getWalletBalance.js";
+export * from "./verifyPrivateKey.js";

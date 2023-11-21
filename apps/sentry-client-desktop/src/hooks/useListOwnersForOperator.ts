@@ -5,10 +5,11 @@ export function useListOwnersForOperator(sentryAddress: string | undefined) {
 	return useQuery({
 		queryKey: ["ownersForOperator", sentryAddress],
 		queryFn: async () => {
+			await new Promise((resolve) => setTimeout(resolve, 2500));
 			const owners = await listOwnersForOperator(sentryAddress!);
 			return {owners};
 		},
-		staleTime: 10000,
+		staleTime: Infinity,
 		cacheTime: Infinity,
 		enabled: !!sentryAddress,
 	});

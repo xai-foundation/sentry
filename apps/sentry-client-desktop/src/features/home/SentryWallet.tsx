@@ -35,21 +35,26 @@ export function SentryWallet() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
+
+	// TODO connect the refresh button on the x keys in y wallets text and query-ify these so we know when it's been cache cleared
 	const {isLoading: isListOwnersLoading, owners} = useListOwnersForOperatorWithCallback(operatorAddress, true);
 	const {isLoading: isListNodeLicensesLoading, licensesMap} = useListNodeLicensesWithCallback(owners);
+	const loading = isOperatorLoading || isListOwnersLoading || isListNodeLicensesLoading;
 
 	const keyCount = getLicensesList(licensesMap).length;
-	const loading = isOperatorLoading || isListOwnersLoading || isListNodeLicensesLoading;
 
 	const [copied, setCopied] = useState<boolean>(false);
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
-	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
+	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({
+		show: false,
+		txHash: ""
+	});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
 	const {startRuntime, stopRuntime, sentryRunning, nodeLicenseStatusMap} = useOperatorRuntime();
 	const setModalState = useSetAtom(modalStateAtom);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
-	const {assignedKeys} = useSentryLogic();
+	const {hasAssignedKeys} = useSentryLogic();
 
 	// assign wallet
 	(window as any).deeplinks?.assignedWallet((_event, txHash) => {
@@ -66,6 +71,10 @@ export function SentryWallet() {
 
 	function onRefreshEthBalance() {
 		queryClient.invalidateQueries({queryKey: ["balance", operatorAddress]});
+	}
+
+	function onRefreshTable() {
+		queryClient.invalidateQueries({queryKey: ["ownersForOperator", operatorAddress]});
 	}
 
 	function copyPublicKey() {
@@ -202,7 +211,7 @@ export function SentryWallet() {
 								</p>
 							)}
 
-							{sentryRunning && !assignedKeys && (
+							{sentryRunning && !hasAssignedKeys && (
 								<>
 									<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
 										No Keys Assigned
@@ -216,7 +225,7 @@ export function SentryWallet() {
 								</p>
 							)}
 
-							{sentryRunning && assignedKeys && balance?.wei !== 0n && (
+							{sentryRunning && hasAssignedKeys && balance?.wei !== 0n && (
 								<p className="border border-[#22C55E] bg-[#F0FDF4] text-[#16A34A] text-xs font-semibold uppercase rounded-full px-2">
 									Active
 								</p>
@@ -334,6 +343,18 @@ export function SentryWallet() {
 						<p className="text-sm bg-gray-100 px-2 rounded-2xl text-gray-500">
 							{loading ? "Loading..." : `${keyCount} key${keyCount === 1 ? "" : "s"} in ${owners.length} wallet${owners.length === 1 ? "" : "s"}`}
 						</p>
+						{loading ? (
+							<span className="flex items-center text-[15px] text-[#A3A3A3] select-none">
+								Refreshing
+							</span>
+						) : (
+							<a
+								onClick={onRefreshTable}
+								className="flex items-center text-[15px] text-[#F30919] gap-1 cursor-pointer select-none"
+							>
+								<MdRefresh/> Refresh
+							</a>
+						)}
 						<Tooltip
 							header={"Purchased keys must be assigned to Sentry Wallet"}
 							body={"To assign keys, connect all wallets containing Sentry Keys."}

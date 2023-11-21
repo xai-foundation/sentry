@@ -16,7 +16,7 @@ import {useSentryLogic} from "@/hooks/useSentryLogic";
 export function Sidebar() {
 	const navigate = useNavigate();
 	const {sentryRunning} = useOperatorRuntime();
-	const {funded, assignedKeys} = useSentryLogic();
+	const {funded, hasAssignedKeys} = useSentryLogic();
 
 	return (
 		<div
@@ -45,7 +45,7 @@ export function Sidebar() {
 					>
 						<div className="w-[15px] h-[15px] flex justify-center items-center">
 							{sentryRunning
-								? sentryRunning && assignedKeys && funded
+								? sentryRunning && hasAssignedKeys && funded
 									? <GreenPulse/>
 									: <YellowPulse/>
 								: <FaRegCircle size={8}/>}

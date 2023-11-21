@@ -13,7 +13,7 @@ import {useAccruingInfo} from "@/hooks/useAccruingInfo";
 
 export function ActionsRequiredNotAccruingDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const {accruing, kycRequired} = useAccruingInfo();
+	const {accruing, owners, statusMap, kycRequired} = useAccruingInfo();
 
 	return (
 		<div className="h-full flex flex-col justify-start items-center">
@@ -85,19 +85,7 @@ export function ActionsRequiredNotAccruingDrawer() {
 
 				{accruing && (
 					<div className="mt-8">
-						{/*{kycState === "done" ? (*/}
-						{false ? (
-							<SquareCard className="bg-[#DCFCE7]">
-								<IconLabel
-									icon={AiFillCheckCircle}
-									color="#16A34A"
-									title="You can claim esXAI"
-								/>
-								<p className="text-[15px] text-[#15803D] mt-2">
-									You have successfully completed your KYC on all wallets assigned to the Sentry.
-								</p>
-							</SquareCard>
-						) : (
+						{kycRequired ? (
 							<SquareCard>
 								<IconLabel
 									icon={IoMdCloseCircle}
@@ -108,11 +96,29 @@ export function ActionsRequiredNotAccruingDrawer() {
 									Complete KYC for all of the below wallets to be able to claim esXAI.
 								</p>
 							</SquareCard>
+						) : (
+							<SquareCard className="bg-[#DCFCE7]">
+								<IconLabel
+									icon={AiFillCheckCircle}
+									color="#16A34A"
+									title="You can claim esXAI"
+								/>
+								<p className="text-[15px] text-[#15803D] mt-2">
+									You have successfully completed your KYC on all wallets assigned to the Sentry.
+								</p>
+							</SquareCard>
 						)}
 
-						<BarStepItem lastItem={true}>
-							<KycRequiredCard/>
-						</BarStepItem>
+						{owners?.map((owner, i) => {
+							return (
+								<BarStepItem lastItem={i + 1 === owners!.length}>
+									<KycRequiredCard
+										wallet={owner}
+										status={statusMap[owner]}
+									/>
+								</BarStepItem>
+							);
+						})}
 					</div>
 				)}
 			</div>

@@ -52,7 +52,7 @@ export function useListNodeLicensesWithCallback(wallets: string[] = []) {
 	}
 }
 
-export function getLicensesList(_licenses): LicenseList {
+export function getLicensesList(_licenses: LicenseMap): LicenseList {
 	const keysWithOwners: LicenseList = [];
 
 	Object.keys(_licenses).map((owner) => {
