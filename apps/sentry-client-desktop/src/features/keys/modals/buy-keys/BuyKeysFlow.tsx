@@ -1,11 +1,22 @@
-import {useState} from "react";
+import {useRef, useState} from "react";
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {BuyKeysQuantity} from "@/features/keys/modals/buy-keys/BuyKeysQuantity";
 import {BuyKeysOrderTotal} from "@/features/keys/modals/buy-keys/BuyKeysOrderTotal";
 import {BuyFlowBanner} from "@/features/keys/modals/buy-keys/BuyFlowBanner";
 
 export function BuyKeysFlow() {
-	const [quantity, setQuantity] = useState<number>(1);
+	const [displayQuantity, setDisplayQuantity] = useState<number>(1);
+	const [queryQuantity, setQueryQuantity] = useState<number>(displayQuantity);
+	const timer = useRef<ReturnType<typeof setTimeout>>();
+
+	const intermediaryStep = (_quantity: number) => {
+		clearTimeout(timer.current);
+		setDisplayQuantity(_quantity);
+
+		timer.current = setTimeout(() => {
+			setQueryQuantity(_quantity);
+		}, 500)
+	}
 
 	return (
 		<div className="relative w-full h-screen flex flex-col gap-8">
@@ -25,16 +36,16 @@ export function BuyKeysFlow() {
 				</div>
 				{/*		Quantity section		*/}
 				<BuyKeysQuantity
-					quantity={quantity}
-					setQuantity={setQuantity}
+					quantity={displayQuantity}
+					setQuantity={intermediaryStep}
 				/>
 			</div>
 
 			{/*		Order Total section		*/}
-			<BuyKeysOrderTotal quantity={quantity}/>
+			<BuyKeysOrderTotal quantity={queryQuantity}/>
 
 			{/*		Banner section		*/}
-			<BuyFlowBanner quantity={quantity}/>
+			<BuyFlowBanner quantity={displayQuantity}/>
 		</div>
 	)
 }
