@@ -16,6 +16,7 @@ import {WalletAssignedMap} from "@/features/keys/Keys";
 import {FaRegCircle} from "react-icons/fa";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {useOperator} from "@/features/operator";
+import {useStorage} from "@/features/storage";
 
 interface HasKeysProps {
 	licensesMap: LicenseMap,
@@ -26,6 +27,7 @@ interface HasKeysProps {
 export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysProps) {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
+	const {data, setData} = useStorage();
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -37,6 +39,19 @@ export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysPr
 			setModalState(ModalView.TransactionInProgress);
 			window.electron.openExternal(`http://localhost:7555/assign-wallet/${operatorAddress}`);
 		}
+	}
+
+	function onStartKyc(wallet) {
+		console.log("hello???");
+		const kycStartedWallets = data?.kycStartedWallets || [];
+		if (kycStartedWallets.indexOf(wallet) < 0) {
+			kycStartedWallets.push(wallet);
+		}
+
+		setData({
+			...data,
+			kycStartedWallets,
+		});
 	}
 
 	function renderKeys() {
@@ -58,7 +73,10 @@ export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysPr
 			const status = statusMap[owner];
 			const isAssigned = isWalletAssignedMap[owner];
 
-			console.log(isAssigned)
+			console.log("data:", data);
+			console.log("owner:", owner);
+			const kycStarted = (data?.kycStartedWallets || []).indexOf(owner) > -1;
+			console.log("kycStarted:", kycStarted);
 
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
@@ -79,11 +97,21 @@ export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysPr
 							</div>
 						) : (
 							!status ? (
-								<div className="flex items-center gap-2">
-									<YellowPulse/>
-									KYC required
-									<BlockPassKYC/>
-								</div>
+								<>
+									{!kycStarted ? (
+										<div className="flex items-center gap-2">
+											<YellowPulse/>
+											KYC required
+											<BlockPassKYC onClick={() => onStartKyc(owner)}/>
+										</div>
+									) : (
+										<div className="flex items-center gap-2">
+											<YellowPulse/>
+											KYC required
+											<BlockPassKYC>Continue</BlockPassKYC>
+										</div>
+									)}
+								</>
 							) : (
 								<span>KYC GOOD</span>
 							)

@@ -32,7 +32,7 @@ export function Blockpass({onClick = () => {}, children = "Begin KYC"}: PropsWit
 	);
 }
 
-export function BlockPassKYC() {
+export function BlockPassKYC({onClick = () => {}, children = "Begin KYC"}: PropsWithChildren<BlockpassProps>) {
 	useEffect(() => {
 		// Check if BlockpassKYCConnect is defined on the window object
 		if ((window as any).BlockpassKYCConnect) {
@@ -50,8 +50,12 @@ export function BlockPassKYC() {
 	}, []);
 
 	return (
-		<a id="blockpass-kyc-connect" className="text-[#F30919] cursor-pointer">
-			Begin KYC
+		<a
+			id="blockpass-kyc-connect"
+			className="text-[#F30919] cursor-pointer"
+			onClick={onClick}
+		>
+			{children}
 		</a>
 	);
 
