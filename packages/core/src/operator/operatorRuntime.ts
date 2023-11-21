@@ -137,8 +137,8 @@ export async function operatorRuntime(
                 status: NodeLicenseStatus.CHECKING_IF_ELIGIBLE_FOR_PAYOUT,
             });
             safeStatusCallback();
-            const [eligibleForClaim] = await refereeContract.createAssertionHashAndCheckPayout(nodeLicenseId, challengeNumber, challenge.assertionStateRoot);
-            if (!eligibleForClaim) {
+            const [payoutEligible] = await refereeContract.createAssertionHashAndCheckPayout(nodeLicenseId, challengeNumber, challenge.assertionStateRoot);
+            if (!payoutEligible) {
                 logFunction(`nodeLicenseId ${nodeLicenseId} is not going to receive a reward for entering the challenge ${challengeNumber}, thus not submmiting an assertion.`);
                 nodeLicenseStatusMap.set(nodeLicenseId, {
                     ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
@@ -181,6 +181,13 @@ export async function operatorRuntime(
         safeStatusCallback();
         
         await claimReward(nodeLicenseId, challengeNumber, signer);
+
+        logFunction(`Claimed Submission for Challenge '${challengeNumber}'.`);
+        nodeLicenseStatusMap.set(nodeLicenseId, {
+            ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
+            status: `Claimed Submission for Challenge '${challengeNumber}'`,
+        });
+        safeStatusCallback();
     }
 
     // start a listener for new challenges
@@ -215,7 +222,8 @@ export async function operatorRuntime(
             status: NodeLicenseStatus.QUERYING_FOR_UNCLAIMED_SUBMISSIONS,
         });
         safeStatusCallback();
-        getSubmissionsForChallenges(closedChallengeIds, nodeLicenseId, async (submission, index) => {
+
+        await getSubmissionsForChallenges(closedChallengeIds, nodeLicenseId, async (submission, index) => {
 
             const challengeId = closedChallengeIds[index];
 
@@ -226,6 +234,7 @@ export async function operatorRuntime(
             safeStatusCallback();
 
             // call the process claim and update statuses/logs accoridngly
+            // TODO check if eligible for this claim
             if (submission.submitted && !submission.claimed) {
                 await processClaimForChallenge(challengeId, nodeLicenseId);
             }

@@ -11,20 +11,41 @@ const config = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200
+        runs: 200,
+        details: {
+          yul: true
+        }
       }
     }
   },
   networks: {
+    hardhat: {
+      forking: {
+        url: "https://frequent-damp-star.arbitrum-goerli.quiknode.pro/c1b565106ebecad49a9e7a938d084543187755e4/",
+        blockNumber: 56122196,
+      },
+      chainId: 421613,
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+        count: 30,
+      },
+    },  
     xai: {
       url: "https://testnet.xai-chain.net/rpc",
       chainId: 47279324479,
-      accounts: { mnemonic: process.env.MNEMONIC },
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+        count: 30,
+      },
       gasPrice: 20000000000,
     },
     arbitrumGoerli: {
       url: "https://goerli-rollup.arbitrum.io/rpc",
-      accounts: { mnemonic: process.env.MNEMONIC },
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+        count: 30,
+      },
+      chainId: 421613,
       gasPrice: 20000000000,
     },
   },

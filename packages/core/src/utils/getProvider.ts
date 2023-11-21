@@ -10,7 +10,8 @@ const providers: { [url: string]: ethers.JsonRpcProvider } = {};
  * @param rpcUrl - The RPC URL. Defaults to Arbitrum One's public RPC.
  * @returns An ethers provider.
  */
-export function getProvider(rpcUrl: string = config.defaultRpcUrl): ethers.JsonRpcProvider {
+export function getProvider(_rpcUrl?: string): ethers.JsonRpcProvider {
+    const rpcUrl = _rpcUrl ? _rpcUrl :  config.defaultRpcUrl;
     if (!providers[rpcUrl]) {
         providers[rpcUrl] = new ethers.JsonRpcProvider(rpcUrl);
     }
