@@ -14,6 +14,7 @@ export function useBalance(address: string | undefined) {
 			}
 		},
 		staleTime: Infinity,
+		cacheTime: 2500,
 		enabled: address != undefined && address.length > 0,
 	});
 }

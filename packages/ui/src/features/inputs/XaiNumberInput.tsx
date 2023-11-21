@@ -1,9 +1,9 @@
-import {ChangeEvent, Dispatch, SetStateAction} from "react";
+import {ChangeEvent} from "react";
 import {AiOutlineMinus, AiOutlinePlus} from "react-icons/ai";
 
 interface XaiNumberInput {
 	quantity: number;
-	setQuantity: Dispatch<SetStateAction<number>>;
+	setQuantity: (quantity: number) => void;
 	maxSupply?: number;
 }
 

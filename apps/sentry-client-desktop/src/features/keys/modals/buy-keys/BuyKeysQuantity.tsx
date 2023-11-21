@@ -1,10 +1,9 @@
 import {XaiNumberInput} from "@sentry/ui";
-import {Dispatch, SetStateAction} from "react";
 import {useGetTotalSupplyAndCap} from "@/features/keys/hooks/useGetTotalSupplyAndCap";
 
 interface BuyKeysQuantityProps {
 	quantity: number;
-	setQuantity: Dispatch<SetStateAction<number>>;
+	setQuantity: (quantity: number) => void;
 }
 
 export function BuyKeysQuantity({quantity, setQuantity}: BuyKeysQuantityProps) {

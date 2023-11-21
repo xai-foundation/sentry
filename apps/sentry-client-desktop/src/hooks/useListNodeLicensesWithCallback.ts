@@ -21,7 +21,11 @@ export function useListNodeLicensesWithCallback(wallets: string[] = []) {
 		setLoading(true);
 
 		await Promise.all(wallets.map(async (wallet) => {
-			await listNodeLicenses(wallet, (tokenId) => foundLicenseCallback(wallet, tokenId));
+			try {
+				await listNodeLicenses(wallet, (tokenId) => foundLicenseCallback(wallet, tokenId));
+			} catch (e) {
+				throw Error("Unable to retrieve list of node licenses. You are likely rate limited.");
+			}
 		}));
 
 		setLoading(false);
@@ -48,7 +52,7 @@ export function useListNodeLicensesWithCallback(wallets: string[] = []) {
 	}
 }
 
-export function getLicensesList(_licenses): LicenseList {
+export function getLicensesList(_licenses: LicenseMap): LicenseList {
 	const keysWithOwners: LicenseList = [];
 
 	Object.keys(_licenses).map((owner) => {

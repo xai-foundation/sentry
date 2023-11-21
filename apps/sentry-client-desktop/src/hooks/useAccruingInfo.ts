@@ -2,9 +2,11 @@ import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {useOperator} from "@/features/operator";
 import {useBalance} from "@/hooks/useBalance";
 import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
-import {useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
+import {getLicensesList, useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
 import {recommendedFundingBalance} from "@/features/home/SentryWallet";
 import {useKycStatusesWithCallback} from "@/hooks/useKycStatusesWithCallback";
+import {useGetAccruedEsXaiBulk} from "@/hooks/useGetAccruedEsXaiBulk";
+import {GetAccruedEsXaiResponse} from "@sentry/core";
 
 export function useAccruingInfo() {
 	const {sentryRunning} = useOperatorRuntime();
@@ -15,13 +17,16 @@ export function useAccruingInfo() {
 	const {licensesMap} = useListNodeLicensesWithCallback(owners);
 
 	const {statusMap} = useKycStatusesWithCallback(owners);
-	const kycRequired = statusMap && Object.values(statusMap).filter((status) => !status).length > 0
+	const {balances} = useGetAccruedEsXaiBulk(getLicensesList(licensesMap).map(m => m.key));
+	const kycRequired = owners?.length > 0 && statusMap && Object.values(statusMap).filter((status) => !status).length > 0 && Object.values(balances).filter((res: GetAccruedEsXaiResponse) => res.totalAccruedEsXai > BigInt(0));
 
 	const funded = balance && balance.wei !== undefined && balance.wei >= recommendedFundingBalance;
 	const accruing = sentryRunning && funded && Object.keys(licensesMap).length > 0;
 
 	return {
 		accruing,
+		owners,
+		statusMap,
 		kycRequired,
 	}
 }

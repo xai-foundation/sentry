@@ -2,21 +2,7 @@ import { ethers } from 'ethers';
 import { RefereeAbi } from '../abis/RefereeAbi.js';
 import { config } from '../config.js';
 import { getProvider } from '../utils/getProvider.js';
-
-/**
- * Interface for the Challenge struct in the Referee contract.
- */
-export interface Challenge {
-    openForSubmissions: boolean;
-    assertionId: bigint;
-    predecessorAssertionId: bigint;
-    assertionStateRoot: string;
-    assertionTimestamp: bigint;
-    challengerSignedHash: string;
-    activeChallengerPublicKey: string;
-    rollupUsed: string;
-    createdTimestamp: bigint; // in seconds
-}
+import { getChallenge, Challenge } from "../index.js";
 
 /**
  * Fetches all Challenges from the Referee contract.
@@ -43,7 +29,7 @@ export async function listChallenges(
 
     // Loop through the challenge count in reverse order and fetch each challenge
     for (let i = challengeCount - BigInt(1); i >= 0; i--) {
-        const challenge = await refereeContract.getChallenge(i);
+        const challenge = await getChallenge(i);
         if (openForSubmissions && !challenge.openForSubmissions) {
             break;
         }

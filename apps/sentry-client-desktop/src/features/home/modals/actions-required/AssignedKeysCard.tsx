@@ -11,7 +11,7 @@ import {useSentryLogic} from "@/hooks/useSentryLogic";
 export function AssignedKeysCard() {
 	const setModalState = useSetAtom(modalStateAtom);
 	const {publicKey: operatorAddress} = useOperator();
-	const {assignedKeys} = useSentryLogic();
+	const {hasAssignedKeys} = useSentryLogic();
 
 	function onSetKeys() {
 		setModalState(ModalView.TransactionInProgress);
@@ -20,7 +20,7 @@ export function AssignedKeysCard() {
 
 	return (
 		<SquareCard className="bg-[#F5F5F5]">
-			{assignedKeys ? (
+			{hasAssignedKeys ? (
 				<IconLabel
 					icon={AiFillCheckCircle}
 					color="#16A34A"

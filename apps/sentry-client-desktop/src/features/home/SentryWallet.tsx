@@ -12,8 +12,6 @@ import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.js";
 import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
 import {AssignKeysFromNewWallet} from "@/components/AssignKeysFromNewWallet";
-import {useListOwnersForOperator} from "@/hooks/useListOwnersForOperator";
-import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
 import {WalletConnectedModal} from "@/features/home/modals/WalletConnectedModal";
 import {WalletDisconnectedModal} from "@/features/home/modals/WalletDisconnectedModal";
 import {useQueryClient} from "react-query";
@@ -25,6 +23,8 @@ import {Tooltip} from "@/features/keys/Tooltip";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
 import {useSentryLogic} from "@/hooks/useSentryLogic";
+import {getLicensesList, useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
+import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
@@ -35,19 +35,26 @@ export function SentryWallet() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
-	const {isLoading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
-	const {isLoading: isListNodeLicensesLoading, data: listNodeLicensesData} = useListNodeLicenses(listOwnersData?.owners);
+
+	// TODO connect the refresh button on the x keys in y wallets text and query-ify these so we know when it's been cache cleared
+	const {isLoading: isListOwnersLoading, owners} = useListOwnersForOperatorWithCallback(operatorAddress, true);
+	const {isLoading: isListNodeLicensesLoading, licensesMap} = useListNodeLicensesWithCallback(owners);
 	const loading = isOperatorLoading || isListOwnersLoading || isListNodeLicensesLoading;
+
+	const keyCount = getLicensesList(licensesMap).length;
 
 	const [copied, setCopied] = useState<boolean>(false);
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
-	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
+	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({
+		show: false,
+		txHash: ""
+	});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
 	const {startRuntime, stopRuntime, sentryRunning, nodeLicenseStatusMap} = useOperatorRuntime();
 	const setModalState = useSetAtom(modalStateAtom);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
-	const {assignedKeys} = useSentryLogic();
+	const {hasAssignedKeys} = useSentryLogic();
 
 	// assign wallet
 	(window as any).deeplinks?.assignedWallet((_event, txHash) => {
@@ -64,6 +71,10 @@ export function SentryWallet() {
 
 	function onRefreshEthBalance() {
 		queryClient.invalidateQueries({queryKey: ["balance", operatorAddress]});
+	}
+
+	function onRefreshTable() {
+		queryClient.invalidateQueries({queryKey: ["ownersForOperator", operatorAddress]});
 	}
 
 	function copyPublicKey() {
@@ -101,7 +112,7 @@ export function SentryWallet() {
 	}
 
 	function getDropdownItems() {
-		return listOwnersData!.owners.map((wallet, i) => (
+		return owners.map((wallet, i) => (
 			<p
 				onClick={() => {
 					setSelectedWallet(wallet);
@@ -120,13 +131,13 @@ export function SentryWallet() {
 
 		// Get keys from every assigned wallet if "All" is selected in the drop-down
 		if (selectedWallet === null) {
-			Object.keys(listNodeLicensesData!.licenses).map((owner) => {
-				listNodeLicensesData!.licenses[owner].forEach((license) => {
+			Object.keys(licensesMap).map((owner) => {
+				licensesMap[owner].forEach((license) => {
 					keysWithOwners.push({owner, key: license});
 				});
 			});
 		} else {
-			listNodeLicensesData!.licenses[selectedWallet].forEach((license) => {
+			licensesMap[selectedWallet].forEach((license) => {
 				keysWithOwners.push({owner: selectedWallet, key: license});
 			});
 		}
@@ -146,7 +157,7 @@ export function SentryWallet() {
 
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
-					<td className="w-fit px-4 py-2">{keyWithOwner.key.toString()}</td>
+					<td className="w-full max-w-[70px] px-4 py-2">{keyWithOwner.key.toString()}</td>
 					<td className="w-full max-w-[390px] px-4 py-2">{keyWithOwner.owner.toString()}</td>
 					<td className="w-full max-w-[390px] px-4 py-2 text-[#A3A3A3]">
 						{currentStatus ? currentStatus.status : "Sentry not running"}
@@ -194,13 +205,13 @@ export function SentryWallet() {
 						<div className="flex flex-row items-center gap-2">
 							<h2 className="text-lg font-semibold">Sentry Wallet</h2>
 
-							{balance?.wei === 0n && (
+							{sentryRunning && balance?.wei === 0n && (
 								<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
 									No ETH
 								</p>
 							)}
 
-							{sentryRunning && !assignedKeys && (
+							{sentryRunning && !hasAssignedKeys && (
 								<>
 									<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
 										No Keys Assigned
@@ -211,6 +222,12 @@ export function SentryWallet() {
 							{!sentryRunning && (
 								<p className="border border-[#F5F5F5] bg-[#F5F5F5] text-[#A3A3A3] text-xs font-semibold uppercase rounded-full px-2">
 									Stopped
+								</p>
+							)}
+
+							{sentryRunning && hasAssignedKeys && balance?.wei !== 0n && (
+								<p className="border border-[#22C55E] bg-[#F0FDF4] text-[#16A34A] text-xs font-semibold uppercase rounded-full px-2">
+									Active
 								</p>
 							)}
 
@@ -324,8 +341,20 @@ export function SentryWallet() {
 					<div className="flex flex-row items-center w-full py-3 pl-10 gap-1">
 						<h2 className="font-semibold">Assigned Keys</h2>
 						<p className="text-sm bg-gray-100 px-2 rounded-2xl text-gray-500">
-							{loading ? "Loading..." : `${listNodeLicensesData!.totalLicenses} key${listNodeLicensesData!.totalLicenses === 1 ? "" : "s"} in ${listOwnersData!.owners.length} wallet${listOwnersData!.owners.length === 1 ? "" : "s"}`}
+							{loading ? "Loading..." : `${keyCount} key${keyCount === 1 ? "" : "s"} in ${owners.length} wallet${owners.length === 1 ? "" : "s"}`}
 						</p>
+						{loading ? (
+							<span className="flex items-center text-[15px] text-[#A3A3A3] select-none">
+								Refreshing
+							</span>
+						) : (
+							<a
+								onClick={onRefreshTable}
+								className="flex items-center text-[15px] text-[#F30919] gap-1 cursor-pointer select-none"
+							>
+								<MdRefresh/> Refresh
+							</a>
+						)}
 						<Tooltip
 							header={"Purchased keys must be assigned to Sentry Wallet"}
 							body={"To assign keys, connect all wallets containing Sentry Keys."}
@@ -337,7 +366,7 @@ export function SentryWallet() {
 				</div>
 
 				{/*		Keys	*/}
-				{listOwnersData && listOwnersData.owners && listOwnersData.owners.length > 0 ? (
+				{owners && owners.length > 0 ? (
 					<>
 						<div>
 							<div className="w-full h-auto flex flex-col py-3 pl-10">
@@ -350,7 +379,7 @@ export function SentryWallet() {
 											onClick={() => setIsOpen(!isOpen)}
 											className={`flex items-center justify-between w-[538px] border-[#A3A3A3] border-r border-l border-t ${!isOpen ? "border-b" : null} border-[#A3A3A3] p-2`}
 										>
-											<p>{selectedWallet || `All assigned wallets (${listOwnersData.owners.length})`}</p>
+											<p>{selectedWallet || `All assigned wallets (${owners.length})`}</p>
 											<IoIosArrowDown
 												className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
 											/>
@@ -412,7 +441,7 @@ export function SentryWallet() {
 								<table className="w-full bg-white">
 									<thead className="text-[#A3A3A3]">
 									<tr className="flex text-left text-[12px] uppercase px-8">
-										<th className="w-fit px-4 py-2">Key Id</th>
+										<th className="w-full max-w-[70px] px-4 py-2">Key Id</th>
 										<th className="w-full max-w-[390px] px-4 py-2">Owner Address</th>
 										<th className="w-full max-w-[390px] px-4 py-2">Claim Status</th>
 									</tr>
