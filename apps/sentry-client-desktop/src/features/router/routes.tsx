@@ -9,6 +9,7 @@ import {DrawerManager} from "../drawer/DrawerManager";
 import {ModalManager} from "@/features/modal/ModalManager";
 import {QueryClient, QueryClientProvider} from "react-query";
 import {BlockpassHandler} from "@/components/blockpass/BlockpassHandler";
+import {ChainDataManager} from "@/components/ChainDataManager";
 
 export function AppRoutes() {
 	const queryClient = new QueryClient();
@@ -17,6 +18,7 @@ export function AppRoutes() {
 		<Router>
 			<QueryClientProvider client={queryClient}>
 				<div className="w-full h-screen flex">
+					<ChainDataManager/>
 					<BlockpassHandler/>
 					<Sidebar/>
 
