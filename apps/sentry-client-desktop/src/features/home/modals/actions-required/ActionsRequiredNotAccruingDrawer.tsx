@@ -111,7 +111,7 @@ export function ActionsRequiredNotAccruingDrawer() {
 
 						{owners?.map((owner, i) => {
 							return (
-								<BarStepItem lastItem={i + 1 === owners!.length}>
+								<BarStepItem  key={`bar-step-item-${i}`} lastItem={i + 1 === owners!.length}>
 									<KycRequiredCard
 										wallet={owner}
 										status={statusMap[owner]}
