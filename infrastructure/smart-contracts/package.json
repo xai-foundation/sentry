@@ -5,18 +5,26 @@
   "type": "module",
   "scripts": {
     "deploy": "hardhat run scripts/deploy.mjs",
+    "deploy-xai": "hardhat run scripts/deployXai.mjs",
+    "local": "hardhat node",
+    "test": "hardhat test --network localhost",
+    "coverage": "hardhat coverage --network hardhat --solcoverjs ./.solcover.cjs --temp artifacts --testfiles \"./test/**/*.mjs\"",
     "clean": "rimraf artifacts && rimraf cache"
   },
   "dependencies": {
     "@sentry/core": "workspace:*",
     "csv": "^6.3.5",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "ethers": "6.8.1"
   },
   "devDependencies": {
     "@openzeppelin/contracts": "4.9.3",
     "@openzeppelin/contracts-upgradeable": "4.9.3",
     "@openzeppelin/hardhat-upgrades": "^2.3.3",
     "@nomicfoundation/hardhat-toolbox": "^3.0.0",
-    "hardhat": "^2.17.2"
+    "@nomicfoundation/hardhat-network-helpers": "1.0.9",
+    "hardhat": "2.19.1",
+    "chai": "4.3.10",
+    "shelljs": "0.8.5"
   }
 }
