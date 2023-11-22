@@ -31,6 +31,15 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     // Mapping from token ID to minting timestamp
     mapping (uint256 => uint256) private _mintTimestamps;
 
+    // Define the PromoCode struct
+    struct PromoCode {
+        address recipient;
+        bool active;
+    }
+
+    // Mapping from promo code to PromoCode struct
+    mapping (string => PromoCode) private _promoCodes;
+
     event ReferralReward(address indexed buyer, address indexed referralAddress, uint256 amount);
 
     function initialize(
@@ -47,6 +56,24 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     }
 
     /**
+     * @notice Creates a new promo code.
+     * @param _promoCode The promo code.
+     * @param _recipient The recipient address.
+     */
+    function createPromoCode(string calldata _promoCode, address _recipient) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _promoCodes[_promoCode] = PromoCode(_recipient, true);
+    }
+
+    /**
+     * @notice Disables a promo code.
+     * @param _promoCode The promo code to disable.
+     */
+    function removePromoCode(string calldata _promoCode) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_promoCodes[_promoCode].recipient != address(0), "Promo code does not exist");
+        _promoCodes[_promoCode].active = false; // 'active' is set to false
+    }
+
+    /**
      * @notice Returns the length of the pricing tiers array.
      * @return The length of the pricing tiers array.
      */
@@ -57,19 +84,24 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     /**
      * @notice Mints new NodeLicense tokens.
      * @param _amount The amount of tokens to mint.
-     * @param _referralAddress The referral address.
+     * @param _promoCode The promo code.
      */
-    function mint(uint256 _amount, address _referralAddress) public payable {
+    function mint(uint256 _amount, string calldata _promoCode) public payable {
         require(
             _tokenIds.current() + _amount <= maxSupply,
             "Exceeds maxSupply"
         );
+        PromoCode memory promoCode = _promoCodes[_promoCode];
         require(
-            _referralAddress != msg.sender,
+            promoCode.recipient != address(0) && promoCode.active,
+            "Invalid or inactive promo code"
+        );
+        require(
+            promoCode.recipient != msg.sender,
             "Referral address cannot be the sender's address"
         );
 
-        uint256 finalPrice = price(_amount, _referralAddress);
+        uint256 finalPrice = price(_amount, promoCode.recipient);
 
         require(msg.value >= finalPrice, "Ether value sent is not correct");
 
@@ -84,10 +116,10 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
 
         // Calculate the referral reward
         uint256 referralReward = 0;
-        if (_referralAddress != address(0)) {
+        if (promoCode.recipient != address(0)) {
             referralReward = finalPrice * referralRewardPercentage / 100;
-            payable(_referralAddress).transfer(referralReward);
-            emit ReferralReward(msg.sender, _referralAddress, referralReward);
+            payable(promoCode.recipient).transfer(referralReward);
+            emit ReferralReward(msg.sender, promoCode.recipient, referralReward);
         }
 
         // Transfer the funds to the fundsReceiver
