@@ -4,7 +4,7 @@ import {PiCopy} from "react-icons/pi";
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {useState} from "react";
 import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse.js";
-import {Blockpass, BlockPassKYC} from "@/components/blockpass/Blockpass";
+import {BlockPassKYC} from "@/components/blockpass/Blockpass";
 import {getLicensesList, LicenseList, LicenseMap} from "@/hooks/useListNodeLicensesWithCallback";
 import {config} from "@sentry/core";
 import {StatusMap} from "@/hooks/useKycStatusesWithCallback";
