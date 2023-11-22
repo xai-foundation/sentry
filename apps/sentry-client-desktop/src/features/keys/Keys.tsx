@@ -70,7 +70,7 @@ export function Keys() {
 					</button>
 				</div>
 
-				{drawerState === null && (
+				{drawerState === null && !ownersLoading && !kycStatusesLoading && !licensesLoading && keyCount === 0 && (
 					<div className="flex gap-4 bg-[#FFFBEB] p-2 z-10">
 						<div className="flex flex-row gap-2 items-center">
 							<AiFillWarning className="w-7 h-7 text-[#F59E28]"/>
