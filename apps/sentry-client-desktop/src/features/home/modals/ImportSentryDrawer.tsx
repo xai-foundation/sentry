@@ -5,19 +5,41 @@ import {useOperator} from "../../operator";
 import {ChangeEvent, useState} from "react";
 import {BiLoaderAlt} from "react-icons/bi";
 import {ImportSentryAlertModal} from "@/features/home/modals/ImportSentryAlertModal";
+import {verifyPrivateKey} from "@sentry/core";
 
 export function ImportSentryDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {isLoading, importPrivateKey} = useOperator();
 	const [inputValue, setInputValue] = useState('');
 	const [showModal, setShowModal] = useState<boolean>(false);
+	const [privateKeyError, setPrivateKeyError] = useState({
+		message: "",
+		error: false,
+	});
 
 	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setInputValue(event.target.value);
+
+		if (inputValue === "") {
+			setPrivateKeyError({
+				message: "",
+				error: false,
+			});
+		}
 	};
 
 	const handleButton = () => {
-		if (inputValue !== "") {
+		const validPrivateKey = verifyPrivateKey(inputValue);
+
+		if (!validPrivateKey) {
+			setInputValue("");
+			setPrivateKeyError({
+				message: "Private key not valid",
+				error: true,
+			});
+		}
+
+		if (inputValue !== "" && validPrivateKey) {
 			setShowModal(true);
 		}
 	}
@@ -73,6 +95,10 @@ export function ImportSentryDrawer() {
 									className="w-full mt-2 p-2 border rounded"
 									placeholder="Enter private key"
 								/>
+
+								{privateKeyError.error && (
+									<p className="w-full text-[14px] text-[#AB0914]">{privateKeyError.message}</p>
+								)}
 
 								<button
 									onClick={handleButton}
