@@ -1,12 +1,12 @@
 import {useEffect, useState} from "react";
-import {getAccruedEsXaiBulk, GetAccruedEsXaiResponse} from "@sentry/core";
+import {getAccruedEsXaiBulk} from "@sentry/core";
 
-export type AccruedBalanceMap = Record<string, GetAccruedEsXaiResponse>;
+// export type AccruedBalanceMap = Record<string, GetAccruedEsXaiResponse>;
 
 export function useGetAccruedEsXaiBulk(keys: bigint[] = []) {
 
 	const [loading, setLoading] = useState(false);
-	const [balances, setBalances] = useState<AccruedBalanceMap>({});
+	const [balances, setBalances] = useState<bigint[]>([]);
 
 	useEffect(() => {
 		if (keys.length > 0) {
@@ -17,11 +17,11 @@ export function useGetAccruedEsXaiBulk(keys: bigint[] = []) {
 	async function getBalances() {
 		setLoading(true);
 
-		await getAccruedEsXaiBulk(keys, async (response, nodeLicenseId) => {
+		await getAccruedEsXaiBulk(keys, async (response) => {
 			setBalances((_balances) => {
 				return {
 					..._balances,
-					[nodeLicenseId.toString()]: response,
+					[keys.toString()]: response,
 				}
 			});
 		});
