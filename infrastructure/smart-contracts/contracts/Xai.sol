@@ -30,7 +30,7 @@ contract Xai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgrade
      * @return A boolean that indicates if the operation was successful.
      */
     function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) returns (bool) {
-        require(totalSupply() + amount <= MAX_SUPPLY, "Cannot mint beyond max supply");
+        require(totalSupply() + amount <= MAX_SUPPLY, "Cannot mint beyond max supply"); // not needed for testnet
         _mint(to, amount);
         return true;
     }
