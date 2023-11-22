@@ -104,10 +104,15 @@ async function main() {
     console.log(`Granted admin role to ${address} on esXai`);
   }
 
-  // Add minter role to the referee
-  const minterRole = await esXai.MINTER_ROLE();
-  await esXai.grantRole(minterRole, refereeAddress);
+  // Add minter role to the referee for esXai
+  const minterRoleEsXai = await esXai.MINTER_ROLE();
+  await esXai.grantRole(minterRoleEsXai, refereeAddress);
   console.log(`Granted minter role to ${refereeAddress} on esXai`);
+
+  // Add minter role to the referee for Xai
+  const minterRoleXai = await esXai.MINTER_ROLE();
+  await esXai.grantRole(minterRoleXai, refereeAddress);
+  console.log(`Granted minter role to ${refereeAddress} on Xai`);
 
   console.log("Deploying NodeLicense...");
   const NodeLicense = await ethers.getContractFactory("NodeLicense");
