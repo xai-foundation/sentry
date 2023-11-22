@@ -4,7 +4,7 @@ import {PiCopy} from "react-icons/pi";
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {useState} from "react";
 import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse.js";
-import {BlockPassKYC} from "@/components/blockpass/Blockpass";
+import {Blockpass, BlockPassKYC} from "@/components/blockpass/Blockpass";
 import {getLicensesList, LicenseList, LicenseMap} from "@/hooks/useListNodeLicensesWithCallback";
 import {config} from "@sentry/core";
 import {StatusMap} from "@/hooks/useKycStatusesWithCallback";
@@ -76,13 +76,26 @@ export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysPr
 			const isAssigned = isWalletAssignedMap[owner];
 			const kycStarted = (data?.kycStartedWallets || []).indexOf(owner) > -1;
 
+
+			let _status: "sentryNotRunning" | "walletNotAssigned" | "kycStart" | "kycContinue" | "claiming" = "sentryNotRunning";
+
+			if (sentryRunning && !isAssigned) {
+				_status = "walletNotAssigned";
+			} else if (sentryRunning && isAssigned && !status && !kycStarted) {
+				_status = "kycStart";
+			} else if (sentryRunning && isAssigned && !status && kycStarted) {
+				_status = "kycContinue";
+			} else if (sentryRunning && isAssigned && status) {
+				_status = "claiming";
+			}
+
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
 					<td className="w-full max-w-[70px] px-4 py-2">{keyString}</td>
 					<td className="w-full max-w-[360px] px-4 py-2">{owner}</td>
 					<td className="w-full max-w-[360px] px-4 py-2 text-[#A3A3A3]">
 
-						{!sentryRunning && (
+						{_status === "sentryNotRunning" && (
 							<div className="flex items-center gap-2">
 								Sentry not running
 								<a
@@ -94,7 +107,7 @@ export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysPr
 							</div>
 						)}
 
-						{sentryRunning && !isAssigned ? (
+						{_status === "walletNotAssigned" && (
 							<div className="flex items-center gap-2">
 								<FaRegCircle size={8}/>
 								Wallet not assigned
@@ -105,50 +118,29 @@ export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysPr
 									Assign
 								</a>
 							</div>
-						) : (
-							!status ? (
-								<>
-									{!kycStarted ? (
-										<div className="flex items-center gap-2">
-											<YellowPulse/>
-											KYC required
-											<BlockPassKYC onClick={() => onStartKyc(owner)}/>
-										</div>
-									) : (
-										<div className="flex items-center gap-2">
-											<YellowPulse/>
-											KYC required
-											<BlockPassKYC>Continue</BlockPassKYC>
-										</div>
-									)}
-								</>
-							) : (
-								<span>KYC GOOD</span>
-							)
 						)}
 
-						{sentryRunning && isAssigned && !status && (
+						{_status === "kycStart" && (
 							<div className="flex items-center gap-2">
 								<YellowPulse/>
 								KYC required
-								<BlockPassKYC/>
+								<BlockPassKYC onClick={() => onStartKyc(owner)}/>
 							</div>
 						)}
 
-						{/*		KYC Status Pending here	*/}
-						{/*{sentryRunning && isAssigned && !status && (*/}
-						{/*	<div className="flex items-center gap-2">*/}
-						{/*		<YellowPulse/>*/}
-						{/*		KYC pending*/}
-						{/*	</div>*/}
-						{/*)}*/}
+						{_status === "kycContinue" && (
+							<div className="flex items-center gap-2">
+								<YellowPulse/>
+								KYC required
+								<BlockPassKYC>Continue</BlockPassKYC>
+							</div>
+						)}
 
-						{sentryRunning && isAssigned && status && (
+						{_status === "claiming" && (
 							<div className="flex items-center gap-2">
 								<GreenPulse/> Claiming rewards when available
 							</div>
 						)}
-
 
 					</td>
 					<td className="w-full max-w-[150px] px-4 py-2 text-right">ACCRUED esXAI</td>
