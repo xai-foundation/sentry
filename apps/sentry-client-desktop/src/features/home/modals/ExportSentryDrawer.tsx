@@ -31,8 +31,8 @@ export function ExportSentryDrawer() {
 	function wrapTextWithLineBreaks() {
 		if (privateKey) {
 			let result = '';
-			for (let i = 0; i < privateKey.length; i += 48) {
-				result += privateKey.slice(i, i + 48) + '\n';
+			for (let i = 0; i < privateKey.length; i += 42) {
+				result += privateKey.slice(i, i + 42) + '\n';
 			}
 			return result;
 		}
