@@ -149,7 +149,7 @@ export async function operatorRuntime(
             }
 
             // check to see if this nodeLicense has already submitted, if we have, then go to next license
-            const [_, {submitted}] = await getSubmissionsForChallenges([challengeNumber], nodeLicenseId);
+            const [{submitted}] = await getSubmissionsForChallenges([challengeNumber], nodeLicenseId);
             if (submitted) {
                 logFunction(`nodeLicenseId ${nodeLicenseId} has already submitted for challenge ${challengeNumber}.`);
                 nodeLicenseStatusMap.set(nodeLicenseId, {
