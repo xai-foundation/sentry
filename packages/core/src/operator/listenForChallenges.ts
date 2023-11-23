@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { RefereeAbi } from "../abis/RefereeAbi.js";
 import { getProvider } from "../utils/getProvider.js";
 import { config } from "../config.js";
-import { Challenge } from "../index.js";
+import { Challenge, getChallenge } from "../index.js";
 
 /**
  * Listens for ChallengeSubmitted events and triggers a callback function when the event is emitted.
@@ -21,11 +21,15 @@ export function listenForChallenges(callback: (challengeNumber: bigint, challeng
     const challengeNumberMap: { [challengeNumber: string]: boolean } = {};
 
     // listen for the ChallengeSubmitted event
-    refereeContract.on("ChallengeSubmitted", (challengeNumber, challenge, event) => {
+    refereeContract.on("ChallengeSubmitted", async (challengeNumber, event) => {
 
         // if the challengeNumber has not been seen before, call the callback and add it to the map
         if (!challengeNumberMap[challengeNumber.toString()]) {
             challengeNumberMap[challengeNumber.toString()] = true;
+
+            // lookup the challenge
+            const challenge = await getChallenge(challengeNumber);
+
             void callback(challengeNumber, challenge, event);
         }
     });
