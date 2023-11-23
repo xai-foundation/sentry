@@ -39,6 +39,8 @@ import { getReferralDiscountAndRewardPercentages } from './commands/licenses/get
 import { setReferralDiscountAndRewardPercentages } from './commands/licenses/set-referral-discount-and-reward-percentages.js';
 import { bootOperator } from './commands/operator-control/operator-runtime.js';
 import { setOrAddPricingTiersCommand } from './commands/licenses/set-or-add-pricing-tiers.js';
+import { addPromoCode } from './commands/licenses/add-promo-code.js';
+import { removePromoCode } from './commands/licenses/remove-promo-code.js';
 
 const cli = new Vorpal();
 
@@ -47,42 +49,44 @@ addAdmin(cli);
 addChallenger(cli);
 addKycAdmin(cli);
 addOperator(cli);
+addPromoCode(cli);
 bootChallenger(cli);
+bootOperator(cli);
+changeWhitelistStatus(cli);
 checkKycStatus(cli);
+checkWhitelist(cli);
 createBlsKeyPair(cli);
 createMnemonic(cli);
+getAllContractAddresses(cli);
 getAssertionCheckingStatus(cli);
 getBalancesForAddresses(cli);
 getListOfAdmins(cli);
 getListOfChallengers(cli);
 getListOfKycAdmins(cli);
+getPriceForQuantity(cli);
 getPrivateKeyFromMnemonic(cli);
 getPublicKeyFromPrivateKey(cli);
+getReferralDiscountAndRewardPercentages(cli);
+getReferralRewards(cli);
+getTotalSupplyAndCap(cli);
 listKycStatuses(cli);
 listNodeLicenses(cli);
 listOperators(cli);
+listTiers(cli);
 manuallyChallengeAssertion(cli);
 mintNodeLicenses(cli);
 removeAdmin(cli);
 removeChallenger(cli);
 removeKycAdmin(cli);
 removeOperator(cli);
+removePromoCode(cli);
 setChallengerPublicKey(cli);
 setKycStatus(cli);
+setOrAddPricingTiersCommand(cli);
+setReferralDiscountAndRewardPercentages(cli);
 setRollupAddress(cli);
 toggleAssertionChecking(cli);
 totalSupply(cli);
-getAllContractAddresses(cli);
-checkWhitelist(cli);
-changeWhitelistStatus(cli);
-getPriceForQuantity(cli);
-listTiers(cli);
-getTotalSupplyAndCap(cli);
-getReferralRewards(cli);
-getReferralDiscountAndRewardPercentages(cli);
-setReferralDiscountAndRewardPercentages(cli);
-bootOperator(cli);
-setOrAddPricingTiersCommand(cli);
 
 cli
     .delimiter('sentry-node$')

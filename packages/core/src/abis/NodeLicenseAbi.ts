@@ -217,6 +217,23 @@ export const NodeLicenseAbi = [
   },
   {
     "type": "function",
+    "name": "createPromoCode",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "string",
+        "name": "_promoCode"
+      },
+      {
+        "type": "address",
+        "name": "_recipient"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "fundsReceiver",
     "constant": true,
     "stateMutability": "view",
@@ -439,8 +456,8 @@ export const NodeLicenseAbi = [
         "name": "_amount"
       },
       {
-        "type": "address",
-        "name": "_referralAddress"
+        "type": "string",
+        "name": "_promoCode"
       }
     ],
     "outputs": []
@@ -490,8 +507,8 @@ export const NodeLicenseAbi = [
         "name": "_amount"
       },
       {
-        "type": "address",
-        "name": "_referralAddress"
+        "type": "string",
+        "name": "_promoCode"
       }
     ],
     "outputs": [
@@ -528,6 +545,19 @@ export const NodeLicenseAbi = [
         "name": ""
       }
     ]
+  },
+  {
+    "type": "function",
+    "name": "removePromoCode",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "string",
+        "name": "_promoCode"
+      }
+    ],
+    "outputs": []
   },
   {
     "type": "function",

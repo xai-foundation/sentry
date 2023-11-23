@@ -59,69 +59,6 @@ export const RefereeAbi = [
         "type": "uint256",
         "name": "challengeNumber",
         "indexed": true
-      },
-      {
-        "type": "tuple",
-        "name": "challenge",
-        "indexed": false,
-        "components": [
-          {
-            "type": "bool",
-            "name": "openForSubmissions"
-          },
-          {
-            "type": "uint64",
-            "name": "assertionId"
-          },
-          {
-            "type": "uint64",
-            "name": "predecessorAssertionId"
-          },
-          {
-            "type": "bytes32",
-            "name": "assertionStateRoot"
-          },
-          {
-            "type": "uint64",
-            "name": "assertionTimestamp"
-          },
-          {
-            "type": "bytes",
-            "name": "challengerSignedHash"
-          },
-          {
-            "type": "bytes",
-            "name": "activeChallengerPublicKey"
-          },
-          {
-            "type": "address",
-            "name": "rollupUsed"
-          },
-          {
-            "type": "uint256",
-            "name": "createdTimestamp"
-          },
-          {
-            "type": "uint256",
-            "name": "closeTimestamp"
-          },
-          {
-            "type": "uint256",
-            "name": "totalSupplyOfNodesAtChallengeStart"
-          },
-          {
-            "type": "uint256",
-            "name": "rewardAmountForClaimers"
-          },
-          {
-            "type": "uint256",
-            "name": "amountForGasSubsidy"
-          },
-          {
-            "type": "uint256",
-            "name": "numberOfEligibleClaimers"
-          }
-        ]
       }
     ]
   },
@@ -134,69 +71,6 @@ export const RefereeAbi = [
         "type": "uint256",
         "name": "challengeNumber",
         "indexed": true
-      },
-      {
-        "type": "tuple",
-        "name": "challenge",
-        "indexed": false,
-        "components": [
-          {
-            "type": "bool",
-            "name": "openForSubmissions"
-          },
-          {
-            "type": "uint64",
-            "name": "assertionId"
-          },
-          {
-            "type": "uint64",
-            "name": "predecessorAssertionId"
-          },
-          {
-            "type": "bytes32",
-            "name": "assertionStateRoot"
-          },
-          {
-            "type": "uint64",
-            "name": "assertionTimestamp"
-          },
-          {
-            "type": "bytes",
-            "name": "challengerSignedHash"
-          },
-          {
-            "type": "bytes",
-            "name": "activeChallengerPublicKey"
-          },
-          {
-            "type": "address",
-            "name": "rollupUsed"
-          },
-          {
-            "type": "uint256",
-            "name": "createdTimestamp"
-          },
-          {
-            "type": "uint256",
-            "name": "closeTimestamp"
-          },
-          {
-            "type": "uint256",
-            "name": "totalSupplyOfNodesAtChallengeStart"
-          },
-          {
-            "type": "uint256",
-            "name": "rewardAmountForClaimers"
-          },
-          {
-            "type": "uint256",
-            "name": "amountForGasSubsidy"
-          },
-          {
-            "type": "uint256",
-            "name": "numberOfEligibleClaimers"
-          }
-        ]
       }
     ]
   },
@@ -450,12 +324,12 @@ export const RefereeAbi = [
         "name": "openForSubmissions"
       },
       {
-        "type": "uint64",
-        "name": "assertionId"
+        "type": "bool",
+        "name": "expiredForRewarding"
       },
       {
         "type": "uint64",
-        "name": "predecessorAssertionId"
+        "name": "assertionId"
       },
       {
         "type": "bytes32",
@@ -483,10 +357,6 @@ export const RefereeAbi = [
       },
       {
         "type": "uint256",
-        "name": "closeTimestamp"
-      },
-      {
-        "type": "uint256",
         "name": "totalSupplyOfNodesAtChallengeStart"
       },
       {
@@ -500,6 +370,10 @@ export const RefereeAbi = [
       {
         "type": "uint256",
         "name": "numberOfEligibleClaimers"
+      },
+      {
+        "type": "uint256",
+        "name": "amountClaimedByClaimers"
       }
     ]
   },
@@ -567,6 +441,19 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
+    "name": "expireChallengeRewards",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "_challengeId"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "gasSubsidyRecipient",
     "constant": true,
     "stateMutability": "view",
@@ -601,12 +488,12 @@ export const RefereeAbi = [
             "name": "openForSubmissions"
           },
           {
-            "type": "uint64",
-            "name": "assertionId"
+            "type": "bool",
+            "name": "expiredForRewarding"
           },
           {
             "type": "uint64",
-            "name": "predecessorAssertionId"
+            "name": "assertionId"
           },
           {
             "type": "bytes32",
@@ -634,10 +521,6 @@ export const RefereeAbi = [
           },
           {
             "type": "uint256",
-            "name": "closeTimestamp"
-          },
-          {
-            "type": "uint256",
             "name": "totalSupplyOfNodesAtChallengeStart"
           },
           {
@@ -651,6 +534,10 @@ export const RefereeAbi = [
           {
             "type": "uint256",
             "name": "numberOfEligibleClaimers"
+          },
+          {
+            "type": "uint256",
+            "name": "amountClaimedByClaimers"
           }
         ]
       }
@@ -678,12 +565,12 @@ export const RefereeAbi = [
             "name": "openForSubmissions"
           },
           {
-            "type": "uint64",
-            "name": "assertionId"
+            "type": "bool",
+            "name": "expiredForRewarding"
           },
           {
             "type": "uint64",
-            "name": "predecessorAssertionId"
+            "name": "assertionId"
           },
           {
             "type": "bytes32",
@@ -711,10 +598,6 @@ export const RefereeAbi = [
           },
           {
             "type": "uint256",
-            "name": "closeTimestamp"
-          },
-          {
-            "type": "uint256",
             "name": "totalSupplyOfNodesAtChallengeStart"
           },
           {
@@ -728,6 +611,10 @@ export const RefereeAbi = [
           {
             "type": "uint256",
             "name": "numberOfEligibleClaimers"
+          },
+          {
+            "type": "uint256",
+            "name": "amountClaimedByClaimers"
           }
         ]
       }
