@@ -16,15 +16,21 @@ contract Xai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgrade
     uint256 public constant MAX_SUPPLY = 2500000000 * 10**18; // Max supply of 2,500,000,000 tokens
     address private _esXai;
 
-    function initialize(address esXaiAddress) public initializer {
+    function initialize() public initializer {
         __ERC20_init("Xai", "XAI");
         __ERC20Burnable_init();
         __AccessControl_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setRoleAdmin(MINTER_ROLE, DEFAULT_ADMIN_ROLE);
+    }
 
-        _esXai = esXaiAddress;
+    /**
+     * @dev Function to set esXai address
+     * @param newEsXaiAddress The new esXai address.
+     */
+    function setEsXaiAddress(address newEsXaiAddress) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _esXai = newEsXaiAddress;
     }
 
     /**
