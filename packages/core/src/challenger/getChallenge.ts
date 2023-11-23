@@ -8,6 +8,7 @@ import { getProvider } from "../index.js";
  */
 export interface Challenge {
     openForSubmissions: boolean;
+    expiredForRewarding: boolean;
     assertionId: bigint;
     predecessorAssertionId: bigint;
     assertionStateRoot: string;
@@ -16,11 +17,11 @@ export interface Challenge {
     activeChallengerPublicKey: string;
     rollupUsed: string;
     createdTimestamp: bigint;
-    closeTimestamp: bigint;
     totalSupplyOfNodesAtChallengeStart: bigint;
     rewardAmountForClaimers: bigint;
     amountForGasSubsidy: bigint;
     numberOfEligibleClaimers: bigint;
+    amountClaimedByClaimers: bigint;
 }
 
 /**
@@ -33,6 +34,7 @@ export async function getChallenge(challengeId: bigint): Promise<Challenge> {
     const refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, provider);
     const [
         openForSubmissions,
+        expiredForRewarding,
         assertionId,
         predecessorAssertionId,
         assertionStateRoot,
@@ -41,14 +43,15 @@ export async function getChallenge(challengeId: bigint): Promise<Challenge> {
         activeChallengerPublicKey,
         rollupUsed,
         createdTimestamp,
-        closeTimestamp,
         totalSupplyOfNodesAtChallengeStart,
         rewardAmountForClaimers,
         amountForGasSubsidy,
-        numberOfEligibleClaimers
+        numberOfEligibleClaimers,
+        amountClaimedByClaimers
     ] = await refereeContract.getChallenge(challengeId);
     const challenge: Challenge = {
         openForSubmissions,
+        expiredForRewarding,
         assertionId: BigInt(assertionId),
         predecessorAssertionId: BigInt(predecessorAssertionId),
         assertionStateRoot,
@@ -57,11 +60,11 @@ export async function getChallenge(challengeId: bigint): Promise<Challenge> {
         activeChallengerPublicKey,
         rollupUsed,
         createdTimestamp: BigInt(createdTimestamp),
-        closeTimestamp: BigInt(closeTimestamp),
         totalSupplyOfNodesAtChallengeStart: BigInt(totalSupplyOfNodesAtChallengeStart),
         rewardAmountForClaimers: BigInt(rewardAmountForClaimers),
         amountForGasSubsidy: BigInt(amountForGasSubsidy),
-        numberOfEligibleClaimers: BigInt(numberOfEligibleClaimers)
+        numberOfEligibleClaimers: BigInt(numberOfEligibleClaimers),
+        amountClaimedByClaimers: BigInt(amountClaimedByClaimers)
     }
     return challenge;
 }

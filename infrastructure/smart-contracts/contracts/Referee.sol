@@ -74,26 +74,24 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     // Struct for the challenges
     struct Challenge {
         bool openForSubmissions; // when the next challenge is submitted for the following assertion, this will be closed.
+        bool expiredForRewarding; // when this is true, this challenge is no longer eligible for claiming
         uint64 assertionId;
-        uint64 predecessorAssertionId;
         bytes32 assertionStateRoot;
         uint64 assertionTimestamp; // equal to the block number the assertion was made on in the rollup protocol
         bytes challengerSignedHash;
         bytes activeChallengerPublicKey; // The challengerPublicKey that was active at the time of challenge submission
         address rollupUsed; // The rollup address used for this challenge
         uint256 createdTimestamp; // used to determine if a node license is eligible to submit
-        uint256 closeTimestamp; // used to determine reward expiry
         uint256 totalSupplyOfNodesAtChallengeStart; // keep track of what the total supply opf nodes is when the challenge starts
         uint256 rewardAmountForClaimers; // this is how much esXai should be allocated to the claimers
         uint256 amountForGasSubsidy; // this is how much Xai was minted for the gas subsidy
         uint256 numberOfEligibleClaimers; // how many submitters are eligible for claiming, used to determine the reward amount
         uint256 amountClaimedByClaimers; // keep track of how much Xai has been claimed by the claimers, primarily used to expire unclaimed rewards 
-        bool expiredForRewarding; // when this is true, this challenge is no longer eligible for claiming
     }
 
     // Define events
-    event ChallengeSubmitted(uint256 indexed challengeNumber, Challenge challenge);
-    event ChallengeClosed(uint256 indexed challengeNumber, Challenge challenge);
+    event ChallengeSubmitted(uint256 indexed challengeNumber);
+    event ChallengeClosed(uint256 indexed challengeNumber);
     event AssertionSubmitted(uint256 indexed challengeId, uint256 indexed nodeLicenseId);
     event RollupAddressChanged(address newRollupAddress);
     event ChallengerPublicKeyChanged(bytes newChallengerPublicKey);
@@ -365,32 +363,29 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         // close the previous challenge with the start of the next challenge
         if (challengeCounter > 0) {
             challenges[challengeCounter - 1].openForSubmissions = false;
-            challenges[challengeCounter - 1].closeTimestamp = block.timestamp;
-            emit ChallengeClosed(challengeCounter - 1, challenges[challengeCounter - 1]);
+            emit ChallengeClosed(challengeCounter - 1);
         }
 
         // add challenge to the mapping
         challenges[challengeCounter] = Challenge({
             openForSubmissions: true,
+            expiredForRewarding: false,
             assertionId: _assertionId,
-            predecessorAssertionId: _predecessorAssertionId,
             assertionStateRoot: _assertionStateRoot,
             assertionTimestamp: _assertionTimestamp,
             challengerSignedHash: _challengerSignedHash,
             activeChallengerPublicKey: challengerPublicKey, // Store the active challengerPublicKey at the time of challenge submission
             rollupUsed: rollupAddress, // Store the rollup address used for this challenge
             createdTimestamp: block.timestamp,
-            closeTimestamp: 0,
             totalSupplyOfNodesAtChallengeStart: NodeLicense(nodeLicenseAddress).totalSupply(), // we need to store how many nodes were created for the 1% odds
             rewardAmountForClaimers: rewardAmountForClaimers,
             amountForGasSubsidy: amountForGasSubsidy,
             numberOfEligibleClaimers: 0,
-            amountClaimedByClaimers: 0,
-            expiredForRewarding: false
+            amountClaimedByClaimers: 0
         });
 
         // emit the events
-        emit ChallengeSubmitted(challengeCounter, challenges[challengeCounter]);   
+        emit ChallengeSubmitted(challengeCounter);   
 
         // increment the challenge counter
         challengeCounter++;
