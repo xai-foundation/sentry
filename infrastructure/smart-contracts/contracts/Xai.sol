@@ -34,4 +34,6 @@ contract Xai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgrade
         _mint(to, amount);
         return true;
     }
+
+    
 }

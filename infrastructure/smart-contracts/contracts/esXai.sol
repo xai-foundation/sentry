@@ -19,8 +19,22 @@ contract esXai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgra
     EnumerableSetUpgradeable.AddressSet private _whitelist;
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     address private _xai;
+    bool private _redemptionActive;
+
+    struct RedemptionRequest {
+        uint256 amount;
+        uint256 startTime;
+        uint256 duration;
+        bool completed;
+    }
+
+    mapping(address => RedemptionRequest[]) private _redemptionRequests;
 
     event WhitelistUpdated(address account, bool isAdded);
+    event RedemptionStarted(address indexed user, uint256 indexed index);
+    event RedemptionCancelled(address indexed user, uint256 indexed index);
+    event RedemptionCompleted(address indexed user, uint256 indexed index);
+    event RedemptionStatusChanged(bool isActive);
 
     function initialize (address xai) public initializer {
         __ERC20_init("esXai", "esXAI");
@@ -30,6 +44,16 @@ contract esXai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgra
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setRoleAdmin(MINTER_ROLE, DEFAULT_ADMIN_ROLE);
         _xai = xai;
+        _redemptionActive = false;
+    }
+
+    /**
+     * @dev Function to change the redemption status
+     * @param isActive The new redemption status.
+     */
+    function changeRedemptionStatus(bool isActive) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _redemptionActive = isActive;
+        emit RedemptionStatusChanged(isActive);
     }
 
     /**
@@ -122,5 +146,93 @@ contract esXai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgra
     function transferFrom(address from, address to, uint256 amount) public override returns (bool) {
         require(_whitelist.contains(from) || _whitelist.contains(to), "Transfer not allowed: address not in whitelist");
         return super.transferFrom(from, to, amount);
+    }
+
+    /**
+     * @dev Function to start the redemption process
+     * @param amount The amount of esXai to redeem.
+     * @param duration The duration of the redemption process in seconds.
+     */
+    function startRedemption(uint256 amount, uint256 duration) public {
+        require(_redemptionActive, "Redemption is currently inactive");
+        require(balanceOf(msg.sender) >= amount, "Insufficient esXai balance");
+        require(duration == 15 days || duration == 90 days || duration == 180 days, "Invalid duration");
+
+        // Transfer the esXai tokens from the sender's account to this contract
+        transferFrom(msg.sender, address(this), amount);
+
+        // Store the redemption request
+        _redemptionRequests[msg.sender].push(RedemptionRequest(amount, block.timestamp, duration, false));
+        emit RedemptionStarted(msg.sender, _redemptionRequests[msg.sender].length - 1);
+    }
+
+    /**
+     * @dev Function to cancel the redemption process
+     * @param index The index of the redemption request to cancel.
+     */
+    function cancelRedemption(uint256 index) public {
+        require(_redemptionActive, "Redemption is currently inactive");
+        RedemptionRequest storage request = _redemptionRequests[msg.sender][index];
+        require(!request.completed, "Redemption already completed");
+
+        // Transfer back the esXai tokens to the sender's account
+        _transfer(address(this), msg.sender, request.amount);
+
+        // Mark the redemption request as completed
+        request.completed = true;
+        emit RedemptionCancelled(msg.sender, index);
+    }
+
+    /**
+     * @dev Function to complete the redemption process
+     * @param index The index of the redemption request to complete.
+     */
+    function completeRedemption(uint256 index) public {
+        require(_redemptionActive, "Redemption is currently inactive");
+        RedemptionRequest storage request = _redemptionRequests[msg.sender][index];
+        require(!request.completed, "Redemption already completed");
+        require(block.timestamp >= request.startTime + request.duration, "Redemption period not yet over");
+
+        // Calculate the conversion ratio based on the duration
+        uint256 ratio;
+        if (request.duration == 15 days) {
+            ratio = 25;
+        } else if (request.duration == 90 days) {
+            ratio = 625;
+        } else {
+            ratio = 1000;
+        }
+
+        // Calculate the amount of Xai to mint
+        uint256 xaiAmount = request.amount * ratio / 1000;
+
+        // Burn the esXai tokens
+        _burn(address(this), request.amount);
+
+        // Mint the Xai tokens
+        Xai(_xai).mint(msg.sender, xaiAmount);
+
+        // Mark the redemption request as completed
+        request.completed = true;
+        emit RedemptionCompleted(msg.sender, index);
+    }
+
+    /**
+     * @dev Function to get the redemption request at a given index.
+     * @param account The address to query.
+     * @param index The index of the redemption request.
+     * @return The redemption request.
+     */
+    function getRedemptionRequest(address account, uint256 index) public view returns (RedemptionRequest memory) {
+        return _redemptionRequests[account][index];
+    }
+
+    /**
+     * @dev Function to get the count of redemption requests for a given address.
+     * @param account The address to query.
+     * @return The count of redemption requests.
+     */
+    function getRedemptionRequestCount(address account) public view returns (uint256) {
+        return _redemptionRequests[account].length;
     }
 }
