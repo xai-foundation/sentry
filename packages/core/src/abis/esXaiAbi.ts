@@ -36,6 +36,69 @@ export const esXaiAbi = [
   {
     "type": "event",
     "anonymous": false,
+    "name": "RedemptionCancelled",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "index",
+        "indexed": true
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "RedemptionCompleted",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "index",
+        "indexed": true
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "RedemptionStarted",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "index",
+        "indexed": true
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "RedemptionStatusChanged",
+    "inputs": [
+      {
+        "type": "bool",
+        "name": "isActive",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "RoleAdminChanged",
     "inputs": [
       {
@@ -275,6 +338,32 @@ export const esXaiAbi = [
   },
   {
     "type": "function",
+    "name": "cancelRedemption",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "index"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "changeRedemptionStatus",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bool",
+        "name": "isActive"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "changeXaiAddress",
     "constant": false,
     "payable": false,
@@ -282,6 +371,19 @@ export const esXaiAbi = [
       {
         "type": "address",
         "name": "newXai"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "completeRedemption",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "index"
       }
     ],
     "outputs": []
@@ -331,6 +433,66 @@ export const esXaiAbi = [
     "outputs": [
       {
         "type": "bool",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getRedemptionRequest",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "account"
+      },
+      {
+        "type": "uint256",
+        "name": "index"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple",
+        "name": "",
+        "components": [
+          {
+            "type": "uint256",
+            "name": "amount"
+          },
+          {
+            "type": "uint256",
+            "name": "startTime"
+          },
+          {
+            "type": "uint256",
+            "name": "duration"
+          },
+          {
+            "type": "bool",
+            "name": "completed"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getRedemptionRequestCount",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "account"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
         "name": ""
       }
     ]
@@ -555,6 +717,23 @@ export const esXaiAbi = [
       {
         "type": "address",
         "name": "account"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "startRedemption",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "amount"
+      },
+      {
+        "type": "uint256",
+        "name": "duration"
       }
     ],
     "outputs": []

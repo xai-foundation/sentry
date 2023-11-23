@@ -259,6 +259,19 @@ export const XaiAbi = [
   },
   {
     "type": "function",
+    "name": "convertToEsXai",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "amount"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "decimals",
     "constant": true,
     "stateMutability": "view",
@@ -448,6 +461,19 @@ export const XaiAbi = [
       {
         "type": "address",
         "name": "account"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "setEsXaiAddress",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "newEsXaiAddress"
       }
     ],
     "outputs": []
