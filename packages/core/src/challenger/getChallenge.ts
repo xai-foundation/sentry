@@ -10,7 +10,6 @@ export interface Challenge {
     openForSubmissions: boolean;
     expiredForRewarding: boolean;
     assertionId: bigint;
-    predecessorAssertionId: bigint;
     assertionStateRoot: string;
     assertionTimestamp: bigint;
     challengerSignedHash: string;
@@ -36,7 +35,6 @@ export async function getChallenge(challengeId: bigint): Promise<Challenge> {
         openForSubmissions,
         expiredForRewarding,
         assertionId,
-        predecessorAssertionId,
         assertionStateRoot,
         assertionTimestamp,
         challengerSignedHash,
@@ -53,7 +51,6 @@ export async function getChallenge(challengeId: bigint): Promise<Challenge> {
         openForSubmissions,
         expiredForRewarding,
         assertionId: BigInt(assertionId),
-        predecessorAssertionId: BigInt(predecessorAssertionId),
         assertionStateRoot,
         assertionTimestamp: BigInt(assertionTimestamp),
         challengerSignedHash,
