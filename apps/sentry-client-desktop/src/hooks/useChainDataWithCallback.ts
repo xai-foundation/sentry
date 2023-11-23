@@ -9,6 +9,7 @@ import {
 	LicenseMap,
 	useListNodeLicensesWithCallback
 } from "@/hooks/useListNodeLicensesWithCallback";
+import {useCombinedOwners} from "@/hooks/useCombinedOwners";
 
 interface ChainState {
 	anyLoading: boolean;
@@ -38,10 +39,11 @@ export function useChainDataWithCallback() {
 	const [chainState, setChainState] = useAtom(chainStateAtom);
 
 	const {publicKey} = useOperator();
+
 	const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey);
-	//todo combine owners with manual-adds
-	const {isLoading: ownersKycLoading, statusMap: ownersKycMap} = useKycStatusesWithCallback(owners);
-	const {isLoading: licensesLoading, licensesMap} = useListNodeLicensesWithCallback(owners);
+	const {combinedOwners} = useCombinedOwners(owners);
+	const {isLoading: ownersKycLoading, statusMap: ownersKycMap} = useKycStatusesWithCallback(combinedOwners);
+	const {isLoading: licensesLoading, licensesMap} = useListNodeLicensesWithCallback(combinedOwners);
 
 	useEffect(() => {
 		setChainState((_chainState) => {

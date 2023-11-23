@@ -3,36 +3,20 @@ import {NoKeys} from "./NoKeys.js";
 import {AiFillWarning, AiOutlineInfoCircle} from "react-icons/ai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useAtom} from "jotai";
-import {getLicensesList, useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
-import {useOperator} from "@/features/operator";
-import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
-import {useKycStatusesWithCallback} from "@/hooks/useKycStatusesWithCallback";
 import {Tooltip} from "@/features/keys/Tooltip";
-import {useStorage} from "@/features/storage";
 import {RiKey2Line} from "react-icons/ri";
 import {BiLoaderAlt} from "react-icons/bi";
+import {useAtomValue} from "jotai";
+import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
+import {useCombinedOwners} from "@/hooks/useCombinedOwners";
 
 export type WalletAssignedMap = Record<string, boolean>;
 
 export function Keys() {
+	const {ownersLoading, owners, ownersKycLoading, ownersKycMap, licensesLoading, licensesMap, licensesList} = useAtomValue(chainStateAtom);
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
-
-	const {publicKey} = useOperator();
-	const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey, true);
-	const {data} = useStorage();
-
-	const combinedOwners = [...new Set([...owners, ...(data?.addedWallets || [])])]
-		.filter((wallet, index, array) => array.indexOf(wallet) === index)
-
-	const isWalletAssignedMap = combinedOwners.reduce((result, wallet) => {
-		result[wallet] = owners.includes(wallet);
-		return result;
-	}, {});
-
-	const {isLoading: kycStatusesLoading, statusMap} = useKycStatusesWithCallback(combinedOwners);
-	const {isLoading: licensesLoading, licensesMap} = useListNodeLicensesWithCallback(combinedOwners);
-
-	const keyCount = getLicensesList(licensesMap).length;
+	const {combinedOwners, walletAssignedMap} = useCombinedOwners(owners);
+	const keyCount = licensesList.length;
 
 	return (
 		<div className="w-full h-screen">
@@ -70,7 +54,7 @@ export function Keys() {
 					</button>
 				</div>
 
-				{drawerState === null && !ownersLoading && !kycStatusesLoading && !licensesLoading && keyCount === 0 && (
+				{drawerState === null && !ownersLoading && !ownersKycLoading && !licensesLoading && keyCount === 0 && (
 					<div className="flex gap-4 bg-[#FFFBEB] p-2 z-10">
 						<div className="flex flex-row gap-2 items-center">
 							<AiFillWarning className="w-7 h-7 text-[#F59E28]"/>
@@ -86,7 +70,7 @@ export function Keys() {
 				)}
 			</div>
 
-			{!ownersLoading && !kycStatusesLoading && !licensesLoading && keyCount === 0 ? (
+			{!ownersLoading && !ownersKycLoading && !licensesLoading && keyCount === 0 ? (
 				<NoKeys/>
 			) : (
 				<>
@@ -97,8 +81,8 @@ export function Keys() {
 					) : (
 						<HasKeys
 							licensesMap={licensesMap}
-							statusMap={statusMap}
-							isWalletAssignedMap={isWalletAssignedMap}
+							statusMap={ownersKycMap}
+							isWalletAssignedMap={walletAssignedMap}
 						/>
 					)}
 				</>
