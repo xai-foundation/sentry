@@ -35,6 +35,7 @@ const defaultChainState: ChainState = {
 
 export const chainStateAtom = atom<ChainState>(defaultChainState);
 
+// todo implement refreshing
 export function useChainDataWithCallback() {
 	const [chainState, setChainState] = useAtom(chainStateAtom);
 
