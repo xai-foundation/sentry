@@ -2,8 +2,8 @@ import {useChainDataWithCallback} from "@/hooks/useChainDataWithCallback";
 
 export function ChainDataManager() {
 
-	const {chainState} = useChainDataWithCallback();
-	console.log("chainState:", chainState);
+	console.log("I'm firing");
 
+	useChainDataWithCallback();
 	return null;
 }

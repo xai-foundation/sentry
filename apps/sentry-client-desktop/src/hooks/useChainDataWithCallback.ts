@@ -38,7 +38,6 @@ export const chainStateAtom = atom<ChainState>(defaultChainState);
 // todo implement refreshing
 export function useChainDataWithCallback() {
 	const [chainState, setChainState] = useAtom(chainStateAtom);
-
 	const {publicKey} = useOperator();
 	const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey);
 	const {combinedOwners} = useCombinedOwners(owners);
@@ -86,6 +85,6 @@ export function useChainDataWithCallback() {
 	}, [licensesMap]);
 
 	return {
-		chainState,
+		...chainState,
 	}
 }

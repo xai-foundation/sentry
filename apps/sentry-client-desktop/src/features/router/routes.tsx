@@ -10,34 +10,40 @@ import {ModalManager} from "@/features/modal/ModalManager";
 import {QueryClient, QueryClientProvider} from "react-query";
 import {BlockpassHandler} from "@/components/blockpass/BlockpassHandler";
 import {ChainDataManager} from "@/components/ChainDataManager";
+import {createStore, Provider as JotaiProvider} from "jotai";
+
+const store = createStore();
 
 export function AppRoutes() {
 	const queryClient = new QueryClient();
 
 	return (
-		<Router>
-			<QueryClientProvider client={queryClient}>
-				<div className="w-full h-screen flex">
-					<ChainDataManager/>
-					<BlockpassHandler/>
-					<Sidebar/>
+		<JotaiProvider store={store}>
+			<ChainDataManager/>
+			<Router>
+				<QueryClientProvider client={queryClient}>
+					<div className="w-full h-screen flex">
+						<BlockpassHandler/>
+						<Sidebar/>
 
-					<div className="max-w-[1686px] flex-grow">
-						<Routes>
-							<Route path="/" element={<GetSentryNode/>}/>
+						<div className="max-w-[1686px] flex-grow">
+							<Routes>
+								<Route path="/" element={<GetSentryNode/>}/>
 
-							<Route path="/keys" element={<Keys/>}/>
-							<Route path="/sentry-wallet" element={<SentryWallet/>}/>
-							<Route path="/redeem" element={<Redeem/>}/>
+								<Route path="/keys" element={<Keys/>}/>
+								<Route path="/sentry-wallet" element={<SentryWallet/>}/>
+								<Route path="/redeem" element={<Redeem/>}/>
 
-							<Route path="/demo" element={<Demo/>}/>
-						</Routes>
+								<Route path="/demo" element={<Demo/>}/>
+							</Routes>
+						</div>
+
+						<ModalManager/>
+						<DrawerManager/>
 					</div>
+				</QueryClientProvider>
+			</Router>
+		</JotaiProvider>
 
-					<ModalManager/>
-					<DrawerManager/>
-				</div>
-			</QueryClientProvider>
-		</Router>
 	);
 }

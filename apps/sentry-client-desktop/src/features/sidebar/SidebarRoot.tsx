@@ -7,7 +7,7 @@ import {SiGitbook} from "react-icons/si";
 import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse.js";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {IoGiftOutline} from "react-icons/io5";
-import {useSentryLogic} from "@/hooks/useSentryLogic";
+import {useAccruingInfo} from "@/hooks/useAccruingInfo";
 
 /**
  * Sidebar component
@@ -16,7 +16,7 @@ import {useSentryLogic} from "@/hooks/useSentryLogic";
 export function Sidebar() {
 	const navigate = useNavigate();
 	const {sentryRunning} = useOperatorRuntime();
-	const {funded, hasAssignedKeys} = useSentryLogic();
+	const {funded, hasAssignedKeys} = useAccruingInfo();
 
 	return (
 		<div

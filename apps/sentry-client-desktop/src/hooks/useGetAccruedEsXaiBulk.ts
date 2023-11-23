@@ -1,31 +1,25 @@
 import {useEffect, useState} from "react";
-import {getAccruedEsXaiBulk} from "@sentry/core";
+import {getAccruedEsXaiBulk, GetAccruedEsXaiResponse} from "@sentry/core";
+import {atom, useAtom} from "jotai";
+import {useChainDataWithCallback} from "@/hooks/useChainDataWithCallback";
 
-// export type AccruedBalanceMap = Record<string, GetAccruedEsXaiResponse>;
+export type AccruedBalanceMap = Record<string, GetAccruedEsXaiResponse>;
+export const accruedEsXaiAtom = atom<AccruedBalanceMap>({});
 
-export function useGetAccruedEsXaiBulk(keys: bigint[] = []) {
-
+export function useGetAccruedEsXaiBulk() {
+	const {licensesList} = useChainDataWithCallback();
 	const [loading, setLoading] = useState(false);
-	const [balances, setBalances] = useState<bigint[]>([]);
+	const [balances, setBalances] = useAtom(accruedEsXaiAtom);
 
 	useEffect(() => {
-		if (keys.length > 0) {
+		if (licensesList.length > 0) {
 			void getBalances();
 		}
-	}, [JSON.stringify(keys.map(k => k.toString()))]);
+	}, [JSON.stringify(licensesList.map(k => k.toString()))]);
 
 	async function getBalances() {
 		setLoading(true);
-
-		await getAccruedEsXaiBulk(keys, async (response) => {
-			setBalances((_balances) => {
-				return {
-					..._balances,
-					[keys.toString()]: response,
-				}
-			});
-		});
-
+		await getAccruedEsXaiBulk(licensesList.map((item) => item.key), async (response) => setBalances(response));
 		setLoading(false);
 	}
 

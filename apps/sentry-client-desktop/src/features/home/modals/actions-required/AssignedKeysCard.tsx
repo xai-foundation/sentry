@@ -6,12 +6,12 @@ import {AiFillCheckCircle} from "react-icons/ai";
 import {useOperator} from "@/features/operator";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {useSetAtom} from "jotai";
-import {useSentryLogic} from "@/hooks/useSentryLogic";
+import {useAccruingInfo} from "@/hooks/useAccruingInfo";
 
 export function AssignedKeysCard() {
 	const setModalState = useSetAtom(modalStateAtom);
 	const {publicKey: operatorAddress} = useOperator();
-	const {hasAssignedKeys} = useSentryLogic();
+	const {hasAssignedKeys} = useAccruingInfo();
 
 	function onSetKeys() {
 		setModalState(ModalView.TransactionInProgress);
