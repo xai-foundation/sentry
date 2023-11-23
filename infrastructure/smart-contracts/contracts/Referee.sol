@@ -74,24 +74,24 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     // Struct for the challenges
     struct Challenge {
         bool openForSubmissions; // when the next challenge is submitted for the following assertion, this will be closed.
+        bool expiredForRewarding; // when this is true, this challenge is no longer eligible for claiming
         uint64 assertionId;
-        uint64 predecessorAssertionId;
         bytes32 assertionStateRoot;
         uint64 assertionTimestamp; // equal to the block number the assertion was made on in the rollup protocol
         bytes challengerSignedHash;
         bytes activeChallengerPublicKey; // The challengerPublicKey that was active at the time of challenge submission
         address rollupUsed; // The rollup address used for this challenge
         uint256 createdTimestamp; // used to determine if a node license is eligible to submit
-        uint256 closeTimestamp; // used to determine reward expiry
         uint256 totalSupplyOfNodesAtChallengeStart; // keep track of what the total supply opf nodes is when the challenge starts
         uint256 rewardAmountForClaimers; // this is how much esXai should be allocated to the claimers
         uint256 amountForGasSubsidy; // this is how much Xai was minted for the gas subsidy
         uint256 numberOfEligibleClaimers; // how many submitters are eligible for claiming, used to determine the reward amount
+        uint256 amountClaimedByClaimers; // keep track of how much Xai has been claimed by the claimers, primarily used to expire unclaimed rewards 
     }
 
     // Define events
-    event ChallengeSubmitted(uint256 indexed challengeNumber, Challenge challenge);
-    event ChallengeClosed(uint256 indexed challengeNumber, Challenge challenge);
+    event ChallengeSubmitted(uint256 indexed challengeNumber);
+    event ChallengeClosed(uint256 indexed challengeNumber);
     event AssertionSubmitted(uint256 indexed challengeId, uint256 indexed nodeLicenseId);
     event RollupAddressChanged(address newRollupAddress);
     event ChallengerPublicKeyChanged(bytes newChallengerPublicKey);
@@ -119,9 +119,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
      * @return uint256 The combined total supply of esXai, Xai, and the unminted allocated tokens.
      */
     function getCombinedTotalSupply() public view returns (uint256) {
-        uint256 esXaiSupply = esXai(esXaiAddress).totalSupply();
-        uint256 xaiSupply = Xai(xaiAddress).totalSupply();
-        return esXaiSupply + xaiSupply + _allocatedTokens;
+        return  esXai(esXaiAddress).totalSupply() + Xai(xaiAddress).totalSupply() + _allocatedTokens;
     }
 
     /**
@@ -365,30 +363,29 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         // close the previous challenge with the start of the next challenge
         if (challengeCounter > 0) {
             challenges[challengeCounter - 1].openForSubmissions = false;
-            challenges[challengeCounter - 1].closeTimestamp = block.timestamp;
-            emit ChallengeClosed(challengeCounter - 1, challenges[challengeCounter - 1]);
+            emit ChallengeClosed(challengeCounter - 1);
         }
 
         // add challenge to the mapping
         challenges[challengeCounter] = Challenge({
             openForSubmissions: true,
+            expiredForRewarding: false,
             assertionId: _assertionId,
-            predecessorAssertionId: _predecessorAssertionId,
             assertionStateRoot: _assertionStateRoot,
             assertionTimestamp: _assertionTimestamp,
             challengerSignedHash: _challengerSignedHash,
             activeChallengerPublicKey: challengerPublicKey, // Store the active challengerPublicKey at the time of challenge submission
             rollupUsed: rollupAddress, // Store the rollup address used for this challenge
             createdTimestamp: block.timestamp,
-            closeTimestamp: 0,
             totalSupplyOfNodesAtChallengeStart: NodeLicense(nodeLicenseAddress).totalSupply(), // we need to store how many nodes were created for the 1% odds
             rewardAmountForClaimers: rewardAmountForClaimers,
             amountForGasSubsidy: amountForGasSubsidy,
-            numberOfEligibleClaimers: 0
+            numberOfEligibleClaimers: 0,
+            amountClaimedByClaimers: 0
         });
 
         // emit the events
-        emit ChallengeSubmitted(challengeCounter, challenges[challengeCounter]);   
+        emit ChallengeSubmitted(challengeCounter);   
 
         // increment the challenge counter
         challengeCounter++;
@@ -465,13 +462,25 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         uint256 _nodeLicenseId,
         uint256 _challengeId
     ) public {
+
+        // check the challenge exists by checking the timestamp is not 0
+        require(challenges[_challengeId].createdTimestamp != 0, "The Challenge does not exist for this id");
+
+        // Check if the challenge is closed for submissions
+        require(!challenges[_challengeId].openForSubmissions, "Challenge is still open for submissions");
+
+        // expire the challenge if 180 days old
+        if (block.timestamp >= challenges[_challengeId].createdTimestamp + 180 days) {
+            expireChallengeRewards(_challengeId);
+            return;
+        }
+
         // Look up the submission
         Submission memory submission = submissions[_challengeId][_nodeLicenseId];
         require(submission.submitted, "No submission found for this NodeLicense and challenge");
 
-        // Check if the challenge is closed for submissions
-        Challenge memory challenge = challenges[_challengeId];
-        require(!challenge.openForSubmissions, "Challenge is still open for submissions");
+        // Check if the challenge rewards have expired
+        require(!challenges[_challengeId].expiredForRewarding, "Challenge rewards have expired");
 
         // Check if the owner of the NodeLicense is KYC'd
         address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
@@ -489,6 +498,9 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
 
         // mark the submission as claimed
         submissions[_challengeId][_nodeLicenseId].claimed = true;
+
+        // increment the amount claimed on the challenge
+        challenges[_challengeId].amountClaimedByClaimers += reward;
 
         // Mint the reward to the owner of the nodeLicense
         esXai(esXaiAddress).mint(owner, reward);
@@ -536,5 +548,23 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
             submissionsArray[i] = submissions[_challengeIds[i]][_nodeLicenseId];
         }
         return submissionsArray;
+    }
+
+    /**
+     * @notice Expires the rewards for a challenge if it is at least 180 days old.
+     * @param _challengeId The ID of the challenge.
+     */
+    function expireChallengeRewards(uint256 _challengeId) public {
+        // check the challenge exists by checking the timestamp is not 0
+        require(challenges[_challengeId].createdTimestamp != 0, "The Challenge does not exist for this id");
+
+        // Check if the challenge is at least 180 days old
+        require(block.timestamp >= challenges[_challengeId].createdTimestamp + 180 days, "Challenge is not old enough to expire rewards");
+
+        // Remove the unclaimed tokens from the allocation
+        _allocatedTokens -= challenges[_challengeId].rewardAmountForClaimers - challenges[_challengeId].amountClaimedByClaimers;
+
+        // Set expiredForRewarding to true
+        challenges[_challengeId].expiredForRewarding = true;
     }
 }

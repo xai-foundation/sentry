@@ -11,3 +11,5 @@ export * from "./getOwnerOfNodeLicense.js";
 export * from "./getOperatorsForNodeLicense.js";
 export * from "./setOrAddPricingTiers.js";
 export * from "./getAccruedEsXai.js";
+export * from "./addPromoCode.js";
+export * from "./removePromoCode.js";

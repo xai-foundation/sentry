@@ -27,7 +27,7 @@ export async function getPriceForQuantity(quantity: number): Promise<{ price: bi
     const nodeLicenseContract = new ethers.Contract(config.nodeLicenseAddress, NodeLicenseAbi, provider);
 
     // Get the price from the price() function in NodeLicense contract
-    const contractPrice = await nodeLicenseContract.price(quantity, ethers.ZeroAddress);
+    const contractPrice = await nodeLicenseContract.price(quantity, "");
 
     // Get the total supply of NodeLicenses
     let totalSupply = await nodeLicenseContract.totalSupply();

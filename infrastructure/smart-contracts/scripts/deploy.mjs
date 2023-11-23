@@ -11,15 +11,15 @@ const { ethers, upgrades } = hardhat;
 
 const options = {
   admins: [
-    "0xc32493515E3537E55a323B3F0aF1AC4ED0E71BF4", // Christopher
+    "0xbecbba84BF2d109A4154AAc8f9F9DDDA0808fA95", // Christopher
     "0xd942EBC67d2C91Eb1a0757345D55A48F953D585b" // Avo
   ],
   // used for the Gas Subsidy Contract
   transferAdmins: [
-    "0xc32493515E3537E55a323B3F0aF1AC4ED0E71BF4", // Christopher
+    "0xbecbba84BF2d109A4154AAc8f9F9DDDA0808fA95", // Christopher
     "0xd942EBC67d2C91Eb1a0757345D55A48F953D585b" // Avo
   ],
-  fundsReceiver: "0xc32493515E3537E55a323B3F0aF1AC4ED0E71BF4", // Christopher
+  fundsReceiver: "0xbecbba84BF2d109A4154AAc8f9F9DDDA0808fA95", // Christopher
   referralDiscountPercentage: 10,
   referralRewardPercentage: 2,
   gasSubsidyPercentage: 15, // 15 = 15%
@@ -110,8 +110,8 @@ async function main() {
   console.log(`Granted minter role to ${refereeAddress} on esXai`);
 
   // Add minter role to the referee for Xai
-  const minterRoleXai = await esXai.MINTER_ROLE();
-  await esXai.grantRole(minterRoleXai, refereeAddress);
+  const minterRoleXai = await xai.MINTER_ROLE();
+  await xai.grantRole(minterRoleXai, refereeAddress);
   console.log(`Granted minter role to ${refereeAddress} on Xai`);
 
   console.log("Deploying NodeLicense...");
