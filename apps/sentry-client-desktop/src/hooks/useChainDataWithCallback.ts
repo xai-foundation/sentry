@@ -40,7 +40,6 @@ export function useChainDataWithCallback() {
 	const [chainState, setChainState] = useAtom(chainStateAtom);
 
 	const {publicKey} = useOperator();
-
 	const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey);
 	const {combinedOwners} = useCombinedOwners(owners);
 	const {isLoading: ownersKycLoading, statusMap: ownersKycMap} = useKycStatusesWithCallback(combinedOwners);
@@ -57,24 +56,6 @@ export function useChainDataWithCallback() {
 			}
 		});
 	}, [ownersLoading, ownersKycLoading, licensesLoading]);
-
-	// useEffect(() => {
-	// 	setChainState((_chainState) => {
-	// 		return {
-	// 			..._chainState,
-	// 			ownersKycLoading,
-	// 		}
-	// 	});
-	// }, [ownersKycLoading]);
-
-	// useEffect(() => {
-	// 	setChainState((_chainState) => {
-	// 		return {
-	// 			..._chainState,
-	// 			licensesLoading,
-	// 		}
-	// 	});
-	// }, [licensesLoading]);
 
 	useEffect(() => {
 		setChainState((_chainState) => {

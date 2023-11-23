@@ -1,6 +1,6 @@
-import {AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
+import {AiFillWarning, AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
 import {useState} from "react";
-import {BiDownload, BiLinkExternal, BiUpload} from "react-icons/bi";
+import {BiDownload, BiLinkExternal, BiPlay, BiUpload} from "react-icons/bi";
 import {useOperator} from "../operator";
 import {PiCopy} from "react-icons/pi";
 import {HiOutlineDotsVertical} from "react-icons/hi";
@@ -313,8 +313,31 @@ export function SentryWallet() {
 					</div>
 				</div>
 
+				{!sentryRunning && (
+					<div className="w-full h-auto flex flex-col justify-center items-center">
+						<div className="absolute top-0 bottom-0 flex flex-col justify-center items-center gap-4">
+							<AiFillWarning className="w-16 h-16 text-[#F59E28]"/>
+							<p className="text-2xl font-semibold">
+								Sentry is not running
+							</p>
+							<p className="text-lg text-[#525252]">
+								Start the sentry to see your assigned keys
+							</p>
+
+							<button
+								onClick={startRuntime}
+								className="flex justify-center items-center text-[15px] text-white bg-[#F30919] font-semibold mt-2 px-6 py-3"
+							>
+								<BiPlay className="w-6 h-6"/>
+								Start Sentry
+							</button>
+						</div>
+					</div>
+				)}
+
+
 				{/*		Keys	*/}
-				{owners && owners.length > 0 ? (
+				{sentryRunning && owners && owners.length > 0 && (
 					<>
 						<div>
 							<div className="w-full h-auto flex flex-col py-3 pl-10">
@@ -405,7 +428,9 @@ export function SentryWallet() {
 							</div>
 						</div>
 					</>
-				) : (
+				)}
+
+				{sentryRunning && owners && owners.length <= 0 && (
 					<>
 						{loading ? (
 							<div className="w-full flex-1 flex flex-col justify-center items-center">
