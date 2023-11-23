@@ -6,7 +6,7 @@ import {PiCopy} from "react-icons/pi";
 import {HiOutlineDotsVertical} from "react-icons/hi";
 import {GiPauseButton} from "react-icons/gi";
 import {MdRefresh} from "react-icons/md";
-import {useAtom, useSetAtom} from "jotai";
+import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.js";
 import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
@@ -21,39 +21,33 @@ import {Tooltip} from "@/features/keys/Tooltip";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
 import {useSentryLogic} from "@/hooks/useSentryLogic";
-import {getLicensesList, useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
-import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
 import {SentryWalletHeader} from "@/features/home/SentryWalletHeader";
+import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
 
 export function SentryWallet() {
-	// todo -> split up
-	const queryClient = useQueryClient();
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
-	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
+	const setModalState = useSetAtom(modalStateAtom);
+	const {ownersLoading, owners, licensesLoading, licensesMap, licensesList} = useAtomValue(chainStateAtom);
+
+	const queryClient = useQueryClient();
+	const {hasAssignedKeys} = useSentryLogic();
+	const {isLoading: operatorLoading, publicKey: operatorAddress} = useOperator();
 	const {data: balance} = useBalance(operatorAddress);
 
 	// TODO connect the refresh button on the x keys in y wallets text and query-ify these so we know when it's been cache cleared
-	const {isLoading: isListOwnersLoading, owners} = useListOwnersForOperatorWithCallback(operatorAddress, true);
-	const {isLoading: isListNodeLicensesLoading, licensesMap} = useListNodeLicensesWithCallback(owners);
-	const loading = isOperatorLoading || isListOwnersLoading || isListNodeLicensesLoading;
-
-	const keyCount = getLicensesList(licensesMap).length;
+	const loading = operatorLoading || ownersLoading || licensesLoading;
+	const keyCount = licensesList.length;
 
 	const [copied, setCopied] = useState<boolean>(false);
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
-	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({
-		show: false,
-		txHash: ""
-	});
+	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
 	const {startRuntime, stopRuntime, sentryRunning, nodeLicenseStatusMap} = useOperatorRuntime();
-	const setModalState = useSetAtom(modalStateAtom);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
-	const {hasAssignedKeys} = useSentryLogic();
 
 	// assign wallet
 	(window as any).deeplinks?.assignedWallet((_event, txHash) => {
@@ -220,7 +214,7 @@ export function SentryWallet() {
 
 							<div className="flex flex-row items-center gap-2 text-[#A3A3A3] text-[15px]">
 								<p>
-									{isOperatorLoading ? "Loading..." : operatorAddress}
+									{operatorLoading ? "Loading..." : operatorAddress}
 								</p>
 
 								<div

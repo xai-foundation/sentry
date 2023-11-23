@@ -2,11 +2,10 @@ import {HasKeys} from "./HasKeys.js";
 import {NoKeys} from "./NoKeys.js";
 import {AiFillWarning, AiOutlineInfoCircle} from "react-icons/ai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
-import {useAtom} from "jotai";
+import {useAtom, useAtomValue} from "jotai";
 import {Tooltip} from "@/features/keys/Tooltip";
 import {RiKey2Line} from "react-icons/ri";
 import {BiLoaderAlt} from "react-icons/bi";
-import {useAtomValue} from "jotai";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
 import {useCombinedOwners} from "@/hooks/useCombinedOwners";
 
