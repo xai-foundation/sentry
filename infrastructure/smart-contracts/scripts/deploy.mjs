@@ -110,8 +110,8 @@ async function main() {
   console.log(`Granted minter role to ${refereeAddress} on esXai`);
 
   // Add minter role to the referee for Xai
-  const minterRoleXai = await esXai.MINTER_ROLE();
-  await esXai.grantRole(minterRoleXai, refereeAddress);
+  const minterRoleXai = await xai.MINTER_ROLE();
+  await xai.grantRole(minterRoleXai, refereeAddress);
   console.log(`Granted minter role to ${refereeAddress} on Xai`);
 
   console.log("Deploying NodeLicense...");
