@@ -1,7 +1,7 @@
 import {BiLoaderAlt} from "react-icons/bi";
 import {AiFillInfoCircle, AiOutlineClose} from "react-icons/ai";
 import {useGetTotalSupplyAndCap} from "@/features/checkout/hooks/useGetTotalSupplyAndCap";
-import {useEffect, useState} from "react";
+import {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {ethers} from "ethers";
 import {CheckoutTierSummary} from "@sentry/core";
 import {XaiCheckbox} from "@sentry/ui";
@@ -15,15 +15,27 @@ interface WebBuyKeysOrderTotalProps {
 	onClick: () => void;
 	getPriceData: PriceDataInterface | undefined;
 	isPriceLoading: boolean;
+	promoCode: string;
+	setPromoCode: Dispatch<SetStateAction<string>>;
 	error: Error | null;
 }
 
-export function WebBuyKeysOrderTotal({onClick, getPriceData, isPriceLoading, error}: WebBuyKeysOrderTotalProps) {
+export function WebBuyKeysOrderTotal(
+	{
+		onClick,
+		getPriceData,
+		isPriceLoading,
+		promoCode,
+		setPromoCode,
+		error
+	}: WebBuyKeysOrderTotalProps) {
 	const {isLoading: isTotalLoading} = useGetTotalSupplyAndCap();
-	const [discountApplied, setDiscountApplied] = useState<boolean>(false);
-	const [discountError, setDiscountError] = useState<boolean>(false);
+	const [discount, setDiscount] = useState({
+		applied: false,
+		error: false,
+	});
+
 	const [promo, setPromo] = useState<boolean>(false);
-	const [inputValue, setInputValue] = useState('');
 	const [price, setPrice] = useState<{ price: number, discount: number }>({price: 0, discount: 0});
 	const [terms, setTerms] = useState<boolean>(false);
 	const [investments, setInvestments] = useState<boolean>(false);
@@ -39,12 +51,17 @@ export function WebBuyKeysOrderTotal({onClick, getPriceData, isPriceLoading, err
 	}, [getPriceData]);
 
 	const handleSubmit = () => {
-		setDiscountError(false);
-		if (inputValue === "IDONTWANNAPAYFULLPRICE") {
-			setDiscountApplied(true);
+		if (promoCode === "IDONTWANNAPAYFULLPRICE") {
+			setDiscount({
+				applied: true,
+				error: false,
+			});
 		} else {
-			setDiscountError(true);
-			setInputValue("");
+			setDiscount({
+				applied: false,
+				error: true,
+			});
+			setPromoCode("");
 		}
 	};
 
@@ -89,14 +106,14 @@ export function WebBuyKeysOrderTotal({onClick, getPriceData, isPriceLoading, err
 							<div className="px-6 mt-4">
 								{getKeys()}
 
-								{discountApplied && (
+								{discount.applied && (
 									<>
 										<div className="flex flex-row items-center justify-between text-[15px]">
 											<div className="flex flex-row items-center gap-2">
 												<span>Discount (5%)</span>
 
 												<a
-													onClick={() => setDiscountApplied(false)}
+													onClick={() => setDiscount({applied: false, error: false})}
 													className="text-[#F30919] ml-1 cursor-pointer"
 												>
 													Remove
@@ -136,7 +153,7 @@ export function WebBuyKeysOrderTotal({onClick, getPriceData, isPriceLoading, err
 								)}
 
 								{/*		Promo section		*/}
-								{!discountApplied && (
+								{!discount.applied && (
 									<>
 										<hr className="my-2"/>
 										{promo ? (
@@ -156,12 +173,15 @@ export function WebBuyKeysOrderTotal({onClick, getPriceData, isPriceLoading, err
 
 													<input
 														type="text"
-														value={inputValue}
+														value={promoCode}
 														onChange={(e) => {
-															setInputValue(e.target.value)
-															setDiscountError(false);
+															setPromoCode(e.target.value)
+															setDiscount({
+																applied: false,
+																error: false,
+															});
 														}}
-														className={`w-full my-2 p-2 border ${discountError ? "border-[#AB0914]" : "border-[#A3A3A3]"}`}
+														className={`w-full my-2 p-2 border ${discount.error ? "border-[#AB0914]" : "border-[#A3A3A3]"}`}
 														placeholder="Enter promo code"
 													/>
 
@@ -173,7 +193,7 @@ export function WebBuyKeysOrderTotal({onClick, getPriceData, isPriceLoading, err
 													</button>
 												</div>
 
-												{discountError && (
+												{discount.error && (
 													<p className="text-[14px] text-[#AB0914]">Invalid referral
 														address</p>
 												)}
@@ -198,7 +218,7 @@ export function WebBuyKeysOrderTotal({onClick, getPriceData, isPriceLoading, err
 									</div>
 									<div className="flex flex-row items-center gap-1 font-semibold">
 										<span>
-											{discountApplied
+											{discount.applied
 												? Number(price.price + price.discount)
 												: Number(price.price)}
 										</span>
