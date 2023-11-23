@@ -5,7 +5,6 @@ import {WebBuyKeysOrderTotal} from "@/features/checkout/WebBuyKeysOrderTotal";
 import {useGetPriceForQuantity} from "@/features/checkout/hooks/useGetPriceForQuantity";
 import {useContractWrite} from "wagmi";
 import {config, NodeLicenseAbi} from "@sentry/core";
-import {ethers} from "ethers";
 import {BiLoaderAlt} from "react-icons/bi";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useProvider} from "@/features/checkout/hooks/useProvider";
@@ -15,6 +14,8 @@ export function Checkout() {
 	const queryParams = new URLSearchParams(queryString);
 	const prefilledAmount = queryParams.get("quantity");
 	const [quantity, setQuantity] = useState<number>(1);
+	const [promoCode, setPromoCode] = useState<string>("");
+
 	const {data: getPriceData, isLoading: isPriceLoading} = useGetPriceForQuantity(quantity);
 	const {data: providerData} = useProvider();
 
@@ -24,13 +25,11 @@ export function Checkout() {
 		}
 	}, [prefilledAmount]);
 
-
-	// const {isLoading, isSuccess, write, error, data} = useContractWrite({
 	const {isLoading, isSuccess, write, error, data} = useContractWrite({
 		address: config.nodeLicenseAddress as `0x${string}`,
 		abi: NodeLicenseAbi,
 		functionName: "mint",
-		args: [quantity, ethers.ZeroAddress],
+		args: [quantity, promoCode],
 		value: getPriceData?.price,
 		onSuccess(data) {
 			window.location = `xai-sentry://purchase-successful?txHash=${data.hash}` as unknown as Location;
@@ -120,6 +119,8 @@ export function Checkout() {
 							onClick={write}
 							getPriceData={getPriceData}
 							isPriceLoading={isPriceLoading}
+							promoCode={promoCode}
+							setPromoCode={setPromoCode}
 							error={error}
 						/>
 					</div>

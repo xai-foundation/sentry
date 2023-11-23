@@ -13,8 +13,10 @@ interface BuyKeysOrderTotalProps {
 export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 	const {data: getPriceData, isLoading: isPriceLoading} = useGetPriceForQuantity(quantity);
 	const {isLoading: isTotalLoading} = useGetTotalSupplyAndCap();
-	const [discountApplied, setDiscountApplied] = useState<boolean>(false);
-	const [discountError, setDiscountError] = useState<boolean>(false);
+	const [discount, setDiscount] = useState({
+		applied: false,
+		error: false,
+	});
 	const [promo, setPromo] = useState<boolean>(false);
 	const [inputValue, setInputValue] = useState('');
 	const [price, setPrice] = useState<{ price: number, discount: number }>({price: 0, discount: 0});
@@ -29,11 +31,16 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 	}, [getPriceData]);
 
 	const handleSubmit = () => {
-		setDiscountError(false);
 		if (inputValue === "IDONTWANNAPAYFULLPRICE") {
-			setDiscountApplied(true);
+			setDiscount({
+				applied: true,
+				error: false,
+			});
 		} else {
-			setDiscountError(true);
+			setDiscount({
+				applied: false,
+				error: true,
+			});
 			setInputValue("");
 		}
 	};
@@ -97,14 +104,14 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 							<div className="px-6">
 								{getKeys()}
 
-								{discountApplied && (
+								{discount.applied && (
 									<>
 										<div className="flex flex-row items-center justify-between text-[15px]">
 											<div className="flex flex-row items-center gap-2">
 												<span>Discount (5%)</span>
 
 												<a
-													onClick={() => setDiscountApplied(false)}
+													onClick={() => setDiscount({applied: false, error: false})}
 													className="text-[#F30919] ml-1 cursor-pointer"
 												>
 													Remove
@@ -142,7 +149,7 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 								)}
 
 								{/*		Promo section		*/}
-								{!discountApplied && (
+								{!discount.applied && (
 									<>
 										<hr className="my-2"/>
 										{promo ? (
@@ -165,9 +172,9 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 														value={inputValue}
 														onChange={(e) => {
 															setInputValue(e.target.value)
-															setDiscountError(false);
+															setDiscount({applied: false, error: false})
 														}}
-														className={`w-full my-2 p-2 border ${discountError ? "border-[#AB0914]" : "border-[#A3A3A3]"}`}
+														className={`w-full my-2 p-2 border ${discount.error ? "border-[#AB0914]" : "border-[#A3A3A3]"}`}
 														placeholder="Enter promo code"
 													/>
 
@@ -179,7 +186,7 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 													</button>
 												</div>
 
-												{discountError && (
+												{discount.error && (
 													<p className="text-[14px] text-[#AB0914]">Invalid referral
 														address</p>
 												)}
@@ -204,7 +211,7 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 									</div>
 									<div className="flex flex-row items-center gap-1 font-semibold">
 										<span>
-											{discountApplied
+											{discount.applied
 												? Number(price.price + price.discount)
 												: Number(price.price)}
 										</span>
