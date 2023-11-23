@@ -23,10 +23,11 @@ export function mintNodeLicenses(cli: Vorpal) {
 
             const referralAddressPrompt: Vorpal.PromptObject = {
                 type: 'input',
-                name: 'referralAddress',
+                name: 'promoCode',
                 message: 'Enter the referral address (optional):',
+                default: '',
             };
-            const { referralAddress } = await this.prompt(referralAddressPrompt);
+            const { promoCode } = await this.prompt(referralAddressPrompt);
 
             this.log(`Minting ${amount} NodeLicense tokens...`);
 
@@ -37,7 +38,7 @@ export function mintNodeLicenses(cli: Vorpal) {
                 const { mintedNftIds, pricePaid } = await coreMintNodeLicenses(
                     Number(amount),
                     signer,
-                    referralAddress,
+                    promoCode,
                 );
 
                 this.log(`Tokens successfully minted. Here are the details:`);

@@ -93,7 +93,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         );
         PromoCode memory promoCode = _promoCodes[_promoCode];
         require(
-            promoCode.recipient != address(0) && promoCode.active,
+            (promoCode.recipient != address(0) && promoCode.active) || bytes(_promoCode).length == 0,
             "Invalid or inactive promo code"
         );
         require(
@@ -101,7 +101,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             "Referral address cannot be the sender's address"
         );
 
-        uint256 finalPrice = price(_amount, promoCode.recipient);
+        uint256 finalPrice = price(_amount, _promoCode);
 
         require(msg.value >= finalPrice, "Ether value sent is not correct");
 
@@ -129,10 +129,10 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     /**
      * @notice Calculates the price for minting NodeLicense tokens.
      * @param _amount The amount of tokens to mint.
-     * @param _referralAddress The referral address.
+     * @param _promoCode The promo code to use address.
      * @return The price in wei.
      */
-    function price(uint256 _amount, address _referralAddress) public view returns (uint256) {
+    function price(uint256 _amount, string calldata _promoCode) public view returns (uint256) {
         uint256 totalSupply = _tokenIds.current();
         uint256 totalCost = 0;
         uint256 remaining = _amount;
@@ -157,8 +157,8 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
 
         require(remaining == 0, "Not enough licenses available for sale");
 
-        // Apply discount if referral address is not the sender
-        if (_referralAddress != address(0)) {
+        // Apply discount if promo code is active
+        if (_promoCodes[_promoCode].active) {
             totalCost = totalCost * (100 - referralDiscountPercentage) / 100;
         }
 

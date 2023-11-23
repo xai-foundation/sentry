@@ -507,8 +507,8 @@ export const NodeLicenseAbi = [
         "name": "_amount"
       },
       {
-        "type": "address",
-        "name": "_referralAddress"
+        "type": "string",
+        "name": "_promoCode"
       }
     ],
     "outputs": [
