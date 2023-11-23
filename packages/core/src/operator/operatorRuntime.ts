@@ -197,7 +197,6 @@ export async function operatorRuntime(
         if (challenge.openForSubmissions) {
             logFunction(`Received new challenge with number: ${challengeNumber}.`);
             if (!challengeNumberMap[challengeNumber.toString()]) {
-                logFunction(`Processing new challenge with number: ${challengeNumber}.`);
                 challengeNumberMap[challengeNumber.toString()] = true;
                 await processNewChallenge(challengeNumber, challenge);
             }
