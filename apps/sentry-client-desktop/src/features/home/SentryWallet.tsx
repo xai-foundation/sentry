@@ -5,7 +5,6 @@ import {useOperator} from "../operator";
 import {PiCopy} from "react-icons/pi";
 import {HiOutlineDotsVertical} from "react-icons/hi";
 import {GiPauseButton} from "react-icons/gi";
-import {FaEthereum} from "react-icons/fa";
 import {MdRefresh} from "react-icons/md";
 import {useAtom, useSetAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.js";
@@ -17,7 +16,6 @@ import {WalletDisconnectedModal} from "@/features/home/modals/WalletDisconnected
 import {useQueryClient} from "react-query";
 import {useBalance} from "@/hooks/useBalance";
 import {ethers} from "ethers";
-import classNames from "classnames";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {Tooltip} from "@/features/keys/Tooltip";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
@@ -25,6 +23,7 @@ import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPro
 import {useSentryLogic} from "@/hooks/useSentryLogic";
 import {getLicensesList, useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
 import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
+import {SentryWalletHeader} from "@/features/home/SentryWalletHeader";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
@@ -34,7 +33,7 @@ export function SentryWallet() {
 	const queryClient = useQueryClient();
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
-	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
+	const {data: balance} = useBalance(operatorAddress);
 
 	// TODO connect the refresh button on the x keys in y wallets text and query-ify these so we know when it's been cache cleared
 	const {isLoading: isListOwnersLoading, owners} = useListOwnersForOperatorWithCallback(operatorAddress, true);
@@ -68,10 +67,6 @@ export function SentryWallet() {
 		setSelectedWallet(null);
 		setUnassignedWallet({show: true, txHash});
 	});
-
-	function onRefreshEthBalance() {
-		queryClient.invalidateQueries({queryKey: ["balance", operatorAddress]});
-	}
 
 	function onRefreshTable() {
 		queryClient.invalidateQueries({queryKey: ["ownersForOperator", operatorAddress]});
@@ -171,14 +166,6 @@ export function SentryWallet() {
 		setAssignedWallet({show: false, txHash: ""});
 		setUnassignedWallet({show: false, txHash: ""});
 		void queryClient.invalidateQueries({queryKey: ["ownersForOperator", operatorAddress]});
-	}
-
-	function getEthFundsTextColor(): string {
-		if (balance?.wei !== undefined && balance.wei >= recommendedFundingBalance) {
-			return "text-[#38A349]";
-		}
-
-		return "text-[#F59E28]";
 	}
 
 	return (
@@ -303,40 +290,7 @@ export function SentryWallet() {
 						)}
 					</div>
 
-					<div className="flex flex-col items-start w-full border-b border-gray-200 gap-2 py-2 pl-10">
-						<div className="flex items-center gap-1">
-							<h2 className="font-semibold">Sentry Wallet Balance</h2>
-							<Tooltip
-								header={"Funds in ETH required"}
-								body={"Sentry Wallet balance is used to pay gas fees for automatically claiming accrued esXAI."}
-								banner={true}
-								bannerTitle={"Recommended minimum balance"}
-								bannerValue={"0.005 ETH"}
-							>
-								<AiOutlineInfoCircle className="text-[#A3A3A3]"/>
-							</Tooltip>
-						</div>
-
-						<div className="flex justify-center items-center gap-4">
-							<div className="flex justify-center items-center gap-1">
-								<FaEthereum className="w-6 h-6"/>
-								<p className={classNames(getEthFundsTextColor(), "text-2xl font-semibold")}>{(balance == undefined) ? "" : (balance.ethString === "0.0" ? "0" : balance.ethString)} ETH</p>
-							</div>
-							{isBalanceLoading ? (
-								<span className="flex items-center text-[15px] text-[#A3A3A3] select-none"
-								>
-									Refreshing
-								</span>
-							) : (
-								<a
-									onClick={onRefreshEthBalance}
-									className="flex items-center text-[15px] text-[#F30919] gap-1 cursor-pointer select-none"
-								>
-									<MdRefresh/> Refresh
-								</a>
-							)}
-						</div>
-					</div>
+					<SentryWalletHeader/>
 
 					<div className="flex flex-row items-center w-full py-3 pl-10 gap-1">
 						<h2 className="font-semibold">Assigned Keys</h2>
