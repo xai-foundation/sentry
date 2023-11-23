@@ -5,6 +5,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "./esXai.sol";
 
 /**
  * @title Xai
@@ -13,14 +14,17 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 contract Xai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgradeable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     uint256 public constant MAX_SUPPLY = 2500000000 * 10**18; // Max supply of 2,500,000,000 tokens
+    address private _esXai;
 
-    function initialize() public initializer {
+    function initialize(address esXaiAddress) public initializer {
         __ERC20_init("Xai", "XAI");
         __ERC20Burnable_init();
         __AccessControl_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setRoleAdmin(MINTER_ROLE, DEFAULT_ADMIN_ROLE);
+
+        _esXai = esXaiAddress;
     }
 
     /**
@@ -35,5 +39,13 @@ contract Xai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgrade
         return true;
     }
 
-    
+    /**
+     * @dev Function to convert Xai to esXai
+     * @param amount The amount of Xai to convert.
+     */
+    function convertToEsXai(uint256 amount) public {
+        require(_esXai != address(0), "esXai contract address not set");
+        _burn(msg.sender, amount);
+        esXai(_esXai).mint(msg.sender, amount);
+    }
 }
