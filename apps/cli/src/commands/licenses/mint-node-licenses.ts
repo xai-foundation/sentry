@@ -24,7 +24,7 @@ export function mintNodeLicenses(cli: Vorpal) {
             const referralAddressPrompt: Vorpal.PromptObject = {
                 type: 'input',
                 name: 'promoCode',
-                message: 'Enter the referral address (optional):',
+                message: 'Enter the promo code (optional):',
                 default: '',
             };
             const { promoCode } = await this.prompt(referralAddressPrompt);
