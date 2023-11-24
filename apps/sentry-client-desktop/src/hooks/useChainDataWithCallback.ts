@@ -36,9 +36,14 @@ const defaultChainState: ChainState = {
 export const chainStateAtom = atom<ChainState>(defaultChainState);
 
 // todo implement refreshing
+
+/**
+ * This hook is implemented in the ChainDataManager component, which is rendered at the top level of the app.
+ * To enable our caching and prevent rate-limiting, do not implement this anywhere else but simply
+ * read from chainStateAtom.
+ */
 export function useChainDataWithCallback() {
 	const [chainState, setChainState] = useAtom(chainStateAtom);
-
 	const {publicKey} = useOperator();
 	const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey);
 	const {combinedOwners} = useCombinedOwners(owners);
@@ -86,6 +91,6 @@ export function useChainDataWithCallback() {
 	}, [licensesMap]);
 
 	return {
-		chainState,
+		...chainState,
 	}
 }

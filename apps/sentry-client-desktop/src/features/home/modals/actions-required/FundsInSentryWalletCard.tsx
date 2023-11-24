@@ -7,12 +7,12 @@ import {FaEthereum} from "react-icons/fa";
 import {AiFillCheckCircle, AiOutlineCheck} from "react-icons/ai";
 import {useOperator} from "@/features/operator";
 import {useState} from "react";
-import {useSentryLogic} from "@/hooks/useSentryLogic";
+import {useAccruingInfo} from "@/hooks/useAccruingInfo";
 
 export function FundsInSentryWalletCard() {
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const [copied, setCopied] = useState(false);
-	const {funded} = useSentryLogic();
+	const {funded} = useAccruingInfo();
 
 	function copyAddress() {
 		if (operatorAddress && navigator.clipboard) {

@@ -10,10 +10,14 @@ import {AssignedKeysCard} from "./AssignedKeysCard";
 import {KycRequiredCard} from "./KycRequiredCard";
 import {BarStepItem} from "@/components/BarStepItem";
 import {useAccruingInfo} from "@/hooks/useAccruingInfo";
+import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
+import {useAtomValue} from "jotai";
 
 export function ActionsRequiredNotAccruingDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const {accruing, owners, statusMap, kycRequired} = useAccruingInfo();
+	const {owners, ownersKycMap} = useAtomValue(chainStateAtom);
+
+	const {accruing, kycRequired} = useAccruingInfo();
 
 	return (
 		<div className="h-full flex flex-col justify-start items-center">
@@ -111,10 +115,10 @@ export function ActionsRequiredNotAccruingDrawer() {
 
 						{owners?.map((owner, i) => {
 							return (
-								<BarStepItem  key={`bar-step-item-${i}`} lastItem={i + 1 === owners!.length}>
+								<BarStepItem key={`bar-step-item-${i}`} lastItem={i + 1 === owners!.length}>
 									<KycRequiredCard
 										wallet={owner}
-										status={statusMap[owner]}
+										status={ownersKycMap[owner]}
 									/>
 								</BarStepItem>
 							);

@@ -7,7 +7,9 @@ export function useListOwnersForOperatorWithCallback(operatorAddress: string | u
 	const [owners, setOwners] = useState<string[]>([]);
 
 	useEffect(() => {
+		// console.log(0);
 		if (operatorAddress) {
+			// console.log(1);
 			void getOperators(operatorAddress);
 		}
 	}, [operatorAddress]);

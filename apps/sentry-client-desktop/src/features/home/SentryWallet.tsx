@@ -20,9 +20,9 @@ import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {Tooltip} from "@/features/keys/Tooltip";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
-import {useSentryLogic} from "@/hooks/useSentryLogic";
 import {SentryWalletHeader} from "@/features/home/SentryWalletHeader";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
+import {useAccruingInfo} from "@/hooks/useAccruingInfo";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
@@ -33,7 +33,7 @@ export function SentryWallet() {
 	const {ownersLoading, owners, licensesLoading, licensesMap, licensesList} = useAtomValue(chainStateAtom);
 
 	const queryClient = useQueryClient();
-	const {hasAssignedKeys} = useSentryLogic();
+	const {hasAssignedKeys} = useAccruingInfo();
 	const {isLoading: operatorLoading, publicKey: operatorAddress} = useOperator();
 	const {data: balance} = useBalance(operatorAddress);
 

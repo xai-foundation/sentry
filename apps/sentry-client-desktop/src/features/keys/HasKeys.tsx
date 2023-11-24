@@ -44,7 +44,6 @@ export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysPr
 	}
 
 	function onStartKyc(wallet) {
-		console.log("hello???");
 		const kycStartedWallets = data?.kycStartedWallets || [];
 		if (kycStartedWallets.indexOf(wallet) < 0) {
 			kycStartedWallets.push(wallet);
