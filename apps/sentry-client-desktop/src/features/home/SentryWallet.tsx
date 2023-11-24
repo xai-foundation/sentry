@@ -1,6 +1,6 @@
-import {AiFillWarning, AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
+import {AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
 import {useState} from "react";
-import {BiDownload, BiLinkExternal, BiPlay, BiUpload} from "react-icons/bi";
+import {BiDownload, BiLinkExternal, BiUpload} from "react-icons/bi";
 import {useOperator} from "../operator";
 import {PiCopy} from "react-icons/pi";
 import {HiOutlineDotsVertical} from "react-icons/hi";
@@ -23,6 +23,7 @@ import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPro
 import {SentryWalletHeader} from "@/features/home/SentryWalletHeader";
 import {chainStateAtom, useChainDataRefresh} from "@/hooks/useChainDataWithCallback";
 import {useAccruingInfo} from "@/hooks/useAccruingInfo";
+import {AssignKeysSentryNotRunning} from "@/components/AssignKeysSentryNotRunning";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
@@ -326,29 +327,6 @@ export function SentryWallet() {
 					</div>
 				</div>
 
-				{!sentryRunning && (
-					<div className="w-full h-auto flex flex-col justify-center items-center">
-						<div className="absolute top-0 bottom-0 flex flex-col justify-center items-center gap-4">
-							<AiFillWarning className="w-16 h-16 text-[#F59E28]"/>
-							<p className="text-2xl font-semibold">
-								Sentry is not running
-							</p>
-							<p className="text-lg text-[#525252]">
-								Start the sentry to see your assigned keys
-							</p>
-
-							<button
-								onClick={startRuntime}
-								className="flex justify-center items-center text-[15px] text-white bg-[#F30919] font-semibold mt-2 px-6 py-3"
-							>
-								<BiPlay className="w-6 h-6"/>
-								Start Sentry
-							</button>
-						</div>
-					</div>
-				)}
-
-
 				{/*		Keys	*/}
 				{sentryRunning && owners && owners.length > 0 && (
 					<>
@@ -443,18 +421,22 @@ export function SentryWallet() {
 					</>
 				)}
 
-				{sentryRunning && owners && owners.length <= 0 && (
+				{owners && owners.length <= 0 && (
 					<>
 						{loading ? (
 							<div className="w-full flex-1 flex flex-col justify-center items-center">
 								<h3 className="text-center">Loading...</h3>
 							</div>
 						) : (
-							<>
+							sentryRunning ? (
 								<div className="w-full flex-1 flex flex-col justify-center items-center">
 									<AssignKeysFromNewWallet/>
 								</div>
-							</>
+							) : (
+								<div className="w-full flex-1 flex flex-col justify-center items-center">
+									<AssignKeysSentryNotRunning/>
+								</div>
+							)
 						)}
 					</>
 				)}

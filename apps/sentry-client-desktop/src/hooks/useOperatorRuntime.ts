@@ -1,6 +1,7 @@
 import {NodeLicenseInformation, NodeLicenseStatusMap, operatorRuntime} from "@sentry/core";
 import {useOperator} from "@/features/operator";
 import {atom, useAtom} from "jotai";
+import {useState} from "react";
 
 let stop: (() => Promise<void>) | undefined;
 export const sentryRunningAtom = atom(stop != null);
@@ -12,6 +13,7 @@ export function useOperatorRuntime() {
 	const [sentryRunning, setSentryRunning] = useAtom(sentryRunningAtom);
 	const [nodeLicenseStatusMap, setNodeLicenseStatusMap] = useAtom(nodeLicenseStatusMapAtom);
 	const [runtimeLogs, setRuntimeLogs] = useAtom(runtimeLogsAtom);
+	const [, setRerender] = useState(0);
 
 	function writeLog(log: string) {
 		const _logs = runtimeLogs.concat([]);
@@ -29,6 +31,7 @@ export function useOperatorRuntime() {
 
 			// @ts-ignore
 			stop = await operatorRuntime(getSigner(), setNodeLicenseStatusMap, writeLog);
+			setRerender((_number) => _number + 1);
 		}
 	}
 

@@ -75,7 +75,6 @@ export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysPr
 			const isAssigned = isWalletAssignedMap[owner];
 			const kycStarted = (data?.kycStartedWallets || []).indexOf(owner) > -1;
 
-
 			let _status: "sentryNotRunning" | "walletNotAssigned" | "kycStart" | "kycContinue" | "claiming" = "sentryNotRunning";
 
 			if (sentryRunning && !isAssigned) {
