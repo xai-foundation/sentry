@@ -22,7 +22,7 @@ const config = {
     hardhat: {
       forking: {
         url: "https://frequent-damp-star.arbitrum-goerli.quiknode.pro/c1b565106ebecad49a9e7a938d084543187755e4/",
-        blockNumber: 56122196,
+        // blockNumber: 56122196,
       },
       chainId: 421613,
       accounts: {
