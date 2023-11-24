@@ -3,6 +3,7 @@ import {AiOutlineClose} from "react-icons/ai";
 import {useProvider} from "@/hooks/useProvider";
 import {useSetAtom} from "jotai";
 import {modalStateAtom} from "@/features/modal/ModalManager";
+import {useChainDataRefresh} from "@/hooks/useChainDataWithCallback";
 
 interface PurchaseCompleteModalProps {
 	txHash: string;
@@ -11,6 +12,7 @@ interface PurchaseCompleteModalProps {
 export function PurchaseCompleteModal({txHash}: PurchaseCompleteModalProps) {
 	const {data: providerData} = useProvider();
 	const setModalState = useSetAtom(modalStateAtom);
+	const {refresh} = useChainDataRefresh();
 
 	return (
 		<div
@@ -20,7 +22,10 @@ export function PurchaseCompleteModal({txHash}: PurchaseCompleteModalProps) {
 				className="absolute top-0 right-0 left-0 bottom-0 m-auto flex flex-col justify-start items-center w-[506px] h-[216px] border border-gray-200 bg-white">
 				<div
 					className="absolute top-0 right-0 h-16 flex flex-row justify-between items-center text-lg px-6">
-					<div className="cursor-pointer z-10" onClick={() => setModalState(null)}>
+					<div className="cursor-pointer z-10" onClick={() => {
+						setModalState(null)
+						refresh();
+					}}>
 						<AiOutlineClose/>
 					</div>
 				</div>

@@ -1,24 +1,25 @@
 import {useEffect, useState} from "react";
 import {listOwnersForOperator} from "@sentry/core";
 
-export function useListOwnersForOperatorWithCallback(operatorAddress: string | undefined, initialLoadingState = false) {
+export function useListOwnersForOperatorWithCallback(operatorAddress: string | undefined, initialLoadingState = false, refresh = 0) {
 
 	const [loading, setLoading] = useState(initialLoadingState);
 	const [owners, setOwners] = useState<string[]>([]);
 
 	useEffect(() => {
-		// console.log(0);
+		setOwners([]);
+	}, [refresh]);
+
+	useEffect(() => {
+		console.log("useListOwne....");
 		if (operatorAddress) {
-			// console.log(1);
 			void getOperators(operatorAddress);
 		}
-	}, [operatorAddress]);
+	}, [operatorAddress, refresh]);
 
 	async function getOperators(_operatorAddress: string) {
 		setLoading(true);
-
 		await listOwnersForOperator(_operatorAddress, foundOwnerCallback);
-
 		setLoading(false);
 	}
 

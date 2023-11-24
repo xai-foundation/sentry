@@ -3,15 +3,19 @@ import {checkKycStatus} from "@sentry/core";
 
 export type StatusMap = Record<string, boolean>;
 
-export function useKycStatusesWithCallback(wallets: string[] = []) {
+export function useKycStatusesWithCallback(wallets: string[] = [], refresh = 0) {
 	const [loading, setLoading] = useState(false);
 	const [statuses, setStatuses] = useState<StatusMap>({});
+
+	useEffect(() => {
+		setStatuses({});
+	}, [refresh]);
 
 	useEffect(() => {
 		if (wallets.length > 0) {
 			void getStatuses();
 		}
-	}, [JSON.stringify(wallets)]);
+	}, [JSON.stringify(wallets), refresh]);
 
 	async function getStatuses() {
 		setLoading(true);

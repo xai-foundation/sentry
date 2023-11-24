@@ -7,15 +7,20 @@ export type LicenseList = Array<{ owner: string, key: bigint }>;
 
 export const licensesAtom = atom<LicenseMap>({});
 
-export function useListNodeLicensesWithCallback(wallets: string[] = []) {
+export function useListNodeLicensesWithCallback(wallets: string[] = [], refresh = 0) {
 	const [loading, setLoading] = useState(false);
 	const [licenses, setLicenses] = useAtom(licensesAtom);
+
+
+	useEffect(() => {
+		setLicenses({})
+	}, [refresh]);
 
 	useEffect(() => {
 		if (wallets.length > 0) {
 			void getNodeLicenses();
 		}
-	}, [JSON.stringify(wallets)]);
+	}, [JSON.stringify(wallets), refresh]);
 
 	async function getNodeLicenses() {
 		setLoading(true);

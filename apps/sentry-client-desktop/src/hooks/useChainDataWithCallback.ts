@@ -1,6 +1,6 @@
 import {useOperator} from "@/features/operator";
 import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
-import {atom, useAtom} from "jotai";
+import {atom, useAtom, useAtomValue, useSetAtom} from "jotai";
 import {useEffect} from "react";
 import {StatusMap, useKycStatusesWithCallback} from "@/hooks/useKycStatusesWithCallback";
 import {
@@ -34,6 +34,7 @@ const defaultChainState: ChainState = {
 }
 
 export const chainStateAtom = atom<ChainState>(defaultChainState);
+export const chainStateRefreshAtom = atom(0);
 
 // todo implement refreshing
 
@@ -44,11 +45,26 @@ export const chainStateAtom = atom<ChainState>(defaultChainState);
  */
 export function useChainDataWithCallback() {
 	const [chainState, setChainState] = useAtom(chainStateAtom);
+	const chainStateRefresh = useAtomValue(chainStateRefreshAtom);
 	const {publicKey} = useOperator();
-	const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey);
+	const {
+		isLoading: ownersLoading,
+		owners
+	} = useListOwnersForOperatorWithCallback(publicKey, false, chainStateRefresh);
 	const {combinedOwners} = useCombinedOwners(owners);
-	const {isLoading: ownersKycLoading, statusMap: ownersKycMap} = useKycStatusesWithCallback(combinedOwners);
-	const {isLoading: licensesLoading, licensesMap} = useListNodeLicensesWithCallback(combinedOwners);
+	const {
+		isLoading: ownersKycLoading,
+		statusMap: ownersKycMap
+	} = useKycStatusesWithCallback(combinedOwners, chainStateRefresh);
+	const {
+		isLoading: licensesLoading,
+		licensesMap
+	} = useListNodeLicensesWithCallback(combinedOwners, chainStateRefresh);
+
+	useEffect(() => {
+		console.log(chainStateRefresh);
+		setChainState(defaultChainState);
+	}, [chainStateRefresh]);
 
 	useEffect(() => {
 		setChainState((_chainState) => {
@@ -93,4 +109,18 @@ export function useChainDataWithCallback() {
 	return {
 		...chainState,
 	}
+}
+
+export function useChainDataRefresh() {
+	const setChainStateRefresh = useSetAtom(chainStateRefreshAtom);
+
+	function refresh() {
+		setChainStateRefresh((_value) => {
+			return _value + 1
+		});
+	}
+
+	return {
+		refresh
+	};
 }
