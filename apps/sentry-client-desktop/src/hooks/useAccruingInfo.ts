@@ -12,7 +12,6 @@ export function useAccruingInfo() {
 	const {data: balance} = useBalance(operatorAddress);
 
 	const {owners, licensesMap, ownersKycMap} = useAtomValue(chainStateAtom);
-
 	const {balances} = useGetAccruedEsXaiBulk();
 	const kycRequired = owners?.length > 0 && ownersKycMap && Object.values(ownersKycMap).filter((status) => !status).length > 0;
 

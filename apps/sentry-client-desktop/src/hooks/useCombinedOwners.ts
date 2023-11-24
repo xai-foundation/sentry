@@ -11,6 +11,8 @@ export function useCombinedOwners(assignedOwners: string[] = []) {
 		return result;
 	}, {});
 
+
+
 	return {
 		combinedOwners,
 		walletAssignedMap,

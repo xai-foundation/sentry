@@ -1,6 +1,6 @@
 import {HasKeys} from "./HasKeys.js";
 import {NoKeys} from "./NoKeys.js";
-import {AiFillWarning, AiOutlineInfoCircle} from "react-icons/ai";
+import {AiOutlineInfoCircle} from "react-icons/ai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useAtom, useAtomValue} from "jotai";
 import {Tooltip} from "@/features/keys/Tooltip";
@@ -9,6 +9,7 @@ import {BiLoaderAlt} from "react-icons/bi";
 import {chainStateAtom, useChainDataRefresh} from "@/hooks/useChainDataWithCallback";
 import {useCombinedOwners} from "@/hooks/useCombinedOwners";
 import {MdRefresh} from "react-icons/md";
+import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
 
 export type WalletAssignedMap = Record<string, boolean>;
 
@@ -19,12 +20,12 @@ export function Keys() {
 		ownersKycLoading,
 		ownersKycMap,
 		licensesLoading,
-		licensesMap,
-		licensesList
+		combinedLicensesMap,
+		combinedLicensesList,
 	} = useAtomValue(chainStateAtom);
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const {combinedOwners, walletAssignedMap} = useCombinedOwners(owners);
-	const keyCount = licensesList.length;
+	const keyCount = combinedLicensesList.length;
 	const {refresh} = useChainDataRefresh();
 
 	return (
@@ -71,19 +72,8 @@ export function Keys() {
 					</button>
 				</div>
 
-				{drawerState === null && !ownersLoading && !ownersKycLoading && !licensesLoading && keyCount === 0 && (
-					<div className="flex gap-4 bg-[#FFFBEB] p-2 z-10">
-						<div className="flex flex-row gap-2 items-center">
-							<AiFillWarning className="w-7 h-7 text-[#F59E28]"/>
-							<span className="text-[#B45317] text-[15px] font-semibold">Actions required (Buy)</span>
-						</div>
-						<button
-							onClick={() => setDrawerState(DrawerView.ActionsRequiredBuy)}
-							className={`flex flex-row justify-center items-center py-1 px-4 gap-1 bg-[#F30919] text-[15px] text-white font-semibold`}
-						>
-							Resolve
-						</button>
-					</div>
+				{drawerState === null && (
+					<ActionsRequiredPromptHandler/>
 				)}
 			</div>
 
@@ -91,13 +81,13 @@ export function Keys() {
 				<NoKeys/>
 			) : (
 				<>
-					{Object.keys(licensesMap).length === 0 || keyCount === 0 ? (
+					{Object.keys(combinedLicensesMap).length === 0 || keyCount === 0 ? (
 						<div className="w-full h-full flex-1 flex flex-col justify-center items-center">
 							<h3 className="text-center">Loading...</h3>
 						</div>
 					) : (
 						<HasKeys
-							licensesMap={licensesMap}
+							combinedLicensesMap={combinedLicensesMap}
 							statusMap={ownersKycMap}
 							isWalletAssignedMap={walletAssignedMap}
 						/>

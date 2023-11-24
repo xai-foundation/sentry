@@ -20,12 +20,12 @@ import {useStorage} from "@/features/storage";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 
 interface HasKeysProps {
-	licensesMap: LicenseMap,
+	combinedLicensesMap: LicenseMap,
 	statusMap: StatusMap,
 	isWalletAssignedMap: WalletAssignedMap,
 }
 
-export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysProps) {
+export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: HasKeysProps) {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
 	const {data, setData} = useStorage();
@@ -58,10 +58,10 @@ export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysPr
 	function renderKeys() {
 		let licenses: LicenseList = [];
 		if (!selectedWallet) {
-			licenses = getLicensesList(licensesMap);
+			licenses = getLicensesList(combinedLicensesMap);
 		} else {
-			if (licensesMap[selectedWallet]) {
-				licenses = licensesMap[selectedWallet].map((license) => {
+			if (combinedLicensesMap[selectedWallet]) {
+				licenses = combinedLicensesMap[selectedWallet].map((license) => {
 					return {owner: selectedWallet, key: license};
 				});
 			}
