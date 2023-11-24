@@ -18,8 +18,6 @@ import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {useOperator} from "@/features/operator";
 import {useStorage} from "@/features/storage";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
-import {MdRefresh} from "react-icons/md";
-import {useChainDataRefresh} from "@/hooks/useChainDataWithCallback";
 
 interface HasKeysProps {
 	licensesMap: LicenseMap,
@@ -30,8 +28,6 @@ interface HasKeysProps {
 export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysProps) {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
-	const {refresh} = useChainDataRefresh();
-
 	const {data, setData} = useStorage();
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
@@ -299,16 +295,6 @@ export function HasKeys({licensesMap, statusMap, isWalletAssignedMap}: HasKeysPr
 						{renderKeys()}
 						</tbody>
 					</table>
-
-					<div className="w-full flex items-center justify-center p-4">
-						<a
-							onClick={refresh}
-							className="flex items-center text-[15px] text-[#F30919] gap-1 cursor-pointer font-light select-none"
-						>
-							<MdRefresh/> Refresh
-						</a>
-					</div>
-
 				</div>
 			</div>
 		</>

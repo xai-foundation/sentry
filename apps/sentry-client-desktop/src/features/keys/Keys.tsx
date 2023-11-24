@@ -6,16 +6,26 @@ import {useAtom, useAtomValue} from "jotai";
 import {Tooltip} from "@/features/keys/Tooltip";
 import {RiKey2Line} from "react-icons/ri";
 import {BiLoaderAlt} from "react-icons/bi";
-import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
+import {chainStateAtom, useChainDataRefresh} from "@/hooks/useChainDataWithCallback";
 import {useCombinedOwners} from "@/hooks/useCombinedOwners";
+import {MdRefresh} from "react-icons/md";
 
 export type WalletAssignedMap = Record<string, boolean>;
 
 export function Keys() {
-	const {ownersLoading, owners, ownersKycLoading, ownersKycMap, licensesLoading, licensesMap, licensesList} = useAtomValue(chainStateAtom);
+	const {
+		ownersLoading,
+		owners,
+		ownersKycLoading,
+		ownersKycMap,
+		licensesLoading,
+		licensesMap,
+		licensesList
+	} = useAtomValue(chainStateAtom);
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const {combinedOwners, walletAssignedMap} = useCombinedOwners(owners);
 	const keyCount = licensesList.length;
+	const {refresh} = useChainDataRefresh();
 
 	return (
 		<div className="w-full h-screen">
@@ -24,8 +34,9 @@ export function Keys() {
 					<h2 className="text-lg font-semibold">Keys</h2>
 
 					{licensesLoading ? (
-						<div className="flex min-w-[128px] justify-center items-center text-sm bg-gray-100 pl-2 pr-2 rounded-2xl text-gray-500 gap-1">
-							<BiLoaderAlt className="animate-spin" color={"#A3A3A3"} />
+						<div
+							className="flex min-w-[128px] justify-center items-center text-sm bg-gray-100 pl-2 pr-2 rounded-2xl text-gray-500 gap-1">
+							<BiLoaderAlt className="animate-spin" color={"#A3A3A3"}/>
 							<p>
 								Loading...
 							</p>
@@ -43,6 +54,13 @@ export function Keys() {
 					>
 						<AiOutlineInfoCircle size={16} className="text-[#A3A3A3]"/>
 					</Tooltip>
+
+					<a
+						onClick={refresh}
+						className="flex items-center text-[15px] text-[#F30919] gap-1 cursor-pointer font-light select-none"
+					>
+						<MdRefresh/> Refresh
+					</a>
 
 					<button
 						className="flex justify-center items-center text-[15px] border border-[#E5E5E5] ml-2 py-2 px-3 gap-1"

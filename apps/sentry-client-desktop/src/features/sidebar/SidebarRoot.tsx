@@ -1,5 +1,5 @@
 import {AiOutlineCloudUpload} from "react-icons/ai";
-import {FaDiscord, FaIcons, FaRegCircle} from 'react-icons/fa';
+import {FaDiscord, FaIcons} from 'react-icons/fa';
 import {Link, useNavigate} from 'react-router-dom';
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {RiKey2Line, RiTwitterXFill} from "react-icons/ri";
