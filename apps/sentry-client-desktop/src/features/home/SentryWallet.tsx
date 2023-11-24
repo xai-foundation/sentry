@@ -6,7 +6,7 @@ import {PiCopy} from "react-icons/pi";
 import {HiOutlineDotsVertical} from "react-icons/hi";
 import {GiPauseButton} from "react-icons/gi";
 import {MdRefresh} from "react-icons/md";
-import {useAtom, useSetAtom} from "jotai";
+import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.js";
 import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
@@ -21,7 +21,7 @@ import {Tooltip} from "@/features/keys/Tooltip";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
 import {SentryWalletHeader} from "@/features/home/SentryWalletHeader";
-import {useChainDataWithCallback} from "@/hooks/useChainDataWithCallback";
+import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
 import {useAccruingInfo} from "@/hooks/useAccruingInfo";
 
 // TODO -> replace with dynamic value later
@@ -30,12 +30,18 @@ export const recommendedFundingBalance = ethers.parseEther("0.005");
 export function SentryWallet() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
-	const {ownersLoading, owners, licensesLoading, licensesMap, licensesList} = useChainDataWithCallback();
+	const {ownersLoading, owners, licensesLoading, licensesMap, licensesList} = useAtomValue(chainStateAtom);
 
 	const queryClient = useQueryClient();
 	const {hasAssignedKeys} = useAccruingInfo();
 	const {isLoading: operatorLoading, publicKey: operatorAddress} = useOperator();
 	const {data: balance} = useBalance(operatorAddress);
+
+
+	console.log("licensesLoading", licensesLoading);
+	console.log("ownersLoading", ownersLoading);
+	// console.log("operatorLoading", operatorLoading);
+
 
 	// TODO connect the refresh button on the x keys in y wallets text and query-ify these so we know when it's been cache cleared
 	const loading = operatorLoading || ownersLoading || licensesLoading;

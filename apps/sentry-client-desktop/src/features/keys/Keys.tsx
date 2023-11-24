@@ -2,17 +2,17 @@ import {HasKeys} from "./HasKeys.js";
 import {NoKeys} from "./NoKeys.js";
 import {AiFillWarning, AiOutlineInfoCircle} from "react-icons/ai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
-import {useAtom} from "jotai";
+import {useAtom, useAtomValue} from "jotai";
 import {Tooltip} from "@/features/keys/Tooltip";
 import {RiKey2Line} from "react-icons/ri";
 import {BiLoaderAlt} from "react-icons/bi";
-import {useChainDataWithCallback} from "@/hooks/useChainDataWithCallback";
+import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
 import {useCombinedOwners} from "@/hooks/useCombinedOwners";
 
 export type WalletAssignedMap = Record<string, boolean>;
 
 export function Keys() {
-	const {ownersLoading, owners, ownersKycLoading, ownersKycMap, licensesLoading, licensesMap, licensesList} = useChainDataWithCallback();
+	const {ownersLoading, owners, ownersKycLoading, ownersKycMap, licensesLoading, licensesMap, licensesList} = useAtomValue(chainStateAtom);
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const {combinedOwners, walletAssignedMap} = useCombinedOwners(owners);
 	const keyCount = licensesList.length;

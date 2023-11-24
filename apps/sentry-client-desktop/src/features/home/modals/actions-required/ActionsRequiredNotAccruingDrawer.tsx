@@ -10,11 +10,13 @@ import {AssignedKeysCard} from "./AssignedKeysCard";
 import {KycRequiredCard} from "./KycRequiredCard";
 import {BarStepItem} from "@/components/BarStepItem";
 import {useAccruingInfo} from "@/hooks/useAccruingInfo";
-import {useChainDataWithCallback} from "@/hooks/useChainDataWithCallback";
+import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
+import {useAtomValue} from "jotai";
 
 export function ActionsRequiredNotAccruingDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const {owners, ownersKycMap} = useChainDataWithCallback();
+	const {owners, ownersKycMap} = useAtomValue(chainStateAtom);
+
 	const {accruing, kycRequired} = useAccruingInfo();
 
 	return (

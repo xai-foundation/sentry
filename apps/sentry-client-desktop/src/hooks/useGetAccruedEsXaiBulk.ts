@@ -1,13 +1,13 @@
 import {useEffect, useState} from "react";
 import {getAccruedEsXaiBulk, GetAccruedEsXaiResponse} from "@sentry/core";
-import {atom, useAtom} from "jotai";
-import {useChainDataWithCallback} from "@/hooks/useChainDataWithCallback";
+import {atom, useAtom, useAtomValue} from "jotai";
+import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
 
 export type AccruedBalanceMap = Record<string, GetAccruedEsXaiResponse>;
 export const accruedEsXaiAtom = atom<AccruedBalanceMap>({});
 
 export function useGetAccruedEsXaiBulk() {
-	const {licensesList} = useChainDataWithCallback();
+	const {licensesList} = useAtomValue(chainStateAtom);
 	const [loading, setLoading] = useState(false);
 	const [balances, setBalances] = useAtom(accruedEsXaiAtom);
 

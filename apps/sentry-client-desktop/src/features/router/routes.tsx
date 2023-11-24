@@ -19,10 +19,10 @@ export function AppRoutes() {
 
 	return (
 		<JotaiProvider store={store}>
-			<ChainDataManager/>
 			<Router>
 				<QueryClientProvider client={queryClient}>
 					<div className="w-full h-screen flex">
+						<ChainDataManager/>
 						<BlockpassHandler/>
 						<Sidebar/>
 

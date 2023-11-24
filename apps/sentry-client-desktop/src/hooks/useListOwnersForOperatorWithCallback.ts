@@ -1,6 +1,5 @@
 import {useEffect, useState} from "react";
 import {listOwnersForOperator} from "@sentry/core";
-import {useQuery} from "react-query";
 
 export function useListOwnersForOperatorWithCallback(operatorAddress: string | undefined, initialLoadingState = false) {
 
@@ -8,7 +7,9 @@ export function useListOwnersForOperatorWithCallback(operatorAddress: string | u
 	const [owners, setOwners] = useState<string[]>([]);
 
 	useEffect(() => {
+		// console.log(0);
 		if (operatorAddress) {
+			// console.log(1);
 			void getOperators(operatorAddress);
 		}
 	}, [operatorAddress]);
@@ -37,18 +38,4 @@ export function useListOwnersForOperatorWithCallback(operatorAddress: string | u
 		isLoading: loading,
 		owners,
 	}
-}
-
-export function useCachedListOwnersForOperatorWithCallback(operatorAddress: string | undefined) {
-	// todo: continue here
-	const {owners} = useListOwnersForOperatorWithCallback(operatorAddress, true);
-
-	return useQuery({
-		queryKey: ["use-cached-list-owners-for-operator-with-callback", operatorAddress],
-		queryFn: async () => {
-			return owners;
-		},
-		cacheTime: Infinity,
-		enabled: operatorAddress != null,
-	})
 }

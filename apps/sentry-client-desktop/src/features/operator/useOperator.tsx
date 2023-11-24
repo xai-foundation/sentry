@@ -102,8 +102,6 @@ export function useOperator(): IUseOperatorResponse {
 	}, [window.ipcRenderer])
 
 	useEffect(() => {
-		console.log("6: ", privateKey);
-
 		if (privateKey) {
 			const {signer, address} = getSignerFromPrivateKey(privateKey);
 			signerRef.current = signer;

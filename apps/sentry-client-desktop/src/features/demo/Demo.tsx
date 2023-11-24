@@ -4,16 +4,10 @@ import {useSetAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
 import {Tooltip} from "@/features/keys/Tooltip";
 import {AiFillInfoCircle} from "react-icons/ai";
-import {useOperator} from "@/features/operator";
-import {useCachedListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
 
 export function Demo() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const [showImportSentryAlertModal, setShowImportSentryAlertModal] = useState<boolean>(false);
-	const {publicKey} = useOperator();
-	const owners = useCachedListOwnersForOperatorWithCallback(publicKey);
-
-	console.log("owners", owners);
 
 	return (
 		<div className="h-full flex justify-center items-center gap-4">
