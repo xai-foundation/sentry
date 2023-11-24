@@ -93,7 +93,7 @@ export function useChainDataWithCallback() {
 				combinedWalletsKycMap,
 			}
 		});
-	}, [JSON.stringify(combinedWalletsKycMap)]);
+	}, [JSON.stringify(combinedWalletsKycMap), JSON.stringify(owners)]);
 
 	useEffect(() => {
 		setChainState((_chainState) => {
