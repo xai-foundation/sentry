@@ -122,18 +122,21 @@ export function SentryWallet() {
 
 	function getKeys() {
 		const keysWithOwners: Array<{ owner: string, key: bigint }> = [];
-
 		// Get keys from every assigned wallet if "All" is selected in the drop-down
 		if (selectedWallet === null) {
-			Object.keys(licensesMap).map((owner) => {
-				licensesMap[owner].forEach((license) => {
-					keysWithOwners.push({owner, key: license});
-				});
+			Object.keys(licensesMap).forEach((owner) => {
+				if (licensesMap[owner]) {
+					licensesMap[owner].forEach((license) => {
+						keysWithOwners.push({owner, key: license});
+					});
+				}
 			});
 		} else {
-			licensesMap[selectedWallet].forEach((license) => {
-				keysWithOwners.push({owner: selectedWallet, key: license});
-			});
+			if (licensesMap[selectedWallet]) {
+				licensesMap[selectedWallet].forEach((license) => {
+					keysWithOwners.push({owner: selectedWallet, key: license});
+				});
+			}
 		}
 
 		if (keysWithOwners.length === 0) {
@@ -164,6 +167,7 @@ export function SentryWallet() {
 	function onCloseWalletConnectedModal() {
 		setAssignedWallet({show: false, txHash: ""});
 		setUnassignedWallet({show: false, txHash: ""});
+		refresh();
 		void queryClient.invalidateQueries({queryKey: ["ownersForOperator", operatorAddress]});
 	}
 
@@ -294,7 +298,11 @@ export function SentryWallet() {
 					<div className="flex flex-row items-center w-full py-3 pl-10 gap-1">
 						<h2 className="font-semibold">Assigned Keys</h2>
 						<p className="text-sm bg-gray-100 px-2 rounded-2xl text-gray-500">
-							{loading ? "Loading..." : `${keyCount} key${keyCount === 1 ? "" : "s"} in ${owners.length} wallet${owners.length === 1 ? "" : "s"}`}
+							{owners.length > 0 ? (
+								loading ? "Loading..." : `${keyCount} key${keyCount === 1 ? "" : "s"} in ${owners.length} wallet${owners.length === 1 ? "" : "s"}`
+							) : (
+								"Keys not assigned"
+							)}
 						</p>
 						{loading ? (
 							<span className="flex items-center text-[15px] text-[#A3A3A3] select-none">

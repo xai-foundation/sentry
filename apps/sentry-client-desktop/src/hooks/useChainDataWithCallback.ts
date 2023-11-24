@@ -62,7 +62,6 @@ export function useChainDataWithCallback() {
 	} = useListNodeLicensesWithCallback(combinedOwners, chainStateRefresh);
 
 	useEffect(() => {
-		console.log(chainStateRefresh);
 		setChainState(defaultChainState);
 	}, [chainStateRefresh]);
 

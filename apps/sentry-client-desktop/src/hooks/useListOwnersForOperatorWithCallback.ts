@@ -11,7 +11,6 @@ export function useListOwnersForOperatorWithCallback(operatorAddress: string | u
 	}, [refresh]);
 
 	useEffect(() => {
-		console.log("useListOwne....");
 		if (operatorAddress) {
 			void getOperators(operatorAddress);
 		}
