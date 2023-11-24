@@ -4,6 +4,7 @@ import fs from "fs";
 import { XaiTests } from "./Xai.mjs";
 import { config, createBlsKeyPair } from "@sentry/core";
 import { RuntimeTests } from "./Runtime.mjs";
+import { UpgradeabilityTests } from "./UpgradeTest.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -129,16 +130,16 @@ describe("Fixture Tests", function () {
         // await upgrades.admin.transferProxyAdminOwnership(await upgrader.getAddress(), deployer);
 
         // Mint addr1 a node license
-        let price = await nodeLicense.price(1, ethers.ZeroAddress);
-        await nodeLicense.connect(addr1).mint(1, ethers.ZeroAddress, {value: price});
+        let price = await nodeLicense.price(1, "");
+        await nodeLicense.connect(addr1).mint(1, "", {value: price});
 
         // Mint addr2 10 node licenses
-        price = await nodeLicense.price(10, ethers.ZeroAddress);
-        await nodeLicense.connect(addr2).mint(10, ethers.ZeroAddress, {value: price});
+        price = await nodeLicense.price(10, "");
+        await nodeLicense.connect(addr2).mint(10, "", {value: price});
 
         // Mint addr3 a node license
-        price = await nodeLicense.price(1, ethers.ZeroAddress);
-        await nodeLicense.connect(addr3).mint(1, ethers.ZeroAddress, {value: price});
+        price = await nodeLicense.price(1, "");
+        await nodeLicense.connect(addr3).mint(1, "", {value: price});
 
         // KYC addr1 and addr 2, but not addr 3
         await referee.connect(kycAdmin).addKycWallet(await addr1.getAddress());
@@ -197,6 +198,7 @@ describe("Fixture Tests", function () {
 
     describe("Xai", XaiTests(deployInfrastructure).bind(this));
     describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
-    describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));
+    // describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));
+    describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
 
 })

@@ -16,12 +16,6 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
 
     uint256 public maxSupply; // Maximum number of licenses that can be minted
 
-    // Define the pricing tiers
-    struct Tier {
-        uint256 price;
-        uint256 quantity;
-    }
-
     // Define the pricing table
     Tier[] private pricingTiers;
 
@@ -31,14 +25,27 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     // Mapping from token ID to minting timestamp
     mapping (uint256 => uint256) private _mintTimestamps;
 
+    // Mapping from promo code to PromoCode struct
+    mapping (string => PromoCode) private _promoCodes;
+
+    /**
+     * @dev This empty reserved space is put in place to allow future versions to add new
+     * variables without shifting down storage in the inheritance chain.
+     * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+     */
+    uint256[500] private __gap;
+
+    // Define the pricing tiers
+    struct Tier {
+        uint256 price;
+        uint256 quantity;
+    }
+
     // Define the PromoCode struct
     struct PromoCode {
         address recipient;
         bool active;
     }
-
-    // Mapping from promo code to PromoCode struct
-    mapping (string => PromoCode) private _promoCodes;
 
     event ReferralReward(address indexed buyer, address indexed referralAddress, uint256 amount);
 
