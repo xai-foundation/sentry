@@ -19,7 +19,6 @@ contract GasSubsidy is AccessControlUpgradeable {
      */
     uint256[500] private __gap;
 
-
     function initialize() public initializer {
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);

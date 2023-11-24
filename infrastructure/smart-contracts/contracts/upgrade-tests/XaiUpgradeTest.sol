@@ -5,29 +5,16 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 
 /**
- * @title esXaiUpgradeTest
- * @dev Implementation of the esXaiUpgradeTest
+ * @title XaiUpgradeTest
+ * @dev Implementation of the XaiUpgradeTest
  */
-contract esXaiUpgradeTest is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgradeable {
-
-    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
-
-    EnumerableSetUpgradeable.AddressSet private _whitelist;
+contract XaiUpgradeTest is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgradeable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    address private _xai;
-    bool private _redemptionActive;
-    mapping(address => RedemptionRequest[]) private _redemptionRequests;
+    uint256 public constant MAX_SUPPLY = 2500000000 * 10**18; // Max supply of 2,500,000,000 tokens
+    address private _esXai;
     uint256 private _count;
-
-    struct RedemptionRequest {
-        uint256 amount;
-        uint256 startTime;
-        uint256 duration;
-        bool completed;
-    }
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
@@ -51,4 +38,3 @@ contract esXaiUpgradeTest is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessC
         return _count;
     }
 }
-

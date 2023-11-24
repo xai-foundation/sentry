@@ -20,6 +20,7 @@ contract esXai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgra
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     address private _xai;
     bool private _redemptionActive;
+    mapping(address => RedemptionRequest[]) private _redemptionRequests;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
@@ -35,8 +36,6 @@ contract esXai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgra
         uint256 duration;
         bool completed;
     }
-
-    mapping(address => RedemptionRequest[]) private _redemptionRequests;
 
     event WhitelistUpdated(address account, bool isAdded);
     event RedemptionStarted(address indexed user, uint256 indexed index);
