@@ -31,6 +31,9 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     // Mapping from referral address to referral reward
     mapping (address => uint256) private _referralRewards;
 
+    // Mapping from token ID to average cost, this is used for refunds over multiple tiers
+    mapping (uint256 => uint256) private _averageCost;
+
     // Boolean to control whether referral rewards can be claimed
     bool public claimable = false;
 
@@ -115,6 +118,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         );
 
         uint256 finalPrice = price(_amount, _promoCode);
+        uint256 averageCost = msg.value / _amount;
 
         require(msg.value >= finalPrice, "Ether value sent is not correct");
 
@@ -125,6 +129,9 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
 
             // Record the minting timestamp
             _mintTimestamps[newItemId] = block.timestamp;
+
+            // Record the average cost
+            _averageCost[newItemId] = averageCost;
         }
 
         // Calculate the referral reward
@@ -301,6 +308,20 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             )
         );
         return string(abi.encodePacked("data:application/json;base64,", json));
+    }
+
+    /**
+     * @notice Allows the admin to refund a NodeLicense.
+     * @param _tokenId The ID of the token to refund.
+     * @dev Only callable by the admin.
+     */
+    function refundNodeLicense(uint256 _tokenId) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_exists(_tokenId), "ERC721Metadata: Refund for nonexistent token");
+        uint256 refundAmount = _averageCost[_tokenId];
+        require(refundAmount > 0, "No funds to refund");
+        _averageCost[_tokenId] = 0;
+        payable(ownerOf(_tokenId)).transfer(refundAmount);
+        _burn(_tokenId);
     }
 
     /**
