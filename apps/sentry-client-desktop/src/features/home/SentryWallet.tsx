@@ -21,7 +21,7 @@ import {Tooltip} from "@/features/keys/Tooltip";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
 import {SentryWalletHeader} from "@/features/home/SentryWalletHeader";
-import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
+import {chainStateAtom, useChainDataRefresh} from "@/hooks/useChainDataWithCallback";
 import {useAccruingInfo} from "@/hooks/useAccruingInfo";
 
 // TODO -> replace with dynamic value later
@@ -43,11 +43,15 @@ export function SentryWallet() {
 
 	const [copied, setCopied] = useState<boolean>(false);
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
-	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
+	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({
+		show: false,
+		txHash: ""
+	});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
 	const {startRuntime, stopRuntime, sentryRunning, nodeLicenseStatusMap} = useOperatorRuntime();
 	const [isOpen, setIsOpen] = useState<boolean>(false);
+	const {refresh} = useChainDataRefresh();
 
 	// assign wallet
 	(window as any).deeplinks?.assignedWallet((_event, txHash) => {
@@ -64,6 +68,7 @@ export function SentryWallet() {
 
 	function onRefreshTable() {
 		queryClient.invalidateQueries({queryKey: ["ownersForOperator", operatorAddress]});
+		refresh();
 	}
 
 	function copyPublicKey() {
