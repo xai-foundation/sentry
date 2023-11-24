@@ -28,6 +28,12 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     // Mapping from promo code to PromoCode struct
     mapping (string => PromoCode) private _promoCodes;
 
+    // Mapping from referral address to referral reward
+    mapping (address => uint256) private _referralRewards;
+
+    // Boolean to control whether referral rewards can be claimed
+    bool public claimable = false;
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
@@ -125,7 +131,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         uint256 referralReward = 0;
         if (promoCode.recipient != address(0)) {
             referralReward = finalPrice * referralRewardPercentage / 100;
-            payable(promoCode.recipient).transfer(referralReward);
+            _referralRewards[promoCode.recipient] += referralReward;
             emit ReferralReward(msg.sender, promoCode.recipient, referralReward);
         }
 
@@ -170,6 +176,36 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         }
 
         return totalCost;
+    }
+
+    /**
+     * @notice Allows a user to claim their referral reward.
+     * @dev The function checks if claiming is enabled and if the caller has a reward to claim.
+     * If both conditions are met, the reward is transferred to the caller and their reward balance is reset.
+     */
+    function claimReferralReward() external {
+        require(claimable, "Claiming of referral rewards is currently disabled");
+        uint256 reward = _referralRewards[msg.sender];
+        require(reward > 0, "No referral reward to claim");
+        _referralRewards[msg.sender] = 0;
+        payable(msg.sender).transfer(reward);
+    }
+
+    /**
+     * @notice Allows the admin to withdraw all funds from the contract.
+     * @dev Only callable by the admin.
+     */
+    function withdrawFunds() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        fundsReceiver.transfer(address(this).balance);
+    }
+
+    /**
+     * @notice Allows the admin to toggle the claimable state of referral rewards.
+     * @param _claimable The new state of the claimable variable.
+     * @dev Only callable by the admin.
+     */
+    function setClaimable(bool _claimable) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        claimable = _claimable;
     }
 
     /**
@@ -302,3 +338,4 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         revert("NodeLicense: transfer is not allowed");
     }
 }
+
