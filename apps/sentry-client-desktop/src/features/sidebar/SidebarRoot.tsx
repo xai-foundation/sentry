@@ -44,11 +44,10 @@ export function Sidebar() {
 						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
 					>
 						<div className="w-[15px] h-[15px] flex justify-center items-center">
-							{sentryRunning
-								? sentryRunning && hasAssignedKeys && funded
-									? <GreenPulse/>
-									: <YellowPulse/>
-								: <FaRegCircle size={8}/>}
+							{sentryRunning && hasAssignedKeys && funded
+								? <GreenPulse/>
+								: <YellowPulse/>
+							}
 						</div>
 
 						Sentry Wallet
