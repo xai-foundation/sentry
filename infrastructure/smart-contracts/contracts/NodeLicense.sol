@@ -35,7 +35,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     mapping (uint256 => uint256) private _averageCost;
 
     // Boolean to control whether referral rewards can be claimed
-    bool public claimable = false;
+    bool public claimable;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
@@ -68,6 +68,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         fundsReceiver = _fundsReceiver;
         referralDiscountPercentage = _referralDiscountPercentage;
         referralRewardPercentage = _referralRewardPercentage;
+        claimable = false;
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
@@ -286,7 +287,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             abi.encodePacked(
                 "<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' style='background-color:black;'><text x='10' y='50' font-size='20' fill='white'>",
                 _tokenId.toString(),
-                "</text><text x='10' y='90' font-size='15' textLength='100' lengthAdjust='spacingAndGlyphs' fill='white'>",
+                "</text><text x='10' y='90' font-size='8' textLength='100' lengthAdjust='spacingAndGlyphs' fill='white'>",
                 StringsUpgradeable.toHexString(uint160(ownerAddress)),
                 "</text></svg>"
             )

@@ -101,6 +101,23 @@ export const RefereeAbi = [
   {
     "type": "event",
     "anonymous": false,
+    "name": "InvalidSubmission",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "challengeId",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "nodeLicenseId",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "KycStatusChanged",
     "inputs": [
       {

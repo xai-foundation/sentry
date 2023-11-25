@@ -12,12 +12,16 @@ const { ethers, upgrades } = hardhat;
 const options = {
   admins: [
     "0xbecbba84BF2d109A4154AAc8f9F9DDDA0808fA95", // Christopher
-    "0xd942EBC67d2C91Eb1a0757345D55A48F953D585b" // Avo
+    "0xd942EBC67d2C91Eb1a0757345D55A48F953D585b", // Avo
+    "0x39085cC8918dED41cA38993Ccd73934AC097e373", // James
+    "0xB065D33B024F87c07E7AaC14E87b5d76e3162647" // Spencer
   ],
   // used for the Gas Subsidy Contract
   transferAdmins: [
     "0xbecbba84BF2d109A4154AAc8f9F9DDDA0808fA95", // Christopher
-    "0xd942EBC67d2C91Eb1a0757345D55A48F953D585b" // Avo
+    "0xd942EBC67d2C91Eb1a0757345D55A48F953D585b", // Avo
+    "0x39085cC8918dED41cA38993Ccd73934AC097e373", // James
+    "0xB065D33B024F87c07E7AaC14E87b5d76e3162647" // Spencer
   ],
   fundsReceiver: "0xbecbba84BF2d109A4154AAc8f9F9DDDA0808fA95", // Christopher
   referralDiscountPercentage: 10,

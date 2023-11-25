@@ -106,6 +106,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     event AssertionCheckingToggled(bool newState);
     event Approval(address indexed owner, address indexed operator, bool approved);
     event KycStatusChanged(address indexed wallet, bool isKycApproved);
+    event InvalidSubmission(uint256 indexed challengeId, uint256 nodeLicenseId);
 
     function initialize(address _esXaiAddress, address _xaiAddress, address _gasSubsidyAddress, uint256 gasSubsidyPercentage_) public initializer {
         __AccessControlEnumerable_init();
@@ -438,6 +439,12 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         
         // Check that _nodeLicenseId hasn't already been submitted for this challenge
         require(!submissions[_challengeId][_nodeLicenseId].submitted, "_nodeLicenseId has already been submitted for this challenge");
+
+        // If the submission successor hash, doesn't match the one submitted by the challenger, then end early and emit an event
+        if (keccak256(abi.encodePacked(_successorStateRoot)) != keccak256(abi.encodePacked(challenges[_challengeId].assertionStateRoot))) {
+            emit InvalidSubmission(_challengeId, _nodeLicenseId);
+            return;
+        }
 
         // Store the assertionSubmission to a map
         submissions[_challengeId][_nodeLicenseId] = Submission({
