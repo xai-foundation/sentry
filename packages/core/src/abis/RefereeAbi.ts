@@ -872,6 +872,25 @@ export const RefereeAbi = [
   },
   {
     "type": "function",
+    "name": "getTotalClaims",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "owner"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "grantRole",
     "constant": false,
     "payable": false,
