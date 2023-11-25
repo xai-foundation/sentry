@@ -101,6 +101,23 @@ export const RefereeAbi = [
   {
     "type": "event",
     "anonymous": false,
+    "name": "InvalidSubmission",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "challengeId",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "nodeLicenseId",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "KycStatusChanged",
     "inputs": [
       {
@@ -850,6 +867,25 @@ export const RefereeAbi = [
             "name": "claimed"
           }
         ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getTotalClaims",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "owner"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
       }
     ]
   },

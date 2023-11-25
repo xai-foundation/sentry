@@ -51,6 +51,9 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping from operator to owners
     mapping (address => EnumerableSetUpgradeable.AddressSet) private _ownersForOperator;
 
+    // Mappings to keep track of all claims
+    mapping (address => uint256) private _lifetimeClaims;
+
     // Mapping to track rollup assertions (combination of the assertionId and the rollupAddress used, because we allow switching the rollupAddress, and can't assume assertionIds are unique.)
     mapping (bytes32 => bool) public rollupAssertionTracker;
 
@@ -106,6 +109,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     event AssertionCheckingToggled(bool newState);
     event Approval(address indexed owner, address indexed operator, bool approved);
     event KycStatusChanged(address indexed wallet, bool isKycApproved);
+    event InvalidSubmission(uint256 indexed challengeId, uint256 nodeLicenseId);
 
     function initialize(address _esXaiAddress, address _xaiAddress, address _gasSubsidyAddress, uint256 gasSubsidyPercentage_) public initializer {
         __AccessControlEnumerable_init();
@@ -439,6 +443,12 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         // Check that _nodeLicenseId hasn't already been submitted for this challenge
         require(!submissions[_challengeId][_nodeLicenseId].submitted, "_nodeLicenseId has already been submitted for this challenge");
 
+        // If the submission successor hash, doesn't match the one submitted by the challenger, then end early and emit an event
+        if (keccak256(abi.encodePacked(_successorStateRoot)) != keccak256(abi.encodePacked(challenges[_challengeId].assertionStateRoot))) {
+            emit InvalidSubmission(_challengeId, _nodeLicenseId);
+            return;
+        }
+
         // Store the assertionSubmission to a map
         submissions[_challengeId][_nodeLicenseId] = Submission({
             submitted: true,
@@ -511,6 +521,9 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
 
         // Mint the reward to the owner of the nodeLicense
         esXai(esXaiAddress).mint(owner, reward);
+
+        // Increment the total claims of this address
+        _lifetimeClaims[owner] += reward;
     }
 
     /**
@@ -573,5 +586,14 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
 
         // Set expiredForRewarding to true
         challenges[_challengeId].expiredForRewarding = true;
+    }
+
+    /**
+     * @notice Get the total claims for a specific address.
+     * @param owner The address to query.
+     * @return The total claims for the address.
+     */
+    function getTotalClaims(address owner) public view returns (uint256) {
+        return _lifetimeClaims[owner];
     }
 }

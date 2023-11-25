@@ -217,6 +217,28 @@ export const NodeLicenseAbi = [
   },
   {
     "type": "function",
+    "name": "claimReferralReward",
+    "constant": false,
+    "payable": false,
+    "inputs": [],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "claimable",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "bool",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "createPromoCode",
     "constant": false,
     "payable": false,
@@ -548,6 +570,19 @@ export const NodeLicenseAbi = [
   },
   {
     "type": "function",
+    "name": "refundNodeLicense",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "_tokenId"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "removePromoCode",
     "constant": false,
     "payable": false,
@@ -652,6 +687,19 @@ export const NodeLicenseAbi = [
       {
         "type": "bool",
         "name": "approved"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "setClaimable",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "bool",
+        "name": "_claimable"
       }
     ],
     "outputs": []
@@ -834,6 +882,14 @@ export const NodeLicenseAbi = [
         "name": "tokenId"
       }
     ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "withdrawFunds",
+    "constant": false,
+    "payable": false,
+    "inputs": [],
     "outputs": []
   }
 ];

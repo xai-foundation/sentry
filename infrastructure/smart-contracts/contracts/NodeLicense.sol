@@ -31,8 +31,11 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     // Mapping from referral address to referral reward
     mapping (address => uint256) private _referralRewards;
 
+    // Mapping from token ID to average cost, this is used for refunds over multiple tiers
+    mapping (uint256 => uint256) private _averageCost;
+
     // Boolean to control whether referral rewards can be claimed
-    bool public claimable = false;
+    bool public claimable;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
@@ -65,6 +68,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         fundsReceiver = _fundsReceiver;
         referralDiscountPercentage = _referralDiscountPercentage;
         referralRewardPercentage = _referralRewardPercentage;
+        claimable = false;
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
@@ -115,6 +119,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         );
 
         uint256 finalPrice = price(_amount, _promoCode);
+        uint256 averageCost = msg.value / _amount;
 
         require(msg.value >= finalPrice, "Ether value sent is not correct");
 
@@ -125,6 +130,9 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
 
             // Record the minting timestamp
             _mintTimestamps[newItemId] = block.timestamp;
+
+            // Record the average cost
+            _averageCost[newItemId] = averageCost;
         }
 
         // Calculate the referral reward
@@ -279,7 +287,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             abi.encodePacked(
                 "<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' style='background-color:black;'><text x='10' y='50' font-size='20' fill='white'>",
                 _tokenId.toString(),
-                "</text><text x='10' y='90' font-size='15' textLength='100' lengthAdjust='spacingAndGlyphs' fill='white'>",
+                "</text><text x='10' y='90' font-size='8' textLength='100' lengthAdjust='spacingAndGlyphs' fill='white'>",
                 StringsUpgradeable.toHexString(uint160(ownerAddress)),
                 "</text></svg>"
             )
@@ -301,6 +309,20 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             )
         );
         return string(abi.encodePacked("data:application/json;base64,", json));
+    }
+
+    /**
+     * @notice Allows the admin to refund a NodeLicense.
+     * @param _tokenId The ID of the token to refund.
+     * @dev Only callable by the admin.
+     */
+    function refundNodeLicense(uint256 _tokenId) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_exists(_tokenId), "ERC721Metadata: Refund for nonexistent token");
+        uint256 refundAmount = _averageCost[_tokenId];
+        require(refundAmount > 0, "No funds to refund");
+        _averageCost[_tokenId] = 0;
+        payable(ownerOf(_tokenId)).transfer(refundAmount);
+        _burn(_tokenId);
     }
 
     /**
