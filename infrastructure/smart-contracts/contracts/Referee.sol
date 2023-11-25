@@ -51,6 +51,9 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping from operator to owners
     mapping (address => EnumerableSetUpgradeable.AddressSet) private _ownersForOperator;
 
+    // Mappings to keep track of all claims
+    mapping (address => uint256) private _lifetimeClaims;
+
     // Mapping to track rollup assertions (combination of the assertionId and the rollupAddress used, because we allow switching the rollupAddress, and can't assume assertionIds are unique.)
     mapping (bytes32 => bool) public rollupAssertionTracker;
 
@@ -518,6 +521,9 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
 
         // Mint the reward to the owner of the nodeLicense
         esXai(esXaiAddress).mint(owner, reward);
+
+        // Increment the total claims of this address
+        _lifetimeClaims[owner] += reward;
     }
 
     /**
@@ -580,5 +586,14 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
 
         // Set expiredForRewarding to true
         challenges[_challengeId].expiredForRewarding = true;
+    }
+
+    /**
+     * @notice Get the total claims for a specific address.
+     * @param owner The address to query.
+     * @return The total claims for the address.
+     */
+    function getTotalClaims(address owner) public view returns (uint256) {
+        return _lifetimeClaims[owner];
     }
 }
