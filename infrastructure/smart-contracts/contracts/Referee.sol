@@ -310,22 +310,6 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         // determine what the size of the emission is based on each challenge having an estimated static length
         return (emissionTier / 17520, emissionTier);
     }
-    // function calculateChallengeEmissionAndTier() public view returns (uint256, uint256) {
-
-    //     uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
-    //     uint256 totalSupply = getCombinedTotalSupply();
-
-    //     // determine which tier we are in based on the halving formula
-    //     uint256 emissionTier = maxSupply / 2;
-    //     uint256 challengeEmission = emissionTier / 17520;
-    //     while (totalSupply >= emissionTier) {
-    //         emissionTier = (emissionTier / 2) + emissionTier;
-    //         challengeEmission = challengeEmission / 2;
-    //     }
-
-    //     // determine what the size of the emission is based on each challenge having an estimated static length
-    //     return (challengeEmission, emissionTier);
-    // }
 
     /**
      * @notice Submits a challenge to the contract.
