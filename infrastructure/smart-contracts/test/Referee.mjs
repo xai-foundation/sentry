@@ -1,4 +1,5 @@
 import { expect, assert } from "chai";
+import { ethers } from "ethers";
 
 export function RefereeTests(deployInfrastructure) {
     return function() {
@@ -93,6 +94,44 @@ export function RefereeTests(deployInfrastructure) {
             await referee.connect(kycAdmin).addKycWallet(kycAdmin.address);
             const finalCount = await referee.getKycWalletCount();
             assert.equal(finalCount, BigInt(initialCount + BigInt(1)), "The KYC wallet count does not match");
+        })
+
+        it("Check calculateChallengeEmissionAndTier function with increased total supply", async function() {
+            const {referee, xai, xaiMinter} = await deployInfrastructure();
+            const maxSupply = await xai.MAX_SUPPLY();
+    
+
+            let previousEmissionAndTier = await referee.calculateChallengeEmissionAndTier();
+            let currentSupply = await referee.getCombinedTotalSupply();
+            let currentTier = maxSupply / BigInt(2);
+            let iterationCount = 0;
+        
+            while(currentSupply < maxSupply && iterationCount < 29) {
+                // Calculate the amount to mint to reach the next tier
+                let mintAmount = currentTier - currentSupply;
+        
+                // Break out of the loop if mint amount is 0
+                if (mintAmount === BigInt(0)) {
+                    break;
+                }
+        
+                // Mint the calculated amount
+                await xai.connect(xaiMinter).mint(xaiMinter.address, mintAmount);
+        
+                // Update the current supply
+                currentSupply = await referee.getCombinedTotalSupply();
+        
+                // Check that the emission and tier have changed
+                const currentEmissionAndTier = await referee.calculateChallengeEmissionAndTier();
+                assert.notDeepEqual(previousEmissionAndTier, currentEmissionAndTier, "The emission and tier did not change after increasing total supply");
+                previousEmissionAndTier = currentEmissionAndTier;
+        
+                // Calculate the next tier
+                currentTier = currentSupply + (mintAmount / BigInt(2));
+                
+                // Increase iteration count
+                iterationCount++;
+            }
         })
 
 
