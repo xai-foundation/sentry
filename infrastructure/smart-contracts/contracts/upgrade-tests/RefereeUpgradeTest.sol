@@ -29,6 +29,7 @@ contract RefereeUpgradeTest is AccessControlEnumerableUpgradeable {
     bool public isCheckingAssertions;
     mapping (address => EnumerableSetUpgradeable.AddressSet) private _operatorApprovals;
     mapping (address => EnumerableSetUpgradeable.AddressSet) private _ownersForOperator;
+    mapping (address => uint256) private _lifetimeClaims;
     mapping (bytes32 => bool) public rollupAssertionTracker;
     EnumerableSetUpgradeable.AddressSet private kycWallets;
     uint256 private _allocatedTokens;

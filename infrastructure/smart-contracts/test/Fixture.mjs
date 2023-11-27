@@ -5,6 +5,7 @@ import { XaiTests } from "./Xai.mjs";
 import { config, createBlsKeyPair } from "@sentry/core";
 import { RuntimeTests } from "./Runtime.mjs";
 import { UpgradeabilityTests } from "./UpgradeTest.mjs";
+import { RefereeTests } from "./Referee.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -43,6 +44,9 @@ describe("Fixture Tests", function () {
         const EsXai = await ethers.getContractFactory("esXai");
         const esXai = await upgrades.deployProxy(EsXai, [await xai.getAddress()], { deployer: deployer });
         await esXai.waitForDeployment();
+
+        // Set esXai on Xai
+        await xai.setEsXaiAddress(await esXai.getAddress());
 
         // Deploy Gas Subsidy
         const GasSubsidy = await ethers.getContractFactory("GasSubsidy");
@@ -96,6 +100,7 @@ describe("Fixture Tests", function () {
         const esXaiMinterRole = await xai.MINTER_ROLE();
         await esXai.grantRole(esXaiMinterRole, await esXaiMinter.getAddress());
         await esXai.grantRole(esXaiMinterRole, await referee.getAddress());
+        await esXai.grantRole(esXaiMinterRole, await xai.getAddress());
 
         // Setup Node License Roles 
         const nodeLicenseAdminRole = await nodeLicense.DEFAULT_ADMIN_ROLE();
@@ -198,7 +203,10 @@ describe("Fixture Tests", function () {
 
     describe("Xai", XaiTests(deployInfrastructure).bind(this));
     describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
-    // describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));
+    describe("Referee", RefereeTests(deployInfrastructure).bind(this));
     describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
+
+    // This doesn't work when running coverage
+    // describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));
 
 })

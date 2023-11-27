@@ -14,7 +14,7 @@ import "./esXai.sol";
 contract Xai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgradeable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     uint256 public constant MAX_SUPPLY = 2500000000 * 10**18; // Max supply of 2,500,000,000 tokens
-    address private _esXai;
+    address public esXaiAddress;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
@@ -37,7 +37,7 @@ contract Xai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgrade
      * @param newEsXaiAddress The new esXai address.
      */
     function setEsXaiAddress(address newEsXaiAddress) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        _esXai = newEsXaiAddress;
+        esXaiAddress = newEsXaiAddress;
     }
 
     /**
@@ -57,8 +57,8 @@ contract Xai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgrade
      * @param amount The amount of Xai to convert.
      */
     function convertToEsXai(uint256 amount) public {
-        require(_esXai != address(0), "esXai contract address not set");
+        require(esXaiAddress != address(0), "esXai contract address not set");
         _burn(msg.sender, amount);
-        esXai(_esXai).mint(msg.sender, amount);
+        esXai(esXaiAddress).mint(msg.sender, amount);
     }
 }

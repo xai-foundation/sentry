@@ -23,8 +23,11 @@ contract NodeLicenseUpgradeTest is ERC721EnumerableUpgradeable, AccessControlUpg
     Tier[] private pricingTiers;
     uint256 public referralDiscountPercentage;
     uint256 public referralRewardPercentage;
+    bool public claimable;
     mapping (uint256 => uint256) private _mintTimestamps;
     mapping (string => PromoCode) private _promoCodes;
+    mapping (address => uint256) private _referralRewards;
+    mapping (uint256 => uint256) private _averageCost;
 
     uint256 private _count;
 

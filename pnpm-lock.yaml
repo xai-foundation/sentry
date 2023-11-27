@@ -289,6 +289,9 @@ importers:
       ethers:
         specifier: 6.8.1
         version: 6.8.1
+      ganache-cli:
+        specifier: ^6.12.2
+        version: 6.12.2
     devDependencies:
       '@nomicfoundation/hardhat-network-helpers':
         specifier: 1.0.9
@@ -10312,6 +10315,16 @@ packages:
   /functions-have-names@1.2.3:
     resolution: {integrity: sha512-xckBUXyTIqT97tq2x2AMb+g163b5JFysYk0x4qxNFwbfQkmNZoiRHb6sPzI9/QV33WeuvVYBUIiD4NzNIyqaRQ==}
     dev: true
+
+  /ganache-cli@6.12.2:
+    resolution: {integrity: sha512-bnmwnJDBDsOWBUP8E/BExWf85TsdDEFelQSzihSJm9VChVO1SHp94YXLP5BlA4j/OTxp0wR4R1Tje9OHOuAJVw==}
+    deprecated: ganache-cli is now ganache; visit https://trfl.io/g7 for details
+    hasBin: true
+    dev: false
+    bundledDependencies:
+      - source-map-support
+      - yargs
+      - ethereumjs-util
 
   /gensync@1.0.0-beta.2:
     resolution: {integrity: sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==}

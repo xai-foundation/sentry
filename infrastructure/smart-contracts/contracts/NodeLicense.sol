@@ -22,6 +22,9 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     uint256 public referralDiscountPercentage;
     uint256 public referralRewardPercentage;
 
+    // Boolean to control whether referral rewards can be claimed
+    bool public claimable;
+
     // Mapping from token ID to minting timestamp
     mapping (uint256 => uint256) private _mintTimestamps;
 
@@ -34,8 +37,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     // Mapping from token ID to average cost, this is used for refunds over multiple tiers
     mapping (uint256 => uint256) private _averageCost;
 
-    // Boolean to control whether referral rewards can be claimed
-    bool public claimable;
+
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
