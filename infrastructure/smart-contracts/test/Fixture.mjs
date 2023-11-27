@@ -17,7 +17,6 @@ describe("Fixture Tests", function () {
         // Get addresses to use in the tests
         const [
             deployer,
-            upgrader,
             challenger,
             fundsReceiver,
             refereeDefaultAdmin,
@@ -97,7 +96,7 @@ describe("Fixture Tests", function () {
         // Setup esXai Roles
         const esXaiAdminRole = await esXai.DEFAULT_ADMIN_ROLE();
         await esXai.grantRole(esXaiAdminRole, await esXaiDefaultAdmin.getAddress());
-        const esXaiMinterRole = await xai.MINTER_ROLE();
+        const esXaiMinterRole = await esXai.MINTER_ROLE();
         await esXai.grantRole(esXaiMinterRole, await esXaiMinter.getAddress());
         await esXai.grantRole(esXaiMinterRole, await referee.getAddress());
         await esXai.grantRole(esXaiMinterRole, await xai.getAddress());
@@ -129,10 +128,6 @@ describe("Fixture Tests", function () {
         await gasSubsidy.renounceRole(gasSubsidyAdminRole, await deployer.getAddress());
         await esXai.renounceRole(esXaiAdminRole, await deployer.getAddress());
         await xai.renounceRole(xaiAdminRole, await deployer.getAddress());
-
-        // Transfer the Proxy Admin Ownership
-        // TODO figure out why this doesn't work
-        // await upgrades.admin.transferProxyAdminOwnership(await upgrader.getAddress(), deployer);
 
         // Mint addr1 a node license
         let price = await nodeLicense.price(1, "");
@@ -170,7 +165,6 @@ describe("Fixture Tests", function () {
 
         return {
             deployer,
-            upgrader,
             challenger,
             fundsReceiver,
             refereeDefaultAdmin,

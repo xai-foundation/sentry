@@ -45,9 +45,10 @@ contract RefereeUpgradeTest is AccessControlEnumerableUpgradeable {
 
     struct Submission {
         bool submitted;
+        bool claimed;
+        bool eligibleForPayout;
         uint256 nodeLicenseId;
         bytes successorStateRoot;
-        bool claimed;
     }
 
     struct Challenge {

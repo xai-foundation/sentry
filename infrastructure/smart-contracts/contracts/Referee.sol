@@ -76,9 +76,10 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     // Struct for the submissions
     struct Submission {
         bool submitted;
+        bool claimed;
+        bool eligibleForPayout;
         uint256 nodeLicenseId;
         bytes successorStateRoot;
-        bool claimed;
     }
 
     // Struct for the challenges
@@ -448,16 +449,18 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
             return;
         }
 
+
+        // Check the user is actually eligible for receiving a reward, do not count them in numberOfEligibleClaimers if they are not able to receive a reward
+        (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _successorStateRoot, challenges[_challengeId].challengerSignedHash);
+
         // Store the assertionSubmission to a map
         submissions[_challengeId][_nodeLicenseId] = Submission({
             submitted: true,
+            claimed: false,
+            eligibleForPayout: hashEligible,
             nodeLicenseId: _nodeLicenseId,
-            successorStateRoot: _successorStateRoot,
-            claimed: false
+            successorStateRoot: _successorStateRoot
         });
-
-        // Check the user is actually eligible for receiving a reward, do not count them in numberOfEligibleClaimers if they are not able to receive a reward
-        (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _successorStateRoot);
 
         // Keep track of how many submissions submitted were eligible for the reward
         if (hashEligible) {
@@ -491,6 +494,15 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
             return;
         }
 
+        // Check that node licenses could even be eligible at the start
+        require(challenges[_challengeId].totalSupplyOfNodesAtChallengeStart > 0, "No NodeLicenses have been minted when this challenge started");
+
+        // Get the minting timestamp of the nodeLicenseId
+        uint256 mintTimestamp = NodeLicense(nodeLicenseAddress).getMintTimestamp(_nodeLicenseId);
+
+        // Check if the nodeLicenseId is eligible for a payout
+        require(mintTimestamp < challenges[_challengeId].createdTimestamp, "NodeLicense is not eligible for a payout on this challenge, it was minted after it started");
+
         // Look up the submission
         Submission memory submission = submissions[_challengeId][_nodeLicenseId];
         require(submission.submitted, "No submission found for this NodeLicense and challenge");
@@ -506,7 +518,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         require(!submission.claimed, "This submission has already been claimed");
 
         // Check if we are valid for a payout
-        (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, submission.successorStateRoot);
+        (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, submission.successorStateRoot, challenges[_challengeId].challengerSignedHash);
         require(hashEligible, "Not valid for a payout");
 
         // Take the amount that was allocated for the rewards and divide it by the number of claimers
@@ -533,23 +545,17 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
      * @param _nodeLicenseId The ID of the NodeLicense.
      * @param _challengeId The ID of the challenge.
      * @param _successorStateRoot The successor state root.
-     * @return A tuple containing a boolean indicating if the hash is eligible, the assertionHash, and the threshold.
+     * @param _challengerSignedHash The signed hash for the challenge
+     * @return a boolean indicating if the hash is eligible, and the assertionHash.
      */
     function createAssertionHashAndCheckPayout(
         uint256 _nodeLicenseId,
         uint256 _challengeId,
-        bytes memory _successorStateRoot
-    ) public view returns (bool, bytes32) {
+        bytes memory _successorStateRoot,
+        bytes memory _challengerSignedHash
+    ) public pure returns (bool, bytes32) {
 
-        require(challenges[_challengeId].totalSupplyOfNodesAtChallengeStart > 0, "No NodeLicenses have been minted when this challenge started");
-
-        // Get the minting timestamp of the nodeLicenseId
-        uint256 mintTimestamp = NodeLicense(nodeLicenseAddress).getMintTimestamp(_nodeLicenseId);
-
-        // Check if the nodeLicenseId is eligible for a payout
-        require(mintTimestamp < challenges[_challengeId].createdTimestamp, "NodeLicense is not eligible for a payout on this challenge, it was minted after it started");
-
-        bytes32 assertionHash = keccak256(abi.encodePacked(_nodeLicenseId, _challengeId, challenges[_challengeId].challengerSignedHash, _successorStateRoot));
+        bytes32 assertionHash = keccak256(abi.encodePacked(_nodeLicenseId, _challengeId, _successorStateRoot, _challengerSignedHash));
         uint256 hashNumber = uint256(assertionHash);
 
         return (hashNumber % 100 == 0, assertionHash);

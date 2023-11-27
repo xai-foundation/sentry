@@ -1,7 +1,36 @@
 import { expect, assert } from "chai";
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import {winningHashForNodeLicense0} from "./AssertionData.mjs";
 
 export function RefereeTests(deployInfrastructure) {
+
+    /**
+     * @notice Iterates over a range of state roots to find a winning state root.
+     * @dev This function iterates over a range of state roots, creating an assertion hash for each one and checking if it is a winner.
+     * A state root is considered a winner if the assertion hash is below the threshold for all node licenses.
+     * The function will continue to iterate until a winning state root is found.
+     * @param referee The referee contract instance.
+     * @param winnerNodeLicenses An array of node licenses that are potential winners.
+     * @param challengeId The ID of the challenge.
+     * @return The winning state root.
+     */
+    async function findWinningStateRoot(referee, winnerNodeLicenses, challengeId) {
+        for (let i = 0n;; i++) {
+            const successorStateRoot = `0x${i.toString(16).padStart(64, '0')}`;
+            let isWinnerForAll = true;
+            for (const nodeLicenseId of winnerNodeLicenses) {
+                const [isWinner] = await referee.createAssertionHashAndCheckPayout(nodeLicenseId, challengeId, successorStateRoot, "0x0000000000000000000000000000000000000000000000000000000000000000");
+                if (!isWinner) {
+                    isWinnerForAll = false;
+                    break;
+                }
+            }
+            if (isWinnerForAll) {
+                return successorStateRoot;
+            }
+        }
+    }
+
     return function() {
 
         it("Check to make sure the setChallengerPublicKey actually saves the value and only callable as an admin", async function() {
@@ -180,7 +209,7 @@ export function RefereeTests(deployInfrastructure) {
                 99,
                 "0x0000000000000000000000000000000000000000000000000000000000000000",
                 0,
-                publicKeyHex
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
             );
 
             // Submit the second challenge
@@ -189,7 +218,7 @@ export function RefereeTests(deployInfrastructure) {
                 100,
                 "0x0000000000000000000000000000000000000000000000000000000000000001",
                 0,
-                publicKeyHex
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
             );
 
             const finalChallengeCounter = await referee.challengeCounter();
@@ -202,6 +231,65 @@ export function RefereeTests(deployInfrastructure) {
             assert.equal(previousChallenge.openForSubmissions, false, "The previous challenge did not close after submitting a new challenge");
         });
 
+        it("Check that addr1 submitting a winning hash receives the allocated reward", async function() {
+            const {referee, operator, challenger, esXai, addr1} = await loadFixture(deployInfrastructure);
 
+            const winningStateRoot = await findWinningStateRoot(referee, [1], 0);
+
+            // Submit a challenge
+            await referee.connect(challenger).submitChallenge(
+                100,
+                99,
+                winningStateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
+            // check to see the challenge is open for submissions
+            const {openForSubmissions} = await referee.getChallenge(0);
+            expect(openForSubmissions).to.be.eq(true);
+            
+
+            // Submit a winning hash
+            await referee.connect(operator).submitAssertionToChallenge(1, 0, winningStateRoot);
+
+            // Check the submission
+            const submission = await referee.getSubmissionsForChallenges([0], 1);
+            assert.equal(submission[0].submitted, true, "The submission was not submitted");
+            assert.equal(submission[0].claimed, false, "The submission was already claimed");
+            assert.equal(submission[0].eligibleForPayout, true, "The hash was not eligible for a payout");
+
+            // submit another assertion to end the previous challenge
+            await referee.connect(challenger).submitChallenge(
+                101,
+                100,
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
+            // check to see the previous challenge closed
+            const {openForSubmissions: openForSubmissionsAfter, numberOfEligibleClaimers, rewardAmountForClaimers} = await referee.getChallenge(0);
+            expect(openForSubmissionsAfter).to.be.eq(false);
+            expect(numberOfEligibleClaimers).to.be.eq(BigInt(1));
+
+            // get the esXai balance of the addr1 prior to claiming
+            const balanceBefore = await esXai.balanceOf(await addr1.getAddress());
+
+            // Claim the reward
+            await referee.connect(operator).claimReward(1, 0);
+
+            // Check the submission again to see its now claimed
+            const claimedSubmission = await referee.getSubmissionsForChallenges([0], 1);
+            assert.equal(claimedSubmission[0].claimed, true, "The reward was not claimed");
+
+            // check to see we got all the rewards from the claim
+            const balanceAfter = await esXai.balanceOf(await addr1.getAddress());
+            assert.equal(balanceAfter, balanceBefore + rewardAmountForClaimers, "The amount of esXai minted was wrong")
+
+            // check the esxai balance is equal to the total claims for the node owner
+            const totalClaimsForAddr1 = await referee.getTotalClaims(await addr1.getAddress());
+            assert.equal(totalClaimsForAddr1, balanceAfter, "total claims does not match the esXai value")
+        });
     }
 }
