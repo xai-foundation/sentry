@@ -55,8 +55,11 @@ export function RefereeTests(deployInfrastructure) {
         it("Check setApprovalForOperator function", async function() {
             const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
             await referee.connect(refereeDefaultAdmin).setApprovalForOperator(kycAdmin.address, true);
-            const isApproved = await referee.isApprovedForOperator(refereeDefaultAdmin.address, kycAdmin.address);
+            let isApproved = await referee.isApprovedForOperator(refereeDefaultAdmin.address, kycAdmin.address);
             assert.equal(isApproved, true, "The operator is not approved");
+            await referee.connect(refereeDefaultAdmin).setApprovalForOperator(kycAdmin.address, false);
+            isApproved = await referee.isApprovedForOperator(refereeDefaultAdmin.address, kycAdmin.address);
+            assert.equal(isApproved, false, "The operator is still approved");
         })
 
         it("Check getOperatorAtIndex function", async function() {
@@ -248,7 +251,6 @@ export function RefereeTests(deployInfrastructure) {
             // check to see the challenge is open for submissions
             const {openForSubmissions} = await referee.getChallenge(0);
             expect(openForSubmissions).to.be.eq(true);
-            
 
             // Submit a winning hash
             await referee.connect(operator).submitAssertionToChallenge(1, 0, winningStateRoot);
@@ -290,6 +292,251 @@ export function RefereeTests(deployInfrastructure) {
             // check the esxai balance is equal to the total claims for the node owner
             const totalClaimsForAddr1 = await referee.getTotalClaims(await addr1.getAddress());
             assert.equal(totalClaimsForAddr1, balanceAfter, "total claims does not match the esXai value")
+
+            // check getChallengeAtIndex is able to iterate over both challenges
+            const firstChallenge = await referee.getChallengeAtIndex(0);
+            const secondChallenge = await referee.getChallengeAtIndex(1);
+            assert.equal(firstChallenge.openForSubmissions, false, "First challenge is still open for submissions");
+            assert.equal(secondChallenge.openForSubmissions, true, "Second challenge is not open for submissions");
         });
+
+        it("Check that an assertion for a challenge, can't be submitted more than once", async function() {
+            const {referee, challenger} = await loadFixture(deployInfrastructure);
+
+            // Submit the same challenge twice
+            await referee.connect(challenger).submitChallenge(
+                101,
+                100,
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
+            await expect(
+                referee.connect(challenger).submitChallenge(
+                    101,
+                    100,
+                    "0x0000000000000000000000000000000000000000000000000000000000000001",
+                    0,
+                    "0x0000000000000000000000000000000000000000000000000000000000000000"
+                )
+            ).to.be.revertedWith("This assertionId and rollupAddress combo has already been submitted");
+        })
+
+        it("Check that only a challenger can can submit a challenge", async function() {
+            const {referee, operator, challenger} = await loadFixture(deployInfrastructure);
+            const expectedRevertMessageChallenger = `AccessControl: account ${operator.address.toLowerCase()} is missing role ${await referee.CHALLENGER_ROLE()}`;
+
+            // Attempt to submit a challenge as an operator, which should fail
+            await expect(
+                referee.connect(operator).submitChallenge(
+                    101,
+                    100,
+                    "0x0000000000000000000000000000000000000000000000000000000000000001",
+                    0,
+                    "0x0000000000000000000000000000000000000000000000000000000000000000"
+                )
+            ).to.be.revertedWith(expectedRevertMessageChallenger);
+
+            // Submit a challenge as a challenger, which should succeed
+            await referee.connect(challenger).submitChallenge(
+                101,
+                100,
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+        })
+
+        it("Check that rewards for a challenge can be expired", async function() {
+            const {referee, operator, challenger} = await loadFixture(deployInfrastructure);
+
+            // Submit a challenge
+            await referee.connect(challenger).submitChallenge(
+                101,
+                100,
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
+            // Attempt to expire the challenge rewards early
+            await expect(
+                referee.connect(operator).expireChallengeRewards(0)
+            ).to.be.revertedWith("Challenge is not old enough to expire rewards");
+
+            // Fast forward time by 180 days
+            await ethers.provider.send("evm_increaseTime", [15552000]);
+            await ethers.provider.send("evm_mine");
+
+            // Attempt to expire the challenge rewards
+            await referee.connect(operator).expireChallengeRewards(0);
+
+            // Check that the challenge is marked as expired
+            const challenge = await referee.challenges(0);
+            assert.equal(challenge.expiredForRewarding, true, "Challenge rewards were not expired");
+        });
+
+        it("Check that rewards for a challenge can be expired via claimReward", async function() {
+            const {referee, operator, challenger} = await loadFixture(deployInfrastructure);
+
+            // Submit a challenge
+            await referee.connect(challenger).submitChallenge(
+                101,
+                100,
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
+            // Close the challenge to allow claims by submitting the next challenge
+            await referee.connect(challenger).submitChallenge(
+                102,
+                101,
+                "0x0000000000000000000000000000000000000000000000000000000000000002",
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
+            // Fast forward time by 180 days
+            await ethers.provider.send("evm_increaseTime", [15552000]);
+            await ethers.provider.send("evm_mine");
+
+            // Attempt to claim reward, which should expire the challenge rewards
+            await referee.connect(operator).claimReward(0, 0);
+
+            // Check that the challenge is marked as expired
+            const challenge = await referee.challenges(0);
+            assert.equal(challenge.expiredForRewarding, true, "Challenge rewards were not expired via claimReward");
+        });
+
+        it("Check that submitting an invalid successorRoot does not create a submission", async function() {
+            const {referee, operator, challenger} = await loadFixture(deployInfrastructure);
+
+            // Submit a challenge
+            await referee.connect(challenger).submitChallenge(
+                101,
+                100,
+                "0x0000000000000000000000000000000000000000000000000000000000000001",
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
+            // Submit an invalid successorRoot
+            referee.connect(operator).submitAssertionToChallenge(
+                1,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000002"
+            )
+
+            // Check that no submission was created
+            const [submission] = await referee.getSubmissionsForChallenges([0], 1);
+            assert.equal(submission.submitted, false, "Submission was created with invalid successorRoot");
+        });
+
+        describe("The rollup protocol should be checking if values are correct", function() {
+
+            it("Check that toggling assertion, makes so you have to send in the correct assertion data from the rollup protocol", async function() {
+                const {referee, refereeDefaultAdmin, challenger} = await loadFixture(deployInfrastructure);
+    
+                // check isCheckingAssertions is false
+                const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
+                assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
+    
+                // turn on assertion checking
+                await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
+            
+                // check isCheckingAssertions is true
+                const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
+                assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
+    
+                // get an arbitrary node from the protocol and check to see that the referee actually checks it
+                await referee.connect(challenger).submitChallenge(
+                    2252,
+                    2251,
+                    "0xe92f83d1df26eaa329c13411269d1b78b3b9ae2e7d18097fd3a38efc02077fac",
+                    10117582,
+                    "0x0000000000000000000000000000000000000000000000000000000000000000"
+                );
+            })
+
+            it("Check that passing an incorrect _predecessorAssertionId throws an error", async function() {
+
+                const {referee, refereeDefaultAdmin, challenger} = await loadFixture(deployInfrastructure);
+    
+                // check isCheckingAssertions is false
+                const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
+                assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
+    
+                // turn on assertion checking
+                await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
+            
+                // check isCheckingAssertions is true
+                const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
+                assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
+
+                await expect(
+                    referee.connect(challenger).submitChallenge(
+                        2252,
+                        9999,
+                        "0xe92f83d1df26eaa329c13411269d1b78b3b9ae2e7d18097fd3a38efc02077fac",
+                        10117582,
+                        "0x0000000000000000000000000000000000000000000000000000000000000000"
+                    )
+                ).to.be.revertedWith("The _predecessorAssertionId is incorrect.");
+            })
+
+            it("Check that passing an incorrect _assertionStateRoot throws an error", async function() {
+
+                const {referee, refereeDefaultAdmin, challenger} = await loadFixture(deployInfrastructure);
+    
+                // check isCheckingAssertions is false
+                const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
+                assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
+    
+                // turn on assertion checking
+                await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
+            
+                // check isCheckingAssertions is true
+                const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
+                assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
+
+                await expect(
+                    referee.connect(challenger).submitChallenge(
+                        2252,
+                        2251,
+                        "0x0000000000000000000000000000000000000000000000000000000000000000",
+                        10117582,
+                        "0x0000000000000000000000000000000000000000000000000000000000000000"
+                    )
+                ).to.be.revertedWith("The _assertionStateRoot is incorrect.");
+            })
+
+            it("Check that passing an incorrect _assertionTimestamp throws an error", async function() {
+
+                const {referee, refereeDefaultAdmin, challenger} = await loadFixture(deployInfrastructure);
+    
+                // check isCheckingAssertions is false
+                const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
+                assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
+    
+                // turn on assertion checking
+                await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
+            
+                // check isCheckingAssertions is true
+                const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
+                assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
+
+                await expect(
+                    referee.connect(challenger).submitChallenge(
+                        2252,
+                        2251,
+                        "0xe92f83d1df26eaa329c13411269d1b78b3b9ae2e7d18097fd3a38efc02077fac",
+                        99999999,
+                        "0x0000000000000000000000000000000000000000000000000000000000000000"
+                    )
+                ).to.be.revertedWith("The _assertionTimestamp did not match the block this assertion was created at.");
+            })
+        })
     }
 }

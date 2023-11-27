@@ -586,6 +586,9 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         // Check if the challenge is at least 180 days old
         require(block.timestamp >= challenges[_challengeId].createdTimestamp + 180 days, "Challenge is not old enough to expire rewards");
 
+        // Check the challenge isn't already expired
+        require(challenges[_challengeId].expiredForRewarding == false, "The challenge is already expired");
+
         // Remove the unclaimed tokens from the allocation
         _allocatedTokens -= challenges[_challengeId].rewardAmountForClaimers - challenges[_challengeId].amountClaimedByClaimers;
 
