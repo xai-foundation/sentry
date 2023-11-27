@@ -76,7 +76,7 @@ export function useChainDataWithCallback() {
 				owners,
 			}
 		});
-	}, [JSON.stringify(owners)]);
+	}, [owners]);
 
 	useEffect(() => {
 		setChainState((_chainState) => {
@@ -91,9 +91,9 @@ export function useChainDataWithCallback() {
 				..._chainState,
 				ownersKycMap,
 				combinedWalletsKycMap,
-			}
+			};
 		});
-	}, [JSON.stringify(combinedWalletsKycMap), JSON.stringify(owners)]);
+	}, [combinedWalletsKycMap, owners]);
 
 	useEffect(() => {
 		setChainState((_chainState) => {
@@ -112,7 +112,7 @@ export function useChainDataWithCallback() {
 				combinedLicensesList: getLicensesList(combinedLicensesMap)
 			}
 		});
-	}, [JSON.stringify(Object.values(combinedLicensesMap).map(toString))]);
+	}, [combinedLicensesMap]);
 
 	return {
 		...chainState,
