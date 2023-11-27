@@ -300,12 +300,15 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
      */
     function calculateChallengeEmissionAndTier() public view returns (uint256, uint256) {
 
-        uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
         uint256 totalSupply = getCombinedTotalSupply();
+        uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
         require(maxSupply > totalSupply, "There are no more tiers, we are too close to the end");
+
+
         uint256 tier = log2(maxSupply / (maxSupply - totalSupply));
         require(tier < 30, "There are no more valuable tiers");
-        uint256 emissionTier = maxSupply - (maxSupply / (2**(tier)));
+
+        uint256 emissionTier = maxSupply - (maxSupply / (2**(tier + 1)));
 
         // determine what the size of the emission is based on each challenge having an estimated static length
         return (emissionTier / 17520, emissionTier);
@@ -593,6 +596,12 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         return _lifetimeClaims[owner];
     }
 
+    /**
+     * @notice Calculates the base 2 logarithm of the input number.
+     * @dev This function uses bitwise operations and a lookup table to calculate the base 2 logarithm.
+     * @param x The input number.
+     * @return y The base 2 logarithm of the input number.
+     */
     function log2(uint x) pure internal returns (uint y){
         assembly {
             let arg := x
