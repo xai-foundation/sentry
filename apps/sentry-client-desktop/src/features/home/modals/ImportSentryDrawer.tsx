@@ -6,10 +6,12 @@ import {ChangeEvent, useState} from "react";
 import {BiLoaderAlt} from "react-icons/bi";
 import {ImportSentryAlertModal} from "@/features/home/modals/ImportSentryAlertModal";
 import {verifyPrivateKey} from "@sentry/core";
+import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 
 export function ImportSentryDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {isLoading, importPrivateKey} = useOperator();
+	const {stopRuntime} = useOperatorRuntime();
 	const [inputValue, setInputValue] = useState('');
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const [privateKeyError, setPrivateKeyError] = useState({
@@ -47,6 +49,9 @@ export function ImportSentryDrawer() {
 	const handleSetData = () => {
 		importPrivateKey(inputValue).then(() => {
 			setDrawerState(null)
+			if (stopRuntime) {
+				void stopRuntime()
+			}
 		});
 	};
 

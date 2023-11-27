@@ -156,7 +156,7 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 	}
 
 	function getDropdownItems() {
-		return Object.keys(statusMap).map((wallet, i) => (
+		return Object.keys(combinedLicensesMap).map((wallet, i) => (
 			<p
 				onClick={() => {
 					setSelectedWallet(wallet);
@@ -206,7 +206,7 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 								onClick={() => setIsOpen(!isOpen)}
 								className={`flex items-center justify-between w-[538px] border-[#A3A3A3] border-r border-l border-t ${!isOpen ? "border-b" : null} border-[#A3A3A3] p-2`}
 							>
-								<p>{selectedWallet || `All wallets (${Object.keys(statusMap).length})`}</p>
+								<p>{selectedWallet || `All wallets (${Object.keys(combinedLicensesMap).length})`}</p>
 								<IoIosArrowDown
 									className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
 								/>
