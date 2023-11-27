@@ -7,8 +7,8 @@ import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
 export function ActionsRequiredPromptHandler() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {accruing, kycRequired} = useAccruingInfo();
-	const {ownersLoading, ownersKycLoading, licensesLoading, licensesList} = useAtomValue(chainStateAtom);
-	const keyCount = licensesList.length;
+	const {ownersLoading, ownersKycLoading, licensesLoading, combinedLicensesList} = useAtomValue(chainStateAtom);
+	const keyCount = combinedLicensesList.length;
 
 	if (!ownersLoading && !ownersKycLoading && !licensesLoading && keyCount === 0) {
 		return (
