@@ -35,20 +35,4 @@ contract GasSubsidy is AccessControlUpgradeable {
         require(token.balanceOf(address(this)) >= amount, "Not enough tokens in contract");
         token.transfer(recipient, amount);
     }
-
-    /**
-     * @dev Function to add an admin
-     * @param admin The address to grant the admin role.
-     */
-    function addAdmin(address admin) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        grantRole(TRANSFER_ROLE, admin);
-    }
-
-    /**
-     * @dev Function to remove an admin
-     * @param admin The address to revoke the admin role.
-     */
-    function removeAdmin(address admin) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        revokeRole(TRANSFER_ROLE, admin);
-    }
 }

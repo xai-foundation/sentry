@@ -7,6 +7,7 @@ import { RuntimeTests } from "./Runtime.mjs";
 import { UpgradeabilityTests } from "./UpgradeTest.mjs";
 import { RefereeTests } from "./Referee.mjs";
 import { esXaiTests } from "./esXai.mjs";
+import { GasSubsidyTests } from "./GasSubsidy.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -201,6 +202,7 @@ describe("Fixture Tests", function () {
     describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
     describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
     describe("Referee", RefereeTests(deployInfrastructure).bind(this));
+    describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
     describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
 
     // This doesn't work when running coverage
