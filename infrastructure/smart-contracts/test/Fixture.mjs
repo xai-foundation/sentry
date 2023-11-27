@@ -6,6 +6,7 @@ import { config, createBlsKeyPair } from "@sentry/core";
 import { RuntimeTests } from "./Runtime.mjs";
 import { UpgradeabilityTests } from "./UpgradeTest.mjs";
 import { RefereeTests } from "./Referee.mjs";
+import { esXaiTests } from "./esXai.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -92,6 +93,7 @@ describe("Fixture Tests", function () {
         const xaiMinterRole = await xai.MINTER_ROLE();
         await xai.grantRole(xaiMinterRole, await xaiMinter.getAddress());
         await xai.grantRole(xaiMinterRole, await referee.getAddress());
+        await xai.grantRole(xaiMinterRole, await esXai.getAddress());
 
         // Setup esXai Roles
         const esXaiAdminRole = await esXai.DEFAULT_ADMIN_ROLE();
@@ -196,6 +198,7 @@ describe("Fixture Tests", function () {
     }
 
     describe("Xai", XaiTests(deployInfrastructure).bind(this));
+    describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
     describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
     describe("Referee", RefereeTests(deployInfrastructure).bind(this));
     describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
