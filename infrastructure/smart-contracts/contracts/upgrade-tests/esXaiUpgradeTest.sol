@@ -17,7 +17,7 @@ contract esXaiUpgradeTest is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessC
 
     EnumerableSetUpgradeable.AddressSet private _whitelist;
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    address private _xai;
+    address public xai;
     bool private _redemptionActive;
     mapping(address => RedemptionRequest[]) private _redemptionRequests;
     uint256 private _count;
