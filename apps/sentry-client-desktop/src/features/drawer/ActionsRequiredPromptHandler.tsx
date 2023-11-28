@@ -42,8 +42,11 @@ export function ActionsRequiredPromptHandler() {
 		);
 	} else {
 		return (
-			<div className="flex gap-4 bg-[#DCFCE7] p-3 mr-2 z-10">
-				<div className="flex flex-row gap-2 items-center">
+			<div
+				className="flex gap-4 bg-[#DCFCE7] p-3 mr-2 z-10"
+				onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}
+			>
+				<div className="flex flex-row gap-2 items-center cursor-pointer">
 					<AiFillCheckCircle className="w-5 h-5 text-[#16A34A] mt-1"/>
 					<p className="text-[15px] font-semibold">esXAI is being claimed</p>
 				</div>
