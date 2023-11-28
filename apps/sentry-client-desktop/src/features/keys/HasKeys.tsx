@@ -18,6 +18,7 @@ import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {useOperator} from "@/features/operator";
 import {useStorage} from "@/features/storage";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
+import {useAccruingInfo} from "@/hooks/useAccruingInfo";
 
 interface HasKeysProps {
 	combinedLicensesMap: LicenseMap,
@@ -29,6 +30,8 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
 	const {data, setData} = useStorage();
+	const {balances, isBalancesLoading} = useAccruingInfo();
+
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -87,6 +90,10 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 				_status = "claiming";
 			}
 
+			// todo: confirm implementation returns expected values
+			const totalAccruedEsXai = Object.values(balances).map((items) => BigInt(items.totalAccruedEsXai).toString() ?? 0);
+
+
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
 					<td className="w-full max-w-[70px] px-4 py-2">{keyString}</td>
@@ -141,7 +148,7 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 						)}
 
 					</td>
-					<td className="w-full max-w-[150px] px-4 py-2 text-right">ACCRUED esXAI</td>
+					<td className="w-full max-w-[150px] px-4 py-2 text-right">{isBalancesLoading || totalAccruedEsXai.length === 0 ? "Loading..." : totalAccruedEsXai[i]}</td>
 					<td className="w-full max-w-[150px] px-4 py-2 text-[#F30919]">
 						<span
 							className="cursor-pointer"

@@ -12,7 +12,7 @@ export function useAccruingInfo() {
 	const {data: balance} = useBalance(operatorAddress);
 
 	const {owners, licensesMap, ownersKycMap} = useAtomValue(chainStateAtom);
-	const {balances} = useGetAccruedEsXaiBulk();
+	const {balances, isLoading: isBalancesLoading} = useGetAccruedEsXaiBulk();
 	const kycRequired = owners?.length > 0 && ownersKycMap && Object.values(ownersKycMap).filter((status) => !status).length > 0;
 
 	const funded = balance && balance.wei !== undefined && balance.wei >= recommendedFundingBalance;
@@ -22,6 +22,7 @@ export function useAccruingInfo() {
 		funded,
 		accruing,
 		balances,
+		isBalancesLoading,
 		hasAssignedKeys: Object.keys(licensesMap).length > 0,
 		kycRequired,
 		owners,
