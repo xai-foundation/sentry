@@ -1,5 +1,5 @@
 import {AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
-import {useState} from "react";
+import {ReactNode, useState} from "react";
 import {BiDownload, BiLinkExternal, BiUpload} from "react-icons/bi";
 import {useOperator} from "../operator";
 import {PiCopy} from "react-icons/pi";
@@ -31,7 +31,7 @@ export const recommendedFundingBalance = ethers.parseEther("0.005");
 export function SentryWallet() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
-	const {ownersLoading, owners, licensesLoading, licensesMap, licensesList} = useAtomValue(chainStateAtom);
+	const {ownersLoading, owners, licensesLoading, licensesList} = useAtomValue(chainStateAtom);
 
 	const queryClient = useQueryClient();
 	const {hasAssignedKeys} = useAccruingInfo();
@@ -51,6 +51,8 @@ export function SentryWallet() {
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
 	const {startRuntime, stopRuntime, sentryRunning, nodeLicenseStatusMap} = useOperatorRuntime();
+
+
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const {refresh} = useChainDataRefresh();
 
@@ -122,25 +124,7 @@ export function SentryWallet() {
 	}
 
 	function getKeys() {
-		const keysWithOwners: Array<{ owner: string, key: bigint }> = [];
-		// Get keys from every assigned wallet if "All" is selected in the drop-down
-		if (selectedWallet === null) {
-			Object.keys(licensesMap).forEach((owner) => {
-				if (licensesMap[owner]) {
-					licensesMap[owner].forEach((license) => {
-						keysWithOwners.push({owner, key: license});
-					});
-				}
-			});
-		} else {
-			if (licensesMap[selectedWallet]) {
-				licensesMap[selectedWallet].forEach((license) => {
-					keysWithOwners.push({owner: selectedWallet, key: license});
-				});
-			}
-		}
-
-		if (keysWithOwners.length === 0) {
+		if (nodeLicenseStatusMap.size === 0) {
 			return (
 				<tr className="bg-white flex px-8 text-sm">
 					<td colSpan={3} className="w-full text-center">No keys found.</td>
@@ -148,21 +132,29 @@ export function SentryWallet() {
 			);
 		}
 
-		return keysWithOwners.map((keyWithOwner, i: number) => {
-			const isEven = i % 2 === 0;
-			const statusArray = nodeLicenseStatusMap ? Array.from(nodeLicenseStatusMap.entries()) : [];
-			const currentStatus = statusArray[i] ? statusArray[i][1] : null;
+		let i = 0;
+		const element: Array<ReactNode> = [];
 
-			return (
-				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
-					<td className="w-full max-w-[70px] px-4 py-2">{keyWithOwner.key.toString()}</td>
-					<td className="w-full max-w-[390px] px-4 py-2">{keyWithOwner.owner.toString()}</td>
-					<td className="w-full max-w-[390px] px-4 py-2 text-[#A3A3A3]">
-						{currentStatus ? currentStatus.status : "Sentry not running"}
-					</td>
-				</tr>
-			);
-		});
+		new Map([...nodeLicenseStatusMap].filter(([, status]) => {
+			if (selectedWallet === null) {
+				return true;
+			}
+			return status.ownerPublicKey === selectedWallet;
+		}))
+			.forEach((status, key) => {
+				const isEven = i++ % 2 === 0;
+
+				element.push(
+					<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
+						<td className="w-full max-w-[70px] px-4 py-2">{key.toString()}</td>
+						<td className="w-full max-w-[390px] px-4 py-2">{status.ownerPublicKey}</td>
+						<td className="w-full max-w-[390px] px-4 py-2 text-[#A3A3A3]">
+							{status.status}
+						</td>
+					</tr>
+				);
+			})
+		return element;
 	}
 
 	function onCloseWalletConnectedModal() {
