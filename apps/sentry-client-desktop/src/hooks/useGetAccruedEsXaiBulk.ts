@@ -12,10 +12,14 @@ export function useGetAccruedEsXaiBulk() {
 	const [balances, setBalances] = useAtom(accruedEsXaiAtom);
 
 	useEffect(() => {
-		if (licensesList.length > 0) {
-			void getBalances();
-		}
-	}, [JSON.stringify(licensesList.map(k => k.toString()))]);
+		const timeout = setTimeout(() => {
+			if (licensesList.length > 0) {
+				void getBalances();
+			}
+		}, 5000);
+
+		return () => clearTimeout(timeout);
+	}, [licensesList]);
 
 	async function getBalances() {
 		setLoading(true);

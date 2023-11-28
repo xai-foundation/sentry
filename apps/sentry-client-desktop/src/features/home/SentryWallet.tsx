@@ -35,6 +35,7 @@ export function SentryWallet() {
 
 	const queryClient = useQueryClient();
 	const {hasAssignedKeys} = useAccruingInfo();
+
 	const {isLoading: operatorLoading, publicKey: operatorAddress} = useOperator();
 	const {data: balance} = useBalance(operatorAddress);
 
