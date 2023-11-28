@@ -48,6 +48,7 @@ contract NodeLicenseUpgradeTest is ERC721EnumerableUpgradeable, AccessControlUpg
     struct PromoCode {
         address recipient;
         bool active;
+        uint256 receivedLifetime;
     }
 
     /**
@@ -76,4 +77,3 @@ contract NodeLicenseUpgradeTest is ERC721EnumerableUpgradeable, AccessControlUpg
         return super.supportsInterface(interfaceId);
     }
 }
-

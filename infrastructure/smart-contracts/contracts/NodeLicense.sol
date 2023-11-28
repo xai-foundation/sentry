@@ -37,8 +37,6 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     // Mapping from token ID to average cost, this is used for refunds over multiple tiers
     mapping (uint256 => uint256) private _averageCost;
 
-
-
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
@@ -56,6 +54,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     struct PromoCode {
         address recipient;
         bool active;
+        uint256 receivedLifetime;
     }
 
     event ReferralReward(address indexed buyer, address indexed referralAddress, uint256 amount);
@@ -80,7 +79,8 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @param _recipient The recipient address.
      */
     function createPromoCode(string calldata _promoCode, address _recipient) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        _promoCodes[_promoCode] = PromoCode(_recipient, true);
+        require(_recipient != address(0), "Recipient address cannot be zero");
+        _promoCodes[_promoCode] = PromoCode(_recipient, true, 0);
     }
 
     /**
@@ -90,6 +90,15 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     function removePromoCode(string calldata _promoCode) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_promoCodes[_promoCode].recipient != address(0), "Promo code does not exist");
         _promoCodes[_promoCode].active = false; // 'active' is set to false
+    }
+
+    /**
+     * @notice Returns the promo code details.
+     * @param _promoCode The promo code to get.
+     * @return The promo code details.
+     */
+    function getPromoCode(string calldata _promoCode) external view returns (PromoCode memory) {
+        return _promoCodes[_promoCode];
     }
 
     /**
@@ -142,11 +151,12 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         if (promoCode.recipient != address(0)) {
             referralReward = finalPrice * referralRewardPercentage / 100;
             _referralRewards[promoCode.recipient] += referralReward;
+            _promoCodes[_promoCode].receivedLifetime += referralReward;
             emit ReferralReward(msg.sender, promoCode.recipient, referralReward);
         }
 
-        // Transfer the funds to the fundsReceiver
-        fundsReceiver.transfer(msg.value - referralReward);
+        (bool sent, bytes memory data) = fundsReceiver.call{value: msg.value - referralReward}("");
+        require(sent, "Failed to send Ether");
     }
 
     /**
@@ -156,7 +166,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @return The price in wei.
      */
     function price(uint256 _amount, string calldata _promoCode) public view returns (uint256) {
-        uint256 totalSupply = _tokenIds.current();
+        uint256 totalSupply = totalSupply();
         uint256 totalCost = 0;
         uint256 remaining = _amount;
         uint256 tierSum = 0;
@@ -198,7 +208,8 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         uint256 reward = _referralRewards[msg.sender];
         require(reward > 0, "No referral reward to claim");
         _referralRewards[msg.sender] = 0;
-        payable(msg.sender).transfer(reward);
+        (bool success, ) = msg.sender.call{value: reward}("");
+        require(success, "Transfer failed.");
     }
 
     /**
@@ -318,12 +329,13 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @param _tokenId The ID of the token to refund.
      * @dev Only callable by the admin.
      */
-    function refundNodeLicense(uint256 _tokenId) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function refundNodeLicense(uint256 _tokenId) external payable onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_exists(_tokenId), "ERC721Metadata: Refund for nonexistent token");
         uint256 refundAmount = _averageCost[_tokenId];
         require(refundAmount > 0, "No funds to refund");
         _averageCost[_tokenId] = 0;
-        payable(ownerOf(_tokenId)).transfer(refundAmount);
+        (bool success, ) = payable(ownerOf(_tokenId)).call{value: refundAmount}("");
+        require(success, "Transfer failed.");
         _burn(_tokenId);
     }
 
@@ -345,7 +357,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     function supportsInterface(
         bytes4 interfaceId
     ) public view override(ERC721EnumerableUpgradeable, AccessControlUpgradeable) returns (bool) {
-        return super.supportsInterface(interfaceId);
+        return super.supportsInterface(interfaceId) || ERC721EnumerableUpgradeable.supportsInterface(interfaceId) || AccessControlUpgradeable.supportsInterface(interfaceId);
     }
 
     /**
