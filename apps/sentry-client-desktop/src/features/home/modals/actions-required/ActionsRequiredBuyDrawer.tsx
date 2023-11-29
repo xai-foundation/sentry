@@ -8,7 +8,7 @@ export function ActionsRequiredBuyDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 
 	return (
-		<div className="w-full h-full flex flex-col justify-start items-center border border-gray-200 z-20 bg-white">
+		<div className="h-full flex flex-col justify-start items-center">
 			<div
 				className="w-full h-16 flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
 				<div className="flex flex-row gap-2 items-center">

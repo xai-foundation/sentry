@@ -1,34 +1,47 @@
 import {AiOutlineClose} from "react-icons/ai";
-import {useSetAtom} from "jotai/index";
+import {useSetAtom} from "jotai";
 import {drawerStateAtom} from "../../drawer/DrawerManager.js";
 import {useOperator} from "../../operator";
-import {ChangeEvent, useEffect, useState} from "react";
+import {ChangeEvent, useState} from "react";
 import {BiLoaderAlt} from "react-icons/bi";
-import {useStorage} from "../../storage";
 import {ImportSentryAlertModal} from "@/features/home/modals/ImportSentryAlertModal";
+import {verifyPrivateKey} from "@sentry/core";
+import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 
 export function ImportSentryDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {isLoading, importPrivateKey} = useOperator();
-	const [filePath, setFilePath] = useState('');
-	const {getFilePath} = useStorage();
+	const {stopRuntime} = useOperatorRuntime();
 	const [inputValue, setInputValue] = useState('');
 	const [showModal, setShowModal] = useState<boolean>(false);
-
-	useEffect(() => {
-		const fetchFilePath = async () => {
-			const path = await getFilePath();
-			setFilePath(path);
-		};
-		void fetchFilePath();
-	}, [filePath, getFilePath]);
+	const [privateKeyError, setPrivateKeyError] = useState({
+		message: "",
+		error: false,
+	});
 
 	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setInputValue(event.target.value);
+
+		if (inputValue === "") {
+			setPrivateKeyError({
+				message: "",
+				error: false,
+			});
+		}
 	};
 
 	const handleButton = () => {
-		if (inputValue !== "") {
+		const validPrivateKey = verifyPrivateKey(inputValue);
+
+		if (!validPrivateKey) {
+			setInputValue("");
+			setPrivateKeyError({
+				message: "Private key not valid",
+				error: true,
+			});
+		}
+
+		if (inputValue !== "" && validPrivateKey) {
 			setShowModal(true);
 		}
 	}
@@ -36,6 +49,9 @@ export function ImportSentryDrawer() {
 	const handleSetData = () => {
 		importPrivateKey(inputValue).then(() => {
 			setDrawerState(null)
+			if (stopRuntime) {
+				void stopRuntime()
+			}
 		});
 	};
 
@@ -47,8 +63,7 @@ export function ImportSentryDrawer() {
 					onSuccess={handleSetData}
 				/>
 			)}
-			<div
-				className="absolute top-0 right-0 w-[30rem] h-screen flex flex-col justify-start items-center border border-gray-200 z-20 bg-white">
+			<div className="h-full flex flex-col justify-start items-center">
 				<div
 					className="absolute top-0 w-full h-16 flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
 					<span>Import Sentry Wallet</span>
@@ -85,6 +100,10 @@ export function ImportSentryDrawer() {
 									className="w-full mt-2 p-2 border rounded"
 									placeholder="Enter private key"
 								/>
+
+								{privateKeyError.error && (
+									<p className="w-full text-[14px] text-[#AB0914]">{privateKeyError.message}</p>
+								)}
 
 								<button
 									onClick={handleButton}

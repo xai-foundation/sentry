@@ -2,58 +2,39 @@ import {useSetAtom} from "jotai";
 import {drawerStateAtom} from "../../../drawer/DrawerManager";
 import {AiFillCheckCircle, AiFillWarning, AiOutlineClose} from "react-icons/ai";
 import {IoMdCloseCircle} from "react-icons/io";
-import {IconLabel} from "../../../../components/IconLabel";
-import {SquareCard} from "../../../../components/SquareCard";
+import {IconLabel} from "@/components/IconLabel";
+import {SquareCard} from "@/components/SquareCard";
 import {SentryActiveCard} from "./SentryActiveCard";
-import {InsufficientFundsCard} from "./InsufficientFundsCard";
-import {AssignedKeysDrawer} from "./AssignedKeysDrawer";
-import {useEffect, useState} from "react";
+import {FundsInSentryWalletCard} from "./FundsInSentryWalletCard";
+import {AssignedKeysCard} from "./AssignedKeysCard";
 import {KycRequiredCard} from "./KycRequiredCard";
-import {BarStepItem} from "../../../../components/BarStepItem";
+import {BarStepItem} from "@/components/BarStepItem";
+import {useAccruingInfo} from "@/hooks/useAccruingInfo";
+import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
+import {useAtomValue} from "jotai";
 
 export function ActionsRequiredNotAccruingDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-
-	// const {isLoading, data: balance, error} = useBalance("0xB065D33B024F87c07E7AaC14E87b5d76e3162647"); // spencer test wallet
-
-	const [testState, setTestState] = useState({
-		active: false,
-		funded: false,
-		keys: false,
-	});
-	const [kycState, setKycState] = useState<"required" | "pending" | "done">("required");
-
-	useEffect(() => {
-		function setDone() {
-			setKycState("done");
-		}
-
-		if (kycState === "pending") {
-			setTimeout(() => {
-				setDone();
-			}, 3000);
-		}
-	}, [kycState]);
-
-	const accruing = testState.active && testState.funded && testState.keys;
+	const {owners, ownersKycMap} = useAtomValue(chainStateAtom);
+	const {accruing, kycRequired} = useAccruingInfo();
 
 	return (
-		<div className="w-full h-full flex flex-col justify-start border border-gray-200 z-20 bg-white">
+		<div className="h-full flex flex-col justify-start items-center">
 			<div
 				className="w-full h-16 flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
-				{!accruing && kycState === "required" && (
+				{!accruing && (
 					<div className="flex flex-row gap-2 items-center">
 						<AiFillWarning className="w-7 h-7 text-[#F59E28]"/> <span>Actions required</span>
 					</div>
 				)}
 
-				{accruing && kycState !== "done" && (
+				{accruing && kycRequired && (
 					<div className="flex flex-row gap-2 items-center">
 						<AiFillWarning className="w-7 h-7 text-[#F59E28]"/> <span>Next Step: Complete KYC</span>
 					</div>
 				)}
 
-				{accruing && kycState === "done" && (
+				{accruing && !kycRequired && (
 					<div className="flex flex-row gap-2 items-center">
 						<AiFillCheckCircle className="w-5 h-5 text-[#16A34A] mt-1"/> <span>esXAI is being claimed</span>
 					</div>
@@ -92,48 +73,22 @@ export function ActionsRequiredNotAccruingDrawer() {
 
 					<div className="flex flex-col">
 						<BarStepItem>
-							<SentryActiveCard
-								active={testState.active}
-								setActive={() => setTestState((_state) => {
-									return {..._state, active: true}
-								})}
-							/>
+							<SentryActiveCard/>
 						</BarStepItem>
 
 						<BarStepItem>
-							<InsufficientFundsCard
-								funded={testState.funded}
-								setFunded={() => setTestState((_state) => {
-									return {..._state, funded: true}
-								})}
-							/>
+							<FundsInSentryWalletCard/>
 						</BarStepItem>
 
 						<BarStepItem lastItem={true}>
-							<AssignedKeysDrawer
-								keys={testState.keys}
-								setKeys={() => setTestState((_state) => {
-									return {..._state, keys: true}
-								})}
-							/>
+							<AssignedKeysCard/>
 						</BarStepItem>
 					</div>
 				</div>
 
 				{accruing && (
 					<div className="mt-8">
-						{kycState === "done" ? (
-							<SquareCard className="bg-[#DCFCE7]">
-								<IconLabel
-									icon={AiFillCheckCircle}
-									color="#16A34A"
-									title="You can claim esXAI"
-								/>
-								<p className="text-[15px] text-[#15803D] mt-2">
-									You have successfully completed your KYC on all wallets assigned to the Sentry.
-								</p>
-							</SquareCard>
-						) : (
+						{kycRequired ? (
 							<SquareCard>
 								<IconLabel
 									icon={IoMdCloseCircle}
@@ -144,14 +99,29 @@ export function ActionsRequiredNotAccruingDrawer() {
 									Complete KYC for all of the below wallets to be able to claim esXAI.
 								</p>
 							</SquareCard>
+						) : (
+							<SquareCard className="bg-[#DCFCE7]">
+								<IconLabel
+									icon={AiFillCheckCircle}
+									color="#16A34A"
+									title="You can claim esXAI"
+								/>
+								<p className="text-[15px] text-[#15803D] mt-2">
+									You have successfully completed your KYC on all wallets assigned to the Sentry.
+								</p>
+							</SquareCard>
 						)}
 
-						<BarStepItem lastItem={true}>
-							<KycRequiredCard
-								kycState={kycState}
-								setKycState={setKycState}
-							/>
-						</BarStepItem>
+						{owners?.map((owner, i) => {
+							return (
+								<BarStepItem key={`bar-step-item-${i}`} lastItem={i + 1 === owners!.length}>
+									<KycRequiredCard
+										wallet={owner}
+										status={ownersKycMap[owner]}
+									/>
+								</BarStepItem>
+							);
+						})}
 					</div>
 				)}
 			</div>

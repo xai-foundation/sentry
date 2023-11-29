@@ -8,14 +8,13 @@ export function useBalance(address: string | undefined) {
 		queryFn: async () => {
 			const wei = await getWalletBalanceCore(address!);
 
-			console.log("new balance:", wei);
 			return {
 				wei,
 				ethString: ethers.formatEther(wei),
 			}
 		},
 		staleTime: Infinity,
-		cacheTime: 0,
+		cacheTime: 2500,
 		enabled: address != undefined && address.length > 0,
 	});
 }

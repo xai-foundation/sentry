@@ -1,52 +1,41 @@
-import {useEffect} from "react";
+import {PropsWithChildren} from "react";
 
-export function Blockpass() {
-	useEffect(() => {
-		// Check if BlockpassKYCConnect is defined on the window object
-		if ((window as any).BlockpassKYCConnect) {
-			const blockpass = new (window as any).BlockpassKYCConnect("xai_node_007da", {
-				// refId: 'refId', // Replace with your refId value
-				mainColor: "F30919",
-			});
+interface BlockpassProps {
+	onClick?: () => void;
+}
 
-			blockpass.startKYCConnect();
+export function Blockpass({onClick = () => {}, children = "Begin KYC"}: PropsWithChildren<BlockpassProps>) {
 
-			blockpass.on('KYCConnectSuccess', () => {
-				// Add code that will trigger when data has been sent.
-			});
-		}
-	}, []);
+	function onClickHelper() {
+		onClick?.();
+		document.getElementById("blockpass-kyc-connect")!.click();
+	}
 
 	return (
 		<button
-			className="w-auto h-auto bg-[#F30919] text-white p-4 uppercase font-semibold"
+			className="w-full flex justify-center items-center gap-1 text-[15px] text-white bg-[#F30919] font-semibold mt-4 px-6 py-2"
 			id="blockpass-kyc-connect"
+			onClick={onClickHelper}
 		>
-			Verify with Blockpass
+			{children}
 		</button>
 	);
 }
 
-export function BlockPassKYC() {
-	useEffect(() => {
-		// Check if BlockpassKYCConnect is defined on the window object
-		if ((window as any).BlockpassKYCConnect) {
-			const blockpass = new (window as any).BlockpassKYCConnect("xai_node_007da", {
-				// refId: 'refId', // Replace with your refId value
-				mainColor: "F30919",
-			});
+export function BlockPassKYC({onClick = () => {}, children = "Begin KYC"}: PropsWithChildren<BlockpassProps>) {
 
-			blockpass.startKYCConnect();
-
-			blockpass.on('KYCConnectSuccess', () => {
-				// Add code that will trigger when data has been sent.
-			});
-		}
-	}, []);
+	function onClickHelper() {
+		onClick?.();
+		document.getElementById("blockpass-kyc-connect")!.click();
+	}
 
 	return (
-		<a id="blockpass-kyc-connect" className="text-[#F30919] cursor-pointer">
-			Begin KYC
+		<a
+			className="text-[#F30919] cursor-pointer"
+			id="blockpass-kyc-connect"
+			onClick={onClickHelper}
+		>
+			{children}
 		</a>
 	);
 
