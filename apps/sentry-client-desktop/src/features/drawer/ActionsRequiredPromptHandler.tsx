@@ -1,12 +1,13 @@
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
 import {AiFillCheckCircle, AiFillWarning} from "react-icons/ai";
 import {useSetAtom, useAtomValue} from "jotai";
-import {useAccruingInfo} from "@/hooks/useAccruingInfo";
+import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
 
 export function ActionsRequiredPromptHandler() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const {accruing, kycRequired} = useAccruingInfo();
+	const {accruing, kycRequired} = useAtomValue(accruingStateAtom);
+
 	const {ownersLoading, ownersKycLoading, licensesLoading, combinedLicensesList} = useAtomValue(chainStateAtom);
 	const keyCount = combinedLicensesList.length;
 

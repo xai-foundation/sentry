@@ -18,7 +18,8 @@ import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {useOperator} from "@/features/operator";
 import {useStorage} from "@/features/storage";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
-import {useAccruingInfo} from "@/hooks/useAccruingInfo";
+import {accruingStateAtom} from "@/hooks/useAccruingInfo";
+import {useAtomValue} from "jotai";
 
 interface HasKeysProps {
 	combinedLicensesMap: LicenseMap,
@@ -30,7 +31,7 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
 	const {data, setData} = useStorage();
-	const {balances, isBalancesLoading} = useAccruingInfo();
+	const {balances, isBalancesLoading} = useAtomValue(accruingStateAtom);
 
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
