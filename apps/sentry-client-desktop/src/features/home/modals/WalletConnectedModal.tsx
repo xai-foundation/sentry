@@ -1,6 +1,6 @@
 import {FaCircleCheck} from "react-icons/fa6";
 import {AiOutlineClose} from "react-icons/ai";
-import {useProvider} from "../../../hooks/useProvider";
+import {useProvider} from "@/hooks/useProvider";
 
 interface WalletConnectedModalProps {
 	txHash: string;

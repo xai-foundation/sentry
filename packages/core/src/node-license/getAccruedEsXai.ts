@@ -63,10 +63,19 @@ export async function getAccruedEsXaiBulk(
 
     // iterate over each node license ID
     for (const nodeLicenseId of nodeLicenseIds) {
-        
+        responses[nodeLicenseId.toString()] = {
+            submissions: [],
+            totalAccruedEsXai: BigInt(0),
+        }
+
+        // call the callback from getAccruedEsXaiBulk
+        if (callback) {
+            await callback(responses);
+        }
+
         // define a new callback function to pass into getAccruedEsXai
         const newCallback = async (response: GetAccruedEsXaiResponse) => {
-            
+
             // update the responses object
             responses[nodeLicenseId.toString()] = { ...response };
 

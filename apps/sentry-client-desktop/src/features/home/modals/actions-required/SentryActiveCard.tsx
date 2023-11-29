@@ -1,18 +1,16 @@
-import {IconLabel} from "../../../../components/IconLabel";
-import {SquareCard} from "../../../../components/SquareCard";
+import {IconLabel} from "@/components/IconLabel";
+import {SquareCard} from "@/components/SquareCard";
 import {BiPlay} from "react-icons/bi";
 import {IoMdCloseCircle} from "react-icons/io";
 import {AiFillCheckCircle} from "react-icons/ai";
+import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 
-interface SentryActiveCardProps {
-	active: boolean;
-	setActive: () => void
-}
+export function SentryActiveCard() {
+	const {startRuntime, sentryRunning} = useOperatorRuntime();
 
-export function SentryActiveCard({active, setActive}: SentryActiveCardProps) {
 	return (
 		<SquareCard className="bg-[#F5F5F5]">
-			{active ? (
+			{sentryRunning ? (
 				<IconLabel
 					icon={AiFillCheckCircle}
 					color="#16A34A"
@@ -24,6 +22,10 @@ export function SentryActiveCard({active, setActive}: SentryActiveCardProps) {
 						icon={IoMdCloseCircle}
 						color="#F59E28"
 						title="Sentry Wallet inactive"
+						tooltip={true}
+						header={"Your Sentry Wallet is inactive"}
+						body={"esXAI cannot be accrued while your Sentry Wallet is inactive."}
+						position={"end"}
 					/>
 
 					<p className="text-[15px] text-[#525252] mt-3">
@@ -31,7 +33,7 @@ export function SentryActiveCard({active, setActive}: SentryActiveCardProps) {
 					</p>
 
 					<button
-						onClick={setActive}
+						onClick={startRuntime}
 						className="w-full flex justify-center items-center gap-1 text-[15px] text-white bg-[#F30919] font-semibold mt-4 px-6 py-2"
 					>
 						<BiPlay className="w-5 h-5"/>

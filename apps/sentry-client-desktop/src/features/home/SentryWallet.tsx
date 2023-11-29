@@ -1,68 +1,78 @@
-import {AiFillWarning, AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
-import {useRef, useState} from "react";
-import {ContinueInBrowserModal} from "@/features/home/modals/ContinueInBrowserModal";
+import {AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
+import {ReactNode, useState} from "react";
 import {BiDownload, BiLinkExternal, BiUpload} from "react-icons/bi";
 import {useOperator} from "../operator";
 import {PiCopy} from "react-icons/pi";
 import {HiOutlineDotsVertical} from "react-icons/hi";
 import {GiPauseButton} from "react-icons/gi";
-import {FaEthereum} from "react-icons/fa";
 import {MdRefresh} from "react-icons/md";
-import {useAtom} from "jotai";
+import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.js";
 import {FaPlay} from "react-icons/fa6";
 import {IoIosArrowDown} from "react-icons/io";
-import {NodeLicenseStatusMap, operatorRuntime} from "@sentry/core";
 import {AssignKeysFromNewWallet} from "@/components/AssignKeysFromNewWallet";
-import {useListOwnersForOperator} from "@/hooks/useListOwnersForOperator";
-import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
 import {WalletConnectedModal} from "@/features/home/modals/WalletConnectedModal";
 import {WalletDisconnectedModal} from "@/features/home/modals/WalletDisconnectedModal";
 import {useQueryClient} from "react-query";
 import {useBalance} from "@/hooks/useBalance";
 import {ethers} from "ethers";
-import classNames from "classnames";
+import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
+import {Tooltip} from "@/features/keys/Tooltip";
+import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
+import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
+import {SentryWalletHeader} from "@/features/home/SentryWalletHeader";
+import {chainStateAtom, useChainDataRefresh} from "@/hooks/useChainDataWithCallback";
+import {useAccruingInfo} from "@/hooks/useAccruingInfo";
+import {AssignKeysSentryNotRunning} from "@/components/AssignKeysSentryNotRunning";
 
 // TODO -> replace with dynamic value later
-const recommendedValue = ethers.parseEther("0.005");
-
-type OperatorRuntimeFunction = () => Promise<void>
+export const recommendedFundingBalance = ethers.parseEther("0.005");
 
 export function SentryWallet() {
-	// todo -> split up
-	const queryClient = useQueryClient();
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
-	const [showContinueInBrowserModal, setShowContinueInBrowserModal] = useState<boolean>(false);
-	const {isLoading: isOperatorLoading, publicKey: operatorAddress, signer} = useOperator();
-	const {isFetching: isBalanceLoading, data: balance} = useBalance(operatorAddress);
+	const setModalState = useSetAtom(modalStateAtom);
+	const {ownersLoading, owners, licensesLoading, licensesList} = useAtomValue(chainStateAtom);
 
-	const {isLoading: isListOwnersLoading, data: listOwnersData} = useListOwnersForOperator(operatorAddress);
-	const {isLoading: isListNodeLicensesLoading, data: listNodeLicensesData} = useListNodeLicenses(listOwnersData?.owners);
-	const loading = isOperatorLoading || isListOwnersLoading || isListNodeLicensesLoading;
+	const queryClient = useQueryClient();
+	const {hasAssignedKeys} = useAccruingInfo();
+
+	const {isLoading: operatorLoading, publicKey: operatorAddress} = useOperator();
+	const {data: balance} = useBalance(operatorAddress);
+
+	// TODO connect the refresh button on the x keys in y wallets text and query-ify these so we know when it's been cache cleared
+	const loading = operatorLoading || ownersLoading || licensesLoading;
+	const keyCount = licensesList.length;
 
 	const [copied, setCopied] = useState<boolean>(false);
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
-	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
+	const [unassignedWallet, setUnassignedWallet] = useState<{ show: boolean, txHash: string }>({
+		show: false,
+		txHash: ""
+	});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
+	const {startRuntime, stopRuntime, sentryRunning, nodeLicenseStatusMap} = useOperatorRuntime();
+
+
+	const [isOpen, setIsOpen] = useState<boolean>(false);
+	const {refresh} = useChainDataRefresh();
 
 	// assign wallet
 	(window as any).deeplinks?.assignedWallet((_event, txHash) => {
+		setModalState(null)
 		setAssignedWallet({show: true, txHash});
 	});
 
 	// un-assign wallet
 	(window as any).deeplinks?.unassignedWallet((_event, txHash) => {
+		setModalState(null)
+		setSelectedWallet(null);
 		setUnassignedWallet({show: true, txHash});
 	});
 
-	const [isOpen, setIsOpen] = useState<boolean>(false);
-	const stopFunction = useRef<OperatorRuntimeFunction>();
-	const [sentryRunning, setSentryRunning] = useState<boolean>(false);
-	const [status, setStatus] = useState<NodeLicenseStatusMap>();
-
-	function onRefreshEthBalance() {
-		queryClient.invalidateQueries({queryKey: ["balance", operatorAddress]});
+	function onRefreshTable() {
+		queryClient.invalidateQueries({queryKey: ["ownersForOperator", operatorAddress]});
+		refresh();
 	}
 
 	function copyPublicKey() {
@@ -99,32 +109,8 @@ export function SentryWallet() {
 		}
 	}
 
-	const startSentry = async () => {
-		if (signer) {
-			try {
-				// todo: ethers issue is back
-				// @ts-ignore
-				stopFunction.current = await operatorRuntime(signer, setStatus, console.log);
-				setSentryRunning(true);
-			} catch (error) {
-				console.error('Error starting the operator runtime:', error);
-			}
-		}
-	};
-
-	const pauseSentry = async () => {
-		if (stopFunction.current) {
-			try {
-				await stopFunction.current();
-				setSentryRunning(false);
-			} catch (error) {
-				console.error('Error stopping the operator runtime:', error);
-			}
-		}
-	};
-
 	function getDropdownItems() {
-		return listOwnersData!.owners.map((wallet, i) => (
+		return owners.map((wallet, i) => (
 			<p
 				onClick={() => {
 					setSelectedWallet(wallet);
@@ -139,22 +125,7 @@ export function SentryWallet() {
 	}
 
 	function getKeys() {
-		const keysWithOwners: Array<{ owner: string, key: bigint }> = [];
-
-		// Get keys from every assigned wallet if "All" is selected in the drop-down
-		if (selectedWallet === null) {
-			Object.keys(listNodeLicensesData!.licenses).map((owner) => {
-				listNodeLicensesData!.licenses[owner].forEach((license) => {
-					keysWithOwners.push({owner, key: license});
-				});
-			});
-		} else {
-			listNodeLicensesData!.licenses[selectedWallet].forEach((license) => {
-				keysWithOwners.push({owner: selectedWallet, key: license});
-			});
-		}
-
-		if (keysWithOwners.length === 0) {
+		if (nodeLicenseStatusMap.size === 0) {
 			return (
 				<tr className="bg-white flex px-8 text-sm">
 					<td colSpan={3} className="w-full text-center">No keys found.</td>
@@ -162,35 +133,36 @@ export function SentryWallet() {
 			);
 		}
 
-		return keysWithOwners.map((keyWithOwner, i: number) => {
-			const isEven = i % 2 === 0;
-			const statusArray = status ? Array.from(status.entries()) : [];
-			const currentStatus = statusArray[i] ? statusArray[i][1] : null;
+		let i = 0;
+		const element: Array<ReactNode> = [];
 
-			return (
-				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
-					<td className="w-fit px-4 py-2">{keyWithOwner.key.toString()}</td>
-					<td className="w-full max-w-[390px] px-4 py-2">{keyWithOwner.owner.toString()}</td>
-					<td className="w-full max-w-[390px] px-4 py-2 text-[#A3A3A3]">
-						{currentStatus ? currentStatus.status : "Sentry not running"}
-					</td>
-				</tr>
-			);
-		});
+		new Map([...nodeLicenseStatusMap].filter(([, status]) => {
+			if (selectedWallet === null) {
+				return true;
+			}
+			return status.ownerPublicKey === selectedWallet;
+		}))
+			.forEach((status, key) => {
+				const isEven = i++ % 2 === 0;
+
+				element.push(
+					<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
+						<td className="w-full max-w-[70px] px-4 py-2">{key.toString()}</td>
+						<td className="w-full max-w-[390px] px-4 py-2">{status.ownerPublicKey}</td>
+						<td className="w-full max-w-[390px] px-4 py-2 text-[#A3A3A3]">
+							{status.status}
+						</td>
+					</tr>
+				);
+			})
+		return element;
 	}
 
 	function onCloseWalletConnectedModal() {
 		setAssignedWallet({show: false, txHash: ""});
 		setUnassignedWallet({show: false, txHash: ""});
+		refresh();
 		void queryClient.invalidateQueries({queryKey: ["ownersForOperator", operatorAddress]});
-	}
-
-	function getEthFundsTextColor(): string {
-		if (balance?.wei !== undefined && balance.wei >= recommendedValue) {
-			return "text-[#38A349]";
-		}
-
-		return "text-[#F59E28]";
 	}
 
 	return (
@@ -202,42 +174,50 @@ export function SentryWallet() {
 				/>
 			)}
 
-				{unassignedWallet.show && (
-					<WalletDisconnectedModal
-						txHash={unassignedWallet.txHash}
-						onClose={onCloseWalletConnectedModal}
-					/>
-				)}
+			{unassignedWallet.show && (
+				<WalletDisconnectedModal
+					txHash={unassignedWallet.txHash}
+					onClose={onCloseWalletConnectedModal}
+				/>
+			)}
 
 			<div className="w-full h-full flex flex-col">
 				<div
 					className="sticky top-0 flex flex-col items-center w-full h-auto bg-white z-10">
 					<div
-						className="flex flex-row justify-between items-center w-full py-3 gap-2 border-b border-gray-200 pl-10">
+						className="flex flex-row justify-between items-center w-full py-2 gap-2 border-b border-gray-200 pl-10 pr-2">
 						<div className="flex flex-row items-center gap-2">
 							<h2 className="text-lg font-semibold">Sentry Wallet</h2>
 
-							{balance?.wei === 0n && (
+							{sentryRunning && balance?.wei === 0n && (
 								<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
 									No ETH
 								</p>
 							)}
 
-							{sentryRunning ? (
+							{sentryRunning && !hasAssignedKeys && (
 								<>
 									<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
 										No Keys Assigned
 									</p>
 								</>
-							) : (
+							)}
+
+							{!sentryRunning && (
 								<p className="border border-[#F5F5F5] bg-[#F5F5F5] text-[#A3A3A3] text-xs font-semibold uppercase rounded-full px-2">
 									Stopped
 								</p>
 							)}
 
+							{sentryRunning && hasAssignedKeys && balance?.wei !== 0n && (
+								<p className="border border-[#22C55E] bg-[#F0FDF4] text-[#16A34A] text-xs font-semibold uppercase rounded-full px-2">
+									Active
+								</p>
+							)}
+
 							<div className="flex flex-row items-center gap-2 text-[#A3A3A3] text-[15px]">
 								<p>
-									{isOperatorLoading ? "Loading..." : operatorAddress}
+									{operatorLoading ? "Loading..." : operatorAddress}
 								</p>
 
 								<div
@@ -245,12 +225,18 @@ export function SentryWallet() {
 									className="cursor-pointer"
 								>
 									{copied
-										? (<AiOutlineCheck/>)
-										: (<PiCopy/>)}
+										? (<AiOutlineCheck className="h-[15px]"/>)
+										: (<PiCopy className="h-[15px]"/>)
+									}
 								</div>
 
-
-								<AiOutlineInfoCircle/>
+								<Tooltip
+									header={"Sentry Wallet is encrypted on your device"}
+									body={"This wallet is exportable and EVM compatible."}
+									width={350}
+								>
+									<AiOutlineInfoCircle className="text-[#A3A3A3]"/>
+								</Tooltip>
 
 								<div
 									className="relative cursor-pointer"
@@ -279,7 +265,7 @@ export function SentryWallet() {
 
 							{sentryRunning ? (
 								<button
-									onClick={() => pauseSentry()}
+									onClick={stopRuntime}
 									className="ml-4 flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 								>
 									<GiPauseButton className="h-[15px]"/>
@@ -287,7 +273,7 @@ export function SentryWallet() {
 								</button>
 							) : (
 								<button
-									onClick={() => startSentry()}
+									onClick={startRuntime}
 									className="ml-4 flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 								>
 									<FaPlay className="h-[15px]"/>
@@ -296,66 +282,46 @@ export function SentryWallet() {
 							)}
 						</div>
 
-						{/*		todo: swapped number with listNodeLicensesData, check if correct param	*/}
-						{!listNodeLicensesData?.licenses && drawerState === null && (
-							<div className="flex gap-4 bg-[#FFFBEB] p-2 z-10">
-								<div className="flex flex-row gap-2 items-center">
-									<AiFillWarning className="w-7 h-7 text-[#F59E28]"/>
-									<span
-										className="text-[#B45317] text-[15px] font-semibold">Actions required (N A)</span>
-								</div>
-								<button
-									onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}
-									className={`flex flex-row justify-center items-center py-1 px-4 gap-1 bg-[#F30919] text-[15px] text-white font-semibold`}
-								>
-									Resolve
-								</button>
-							</div>
+						{drawerState === null && (
+							<ActionsRequiredPromptHandler/>
 						)}
 					</div>
 
-					<div className="flex flex-col items-start w-full border-b border-gray-200 gap-2 py-2 pl-10">
-						<div className="flex items-center gap-1">
-							<h2 className="font-semibold">Sentry Wallet Balance</h2>
-							<AiOutlineInfoCircle className="text-[#A3A3A3]"/>
-						</div>
-
-						<div className="flex justify-center items-center gap-4">
-							<div className="flex justify-center items-center gap-1">
-								<FaEthereum className="w-6 h-6"/>
-								<p className={classNames(getEthFundsTextColor(), "text-2xl font-semibold")}>{(balance == undefined) ? "" : (balance.ethString === "0.0" ? "0" : balance.ethString)} ETH</p>
-							</div>
-							{isBalanceLoading ? (
-								<span className="flex items-center text-[15px] text-[#A3A3A3] select-none"
-								>
-									Refreshing
-								</span>
-							) : (
-								<a
-									onClick={onRefreshEthBalance}
-									className="flex items-center text-[15px] text-[#F30919] gap-1 cursor-pointer select-none"
-								>
-									<MdRefresh/> Refresh
-								</a>
-							)}
-						</div>
-					</div>
+					<SentryWalletHeader/>
 
 					<div className="flex flex-row items-center w-full py-3 pl-10 gap-1">
 						<h2 className="font-semibold">Assigned Keys</h2>
 						<p className="text-sm bg-gray-100 px-2 rounded-2xl text-gray-500">
-							{loading ? "Loading..." : `${listNodeLicensesData!.totalLicenses} key${listNodeLicensesData!.totalLicenses === 1 ? "" : "s"} in ${listOwnersData!.owners.length} wallet${listOwnersData!.owners.length === 1 ? "" : "s"}`}
+							{owners.length > 0 ? (
+								loading ? "Loading..." : `${keyCount} key${keyCount === 1 ? "" : "s"} in ${owners.length} wallet${owners.length === 1 ? "" : "s"}`
+							) : (
+								"Keys not assigned"
+							)}
 						</p>
-						<AiOutlineInfoCircle className="text-[#A3A3A3]"/>
+						{loading ? (
+							<span className="flex items-center text-[15px] text-[#A3A3A3] select-none">
+								Refreshing
+							</span>
+						) : (
+							<a
+								onClick={onRefreshTable}
+								className="flex items-center text-[15px] text-[#F30919] gap-1 cursor-pointer select-none"
+							>
+								<MdRefresh/> Refresh
+							</a>
+						)}
+						<Tooltip
+							header={"Purchased keys must be assigned to Sentry Wallet"}
+							body={"To assign keys, connect all wallets containing Sentry Keys."}
+							body2={"The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry."}
+						>
+							<AiOutlineInfoCircle className="text-[#A3A3A3]"/>
+						</Tooltip>
 					</div>
 				</div>
 
-				{showContinueInBrowserModal && (
-					<ContinueInBrowserModal setShowContinueInBrowserModal={setShowContinueInBrowserModal}/>
-				)}
-
 				{/*		Keys	*/}
-				{listOwnersData && listOwnersData.owners && listOwnersData.owners.length > 0 ? (
+				{sentryRunning && owners && owners.length > 0 && (
 					<>
 						<div>
 							<div className="w-full h-auto flex flex-col py-3 pl-10">
@@ -368,7 +334,7 @@ export function SentryWallet() {
 											onClick={() => setIsOpen(!isOpen)}
 											className={`flex items-center justify-between w-[538px] border-[#A3A3A3] border-r border-l border-t ${!isOpen ? "border-b" : null} border-[#A3A3A3] p-2`}
 										>
-											<p>{selectedWallet || `All assigned wallets (${listOwnersData.owners.length})`}</p>
+											<p>{selectedWallet || `All assigned wallets (${owners.length})`}</p>
 											<IoIosArrowDown
 												className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
 											/>
@@ -376,7 +342,7 @@ export function SentryWallet() {
 
 										{isOpen && (
 											<div
-												className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3] bg-white">
+												className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3] bg-white z-10">
 												<p
 													onClick={() => {
 														setSelectedWallet(null);
@@ -405,7 +371,10 @@ export function SentryWallet() {
 									</button>
 
 									<button
-										onClick={() => window.electron.openExternal(`http://localhost:7555/assign-wallet/${operatorAddress}`)}
+										onClick={() => {
+											setModalState(ModalView.TransactionInProgress)
+											window.electron.openExternal(`http://localhost:7555/assign-wallet/${operatorAddress}`)
+										}}
 										className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 									>
 										Assign keys from new wallet
@@ -427,7 +396,7 @@ export function SentryWallet() {
 								<table className="w-full bg-white">
 									<thead className="text-[#A3A3A3]">
 									<tr className="flex text-left text-[12px] uppercase px-8">
-										<th className="w-fit px-4 py-2">Key Id</th>
+										<th className="w-full max-w-[70px] px-4 py-2">Key Id</th>
 										<th className="w-full max-w-[390px] px-4 py-2">Owner Address</th>
 										<th className="w-full max-w-[390px] px-4 py-2">Claim Status</th>
 									</tr>
@@ -438,30 +407,37 @@ export function SentryWallet() {
 											<td colSpan={3} className="w-full text-center">Loading...</td>
 										</tr>
 									) : getKeys()}
-
-									{/*<tr className="text-[#A3A3A3] text-sm flex px-8">*/}
-									{/*	<td className="w-full max-w-[70px] px-4 py-2">-</td>*/}
-									{/*	<td className="w-full max-w-[390px] px-4 py-2">Empty Key Slot</td>*/}
-									{/*</tr>*/}
 									</tbody>
 								</table>
 							</div>
 						</div>
 					</>
-				) : (
+				)}
+
+				{sentryRunning && owners && owners.length <= 0 && (
 					<>
 						{loading ? (
 							<div className="w-full flex-1 flex flex-col justify-center items-center">
 								<h3 className="text-center">Loading...</h3>
 							</div>
 						) : (
-							<>
+							sentryRunning ? (
 								<div className="w-full flex-1 flex flex-col justify-center items-center">
 									<AssignKeysFromNewWallet/>
 								</div>
-							</>
+							) : (
+								<div className="w-full flex-1 flex flex-col justify-center items-center">
+									<AssignKeysSentryNotRunning/>
+								</div>
+							)
 						)}
 					</>
+				)}
+
+				{!sentryRunning && (
+					<div className="w-full flex-1 flex flex-col justify-center items-center">
+						<AssignKeysSentryNotRunning/>
+					</div>
 				)}
 			</div>
 		</>
