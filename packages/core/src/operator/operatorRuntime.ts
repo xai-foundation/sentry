@@ -137,7 +137,8 @@ export async function operatorRuntime(
                 status: NodeLicenseStatus.CHECKING_IF_ELIGIBLE_FOR_PAYOUT,
             });
             safeStatusCallback();
-            const [payoutEligible] = await refereeContract.createAssertionHashAndCheckPayout(nodeLicenseId, challengeNumber, challenge.assertionStateRoot);
+
+            const [payoutEligible] = await refereeContract.createAssertionHashAndCheckPayout(nodeLicenseId, challengeNumber, challenge.assertionStateRoot, challenge.challengerSignedHash);
             if (!payoutEligible) {
                 logFunction(`nodeLicenseId ${nodeLicenseId} is not going to receive a reward for entering the challenge ${challengeNumber}, thus not submmiting an assertion.`);
                 nodeLicenseStatusMap.set(nodeLicenseId, {

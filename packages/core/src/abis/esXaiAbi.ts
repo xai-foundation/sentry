@@ -370,7 +370,7 @@ export const esXaiAbi = [
     "inputs": [
       {
         "type": "address",
-        "name": "newXai"
+        "name": "_newXai"
       }
     ],
     "outputs": []
@@ -384,19 +384,6 @@ export const esXaiAbi = [
       {
         "type": "uint256",
         "name": "index"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "convert",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "amount"
       }
     ],
     "outputs": []
@@ -619,7 +606,7 @@ export const esXaiAbi = [
     "inputs": [
       {
         "type": "address",
-        "name": "xai"
+        "name": "_xai"
       }
     ],
     "outputs": []
@@ -829,6 +816,20 @@ export const esXaiAbi = [
     "outputs": [
       {
         "type": "bool",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "xai",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address",
         "name": ""
       }
     ]

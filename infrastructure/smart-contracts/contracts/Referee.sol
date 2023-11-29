@@ -449,7 +449,6 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
             return;
         }
 
-
         // Check the user is actually eligible for receiving a reward, do not count them in numberOfEligibleClaimers if they are not able to receive a reward
         (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _successorStateRoot, challenges[_challengeId].challengerSignedHash);
 
