@@ -6,6 +6,7 @@ import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {useStorage} from "@/features/storage";
 import {useNavigate} from "react-router-dom";
 import {drawerStateAtom} from "@/features/drawer/DrawerManager";
+import {useOperator} from "@/features/operator";
 
 export function ViewKeysFlow() {
 	const [ownerAddress, setOwnerAddress] = useState('');
@@ -16,6 +17,8 @@ export function ViewKeysFlow() {
 
 	const [loading, setLoading] = useState<boolean>(false)
 	const [success, setSuccess] = useState<boolean>(false)
+	const {publicKey: operatorAddress} = useOperator();
+
 
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
@@ -66,6 +69,11 @@ export function ViewKeysFlow() {
 
 		setLoading(false);
 		setSuccess(true);
+	}
+
+	function startAssignment() {
+		setModalState(ModalView.TransactionInProgress);
+		window.electron.openExternal(`http://localhost:7555/assign-wallet/${operatorAddress}`);
 	}
 
 	// Load State
@@ -127,17 +135,14 @@ export function ViewKeysFlow() {
 						</button>
 
 						<p className="text-[15px] text-[#525252] mt-8">
-							Or connect wallet to view all keys in the wallet
+							Or assign wallet to view all keys in the wallet
 						</p>
 
 						<button
-							onClick={() => {
-								setModalState(ModalView.TransactionInProgress)
-								window.electron.openExternal('http://localhost:7555/connect-wallet')
-							}}
+							onClick={startAssignment}
 							className="w-full h-12 flex flex-row justify-center items-center gap-1 bg-[#F30919] text-[15px] text-white font-semibold"
 						>
-							Connect wallet <BiLinkExternal/>
+							Assign wallet <BiLinkExternal/>
 						</button>
 					</div>
 				</div>
