@@ -351,6 +351,39 @@ export const NodeLicenseAbi = [
   },
   {
     "type": "function",
+    "name": "getPromoCode",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "string",
+        "name": "_promoCode"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple",
+        "name": "",
+        "components": [
+          {
+            "type": "address",
+            "name": "recipient"
+          },
+          {
+            "type": "bool",
+            "name": "active"
+          },
+          {
+            "type": "uint256",
+            "name": "receivedLifetime"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "getRoleAdmin",
     "constant": true,
     "stateMutability": "view",
@@ -572,7 +605,8 @@ export const NodeLicenseAbi = [
     "type": "function",
     "name": "refundNodeLicense",
     "constant": false,
-    "payable": false,
+    "stateMutability": "payable",
+    "payable": true,
     "inputs": [
       {
         "type": "uint256",

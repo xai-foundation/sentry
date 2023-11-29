@@ -18,7 +18,7 @@ contract esXai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgra
 
     EnumerableSetUpgradeable.AddressSet private _whitelist;
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    address private _xai;
+    address public xai;
     bool private _redemptionActive;
     mapping(address => RedemptionRequest[]) private _redemptionRequests;
 
@@ -43,14 +43,14 @@ contract esXai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgra
     event RedemptionCompleted(address indexed user, uint256 indexed index);
     event RedemptionStatusChanged(bool isActive);
 
-    function initialize (address xai) public initializer {
+    function initialize (address _xai) public initializer {
         __ERC20_init("esXai", "esXAI");
         __ERC20Burnable_init();
         __AccessControl_init();
 
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _setRoleAdmin(MINTER_ROLE, DEFAULT_ADMIN_ROLE);
-        _xai = xai;
+        xai = _xai;
         _redemptionActive = false;
     }
 
@@ -64,15 +64,6 @@ contract esXai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgra
     }
 
     /**
-     * @dev Function to convert Xai to esXai
-     * @param amount The amount of Xai to convert.
-     */
-    function convert(uint256 amount) public {
-        Xai(_xai).burnFrom(msg.sender, amount);
-        _mint(msg.sender, amount);
-    }
-
-    /**
      * @dev Function to mint esXai tokens
      * @param to The address that will receive the minted tokens.
      * @param amount The amount of tokens to mint.
@@ -83,10 +74,10 @@ contract esXai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgra
 
     /**
      * @dev Function to change the Xai contract address
-     * @param newXai The new Xai contract address.
+     * @param _newXai The new Xai contract address.
      */
-    function changeXaiAddress(address newXai) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        _xai = newXai;
+    function changeXaiAddress(address _newXai) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        xai = _newXai;
     }
 
     /**
@@ -166,7 +157,7 @@ contract esXai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgra
         require(duration == 15 days || duration == 90 days || duration == 180 days, "Invalid duration");
 
         // Transfer the esXai tokens from the sender's account to this contract
-        transferFrom(msg.sender, address(this), amount);
+        _transfer(msg.sender, address(this), amount);
 
         // Store the redemption request
         _redemptionRequests[msg.sender].push(RedemptionRequest(amount, block.timestamp, duration, false));
@@ -217,7 +208,7 @@ contract esXai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgra
         _burn(address(this), request.amount);
 
         // Mint the Xai tokens
-        Xai(_xai).mint(msg.sender, xaiAmount);
+        Xai(xai).mint(msg.sender, xaiAmount);
 
         // Mark the redemption request as completed
         request.completed = true;

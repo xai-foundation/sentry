@@ -308,6 +308,20 @@ export const XaiAbi = [
   },
   {
     "type": "function",
+    "name": "esXaiAddress",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "getRoleAdmin",
     "constant": true,
     "stateMutability": "view",
