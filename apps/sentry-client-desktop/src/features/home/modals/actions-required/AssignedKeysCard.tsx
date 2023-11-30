@@ -5,17 +5,17 @@ import {LuExternalLink} from "react-icons/lu";
 import {AiFillCheckCircle} from "react-icons/ai";
 import {useOperator} from "@/features/operator";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
-import {useSetAtom} from "jotai";
-import {useAccruingInfo} from "@/hooks/useAccruingInfo";
+import {useAtomValue, useSetAtom} from "jotai";
+import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 
 export function AssignedKeysCard() {
 	const setModalState = useSetAtom(modalStateAtom);
 	const {publicKey: operatorAddress} = useOperator();
-	const {hasAssignedKeys} = useAccruingInfo();
+	const {hasAssignedKeys} = useAtomValue(accruingStateAtom);
 
 	function onSetKeys() {
 		setModalState(ModalView.TransactionInProgress);
-		window.electron.openExternal(`http://localhost:7555/assign-wallet/${operatorAddress}`);
+		window.electron.openExternal(`http://localhost:8080/assign-wallet/${operatorAddress}`);
 	}
 
 	return (

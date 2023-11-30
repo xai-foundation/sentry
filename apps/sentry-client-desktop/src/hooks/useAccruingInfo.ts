@@ -2,11 +2,34 @@ import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {useOperator} from "@/features/operator";
 import {useBalance} from "@/hooks/useBalance";
 import {recommendedFundingBalance} from "@/features/home/SentryWallet";
-import {useGetAccruedEsXaiBulk} from "@/hooks/useGetAccruedEsXaiBulk";
+import {AccruedBalanceMap, useGetAccruedEsXaiBulk} from "@/hooks/useGetAccruedEsXaiBulk";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
-import {useAtomValue} from "jotai";
+import {atom, useAtom, useAtomValue} from "jotai";
+import {useEffect} from "react";
+
+interface AccruingState {
+	funded: boolean | undefined;
+	accruing: boolean | undefined;
+	balances: AccruedBalanceMap;
+	isBalancesLoading: boolean;
+	hasAssignedKeys: boolean;
+	kycRequired: boolean;
+}
+
+const defaultAccruingState: AccruingState = {
+	funded: false,
+	accruing: false,
+	balances: {},
+	isBalancesLoading: false,
+	hasAssignedKeys: false,
+	kycRequired: true,
+}
+
+export const accruingStateAtom = atom<AccruingState>(defaultAccruingState);
+export const accruingStateRefreshAtom = atom(0);
 
 export function useAccruingInfo() {
+	const [accruingState, setAccruingState] = useAtom(accruingStateAtom);
 	const {sentryRunning} = useOperatorRuntime();
 	const {publicKey: operatorAddress} = useOperator();
 	const {data: balance} = useBalance(operatorAddress);
@@ -18,14 +41,72 @@ export function useAccruingInfo() {
 	const funded = balance && balance.wei !== undefined && balance.wei >= recommendedFundingBalance;
 	const accruing = sentryRunning && funded && Object.keys(licensesMap).length > 0;
 
+	// set default state
+	useEffect(() => {
+		setAccruingState(defaultAccruingState);
+	}, [accruingStateRefreshAtom]);
+
+	// check if anything is loading
+	useEffect(() => {
+		setAccruingState((_accruingState) => {
+			return {
+				..._accruingState,
+				isBalancesLoading,
+			}
+		});
+	}, [isBalancesLoading]);
+
+	// return balances
+	useEffect(() => {
+		setAccruingState((_accruingState) => {
+			return {
+				..._accruingState,
+				balances,
+			}
+		});
+	}, [balances]);
+
+	// return funded
+	useEffect(() => {
+		setAccruingState((_accruingState) => {
+			return {
+				..._accruingState,
+				funded,
+			}
+		});
+	}, [funded]);
+
+	// return accruing
+	useEffect(() => {
+		setAccruingState((_accruingState) => {
+			return {
+				..._accruingState,
+				accruing,
+			}
+		});
+	}, [accruing]);
+
+	// return kycRequired
+	useEffect(() => {
+		setAccruingState((_accruingState) => {
+			return {
+				..._accruingState,
+				kycRequired,
+			}
+		});
+	}, [kycRequired]);
+
+	// return hasAssignedKeys
+	useEffect(() => {
+		setAccruingState((_accruingState) => {
+			return {
+				..._accruingState,
+				hasAssignedKeys: Object.keys(licensesMap).length > 0,
+			}
+		});
+	}, [licensesMap]);
+
 	return {
-		funded,
-		accruing,
-		balances,
-		isBalancesLoading,
-		hasAssignedKeys: Object.keys(licensesMap).length > 0,
-		kycRequired,
-		owners,
-		ownersKycMap,
+		...accruingState,
 	}
 }

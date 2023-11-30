@@ -9,14 +9,15 @@ import {FundsInSentryWalletCard} from "./FundsInSentryWalletCard";
 import {AssignedKeysCard} from "./AssignedKeysCard";
 import {KycRequiredCard} from "./KycRequiredCard";
 import {BarStepItem} from "@/components/BarStepItem";
-import {useAccruingInfo} from "@/hooks/useAccruingInfo";
+import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
 import {useAtomValue} from "jotai";
 
 export function ActionsRequiredNotAccruingDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {owners, ownersKycMap} = useAtomValue(chainStateAtom);
-	const {accruing, kycRequired} = useAccruingInfo();
+	const {accruing, kycRequired} = useAtomValue(accruingStateAtom);
+
 
 	return (
 		<div className="h-full flex flex-col justify-start items-center">

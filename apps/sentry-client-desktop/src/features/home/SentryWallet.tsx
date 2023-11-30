@@ -22,7 +22,7 @@ import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
 import {SentryWalletHeader} from "@/features/home/SentryWalletHeader";
 import {chainStateAtom, useChainDataRefresh} from "@/hooks/useChainDataWithCallback";
-import {useAccruingInfo} from "@/hooks/useAccruingInfo";
+import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {AssignKeysSentryNotRunning} from "@/components/AssignKeysSentryNotRunning";
 
 // TODO -> replace with dynamic value later
@@ -34,7 +34,8 @@ export function SentryWallet() {
 	const {ownersLoading, owners, licensesLoading, licensesList} = useAtomValue(chainStateAtom);
 
 	const queryClient = useQueryClient();
-	const {hasAssignedKeys} = useAccruingInfo();
+	const {hasAssignedKeys} = useAtomValue(accruingStateAtom);
+
 
 	const {isLoading: operatorLoading, publicKey: operatorAddress} = useOperator();
 	const {data: balance} = useBalance(operatorAddress);
@@ -373,7 +374,7 @@ export function SentryWallet() {
 									<button
 										onClick={() => {
 											setModalState(ModalView.TransactionInProgress)
-											window.electron.openExternal(`http://localhost:7555/assign-wallet/${operatorAddress}`)
+											window.electron.openExternal(`http://localhost:8080/assign-wallet/${operatorAddress}`)
 										}}
 										className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 									>
@@ -383,7 +384,7 @@ export function SentryWallet() {
 
 									<button
 										disabled={selectedWallet === null}
-										onClick={() => window.electron.openExternal(`http://localhost:7555/unassign-wallet/${operatorAddress}`)}
+										onClick={() => window.electron.openExternal(`http://localhost:8080/unassign-wallet/${operatorAddress}`)}
 										className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] ${selectedWallet === null ? 'text-[#D4D4D4] cursor-not-allowed' : ""} px-4 py-2`}
 									>
 										Un-assign this wallet
