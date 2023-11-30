@@ -136,8 +136,8 @@ app.on('activate', () => {
 // When the app is ready, we are going to start a local web server to deploy the web-connect project
 app.on('ready', async () => {
 	const isPortOpen = async (port: number): Promise<boolean> => {
-		return new Promise((resolve, reject) => {
-			let s = net.createServer();
+		return new Promise((resolve) => {
+			const s = net.createServer();
 			s.once('error', (err) => {
 				s.close();
 				if (err["code"] == "EADDRINUSE") {
