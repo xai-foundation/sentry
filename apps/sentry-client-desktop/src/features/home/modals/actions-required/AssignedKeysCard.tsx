@@ -15,7 +15,7 @@ export function AssignedKeysCard() {
 
 	function onSetKeys() {
 		setModalState(ModalView.TransactionInProgress);
-		window.electron.openExternal(`http://localhost:7555/assign-wallet/${operatorAddress}`);
+		window.electron.openExternal(`http://localhost:8080/assign-wallet/${operatorAddress}`);
 	}
 
 	return (
