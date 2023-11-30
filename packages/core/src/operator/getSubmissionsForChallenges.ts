@@ -8,9 +8,10 @@ import { getProvider } from "../index.js";
  */
 export interface Submission {
     submitted: boolean;
+    claimed: boolean;
+    eligibleForPayout: boolean;
     nodeLicenseId: number;
     successorStateRoot: string;
-    claimed: boolean;
 }
 
 /**
@@ -37,19 +38,21 @@ export async function getSubmissionsForChallenges(
             const result = results[j];
             const [
                 submitted,
+                claimed,
+                eligibleForPayout,
                 nodeLicenseId,
                 successorStateRoot,
-                claimed
             ] = result;
             const submission: Submission = {
                 submitted,
+                claimed,
+                eligibleForPayout,
                 nodeLicenseId,
                 successorStateRoot,
-                claimed
             };
             submissions.push(submission);
             if (callback) {
-                await callback(submission, j);
+                await callback(submission, i + j);
             }
         }
     }

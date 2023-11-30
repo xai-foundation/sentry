@@ -221,6 +221,7 @@ export async function operatorRuntime(
             ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
             status: NodeLicenseStatus.QUERYING_FOR_UNCLAIMED_SUBMISSIONS,
         });
+        logFunction(`Querying for unclaimed submission for node license '${nodeLicenseId}'.`);
         safeStatusCallback();
 
         await getSubmissionsForChallenges(closedChallengeIds, nodeLicenseId, async (submission, index) => {
@@ -232,10 +233,17 @@ export async function operatorRuntime(
                 status: `Checking Submission for Challenge '${challengeId}'`,
             });
             safeStatusCallback();
+            logFunction(`Checking Submission for Challenge '${challengeId}'`);
 
             // call the process claim and update statuses/logs accoridngly
             // TODO check if eligible for this claim
             if (submission.submitted && !submission.claimed) {
+                nodeLicenseStatusMap.set(nodeLicenseId, {
+                    ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
+                    status: `Found unclaimed submission for Challenge '${challengeId}'`,
+                });
+                safeStatusCallback();
+                logFunction(`Found unclaimed submission for Challenge '${challengeId}'`);
                 await processClaimForChallenge(challengeId, nodeLicenseId);
             }
         });
