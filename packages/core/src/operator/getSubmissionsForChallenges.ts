@@ -52,7 +52,7 @@ export async function getSubmissionsForChallenges(
             };
             submissions.push(submission);
             if (callback) {
-                await callback(submission, j);
+                await callback(submission, i + j);
             }
         }
     }
