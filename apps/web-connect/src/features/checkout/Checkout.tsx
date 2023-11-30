@@ -8,7 +8,6 @@ import {config, NodeLicenseAbi} from "@sentry/core";
 import {BiLoaderAlt} from "react-icons/bi";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useProvider} from "@/features/checkout/hooks/useProvider";
-import {Web3Button} from "@/features/checkout/Web3Button";
 
 export function Checkout() {
 	const queryString = window.location.search;
@@ -130,7 +129,7 @@ export function Checkout() {
 
 
 			<div className="absolute top-0 right-0 p-4">
-				<Web3Button/>
+				<w3m-button/>
 			</div>
 		</div>
 	)

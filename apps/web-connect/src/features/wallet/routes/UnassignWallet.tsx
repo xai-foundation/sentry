@@ -3,7 +3,6 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useAccount, useContractWrite} from "wagmi";
 import {config, RefereeAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
-import {Web3Button} from "@/features/checkout/Web3Button";
 
 export function UnassignWallet() {
 	const navigate = useNavigate();
@@ -93,7 +92,7 @@ export function UnassignWallet() {
 								</button>
 							) : (
 								<div className="m-8">
-									<Web3Button/>
+									<w3m-button/>
 								</div>
 							)}
 
@@ -112,7 +111,7 @@ export function UnassignWallet() {
 			</div>
 
 			<div className="absolute top-0 right-0 p-4">
-				<Web3Button/>
+				<w3m-button/>
 			</div>
 		</div>
 	)
