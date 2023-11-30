@@ -2,6 +2,7 @@ import {MdVerifiedUser} from "react-icons/md";
 import {useNavigate} from "react-router-dom";
 import {useAccount} from "wagmi";
 import {FaCircleCheck} from "react-icons/fa6";
+import {Web3Button} from "@/features/checkout/Web3Button";
 
 export function ConnectWallet() {
 	const {address} = useAccount()
@@ -52,7 +53,7 @@ export function ConnectWallet() {
 							</p>
 
 							<div className="m-8">
-								<w3m-button/>
+								<Web3Button/>
 							</div>
 
 							<p className="text-[#525252] mt-2">
@@ -70,7 +71,7 @@ export function ConnectWallet() {
 			</div>
 
 			<div className="absolute top-0 right-0 p-4">
-				<w3m-button/>
+				<Web3Button/>
 			</div>
 		</div>
 	)
