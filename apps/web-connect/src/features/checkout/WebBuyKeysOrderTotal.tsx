@@ -1,7 +1,7 @@
 import {BiLoaderAlt} from "react-icons/bi";
 import {AiFillInfoCircle, AiOutlineClose} from "react-icons/ai";
 import {useGetTotalSupplyAndCap} from "@/features/checkout/hooks/useGetTotalSupplyAndCap";
-import {Dispatch, SetStateAction, useEffect, useLayoutEffect, useState} from "react";
+import {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {ethers} from "ethers";
 import {CheckoutTierSummary, getPromoCode} from "@sentry/core";
 import {XaiCheckbox} from "@sentry/ui";
@@ -26,7 +26,6 @@ export function WebBuyKeysOrderTotal(
 		onClick,
 		getPriceData,
 		isPriceLoading,
-		prefilledPromoCode,
 		promoCode,
 		setPromoCode,
 		error
@@ -51,13 +50,6 @@ export function WebBuyKeysOrderTotal(
 			});
 		}
 	}, [getPriceData]);
-
-	useLayoutEffect(() => {
-		if (prefilledPromoCode) {
-			setPromoCode(prefilledPromoCode);
-			void handleSubmit()
-		}
-	}, [prefilledPromoCode, setPromoCode]);
 
 	const handleSubmit = async () => {
 		const validatePromoCode = await getPromoCode(promoCode);

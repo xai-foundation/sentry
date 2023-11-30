@@ -26,6 +26,12 @@ export function Checkout() {
 		}
 	}, [prefilledAmount]);
 
+	useEffect(() => {
+		if (prefilledPromoCode) {
+			setPromoCode(prefilledPromoCode);
+		}
+	}, [prefilledPromoCode]);
+
 	const {isLoading, isSuccess, write, error, data} = useContractWrite({
 		address: config.nodeLicenseAddress as `0x${string}`,
 		abi: NodeLicenseAbi,
