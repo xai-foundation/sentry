@@ -1,9 +1,9 @@
 import {BiLoaderAlt} from "react-icons/bi";
 import {AiFillInfoCircle, AiOutlineClose} from "react-icons/ai";
 import {useGetTotalSupplyAndCap} from "@/features/checkout/hooks/useGetTotalSupplyAndCap";
-import {Dispatch, SetStateAction, useEffect, useState} from "react";
+import {Dispatch, SetStateAction, useEffect, useLayoutEffect, useState} from "react";
 import {ethers} from "ethers";
-import {CheckoutTierSummary} from "@sentry/core";
+import {CheckoutTierSummary, getPromoCode} from "@sentry/core";
 import {XaiCheckbox} from "@sentry/ui";
 
 interface PriceDataInterface {
@@ -15,6 +15,7 @@ interface WebBuyKeysOrderTotalProps {
 	onClick: () => void;
 	getPriceData: PriceDataInterface | undefined;
 	isPriceLoading: boolean;
+	prefilledPromoCode?: string | null;
 	promoCode: string;
 	setPromoCode: Dispatch<SetStateAction<string>>;
 	error: Error | null;
@@ -25,6 +26,7 @@ export function WebBuyKeysOrderTotal(
 		onClick,
 		getPriceData,
 		isPriceLoading,
+		prefilledPromoCode,
 		promoCode,
 		setPromoCode,
 		error
@@ -50,8 +52,17 @@ export function WebBuyKeysOrderTotal(
 		}
 	}, [getPriceData]);
 
-	const handleSubmit = () => {
-		if (promoCode === "IDONTWANNAPAYFULLPRICE") {
+	useLayoutEffect(() => {
+		if (prefilledPromoCode) {
+			setPromoCode(prefilledPromoCode);
+			void handleSubmit()
+		}
+	}, [prefilledPromoCode, setPromoCode]);
+
+	const handleSubmit = async () => {
+		const validatePromoCode = await getPromoCode(promoCode);
+
+		if (validatePromoCode.active) {
 			setDiscount({
 				applied: true,
 				error: false,
@@ -126,8 +137,8 @@ export function WebBuyKeysOrderTotal(
 												</span>
 											</div>
 										</div>
-										<p className="text-[13px] text-[#A3A3A3] mb-4">
-											IDONTWANNAPAYFULLPRICE
+										<p className="text-[13px] text-[#A3A3A3] ">
+											{promoCode}
 										</p>
 									</>
 								)}
@@ -163,7 +174,10 @@ export function WebBuyKeysOrderTotal(
 													<span>Add promo code</span>
 													<div
 														className="cursor-pointer z-10"
-														onClick={() => setPromo(false)}
+														onClick={() => {
+															setPromoCode("");
+															setPromo(false);
+														}}
 													>
 														<AiOutlineClose/>
 													</div>

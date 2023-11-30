@@ -13,6 +13,7 @@ export function Checkout() {
 	const queryString = window.location.search;
 	const queryParams = new URLSearchParams(queryString);
 	const prefilledAmount = queryParams.get("quantity");
+	const prefilledPromoCode = queryParams.get("promoCode");
 	const [quantity, setQuantity] = useState<number>(1);
 	const [promoCode, setPromoCode] = useState<string>("");
 
@@ -119,6 +120,7 @@ export function Checkout() {
 							onClick={write}
 							getPriceData={getPriceData}
 							isPriceLoading={isPriceLoading}
+							prefilledPromoCode={prefilledPromoCode}
 							promoCode={promoCode}
 							setPromoCode={setPromoCode}
 							error={error}

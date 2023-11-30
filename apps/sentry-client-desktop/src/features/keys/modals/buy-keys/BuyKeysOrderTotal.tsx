@@ -2,15 +2,18 @@ import {BiLoaderAlt} from "react-icons/bi";
 import {AiFillInfoCircle, AiOutlineClose, AiOutlineInfoCircle} from "react-icons/ai";
 import {useGetPriceForQuantity} from "@/features/keys/hooks/useGetPriceForQuantity";
 import {useGetTotalSupplyAndCap} from "@/features/keys/hooks/useGetTotalSupplyAndCap";
-import {useEffect, useState} from "react";
+import {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {ethers} from "ethers";
 import {Tooltip} from "@/features/keys/Tooltip";
+import {getPromoCode} from "@sentry/core";
 
 interface BuyKeysOrderTotalProps {
 	quantity: number;
+	promoCode: string;
+	setPromoCode: Dispatch<SetStateAction<string>>;
 }
 
-export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
+export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOrderTotalProps) {
 	const {data: getPriceData, isLoading: isPriceLoading} = useGetPriceForQuantity(quantity);
 	const {isLoading: isTotalLoading} = useGetTotalSupplyAndCap();
 	const [discount, setDiscount] = useState({
@@ -18,7 +21,6 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 		error: false,
 	});
 	const [promo, setPromo] = useState<boolean>(false);
-	const [inputValue, setInputValue] = useState('');
 	const [price, setPrice] = useState<{ price: number, discount: number }>({price: 0, discount: 0});
 
 	useEffect(() => {
@@ -30,8 +32,10 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 		}
 	}, [getPriceData]);
 
-	const handleSubmit = () => {
-		if (inputValue === "IDONTWANNAPAYFULLPRICE") {
+	const handleSubmit = async () => {
+		const validatePromoCode = await getPromoCode(promoCode);
+
+		if (validatePromoCode.active) {
 			setDiscount({
 				applied: true,
 				error: false,
@@ -41,7 +45,7 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 				applied: false,
 				error: true,
 			});
-			setInputValue("");
+			setPromoCode("");
 		}
 	};
 
@@ -124,8 +128,8 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 												</span>
 											</div>
 										</div>
-										<p className="text-[13px] text-[#A3A3A3] mb-4">
-											IDONTWANNAPAYFULLPRICE
+										<p className="text-[13px] text-[#A3A3A3] ">
+											{promoCode}
 										</p>
 									</>
 								)}
@@ -159,7 +163,10 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 													<span>Add promo code</span>
 													<div
 														className="cursor-pointer z-10"
-														onClick={() => setPromo(false)}
+														onClick={() => {
+															setPromoCode("");
+															setPromo(false);
+														}}
 													>
 														<AiOutlineClose/>
 													</div>
@@ -169,9 +176,9 @@ export function BuyKeysOrderTotal({quantity}: BuyKeysOrderTotalProps) {
 
 													<input
 														type="text"
-														value={inputValue}
+														value={promoCode}
 														onChange={(e) => {
-															setInputValue(e.target.value)
+															setPromoCode(e.target.value)
 															setDiscount({applied: false, error: false})
 														}}
 														className={`w-full my-2 p-2 border ${discount.error ? "border-[#AB0914]" : "border-[#A3A3A3]"}`}
