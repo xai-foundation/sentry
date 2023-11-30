@@ -13,7 +13,7 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 contract XaiUpgradeTest is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgradeable {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     uint256 public constant MAX_SUPPLY = 2500000000 * 10**18; // Max supply of 2,500,000,000 tokens
-    address private _esXai;
+    address private esXaiAddress;
     uint256 private _count;
 
     /**

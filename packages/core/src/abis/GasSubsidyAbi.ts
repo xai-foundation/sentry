@@ -107,19 +107,6 @@ export const GasSubsidyAbi = [
   },
   {
     "type": "function",
-    "name": "addAdmin",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "admin"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
     "name": "getRoleAdmin",
     "constant": true,
     "stateMutability": "view",
@@ -183,19 +170,6 @@ export const GasSubsidyAbi = [
     "constant": false,
     "payable": false,
     "inputs": [],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "removeAdmin",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "admin"
-      }
-    ],
     "outputs": []
   },
   {

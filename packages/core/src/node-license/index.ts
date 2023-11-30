@@ -13,3 +13,4 @@ export * from "./setOrAddPricingTiers.js";
 export * from "./getAccruedEsXai.js";
 export * from "./addPromoCode.js";
 export * from "./removePromoCode.js";
+export * from "./getPromoCode.js";

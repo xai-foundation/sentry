@@ -415,7 +415,7 @@ export const RefereeAbi = [
     "type": "function",
     "name": "createAssertionHashAndCheckPayout",
     "constant": true,
-    "stateMutability": "view",
+    "stateMutability": "pure",
     "payable": false,
     "inputs": [
       {
@@ -429,6 +429,10 @@ export const RefereeAbi = [
       {
         "type": "bytes",
         "name": "_successorStateRoot"
+      },
+      {
+        "type": "bytes",
+        "name": "_challengerSignedHash"
       }
     ],
     "outputs": [
@@ -855,16 +859,20 @@ export const RefereeAbi = [
             "name": "submitted"
           },
           {
+            "type": "bool",
+            "name": "claimed"
+          },
+          {
+            "type": "bool",
+            "name": "eligibleForPayout"
+          },
+          {
             "type": "uint256",
             "name": "nodeLicenseId"
           },
           {
             "type": "bytes",
             "name": "successorStateRoot"
-          },
-          {
-            "type": "bool",
-            "name": "claimed"
           }
         ]
       }
@@ -1182,16 +1190,20 @@ export const RefereeAbi = [
         "name": "submitted"
       },
       {
+        "type": "bool",
+        "name": "claimed"
+      },
+      {
+        "type": "bool",
+        "name": "eligibleForPayout"
+      },
+      {
         "type": "uint256",
         "name": "nodeLicenseId"
       },
       {
         "type": "bytes",
         "name": "successorStateRoot"
-      },
-      {
-        "type": "bool",
-        "name": "claimed"
       }
     ]
   },

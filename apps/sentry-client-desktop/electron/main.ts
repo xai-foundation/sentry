@@ -1,8 +1,9 @@
-import {app, BrowserWindow, ipcMain, safeStorage, shell} from 'electron'
+import { app, BrowserWindow, ipcMain, safeStorage, shell } from 'electron'
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import express from 'express';
+import net from "net";
 
 const isWindows = os.platform() === "win32";
 
@@ -133,14 +134,39 @@ app.on('activate', () => {
 })
 
 // When the app is ready, we are going to start a local web server to deploy the web-connect project
-app.on('ready', () => {
+app.on('ready', async () => {
+	const isPortOpen = async (port: number): Promise<boolean> => {
+		return new Promise((resolve) => {
+			const s = net.createServer();
+			s.once('error', (err) => {
+				s.close();
+				if (err["code"] == "EADDRINUSE") {
+					resolve(false);
+				} else {
+					resolve(false); // or throw error!!
+					// reject(err); 
+				}
+			});
+			s.once('listening', () => {
+				resolve(true);
+				s.close();
+			});
+			s.listen(port);
+		});
+	}
+
+	// on windows, the server gets started multiple times when it shouldn't
+	if (!(await isPortOpen(8080))) {
+		return;
+	}
+
 	const server = express();
 	const publicWebPath = path.join(process.env.VITE_PUBLIC, '/web');
 	server.use(express.static(publicWebPath)); // takes dir, makes root
 	server.get("/*", (_, res) => {
 		res.sendFile(path.join(publicWebPath, "index.html")) // force web to load index.html
 	})
-	server.listen(7555);
+	server.listen(8080);
 })
 
 // Windows deep-link
@@ -177,14 +203,17 @@ function handleDeeplink(_, url) {
 	let txHash: string;
 
 	switch (instruction) {
+		case "assigned-wallet/":
 		case "assigned-wallet":
 			txHash = url.slice(url.indexOf("=") + 1);
 			win?.webContents.send("assigned-wallet", txHash);
 			break;
+		case "unassigned-wallet/":
 		case "unassigned-wallet":
 			txHash = url.slice(url.indexOf("=") + 1);
 			win?.webContents.send("unassigned-wallet", txHash);
 			break;
+		case "purchase-successful/":
 		case "purchase-successful":
 			txHash = url.slice(url.indexOf("=") + 1);
 			win?.webContents.send("purchase-successful", txHash);

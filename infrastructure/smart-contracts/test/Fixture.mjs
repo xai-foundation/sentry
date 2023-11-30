@@ -5,6 +5,9 @@ import { XaiTests } from "./Xai.mjs";
 import { config, createBlsKeyPair } from "@sentry/core";
 import { RuntimeTests } from "./Runtime.mjs";
 import { UpgradeabilityTests } from "./UpgradeTest.mjs";
+import { RefereeTests } from "./Referee.mjs";
+import { esXaiTests } from "./esXai.mjs";
+import { GasSubsidyTests } from "./GasSubsidy.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -16,7 +19,6 @@ describe("Fixture Tests", function () {
         // Get addresses to use in the tests
         const [
             deployer,
-            upgrader,
             challenger,
             fundsReceiver,
             refereeDefaultAdmin,
@@ -43,6 +45,9 @@ describe("Fixture Tests", function () {
         const EsXai = await ethers.getContractFactory("esXai");
         const esXai = await upgrades.deployProxy(EsXai, [await xai.getAddress()], { deployer: deployer });
         await esXai.waitForDeployment();
+
+        // Set esXai on Xai
+        await xai.setEsXaiAddress(await esXai.getAddress());
 
         // Deploy Gas Subsidy
         const GasSubsidy = await ethers.getContractFactory("GasSubsidy");
@@ -89,13 +94,15 @@ describe("Fixture Tests", function () {
         const xaiMinterRole = await xai.MINTER_ROLE();
         await xai.grantRole(xaiMinterRole, await xaiMinter.getAddress());
         await xai.grantRole(xaiMinterRole, await referee.getAddress());
+        await xai.grantRole(xaiMinterRole, await esXai.getAddress());
 
         // Setup esXai Roles
         const esXaiAdminRole = await esXai.DEFAULT_ADMIN_ROLE();
         await esXai.grantRole(esXaiAdminRole, await esXaiDefaultAdmin.getAddress());
-        const esXaiMinterRole = await xai.MINTER_ROLE();
+        const esXaiMinterRole = await esXai.MINTER_ROLE();
         await esXai.grantRole(esXaiMinterRole, await esXaiMinter.getAddress());
         await esXai.grantRole(esXaiMinterRole, await referee.getAddress());
+        await esXai.grantRole(esXaiMinterRole, await xai.getAddress());
 
         // Setup Node License Roles 
         const nodeLicenseAdminRole = await nodeLicense.DEFAULT_ADMIN_ROLE();
@@ -124,10 +131,6 @@ describe("Fixture Tests", function () {
         await gasSubsidy.renounceRole(gasSubsidyAdminRole, await deployer.getAddress());
         await esXai.renounceRole(esXaiAdminRole, await deployer.getAddress());
         await xai.renounceRole(xaiAdminRole, await deployer.getAddress());
-
-        // Transfer the Proxy Admin Ownership
-        // TODO figure out why this doesn't work
-        // await upgrades.admin.transferProxyAdminOwnership(await upgrader.getAddress(), deployer);
 
         // Mint addr1 a node license
         let price = await nodeLicense.price(1, "");
@@ -165,7 +168,6 @@ describe("Fixture Tests", function () {
 
         return {
             deployer,
-            upgrader,
             challenger,
             fundsReceiver,
             refereeDefaultAdmin,
@@ -197,8 +199,13 @@ describe("Fixture Tests", function () {
     }
 
     describe("Xai", XaiTests(deployInfrastructure).bind(this));
+    describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
     describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
-    // describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));
+    describe("Referee", RefereeTests(deployInfrastructure).bind(this));
+    describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
     describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
+
+    // This doesn't work when running coverage
+    // describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));
 
 })

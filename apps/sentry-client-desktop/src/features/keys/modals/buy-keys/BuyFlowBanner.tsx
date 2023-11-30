@@ -29,7 +29,7 @@ export function BuyFlowBanner({quantity}: BuyFlowBanner) {
 				<button
 					onClick={() => {
 						setModalState(ModalView.TransactionInProgress)
-						window.electron.openExternal(`http://localhost:7555/?quantity=${quantity}`)
+						window.electron.openExternal(`http://localhost:8080/?quantity=${quantity}`)
 					}}
 					className={"w-full h-16 flex flex-row justify-center items-center gap-1 bg-[#F30919] text-lg text-white"}
 				>
