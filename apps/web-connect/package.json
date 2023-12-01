@@ -1,19 +1,19 @@
 {
   "name": "@sentry/web-connect",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo && rimraf tsconfig.node.tsbuildinfo && rimraf vite.config.js && rimraf vite.config.d.ts",
     "build": "tsc --build && vite build && copyfiles -u 1 dist/* dist/**/* ../sentry-client-desktop/public/web",
+    "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo && rimraf tsconfig.node.tsbuildinfo && rimraf vite.config.js && rimraf vite.config.d.ts",
+    "dev": "vite",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@web3modal/wagmi": "^3.1.0",
     "@sentry/core": "workspace:*",
     "@sentry/ui": "workspace:*",
+    "@web3modal/wagmi": "^3.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.11.0",

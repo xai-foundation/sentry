@@ -2,20 +2,20 @@
   "name": "@sentry/sentry-node-cli",
   "version": "1.0.0",
   "description": "",
+  "keywords": [],
+  "license": "UNLICENSED",
+  "author": "",
+  "type": "module",
   "main": "dist/index.js",
   "bin": "build/sentry-node-cli.js",
-  "type": "module",
   "scripts": {
-    "clean": "rimraf dist && rimraf release && rimraf build && rimraf tsconfig.tsbuildinfo",
-    "lint": "eslint . --ext .ts,.tsx",
-    "transpile": "esbuild --bundle --outfile=./build/sentry-node-cli.js --platform=node dist/index.js",
     "build": "npm run compile && npm run transpile && pkg ./build/sentry-node-cli.js --targets=node18-linux-x64,node18-macos-x64,node18-win-x64 --out-path=release",
+    "clean": "rimraf dist && rimraf release && rimraf build && rimraf tsconfig.tsbuildinfo",
     "compile": "tsc",
-    "start": "node dist/index.js"
+    "lint": "eslint . --ext .ts,.tsx",
+    "start": "node dist/index.js",
+    "transpile": "esbuild --bundle --outfile=./build/sentry-node-cli.js --platform=node dist/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "UNLICENSED",
   "dependencies": {
     "@sentry/core": "workspace:*",
     "cli-table3": "^0.6.3",

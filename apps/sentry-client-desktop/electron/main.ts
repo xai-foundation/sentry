@@ -1,9 +1,13 @@
-import { app, BrowserWindow, ipcMain, safeStorage, shell } from 'electron'
+import {app, BrowserWindow, ipcMain, safeStorage, shell} from 'electron';
+import {autoUpdater} from "electron-updater";
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import express from 'express';
 import net from "net";
+
+autoUpdater.autoDownload = true;
+autoUpdater.autoInstallOnAppQuit = true;
 
 const isWindows = os.platform() === "win32";
 
@@ -19,7 +23,7 @@ const isWindows = os.platform() === "win32";
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
 
-let win: BrowserWindow | null;
+let win: BrowserWindow | undefined;
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 
@@ -167,6 +171,32 @@ app.on('ready', async () => {
 		res.sendFile(path.join(publicWebPath, "index.html")) // force web to load index.html
 	})
 	server.listen(8080);
+
+	autoUpdater.checkForUpdatesAndNotify()
+})
+
+autoUpdater.on('checking-for-update', () => {
+	console.log("checking-for-update");
+	win?.webContents.send("checking-for-update");
+})
+autoUpdater.on('update-available', (info) => {
+	console.log("update-available", info);
+	win?.webContents.send("update-available");
+})
+autoUpdater.on('update-not-available', (info) => {
+	console.log("update-not-available", info);
+	win?.webContents.send("update-not-available");
+})
+autoUpdater.on('error', (err) => {
+	console.log("error", err)
+})
+autoUpdater.on('download-progress', (progressObj) => {
+	console.log("download-progress", progressObj);
+	win?.webContents.send("update-download-progress");
+})
+autoUpdater.on('update-downloaded', (info) => {
+	console.log("update-downloaded:", info);
+	autoUpdater.quitAndInstall();
 })
 
 // Windows deep-link

@@ -45,5 +45,9 @@
       name: "Xai Sentry",
       schemes: ["xai-sentry"]
     }
-  ]
+  ],
+  publish: {
+      "provider": "github",
+      releaseType: "release"
+  }
 }
