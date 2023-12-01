@@ -28,7 +28,7 @@ export function AppRoutes() {
 						<BlockpassHandler/>
 						<Sidebar/>
 
-						<div className="max-w-[1686px] flex-grow">
+						<div className="flex-grow">
 							<Routes>
 								<Route path="/" element={<GetSentryNode/>}/>
 

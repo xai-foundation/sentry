@@ -162,6 +162,7 @@ export function SentryWallet() {
 	function onCloseWalletConnectedModal() {
 		setAssignedWallet({show: false, txHash: ""});
 		setUnassignedWallet({show: false, txHash: ""});
+		setSelectedWallet(null);
 		refresh();
 		void queryClient.invalidateQueries({queryKey: ["ownersForOperator", operatorAddress]});
 	}
@@ -384,7 +385,10 @@ export function SentryWallet() {
 
 									<button
 										disabled={selectedWallet === null}
-										onClick={() => window.electron.openExternal(`http://localhost:8080/unassign-wallet/${operatorAddress}`)}
+										onClick={() => {
+											setModalState(ModalView.TransactionInProgress)
+											window.electron.openExternal(`http://localhost:8080/unassign-wallet/${operatorAddress}}`)
+										}}
 										className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] ${selectedWallet === null ? 'text-[#D4D4D4] cursor-not-allowed' : ""} px-4 py-2`}
 									>
 										Un-assign this wallet
@@ -393,23 +397,25 @@ export function SentryWallet() {
 								</div>
 							</div>
 
-							<div className="w-full">
-								<table className="w-full bg-white">
-									<thead className="text-[#A3A3A3]">
-									<tr className="flex text-left text-[12px] uppercase px-8">
-										<th className="w-full max-w-[70px] px-4 py-2">Key Id</th>
-										<th className="w-full max-w-[390px] px-4 py-2">Owner Address</th>
-										<th className="w-full max-w-[390px] px-4 py-2">Claim Status</th>
-									</tr>
-									</thead>
-									<tbody>
-									{loading ? (
-										<tr className="text-[#A3A3A3] text-sm flex px-8">
-											<td colSpan={3} className="w-full text-center">Loading...</td>
+							<div className="flex flex-col max-h-[70vh]">
+								<div className="w-full overflow-y-auto">
+									<table className="w-full bg-white">
+										<thead className="text-[#A3A3A3] sticky top-0 bg-white">
+										<tr className="flex text-left text-[12px] uppercase px-8">
+											<th className="w-full max-w-[70px] px-4 py-2">Key Id</th>
+											<th className="w-full max-w-[390px] px-4 py-2">Owner Address</th>
+											<th className="w-full max-w-[390px] px-4 py-2">Claim Status</th>
 										</tr>
-									) : getKeys()}
-									</tbody>
-								</table>
+										</thead>
+										<tbody>
+										{loading ? (
+											<tr className="text-[#A3A3A3] text-sm flex px-8">
+												<td colSpan={3} className="w-full text-center">Loading...</td>
+											</tr>
+										) : getKeys()}
+										</tbody>
+									</table>
+								</div>
 							</div>
 						</div>
 					</>
