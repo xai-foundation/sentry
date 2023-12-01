@@ -65,6 +65,18 @@ export const RefereeAbi = [
   {
     "type": "event",
     "anonymous": false,
+    "name": "ChallengeExpired",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "challengeId",
+        "indexed": true
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "ChallengeSubmitted",
     "inputs": [
       {
@@ -140,6 +152,23 @@ export const RefereeAbi = [
       {
         "type": "address",
         "name": "newNodeLicenseAddress",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "RewardsClaimed",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "challengeId",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
         "indexed": false
       }
     ]
@@ -497,83 +526,6 @@ export const RefereeAbi = [
       {
         "type": "uint64",
         "name": "_challengeId"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "tuple",
-        "name": "",
-        "components": [
-          {
-            "type": "bool",
-            "name": "openForSubmissions"
-          },
-          {
-            "type": "bool",
-            "name": "expiredForRewarding"
-          },
-          {
-            "type": "uint64",
-            "name": "assertionId"
-          },
-          {
-            "type": "bytes32",
-            "name": "assertionStateRoot"
-          },
-          {
-            "type": "uint64",
-            "name": "assertionTimestamp"
-          },
-          {
-            "type": "bytes",
-            "name": "challengerSignedHash"
-          },
-          {
-            "type": "bytes",
-            "name": "activeChallengerPublicKey"
-          },
-          {
-            "type": "address",
-            "name": "rollupUsed"
-          },
-          {
-            "type": "uint256",
-            "name": "createdTimestamp"
-          },
-          {
-            "type": "uint256",
-            "name": "totalSupplyOfNodesAtChallengeStart"
-          },
-          {
-            "type": "uint256",
-            "name": "rewardAmountForClaimers"
-          },
-          {
-            "type": "uint256",
-            "name": "amountForGasSubsidy"
-          },
-          {
-            "type": "uint256",
-            "name": "numberOfEligibleClaimers"
-          },
-          {
-            "type": "uint256",
-            "name": "amountClaimedByClaimers"
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getChallengeAtIndex",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "index"
       }
     ],
     "outputs": [
