@@ -2,7 +2,7 @@ import {BiLoaderAlt} from "react-icons/bi";
 import {AiFillInfoCircle, AiOutlineClose, AiOutlineInfoCircle} from "react-icons/ai";
 import {useGetPriceForQuantity} from "@/features/keys/hooks/useGetPriceForQuantity";
 import {useGetTotalSupplyAndCap} from "@/features/keys/hooks/useGetTotalSupplyAndCap";
-import {Dispatch, SetStateAction, useEffect, useState} from "react";
+import {Dispatch, SetStateAction, useState} from "react";
 import {ethers} from "ethers";
 import {Tooltip} from "@/features/keys/Tooltip";
 import {getPromoCode} from "@sentry/core";
@@ -21,16 +21,6 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 		error: false,
 	});
 	const [promo, setPromo] = useState<boolean>(false);
-	const [price, setPrice] = useState<{ price: number, discount: number }>({price: 0, discount: 0});
-
-	useEffect(() => {
-		if (getPriceData) {
-			setPrice({
-				price: Number(ethers.formatEther(getPriceData.price)),
-				discount: ((5 / 100) * Number(ethers.formatEther(getPriceData.price))) * -1
-			});
-		}
-	}, [getPriceData]);
 
 	const handleSubmit = async () => {
 		const validatePromoCode = await getPromoCode(promoCode);
@@ -61,15 +51,16 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 					<div key={`get-keys-${i}`}>
 						<div className="flex flex-row items-center justify-between text-[15px]">
 							<div className="flex flex-row items-center gap-2">
-								<span className="">{Number(item.quantity)} x Xai Sentry Node Key</span>
+								<p className="">{item.quantity.toString()} x Xai Sentry Node Key</p>
 							</div>
 							<div className="flex flex-row items-center gap-1">
-								<span
-									className="font-semibold">{Number(ethers.formatEther(item.totalPriceForTier))} ETH</span>
+								<p className="font-semibold">
+									{ethers.formatEther(item.totalPriceForTier)} ETH
+								</p>
 							</div>
 						</div>
 						<p className="text-[13px] text-[#A3A3A3] mb-4">
-							{Number(ethers.formatEther(item.pricePer))} ETH per key
+							{ethers.formatEther(item.pricePer)} ETH per key
 						</p>
 					</div>
 				);
@@ -112,7 +103,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 									<>
 										<div className="flex flex-row items-center justify-between text-[15px]">
 											<div className="flex flex-row items-center gap-2">
-												<span>Discount (5%)</span>
+												<p>Discount (5%)</p>
 
 												<a
 													onClick={() => setDiscount({applied: false, error: false})}
@@ -123,9 +114,9 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 
 											</div>
 											<div className="flex flex-row items-center gap-1">
-												<span className="text-[#2A803D] font-semibold">
-													{price.discount} ETH
-												</span>
+												<p className="text-[#2A803D] font-semibold">
+													{ethers.formatEther(Number(getPriceData.price) * 0.05)} ETH
+												</p>
 											</div>
 										</div>
 										<p className="text-[13px] text-[#A3A3A3] ">
@@ -143,11 +134,9 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 											</p>
 										</div>
 										<p className="text-sm">
-											Xai Sentry Node Key prices vary depending on the quantity of remaining
-											supply.
-											In general, as the quantity of available keys decreases, the price of a key
-											will
-											increase.
+											Xai Sentry Node Key prices vary depending on the quantity
+											of remaining supply. In general, as the quantity of available keys
+											decreases, the price of a key will increase.
 										</p>
 									</div>
 								)}
@@ -160,7 +149,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 											<div>
 												<div
 													className="w-full h-auto flex flex-row justify-between items-center text-[15px] text-[#525252] mt-2 py-2">
-													<span>Add promo code</span>
+													<p>Add promo code</p>
 													<div
 														className="cursor-pointer z-10"
 														onClick={() => {
@@ -214,15 +203,16 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 								<hr className="my-2"/>
 								<div className="flex flex-row items-center justify-between">
 									<div className="flex flex-row items-center gap-2 text-lg">
-										<span className="">You pay</span>
+										<p className="">You pay</p>
 									</div>
 									<div className="flex flex-row items-center gap-1 font-semibold">
-										<span>
+										<p>
 											{discount.applied
-												? Number(price.price + price.discount)
-												: Number(price.price)}
-										</span>
-										<span>ETH</span>
+												? ethers.formatEther(Number(getPriceData.price) * 0.95)
+												: ethers.formatEther(getPriceData.price)
+											}
+										</p>
+										<p>ETH</p>
 									</div>
 								</div>
 							</div>

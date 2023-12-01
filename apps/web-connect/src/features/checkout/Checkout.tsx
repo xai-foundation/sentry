@@ -19,6 +19,18 @@ export function Checkout() {
 
 	const {data: getPriceData, isLoading: isPriceLoading} = useGetPriceForQuantity(quantity);
 	const {data: providerData} = useProvider();
+	// const [price, setPrice] = useState<{ price: string, discount: string }>({price: "0", discount: "0"});
+	const [discount, setDiscount] = useState({applied: false, error: false,});
+
+		// if (getPriceData?.price !== undefined) {
+		// 	const priceAsNumber = parseFloat(ethers.formatEther(getPriceData.price));
+		//
+		// 	if (!isNaN(priceAsNumber)) {
+		// 		const discount = priceAsNumber * 0.05;
+		// 	} else {
+		// 		console.error('Invalid price format');
+		// 	}
+		// }
 
 	useEffect(() => {
 		if (prefilledAmount) {
@@ -37,7 +49,7 @@ export function Checkout() {
 		abi: NodeLicenseAbi,
 		functionName: "mint",
 		args: [quantity, promoCode],
-		value: getPriceData?.price,
+		value: discount.applied ? BigInt(Number(getPriceData!.price) * 0.95) : getPriceData?.price,
 		onSuccess(data) {
 			window.location = `xai-sentry://purchase-successful?txHash=${data.hash}` as unknown as Location;
 		},
@@ -125,6 +137,8 @@ export function Checkout() {
 						<WebBuyKeysOrderTotal
 							onClick={write}
 							getPriceData={getPriceData}
+							discount={discount}
+							setDiscount={setDiscount}
 							isPriceLoading={isPriceLoading}
 							prefilledPromoCode={prefilledPromoCode}
 							promoCode={promoCode}

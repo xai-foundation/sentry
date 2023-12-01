@@ -1,7 +1,7 @@
 import {BiLoaderAlt} from "react-icons/bi";
 import {AiFillInfoCircle, AiOutlineClose} from "react-icons/ai";
 import {useGetTotalSupplyAndCap} from "@/features/checkout/hooks/useGetTotalSupplyAndCap";
-import {Dispatch, SetStateAction, useEffect, useState} from "react";
+import {Dispatch, SetStateAction, useState} from "react";
 import {ethers} from "ethers";
 import {CheckoutTierSummary, getPromoCode} from "@sentry/core";
 import {XaiCheckbox} from "@sentry/ui";
@@ -14,6 +14,8 @@ interface PriceDataInterface {
 interface WebBuyKeysOrderTotalProps {
 	onClick: () => void;
 	getPriceData: PriceDataInterface | undefined;
+	discount: { applied: boolean, error: boolean }
+	setDiscount: Dispatch<SetStateAction<{ applied: boolean, error: boolean }>>;
 	isPriceLoading: boolean;
 	prefilledPromoCode?: string | null;
 	promoCode: string;
@@ -25,31 +27,19 @@ export function WebBuyKeysOrderTotal(
 	{
 		onClick,
 		getPriceData,
+		discount,
+		setDiscount,
 		isPriceLoading,
 		promoCode,
 		setPromoCode,
 		error
 	}: WebBuyKeysOrderTotalProps) {
 	const {isLoading: isTotalLoading} = useGetTotalSupplyAndCap();
-	const [discount, setDiscount] = useState({
-		applied: false,
-		error: false,
-	});
 
 	const [promo, setPromo] = useState<boolean>(false);
-	const [price, setPrice] = useState<{ price: number, discount: number }>({price: 0, discount: 0});
 	const [terms, setTerms] = useState<boolean>(false);
 	const [investments, setInvestments] = useState<boolean>(false);
 	const ready = terms && investments;
-
-	useEffect(() => {
-		if (getPriceData) {
-			setPrice({
-				price: Number(ethers.formatEther(getPriceData.price)),
-				discount: ((5 / 100) * Number(ethers.formatEther(getPriceData.price))) * -1
-			});
-		}
-	}, [getPriceData]);
 
 	const handleSubmit = async () => {
 		const validatePromoCode = await getPromoCode(promoCode);
@@ -80,15 +70,17 @@ export function WebBuyKeysOrderTotal(
 					<div key={`get-keys-${i}`}>
 						<div className="flex flex-row items-center justify-between text-[15px]">
 							<div className="flex flex-row items-center gap-2">
-								<span className="">{Number(item.quantity)} x Xai Sentry Node Key</span>
+								<span className="">{item.quantity.toString()} x Xai Sentry Node Key</span>
 							</div>
 							<div className="flex flex-row items-center gap-1">
 								<span
-									className="font-semibold">{Number(ethers.formatEther(item.totalPriceForTier))} ETH</span>
+									className="font-semibold">
+									{ethers.formatEther(item.totalPriceForTier)} ETH
+								</span>
 							</div>
 						</div>
 						<p className="text-[13px] text-[#A3A3A3] mb-4">
-							{Number(ethers.formatEther(item.pricePer))} ETH per key
+							{ethers.formatEther(item.pricePer)} ETH per key
 						</p>
 					</div>
 				);
@@ -125,7 +117,7 @@ export function WebBuyKeysOrderTotal(
 											</div>
 											<div className="flex flex-row items-center gap-1">
 												<span className="text-[#2A803D] font-semibold">
-													{price.discount} ETH
+													{ethers.formatEther(Number(getPriceData.price) * 0.05)} ETH
 												</span>
 											</div>
 										</div>
@@ -144,13 +136,9 @@ export function WebBuyKeysOrderTotal(
 											</p>
 										</div>
 										<p className="text-sm">
-											Xai Sentry Node Key prices vary depending on the quantity of
-											remaining
-											supply.
-											In general, as the quantity of available keys decreases, the price
-											of a key
-											will
-											increase.
+											Xai Sentry Node Key prices vary depending on the quantity
+											of remaining supply. In general, as the quantity of available keys
+											decreases, the price of a key will increase.
 										</p>
 									</div>
 								)}
@@ -225,8 +213,9 @@ export function WebBuyKeysOrderTotal(
 									<div className="flex flex-row items-center gap-1 font-semibold">
 										<span>
 											{discount.applied
-												? Number(price.price + price.discount)
-												: Number(price.price)}
+												? ethers.formatEther(Number(getPriceData.price) * 0.95)
+												: ethers.formatEther(getPriceData.price)
+											}
 										</span>
 										<span>ETH</span>
 									</div>
