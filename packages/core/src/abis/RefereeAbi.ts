@@ -379,7 +379,7 @@ export const RefereeAbi = [
       },
       {
         "type": "bytes32",
-        "name": "assertionStateRoot"
+        "name": "assertionStateRootOrConfirmData"
       },
       {
         "type": "uint64",
@@ -457,7 +457,7 @@ export const RefereeAbi = [
       },
       {
         "type": "bytes",
-        "name": "_successorStateRoot"
+        "name": "_confirmData"
       },
       {
         "type": "bytes",
@@ -547,7 +547,7 @@ export const RefereeAbi = [
           },
           {
             "type": "bytes32",
-            "name": "assertionStateRoot"
+            "name": "assertionStateRootOrConfirmData"
           },
           {
             "type": "uint64",
@@ -824,7 +824,7 @@ export const RefereeAbi = [
           },
           {
             "type": "bytes",
-            "name": "successorStateRoot"
+            "name": "assertionStateRootOrConfirmData"
           }
         ]
       }
@@ -1155,7 +1155,7 @@ export const RefereeAbi = [
       },
       {
         "type": "bytes",
-        "name": "successorStateRoot"
+        "name": "assertionStateRootOrConfirmData"
       }
     ]
   },
@@ -1175,7 +1175,7 @@ export const RefereeAbi = [
       },
       {
         "type": "bytes",
-        "name": "_successorStateRoot"
+        "name": "_confirmData"
       }
     ],
     "outputs": []
@@ -1196,7 +1196,7 @@ export const RefereeAbi = [
       },
       {
         "type": "bytes32",
-        "name": "_assertionStateRoot"
+        "name": "_confirmData"
       },
       {
         "type": "uint64",
