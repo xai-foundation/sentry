@@ -59,6 +59,13 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 		});
 	}
 
+	const totalAccruedEsXai = isBalancesLoading
+		? "Loading..."
+		: (Object.values(balances)
+			.map((items) => BigInt(items.totalAccruedEsXai) ?? 0n)
+			.reduce((acc, value) => acc + value, 0n) / BigInt(10) ** BigInt(18)).toString();
+
+
 	function renderKeys() {
 		let licenses: LicenseList = [];
 		if (!selectedWallet) {
@@ -92,8 +99,7 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 			}
 
 			// todo: confirm implementation returns expected values
-			const totalAccruedEsXai = Object.values(balances).map((items) => BigInt(items.totalAccruedEsXai).toString() ?? 0);
-
+			const accruedEsXaiPerKey = Object.values(balances).map((items) => (BigInt(items.totalAccruedEsXai) / BigInt(10) ** BigInt(18)).toString())
 
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
@@ -149,7 +155,7 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 						)}
 
 					</td>
-					<td className="w-full max-w-[150px] px-4 py-2 text-right">{isBalancesLoading || totalAccruedEsXai.length === 0 ? "Loading..." : totalAccruedEsXai[i]}</td>
+					<td className="w-full max-w-[150px] px-4 py-2 text-right">{isBalancesLoading || accruedEsXaiPerKey.length === 0 ? "Loading..." : accruedEsXaiPerKey[i]}</td>
 					<td className="w-full max-w-[150px] px-4 py-2 text-[#F30919]">
 						<span
 							className="cursor-pointer"
@@ -282,26 +288,26 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 					<div className="flex items-center gap-2 font-semibold">
 						<XaiLogo/>
 						<p className="text-3xl">
-							SOME esXAI
+							{totalAccruedEsXai.toString()}
 						</p>
 					</div>
 				</div>
 
-				<div className="w-full">
-					<table className="w-full bg-white">
-						<thead className="text-[#A3A3A3]">
-						<tr className="flex text-left text-[12px] px-8">
-							<th className="w-full max-w-[70px] px-4 py-2">KEY ID</th>
-							<th className="w-full max-w-[360px] px-4 py-2">OWNER ADDRESS</th>
-							<th className="w-full max-w-[360px] px-4 py-2">STATUS</th>
-							<th className="w-full max-w-[150px] px-4 py-2 text-right">ACCRUED esXAI</th>
-							<th className="w-full max-w-[150px] px-4 py-2">OPENSEA URL</th>
-						</tr>
-						</thead>
-						<tbody>
-						{renderKeys()}
-						</tbody>
-					</table>
+				<div className="flex flex-col max-h-[70vh]">
+					<div className="w-full overflow-y-auto">
+						<table className="w-full bg-white">
+							<thead className="text-[#A3A3A3] sticky top-0 bg-white">
+							<tr className="flex text-left text-[12px] px-8">
+								<th className="w-full max-w-[70px] px-4 py-2">KEY ID</th>
+								<th className="w-full max-w-[360px] px-4 py-2">OWNER ADDRESS</th>
+								<th className="w-full max-w-[360px] px-4 py-2">STATUS</th>
+								<th className="w-full max-w-[150px] px-4 py-2 text-right">ACCRUED esXAI</th>
+								<th className="w-full max-w-[150px] px-4 py-2">OPENSEA URL</th>
+							</tr>
+							</thead>
+							<tbody>{renderKeys()}</tbody>
+						</table>
+					</div>
 				</div>
 			</div>
 		</>

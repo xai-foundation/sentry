@@ -394,23 +394,25 @@ export function SentryWallet() {
 								</div>
 							</div>
 
-							<div className="w-full">
-								<table className="w-full bg-white">
-									<thead className="text-[#A3A3A3]">
-									<tr className="flex text-left text-[12px] uppercase px-8">
-										<th className="w-full max-w-[70px] px-4 py-2">Key Id</th>
-										<th className="w-full max-w-[390px] px-4 py-2">Owner Address</th>
-										<th className="w-full max-w-[390px] px-4 py-2">Claim Status</th>
-									</tr>
-									</thead>
-									<tbody>
-									{loading ? (
-										<tr className="text-[#A3A3A3] text-sm flex px-8">
-											<td colSpan={3} className="w-full text-center">Loading...</td>
+							<div className="flex flex-col max-h-[70vh]">
+								<div className="w-full overflow-y-auto">
+									<table className="w-full bg-white">
+										<thead className="text-[#A3A3A3] sticky top-0 bg-white">
+										<tr className="flex text-left text-[12px] uppercase px-8">
+											<th className="w-full max-w-[70px] px-4 py-2">Key Id</th>
+											<th className="w-full max-w-[390px] px-4 py-2">Owner Address</th>
+											<th className="w-full max-w-[390px] px-4 py-2">Claim Status</th>
 										</tr>
-									) : getKeys()}
-									</tbody>
-								</table>
+										</thead>
+										<tbody>
+										{loading ? (
+											<tr className="text-[#A3A3A3] text-sm flex px-8">
+												<td colSpan={3} className="w-full text-center">Loading...</td>
+											</tr>
+										) : getKeys()}
+										</tbody>
+									</table>
+								</div>
 							</div>
 						</div>
 					</>
