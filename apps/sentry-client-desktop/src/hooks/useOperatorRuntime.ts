@@ -16,6 +16,7 @@ export function useOperatorRuntime() {
 	const [, setRerender] = useState(0);
 
 	function writeLog(log: string) {
+		console.log(log);
 		const _logs = runtimeLogs.concat([]);
 		if (_logs.length === 1000) {
 			_logs.shift();
