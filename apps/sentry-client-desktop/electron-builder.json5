@@ -16,7 +16,8 @@
   ],
   "mac": {
     "target": [
-      "dmg"
+      "dmg",
+      "zip"
     ],
     "artifactName": "sentry-client-macos.${ext}",
     "icon": "public/xai.png"
