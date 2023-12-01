@@ -139,7 +139,7 @@ export async function operatorRuntime(
             });
             safeStatusCallback();
 
-            const [payoutEligible] = await refereeContract.createAssertionHashAndCheckPayout(nodeLicenseId, challengeNumber, challenge.assertionStateRoot, challenge.challengerSignedHash);
+            const [payoutEligible] = await refereeContract.createAssertionHashAndCheckPayout(nodeLicenseId, challengeNumber, challenge.assertionStateRootOrConfirmData, challenge.challengerSignedHash);
             if (!payoutEligible) {
                 logFunction(`nodeLicenseId ${nodeLicenseId} is not going to receive a reward for entering the challenge ${challengeNumber}, thus not submmiting an assertion.`);
                 nodeLicenseStatusMap.set(nodeLicenseId, {
@@ -164,7 +164,7 @@ export async function operatorRuntime(
 
             // submit the claim to the challenge
             logFunction(`Submitting claim for nodeLicenseId ${nodeLicenseId} to challenge ${challengeNumber}.`);
-            await submitAssertionToChallenge(nodeLicenseId, challengeNumber, challenge.assertionStateRoot, signer);
+            await submitAssertionToChallenge(nodeLicenseId, challengeNumber, challenge.assertionStateRootOrConfirmData, signer);
             logFunction(`Submitted claim for nodeLicenseId ${nodeLicenseId} to challenge ${challengeNumber}.`);
             nodeLicenseStatusMap.set(nodeLicenseId, {
                 ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,

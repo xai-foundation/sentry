@@ -454,7 +454,7 @@ export function RefereeTests(deployInfrastructure) {
                 await referee.connect(challenger).submitChallenge(
                     2252,
                     2251,
-                    "0xe92f83d1df26eaa329c13411269d1b78b3b9ae2e7d18097fd3a38efc02077fac",
+                    "0x2fd53fdb1cd3d34d509978b94af510451ab103c5ba7aef645fd27c97af8aacb0",
                     10117582,
                     "0x0000000000000000000000000000000000000000000000000000000000000000"
                 );
@@ -479,14 +479,14 @@ export function RefereeTests(deployInfrastructure) {
                     referee.connect(challenger).submitChallenge(
                         2252,
                         9999,
-                        "0xe92f83d1df26eaa329c13411269d1b78b3b9ae2e7d18097fd3a38efc02077fac",
+                        "0x2fd53fdb1cd3d34d509978b94af510451ab103c5ba7aef645fd27c97af8aacb0",
                         10117582,
                         "0x0000000000000000000000000000000000000000000000000000000000000000"
                     )
                 ).to.be.revertedWith("The _predecessorAssertionId is incorrect.");
             })
 
-            it("Check that passing an incorrect _assertionStateRoot throws an error", async function() {
+            it("Check that passing an incorrect _confirmData throws an error", async function() {
 
                 const {referee, refereeDefaultAdmin, challenger} = await loadFixture(deployInfrastructure);
     
@@ -509,7 +509,7 @@ export function RefereeTests(deployInfrastructure) {
                         10117582,
                         "0x0000000000000000000000000000000000000000000000000000000000000000"
                     )
-                ).to.be.revertedWith("The _assertionStateRoot is incorrect.");
+                ).to.be.revertedWith("The _confirmData is incorrect.");
             })
 
             it("Check that passing an incorrect _assertionTimestamp throws an error", async function() {
@@ -531,7 +531,7 @@ export function RefereeTests(deployInfrastructure) {
                     referee.connect(challenger).submitChallenge(
                         2252,
                         2251,
-                        "0xe92f83d1df26eaa329c13411269d1b78b3b9ae2e7d18097fd3a38efc02077fac",
+                        "0x2fd53fdb1cd3d34d509978b94af510451ab103c5ba7aef645fd27c97af8aacb0",
                         99999999,
                         "0x0000000000000000000000000000000000000000000000000000000000000000"
                     )
