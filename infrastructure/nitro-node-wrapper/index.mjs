@@ -1,8 +1,9 @@
-'use strict';
-import {Docker} from "node-docker-api";
+import Docker from "dockerode";
 import fs from 'fs';
+import { Writable } from 'stream';
 
 // configure a config for the docker container
+const rpc = 
 const config = {
     "chain": {
         "id": 47279324479,
@@ -100,37 +101,85 @@ fs.writeFileSync('./arbitrum/config.json', JSON.stringify(config, null, 2));
 // Create an instance of Docker runtime
 const docker = new Docker({ socketPath: '/var/run/docker.sock' });
 
-// Create an instance of the docker container if it doesn't already exist
-let container;
-container = await docker.container.create({
-    Image: "offchainlabs/nitro-node:v2.1.0-72ccc0c",
-    HostConfig: {
-        Binds: ["arbitrum:/home/user/.arbitrum"],
-        PortBindings: {
-            "8547/tcp": [{ "HostPort": "8547" }],
-            "8548/tcp": [{ "HostPort": "8548" }],
-            "9642/tcp": [{ "HostPort": "9642" }]
-        }
+// Pull the docker container for the nitro node
+const image = await docker.pull('offchainlabs/nitro-node:v2.1.0-72ccc0c');
+
+// Stop all running containers of the specified image
+const containers = await docker.listContainers();
+for (const containerInfo of containers) {
+    if (containerInfo.Image === 'offchainlabs/nitro-node:v2.1.0-72ccc0c') {
+        await docker.getContainer(containerInfo.Id).stop();
+    }
+}
+
+// Create the docker container
+const container = await docker.createContainer({
+    Image: 'offchainlabs/nitro-node:v2.1.0-72ccc0c',
+    Cmd: ['--conf.file', '/home/user/.arbitrum/config.json', '--metrics', '--ws.port=8548', '--ws.addr=0.0.0.0', '--ws.origins=*'],
+    Tty: false,
+    ExposedPorts: {
+        '8547/tcp': {},
+        '8548/tcp': {},
+        '9642/tcp': {}
     },
-    Cmd: [
-        "--conf.file", "/home/user/.arbitrum/config.json",
-        "--metrics",
-        "--ws.port=8548",
-        "--ws.addr=0.0.0.0",
-        "--ws.origins=*"
-    ]
+    HostConfig: {
+        Binds: [
+            `${process.cwd()}/arbitrum:/home/user/.arbitrum`,
+            `${process.cwd()}/data:/home/user/data:delegated`
+        ],
+        PortBindings: {
+            '8547/tcp': [{ HostPort: '8547' }],
+            '8548/tcp': [{ HostPort: '8548' }],
+            '9642/tcp': [{ HostPort: '9642' }]
+        }
+    }
 });
 
+function isJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
 
-// start the docker container
-container = await container.start();
+const stdOut = new Writable({
+  async write(chunk, encoding, callback) {
+    const out = chunk.toString('utf8');
+    
+    // Split the output by new lines
+    const potentialJsons = out.split(/\n/);
 
-// listen to the logs of the docker container
-const stream = await container.logs({
-    follow: true,
-    stdout: true,
-    stderr: true
+    for (const potentialJson of potentialJsons) {
+        if (potentialJson.trim() !== '' && isJsonString(potentialJson)) {
+            const json = JSON.parse(potentialJson);
+            if (json.hasOwnProperty('err')) {
+                console.error(json);
+            } else {
+                console.log(json);
+
+                // if there is an assertion and a state field then this means the validator has found a stateRoot we should process
+                if (json.hasOwnProperty('assertion') && json.hasOwnProperty('state')) {
+                    
+                }
+            }
+        } else if (potentialJson.trim() !== '') {
+            console.info(potentialJson);
+        }
+    }
+
+    callback();
+  }
 });
 
-stream.on('data', info => console.log(info.toString('utf8')));
-stream.on('error', err => console.log(err.toString('utf8')));
+// Attach the stdout and stderr to custom streams
+container.attach({stream: true, stdout: true, stderr: true}, function (err, stream) {
+    // Dockerode may demultiplex attach streams for you :)
+    container.modem.demuxStream(stream, stdOut, stdOut);
+});
+
+// Start the docker container
+await container.start();
+
+console.log('Docker container started successfully');

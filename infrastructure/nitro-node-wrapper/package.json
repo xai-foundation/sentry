@@ -8,7 +8,7 @@
     "start": "zx index.mjs"
   },
   "dependencies": {
-    "node-docker-api": "^1.1.22",
+    "dockerode": "4.0.0",
     "zx": "7.2.3"
   },
   "keywords": [],
