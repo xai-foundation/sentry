@@ -11,6 +11,7 @@ import {QueryClient, QueryClientProvider} from "react-query";
 import {BlockpassHandler} from "@/components/blockpass/BlockpassHandler";
 import {ChainDataManager} from "@/components/ChainDataManager";
 import {createStore, Provider as JotaiProvider} from "jotai";
+import {AccruingDataManager} from "@/components/AccruingDataManager";
 
 const store = createStore();
 
@@ -23,6 +24,7 @@ export function AppRoutes() {
 				<QueryClientProvider client={queryClient}>
 					<div className="w-full h-screen flex">
 						<ChainDataManager/>
+						<AccruingDataManager/>
 						<BlockpassHandler/>
 						<Sidebar/>
 

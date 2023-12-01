@@ -7,6 +7,8 @@ import {BuyFlowBanner} from "@/features/keys/modals/buy-keys/BuyFlowBanner";
 export function BuyKeysFlow() {
 	const [displayQuantity, setDisplayQuantity] = useState<number>(1);
 	const [queryQuantity, setQueryQuantity] = useState<number>(displayQuantity);
+	const [promoCode, setPromoCode] = useState<string>("");
+
 	const timer = useRef<ReturnType<typeof setTimeout>>();
 
 	const intermediaryStep = (_quantity: number) => {
@@ -42,10 +44,17 @@ export function BuyKeysFlow() {
 			</div>
 
 			{/*		Order Total section		*/}
-			<BuyKeysOrderTotal quantity={queryQuantity}/>
+			<BuyKeysOrderTotal
+				quantity={queryQuantity}
+				promoCode={promoCode}
+				setPromoCode={setPromoCode}
+			/>
 
 			{/*		Banner section		*/}
-			<BuyFlowBanner quantity={displayQuantity}/>
+			<BuyFlowBanner
+				quantity={displayQuantity}
+				promoCode={promoCode}
+			/>
 		</div>
 	)
 }

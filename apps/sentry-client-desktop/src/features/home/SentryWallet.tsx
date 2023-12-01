@@ -22,7 +22,7 @@ import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
 import {SentryWalletHeader} from "@/features/home/SentryWalletHeader";
 import {chainStateAtom, useChainDataRefresh} from "@/hooks/useChainDataWithCallback";
-import {useAccruingInfo} from "@/hooks/useAccruingInfo";
+import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {AssignKeysSentryNotRunning} from "@/components/AssignKeysSentryNotRunning";
 
 // TODO -> replace with dynamic value later
@@ -34,7 +34,8 @@ export function SentryWallet() {
 	const {ownersLoading, owners, licensesLoading, licensesList} = useAtomValue(chainStateAtom);
 
 	const queryClient = useQueryClient();
-	const {hasAssignedKeys} = useAccruingInfo();
+	const {hasAssignedKeys} = useAtomValue(accruingStateAtom);
+
 
 	const {isLoading: operatorLoading, publicKey: operatorAddress} = useOperator();
 	const {data: balance} = useBalance(operatorAddress);
