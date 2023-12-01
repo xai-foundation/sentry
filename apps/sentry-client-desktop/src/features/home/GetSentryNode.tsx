@@ -64,6 +64,22 @@ export function GetSentryNode() {
 		setUpdateText("checking for update");
 	});
 
+	(window as any).deeplinks?.updateAvailable(() => {
+		setUpdateText("update available");
+	});
+
+	(window as any).deeplinks?.updateNotAvailable(() => {
+		setUpdateText("update not available");
+	});
+
+	(window as any).deeplinks?.updateDownloadProgress(() => {
+		setUpdateText("update download progress");
+	});
+
+	(window as any).deeplinks?.updateDownloaded(() => {
+		setUpdateText("update downloaded");
+	});
+
 	// function getSentryNodeBody() {
 	// 	return sentryBody.map((item, i) => {
 	// 		return (
@@ -82,7 +98,7 @@ export function GetSentryNode() {
 		<div className="w-full flex flex-row items-center justify-between px-[2.8rem] pt-[5.625rem]">
 			<div className="flex flex-col">
 				<h1 className="text-[40px] font-bold uppercase tracking-widest">
-					Get a Xai Sentry Node
+					Get a Xai Sentry Node UPDATE
 				</h1>
 
 				<span className="text-xl font-semibold mt-[8.5rem]">
