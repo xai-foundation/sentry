@@ -413,16 +413,6 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     /**
-     * @notice Get the challenge at a given index.
-     * @param index The index of the challenge to query.
-     * @return The challenge corresponding to the given index.
-     */
-    function getChallengeAtIndex(uint256 index) public view returns (Challenge memory) {
-        require(index <= challengeCounter, "Index out of bounds");
-        return challenges[index];
-    }
-
-    /**
      * @notice Submits an assertion to a challenge.
      * @dev This function can only be called by the owner of a NodeLicense or addresses they have approved on this contract.
      * @param _nodeLicenseId The ID of the NodeLicense.
