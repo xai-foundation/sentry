@@ -13,11 +13,24 @@ export function Checkout() {
 	const queryString = window.location.search;
 	const queryParams = new URLSearchParams(queryString);
 	const prefilledAmount = queryParams.get("quantity");
+	const prefilledPromoCode = queryParams.get("promoCode");
 	const [quantity, setQuantity] = useState<number>(1);
 	const [promoCode, setPromoCode] = useState<string>("");
 
 	const {data: getPriceData, isLoading: isPriceLoading} = useGetPriceForQuantity(quantity);
 	const {data: providerData} = useProvider();
+	// const [price, setPrice] = useState<{ price: string, discount: string }>({price: "0", discount: "0"});
+	const [discount, setDiscount] = useState({applied: false, error: false,});
+
+		// if (getPriceData?.price !== undefined) {
+		// 	const priceAsNumber = parseFloat(ethers.formatEther(getPriceData.price));
+		//
+		// 	if (!isNaN(priceAsNumber)) {
+		// 		const discount = priceAsNumber * 0.05;
+		// 	} else {
+		// 		console.error('Invalid price format');
+		// 	}
+		// }
 
 	useEffect(() => {
 		if (prefilledAmount) {
@@ -25,12 +38,18 @@ export function Checkout() {
 		}
 	}, [prefilledAmount]);
 
+	useEffect(() => {
+		if (prefilledPromoCode) {
+			setPromoCode(prefilledPromoCode);
+		}
+	}, [prefilledPromoCode]);
+
 	const {isLoading, isSuccess, write, error, data} = useContractWrite({
 		address: config.nodeLicenseAddress as `0x${string}`,
 		abi: NodeLicenseAbi,
 		functionName: "mint",
 		args: [quantity, promoCode],
-		value: getPriceData?.price,
+		value: discount.applied ? BigInt(Number(getPriceData!.price) * 0.95) : getPriceData?.price,
 		onSuccess(data) {
 			window.location = `xai-sentry://purchase-successful?txHash=${data.hash}` as unknown as Location;
 		},
@@ -118,7 +137,10 @@ export function Checkout() {
 						<WebBuyKeysOrderTotal
 							onClick={write}
 							getPriceData={getPriceData}
+							discount={discount}
+							setDiscount={setDiscount}
 							isPriceLoading={isPriceLoading}
+							prefilledPromoCode={prefilledPromoCode}
 							promoCode={promoCode}
 							setPromoCode={setPromoCode}
 							error={error}
