@@ -293,9 +293,9 @@ export function RefereeTests(deployInfrastructure) {
             const totalClaimsForAddr1 = await referee.getTotalClaims(await addr1.getAddress());
             assert.equal(totalClaimsForAddr1, balanceAfter, "total claims does not match the esXai value")
 
-            // check getChallengeAtIndex is able to iterate over both challenges
-            const firstChallenge = await referee.getChallengeAtIndex(0);
-            const secondChallenge = await referee.getChallengeAtIndex(1);
+            // check getChallenge is able to iterate over both challenges
+            const firstChallenge = await referee.getChallenge(0);
+            const secondChallenge = await referee.getChallenge(1);
             assert.equal(firstChallenge.openForSubmissions, false, "First challenge is still open for submissions");
             assert.equal(secondChallenge.openForSubmissions, true, "Second challenge is not open for submissions");
         });
