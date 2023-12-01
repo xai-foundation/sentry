@@ -23,12 +23,13 @@ import {useAtomValue} from "jotai";
 import {ethers} from "ethers";
 
 interface HasKeysProps {
+	combinedOwners: string[],
 	combinedLicensesMap: LicenseMap,
 	statusMap: StatusMap,
 	isWalletAssignedMap: WalletAssignedMap,
 }
 
-export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: HasKeysProps) {
+export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalletAssignedMap}: HasKeysProps) {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
 	const {data, setData} = useStorage();
@@ -79,6 +80,16 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 			}
 		}
 
+		if (licenses.length === 0) {
+			return (
+				<tr className="bg-white flex px-8 text-sm">
+					<td colSpan={5} className="w-full text-center">
+						No keys found.
+					</td>
+				</tr>
+			);
+		}
+
 		return licenses.sort((a, b) => Number(a.key) - Number(b.key)).map((keyWithOwner, i) => {
 			const isEven = i % 2 === 0;
 			const keyString = keyWithOwner.key.toString();
@@ -100,9 +111,7 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 			}
 
 
-			console.log("balances", balances);
 			const accruedEsXaiPerKey = !balances ? "Loading..." : Object.values(balances).map((items) => ethers.formatEther(items.totalAccruedEsXai));
-			console.log("accruedEsXaiPerKey", accruedEsXaiPerKey);
 
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
@@ -175,7 +184,7 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 	}
 
 	function getDropdownItems() {
-		return Object.keys(combinedLicensesMap).map((wallet, i) => (
+		return Object.values(combinedOwners).map((wallet, i) => (
 			<p
 				onClick={() => {
 					setSelectedWallet(wallet);
@@ -219,13 +228,13 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 					<p className="text-sm uppercase text-[#A3A3A3] mb-1 mt-2">
 						View Wallet
 					</p>
-					<div className="flex flex-row gap-2">
+					<div className="relative flex flex-row gap-2">
 						<div>
 							<div
 								onClick={() => setIsOpen(!isOpen)}
 								className={`flex items-center justify-between w-[538px] border-[#A3A3A3] border-r border-l border-t ${!isOpen ? "border-b" : null} border-[#A3A3A3] p-2`}
 							>
-								<p>{selectedWallet || `All wallets (${Object.keys(combinedLicensesMap).length})`}</p>
+								<p>{selectedWallet || `All wallets (${Object.keys(combinedOwners).length})`}</p>
 								<IoIosArrowDown
 									className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
 								/>
@@ -233,7 +242,7 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 
 							{isOpen && (
 								<div
-									className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3] bg-white z-10">
+									className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3] bg-white z-30">
 									<p
 										onClick={() => {
 											setSelectedWallet(null);

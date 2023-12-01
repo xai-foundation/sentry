@@ -31,7 +31,6 @@ export function Checkout() {
 		if (prefilledPromoCode) {
 			setPromoCode(prefilledPromoCode);
 		}
-		console.log("--");
 	}, [prefilledPromoCode]);
 
 	const {isLoading, isSuccess, write, error, data} = useContractWrite({
