@@ -42,6 +42,7 @@ contract esXai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgra
     event RedemptionCancelled(address indexed user, uint256 indexed index);
     event RedemptionCompleted(address indexed user, uint256 indexed index);
     event RedemptionStatusChanged(bool isActive);
+    event XaiAddressChanged(address indexed newXaiAddress);
 
     function initialize (address _xai) public initializer {
         __ERC20_init("esXai", "esXAI");
@@ -78,6 +79,7 @@ contract esXai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgra
      */
     function changeXaiAddress(address _newXai) public onlyRole(DEFAULT_ADMIN_ROLE) {
         xai = _newXai;
+        emit XaiAddressChanged(_newXai); // Emit event when xai address is changed
     }
 
     /**

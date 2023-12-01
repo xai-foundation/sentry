@@ -60,7 +60,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping to track KYC'd wallets
     EnumerableSetUpgradeable.AddressSet private kycWallets;
 
-    // This value keeps track of how many token are not ye tminted but are allocated by the referee. This should be used in calculating the total supply for emissions
+    // This value keeps track of how many token are not yet minted but are allocated by the referee. This should be used in calculating the total supply for emissions
     uint256 private _allocatedTokens;
 
     // This is the percentage of each challenge emission to be given to the gas subsidy. Should be a whole number like 15% = 15
@@ -111,6 +111,8 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     event Approval(address indexed owner, address indexed operator, bool approved);
     event KycStatusChanged(address indexed wallet, bool isKycApproved);
     event InvalidSubmission(uint256 indexed challengeId, uint256 nodeLicenseId);
+    event RewardsClaimed(uint256 indexed challengeId, uint256 amount);
+    event ChallengeExpired(uint256 indexed challengeId);
 
     function initialize(address _esXaiAddress, address _xaiAddress, address _gasSubsidyAddress, uint256 gasSubsidyPercentage_) public initializer {
         __AccessControlEnumerable_init();
@@ -522,8 +524,14 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         // Mint the reward to the owner of the nodeLicense
         esXai(esXaiAddress).mint(owner, reward);
 
+        // Emit the RewardsClaimed event
+        emit RewardsClaimed(_challengeId, reward);
+
         // Increment the total claims of this address
         _lifetimeClaims[owner] += reward;
+
+        // unallocate the tokens that have now been converted to esXai
+        _allocatedTokens -= reward;
     }
 
     /**
@@ -583,6 +591,9 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
 
         // Set expiredForRewarding to true
         challenges[_challengeId].expiredForRewarding = true;
+
+        // Emit the ChallengeExpired event
+        emit ChallengeExpired(_challengeId);
     }
 
     /**
