@@ -29,6 +29,8 @@ jobs:
 
       - name: Build monorepo
         run: pnpm run build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload sentry-client-desktop artifacts
         uses: actions/upload-artifact@v2
@@ -70,5 +72,4 @@ jobs:
             release-cli-ubuntu-latest/sentry-node-cli-linux.zip
             release-cli-ubuntu-latest/sentry-node-cli-windows.zip
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
