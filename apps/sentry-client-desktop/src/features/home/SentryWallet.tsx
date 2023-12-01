@@ -162,6 +162,7 @@ export function SentryWallet() {
 	function onCloseWalletConnectedModal() {
 		setAssignedWallet({show: false, txHash: ""});
 		setUnassignedWallet({show: false, txHash: ""});
+		setSelectedWallet(null);
 		refresh();
 		void queryClient.invalidateQueries({queryKey: ["ownersForOperator", operatorAddress]});
 	}
