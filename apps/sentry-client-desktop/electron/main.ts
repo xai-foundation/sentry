@@ -8,6 +8,17 @@ import net from "net";
 
 autoUpdater.autoDownload = true;
 autoUpdater.autoInstallOnAppQuit = true;
+autoUpdater.setFeedURL({
+	provider: "github",
+	owner: "xai-foundation",
+	repo: "sentry",
+});
+
+Object.defineProperty(app, 'isPackaged', {
+	get() {
+		return true;
+	}
+});
 
 const isWindows = os.platform() === "win32";
 
@@ -23,7 +34,7 @@ const isWindows = os.platform() === "win32";
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
 
-let win: BrowserWindow | undefined;
+let win: BrowserWindow | undefined | null;
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 
@@ -124,8 +135,8 @@ function createWindow() {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {
-		app.quit()
-		win = null
+		app.quit();
+		win = null;
 	}
 })
 

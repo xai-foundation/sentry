@@ -131,6 +131,10 @@ contextBridge.exposeInMainWorld('deeplinks', {
 	unassignedWallet: (callback: (_event, txHash) => void) => ipcRenderer.on("unassigned-wallet", callback),
 	purchaseSuccessful: (callback: (_event, txHash) => void) => ipcRenderer.on("purchase-successful", callback),
 	checkingForUpdate: (callback: (_event, txHash) => void) => ipcRenderer.on("checking-for-update", callback),
+	updateAvailable: (callback: (_event, txHash) => void) => ipcRenderer.on("update-available", callback),
+	updateNotAvailable: (callback: (_event, txHash) => void) => ipcRenderer.on("update-not-available", callback),
+	updateDownloadProgress: (callback: (_event, txHash) => void) => ipcRenderer.on("update-download-progress", callback),
+	updateDownloaded: (callback: (_event, txHash) => void) => ipcRenderer.on("update-downloaded", callback),
 });
 
 // ipcRenderer.on("test", (event, url) => {
