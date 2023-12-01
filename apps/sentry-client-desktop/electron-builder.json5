@@ -31,7 +31,7 @@
       "portable"
     ],
     "artifactName": "sentry-client-windows.${ext}",
-    "icon": "public/xai.png"
+    "icon": "public/xai.ico"
   },
   "nsis": {
     "oneClick": false,
