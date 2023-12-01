@@ -194,7 +194,7 @@ contract esXai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgra
         // Calculate the conversion ratio based on the duration
         uint256 ratio;
         if (request.duration == 15 days) {
-            ratio = 25;
+            ratio = 250;
         } else if (request.duration == 90 days) {
             ratio = 625;
         } else {
