@@ -19,10 +19,10 @@
       "dmg",
       "zip"
     ],
-    publish: {
+    publish: [{
       provider: "github",
-      releaseType: "release",
-    },
+      releaseType: "release"
+    }],
     "artifactName": "sentry-client-macos.${ext}",
     "icon": "public/xai.png"
   },
@@ -50,5 +50,5 @@
       name: "Xai Sentry",
       schemes: ["xai-sentry"]
     }
-  ],
+  ]
 }

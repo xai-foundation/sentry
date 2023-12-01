@@ -8,11 +8,6 @@ import net from "net";
 
 autoUpdater.autoDownload = true;
 autoUpdater.autoInstallOnAppQuit = true;
-autoUpdater.setFeedURL({
-	provider: "github",
-	owner: "xai-foundation",
-	repo: "sentry",
-});
 
 Object.defineProperty(app, 'isPackaged', {
 	get() {
