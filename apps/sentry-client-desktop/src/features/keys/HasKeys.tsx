@@ -20,14 +20,16 @@ import {useStorage} from "@/features/storage";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {useAtomValue} from "jotai";
+import {ethers} from "ethers";
 
 interface HasKeysProps {
+	combinedOwners: string[],
 	combinedLicensesMap: LicenseMap,
 	statusMap: StatusMap,
 	isWalletAssignedMap: WalletAssignedMap,
 }
 
-export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: HasKeysProps) {
+export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalletAssignedMap}: HasKeysProps) {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
 	const {data, setData} = useStorage();
@@ -59,11 +61,11 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 		});
 	}
 
-	const totalAccruedEsXai = isBalancesLoading
+	const totalAccruedEsXai = !balances
 		? "Loading..."
-		: (Object.values(balances)
-			.map((items) => BigInt(items.totalAccruedEsXai) ?? 0n)
-			.reduce((acc, value) => acc + value, 0n) / BigInt(10) ** BigInt(18)).toString();
+		: Object.values(balances)
+			.map((items) => ethers.formatEther(items.totalAccruedEsXai))
+			.reduce((acc, value) => acc + parseFloat(value), 0);
 
 
 	function renderKeys() {
@@ -76,6 +78,16 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 					return {owner: selectedWallet, key: license};
 				});
 			}
+		}
+
+		if (licenses.length === 0) {
+			return (
+				<tr className="bg-white flex px-8 text-sm">
+					<td colSpan={5} className="w-full text-center">
+						No keys found.
+					</td>
+				</tr>
+			);
 		}
 
 		return licenses.sort((a, b) => Number(a.key) - Number(b.key)).map((keyWithOwner, i) => {
@@ -98,8 +110,8 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 				_status = "claiming";
 			}
 
-			// todo: confirm implementation returns expected values
-			const accruedEsXaiPerKey = Object.values(balances).map((items) => (BigInt(items.totalAccruedEsXai) / BigInt(10) ** BigInt(18)).toString())
+
+			const accruedEsXaiPerKey = !balances ? "Loading..." : Object.values(balances).map((items) => ethers.formatEther(items.totalAccruedEsXai));
 
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
@@ -108,7 +120,7 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 					<td className="w-full max-w-[360px] px-4 py-2 text-[#A3A3A3]">
 
 						{_status === "sentryNotRunning" && (
-							<div className="flex items-center gap-2">
+							<div className="relative flex items-center gap-2">
 								Sentry not running
 								<a
 									onClick={startRuntime}
@@ -120,7 +132,7 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 						)}
 
 						{_status === "walletNotAssigned" && (
-							<div className="flex items-center gap-2">
+							<div className="relative flex items-center gap-2">
 								<FaRegCircle size={8}/>
 								Wallet not assigned
 								<a
@@ -133,7 +145,7 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 						)}
 
 						{_status === "kycStart" && (
-							<div className="flex items-center gap-2">
+							<div className="relative flex items-center gap-2">
 								<YellowPulse/>
 								KYC required
 								<BlockPassKYC onClick={() => onStartKyc(owner)}/>
@@ -141,7 +153,7 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 						)}
 
 						{_status === "kycContinue" && (
-							<div className="flex items-center gap-2">
+							<div className="relative flex items-center gap-2">
 								<YellowPulse/>
 								KYC required
 								<BlockPassKYC>Continue</BlockPassKYC>
@@ -149,13 +161,15 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 						)}
 
 						{_status === "claiming" && (
-							<div className="flex items-center gap-2">
+							<div className="relative flex items-center gap-2">
 								<GreenPulse/> Claiming rewards when available
 							</div>
 						)}
 
 					</td>
-					<td className="w-full max-w-[150px] px-4 py-2 text-right">{isBalancesLoading || accruedEsXaiPerKey.length === 0 ? "Loading..." : accruedEsXaiPerKey[i]}</td>
+					<td className="w-full max-w-[150px] px-4 py-2 text-right">
+						{isBalancesLoading || accruedEsXaiPerKey.length === 0 || accruedEsXaiPerKey[i] === "0.0" ? "Loading..." : accruedEsXaiPerKey[i]}
+					</td>
 					<td className="w-full max-w-[150px] px-4 py-2 text-[#F30919]">
 						<span
 							className="cursor-pointer"
@@ -170,7 +184,7 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 	}
 
 	function getDropdownItems() {
-		return Object.keys(combinedLicensesMap).map((wallet, i) => (
+		return Object.values(combinedOwners).map((wallet, i) => (
 			<p
 				onClick={() => {
 					setSelectedWallet(wallet);
@@ -214,13 +228,13 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 					<p className="text-sm uppercase text-[#A3A3A3] mb-1 mt-2">
 						View Wallet
 					</p>
-					<div className="flex flex-row gap-2">
+					<div className="relative flex flex-row gap-2">
 						<div>
 							<div
 								onClick={() => setIsOpen(!isOpen)}
 								className={`flex items-center justify-between w-[538px] border-[#A3A3A3] border-r border-l border-t ${!isOpen ? "border-b" : null} border-[#A3A3A3] p-2`}
 							>
-								<p>{selectedWallet || `All wallets (${Object.keys(combinedLicensesMap).length})`}</p>
+								<p>{selectedWallet || `All wallets (${Object.keys(combinedOwners).length})`}</p>
 								<IoIosArrowDown
 									className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
 								/>
@@ -228,7 +242,7 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 
 							{isOpen && (
 								<div
-									className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3] bg-white z-10">
+									className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3] bg-white z-30">
 									<p
 										onClick={() => {
 											setSelectedWallet(null);
@@ -288,7 +302,7 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 					<div className="flex items-center gap-2 font-semibold">
 						<XaiLogo/>
 						<p className="text-3xl">
-							{totalAccruedEsXai.toString()}
+							{totalAccruedEsXai}
 						</p>
 					</div>
 				</div>
@@ -296,7 +310,7 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 				<div className="flex flex-col max-h-[70vh]">
 					<div className="w-full overflow-y-auto">
 						<table className="w-full bg-white">
-							<thead className="text-[#A3A3A3] sticky top-0 bg-white">
+							<thead className="text-[#A3A3A3] sticky top-0 bg-white z-10">
 							<tr className="flex text-left text-[12px] px-8">
 								<th className="w-full max-w-[70px] px-4 py-2">KEY ID</th>
 								<th className="w-full max-w-[360px] px-4 py-2">OWNER ADDRESS</th>
@@ -305,7 +319,7 @@ export function HasKeys({combinedLicensesMap, statusMap, isWalletAssignedMap}: H
 								<th className="w-full max-w-[150px] px-4 py-2">OPENSEA URL</th>
 							</tr>
 							</thead>
-							<tbody>{renderKeys()}</tbody>
+							<tbody className="relative">{renderKeys()}</tbody>
 						</table>
 					</div>
 				</div>

@@ -87,6 +87,7 @@ export function Keys() {
 						</div>
 					) : (
 						<HasKeys
+							combinedOwners={combinedOwners}
 							combinedLicensesMap={combinedLicensesMap}
 							statusMap={ownersKycMap}
 							isWalletAssignedMap={walletAssignedMap}

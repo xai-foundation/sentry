@@ -19,18 +19,7 @@ export function Checkout() {
 
 	const {data: getPriceData, isLoading: isPriceLoading} = useGetPriceForQuantity(quantity);
 	const {data: providerData} = useProvider();
-	// const [price, setPrice] = useState<{ price: string, discount: string }>({price: "0", discount: "0"});
 	const [discount, setDiscount] = useState({applied: false, error: false,});
-
-		// if (getPriceData?.price !== undefined) {
-		// 	const priceAsNumber = parseFloat(ethers.formatEther(getPriceData.price));
-		//
-		// 	if (!isNaN(priceAsNumber)) {
-		// 		const discount = priceAsNumber * 0.05;
-		// 	} else {
-		// 		console.error('Invalid price format');
-		// 	}
-		// }
 
 	useEffect(() => {
 		if (prefilledAmount) {

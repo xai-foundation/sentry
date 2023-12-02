@@ -55,9 +55,9 @@ export function KycRequiredCard({wallet, status}: KycRequiredCardProps) {
 					/>
 
 					<p className="text-[15px] text-[#525252] mt-3">
-						Your KYC is In-Progress. If you have submitted all necessary documents, then please check back
-						in 48 hours. If you have not submitted all documents, click here to continue where you left
-						off.
+						Check back in 48 hours if all docs submitted. Check your inbox (including spam)
+						for updates. For KYC issues, contact <a className="text-[#F30919] cursor-pointer" href={"https://help.blockpass.org/hc/en-us/requests/new"}>Blockpass</a>.
+						If not completed, continue submission here.
 					</p>
 
 					<Blockpass onClick={onStartKyc}>
