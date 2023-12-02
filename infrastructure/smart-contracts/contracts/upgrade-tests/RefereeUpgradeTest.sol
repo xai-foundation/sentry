@@ -48,14 +48,14 @@ contract RefereeUpgradeTest is AccessControlEnumerableUpgradeable {
         bool claimed;
         bool eligibleForPayout;
         uint256 nodeLicenseId;
-        bytes successorStateRoot;
+        bytes assertionStateRootOrConfirmData;
     }
 
     struct Challenge {
         bool openForSubmissions; // when the next challenge is submitted for the following assertion, this will be closed.
         bool expiredForRewarding; // when this is true, this challenge is no longer eligible for claiming
         uint64 assertionId;
-        bytes32 assertionStateRoot;
+        bytes32 assertionStateRootOrConfirmData; // Depending on the BOLD 2 deployment, this will either be the assertionStateRoot or ConfirmData
         uint64 assertionTimestamp; // equal to the block number the assertion was made on in the rollup protocol
         bytes challengerSignedHash;
         bytes activeChallengerPublicKey; // The challengerPublicKey that was active at the time of challenge submission

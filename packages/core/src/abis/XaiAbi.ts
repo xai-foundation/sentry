@@ -24,6 +24,35 @@ export const XaiAbi = [
   {
     "type": "event",
     "anonymous": false,
+    "name": "ConvertedToEsXai",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "EsXaiAddressSet",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "newEsXaiAddress",
+        "indexed": true
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "Initialized",
     "inputs": [
       {

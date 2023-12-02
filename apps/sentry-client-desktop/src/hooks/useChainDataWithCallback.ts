@@ -53,10 +53,12 @@ export function useChainDataWithCallback() {
 	const {isLoading: ownersKycLoading, statusMap: combinedWalletsKycMap} = useKycStatusesWithCallback(combinedOwners, chainStateRefresh);
 	const {isLoading: licensesLoading, licensesMap: combinedLicensesMap} = useListNodeLicensesWithCallback(combinedOwners, chainStateRefresh);
 
+	// set default state
 	useEffect(() => {
 		setChainState(defaultChainState);
 	}, [chainStateRefresh]);
 
+	// check if anything is loading
 	useEffect(() => {
 		setChainState((_chainState) => {
 			return {
@@ -69,6 +71,7 @@ export function useChainDataWithCallback() {
 		});
 	}, [ownersLoading, ownersKycLoading, licensesLoading]);
 
+	// return owners
 	useEffect(() => {
 		setChainState((_chainState) => {
 			return {
@@ -78,6 +81,7 @@ export function useChainDataWithCallback() {
 		});
 	}, [owners]);
 
+	// return ownersKycMap & combinedWalletsKycMap
 	useEffect(() => {
 		setChainState((_chainState) => {
 			const ownersKycMap = Object.keys(combinedWalletsKycMap).reduce((result, wallet) => {
@@ -95,6 +99,7 @@ export function useChainDataWithCallback() {
 		});
 	}, [combinedWalletsKycMap, owners]);
 
+	// return licensesMap & combinedLicensesMap
 	useEffect(() => {
 		setChainState((_chainState) => {
 			const licensesMap = Object.keys(combinedLicensesMap).reduce((result, wallet) => {

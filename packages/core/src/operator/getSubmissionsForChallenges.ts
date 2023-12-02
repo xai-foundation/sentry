@@ -11,8 +11,8 @@ export interface Submission {
     claimed: boolean;
     eligibleForPayout: boolean;
     nodeLicenseId: number;
-    successorStateRoot: string;
-}
+    assertionStateRootOrConfirmData: string;
+ }
 
 /**
  * Fetches the submissions of a given array of challenge Ids.
@@ -41,14 +41,14 @@ export async function getSubmissionsForChallenges(
                 claimed,
                 eligibleForPayout,
                 nodeLicenseId,
-                successorStateRoot,
+                assertionStateRootOrConfirmData,
             ] = result;
             const submission: Submission = {
                 submitted,
                 claimed,
                 eligibleForPayout,
                 nodeLicenseId,
-                successorStateRoot,
+                assertionStateRootOrConfirmData,
             };
             submissions.push(submission);
             if (callback) {

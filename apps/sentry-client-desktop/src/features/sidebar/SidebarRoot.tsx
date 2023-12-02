@@ -7,7 +7,8 @@ import {SiGitbook} from "react-icons/si";
 import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse.js";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {IoGiftOutline} from "react-icons/io5";
-import {useAccruingInfo} from "@/hooks/useAccruingInfo";
+import {accruingStateAtom} from "@/hooks/useAccruingInfo";
+import {useAtomValue} from "jotai";
 
 /**
  * Sidebar component
@@ -16,12 +17,12 @@ import {useAccruingInfo} from "@/hooks/useAccruingInfo";
 export function Sidebar() {
 	const navigate = useNavigate();
 	const {sentryRunning} = useOperatorRuntime();
-	const {funded, hasAssignedKeys} = useAccruingInfo();
+	const {funded, hasAssignedKeys} = useAtomValue(accruingStateAtom);
 
 	return (
 		<div
 			className="sticky h-full w-[14.625rem] min-w-[14.625rem] bg-white border-r border-gray-200 text-[15px] p-4 z-10">
-			<div className="h-full flex flex-col gap-5">
+			<div className="fixed h-full flex flex-col gap-5">
 				<div
 					className="flex items-center gap-2 text-base font-semibold cursor-pointer"
 					onClick={() => navigate("/")}

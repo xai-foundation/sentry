@@ -60,7 +60,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping to track KYC'd wallets
     EnumerableSetUpgradeable.AddressSet private kycWallets;
 
-    // This value keeps track of how many token are not ye tminted but are allocated by the referee. This should be used in calculating the total supply for emissions
+    // This value keeps track of how many token are not yet minted but are allocated by the referee. This should be used in calculating the total supply for emissions
     uint256 private _allocatedTokens;
 
     // This is the percentage of each challenge emission to be given to the gas subsidy. Should be a whole number like 15% = 15
@@ -79,7 +79,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         bool claimed;
         bool eligibleForPayout;
         uint256 nodeLicenseId;
-        bytes successorStateRoot;
+        bytes assertionStateRootOrConfirmData;
     }
 
     // Struct for the challenges
@@ -87,7 +87,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         bool openForSubmissions; // when the next challenge is submitted for the following assertion, this will be closed.
         bool expiredForRewarding; // when this is true, this challenge is no longer eligible for claiming
         uint64 assertionId;
-        bytes32 assertionStateRoot;
+        bytes32 assertionStateRootOrConfirmData; // Depending on the BOLD 2 deployment, this will either be the assertionStateRoot or ConfirmData
         uint64 assertionTimestamp; // equal to the block number the assertion was made on in the rollup protocol
         bytes challengerSignedHash;
         bytes activeChallengerPublicKey; // The challengerPublicKey that was active at the time of challenge submission
@@ -111,6 +111,8 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     event Approval(address indexed owner, address indexed operator, bool approved);
     event KycStatusChanged(address indexed wallet, bool isKycApproved);
     event InvalidSubmission(uint256 indexed challengeId, uint256 nodeLicenseId);
+    event RewardsClaimed(uint256 indexed challengeId, uint256 amount);
+    event ChallengeExpired(uint256 indexed challengeId);
 
     function initialize(address _esXaiAddress, address _xaiAddress, address _gasSubsidyAddress, uint256 gasSubsidyPercentage_) public initializer {
         __AccessControlEnumerable_init();
@@ -305,7 +307,6 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
         require(maxSupply > totalSupply, "There are no more tiers, we are too close to the end");
 
-
         uint256 tier = log2(maxSupply / (maxSupply - totalSupply));
         require(tier < 30, "There are no more valuable tiers");
 
@@ -322,14 +323,14 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
      * adds the challenge to the mapping, and emits the ChallengeSubmitted event.
      * @param _assertionId The ID of the assertion.
      * @param _predecessorAssertionId The ID of the predecessor assertion.
-     * @param _assertionStateRoot The state root of the assertion.
+     * @param _confirmData The confirm data of the assertion. This will change with implementation of BOLD 2
      * @param _assertionTimestamp The timestamp of the assertion.
      * @param _challengerSignedHash The signed hash from the challenger.
      */
     function submitChallenge(
         uint64 _assertionId,
         uint64 _predecessorAssertionId,
-        bytes32 _assertionStateRoot,
+        bytes32 _confirmData,
         uint64 _assertionTimestamp,
         bytes memory _challengerSignedHash
     ) public onlyRole(CHALLENGER_ROLE) {
@@ -352,7 +353,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
             Node memory node = IRollupCore(rollupAddress).getNode(_assertionId);
 
             require(node.prevNum == _predecessorAssertionId, "The _predecessorAssertionId is incorrect.");
-            require(node.stateHash == _assertionStateRoot, "The _assertionStateRoot is incorrect.");
+            require(node.confirmData == _confirmData, "The _confirmData is incorrect.");
             require(node.createdAtBlock == _assertionTimestamp, "The _assertionTimestamp did not match the block this assertion was created at.");
         }
 
@@ -382,7 +383,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
             openForSubmissions: true,
             expiredForRewarding: false,
             assertionId: _assertionId,
-            assertionStateRoot: _assertionStateRoot,
+            assertionStateRootOrConfirmData: _confirmData,
             assertionTimestamp: _assertionTimestamp,
             challengerSignedHash: _challengerSignedHash,
             activeChallengerPublicKey: challengerPublicKey, // Store the active challengerPublicKey at the time of challenge submission
@@ -413,16 +414,6 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     /**
-     * @notice Get the challenge at a given index.
-     * @param index The index of the challenge to query.
-     * @return The challenge corresponding to the given index.
-     */
-    function getChallengeAtIndex(uint256 index) public view returns (Challenge memory) {
-        require(index <= challengeCounter, "Index out of bounds");
-        return challenges[index];
-    }
-
-    /**
      * @notice Submits an assertion to a challenge.
      * @dev This function can only be called by the owner of a NodeLicense or addresses they have approved on this contract.
      * @param _nodeLicenseId The ID of the NodeLicense.
@@ -430,7 +421,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
     function submitAssertionToChallenge(
         uint256 _nodeLicenseId,
         uint256 _challengeId,
-        bytes memory _successorStateRoot
+        bytes memory _confirmData
     ) public {
         require(
             isApprovedForOperator(NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId), msg.sender) || NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId) == msg.sender,
@@ -444,13 +435,13 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         require(!submissions[_challengeId][_nodeLicenseId].submitted, "_nodeLicenseId has already been submitted for this challenge");
 
         // If the submission successor hash, doesn't match the one submitted by the challenger, then end early and emit an event
-        if (keccak256(abi.encodePacked(_successorStateRoot)) != keccak256(abi.encodePacked(challenges[_challengeId].assertionStateRoot))) {
+        if (keccak256(abi.encodePacked(_confirmData)) != keccak256(abi.encodePacked(challenges[_challengeId].assertionStateRootOrConfirmData))) {
             emit InvalidSubmission(_challengeId, _nodeLicenseId);
             return;
         }
 
         // Check the user is actually eligible for receiving a reward, do not count them in numberOfEligibleClaimers if they are not able to receive a reward
-        (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _successorStateRoot, challenges[_challengeId].challengerSignedHash);
+        (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _confirmData, challenges[_challengeId].challengerSignedHash);
 
         // Store the assertionSubmission to a map
         submissions[_challengeId][_nodeLicenseId] = Submission({
@@ -458,7 +449,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
             claimed: false,
             eligibleForPayout: hashEligible,
             nodeLicenseId: _nodeLicenseId,
-            successorStateRoot: _successorStateRoot
+            assertionStateRootOrConfirmData: _confirmData
         });
 
         // Keep track of how many submissions submitted were eligible for the reward
@@ -517,7 +508,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         require(!submission.claimed, "This submission has already been claimed");
 
         // Check if we are valid for a payout
-        (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, submission.successorStateRoot, challenges[_challengeId].challengerSignedHash);
+        (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, submission.assertionStateRootOrConfirmData, challenges[_challengeId].challengerSignedHash);
         require(hashEligible, "Not valid for a payout");
 
         // Take the amount that was allocated for the rewards and divide it by the number of claimers
@@ -532,8 +523,14 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         // Mint the reward to the owner of the nodeLicense
         esXai(esXaiAddress).mint(owner, reward);
 
+        // Emit the RewardsClaimed event
+        emit RewardsClaimed(_challengeId, reward);
+
         // Increment the total claims of this address
         _lifetimeClaims[owner] += reward;
+
+        // unallocate the tokens that have now been converted to esXai
+        _allocatedTokens -= reward;
     }
 
     /**
@@ -543,18 +540,18 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
      * The threshold is calculated as the maximum uint256 value divided by 100 and then multiplied by the total supply of NodeLicenses.
      * @param _nodeLicenseId The ID of the NodeLicense.
      * @param _challengeId The ID of the challenge.
-     * @param _successorStateRoot The successor state root.
+     * @param _confirmData The confirm hash, will change to assertionState after BOLD.
      * @param _challengerSignedHash The signed hash for the challenge
      * @return a boolean indicating if the hash is eligible, and the assertionHash.
      */
     function createAssertionHashAndCheckPayout(
         uint256 _nodeLicenseId,
         uint256 _challengeId,
-        bytes memory _successorStateRoot,
+        bytes memory _confirmData,
         bytes memory _challengerSignedHash
     ) public pure returns (bool, bytes32) {
 
-        bytes32 assertionHash = keccak256(abi.encodePacked(_nodeLicenseId, _challengeId, _successorStateRoot, _challengerSignedHash));
+        bytes32 assertionHash = keccak256(abi.encodePacked(_nodeLicenseId, _challengeId, _confirmData, _challengerSignedHash));
         uint256 hashNumber = uint256(assertionHash);
 
         return (hashNumber % 100 == 0, assertionHash);
@@ -593,6 +590,9 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
 
         // Set expiredForRewarding to true
         challenges[_challengeId].expiredForRewarding = true;
+
+        // Emit the ChallengeExpired event
+        emit ChallengeExpired(_challengeId);
     }
 
     /**

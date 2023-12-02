@@ -9,7 +9,7 @@ import * as ethers from "ethers";
  * @param challengerBlsSecretKey - The BLS secret key of the challenger in hexadecimal format.
  * @param assertionId - The ID of the assertion.
  * @param predecessorAssertionId - The ID of the predecessor assertion.
- * @param stateRoot - The state root.
+ * @param confirmData - The confirm data.
  * @param assertionTimestamp - The timestamp of the assertion.
  * @returns The signature of the ABI-encoded message in hexadecimal format.
  */
@@ -17,12 +17,12 @@ export async function challengerHashAssertion(
     challengerBlsSecretKey: string,
     assertionId: BigInt,
     predecessorAssertionId: BigInt,
-    stateRoot: string,
+    confirmData: string,
     assertionTimestamp: BigInt
 ): Promise<string> {
     const message = ethers.AbiCoder.defaultAbiCoder().encode(
         ['uint64', 'uint64', 'bytes32', 'uint64'],
-        [assertionId, predecessorAssertionId, stateRoot, assertionTimestamp]
+        [assertionId, predecessorAssertionId, confirmData, assertionTimestamp]
     );
     const messageHash = ethers.keccak256(message);
     const validMessageHash = messageHash.startsWith('0x') ? messageHash.slice(2) : messageHash;

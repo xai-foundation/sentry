@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { Challenge, RefereeAbi, claimReward, config, getMintTimestamp, getSubmissionsForChallenges, listChallenges, listNodeLicenses, listOwnersForOperator, listenForChallenges, submitAssertionToChallenge } from "../index.js";
+import { Challenge, RefereeAbi, claimReward, config, getMintTimestamp, getSubmissionsForChallenges, listChallenges, listNodeLicenses, listOwnersForOperator, listenForChallenges, submitAssertionToChallenge, checkKycStatus } from "../index.js";
 
 export enum NodeLicenseStatus {
     WAITING_IN_QUEUE = "Waiting in Queue", // waiting to do an action, but in a queue
@@ -121,6 +121,7 @@ export async function operatorRuntime(
                 status: NodeLicenseStatus.CHECKING_MINT_TIMESTAMP_ELIGIBILITY,
             });
             safeStatusCallback();
+
             if (challenge.createdTimestamp <= mintTimestamps[nodeLicenseId.toString()]) {
                 logFunction(`nodeLicenseId ${nodeLicenseId} is not eligible for challenge ${challengeNumber}.`);
                 nodeLicenseStatusMap.set(nodeLicenseId, {
@@ -138,7 +139,7 @@ export async function operatorRuntime(
             });
             safeStatusCallback();
 
-            const [payoutEligible] = await refereeContract.createAssertionHashAndCheckPayout(nodeLicenseId, challengeNumber, challenge.assertionStateRoot, challenge.challengerSignedHash);
+            const [payoutEligible] = await refereeContract.createAssertionHashAndCheckPayout(nodeLicenseId, challengeNumber, challenge.assertionStateRootOrConfirmData, challenge.challengerSignedHash);
             if (!payoutEligible) {
                 logFunction(`nodeLicenseId ${nodeLicenseId} is not going to receive a reward for entering the challenge ${challengeNumber}, thus not submmiting an assertion.`);
                 nodeLicenseStatusMap.set(nodeLicenseId, {
@@ -163,7 +164,7 @@ export async function operatorRuntime(
 
             // submit the claim to the challenge
             logFunction(`Submitting claim for nodeLicenseId ${nodeLicenseId} to challenge ${challengeNumber}.`);
-            await submitAssertionToChallenge(nodeLicenseId, challengeNumber, challenge.assertionStateRoot, signer);
+            await submitAssertionToChallenge(nodeLicenseId, challengeNumber, challenge.assertionStateRootOrConfirmData, signer);
             logFunction(`Submitted claim for nodeLicenseId ${nodeLicenseId} to challenge ${challengeNumber}.`);
             nodeLicenseStatusMap.set(nodeLicenseId, {
                 ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
@@ -174,21 +175,41 @@ export async function operatorRuntime(
     }
 
     async function processClaimForChallenge(challengeNumber: bigint, nodeLicenseId: bigint) {
-        logFunction(`Claiming Submission for Challenge '${challengeNumber}'.`);
-        nodeLicenseStatusMap.set(nodeLicenseId, {
-            ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
-            status: `Claiming Submission for Challenge '${challengeNumber}'`,
-        });
-        safeStatusCallback();
-        
-        await claimReward(nodeLicenseId, challengeNumber, signer);
 
-        logFunction(`Claimed Submission for Challenge '${challengeNumber}'.`);
+        logFunction(`Checking KYC status of '${nodeLicenseStatusMap.get(nodeLicenseId)!.ownerPublicKey}' for Node License '${nodeLicenseId}'.`);
         nodeLicenseStatusMap.set(nodeLicenseId, {
             ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
-            status: `Claimed Submission for Challenge '${challengeNumber}'`,
+            status: `Checking KYC Status`,
         });
         safeStatusCallback();
+
+        // check to see if the owner of teh license is KYC'd
+        const [{isKycApproved}] = await checkKycStatus([nodeLicenseStatusMap.get(nodeLicenseId)!.ownerPublicKey]);
+        
+        if (isKycApproved) {
+            logFunction(`Claiming Submission for Challenge '${challengeNumber}'.`);
+            nodeLicenseStatusMap.set(nodeLicenseId, {
+                ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
+                status: `Claiming Submission for Challenge '${challengeNumber}'`,
+            });
+            safeStatusCallback();
+
+            await claimReward(nodeLicenseId, challengeNumber, signer);
+
+            logFunction(`Claimed Submission for Challenge '${challengeNumber}'.`);
+            nodeLicenseStatusMap.set(nodeLicenseId, {
+                ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
+                status: `Claimed Submission for Challenge '${challengeNumber}'`,
+            });
+            safeStatusCallback();
+        } else {
+            logFunction(`Checked KYC status of '${nodeLicenseStatusMap.get(nodeLicenseId)!.ownerPublicKey}' for Node License '${nodeLicenseId}' It was not KYC'd and not able to claim the reward.`);
+            nodeLicenseStatusMap.set(nodeLicenseId, {
+                ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
+                status: `Cannot Claim, Failed KYC`,
+            });
+        }
+
     }
 
     // start a listener for new challenges
