@@ -3,7 +3,6 @@ import fs from 'fs';
 import { Writable } from 'stream';
 
 // configure a config for the docker container
-const rpc = 
 const config = {
     "chain": {
         "id": 47279324479,
