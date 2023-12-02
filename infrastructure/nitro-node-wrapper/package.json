@@ -1,0 +1,17 @@
+{
+  "name": "@sentry/nitro-node-wrapper",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.mjs",
+  "type": "module",
+  "scripts": {
+    "start": "zx index.mjs"
+  },
+  "dependencies": {
+    "dockerode": "4.0.0",
+    "zx": "7.2.3"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED"
+}

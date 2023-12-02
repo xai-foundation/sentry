@@ -23,6 +23,9 @@ contract Xai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgrade
      */
     uint256[500] private __gap;
 
+    event EsXaiAddressSet(address indexed newEsXaiAddress);
+    event ConvertedToEsXai(address indexed user, uint256 amount);
+
     function initialize() public initializer {
         __ERC20_init("Xai", "XAI");
         __ERC20Burnable_init();
@@ -38,6 +41,7 @@ contract Xai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgrade
      */
     function setEsXaiAddress(address newEsXaiAddress) public onlyRole(DEFAULT_ADMIN_ROLE) {
         esXaiAddress = newEsXaiAddress;
+        emit EsXaiAddressSet(newEsXaiAddress);
     }
 
     /**
@@ -60,5 +64,6 @@ contract Xai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgrade
         require(esXaiAddress != address(0), "esXai contract address not set");
         _burn(msg.sender, amount);
         esXai(esXaiAddress).mint(msg.sender, amount);
+        emit ConvertedToEsXai(msg.sender, amount);
     }
 }

@@ -24,7 +24,7 @@ export async function submitAssertionToReferee(
         challengerBlsSecretKey,
         BigInt(assertionId),
         assertionNode.prevNum,
-        assertionNode.stateHash,
+        assertionNode.confirmData,
         assertionNode.createdAtBlock
     );
 
@@ -35,7 +35,7 @@ export async function submitAssertionToReferee(
     await refereeContract.submitChallenge(
         assertionId,
         assertionNode.prevNum,
-        assertionNode.stateHash,
+        assertionNode.confirmData,
         Number(assertionNode.createdAtBlock),
         assertionHash
     );

@@ -46,11 +46,113 @@ export const NodeLicenseAbi = [
   {
     "type": "event",
     "anonymous": false,
+    "name": "ClaimableChanged",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "admin",
+        "indexed": true
+      },
+      {
+        "type": "bool",
+        "name": "newClaimableState",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "FundsReceiverChanged",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "admin",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "newFundsReceiver",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "FundsWithdrawn",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "admin",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
     "name": "Initialized",
     "inputs": [
       {
         "type": "uint8",
         "name": "version",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PricingTierSetOrAdded",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "index",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "price",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "quantity",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PromoCodeCreated",
+    "inputs": [
+      {
+        "type": "string",
+        "name": "promoCode",
+        "indexed": false
+      },
+      {
+        "type": "address",
+        "name": "recipient",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "PromoCodeRemoved",
+    "inputs": [
+      {
+        "type": "string",
+        "name": "promoCode",
         "indexed": false
       }
     ]
@@ -68,6 +170,57 @@ export const NodeLicenseAbi = [
       {
         "type": "address",
         "name": "referralAddress",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "ReferralRewardPercentagesChanged",
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "referralDiscountPercentage",
+        "indexed": false
+      },
+      {
+        "type": "uint256",
+        "name": "referralRewardPercentage",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "RefundOccurred",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "refundee",
+        "indexed": true
+      },
+      {
+        "type": "uint256",
+        "name": "amount",
+        "indexed": false
+      }
+    ]
+  },
+  {
+    "type": "event",
+    "anonymous": false,
+    "name": "RewardClaimed",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "claimer",
         "indexed": true
       },
       {

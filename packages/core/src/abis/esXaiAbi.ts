@@ -202,6 +202,18 @@ export const esXaiAbi = [
     ]
   },
   {
+    "type": "event",
+    "anonymous": false,
+    "name": "XaiAddressChanged",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "newXaiAddress",
+        "indexed": true
+      }
+    ]
+  },
+  {
     "type": "function",
     "name": "DEFAULT_ADMIN_ROLE",
     "constant": true,
