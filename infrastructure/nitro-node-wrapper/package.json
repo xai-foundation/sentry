@@ -8,7 +8,9 @@
     "start": "zx index.mjs"
   },
   "dependencies": {
+    "@google-cloud/storage": "7.7.0",
     "dockerode": "4.0.0",
+    "ethers": "6.8.1",
     "zx": "7.2.3"
   },
   "keywords": [],

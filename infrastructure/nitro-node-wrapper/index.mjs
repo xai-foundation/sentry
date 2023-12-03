@@ -1,6 +1,8 @@
 import Docker from "dockerode";
 import fs from 'fs';
 import { Writable } from 'stream';
+import ethers from "ethers";
+
 
 // configure a config for the docker container
 const config = {
@@ -159,8 +161,22 @@ const stdOut = new Writable({
                 console.log(json);
 
                 // if there is an assertion and a state field then this means the validator has found a stateRoot we should process
-                if (json.hasOwnProperty('assertion') && json.hasOwnProperty('state')) {
-                    
+                if (json.hasOwnProperty('assertion') && json.hasOwnProperty('state') && isJsonString(json.state)) {
+                    const state = JSON.parse(json.state);
+
+                    // Concatenate the blockHash and sendRoot
+                    const concatenatedHashes = ethers.hexConcat([state.BlockHash, state.SendRoot]);
+
+                    // Create the confirm hash by keccak256
+                    const confirmHash = ethers.keccak256(concatenatedHashes);
+
+                    // create a JSON object that will get saved to the bucket
+                    const jsonSave = {
+                        assertion: json.assertion,
+                        blockHash: state.BlockHash,
+                        sendRoot: state.SendRoot,
+                        confirmHash,
+                    }
                 }
             }
         } else if (potentialJson.trim() !== '') {
