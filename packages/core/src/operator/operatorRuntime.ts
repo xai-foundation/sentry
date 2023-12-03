@@ -103,15 +103,6 @@ export async function operatorRuntime(
     async function processNewChallenge(challengeNumber: bigint, challenge: Challenge) {
         logFunction(`Processing new challenge with number: ${challengeNumber}.`);
 
-        // Update the status of each license to 'waiting in queue'
-        nodeLicenseIds.forEach(nodeLicenseId => {
-            nodeLicenseStatusMap.set(nodeLicenseId, {
-                ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
-                status: NodeLicenseStatus.WAITING_IN_QUEUE,
-            });
-        });
-        safeStatusCallback();
-
         for (const nodeLicenseId of nodeLicenseIds) {
             logFunction(`Checking eligibility for nodeLicenseId ${nodeLicenseId}.`);
 
