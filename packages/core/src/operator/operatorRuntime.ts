@@ -238,8 +238,8 @@ export async function operatorRuntime(
                 ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
                 status: NodeLicenseStatus.QUERYING_FOR_UNCLAIMED_SUBMISSIONS,
             });
-            logFunction(`Querying for unclaimed submission for node license '${nodeLicenseId}'.`);
             safeStatusCallback();
+            logFunction(`Querying for unclaimed submission for node license '${nodeLicenseId}'.`);
     
             await getSubmissionsForChallenges(challengeIds, nodeLicenseId, async (submission, index) => {
     
