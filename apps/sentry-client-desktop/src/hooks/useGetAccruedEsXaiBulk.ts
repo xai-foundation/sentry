@@ -16,9 +16,7 @@ export function useGetAccruedEsXaiBulk() {
 			if (combinedLicensesList.length > 0) {
 				void getBalances();
 			}
-		}, 5000);
-
-		console.log("RERUN");
+		}, 3000);
 
 		return () => clearTimeout(timeout);
 	}, [combinedLicensesList]);
@@ -27,7 +25,6 @@ export function useGetAccruedEsXaiBulk() {
 		setLoading(true);
 		setBalances({});
 		await getAccruedEsXaiBulk(combinedLicensesList.map((item) => item.key), async (response) => {
-			console.log("response", response)
 			setBalances({...response});
 		});
 		setLoading(false);

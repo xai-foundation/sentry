@@ -157,7 +157,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						)}
 
 					</td>
-					<td className="w-full max-w-[360px] px-4 py-2 ">
+					<td className="w-full max-w-[360px] px-4 py-2 text-right">
 						{balances && balances[keyString]
 							? ethers.formatEther(balances[keyString].totalAccruedEsXai)
 							: "Loading..."}
@@ -311,9 +311,9 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 									<th className="w-full max-w-[70px] px-4 py-2">KEY ID</th>
 									<th className="w-full max-w-[360px] px-4 py-2">OWNER ADDRESS</th>
 									<th className="w-full max-w-[270px] px-4 py-2">STATUS</th>
-									<th className="w-full max-w-[360px] px-4 py-2 flex items-center gap-1">
-										ACCRUED esXAI
+									<th className="w-full max-w-[360px] px-4 py-2 flex items-center justify-end gap-1">
 										{isBalancesLoading && <BiLoaderAlt className="animate-spin" color={"#A3A3A3"}/>}
+										ACCRUED esXAI
 									</th>
 									<th className="w-full max-w-[150px] px-4 py-2">OPENSEA URL</th>
 								</tr>
