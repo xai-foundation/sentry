@@ -128,7 +128,45 @@ export function RefereeTests(deployInfrastructure) {
             assert.equal(finalCount, BigInt(initialCount + BigInt(1)), "The KYC wallet count does not match");
         })
 
-        it("Check calculateChallengeEmissionAndTier function with increased total supply", async function() {
+        // it("Check calculateChallengeEmissionAndTier function with increased total supply", async function() {
+        //     const {referee, xai, xaiMinter} = await loadFixture(deployInfrastructure);
+        //     const maxSupply = await xai.MAX_SUPPLY();
+    
+
+        //     let previousEmissionAndTier = await referee.calculateChallengeEmissionAndTier();
+        //     let currentSupply = await referee.getCombinedTotalSupply();
+        //     let currentTier = maxSupply / BigInt(2);
+        //     let iterationCount = 0;
+        
+        //     while(currentSupply < maxSupply && iterationCount < 29) {
+        //         // Calculate the amount to mint to reach the next tier
+        //         let mintAmount = currentTier - currentSupply;
+        
+        //         // Break out of the loop if mint amount is 0
+        //         if (mintAmount === BigInt(0)) {
+        //             break;
+        //         }
+        
+        //         // Mint the calculated amount
+        //         await xai.connect(xaiMinter).mint(xaiMinter.address, mintAmount);
+        
+        //         // Update the current supply
+        //         currentSupply = await referee.getCombinedTotalSupply();
+        
+        //         // Check that the emission and tier have changed
+        //         const currentEmissionAndTier = await referee.calculateChallengeEmissionAndTier();
+        //         assert.notDeepEqual(previousEmissionAndTier, currentEmissionAndTier, "The emission and tier did not change after increasing total supply");
+        //         previousEmissionAndTier = currentEmissionAndTier;
+        
+        //         // Calculate the next tier
+        //         currentTier = currentSupply + (mintAmount / BigInt(2));
+                
+        //         // Increase iteration count
+        //         iterationCount++;
+        //     }
+        // })
+
+        it("Check calculateChallengeEmissionAndTier", async function() {
             const {referee, xai, xaiMinter} = await loadFixture(deployInfrastructure);
             const maxSupply = await xai.MAX_SUPPLY();
     
@@ -137,33 +175,30 @@ export function RefereeTests(deployInfrastructure) {
             let currentSupply = await referee.getCombinedTotalSupply();
             let currentTier = maxSupply / BigInt(2);
             let iterationCount = 0;
-        
-            while(currentSupply < maxSupply && iterationCount < 29) {
-                // Calculate the amount to mint to reach the next tier
-                let mintAmount = currentTier - currentSupply;
-        
-                // Break out of the loop if mint amount is 0
-                if (mintAmount === BigInt(0)) {
-                    break;
-                }
-        
-                // Mint the calculated amount
-                await xai.connect(xaiMinter).mint(xaiMinter.address, mintAmount);
-        
-                // Update the current supply
-                currentSupply = await referee.getCombinedTotalSupply();
-        
-                // Check that the emission and tier have changed
-                const currentEmissionAndTier = await referee.calculateChallengeEmissionAndTier();
-                assert.notDeepEqual(previousEmissionAndTier, currentEmissionAndTier, "The emission and tier did not change after increasing total supply");
-                previousEmissionAndTier = currentEmissionAndTier;
-        
-                // Calculate the next tier
-                currentTier = currentSupply + (mintAmount / BigInt(2));
-                
-                // Increase iteration count
-                iterationCount++;
+
+            let tokensToMint = [ethers.parseEther('1250000000')];
+            for (let i = 0; i < 29; i++) {
+                tokensToMint.push(tokensToMint[i] / BigInt(2));
             }
+
+            let challengeAllocations = [BigInt('71347031963470319634703')];
+            for (let i = 0; i < 29; i++) {
+                challengeAllocations.push(challengeAllocations[i] / BigInt(2));
+            }
+        
+            let calculatedChallengeAllocations = [];
+            for (let i = 0; i < tokensToMint.length; i++) {
+                
+                // calculate the ChallengeEmissionAndTier
+                const [_challengeAllocation, threshold] = await referee.calculateChallengeEmissionAndTier();
+                calculatedChallengeAllocations.push(_challengeAllocation);
+
+                // mint the tokens to get to the next tier
+                await xai.connect(xaiMinter).mint(xaiMinter.address, tokensToMint[i]);
+            }
+
+            // compare the entire arrays
+            expect(calculatedChallengeAllocations).to.deep.equal(challengeAllocations);
         })
 
         it("Check submitChallenge function", async function() {

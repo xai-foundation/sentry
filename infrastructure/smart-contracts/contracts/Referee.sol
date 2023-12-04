@@ -310,7 +310,8 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         uint256 tier = log2(maxSupply / (maxSupply - totalSupply));
         require(tier < 30, "There are no more valuable tiers");
 
-        uint256 emissionTier = maxSupply - (maxSupply / (2**(tier + 1)));
+        // uint256 emissionTier = maxSupply - (maxSupply / (2**(tier + 1)));
+        uint256 emissionTier = maxSupply / 2 / (2**tier);
 
         // determine what the size of the emission is based on each challenge having an estimated static length
         return (emissionTier / 17520, emissionTier);
