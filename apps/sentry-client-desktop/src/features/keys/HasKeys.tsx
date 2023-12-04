@@ -10,7 +10,7 @@ import {config} from "@sentry/core";
 import {StatusMap} from "@/hooks/useKycStatusesWithCallback";
 import {Tooltip} from "@/features/keys/Tooltip";
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
-import {useSetAtom} from "jotai";
+import {useAtomValue, useSetAtom} from "jotai";
 import {RemoveWalletModal} from "@/features/home/modals/RemoveWalletModal";
 import {WalletAssignedMap} from "@/features/keys/Keys";
 import {FaRegCircle} from "react-icons/fa";
@@ -19,7 +19,6 @@ import {useOperator} from "@/features/operator";
 import {useStorage} from "@/features/storage";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
-import {useAtomValue} from "jotai";
 import {ethers} from "ethers";
 
 interface HasKeysProps {
@@ -61,11 +60,9 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 		});
 	}
 
-	const totalAccruedEsXai = !balances
-		? "Loading..."
-		: Object.values(balances)
-			.map((items) => ethers.formatEther(items.totalAccruedEsXai))
-			.reduce((acc, value) => acc + parseFloat(value), 0);
+	const totalEsXai = Object.values(balances)
+		.map((items) => ethers.formatEther(items.totalAccruedEsXai))
+		.reduce((acc, value) => acc + parseFloat(value), 0);
 
 
 	function renderKeys() {
@@ -111,7 +108,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 			}
 
 
-			const accruedEsXaiPerKey = !balances ? "Loading..." : Object.values(balances).map((items) => ethers.formatEther(items.totalAccruedEsXai));
+			const accruedEsXaiPerKey = Object.values(balances).map((items) => ethers.formatEther(items.totalAccruedEsXai));
 
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
@@ -168,7 +165,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 
 					</td>
 					<td className="w-full max-w-[150px] px-4 py-2 text-right">
-						{isBalancesLoading || accruedEsXaiPerKey.length === 0 || accruedEsXaiPerKey[i] === "0.0" ? "Loading..." : accruedEsXaiPerKey[i]}
+						{isBalancesLoading ? "Loading..." : accruedEsXaiPerKey[i]}
 					</td>
 					<td className="w-full max-w-[150px] px-4 py-2 text-[#F30919]">
 						<span
@@ -302,7 +299,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					<div className="flex items-center gap-2 font-semibold">
 						<XaiLogo/>
 						<p className="text-3xl">
-							{totalAccruedEsXai}
+							{totalEsXai ? totalEsXai : "Loading..."}
 						</p>
 					</div>
 				</div>
