@@ -3,7 +3,6 @@ import {FiGift, FiGitCommit} from "react-icons/fi";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useSetAtom} from "jotai";
 import {AiOutlineInfoCircle} from "react-icons/ai";
-import {Tooltip} from "@/features/keys/Tooltip";
 import {GetSentryNodeTooltip} from "@/features/keys/GetSentryNodeTooltip";
 
 const body = [
