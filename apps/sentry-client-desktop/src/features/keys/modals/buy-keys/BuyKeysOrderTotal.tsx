@@ -115,7 +115,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 											</div>
 											<div className="flex flex-row items-center gap-1">
 												<p className="text-[#2A803D] font-semibold">
-													{ethers.formatEther(Number(getPriceData.price) * 0.05)} ETH
+													{ethers.formatEther(getPriceData.price * BigInt(95) / BigInt(100))} ETH
 												</p>
 											</div>
 										</div>
@@ -183,8 +183,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 												</div>
 
 												{discount.error && (
-													<p className="text-[14px] text-[#AB0914]">Invalid referral
-														address</p>
+													<p className="text-[14px] text-[#AB0914]">Error with Promo Code</p>
 												)}
 											</div>
 										) : (
@@ -208,7 +207,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 									<div className="flex flex-row items-center gap-1 font-semibold">
 										<p>
 											{discount.applied
-												? ethers.formatEther(Number(getPriceData.price) * 0.95)
+												? ethers.formatEther(getPriceData.price * BigInt(95) / BigInt(100))
 												: ethers.formatEther(getPriceData.price)
 											}
 										</p>
