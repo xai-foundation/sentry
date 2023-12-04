@@ -1,0 +1,12 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 550 200" width="100%" height="100%">
+	<title>xai-logo-svg</title>
+	<style>
+		.s0 { fill: #000000 }
+		.s1 { fill: #ff001b }
+	</style>
+	<g id="Layer">
+		<path id="Layer" class="s0" d="m519.7 21.8h30.3v155.8h-30.3z"/>
+		<path id="e50DxY7wA8i5" fill-rule="evenodd" class="s1" d="m321.1 22q0 0 0 0zm0 0c0 0 92.6 156.5 92.6 156.5h-185.2zm0 54.9q0 0 0 0zm0 0c0 0-42.3 71.5-42.3 71.5h84.6z"/>
+		<path id="Layer" class="s0" d="m157.6 21.5h-32.5l-46.3 57.9-46.3-57.9h-32.5l62.5 78.3-62.5 78.2h32.5l46.3-57.9 46.3 57.9h32.5l-62.5-78.2 62.5-78.3z"/>
+	</g>
+</svg>
