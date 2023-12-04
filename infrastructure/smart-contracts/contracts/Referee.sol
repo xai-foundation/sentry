@@ -408,7 +408,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
      * @param _challengeId The ID of the challenge to look up.
      * @return The challenge corresponding to the given ID.
      */
-    function getChallenge(uint64 _challengeId) public view returns (Challenge memory) {
+    function getChallenge(uint256 _challengeId) public view returns (Challenge memory) {
         require(_challengeId < challengeCounter, "challenge with this id, has not been created.");
         return challenges[_challengeId];
     }
