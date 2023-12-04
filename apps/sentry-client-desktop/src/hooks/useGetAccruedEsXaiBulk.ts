@@ -7,23 +7,29 @@ export type AccruedBalanceMap = Record<string, GetAccruedEsXaiResponse>;
 export const accruedEsXaiAtom = atom<AccruedBalanceMap>({});
 
 export function useGetAccruedEsXaiBulk() {
-	const {licensesList} = useAtomValue(chainStateAtom);
+	const {combinedLicensesList} = useAtomValue(chainStateAtom);
 	const [loading, setLoading] = useState(false);
 	const [balances, setBalances] = useAtom(accruedEsXaiAtom);
 
 	useEffect(() => {
 		const timeout = setTimeout(() => {
-			if (licensesList.length > 0) {
+			if (combinedLicensesList.length > 0) {
 				void getBalances();
 			}
 		}, 5000);
 
+		console.log("RERUN");
+
 		return () => clearTimeout(timeout);
-	}, [licensesList]);
+	}, [combinedLicensesList]);
 
 	async function getBalances() {
 		setLoading(true);
-		await getAccruedEsXaiBulk(licensesList.map((item) => item.key), async (response) => setBalances(response));
+		setBalances({});
+		await getAccruedEsXaiBulk(combinedLicensesList.map((item) => item.key), async (response) => {
+			console.log("response", response)
+			setBalances({...response});
+		});
 		setLoading(false);
 	}
 
