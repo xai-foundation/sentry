@@ -2,7 +2,6 @@ import {RiKey2Line} from "react-icons/ri";
 import {FiGift, FiGitCommit} from "react-icons/fi";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useSetAtom} from "jotai";
-import {useState} from "react";
 
 const body = [
 	{
@@ -43,7 +42,6 @@ const body = [
 
 export function GetSentryNode() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const [updateText, setUpdateText] = useState("Default");
 
 	function getBody() {
 		return body.map((item, i) => {
@@ -59,26 +57,6 @@ export function GetSentryNode() {
 			);
 		});
 	}
-
-	(window as any).deeplinks?.checkingForUpdate(() => {
-		setUpdateText("checking for update");
-	});
-
-	(window as any).deeplinks?.updateAvailable(() => {
-		setUpdateText("update available");
-	});
-
-	(window as any).deeplinks?.updateNotAvailable(() => {
-		setUpdateText("update not available");
-	});
-
-	(window as any).deeplinks?.updateDownloadProgress(() => {
-		setUpdateText("update download progress");
-	});
-
-	(window as any).deeplinks?.updateDownloaded(() => {
-		setUpdateText("update downloaded");
-	});
 
 	// function getSentryNodeBody() {
 	// 	return sentryBody.map((item, i) => {
@@ -98,7 +76,7 @@ export function GetSentryNode() {
 		<div className="w-full flex flex-row items-center justify-between px-[2.8rem] pt-[5.625rem]">
 			<div className="flex flex-col">
 				<h1 className="text-[40px] font-bold uppercase tracking-widest">
-					Get a Xai Sentry Node UPDATE 2
+					Get a Xai Sentry Node
 				</h1>
 
 				<span className="text-xl font-semibold mt-[8.5rem]">
@@ -122,10 +100,6 @@ export function GetSentryNode() {
 						I already own a key
 					</p>
 				</div>
-
-				<span>
-					{updateText}
-				</span>
 
 				<div className="flex flex-row items-center mt-[4.375rem]">
 					{getBody()}

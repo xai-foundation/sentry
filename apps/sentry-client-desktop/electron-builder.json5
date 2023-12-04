@@ -16,13 +16,8 @@
   ],
   "mac": {
     "target": [
-      "dmg",
-      "zip"
+      "dmg"
     ],
-    publish: [{
-      provider: "github",
-      releaseType: "release"
-    }],
     "artifactName": "sentry-client-macos.${ext}",
     "icon": "public/xai.png"
   },

@@ -6,7 +6,7 @@
   "main": "dist-electron/main.js",
   "repository": "https://github.com/xai-foundation/sentry",
   "scripts": {
-    "build": "tsc --build && vite build && electron-builder -p always",
+    "build": "tsc --build && vite build && electron-builder",
     "clean": "rimraf dist && rimraf dist-electron && rimraf release && rimraf public/web && rimraf tsconfig.tsbuildinfo && rimraf vite.config.js && rimraf vite.config.d.ts",
     "dev": "vite",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -20,7 +20,6 @@
     "classnames": "^2.3.2",
     "clsx": "^1.2.1",
     "crypto-js": "4.1.1",
-    "electron-updater": "^6.1.7",
     "express": "^4.18.2",
     "jotai": "^2.5.0",
     "react": "^18.2.0",
