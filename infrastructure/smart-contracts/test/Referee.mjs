@@ -128,7 +128,45 @@ export function RefereeTests(deployInfrastructure) {
             assert.equal(finalCount, BigInt(initialCount + BigInt(1)), "The KYC wallet count does not match");
         })
 
-        it("Check calculateChallengeEmissionAndTier function with increased total supply", async function() {
+        // it("Check calculateChallengeEmissionAndTier function with increased total supply", async function() {
+        //     const {referee, xai, xaiMinter} = await loadFixture(deployInfrastructure);
+        //     const maxSupply = await xai.MAX_SUPPLY();
+    
+
+        //     let previousEmissionAndTier = await referee.calculateChallengeEmissionAndTier();
+        //     let currentSupply = await referee.getCombinedTotalSupply();
+        //     let currentTier = maxSupply / BigInt(2);
+        //     let iterationCount = 0;
+        
+        //     while(currentSupply < maxSupply && iterationCount < 29) {
+        //         // Calculate the amount to mint to reach the next tier
+        //         let mintAmount = currentTier - currentSupply;
+        
+        //         // Break out of the loop if mint amount is 0
+        //         if (mintAmount === BigInt(0)) {
+        //             break;
+        //         }
+        
+        //         // Mint the calculated amount
+        //         await xai.connect(xaiMinter).mint(xaiMinter.address, mintAmount);
+        
+        //         // Update the current supply
+        //         currentSupply = await referee.getCombinedTotalSupply();
+        
+        //         // Check that the emission and tier have changed
+        //         const currentEmissionAndTier = await referee.calculateChallengeEmissionAndTier();
+        //         assert.notDeepEqual(previousEmissionAndTier, currentEmissionAndTier, "The emission and tier did not change after increasing total supply");
+        //         previousEmissionAndTier = currentEmissionAndTier;
+        
+        //         // Calculate the next tier
+        //         currentTier = currentSupply + (mintAmount / BigInt(2));
+                
+        //         // Increase iteration count
+        //         iterationCount++;
+        //     }
+        // })
+
+        it("Check calculateChallengeEmissionAndTier", async function() {
             const {referee, xai, xaiMinter} = await loadFixture(deployInfrastructure);
             const maxSupply = await xai.MAX_SUPPLY();
     
@@ -137,33 +175,30 @@ export function RefereeTests(deployInfrastructure) {
             let currentSupply = await referee.getCombinedTotalSupply();
             let currentTier = maxSupply / BigInt(2);
             let iterationCount = 0;
-        
-            while(currentSupply < maxSupply && iterationCount < 29) {
-                // Calculate the amount to mint to reach the next tier
-                let mintAmount = currentTier - currentSupply;
-        
-                // Break out of the loop if mint amount is 0
-                if (mintAmount === BigInt(0)) {
-                    break;
-                }
-        
-                // Mint the calculated amount
-                await xai.connect(xaiMinter).mint(xaiMinter.address, mintAmount);
-        
-                // Update the current supply
-                currentSupply = await referee.getCombinedTotalSupply();
-        
-                // Check that the emission and tier have changed
-                const currentEmissionAndTier = await referee.calculateChallengeEmissionAndTier();
-                assert.notDeepEqual(previousEmissionAndTier, currentEmissionAndTier, "The emission and tier did not change after increasing total supply");
-                previousEmissionAndTier = currentEmissionAndTier;
-        
-                // Calculate the next tier
-                currentTier = currentSupply + (mintAmount / BigInt(2));
-                
-                // Increase iteration count
-                iterationCount++;
+
+            let tokensToMint = [ethers.parseEther('1250000000')];
+            for (let i = 0; i < 29; i++) {
+                tokensToMint.push(tokensToMint[i] / BigInt(2));
             }
+
+            let challengeAllocations = [BigInt('71347031963470319634703')];
+            for (let i = 0; i < 29; i++) {
+                challengeAllocations.push(challengeAllocations[i] / BigInt(2));
+            }
+        
+            let calculatedChallengeAllocations = [];
+            for (let i = 0; i < tokensToMint.length; i++) {
+                
+                // calculate the ChallengeEmissionAndTier
+                const [_challengeAllocation, threshold] = await referee.calculateChallengeEmissionAndTier();
+                calculatedChallengeAllocations.push(_challengeAllocation);
+
+                // mint the tokens to get to the next tier
+                await xai.connect(xaiMinter).mint(xaiMinter.address, tokensToMint[i]);
+            }
+
+            // compare the entire arrays
+            expect(calculatedChallengeAllocations).to.deep.equal(challengeAllocations);
         })
 
         it("Check submitChallenge function", async function() {
@@ -293,9 +328,9 @@ export function RefereeTests(deployInfrastructure) {
             const totalClaimsForAddr1 = await referee.getTotalClaims(await addr1.getAddress());
             assert.equal(totalClaimsForAddr1, balanceAfter, "total claims does not match the esXai value")
 
-            // check getChallengeAtIndex is able to iterate over both challenges
-            const firstChallenge = await referee.getChallengeAtIndex(0);
-            const secondChallenge = await referee.getChallengeAtIndex(1);
+            // check getChallenge is able to iterate over both challenges
+            const firstChallenge = await referee.getChallenge(0);
+            const secondChallenge = await referee.getChallenge(1);
             assert.equal(firstChallenge.openForSubmissions, false, "First challenge is still open for submissions");
             assert.equal(secondChallenge.openForSubmissions, true, "Second challenge is not open for submissions");
         });
@@ -454,7 +489,7 @@ export function RefereeTests(deployInfrastructure) {
                 await referee.connect(challenger).submitChallenge(
                     2252,
                     2251,
-                    "0xe92f83d1df26eaa329c13411269d1b78b3b9ae2e7d18097fd3a38efc02077fac",
+                    "0x2fd53fdb1cd3d34d509978b94af510451ab103c5ba7aef645fd27c97af8aacb0",
                     10117582,
                     "0x0000000000000000000000000000000000000000000000000000000000000000"
                 );
@@ -479,14 +514,14 @@ export function RefereeTests(deployInfrastructure) {
                     referee.connect(challenger).submitChallenge(
                         2252,
                         9999,
-                        "0xe92f83d1df26eaa329c13411269d1b78b3b9ae2e7d18097fd3a38efc02077fac",
+                        "0x2fd53fdb1cd3d34d509978b94af510451ab103c5ba7aef645fd27c97af8aacb0",
                         10117582,
                         "0x0000000000000000000000000000000000000000000000000000000000000000"
                     )
                 ).to.be.revertedWith("The _predecessorAssertionId is incorrect.");
             })
 
-            it("Check that passing an incorrect _assertionStateRoot throws an error", async function() {
+            it("Check that passing an incorrect _confirmData throws an error", async function() {
 
                 const {referee, refereeDefaultAdmin, challenger} = await loadFixture(deployInfrastructure);
     
@@ -509,7 +544,7 @@ export function RefereeTests(deployInfrastructure) {
                         10117582,
                         "0x0000000000000000000000000000000000000000000000000000000000000000"
                     )
-                ).to.be.revertedWith("The _assertionStateRoot is incorrect.");
+                ).to.be.revertedWith("The _confirmData is incorrect.");
             })
 
             it("Check that passing an incorrect _assertionTimestamp throws an error", async function() {
@@ -531,7 +566,7 @@ export function RefereeTests(deployInfrastructure) {
                     referee.connect(challenger).submitChallenge(
                         2252,
                         2251,
-                        "0xe92f83d1df26eaa329c13411269d1b78b3b9ae2e7d18097fd3a38efc02077fac",
+                        "0x2fd53fdb1cd3d34d509978b94af510451ab103c5ba7aef645fd27c97af8aacb0",
                         99999999,
                         "0x0000000000000000000000000000000000000000000000000000000000000000"
                     )

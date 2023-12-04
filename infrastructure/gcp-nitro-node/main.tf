@@ -19,6 +19,22 @@ resource "google_compute_address" "default" {
   name = "node-static-ip"
 }
 
+resource "google_service_account" "bucket_updater" {
+  account_id   = "bucket-updater"
+  display_name = "Bucket Updater Service Account"
+  project      = var.gcp_project_id
+}
+
+resource "google_service_account_key" "bucket_updater_key" {
+  service_account_id = google_service_account.bucket_updater.name
+}
+
+resource "google_storage_bucket_iam_member" "bucket_updater" {
+  bucket = google_storage_bucket.public_bucket.name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.bucket_updater.email}"
+}
+
 resource "google_compute_instance" "default" {
   name         = "arbitrum-full-node"
   machine_type = "n1-standard-4"
@@ -31,47 +47,39 @@ resource "google_compute_instance" "default" {
   }
   network_interface {
     network = "default"
-    access_config {
-      nat_ip = google_compute_address.default.address
-    }
   }
+
   metadata_startup_script = local.startup_script
+
+  metadata = {  
+    service_account_key = google_service_account_key.bucket_updater_key.private_key
+  }
+
   service_account {
     scopes = ["https://www.googleapis.com/auth/compute.readonly", "https://www.googleapis.com/auth/cloud-platform.read-only"]
   }
 }
 
-resource "google_compute_firewall" "default" {
-  name    = "allow-websocket-http"
-  network = "default"
-
-  allow {
-    protocol = "tcp"
-    ports    = ["8547", "9642", "8548"]
-  }
-
-  source_ranges = ["0.0.0.0/0"]
+resource "google_storage_bucket" "public_bucket" {
+  name     = var.bucket_name
+  location = "ASIA"
 }
 
-output "instance_ip" {
-  value = google_compute_instance.default.network_interface[0].access_config[0].nat_ip
-}
-
-output "websocket_url" {
-  value = "ws://${google_compute_instance.default.network_interface[0].access_config[0].nat_ip}:8548"
-}
-
-output "http_url" {
-  value = "http://${google_compute_instance.default.network_interface[0].access_config[0].nat_ip}:8547"
+# allow public access to the sitemap bucket
+data "google_iam_policy" "viewer" {
+	binding {
+		role    = "roles/storage.objectViewer"
+		members = [
+			"allUsers",
+		]
+	}
 }
 
 locals {
+  
   markdown = <<-EOF
-# URL Information
-
-Instance IP: ${google_compute_instance.default.network_interface[0].access_config[0].nat_ip}
-Websocket URL: ws://${google_compute_instance.default.network_interface[0].access_config[0].nat_ip}:8548
-HTTP URL: http://${google_compute_instance.default.network_interface[0].access_config[0].nat_ip}:8547
+# OUTPUT
+Service Account Key: `${google_service_account_key.bucket_updater_key.private_key}`
 EOF
 }
 

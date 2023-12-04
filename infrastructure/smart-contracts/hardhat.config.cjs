@@ -39,6 +39,14 @@ const config = {
       },
       gasPrice: 20000000000,
     },
+    arbitrumOne: {
+      url: "https://arb1.arbitrum.io/rpc",
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+        count: 30,
+      },
+      chainId: 42161,
+    },
     arbitrumGoerli: {
       url: "https://goerli-rollup.arbitrum.io/rpc",
       accounts: {
@@ -61,6 +69,7 @@ const config = {
   etherscan: {
     apiKey: {
       arbitrumGoerli: process.env.ARBISCAN_API_KEY,
+      arbitrumOne: process.env.ARBISCAN_API_KEY,
       arbitrumSepolia: process.env.ARBISCAN_API_KEY,
     }
   }

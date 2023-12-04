@@ -73,12 +73,12 @@ export function RuntimeTests(deployInfrastructure) {
                 await referee.connect(operator).submitAssertionToChallenge(1,0,winningHashForNodeLicense0);
                 
                 // get the submission back to see it was created
-                const [{submitted, successorStateRoot, claimed}] = await referee.getSubmissionsForChallenges([0], 1);
+                const [{submitted, assertionStateRootOrConfirmData, claimed}] = await referee.getSubmissionsForChallenges([0], 1);
                 expect(submitted).to.be.eq(true)
                 expect(claimed).to.be.eq(false);
 
                 // // check to see if the submission was eligible for a payout
-                const [payoutEligible] = await referee.createAssertionHashAndCheckPayout(1, 0, successorStateRoot);
+                const [payoutEligible] = await referee.createAssertionHashAndCheckPayout(1, 0, assertionStateRootOrConfirmData);
                 expect(payoutEligible).to.be.eq(true);
 
                 // submit another assertion to end the previous challenge

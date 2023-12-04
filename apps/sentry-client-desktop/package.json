@@ -1,12 +1,14 @@
 {
   "name": "@sentry/sentry-client-desktop",
-  "productName": "Xai Sentry Node",
+  "author": "Xai Foundation",
+  "version": "0.1.157",
   "private": true,
-  "version": "0.1.0",
+  "main": "dist-electron/main.js",
+  "repository": "https://github.com/xai-foundation/sentry",
   "scripts": {
-    "dev": "vite",
-    "clean": "rimraf dist && rimraf dist-electron && rimraf release && rimraf public/web && rimraf tsconfig.tsbuildinfo && rimraf vite.config.js && rimraf vite.config.d.ts",
     "build": "tsc --build && vite build && electron-builder",
+    "clean": "rimraf dist && rimraf dist-electron && rimraf release && rimraf public/web && rimraf tsconfig.tsbuildinfo && rimraf vite.config.js && rimraf vite.config.d.ts",
+    "dev": "vite",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -47,5 +49,5 @@
     "vite-plugin-electron-renderer": "^0.14.5",
     "vite-plugin-svgr": "^3.2.0"
   },
-  "main": "dist-electron/main.js"
+  "productName": "Xai Sentry Node"
 }

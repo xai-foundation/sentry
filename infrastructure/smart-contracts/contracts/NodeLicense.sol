@@ -57,7 +57,16 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         uint256 receivedLifetime;
     }
 
+    event PromoCodeCreated(string promoCode, address recipient);
+    event PromoCodeRemoved(string promoCode);
+    event RewardClaimed(address indexed claimer, uint256 amount);
+    event PricingTierSetOrAdded(uint256 index, uint256 price, uint256 quantity);
+    event ReferralRewardPercentagesChanged(uint256 referralDiscountPercentage, uint256 referralRewardPercentage);
+    event RefundOccurred(address indexed refundee, uint256 amount);
     event ReferralReward(address indexed buyer, address indexed referralAddress, uint256 amount);
+    event FundsWithdrawn(address indexed admin, uint256 amount);
+    event FundsReceiverChanged(address indexed admin, address newFundsReceiver);
+    event ClaimableChanged(address indexed admin, bool newClaimableState);
 
     function initialize(
         address payable _fundsReceiver,
@@ -81,6 +90,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     function createPromoCode(string calldata _promoCode, address _recipient) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_recipient != address(0), "Recipient address cannot be zero");
         _promoCodes[_promoCode] = PromoCode(_recipient, true, 0);
+        emit PromoCodeCreated(_promoCode, _recipient);
     }
 
     /**
@@ -90,6 +100,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     function removePromoCode(string calldata _promoCode) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_promoCodes[_promoCode].recipient != address(0), "Promo code does not exist");
         _promoCodes[_promoCode].active = false; // 'active' is set to false
+        emit PromoCodeRemoved(_promoCode);
     }
 
     /**
@@ -155,8 +166,15 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             emit ReferralReward(msg.sender, promoCode.recipient, referralReward);
         }
 
-        (bool sent, bytes memory data) = fundsReceiver.call{value: msg.value - referralReward}("");
+        uint256 remainder = msg.value - finalPrice;
+        (bool sent, bytes memory data) = fundsReceiver.call{value: finalPrice - referralReward}("");
         require(sent, "Failed to send Ether");
+
+        // Send back the remainder amount
+        if (remainder > 0) {
+            (bool sentRemainder, bytes memory dataRemainder) = msg.sender.call{value: remainder}("");
+            require(sentRemainder, "Failed to send back the remainder Ether");
+        }
     }
 
     /**
@@ -210,6 +228,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         _referralRewards[msg.sender] = 0;
         (bool success, ) = msg.sender.call{value: reward}("");
         require(success, "Transfer failed.");
+        emit RewardClaimed(msg.sender, reward);
     }
 
     /**
@@ -217,7 +236,9 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @dev Only callable by the admin.
      */
     function withdrawFunds() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        fundsReceiver.transfer(address(this).balance);
+        uint256 amount = address(this).balance;
+        fundsReceiver.transfer(amount);
+        emit FundsWithdrawn(msg.sender, amount);
     }
 
     /**
@@ -227,29 +248,37 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      */
     function setClaimable(bool _claimable) external onlyRole(DEFAULT_ADMIN_ROLE) {
         claimable = _claimable;
+        emit ClaimableChanged(msg.sender, _claimable);
     }
 
     /**
      * @notice Sets the fundsReceiver address.
      * @param _newFundsReceiver The new fundsReceiver address.
+     * @dev The new fundsReceiver address cannot be the zero address.
      */
     function setFundsReceiver(
         address payable _newFundsReceiver
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_newFundsReceiver != address(0), "New fundsReceiver cannot be the zero address");
         fundsReceiver = _newFundsReceiver;
+        emit FundsReceiverChanged(msg.sender, _newFundsReceiver);
     }
 
     /**
      * @notice Sets the referral discount and reward percentages.
      * @param _referralDiscountPercentage The referral discount percentage.
      * @param _referralRewardPercentage The referral reward percentage.
+     * @dev The referral discount and reward percentages cannot be greater than 99.
      */
     function setReferralPercentages(
         uint256 _referralDiscountPercentage,
         uint256 _referralRewardPercentage
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(_referralDiscountPercentage <= 99, "Referral discount percentage cannot be greater than 99");
+        require(_referralRewardPercentage <= 99, "Referral reward percentage cannot be greater than 99");
         referralDiscountPercentage = _referralDiscountPercentage;
         referralRewardPercentage = _referralRewardPercentage;
+        emit ReferralRewardPercentagesChanged(_referralDiscountPercentage, _referralRewardPercentage);
     }
 
     /**
@@ -271,6 +300,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
 
         // Add the quantity of the new or updated tier to maxSupply
         maxSupply += _quantity;
+        emit PricingTierSetOrAdded(_index, _price, _quantity);
     }
 
     /**
@@ -336,6 +366,7 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         _averageCost[_tokenId] = 0;
         (bool success, ) = payable(ownerOf(_tokenId)).call{value: refundAmount}("");
         require(success, "Transfer failed.");
+        emit RefundOccurred(ownerOf(_tokenId), refundAmount);
         _burn(_tokenId);
     }
 

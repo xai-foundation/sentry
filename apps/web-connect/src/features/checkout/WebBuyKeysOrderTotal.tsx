@@ -118,7 +118,7 @@ export function WebBuyKeysOrderTotal(
 											</div>
 											<div className="flex flex-row items-center gap-1">
 												<span className="text-[#2A803D] font-semibold">
-													{ethers.formatEther(Number(getPriceData.price) * 0.05)} ETH
+													{ethers.formatEther(getPriceData.price * BigInt(5) / BigInt(100))} ETH
 												</span>
 											</div>
 										</div>
@@ -214,7 +214,7 @@ export function WebBuyKeysOrderTotal(
 									<div className="flex flex-row items-center gap-1 font-semibold">
 										<span>
 											{discount.applied
-												? ethers.formatEther(Number(getPriceData.price) * 0.95)
+												? ethers.formatEther(getPriceData.price * BigInt(95) / BigInt(100))
 												: ethers.formatEther(getPriceData.price)
 											}
 										</span>

@@ -6,13 +6,13 @@ import { config } from '../config.js';
  * Submits an assertion to the Referee contract.
  * @param nodeLicenseId - The ID of the NodeLicense.
  * @param challengeId - The ID of the challenge.
- * @param successorStateRoot - The successor state root.
+ * @param successorConfirmData - The successor confirm data.
  * @param signer - The signer to interact with the contract.
  */
 export async function submitAssertionToChallenge(
     nodeLicenseId: bigint,
     challengeId: bigint,
-    successorStateRoot: string,
+    successorConfirmData: string,
     signer: ethers.Signer
 ): Promise<void> {
 
@@ -23,6 +23,6 @@ export async function submitAssertionToChallenge(
     await refereeContract.submitAssertionToChallenge(
         nodeLicenseId,
         challengeId,
-        successorStateRoot
+        successorConfirmData
     );
 }

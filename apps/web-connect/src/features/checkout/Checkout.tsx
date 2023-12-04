@@ -38,7 +38,7 @@ export function Checkout() {
 		abi: NodeLicenseAbi,
 		functionName: "mint",
 		args: [quantity, promoCode],
-		value: discount.applied ? BigInt(Number(getPriceData!.price) * 0.95) : getPriceData?.price,
+		value: discount.applied ? getPriceData!.price * BigInt(95) / BigInt(100) : getPriceData?.price,
 		onSuccess(data) {
 			window.location = `xai-sentry://purchase-successful?txHash=${data.hash}` as unknown as Location;
 		},

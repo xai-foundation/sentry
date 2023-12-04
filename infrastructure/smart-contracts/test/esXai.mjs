@@ -129,7 +129,7 @@ export function esXaiTests(deployInfrastructure) {
             const redemptionAmount = BigInt(1000);
             await esXai.connect(esXaiMinter).mint(addr1.address, redemptionAmount * BigInt(3));
             const durations = [15 * 24 * 60 * 60, 90 * 24 * 60 * 60, 180 * 24 * 60 * 60]; // 15 days, 90 days, 180 days in seconds
-            const ratios = [25, 625, 1000]; // corresponding ratios for 15 days, 90 days, 180 days
+            const ratios = [250, 625, 1000]; // corresponding ratios for 15 days, 90 days, 180 days
             for (let i = 0; i < durations.length; i++) {
                 const duration = durations[i];
                 const ratio = ratios[i];

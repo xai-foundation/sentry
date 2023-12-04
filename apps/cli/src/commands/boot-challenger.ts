@@ -1,4 +1,5 @@
-import Vorpal from "vorpal";import { createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee } from "@sentry/core";
+import Vorpal from "vorpal";
+import { createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee } from "@sentry/core";
 
 /**
  * Starts a runtime of the challenger.

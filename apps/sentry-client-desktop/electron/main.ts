@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, safeStorage, shell } from 'electron'
+import {app, BrowserWindow, ipcMain, safeStorage, shell} from 'electron';
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
@@ -19,7 +19,7 @@ const isWindows = os.platform() === "win32";
 process.env.DIST = path.join(__dirname, '../dist')
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public')
 
-let win: BrowserWindow | null;
+let win: BrowserWindow | undefined | null;
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 
@@ -120,8 +120,8 @@ function createWindow() {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {
-		app.quit()
-		win = null
+		app.quit();
+		win = null;
 	}
 })
 
