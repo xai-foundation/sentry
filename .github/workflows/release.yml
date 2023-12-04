@@ -30,7 +30,7 @@ jobs:
       - name: Build monorepo
         run: pnpm run build
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload sentry-client-desktop artifacts
         uses: actions/upload-artifact@v2
