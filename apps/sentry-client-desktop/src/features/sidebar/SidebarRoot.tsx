@@ -1,5 +1,5 @@
 import {AiOutlineCloudUpload} from "react-icons/ai";
-import {FaDiscord, FaIcons} from 'react-icons/fa';
+import {FaDiscord} from 'react-icons/fa';
 import {Link, useNavigate} from 'react-router-dom';
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {RiKey2Line, RiTwitterXFill} from "react-icons/ri";
@@ -91,16 +91,6 @@ export function Sidebar() {
 					>
 						<RiTwitterXFill size={15}/> X
 					</a>
-				</div>
-
-				<div>
-					<h2 className="text-gray-400 text-[12px] mb-2 uppercase">Dev Links</h2>
-					<Link
-						to="/demo"
-						className="flex items-center mb-1 text-[15px text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
-					>
-						<FaIcons size={15}/> Demo
-					</Link>
 				</div>
 			</div>
 		</div>

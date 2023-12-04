@@ -4,7 +4,7 @@ import {useGetPriceForQuantity} from "@/features/keys/hooks/useGetPriceForQuanti
 import {useGetTotalSupplyAndCap} from "@/features/keys/hooks/useGetTotalSupplyAndCap";
 import {Dispatch, SetStateAction, useState} from "react";
 import {ethers} from "ethers";
-import {Tooltip} from "@/features/keys/Tooltip";
+import {Tooltip} from "../../../../../../../packages/ui/src/features/tooltip/Tooltip";
 import {getPromoCode} from "@sentry/core";
 
 interface BuyKeysOrderTotalProps {

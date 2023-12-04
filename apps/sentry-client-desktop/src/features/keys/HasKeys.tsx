@@ -8,7 +8,7 @@ import {BlockPassKYC} from "@/components/blockpass/Blockpass";
 import {getLicensesList, LicenseList, LicenseMap} from "@/hooks/useListNodeLicensesWithCallback";
 import {config} from "@sentry/core";
 import {StatusMap} from "@/hooks/useKycStatusesWithCallback";
-import {Tooltip} from "@/features/keys/Tooltip";
+import {Tooltip} from "../../../../../packages/ui/src/features/tooltip/Tooltip";
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
 import {useAtomValue, useSetAtom} from "jotai";
 import {RemoveWalletModal} from "@/features/home/modals/RemoveWalletModal";
@@ -218,6 +218,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 				<RemoveWalletModal
 					onClose={() => setIsRemoveWalletOpen(false)}
 					selectedWallet={selectedWallet}
+					isWalletAssignedMap={isWalletAssignedMap}
 				/>
 			)}
 			<div className="w-full flex flex-col gap-4">
