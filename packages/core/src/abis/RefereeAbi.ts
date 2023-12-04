@@ -524,7 +524,7 @@ export const RefereeAbi = [
     "payable": false,
     "inputs": [
       {
-        "type": "uint64",
+        "type": "uint256",
         "name": "_challengeId"
       }
     ],
