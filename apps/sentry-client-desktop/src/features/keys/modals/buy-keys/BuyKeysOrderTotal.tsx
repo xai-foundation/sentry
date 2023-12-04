@@ -115,7 +115,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 											</div>
 											<div className="flex flex-row items-center gap-1">
 												<p className="text-[#2A803D] font-semibold">
-													{ethers.formatEther(getPriceData.price * BigInt(95) / BigInt(100))} ETH
+													{ethers.formatEther(getPriceData.price * BigInt(5) / BigInt(100))} ETH
 												</p>
 											</div>
 										</div>
