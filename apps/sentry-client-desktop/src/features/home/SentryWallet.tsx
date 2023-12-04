@@ -1,6 +1,6 @@
 import {AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
 import {ReactNode, useState} from "react";
-import {BiDownload, BiLinkExternal, BiUpload} from "react-icons/bi";
+import {BiDownload, BiLinkExternal, BiLoaderAlt, BiUpload} from "react-icons/bi";
 import {useOperator} from "../operator";
 import {PiCopy} from "react-icons/pi";
 import {HiOutlineDotsVertical} from "react-icons/hi";
@@ -268,10 +268,21 @@ export function SentryWallet() {
 							{sentryRunning ? (
 								<button
 									onClick={stopRuntime}
-									className="ml-4 flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
+									className={`ml-4 flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2 ${!stopRuntime && 'cursor-not-allowed'}`}
+									disabled={!stopRuntime}
 								>
-									<GiPauseButton className="h-[15px]"/>
-									Pause Sentry
+									{stopRuntime ?
+										<>
+											<GiPauseButton className="h-[15px]"/>
+											Pause Sentry
+										</>
+										:
+										<>
+											<BiLoaderAlt className="animate-spin" color={"#A3A3A3"}/>
+											Starting Sentry
+										</>
+									}
+
 								</button>
 							) : (
 								<button
