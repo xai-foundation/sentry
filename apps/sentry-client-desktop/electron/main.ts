@@ -4,8 +4,23 @@ import fs from 'fs';
 import path from 'path';
 import express from 'express';
 import net from "net";
+import log from "electron-log";
+import {autoUpdater} from 'electron-updater';
 
 const isWindows = os.platform() === "win32";
+
+//-------------------------------------------------------------------
+// Logging
+//
+// THIS SECTION IS NOT REQUIRED
+//
+// This logging setup is not required for auto-updates to work,
+// but it sure makes debugging easier :)
+//-------------------------------------------------------------------
+autoUpdater.logger = log;
+// @ts-ignore
+autoUpdater.logger.transports.file.level = 'info';
+log.info('App starting...');
 
 // The built directory structure
 //
@@ -97,7 +112,6 @@ function createWindow() {
 	if (VITE_DEV_SERVER_URL) {
 		win.loadURL(VITE_DEV_SERVER_URL)
 	} else {
-		// win.loadFile('dist/index.html')
 		win.loadFile(path.join(process.env.DIST, 'index.html'))
 	}
 
@@ -167,7 +181,33 @@ app.on('ready', async () => {
 		res.sendFile(path.join(publicWebPath, "index.html")) // force web to load index.html
 	})
 	server.listen(8080);
-})
+});
+
+app.on('ready', function()  {
+	autoUpdater.checkForUpdatesAndNotify();
+});
+
+autoUpdater.on('checking-for-update', () => {
+	win?.webContents.send("update-message", "checking-for-update");
+});
+autoUpdater.on('update-available', () => {
+	win?.webContents.send("update-message", "update-available");
+});
+autoUpdater.on('update-not-available', () => {
+	win?.webContents.send("update-message", "update-not-available");
+});
+autoUpdater.on('error', () => {
+	win?.webContents.send("update-message", "error");
+});
+autoUpdater.on('download-progress', (progressObj) => {
+	let logMessage = "Download speed: " + progressObj.bytesPerSecond;
+	logMessage = logMessage + ' - Downloaded ' + progressObj.percent + '%';
+	logMessage = logMessage + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
+	win?.webContents.send("update-message", logMessage);
+});
+autoUpdater.on('update-downloaded', () => {
+	win?.webContents.send("update-message", "update-downloaded");
+});
 
 // Windows deep-link
 if (isWindows) {

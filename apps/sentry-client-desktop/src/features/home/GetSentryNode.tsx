@@ -2,6 +2,7 @@ import {RiKey2Line} from "react-icons/ri";
 import {FiGift, FiGitCommit} from "react-icons/fi";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useSetAtom} from "jotai";
+import {useState} from "react";
 
 const body = [
 	{
@@ -42,6 +43,12 @@ const body = [
 
 export function GetSentryNode() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
+	const [updateMessage, setUpdateMessage] = useState("Default Update Message");
+
+	// update message deep link
+	(window as any).deeplinks?.updateMessage((_event, message) => {
+		setUpdateMessage(message);
+	});
 
 	function getBody() {
 		return body.map((item, i) => {
@@ -99,6 +106,10 @@ export function GetSentryNode() {
 					>
 						I already own a key
 					</p>
+				</div>
+
+				<div>
+					<span>{updateMessage}</span>
 				</div>
 
 				<div className="flex flex-row items-center mt-[4.375rem]">
