@@ -30,7 +30,7 @@ export function BuyFlowBanner({quantity, promoCode}: BuyFlowBanner) {
 				<button
 					onClick={() => {
 						setModalState(ModalView.TransactionInProgress)
-						window.electron.openExternal(promoCode ? `http://localhost:8080/?quantity=${quantity}&promoCode=${promoCode}` : `http://localhost:8080/?quantity=${quantity}`)
+						window.electron.openExternal(promoCode ? `https://sentry.xai.games/?quantity=${quantity}&promoCode=${promoCode}` : `https://sentry.xai.games/?quantity=${quantity}`)
 					}}
 					className={"w-full h-16 flex flex-row justify-center items-center gap-1 bg-[#F30919] text-lg text-white"}
 				>

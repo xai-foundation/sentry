@@ -2,15 +2,15 @@ import {AiOutlineCheck, AiOutlineInfoCircle, AiOutlineMinus, AiOutlinePlus} from
 import {IoIosArrowDown} from "react-icons/io";
 import {PiCopy} from "react-icons/pi";
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse.js";
 import {BlockPassKYC} from "@/components/blockpass/Blockpass";
 import {getLicensesList, LicenseList, LicenseMap} from "@/hooks/useListNodeLicensesWithCallback";
 import {config} from "@sentry/core";
 import {StatusMap} from "@/hooks/useKycStatusesWithCallback";
-import {Tooltip} from "@/features/keys/Tooltip";
+import {Tooltip} from "@sentry/ui";
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
-import {useSetAtom} from "jotai";
+import {useAtomValue, useSetAtom} from "jotai";
 import {RemoveWalletModal} from "@/features/home/modals/RemoveWalletModal";
 import {WalletAssignedMap} from "@/features/keys/Keys";
 import {FaRegCircle} from "react-icons/fa";
@@ -19,8 +19,8 @@ import {useOperator} from "@/features/operator";
 import {useStorage} from "@/features/storage";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
-import {useAtomValue} from "jotai";
 import {ethers} from "ethers";
+import {BiLoaderAlt} from "react-icons/bi";
 
 interface HasKeysProps {
 	combinedOwners: string[],
@@ -41,11 +41,18 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 	const [isRemoveWalletOpen, setIsRemoveWalletOpen] = useState<boolean>(false);
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const {startRuntime, sentryRunning} = useOperatorRuntime();
+	const [lastTrueTimestamp, setLastTrueTimestamp] = useState<null | Date>(null);
+
+	useEffect(() => {
+		if (isBalancesLoading) {
+			setLastTrueTimestamp(new Date());
+		}
+	}, [isBalancesLoading]);
 
 	function startAssignment() {
 		if (!isOperatorLoading) {
 			setModalState(ModalView.TransactionInProgress);
-			window.electron.openExternal(`http://localhost:8080/assign-wallet/${operatorAddress}`);
+			window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`);
 		}
 	}
 
@@ -60,13 +67,6 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 			kycStartedWallets,
 		});
 	}
-
-	const totalAccruedEsXai = !balances
-		? "Loading..."
-		: Object.values(balances)
-			.map((items) => ethers.formatEther(items.totalAccruedEsXai))
-			.reduce((acc, value) => acc + parseFloat(value), 0);
-
 
 	function renderKeys() {
 		let licenses: LicenseList = [];
@@ -110,14 +110,11 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 				_status = "claiming";
 			}
 
-
-			const accruedEsXaiPerKey = !balances ? "Loading..." : Object.values(balances).map((items) => ethers.formatEther(items.totalAccruedEsXai));
-
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
 					<td className="w-full max-w-[70px] px-4 py-2">{keyString}</td>
 					<td className="w-full max-w-[360px] px-4 py-2">{owner}</td>
-					<td className="w-full max-w-[360px] px-4 py-2 text-[#A3A3A3]">
+					<td className="w-full max-w-[270px] px-4 py-2 text-[#A3A3A3]">
 
 						{_status === "sentryNotRunning" && (
 							<div className="relative flex items-center gap-2">
@@ -167,8 +164,10 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						)}
 
 					</td>
-					<td className="w-full max-w-[150px] px-4 py-2 text-right">
-						{isBalancesLoading || accruedEsXaiPerKey.length === 0 || accruedEsXaiPerKey[i] === "0.0" ? "Loading..." : accruedEsXaiPerKey[i]}
+					<td className="w-full max-w-[360px] px-4 py-2 text-right">
+						{balances && balances[keyString]
+							? ethers.formatEther(balances[keyString].totalAccruedEsXai)
+							: "Loading..."}
 					</td>
 					<td className="w-full max-w-[150px] px-4 py-2 text-[#F30919]">
 						<span
@@ -221,6 +220,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 				<RemoveWalletModal
 					onClose={() => setIsRemoveWalletOpen(false)}
 					selectedWallet={selectedWallet}
+					isWalletAssignedMap={isWalletAssignedMap}
 				/>
 			)}
 			<div className="w-full flex flex-col gap-4">
@@ -302,10 +302,23 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					<div className="flex items-center gap-2 font-semibold">
 						<XaiLogo/>
 						<p className="text-3xl">
-							{totalAccruedEsXai}
+							{balances
+								?
+								<div className={`flex gap-1 items-center`}>
+									{ethers.formatEther(Object.values(balances).reduce((acc, value) => acc + value.totalAccruedEsXai, BigInt(0)))}
+									{isBalancesLoading ? (
+										<BiLoaderAlt className="animate-spin w-[18px]" color={"#A3A3A3"}/>) : (
+										<p className="flex text-[#A3A3A3] text-[12px]">
+											Last updated: {lastTrueTimestamp ? lastTrueTimestamp.toLocaleString() : "N/A"}
+										</p>
+									)}
+								</div>
+								: "Loading..."
+							}
 						</p>
 					</div>
 				</div>
+
 
 				<div className="flex flex-col max-h-[70vh]">
 					<div className="w-full overflow-y-auto">
@@ -314,8 +327,10 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 							<tr className="flex text-left text-[12px] px-8">
 								<th className="w-full max-w-[70px] px-4 py-2">KEY ID</th>
 								<th className="w-full max-w-[360px] px-4 py-2">OWNER ADDRESS</th>
-								<th className="w-full max-w-[360px] px-4 py-2">STATUS</th>
-								<th className="w-full max-w-[150px] px-4 py-2 text-right">ACCRUED esXAI</th>
+								<th className="w-full max-w-[270px] px-4 py-2">STATUS</th>
+								<th className="w-full max-w-[360px] px-4 py-2 flex items-center justify-end gap-1">
+									ACCRUED esXAI
+								</th>
 								<th className="w-full max-w-[150px] px-4 py-2">OPENSEA URL</th>
 							</tr>
 							</thead>

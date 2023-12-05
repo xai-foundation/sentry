@@ -1,6 +1,6 @@
 import {AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
 import {ReactNode, useState} from "react";
-import {BiDownload, BiLinkExternal, BiUpload} from "react-icons/bi";
+import {BiDownload, BiLinkExternal, BiLoaderAlt, BiUpload} from "react-icons/bi";
 import {useOperator} from "../operator";
 import {PiCopy} from "react-icons/pi";
 import {HiOutlineDotsVertical} from "react-icons/hi";
@@ -17,7 +17,7 @@ import {useQueryClient} from "react-query";
 import {useBalance} from "@/hooks/useBalance";
 import {ethers} from "ethers";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
-import {Tooltip} from "@/features/keys/Tooltip";
+import {Tooltip} from "../../../../../packages/ui/src/features/tooltip/Tooltip";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
 import {SentryWalletHeader} from "@/features/home/SentryWalletHeader";
@@ -268,10 +268,21 @@ export function SentryWallet() {
 							{sentryRunning ? (
 								<button
 									onClick={stopRuntime}
-									className="ml-4 flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
+									className={`ml-4 flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2 ${!stopRuntime && 'cursor-not-allowed'}`}
+									disabled={!stopRuntime}
 								>
-									<GiPauseButton className="h-[15px]"/>
-									Pause Sentry
+									{stopRuntime ?
+										<>
+											<GiPauseButton className="h-[15px]"/>
+											Pause Sentry
+										</>
+										:
+										<>
+											<BiLoaderAlt className="animate-spin" color={"#A3A3A3"}/>
+											Starting Sentry
+										</>
+									}
+
 								</button>
 							) : (
 								<button
@@ -375,7 +386,7 @@ export function SentryWallet() {
 									<button
 										onClick={() => {
 											setModalState(ModalView.TransactionInProgress)
-											window.electron.openExternal(`http://localhost:8080/assign-wallet/${operatorAddress}`)
+											window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`)
 										}}
 										className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 									>
@@ -387,7 +398,7 @@ export function SentryWallet() {
 										disabled={selectedWallet === null}
 										onClick={() => {
 											setModalState(ModalView.TransactionInProgress)
-											window.electron.openExternal(`http://localhost:8080/unassign-wallet/${operatorAddress}`)
+											window.electron.openExternal(`https://sentry.xai.games/#/unassign-wallet/${operatorAddress}`)
 										}}
 										className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] ${selectedWallet === null ? 'text-[#D4D4D4] cursor-not-allowed' : ""} px-4 py-2`}
 									>

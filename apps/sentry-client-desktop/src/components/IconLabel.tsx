@@ -1,6 +1,6 @@
 import * as React from "react";
 import {AiOutlineInfoCircle} from "react-icons/ai";
-import {Tooltip} from "@/features/keys/Tooltip";
+import {Tooltip} from "../../../../packages/ui/src/features/tooltip/Tooltip";
 
 interface IconLabelProps {
 	icon: React.FC;
