@@ -1,7 +1,7 @@
 {
   "name": "@sentry/sentry-client-desktop",
   "author": "Xai Foundation",
-  "version": "0.1.182",
+  "version": "0.1.183",
   "private": true,
   "main": "dist-electron/main.js",
   "repository": "https://github.com/xai-foundation/sentry",
