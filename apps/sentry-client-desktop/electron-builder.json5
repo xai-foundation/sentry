@@ -16,7 +16,8 @@
   ],
   "mac": {
     "target": [
-      "dmg"
+      "dmg",
+      "zip"
     ],
     "artifactName": "sentry-client-macos.${ext}",
     "icon": "public/xai.png"
@@ -45,12 +46,5 @@
       "name": "Xai Sentry",
       "schemes": ["xai-sentry"]
     }
-  ],
-  "publish": [
-    {
-      "provider": "github",
-      "owner": "xai-foundation",
-      "repo": "sentry"
-    }
-  ],
+  ]
 }
