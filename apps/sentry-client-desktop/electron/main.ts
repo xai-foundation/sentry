@@ -196,8 +196,8 @@ autoUpdater.on('update-available', () => {
 autoUpdater.on('update-not-available', () => {
 	win?.webContents.send("update-message", "update-not-available");
 });
-autoUpdater.on('error', () => {
-	win?.webContents.send("update-message", "error");
+autoUpdater.on('error', (err) => {
+	win?.webContents.send("update-message", err.message);
 });
 autoUpdater.on('download-progress', (progressObj) => {
 	let logMessage = "Download speed: " + progressObj.bytesPerSecond;
