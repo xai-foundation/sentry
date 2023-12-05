@@ -193,7 +193,7 @@ autoUpdater.on('checking-for-update', () => {
 	win?.webContents.send("update-message", "checking-for-update");
 });
 autoUpdater.on('update-available', () => {
-	win?.webContents.send("update-message", "update-available");
+	win?.webContents.send("update-available");
 });
 autoUpdater.on('update-not-available', () => {
 	win?.webContents.send("update-message", "update-not-available");

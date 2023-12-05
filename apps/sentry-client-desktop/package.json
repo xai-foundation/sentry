@@ -1,7 +1,7 @@
 {
   "name": "@sentry/sentry-client-desktop",
   "author": "Xai Foundation",
-  "version": "0.1.177",
+  "version": "0.1.178",
   "private": true,
   "main": "dist-electron/main.js",
   "repository": "https://github.com/xai-foundation/sentry",
@@ -26,6 +26,7 @@
     "jotai": "^2.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.4.1",
     "react-icons": "^4.11.0",
     "react-query": "^3.39.3",
     "react-router-dom": "^6.16.0",
