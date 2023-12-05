@@ -1,5 +1,4 @@
 import {useEffect, useState} from "react";
-import {MdVerifiedUser} from "react-icons/md";
 import {WebBuyKeysQuantity} from "@/features/checkout/WebBuyKeysQuantity";
 import {WebBuyKeysOrderTotal} from "@/features/checkout/WebBuyKeysOrderTotal";
 import {useGetPriceForQuantity} from "@/features/checkout/hooks/useGetPriceForQuantity";
@@ -11,6 +10,7 @@ import {useProvider} from "@/features/checkout/hooks/useProvider";
 import {AiOutlineInfoCircle} from "react-icons/ai";
 import {Tooltip} from "@sentry/ui";
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
+import {XaiBanner} from "@/features/checkout/XaiBanner";
 
 export function Checkout() {
 	const queryString = window.location.search;
@@ -57,16 +57,7 @@ export function Checkout() {
 	return (
 		<div>
 			<div className="h-screen flex flex-col justify-center items-center">
-				<div className="w-[744px] flex flex-col gap-2 bg-[#DCFCE6] p-6">
-					<span className="flex flex-row gap-1 items-center font-semibold">
-						<MdVerifiedUser size={22} color={"#38A349"}/>You are on the official <p
-						className="text-[#2A803D]">Xai.games</p> website
-					</span>
-					<p className="text-[15px] text-[#15803D]">
-						Purchases from Xai will only ever occur on Xai.games. Check that you are on Xai.games whenever
-						purchasing from Xai.
-					</p>
-				</div>
+				<XaiBanner/>
 
 				{isLoading && (
 					<div className="w-[744px] h-[208px] flex flex-col justify-center border border-[#E5E5E5] m-4">
