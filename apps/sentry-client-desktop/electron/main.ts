@@ -117,6 +117,8 @@ function createWindow() {
 		win.loadFile(path.join(process.env.DIST, 'index.html'))
 	}
 
+	win.webContents.openDevTools();
+
 	// win.on('close', (e) => {
 	// 	const choice = dialog.showMessageBoxSync({
 	// 		type: 'question',
