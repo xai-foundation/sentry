@@ -19,8 +19,8 @@ export function AppRoutes() {
 	const queryClient = new QueryClient();
 
 	window.ipcRenderer.on("update-available", () => {
-		toast("Downloading update. Your app will restart soon.");
-	})
+		toast.loading("Downloading update. Your app will restart soon.");
+	});
 
 	return (
 		<JotaiProvider store={store}>
