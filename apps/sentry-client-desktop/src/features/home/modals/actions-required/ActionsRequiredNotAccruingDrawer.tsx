@@ -97,7 +97,7 @@ export function ActionsRequiredNotAccruingDrawer() {
 									title="At least one wallet has unclaimable esXAI"
 								/>
 								<p className="text-[15px] text-[#924012] mt-2">
-									Complete KYC for all of the below wallets to be able to claim esXAI.
+									Complete KYC within 180 days for all of the below wallets to be able to claim esXAI.
 								</p>
 							</SquareCard>
 						) : (

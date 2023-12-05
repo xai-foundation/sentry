@@ -4,6 +4,7 @@ import {Checkout} from "../checkout";
 import {ConnectWallet} from "../wallet/routes/ConnectWallet.js";
 import {AssignWallet} from "../wallet/routes/AssignWallet.js";
 import {UnassignWallet} from "@/features/wallet/routes/UnassignWallet";
+import {Header} from "@/features/header/Header";
 
 export function AppRoutes() {
 	const queryClient = new QueryClient();
@@ -11,6 +12,7 @@ export function AppRoutes() {
 	return (
 		<BrowserRouter>
 			<QueryClientProvider client={queryClient}>
+				<Header/>
 				<Routes>
 					<Route path="/" element={<Checkout/>}/>
 					<Route path="/connect-wallet" element={<ConnectWallet/>}/>

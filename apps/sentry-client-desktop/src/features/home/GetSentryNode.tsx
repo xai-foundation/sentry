@@ -3,6 +3,8 @@ import {FiGift, FiGitCommit} from "react-icons/fi";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useSetAtom} from "jotai";
 import {useState} from "react";
+import {AiOutlineInfoCircle} from "react-icons/ai";
+import {GetSentryNodeTooltip} from "@/features/keys/GetSentryNodeTooltip";
 
 const body = [
 	{
@@ -21,25 +23,6 @@ const body = [
 		body: "Over time you will earn esXAI from network challenges",
 	},
 ];
-
-// const sentryBody = [
-// 	{
-// 		header: "Observation node",
-// 		body: "The Sentry Node is an observation node that monitors the Xai rollup protocol",
-// 	},
-// 	{
-// 		header: "Solves the verifiers dilemma",
-// 		body: "If an incorrect block is proposed, the node will raise the alarm by whatever means the operator chooses",
-// 	},
-// 	{
-// 		header: "Sentry Nodes can receive network rewards",
-// 		body: "As long as the node is running, a probabilistic algorithm determines if nodes will receive network rewards",
-// 	},
-// 	{
-// 		header: "Can be run on computers or the cloud",
-// 		body: "Sentry Nodes can be run on any laptop, desktop, or even on cloud instances",
-// 	},
-// ];
 
 export function GetSentryNode() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -65,26 +48,19 @@ export function GetSentryNode() {
 		});
 	}
 
-	// function getSentryNodeBody() {
-	// 	return sentryBody.map((item, i) => {
-	// 		return (
-	// 			<div
-	// 				key={`connect-wallet-content-${i}`}
-	// 				className="flex flex-col gap-2"
-	// 			>
-	// 				<p className="text-base font-semibold">{item.header}</p>
-	// 				<p className="text-[15px] text-[#525252]">{item.body}</p>
-	// 			</div>
-	// 		);
-	// 	});
-	// }
-
 	return (
 		<div className="w-full flex flex-row items-center justify-between px-[2.8rem] pt-[5.625rem]">
 			<div className="flex flex-col">
-				<h1 className="text-[40px] font-bold uppercase tracking-widest">
-					Get a Xai Sentry Node Update 0.1.168
-				</h1>
+				<div className="flex gap-1 items-center">
+					<h1 className="text-[40px] font-bold uppercase tracking-widest">
+						Get a Xai Sentry Node
+					</h1>
+					<GetSentryNodeTooltip
+						width={436}
+					>
+						<AiOutlineInfoCircle size={16} className="text-[#A3A3A3]"/>
+					</GetSentryNodeTooltip>
+				</div>
 
 				<span className="text-xl font-semibold mt-[8.5rem]">
 					Get started
@@ -116,30 +92,6 @@ export function GetSentryNode() {
 					{getBody()}
 				</div>
 			</div>
-
-			{/*<div>*/}
-			{/*	<div className="w-[436px] p-[2rem] bg-[#F5F5F5]">*/}
-			{/*		<p className="flex items-center font-semibold gap-2 mb-4 text-lg">*/}
-			{/*			<AiFillInfoCircle size={18} className="text-[#A3A3A3]"/>*/}
-			{/*			What is a Sentry Node?*/}
-			{/*		</p>*/}
-
-			{/*		<div className="flex flex-col items-center gap-[24px]">*/}
-			{/*			{getSentryNodeBody()}*/}
-			{/*		</div>*/}
-
-			{/*		<p className="mt-[14px] text-[14px] text-[#525252]">*/}
-			{/*			Want to learn more about Sentry Node technical specifications?*/}
-
-			{/*			<a*/}
-			{/*				onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/xai-protocol/sentry-nodes-explained")}*/}
-			{/*				className="text-[#F30919] ml-1 cursor-pointer"*/}
-			{/*			>*/}
-			{/*				Learn more*/}
-			{/*			</a>*/}
-			{/*		</p>*/}
-			{/*	</div>*/}
-			{/*</div>*/}
 
 			<video
 				className="fixed bottom-[-10rem] left-0 w-screen object-cover -z-10"
