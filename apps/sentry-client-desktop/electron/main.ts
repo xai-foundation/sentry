@@ -207,10 +207,10 @@ autoUpdater.on('update-available', () => {
 // 	logMessage = logMessage + ' (' + progressObj.transferred + "/" + progressObj.total + ')';
 // 	win?.webContents.send("update-message", logMessage);
 // });
-// autoUpdater.on('update-downloaded', () => {
-// 	win?.webContents.send("update-message", "update-downloaded");
-// 	autoUpdater.quitAndInstall(true, true);
-// });
+autoUpdater.on('update-downloaded', () => {
+	// win?.webContents.send("update-message", "update-downloaded");
+	autoUpdater.quitAndInstall(true, true);
+});
 
 // Windows deep-link
 if (isWindows) {
