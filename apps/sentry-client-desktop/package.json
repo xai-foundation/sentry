@@ -1,11 +1,12 @@
 {
   "name": "@sentry/sentry-client-desktop",
   "author": "Xai Foundation",
-  "version": "0.1.181",
+  "version": "0.1.182",
   "private": true,
   "main": "dist-electron/main.js",
+  "repository": "https://github.com/xai-foundation/sentry",
   "scripts": {
-    "build": "tsc --build && vite build && electron-builder",
+    "build": "tsc --build && vite build && electron-builder -p never",
     "clean": "rimraf dist && rimraf dist-electron && rimraf release && rimraf public/web && rimraf tsconfig.tsbuildinfo && rimraf vite.config.js && rimraf vite.config.d.ts",
     "dev": "vite",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
