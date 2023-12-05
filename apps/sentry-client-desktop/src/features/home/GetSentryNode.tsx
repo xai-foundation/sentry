@@ -53,7 +53,7 @@ export function GetSentryNode() {
 			<div className="flex flex-col">
 				<div className="flex gap-1 items-center">
 					<h1 className="text-[40px] font-bold uppercase tracking-widest">
-						Get a Xai Sentry Node 0.1.172
+						Get a Xai Sentry Node 0.1.173
 					</h1>
 					<GetSentryNodeTooltip
 						width={436}
