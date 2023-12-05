@@ -46,7 +46,7 @@ export function GetSentryNode() {
 			<div className="flex flex-col">
 				<div className="flex gap-1 items-center">
 					<h1 className="text-[40px] font-bold uppercase tracking-widest">
-						Get a Xai Sentry Node 0.1.185
+						Get a Xai Sentry Node
 					</h1>
 					<GetSentryNodeTooltip
 						width={436}
@@ -75,6 +75,10 @@ export function GetSentryNode() {
 					>
 						I already own a key
 					</p>
+				</div>
+				
+				<div>
+					<span>{import.meta.env.APP_VERSION}</span>
 				</div>
 
 				<div className="flex flex-row items-center mt-[4.375rem]">
