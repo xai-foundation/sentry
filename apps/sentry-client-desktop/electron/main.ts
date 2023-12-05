@@ -21,7 +21,7 @@ autoUpdater.logger = log;
 // @ts-ignore
 autoUpdater.logger.transports.file.level = 'info';
 // autoUpdater.autoInstallOnAppQuit = true;
-// autoUpdater.autoRunAppAfterInstall = true;
+autoUpdater.autoRunAppAfterInstall = true;
 log.info('App starting...');
 
 // The built directory structure
