@@ -4,6 +4,7 @@ import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useSetAtom} from "jotai";
 import {AiOutlineInfoCircle} from "react-icons/ai";
 import {GetSentryNodeTooltip} from "@/features/keys/GetSentryNodeTooltip";
+import {useState} from "react";
 
 const body = [
 	{
@@ -25,6 +26,11 @@ const body = [
 
 export function GetSentryNode() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
+	const [errorMessage, setErrorMessage] = useState();
+
+	(window as any).deeplinks?.updateMessage((msg) => {
+		setErrorMessage(msg);
+	});
 
 	function getBody() {
 		return body.map((item, i) => {
@@ -75,6 +81,10 @@ export function GetSentryNode() {
 					>
 						I already own a key
 					</p>
+				</div>
+
+				<div>
+					<span>{errorMessage}</span>
 				</div>
 
 				<div className="flex flex-row items-center mt-[4.375rem]">
