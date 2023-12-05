@@ -24,6 +24,9 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm
 
+      - name: Set package version
+        run: pnpm pkg set version=${{ github.ref_name }} --prefix apps/sentry-client-desktop
+
       - name: Install dependencies
         run: pnpm install
 
