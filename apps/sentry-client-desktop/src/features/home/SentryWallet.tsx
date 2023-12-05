@@ -386,7 +386,7 @@ export function SentryWallet() {
 									<button
 										onClick={() => {
 											setModalState(ModalView.TransactionInProgress)
-											window.electron.openExternal(`http://localhost:8080/assign-wallet/${operatorAddress}`)
+											window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`)
 										}}
 										className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 									>
@@ -398,7 +398,7 @@ export function SentryWallet() {
 										disabled={selectedWallet === null}
 										onClick={() => {
 											setModalState(ModalView.TransactionInProgress)
-											window.electron.openExternal(`http://localhost:8080/unassign-wallet/${operatorAddress}`)
+											window.electron.openExternal(`https://sentry.xai.games/#/unassign-wallet/${operatorAddress}`)
 										}}
 										className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] ${selectedWallet === null ? 'text-[#D4D4D4] cursor-not-allowed' : ""} px-4 py-2`}
 									>

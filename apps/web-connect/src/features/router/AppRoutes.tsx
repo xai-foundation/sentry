@@ -1,4 +1,4 @@
-import {BrowserRouter, Navigate, Route, Routes} from 'react-router-dom';
+import {HashRouter as Router, Navigate, Route, Routes} from 'react-router-dom';
 import {QueryClient, QueryClientProvider} from "react-query";
 import {Checkout} from "../checkout";
 import {ConnectWallet} from "../wallet/routes/ConnectWallet.js";
@@ -10,7 +10,7 @@ export function AppRoutes() {
 	const queryClient = new QueryClient();
 
 	return (
-		<BrowserRouter>
+		<Router basename={"/"}>
 			<QueryClientProvider client={queryClient}>
 				<Header/>
 				<Routes>
@@ -21,6 +21,6 @@ export function AppRoutes() {
 					<Route path="*" element={<Navigate to="/" replace={true}/>}/>
 				</Routes>
 			</QueryClientProvider>
-		</BrowserRouter>
+		</Router>
 	);
 }
