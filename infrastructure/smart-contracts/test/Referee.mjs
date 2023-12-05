@@ -170,18 +170,13 @@ export function RefereeTests(deployInfrastructure) {
             const {referee, xai, xaiMinter} = await loadFixture(deployInfrastructure);
             const maxSupply = await xai.MAX_SUPPLY();
 
-            let previousEmissionAndTier = await referee.calculateChallengeEmissionAndTier();
-            let currentSupply = await referee.getCombinedTotalSupply();
-            let currentTier = maxSupply / BigInt(2);
-            let iterationCount = 0;
-
             let tokensToMint = [ethers.parseEther('1250000000')];
-            for (let i = 0; i < 29; i++) {
+            for (let i = 0; i < 23; i++) {
                 tokensToMint.push(tokensToMint[i] / BigInt(2));
             }
 
             let challengeAllocations = [BigInt('71347031963470319634703')];
-            for (let i = 0; i < 29; i++) {
+            for (let i = 0; i < 23; i++) {
                 challengeAllocations.push(challengeAllocations[i] / BigInt(2));
             }
         
@@ -210,7 +205,45 @@ export function RefereeTests(deployInfrastructure) {
             // compare the entire arrays
             expect(calculatedChallengeAllocations).to.deep.equal(challengeAllocations);
             expect(calculatedThresholds).to.deep.equal(tokensToMint);
+        })
 
+        it("Check calculateChallengeEmissionAndTier with a variance", async function() {
+            const {referee, xai, xaiMinter} = await loadFixture(deployInfrastructure);
+            this.timeout(1000 * 60 * 20);
+            const maxSupply = await xai.MAX_SUPPLY();
+
+            let tokensToMint = [ethers.parseEther('1250000000')];
+            for (let i = 0; i < 23; i++) {
+                tokensToMint.push(tokensToMint[i] / BigInt(2));
+            }
+
+            let challengeAllocations = [BigInt('71347031963470319634703')];
+            for (let i = 0; i < 23; i++) {
+                challengeAllocations.push(challengeAllocations[i] / BigInt(2));
+            }
+        
+            for (let i = 0; i < tokensToMint.length; i++) {
+
+                const amountInTier = tokensToMint[i];
+                const challengeAllocation = challengeAllocations[i];
+                const variance = BigInt(200);
+                const mintAmount = amountInTier / variance;
+
+                for (let k = 0; k < variance; k++) {
+
+                    console.log(i, k, mintAmount * (variance - BigInt(k)))
+
+                    // check the current variance
+                    const [_challengeAllocation, threshold] = await referee.calculateChallengeEmissionAndTier();
+                    expect(_challengeAllocation).to.be.eq(challengeAllocation);
+                    expect(threshold).to.be.eq(amountInTier);
+
+                    // mint the tokens to get to the next tier
+                    await xai.connect(xaiMinter).mint(xaiMinter.address, mintAmount);
+                    
+                }
+                
+            }
         })
 
         it("Check submitChallenge function", async function() {

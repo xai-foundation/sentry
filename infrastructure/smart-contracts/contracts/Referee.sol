@@ -309,7 +309,7 @@ contract Referee is Initializable, AccessControlEnumerableUpgradeable {
         require(maxSupply > totalSupply, "There are no more tiers, we are too close to the end");
 
         uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply)); // calculate which tier we are in starting from 0
-        require(tier < 30, "There are no more valuable tiers");
+        require(tier < 23, "There are no more accurate tiers");
 
         uint256 emissionTier = maxSupply / (2**(tier + 1)); // equal to the amount of tokens that are emitted during this tier
 
