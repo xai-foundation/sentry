@@ -371,6 +371,16 @@ contract NodeLicense is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     }
 
     /**
+     * @notice Returns the average cost of a NodeLicense token. This is primarily used for refunds.
+     * @param _tokenId The ID of the token.
+     * @return The average cost.
+     */
+    function getAverageCost(uint256 _tokenId) public view returns (uint256) {
+        require(_exists(_tokenId), "ERC721Metadata: Query for nonexistent token");
+        return _averageCost[_tokenId];
+    }
+
+    /**
      * @notice Returns the minting timestamp of a NodeLicense token.
      * @param _tokenId The ID of the token.
      * @return The minting timestamp.

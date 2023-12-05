@@ -63,7 +63,7 @@ async function main() {
   console.log("esXai Abi exported");
 
   // Add the esXai address to Xai
-  await xai.setEsXaiAddress(xaiAddress);
+  await xai.setEsXaiAddress(esXaiAddress);
   console.log("Set the esXai address in Xai for reverse redemption.");
 
   console.log("Deploying GasSubsidy...");

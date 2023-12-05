@@ -442,6 +442,25 @@ export const NodeLicenseAbi = [
   },
   {
     "type": "function",
+    "name": "getAverageCost",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": "_tokenId"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "getMintTimestamp",
     "constant": true,
     "stateMutability": "view",
