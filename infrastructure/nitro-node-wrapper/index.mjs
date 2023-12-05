@@ -2,7 +2,17 @@ import Docker from "dockerode";
 import fs from 'fs';
 import { Writable } from 'stream';
 import ethers from "ethers";
+import {Bucket, Storage} from "@google-cloud/storage";
 
+// create an instance of the bucket
+storage = new Storage({
+    projectId: process.env.PROJECT_ID,
+    credentials: {
+        client_email: process.env.SERVICE_ACCOUNT_EMAIL,
+        private_key: process.env.SERVICE_ACCOUNT_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    }
+});
+storage.Bucket(process.env.BUCKET_NAME)
 
 // configure a config for the docker container
 const config = {

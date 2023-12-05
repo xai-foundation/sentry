@@ -52,7 +52,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 	function startAssignment() {
 		if (!isOperatorLoading) {
 			setModalState(ModalView.TransactionInProgress);
-			window.electron.openExternal(`http://localhost:8080/assign-wallet/${operatorAddress}`);
+			window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`);
 		}
 	}
 
