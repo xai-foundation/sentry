@@ -72,6 +72,10 @@ async function main() {
     await extractAbi("esXai", esXai);
     console.log("esXai Abi exported");
 
+    // Add the esXai address to Xai
+    await xai.setEsXaiAddress(esXaiAddress);
+    console.log("Set the esXai address in Xai for reverse redemption.");
+
     console.log("Deploying GasSubsidy...");
     const GasSubsidy = await ethers.getContractFactory("GasSubsidy");
     const gasSubsidy = await upgrades.deployProxy(GasSubsidy, [], { deployer: deployer });
