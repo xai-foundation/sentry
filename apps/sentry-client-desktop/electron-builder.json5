@@ -3,7 +3,7 @@
  */
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "appId": "YourAppID",
+  "appId": "com.github.xaifoundation.sentry",
   "includeSubNodeModules": true,
   "asar": true,
   "productName": "Xai Sentry Node",
@@ -16,14 +16,15 @@
   ],
   "mac": {
     "target": [
-      "dmg"
+      "dmg",
+      "zip"
     ],
     "artifactName": "sentry-client-macos.${ext}",
     "icon": "public/xai.png"
   },
   "win": {
     "target": [
-      "portable"
+      "nsis"
     ],
     "artifactName": "sentry-client-windows.${ext}",
     "icon": "public/xai.ico"
@@ -42,8 +43,8 @@
   },
   "protocols": [
     {
-      name: "Xai Sentry",
-      schemes: ["xai-sentry"]
+      "name": "Xai Sentry",
+      "schemes": ["xai-sentry"]
     }
   ]
 }

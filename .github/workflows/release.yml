@@ -24,6 +24,9 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm
 
+      - name: Set package version
+        run: pnpm pkg set version=${{ github.ref_name }} --prefix apps/sentry-client-desktop
+
       - name: Install dependencies
         run: pnpm install
 
@@ -81,8 +84,13 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: |
+            release-sentry-client-desktop-macos-latest/latest-mac.yml
+            release-sentry-client-desktop-macos-latest/sentry-client-macos.dmg.blockmap
             release-sentry-client-desktop-macos-latest/sentry-client-macos.dmg
+            release-sentry-client-desktop-ubuntu-latest/latest-linux.yml
             release-sentry-client-desktop-ubuntu-latest/sentry-client-linux.AppImage
+            release-sentry-client-desktop-windows-latest/latest.yml
+            release-sentry-client-desktop-windows-latest/sentry-client-windows.exe.blockmap
             release-sentry-client-desktop-windows-latest/sentry-client-windows.exe
             release-cli-ubuntu-latest/sentry-node-cli-macos.zip
             release-cli-ubuntu-latest/sentry-node-cli-linux.zip
