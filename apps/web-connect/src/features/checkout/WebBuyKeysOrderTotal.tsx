@@ -1,10 +1,11 @@
 import {BiLoaderAlt} from "react-icons/bi";
-import {AiFillInfoCircle, AiOutlineClose} from "react-icons/ai";
+import {AiFillInfoCircle, AiOutlineClose, AiOutlineInfoCircle} from "react-icons/ai";
 import {useGetTotalSupplyAndCap} from "@/features/checkout/hooks/useGetTotalSupplyAndCap";
 import {Dispatch, SetStateAction, useState} from "react";
 import {ethers} from "ethers";
 import {CheckoutTierSummary, getPromoCode} from "@sentry/core";
 import {XaiCheckbox} from "@sentry/ui";
+import {KYCTooltip} from "@/features/checkout/KYCTooltip";
 
 interface PriceDataInterface {
 	price: bigint;
@@ -251,6 +252,11 @@ export function WebBuyKeysOrderTotal(
 									condition={checkboxThree}
 								>
 									I understand that I cannot claim rewards until I pass KYC
+									<KYCTooltip
+										width={452}
+									>
+										<AiOutlineInfoCircle size={16} className="text-[#A3A3A3]"/>
+									</KYCTooltip>
 								</XaiCheckbox>
 							</div>
 
