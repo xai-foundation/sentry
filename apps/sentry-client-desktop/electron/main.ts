@@ -209,6 +209,7 @@ autoUpdater.on('download-progress', (progressObj) => {
 });
 autoUpdater.on('update-downloaded', () => {
 	win?.webContents.send("update-message", "update-downloaded");
+	autoUpdater.quitAndInstall(false);
 });
 
 // Windows deep-link
