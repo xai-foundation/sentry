@@ -5,7 +5,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const config = {
-  defaultNetwork: "arbitrumGoerli",
+  defaultNetwork: "arbitrumOne",
   solidity: {
     version: "0.8.9",
     settings: {
@@ -40,7 +40,7 @@ const config = {
       gasPrice: 20000000000,
     },
     arbitrumOne: {
-      url: "https://arb1.arbitrum.io/rpc",
+      url: "https://fabled-tiniest-pool.arbitrum-mainnet.quiknode.pro/46587f636c27695db308156027daa8a5ad621050/",
       accounts: {
         mnemonic: process.env.MNEMONIC,
         count: 30,
