@@ -169,7 +169,6 @@ export function RefereeTests(deployInfrastructure) {
         it("Check calculateChallengeEmissionAndTier", async function() {
             const {referee, xai, xaiMinter} = await loadFixture(deployInfrastructure);
             const maxSupply = await xai.MAX_SUPPLY();
-    
 
             let previousEmissionAndTier = await referee.calculateChallengeEmissionAndTier();
             let currentSupply = await referee.getCombinedTotalSupply();
@@ -187,18 +186,31 @@ export function RefereeTests(deployInfrastructure) {
             }
         
             let calculatedChallengeAllocations = [];
+            let calculatedThresholds = [];
+            let totalSupplies = [];
+            await xai.connect(xaiMinter).mint(xaiMinter.address, 1);
             for (let i = 0; i < tokensToMint.length; i++) {
                 
                 // calculate the ChallengeEmissionAndTier
                 const [_challengeAllocation, threshold] = await referee.calculateChallengeEmissionAndTier();
+                const totalSupply = await referee.getCombinedTotalSupply();
                 calculatedChallengeAllocations.push(_challengeAllocation);
+                calculatedThresholds.push(threshold);
+                totalSupplies.push(totalSupply);
+
 
                 // mint the tokens to get to the next tier
                 await xai.connect(xaiMinter).mint(xaiMinter.address, tokensToMint[i]);
             }
 
+            for (let i = 0; i < calculatedChallengeAllocations.length; i++) {
+                console.log(i, totalSupplies[i], calculatedThresholds[i], calculatedChallengeAllocations[i]);
+            }
+
             // compare the entire arrays
             expect(calculatedChallengeAllocations).to.deep.equal(challengeAllocations);
+            expect(calculatedThresholds).to.deep.equal(tokensToMint);
+
         })
 
         it("Check submitChallenge function", async function() {
