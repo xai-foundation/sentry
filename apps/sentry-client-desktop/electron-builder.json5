@@ -23,7 +23,7 @@
   },
   "win": {
     "target": [
-      "portable"
+      "nsis"
     ],
     "artifactName": "sentry-client-windows.${ext}",
     "icon": "public/xai.ico"
