@@ -83,7 +83,7 @@ export function GetSentryNode() {
 		<div className="w-full flex flex-row items-center justify-between px-[2.8rem] pt-[5.625rem]">
 			<div className="flex flex-col">
 				<h1 className="text-[40px] font-bold uppercase tracking-widest">
-					Get a Xai Sentry Node Update 0.1.167
+					Get a Xai Sentry Node Update 0.1.168
 				</h1>
 
 				<span className="text-xl font-semibold mt-[8.5rem]">
