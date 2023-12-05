@@ -97,7 +97,7 @@ export function useChainDataWithCallback() {
 				combinedWalletsKycMap,
 			};
 		});
-	}, [combinedWalletsKycMap, owners]);
+	}, [JSON.stringify(combinedWalletsKycMap), owners]);
 
 	// return licensesMap & combinedLicensesMap
 	useEffect(() => {
