@@ -76,10 +76,6 @@ export function GetSentryNode() {
 						I already own a key
 					</p>
 				</div>
-				
-				<div>
-					<span>{import.meta.env.APP_VERSION}</span>
-				</div>
 
 				<div className="flex flex-row items-center mt-[4.375rem]">
 					{getBody()}
