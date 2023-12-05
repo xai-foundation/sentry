@@ -51,17 +51,8 @@ export function KycRequiredCard({wallet, status}: KycRequiredCardProps) {
 					<IconLabel
 						icon={BsHourglassBottom}
 						color="#F59E28"
-						title={`KYC pending: ${clampAddress(wallet, 5)}`}
+						title={`KYC pending: ${clampAddress(wallet, 10)}`}
 					/>
-
-					<p className="text-[15px] text-[#525252] mt-3">
-						You must pass KYC within 180 days of accruing esXAI to claim accrued node rewards. Check back in
-						48 hours if all docs submitted. Check your inbox (including spam) for updates. For KYC issues,
-						contact<a
-						className="text-[#F30919] cursor-pointer"
-						onClick={() => window.electron.openExternal(`https://help.blockpass.org/hc/en-us/requests/new`)}
-					> Blockpass</a>. If not completed, continue submission here.
-					</p>
 
 					<Blockpass onClick={onStartKyc}>
 						Continue KYC
@@ -73,7 +64,7 @@ export function KycRequiredCard({wallet, status}: KycRequiredCardProps) {
 				<IconLabel
 					icon={AiFillCheckCircle}
 					color="#16A34A"
-					title={`KYC complete: ${clampAddress(wallet, 5)}`}
+					title={`KYC complete: ${clampAddress(wallet, 10)}`}
 				/>
 			)}
 		</SquareCard>

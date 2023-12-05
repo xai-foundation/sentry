@@ -96,8 +96,13 @@ export function ActionsRequiredNotAccruingDrawer() {
 									color="#F59E28"
 									title="At least one wallet has unclaimable esXAI"
 								/>
-								<p className="text-[15px] text-[#924012] mt-2">
-									You are currently not accruing esXAI on at least one assigned wallet:
+								<p className="text-[15px] text-[#525252] mt-3">
+									You must pass KYC within 180 days of accruing esXAI to claim accrued node rewards. Check back in
+									48 hours if all docs submitted. Check your inbox (including spam) for updates. For KYC issues,
+									contact<a
+									className="text-[#F30919] cursor-pointer"
+									onClick={() => window.electron.openExternal(`https://help.blockpass.org/hc/en-us/requests/new`)}
+								> Blockpass</a>. If not completed, continue submission here.
 								</p>
 							</SquareCard>
 						) : (
