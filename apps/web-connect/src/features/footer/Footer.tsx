@@ -18,7 +18,7 @@ const bodyContent = {
 		},
 		{
 			label: "Gitbook",
-			link: "https://xai-foundation.gitbook.io/xai-network/xai-blockchain/welcome-to-xai",
+			link: "https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup",
 			icon: <SiGitbook size={24}/>,
 		},
 		{
