@@ -10,7 +10,6 @@ import {ImportSentryDrawer} from "../home/modals/ImportSentryDrawer";
 export enum DrawerView {
 	ActionsRequiredBuy,
 	ActionsRequiredNotAccruing,
-	ActionsRequiredCompleteKyc,
 	BuyKeys,
 	ViewKeys,
 	ImportSentry,

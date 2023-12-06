@@ -145,7 +145,12 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 							<div className="relative flex items-center gap-2">
 								<YellowPulse/>
 								KYC required
-								<BlockPassKYC onClick={() => onStartKyc(owner)}/>
+								<BlockPassKYC
+									onClick={() => {
+										setDrawerState(DrawerView.ActionsRequiredNotAccruing)
+										onStartKyc(owner)
+									}}
+								/>
 							</div>
 						)}
 
@@ -153,7 +158,11 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 							<div className="relative flex items-center gap-2">
 								<YellowPulse/>
 								KYC required
-								<BlockPassKYC>Continue</BlockPassKYC>
+								<BlockPassKYC
+									onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}
+								>
+									Continue
+								</BlockPassKYC>
 							</div>
 						)}
 
@@ -309,7 +318,8 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 									{isBalancesLoading ? (
 										<BiLoaderAlt className="animate-spin w-[18px]" color={"#A3A3A3"}/>) : (
 										<p className="flex text-[#A3A3A3] text-[12px]">
-											Last updated: {lastTrueTimestamp ? lastTrueTimestamp.toLocaleString() : "N/A"}
+											Last
+											updated: {lastTrueTimestamp ? lastTrueTimestamp.toLocaleString() : "N/A"}
 										</p>
 									)}
 								</div>
