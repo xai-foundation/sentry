@@ -8,6 +8,7 @@ import {Header} from "@/features/header/Header";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {BiLoaderAlt} from "react-icons/bi";
+import {Footer} from "@/features/footer/Footer";
 
 enum IpBanType {
 	INVALID_IP = "INVALID_IP",
@@ -87,6 +88,7 @@ export function AppRoutes() {
 						<Route path="/unassign-wallet/:operatorAddress" element={<UnassignWallet/>}/>
 						<Route path="*" element={<Navigate to="/" replace={true}/>}/>
 					</Routes>
+					<Footer/>
 				</QueryClientProvider>
 			</Router>
 		);

@@ -56,7 +56,7 @@ export function Checkout() {
 
 	return (
 		<div>
-			<div className="h-screen flex flex-col justify-center items-center">
+			<div className="h-full min-h-[90vh] flex flex-col justify-center items-center">
 				<XaiBanner/>
 
 				{isLoading && (
