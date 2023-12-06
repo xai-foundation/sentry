@@ -26,6 +26,8 @@
     "target": [
       "nsis"
     ],
+    "publisherName": "Xai Foundation",
+    "verifyUpdateCodeSignature": false,
     "artifactName": "sentry-client-windows.${ext}",
     "icon": "public/xai.ico"
   },
