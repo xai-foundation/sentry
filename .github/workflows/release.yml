@@ -9,7 +9,7 @@ jobs:
   build:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-2019]
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -106,9 +106,9 @@ jobs:
             release-sentry-client-desktop-macos-latest/sentry-client-macos.dmg
             release-sentry-client-desktop-ubuntu-latest/latest-linux.yml
             release-sentry-client-desktop-ubuntu-latest/sentry-client-linux.AppImage
-            release-sentry-client-desktop-windows-latest/latest.yml
-            release-sentry-client-desktop-windows-latest/sentry-client-windows.exe.blockmap
-            release-sentry-client-desktop-windows-latest/sentry-client-windows.exe
+            release-sentry-client-desktop-windows-2019/latest.yml
+            release-sentry-client-desktop-windows-2019/sentry-client-windows.exe.blockmap
+            release-sentry-client-desktop-windows-2019/sentry-client-windows.exe
             release-cli-ubuntu-latest/sentry-node-cli-macos.zip
             release-cli-ubuntu-latest/sentry-node-cli-linux.zip
             release-cli-ubuntu-latest/sentry-node-cli-windows.zip
