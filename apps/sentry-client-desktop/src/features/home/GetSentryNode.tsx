@@ -26,10 +26,11 @@ const body = [
 
 export function GetSentryNode() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const [m, setM] = useState("no error");
+	const [message, setMessage] = useState("no error");
 
-	(window as any).deeplinks?.updateMessage((mess) => {
-		setM(mess);
+	(window as any).deeplinks?.updateMessage((mess: any) => {
+		console.log("asdfasdfasdfasdf:", mess);
+		setMessage(mess);
 	});
 
 	function getBody() {
@@ -84,7 +85,7 @@ export function GetSentryNode() {
 				</div>
 
 				<div>
-					<span>{m}</span>
+					<span>{JSON.stringify(message)}</span>
 				</div>
 				
 				<div className="flex flex-row items-center mt-[4.375rem]">
