@@ -21,7 +21,7 @@ function sign(configuration) {
     // then replacing the original file with the signed file.
     const tempFile = path.join(TEMP_DIR, name);
     const setDir = `cd ../../infrastructure/CodeSignTool-v1.3.0-windows`;
-    const signFile = `CodeSignTool sign -input_file_path="${configuration.path}" -output_dir_path="${TEMP_DIR}" -username="${USER_NAME}" -password="${USER_PASSWORD}" -totp_secret="${USER_TOTP}"`;
+    const signFile = `java -jar .\jar\code_sign_tool-1.3.0.jar sign -input_file_path="${configuration.path}" -output_dir_path="${TEMP_DIR}" -username="${USER_NAME}" -password="${USER_PASSWORD}" -totp_secret="${USER_TOTP}"`;
     const moveFile = `mv "${tempFile}" "${dir}"`;
     childProcess.execSync(`${setDir} && ${signFile} && ${moveFile}`, { stdio: 'inherit' });
   } else {
