@@ -21,7 +21,8 @@ export function Sidebar() {
 
 	return (
 		<div
-			className="sticky h-full w-[14.625rem] min-w-[14.625rem] bg-white border-r border-gray-200 text-[15px] p-4 z-10">
+			className="flex flex-col justify-between sticky h-full w-[14.625rem] min-w-[14.625rem] bg-white border-r border-gray-200 text-[15px] p-4 z-10"
+		>
 			<div className="fixed h-full flex flex-col gap-5">
 				<div
 					className="flex items-center gap-2 text-base font-semibold cursor-pointer"
@@ -92,6 +93,11 @@ export function Sidebar() {
 						<RiTwitterXFill size={15}/> X
 					</a>
 				</div>
+			</div>
+
+			<div/>
+			<div>
+				<p>v{import.meta.env.APP_VERSION}</p>
 			</div>
 		</div>
 	);
