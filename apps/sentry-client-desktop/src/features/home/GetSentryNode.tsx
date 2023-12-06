@@ -28,7 +28,7 @@ export function GetSentryNode() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const [message, setMessage] = useState("no error");
 
-	(window as any).deeplinks?.updateMessage((mess: any) => {
+	(window as any).deeplinks?.updateMessage((_e, mess: any) => {
 		console.log("asdfasdfasdfasdf:", mess);
 		setMessage(mess);
 	});
