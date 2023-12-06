@@ -29,7 +29,7 @@ export function GetSentryNode() {
 	const [m, setM] = useState("no error");
 
 	(window as any).deeplinks?.updateMessage((mess) => {
-		setM(mess);
+		setM(mess.message);
 	});
 
 	function getBody() {
