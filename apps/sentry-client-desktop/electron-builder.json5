@@ -19,7 +19,7 @@
       "dmg",
       "zip"
     ],
-    "artifactName": "sentry-client-macos-${version}.${ext}",
+    "artifactName": "sentry-client-macos.${ext}",
     "icon": "public/xai.png"
   },
   "win": {
@@ -28,7 +28,7 @@
     ],
     "publisherName": "Xai Foundation",
     "verifyUpdateCodeSignature": false,
-    "artifactName": "sentry-client-windows-${version}.${ext}",
+    "artifactName": "sentry-client-windows.${ext}",
     "icon": "public/xai.ico"
   },
   "nsis": {
@@ -41,7 +41,7 @@
     "target": [
       "AppImage"
     ],
-    "artifactName": "sentry-client-linux-${version}.${ext}"
+    "artifactName": "sentry-client-linux.${ext}"
   },
   "protocols": [
     {
