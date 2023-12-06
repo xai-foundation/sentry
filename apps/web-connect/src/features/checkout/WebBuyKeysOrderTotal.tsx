@@ -89,6 +89,8 @@ export function WebBuyKeysOrderTotal(
 			});
 	}
 
+	const displayPricesMayVary = (getPriceData?.nodesAtEachPrice?.filter((node) => node.quantity !== 0n) ?? []).length >= 2;
+
 	return (
 		<div>
 			{isPriceLoading || isTotalLoading || !getPriceData
@@ -129,7 +131,7 @@ export function WebBuyKeysOrderTotal(
 									</>
 								)}
 
-								{getPriceData && getPriceData.nodesAtEachPrice.length > 1 && (
+								{displayPricesMayVary && (
 									<div className="w-full flex flex-col bg-[#F5F5F5] px-5 py-4 gap-2 mb-4">
 										<div className="flex items-center gap-2 font-semibold">
 											<AiFillInfoCircle className="w-[20px] h-[20px] text-[#3B82F6]"/>

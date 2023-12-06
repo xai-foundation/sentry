@@ -32,21 +32,14 @@ export function AppRoutes() {
 	const [loading, setLoading] = useState(true)
 
 	useEffect(() => {
-		console.log("running");
 		void checkIp();
 	}, [location.pathname]);
 
 	async function checkIp() {
 		try {
 			const {data} = await axios.post(`https://centralized-services.expopulus.com/check-ip`);
-
-			console.log("data", data);
-
 			const invalidIp = data.reasons?.find(({type}: checkIpProps) => type === "INVALID_IP");
 			const ofacSanction = data.reasons?.find(({type, geoBanType}: checkIpProps) => type === "GEO" && geoBanType === "OFAC_SANCTIONS");
-
-			console.log("invalidIp", invalidIp)
-			console.log("ofacSanction", ofacSanction)
 
 			if (!invalidIp || !ofacSanction) {
 				setBlocked(false);
