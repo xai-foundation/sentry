@@ -41,7 +41,7 @@ export function Checkout() {
 		abi: NodeLicenseAbi,
 		functionName: "mint",
 		args: [quantity, promoCode],
-		value: discount.applied ? getPriceData!.price * BigInt(95) / BigInt(100) : getPriceData?.price,
+		value: getPriceData && discount.applied ? getPriceData.price * BigInt(95) / BigInt(100) : getPriceData?.price,
 		onSuccess(data) {
 			window.location = `xai-sentry://purchase-successful?txHash=${data.hash}` as unknown as Location;
 		},
@@ -107,7 +107,8 @@ export function Checkout() {
 										Xai Sentry Node Key
 									</p>
 									<Tooltip
-										body={"Xai keys are required for nodes to earn $XAI network rewards."}
+										header={"Xai keys are required for nodes to receive $esXAI network rewards."}
+										body={"All purchases must be made in Arbitrum ETH."}
 										width={452}
 									>
 										<AiOutlineInfoCircle size={16} className="text-[#A3A3A3]"/>

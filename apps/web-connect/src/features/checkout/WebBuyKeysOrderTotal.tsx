@@ -1,5 +1,5 @@
 import {BiLoaderAlt} from "react-icons/bi";
-import {AiFillInfoCircle, AiOutlineClose, AiOutlineInfoCircle} from "react-icons/ai";
+import {AiFillInfoCircle, AiOutlineClose} from "react-icons/ai";
 import {useGetTotalSupplyAndCap} from "@/features/checkout/hooks/useGetTotalSupplyAndCap";
 import {Dispatch, SetStateAction, useState} from "react";
 import {ethers} from "ethers";
@@ -253,9 +253,9 @@ export function WebBuyKeysOrderTotal(
 								>
 									I understand that I cannot claim rewards until I pass KYC
 									<KYCTooltip
-										width={452}
+										width={850}
 									>
-										<AiOutlineInfoCircle size={16} className="text-[#A3A3A3]"/>
+										<p className="text-[#F30919]">(SEE LIST OF COUNTRIES)</p>
 									</KYCTooltip>
 								</XaiCheckbox>
 							</div>

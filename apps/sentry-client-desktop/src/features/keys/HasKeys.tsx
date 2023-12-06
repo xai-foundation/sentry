@@ -315,13 +315,12 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 								?
 								<div className={`flex gap-1 items-center`}>
 									{ethers.formatEther(Object.values(balances).reduce((acc, value) => acc + value.totalAccruedEsXai, BigInt(0)))}
-									{isBalancesLoading ? (
-										<BiLoaderAlt className="animate-spin w-[18px]" color={"#A3A3A3"}/>) : (
-										<p className="flex text-[#A3A3A3] text-[12px]">
-											Last
-											updated: {lastTrueTimestamp ? lastTrueTimestamp.toLocaleString() : "N/A"}
-										</p>
-									)}
+
+									<p className="flex items-center text-[#A3A3A3] text-[12px] ml-1">
+										Last
+										updated: {!isBalancesLoading && lastTrueTimestamp ? lastTrueTimestamp.toLocaleString() :
+										<BiLoaderAlt className="animate-spin w-[18px]" color={"#A3A3A3"}/>}
+									</p>
 								</div>
 								: "Loading..."
 							}
@@ -339,6 +338,8 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 								<th className="w-full max-w-[360px] px-4 py-2">OWNER ADDRESS</th>
 								<th className="w-full max-w-[270px] px-4 py-2">STATUS</th>
 								<th className="w-full max-w-[360px] px-4 py-2 flex items-center justify-end gap-1">
+									{isBalancesLoading &&
+                                        <BiLoaderAlt className="animate-spin w-[18px]" color={"#A3A3A3"}/>}
 									ACCRUED esXAI
 								</th>
 								<th className="w-full max-w-[150px] px-4 py-2">OPENSEA URL</th>
