@@ -3,7 +3,7 @@ import {NoKeys} from "./NoKeys.js";
 import {AiOutlineInfoCircle} from "react-icons/ai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useAtom, useAtomValue} from "jotai";
-import {Tooltip} from "../../../../../packages/ui/src/features/tooltip/Tooltip";
+import {Tooltip} from "@sentry/ui";
 import {RiKey2Line} from "react-icons/ri";
 import {BiLoaderAlt} from "react-icons/bi";
 import {chainStateAtom, useChainDataRefresh} from "@/hooks/useChainDataWithCallback";

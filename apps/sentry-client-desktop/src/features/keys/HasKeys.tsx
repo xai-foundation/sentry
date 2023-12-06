@@ -301,7 +301,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					</div>
 					<div className="flex items-center gap-2 font-semibold">
 						<XaiLogo/>
-						<p className="text-3xl">
+						<div className="text-3xl">
 							{balances
 								?
 								<div className={`flex gap-1 items-center`}>
@@ -315,7 +315,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 								</div>
 								: "Loading..."
 							}
-						</p>
+						</div>
 					</div>
 				</div>
 
