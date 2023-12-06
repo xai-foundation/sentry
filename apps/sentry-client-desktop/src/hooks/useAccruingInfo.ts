@@ -79,7 +79,7 @@ export function useAccruingInfo() {
 				balancesFetchedLast,
 			}
 		});
-	}, [balancesFetchedLast, isBalancesLoading]);
+	}, [isBalancesLoading]);
 
 	// return funded
 	useEffect(() => {
