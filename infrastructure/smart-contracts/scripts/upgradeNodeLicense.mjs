@@ -1,4 +1,4 @@
-const address = "0x2DBdA974Fb90e6eB19F4FCce82BC3A9Cf4a0Fd74";
+const address = "0xbc14d8563b248B79689ECbc43bBa53290e0b6b66";
 
 async function main() {
     const NodeLicense2 = await ethers.getContractFactory("NodeLicense2");
