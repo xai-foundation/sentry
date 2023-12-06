@@ -260,7 +260,7 @@ export function WebBuyKeysOrderTotal(
 									<KYCTooltip
 										width={850}
 									>
-										<p className="text-[#F30919]">(SEE LIST OF COUNTRIES)</p>
+										<p className="text-[#F30919]">(SEE BLOCKED COUNTRIES)</p>
 									</KYCTooltip>
 								</XaiCheckbox>
 							</div>

@@ -1,4 +1,3 @@
-import {Link} from "react-router-dom";
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo-full.svg";
 import {FaDiscord, FaTelegram} from "react-icons/fa";
 import {SiGitbook} from "react-icons/si";
@@ -70,13 +69,12 @@ export function Footer() {
 
 						<div className="flex items-center gap-2">
 							<p className="hidden md:inline">|</p>
-
-							<Link
-								to="/sentrynodeagreement"
+							<a
 								className="text-blue-500 hover:underline"
+								onClick={() => window.open("https://xai.games/sentrynodeagreement/", "_blank", "noopener noreferrer")}
 							>
 								Sentry Node Agreement
-							</Link>
+							</a>
 						</div>
 					</div>
 
