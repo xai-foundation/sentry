@@ -30,6 +30,7 @@
     "publisherName": "Xai Foundation",
     "certificateSha1": "106ce922014c69efb83bb9b82cbc2ea8b13a20c4",
     "signAndEditExecutable": true,
+    "verifyUpdateCodeSignature": true
     "artifactName": "sentry-client-windows.${ext}",
     "icon": "public/xai.ico"
   },
