@@ -26,7 +26,6 @@
     "target": [
       "nsis"
     ],
-    "certificateSubjectName": "xai foundation",
     "artifactName": "sentry-client-windows.${ext}",
     "icon": "public/xai.ico"
   },

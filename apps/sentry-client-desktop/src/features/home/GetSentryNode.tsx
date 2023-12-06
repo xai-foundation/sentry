@@ -25,6 +25,11 @@ const body = [
 
 export function GetSentryNode() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
+	const [m, setM] = useState("no error");
+
+	(window as any).deeplinks?.updateMessage((mess) => {
+		setM(mess);
+	});
 
 	function getBody() {
 		return body.map((item, i) => {
@@ -75,6 +80,10 @@ export function GetSentryNode() {
 					>
 						I already own a key
 					</p>
+				</div>
+
+				<div>
+					<span>{m}</span>
 				</div>
 				
 				<div className="flex flex-row items-center mt-[4.375rem]">
