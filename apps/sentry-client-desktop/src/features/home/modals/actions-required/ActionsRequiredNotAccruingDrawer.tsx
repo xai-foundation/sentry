@@ -46,7 +46,7 @@ export function ActionsRequiredNotAccruingDrawer() {
 				</div>
 			</div>
 
-			<div className="p-5">
+			<div className="py-5 px-3">
 				<div>
 					{accruing ? (
 						<SquareCard className="bg-[#DCFCE7]">

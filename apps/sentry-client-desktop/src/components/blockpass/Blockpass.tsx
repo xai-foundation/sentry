@@ -18,7 +18,9 @@ export function Blockpass({onClick = () => {}, children = "Begin KYC"}: PropsWit
 				selectedCountry === "HK" || //Hong Kong
 				selectedCountry === "MK" || //Macedonia
 				selectedCountry === "RO" || //Romania
-				selectedCountry === "TR" 	//Turkey
+				selectedCountry === "RU" ||	//Russia
+				selectedCountry === "TR" ||	//Turkey
+				selectedCountry === "UA" 	//Ukraine
 			) {
 				onClick?.();
 				return window.electron.openExternal(`https://verify-with.blockpass.org/?clientId=xai_sentry_node__edd_60145`);

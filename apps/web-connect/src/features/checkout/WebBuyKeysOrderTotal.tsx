@@ -136,13 +136,16 @@ export function WebBuyKeysOrderTotal(
 										<div className="flex items-center gap-2 font-semibold">
 											<AiFillInfoCircle className="w-[20px] h-[20px] text-[#3B82F6]"/>
 											<p className="text-[15px]">
-												Prices may vary
+												Your transaction may be reverted
 											</p>
 										</div>
 										<p className="text-sm">
-											Xai Sentry Node Key prices vary depending on the quantity
-											of remaining supply. In general, as the quantity of available keys
-											decreases, the price of a key will increase.
+											Xai Sentry Node Key prices vary depending on the quantity of remaining
+											supply. In general, as the quantity of available keys decreases, the price
+											of a key will increase. If you purchase more Keys than are available in the
+											current pricing tier, the transaction may revert. We recommend splitting the
+											purchase into two transactions - one for the current pricing tier and
+											another in the next pricing tier.
 										</p>
 									</div>
 								)}
