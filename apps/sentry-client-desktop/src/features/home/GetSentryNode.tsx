@@ -4,6 +4,7 @@ import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useSetAtom} from "jotai";
 import {AiOutlineInfoCircle} from "react-icons/ai";
 import {GetSentryNodeTooltip} from "@/features/keys/GetSentryNodeTooltip";
+import {useState} from "react";
 
 const body = [
 	{
