@@ -4,7 +4,7 @@ import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useSetAtom} from "jotai";
 import {AiOutlineInfoCircle} from "react-icons/ai";
 import {GetSentryNodeTooltip} from "@/features/keys/GetSentryNodeTooltip";
-import {useState} from "react";
+// import {useState} from "react";
 
 const body = [
 	{
@@ -26,12 +26,12 @@ const body = [
 
 export function GetSentryNode() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const [message, setMessage] = useState("no error");
+	// const [message, setMessage] = useState("no error");
 
-	(window as any).deeplinks?.updateMessage((_e, mess: any) => {
-		console.log("asdfasdfasdfasdf:", mess);
-		setMessage(mess);
-	});
+	// (window as any).deeplinks?.updateMessage((_e, mess: any) => {
+	// 	console.log("asdfasdfasdfasdf:", mess);
+	// 	setMessage(mess);
+	// });
 
 	function getBody() {
 		return body.map((item, i) => {
@@ -84,9 +84,9 @@ export function GetSentryNode() {
 					</p>
 				</div>
 
-				<div>
+				{/* <div>
 					<span>{JSON.stringify(message)}</span>
-				</div>
+				</div> */}
 				
 				<div className="flex flex-row items-center mt-[4.375rem]">
 					{getBody()}
