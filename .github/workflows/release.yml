@@ -20,6 +20,12 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 18
+      
+      - name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: '11.0.2'
+        if: matrix.os == 'windows-latest'
 
       - name: Install pnpm
         run: npm install -g pnpm
@@ -34,6 +40,9 @@ jobs:
         run: pnpm run build
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WINDOWS_SIGN_USER_NAME: ${{ secrets.SSL_USERNAME }}
+          WINDOWS_SIGN_USER_PASSWORD: ${{ secrets.SSL_PASSWORD }}
+          WINDOWS_SIGN_USER_TOTP: ${{ secrets.SSL_TOTP_SECRET }}
 
       - name: Upload sentry-client-desktop artifacts
         uses: actions/upload-artifact@v2
@@ -72,13 +81,27 @@ jobs:
           user_email: 41898282+github-actions[bot]@users.noreply.github.com
         if: matrix.os == 'ubuntu-latest'
 
-  release:
+  sign-and-release:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v2
+
+      # - name: Create Directory For Signed Build
+      #   shell: bash
+      #   run: mkdir release-sentry-client-desktop-windows-latest/signed_builds
+
+      # - name: Sign build
+      #   uses: sslcom/actions-codesigner@develop
+      #   with:
+      #     command: sign
+      #     username: ${{ secrets.SSL_USERNAME }}
+      #     password: ${{ secrets.SSL_PASSWORD }}
+      #     totp_secret: ${{ secrets.SSL_TOTP_SECRET }}
+      #     file_path: release-sentry-client-desktop-windows-latest/sentry-client-windows.exe
+      #     output_path: release-sentry-client-desktop-windows-latest/signed_builds
 
       - name: Release
         uses: softprops/action-gh-release@v1
