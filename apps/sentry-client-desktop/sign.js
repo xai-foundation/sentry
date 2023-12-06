@@ -4,7 +4,7 @@ const childProcess = require('child_process');
 
 const TEMP_DIR = path.join(__dirname, 'release', 'temp');
 
-if (!fs.statSync(TEMP_DIR).isDirectory()) {
+if (!fs.existsSync(TEMP_DIR)) {
   fs.mkdirSync(TEMP_DIR);
 }
 
