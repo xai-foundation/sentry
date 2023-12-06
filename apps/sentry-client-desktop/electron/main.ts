@@ -185,13 +185,13 @@ app.on('ready', async () => {
 	server.listen(8080);
 });
 
-app.on('ready', function()  {
-	autoUpdater.checkForUpdatesAndNotify();
-});
+// app.on('ready', function()  {
+// 	autoUpdater.checkForUpdatesAndNotify();
+// });
 
-setInterval(() => {
-    autoUpdater.checkForUpdatesAndNotify();
-}, 1000 * 60 * 5);
+// setInterval(() => {
+//     autoUpdater.checkForUpdatesAndNotify();
+// }, 1000 * 60 * 5);
 
 // autoUpdater.on('checking-for-update', () => {
 // 	win?.webContents.send("update-message", "checking-for-update");

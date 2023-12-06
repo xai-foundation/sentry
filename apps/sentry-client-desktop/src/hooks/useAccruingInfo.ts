@@ -5,13 +5,14 @@ import {recommendedFundingBalance} from "@/features/home/SentryWallet";
 import {AccruedBalanceMap, useGetAccruedEsXaiBulk} from "@/hooks/useGetAccruedEsXaiBulk";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
 import {atom, useAtom, useAtomValue} from "jotai";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 
 interface AccruingState {
 	funded: boolean | undefined;
 	accruing: boolean | undefined;
 	balances: AccruedBalanceMap;
 	isBalancesLoading: boolean;
+	balancesFetchedLast: null | Date
 	hasAssignedKeys: boolean;
 	kycRequired: boolean;
 }
@@ -21,6 +22,7 @@ const defaultAccruingState: AccruingState = {
 	accruing: false,
 	balances: {},
 	isBalancesLoading: false,
+	balancesFetchedLast: null,
 	hasAssignedKeys: false,
 	kycRequired: true,
 }
@@ -40,6 +42,7 @@ export function useAccruingInfo() {
 
 	const funded = balance && balance.wei !== undefined && balance.wei >= recommendedFundingBalance;
 	const accruing = sentryRunning && funded && Object.keys(licensesMap).length > 0;
+	const [balancesFetchedLast, setBalancesFetchedLast] = useState<null | Date>(null);
 
 	// set default state
 	useEffect(() => {
@@ -65,6 +68,18 @@ export function useAccruingInfo() {
 			}
 		});
 	}, [balances]);
+
+	useEffect(() => {
+		setAccruingState((_accruingState) => {
+			if (isBalancesLoading) {
+				setBalancesFetchedLast(new Date());
+			}
+			return {
+				..._accruingState,
+				balancesFetchedLast,
+			}
+		});
+	}, [isBalancesLoading]);
 
 	// return funded
 	useEffect(() => {

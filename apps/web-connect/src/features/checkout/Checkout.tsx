@@ -41,10 +41,7 @@ export function Checkout() {
 		abi: NodeLicenseAbi,
 		functionName: "mint",
 		args: [quantity, promoCode],
-		value: discount.applied ? getPriceData!.price * BigInt(95) / BigInt(100) : getPriceData?.price,
-		onSuccess(data) {
-			window.location = `xai-sentry://purchase-successful?txHash=${data.hash}` as unknown as Location;
-		},
+		value: getPriceData && discount.applied ? getPriceData.price * BigInt(95) / BigInt(100) : getPriceData?.price,
 		onError(error) {
 			console.warn("Error", error);
 		},
@@ -56,7 +53,7 @@ export function Checkout() {
 
 	return (
 		<div>
-			<div className="h-screen flex flex-col justify-center items-center">
+			<div className="h-full min-h-[90vh] flex flex-col justify-center items-center">
 				<XaiBanner/>
 
 				{isLoading && (
@@ -68,7 +65,7 @@ export function Checkout() {
 					</div>
 				)}
 
-				{isSuccess && (
+				{!isSuccess && (
 					<div
 						className="flex flex-col justify-center items-center w-[744px] h-[320px] border border-gray-200 bg-white m-4">
 						<div
@@ -90,11 +87,20 @@ export function Checkout() {
 							>
 								Return to Xai Client
 							</button>
+							<div className="text-[15px] mt-1">
+								Haven't installed Xai Client yet?
+								<a
+									onClick={() => window.open("https://xai.games/sentrynodes/", "_blank", "noopener noreferrer")}
+									className="text-[#F30919] ml-1 cursor-pointer"
+								>
+									Click here to download and run a node.
+								</a>
+							</div>
 						</div>
 					</div>
 				)}
 
-				{!isLoading && !isSuccess && (
+				{!isLoading && isSuccess && (
 					<div className="w-[744px] h-auto flex flex-col justify-center border border-[#E5E5E5] m-4">
 						<div className="w-full flex justify-center items-center border-b border-[#E5E5E5] px-6 py-4">
 							<span className="text-3xl py-2 px-6 font-semibold">Your purchase is ready</span>
@@ -107,7 +113,8 @@ export function Checkout() {
 										Xai Sentry Node Key
 									</p>
 									<Tooltip
-										body={"Xai keys are required for nodes to earn $XAI network rewards."}
+										header={"Xai keys are required for nodes to receive $esXAI network rewards."}
+										body={"All purchases must be made in Arbitrum ETH."}
 										width={452}
 									>
 										<AiOutlineInfoCircle size={16} className="text-[#A3A3A3]"/>

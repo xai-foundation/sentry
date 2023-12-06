@@ -20,7 +20,7 @@ export function WebBuyKeysQuantity({quantity, setQuantity}: WebBuyKeysQuantityPr
 				</p>
 				<Tooltip
 					header={"Recommended max quantity is 50"}
-					body={"Purchasing more than 50 keys in a single transaction will likely fail due to gas limits."}
+					body={"Purchasing more than 50 keys in a single transaction will likely fail due to gas limits on Arbitrum One."}
 					width={452}
 				>
 					<AiOutlineInfoCircle size={16} className="text-[#A3A3A3]"/>

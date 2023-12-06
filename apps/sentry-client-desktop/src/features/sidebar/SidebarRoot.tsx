@@ -65,13 +65,13 @@ export function Sidebar() {
 				<div>
 					<h2 className="text-gray-400 text-[12px] mb-2 uppercase">Help</h2>
 					<a
-						onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/")}
+						onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup/step-2-download-and-run-the-xai-sentry-node")}
 						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
 					>
 						<AiOutlineCloudUpload size={15}/> Set up on Cloud
 					</a>
 					<a
-						onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/")}
+						onClick={() => window.electron.openExternal(" https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup/step-3-complete-requirements-to-accrue-esxai")}
 						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
 					>
 						<SiGitbook size={15}/> Gitbook

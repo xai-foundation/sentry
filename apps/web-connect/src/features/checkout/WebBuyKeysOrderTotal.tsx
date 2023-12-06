@@ -1,5 +1,5 @@
 import {BiLoaderAlt} from "react-icons/bi";
-import {AiFillInfoCircle, AiOutlineClose, AiOutlineInfoCircle} from "react-icons/ai";
+import {AiFillInfoCircle, AiOutlineClose} from "react-icons/ai";
 import {useGetTotalSupplyAndCap} from "@/features/checkout/hooks/useGetTotalSupplyAndCap";
 import {Dispatch, SetStateAction, useState} from "react";
 import {ethers} from "ethers";
@@ -89,6 +89,8 @@ export function WebBuyKeysOrderTotal(
 			});
 	}
 
+	const displayPricesMayVary = (getPriceData?.nodesAtEachPrice?.filter((node) => node.quantity !== 0n) ?? []).length >= 2;
+
 	return (
 		<div>
 			{isPriceLoading || isTotalLoading || !getPriceData
@@ -129,18 +131,21 @@ export function WebBuyKeysOrderTotal(
 									</>
 								)}
 
-								{getPriceData && getPriceData.nodesAtEachPrice.length > 1 && (
+								{displayPricesMayVary && (
 									<div className="w-full flex flex-col bg-[#F5F5F5] px-5 py-4 gap-2 mb-4">
 										<div className="flex items-center gap-2 font-semibold">
 											<AiFillInfoCircle className="w-[20px] h-[20px] text-[#3B82F6]"/>
 											<p className="text-[15px]">
-												Prices may vary
+												Your transaction may be reverted
 											</p>
 										</div>
 										<p className="text-sm">
-											Xai Sentry Node Key prices vary depending on the quantity
-											of remaining supply. In general, as the quantity of available keys
-											decreases, the price of a key will increase.
+											Xai Sentry Node Key prices vary depending on the quantity of remaining
+											supply. In general, as the quantity of available keys decreases, the price
+											of a key will increase. If you purchase more Keys than are available in the
+											current pricing tier, the transaction may revert. We recommend splitting the
+											purchase into two transactions - one for the current pricing tier and
+											another in the next pricing tier.
 										</p>
 									</div>
 								)}
@@ -253,9 +258,9 @@ export function WebBuyKeysOrderTotal(
 								>
 									I understand that I cannot claim rewards until I pass KYC
 									<KYCTooltip
-										width={452}
+										width={850}
 									>
-										<AiOutlineInfoCircle size={16} className="text-[#A3A3A3]"/>
+										<p className="text-[#F30919]">(SEE BLOCKED COUNTRIES)</p>
 									</KYCTooltip>
 								</XaiCheckbox>
 							</div>

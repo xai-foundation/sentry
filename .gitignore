@@ -16,5 +16,6 @@ build
 
 **/*.DS_Store
 *.tsbuildinfo
+infrastructure/CodeSignTool-*
 
 infrastructure/CodeSignTool-*

@@ -22,7 +22,7 @@ export function ActionsRequiredNotAccruingDrawer() {
 	return (
 		<div className="h-full flex flex-col justify-start items-center">
 			<div
-				className="w-full h-16 flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
+				className="w-full h-[4rem] min-h-[4rem] flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
 				{!accruing && (
 					<div className="flex flex-row gap-2 items-center">
 						<AiFillWarning className="w-7 h-7 text-[#F59E28]"/> <span>Actions required</span>
@@ -46,8 +46,8 @@ export function ActionsRequiredNotAccruingDrawer() {
 				</div>
 			</div>
 
-			<div className="p-5">
-				<div>
+			<div>
+				<div className="py-5 px-3">
 					{accruing ? (
 						<SquareCard className="bg-[#DCFCE7]">
 							<IconLabel
@@ -88,7 +88,7 @@ export function ActionsRequiredNotAccruingDrawer() {
 				</div>
 
 				{accruing && (
-					<div className="mt-8">
+					<div className="py-5 px-3">
 						{kycRequired ? (
 							<SquareCard>
 								<IconLabel
@@ -97,8 +97,10 @@ export function ActionsRequiredNotAccruingDrawer() {
 									title="At least one wallet has unclaimable esXAI"
 								/>
 								<p className="text-[15px] text-[#525252] mt-3">
-									You must pass KYC within 180 days of accruing esXAI to claim accrued node rewards. Check back in
-									48 hours if all docs submitted. Check your inbox (including spam) for updates. For KYC issues,
+									You must pass KYC within 180 days of accruing esXAI to claim accrued node rewards.
+									Check back in
+									48 hours if all docs submitted. Check your inbox (including spam) for updates. For
+									KYC issues,
 									contact<a
 									className="text-[#F30919] cursor-pointer"
 									onClick={() => window.electron.openExternal(`https://help.blockpass.org/hc/en-us/requests/new`)}
