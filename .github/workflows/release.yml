@@ -22,10 +22,9 @@ jobs:
           node-version: 18
       
       - name: Setup Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v1
         with:
-          distribution: 'microsoft'
-          java-version: 'openjdk64-11.0.2'
+          java-version: '11.0.2'
         if: matrix.os == 'windows-latest'
 
       - name: Install pnpm
