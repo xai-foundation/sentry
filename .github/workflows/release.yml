@@ -7,7 +7,10 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout code
@@ -32,24 +35,10 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create Directory For Signed Build
-        shell: bash
-        run: mkdir apps/sentry-client-desktop/release/signed_builds
-
-      - name: Sign build
-        uses: sslcom/actions-codesigner@develop
-        with:
-          command: sign
-          username: ${{ secrets.SSL_USERNAME }}
-          password: ${{ secrets.SSL_PASSWORD }}
-          totp_secret: ${{ secrets.SSL_TOTP_SECRET }}
-          file_path: apps/sentry-client-desktop/release/sentry-client-windows.exe
-          output_path: apps/sentry-client-desktop/release/signed_builds
-
       - name: Upload sentry-client-desktop artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: release-sentry-client-desktop
+          name: release-sentry-client-desktop-${{ matrix.os }}
           path: apps/sentry-client-desktop/release
 
       - name: zip cli artifacts
@@ -58,11 +47,12 @@ jobs:
           zip sentry-node-cli-macos.zip sentry-node-cli-macos
           zip sentry-node-cli-linux.zip sentry-node-cli-linux
           zip sentry-node-cli-windows.zip sentry-node-cli-win.exe
+        if: matrix.os == 'ubuntu-latest'
 
       - name: Upload cli artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: release-cli
+          name: release-cli-${{ matrix.os }}
           path: apps/cli/release
 
           # Popular action to deploy to GitHub Pages:
@@ -80,8 +70,9 @@ jobs:
           # You can swap them out with your own user credentials.
           user_name: github-actions[bot]
           user_email: 41898282+github-actions[bot]@users.noreply.github.com
+        if: matrix.os == 'ubuntu-latest'
 
-  release:
+  sign-and-release:
     needs: build
     runs-on: ubuntu-latest
 
@@ -89,21 +80,34 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v2
 
+      - name: Create Directory For Signed Build
+        shell: bash
+        run: mkdir release-sentry-client-desktop-windows-latest/signed_builds
+
+      - name: Sign build
+        uses: sslcom/actions-codesigner@develop
+        with:
+          command: sign
+          username: ${{ secrets.SSL_USERNAME }}
+          password: ${{ secrets.SSL_PASSWORD }}
+          totp_secret: ${{ secrets.SSL_TOTP_SECRET }}
+          file_path: release-sentry-client-desktop-windows-latest/sentry-client-windows.exe
+          output_path: release-sentry-client-desktop-windows-latest/signed_builds
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
-            release-sentry-client-desktop/latest-mac.yml
-            release-sentry-client-desktop/sentry-client-macos.dmg.blockmap
-            release-sentry-client-desktop/sentry-client-macos.dmg
-            release-sentry-client-desktop/latest-linux.yml
-            release-sentry-client-desktop/sentry-client-linux.AppImage
-            release-sentry-client-desktop/latest.yml
-            release-sentry-client-desktop/sentry-client-windows.exe.blockmap
-            release-sentry-client-desktop/sentry-client-windows.exe
-            release-sentry-client-desktop/signed_builds/sentry-client-windows.exe
-            release-cli/sentry-node-cli-macos.zip
-            release-cli/sentry-node-cli-linux.zip
-            release-cli/sentry-node-cli-windows.zip
+            release-sentry-client-desktop-macos-latest/latest-mac.yml
+            release-sentry-client-desktop-macos-latest/sentry-client-macos.dmg.blockmap
+            release-sentry-client-desktop-macos-latest/sentry-client-macos.dmg
+            release-sentry-client-desktop-ubuntu-latest/latest-linux.yml
+            release-sentry-client-desktop-ubuntu-latest/sentry-client-linux.AppImage
+            release-sentry-client-desktop-windows-latest/latest.yml
+            release-sentry-client-desktop-windows-latest/sentry-client-windows.exe.blockmap
+            release-sentry-client-desktop-windows-latest/signed_builds/sentry-client-windows.exe
+            release-cli-ubuntu-latest/sentry-node-cli-macos.zip
+            release-cli-ubuntu-latest/sentry-node-cli-linux.zip
+            release-cli-ubuntu-latest/sentry-node-cli-windows.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
