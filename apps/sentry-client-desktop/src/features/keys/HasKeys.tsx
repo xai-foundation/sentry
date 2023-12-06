@@ -2,7 +2,7 @@ import {AiOutlineCheck, AiOutlineInfoCircle, AiOutlineMinus, AiOutlinePlus} from
 import {IoIosArrowDown} from "react-icons/io";
 import {PiCopy} from "react-icons/pi";
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse.js";
 import {BlockPassKYC} from "@/components/blockpass/Blockpass";
 import {getLicensesList, LicenseList, LicenseMap} from "@/hooks/useListNodeLicensesWithCallback";
@@ -33,7 +33,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
 	const {data, setData} = useStorage();
-	const {balances, isBalancesLoading} = useAtomValue(accruingStateAtom);
+	const {balances, isBalancesLoading, balancesFetchedLast} = useAtomValue(accruingStateAtom);
 
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
@@ -41,13 +41,6 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 	const [isRemoveWalletOpen, setIsRemoveWalletOpen] = useState<boolean>(false);
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const {startRuntime, sentryRunning} = useOperatorRuntime();
-	const [lastTrueTimestamp, setLastTrueTimestamp] = useState<null | Date>(null);
-
-	useEffect(() => {
-		if (isBalancesLoading) {
-			setLastTrueTimestamp(new Date());
-		}
-	}, [isBalancesLoading]);
 
 	function startAssignment() {
 		if (!isOperatorLoading) {
@@ -310,15 +303,17 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					</div>
 					<div className="flex items-center gap-2 font-semibold">
 						<XaiLogo/>
-						<div className="text-3xl">
+						<div>
 							{balances
 								?
-								<div className={`flex gap-1 items-center`}>
+								<div className={`flex gap-1 items-end`}>
+									<p className="text-3xl">
 									{ethers.formatEther(Object.values(balances).reduce((acc, value) => acc + value.totalAccruedEsXai, BigInt(0)))}
+									</p>
 
-									<p className="flex items-center text-[#A3A3A3] text-[12px] ml-1">
+									<p className="flex items-center text-[#A3A3A3] text-[12px] ml-1 mb-1">
 										Last
-										updated: {!isBalancesLoading && lastTrueTimestamp ? lastTrueTimestamp.toLocaleString() :
+										updated: {!isBalancesLoading && balancesFetchedLast ? balancesFetchedLast.toLocaleString() :
 										<BiLoaderAlt className="animate-spin w-[18px]" color={"#A3A3A3"}/>}
 									</p>
 								</div>

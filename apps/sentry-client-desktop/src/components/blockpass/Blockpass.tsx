@@ -13,11 +13,11 @@ export function Blockpass({onClick = () => {}, children = "Begin KYC"}: PropsWit
 			if (selectedCountry === "TR" || selectedCountry === "CN" || selectedCountry === "HK") {
 				console.log("Logic for Turkey | China | Hong Kong");
 				onClick?.();
-				return document.getElementById("blockpass-kyc-connect")!.click();
+				return window.electron.openExternal(`https://verify-with.blockpass.org/?clientId=xai_sentry_node__edd_60145`);
 			} else if (selectedCountry !== "") {
 				console.log("Logic for general countries");
 				onClick?.();
-				return document.getElementById("blockpass-kyc-connect")!.click();
+				return window.electron.openExternal(`https://verify-with.blockpass.org/?clientId=xai_node_007da`);
 			}
 		} else {
 			console.log("Please select a country");
