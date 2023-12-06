@@ -10,12 +10,19 @@ export function Blockpass({onClick = () => {}, children = "Begin KYC"}: PropsWit
 
 	function onClickHelper() {
 		if (selectedCountry) {
-			if (selectedCountry === "TR" || selectedCountry === "CN" || selectedCountry === "HK") {
-				console.log("Logic for Turkey | China | Hong Kong");
+			if (
+				selectedCountry === "BG" || //Bulgaria
+				selectedCountry === "CN" || //China
+				selectedCountry === "HR" || //Croatia
+				selectedCountry === "GR" || //Greece
+				selectedCountry === "HK" || //Hong Kong
+				selectedCountry === "MK" || //Macedonia
+				selectedCountry === "RO" || //Romania
+				selectedCountry === "TR" 	//Turkey
+			) {
 				onClick?.();
 				return window.electron.openExternal(`https://verify-with.blockpass.org/?clientId=xai_sentry_node__edd_60145`);
 			} else if (selectedCountry !== "") {
-				console.log("Logic for general countries");
 				onClick?.();
 				return window.electron.openExternal(`https://verify-with.blockpass.org/?clientId=xai_node_007da`);
 			}
@@ -44,7 +51,6 @@ export function Blockpass({onClick = () => {}, children = "Begin KYC"}: PropsWit
 }
 
 export function BlockPassKYC({onClick = () => {}, children = "Begin KYC"}: PropsWithChildren<BlockpassProps>) {
-
 	function onClickHelper() {
 		onClick?.();
 	}
