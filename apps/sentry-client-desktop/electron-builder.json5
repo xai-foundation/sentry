@@ -27,7 +27,6 @@
       "nsis"
     ],
     "publisherName": "Xai Foundation",
-    "certificateSubjectName": "Xai Foundation",
     "artifactName": "sentry-client-windows.${ext}",
     "icon": "public/xai.ico"
   },
