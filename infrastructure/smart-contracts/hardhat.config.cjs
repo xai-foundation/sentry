@@ -5,7 +5,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const config = {
-  defaultNetwork: "arbitrumOne",
+  defaultNetwork: "arbitrumGoerli",
   solidity: {
     version: "0.8.9",
     settings: {
@@ -21,7 +21,7 @@ const config = {
   networks: {
     hardhat: {
       forking: {
-        url: "https://frequent-damp-star.arbitrum-goerli.quiknode.pro/c1b565106ebecad49a9e7a938d084543187755e4/",
+        url: "https://icy-thrilling-frog.arbitrum-goerli.quiknode.pro/4d27f3253823ff8ec0afbabc49cbe924bfc9acdb/",
         // blockNumber: 56122196,
       },
       chainId: 421613,
@@ -48,7 +48,7 @@ const config = {
       chainId: 42161,
     },
     arbitrumGoerli: {
-      url: "https://goerli-rollup.arbitrum.io/rpc",
+      url: "https://icy-thrilling-frog.arbitrum-goerli.quiknode.pro/4d27f3253823ff8ec0afbabc49cbe924bfc9acdb/",
       accounts: {
         mnemonic: process.env.MNEMONIC,
         count: 30,
