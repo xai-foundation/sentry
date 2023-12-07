@@ -8,7 +8,7 @@ import { getProvider } from "../utils/getProvider.js";
  * @returns The value of isCheckingAssertions.
  */
 export async function getIsCheckingAssertions(): Promise<boolean> {
-    const provider = getProvider();
+    const provider = getProvider("https://icy-thrilling-frog.arbitrum-goerli.quiknode.pro/4d27f3253823ff8ec0afbabc49cbe924bfc9acdb/"); // goerli for now
     const rollupContract = new ethers.Contract(config.rollupAddress, RollupAdminLogicAbi, provider);
     const isCheckingAssertions = await rollupContract.isCheckingAssertions();
     return isCheckingAssertions;

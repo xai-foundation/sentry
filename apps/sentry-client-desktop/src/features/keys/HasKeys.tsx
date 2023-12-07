@@ -174,7 +174,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					<td className="w-full max-w-[125px] px-4 py-2 text-[#F30919]">
 						<span
 							className="cursor-pointer"
-							onClick={() => window.electron.openExternal(`https://testnets.opensea.io/assets/arbitrum-goerli/${config.nodeLicenseAddress}/${keyString}`)}
+							onClick={() => window.electron.openExternal(`https://opensea.io/assets/arbitrum/${config.nodeLicenseAddress}/${keyString}`)}
 						>
 							View
 						</span>

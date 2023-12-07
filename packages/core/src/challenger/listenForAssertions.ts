@@ -10,8 +10,7 @@ import { config } from "../config.js";
  * @returns A function that can be called to stop listening for the event.
  */
 export function listenForAssertions(callback: (nodeNum: any, blockHash: any, sendRoot: any, event: any) => void): () => void {
-    // get a provider for the arb one network
-    const provider = getProvider();
+    const provider = getProvider("https://icy-thrilling-frog.arbitrum-goerli.quiknode.pro/4d27f3253823ff8ec0afbabc49cbe924bfc9acdb/"); // arb goerli while we run on testnet
 
     // create an instance of the rollup contract
     const rollupContract = new ethers.Contract(config.rollupAddress, RollupAdminLogicAbi, {provider});
