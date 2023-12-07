@@ -193,7 +193,7 @@ export function SentryWallet() {
 
 							{sentryRunning && balance?.wei === 0n && (
 								<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
-									No ETH
+									No AETH
 								</p>
 							)}
 

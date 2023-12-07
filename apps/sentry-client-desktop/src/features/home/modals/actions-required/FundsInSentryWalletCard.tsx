@@ -50,7 +50,7 @@ export function FundsInSentryWalletCard() {
 					/>
 
 					<p className="text-[15px] text-[#525252] mt-3">
-						To fund the Sentry Wallet, send ETH to this address
+						To fund the Sentry Wallet, send AETH to this address
 					</p>
 
 					<div
@@ -80,7 +80,7 @@ export function FundsInSentryWalletCard() {
 
 						<div className="flex flex-row items-center gap-1">
 							<FaEthereum className="w-4 h-4 mb-[-2px]"/>
-							<p className="text-[#525252] text-[14px] font-semibold">0.005 ETH</p>
+							<p className="text-[#525252] text-[14px] font-semibold">0.005 AETH</p>
 						</div>
 					</div>
 				</>

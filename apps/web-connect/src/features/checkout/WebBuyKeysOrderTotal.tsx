@@ -77,12 +77,12 @@ export function WebBuyKeysOrderTotal(
 							<div className="flex flex-row items-center gap-1">
 								<span
 									className="font-semibold">
-									{ethers.formatEther(item.totalPriceForTier)} ETH
+									{ethers.formatEther(item.totalPriceForTier)} AETH
 								</span>
 							</div>
 						</div>
 						<p className="text-[13px] text-[#A3A3A3] mb-4">
-							{ethers.formatEther(item.pricePer)} ETH per key
+							{ethers.formatEther(item.pricePer)} AETH per key
 						</p>
 					</div>
 				);
@@ -121,7 +121,7 @@ export function WebBuyKeysOrderTotal(
 											</div>
 											<div className="flex flex-row items-center gap-1">
 												<span className="text-[#2A803D] font-semibold">
-													{ethers.formatEther(getPriceData.price * BigInt(5) / BigInt(100))} ETH
+													{ethers.formatEther(getPriceData.price * BigInt(5) / BigInt(100))} AETH
 												</span>
 											</div>
 										</div>
@@ -224,7 +224,7 @@ export function WebBuyKeysOrderTotal(
 												: ethers.formatEther(getPriceData.price)
 											}
 										</span>
-										<span>ETH</span>
+										<span>AETH</span>
 									</div>
 								</div>
 							</div>
