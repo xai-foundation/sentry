@@ -55,12 +55,12 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 							</div>
 							<div className="flex flex-row items-center gap-1">
 								<p className="font-semibold">
-									{ethers.formatEther(item.totalPriceForTier)} ETH
+									{ethers.formatEther(item.totalPriceForTier)} AETH
 								</p>
 							</div>
 						</div>
 						<p className="text-[13px] text-[#A3A3A3] mb-4">
-							{ethers.formatEther(item.pricePer)} ETH per key
+							{ethers.formatEther(item.pricePer)} AETH per key
 						</p>
 					</div>
 				);
@@ -118,7 +118,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 											</div>
 											<div className="flex flex-row items-center gap-1">
 												<p className="text-[#2A803D] font-semibold">
-													{ethers.formatEther(getPriceData.price * BigInt(5) / BigInt(100))} ETH
+													{ethers.formatEther(getPriceData.price * BigInt(5) / BigInt(100))} AETH
 												</p>
 											</div>
 										</div>
@@ -217,7 +217,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 												: ethers.formatEther(getPriceData.price)
 											}
 										</p>
-										<p>ETH</p>
+										<p>AETH</p>
 									</div>
 								</div>
 							</div>
