@@ -1,4 +1,4 @@
-import {Dispatch, SetStateAction, useEffect, useState} from "react";
+import {Dispatch, SetStateAction, useState} from "react";
 
 export const listOfCountries = [
 	{value: "AF", label: "Afghanistan"},
