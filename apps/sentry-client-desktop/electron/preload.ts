@@ -132,6 +132,7 @@ contextBridge.exposeInMainWorld('deeplinks', {
 	purchaseSuccessful: (callback: (_event, txHash) => void) => ipcRenderer.on("purchase-successful", callback),
 	// updateMessage: (callback: (_event, txHash) => void) => ipcRenderer.on("update-message", callback),
 	updateAvailable: (callback: (_event, txHash) => void) => ipcRenderer.on("update-available", callback),
+	updateError: (callback: (_event, txHash) => void) => ipcRenderer.on("update-error", callback),
 });
 
 // ipcRenderer.on("test", (event, url) => {

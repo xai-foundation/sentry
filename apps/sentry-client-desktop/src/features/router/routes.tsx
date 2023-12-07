@@ -12,14 +12,25 @@ import {ChainDataManager} from "@/components/ChainDataManager";
 import {createStore, Provider as JotaiProvider} from "jotai";
 import {AccruingDataManager} from "@/components/AccruingDataManager";
 import toast, {Toaster} from "react-hot-toast";
+import {useState} from 'react';
 
 const store = createStore();
 
 export function AppRoutes() {
 	const queryClient = new QueryClient();
+	const [toastId, setToastId] = useState("");
 
 	window.ipcRenderer.on("update-available", () => {
-		toast.loading("Downloading update. Your app will restart soon.");
+		setToastId(toast.loading("Downloading update. Your app will restart soon."));
+	});
+
+	window.ipcRenderer.on("update-error", () => {
+		if (toastId) {
+			toast.dismiss(toastId);
+			setToastId("");
+		}
+
+		toast.error("Error downloading update. Retrying in 5 minutes.");
 	});
 
 	return (
