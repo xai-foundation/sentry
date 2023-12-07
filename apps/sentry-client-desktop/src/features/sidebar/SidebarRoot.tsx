@@ -6,7 +6,6 @@ import {RiKey2Line, RiTwitterXFill} from "react-icons/ri";
 import {SiGitbook} from "react-icons/si";
 import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse.js";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
-import {IoGiftOutline} from "react-icons/io5";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {useAtomValue} from "jotai";
 
@@ -54,12 +53,12 @@ export function Sidebar() {
 
 						Sentry Wallet
 					</Link>
-					<Link
-						to="/redeem"
-						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
-					>
-						<IoGiftOutline size={15}/> Redeem
-					</Link>
+					{/*<Link*/}
+					{/*	to="/redeem"*/}
+					{/*	className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"*/}
+					{/*>*/}
+					{/*	<IoGiftOutline size={15}/> Redeem*/}
+					{/*</Link>*/}
 				</div>
 
 				<div>

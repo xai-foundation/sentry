@@ -3,7 +3,6 @@ import {Sidebar} from "../sidebar";
 import {GetSentryNode} from "../home/GetSentryNode.js";
 import {Keys} from "../keys/Keys.js";
 import {SentryWallet} from "../home/SentryWallet.js";
-import {Redeem} from "@/features/redeem/Redeem";
 import {DrawerManager} from "../drawer/DrawerManager";
 import {ModalManager} from "@/features/modal/ModalManager";
 import {QueryClient, QueryClientProvider} from "react-query";
@@ -43,14 +42,14 @@ export function AppRoutes() {
 						<AccruingDataManager/>
 						<BlockpassHandler/>
 						<Sidebar/>
-						<Toaster position="top-right" />
+						<Toaster position="top-right"/>
 
 						<div className="flex-grow">
 							<Routes>
 								<Route path="/" element={<GetSentryNode/>}/>
 								<Route path="/keys" element={<Keys/>}/>
 								<Route path="/sentry-wallet" element={<SentryWallet/>}/>
-								<Route path="/redeem" element={<Redeem/>}/>
+								{/*<Route path="/redeem" element={<Redeem/>}/>*/}
 							</Routes>
 						</div>
 
@@ -60,6 +59,5 @@ export function AppRoutes() {
 				</QueryClientProvider>
 			</Router>
 		</JotaiProvider>
-
 	);
 }
