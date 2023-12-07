@@ -21,7 +21,7 @@ export interface CheckoutTierSummary {
 export async function getPriceForQuantity(quantity: number): Promise<{ price: bigint, nodesAtEachPrice: CheckoutTierSummary[] }> {
 
     // Get the provider
-    const provider = getProvider();
+    const provider = getProvider("https://arb1.arbitrum.io/rpc");
 
     // Create an instance of the NodeLicense contract
     const nodeLicenseContract = new ethers.Contract(config.nodeLicenseAddress, NodeLicenseAbi, provider);
