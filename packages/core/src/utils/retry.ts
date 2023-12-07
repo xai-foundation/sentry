@@ -10,6 +10,7 @@ export async function retry<T>(process: () => Promise<T>, retries: number = 5): 
         return await process();
     } catch (error) {
         if (retries === 0) {
+            console.error(`There was an error retrying a mechanism ${retries} times. Please save this error for troubleshooting.`);
             throw error;
         }
         await new Promise(resolve => setTimeout(resolve, Math.random() * (5000 - 1000) + 1000));
