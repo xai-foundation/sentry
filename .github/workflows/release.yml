@@ -24,6 +24,9 @@ jobs:
       - name: Install pnpm
         run: npm install -g pnpm
 
+      - name: Set package version
+        run: pnpm pkg set version=${{ github.ref_name }} --prefix apps/sentry-client-desktop
+
       - name: Install dependencies
         run: pnpm install
 
@@ -69,7 +72,7 @@ jobs:
           user_email: 41898282+github-actions[bot]@users.noreply.github.com
         if: matrix.os == 'ubuntu-latest'
 
-  release:
+  sign-and-release:
     needs: build
     runs-on: ubuntu-latest
 
@@ -77,13 +80,41 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v2
 
+      - name: Create Directory For Signed Build
+        shell: bash
+        run: mkdir release-sentry-client-desktop-windows-latest/signed_builds
+
+      - name: Sign build
+        uses: sslcom/actions-codesigner@develop
+        with:
+          command: sign
+          username: ${{ secrets.SSL_USERNAME }}
+          password: ${{ secrets.SSL_PASSWORD }}
+          totp_secret: ${{ secrets.SSL_TOTP_SECRET }}
+          file_path: release-sentry-client-desktop-windows-latest/sentry-client-windows.exe
+          output_path: release-sentry-client-desktop-windows-latest/signed_builds
+
+      - name: Update latest.yml for signed checksum
+        run: |
+          sudo curl -L https://github.com/mikefarah/yq/releases/download/v3.4.1/yq_linux_amd64 -o /usr/local/bin/yq
+          sudo chmod +x /usr/local/bin/yq
+          CHECKSUM=$(shasum -a 512 release-sentry-client-desktop-windows-latest/signed_builds/sentry-client-windows.exe | cut -f1 -d\\ | xxd -r -p | base64)
+          echo "SHA512 Checksum: $CHECKSUM"
+          yq eval '.files.sha512 = ${CHECKSUM}' -i release-sentry-client-desktop-windows-latest/latest.yml
+          yq eval '.sha512 = ${CHECKSUM}' -i release-sentry-client-desktop-windows-latest/latest.yml
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           files: |
+            release-sentry-client-desktop-macos-latest/latest-mac.yml
+            release-sentry-client-desktop-macos-latest/sentry-client-macos.dmg.blockmap
             release-sentry-client-desktop-macos-latest/sentry-client-macos.dmg
+            release-sentry-client-desktop-ubuntu-latest/latest-linux.yml
             release-sentry-client-desktop-ubuntu-latest/sentry-client-linux.AppImage
-            release-sentry-client-desktop-windows-latest/sentry-client-windows.exe
+            release-sentry-client-desktop-windows-latest/latest.yml
+            release-sentry-client-desktop-windows-latest/sentry-client-windows.exe.blockmap
+            release-sentry-client-desktop-windows-latest/signed_builds/sentry-client-windows.exe
             release-cli-ubuntu-latest/sentry-node-cli-macos.zip
             release-cli-ubuntu-latest/sentry-node-cli-linux.zip
             release-cli-ubuntu-latest/sentry-node-cli-windows.zip

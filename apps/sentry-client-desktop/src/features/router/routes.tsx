@@ -11,11 +11,16 @@ import {BlockpassHandler} from "@/components/blockpass/BlockpassHandler";
 import {ChainDataManager} from "@/components/ChainDataManager";
 import {createStore, Provider as JotaiProvider} from "jotai";
 import {AccruingDataManager} from "@/components/AccruingDataManager";
+import toast, {Toaster} from "react-hot-toast";
 
 const store = createStore();
 
 export function AppRoutes() {
 	const queryClient = new QueryClient();
+
+	window.ipcRenderer.on("update-available", () => {
+		toast.loading("Downloading update. Your app will restart soon.");
+	});
 
 	return (
 		<JotaiProvider store={store}>
@@ -26,6 +31,7 @@ export function AppRoutes() {
 						<AccruingDataManager/>
 						<BlockpassHandler/>
 						<Sidebar/>
+						<Toaster position="top-right" />
 
 						<div className="flex-grow">
 							<Routes>

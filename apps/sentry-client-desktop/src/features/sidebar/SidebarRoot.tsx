@@ -21,7 +21,8 @@ export function Sidebar() {
 
 	return (
 		<div
-			className="sticky h-full w-[14.625rem] min-w-[14.625rem] bg-white border-r border-gray-200 text-[15px] p-4 z-10">
+			className="flex flex-col justify-between sticky h-full w-[14.625rem] min-w-[14.625rem] bg-white border-r border-gray-200 text-[15px] p-4 z-10"
+		>
 			<div className="fixed h-full flex flex-col gap-5">
 				<div
 					className="flex items-center gap-2 text-base font-semibold cursor-pointer"
@@ -64,13 +65,13 @@ export function Sidebar() {
 				<div>
 					<h2 className="text-gray-400 text-[12px] mb-2 uppercase">Help</h2>
 					<a
-						onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/")}
+						onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup/step-2-download-and-run-the-xai-sentry-node")}
 						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
 					>
 						<AiOutlineCloudUpload size={15}/> Set up on Cloud
 					</a>
 					<a
-						onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/")}
+						onClick={() => window.electron.openExternal(" https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup/step-3-complete-requirements-to-accrue-esxai")}
 						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
 					>
 						<SiGitbook size={15}/> Gitbook
@@ -92,6 +93,11 @@ export function Sidebar() {
 						<RiTwitterXFill size={15}/> X
 					</a>
 				</div>
+			</div>
+
+			<div/>
+			<div>
+				<p>v{import.meta.env.APP_VERSION}</p>
 			</div>
 		</div>
 	);

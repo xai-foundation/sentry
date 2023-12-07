@@ -2,7 +2,7 @@ import {AiOutlineCheck, AiOutlineInfoCircle, AiOutlineMinus, AiOutlinePlus} from
 import {IoIosArrowDown} from "react-icons/io";
 import {PiCopy} from "react-icons/pi";
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse.js";
 import {BlockPassKYC} from "@/components/blockpass/Blockpass";
 import {getLicensesList, LicenseList, LicenseMap} from "@/hooks/useListNodeLicensesWithCallback";
@@ -33,7 +33,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
 	const {data, setData} = useStorage();
-	const {balances, isBalancesLoading} = useAtomValue(accruingStateAtom);
+	const {balances, isBalancesLoading, balancesFetchedLast} = useAtomValue(accruingStateAtom);
 
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
@@ -41,13 +41,6 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 	const [isRemoveWalletOpen, setIsRemoveWalletOpen] = useState<boolean>(false);
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const {startRuntime, sentryRunning} = useOperatorRuntime();
-	const [lastTrueTimestamp, setLastTrueTimestamp] = useState<null | Date>(null);
-
-	useEffect(() => {
-		if (isBalancesLoading) {
-			setLastTrueTimestamp(new Date());
-		}
-	}, [isBalancesLoading]);
 
 	function startAssignment() {
 		if (!isOperatorLoading) {
@@ -113,8 +106,8 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
 					<td className="w-full max-w-[70px] px-4 py-2">{keyString}</td>
-					<td className="w-full max-w-[360px] px-4 py-2">{owner}</td>
-					<td className="w-full max-w-[270px] px-4 py-2 text-[#A3A3A3]">
+					<td className="w-full max-w-[400px] px-4 py-2">{owner}</td>
+					<td className="w-full max-w-[350px] px-4 py-2 text-[#A3A3A3]">
 
 						{_status === "sentryNotRunning" && (
 							<div className="relative flex items-center gap-2">
@@ -145,7 +138,12 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 							<div className="relative flex items-center gap-2">
 								<YellowPulse/>
 								KYC required
-								<BlockPassKYC onClick={() => onStartKyc(owner)}/>
+								<BlockPassKYC
+									onClick={() => {
+										setDrawerState(DrawerView.ActionsRequiredNotAccruing)
+										onStartKyc(owner)
+									}}
+								/>
 							</div>
 						)}
 
@@ -153,7 +151,11 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 							<div className="relative flex items-center gap-2">
 								<YellowPulse/>
 								KYC required
-								<BlockPassKYC>Continue</BlockPassKYC>
+								<BlockPassKYC
+									onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}
+								>
+									Continue
+								</BlockPassKYC>
 							</div>
 						)}
 
@@ -164,12 +166,12 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						)}
 
 					</td>
-					<td className="w-full max-w-[360px] px-4 py-2 text-right">
+					<td className="w-full max-w-[200px] px-4 py-2 text-right">
 						{balances && balances[keyString]
 							? ethers.formatEther(balances[keyString].totalAccruedEsXai)
 							: "Loading..."}
 					</td>
-					<td className="w-full max-w-[150px] px-4 py-2 text-[#F30919]">
+					<td className="w-full max-w-[125px] px-4 py-2 text-[#F30919]">
 						<span
 							className="cursor-pointer"
 							onClick={() => window.electron.openExternal(`https://opensea.io/assets/arbitrum/${config.nodeLicenseAddress}/${keyString}`)}
@@ -301,21 +303,23 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					</div>
 					<div className="flex items-center gap-2 font-semibold">
 						<XaiLogo/>
-						<p className="text-3xl">
+						<div>
 							{balances
 								?
-								<div className={`flex gap-1 items-center`}>
+								<div className={`flex gap-1 items-end`}>
+									<p className="text-3xl">
 									{ethers.formatEther(Object.values(balances).reduce((acc, value) => acc + value.totalAccruedEsXai, BigInt(0)))}
-									{isBalancesLoading ? (
-										<BiLoaderAlt className="animate-spin w-[18px]" color={"#A3A3A3"}/>) : (
-										<p className="flex text-[#A3A3A3] text-[12px]">
-											Last updated: {lastTrueTimestamp ? lastTrueTimestamp.toLocaleString() : "N/A"}
-										</p>
-									)}
+									</p>
+
+									<p className="flex items-center text-[#A3A3A3] text-[12px] ml-1 mb-1">
+										Last
+										updated: {!isBalancesLoading && balancesFetchedLast ? balancesFetchedLast.toLocaleString() :
+										<BiLoaderAlt className="animate-spin w-[18px]" color={"#A3A3A3"}/>}
+									</p>
 								</div>
 								: "Loading..."
 							}
-						</p>
+						</div>
 					</div>
 				</div>
 
@@ -326,12 +330,14 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 							<thead className="text-[#A3A3A3] sticky top-0 bg-white z-10">
 							<tr className="flex text-left text-[12px] px-8">
 								<th className="w-full max-w-[70px] px-4 py-2">KEY ID</th>
-								<th className="w-full max-w-[360px] px-4 py-2">OWNER ADDRESS</th>
-								<th className="w-full max-w-[270px] px-4 py-2">STATUS</th>
-								<th className="w-full max-w-[360px] px-4 py-2 flex items-center justify-end gap-1">
+								<th className="w-full max-w-[400px] px-4 py-2">OWNER ADDRESS</th>
+								<th className="w-full max-w-[350px] px-4 py-2">STATUS</th>
+								<th className="w-full max-w-[200px] px-4 py-2 flex items-center justify-end gap-1">
+									{isBalancesLoading &&
+                                        <BiLoaderAlt className="animate-spin w-[18px]" color={"#A3A3A3"}/>}
 									ACCRUED esXAI
 								</th>
-								<th className="w-full max-w-[150px] px-4 py-2">OPENSEA URL</th>
+								<th className="w-full max-w-[125px] px-4 py-2">OPENSEA URL</th>
 							</tr>
 							</thead>
 							<tbody className="relative">{renderKeys()}</tbody>

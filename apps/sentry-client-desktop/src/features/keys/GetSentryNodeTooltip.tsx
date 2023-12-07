@@ -74,8 +74,8 @@ export const GetSentryNodeTooltip = ({width = 443, position = "start", side = "b
 								Want to learn more about Sentry Node technical specifications?
 
 								<a
-									onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/xai-protocol/sentry-nodes-explained")}
-									className="text-[#F30919] ml-1 cursor-pointer"
+									onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup/step-2-download-and-run-the-xai-sentry-node")}
+									className="text-[#F30919] cursor-pointer"
 								>
 									Learn more
 								</a>

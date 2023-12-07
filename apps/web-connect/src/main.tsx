@@ -25,6 +25,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 	<WagmiConfig config={wagmiConfig}>
 		<React.StrictMode>
 			<AppRoutes/>
-		</React.StrictMode>,
+		</React.StrictMode>
 	</WagmiConfig>
 )

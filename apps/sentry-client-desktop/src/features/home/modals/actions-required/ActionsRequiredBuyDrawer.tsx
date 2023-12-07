@@ -10,7 +10,7 @@ export function ActionsRequiredBuyDrawer() {
 	return (
 		<div className="h-full flex flex-col justify-start items-center">
 			<div
-				className="w-full h-16 flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
+				className="w-full h-[4rem] flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
 				<div className="flex flex-row gap-2 items-center">
 					<AiFillWarning className="w-7 h-7 text-[#F59E28]"/> <span>Actions required</span>
 				</div>

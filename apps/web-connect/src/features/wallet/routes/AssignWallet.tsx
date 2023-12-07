@@ -36,7 +36,7 @@ export function AssignWallet() {
 
 	return (
 		<div>
-			<div className="h-screen flex flex-col justify-center items-center">
+			<div className="h-full min-h-[90vh] flex flex-col justify-center items-center">
 				<XaiBanner/>
 
 				{isSuccess ? (
@@ -101,10 +101,6 @@ export function AssignWallet() {
 						</div>
 					</div>
 				)}
-			</div>
-
-			<div className="absolute top-0 right-0 p-4">
-				<w3m-button/>
 			</div>
 		</div>
 	)

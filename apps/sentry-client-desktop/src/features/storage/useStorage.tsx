@@ -6,6 +6,7 @@ const dataAtom = atom<IData | undefined>(undefined);
 export type IData = Partial<{
 	addedWallets: string[];
 	kycStartedWallets: string[];
+	sentryRunning: boolean;
 }>;
 
 interface IUseStorageResponse {

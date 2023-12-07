@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;300;400;500;600;700&display=swap');
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
@@ -38,10 +39,17 @@
     font-weight: 700;
 }
 
+td {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 300;
+}
+
 body {
     font-family: "urw-din", sans-serif;
     font-style: normal;
-    font-weight: 300; /* Specify the desired font weight */
+    font-weight: 300;
 }
 
 
