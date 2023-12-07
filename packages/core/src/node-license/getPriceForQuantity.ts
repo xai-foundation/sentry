@@ -21,7 +21,12 @@ export interface CheckoutTierSummary {
 export async function getPriceForQuantity(quantity: number): Promise<{ price: bigint, nodesAtEachPrice: CheckoutTierSummary[] }> {
 
     // Get the provider
-    const provider = getProvider("https://arb1.arbitrum.io/rpc");
+    const providerUrls = [
+        "https://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
+        "https://arb1.arbitrum.io/rpc",
+        "https://tame-alpha-violet.arbitrum-mainnet.quiknode.pro/d55a31b32f04c82b0e1bcb77f1fc6dcf53147f2a/"
+    ];
+    const provider = getProvider(providerUrls[Math.floor(Math.random() * providerUrls.length)]);
 
     // Create an instance of the NodeLicense contract
     const nodeLicenseContract = new ethers.Contract(config.nodeLicenseAddress, NodeLicenseAbi, provider);
