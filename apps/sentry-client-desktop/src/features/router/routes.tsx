@@ -19,7 +19,6 @@ const store = createStore();
 export function AppRoutes() {
 	const queryClient = new QueryClient();
 	const [loadingToastId, setLoadingToastId] = useState("");
-	const [errorToastId, setErrorToastId] = useState("");
 
 	window.ipcRenderer.on("update-available", () => {
 		setLoadingToastId(toast.loading("Downloading update. Your app will restart soon."));
@@ -31,9 +30,8 @@ export function AppRoutes() {
 			setLoadingToastId("");
 		}
 
-		if (!errorToastId) {
-			setErrorToastId(toast.error("Error downloading update. Retrying in 5 minutes."));
-		}
+		toast.remove();
+		toast.error("Error downloading update. Retrying in 5 minutes.");
 	});
 
 	return (
