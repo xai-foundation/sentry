@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 import { NodeLicenseAbi } from '../abis/NodeLicenseAbi.js';
 import { config } from '../config.js';
 import { getProvider } from '../utils/getProvider.js';
+import { retry } from "../index.js";
 
 /**
  * Fetches all NodeLicense token IDs owned by a given address.
@@ -21,14 +22,14 @@ export async function listNodeLicenses(
     const nodeLicenseContract = new ethers.Contract(config.nodeLicenseAddress, NodeLicenseAbi, provider);
 
     // Get the balance of the owner's address
-    const balance = await nodeLicenseContract.balanceOf(ownerAddress);
+    const balance = await retry(async () => await nodeLicenseContract.balanceOf(ownerAddress));
 
     // Initialize an array to store the token IDs
     const tokenIds: bigint[] = [];
 
     // Loop through the balance and fetch each token ID
     for (let i = 0; i < balance; i++) {
-        const tokenId = await nodeLicenseContract.tokenOfOwnerByIndex(ownerAddress, i);
+        const tokenId = await retry(async () => await nodeLicenseContract.tokenOfOwnerByIndex(ownerAddress, i));
         tokenIds.push(tokenId);
         if (callback) {
             callback(tokenId);

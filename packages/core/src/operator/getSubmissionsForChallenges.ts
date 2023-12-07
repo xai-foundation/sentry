@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import { RefereeAbi } from "../abis/index.js";
 import { config } from "../config.js";
 import { getProvider } from "../index.js";
+import { retry } from "../index.js";
 
 /**
  * Submission structure returned by the getSubmissionsForChallenges function.
@@ -33,7 +34,7 @@ export async function getSubmissionsForChallenges(
     const submissions: Submission[] = [];
     for (let i = 0; i < challengeIds.length; i += chunkSize) {
         const chunk = challengeIds.slice(i, i + chunkSize);
-        const results = await refereeContract.getSubmissionsForChallenges(chunk, _nodeLicenseId);
+        const results = await retry(async () => await refereeContract.getSubmissionsForChallenges(chunk, _nodeLicenseId));
         for (let j = 0; j < results.length; j++) {
             const result = results[j];
             const [

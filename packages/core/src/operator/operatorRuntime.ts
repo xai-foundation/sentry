@@ -1,5 +1,6 @@
 import { ethers } from "ethers";
 import { Challenge, RefereeAbi, claimReward, config, getMintTimestamp, getSubmissionsForChallenges, listChallenges, listNodeLicenses, listOwnersForOperator, listenForChallenges, submitAssertionToChallenge, checkKycStatus } from "../index.js";
+import { retry } from "../index.js";
 
 export enum NodeLicenseStatus {
     WAITING_IN_QUEUE = "Waiting in Queue", // waiting to do an action, but in a queue
@@ -49,12 +50,12 @@ export async function operatorRuntime(
     const refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, signer);
 
     // get the address of the operator
-    const operatorAddress = await signer.getAddress();
+    const operatorAddress = await retry(async () => await signer.getAddress());
     logFunction(`Fetched address of operator ${operatorAddress}.`);
 
     // get a list of all the owners that are added to this operator
     logFunction("Getting all addresses attached to the operator.");
-    const owners = await listOwnersForOperator(operatorAddress);
+    const owners = await retry(async () => await listOwnersForOperator(operatorAddress));
     logFunction(`Received ${owners.length} wallets that are attached to this operator.`);
 
     // get a list of all the node licenses for each of the owners
@@ -130,7 +131,7 @@ export async function operatorRuntime(
             });
             safeStatusCallback();
 
-            const [payoutEligible] = await refereeContract.createAssertionHashAndCheckPayout(nodeLicenseId, challengeNumber, challenge.assertionStateRootOrConfirmData, challenge.challengerSignedHash);
+            const [payoutEligible] = await retry(async () => await refereeContract.createAssertionHashAndCheckPayout(nodeLicenseId, challengeNumber, challenge.assertionStateRootOrConfirmData, challenge.challengerSignedHash));
             if (!payoutEligible) {
                 logFunction(`nodeLicenseId ${nodeLicenseId} is not going to receive a reward for entering the challenge ${challengeNumber}, thus not submmiting an assertion.`);
                 nodeLicenseStatusMap.set(nodeLicenseId, {
@@ -142,7 +143,7 @@ export async function operatorRuntime(
             }
 
             // check to see if this nodeLicense has already submitted, if we have, then go to next license
-            const [{submitted}] = await getSubmissionsForChallenges([challengeNumber], nodeLicenseId);
+            const [{submitted}] = await retry(async () => await getSubmissionsForChallenges([challengeNumber], nodeLicenseId));
             if (submitted) {
                 logFunction(`nodeLicenseId ${nodeLicenseId} has already submitted for challenge ${challengeNumber}.`);
                 nodeLicenseStatusMap.set(nodeLicenseId, {
@@ -154,14 +155,19 @@ export async function operatorRuntime(
             }
 
             // submit the claim to the challenge
-            logFunction(`Submitting claim for nodeLicenseId ${nodeLicenseId} to challenge ${challengeNumber}.`);
-            await submitAssertionToChallenge(nodeLicenseId, challengeNumber, challenge.assertionStateRootOrConfirmData, signer);
-            logFunction(`Submitted claim for nodeLicenseId ${nodeLicenseId} to challenge ${challengeNumber}.`);
-            nodeLicenseStatusMap.set(nodeLicenseId, {
-                ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
-                status: NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE,
-            });
-            safeStatusCallback();
+            try {
+                logFunction(`Submitting claim for nodeLicenseId ${nodeLicenseId} to challenge ${challengeNumber}.`);
+                await retry(async () => await submitAssertionToChallenge(nodeLicenseId, challengeNumber, challenge.assertionStateRootOrConfirmData, signer));
+                logFunction(`Submitted claim for nodeLicenseId ${nodeLicenseId} to challenge ${challengeNumber}.`);
+                nodeLicenseStatusMap.set(nodeLicenseId, {
+                    ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
+                    status: NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE,
+                });
+                safeStatusCallback();
+            } catch (err) {
+                console.error("There was an error trying to submit the assertion, this is likely due to running more than one instance of the operator. If this is the case, you can ignore this error.", err);
+            }
+
         }
     }
 
@@ -175,7 +181,7 @@ export async function operatorRuntime(
         safeStatusCallback();
 
         // check to see if the owner of teh license is KYC'd
-        const [{isKycApproved}] = await checkKycStatus([nodeLicenseStatusMap.get(nodeLicenseId)!.ownerPublicKey]);
+        const [{isKycApproved}] = await retry(async () => await checkKycStatus([nodeLicenseStatusMap.get(nodeLicenseId)!.ownerPublicKey]));
         
         if (isKycApproved) {
             logFunction(`Claiming Submission for Challenge '${challengeNumber}'.`);
@@ -185,7 +191,7 @@ export async function operatorRuntime(
             });
             safeStatusCallback();
 
-            await claimReward(nodeLicenseId, challengeNumber, signer);
+            await retry(async () => await claimReward(nodeLicenseId, challengeNumber, signer));
 
             logFunction(`Claimed Submission for Challenge '${challengeNumber}'.`);
             nodeLicenseStatusMap.set(nodeLicenseId, {
@@ -275,9 +281,16 @@ export async function operatorRuntime(
     // iterate over all the challenges that are closed to see if any are available for claiming
     const closedChallengeIds = challenges.filter(([_, challenge]) => !challenge.openForSubmissions).map(([challengeNumber]) => challengeNumber);
     await processClosedChallenges(closedChallengeIds);
+    logFunction(`The operator has finished booting. The operator is running successfully.`);
 
+    // Interval function to emit to the logFunction every 5 minutes
+    const intervalId = setInterval(() => {
+        const timestamp = new Date();
+        logFunction(`Current timestamp: ${timestamp.toISOString()}. The operator is still running successfully.`);
+    }, 300000); // 300000 milliseconds = 5 minutes
 
     async function stop() {
+        clearInterval(intervalId);
         closeChallengeListener();
         logFunction("Challenge listener stopped.");
     }

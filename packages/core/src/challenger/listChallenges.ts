@@ -3,6 +3,7 @@ import { RefereeAbi } from '../abis/RefereeAbi.js';
 import { config } from '../config.js';
 import { getProvider } from '../utils/getProvider.js';
 import { getChallenge, Challenge } from "../index.js";
+import { retry } from "../index.js";
 
 /**
  * Fetches all Challenges from the Referee contract.
@@ -29,7 +30,7 @@ export async function listChallenges(
 
     // Loop through the challenge count in reverse order and fetch each challenge
     for (let i = challengeCount - BigInt(1); i >= 0; i--) {
-        const challenge = await getChallenge(i);
+        const challenge = await retry(async () => await getChallenge(i));
         if (openForSubmissions && !challenge.openForSubmissions) {
             break;
         }
