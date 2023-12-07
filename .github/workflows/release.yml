@@ -74,7 +74,7 @@ jobs:
 
   sign-and-release:
     needs: build
-    runs-on: mac-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Download artifacts
@@ -96,9 +96,12 @@ jobs:
 
       - name: Update latest.yml for signed checksum
         run: |
+          sudo curl -L https://github.com/mikefarah/yq/releases/download/v3.4.1/yq_linux_amd64 -o /usr/local/bin/yq
+          sudo chmod +x /usr/local/bin/yq
           CHECKSUM=$(shasum -a 512 release-sentry-client-desktop-windows-latest/signed_builds/sentry-client-windows.exe | cut -f1 -d\\ | xxd -r -p | base64)
           echo "SHA512 Checksum: $CHECKSUM"
-          sed -i 's/^sha512:.*/sha512: ${CHECKSUM}' release-sentry-client-desktop-windows-latest/latest.yml
+          yq eval '.files.sha512 = ${CHECKSUM}' -i release-sentry-client-desktop-windows-latest/latest.yml
+          yq eval '.sha512 = ${CHECKSUM}' -i release-sentry-client-desktop-windows-latest/latest.yml
 
       - name: Release
         uses: softprops/action-gh-release@v1
