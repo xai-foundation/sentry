@@ -191,6 +191,16 @@ export function SentryWallet() {
 						<div className="flex flex-row items-center gap-2">
 							<h2 className="text-lg font-semibold">Sentry Wallet</h2>
 
+							{!sentryRunning ? (
+								<p className="border border-[#F5F5F5] bg-[#F5F5F5] text-[#A3A3A3] text-xs font-semibold uppercase rounded-full px-2">
+									Stopped
+								</p>
+							) : (
+								<p className="border border-[#22C55E] bg-[#F0FDF4] text-[#16A34A] text-xs font-semibold uppercase rounded-full px-2">
+									Sentry Active
+								</p>
+							)}
+
 							{sentryRunning && balance?.wei === 0n && (
 								<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">
 									No AETH
@@ -203,18 +213,6 @@ export function SentryWallet() {
 										No Keys Assigned
 									</p>
 								</>
-							)}
-
-							{!sentryRunning && (
-								<p className="border border-[#F5F5F5] bg-[#F5F5F5] text-[#A3A3A3] text-xs font-semibold uppercase rounded-full px-2">
-									Stopped
-								</p>
-							)}
-
-							{sentryRunning && hasAssignedKeys && balance?.wei !== 0n && (
-								<p className="border border-[#22C55E] bg-[#F0FDF4] text-[#16A34A] text-xs font-semibold uppercase rounded-full px-2">
-									Active
-								</p>
 							)}
 
 							<div className="flex flex-row items-center gap-2 text-[#A3A3A3] text-[15px]">
