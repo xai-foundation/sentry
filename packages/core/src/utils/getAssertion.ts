@@ -40,7 +40,7 @@ export interface AssertionNode {
  * @returns The node.
  */
 export async function getAssertion(assertionId: number): Promise<AssertionNode> {
-    const provider = getProvider("https://frequent-damp-star.arbitrum-goerli.quiknode.pro/c1b565106ebecad49a9e7a938d084543187755e4/"); // goerli for now
+    const provider = getProvider("https://icy-thrilling-frog.arbitrum-goerli.quiknode.pro/4d27f3253823ff8ec0afbabc49cbe924bfc9acdb/"); // goerli for now
     const rollupContract = new ethers.Contract(config.rollupAddress, RollupAdminLogicAbi, provider);
     const [
         stateHash,

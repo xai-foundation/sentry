@@ -82,7 +82,7 @@ cat > /opt/arbitrum/config.json <<EOF
         },
         "data-availability": {
             "enable": true,
-            "parent-chain-node-url": "https://frequent-damp-star.arbitrum-goerli.quiknode.pro/c1b565106ebecad49a9e7a938d084543187755e4/",
+            "parent-chain-node-url": "https://icy-thrilling-frog.arbitrum-goerli.quiknode.pro/4d27f3253823ff8ec0afbabc49cbe924bfc9acdb/",
             "request-timeout": "5s",
             "rest-aggregator": {
                 "enable": true,
@@ -109,7 +109,7 @@ cat > /opt/arbitrum/config.json <<EOF
     },
     "parent-chain": {
         "connection": {
-            "url": "https://frequent-damp-star.arbitrum-goerli.quiknode.pro/c1b565106ebecad49a9e7a938d084543187755e4/"
+            "url": "https://icy-thrilling-frog.arbitrum-goerli.quiknode.pro/4d27f3253823ff8ec0afbabc49cbe924bfc9acdb/"
         },
         "id": 421613
     },
