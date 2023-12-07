@@ -31,6 +31,7 @@ const countryList: { country: string; translation: string }[] = [
 	{country: "Myanmar", translation: "Burma"},
 	{country: "Nicaragua", translation: "Nicaragua"},
 	{country: "North Korea", translation: "조선 민주주의 인민 공화국"},
+	{country: "Russia", translation: "Россия"},
 	{country: "Serbia", translation: "Србија"},
 	{country: "Somalia", translation: "Soomaaliya"},
 	{country: "South Sudan", translation: "جنوب السودان‎"},

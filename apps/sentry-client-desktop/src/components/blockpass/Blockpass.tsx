@@ -15,7 +15,6 @@ export function Blockpass({onClick = () => {}, children = "Begin KYC"}: PropsWit
 				selectedCountry === "CN" || //China
 				selectedCountry === "HK" || //Hong Kong
 				selectedCountry === "MK" || //Macedonia
-				selectedCountry === "RU" ||	//Russia
 				selectedCountry === "TR" ||	//Turkey
 				selectedCountry === "UA" 	//Ukraine
 			) {
