@@ -149,8 +149,8 @@ export function SentryWallet() {
 				element.push(
 					<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
 						<td className="w-full max-w-[70px] px-4 py-2">{key.toString()}</td>
-						<td className="w-full max-w-[390px] px-4 py-2">{status.ownerPublicKey}</td>
-						<td className="w-full max-w-[390px] px-4 py-2 text-[#A3A3A3]">
+						<td className="w-full max-w-[400px] px-4 py-2">{status.ownerPublicKey}</td>
+						<td className="w-full max-w-[400px] px-4 py-2 text-[#A3A3A3]">
 							{status.status}
 						</td>
 					</tr>
@@ -414,8 +414,8 @@ export function SentryWallet() {
 										<thead className="text-[#A3A3A3] sticky top-0 bg-white">
 										<tr className="flex text-left text-[12px] uppercase px-8">
 											<th className="w-full max-w-[70px] px-4 py-2">Key Id</th>
-											<th className="w-full max-w-[390px] px-4 py-2">Owner Address</th>
-											<th className="w-full max-w-[390px] px-4 py-2">Claim Status</th>
+											<th className="w-full max-w-[400px] px-4 py-2">Owner Address</th>
+											<th className="w-full max-w-[400px] px-4 py-2">Claim Status</th>
 										</tr>
 										</thead>
 										<tbody>
