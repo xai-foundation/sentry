@@ -94,14 +94,6 @@ jobs:
           file_path: release-sentry-client-desktop-windows-latest/sentry-client-windows.exe
           output_path: release-sentry-client-desktop-windows-latest/signed_builds
 
-      - name: Update latest.yml for signed checksum
-        run: |
-          sudo snap install yq
-          CHECKSUM=$(shasum -a 512 release-sentry-client-desktop-windows-latest/signed_builds/sentry-client-windows.exe | cut -f1 -d\\ | xxd -r -p | base64)
-          echo "SHA512 Checksum: $CHECKSUM"
-          yq eval '.files.sha512 = ${CHECKSUM}' -i release-sentry-client-desktop-windows-latest/latest.yml
-          yq eval '.sha512 = ${CHECKSUM}' -i release-sentry-client-desktop-windows-latest/latest.yml
-
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
