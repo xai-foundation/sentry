@@ -65,7 +65,7 @@ export function Checkout() {
 					</div>
 				)}
 
-				{!isSuccess && (
+				{isSuccess && (
 					<div
 						className="flex flex-col justify-center items-center w-[744px] h-[320px] border border-gray-200 bg-white m-4">
 						<div
@@ -100,7 +100,7 @@ export function Checkout() {
 					</div>
 				)}
 
-				{!isLoading && isSuccess && (
+				{!isLoading && !isSuccess && (
 					<div className="w-[744px] h-auto flex flex-col justify-center border border-[#E5E5E5] m-4">
 						<div className="w-full flex justify-center items-center border-b border-[#E5E5E5] px-6 py-4">
 							<span className="text-3xl py-2 px-6 font-semibold">Your purchase is ready</span>
