@@ -26,5 +26,6 @@ interface Window {
   ipcRenderer: import('electron').IpcRenderer
   electron: {
     openExternal: (url: string) => void;
+    platform: 'aix' | 'darwin' | 'freebsd' | 'linux' | 'openbsd' | 'sunos' | 'win32';
   };
 }

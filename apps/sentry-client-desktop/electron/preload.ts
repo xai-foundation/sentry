@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld(
 	'electron',
 	{
 		openExternal: (url: string) => ipcRenderer.send('open-external', url),
+		platform: process.platform,
 	}
 );
 

@@ -11,26 +11,25 @@ import {ChainDataManager} from "@/components/ChainDataManager";
 import {createStore, Provider as JotaiProvider} from "jotai";
 import {AccruingDataManager} from "@/components/AccruingDataManager";
 import toast, {Toaster} from "react-hot-toast";
-import {useState} from 'react';
 
 const store = createStore();
 
 export function AppRoutes() {
 	const queryClient = new QueryClient();
-	const [loadingToastId, setLoadingToastId] = useState("");
 
 	window.ipcRenderer.on("update-available", () => {
-		setLoadingToastId(toast.loading("Downloading update. Your app will restart soon."));
+		if (window.electron.platform === "win32") {
+			toast.loading("Downloading update. Your app will restart soon.")
+		} else {
+			toast.success("Update is available for download at xai.games/sentrynodes", {duration: 10000});
+		}
 	});
 
 	window.ipcRenderer.on("update-error", () => {
-		if (loadingToastId) {
-			toast.dismiss(loadingToastId);
-			setLoadingToastId("");
+		if (window.electron.platform === "win32") {
+			toast.remove();
+			toast.error("Error downloading update. Retrying in 5 minutes.");
 		}
-
-		toast.remove();
-		toast.error("Error downloading update. Retrying in 5 minutes.");
 	});
 
 	return (
