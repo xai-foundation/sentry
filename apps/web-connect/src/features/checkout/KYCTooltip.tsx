@@ -10,7 +10,6 @@ interface TooltipProps extends PropsWithChildren {
 const countryList: { country: string; translation: string }[] = [
 	{country: "United States", translation: "United States"},
 	{country: "Afghanistan", translation: "افغانستان‎"},
-	{country: "Albania", translation: "Shqipëri"},
 	{country: "Belarus", translation: "Беларусь"},
 	{country: "Bosnia and Herzegovina", translation: "Босна и Херцеговина"},
 	{country: "Burundi", translation: "Uburundi"},
@@ -33,7 +32,6 @@ const countryList: { country: string; translation: string }[] = [
 	{country: "Nicaragua", translation: "Nicaragua"},
 	{country: "North Korea", translation: "조선 민주주의 인민 공화국"},
 	{country: "Serbia", translation: "Србија"},
-	{country: "Slovenia", translation: "Slovenija"},
 	{country: "Somalia", translation: "Soomaaliya"},
 	{country: "South Sudan", translation: "جنوب السودان‎"},
 	{country: "Sudan", translation: "السودان‎"},
