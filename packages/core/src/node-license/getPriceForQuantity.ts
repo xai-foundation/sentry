@@ -38,7 +38,7 @@ export async function getPriceForQuantity(quantity: number): Promise<{ price: bi
     let totalSupply = await nodeLicenseContract.totalSupply();
 
     // Get the pricing tiers
-    const tiers = await listTiers()
+    const tiers = await listTiers();
 
     // Initialize the price
     let price: bigint = 0n;
@@ -72,4 +72,28 @@ export async function getPriceForQuantity(quantity: number): Promise<{ price: bi
     }
 
     return { price: contractPrice, nodesAtEachPrice };
+}
+
+/**
+ * Fetches the price for a given quantity of NodeLicenses and the number of nodes at each price.
+ * @param quantity - The quantity of NodeLicenses.
+ * @returns just the price for a given quantity with no breakdown
+ */
+export async function getPrice(quantity: number): Promise<{ price: bigint }> {
+
+    // Get the provider
+    const providerUrls = [
+        "https://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
+        "https://arb1.arbitrum.io/rpc",
+        "https://tame-alpha-violet.arbitrum-mainnet.quiknode.pro/d55a31b32f04c82b0e1bcb77f1fc6dcf53147f2a/"
+    ];
+    const provider = getProvider(providerUrls[Math.floor(Math.random() * providerUrls.length)]);
+
+    // Create an instance of the NodeLicense contract
+    const nodeLicenseContract = new ethers.Contract(config.nodeLicenseAddress, NodeLicenseAbi, provider);
+
+    // Get the price from the price() function in NodeLicense contract
+    const contractPrice = await nodeLicenseContract.price(quantity, "");
+
+    return { price: contractPrice };
 }
