@@ -106,8 +106,8 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 			return (
 				<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
 					<td className="w-full max-w-[70px] px-4 py-2">{keyString}</td>
-					<td className="w-full max-w-[360px] px-4 py-2">{owner}</td>
-					<td className="w-full max-w-[270px] px-4 py-2 text-[#A3A3A3]">
+					<td className="w-full max-w-[400px] px-4 py-2">{owner}</td>
+					<td className="w-full max-w-[350px] px-4 py-2 text-[#A3A3A3]">
 
 						{_status === "sentryNotRunning" && (
 							<div className="relative flex items-center gap-2">
@@ -166,12 +166,12 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						)}
 
 					</td>
-					<td className="w-full max-w-[360px] px-4 py-2 text-right">
+					<td className="w-full max-w-[200px] px-4 py-2 text-right">
 						{balances && balances[keyString]
 							? ethers.formatEther(balances[keyString].totalAccruedEsXai)
 							: "Loading..."}
 					</td>
-					<td className="w-full max-w-[150px] px-4 py-2 text-[#F30919]">
+					<td className="w-full max-w-[125px] px-4 py-2 text-[#F30919]">
 						<span
 							className="cursor-pointer"
 							onClick={() => window.electron.openExternal(`https://testnets.opensea.io/assets/arbitrum-goerli/${config.nodeLicenseAddress}/${keyString}`)}
@@ -330,14 +330,14 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 							<thead className="text-[#A3A3A3] sticky top-0 bg-white z-10">
 							<tr className="flex text-left text-[12px] px-8">
 								<th className="w-full max-w-[70px] px-4 py-2">KEY ID</th>
-								<th className="w-full max-w-[360px] px-4 py-2">OWNER ADDRESS</th>
-								<th className="w-full max-w-[270px] px-4 py-2">STATUS</th>
-								<th className="w-full max-w-[360px] px-4 py-2 flex items-center justify-end gap-1">
+								<th className="w-full max-w-[400px] px-4 py-2">OWNER ADDRESS</th>
+								<th className="w-full max-w-[350px] px-4 py-2">STATUS</th>
+								<th className="w-full max-w-[200px] px-4 py-2 flex items-center justify-end gap-1">
 									{isBalancesLoading &&
                                         <BiLoaderAlt className="animate-spin w-[18px]" color={"#A3A3A3"}/>}
 									ACCRUED esXAI
 								</th>
-								<th className="w-full max-w-[150px] px-4 py-2">OPENSEA URL</th>
+								<th className="w-full max-w-[125px] px-4 py-2">OPENSEA URL</th>
 							</tr>
 							</thead>
 							<tbody className="relative">{renderKeys()}</tbody>
