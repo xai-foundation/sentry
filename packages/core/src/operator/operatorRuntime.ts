@@ -86,7 +86,7 @@ export async function operatorRuntime(
             status: NodeLicenseStatus.FETCHING_MINT_TIMESTAMP,
         });
         safeStatusCallback();
-        mintTimestamps[nodeLicenseId.toString()] = await getMintTimestamp(nodeLicenseId);
+        mintTimestamps[nodeLicenseId.toString()] = await retry(async () => await getMintTimestamp(nodeLicenseId));
         nodeLicenseStatusMap.set(nodeLicenseId, {
             ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
             status: NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE,
