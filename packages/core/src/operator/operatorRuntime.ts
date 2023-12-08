@@ -64,7 +64,7 @@ export async function operatorRuntime(
     for (const owner of owners) {
         logFunction(`Fetching node licenses for owner ${owner}.`);
         const licensesOfOwner = await listNodeLicenses(owner, (tokenId) => {
-            logFunction(`Fetched node license ${tokenId.toString()} for owner ${owner}.`);
+            logFunction(`Fetched Sentry Key ${tokenId.toString()} for owner ${owner}.`);
             nodeLicenseStatusMap.set(tokenId, {
                 ownerPublicKey: owner,
                 status: NodeLicenseStatus.WAITING_IN_QUEUE,
