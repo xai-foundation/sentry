@@ -24,7 +24,6 @@ export function bootOperator(cli: Vorpal) {
             }
 
             const { signer } = getSignerFromPrivateKey(walletKey);
-            this.log(`Address of the Wallet: ${signer.getAddress()}`);
 
             stopFunction = await operatorRuntime(
                 signer,

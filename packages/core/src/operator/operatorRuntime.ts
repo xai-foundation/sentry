@@ -3,13 +3,13 @@ import { Challenge, RefereeAbi, claimReward, config, getMintTimestamp, getSubmis
 import { retry } from "../index.js";
 
 export enum NodeLicenseStatus {
-    WAITING_IN_QUEUE = "Waiting in Queue", // waiting to do an action, but in a queue
-    FETCHING_MINT_TIMESTAMP = "Fetching Mint Timestamp",
-    WAITING_FOR_NEXT_CHALLENGE = "Waiting for Next Challenge",
-    CHECKING_MINT_TIMESTAMP_ELIGIBILITY = "Checking Mint Timestamp Eligibility",
-    CHECKING_IF_ELIGIBLE_FOR_PAYOUT = "Checking if Eligible for Payout",
-    SUBMITTING_ASSERTION_TO_CHALLENGE = "Submitting Assertion to Challenge",
-    QUERYING_FOR_UNCLAIMED_SUBMISSIONS = "Querying for Unclaimed Submissions"
+    WAITING_IN_QUEUE = "Booting Operator For Key", // waiting to do an action, but in a queue
+    FETCHING_MINT_TIMESTAMP = "Eligibility Lookup",
+    WAITING_FOR_NEXT_CHALLENGE = "Node is Running, esXAI Will Accrue Every Few Days",
+    CHECKING_MINT_TIMESTAMP_ELIGIBILITY = "Eligibility Check",
+    CHECKING_IF_ELIGIBLE_FOR_PAYOUT = "Applying Reward Algorithm",
+    SUBMITTING_ASSERTION_TO_CHALLENGE = "Reward Algorithm Successful",
+    QUERYING_FOR_UNCLAIMED_SUBMISSIONS = "Checking for Unclaimed Rewards"
 }
 
 export interface NodeLicenseInformation {
@@ -50,13 +50,13 @@ export async function operatorRuntime(
     const refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, signer);
 
     // get the address of the operator
-    const operatorAddress = await retry(async () => await signer.getAddress());
+    const operatorAddress = await signer.getAddress();
     logFunction(`Fetched address of operator ${operatorAddress}.`);
 
     // get a list of all the owners that are added to this operator
-    logFunction("Getting all addresses attached to the operator.");
-    const owners = await retry(async () => await listOwnersForOperator(operatorAddress));
-    logFunction(`Received ${owners.length} wallets that are attached to this operator.`);
+    logFunction("Getting all wallets assigned to the operator.");
+    const owners = [operatorAddress, ...await retry(async () => await listOwnersForOperator(operatorAddress))];
+    logFunction(`Received ${owners.length} wallets that are assigned to this operator.`);
 
     // get a list of all the node licenses for each of the owners
     let nodeLicenseIds: bigint[] = [];
@@ -74,13 +74,13 @@ export async function operatorRuntime(
         nodeLicenseIds = [...nodeLicenseIds, ...licensesOfOwner];
         logFunction(`Fetched ${licensesOfOwner.length} node licenses for owner ${owner}.`);
     }
-    logFunction(`Total node licenses fetched: ${nodeLicenseIds.length}.`);
+    logFunction(`Total Sentry Keys fetched: ${nodeLicenseIds.length}.`);
 
     // create a mapping of all the timestamps these nodeLicenses were created at, so we can easily check the eligibility later
-    logFunction("Creating a mapping of all the timestamps these nodeLicenses were created at.");
+    logFunction("Checking Sentry Key eligibility.");
     const mintTimestamps: { [nodeLicenseId: string]: bigint } = {};
     for (const nodeLicenseId of nodeLicenseIds) {
-        logFunction(`Fetching mint timestamp for nodeLicenseId ${nodeLicenseId}.`);
+        logFunction(`Fetching metadata for Sentry Key ${nodeLicenseId}.`);
         nodeLicenseStatusMap.set(nodeLicenseId, {
             ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
             status: NodeLicenseStatus.FETCHING_MINT_TIMESTAMP,
@@ -92,9 +92,9 @@ export async function operatorRuntime(
             status: NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE,
         });
         safeStatusCallback();
-        logFunction(`Fetched mint timestamp for nodeLicenseId ${nodeLicenseId}.`);
+        logFunction(`Fetched metadata for Sentry Key ${nodeLicenseId}.`);
     }
-    logFunction("Finished creating the mapping of mint timestamps.");
+    logFunction("Finished creating the lookup of metadata for the Sentry Keys.");
 
     /**
      * Processes a new challenge for all the node licenses.
@@ -115,7 +115,7 @@ export async function operatorRuntime(
             safeStatusCallback();
 
             if (challenge.createdTimestamp <= mintTimestamps[nodeLicenseId.toString()]) {
-                logFunction(`nodeLicenseId ${nodeLicenseId} is not eligible for challenge ${challengeNumber}.`);
+                logFunction(`Sentry Key ${nodeLicenseId} is not eligible for challenge ${challengeNumber}.`);
                 nodeLicenseStatusMap.set(nodeLicenseId, {
                     ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
                     status: NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE,
@@ -133,7 +133,7 @@ export async function operatorRuntime(
 
             const [payoutEligible] = await retry(async () => await refereeContract.createAssertionHashAndCheckPayout(nodeLicenseId, challengeNumber, challenge.assertionStateRootOrConfirmData, challenge.challengerSignedHash));
             if (!payoutEligible) {
-                logFunction(`nodeLicenseId ${nodeLicenseId} is not going to receive a reward for entering the challenge ${challengeNumber}, thus not submmiting an assertion.`);
+                logFunction(`Sentry Key ${nodeLicenseId} did not accrue esXAI for the challenge ${challengeNumber}. A Sentry Key receives esXAI every few days.`);
                 nodeLicenseStatusMap.set(nodeLicenseId, {
                     ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
                     status: NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE,
@@ -145,7 +145,7 @@ export async function operatorRuntime(
             // check to see if this nodeLicense has already submitted, if we have, then go to next license
             const [{submitted}] = await retry(async () => await getSubmissionsForChallenges([challengeNumber], nodeLicenseId));
             if (submitted) {
-                logFunction(`nodeLicenseId ${nodeLicenseId} has already submitted for challenge ${challengeNumber}.`);
+                logFunction(`Sentry Key ${nodeLicenseId} has submitted for challenge ${challengeNumber} by another node. If multiple nodes are running, this message can be ignored.`);
                 nodeLicenseStatusMap.set(nodeLicenseId, {
                     ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
                     status: NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE,
@@ -156,16 +156,16 @@ export async function operatorRuntime(
 
             // submit the claim to the challenge
             try {
-                logFunction(`Submitting claim for nodeLicenseId ${nodeLicenseId} to challenge ${challengeNumber}.`);
+                logFunction(`Submitting assertion for Sentry Key ${nodeLicenseId} to challenge ${challengeNumber}.`);
                 await retry(async () => await submitAssertionToChallenge(nodeLicenseId, challengeNumber, challenge.assertionStateRootOrConfirmData, signer));
-                logFunction(`Submitted claim for nodeLicenseId ${nodeLicenseId} to challenge ${challengeNumber}.`);
+                logFunction(`Submitted assertion for Sentry Key ${nodeLicenseId} to challenge ${challengeNumber}. You have accrued esXAI.`);
                 nodeLicenseStatusMap.set(nodeLicenseId, {
                     ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
                     status: NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE,
                 });
                 safeStatusCallback();
             } catch (err) {
-                console.error("There was an error trying to submit the assertion, this is likely due to running more than one instance of the operator. If this is the case, you can ignore this error.", err);
+                logFunction(`Sentry Key ${nodeLicenseId} has submitted for challenge ${challengeNumber} by another node. If multiple nodes are running, this message can be ignored.`);
             }
 
         }
@@ -173,7 +173,7 @@ export async function operatorRuntime(
 
     async function processClaimForChallenge(challengeNumber: bigint, nodeLicenseId: bigint) {
 
-        logFunction(`Checking KYC status of '${nodeLicenseStatusMap.get(nodeLicenseId)!.ownerPublicKey}' for Node License '${nodeLicenseId}'.`);
+        logFunction(`Checking KYC status of '${nodeLicenseStatusMap.get(nodeLicenseId)!.ownerPublicKey}' for Sentry Key '${nodeLicenseId}'.`);
         nodeLicenseStatusMap.set(nodeLicenseId, {
             ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
             status: `Checking KYC Status`,
@@ -184,23 +184,23 @@ export async function operatorRuntime(
         const [{isKycApproved}] = await retry(async () => await checkKycStatus([nodeLicenseStatusMap.get(nodeLicenseId)!.ownerPublicKey]));
         
         if (isKycApproved) {
-            logFunction(`Claiming Submission for Challenge '${challengeNumber}'.`);
+            logFunction(`Requesting esXAI reward for challenge '${challengeNumber}'.`);
             nodeLicenseStatusMap.set(nodeLicenseId, {
                 ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
-                status: `Claiming Submission for Challenge '${challengeNumber}'`,
+                status: `Requesting esXAI reward for challenge '${challengeNumber}'.'`,
             });
             safeStatusCallback();
 
             await retry(async () => await claimReward(nodeLicenseId, challengeNumber, signer));
 
-            logFunction(`Claimed Submission for Challenge '${challengeNumber}'.`);
+            logFunction(`esXAI claim was successful for Challenge '${challengeNumber}'.`);
             nodeLicenseStatusMap.set(nodeLicenseId, {
                 ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
-                status: `Claimed Submission for Challenge '${challengeNumber}'`,
+                status: `esXAI claim was successful for Challenge '${challengeNumber}'`,
             });
             safeStatusCallback();
         } else {
-            logFunction(`Checked KYC status of '${nodeLicenseStatusMap.get(nodeLicenseId)!.ownerPublicKey}' for Node License '${nodeLicenseId}' It was not KYC'd and not able to claim the reward.`);
+            logFunction(`Checked KYC status of '${nodeLicenseStatusMap.get(nodeLicenseId)!.ownerPublicKey}' for Sentry Key '${nodeLicenseId}'. It was not KYC'd and not able to claim the reward.`);
             nodeLicenseStatusMap.set(nodeLicenseId, {
                 ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
                 status: `Cannot Claim, Failed KYC`,
@@ -220,7 +220,7 @@ export async function operatorRuntime(
                 await processNewChallenge(challengeNumber, challenge);
             }
         } else {
-            logFunction(`Found challenge with number: ${challengeNumber}. It was closed for submissions.`);
+            logFunction(`Looking for previously accrued rewards on Challenge ${challengeNumber}.`);
         }
 
         // check the previous challenge, that should be closed now
@@ -245,7 +245,7 @@ export async function operatorRuntime(
                 status: NodeLicenseStatus.QUERYING_FOR_UNCLAIMED_SUBMISSIONS,
             });
             safeStatusCallback();
-            logFunction(`Querying for unclaimed submission for node license '${nodeLicenseId}'.`);
+            logFunction(`Checking for unclaimed rewards on Sentry Key '${nodeLicenseId}'.`);
     
             await getSubmissionsForChallenges(challengeIds, nodeLicenseId, async (submission, index) => {
     
@@ -253,19 +253,19 @@ export async function operatorRuntime(
     
                 nodeLicenseStatusMap.set(nodeLicenseId, {
                     ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
-                    status: `Checking Submission for Challenge '${challengeId}'`,
+                    status: `Checking For Unclaimed Rewards on Challenge '${challengeId}'`,
                 });
                 safeStatusCallback();
-                logFunction(`Checking Submission for Challenge '${challengeId}'`);
+                logFunction(`Checking for unclaimed rewards on Challenge '${challengeId}'.`);
     
                 // call the process claim and update statuses/logs accoridngly
                 if (submission.submitted && !submission.claimed) {
                     nodeLicenseStatusMap.set(nodeLicenseId, {
                         ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
-                        status: `Found unclaimed submission for Challenge '${challengeId}'`,
+                        status: `Found Unclaimed Reward for Challenge '${challengeId}'`,
                     });
                     safeStatusCallback();
-                    logFunction(`Found unclaimed submission for Challenge '${challengeId}'`);
+                    logFunction(`Found unclaimed reward for challenge '${challengeId}'.`);
                     await processClaimForChallenge(challengeId, nodeLicenseId);
                 }
             });
@@ -281,13 +281,13 @@ export async function operatorRuntime(
     // iterate over all the challenges that are closed to see if any are available for claiming
     const closedChallengeIds = challenges.filter(([_, challenge]) => !challenge.openForSubmissions).map(([challengeNumber]) => challengeNumber);
     await processClosedChallenges(closedChallengeIds);
-    logFunction(`The operator has finished booting. The operator is running successfully.`);
+    logFunction(`The operator has finished booting. The operator is running successfully. esXAI will accrue every few days.`);
 
     // Interval function to emit to the logFunction every 5 minutes
     const intervalId = setInterval(() => {
         const timestamp = new Date();
-        logFunction(`Current timestamp: ${timestamp.toISOString()}. The operator is still running successfully.`);
-    }, 300000); // 300000 milliseconds = 5 minutes
+        logFunction(`Current timestamp: ${timestamp.toISOString()}. The operator is still running successfully. esXAI will accrue every few days.`);
+    }, 60000); // 60,000 milliseconds = 1 minute
 
     async function stop() {
         clearInterval(intervalId);
