@@ -86,7 +86,7 @@ export function ExportSentryDrawer() {
 							<p className="text-[15px] text-[#525252] mt-2">
 								Want to run a cloud instance?
 								<a
-									onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/xai-protocol/sentry-nodes-explained/who-can-operate-a-sentry")}
+									onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup/step-2-download-and-run-the-xai-sentry-node")}
 									className="text-[#F30919] ml-1 cursor-pointer"
 								>
 									Learn more
