@@ -70,7 +70,7 @@ export function Footer() {
 						<div className="flex items-center gap-2">
 							<p className="hidden md:inline">|</p>
 							<a
-								className="text-blue-500 hover:underline"
+								className="text-blue-500 cursor-pointer hover:underline"
 								onClick={() => window.open("https://xai.games/sentrynodeagreement/", "_blank", "noopener noreferrer")}
 							>
 								Sentry Node Agreement
@@ -78,7 +78,7 @@ export function Footer() {
 						</div>
 					</div>
 
-					<div className="flex gap-4">
+					<div className="flex gap-4 cursor-pointer">
 						{bodyContent.socials.map(createSocialElement)}
 					</div>
 				</div>
