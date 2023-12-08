@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import { config } from "../config.js";
 import { RefereeAbi } from "../abis/index.js";
 import { checkKycStatus } from "./checkKycStatus.js";
+import { retry } from "../index.js";
 
 /**
  * Sets the KYC status of an object of wallets in the Referee contract.
@@ -27,9 +28,9 @@ export async function setKycStatus(
         const currentStatus = await checkKycStatus([wallet]);
         if (status !== currentStatus[0].isKycApproved) {
             if (status) {
-                await contract.addKycWallet(wallet);
+                await retry(async () => await contract.addKycWallet(wallet));
             } else {
-                await contract.removeKycWallet(wallet);
+                await retry(async () => await contract.removeKycWallet(wallet));
             }
             kycStatuses.push({wallet, isKycApproved: status});
             if (callback) {
