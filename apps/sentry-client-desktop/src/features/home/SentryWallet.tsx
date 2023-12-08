@@ -4,7 +4,6 @@ import {BiDownload, BiLinkExternal, BiLoaderAlt, BiUpload} from "react-icons/bi"
 import {useOperator} from "../operator";
 import {PiCopy} from "react-icons/pi";
 import {HiOutlineDotsVertical} from "react-icons/hi";
-import {GiPauseButton} from "react-icons/gi";
 import {MdRefresh} from "react-icons/md";
 import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.js";
@@ -17,13 +16,14 @@ import {useQueryClient} from "react-query";
 import {useBalance} from "@/hooks/useBalance";
 import {ethers} from "ethers";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
-import {Tooltip} from "../../../../../packages/ui/src/features/tooltip/Tooltip";
+import {Tooltip} from "@sentry/ui";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
 import {SentryWalletHeader} from "@/features/home/SentryWalletHeader";
 import {chainStateAtom, useChainDataRefresh} from "@/hooks/useChainDataWithCallback";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {AssignKeysSentryNotRunning} from "@/components/AssignKeysSentryNotRunning";
+import {GrRefresh} from "react-icons/gr";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
@@ -271,8 +271,8 @@ export function SentryWallet() {
 								>
 									{stopRuntime ?
 										<>
-											<GiPauseButton className="h-[15px]"/>
-											Pause Sentry
+											<GrRefresh className="h-[15px]"/>
+											Restart Sentry
 										</>
 										:
 										<>

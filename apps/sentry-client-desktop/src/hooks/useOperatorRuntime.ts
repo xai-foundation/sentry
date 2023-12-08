@@ -1,7 +1,7 @@
 import {NodeLicenseInformation, NodeLicenseStatusMap, operatorRuntime} from "@sentry/core";
 import {useOperator} from "@/features/operator";
 import {atom, useAtom} from "jotai";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useStorage} from "@/features/storage";
 
 let stop: (() => Promise<void>) | undefined;
@@ -16,6 +16,13 @@ export function useOperatorRuntime() {
 	const [runtimeLogs, setRuntimeLogs] = useAtom(runtimeLogsAtom);
 	const [, setRerender] = useState(0);
 	const {data, setData} = useStorage();
+
+	// start sentry on launch / restart sentry
+	useEffect(() => {
+		if (data?.sentryRunning) {
+			void startRuntime();
+		}
+	}, []);
 
 	function writeLog(log: string) {
 		console.info(log); // for debugging purposes
