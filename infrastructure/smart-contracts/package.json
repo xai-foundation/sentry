@@ -8,6 +8,7 @@
     "deploy-xai": "hardhat run scripts/deployXai.mjs",
     "deploy-test": "hardhat run scripts/deployCounter.mjs",
     "upgrade-node-license": "hardhat run scripts/upgradeNodeLicense.mjs",
+    "operator-report": "hardhat run scripts/createOperatorReport.mjs",
     "local": "hardhat node",
     "test": "hardhat test --network localhost",
     "coverage": "hardhat coverage --network hardhat --solcoverjs ./.solcover.cjs --temp artifacts --testfiles \"./test/**/*.mjs\"",

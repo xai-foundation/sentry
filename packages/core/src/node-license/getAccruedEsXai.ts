@@ -29,7 +29,7 @@ export async function getAccruedEsXai(
 	// get all the submissions for the challenges
 	await getSubmissionsForChallenges(challengeIds, nodeLicenseId, async (submission, index) => {
 
-		if (submission.submitted && !submission.claimed) {
+		if (submission.submitted && !submission.claimed && submission.eligibleForPayout) {
 			const [_, challenge] = challenges[index];
 			const individualReward = challenge.rewardAmountForClaimers / challenge.numberOfEligibleClaimers;
 			res.totalAccruedEsXai += individualReward;
