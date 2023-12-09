@@ -19,9 +19,9 @@ export function useOperatorRuntime() {
 
 	// start sentry on launch / restart sentry
 	useEffect(() => {
-		// if (data?.sentryRunning) {
+		if (data?.sentryRunning) {
 			void startRuntime();
-		// }
+		}
 	}, []);
 
 	function writeLog(log: string) {
