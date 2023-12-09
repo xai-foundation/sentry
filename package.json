@@ -9,7 +9,7 @@
   "scripts": {
     "build": "pnpm recursive run build",
     "clean": "pnpm recursive run clean",
-    "cli": "pnpm -filter @sentry/core run build && pnpm -r -filter @sentry/sentry-node-cli run start",
+    "cli": "pnpm -filter @sentry/core run build && pnpm -r -filter @sentry/sentry-node-cli run compile && pnpm -r -filter @sentry/sentry-node-cli run start",
     "deploy-smart-contracts": "pnpm -r -filter @sentry/core run build && pnpm -r -filter @sentry/smart-contracts run deploy",
     "desktop": "pnpm -filter @sentry/web-connect run build && pnpm -r -filter @sentry/sentry-client-desktop run dev",
     "docs": "pnpm -filter @sentry/docs run start",

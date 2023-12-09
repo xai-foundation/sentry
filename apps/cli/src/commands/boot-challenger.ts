@@ -22,7 +22,7 @@ export function bootChallenger(cli: Vorpal) {
             }
 
             const { publicKeyHex } = await createBlsKeyPair(secretKey);
-            this.log(`Public Key of the Challenger: ${publicKeyHex}`);
+            this.log(`[${new Date().toISOString()}] Public Key of the Challenger: ${publicKeyHex}`);
 
             const walletKeyPrompt: Vorpal.PromptObject = {
                 type: 'password',
@@ -37,23 +37,24 @@ export function bootChallenger(cli: Vorpal) {
             }
 
             const { address, signer } = getSignerFromPrivateKey(walletKey);
-            this.log(`Address of the Wallet: ${address}`);
+            this.log(`[${new Date().toISOString()}] Address of the Wallet: ${address}`);
 
             // start a listener for the assertions coming in
+            // @ts-ignore
             listenForAssertions(async (nodeNum, blockHash, sendRoot, event) => {
-                this.log(`Assertion confirmed ${nodeNum}. Looking up the assertion information...`);
+                this.log(`[${new Date().toISOString()}] Assertion confirmed ${nodeNum}. Looking up the assertion information...`);
                 const assertionNode = await getAssertion(nodeNum);
-                this.log(`Assertion data retrieved. Starting the submission process...`);
+                this.log(`[${new Date().toISOString()}] Assertion data retrieved. Starting the submission process...`);
                 await submitAssertionToReferee(
                     secretKey,
                     nodeNum,
                     assertionNode,
                     signer,
                 );
-                this.log(`Submitted assertion: ${nodeNum}`);
-            })
+                this.log(`[${new Date().toISOString()}] Submitted assertion: ${nodeNum}`);
+            }, (v: string) => this.log(`[${new Date().toISOString()}] ${v}`));
 
-            this.log('The challenger is now listening for assertions...');
+            this.log(`[${new Date().toISOString()}] The challenger is now listening for assertions...`);
             return new Promise((resolve, reject) => { }); // Keep the command alive
         });
 }
