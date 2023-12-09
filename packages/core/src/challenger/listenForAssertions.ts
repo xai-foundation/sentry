@@ -29,9 +29,6 @@ export function listenForAssertions(callback: (nodeNum: any, blockHash: any, sen
             if (rollupContract) {
                 rollupContract.removeAllListeners("NodeConfirmed");
             }
-            if (provider) {
-                provider.removeAllListeners("error");
-            }
         }
 
         log(`[${new Date().toISOString()}] Creating provider and contract instance`);

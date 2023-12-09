@@ -10,32 +10,52 @@ import { Challenge, getChallenge } from "../index.js";
  * @param callback - The callback function to be triggered when ChallengeSubmitted event is emitted.
  * @returns A function that can be called to stop listening for the event.
  */
-export function listenForChallenges(callback: (challengeNumber: bigint, challenge: Challenge, event: any) => void): () => void {
-    // get a provider for the arb one network
-    const provider = getProvider();
+export function listenForChallenges(callback: (challengeNumber: bigint, challenge: Challenge, event: any) => void, log: (log: string) => void = () => {}): () => void {
+    let intervalId: NodeJS.Timeout;
+    let refereeContract: ethers.Contract;
+    let provider: ethers.JsonRpcProvider;
 
-    // create an instance of the Referee contract
-    const refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, provider);
-
-    // create a map to keep track of challengeNumbers that have called the callback
     const challengeNumberMap: { [challengeNumber: string]: boolean } = {};
 
-    // listen for the ChallengeSubmitted event
-    refereeContract.on("ChallengeSubmitted", async (challengeNumber, event) => {
+    const startListening = () => {
+        log(`[${new Date().toISOString()}] Starting to listen for ChallengeSubmitted events`);
 
-        // if the challengeNumber has not been seen before, call the callback and add it to the map
-        if (!challengeNumberMap[challengeNumber.toString()]) {
-            challengeNumberMap[challengeNumber.toString()] = true;
-
-            // lookup the challenge
-            const challenge = await getChallenge(challengeNumber);
-
-            void callback(challengeNumber, challenge, event);
+        if (intervalId) {
+            log(`[${new Date().toISOString()}] Clearing existing interval and listeners`);
+            clearInterval(intervalId);
+            if (refereeContract) {
+                refereeContract.removeAllListeners("ChallengeSubmitted");
+            }
         }
-    });
 
-    // return a function that can be used to stop listening for the event
+        log(`[${new Date().toISOString()}] Creating provider and contract instance`);
+        provider = getProvider(undefined, true);
+
+        refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, provider);
+
+        log(`[${new Date().toISOString()}] Setting up listener for ChallengeSubmitted events`);
+        refereeContract.on("ChallengeSubmitted", async (challengeNumber, event) => {
+            if (!challengeNumberMap[challengeNumber.toString()]) {
+                log(`[${new Date().toISOString()}] ChallengeSubmitted event received for new challengeNumber: ${challengeNumber}`);
+                challengeNumberMap[challengeNumber.toString()] = true;
+
+                const challenge = await getChallenge(challengeNumber);
+
+                void callback(challengeNumber, challenge, event);
+            }
+        });
+
+        log(`[${new Date().toISOString()}] Setting up interval to recreate listener every 4 minutes`);
+        intervalId = setInterval(startListening, 4 * 60 * 1000);
+    };
+
+    log(`[${new Date().toISOString()}] Starting initial listening`);
+    startListening();
+
     return () => {
+        log(`[${new Date().toISOString()}] Stopping listening for ChallengeSubmitted events`);
+        clearInterval(intervalId);
         refereeContract.removeAllListeners("ChallengeSubmitted");
+        provider.removeAllListeners("error");
     };
 }
