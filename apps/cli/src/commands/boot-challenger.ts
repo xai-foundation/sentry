@@ -52,7 +52,7 @@ export function bootChallenger(cli: Vorpal) {
                     signer,
                 );
                 this.log(`[${new Date().toISOString()}] Submitted assertion: ${nodeNum}`);
-            }, (v: string) => this.log(`[${new Date().toISOString()}] ${v}`));
+            }, (v: string) => this.log(v));
 
             this.log(`[${new Date().toISOString()}] The challenger is now listening for assertions...`);
             return new Promise((resolve, reject) => { }); // Keep the command alive
