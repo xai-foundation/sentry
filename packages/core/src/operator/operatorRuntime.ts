@@ -259,7 +259,7 @@ export async function operatorRuntime(
                 logFunction(`Checking for unclaimed rewards on Challenge '${challengeId}'.`);
     
                 // call the process claim and update statuses/logs accoridngly
-                if (submission.submitted && !submission.claimed) {
+                if (submission.submitted && submission.eligibleForPayout && !submission.claimed) {
                     nodeLicenseStatusMap.set(nodeLicenseId, {
                         ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
                         status: `Found Unclaimed Reward for Challenge '${challengeId}'`,
