@@ -10,7 +10,7 @@ export const nodeLicenseStatusMapAtom = atom<NodeLicenseStatusMap>(new Map<bigin
 export const runtimeLogsAtom = atom<string[]>([]);
 
 export function useOperatorRuntime() {
-	const {getSigner} = useOperator();
+	const {signer} = useOperator();
 	const [sentryRunning, setSentryRunning] = useAtom(sentryRunningAtom);
 	const [nodeLicenseStatusMap, setNodeLicenseStatusMap] = useAtom(nodeLicenseStatusMapAtom);
 	const [runtimeLogs, setRuntimeLogs] = useAtom(runtimeLogsAtom);
@@ -19,10 +19,10 @@ export function useOperatorRuntime() {
 
 	// start sentry on launch / restart sentry
 	useEffect(() => {
-		if (data?.sentryRunning) {
+		if (signer) {
 			void startRuntime();
 		}
-	}, []);
+	}, [signer]);
 
 	function writeLog(log: string) {
 		console.info(log); // for debugging purposes
@@ -36,12 +36,12 @@ export function useOperatorRuntime() {
 	}
 
 	async function startRuntime() {
-		if (getSigner && !sentryRunning && stop === undefined) {
+		if (!sentryRunning && stop === undefined) {
 			setSentryRunning(true);
 			setData({...data, sentryRunning: true});
 
 			// @ts-ignore
-			stop = await operatorRuntime(getSigner(), setNodeLicenseStatusMap, writeLog);
+			stop = await operatorRuntime(signer, setNodeLicenseStatusMap, writeLog);
 			setRerender((_number) => _number + 1);
 		}
 	}
@@ -60,7 +60,7 @@ export function useOperatorRuntime() {
 	}
 
 	return {
-		startRuntime: getSigner && startRuntime,
+		startRuntime: signer && startRuntime,
 		stopRuntime: stop && stopRuntime,
 		sentryRunning,
 		nodeLicenseStatusMap,
