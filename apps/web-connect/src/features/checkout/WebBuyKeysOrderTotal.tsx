@@ -6,6 +6,7 @@ import {ethers} from "ethers";
 import {CheckoutTierSummary, getPromoCode} from "@sentry/core";
 import {XaiCheckbox} from "@sentry/ui";
 import {KYCTooltip} from "@/features/checkout/KYCTooltip";
+import { useNetwork } from 'wagmi';
 
 interface PriceDataInterface {
 	price: bigint;
@@ -36,6 +37,7 @@ export function WebBuyKeysOrderTotal(
 		error
 	}: WebBuyKeysOrderTotalProps) {
 	const {isLoading: isTotalLoading} = useGetTotalSupplyAndCap();
+	const { chain } = useNetwork()
 
 	const [promo, setPromo] = useState<boolean>(false);
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
@@ -268,10 +270,10 @@ export function WebBuyKeysOrderTotal(
 							<div>
 								<button
 									onClick={() => onClick()}
-									className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
-									disabled={!ready}
+									className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
+									disabled={!ready || chain?.id !== 42_161}
 								>
-									Confirm purchase
+									{chain?.id === 42_161 ? "Confirm purchase" : "Please Switch to Arbitrum One"}
 								</button>
 
 								{error && (
