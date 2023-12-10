@@ -22,7 +22,7 @@ export function useOperatorRuntime() {
 		if (signer) {
 			void startRuntime();
 		}
-	}, []);
+	}, [signer]);
 
 	function writeLog(log: string) {
 		console.info(log); // for debugging purposes
@@ -60,7 +60,7 @@ export function useOperatorRuntime() {
 	}
 
 	return {
-		startRuntime: getSigner && startRuntime,
+		startRuntime: signer && startRuntime,
 		stopRuntime: stop && stopRuntime,
 		sentryRunning,
 		nodeLicenseStatusMap,
