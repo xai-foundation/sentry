@@ -6,7 +6,7 @@ import {createMnemonic, getSignerFromMnemonic, getSignerFromPrivateKey} from "@s
 export const privateKeyAtom = atom<string | undefined>(undefined);
 
 interface IUseOperatorResponse {
-	getSigner?: () => ethers.Signer;
+	signer?: ethers.Signer;
 	privateKey?: string;
 	publicKey?: string;
 	importPrivateKey: (privateKey: string) => Promise<void>
@@ -131,7 +131,7 @@ export function useOperator(): IUseOperatorResponse {
 	return {
 		error,
 		isLoading: !privateKey || !publicKey || !signerRef.current,
-		getSigner: () => signerRef?.current,
+		signer: signerRef?.current,
 		importPrivateKey,
 		privateKey,
 		publicKey
