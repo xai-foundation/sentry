@@ -148,7 +148,7 @@ async function main() {
   console.log("NodeLicense Abi exported");
 
   // Update the referee, NodeLicense, esXai, xai, and GasSubsidy contract addresses in the config
-  writeToConfig({
+  console.log({
     refereeAddress,
     refereeImplementationAddress: await getImplementationAddress(referee),
     refereeDeployedBlockNumber,
@@ -165,7 +165,6 @@ async function main() {
     gasSubsidyImplementationAddress: await getImplementationAddress(gasSubsidy),
     gasSubsidyDeployedBlockNumber
   });
-  console.log("Referee, NodeLicense, esXai, xai, and GasSubsidy contract addresses updated in the config");
 
   // Grant the deployer the minter role on Xai and esXai
   const xaiMinterRole = await xai.MINTER_ROLE();
