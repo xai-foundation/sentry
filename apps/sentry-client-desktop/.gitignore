@@ -30,3 +30,5 @@ public/web
 tsconfig.node.tsbuildinfo
 vite.config.js
 vite.config.d.ts
+# Sentry Config File
+.env.sentry-build-plugin
