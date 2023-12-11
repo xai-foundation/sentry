@@ -21,12 +21,14 @@ import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {ethers} from "ethers";
 import {BiLoaderAlt} from "react-icons/bi";
+import {EarnedEsxaiBalance, useGetWalletBalance} from "@/hooks/useGetWalletBalance";
 
 interface HasKeysProps {
 	combinedOwners: string[],
 	combinedLicensesMap: LicenseMap,
 	statusMap: StatusMap,
 	isWalletAssignedMap: WalletAssignedMap,
+	earnedEsxaiBalance: EarnedEsxaiBalance,
 }
 
 export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalletAssignedMap}: HasKeysProps) {
@@ -41,6 +43,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 	const [isRemoveWalletOpen, setIsRemoveWalletOpen] = useState<boolean>(false);
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const {startRuntime, sentryRunning} = useOperatorRuntime();
+	const {data: earnedEsxaiBalance} = useGetWalletBalance(combinedOwners);
 
 	function startAssignment() {
 		if (!isOperatorLoading) {
@@ -291,38 +294,73 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					</div>
 				</div>
 
-				<div className="flex flex-col pl-10">
-					<div className="flex items-center gap-1 text-[15px] text-[#525252]">
-						<p>Accrued network esXAI</p>
-						<Tooltip
-							header={"Each key will accrue esXAI"}
-							body={"This value is the sum of all esXAI accrued for the selected wallet. If esXAI has already been claimed, it will not be reflected in this value."}
-						>
-							<AiOutlineInfoCircle size={16} color={"#A3A3A3"}/>
-						</Tooltip>
-					</div>
-					<div className="flex items-center gap-2 font-semibold">
-						<XaiLogo/>
-						<div>
-							{balances
-								?
-								<div className={`flex gap-1 items-end`}>
-									<p className="text-3xl">
-									{ethers.formatEther(Object.values(balances).reduce((acc, value) => acc + value.totalAccruedEsXai, BigInt(0)))}
-									</p>
+				<div>
+					<div className="flex">
 
-									<p className="flex items-center text-[#A3A3A3] text-[12px] ml-1 mb-1">
-										Last
-										updated: {!isBalancesLoading && balancesFetchedLast ? balancesFetchedLast.toLocaleString() :
-										<BiLoaderAlt className="animate-spin w-[18px]" color={"#A3A3A3"}/>}
-									</p>
+						<div className="flex flex-col px-10">
+							<div className="flex items-center gap-1 text-[15px] text-[#525252]">
+								<p>esXAI balance</p>
+								<Tooltip
+									header={"Claimed esXAI will appear in your wallet balance.\n"}
+									body={"Once you pass KYC for a wallet, any accrued esXAI for that wallet will be claimed and reflected in your esXAI balance."}
+								>
+									<AiOutlineInfoCircle size={16} color={"#A3A3A3"}/>
+								</Tooltip>
+							</div>
+							<div className="flex items-center gap-2 font-semibold">
+								<XaiLogo/>
+								<div>
+									{earnedEsxaiBalance ? (
+										<div className={`flex gap-1 items-end`}>
+											<p className="text-3xl">
+												{ethers.formatEther(
+													earnedEsxaiBalance.reduce((acc, item) => acc + item.esXaiBalance, BigInt(0))
+												)}
+											</p>
+										</div>
+									) : (
+										<p className="text-3xl">
+											Loading...
+										</p>
+									)}
 								</div>
-								: "Loading..."
-							}
+
+							</div>
+						</div>
+
+						<div className="flex flex-col pl-10">
+							<div className="flex items-center gap-1 text-[15px] text-[#525252]">
+								<p>Accrued esXAI (unclaimed)</p>
+								<Tooltip
+									header={"Each key will accrue esXAI. Pass KYC to claim."}
+									body={"This value is the sum of all esXAI accrued for the selected wallet. If esXAI has already been claimed, it will appear in esXAI balance."}
+								>
+									<AiOutlineInfoCircle size={16} color={"#A3A3A3"}/>
+								</Tooltip>
+							</div>
+							<div className="flex items-center gap-2 font-semibold">
+								<XaiLogo/>
+								<div>
+									{balances
+										?
+										<div className={`flex gap-1 items-end`}>
+											<p className="text-3xl">
+												{ethers.formatEther(Object.values(balances).reduce((acc, value) => acc + value.totalAccruedEsXai, BigInt(0)))}
+											</p>
+										</div>
+										: "Loading..."
+									}
+								</div>
+							</div>
+
+							<p className="flex items-center text-[#A3A3A3] text-[12px]">
+								Last
+								updated: {!isBalancesLoading && balancesFetchedLast ? balancesFetchedLast.toLocaleString() :
+								<BiLoaderAlt className="animate-spin w-[18px]" color={"#A3A3A3"}/>}
+							</p>
 						</div>
 					</div>
 				</div>
-
 
 				<div className="flex flex-col max-h-[70vh]">
 					<div className="w-full overflow-y-auto">
