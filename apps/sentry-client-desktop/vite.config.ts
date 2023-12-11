@@ -45,7 +45,8 @@ export default defineConfig({
         renderer: {},
     }), sentryVitePlugin({
         org: "xai-foundation",
-        project: "javascript-react"
+        project: "javascript-react",
+		authToken: process.env.SENTRY_AUTH_TOKEN
     })],
 
     define: {
