@@ -1,7 +1,7 @@
-import { ethers } from 'ethers';
+import { Networkish, ethers } from 'ethers';
 
 // global storage of providers
-const providers: { [url: string]: ethers.JsonRpcProvider } = {};
+const providers: { [key: string]: ethers.JsonRpcProvider | ethers.WebSocketProvider | ethers.AlchemyProvider } = {};
 
 /**
  * Creates an ethers provider from a given RPC URL. If the same RPC URL is passed in and ignoreMemo is false, 
@@ -10,14 +10,31 @@ const providers: { [url: string]: ethers.JsonRpcProvider } = {};
  * @param ignoreMemo - A flag to ignore the memo. Defaults to false.
  * @returns An ethers provider.
  */
-export function getProvider(_rpcUrl: string = "https://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ", ignoreMemo: boolean = false): ethers.JsonRpcProvider {
-    const rpcUrl = _rpcUrl;
-    if (ignoreMemo || !providers[rpcUrl]) {
-        const provider = new ethers.JsonRpcProvider(rpcUrl);
-        if (!ignoreMemo) {
-            providers[rpcUrl] = provider;
-        }
-        return provider;
+export function getProvider(
+    rpcUrl: string | undefined = undefined,
+    ignoreMemo: boolean = false,
+    alchemyNetwork: Networkish = {name: "arbitrum", chainId: 42161}
+): ethers.JsonRpcProvider | ethers.WebSocketProvider | ethers.AlchemyProvider {
+    
+    const memoKey = rpcUrl != null ? rpcUrl : JSON.stringify(alchemyNetwork);
+
+    if (!ignoreMemo && providers[memoKey]) {
+        return providers[memoKey];
     }
-    return providers[rpcUrl];
+
+    let provider: ethers.JsonRpcProvider | ethers.WebSocketProvider | ethers.AlchemyProvider;
+    if (memoKey.startsWith('http') || memoKey.startsWith('https')) {
+        provider = new ethers.JsonRpcProvider(memoKey);
+    } else if (memoKey.startsWith('wss')) {
+        provider = new ethers.WebSocketProvider(memoKey);
+    } else {
+        const apiKey = 'p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ'; 
+        provider = new ethers.AlchemyProvider(alchemyNetwork, apiKey);
+    }
+
+    if (!ignoreMemo) {
+        providers[memoKey] = provider;
+    }
+
+    return provider;
 }

@@ -14,10 +14,10 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
-    "@noble/curves": "^1.2.0"
+    "@noble/curves": "^1.2.0",
+    "alchemy-sdk": "^3.1.0"
   },
   "devDependencies": {
     "@types/node": "^20.6.0"
   }
 }
-

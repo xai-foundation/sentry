@@ -13,7 +13,7 @@ import { Challenge, getChallenge } from "../index.js";
 export function listenForChallenges(callback: (challengeNumber: bigint, challenge: Challenge, event: any) => void, log: (log: string) => void = () => {}): () => void {
     let intervalId: NodeJS.Timeout;
     let refereeContract: ethers.Contract;
-    let provider: ethers.JsonRpcProvider;
+    let provider: ethers.JsonRpcProvider | ethers.WebSocketProvider | ethers.AlchemyProvider;
 
     const challengeNumberMap: { [challengeNumber: string]: boolean } = {};
 
