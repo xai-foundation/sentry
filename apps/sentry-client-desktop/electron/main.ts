@@ -122,7 +122,7 @@ function createWindow() {
 			type: 'question',
 			buttons: ['Yes', 'No'],
 			title: 'Confirm',
-			message: 'Are you sure you want to quit? You will stop accruing rewards once you exit the client.'
+			message: 'Are you sure you want to quit?\n\nNote: If you are running your node on another computer or in a VPS, you will continue to accrue rewards even if you close this instance.'
 		});
 
 		if (choice === 1) {
@@ -160,7 +160,7 @@ app.on('ready', async () => {
 					resolve(false);
 				} else {
 					resolve(false); // or throw error!!
-					// reject(err); 
+					// reject(err);
 				}
 			});
 			s.once('listening', () => {
