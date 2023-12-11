@@ -22,7 +22,6 @@ export function Keys() {
 		licensesLoading,
 		combinedLicensesMap,
 		combinedLicensesList,
-		earnedEsxaiBalance
 	} = useAtomValue(chainStateAtom);
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const {combinedOwners, walletAssignedMap} = useCombinedOwners(owners);
@@ -92,7 +91,6 @@ export function Keys() {
 							combinedLicensesMap={combinedLicensesMap}
 							statusMap={ownersKycMap}
 							isWalletAssignedMap={walletAssignedMap}
-							earnedEsxaiBalance={earnedEsxaiBalance}
 						/>
 					)}
 				</>

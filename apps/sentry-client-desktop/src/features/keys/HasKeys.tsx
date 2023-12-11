@@ -21,14 +21,13 @@ import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {ethers} from "ethers";
 import {BiLoaderAlt} from "react-icons/bi";
-import {EarnedEsxaiBalance, useGetWalletBalance} from "@/hooks/useGetWalletBalance";
+import {useGetWalletBalance} from "@/hooks/useGetWalletBalance";
 
 interface HasKeysProps {
 	combinedOwners: string[],
 	combinedLicensesMap: LicenseMap,
 	statusMap: StatusMap,
 	isWalletAssignedMap: WalletAssignedMap,
-	earnedEsxaiBalance: EarnedEsxaiBalance,
 }
 
 export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalletAssignedMap}: HasKeysProps) {
