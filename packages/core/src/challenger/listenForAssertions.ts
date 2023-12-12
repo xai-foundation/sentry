@@ -16,7 +16,7 @@ export function listenForAssertions(callback: (nodeNum: any, blockHash: any, sen
     // Initialize a variable to hold the interval ID
     let intervalId: NodeJS.Timeout;
     let rollupContract: ethers.Contract;
-    let provider: ethers.JsonRpcProvider;
+    let provider: ethers.JsonRpcProvider | ethers.WebSocketProvider | ethers.AlchemyProvider;
 
     // Function to start listening for the NodeConfirmed event
     // https://docs.chainstack.com/docs/understanding-ethereums-filter-not-found-error-and-how-to-fix-it
