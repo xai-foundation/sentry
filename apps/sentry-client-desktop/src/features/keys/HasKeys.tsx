@@ -22,6 +22,7 @@ import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {ethers} from "ethers";
 import {BiLoaderAlt} from "react-icons/bi";
 import {useGetWalletBalance} from "@/hooks/useGetWalletBalance";
+import {useGetSingleWalletBalance} from "@/hooks/useGetSingleWalletBalance";
 
 interface HasKeysProps {
 	combinedOwners: string[],
@@ -43,6 +44,8 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const {startRuntime, sentryRunning} = useOperatorRuntime();
 	const {data: earnedEsxaiBalance} = useGetWalletBalance(combinedOwners);
+	const {data: singleWalletBalance} = useGetSingleWalletBalance(selectedWallet);
+
 
 	function startAssignment() {
 		if (!isOperatorLoading) {
@@ -309,19 +312,28 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 							<div className="flex items-center gap-2 font-semibold">
 								<XaiLogo/>
 								<div>
-									{earnedEsxaiBalance ? (
+									{singleWalletBalance ? (
 										<div className={`flex gap-1 items-end`}>
 											<p className="text-3xl">
-												{ethers.formatEther(
-													earnedEsxaiBalance.reduce((acc, item) => acc + item.esXaiBalance, BigInt(0))
-												)}
+												{ethers.formatEther(singleWalletBalance.esXaiBalance)}
 											</p>
 										</div>
 									) : (
-										<p className="text-3xl">
-											Loading...
-										</p>
+										earnedEsxaiBalance ? (
+											<div className={`flex gap-1 items-end`}>
+												<p className="text-3xl">
+													{ethers.formatEther(
+														earnedEsxaiBalance.reduce((acc, item) => acc + item.esXaiBalance, BigInt(0))
+													)}
+												</p>
+											</div>
+										) : (
+											<p className="text-3xl">
+												Loading...
+											</p>
+										)
 									)}
+
 								</div>
 
 							</div>
