@@ -5,7 +5,7 @@ import { retry } from "../index.js";
 export enum NodeLicenseStatus {
     WAITING_IN_QUEUE = "Booting Operator For Key", // waiting to do an action, but in a queue
     FETCHING_MINT_TIMESTAMP = "Eligibility Lookup",
-    WAITING_FOR_NEXT_CHALLENGE = "Node is Running, esXAI Will Accrue Every Few Days",
+    WAITING_FOR_NEXT_CHALLENGE = "Running, esXAI Will Accrue Every Few Days",
     CHECKING_MINT_TIMESTAMP_ELIGIBILITY = "Eligibility Check",
     CHECKING_IF_ELIGIBLE_FOR_PAYOUT = "Applying Reward Algorithm",
     SUBMITTING_ASSERTION_TO_CHALLENGE = "Reward Algorithm Successful",
