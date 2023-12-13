@@ -15,7 +15,11 @@
   "dependencies": {
     "@radix-ui/react-tooltip": "^1.0.7",
     "@sentry/core": "workspace:*",
+    "@sentry/electron": "^4.15.1",
+    "@sentry/integrations": "^7.87.0",
+    "@sentry/react": "^7.86.0",
     "@sentry/ui": "workspace:*",
+    "@sentry/vite-plugin": "^2.10.2",
     "@sentry/web-connect": "workspace:*",
     "classnames": "^2.3.2",
     "clsx": "^1.2.1",
