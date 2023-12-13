@@ -15,9 +15,8 @@ import {useAtomValue} from "jotai";
 
 export function ActionsRequiredNotAccruingDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const {owners, ownersKycMap} = useAtomValue(chainStateAtom);
+	const {owners, ownersKycMap, combinedWalletsKycMap, combinedOwners} = useAtomValue(chainStateAtom);
 	const {accruing, kycRequired} = useAtomValue(accruingStateAtom);
-
 
 	return (
 		<div className="h-full flex flex-col justify-start items-center">
@@ -84,6 +83,17 @@ export function ActionsRequiredNotAccruingDrawer() {
 						<BarStepItem lastItem={true}>
 							<AssignedKeysCard/>
 						</BarStepItem>
+
+						{combinedOwners?.map((owner, i) => {
+							return (
+								<BarStepItem key={`bar-step-item-${i}`} lastItem={i + 1 === combinedOwners!.length}>
+									<KycRequiredCard
+										wallet={owner}
+										status={combinedWalletsKycMap[owner]}
+									/>
+								</BarStepItem>
+							);
+						})}
 					</div>
 				</div>
 

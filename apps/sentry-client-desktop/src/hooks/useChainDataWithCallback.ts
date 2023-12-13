@@ -10,6 +10,7 @@ interface ChainState {
 	anyLoading: boolean;
 	ownersLoading: boolean;
 	owners: string[];
+	combinedOwners: string[];
 	ownersKycLoading: boolean;
 	ownersKycMap: StatusMap;
 	combinedWalletsKycMap: StatusMap;
@@ -24,6 +25,7 @@ const defaultChainState: ChainState = {
 	anyLoading: true,
 	ownersLoading: true,
 	owners: [],
+	combinedOwners: [],
 	ownersKycLoading: false,
 	ownersKycMap: {},
 	combinedWalletsKycMap: {},
@@ -53,6 +55,8 @@ export function useChainDataWithCallback() {
 	const {isLoading: ownersKycLoading, statusMap: combinedWalletsKycMap} = useKycStatusesWithCallback(combinedOwners, chainStateRefresh);
 	const {isLoading: licensesLoading, licensesMap: combinedLicensesMap} = useListNodeLicensesWithCallback(combinedOwners, chainStateRefresh);
 
+	console.log(combinedOwners);
+
 	// set default state
 	useEffect(() => {
 		setChainState(defaultChainState);
@@ -77,6 +81,7 @@ export function useChainDataWithCallback() {
 			return {
 				..._chainState,
 				owners,
+				combinedOwners
 			}
 		});
 	}, [owners]);
