@@ -11,7 +11,7 @@ const providers: { [key: string]: ethers.JsonRpcProvider | ethers.WebSocketProvi
  * @returns An ethers provider.
  */
 export function getProvider(
-    rpcUrl: string | undefined = undefined,
+    rpcUrl: string | undefined = "wss://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
     ignoreMemo: boolean = false,
     alchemyNetwork: Networkish = {name: "arbitrum", chainId: 42161}
 ): ethers.JsonRpcProvider | ethers.WebSocketProvider | ethers.AlchemyProvider {
@@ -24,10 +24,13 @@ export function getProvider(
 
     let provider: ethers.JsonRpcProvider | ethers.WebSocketProvider | ethers.AlchemyProvider;
     if (memoKey.startsWith('http') || memoKey.startsWith('https')) {
+        console.log("Provisioning http provider.");
         provider = new ethers.JsonRpcProvider(memoKey);
     } else if (memoKey.startsWith('wss')) {
+        console.log("Provisioning web socket provider.");
         provider = new ethers.WebSocketProvider(memoKey);
     } else {
+        console.log("Provisioning alchemy provider.");
         const apiKey = 'p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ'; 
         provider = new ethers.AlchemyProvider(alchemyNetwork, apiKey);
     }

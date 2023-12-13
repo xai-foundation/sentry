@@ -211,7 +211,7 @@ export async function operatorRuntime(
 
     // start a listener for new challenges
     const challengeNumberMap: { [challengeNumber: string]: boolean } = {};
-    async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge) {
+    async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: any) {
 
         if (challenge.openForSubmissions) {
             logFunction(`Received new challenge with number: ${challengeNumber}.`);
