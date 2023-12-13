@@ -213,16 +213,8 @@ export async function operatorRuntime(
     const challengeNumberMap: { [challengeNumber: string]: boolean } = {};
     async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: any) {
 
-        if (event) {
-            try {
-                const eventSizeInBytes = Buffer.byteLength(JSON.stringify(event), 'utf8');
-                logFunction(`Event received from referee (${eventSizeInBytes} bytes).`);
-            } catch {}
-        }
-
-
         if (challenge.openForSubmissions) {
-            logFunction(`Received new challenge with number: ${challengeNumber}. Bandwidth of event: `);
+            logFunction(`Received new challenge with number: ${challengeNumber}.`);
             if (!challengeNumberMap[challengeNumber.toString()]) {
                 challengeNumberMap[challengeNumber.toString()] = true;
                 await processNewChallenge(challengeNumber, challenge);
