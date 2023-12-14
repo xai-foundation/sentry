@@ -40,7 +40,6 @@ export function SentryWallet() {
 	const {isLoading: operatorLoading, publicKey: operatorAddress} = useOperator();
 	const {data: balance} = useBalance(operatorAddress);
 
-	// TODO connect the refresh button on the x keys in y wallets text and query-ify these so we know when it's been cache cleared
 	const loading = operatorLoading || ownersLoading || licensesLoading;
 	const keyCount = licensesList.length;
 
