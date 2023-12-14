@@ -12,7 +12,7 @@ import { Challenge, getChallenge } from "../index.js";
  */
 export function listenForChallenges(callback: (challengeNumber: bigint, challenge: Challenge, event: any) => void): () => void {
     // get a provider for the arb one network
-    const provider = getProvider();
+    const provider = getProvider(config.arbitrumOneWebSocketUrl);
 
     // create an instance of the Referee contract
     const refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, provider);

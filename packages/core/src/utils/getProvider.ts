@@ -1,4 +1,5 @@
 import { Networkish, ethers } from 'ethers';
+import { config } from '../index.js';
 
 // global storage of providers
 const providers: { [key: string]: ethers.JsonRpcProvider | ethers.WebSocketProvider | ethers.AlchemyProvider } = {};
@@ -11,11 +12,11 @@ const providers: { [key: string]: ethers.JsonRpcProvider | ethers.WebSocketProvi
  * @returns An ethers provider.
  */
 export function getProvider(
-    rpcUrl: string | undefined = "wss://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
+    rpcUrl: string | undefined = config.arbitrumOneJsonRpcUrl,
     ignoreMemo: boolean = false,
-    alchemyNetwork: Networkish = {name: "arbitrum", chainId: 42161}
+    alchemyNetwork: Networkish = { name: "arbitrum", chainId: 42161 }
 ): ethers.JsonRpcProvider | ethers.WebSocketProvider | ethers.AlchemyProvider {
-    
+
     const memoKey = rpcUrl != null ? rpcUrl : JSON.stringify(alchemyNetwork);
 
     if (!ignoreMemo && providers[memoKey]) {
@@ -31,7 +32,7 @@ export function getProvider(
         provider = new ethers.WebSocketProvider(memoKey);
     } else {
         console.log("Provisioning alchemy provider.");
-        const apiKey = 'p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ'; 
+        const apiKey = 'p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ';
         provider = new ethers.AlchemyProvider(alchemyNetwork, apiKey);
     }
 

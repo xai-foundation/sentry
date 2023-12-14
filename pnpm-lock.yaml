@@ -368,10 +368,16 @@ importers:
       alchemy-sdk:
         specifier: ^3.1.0
         version: 3.1.0
+      ws:
+        specifier: ^8.15.1
+        version: 8.15.1
     devDependencies:
       '@types/node':
         specifier: ^20.6.0
         version: 20.6.0
+      '@types/ws':
+        specifier: ^8.5.10
+        version: 8.5.10
 
   packages/ui:
     dependencies:
@@ -6383,6 +6389,11 @@ packages:
     dependencies:
       '@types/node': 20.6.0
     dev: false
+
+  /@types/ws@8.5.10:
+    resolution: {integrity: sha512-vmQSUcfalpIq0R9q7uTo2lXs6eGIpt9wtnLdMv9LVpIjCA/+ufZRozlVoVelIYixx1ugCBKDhn89vnsEGOCx9A==}
+    dependencies:
+      '@types/node': 20.6.0
 
   /@types/ws@8.5.6:
     resolution: {integrity: sha512-8B5EO9jLVCy+B58PLHvLDuOD8DRVMgQzq8d55SjLCOn9kqGyqOvy27exVaTio1q1nX5zLu8/6N0n2ThSxOM6tg==}
@@ -19107,7 +19118,7 @@ packages:
       '@types/serve-index': 1.9.3
       '@types/serve-static': 1.15.3
       '@types/sockjs': 0.3.35
-      '@types/ws': 8.5.6
+      '@types/ws': 8.5.10
       ansi-html-community: 0.0.8
       bonjour-service: 1.1.1
       chokidar: 3.5.3
@@ -19429,6 +19440,19 @@ packages:
     dependencies:
       bufferutil: 4.0.8
       utf-8-validate: 5.0.10
+    dev: false
+
+  /ws@8.15.1:
+    resolution: {integrity: sha512-W5OZiCjXEmk0yZ66ZN82beM5Sz7l7coYxpRkzS+p9PP+ToQry8szKh+61eNktr7EA9DOwvFGhfC605jDHbP6QQ==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: '>=5.0.2'
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
     dev: false
 
   /ws@8.5.0:
