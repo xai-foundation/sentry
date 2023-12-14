@@ -41,6 +41,11 @@ import { bootOperator } from './commands/operator-control/operator-runtime.js';
 import { setOrAddPricingTiersCommand } from './commands/licenses/set-or-add-pricing-tiers.js';
 import { addPromoCode } from './commands/licenses/add-promo-code.js';
 import { removePromoCode } from './commands/licenses/remove-promo-code.js';
+import { resolve } from 'path';
+import * as fs from "fs";
+import * as https from "https";
+import * as unzipper from "unzipper";
+import axios from "axios";
 
 const cli = new Vorpal();
 
@@ -87,6 +92,55 @@ setReferralDiscountAndRewardPercentages(cli);
 setRollupAddress(cli);
 toggleAssertionChecking(cli);
 totalSupply(cli);
+
+async function downloadFile(url: string, destination: string): Promise<void> {
+	const response = await axios.get(url, {responseType: "stream"});
+
+	const writer = fs.createWriteStream(destination);
+
+	response.data.pipe(writer);
+
+	return new Promise<void>((resolve, reject) => {
+		writer.on("finish", resolve);
+		writer.on("error", reject);
+	});
+}
+
+async function unzipFile(source: string, destination: string): Promise<void> {
+	return new Promise<void>((resolve, reject) => {
+		fs.createReadStream(source)
+			.pipe(unzipper.Extract({ path: destination }))
+			.on('error', reject)
+			.on('finish', resolve);
+	});
+}
+
+// setInterval(async () => {
+// 	const {data: {tag_name: tagName}} = await axios.get("https://api.github.com/repos/xai-foundation/sentry/releases/latest");
+//
+// 	let updateUrl: string;
+// 	switch (process.platform) {
+// 		case "darwin":
+// 			updateUrl = `https://github.com/xai-foundation/sentry/releases/download/${tagName}/sentry-node-cli-macos.zip`;
+// 			break;
+// 		case "linux":
+// 			updateUrl = `https://github.com/xai-foundation/sentry/releases/download/${tagName}/sentry-node-cli-linux.zip`;
+// 			break;
+// 		case "win32":
+// 			updateUrl = `https://github.com/xai-foundation/sentry/releases/download/${tagName}/sentry-node-cli-windows.zip`;
+// 			break;
+// 		default:
+// 			return;
+// 	}
+//
+// 	const zipDestination = "";
+// 	const updateDestination = "";
+// 	await downloadFile(updateUrl, zipDestination);
+// 	await unzipFile(zipDestination, updateDestination);
+//
+// 	await cli.exec("exit", );
+//
+// }, 1000 * 60 * 5);
 
 cli
     .delimiter('sentry-node$')
