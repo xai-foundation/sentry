@@ -289,9 +289,9 @@ export async function operatorRuntime(
     const fetchBlockNumber = async () => {
         try {
             const blockNumber = await provider.getBlockNumber();
-            logFunction(`[${new Date().toISOString()}] Health Check, Operator still healthy. Current block number: ${blockNumber}`);
+            logFunction(`[${new Date().toISOString()}] Health Check on JSON RPC, Operator still healthy. Current block number: ${blockNumber}`);
         } catch (error) {
-            logFunction(`[${new Date().toISOString()}] Error fetching block number, operator may no longer be connected to the RPC: ${JSON.stringify(error)}`);
+            logFunction(`[${new Date().toISOString()}] Error fetching block number, operator may no longer be connected to the JSON RPC: ${JSON.stringify(error)}.`);
         }
     };
     fetchBlockNumber();

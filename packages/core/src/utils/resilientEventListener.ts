@@ -55,9 +55,6 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
 
         ws.on('error', function error(err) {
             args.log && args.log(`WebSocket error: ${err}`);
-            ws = null;
-            // Reconnect after an error
-            setTimeout(connect, 1000);
         });
 
         ws.on('close', function close() {
@@ -71,10 +68,10 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
 
         ws.on('message', function message(data) {
             const parsedData = JSON.parse(data.toString());
-            args.log && args.log(parsedData);
 
             if (parsedData?.id === request.id) {
-                subscriptionId = parsedData.result
+                subscriptionId = parsedData.result;
+                args.log && args.log(`Subscription to event '${args.eventName}' established with subscription ID '${parsedData.id}'.`);
             } else if (parsedData.method === 'eth_subscription' && parsedData.params.subscription === subscriptionId) {
                 const log = parsedData.params.result;
                 const event = contract.interface.parseLog(log);
@@ -92,7 +89,7 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
                   args.log && args.log("No websocket, exiting keep alive interval");
                   return;
                 }
-                args.log && args.log("Checking if the connection is alive, sending a ping");
+                args.log && args.log(`[${new Date().toISOString()}] Performing health check on the Web Socket RPC, to maintain subscription to '${args.eventName}'.`);
         
                 ws.ping();
                 pingTimeout = setTimeout(() => {
@@ -104,7 +101,7 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
         });
 
         ws.on("pong", () => {
-            args.log && args.log("Event listener is still active");
+            args.log && args.log(`[${new Date().toISOString()}] Health check complete, subscription to '${args.eventName}' is still active.`)
             if (pingTimeout) clearInterval(pingTimeout);
         });
     }
