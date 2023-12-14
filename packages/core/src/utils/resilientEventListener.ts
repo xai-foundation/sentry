@@ -39,7 +39,7 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
         const topicHash = contract.getEvent(args.eventName).getFragment().topicHash;
         let subscriptionId: string;
 
-        args.log && args.log(topicHash);
+        args.log && args.log(`[${new Date().toISOString()}] subscribing to event listener with topic hash: ${topicHash}`);
 
         const request = {
             id: Math.floor(Math.random() * 1000000),
@@ -54,11 +54,11 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
         }
 
         ws.on('error', function error(err) {
-            args.log && args.log(`WebSocket error: ${err}`);
+            args.log && args.log(`[${new Date().toISOString()}] WebSocket error: ${err}`);
         });
 
         ws.on('close', function close() {
-            args.log && args.log('WebSocket closed');
+            args.log && args.log(`[${new Date().toISOString()}] WebSocket closed`);
             if (keepAliveInterval) clearInterval(keepAliveInterval);
             if (pingTimeout) clearTimeout(pingTimeout);
             ws = null;
@@ -71,22 +71,22 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
 
             if (parsedData?.id === request.id) {
                 subscriptionId = parsedData.result;
-                args.log && args.log(`Subscription to event '${args.eventName}' established with subscription ID '${parsedData.id}'.`);
+                args.log && args.log(`[${new Date().toISOString()}] Subscription to event '${args.eventName}' established with subscription ID '${parsedData.id}'.`);
             } else if (parsedData.method === 'eth_subscription' && parsedData.params.subscription === subscriptionId) {
                 const log = parsedData.params.result;
                 const event = contract.interface.parseLog(log);
-                args.log && args.log(`Received event ${event?.name}: ${event?.args}`);
+                args.log && args.log(`[${new Date().toISOString()}] Received event ${event?.name}: ${event?.args}`);
                 args.callback && args.callback(event);
             }
         });
 
         ws.on('open', function open() {
-            args.log && args.log("Opened connection to Web Socket RPC")
+            args.log && args.log(`[${new Date().toISOString()}] Opened connection to Web Socket RPC`)
             ws!.send(JSON.stringify(request));
 
             keepAliveInterval = setInterval(() => {
                 if (!ws) {
-                  args.log && args.log("No websocket, exiting keep alive interval");
+                  args.log && args.log(`[${new Date().toISOString()}] No websocket, exiting keep alive interval`);
                   return;
                 }
                 args.log && args.log(`[${new Date().toISOString()}] Performing health check on the Web Socket RPC, to maintain subscription to '${args.eventName}'.`);
