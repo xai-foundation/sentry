@@ -16,7 +16,7 @@
   "dependencies": {
     "@noble/curves": "^1.2.0",
     "alchemy-sdk": "^3.1.0",
-    "ws": "^8.15.1"
+    "isomorphic-ws": "^5.0.0"
   },
   "devDependencies": {
     "@types/node": "^20.6.0",

@@ -1,4 +1,4 @@
-import WebSocket from 'ws';
+import WebSocket from 'isomorphic-ws';
 import {Contract, InterfaceAbi, LogDescription} from "ethers";
 
 interface ResilientEventListenerArgs {
@@ -71,7 +71,7 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
 
             if (parsedData?.id === request.id) {
                 subscriptionId = parsedData.result;
-                args.log && args.log(`[${new Date().toISOString()}] Subscription to event '${args.eventName}' established with subscription ID '${parsedData.id}'.`);
+                args.log && args.log(`[${new Date().toISOString()}] Subscription to event '${args.eventName}' established with subscription ID '${parsedData.result}'.`);
             } else if (parsedData.method === 'eth_subscription' && parsedData.params.subscription === subscriptionId) {
                 const log = parsedData.params.result;
                 const event = contract.interface.parseLog(log);
