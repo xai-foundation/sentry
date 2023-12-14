@@ -10,7 +10,6 @@ interface ChainState {
 	anyLoading: boolean;
 	ownersLoading: boolean;
 	owners: string[];
-	combinedOwners: string[];
 	ownersKycLoading: boolean;
 	ownersKycMap: StatusMap;
 	combinedWalletsKycMap: StatusMap;
@@ -25,7 +24,6 @@ const defaultChainState: ChainState = {
 	anyLoading: true,
 	ownersLoading: true,
 	owners: [],
-	combinedOwners: [],
 	ownersKycLoading: false,
 	ownersKycMap: {},
 	combinedWalletsKycMap: {},
@@ -81,7 +79,6 @@ export function useChainDataWithCallback() {
 			return {
 				..._chainState,
 				owners,
-				combinedOwners
 			}
 		});
 	}, [owners]);

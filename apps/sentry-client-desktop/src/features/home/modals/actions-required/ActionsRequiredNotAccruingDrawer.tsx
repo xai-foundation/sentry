@@ -1,4 +1,4 @@
-import {useSetAtom} from "jotai";
+import {useAtomValue, useSetAtom} from "jotai";
 import {drawerStateAtom} from "../../../drawer/DrawerManager";
 import {AiFillCheckCircle, AiFillWarning, AiOutlineClose} from "react-icons/ai";
 import {IoMdCloseCircle} from "react-icons/io";
@@ -11,11 +11,12 @@ import {KycRequiredCard} from "./KycRequiredCard";
 import {BarStepItem} from "@/components/BarStepItem";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
-import {useAtomValue} from "jotai";
+import {useCombinedOwners} from "@/hooks/useCombinedOwners";
 
 export function ActionsRequiredNotAccruingDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const {owners, ownersKycMap, combinedWalletsKycMap, combinedOwners} = useAtomValue(chainStateAtom);
+	const {owners, ownersKycMap, combinedWalletsKycMap} = useAtomValue(chainStateAtom);
+	const {combinedOwners} = useCombinedOwners(owners);
 	const {accruing, kycRequired} = useAtomValue(accruingStateAtom);
 
 	return (
@@ -80,13 +81,16 @@ export function ActionsRequiredNotAccruingDrawer() {
 							<FundsInSentryWalletCard/>
 						</BarStepItem>
 
-						<BarStepItem lastItem={true}>
+						<BarStepItem>
 							<AssignedKeysCard/>
 						</BarStepItem>
 
 						{combinedOwners?.map((owner, i) => {
 							return (
-								<BarStepItem key={`bar-step-item-${i}`} lastItem={i + 1 === combinedOwners!.length}>
+								<BarStepItem
+									key={`bar-step-item-${i}`}
+									lastItem={i + 1 === combinedOwners!.length}
+								>
 									<KycRequiredCard
 										wallet={owner}
 										status={combinedWalletsKycMap[owner]}
