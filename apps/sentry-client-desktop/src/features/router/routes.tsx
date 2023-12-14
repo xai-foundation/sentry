@@ -1,6 +1,5 @@
 import {HashRouter as Router, Route, Routes} from 'react-router-dom';
 import {Sidebar} from "../sidebar";
-import {GetSentryNode} from "../home/GetSentryNode.js";
 import {Keys} from "../keys/Keys.js";
 import {SentryWallet} from "../home/SentryWallet.js";
 import {DrawerManager} from "../drawer/DrawerManager";
@@ -11,6 +10,7 @@ import {ChainDataManager} from "@/components/ChainDataManager";
 import {createStore, Provider as JotaiProvider} from "jotai";
 import {AccruingDataManager} from "@/components/AccruingDataManager";
 import toast, {Toaster} from "react-hot-toast";
+import {Dashboard} from "@/features/home/Dashboard";
 
 const store = createStore();
 
@@ -45,7 +45,8 @@ export function AppRoutes() {
 
 						<div className="flex-grow">
 							<Routes>
-								<Route path="/" element={<GetSentryNode/>}/>
+								<Route path="/" element={<Dashboard/>}/>
+								{/*<Route path="/" element={<GetSentryNode/>}/>*/}
 								<Route path="/keys" element={<Keys/>}/>
 								<Route path="/sentry-wallet" element={<SentryWallet/>}/>
 								{/*<Route path="/redeem" element={<Redeem/>}/>*/}
