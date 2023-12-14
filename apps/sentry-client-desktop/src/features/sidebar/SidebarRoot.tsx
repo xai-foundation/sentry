@@ -95,8 +95,16 @@ export function Sidebar() {
 			</div>
 
 			<div/>
-			<div>
+
+			<div className="flex flex-col gap-1 text-[12px]">
 				<p>v{import.meta.env.APP_VERSION}</p>
+				<a
+					className="text-blue-500 cursor-pointer hover:underline"
+					onClick={() => window.open("https://xai.games/sentrynodeagreement/", "_blank", "noopener noreferrer")}
+				>
+					Sentry Node Agreement
+				</a>
+				<p>©2023 XAI. All Rights Reserved</p>
 			</div>
 		</div>
 	);
