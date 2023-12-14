@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { Challenge, RefereeAbi, claimReward, config, getMintTimestamp, getSubmissionsForChallenges, listChallenges, listNodeLicenses, listOwnersForOperator, listenForChallenges, submitAssertionToChallenge, checkKycStatus } from "../index.js";
+import { Challenge, RefereeAbi, claimReward, config, getMintTimestamp, getSubmissionsForChallenges, listChallenges, listNodeLicenses, listOwnersForOperator, listenForChallenges, submitAssertionToChallenge, checkKycStatus, getProvider } from "../index.js";
 import { retry } from "../index.js";
 
 export enum NodeLicenseStatus {
@@ -33,6 +33,8 @@ export async function operatorRuntime(
 ): Promise<() => Promise<void>> {
 
     logFunction("Booting operator runtime.");
+
+    const provider = await getProvider();
 
     // Create a NodeLicenseStatusMap to store the status of each node license
     const nodeLicenseStatusMap: NodeLicenseStatusMap = new Map();
@@ -220,7 +222,7 @@ export async function operatorRuntime(
                 await processNewChallenge(challengeNumber, challenge);
             }
         } else {
-            logFunction(`Looking for previously accrued rewards on Challenge ${challengeNumber}.`);
+            logFunction(`Looking for previously accrued rewards on Challenge '${challengeNumber}'.`);
         }
 
         // check the previous challenge, that should be closed now
@@ -283,11 +285,17 @@ export async function operatorRuntime(
     await processClosedChallenges(closedChallengeIds);
     logFunction(`The operator has finished booting. The operator is running successfully. esXAI will accrue every few days.`);
 
-    // Interval function to emit to the logFunction every 5 minutes
-    const intervalId = setInterval(() => {
-        const timestamp = new Date();
-        logFunction(`Current timestamp: ${timestamp.toISOString()}. The operator is still running successfully. esXAI will accrue every few days.`);
-    }, 60000); // 60,000 milliseconds = 1 minute
+    // Request the current block number immediately and then every 5 minutes
+    const fetchBlockNumber = async () => {
+        try {
+            const blockNumber = await provider.getBlockNumber();
+            logFunction(`[${new Date().toISOString()}] Health Check, Operator still healthy. Current block number: ${blockNumber}`);
+        } catch (error) {
+            logFunction(`[${new Date().toISOString()}] Error fetching block number, operator may no longer be connected to the RPC: ${JSON.stringify(error)}`);
+        }
+    };
+    fetchBlockNumber();
+    const intervalId = setInterval(fetchBlockNumber, 300000); // 300,000 milliseconds = 5 minutes
 
     async function stop() {
         clearInterval(intervalId);
