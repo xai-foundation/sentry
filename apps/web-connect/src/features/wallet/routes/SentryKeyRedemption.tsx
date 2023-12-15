@@ -1,13 +1,13 @@
-import {useNavigate, useParams} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import {useAccount, useContractWrite, useNetwork} from "wagmi";
-import {config, NodeLicenseAbi, RefereeAbi} from "@sentry/core";
+import {config, NodeLicenseAbi} from "@sentry/core";
 import {XaiBanner} from "@/features/checkout/XaiBanner";
 import {XaiCheckbox} from "@sentry/ui";
 import {KYCTooltip} from "@/features/checkout/KYCTooltip";
 import {useState} from "react";
 
 export function SentryKeyRedemption() {
-	const navigate = useNavigate();
+	// const navigate = useNavigate();
 	const params = useParams<{ operatorAddress: string }>();
 	const {address} = useAccount();
 	const {chain} = useNetwork();
@@ -16,7 +16,8 @@ export function SentryKeyRedemption() {
 	const [checkboxThree, setCheckboxThree] = useState<boolean>(false);
 	const ready = checkboxOne && checkboxTwo && checkboxThree;
 
-	const {isLoading, isSuccess, write, error, data} = useContractWrite({
+	// const {isLoading, isSuccess, write, error, data} = useContractWrite({
+	const {write, error} = useContractWrite({
 		address: config.nodeLicenseAddress as `0x${string}`,
 		abi: NodeLicenseAbi,
 		functionName: "whitelistAmounts",
@@ -29,9 +30,9 @@ export function SentryKeyRedemption() {
 		},
 	});
 
-	function returnToClient() {
-		window.location = `xai-sentry://assigned-wallet?txHash=${data?.hash}` as unknown as Location;
-	}
+	// function returnToClient() {
+	// 	window.location = `xai-sentry://assigned-wallet?txHash=${data?.hash}` as unknown as Location;
+	// }
 
 	return (
 		<div>
@@ -90,11 +91,11 @@ export function SentryKeyRedemption() {
 
 								<div>
 									<button
-										// onClick={() => onClick()}
+										onClick={() => write}
 										className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 										disabled={!ready || chain?.id !== 42_161}
 									>
-										{chain?.id === 42_161 ? "Redeem Keys" : "Please Switch to Arbitrum One"}
+										{chain?.id === 42_161 ? "Claim" : "Please Switch to Arbitrum One"}
 									</button>
 
 									{error && (
