@@ -1,7 +1,7 @@
-import {ethers} from "ethers";
+import { LogDescription } from "ethers";
 import { RollupAdminLogicAbi } from "../abis/RollupAdminLogicAbi.js";
-import { getProvider } from "../utils/getProvider.js";
 import { config } from "../config.js";
+import { resilientEventListener } from "../utils/resilientEventListener.js";
 
 /**
  * Listens for NodeConfirmed events and triggers a callback function when the event is emitted.
@@ -10,42 +10,32 @@ import { config } from "../config.js";
  * @param log - The logging function to be used for logging.
  * @returns A function that can be called to stop listening for the event.
  */
-export function listenForAssertions(callback: (nodeNum: any, blockHash: any, sendRoot: any, event: any) => void, log: (log: string) => void): () => void {
-    const provider = getProvider("wss://arb-goerli.g.alchemy.com/v2/WNOJEZxrhn3a0PzKUVEZgeRJqxOL7brv"); // arb goerli while we run on testnet
-
-    // create an instance of the rollup contract
-    const rollupContract = new ethers.Contract(config.rollupAddress, RollupAdminLogicAbi, {provider});
-
+export function listenForAssertions(callback: (nodeNum: any, blockHash: any, sendRoot: any, event: any) => void, _log: (log: string) => void): () => void {
     // create a map to keep track of nodeNums that have called the callback
     const nodeNumMap: { [nodeNum: string]: boolean } = {};
 
     // listen for the NodeConfirmed event
-    rollupContract.on("NodeConfirmed", (nodeNum, blockHash, sendRoot, event) => {
+    const listener = resilientEventListener({
+        rpcUrl: "wss://arb-goerli.g.alchemy.com/v2/WNOJEZxrhn3a0PzKUVEZgeRJqxOL7brv",
+        contractAddress: config.rollupAddress,
+        abi: RollupAdminLogicAbi,
+        eventName: "NodeConfirmed",
+        log: _log,
+        callback: (log: LogDescription | null) => {
+            const nodeNum = BigInt(log?.args[0]);
+            const blockHash = log?.args[1];
+            const sendRoot = log?.args[2];
 
-        // if the nodeNum has not been seen before, call the callback and add it to the map
-        if (!nodeNumMap[nodeNum]) {
-            log(`[${new Date().toISOString()}] NodeConfirmed event received for new nodeNum: ${nodeNum}`);
-            nodeNumMap[nodeNum] = true;
-            void callback(nodeNum, blockHash, sendRoot, event);
+            // if the nodeNum has not been seen before, call the callback and add it to the map
+            if (!nodeNumMap[nodeNum.toString()]) {
+                nodeNumMap[nodeNum.toString()] = true;
+                void callback(nodeNum, blockHash, sendRoot, log);
+            }
         }
     });
 
-    // Request the current block number immediately and then every 5 minutes
-    const fetchBlockNumber = async () => {
-        try {
-            const blockNumber = await provider.getBlockNumber();
-            log(`[${new Date().toISOString()}] Health Check, Challenger still healthy. Current block number: ${blockNumber}`);
-        } catch (error) {
-            log(`[${new Date().toISOString()}] Error fetching block number, challenger may no longer be connected to the RPC: ${JSON.stringify(error)}`);
-        }
-    };
-    fetchBlockNumber();
-    const interval = setInterval(fetchBlockNumber, 300000);
-
     // return a function that can be used to stop listening for the event
     return () => {
-        log(`[${new Date().toISOString()}] Stopping listening for NodeConfirmed events`);
-        rollupContract.removeAllListeners("NodeConfirmed");
-        clearInterval(interval);
+        listener.stop();
     };
 }

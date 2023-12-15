@@ -41,6 +41,7 @@ import { bootOperator } from './commands/operator-control/operator-runtime.js';
 import { setOrAddPricingTiersCommand } from './commands/licenses/set-or-add-pricing-tiers.js';
 import { addPromoCode } from './commands/licenses/add-promo-code.js';
 import { removePromoCode } from './commands/licenses/remove-promo-code.js';
+import { eventListener } from './commands/event-listener.js';
 
 const cli = new Vorpal();
 
@@ -57,6 +58,7 @@ checkKycStatus(cli);
 checkWhitelist(cli);
 createBlsKeyPair(cli);
 createMnemonic(cli);
+eventListener(cli);
 getAllContractAddresses(cli);
 getAssertionCheckingStatus(cli);
 getBalancesForAddresses(cli);
