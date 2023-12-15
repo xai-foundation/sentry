@@ -371,9 +371,6 @@ importers:
       isomorphic-ws:
         specifier: ^5.0.0
         version: 5.0.0(ws@8.15.1)
-      ws:
-        specifier: ^8.15.1
-        version: 8.15.1
     devDependencies:
       '@types/node':
         specifier: ^20.6.0
