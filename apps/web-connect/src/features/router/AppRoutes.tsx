@@ -1,7 +1,6 @@
 import {HashRouter as Router, Navigate, Route, Routes} from 'react-router-dom';
 import {QueryClient, QueryClientProvider} from "react-query";
 import {Checkout} from "../checkout";
-import {ConnectWallet} from "../wallet/routes/ConnectWallet.js";
 import {AssignWallet} from "../wallet/routes/AssignWallet.js";
 import {UnassignWallet} from "@/features/wallet/routes/UnassignWallet";
 import {Header} from "@/features/header/Header";
@@ -9,6 +8,7 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import {BiLoaderAlt} from "react-icons/bi";
 import {Footer} from "@/features/footer/Footer";
+import {SentryKeyRedemption} from "@/features/wallet/routes/SentryKeyRedemption";
 
 enum IpBanType {
 	INVALID_IP = "INVALID_IP",
@@ -76,9 +76,9 @@ export function AppRoutes() {
 					<Header/>
 					<Routes>
 						<Route path="/" element={<Checkout/>}/>
-						<Route path="/connect-wallet" element={<ConnectWallet/>}/>
 						<Route path="/assign-wallet/:operatorAddress" element={<AssignWallet/>}/>
 						<Route path="/unassign-wallet/:operatorAddress" element={<UnassignWallet/>}/>
+						<Route path="/sentrykeyredemption" element={<SentryKeyRedemption/>}/>
 						<Route path="*" element={<Navigate to="/" replace={true}/>}/>
 					</Routes>
 					<Footer/>
