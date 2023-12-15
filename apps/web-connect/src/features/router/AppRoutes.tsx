@@ -8,7 +8,7 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import {BiLoaderAlt} from "react-icons/bi";
 import {Footer} from "@/features/footer/Footer";
-import {SentryKeyRedemption} from "@/features/wallet/routes/SentryKeyRedemption";
+import {DropClaim} from "@/features/wallet/routes/DropClaim";
 
 enum IpBanType {
 	INVALID_IP = "INVALID_IP",
@@ -78,7 +78,7 @@ export function AppRoutes() {
 						<Route path="/" element={<Checkout/>}/>
 						<Route path="/assign-wallet/:operatorAddress" element={<AssignWallet/>}/>
 						<Route path="/unassign-wallet/:operatorAddress" element={<UnassignWallet/>}/>
-						<Route path="/sentrykeyredemption" element={<SentryKeyRedemption/>}/>
+						<Route path="/dropclaim" element={<DropClaim/>}/>
 						<Route path="*" element={<Navigate to="/" replace={true}/>}/>
 					</Routes>
 					<Footer/>

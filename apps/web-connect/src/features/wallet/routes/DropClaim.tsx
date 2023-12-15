@@ -1,4 +1,3 @@
-import {useParams} from "react-router-dom";
 import {useAccount, useContractWrite, useNetwork} from "wagmi";
 import {config, NodeLicenseAbi} from "@sentry/core";
 import {XaiBanner} from "@/features/checkout/XaiBanner";
@@ -6,9 +5,8 @@ import {XaiCheckbox} from "@sentry/ui";
 import {KYCTooltip} from "@/features/checkout/KYCTooltip";
 import {useState} from "react";
 
-export function SentryKeyRedemption() {
+export function DropClaim() {
 	// const navigate = useNavigate();
-	const params = useParams<{ operatorAddress: string }>();
 	const {address} = useAccount();
 	const {chain} = useNetwork();
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
@@ -21,7 +19,8 @@ export function SentryKeyRedemption() {
 		address: config.nodeLicenseAddress as `0x${string}`,
 		abi: NodeLicenseAbi,
 		functionName: "whitelistAmounts",
-		args: [params.operatorAddress, true],
+		args: [],
+		// args: [params.operatorAddress, true],
 		onSuccess(data) {
 			window.location = `xai-sentry://assigned-wallet?txHash=${data.hash}` as unknown as Location;
 		},
