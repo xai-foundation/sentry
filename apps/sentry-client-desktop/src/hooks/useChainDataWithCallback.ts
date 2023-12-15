@@ -53,6 +53,8 @@ export function useChainDataWithCallback() {
 	const {isLoading: ownersKycLoading, statusMap: combinedWalletsKycMap} = useKycStatusesWithCallback(combinedOwners, chainStateRefresh);
 	const {isLoading: licensesLoading, licensesMap: combinedLicensesMap} = useListNodeLicensesWithCallback(combinedOwners, chainStateRefresh);
 
+	console.log(combinedOwners);
+
 	// set default state
 	useEffect(() => {
 		setChainState(defaultChainState);

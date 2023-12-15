@@ -28,10 +28,6 @@ export function RemoveWalletModal({onClose, selectedWallet, isWalletAssignedMap}
 		setData({...data, addedWallets: userWallets});
 		setSuccess(true)
 		setTimeout(() => {
-			// setSuccess(false)
-			// onClose();
-
-			// todo: find a better way to do this
 			window.location.reload();
 		}, 2000);
 	}
