@@ -42,7 +42,7 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
         args.log && args.log(`[${new Date().toISOString()}] subscribing to event listener with topic hash: ${topicHash}`);
 
         const request = {
-            id: Math.floor(Math.random() * 1000000),
+            id: 1,
             method: "eth_subscribe",
             params: [
                 "logs",
@@ -51,36 +51,52 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
                     address: args.contractAddress,
                 }
             ]
-        }
+        };
 
-        ws.on('error', function error(err) {
+        // sending this backs should return a result of true
+        const ping = {
+            id: 2,
+            method: "net_listening",
+            params:[],
+        };
+
+        ws.onerror = function error(err: any) {
             args.log && args.log(`[${new Date().toISOString()}] WebSocket error: ${err}`);
-        });
+        };
 
-        ws.on('close', function close() {
+        ws.onclose = function close() {
             args.log && args.log(`[${new Date().toISOString()}] WebSocket closed`);
             if (keepAliveInterval) clearInterval(keepAliveInterval);
             if (pingTimeout) clearTimeout(pingTimeout);
             ws = null;
             // Reconnect when the connection is closed
             setTimeout(connect, 1000);
-        });
+        };
 
-        ws.on('message', function message(data) {
-            const parsedData = JSON.parse(data.toString());
+        ws.onmessage = function message(event: any) {
+            let parsedData;
+            if (typeof event.data === 'string') {
+                parsedData = JSON.parse(event.data);
+            } else if (event.data instanceof ArrayBuffer) {
+                const dataString = new TextDecoder().decode(event.data);
+                parsedData = JSON.parse(dataString);
+            }
 
             if (parsedData?.id === request.id) {
                 subscriptionId = parsedData.result;
                 args.log && args.log(`[${new Date().toISOString()}] Subscription to event '${args.eventName}' established with subscription ID '${parsedData.result}'.`);
-            } else if (parsedData.method === 'eth_subscription' && parsedData.params.subscription === subscriptionId) {
+            } else if(parsedData?.id === ping.id && parsedData?.result === true) { 
+                args.log && args.log(`[${new Date().toISOString()}] Health check complete, subscription to '${args.eventName}' is still active.`)
+                if (pingTimeout) clearInterval(pingTimeout);
+            } else if (parsedData?.method === 'eth_subscription' && parsedData.params.subscription === subscriptionId) {
                 const log = parsedData.params.result;
                 const event = contract.interface.parseLog(log);
                 args.log && args.log(`[${new Date().toISOString()}] Received event ${event?.name}: ${event?.args}`);
                 args.callback && args.callback(event);
             }
-        });
+        };
 
-        ws.on('open', function open() {
+        ws.onopen = function open() {
             args.log && args.log(`[${new Date().toISOString()}] Opened connection to Web Socket RPC`)
             ws!.send(JSON.stringify(request));
 
@@ -91,19 +107,14 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
                 }
                 args.log && args.log(`[${new Date().toISOString()}] Performing health check on the Web Socket RPC, to maintain subscription to '${args.eventName}'.`);
         
-                ws.ping();
+                ws.send(JSON.stringify(ping));
                 pingTimeout = setTimeout(() => {
                   if (ws) ws.terminate();
                 }, EXPECTED_PONG_BACK);
                 
             }, KEEP_ALIVE_CHECK_INTERVAL);
 
-        });
-
-        ws.on("pong", () => {
-            args.log && args.log(`[${new Date().toISOString()}] Health check complete, subscription to '${args.eventName}' is still active.`)
-            if (pingTimeout) clearInterval(pingTimeout);
-        });
+        };
     }
 
     const stop = () => {
