@@ -41,7 +41,7 @@ import { bootOperator } from './commands/operator-control/operator-runtime.js';
 import { setOrAddPricingTiersCommand } from './commands/licenses/set-or-add-pricing-tiers.js';
 import { addPromoCode } from './commands/licenses/add-promo-code.js';
 import { removePromoCode } from './commands/licenses/remove-promo-code.js';
-import { eventListener } from "@/commands/event-listener.js";
+import { eventListener } from "./commands/event-listener.js";
 import { resolve } from 'path';
 import * as fs from "fs";
 import * as unzipper from "unzipper";

@@ -49,7 +49,6 @@ jobs:
           cd apps/cli/release
           zip sentry-node-cli-macos.zip sentry-node-cli-macos
           zip sentry-node-cli-linux.zip sentry-node-cli-linux
-          zip sentry-node-cli-windows.zip sentry-node-cli-win.exe
         if: matrix.os == 'ubuntu-latest'
 
       - name: Create directory for signed builds
@@ -64,7 +63,7 @@ jobs:
           username: ${{ secrets.SSL_USERNAME }}
           password: ${{ secrets.SSL_PASSWORD }}
           totp_secret: ${{ secrets.SSL_TOTP_SECRET }}
-          file_path: apps/cli/release/sentry-node-cli-windows.zip
+          file_path: apps/cli/release/sentry-node-cli-win.exe
           output_path: apps/cli/release/signed-builds
         if: matrix.os == 'ubuntu-latest'
 
@@ -164,6 +163,6 @@ jobs:
             release-signed-desktop-windows-latest/signed-builds/sentry-client-windows.exe
             release-cli/sentry-node-cli-macos.zip
             release-cli/sentry-node-cli-linux.zip
-            release-cli/signed-builds/sentry-node-cli-windows.zip
+            release-cli/signed-builds/sentry-node-cli-windows.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
