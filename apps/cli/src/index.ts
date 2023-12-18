@@ -43,9 +43,12 @@ import { addPromoCode } from './commands/licenses/add-promo-code.js';
 import { removePromoCode } from './commands/licenses/remove-promo-code.js';
 import { resolve } from 'path';
 import * as fs from "fs";
-import * as https from "https";
 import * as unzipper from "unzipper";
 import axios from "axios";
+import * as path from "path";
+import { fileURLToPath } from "url";
+import semver from "semver/preload.js";
+import * as process from "process";
 
 const cli = new Vorpal();
 
@@ -109,40 +112,49 @@ async function downloadFile(url: string, destination: string): Promise<void> {
 async function unzipFile(source: string, destination: string): Promise<void> {
 	return new Promise<void>((resolve, reject) => {
 		fs.createReadStream(source)
-			.pipe(unzipper.Extract({ path: destination }))
+			.pipe(unzipper.Extract({ path: destination}))
 			.on('error', reject)
 			.on('finish', resolve);
 	});
 }
 
-// setInterval(async () => {
-// 	const {data: {tag_name: tagName}} = await axios.get("https://api.github.com/repos/xai-foundation/sentry/releases/latest");
-//
-// 	let updateUrl: string;
-// 	switch (process.platform) {
-// 		case "darwin":
-// 			updateUrl = `https://github.com/xai-foundation/sentry/releases/download/${tagName}/sentry-node-cli-macos.zip`;
-// 			break;
-// 		case "linux":
-// 			updateUrl = `https://github.com/xai-foundation/sentry/releases/download/${tagName}/sentry-node-cli-linux.zip`;
-// 			break;
-// 		case "win32":
-// 			updateUrl = `https://github.com/xai-foundation/sentry/releases/download/${tagName}/sentry-node-cli-windows.zip`;
-// 			break;
-// 		default:
-// 			return;
-// 	}
-//
-// 	const zipDestination = "";
-// 	const updateDestination = "";
-// 	await downloadFile(updateUrl, zipDestination);
-// 	await unzipFile(zipDestination, updateDestination);
-//
-// 	await cli.exec("exit", );
-//
-// }, 1000 * 60 * 5);
+async function downloadUpdate() {
+	// fetch latest tag
+	const {data: {tag_name: tagName}} = await axios.get("https://api.github.com/repos/xai-foundation/sentry/releases/latest");
 
-cli
-    .delimiter('sentry-node$')
-    .show()
-    .log('\nType "help" to display a list of actions.');
+	// check if there is a new version
+	if (semver.gte(process.env.npm_package_version!, tagName)) return;
+
+	// generate the file name to download the update based on platform
+	let executableFileName: string;
+	switch (process.platform) {
+		case "darwin":
+			executableFileName = "sentry-node-cli-macos";
+			break;
+		case "linux":
+			executableFileName = "sentry-node-cli-linux";
+			break;
+		case "win32":
+			executableFileName = "sentry-node-cli-windows.exe";
+			break;
+		default:
+			return;
+	}
+
+	// download the file
+	const executableDestination = resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../infrastructure", executableFileName);
+	await downloadFile(`https://github.com/xai-foundation/sentry/releases/download/${tagName}/${executableFileName}`, executableDestination);
+
+	// await cli.exec("exit", );
+}
+
+downloadUpdate().then(() => {
+	setInterval(downloadUpdate, 1000 * 60 * 5);
+
+	cli
+		.delimiter('sentry-node$')
+		.show()
+		.log('\nType "help" to display a list of actions.');
+});
+
+

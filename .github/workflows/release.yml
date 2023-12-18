@@ -25,7 +25,10 @@ jobs:
         run: npm install -g pnpm
 
       - name: Set package version
-        run: pnpm pkg set version=${{ github.ref_name }} --prefix apps/sentry-client-desktop
+        run: |
+          pnpm pkg set version=${{ github.ref_name }} --prefix apps/cli
+          pnpm pkg set version=${{ github.ref_name }} --prefix apps/sentry-client-desktop
+          pnpm pkg set version=${{ github.ref_name }} --prefix apps/web-connect
 
       - name: Install dependencies
         run: pnpm install
@@ -41,13 +44,13 @@ jobs:
           name: release-desktop-${{ matrix.os }}
           path: apps/sentry-client-desktop/release
 
-      - name: zip cli artifacts
-        run: |
-          cd apps/cli/release
-          zip sentry-node-cli-macos.zip sentry-node-cli-macos
-          zip sentry-node-cli-linux.zip sentry-node-cli-linux
-          zip sentry-node-cli-windows.zip sentry-node-cli-win.exe
-        if: matrix.os == 'ubuntu-latest'
+#      - name: zip cli artifacts
+#        run: |
+#          cd apps/cli/release
+#          zip sentry-node-cli-macos.zip sentry-node-cli-macos
+#          zip sentry-node-cli-linux.zip sentry-node-cli-linux
+#          zip sentry-node-cli-windows.zip sentry-node-cli-win.exe
+#        if: matrix.os == 'ubuntu-latest'
 
       - name: Upload cli artifacts
         uses: actions/upload-artifact@v2
@@ -132,8 +135,8 @@ jobs:
             release-signed-desktop-windows-latest/latest.yml
             release-signed-desktop-windows-latest/sentry-client-windows.exe.blockmap
             release-signed-desktop-windows-latest/signed-builds/sentry-client-windows.exe
-            release-cli-ubuntu-latest/sentry-node-cli-macos.zip
-            release-cli-ubuntu-latest/sentry-node-cli-linux.zip
-            release-cli-ubuntu-latest/sentry-node-cli-windows.zip
+            release-cli-ubuntu-latest/sentry-node-cli-macos
+            release-cli-ubuntu-latest/sentry-node-cli-linux
+            release-cli-ubuntu-latest/sentry-node-cli-windows.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
