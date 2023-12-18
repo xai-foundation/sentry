@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@sentry/core": "workspace:*",
+    "axios": "^1.6.2",
     "cli-table3": "^0.6.3",
     "date-prompt": "^1.0.0",
     "vorpal": "^1.12.0"
