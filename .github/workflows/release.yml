@@ -91,7 +91,7 @@ jobs:
           user_email: 41898282+github-actions[bot]@users.noreply.github.com
         if: matrix.os == 'ubuntu-latest'
 
-  sign:
+  sign-desktop-windows:
     needs: build
     runs-on: ubuntu-latest
 
@@ -116,16 +116,6 @@ jobs:
           file_path: release-desktop-windows-latest/sentry-client-windows.exe
           output_path: release-desktop-windows-latest/signed-builds
 
-      - name: Sign build Windows CLI zip
-        uses: sslcom/actions-codesigner@develop
-        with:
-          command: sign
-          username: ${{ secrets.SSL_USERNAME }}
-          password: ${{ secrets.SSL_PASSWORD }}
-          totp_secret: ${{ secrets.SSL_TOTP_SECRET }}
-          file_path: release-desktop-ubuntu-latest/sentry-node-cli-windows.zip
-          output_path: release-desktop-windows-latest/signed-builds
-      
       - name: Upload signed artifacts
         uses: actions/upload-artifact@v2
         with:
@@ -133,7 +123,7 @@ jobs:
           path: release-desktop-windows-latest
 
   checksum-and-release:
-    needs: sign
+    needs: sign-desktop-windows
     runs-on: macos-latest
 
     steps:
