@@ -16,7 +16,7 @@ import {useQueryClient} from "react-query";
 import {useBalance} from "@/hooks/useBalance";
 import {ethers} from "ethers";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
-import {Tooltip, XaiButton} from "@sentry/ui";
+import {Tooltip} from "@sentry/ui";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
 import {SentryWalletHeader} from "@/features/home/SentryWalletHeader";
@@ -24,6 +24,7 @@ import {chainStateAtom, useChainDataRefresh} from "@/hooks/useChainDataWithCallb
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {AssignKeysSentryNotRunning} from "@/components/AssignKeysSentryNotRunning";
 import {GrRefresh} from "react-icons/gr";
+import {LuListChecks} from "react-icons/lu";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
@@ -32,15 +33,12 @@ export function SentryWallet() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
 	const {ownersLoading, owners, licensesLoading, licensesList} = useAtomValue(chainStateAtom);
-
 	const queryClient = useQueryClient();
 	const {hasAssignedKeys} = useAtomValue(accruingStateAtom);
-
 
 	const {isLoading: operatorLoading, publicKey: operatorAddress} = useOperator();
 	const {data: balance} = useBalance(operatorAddress);
 
-	// TODO connect the refresh button on the x keys in y wallets text and query-ify these so we know when it's been cache cleared
 	const loading = operatorLoading || ownersLoading || licensesLoading;
 	const keyCount = licensesList.length;
 
@@ -265,7 +263,9 @@ export function SentryWallet() {
 
 							{sentryRunning ? (
 								<button
-									onClick={stopRuntime}
+									onClick={() => {
+										setDrawerState(DrawerView.Whitelist)
+									}}
 									className={`ml-4 flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2 ${!stopRuntime && 'cursor-not-allowed'}`}
 									disabled={!stopRuntime}
 								>
@@ -381,15 +381,24 @@ export function SentryWallet() {
 										Copy address
 									</button>
 
-									<XaiButton
+									<button
 										onClick={() => {
 											setModalState(ModalView.TransactionInProgress)
 											window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`)
 										}}
+										className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2`}
 									>
-										Assign keys from new wallet
+										Assign wallet
 										<BiLinkExternal className="h-[15px]"/>
-									</XaiButton>
+									</button>
+
+									<button
+										onClick={() => setDrawerState(DrawerView.Whitelist)}
+										className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2`}
+									>
+										<LuListChecks className="h-[15px]"/>
+										Allowed wallet
+									</button>
 
 									<button
 										disabled={selectedWallet === null}
@@ -399,7 +408,7 @@ export function SentryWallet() {
 										}}
 										className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] ${selectedWallet === null ? 'text-[#D4D4D4] cursor-not-allowed' : ""} px-4 py-2`}
 									>
-										Un-assign this wallet
+										Un-assign wallet
 										<BiLinkExternal className="h-[15px]"/>
 									</button>
 								</div>

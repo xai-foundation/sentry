@@ -1,18 +1,25 @@
-import {AiOutlineClose} from "react-icons/ai";
 import {useAtomValue, useSetAtom} from "jotai";
 import {drawerStateAtom} from "@/features/drawer/DrawerManager";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
-import {useCombinedOwners} from "@/hooks/useCombinedOwners";
-import {XaiButton, XaiCheckbox} from "@sentry/ui";
-import {useState} from "react";
+import {XaiCheckbox} from "@sentry/ui";
+import {useEffect, useState} from "react";
 import {useStorage} from "@/features/storage";
+import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
+import {useOperator} from "@/features/operator";
 
 export function WhitelistDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {owners} = useAtomValue(chainStateAtom);
 	const {data, setData} = useStorage();
-	const {combinedOwners} = useCombinedOwners(owners);
 	const [selected, setSelected] = useState<string[]>([]);
+	const {sentryRunning, stopRuntime} = useOperatorRuntime();
+	const {publicKey: operatorAddress} = useOperator();
+
+	useEffect(() => {
+		if (data?.whitelistedWallets) {
+			setSelected(data?.whitelistedWallets)
+		}
+	}, []);
 
 	const toggleSelected = (wallet: string) => {
 		setSelected((prevSelected) =>
@@ -24,7 +31,7 @@ export function WhitelistDrawer() {
 
 	const getDropdownItems = () => (
 		<div>
-			{combinedOwners.map((wallet, i) => (
+			{owners.map((wallet, i) => (
 				<div
 					className="p-2 cursor-pointer hover:bg-gray-100"
 					key={`whitelist-item-${i}`}
@@ -46,34 +53,69 @@ export function WhitelistDrawer() {
 			whitelistedWallets: selected,
 		});
 		setDrawerState(null);
+		if (stopRuntime) {
+			void stopRuntime()
+		}
 	}
 
 	return (
 		<div className="relative h-full flex flex-col justify-start items-center">
 			<div
 				className="w-full h-[4rem] min-h-[4rem] flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
-				<div className="flex flex-row gap-2 items-center">
-					<p>Whitelist Wallet</p>
-				</div>
-				<div className="cursor-pointer z-10" onClick={() => setDrawerState(null)}>
-					<AiOutlineClose/>
-				</div>
+				<p>Allowed Wallet</p>
 			</div>
 
 			<div className="flex-grow overflow-y-scroll max-h-[calc(100vh-4rem)] px-6 pt-[1rem]">
-				<p className="mb-2">
-					Select wallets that you would like to whitelist to your operator:
+				<p className="mb-2 text-[15px]">
+					Below are the wallets assigned to your Sentry Wallet ({operatorAddress}). Select the wallets
+					you'd like to enable.
+				</p>
+				<p className="mb-4 text-[15px]">
+					Note: Gas fees will be covered using your Sentry Wallet funds whenever an enabled wallet is eligible
+					to participate in a challenge.
 				</p>
 				<div>
 					{getDropdownItems()}
 				</div>
 			</div>
 
-			<div className="flex-shrink-0 h-16 bg-white flex items-center justify-center">
-				<XaiButton onClick={() => handleSubmit()} width="27.25rem">
-					Submit
-				</XaiButton>
+			<div className="w-full flex-shrink-0 h-18 bg-white flex flex-col items-center justify-center px-2">
+				<p className="text-[14px]">
+					Applying changes will restart your sentry
+				</p>
+
+				<div className="w-full h-16 flex items-center justify-center gap-1">
+					<button
+						onClick={() => {
+							setDrawerState(null)
+						}}
+						className="w-full h-auto text-[15px] text-[#F30919] border border-[#F30919] px-4 py-3 font-semibold"
+					>
+						Cancel
+					</button>
+
+					{sentryRunning && (
+						<button
+							onClick={() => handleSubmit()}
+							disabled={selected.length <= 0 || !stopRuntime}
+							className={`w-full h-auto bg-[#F30919] text-[15px] border border-[#F30919] text-white px-4 py-3 font-semibold ${selected.length <= 0 || !stopRuntime && "bg-gray-400 border-gray-400 cursor-not-allowed"}`}
+						>
+							{stopRuntime ?
+								<>
+									Apply
+								</>
+								:
+								<>
+									Loading...
+								</>
+							}
+						</button>
+					)}
+				</div>
 			</div>
 		</div>
 	);
 }
+
+
+

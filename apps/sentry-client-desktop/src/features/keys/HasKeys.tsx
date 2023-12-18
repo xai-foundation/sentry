@@ -23,7 +23,6 @@ import {ethers} from "ethers";
 import {BiLoaderAlt} from "react-icons/bi";
 import {useGetWalletBalance} from "@/hooks/useGetWalletBalance";
 import {useGetSingleWalletBalance} from "@/hooks/useGetSingleWalletBalance";
-import {LuListChecks} from "react-icons/lu";
 
 interface HasKeysProps {
 	combinedOwners: string[],
@@ -283,14 +282,6 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						>
 							<AiOutlinePlus className="h-[15px]"/>
 							Add wallet
-						</button>
-
-						<button
-							onClick={() => setDrawerState(DrawerView.Whitelist)}
-							className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
-						>
-							<LuListChecks className="h-[15px]"/>
-							Whitelist wallet
 						</button>
 
 						<button
