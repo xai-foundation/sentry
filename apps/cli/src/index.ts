@@ -41,7 +41,7 @@ import { bootOperator } from './commands/operator-control/operator-runtime.js';
 import { setOrAddPricingTiersCommand } from './commands/licenses/set-or-add-pricing-tiers.js';
 import { addPromoCode } from './commands/licenses/add-promo-code.js';
 import { removePromoCode } from './commands/licenses/remove-promo-code.js';
-import { eventListener } from './commands/event-listener.js';
+import { eventListener } from "@/commands/event-listener.js";
 import { resolve } from 'path';
 import * as fs from "fs";
 import * as unzipper from "unzipper";
@@ -127,25 +127,29 @@ async function downloadUpdate() {
 	// check if there is a new version
 	if (semver.gte(process.env.npm_package_version!, tagName)) return;
 
-	// generate the file name to download the update based on platform
-	let executableFileName: string;
+	// generate the url to download the update based on platform
+	let updateUrl: string;
 	switch (process.platform) {
 		case "darwin":
-			executableFileName = "sentry-node-cli-macos";
+			updateUrl = `https://github.com/xai-foundation/sentry/releases/download/${tagName}/sentry-node-cli-macos.zip`;
 			break;
 		case "linux":
-			executableFileName = "sentry-node-cli-linux";
+			updateUrl = `https://github.com/xai-foundation/sentry/releases/download/${tagName}/sentry-node-cli-linux.zip`;
 			break;
 		case "win32":
-			executableFileName = "sentry-node-cli-windows.exe";
+			updateUrl = `https://github.com/xai-foundation/sentry/releases/download/${tagName}/sentry-node-cli-windows.zip`;
 			break;
 		default:
 			return;
 	}
 
 	// download the file
-	const executableDestination = resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../infrastructure", executableFileName);
-	await downloadFile(`https://github.com/xai-foundation/sentry/releases/download/${tagName}/${executableFileName}`, executableDestination);
+	const currentFolder = path.dirname(fileURLToPath(import.meta.url));
+	const zipDestination = resolve(currentFolder, "../../../infrastructure/sentry-node-cli.zip");
+	const updateDestination = resolve(currentFolder, "../../../infrastructure");
+	await downloadFile(updateUrl, zipDestination);
+	await unzipFile(zipDestination, updateDestination);
+	await cli.exec(`chmod +x ${resolve(updateDestination, "sentry-node-cli-macos")}`);
 
 	// await cli.exec("exit", );
 }

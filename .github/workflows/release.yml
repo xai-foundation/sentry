@@ -44,19 +44,36 @@ jobs:
           name: release-desktop-${{ matrix.os }}
           path: apps/sentry-client-desktop/release
 
-#      - name: zip cli artifacts
-#        run: |
-#          cd apps/cli/release
-#          zip sentry-node-cli-macos.zip sentry-node-cli-macos
-#          zip sentry-node-cli-linux.zip sentry-node-cli-linux
-#          zip sentry-node-cli-windows.zip sentry-node-cli-win.exe
-#        if: matrix.os == 'ubuntu-latest'
+      - name: zip cli artifacts
+        run: |
+          cd apps/cli/release
+          zip sentry-node-cli-macos.zip sentry-node-cli-macos
+          zip sentry-node-cli-linux.zip sentry-node-cli-linux
+          zip sentry-node-cli-windows.zip sentry-node-cli-win.exe
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Create directory for signed builds
+        shell: bash
+        run: mkdir apps/cli/release/signed-builds
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Sign build Windows CLI zip
+        uses: sslcom/actions-codesigner@develop
+        with:
+          command: sign
+          username: ${{ secrets.SSL_USERNAME }}
+          password: ${{ secrets.SSL_PASSWORD }}
+          totp_secret: ${{ secrets.SSL_TOTP_SECRET }}
+          file_path: apps/cli/release/sentry-node-cli-windows.zip
+          output_path: apps/cli/release/signed-builds
+        if: matrix.os == 'ubuntu-latest'
 
       - name: Upload cli artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: release-cli-${{ matrix.os }}
+          name: release-cli
           path: apps/cli/release
+        if: matrix.os == 'ubuntu-latest'
 
           # Popular action to deploy to GitHub Pages:
           # Docs: https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus
@@ -99,6 +116,16 @@ jobs:
           totp_secret: ${{ secrets.SSL_TOTP_SECRET }}
           file_path: release-desktop-windows-latest/sentry-client-windows.exe
           output_path: release-desktop-windows-latest/signed-builds
+
+      - name: Sign build Windows CLI zip
+        uses: sslcom/actions-codesigner@develop
+        with:
+          command: sign
+          username: ${{ secrets.SSL_USERNAME }}
+          password: ${{ secrets.SSL_PASSWORD }}
+          totp_secret: ${{ secrets.SSL_TOTP_SECRET }}
+          file_path: release-desktop-ubuntu-latest/sentry-node-cli-windows.zip
+          output_path: release-desktop-windows-latest/signed-builds
       
       - name: Upload signed artifacts
         uses: actions/upload-artifact@v2
@@ -135,8 +162,8 @@ jobs:
             release-signed-desktop-windows-latest/latest.yml
             release-signed-desktop-windows-latest/sentry-client-windows.exe.blockmap
             release-signed-desktop-windows-latest/signed-builds/sentry-client-windows.exe
-            release-cli-ubuntu-latest/sentry-node-cli-macos
-            release-cli-ubuntu-latest/sentry-node-cli-linux
-            release-cli-ubuntu-latest/sentry-node-cli-win.exe
+            release-cli/sentry-node-cli-macos.zip
+            release-cli/sentry-node-cli-linux.zip
+            release-cli/signed-builds/sentry-node-cli-windows.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
