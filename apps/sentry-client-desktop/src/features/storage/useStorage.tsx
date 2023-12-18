@@ -5,6 +5,7 @@ const dataAtom = atom<IData | undefined>(undefined);
 
 export type IData = Partial<{
 	addedWallets: string[];
+	whitelistedWallets: string[];
 	kycStartedWallets: string[];
 	sentryRunning: boolean;
 }>;

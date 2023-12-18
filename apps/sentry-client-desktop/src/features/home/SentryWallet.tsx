@@ -16,7 +16,7 @@ import {useQueryClient} from "react-query";
 import {useBalance} from "@/hooks/useBalance";
 import {ethers} from "ethers";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
-import {Tooltip} from "@sentry/ui";
+import {Tooltip, XaiButton} from "@sentry/ui";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
 import {SentryWalletHeader} from "@/features/home/SentryWalletHeader";
@@ -381,16 +381,15 @@ export function SentryWallet() {
 										Copy address
 									</button>
 
-									<button
+									<XaiButton
 										onClick={() => {
 											setModalState(ModalView.TransactionInProgress)
 											window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`)
 										}}
-										className="flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2"
 									>
 										Assign keys from new wallet
 										<BiLinkExternal className="h-[15px]"/>
-									</button>
+									</XaiButton>
 
 									<button
 										disabled={selectedWallet === null}
