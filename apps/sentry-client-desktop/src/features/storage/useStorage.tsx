@@ -12,7 +12,7 @@ export type IData = Partial<{
 
 interface IUseStorageResponse {
 	data?: IData;
-	setData: (data: IData) => void;
+	setData: (data: IData) => Promise<void>;
 	removeData: () => void;
 	loading: boolean;
 	getFilePath: () => Promise<string>;

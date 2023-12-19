@@ -39,10 +39,10 @@ export function useOperatorRuntime() {
 	async function startRuntime() {
 		if (!sentryRunning && stop === undefined) {
 			setSentryRunning(true);
-			setData({...data, sentryRunning: true});
+			await setData({...data, sentryRunning: true});
 
 			// @ts-ignore
-			stop = await operatorRuntime(signer, setNodeLicenseStatusMap, writeLog, whitelistedWallets);
+			stop = await operatorRuntime(signer, setNodeLicenseStatusMap, writeLog);
 			setRerender((_number) => _number + 1);
 		}
 	}

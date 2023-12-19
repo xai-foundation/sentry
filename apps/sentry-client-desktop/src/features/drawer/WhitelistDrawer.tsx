@@ -18,16 +18,15 @@ export function WhitelistDrawer() {
 	const disableButton = selected.length <= 0 || !stopRuntime;
 
 	useEffect(() => {
-		if (data?.whitelistedWallets) {
-			setSelected(data?.whitelistedWallets)
+		if (data && data.whitelistedWallets) {
+			setSelected(data.whitelistedWallets);
 		}
 	}, []);
 
 	const toggleSelected = (wallet: string) => {
-		setSelected((prevSelected) =>
-			prevSelected.includes(wallet)
-				? prevSelected.filter((item) => item !== wallet)
-				: [...prevSelected, wallet]
+		setSelected((prevSelected) => prevSelected.includes(wallet)
+			? prevSelected.filter((item) => item !== wallet)
+			: [...prevSelected, wallet]
 		);
 	};
 
@@ -49,15 +48,15 @@ export function WhitelistDrawer() {
 		</div>
 	);
 
-	function handleSubmit() {
-		console.log(selected);
-		setData({
+	async function handleSubmit() {
+		await setData({
 			...data,
 			whitelistedWallets: selected,
 		});
+
 		setDrawerState(null);
 		if (stopRuntime) {
-			void stopRuntime()
+			void stopRuntime();
 		}
 	}
 

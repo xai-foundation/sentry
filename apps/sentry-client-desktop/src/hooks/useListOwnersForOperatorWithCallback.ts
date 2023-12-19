@@ -1,11 +1,9 @@
 import {useEffect, useState} from "react";
 import {listOwnersForOperator} from "@sentry/core";
-import {useStorage} from "@/features/storage";
 
 export function useListOwnersForOperatorWithCallback(operatorAddress: string | undefined, initialLoadingState = false, refresh = 0) {
 	const [loading, setLoading] = useState(initialLoadingState);
 	const [owners, setOwners] = useState<string[]>([]);
-	const {data} = useStorage();
 
 	useEffect(() => {
 		setOwners([]);
