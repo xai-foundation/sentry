@@ -153,6 +153,6 @@ jobs:
             release-signed-desktop-windows-latest/signed-builds/sentry-client-windows.exe
             release-cli/sentry-node-cli-macos.zip
             release-cli/sentry-node-cli-linux.zip
-            release-cli/signed-builds/sentry-node-cli-windows.exe
+            release-cli/signed-builds/sentry-node-cli-win.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
