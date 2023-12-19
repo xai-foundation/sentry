@@ -16,6 +16,7 @@ export function useOperatorRuntime() {
 	const [runtimeLogs, setRuntimeLogs] = useAtom(runtimeLogsAtom);
 	const [, setRerender] = useState(0);
 	const {data, setData} = useStorage();
+	const whitelistedWallets = data?.whitelistedWallets;
 
 	// start sentry on launch / restart sentry
 	useEffect(() => {
@@ -41,7 +42,7 @@ export function useOperatorRuntime() {
 			setData({...data, sentryRunning: true});
 
 			// @ts-ignore
-			stop = await operatorRuntime(signer, setNodeLicenseStatusMap, writeLog);
+			stop = await operatorRuntime(signer, setNodeLicenseStatusMap, writeLog, whitelistedWallets);
 			setRerender((_number) => _number + 1);
 		}
 	}

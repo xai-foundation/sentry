@@ -197,7 +197,7 @@ export async function operatorRuntime(
 
         // check to see if the owner of teh license is KYC'd
         const [{isKycApproved}] = await retry(async () => await checkKycStatus([nodeLicenseStatusMap.get(nodeLicenseId)!.ownerPublicKey]));
-        
+
         if (isKycApproved) {
             logFunction(`[${new Date().toISOString()}] Requesting esXAI reward for challenge '${challengeNumber}'.`);
             nodeLicenseStatusMap.set(nodeLicenseId, {
@@ -261,18 +261,18 @@ export async function operatorRuntime(
             });
             safeStatusCallback();
             logFunction(`[${new Date().toISOString()}] Checking for unclaimed rewards on Sentry Key '${nodeLicenseId}'.`);
-    
+
             await getSubmissionsForChallenges(challengeIds, nodeLicenseId, async (submission, index) => {
-    
+
                 const challengeId = challengeIds[index];
-    
+
                 nodeLicenseStatusMap.set(nodeLicenseId, {
                     ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
                     status: `Checking For Unclaimed Rewards on Challenge '${challengeId}'`,
                 });
                 safeStatusCallback();
                 logFunction(`[${new Date().toISOString()}] Checking for unclaimed rewards on Challenge '${challengeId}'.`);
-    
+
                 // call the process claim and update statuses/logs accoridngly
                 if (submission.submitted && !submission.claimed) {
                     nodeLicenseStatusMap.set(nodeLicenseId, {
@@ -284,7 +284,7 @@ export async function operatorRuntime(
                     await processClaimForChallenge(challengeId, nodeLicenseId);
                 }
             });
-    
+
             nodeLicenseStatusMap.set(nodeLicenseId, {
                 ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
                 status: beforeStatus,

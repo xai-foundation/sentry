@@ -397,7 +397,7 @@ export function SentryWallet() {
 										className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2`}
 									>
 										<LuListChecks className="h-[15px]"/>
-										Allowed wallet
+										Allowed wallets
 									</button>
 
 									<button
