@@ -1,5 +1,6 @@
 import Vorpal from "vorpal";
-import { createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee } from "@sentry/core";
+import axios from "axios";
+import { config, createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee } from "@sentry/core";
 
 /**
  * Starts a runtime of the challenger.
@@ -39,20 +40,62 @@ export function bootChallenger(cli: Vorpal) {
             const { address, signer } = getSignerFromPrivateKey(walletKey);
             this.log(`[${new Date().toISOString()}] Address of the Wallet: ${address}`);
 
+            const webhookUrlPrompt: Vorpal.PromptObject = {
+                type: 'input',
+                name: 'webhookUrl',
+                message: 'Enter the webhook URL if you want to post errors (optional):',
+            };
+            const { webhookUrl } = await this.prompt(webhookUrlPrompt);
+
+            if (webhookUrl) {
+                await axios.post(webhookUrl, { text: 'Challenger has started.' });
+            }
+
+            let lastAssertionTime = Date.now();
+
             // start a listener for the assertions coming in
             // @ts-ignore
             listenForAssertions(async (nodeNum, blockHash, sendRoot, event) => {
                 this.log(`[${new Date().toISOString()}] Assertion confirmed ${nodeNum}. Looking up the assertion information...`);
                 const assertionNode = await getAssertion(nodeNum);
                 this.log(`[${new Date().toISOString()}] Assertion data retrieved. Starting the submission process...`);
-                await submitAssertionToReferee(
-                    secretKey,
-                    nodeNum,
-                    assertionNode,
-                    signer,
-                );
-                this.log(`[${new Date().toISOString()}] Submitted assertion: ${nodeNum}`);
+                try {
+                    await submitAssertionToReferee(
+                        secretKey,
+                        nodeNum,
+                        assertionNode,
+                        signer,
+                    );
+                    this.log(`[${new Date().toISOString()}] Submitted assertion: ${nodeNum}`);
+                    lastAssertionTime = Date.now();
+                } catch (error) {
+                    if (webhookUrl) {
+                        await axios.post(webhookUrl, { text: `Error: ${(error as Error).message}` });
+                    }
+                    throw error;
+                }
             }, (v: string) => this.log(v));
+
+            // Check if submit assertion has not been run for over 1 hour and 10 minutes
+            setInterval(async () => {
+                const currentTime = Date.now();
+                if (currentTime - lastAssertionTime > 70 * 60 * 1000) {
+                    const timeSinceLastAssertion = Math.round((currentTime - lastAssertionTime) / 60000);
+                    this.log(`[${new Date().toISOString()}] It has been ${timeSinceLastAssertion} minutes since the last assertion. Please check the Rollup Protocol (${config.rollupAddress}).`);
+                    if (webhookUrl) {
+                        await axios.post(webhookUrl, { text: `It has been ${timeSinceLastAssertion} minutes since the last assertion. Please check the Rollup Protocol (${config.rollupAddress}).` });
+                    }
+                }
+                lastAssertionTime = currentTime;
+            }, 5 * 60 * 1000); // Check every 5 minutes
+
+            // Listen for process termination and send a message to slack
+            process.on('SIGINT', async () => {
+                if (webhookUrl) {
+                    await axios.post(webhookUrl, { text: `The challenger is shutting down...` });
+                }
+                process.exit();
+            });
 
             this.log(`[${new Date().toISOString()}] The challenger is now listening for assertions...`);
             return new Promise((resolve, reject) => { }); // Keep the command alive

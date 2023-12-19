@@ -45,6 +45,9 @@ importers:
       '@sentry/core':
         specifier: workspace:*
         version: link:../../packages/core
+      axios:
+        specifier: ^1.6.2
+        version: 1.6.2(debug@4.3.4)
       cli-table3:
         specifier: ^0.6.3
         version: 0.6.3
