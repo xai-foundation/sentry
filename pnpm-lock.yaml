@@ -45,6 +45,9 @@ importers:
       '@sentry/core':
         specifier: workspace:*
         version: link:../../packages/core
+      app-root-path:
+        specifier: ^3.1.0
+        version: 3.1.0
       axios:
         specifier: ^1.6.2
         version: 1.6.2(debug@4.3.4)
@@ -64,6 +67,9 @@ importers:
         specifier: ^1.12.0
         version: 1.12.0
     devDependencies:
+      '@types/app-root-path':
+        specifier: ^1.2.8
+        version: 1.2.8
       '@types/node':
         specifier: ^20.10.4
         version: 20.10.4
@@ -5969,6 +5975,10 @@ packages:
       '@types/estree': 1.0.3
     dev: false
 
+  /@types/app-root-path@1.2.8:
+    resolution: {integrity: sha512-l12miuN6JXAi3yuADZNhRKbyN7IIyaUP9hFVZ/BbHhWYpBkHLbOaX2WkQoXGJyAgMcP9iZ0S9+tz/FN40VrwWQ==}
+    dev: true
+
   /@types/bn.js@4.11.6:
     resolution: {integrity: sha512-pqr857jrp2kPuO9uRjZ3PwnJTjoQy+fcdxvBTvHm6dkmEL9q+hDD/2j/0ELOBPtPnS8LjCX0gI9nbl8lVkadpg==}
     dependencies:
@@ -6230,7 +6240,6 @@ packages:
 
   /@types/node@20.6.0:
     resolution: {integrity: sha512-najjVq5KN2vsH2U/xyh2opaSEz6cZMR2SetLIlxlj08nOcmPOemJmUK2o4kUzfLqfrWE0PIrNeE16XhYDd3nqg==}
-    dev: true
 
   /@types/node@8.10.66:
     resolution: {integrity: sha512-tktOkFUA4kXx2hhhrB8bIFb5TbwzS4uOhKEmwiD+NoiL0qtP2OQ9mFldbgD4dV1djrlBYP6eBuQZiWjuHUpqFw==}
@@ -7708,6 +7717,11 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /app-root-path@3.1.0:
+    resolution: {integrity: sha512-biN3PwB2gUtjaYy/isrU3aNWI5w+fAfvHkSvCKeQGxhmYpwKFUxudR3Yya+KqVRHBmEDYh+/lTozYCFbmzX4nA==}
+    engines: {node: '>= 6.0.0'}
+    dev: false
 
   /arg@4.1.3:
     resolution: {integrity: sha512-58S9QDqG0Xx27YwPSt9fJxivjYl432YCwfDMfZ+71RAqUrZef7LrKQZ3LHLOwCS4FLNBplP533Zx895SeOCHvA==}

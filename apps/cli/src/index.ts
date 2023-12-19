@@ -51,6 +51,7 @@ import { fileURLToPath } from "url";
 import semver from "semver/preload.js";
 import * as process from "process";
 import {exec as execPromise} from "child_process";
+import appRootPath from "app-root-path";
 
 const cli = new Vorpal();
 
@@ -125,9 +126,9 @@ async function exec(command: string): Promise<void> {
 	return new Promise<void>((resolve, reject) => {
 		execPromise(command, (error) => {
 			if (error) {
-				resolve();
+				reject(error);
 			} else {
-				reject();
+				resolve();
 			}
 		});
 	});
@@ -135,30 +136,36 @@ async function exec(command: string): Promise<void> {
 
 async function downloadUpdate() {
 	// fetch latest tag
-	const {data: {tag_name: tagName}} = await axios.get("https://api.github.com/repos/xai-foundation/sentry/releases/latest");
+	const {data: {tag_name: tagName}} = await axios.get("https://api.github.com/repos/xai-foundation/sentry-develop/releases/latest");
 
 	// check if there is a new version
 	if (semver.gte(process.env.npm_package_version!, tagName)) return;
 
 	const currentFolder = path.dirname(fileURLToPath(import.meta.url));
+	console.log("currentFolder:", currentFolder);
+	console.log("appRootPath.path:", appRootPath.path);
 
 	// generate the url to download the update based on platform
 	switch (process.platform) {
 		case "darwin": {
-			const updateUrl = `https://github.com/xai-foundation/sentry/releases/download/${tagName}/sentry-node-cli-macos.zip`;
-			const zipDestination = resolve(currentFolder, "../../../infrastructure");
-			const execDestination = resolve(currentFolder, "../../../infrastructure/sentry-node-cli-macos");
+			const updateUrl = `https://github.com/xai-foundation/sentry-develop/releases/download/${tagName}/sentry-node-cli-macos.zip`;
+			const zipDestination = resolve(currentFolder, "../../../infrastructure/sentry-node-cli-macos.zip");
+			const execDestination = resolve(currentFolder, "../../../infrastructure");
+
 			await downloadFile(updateUrl, zipDestination);
 			await unzipFile(zipDestination, execDestination);
-			await exec(`chmod +x ${execDestination}`);
+
+			// set unzipped file as unix executable
+			await exec(`chmod +x ${resolve(execDestination, "sentry-node-cli-macos")}`);
+
 			break;
 		}
 		case "linux": {
-			const updateUrl = `https://github.com/xai-foundation/sentry/releases/download/${tagName}/sentry-node-cli-linux.zip`;
+			const updateUrl = `https://github.com/xai-foundation/sentry-develop/releases/download/${tagName}/sentry-node-cli-linux.zip`;
 			break;
 		}
 		case "win32": {
-			const updateUrl = `https://github.com/xai-foundation/sentry/releases/download/${tagName}/sentry-node-cli-win.exe`;
+			const updateUrl = `https://github.com/xai-foundation/sentry-develop/releases/download/${tagName}/sentry-node-cli-win.exe`;
 			break;
 		}
 		default:
