@@ -138,6 +138,10 @@ async function downloadUpdate() {
 	// fetch latest tag
 	const {data: {tag_name: tagName}} = await axios.get("https://api.github.com/repos/xai-foundation/sentry-develop/releases/latest");
 
+	console.log("process.env:", process.env);
+	console.log("process.env.npm_package_version:", process.env.npm_package_version);
+	console.log("tagName:", tagName);
+
 	// check if there is a new version
 	if (semver.gte(process.env.npm_package_version!, tagName)) return;
 
