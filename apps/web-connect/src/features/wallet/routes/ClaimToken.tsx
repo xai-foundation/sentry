@@ -1,37 +1,10 @@
-import {useAccount, useContractRead, useContractWrite, useNetwork} from "wagmi";
-import {config, NodeLicenseAbi} from "@sentry/core";
+import {useAccount} from "wagmi";
 import {XaiBanner} from "@/features/checkout/XaiBanner";
-import {XaiCheckbox} from "@sentry/ui";
-import {KYCTooltip} from "@/features/checkout/KYCTooltip";
 import {useState} from "react";
 
 export function ClaimToken() {
 	const {address} = useAccount();
-	const {chain} = useNetwork();
-
-	const [eligible, setEligible] = useState<boolean>(true);
-
-	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
-	const [checkboxTwo, setCheckboxTwo] = useState<boolean>(false);
-	const [checkboxThree, setCheckboxThree] = useState<boolean>(false);
-	const ready = checkboxOne && checkboxTwo && checkboxThree;
-
-	const {data, isLoading} = useContractRead({
-		address: config.nodeLicenseAddress as `0x${string}`,
-		abi: NodeLicenseAbi,
-		functionName: "whitelistAmounts",
-		args: [address],
-	})
-
-	// const {isLoading, isSuccess, write, error, data} = useContractWrite({
-	const {write, error} = useContractWrite({
-		address: config.nodeLicenseAddress as `0x${string}`,
-		abi: NodeLicenseAbi,
-		functionName: "redeemFromWhitelist",
-		onError(error) {
-			console.warn("Error", error);
-		},
-	});
+	const [eligible, ] = useState<boolean>(true);
 
 	return (
 		<div>
@@ -59,54 +32,14 @@ export function ClaimToken() {
 											You are eligible to claim Xai Tokens!
 										</p>
 										<div className="flex flex-col justify-center gap-8 p-6 mt-8">
-											{/*<div className="flex flex-col justify-center gap-2">*/}
-											{/*	<XaiCheckbox*/}
-											{/*		onClick={() => setCheckboxOne(!checkboxOne)}*/}
-											{/*		condition={checkboxOne}*/}
-											{/*	>*/}
-											{/*		I agree with the*/}
-											{/*		<a*/}
-											{/*			className="cursor-pointer text-[#F30919]"*/}
-											{/*			onClick={() => window.open("https://xai.games/sentrynodeagreement/")}>*/}
-											{/*			Sentry Node Agreement*/}
-											{/*		</a>*/}
-											{/*	</XaiCheckbox>*/}
-
-
-											{/*	<XaiCheckbox*/}
-											{/*		onClick={() => setCheckboxTwo(!checkboxTwo)}*/}
-											{/*		condition={checkboxTwo}*/}
-											{/*	>*/}
-											{/*		I understand Sentry Node Keys are not transferable*/}
-											{/*	</XaiCheckbox>*/}
-
-											{/*	<XaiCheckbox*/}
-											{/*		onClick={() => setCheckboxThree(!checkboxThree)}*/}
-											{/*		condition={checkboxThree}*/}
-											{/*	>*/}
-											{/*		I understand that I cannot claim rewards until I pass KYC*/}
-											{/*		<KYCTooltip*/}
-											{/*			width={850}*/}
-											{/*		>*/}
-											{/*			<p className="text-[#F30919]">(SEE BLOCKED COUNTRIES)</p>*/}
-											{/*		</KYCTooltip>*/}
-											{/*	</XaiCheckbox>*/}
-											{/*</div>*/}
-
 											<div className="w-full">
-												<button
-													onClick={() => write}
-													className={`w-[576px] h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
-													disabled={!ready || chain?.id !== 42_161}
-												>
-													{chain?.id === 42_161 ? "Claim" : "Please Switch to Arbitrum One"}
-												</button>
-
-												{error && (
-													<p className="text-center break-words w-full mt-4 text-red-500">
-														{error.message}
-													</p>
-												)}
+												{/*<button*/}
+												{/*	onClick={() => write}*/}
+												{/*	className={`w-[576px] h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}*/}
+												{/*	disabled={!ready || chain?.id !== 42_161}*/}
+												{/*>*/}
+												{/*	{chain?.id === 42_161 ? "Claim" : "Please Switch to Arbitrum One"}*/}
+												{/*</button>*/}
 											</div>
 										</div>
 									</>
