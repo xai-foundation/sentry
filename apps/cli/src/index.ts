@@ -137,24 +137,21 @@ async function exec(command: string): Promise<void> {
 async function downloadUpdate() {
 	// fetch latest tag
 	const {data: {tag_name: tagName}} = await axios.get("https://api.github.com/repos/xai-foundation/sentry-develop/releases/latest");
-
-	console.log("process.env:", process.env);
-	console.log("process.env.npm_package_version:", process.env.npm_package_version);
-	console.log("tagName:", tagName);
+	const packageJson = fs.readFileSync(new URL(resolve(appRootPath.path, "apps/cli/package.json"), import.meta.url));
+	const {version} = JSON.parse(packageJson.toString());
 
 	// check if there is a new version
-	if (semver.gte(process.env.npm_package_version!, tagName)) return;
+	if (semver.gte(version, tagName)) return;
 
-	const currentFolder = path.dirname(fileURLToPath(import.meta.url));
-	console.log("currentFolder:", currentFolder);
 	console.log("appRootPath.path:", appRootPath.path);
+	await exec("ls -a");
 
 	// generate the url to download the update based on platform
 	switch (process.platform) {
 		case "darwin": {
 			const updateUrl = `https://github.com/xai-foundation/sentry-develop/releases/download/${tagName}/sentry-node-cli-macos.zip`;
-			const zipDestination = resolve(currentFolder, "../../../infrastructure/sentry-node-cli-macos.zip");
-			const execDestination = resolve(currentFolder, "../../../infrastructure");
+			const zipDestination = resolve(appRootPath.path, "infrastructure/sentry-node-cli-macos.zip");
+			const execDestination = resolve(appRootPath.path, "infrastructure");
 
 			await downloadFile(updateUrl, zipDestination);
 			await unzipFile(zipDestination, execDestination);
