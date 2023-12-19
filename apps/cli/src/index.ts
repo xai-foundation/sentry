@@ -137,11 +137,11 @@ async function exec(command: string): Promise<void> {
 async function downloadUpdate() {
 	// fetch latest tag
 	const {data: {tag_name: tagName}} = await axios.get("https://api.github.com/repos/xai-foundation/sentry-develop/releases/latest");
-	const packageJson = fs.readFileSync(new URL(resolve(appRootPath.path, "apps/cli/package.json"), import.meta.url));
-	const {version} = JSON.parse(packageJson.toString());
+
+	console.log("process.env:", process.env);
 
 	// check if there is a new version
-	if (semver.gte(version, tagName)) return;
+	if (semver.gte(process.env.APP_VERSION!, tagName)) return;
 
 	console.log("appRootPath.path:", appRootPath.path);
 	await exec("ls -a");

@@ -34,7 +34,9 @@ jobs:
         run: pnpm install
 
       - name: Build monorepo
-        run: pnpm run build
+        run: |
+          export APP_VERSION=${{ github.ref_name }}
+          pnpm run build
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
