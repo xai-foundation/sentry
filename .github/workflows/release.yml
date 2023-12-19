@@ -45,7 +45,7 @@ jobs:
         run: pnpm run build
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        if: matrix.os !== 'ubuntu-latest'
+        if: matrix.os != 'ubuntu-latest'
 
       - name: Upload sentry-client-desktop artifacts
         uses: actions/upload-artifact@v2
