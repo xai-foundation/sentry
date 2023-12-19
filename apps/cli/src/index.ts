@@ -42,6 +42,7 @@ import { setOrAddPricingTiersCommand } from './commands/licenses/set-or-add-pric
 import { addPromoCode } from './commands/licenses/add-promo-code.js';
 import { removePromoCode } from './commands/licenses/remove-promo-code.js';
 import { eventListener } from './commands/event-listener.js';
+import { startKycProcess } from './commands/kyc/start-kyc-process.js';
 
 const cli = new Vorpal();
 
@@ -89,6 +90,7 @@ setReferralDiscountAndRewardPercentages(cli);
 setRollupAddress(cli);
 toggleAssertionChecking(cli);
 totalSupply(cli);
+startKycProcess(cli);
 
 cli
     .delimiter('sentry-node$')
