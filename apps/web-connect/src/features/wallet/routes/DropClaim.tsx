@@ -1,18 +1,15 @@
-import {useAccount, useNetwork} from "wagmi";
+import {useAccount, useContractWrite, useNetwork} from "wagmi";
 import {XaiBanner} from "@/features/checkout/XaiBanner";
 import {XaiCheckbox} from "@sentry/ui";
 import {KYCTooltip} from "@/features/checkout/KYCTooltip";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {useListClaimableAmount} from "@/features/checkout/hooks/useListClaimableAmount";
 import {BiLoaderAlt} from "react-icons/bi";
+import {config, NodeLicenseAbi} from "@sentry/core";
 
 export function DropClaim() {
 	const {address} = useAccount();
 	const {chain} = useNetwork();
-
-	const [eligible, setEligible] = useState<boolean>(false);
-	const [keys,] = useState(15);
-
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
 	const [checkboxTwo, setCheckboxTwo] = useState<boolean>(false);
 	const [checkboxThree, setCheckboxThree] = useState<boolean>(false);
@@ -20,17 +17,18 @@ export function DropClaim() {
 
 	const {data: claimableAmountData, isLoading: isClaimableAmountLoading} = useListClaimableAmount(address);
 
-	if (!isClaimableAmountLoading) {
-		console.log("claimableAmount: ", claimableAmountData);
-	}
-
-	useEffect(() => {
-		if (keys !== 0) {
-			setEligible(true)
-		} else if (keys <= 0) {
-			setEligible(false)
-		}
-	}, [keys]);
+	const {isLoading: isRedeemFromWhitelistLoading, write, error, data} = useContractWrite({
+		address: config.nodeLicenseAddress as `0x${string}`,
+		abi: NodeLicenseAbi,
+		functionName: "redeemFromWhitelist",
+		args: [claimableAmountData],
+		onSuccess() {
+			console.log("Success", data);
+		},
+		onError(error) {
+			console.warn("Error", error);
+		},
+	});
 
 	return (
 		<div>
@@ -51,8 +49,6 @@ export function DropClaim() {
 							</div>
 						) : (
 							<>
-
-
 								{!address && (
 									<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
 										Connect your wallet to check your eligibility.
@@ -61,11 +57,11 @@ export function DropClaim() {
 
 								{address ? (
 									<>
-										{eligible ? (
+										{claimableAmountData ? (
 											<>
 												<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
 													This wallet ({address}) can claim <span
-													className="font-semibold">{keys}</span> {keys === 1 ? "key" : "keys"}.
+													className="font-semibold">{claimableAmountData}</span> {claimableAmountData === 1 ? "key" : "keys"}.
 												</p>
 												<div className="flex flex-col justify-center gap-8 p-6 mt-8">
 													<div className="flex flex-col justify-center gap-2">
@@ -105,13 +101,19 @@ export function DropClaim() {
 
 													<div>
 														<button
-															// onClick={() => write}
+															onClick={() => write}
 															className={`w-[576px] h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
-															disabled={!ready || chain?.id !== 42_161}
+															disabled={!ready || chain?.id !== 42_161 || isRedeemFromWhitelistLoading}
 														>
 															{chain?.id === 42_161 ? "Claim" : "Please Switch to Arbitrum One"}
 														</button>
 													</div>
+
+													{error && (
+														<p className="text-center break-words w-full mt-4 text-red-500">
+															{error.message}
+														</p>
+													)}
 												</div>
 											</>
 										) : (

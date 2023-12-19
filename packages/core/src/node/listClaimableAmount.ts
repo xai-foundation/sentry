@@ -5,7 +5,7 @@ import {config} from "../config.js";
 
 export async function listClaimableAmount(
 	address: string,
-): Promise<string[]> {
+): Promise<number> {
 
 	// Get the provider
 	const provider = getProvider();
