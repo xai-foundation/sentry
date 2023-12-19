@@ -30,6 +30,25 @@ export function WhitelistDrawer() {
 		);
 	};
 
+	const getOperatorItem = () => {
+		if (operatorAddress) {
+			return (
+				<div>
+					<div
+						className="p-2 cursor-pointer hover:bg-gray-100"
+					>
+						<XaiCheckbox
+							onClick={() => toggleSelected(operatorAddress)}
+							condition={selected.includes(operatorAddress)}
+						>
+							{operatorAddress}
+						</XaiCheckbox>
+					</div>
+				</div>
+			)
+		}
+	}
+
 	const getDropdownItems = () => (
 		<div>
 			{owners.map((wallet, i) => (
@@ -77,6 +96,7 @@ export function WhitelistDrawer() {
 					to participate in a challenge.
 				</p>
 				<div>
+					{getOperatorItem()}
 					{getDropdownItems()}
 				</div>
 			</div>
