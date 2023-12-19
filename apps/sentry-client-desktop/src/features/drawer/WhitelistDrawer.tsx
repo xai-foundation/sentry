@@ -15,6 +15,8 @@ export function WhitelistDrawer() {
 	const {sentryRunning, stopRuntime} = useOperatorRuntime();
 	const {publicKey: operatorAddress} = useOperator();
 
+	const disableButton = selected.length <= 0 || !stopRuntime;
+
 	useEffect(() => {
 		if (data?.whitelistedWallets) {
 			setSelected(data?.whitelistedWallets)
@@ -48,6 +50,7 @@ export function WhitelistDrawer() {
 	);
 
 	function handleSubmit() {
+		console.log(selected);
 		setData({
 			...data,
 			whitelistedWallets: selected,
@@ -97,8 +100,8 @@ export function WhitelistDrawer() {
 					{sentryRunning && (
 						<button
 							onClick={() => handleSubmit()}
-							disabled={selected.length <= 0 || !stopRuntime}
-							className={`w-full h-auto bg-[#F30919] text-[15px] border border-[#F30919] text-white px-4 py-3 font-semibold ${selected.length <= 0 || !stopRuntime && "bg-gray-400 border-gray-400 cursor-not-allowed"}`}
+							disabled={disableButton}
+							className={`w-full h-auto bg-[#F30919] text-[15px] border border-[#F30919] text-white px-4 py-3 font-semibold ${disableButton ? "bg-gray-400 border-gray-400 cursor-not-allowed" : ""}`}
 						>
 							{stopRuntime ?
 								<>
