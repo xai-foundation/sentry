@@ -8,7 +8,7 @@ export function useListClaimableAmount(address: string | undefined) {
 			return await listClaimableAmount(address!);
 		},
 		staleTime: Infinity,
-		cacheTime: 2500,
+		cacheTime: Infinity,
 		enabled: address != undefined && address.length > 0,
 	});
 }

@@ -1,10 +1,15 @@
-import {useAccount} from "wagmi";
+import {useAccount, useNetwork} from "wagmi";
 import {XaiBanner} from "@/features/checkout/XaiBanner";
 import {useState} from "react";
+import {XaiCheckbox} from "@sentry/ui";
 
 export function ClaimToken() {
 	const {address} = useAccount();
-	const [eligible, ] = useState<boolean>(true);
+	const [eligible,] = useState<boolean>(false);
+	const {chain} = useNetwork();
+
+	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
+	const ready = checkboxOne && chain?.id === 42_161
 
 	return (
 		<div>
@@ -32,25 +37,40 @@ export function ClaimToken() {
 											You are eligible to claim Xai Tokens!
 										</p>
 										<div className="flex flex-col justify-center gap-8 p-6 mt-8">
+
+											<div className="flex flex-col justify-center gap-2">
+												<XaiCheckbox
+													onClick={() => setCheckboxOne(!checkboxOne)}
+													condition={checkboxOne}
+												>
+													I agree with the Xai Airdrop
+													<a
+														className="cursor-pointer text-[#F30919]"
+														onClick={() => window.open("https://xai.games/sentrynodeagreement/")}>
+														Terms and Conditions
+													</a>
+												</XaiCheckbox>
+											</div>
+
 											<div className="w-full">
-												{/*<button*/}
-												{/*	onClick={() => write}*/}
-												{/*	className={`w-[576px] h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}*/}
-												{/*	disabled={!ready || chain?.id !== 42_161}*/}
-												{/*>*/}
-												{/*	{chain?.id === 42_161 ? "Claim" : "Please Switch to Arbitrum One"}*/}
-												{/*</button>*/}
+												<button
+													// onClick={() => write}
+													className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
+													disabled={!ready}
+												>
+													{chain?.id === 42_161 ? "Claim" : "Please Switch to Arbitrum One"}
+												</button>
 											</div>
 										</div>
 									</>
 								) : (
 									<>
-									<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
-										This wallet ({address}) is ineligible to claim any Xai Tokens.
-									</p>
-									<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
-										You can connect a different wallet to determine if it is eligible.
-									</p>
+										<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
+											This wallet ({address}) is ineligible to claim any Xai Tokens.
+										</p>
+										<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
+											You can connect a different wallet to determine if it is eligible.
+										</p>
 									</>
 								)}
 							</>
