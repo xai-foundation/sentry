@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/Base64Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-contract NodeLicense4 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
+contract NodeLicense5 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     using StringsUpgradeable for uint256;
     using CountersUpgradeable for CountersUpgradeable.Counter;
     CountersUpgradeable.Counter private _tokenIds;
