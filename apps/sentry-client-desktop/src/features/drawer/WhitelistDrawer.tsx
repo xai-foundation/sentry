@@ -96,7 +96,9 @@ export function WhitelistDrawer() {
 					to participate in a challenge.
 				</p>
 				<div>
+					<p className="text-[12px]">Your Sentry Wallet</p>
 					{getOperatorItem()}
+					<p className="text-[12px]">Assigned Wallets</p>
 					{getDropdownItems()}
 				</div>
 			</div>
