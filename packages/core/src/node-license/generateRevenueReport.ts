@@ -1,5 +1,5 @@
-import { ethers } from "ethers";
-import { NodeLicenseAbi, config, getProvider } from "../index.js";
+import {ethers} from "ethers";
+import {config, getProvider, NodeLicenseAbi} from "../index.js";
 import axios from "axios";
 
 export async function generateRevenueReport() {

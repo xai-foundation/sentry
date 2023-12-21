@@ -11,12 +11,10 @@ import {KycRequiredCard} from "./KycRequiredCard";
 import {BarStepItem} from "@/components/BarStepItem";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
-import {useCombinedOwners} from "@/hooks/useCombinedOwners";
 
 export function ActionsRequiredNotAccruingDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const {owners, ownersKycMap, combinedWalletsKycMap} = useAtomValue(chainStateAtom);
-	const {combinedOwners} = useCombinedOwners(owners);
+	const {owners, ownersKycMap} = useAtomValue(chainStateAtom);
 	const {accruing, kycRequired} = useAtomValue(accruingStateAtom);
 
 	return (
@@ -85,15 +83,15 @@ export function ActionsRequiredNotAccruingDrawer() {
 							<AssignedKeysCard/>
 						</BarStepItem>
 
-						{combinedOwners?.map((owner, i) => {
+						{owners?.map((owner, i) => {
 							return (
 								<BarStepItem
 									key={`bar-step-item-${i}`}
-									lastItem={i + 1 === combinedOwners!.length}
+									lastItem={i + 1 === owners!.length}
 								>
 									<KycRequiredCard
 										wallet={owner}
-										status={combinedWalletsKycMap[owner]}
+										status={ownersKycMap[owner]}
 									/>
 								</BarStepItem>
 							);
