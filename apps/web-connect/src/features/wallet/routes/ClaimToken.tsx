@@ -49,7 +49,7 @@ export function ClaimToken() {
 													I agree with the Xai Airdrop
 													<a
 														className="cursor-pointer text-[#F30919]"
-														onClick={() => navigate("/xaiairdroptermsandconditions")}>
+														onClick={() => navigate("/xai-airdrop-terms-and-conditions")}>
 														Terms and Conditions
 													</a>
 												</XaiCheckbox>
