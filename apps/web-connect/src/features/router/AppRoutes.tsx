@@ -10,6 +10,7 @@ import {BiLoaderAlt} from "react-icons/bi";
 import {Footer} from "@/features/footer/Footer";
 import {DropClaim} from "@/features/wallet/routes/DropClaim";
 import {ClaimToken} from "@/features/wallet/routes/ClaimToken";
+import {TermsAndConditions} from "@/features/wallet/routes/TermsAndConditions";
 
 enum IpBanType {
 	INVALID_IP = "INVALID_IP",
@@ -79,8 +80,9 @@ export function AppRoutes() {
 						<Route path="/" element={<Checkout/>}/>
 						<Route path="/assign-wallet/:operatorAddress" element={<AssignWallet/>}/>
 						<Route path="/unassign-wallet/:operatorAddress" element={<UnassignWallet/>}/>
-						<Route path="/dropclaim" element={<DropClaim/>}/>
-						<Route path="/claimtoken" element={<ClaimToken/>}/>
+						<Route path="/drop-claim" element={<DropClaim/>}/>
+						<Route path="/claim-token" element={<ClaimToken/>}/>
+						<Route path="/xai-airdrop-terms-and-conditions" element={<TermsAndConditions/>}/>
 						<Route path="*" element={<Navigate to="/" replace={true}/>}/>
 					</Routes>
 					<Footer/>

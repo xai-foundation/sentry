@@ -2,9 +2,12 @@ import {useAccount, useNetwork} from "wagmi";
 import {XaiBanner} from "@/features/checkout/XaiBanner";
 import {useState} from "react";
 import {XaiCheckbox} from "@sentry/ui";
+import {useNavigate} from "react-router-dom";
 
 export function ClaimToken() {
 	const {address} = useAccount();
+	const navigate = useNavigate();
+
 	const [eligible,] = useState<boolean>(false);
 	const {chain} = useNetwork();
 
@@ -46,7 +49,7 @@ export function ClaimToken() {
 													I agree with the Xai Airdrop
 													<a
 														className="cursor-pointer text-[#F30919]"
-														onClick={() => window.open("https://xai.games/sentrynodeagreement/")}>
+														onClick={() => navigate("/xaiairdroptermsandconditions")}>
 														Terms and Conditions
 													</a>
 												</XaiCheckbox>

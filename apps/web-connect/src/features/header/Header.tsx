@@ -5,7 +5,7 @@ export function Header() {
 	const navigate = useNavigate();
 	return (
 		<div>
-			<div className="fixed flex w-full h-[4rem] justify-between items-center py-[0.325rem] px-[0.75rem]">
+			<div className="fixed flex w-full h-[4rem] justify-between items-center bg-white py-[0.325rem] px-[0.75rem]">
 				<div
 					className="w-[4.3rem] ml-2"
 					onClick={() => navigate("/")}
