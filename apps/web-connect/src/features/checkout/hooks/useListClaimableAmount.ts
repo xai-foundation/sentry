@@ -11,7 +11,7 @@ export function useListClaimableAmount(address: string | undefined) {
 			}
 		},
 		staleTime: Infinity,
-		cacheTime: Infinity,
+		cacheTime: 0,
 		enabled: address != undefined && address.length > 0,
 	});
 }
