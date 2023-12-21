@@ -145,15 +145,21 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
+#          files: |
 #            release-desktop-macos-latest/latest-mac.yml
 #            release-desktop-macos-latest/sentry-client-macos.dmg.blockmap
 #            release-desktop-macos-latest/sentry-client-macos.dmg
-            release-desktop-ubuntu-latest/latest-linux.yml
-            release-desktop-ubuntu-latest/sentry-client-linux.AppImage
+#            release-desktop-ubuntu-latest/latest-linux.yml
+#            release-desktop-ubuntu-latest/sentry-client-linux.AppImage
 #            release-signed-desktop-windows-latest/latest.yml
 #            release-signed-desktop-windows-latest/sentry-client-windows.exe.blockmap
 #            release-signed-desktop-windows-latest/signed-builds/sentry-client-windows.exe
+#            release-cli/sentry-node-cli-macos.zip
+#            release-cli/sentry-node-cli-linux.zip
+#            release-cli/signed-builds/sentry-node-cli-win.exe
+          files: |
+            release-desktop-ubuntu-latest/latest-linux.yml
+            release-desktop-ubuntu-latest/sentry-client-linux.AppImage
             release-cli/sentry-node-cli-macos.zip
             release-cli/sentry-node-cli-linux.zip
             release-cli/signed-builds/sentry-node-cli-win.exe
