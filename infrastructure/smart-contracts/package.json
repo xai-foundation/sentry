@@ -17,10 +17,12 @@
   },
   "dependencies": {
     "@sentry/core": "workspace:*",
+    "@truffle/hdwallet-provider": "^2.1.15",
     "csv": "^6.3.5",
     "dotenv": "^16.3.1",
     "ethers": "6.8.1",
-    "ganache-cli": "^6.12.2"
+    "ganache-cli": "^6.12.2",
+    "web3": "^4.3.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-network-helpers": "1.0.9",
