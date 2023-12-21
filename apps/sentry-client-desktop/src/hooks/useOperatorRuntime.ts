@@ -42,7 +42,7 @@ export function useOperatorRuntime() {
 			await setData({...data, sentryRunning: true});
 
 			// @ts-ignore
-			stop = await operatorRuntime(signer, setNodeLicenseStatusMap, writeLog);
+			stop = await operatorRuntime(signer, setNodeLicenseStatusMap, writeLog, whitelistedWallets);
 			setRerender((_number) => _number + 1);
 		}
 	}
@@ -56,7 +56,7 @@ export function useOperatorRuntime() {
 			await _stop();
 			setNodeLicenseStatusMap(new Map<bigint, NodeLicenseInformation>());
 			setSentryRunning(false);
-			setData({...data, sentryRunning: false});
+			await setData({...data, sentryRunning: false});
 		}
 	}
 
