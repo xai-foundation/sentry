@@ -87,9 +87,9 @@ export async function operatorRuntime(
     }
     logFunction(`[${new Date().toISOString()}] Total Sentry Keys fetched: ${nodeLicenseIds.length}.`);
 
-    if (nodeLicenseIds.length === 0) {
-        throw new Error("No Sentry Keys found.");
-    }
+    // if (nodeLicenseIds.length === 0) {
+    //     throw new Error("No Sentry Keys found.");
+    // }
 
     // create a mapping of all the timestamps these nodeLicenses were created at, so we can easily check the eligibility later
     logFunction(`[${new Date().toISOString()}] Checking Sentry Key eligibility.`);
