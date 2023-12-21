@@ -13,15 +13,14 @@ export function DropClaim() {
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
 	const [checkboxTwo, setCheckboxTwo] = useState<boolean>(false);
 	const [checkboxThree, setCheckboxThree] = useState<boolean>(false);
-	const ready = checkboxOne && checkboxTwo && checkboxThree;
+	const ready = checkboxOne && checkboxTwo && checkboxThree && chain?.id !== 42_161;
 
-	const {data: claimableAmountData, isLoading: isClaimableAmountLoading} = useListClaimableAmount(address);
+	const {data: listClaimableAmountData, isLoading: isClaimableAmountLoading} = useListClaimableAmount(address);
 
 	const {isLoading: isRedeemFromWhitelistLoading, write, error, data} = useContractWrite({
 		address: config.nodeLicenseAddress as `0x${string}`,
 		abi: NodeLicenseAbi,
 		functionName: "redeemFromWhitelist",
-		args: [claimableAmountData],
 		onSuccess() {
 			console.log("Success", data);
 		},
@@ -57,11 +56,11 @@ export function DropClaim() {
 
 								{address ? (
 									<>
-										{claimableAmountData ? (
+										{listClaimableAmountData && Number(listClaimableAmountData?.claimableAmount) !== 0 ? (
 											<>
 												<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
 													This wallet ({address}) can claim <span
-													className="font-semibold">{claimableAmountData}</span> {claimableAmountData === 1 ? "key" : "keys"}.
+													className="font-semibold">{BigInt(listClaimableAmountData.claimableAmount).toString()}</span> {Number(listClaimableAmountData.claimableAmount) === 1 ? "key" : "keys"}.
 												</p>
 												<div className="flex flex-col justify-center gap-8 p-6 mt-8">
 													<div className="flex flex-col justify-center gap-2">
@@ -101,9 +100,9 @@ export function DropClaim() {
 
 													<div>
 														<button
-															onClick={() => write}
-															className={`w-[576px] h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
-															disabled={!ready || chain?.id !== 42_161 || isRedeemFromWhitelistLoading}
+															onClick={() => write()}
+															className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
+															disabled={!ready || isRedeemFromWhitelistLoading}
 														>
 															{chain?.id === 42_161 ? "Claim" : "Please Switch to Arbitrum One"}
 														</button>

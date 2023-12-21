@@ -5,7 +5,10 @@ export function useListClaimableAmount(address: string | undefined) {
 	return useQuery({
 		queryKey: ["list-claimable-amount", address],
 		queryFn: async () => {
-			return await listClaimableAmount(address!);
+			const claimableAmount = await listClaimableAmount(address!);
+			return {
+				claimableAmount,
+			}
 		},
 		staleTime: Infinity,
 		cacheTime: Infinity,
