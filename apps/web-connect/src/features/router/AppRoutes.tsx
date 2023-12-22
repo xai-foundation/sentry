@@ -48,7 +48,7 @@ export function AppRoutes() {
 				setLoading(false);
 			}
 
-			if (!!invalidIp || !!ofacSanction) {
+			if (!!invalidIp || !!ofacSanction || data.country === "US") {
 				setBlocked(true);
 				setLoading(false);
 			}
