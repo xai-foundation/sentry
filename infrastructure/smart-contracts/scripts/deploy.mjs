@@ -128,7 +128,7 @@ async function main() {
 
   console.log("Deploying NodeLicense...");
   const NodeLicense = await ethers.getContractFactory("NodeLicense");
-  const nodeLicense = await upgrades.deployProxy(NodeLicense, [options.fundsReceiver, options.referralDiscountPercentage, options.referralRewardPercentage], { deployer: deployer });
+  let nodeLicense = await upgrades.deployProxy(NodeLicense, [options.fundsReceiver, options.referralDiscountPercentage, options.referralRewardPercentage], { deployer: deployer });
   const { blockNumber: nodeLicenseDeployedBlockNumber } = await nodeLicense.deploymentTransaction();
   const nodeLicenseAddress = await nodeLicense.getAddress();
 
@@ -198,24 +198,43 @@ async function main() {
   }
 
   // denounce the admin role of the deployer on every contract  
-  await referee.renounceRole(refereeAdminRole, deployerAddress);
-  console.log(`Renounced admin role of ${deployerAddress} on Referee`);
-  await nodeLicense.renounceRole(nodeLicenseAdminRole, deployerAddress);
-  console.log(`Renounced admin role of ${deployerAddress} on NodeLicense`);
-  await esXai.renounceRole(esXaiAdminRole, deployerAddress);
-  console.log(`Renounced admin role of ${deployerAddress} on esXai`);
-  await xai.renounceRole(xaiAdminRole, deployerAddress);
-  console.log(`Renounced admin role of ${deployerAddress} on xai`);
+  // await referee.renounceRole(refereeAdminRole, deployerAddress);
+  // console.log(`Renounced admin role of ${deployerAddress} on Referee`);
+  // await nodeLicense.renounceRole(nodeLicenseAdminRole, deployerAddress);
+  // console.log(`Renounced admin role of ${deployerAddress} on NodeLicense`);
+  // await esXai.renounceRole(esXaiAdminRole, deployerAddress);
+  // console.log(`Renounced admin role of ${deployerAddress} on esXai`);
+  // await xai.renounceRole(xaiAdminRole, deployerAddress);
+  // console.log(`Renounced admin role of ${deployerAddress} on xai`);
 
   // Verify the contracts
-  await Promise.all([
-    safeVerify({ contract: xai }),
-    safeVerify({ contract: referee }),
-    safeVerify({ contract: esXai }),
-    safeVerify({ contract: nodeLicense }),
-    safeVerify({ contract: gasSubsidy }),
-  ]);
+  // await Promise.all([
+  //   safeVerify({ contract: xai }),
+  //   safeVerify({ contract: referee }),
+  //   safeVerify({ contract: esXai }),
+  //   safeVerify({ contract: nodeLicense }),
+  //   safeVerify({ contract: gasSubsidy }),
+  // ]);
   console.log("Contracts verified.");
+
+  // upgrade nodelicense
+  const NodeLicenseUpgrade = await ethers.getContractFactory("NodeLicense5");
+  nodeLicense = await upgrades.upgradeProxy(nodeLicenseAddress , NodeLicenseUpgrade);
+  console.log("Upgraded");
+
+  // update the nodeLicense with the new whitelist values
+  const whitelist = ["0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85", "0x39085cC8918dED41cA38993Ccd73934AC097e373", "0x6D5060128fa9611b0E371F1Ba1B2Fa6371cd52cb"];
+  const whitelistValues = [251, 251, 251];
+
+  await nodeLicense.updateWhitelistAmounts(whitelist, whitelistValues);
+  console.log("Updated whitelist amounts");
+
+  // await run("verify:verify", {
+  //     address: nodeLicenseAddress,
+  //     constructorArguments: [],
+  // });
+
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere

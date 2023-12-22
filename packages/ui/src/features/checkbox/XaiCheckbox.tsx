@@ -3,7 +3,7 @@ import {ReactNode} from "react";
 
 interface XaiCheckboxProps {
 	onClick: () => void;
-	condition: string | boolean | number;
+	condition: string | boolean | number | string[];
 	children: ReactNode;
 }
 

@@ -96,11 +96,11 @@ export function Sidebar() {
 
 			<div/>
 
-			<div className="flex flex-col gap-1 text-[12px]">
+			<div className="flex flex-col gap-1 text-[12px] z-10">
 				<p>v{import.meta.env.APP_VERSION}</p>
 				<a
-					className="text-blue-500 cursor-pointer hover:underline"
-					onClick={() => window.open("https://xai.games/sentrynodeagreement/", "_blank", "noopener noreferrer")}
+					className="text-[#F30919] cursor-pointer hover:underline"
+					onClick={() => window.electron.openExternal("https://xai.games/sentrynodeagreement")}
 				>
 					Sentry Node Agreement
 				</a>

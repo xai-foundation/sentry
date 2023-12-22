@@ -11,13 +11,13 @@ import {KycRequiredCard} from "./KycRequiredCard";
 import {BarStepItem} from "@/components/BarStepItem";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
-import {useCombinedOwners} from "@/hooks/useCombinedOwners";
+import {useStorage} from "@/features/storage";
 
 export function ActionsRequiredNotAccruingDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const {owners, ownersKycMap, combinedWalletsKycMap} = useAtomValue(chainStateAtom);
-	const {combinedOwners} = useCombinedOwners(owners);
+	const {ownersKycMap} = useAtomValue(chainStateAtom);
 	const {accruing, kycRequired} = useAtomValue(accruingStateAtom);
+	const {data} = useStorage();
 
 	return (
 		<div className="h-full flex flex-col justify-start items-center">
@@ -81,71 +81,60 @@ export function ActionsRequiredNotAccruingDrawer() {
 							<FundsInSentryWalletCard/>
 						</BarStepItem>
 
-						<BarStepItem>
+						<BarStepItem lastItem={true}>
 							<AssignedKeysCard/>
 						</BarStepItem>
 
-						{combinedOwners?.map((owner, i) => {
-							return (
-								<BarStepItem
-									key={`bar-step-item-${i}`}
-									lastItem={i + 1 === combinedOwners!.length}
-								>
-									<KycRequiredCard
-										wallet={owner}
-										status={combinedWalletsKycMap[owner]}
+						<div className="py-5 px-3">
+							{kycRequired ? (
+								<SquareCard>
+									<IconLabel
+										icon={IoMdCloseCircle}
+										color="#F59E28"
+										title="At least one wallet has unclaimable esXAI"
 									/>
-								</BarStepItem>
-							);
-						})}
+									<p className="text-[15px] text-[#525252] mt-3">
+										You must pass KYC within 180 days of accruing esXAI to claim accrued node
+										rewards.
+										Check back in
+										48 hours if all docs submitted. Check your inbox (including spam) for updates.
+										For
+										KYC issues,
+										contact<a
+										className="text-[#F30919] cursor-pointer"
+										onClick={() => window.electron.openExternal(`https://help.blockpass.org/hc/en-us/requests/new`)}
+									> Blockpass</a>. If not completed, continue submission here.
+									</p>
+								</SquareCard>
+							) : (
+								<SquareCard className="bg-[#DCFCE7]">
+									<IconLabel
+										icon={AiFillCheckCircle}
+										color="#16A34A"
+										title="You can claim esXAI"
+									/>
+									<p className="text-[15px] text-[#15803D] mt-2">
+										You have successfully completed your KYC on all wallets assigned to the Sentry.
+									</p>
+								</SquareCard>
+							)}
+
+							{data?.whitelistedWallets?.map((owner, i) => {
+								return (
+									<BarStepItem
+										key={`bar-step-item-${i}`}
+										lastItem={i + 1 === data?.whitelistedWallets!.length}
+									>
+										<KycRequiredCard
+											wallet={owner}
+											status={ownersKycMap[owner]}
+										/>
+									</BarStepItem>
+								);
+							})}
+						</div>
 					</div>
 				</div>
-
-				{accruing && (
-					<div className="py-5 px-3">
-						{kycRequired ? (
-							<SquareCard>
-								<IconLabel
-									icon={IoMdCloseCircle}
-									color="#F59E28"
-									title="At least one wallet has unclaimable esXAI"
-								/>
-								<p className="text-[15px] text-[#525252] mt-3">
-									You must pass KYC within 180 days of accruing esXAI to claim accrued node rewards.
-									Check back in
-									48 hours if all docs submitted. Check your inbox (including spam) for updates. For
-									KYC issues,
-									contact<a
-									className="text-[#F30919] cursor-pointer"
-									onClick={() => window.electron.openExternal(`https://help.blockpass.org/hc/en-us/requests/new`)}
-								> Blockpass</a>. If not completed, continue submission here.
-								</p>
-							</SquareCard>
-						) : (
-							<SquareCard className="bg-[#DCFCE7]">
-								<IconLabel
-									icon={AiFillCheckCircle}
-									color="#16A34A"
-									title="You can claim esXAI"
-								/>
-								<p className="text-[15px] text-[#15803D] mt-2">
-									You have successfully completed your KYC on all wallets assigned to the Sentry.
-								</p>
-							</SquareCard>
-						)}
-
-						{owners?.map((owner, i) => {
-							return (
-								<BarStepItem key={`bar-step-item-${i}`} lastItem={i + 1 === owners!.length}>
-									<KycRequiredCard
-										wallet={owner}
-										status={ownersKycMap[owner]}
-									/>
-								</BarStepItem>
-							);
-						})}
-					</div>
-				)}
 			</div>
 		</div>
 	);
