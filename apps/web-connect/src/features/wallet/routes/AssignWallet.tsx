@@ -7,7 +7,7 @@ import {XaiBanner} from "@/features/checkout/XaiBanner";
 export function AssignWallet() {
 	const navigate = useNavigate();
 	const params = useParams<{operatorAddress: string}>();
-	const {address} = useAccount();
+	const {isConnected, address} = useAccount();
 	const {chain} = useNetwork();
 
 	const {isLoading, isSuccess, write, error, data} = useContractWrite({
@@ -74,7 +74,7 @@ export function AssignWallet() {
 									{error.message}
 								</p>
 							)}
-							{address ? (
+							{isConnected && address ? (
 								<button
 									onClick={() => write()}
 									disabled={isLoading || isSuccess || chain?.id !== 42_161}
