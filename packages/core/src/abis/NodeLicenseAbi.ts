@@ -1211,4 +1211,4 @@ export const NodeLicenseAbi = [
     "stateMutability": "nonpayable",
     "type": "function"
   }
-];
+]
