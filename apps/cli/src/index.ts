@@ -141,7 +141,8 @@ async function downloadUpdate() {
 	console.log("process.env:", process.env);
 
 	// check if there is a new version
-	if (semver.gte(process.env.APP_VERSION!, tagName)) return;
+	// if (semver.gte(process.env.APP_VERSION!, tagName)) return;
+	if (semver.gte("1.0.0", tagName)) return;
 
 	console.log("appRootPath.path:", appRootPath.path);
 	await exec("ls -a");
