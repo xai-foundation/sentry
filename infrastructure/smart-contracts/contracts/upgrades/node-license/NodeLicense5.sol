@@ -174,6 +174,10 @@ contract NodeLicense5 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      */
     function redeemFromWhitelist() external {
 
+        uint256 startTime = 1703275200; // Fri Dec 22 2023 12:00:00 GMT-0800 (Pacific Standard Time)
+        require(block.timestamp >= startTime, "Redemption is not eligible yet");
+        require(block.timestamp <= startTime + 30 days, "Redemption period has ended");
+
         require(whitelistAmounts[msg.sender] > 0, "Invalid whitelist amount");
 
         uint16 toMint = whitelistAmounts[msg.sender];
