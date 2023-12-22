@@ -35,10 +35,9 @@ jobs:
         run: pnpm install
 
       - name: Build monorepo
-        run: pnpm run build
+        run: APP_VERSION=${{ github.ref_name }} pnpm recursive run build
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APP_VERSION: ${{ github.ref_name }}
 
       - name: Upload sentry-client-desktop artifacts
         uses: actions/upload-artifact@v2
