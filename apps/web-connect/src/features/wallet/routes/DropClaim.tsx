@@ -5,7 +5,7 @@ import {KYCTooltip} from "@/features/checkout/KYCTooltip";
 import {useState} from "react";
 import {useListClaimableAmount} from "@/features/checkout/hooks/useListClaimableAmount";
 import {BiLoaderAlt} from "react-icons/bi";
-import {NodeLicenseAbi} from "@sentry/core";
+import {config, NodeLicenseAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 
 export function DropClaim() {
@@ -14,14 +14,12 @@ export function DropClaim() {
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
 	const [checkboxTwo, setCheckboxTwo] = useState<boolean>(false);
 	const [checkboxThree, setCheckboxThree] = useState<boolean>(false);
-	// const ready = checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161;
-	const ready = checkboxOne && checkboxTwo && checkboxThree && chain?.id === 421613;
+	const ready = checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161;
 
 	const {data: listClaimableAmountData, isLoading: isClaimableAmountLoading} = useListClaimableAmount(address);
 
 	const {isLoading: isRedeemFromWhitelistLoading, write, error, isSuccess} = useContractWrite({
-		address: "0xd8362099000ba0C8A8f0Dd9Ed8413bC8Bc8691B9" as `0x${string}`,
-		// address: config.nodeLicenseAddress as `0x${string}`,
+		address: config.nodeLicenseAddress as `0x${string}`,
 		abi: NodeLicenseAbi,
 		functionName: "redeemFromWhitelist",
 		onError(error) {
@@ -129,8 +127,7 @@ export function DropClaim() {
 																className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 																disabled={!ready || isRedeemFromWhitelistLoading}
 															>
-																{chain?.id === 421613 ? "Claim" : "Please Switch to Arbitrum Goerli"}
-																{/*{chain?.id === 42_161 ? "Claim" : "Please Switch to Arbitrum One"}*/}
+																{chain?.id === 42_161 ? "Claim" : "Please Switch to Arbitrum One"}
 															</button>
 														</div>
 
