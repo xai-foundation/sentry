@@ -5,7 +5,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const config = {
-  defaultNetwork: "hardhat",
+  defaultNetwork: "arbitrumOne",
   solidity: {
     version: "0.8.9",
     settings: {

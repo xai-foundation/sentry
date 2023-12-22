@@ -1,6 +1,6 @@
 import fs from "fs";
 import hardhat from "hardhat";
-import { config } from "@sentry/core";
+import { NodeLicenseAbi, config } from "@sentry/core";
 
 const { ethers } = hardhat;
 
@@ -9,6 +9,7 @@ const RECEIPT_OUT_PATH = "./receipt.json";
 
 async function main() {
     const whitelistAddressMap = await readWhitelistData();
+    const deployer = (await ethers.getSigners())[0];
 
     const addresses = [];
     const amounts = [];
@@ -18,9 +19,9 @@ async function main() {
         amounts.push(whitelistAddressMap[key]);
     });
 
-    console.log(`Loaded ${addresses.length} wallets from whitelist`);
+    console.log(`Loaded ${addresses.length} wallets from whitelist`, whitelistAddressMap);
 
-    const nodeLicense = await ethers.getContractFactory("NodeLicense5").attach(config.nodeLicenseAddress);
+    const nodeLicense = await new ethers.Contract(config.nodeLicenseAddress, NodeLicenseAbi, deployer)
     const receipt = await nodeLicense.updateWhitelistAmounts(addresses, amounts);
 
     const result = { receipt, whitelistAddressMap }
@@ -31,14 +32,14 @@ async function main() {
 
 async function readWhitelistData() {
 
-    const addressesMapped = {} //{[address: string]: number}
-    const lines = fs.readFileSync(PATH_TO_WHITELIST).split('\n').filter(Boolean);
+    const addressesMapped = {}; //{[address: string]: number}
+    const lines = fs.readFileSync(PATH_TO_WHITELIST).toString().split('\n').filter(Boolean);
 
     lines.forEach((line, i) => {
 
         const [address, amount] = line.split(";");
 
-        if (!address || !ethers.utils.isAddress(address) || isNaN(amount)) {
+        if (!address || !ethers.isAddress(address) || isNaN(amount)) {
             console.error(`Invalid whitelist data at line ${i} '${line}'`);
             return;
         }
