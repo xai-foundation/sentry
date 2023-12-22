@@ -5,7 +5,7 @@ import {KYCTooltip} from "@/features/checkout/KYCTooltip";
 import {useState} from "react";
 import {useListClaimableAmount} from "@/features/checkout/hooks/useListClaimableAmount";
 import {BiLoaderAlt} from "react-icons/bi";
-import {config, NodeLicenseAbi} from "@sentry/core";
+import {NodeLicenseAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 
 export function DropClaim() {
