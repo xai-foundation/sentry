@@ -52,6 +52,7 @@ import semver from "semver/preload.js";
 import * as process from "process";
 import {exec as execPromise} from "child_process";
 import appRootPath from "app-root-path";
+import appRootDir from "app-root-dir";
 
 const cli = new Vorpal();
 
@@ -145,14 +146,16 @@ async function downloadUpdate() {
 	if (semver.gte("1.0.0", tagName)) return;
 
 	console.log("appRootPath.path:", appRootPath.path);
+	console.log("appRootDir.get():", appRootDir.get());
+	console.log("path.dirname(fileURLToPath(import.meta.url))", path.dirname(fileURLToPath(import.meta.url)));
 	await exec("ls -a");
 
 	// generate the url to download the update based on platform
 	switch (process.platform) {
 		case "darwin": {
 			const updateUrl = `https://github.com/xai-foundation/sentry-develop/releases/download/${tagName}/sentry-node-cli-macos.zip`;
-			const zipDestination = resolve(appRootPath.path, "infrastructure/sentry-node-cli-macos.zip");
-			const execDestination = resolve(appRootPath.path, "infrastructure");
+			const zipDestination = resolve(process.env.TMPDIR!, "sentry-node-cli-macos.zip");
+			const execDestination = process.env.TMPDIR!;
 
 			await downloadFile(updateUrl, zipDestination);
 			await unzipFile(zipDestination, execDestination);

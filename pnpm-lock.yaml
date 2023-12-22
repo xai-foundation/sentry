@@ -45,6 +45,9 @@ importers:
       '@sentry/core':
         specifier: workspace:*
         version: link:../../packages/core
+      app-root-dir:
+        specifier: ^1.0.2
+        version: 1.0.2
       app-root-path:
         specifier: ^3.1.0
         version: 3.1.0
@@ -67,6 +70,9 @@ importers:
         specifier: ^1.12.0
         version: 1.12.0
     devDependencies:
+      '@types/app-root-dir':
+        specifier: ^0.1.4
+        version: 0.1.4
       '@types/app-root-path':
         specifier: ^1.2.8
         version: 1.2.8
@@ -5975,6 +5981,10 @@ packages:
       '@types/estree': 1.0.3
     dev: false
 
+  /@types/app-root-dir@0.1.4:
+    resolution: {integrity: sha512-KQDMeSvfgmzVfXFzzEGYRdGxokYVrpfuB2Zr2Mbt5G5MQKiiPH2OTNGv9XRqoXN+9vVHcDercrmqWVGRuGWY+A==}
+    dev: true
+
   /@types/app-root-path@1.2.8:
     resolution: {integrity: sha512-l12miuN6JXAi3yuADZNhRKbyN7IIyaUP9hFVZ/BbHhWYpBkHLbOaX2WkQoXGJyAgMcP9iZ0S9+tz/FN40VrwWQ==}
     dev: true
@@ -7717,6 +7727,10 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /app-root-dir@1.0.2:
+    resolution: {integrity: sha512-jlpIfsOoNoafl92Sz//64uQHGSyMrD2vYG5d8o2a4qGvyNCvXur7bzIsWtAC/6flI2RYAp3kv8rsfBtaLm7w0g==}
+    dev: false
 
   /app-root-path@3.1.0:
     resolution: {integrity: sha512-biN3PwB2gUtjaYy/isrU3aNWI5w+fAfvHkSvCKeQGxhmYpwKFUxudR3Yya+KqVRHBmEDYh+/lTozYCFbmzX4nA==}
