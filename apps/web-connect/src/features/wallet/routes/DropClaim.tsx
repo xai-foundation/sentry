@@ -14,12 +14,14 @@ export function DropClaim() {
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
 	const [checkboxTwo, setCheckboxTwo] = useState<boolean>(false);
 	const [checkboxThree, setCheckboxThree] = useState<boolean>(false);
-	const ready = checkboxOne && checkboxTwo && checkboxThree && chain?.id !== 42_161;
+	// const ready = checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161;
+	const ready = checkboxOne && checkboxTwo && checkboxThree && chain?.id === 421613;
 
 	const {data: listClaimableAmountData, isLoading: isClaimableAmountLoading} = useListClaimableAmount(address);
 
 	const {isLoading: isRedeemFromWhitelistLoading, write, error, isSuccess} = useContractWrite({
-		address: config.nodeLicenseAddress as `0x${string}`,
+		address: "0xd8362099000ba0C8A8f0Dd9Ed8413bC8Bc8691B9" as `0x${string}`,
+		// address: config.nodeLicenseAddress as `0x${string}`,
 		abi: NodeLicenseAbi,
 		functionName: "redeemFromWhitelist",
 		onError(error) {
@@ -77,8 +79,12 @@ export function DropClaim() {
 											{listClaimableAmountData && Number(listClaimableAmountData?.claimableAmount) !== 0 ? (
 												<>
 													<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
-														This wallet ({address}) can claim <span
-														className="font-semibold">{BigInt(listClaimableAmountData.claimableAmount).toString()}</span> {Number(listClaimableAmountData.claimableAmount) === 1 ? "key" : "keys"}.
+														This wallet ({address}) is eligible to claim <span
+														className="font-semibold">{BigInt(listClaimableAmountData.claimableAmount).toString()}</span> {Number(listClaimableAmountData.claimableAmount) === 1 ? "Key" : "Keys"}.
+													</p>
+													<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
+														You will be able to claim up to 50 Keys per transaction until
+														all your eligible Keys are claimed.
 													</p>
 													<div className="flex flex-col justify-center gap-8 p-6 mt-8">
 														<div className="flex flex-col justify-center gap-2">
@@ -123,7 +129,8 @@ export function DropClaim() {
 																className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 																disabled={!ready || isRedeemFromWhitelistLoading}
 															>
-																{chain?.id === 42_161 ? "Claim" : "Please Switch to Arbitrum One"}
+																{chain?.id === 421613 ? "Claim" : "Please Switch to Arbitrum Goerli"}
+																{/*{chain?.id === 42_161 ? "Claim" : "Please Switch to Arbitrum One"}*/}
 															</button>
 														</div>
 
