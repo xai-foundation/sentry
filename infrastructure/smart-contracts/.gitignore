@@ -10,4 +10,5 @@ initialXaiMints.csv
 # Hardhat files
 cache
 artifacts
-
+whitelist.csv
+receipt.json

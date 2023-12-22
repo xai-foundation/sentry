@@ -5,7 +5,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const config = {
-  defaultNetwork: "hardhat",
+  defaultNetwork: "arbitrumGoerli",
   solidity: {
     version: "0.8.9",
     settings: {

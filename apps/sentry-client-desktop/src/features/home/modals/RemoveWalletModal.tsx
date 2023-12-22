@@ -25,13 +25,9 @@ export function RemoveWalletModal({onClose, selectedWallet, isWalletAssignedMap}
 		if (indexToRemove !== -1) {
 			userWallets.splice(indexToRemove, 1);
 		}
-		setData({...data, addedWallets: userWallets});
+		void setData({...data, addedWallets: userWallets});
 		setSuccess(true)
 		setTimeout(() => {
-			// setSuccess(false)
-			// onClose();
-
-			// todo: find a better way to do this
 			window.location.reload();
 		}, 2000);
 	}
