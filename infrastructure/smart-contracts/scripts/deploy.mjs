@@ -208,32 +208,14 @@ async function main() {
   // console.log(`Renounced admin role of ${deployerAddress} on xai`);
 
   // Verify the contracts
-  // await Promise.all([
-  //   safeVerify({ contract: xai }),
-  //   safeVerify({ contract: referee }),
-  //   safeVerify({ contract: esXai }),
-  //   safeVerify({ contract: nodeLicense }),
-  //   safeVerify({ contract: gasSubsidy }),
-  // ]);
+  await Promise.all([
+    safeVerify({ contract: xai }),
+    safeVerify({ contract: referee }),
+    safeVerify({ contract: esXai }),
+    safeVerify({ contract: nodeLicense }),
+    safeVerify({ contract: gasSubsidy }),
+  ]);
   console.log("Contracts verified.");
-
-  // upgrade nodelicense
-  const NodeLicenseUpgrade = await ethers.getContractFactory("NodeLicense5");
-  nodeLicense = await upgrades.upgradeProxy(nodeLicenseAddress , NodeLicenseUpgrade);
-  console.log("Upgraded");
-
-  // update the nodeLicense with the new whitelist values
-  const whitelist = ["0xBAbeCCc528725ab1BFe7EEB6971FD7dbdd65cd85", "0x39085cC8918dED41cA38993Ccd73934AC097e373", "0x6D5060128fa9611b0E371F1Ba1B2Fa6371cd52cb"];
-  const whitelistValues = [251, 251, 251];
-
-  await nodeLicense.updateWhitelistAmounts(whitelist, whitelistValues);
-  console.log("Updated whitelist amounts");
-
-  // await run("verify:verify", {
-  //     address: nodeLicenseAddress,
-  //     constructorArguments: [],
-  // });
-
 
 }
 
