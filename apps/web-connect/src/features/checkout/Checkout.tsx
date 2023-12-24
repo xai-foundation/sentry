@@ -11,8 +11,11 @@ import {AiOutlineInfoCircle} from "react-icons/ai";
 import {Tooltip} from "@sentry/ui";
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {XaiBanner} from "@/features/checkout/XaiBanner";
+import {useBlockIp} from "@/hooks/useBlockIp";
 
 export function Checkout() {
+	const {blocked, loading} = useBlockIp();
+
 	const queryString = window.location.search;
 	const queryParams = new URLSearchParams(queryString);
 	const prefilledAmount = queryParams.get("quantity");
@@ -23,6 +26,7 @@ export function Checkout() {
 	const {data: getPriceData, isLoading: isPriceLoading} = useGetPriceForQuantity(quantity);
 	const {data: providerData} = useProvider();
 	const [discount, setDiscount] = useState({applied: false, error: false,});
+
 
 	useEffect(() => {
 		if (prefilledAmount) {
@@ -49,6 +53,20 @@ export function Checkout() {
 
 	function returnToClient() {
 		window.location = `xai-sentry://purchase-successful?txHash=${data?.hash}` as unknown as Location;
+	}
+
+	if (loading) {
+		return (
+			<div className="w-full h-screen flex justify-center items-center">
+				<BiLoaderAlt className="animate-spin" size={32} color={"#000000"}/>
+			</div>
+		)
+	}
+
+	if (blocked) {
+		return (
+			<pre className="p-2 text-[14px]">Not Found</pre>
+		)
 	}
 
 	return (
