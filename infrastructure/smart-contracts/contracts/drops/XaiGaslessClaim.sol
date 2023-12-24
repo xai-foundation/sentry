@@ -1,6 +1,8 @@
 pragma solidity ^0.8.0;
 
 import "../Xai.sol";
+import "../Referee.sol";
+import "../NodeLicense.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 contract XaiGaslessClaim is AccessControlUpgradeable {
@@ -24,11 +26,22 @@ contract XaiGaslessClaim is AccessControlUpgradeable {
     uint256 public startTime;
     uint256 public endTime;
 
+    address public nodeLicense;
+    address public referee;
+
     event Claim(address indexed user, uint256 amount);
     event ClaimPeriodChanged(uint256 newStartTime, uint256 newEndTime);
     event AllowanceAddressChanged(address newAllowanceAddress);
 
-    function initialize(address _permitAdmin, address _xai, address _allowanceAddress, uint256 _startTime, uint256 _endTime) public initializer {
+    function initialize(
+        address _permitAdmin,
+        address _xai,
+        address _allowanceAddress,
+        uint256 _startTime,
+        uint256 _endTime,
+        address _nodeLicense,
+        address _referee
+    ) public initializer {
         require(permitAdmin == address(0), "Already init");
 
         __AccessControl_init();
@@ -58,6 +71,8 @@ contract XaiGaslessClaim is AccessControlUpgradeable {
         permitAdmin = _permitAdmin;
         xai = _xai;
         allowanceAddress = _allowanceAddress;
+        nodeLicense = _nodeLicense;
+        referee = _referee;
     }
 
     function setClaimPeriod(uint256 _startTime, uint256 _endTime) external onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -129,6 +144,13 @@ contract XaiGaslessClaim is AccessControlUpgradeable {
     ) external {
         require(block.timestamp >= startTime && block.timestamp <= endTime, "Claim period is not active");
 
+        // Check if the user owns a NodeLicense
+        NodeLicense _nodeLicense = NodeLicense(nodeLicense);
+        if (_nodeLicense.balanceOf(msg.sender) > 0) {
+            Referee _referee = Referee(referee);
+            // Check if the user is KYC'd
+            require(_referee.isKycApproved(msg.sender), "User is not KYC'd");
+        }
         bytes32 digest = keccak256(
             abi.encodePacked(
                 "\x19\x01",
@@ -143,6 +165,7 @@ contract XaiGaslessClaim is AccessControlUpgradeable {
                 )
             )
         );
+
 
         address recoveredAddress = ecrecover(digest, v, r, s);
         require(recoveredAddress == permitAdmin, "Invalid auth");

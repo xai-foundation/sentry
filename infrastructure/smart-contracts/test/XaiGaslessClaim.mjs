@@ -10,10 +10,13 @@ export function XaiGaslessClaimTests(deployInfrastructure) {
     return function() {
         let xaiGaslessClaim;
         let xai;
+        let nodeLicense;
+        let referee;
         let owner;
         let addr1;
         let addr2;
         let addr3;
+        let kycAdmin;
         let minter;
         let chainId;
         const claimContractName = "XaiGaslessClaim";
@@ -25,6 +28,9 @@ export function XaiGaslessClaimTests(deployInfrastructure) {
             [owner, addr1, addr2, addr3] = await ethers.getSigners();
             minter = fixture.xaiMinter;
             xai = fixture.xai;
+            nodeLicense = fixture.nodeLicense;
+            referee = fixture.referee;
+            kycAdmin = fixture.kycAdmin;
             
 
             chainId = (await owner.provider.getNetwork()).chainId;
@@ -32,7 +38,7 @@ export function XaiGaslessClaimTests(deployInfrastructure) {
             const startTime = await ethers.provider.getBlock('latest').then(block => block.timestamp);
             const endTime = startTime + 3600; // 1 hour later
 
-            xaiGaslessClaim = await upgrades.deployProxy(XaiGaslessClaim, [await owner.getAddress(), await fixture.xai.getAddress(), await addr1.getAddress(), startTime, endTime], { initializer: 'initialize' });
+            xaiGaslessClaim = await upgrades.deployProxy(XaiGaslessClaim, [await owner.getAddress(), await fixture.xai.getAddress(), await addr1.getAddress(), startTime, endTime, await fixture.nodeLicense.getAddress(), await fixture.referee.getAddress()], { initializer: 'initialize' });
             await xaiGaslessClaim.waitForDeployment();
 
             // Mint Xai to addr1
@@ -390,7 +396,69 @@ export function XaiGaslessClaimTests(deployInfrastructure) {
             // Check if the recovered address matches the permit admin address
             expect(recoveredAddress).to.equal(await xaiGaslessClaim.permitAdmin());
         });
-        
+
+        it("Should not allow a non-KYC'd user who owns a NodeLicense to claim", async function() {
+            // Mint a NodeLicense for addr1
+            let price = await nodeLicense.price(1, "");
+            await nodeLicense.connect(addr1).mint(1, "", {value: price});
+
+            // Ensure addr1 is not KYC'd
+            expect(await referee.isKycApproved(addr1.getAddress())).to.be.false;
+
+            const signature = await signERC2612Permit(
+                await xaiGaslessClaim.getAddress(),
+                Number(chainId),
+                await addr1.getAddress(),
+                claimAmount,
+                process.env.MNEMONIC,
+                0,
+                owner,
+                0,
+                claimContractName
+            );
+
+            // Attempt to submit the claim
+            await expect(
+                xaiGaslessClaim.connect(addr1).claimRewards(
+                    claimAmount,
+                    signature.v,
+                    signature.r,
+                    signature.s,
+                )
+            ).to.be.revertedWith("User is not KYC'd");
+        });
+
+        it("Should allow a KYC'd user who owns a NodeLicense to claim", async function() {
+            // Mint a NodeLicense for addr1
+            let price = await nodeLicense.price(1, "");
+            await nodeLicense.connect(addr1).mint(1, "", {value: price});
+
+            // Ensure addr1 is KYC'd
+            await referee.connect(kycAdmin).addKycWallet(await addr1.getAddress());
+            expect(await referee.isKycApproved(addr1.getAddress())).to.be.true;
+
+            const signature = await signERC2612Permit(
+                await xaiGaslessClaim.getAddress(),
+                Number(chainId),
+                await addr1.getAddress(),
+                claimAmount,
+                process.env.MNEMONIC,
+                0,
+                owner,
+                0,
+                claimContractName
+            );
+
+            // Attempt to submit the claim
+            await expect(
+                xaiGaslessClaim.connect(addr1).claimRewards(
+                    claimAmount,
+                    signature.v,
+                    signature.r,
+                    signature.s,
+                )
+            ).to.not.be.reverted;
+        });
 
     };
 }
