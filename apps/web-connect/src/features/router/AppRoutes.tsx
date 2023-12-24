@@ -8,6 +8,8 @@ import {Footer} from "@/features/footer/Footer";
 import {DropClaim} from "@/features/wallet/routes/DropClaim";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import {BiLoaderAlt} from "react-icons/bi";
+import { ClaimToken } from '../wallet/routes/ClaimToken';
+import { TermsAndConditions } from '../wallet/routes/TermsAndConditions';
 
 export function AppRoutes() {
 	const {blocked, loading} = useBlockIp({blockUsa: false});
@@ -33,8 +35,8 @@ export function AppRoutes() {
 				<Header/>
 				<Routes>
 					<Route path="/drop-claim" element={<DropClaim/>}/>
-					{/*<Route path="/claim-token" element={<ClaimToken/>}/>*/}
-					{/*<Route path="/xai-airdrop-terms-and-conditions" element={<TermsAndConditions/>}/>*/}
+					<Route path="/claim-token" element={<ClaimToken/>}/>
+					<Route path="/xai-airdrop-terms-and-conditions" element={<TermsAndConditions/>}/>
 					<Route path="/assign-wallet/:operatorAddress" element={<AssignWallet/>}/>
 					<Route path="/unassign-wallet/:operatorAddress" element={<UnassignWallet/>}/>
 					<Route path="/" element={<Checkout/>}/>

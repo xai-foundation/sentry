@@ -17,19 +17,38 @@ async function main() {
 
     // create list of permits
     const permits = {};
-    for (const {userWalletAddress, amount} of claimAmounts) {
-        const signature = await signERC2612Permit(
-            GASLESS_CLAIM_ADDRESS,
-            CHAIN_ID,
-            userWalletAddress,
-            amount,
-            process.env.MNEMONIC,
-            0,
-            permitAdmin,
-            NONCE_PER_RUN,
-            "XaiGaslessClaim"
-        );
-        permits[userWalletAddress] = signature;
+    const batchSize = 100;
+    let batchCount = 0;
+    for (let i = 0; i < claimAmounts.length; i += batchSize) {
+        const batch = claimAmounts.slice(i, i + batchSize);
+        const startTime = Date.now();
+        const promises = batch.map(async ({userWalletAddress, amount}) => {
+            const startTime = Date.now();
+            const signature = await signERC2612Permit(
+                GASLESS_CLAIM_ADDRESS,
+                CHAIN_ID,
+                userWalletAddress,
+                amount,
+                process.env.MNEMONIC,
+                0,
+                permitAdmin,
+                NONCE_PER_RUN,
+                "XaiGaslessClaim"
+            );
+            const endTime = Date.now();
+            const timeTaken = endTime - startTime;
+            console.log(`Permit creation for ${userWalletAddress} took ${timeTaken} ms`);
+            return {userWalletAddress, signature, timeTaken, amount};
+        });
+        const results = await Promise.all(promises);
+        results.forEach(({userWalletAddress, signature, timeTaken, amount}) => {
+            permits[userWalletAddress] = {...signature, amount};
+            console.log(`Batch ${batchCount + 1} - Permit creation for ${userWalletAddress} took ${timeTaken} ms`);
+        });
+        const batchEndTime = Date.now();
+        const batchTimeTaken = batchEndTime - startTime;
+        console.log(`Batch ${batchCount + 1} completed in ${batchTimeTaken} ms. ${batchCount + 1} / ${Math.ceil(claimAmounts.length / batchSize)} batches completed.`);
+        batchCount++;
     }
 
     // save permit list file into the web public directory
