@@ -10,7 +10,7 @@ import {FaCircleCheck} from "react-icons/fa6";
 import {useBlockIp} from "@/hooks/useBlockIp";
 
 export function DropClaim() {
-	const {blocked, loading} = useBlockIp();
+	const {blocked, loading} = useBlockIp({blockUsa: true});
 
 	const {address} = useAccount();
 	const {chain} = useNetwork();

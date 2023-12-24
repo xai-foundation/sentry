@@ -7,7 +7,7 @@ import {useBlockIp} from "@/hooks/useBlockIp";
 import {BiLoaderAlt} from "react-icons/bi";
 
 export function ClaimToken() {
-	const {blocked, loading} = useBlockIp();
+	const {blocked, loading} = useBlockIp({blockUsa: true});
 
 	const {address} = useAccount();
 	const navigate = useNavigate();

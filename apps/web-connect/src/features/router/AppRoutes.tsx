@@ -6,9 +6,26 @@ import {UnassignWallet} from "@/features/wallet/routes/UnassignWallet";
 import {Header} from "@/features/header/Header";
 import {Footer} from "@/features/footer/Footer";
 import {DropClaim} from "@/features/wallet/routes/DropClaim";
+import {useBlockIp} from "@/hooks/useBlockIp";
+import {BiLoaderAlt} from "react-icons/bi";
 
 export function AppRoutes() {
+	const {blocked, loading} = useBlockIp({blockUsa: false});
 	const queryClient = new QueryClient();
+
+	if (loading) {
+		return (
+			<div className="w-full h-screen flex justify-center items-center">
+				<BiLoaderAlt className="animate-spin" size={32} color={"#000000"}/>
+			</div>
+		)
+	}
+
+	if (blocked) {
+		return (
+			<pre className="p-2 text-[14px]">Not Found</pre>
+		)
+	}
 
 	return (
 		<Router basename={"/"}>

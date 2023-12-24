@@ -17,7 +17,7 @@ interface checkIpProps {
 	geoBanType: GeoBanType;
 }
 
-export function useBlockIp() {
+export function useBlockIp({blockUsa}: {blockUsa: boolean}) {
 	const [blocked, setBlocked] = useState(true);
 	const [loading, setLoading] = useState(true);
 
@@ -36,7 +36,7 @@ export function useBlockIp() {
 				setLoading(false);
 			}
 
-			if (!!invalidIp || !!ofacSanction || data.country === "US") {
+			if (!!invalidIp || !!ofacSanction || (blockUsa && data.country === "US")) {
 				setBlocked(true);
 				setLoading(false);
 			}
@@ -48,5 +48,5 @@ export function useBlockIp() {
 	return {
 		blocked,
 		loading,
-	}
+	};
 }
