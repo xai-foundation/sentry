@@ -1,5 +1,5 @@
 import {useNavigate, useParams} from "react-router-dom";
-import {useAccount, useContractWrite} from "wagmi";
+import {useAccount, useContractWrite, useNetwork} from "wagmi";
 import {config, RefereeAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {XaiBanner} from "@/features/checkout/XaiBanner";
@@ -7,7 +7,8 @@ import {XaiBanner} from "@/features/checkout/XaiBanner";
 export function UnassignWallet() {
 	const navigate = useNavigate();
 	const params = useParams<{ operatorAddress: string }>();
-	const {address} = useAccount();
+	const {isConnected, address} = useAccount();
+	const {chain} = useNetwork();
 
 	const {isLoading, isSuccess, write, error, data} = useContractWrite({
 		address: config.refereeAddress as `0x${string}`,
@@ -73,13 +74,14 @@ export function UnassignWallet() {
 									{error.message}
 								</p>
 							)}
-							{address ? (
+							{isConnected && address ? (
 								<button
 									onClick={() => write()}
-									disabled={isLoading || isSuccess}
+									disabled={isLoading || isSuccess || chain?.id !== 42_161}
 									className="w-full bg-[#F30919] text-white p-4 font-semibold m-8 disabled:bg-slate-400"
 								>
-									Un-assign wallet from Sentry ({getShortenedWallet(address)})
+
+									{chain?.id === 42_161 ? `Un-assign wallet to Sentry (${getShortenedWallet(address)})` : "Please Switch to Arbitrum One"}
 								</button>
 							) : (
 								<div className="m-8">

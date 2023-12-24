@@ -10,6 +10,7 @@
     "get-promo-code": "hardhat run scripts/lookupPromoCodeAtBlockNumber.mjs",
     "upgrade-node-license": "hardhat run scripts/upgradeNodeLicense.mjs",
     "operator-report": "hardhat run scripts/createOperatorReport.mjs",
+    "add-whitelist-amounts": "hardhat run scripts/addWhitelistAmounts.mjs",
     "local": "hardhat node",
     "test": "hardhat test --network localhost",
     "coverage": "hardhat coverage --network hardhat --solcoverjs ./.solcover.cjs --temp artifacts --testfiles \"./test/**/*.mjs\"",

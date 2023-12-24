@@ -1,24 +1,23 @@
 import classNames from "classnames";
-import {atom, useAtom, useSetAtom} from "jotai";
-import {ExitAlertModal} from "@/features/home/modals/ExitAlertModal";
+import {atom, useAtom} from "jotai";
 import {useState} from "react";
 import {PurchaseCompleteModal} from "@/features/home/modals/PurchaseCompleteModal";
-import {drawerStateAtom} from "@/features/drawer/DrawerManager";
+import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
 import {AssignWalletTransactionInProgressModal} from "@/features/home/modals/AssignWalletTransactionInProgressModal";
 import {useNavigate} from "react-router-dom";
+import {DisableBodyModal} from "@/features/home/modals/DisableBodyModal";
 
 export enum ModalView {
-	Exit,
 	PurchaseSuccessful,
 	TransactionInProgress,
-	RemoveWallet
+	RemoveWallet,
 }
 
 export const modalStateAtom = atom<ModalView | null>(null);
 
 export function ModalManager() {
 	const [modalState, setModalState] = useAtom(modalStateAtom);
-	const setDrawerState = useSetAtom(drawerStateAtom);
+	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const [purchaseSuccessful, setPurchaseSuccessful] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
 	const navigate = useNavigate();
 
@@ -31,12 +30,9 @@ export function ModalManager() {
 	});
 
 	return (
-		<div className={classNames("w-full h-full fixed z-30", {
+		<div className={classNames("w-full h-full fixed z-10", {
 			"hidden": modalState === null,
 		})}>
-			{modalState === ModalView.Exit && (
-				<ExitAlertModal onSuccess={() => alert("wow")}/>
-			)}
 
 			{modalState === ModalView.PurchaseSuccessful && (
 				<PurchaseCompleteModal
@@ -46,6 +42,10 @@ export function ModalManager() {
 
 			{modalState === ModalView.TransactionInProgress && (
 				<AssignWalletTransactionInProgressModal/>
+			)}
+
+			{drawerState === DrawerView.Whitelist && (
+				<DisableBodyModal/>
 			)}
 		</div>
 	);

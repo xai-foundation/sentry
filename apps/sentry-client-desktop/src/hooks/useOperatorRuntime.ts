@@ -16,6 +16,7 @@ export function useOperatorRuntime() {
 	const [runtimeLogs, setRuntimeLogs] = useAtom(runtimeLogsAtom);
 	const [, setRerender] = useState(0);
 	const {data, setData} = useStorage();
+	const whitelistedWallets = data?.whitelistedWallets;
 
 	// start sentry on launch / restart sentry
 	useEffect(() => {
@@ -38,10 +39,10 @@ export function useOperatorRuntime() {
 	async function startRuntime() {
 		if (!sentryRunning && stop === undefined) {
 			setSentryRunning(true);
-			setData({...data, sentryRunning: true});
+			await setData({...data, sentryRunning: true});
 
 			// @ts-ignore
-			stop = await operatorRuntime(signer, setNodeLicenseStatusMap, writeLog);
+			stop = await operatorRuntime(signer, setNodeLicenseStatusMap, writeLog, whitelistedWallets);
 			setRerender((_number) => _number + 1);
 		}
 	}
@@ -55,7 +56,7 @@ export function useOperatorRuntime() {
 			await _stop();
 			setNodeLicenseStatusMap(new Map<bigint, NodeLicenseInformation>());
 			setSentryRunning(false);
-			setData({...data, sentryRunning: false});
+			await setData({...data, sentryRunning: false});
 		}
 	}
 

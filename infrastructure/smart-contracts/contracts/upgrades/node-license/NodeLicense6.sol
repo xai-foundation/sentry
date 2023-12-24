@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/Base64Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-contract NodeLicense5 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
+contract NodeLicense6 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     using StringsUpgradeable for uint256;
     using CountersUpgradeable for CountersUpgradeable.Counter;
     CountersUpgradeable.Counter private _tokenIds;
@@ -172,36 +172,36 @@ contract NodeLicense5 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     /**
      * @notice Public function to redeem tokens from on whitelist.
      */
-    function redeemFromWhitelist() external {
+    // function redeemFromWhitelist() external {
 
-        uint256 startTime = 1703275200; // Fri Dec 22 2023 12:00:00 GMT-0800 (Pacific Standard Time)
-        require(block.timestamp >= startTime, "Redemption is not eligible yet");
-        require(block.timestamp <= startTime + 30 days, "Redemption period has ended");
+    //     uint256 startTime = 1703275200; // Fri Dec 22 2023 12:00:00 GMT-0800 (Pacific Standard Time)
+    //     require(block.timestamp >= startTime, "Redemption is not eligible yet");
+    //     require(block.timestamp <= startTime + 30 days, "Redemption period has ended");
 
-        require(whitelistAmounts[msg.sender] > 0, "Invalid whitelist amount");
+    //     require(whitelistAmounts[msg.sender] > 0, "Invalid whitelist amount");
 
-        uint16 toMint = whitelistAmounts[msg.sender];
+    //     uint16 toMint = whitelistAmounts[msg.sender];
 
-        if(toMint > 50){
-            toMint = 50;
-        }
+    //     if(toMint > 50){
+    //         toMint = 50;
+    //     }
 
-        require(
-            _tokenIds.current() + toMint <= maxSupply,
-            "Exceeds maxSupply"
-        );
+    //     require(
+    //         _tokenIds.current() + toMint <= maxSupply,
+    //         "Exceeds maxSupply"
+    //     );
 
-        for (uint16 i = 0; i < toMint; i++) {
-           _tokenIds.increment();
-            uint256 newItemId = _tokenIds.current();
-            _mint(msg.sender, newItemId);
-            _mintTimestamps[newItemId] = block.timestamp;
-        }
+    //     for (uint16 i = 0; i < toMint; i++) {
+    //        _tokenIds.increment();
+    //         uint256 newItemId = _tokenIds.current();
+    //         _mint(msg.sender, newItemId);
+    //         _mintTimestamps[newItemId] = block.timestamp;
+    //     }
 
-        uint16 newAmount = whitelistAmounts[msg.sender] - toMint;
-        whitelistAmounts[msg.sender] = newAmount;
-        emit WhitelistAmountRedeemed(msg.sender, newAmount);
-    }
+    //     uint16 newAmount = whitelistAmounts[msg.sender] - toMint;
+    //     whitelistAmounts[msg.sender] = newAmount;
+    //     emit WhitelistAmountRedeemed(msg.sender, newAmount);
+    // }
 
     /**
      * @notice Calculates the price for minting NodeLicense tokens.
