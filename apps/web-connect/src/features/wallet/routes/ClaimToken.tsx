@@ -7,6 +7,8 @@ import {useBlockIp} from "@/hooks/useBlockIp";
 import {BiLoaderAlt} from "react-icons/bi";
 
 export function ClaimToken() {
+	const {blocked, loading} = useBlockIp();
+
 	const {address} = useAccount();
 	const navigate = useNavigate();
 
@@ -15,6 +17,20 @@ export function ClaimToken() {
 
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
 	const ready = checkboxOne && chain?.id === 42_161
+
+	if (loading) {
+		return (
+			<div className="w-full h-screen flex justify-center items-center">
+				<BiLoaderAlt className="animate-spin" size={32} color={"#000000"}/>
+			</div>
+		)
+	}
+
+	if (blocked) {
+		return (
+			<pre className="p-2 text-[14px]">Not Found</pre>
+		)
+	}
 
 	return (
 		<div>
