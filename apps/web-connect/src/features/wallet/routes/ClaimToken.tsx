@@ -21,7 +21,7 @@ export function ClaimToken() {
 		address: config.xaiGaslessClaimAddress as `0x${string}`,
 		abi: XaiGaslessClaimAbi,
 		functionName: "claimRewards",
-		args: [permits ? permits[address!].amount : "0", permits ? permits[address!].v : "0", permits ? permits[address!].r : "0", permits ? permits[address!].s : "0"],
+		args: [permits && address ? permits[address]?.amount : "0", permits && address ? permits[address]?.v : "0", permits && address ? permits[address]?.r : "0", permits && address ? permits[address]?.s : "0"],
 		onError(error) {
 			console.warn("Error", error);
 		},
@@ -86,7 +86,7 @@ export function ClaimToken() {
 								{permits[address] ? (
 									<>
 										<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
-											You are eligible to claim Xai Tokens!
+											You are eligible to claim ${permits[address].amount.toString()} Xai Tokens!
 										</p>
 										<div className="flex flex-col justify-center gap-8 p-6 mt-8">
 
