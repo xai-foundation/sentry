@@ -14,8 +14,8 @@ export function ClaimToken() {
 	const navigate = useNavigate();
 	const {chain} = useNetwork();
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
-	// const ready = checkboxOne && chain?.id === 42_161;
-	const ready = checkboxOne && chain?.id === 421614;
+	const ready = checkboxOne && chain?.id === 42_161;
+	// const ready = checkboxOne && chain?.id === 421614;
 	const [permits, setPermits] = useState<{[key: string]: {r: string, s: string, v: number, amount: string}}>();
 
 	const {isLoading, isSuccess, write, error} = useContractWrite({
@@ -111,7 +111,7 @@ export function ClaimToken() {
 													className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 													disabled={!ready}
 												>
-													{chain?.id === 421614 ? "Claim" : "Please Switch to Arbitrum One"}
+													{chain?.id === 42_161 ? "Claim" : "Please Switch to Arbitrum One"}
 												</button>
 											</div>
 											{error && (
