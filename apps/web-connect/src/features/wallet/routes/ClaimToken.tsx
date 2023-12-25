@@ -116,6 +116,8 @@ export function ClaimToken() {
 											</div>
 											{error && (
 												<p className="text-center break-words w-full mt-4 text-red-500">
+													You will see an error if you have already claimed!
+													<br/><br/>
 													{error.message}
 												</p>
 											)}
