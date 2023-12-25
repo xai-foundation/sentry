@@ -6,7 +6,7 @@ import {useNavigate} from "react-router-dom";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import {BiLoaderAlt} from "react-icons/bi";
 import {XaiGaslessClaimAbi, config} from "@sentry/core";
-import ethers from "ethers";
+import {ethers} from "ethers";
 
 export function ClaimToken() {
 	const {blocked, loading} = useBlockIp({blockUsa: true});
