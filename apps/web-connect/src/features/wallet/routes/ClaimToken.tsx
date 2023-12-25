@@ -6,6 +6,7 @@ import {useNavigate} from "react-router-dom";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import {BiLoaderAlt} from "react-icons/bi";
 import {XaiGaslessClaimAbi, config} from "@sentry/core";
+import ethers from "ethers";
 
 export function ClaimToken() {
 	const {blocked, loading} = useBlockIp({blockUsa: true});
@@ -86,7 +87,7 @@ export function ClaimToken() {
 								{permits[address] ? (
 									<>
 										<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
-											You are eligible to claim ${permits[address].amount.toString()} Xai Tokens!
+											You are eligible to claim {ethers.formatEther(permits[address].amount.toString())} Xai Tokens!
 										</p>
 										<div className="flex flex-col justify-center gap-8 p-6 mt-8">
 
