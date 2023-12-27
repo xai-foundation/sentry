@@ -6,6 +6,7 @@ import {useNavigate} from "react-router-dom";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import {BiLoaderAlt} from "react-icons/bi";
 import {XaiGaslessClaimAbi, config} from "@sentry/core";
+import {ethers} from "ethers";
 
 export function ClaimToken() {
 	const {blocked, loading} = useBlockIp({blockUsa: true});
@@ -13,15 +14,15 @@ export function ClaimToken() {
 	const navigate = useNavigate();
 	const {chain} = useNetwork();
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
-	// const ready = checkboxOne && chain?.id === 42_161;
-	const ready = checkboxOne && chain?.id === 421614;
+	const ready = checkboxOne && chain?.id === 42_161;
+	// const ready = checkboxOne && chain?.id === 421614;
 	const [permits, setPermits] = useState<{[key: string]: {r: string, s: string, v: number, amount: string}}>();
 
 	const {isLoading, isSuccess, write, error} = useContractWrite({
 		address: config.xaiGaslessClaimAddress as `0x${string}`,
 		abi: XaiGaslessClaimAbi,
 		functionName: "claimRewards",
-		args: [permits ? permits[address!].amount : "0", permits ? permits[address!].v : "0", permits ? permits[address!].r : "0", permits ? permits[address!].s : "0"],
+		args: [permits && address ? permits[address]?.amount : "0", permits && address ? permits[address]?.v : "0", permits && address ? permits[address]?.r : "0", permits && address ? permits[address]?.s : "0"],
 		onError(error) {
 			console.warn("Error", error);
 		},
@@ -86,7 +87,7 @@ export function ClaimToken() {
 								{permits[address] ? (
 									<>
 										<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
-											You are eligible to claim Xai Tokens!
+											You are eligible to claim {ethers.formatEther(permits[address].amount.toString())} Xai Tokens!
 										</p>
 										<div className="flex flex-col justify-center gap-8 p-6 mt-8">
 
@@ -110,11 +111,13 @@ export function ClaimToken() {
 													className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 													disabled={!ready}
 												>
-													{chain?.id === 421614 ? "Claim" : "Please Switch to Arbitrum One"}
+													{chain?.id === 42_161 ? "Claim" : "Please Switch to Arbitrum One"}
 												</button>
 											</div>
 											{error && (
 												<p className="text-center break-words w-full mt-4 text-red-500">
+													You will see an error if you have already claimed!
+													<br/><br/>
 													{error.message}
 												</p>
 											)}

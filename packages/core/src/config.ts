@@ -20,7 +20,7 @@ export let config = {
   "xaiAddress": "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66",
   "xaiDeployedBlockNumber": 157193610,
   "xaiImplementationAddress": "0x3fb787101dc6be47cfe18aeee15404dcc842e6af",
-  "xaiGaslessClaimAddress": "0x5E90cEAf3020Ba175bD0946E39B5eCA67b9Dcc23"
+  "xaiGaslessClaimAddress": "0x149107dEB70b9514930d8e454Fc32E77C5ABafE0"
 };
 
 export function setConfig(_config: any) { config = _config; }
