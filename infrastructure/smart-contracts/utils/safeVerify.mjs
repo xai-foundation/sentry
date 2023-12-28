@@ -5,9 +5,12 @@ const { network, run } = hardhat;
  * Verifies the contract on chain using Hardhat.
  * @param args - The arguments for the function.
  */
-export async function safeVerify({contract, constructorArgs = []}) {
+export async function safeVerify({contract, contractAddress, constructorArgs = []}) {
 
-    const deploymentTransaction = contract.deploymentTransaction();
+    let deploymentTransaction = null;
+    if (contract) {
+        deploymentTransaction = contract.deploymentTransaction();
+    }
 
     if (deploymentTransaction === null) {
         console.log("Waiting for new block before verifying...")
@@ -24,7 +27,9 @@ export async function safeVerify({contract, constructorArgs = []}) {
         await deploymentTransaction.wait();
     }
 
-    const contractAddress = await contract.getAddress();
+    if (!contractAddress && contract) {
+        contractAddress = await contract.getAddress();
+    }
     console.log(`Verifying contract ${contractAddress} on network ${network.name}`);
 
     for (let i = 0; i < 5; i++) {
