@@ -1,12 +1,13 @@
 import {IconLabel} from "@/components/IconLabel";
 import {SquareCard} from "@/components/SquareCard";
 import {IoMdCloseCircle} from "react-icons/io";
-import {LuExternalLink} from "react-icons/lu";
 import {AiFillCheckCircle} from "react-icons/ai";
 import {useOperator} from "@/features/operator";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {useAtomValue, useSetAtom} from "jotai";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
+import {BiLinkExternal} from "react-icons/bi";
+import {XaiButton} from "@sentry/ui";
 
 export function AssignedKeysCard() {
 	const setModalState = useSetAtom(modalStateAtom);
@@ -43,13 +44,14 @@ export function AssignedKeysCard() {
 						At least one key must be assigned to accrue esXAI
 					</p>
 
-					<button
+					<XaiButton
 						onClick={onSetKeys}
-						className="w-full flex justify-center items-center gap-1 text-[15px] text-white bg-[#F30919] font-semibold mt-4 px-6 py-2"
+						width={"100%"}
+						fontSize={"15px"}
 					>
 						Assign keys from new wallet
-						<LuExternalLink className="w-5 h-5"/>
-					</button>
+						<BiLinkExternal className="w-5 h-5"/>
+					</XaiButton>
 				</>
 			)}
 		</SquareCard>

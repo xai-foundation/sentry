@@ -41,6 +41,7 @@ import { bootOperator } from './commands/operator-control/operator-runtime.js';
 import { setOrAddPricingTiersCommand } from './commands/licenses/set-or-add-pricing-tiers.js';
 import { addPromoCode } from './commands/licenses/add-promo-code.js';
 import { removePromoCode } from './commands/licenses/remove-promo-code.js';
+import { generateRevenueReport } from './commands/licenses/generate-revenue-report.js';
 import { eventListener } from "./commands/event-listener.js";
 import { resolve } from 'path';
 import * as fs from "fs";
@@ -100,6 +101,7 @@ setReferralDiscountAndRewardPercentages(cli);
 setRollupAddress(cli);
 toggleAssertionChecking(cli);
 totalSupply(cli);
+generateRevenueReport(cli);
 
 async function downloadFile(url: string, destination: string): Promise<void> {
 	const response = await axios.get(url, {responseType: "stream"});

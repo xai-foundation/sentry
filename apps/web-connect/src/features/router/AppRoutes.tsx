@@ -1,59 +1,17 @@
 import {HashRouter as Router, Navigate, Route, Routes} from 'react-router-dom';
 import {QueryClient, QueryClientProvider} from "react-query";
 import {Checkout} from "../checkout";
-import {ConnectWallet} from "../wallet/routes/ConnectWallet.js";
 import {AssignWallet} from "../wallet/routes/AssignWallet.js";
 import {UnassignWallet} from "@/features/wallet/routes/UnassignWallet";
 import {Header} from "@/features/header/Header";
-import {useEffect, useState} from "react";
-import axios from "axios";
-import {BiLoaderAlt} from "react-icons/bi";
 import {Footer} from "@/features/footer/Footer";
-
-enum IpBanType {
-	INVALID_IP = "INVALID_IP",
-	GEO = "GEO",
-}
-
-enum GeoBanType {
-	OFAC_SANCTIONS = "OFAC_SANCTIONS",
-	GAMBLING = "GAMBLING",
-	SECURITIES = "SECURITIES",
-}
-
-interface checkIpProps {
-	type: IpBanType;
-	geoBanType: GeoBanType;
-}
+import {DropClaim} from "@/features/wallet/routes/DropClaim";
+import {useBlockIp} from "@/hooks/useBlockIp";
+import {BiLoaderAlt} from "react-icons/bi";
 
 export function AppRoutes() {
+	const {blocked, loading} = useBlockIp({blockUsa: false});
 	const queryClient = new QueryClient();
-	const [blocked, setBlocked] = useState(true)
-	const [loading, setLoading] = useState(true)
-
-	useEffect(() => {
-		void checkIp();
-	}, [location.pathname]);
-
-	async function checkIp() {
-		try {
-			const {data} = await axios.post(`https://centralized-services.expopulus.com/check-ip`);
-			const invalidIp = data.reasons?.find(({type}: checkIpProps) => type === "INVALID_IP");
-			const ofacSanction = data.reasons?.find(({type, geoBanType}: checkIpProps) => type === "GEO" && geoBanType === "OFAC_SANCTIONS");
-
-			if (!invalidIp || !ofacSanction) {
-				setBlocked(false);
-				setLoading(false);
-			}
-
-			if (!!invalidIp || !!ofacSanction) {
-				setBlocked(true);
-				setLoading(false);
-			}
-		} catch (e: any) {
-			console.error(e.response.data);
-		}
-	}
 
 	if (loading) {
 		return (
@@ -63,27 +21,27 @@ export function AppRoutes() {
 		)
 	}
 
-	if (!loading && blocked) {
+	if (blocked) {
 		return (
 			<pre className="p-2 text-[14px]">Not Found</pre>
 		)
 	}
 
-	if (!loading && !blocked) {
-		return (
-			<Router basename={"/"}>
-				<QueryClientProvider client={queryClient}>
-					<Header/>
-					<Routes>
-						<Route path="/" element={<Checkout/>}/>
-						<Route path="/connect-wallet" element={<ConnectWallet/>}/>
-						<Route path="/assign-wallet/:operatorAddress" element={<AssignWallet/>}/>
-						<Route path="/unassign-wallet/:operatorAddress" element={<UnassignWallet/>}/>
-						<Route path="*" element={<Navigate to="/" replace={true}/>}/>
-					</Routes>
-					<Footer/>
-				</QueryClientProvider>
-			</Router>
-		);
-	}
+	return (
+		<Router basename={"/"}>
+			<QueryClientProvider client={queryClient}>
+				<Header/>
+				<Routes>
+					<Route path="/drop-claim" element={<DropClaim/>}/>
+					{/*<Route path="/claim-token" element={<ClaimToken/>}/>*/}
+					{/*<Route path="/xai-airdrop-terms-and-conditions" element={<TermsAndConditions/>}/>*/}
+					<Route path="/assign-wallet/:operatorAddress" element={<AssignWallet/>}/>
+					<Route path="/unassign-wallet/:operatorAddress" element={<UnassignWallet/>}/>
+					<Route path="/" element={<Checkout/>}/>
+					<Route path="*" element={<Navigate to="/" replace={true}/>}/>
+				</Routes>
+				<Footer/>
+			</QueryClientProvider>
+		</Router>
+	);
 }

@@ -4,6 +4,7 @@ import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useSetAtom} from "jotai";
 import {AiOutlineInfoCircle} from "react-icons/ai";
 import {GetSentryNodeTooltip} from "@/features/keys/GetSentryNodeTooltip";
+import {XaiButton} from "@sentry/ui";
 // import {useState} from "react";
 
 const body = [
@@ -26,12 +27,6 @@ const body = [
 
 export function GetSentryNode() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	// const [message, setMessage] = useState("no error");
-
-	// (window as any).deeplinks?.updateMessage((_e, mess: any) => {
-	// 	console.log("asdfasdfasdfasdf:", mess);
-	// 	setMessage(mess);
-	// });
 
 	function getBody() {
 		return body.map((item, i) => {
@@ -69,13 +64,14 @@ export function GetSentryNode() {
 					Purchase a key to begin earning esXAI
 				</span>
 				<div className="flex items-center mt-4 gap-[3rem]">
-					<button
-						className={`w-[27.25rem] bg-[#F30919] flex justify-center items-center gap-2 text-lg text-white py-5 font-semibold mt-2`}
+					<XaiButton
 						onClick={() => setDrawerState(DrawerView.BuyKeys)}
+						width={"27.25rem"}
 					>
 						<RiKey2Line className="w-5 h-5"/>
 						Purchase Key
-					</button>
+					</XaiButton>
+
 					<p
 						className="text-xl text-[#F30919] cursor-pointer font-semibold"
 						onClick={() => setDrawerState(DrawerView.ViewKeys)}
@@ -87,7 +83,7 @@ export function GetSentryNode() {
 				{/* <div>
 					<span>{JSON.stringify(message)}</span>
 				</div> */}
-				
+
 				<div className="flex flex-row items-center mt-[4.375rem]">
 					{getBody()}
 				</div>

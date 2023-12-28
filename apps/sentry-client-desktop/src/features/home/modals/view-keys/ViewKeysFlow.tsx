@@ -88,7 +88,6 @@ export function ViewKeysFlow() {
 	}
 
 	// Success state
-	//todo: confirm this logic works
 	if (!loading && success) {
 		setTimeout(() => {
 			setDrawerState(null);
