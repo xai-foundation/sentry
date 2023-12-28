@@ -43,9 +43,9 @@ import { addPromoCode } from './commands/licenses/add-promo-code.js';
 import { removePromoCode } from './commands/licenses/remove-promo-code.js';
 import { eventListener } from './commands/event-listener.js';
 import { generateRevenueReport } from './commands/licenses/generate-revenue-report.js';
+import {version} from "@sentry/core";
 
 const cli = new Vorpal();
-export const version = "VERSION_NUMBER";
 
 // entrypoints to each of the commands
 addAdmin(cli);
@@ -93,7 +93,7 @@ toggleAssertionChecking(cli);
 totalSupply(cli);
 generateRevenueReport(cli);
 
-console.log("starting cli... ", version);
+console.log(`Starting Sentry cli version ${version}`);
 
 cli
     .delimiter('sentry-node$')

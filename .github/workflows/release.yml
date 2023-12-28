@@ -27,8 +27,8 @@ jobs:
       - name: Set desktop app package version
         run: pnpm pkg set version=${{ github.ref_name }} --prefix apps/sentry-client-desktop
 
-      - name: Set cli package version
-        run: sed -i'' -e 's/VERSION_NUMBER/${{ github.ref_name }}/g' apps/cli/src/index.ts
+      - name: Set cli version
+        run: sed -i'' -e 's/VERSION_NUMBER/${{ github.ref_name }}/g' packages/core/src/utils/version.ts
 
       - name: Install dependencies
         run: pnpm install

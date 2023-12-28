@@ -1,5 +1,20 @@
 import { ethers } from "ethers";
-import { Challenge, RefereeAbi, claimReward, config, getMintTimestamp, getSubmissionsForChallenges, listChallenges, listNodeLicenses, listOwnersForOperator, listenForChallenges, submitAssertionToChallenge, checkKycStatus, getProvider } from "../index.js";
+import {
+    Challenge,
+    RefereeAbi,
+    claimReward,
+    config,
+    getMintTimestamp,
+    getSubmissionsForChallenges,
+    listChallenges,
+    listNodeLicenses,
+    listOwnersForOperator,
+    listenForChallenges,
+    submitAssertionToChallenge,
+    checkKycStatus,
+    getProvider,
+    version
+} from "../index.js";
 import { retry } from "../index.js";
 
 export enum NodeLicenseStatus {
@@ -302,7 +317,7 @@ export async function operatorRuntime(
     const fetchBlockNumber = async () => {
         try {
             const blockNumber = await provider.getBlockNumber();
-            logFunction(`[${new Date().toISOString()}] Health Check on JSON RPC, Operator still healthy. Current block number: ${blockNumber}`);
+            logFunction(`[${new Date().toISOString()}] [cli ${version}] Health Check on JSON RPC, Operator still healthy. Current block number: ${blockNumber}`);
         } catch (error) {
             logFunction(`[${new Date().toISOString()}] Error fetching block number, operator may no longer be connected to the JSON RPC: ${JSON.stringify(error)}.`);
         }
