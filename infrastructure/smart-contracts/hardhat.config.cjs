@@ -5,7 +5,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const config = {
-  defaultNetwork: "arbitrumSepolia",
+  defaultNetwork: "sepolia",
   solidity: {
     version: "0.8.9",
     settings: {
@@ -64,12 +64,21 @@ const config = {
       },
       chainId: 421614,
     },
+    sepolia: {
+      url: "https://eth-sepolia.g.alchemy.com/v2/0zXd3gviT-BxO1QiLjttH2DUV5ihyBPs",
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+        count: 30
+      },
+      chainId: 11155111
+    }
   },
   etherscan: {
     apiKey: {
       arbitrumGoerli: process.env.ARBISCAN_API_KEY,
       arbitrumOne: process.env.ARBISCAN_API_KEY,
       arbitrumSepolia: process.env.ARBISCAN_API_KEY,
+      sepolia: process.env.ETHERSCAN_API_KEY
     },
     customChains: [
       {
