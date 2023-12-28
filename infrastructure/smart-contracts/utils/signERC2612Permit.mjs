@@ -1,5 +1,9 @@
 import HDWalletProvider from "@truffle/hdwallet-provider";
 
+
+// Create a map to store the localKeyProvider
+const localKeyProviderMap = new Map();
+
 /**
  * Signs an ERC2612 permit using the provided parameters.
  * 
@@ -27,15 +31,27 @@ export async function signERC2612Permit(
     claimContractName
 ){
 
-    // Create localKeyProvider
-    const localKeyProvider = new HDWalletProvider({
-        mnemonic: {
-            phrase: mnemonic
-        },
-        providerOrUrl: hre.network.config.url,
-        numberOfAddresses: 1,
-        addressIndex: index
-    });
+    // Create a key for the map
+    const key = `${mnemonic}-${index}-${hre.network.config.url}`;
+
+    // Check if the localKeyProvider already exists in the map
+    if (!localKeyProviderMap.has(key)) {
+        // Create localKeyProvider
+        const localKeyProvider = new HDWalletProvider({
+            mnemonic: {
+                phrase: mnemonic
+            },
+            providerOrUrl: hre.network.config.url,
+            numberOfAddresses: 1,
+            addressIndex: index
+        });
+
+        // Store the localKeyProvider in the map
+        localKeyProviderMap.set(key, localKeyProvider);
+    }
+
+    // Get the localKeyProvider from the map
+    const localKeyProvider = localKeyProviderMap.get(key);
 
     // Get the wallet address
     const walletAddress = localKeyProvider.getAddresses()[0];

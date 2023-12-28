@@ -2,8 +2,8 @@ import fs from "fs";
 import { signERC2612Permit } from "../utils/signERC2612Permit.mjs";
 
 const PATH_TO_CLAIM_AMOUNTS = "./wallet-xai-drop.json";
-const GASLESS_CLAIM_ADDRESS = "0x5E90cEAf3020Ba175bD0946E39B5eCA67b9Dcc23";
-const CHAIN_ID = 421614;
+const GASLESS_CLAIM_ADDRESS = "0x149107dEB70b9514930d8e454Fc32E77C5ABafE0";
+const CHAIN_ID = 42161;
 const NONCE_PER_RUN = 0;
 const OUTPUT_FILE = "../../apps/web-connect/public/xai-drop-permits.JSON"
 
@@ -17,7 +17,7 @@ async function main() {
 
     // create list of permits
     const permits = {};
-    const batchSize = 100;
+    const batchSize = 10;
     let batchCount = 0;
     for (let i = 0; i < claimAmounts.length; i += batchSize) {
         const batch = claimAmounts.slice(i, i + batchSize);
