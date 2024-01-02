@@ -17,18 +17,17 @@ export function AllowedWalletsCard() {
 				<IconLabel
 					icon={AiFillCheckCircle}
 					color="#16A34A"
-					title="Allowed wallets assigned"
+					title="Allowed Wallets assigned"
 				/>
 			) : (
 				<>
 					<IconLabel
 						icon={IoMdCloseCircle}
 						color="#F59E28"
-						title="Assign allowed wallets"
+						title="Allowed Wallets not selected"
 						tooltip={true}
-						header={"lorem ipsum lorem ipsum"}
-						body={"lorem ipsum"}
-						body2={"The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry."}
+						header={"Wallets must be allowed to KYC"}
+						body={"By allowing a wallet, you are accepting the responsibility of paying the gas fee associated with submitting an assertion and claiming rewards."}
 						position={"end"}
 					/>
 
