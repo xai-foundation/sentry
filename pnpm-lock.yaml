@@ -54,6 +54,9 @@ importers:
       date-prompt:
         specifier: ^1.0.0
         version: 1.0.0
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.3.1
       vorpal:
         specifier: ^1.12.0
         version: 1.12.0
@@ -10688,6 +10691,7 @@ packages:
       is-hex-prefixed: 1.0.0
       strip-hex-prefix: 1.0.0
     dev: true
+    bundledDependencies: false
 
   /eval@0.1.8:
     resolution: {integrity: sha512-EzV94NYKoO09GLXGjXj9JIlXijVck4ONSr5wiCWDvhsvj5jxSrzTmRU/9C1DyB6uToszLs8aifA6NQ7lEQdvFw==}
