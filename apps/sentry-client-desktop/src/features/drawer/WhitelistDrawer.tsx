@@ -7,7 +7,6 @@ import {useStorage} from "@/features/storage";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {useOperator} from "@/features/operator";
 import {AiOutlineInfoCircle} from "react-icons/ai";
-import * as React from "react";
 
 export function WhitelistDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
