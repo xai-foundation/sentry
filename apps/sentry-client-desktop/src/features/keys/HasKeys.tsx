@@ -46,7 +46,6 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 	const {data: earnedEsxaiBalance} = useGetWalletBalance(combinedOwners);
 	const {data: singleWalletBalance} = useGetSingleWalletBalance(selectedWallet);
 
-
 	function startAssignment() {
 		if (!isOperatorLoading) {
 			setModalState(ModalView.TransactionInProgress);

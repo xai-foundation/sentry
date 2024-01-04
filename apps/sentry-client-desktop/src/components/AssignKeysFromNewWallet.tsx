@@ -4,6 +4,7 @@ import {useSetAtom} from "jotai";
 import {AiFillWarning} from "react-icons/ai";
 import {useOperator} from "@/features/operator";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
+import {XaiButton} from "@sentry/ui";
 
 export function AssignKeysFromNewWallet() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -25,14 +26,14 @@ export function AssignKeysFromNewWallet() {
 				Add wallets to assign keys to the Sentry
 			</p>
 
-			<button
+			<XaiButton
 				onClick={startAssignment}
 				disabled={isOperatorLoading}
-				className="flex justify-center items-center gap-1 text-[15px] text-white bg-[#F30919] font-semibold mt-2 px-6 py-3"
+				fontSize={"15px"}
 			>
 				Assign keys from new wallet
 				<BiLinkExternal className="w-5 h-5"/>
-			</button>
+			</XaiButton>
 
 			<p className="text-[15px] text-[#525252] mt-2">
 				Don't own any keys?

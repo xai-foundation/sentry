@@ -9,3 +9,4 @@ export * from "./findEventTopic.js";
 export * from "./getWalletBalance.js";
 export * from "./verifyPrivateKey.js";
 export * from "./retry.js";
+export * from "./resilientEventListener.js";
