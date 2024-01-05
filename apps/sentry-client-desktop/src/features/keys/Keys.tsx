@@ -30,7 +30,7 @@ export function Keys() {
 
 	return (
 		<div className="w-full h-screen">
-			<div className="sticky top-0 bg-white flex flex-row justify-between items-center border-b border-gray-200 pl-10 pr-2">
+			<div className="sticky top-0 bg-white flex flex-row justify-between items-center border-b border-gray-200 pl-10 pr-2 z-10">
 				<div className="top-0 flex flex-row items-center h-16 gap-2 bg-white">
 					<h2 className="text-lg font-semibold">Keys</h2>
 

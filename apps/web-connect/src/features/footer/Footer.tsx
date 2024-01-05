@@ -56,7 +56,7 @@ export function Footer() {
 				<div className="flex flex-col gap-1">
 					<div className="w-16">
 						<div className="w-[4.5rem] h-full object-contain">
-							<XaiLogo/>
+							<XaiLogo className="text-[#F30919]"/>
 						</div>
 					</div>
 				</div>

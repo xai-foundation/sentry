@@ -27,7 +27,7 @@ export function Sidebar() {
 					className="flex items-center gap-2 text-base font-semibold cursor-pointer"
 					onClick={() => navigate("/")}
 				>
-					<XaiLogo className="w-[16px]"/>
+					<XaiLogo className="w-[16px] text-[#F30919]"/>
 					<h1>Xai Client</h1>
 				</div>
 

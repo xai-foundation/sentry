@@ -343,7 +343,7 @@ export function SentryWallet() {
 									<div>
 										<div
 											onClick={() => setIsOpen(!isOpen)}
-											className={`flex items-center justify-between w-[538px] border-[#A3A3A3] border-r border-l border-t ${!isOpen ? "border-b" : null} border-[#A3A3A3] p-2`}
+											className={`flex items-center justify-between w-[538px] border-[#A3A3A3] border-r border-l border-t ${!isOpen ? "border-b" : "pb-[9px]"} border-[#A3A3A3] p-2`}
 										>
 											<p>{selectedWallet || `All assigned wallets (${owners.length})`}</p>
 											<IoIosArrowDown

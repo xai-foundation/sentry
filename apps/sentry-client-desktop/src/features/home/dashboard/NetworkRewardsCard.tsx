@@ -11,7 +11,8 @@ import {Card} from "@/features/home/cards/Card";
 import {useEffect, useState} from 'react';
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {FaCircleCheck} from "react-icons/fa6";
-import {FiTriangle} from "react-icons/fi";
+import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
+import {MdRefresh} from "react-icons/md";
 
 export function NetworkRewardsCard() {
 	const {owners} = useAtomValue(chainStateAtom);
@@ -59,69 +60,82 @@ export function NetworkRewardsCard() {
 
 			<div className="flex flex-col mt-4 py-2 px-4">
 				<div>
-					<div className="flex items-center gap-1 text-[15px] text-[#A3A3A3]">
-						<h3 className="font-medium">esXAI balance</h3>
-						<Tooltip
-							header={"Claimed esXAI will appear in your wallet balance.\n"}
-							body={"Once you pass KYC for a wallet, any accrued esXAI for that wallet will be claimed and reflected in your esXAI balance."}
-							position={"end"}
-						>
-							<AiOutlineInfoCircle size={14} color={"#D4D4D4"}/>
-						</Tooltip>
-						<p className="flex items-center text-[14px] text-[#D4D4D4]">
-							{!isBalancesLoading && balancesFetchedLast ? (
-								timeDifference !== null ? `Updated ${timeDifference}m ago` : 'Just now'
-							) : (
-								<BiLoaderAlt className="animate-spin w-[18px]" color={"#D4D4D4"}/>
-							)}
-						</p>
-					</div>
-					<div className="flex items-center font-semibold mb-1">
-						{earnedEsxaiBalance ? (
-							<div className="flex items-center gap-2">
-								<div
-									className="w-[32px] h-[32px] flex justify-center items-center bg-[#F5F5F5] rounded-full">
-									<FiTriangle color={"#A3A3A3"} size={18}/>
-								</div>
-								<p className="text-[40px]">
-									{ethers.formatEther(
-										earnedEsxaiBalance.reduce((acc, item) => acc + item.esXaiBalance, BigInt(0))
-									)}
-								</p>
-							</div>
-						) : (
-							<p className="text-[40px]">
-								Loading...
+					<div className="flex justify-between items-center text-[#A3A3A3]">
+
+						<div className="flex items-center gap-1 text-[15px]">
+							<h3 className="font-medium">esXAI balance</h3>
+							<Tooltip
+								header={"Claimed esXAI will appear in your wallet balance.\n"}
+								body={"Once you pass KYC for a wallet, any accrued esXAI for that wallet will be claimed and reflected in your esXAI balance."}
+								position={"end"}
+							>
+								<AiOutlineInfoCircle size={14} color={"#D4D4D4"}/>
+							</Tooltip>
+							<p className="flex items-center text-[14px] text-[#D4D4D4]">
+								{!isBalancesLoading && balancesFetchedLast && (
+									timeDifference !== null ? `Updated ${timeDifference}m ago` : 'Just now'
+								)}
 							</p>
+						</div>
+						{!isBalancesLoading && balancesFetchedLast ? (
+							<a onClick={() => alert("not yet")} className="cursor-pointer">
+								<MdRefresh/>
+							</a>
+						) : (
+							<BiLoaderAlt className="animate-spin w-[18px]" color={"#D4D4D4"}/>
 						)}
+					</div>
+
+					<div className="flex items-center font-semibold mb-1">
+						<div className="flex items-center gap-2">
+							<div
+								className="w-[32px] h-[32px] flex justify-center items-center bg-[#F5F5F5] rounded-full">
+								<XaiLogo className="text-[#A3A3A3] w-[18px] h-[18px]"/>
+							</div>
+							<p className="text-[40px]">
+								{!isBalancesLoading && balancesFetchedLast && earnedEsxaiBalance
+									? parseFloat(ethers.formatEther(earnedEsxaiBalance.reduce((acc, item) => acc + item.esXaiBalance, BigInt(0)))).toFixed(6)
+									: "0"
+								}
+							</p>
+						</div>
 					</div>
 				</div>
 
 				<div>
-					<div className="flex items-center gap-1 text-[15px] text-[#A3A3A3]">
-						<h3 className="font-medium">Accrued esXAI</h3>
-						<Tooltip
-							header={"Each key will accrue esXAI. Pass KYC to claim."}
-							body={"This value is the sum of all esXAI accrued for the selected wallet. If esXAI has already been claimed, it will appear in esXAI balance."}
-							position={"end"}
-						>
-							<AiOutlineInfoCircle size={14} color={"#D4D4D4"}/>
-						</Tooltip>
+					<div className="flex justify-between items-center text-[#A3A3A3]">
+						<div className="flex items-center gap-1 text-[15px]">
+							<h3 className="font-medium">Accrued esXAI</h3>
+							<Tooltip
+								header={"Each key will accrue esXAI. Pass KYC to claim."}
+								body={"This value is the sum of all esXAI accrued for the selected wallet. If esXAI has already been claimed, it will appear in esXAI balance."}
+								position={"end"}
+							>
+								<AiOutlineInfoCircle size={14} color={"#D4D4D4"}/>
+							</Tooltip>
+						</div>
+						{!isBalancesLoading && balancesFetchedLast ? (
+							<a onClick={() => alert("not yet")} className="cursor-pointer">
+								<MdRefresh/>
+							</a>
+						) : (
+							<BiLoaderAlt className="animate-spin w-[18px]" color={"#D4D4D4"}/>
+						)}
 					</div>
 					<div className="flex items-center font-semibold mb-3">
-							{balances
-								?
-								<div className="flex items-center gap-2">
-									<div
-										className="w-[24px] h-[24px] flex justify-center items-center bg-[#F5F5F5] rounded-full">
-										<FiTriangle color={"#A3A3A3"} size={14}/>
-									</div>
-									<p className="text-[24px]">
-										{ethers.formatEther(Object.values(balances).reduce((acc, value) => acc + value.totalAccruedEsXai, BigInt(0)))}
-									</p>
-								</div>
-								: "Loading..."
-							}
+						<div className="flex items-center gap-2">
+							<div
+								className="w-[24px] h-[24px] flex justify-center items-center bg-[#F5F5F5] rounded-full">
+								<XaiLogo className="text-[#A3A3A3] w-[14px] h-[14px]"/>
+
+							</div>
+							<p className="text-[24px]">
+								{!isBalancesLoading && balancesFetchedLast && balances
+									? Number(ethers.formatEther(Object.values(balances).reduce((acc, value) => acc + value.totalAccruedEsXai, BigInt(0)))).toFixed(6)
+									: "0"
+								}
+							</p>
+						</div>
 					</div>
 				</div>
 
@@ -129,8 +143,8 @@ export function NetworkRewardsCard() {
 					<div className="flex items-center gap-1 text-[15px] text-[#A3A3A3]">
 						<h3 className="font-medium">Am I accruing esXAI?</h3>
 						<Tooltip
-							header={"Each key will accrue esXAI. Pass KYC to claim."}
-							body={"This value is the sum of all esXAI accrued for the selected wallet. If esXAI has already been claimed, it will appear in esXAI balance."}
+							header={"Header"}
+							body={"Body"}
 							position={"end"}
 						>
 							<AiOutlineInfoCircle size={14} color={"#D4D4D4"}/>
@@ -147,8 +161,7 @@ export function NetworkRewardsCard() {
 					<div className="flex items-center gap-1 text-[15px] text-[#A3A3A3]">
 						<h3 className="font-medium">How frequently will I accrue?</h3>
 						<Tooltip
-							header={"Each key will accrue esXAI. Pass KYC to claim."}
-							body={"This value is the sum of all esXAI accrued for the selected wallet. If esXAI has already been claimed, it will appear in esXAI balance."}
+							body={"esXAI accrued is probabilistic. You accrue more with more keys"}
 							position={"end"}
 						>
 							<AiOutlineInfoCircle size={14} color={"#D4D4D4"}/>
@@ -160,7 +173,7 @@ export function NetworkRewardsCard() {
 								84
 							</p>
 							<p className="text-[12px] text-[#A3A3A3]">
-								times per month (on average)
+								times per month (on average) (hard-coded)
 							</p>
 						</div>
 					</div>
