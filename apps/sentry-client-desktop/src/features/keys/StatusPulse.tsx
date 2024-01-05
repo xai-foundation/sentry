@@ -12,8 +12,8 @@ export function GreenPulse({size="sm"}: PulseStyle) {
 			pulseH = "0.5rem";
 			break;
 		case "md":
-			pulseW = "1rem";
-			pulseH = "1rem";
+			pulseW = "1.25rem";
+			pulseH = "1.25rem";
 			break;
 		default:
 			console.log("Invalid size"); // Handle the case where size is none of the specified values
@@ -44,8 +44,8 @@ export function YellowPulse({size="sm"}: PulseStyle) {
 			pulseH = "0.5rem";
 			break;
 		case "md":
-			pulseW = "1rem";
-			pulseH = "1rem";
+			pulseW = "1.25rem";
+			pulseH = "1.25rem";
 			break;
 		default:
 			console.log("Invalid size"); // Handle the case where size is none of the specified values
