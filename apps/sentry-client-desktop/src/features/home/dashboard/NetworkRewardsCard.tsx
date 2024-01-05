@@ -182,7 +182,7 @@ export function NetworkRewardsCard() {
 			</div>
 
 			<div
-				className="absolute bottom-4 left-0 right-0 m-auto max-w-[268px] h-[58px] flex justify-center items-center gap-1 rounded-xl text-[15px] text-[#16A34A] bg-[#F0FDF4] mix-blend-multiply p-2">
+				className="absolute bottom-4 left-0 right-0 m-auto max-w-[268px] h-[58px] flex justify-center items-center gap-1 rounded-lg text-[15px] text-[#16A34A] bg-[#F0FDF4] mix-blend-multiply p-2">
 				<div className="flex justify-center items-center gap-2">
 					<FaCircleCheck color={"#16A34A"} size={20}/>
 					You are accruing and claiming esXAI

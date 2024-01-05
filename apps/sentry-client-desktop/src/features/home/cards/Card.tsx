@@ -8,7 +8,7 @@ interface CardProps extends PropsWithChildren {
 export function Card({width, height, children}: CardProps) {
 	return (
 		<div
-			className="relative bg-white border border-[#00000005] shadow rounded-xl overflow-hidden"
+			className="relative bg-white border border-[#00000005] shadow rounded-lg overflow-hidden"
 			style={{width: width, height: height}}
 		>
 			<div>{children}</div>
