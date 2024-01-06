@@ -96,7 +96,7 @@ export function GetSentryNode() {
 				muted
 				playsInline
 			>
-				<source src="/videos/node-bg-4k.mp4" type="video/mp4"/>
+				<source src="../public/videos/node-bg-4k.mp4" type="video/mp4"/>
 			</video>
 		</div>
 	);
