@@ -42,6 +42,7 @@ export function NetworkRewardsCard() {
 		? calculateTimeDifference(currentTime, balancesFetchedLast)
 		: null;
 
+
 	return (
 		<Card width={"300px"} height={"531px"}>
 
@@ -58,7 +59,7 @@ export function NetworkRewardsCard() {
 				</div>
 			</div>
 
-			<div className="flex flex-col mt-4 py-2 px-4">
+			<div className="flex flex-col mt-4 py-2 px-4 gap-3">
 				<div>
 					<div className="flex justify-between items-center text-[#A3A3A3]">
 
@@ -71,7 +72,7 @@ export function NetworkRewardsCard() {
 							>
 								<AiOutlineInfoCircle size={14} color={"#D4D4D4"}/>
 							</Tooltip>
-							<p className="flex items-center text-[14px] text-[#D4D4D4]">
+							<p className="flex items-center text-sm text-[#D4D4D4]">
 								{!isBalancesLoading && balancesFetchedLast && (
 									timeDifference !== null ? `Updated ${timeDifference}m ago` : 'Just now'
 								)}
@@ -86,17 +87,20 @@ export function NetworkRewardsCard() {
 						)}
 					</div>
 
-					<div className="flex items-center font-semibold mb-1">
+					<div className="flex items-center font-semibold">
 						<div className="flex items-center gap-2">
 							<div
 								className="w-[32px] h-[32px] flex justify-center items-center bg-[#F5F5F5] rounded-full">
 								<XaiLogo className="text-[#A3A3A3] w-[18px] h-[18px]"/>
 							</div>
-							<p className="text-[40px]">
+							<p className="text-4xl">
 								{!isBalancesLoading && balancesFetchedLast && earnedEsxaiBalance
-									? parseFloat(ethers.formatEther(earnedEsxaiBalance.reduce((acc, item) => acc + item.esXaiBalance, BigInt(0)))).toFixed(6)
+									? parseFloat(ethers.formatEther(earnedEsxaiBalance.reduce((acc, item) => acc + item.esXaiBalance, BigInt(0)))).toFixed(6) === "0.000000"
+										? "0"
+										: parseFloat(ethers.formatEther(earnedEsxaiBalance.reduce((acc, item) => acc + item.esXaiBalance, BigInt(0)))).toFixed(6)
 									: "0"
 								}
+
 							</p>
 						</div>
 					</div>
@@ -122,16 +126,17 @@ export function NetworkRewardsCard() {
 							<BiLoaderAlt className="animate-spin w-[18px]" color={"#D4D4D4"}/>
 						)}
 					</div>
-					<div className="flex items-center font-semibold mb-3">
+					<div className="flex items-center font-semibold">
 						<div className="flex items-center gap-2">
 							<div
 								className="w-[24px] h-[24px] flex justify-center items-center bg-[#F5F5F5] rounded-full">
 								<XaiLogo className="text-[#A3A3A3] w-[14px] h-[14px]"/>
-
 							</div>
-							<p className="text-[24px]">
+							<p className="text-2xl">
 								{!isBalancesLoading && balancesFetchedLast && balances
-									? Number(ethers.formatEther(Object.values(balances).reduce((acc, value) => acc + value.totalAccruedEsXai, BigInt(0)))).toFixed(6)
+									? Number(ethers.formatEther(Object.values(balances).reduce((acc, value) => acc + value.totalAccruedEsXai, BigInt(0)))).toFixed(6) === "0.000000"
+										? "0"
+										: Number(ethers.formatEther(Object.values(balances).reduce((acc, value) => acc + value.totalAccruedEsXai, BigInt(0)))).toFixed(6)
 									: "0"
 								}
 							</p>
@@ -150,8 +155,8 @@ export function NetworkRewardsCard() {
 							<AiOutlineInfoCircle size={14} color={"#D4D4D4"}/>
 						</Tooltip>
 					</div>
-					<div className="flex items-center font-semibold mb-3">
-						<p className="text-[24px] font-semibold">
+					<div className="flex items-center font-semibold">
+						<p className="text-2xl font-semibold">
 							{sentryRunning ? "Yes" : "No"}
 						</p>
 					</div>
@@ -169,7 +174,7 @@ export function NetworkRewardsCard() {
 					</div>
 					<div className="flex items-center">
 						<div>
-							<p className="text-[24px] font-semibold">
+							<p className="text-2xl font-semibold">
 								84
 							</p>
 							<p className="text-[12px] text-[#A3A3A3]">
@@ -182,7 +187,7 @@ export function NetworkRewardsCard() {
 			</div>
 
 			<div
-				className="absolute bottom-4 left-0 right-0 m-auto max-w-[268px] h-[58px] flex justify-center items-center gap-1 rounded-lg text-[15px] text-[#16A34A] bg-[#F0FDF4] mix-blend-multiply p-2">
+				className="absolute bottom-4 left-0 right-0 m-auto max-w-[268px] h-[40px] flex justify-center items-center gap-1 rounded-lg text-sm text-[#16A34A] bg-[#F0FDF4] p-2">
 				<div className="flex justify-center items-center gap-2">
 					<FaCircleCheck color={"#16A34A"} size={20}/>
 					You are accruing and claiming esXAI

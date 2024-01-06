@@ -102,7 +102,7 @@ export function ImportSentryDrawer() {
 								/>
 
 								{privateKeyError.error && (
-									<p className="w-full text-[14px] text-[#AB0914]">{privateKeyError.message}</p>
+									<p className="w-full text-sm text-[#AB0914]">{privateKeyError.message}</p>
 								)}
 
 								<button

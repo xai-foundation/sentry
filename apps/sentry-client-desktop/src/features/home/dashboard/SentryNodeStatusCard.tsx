@@ -17,7 +17,7 @@ export function SentryNodeStatusCard() {
 	function getNodeFunds() {
 		return (
 			<div
-				className={`absolute bottom-4 left-4 max-w-[280px] h-[40px] flex justify-center items-center gap-1 rounded-lg ${nodeStatus ? "text-[15px] text-[#16A34A] bg-[#F0FDF4]" : "text-[14px] text-[#F59E28] bg-[#FFFBEB]"} mix-blend-multiply p-3`}>
+				className={`absolute bottom-4 left-4 max-w-[280px] h-[40px] flex justify-center items-center gap-1 rounded-lg ${nodeStatus ? "text-[15px] text-[#16A34A] bg-[#F0FDF4]" : "text-sm text-[#F59E28] bg-[#FFFBEB]"} mix-blend-multiply p-3`}>
 				<div className="flex justify-center items-center gap-2">
 					<div className="flex justify-center items-center gap-2">
 						{nodeStatus
@@ -29,15 +29,26 @@ export function SentryNodeStatusCard() {
 					</div>
 				</div>
 			</div>
-
-		)
-			;
+		);
 	}
 
 	return (
 		<Card width={"695px"} height={"328px"}>
+			{sentryRunning && (
+				<div className="absolute top-[-10.5rem] left-0 right-0 w-full h-full">
+					<video
+						className="w-full object-contain"
+						autoPlay
+						loop
+						muted
+						playsInline
+					>
+						<source src="/videos/node-active.mp4" type="video/mp4"/>
+					</video>
+				</div>
+			)}
 
-			<div className="flex flex-row justify-between items-center py-2 px-4 border-b border-[#F5F5F5]">
+			<div className="sticky flex flex-row justify-between items-center py-2 px-4 border-b border-[#F5F5F5]">
 				<div className="flex flex-row items-center gap-1 text-[#A3A3A3] text-[15px]">
 					<h2 className="font-medium">Sentry Node Status</h2>
 					<Tooltip
@@ -47,8 +58,7 @@ export function SentryNodeStatusCard() {
 					>
 						<AiOutlineInfoCircle size={15} color={"#A3A3A3"}/>
 					</Tooltip>
-
-					<p className="flex items-center ml-2 text-[14px] text-[#D4D4D4]">
+					<p className="flex items-center ml-2 text-sm text-[#D4D4D4]">
 						Last challenge 24m ago (hard-coded)
 					</p>
 				</div>
@@ -58,8 +68,8 @@ export function SentryNodeStatusCard() {
 				{sentryRunning ? (
 					<>
 						<div className="relative text-5xl flex items-center gap-5 font-semibold">
-							{nodeStatus ? (<GreenPulse size={"md"}/>) : (<YellowPulse size={"md"}/>)}
-							Your node is running
+							{nodeStatus ? (<GreenPulse size={"md"}/>) : (<YellowPulse size={"md"}/>)} Your node is
+							running
 						</div>
 						{getNodeFunds()}
 					</>

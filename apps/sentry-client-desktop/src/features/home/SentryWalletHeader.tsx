@@ -1,4 +1,4 @@
-import {Tooltip} from "../../../../../packages/ui/src/features/tooltip/Tooltip";
+import {Tooltip} from "@sentry/ui";
 import {AiOutlineInfoCircle} from "react-icons/ai";
 import {FaEthereum} from "react-icons/fa";
 import classNames from "classnames";

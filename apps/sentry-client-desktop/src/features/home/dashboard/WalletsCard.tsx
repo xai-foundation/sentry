@@ -3,7 +3,7 @@ import {useAtomValue, useSetAtom} from "jotai";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
 import {useCombinedOwners} from "@/hooks/useCombinedOwners";
 import {Tooltip} from "@sentry/ui";
-import {AiOutlineInfoCircle} from "react-icons/ai";
+import {AiFillWarning, AiOutlineInfoCircle} from "react-icons/ai";
 import {Card} from "@/features/home/cards/Card";
 import {MdWallet} from "react-icons/md";
 
@@ -13,7 +13,7 @@ export function WalletsCard() {
 	const {combinedOwners} = useCombinedOwners(owners);
 
 	return (
-		<Card width={"337.5px"} height={"187px"}>
+		<Card width={"339px"} height={"187px"}>
 
 			<div className="flex flex-row justify-between items-center py-2 px-4 border-b border-[#F5F5F5]">
 				<div className="flex flex-row items-center gap-1 text-[#A3A3A3] text-[15px]">
@@ -28,7 +28,7 @@ export function WalletsCard() {
 				</div>
 				<div className="flex flex-row justify-between items-center gap-1">
 					<button
-						className="flex flex-row justify-center items-center gap-2 text-[#737373] text-[14px] font-medium bg-[#F5F5F5] rounded-md px-4 py-1"
+						className="flex flex-row justify-center items-center gap-2 text-[#737373] text-sm font-medium bg-[#F5F5F5] rounded-md px-4 py-1"
 						onClick={() => setDrawerState(DrawerView.ViewKeys)}
 					>
 						Add wallet
@@ -49,11 +49,17 @@ export function WalletsCard() {
 					{combinedOwners.length}
 				</h3>
 				</div>
-				<p className="text-[14px] text-[#737373] ml-[2rem]">
+				<p className="text-sm text-[#737373] ml-[2rem]">
 					KYC complete: 0/{combinedOwners.length} (hard-coded)
 				</p>
 			</div>
-
+			<div
+				className="absolute bottom-3 left-3 m-auto max-w-[268px] h-[40px] flex justify-center items-center gap-1 rounded-lg text-sm text-[#F59E28] bg-[#FFFBEB] p-2">
+				<div className="flex justify-center items-center gap-2">
+					<AiFillWarning color={"#F59E28"} size={20}/>
+					KYC required for 3 wallets
+				</div>
+			</div>
 		</Card>
 	)
 }

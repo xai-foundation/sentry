@@ -65,7 +65,7 @@ export function AppRoutes() {
 
 	if (!loading && blocked) {
 		return (
-			<pre className="p-2 text-[14px]">Not Found</pre>
+			<pre className="p-2 text-sm">Not Found</pre>
 		)
 	}
 

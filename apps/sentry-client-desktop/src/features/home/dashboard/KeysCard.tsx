@@ -4,7 +4,7 @@ import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
 import {useCombinedOwners} from "@/hooks/useCombinedOwners";
 import {useOperator} from "@/features/operator";
 import {Tooltip} from "@sentry/ui";
-import {AiOutlineInfoCircle} from "react-icons/ai";
+import {AiFillWarning, AiOutlineInfoCircle} from "react-icons/ai";
 import {Card} from "@/features/home/cards/Card";
 import {RiKey2Line} from "react-icons/ri";
 
@@ -16,7 +16,7 @@ export function KeysCard() {
 	const {publicKey: operatorAddress} = useOperator();
 
 	return (
-		<Card width={"337.5px"} height={"187px"}>
+		<Card width={"339px"} height={"187px"}>
 			<div className="flex flex-row justify-between items-center py-2 px-4 border-b border-[#F5F5F5]">
 				<div className="flex flex-row items-center gap-1 text-[#A3A3A3] text-[15px]">
 					<h2 className="font-medium">Keys</h2>
@@ -31,13 +31,13 @@ export function KeysCard() {
 				</div>
 				<div className="flex flex-row justify-between items-center gap-1">
 					<button
-						className="flex flex-row justify-center items-center gap-2 text-[#737373] text-[14px] font-medium bg-[#F5F5F5] rounded-md px-4 py-1"
+						className="flex flex-row justify-center items-center gap-2 text-[#737373] text-sm font-medium bg-[#F5F5F5] rounded-md px-4 py-1"
 						onClick={() => setDrawerState(DrawerView.BuyKeys)}
 					>
 						Buy keys
 					</button>
 					<button
-						className="flex flex-row justify-center items-center gap-2 text-[#737373] text-[14px] font-medium bg-[#F5F5F5] rounded-md px-4 py-1"
+						className="flex flex-row justify-center items-center gap-2 text-[#737373] text-sm font-medium bg-[#F5F5F5] rounded-md px-4 py-1"
 						onClick={() => window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`)}
 					>
 						Assign keys
@@ -56,9 +56,17 @@ export function KeysCard() {
 						{keyCount}
 					</p>
 				</div>
-				<p className="text-[14px] text-[#737373] ml-[2rem]">
+				<p className="text-sm text-[#737373] ml-[2rem]">
 					In {combinedOwners.length} wallet{combinedOwners.length === 1 ? "" : "s"}
 				</p>
+			</div>
+
+			<div
+				className="absolute bottom-3 left-3 m-auto max-w-[268px] h-[40px] flex justify-center items-center gap-1 rounded-lg text-sm text-[#F59E28] bg-[#FFFBEB] p-2">
+				<div className="flex justify-center items-center gap-2">
+					<AiFillWarning color={"#F59E28"} size={20}/>
+					You have unassigned keys
+				</div>
 			</div>
 		</Card>
 	)
