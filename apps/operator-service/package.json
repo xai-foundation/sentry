@@ -1,0 +1,28 @@
+{
+  "name": "@sentry/operator-service",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "license": "UNLICENSED",
+  "author": "",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": "build/operator-service.js",
+  "scripts": {
+    "build": "npm run compile && npm run transpile && pkg ./build/operator-service.js --targets=node18-linux-x64,node18-macos-x64,node18-win-x64 --out-path=release",
+    "clean": "rimraf dist && rimraf release && rimraf build && rimraf tsconfig.tsbuildinfo",
+    "compile": "tsc",
+    "lint": "eslint . --ext .ts,.tsx",
+    "start": "node dist/index.js",
+    "transpile": "esbuild --bundle --outfile=./build/operator-service.js --platform=node dist/index.js"
+  },
+  "dependencies": {
+    "@sentry/core": "workspace:*",
+    "@types/argparse": "^2.0.14",
+    "argparse": "^2.0.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.4",
+    "pkg": "^5.8.1"
+  }
+}
