@@ -1,10 +1,10 @@
 import {useAtomValue} from "jotai";
-import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
+import {chainStateAtom, useChainDataRefresh} from "@/hooks/useChainDataWithCallback";
 import {useCombinedOwners} from "@/hooks/useCombinedOwners";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {useGetWalletBalance} from "@/hooks/useGetWalletBalance";
 import {Tooltip} from "@sentry/ui";
-import {AiOutlineInfoCircle} from "react-icons/ai";
+import {AiFillWarning, AiOutlineInfoCircle} from "react-icons/ai";
 import {ethers} from "ethers";
 import {BiLoaderAlt} from "react-icons/bi";
 import {Card} from "@/features/home/cards/Card";
@@ -16,13 +16,14 @@ import {MdRefresh} from "react-icons/md";
 
 export function NetworkRewardsCard() {
 	const {owners} = useAtomValue(chainStateAtom);
-	const {balances, isBalancesLoading, balancesFetchedLast} = useAtomValue(accruingStateAtom);
+	const {balances, isBalancesLoading, balancesFetchedLast, accruing} = useAtomValue(accruingStateAtom);
 
 	const {combinedOwners} = useCombinedOwners(owners);
 	const {data: earnedEsxaiBalance} = useGetWalletBalance(combinedOwners);
 
 	const [currentTime, setCurrentTime] = useState(new Date());
 	const {sentryRunning} = useOperatorRuntime();
+	const {refresh} = useChainDataRefresh();
 
 	// Calculate the time difference in minutes
 	const calculateTimeDifference = (currentTime: Date, lastUpdateTime: Date) => {
@@ -30,11 +31,9 @@ export function NetworkRewardsCard() {
 	};
 
 	useEffect(() => {
-		// Update current time every minute
 		const interval = setInterval(() => {
 			setCurrentTime(new Date());
-		}, 60000); // 60000 milliseconds in a minute
-
+		}, 60000);
 		return () => clearInterval(interval);
 	}, []);
 
@@ -42,21 +41,30 @@ export function NetworkRewardsCard() {
 		? calculateTimeDifference(currentTime, balancesFetchedLast)
 		: null;
 
-
 	return (
 		<Card width={"300px"} height={"531px"}>
 
 			<div className="flex flex-row justify-between items-center py-2 px-4 border-b border-[#F5F5F5]">
-				<div className="flex flex-row items-center gap-1 text-[#A3A3A3] text-[15px]">
-					<h2 className="font-medium">Network Rewards</h2>
-					<Tooltip
-						header={"Header"}
-						body={"Body"}
-						position={"end"}
-					>
-						<AiOutlineInfoCircle size={15} color={"#A3A3A3"}/>
-					</Tooltip>
-				</div>
+					<div className="flex flex-row items-center gap-1 text-[#A3A3A3] text-[15px]">
+						<h2 className="font-medium">Network Rewards</h2>
+						<Tooltip
+							header={"Header"}
+							body={"Body"}
+							position={"end"}
+						>
+							<AiOutlineInfoCircle size={15} color={"#A3A3A3"}/>
+						</Tooltip>
+					</div>
+
+					<div className="flex flex-row justify-between items-center gap-1 text-[#A3A3A3]">
+						{!isBalancesLoading && balancesFetchedLast ? (
+							<a onClick={refresh} className="cursor-pointer">
+								<MdRefresh/>
+							</a>
+						) : (
+							<BiLoaderAlt className="animate-spin w-[18px]" color={"#D4D4D4"}/>
+						)}
+					</div>
 			</div>
 
 			<div className="flex flex-col mt-4 py-2 px-4 gap-3">
@@ -78,13 +86,6 @@ export function NetworkRewardsCard() {
 								)}
 							</p>
 						</div>
-						{!isBalancesLoading && balancesFetchedLast ? (
-							<a onClick={() => alert("not yet")} className="cursor-pointer">
-								<MdRefresh/>
-							</a>
-						) : (
-							<BiLoaderAlt className="animate-spin w-[18px]" color={"#D4D4D4"}/>
-						)}
 					</div>
 
 					<div className="flex items-center font-semibold">
@@ -118,13 +119,6 @@ export function NetworkRewardsCard() {
 								<AiOutlineInfoCircle size={14} color={"#D4D4D4"}/>
 							</Tooltip>
 						</div>
-						{!isBalancesLoading && balancesFetchedLast ? (
-							<a onClick={() => alert("not yet")} className="cursor-pointer">
-								<MdRefresh/>
-							</a>
-						) : (
-							<BiLoaderAlt className="animate-spin w-[18px]" color={"#D4D4D4"}/>
-						)}
 					</div>
 					<div className="flex items-center font-semibold">
 						<div className="flex items-center gap-2">
@@ -185,14 +179,23 @@ export function NetworkRewardsCard() {
 				</div>
 
 			</div>
-
-			<div
-				className="absolute bottom-4 left-0 right-0 m-auto max-w-[268px] h-[40px] flex justify-center items-center gap-1 rounded-lg text-sm text-[#16A34A] bg-[#F0FDF4] p-2">
-				<div className="flex justify-center items-center gap-2">
-					<FaCircleCheck color={"#16A34A"} size={20}/>
-					You are accruing and claiming esXAI
+			{accruing ? (
+				<div
+					className="absolute bottom-4 left-0 right-0 m-auto max-w-[268px] flex justify-center items-center gap-1 rounded-lg text-sm text-[#16A34A] bg-[#F0FDF4] p-2">
+					<div className="flex justify-center items-center gap-2">
+						<FaCircleCheck color={"#16A34A"} size={20}/>
+						You are accruing and claiming esXAI
+					</div>
 				</div>
-			</div>
+			) : (
+				<div
+					className="absolute bottom-3 left-3 m-auto max-w-[268px] flex justify-center items-center gap-1 rounded-lg text-sm text-[#F59E28] bg-[#FFFBEB] p-2">
+					<div className="flex justify-center items-center gap-2">
+						<AiFillWarning color={"#F59E28"} size={20}/>
+						You are accruing but not claiming esXAI
+					</div>
+				</div>
+			)}
 		</Card>
 	);
 }

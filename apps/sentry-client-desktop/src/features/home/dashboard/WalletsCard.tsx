@@ -1,16 +1,22 @@
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
 import {useAtomValue, useSetAtom} from "jotai";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
-import {useCombinedOwners} from "@/hooks/useCombinedOwners";
 import {Tooltip} from "@sentry/ui";
 import {AiFillWarning, AiOutlineInfoCircle} from "react-icons/ai";
 import {Card} from "@/features/home/cards/Card";
 import {MdWallet} from "react-icons/md";
+import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 
 export function WalletsCard() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const {owners} = useAtomValue(chainStateAtom);
-	const {combinedOwners} = useCombinedOwners(owners);
+	const {kycRequired} = useAtomValue(accruingStateAtom);
+	const {owners, ownersKycMap} = useAtomValue(chainStateAtom);
+	const kycRequiredLength = Object.values(ownersKycMap).filter(value => !value).length
+
+
+	console.log("owners", owners)
+	console.log("ownersKycMap", ownersKycMap)
+	console.log("yuh", Object.values(ownersKycMap).filter(value => !value).length)
 
 	return (
 		<Card width={"339px"} height={"187px"}>
@@ -46,20 +52,24 @@ export function WalletsCard() {
 					</div>
 				</div>
 				<h3 className="text-[32px] font-semibold">
-					{combinedOwners.length}
+					{owners.length}
 				</h3>
 				</div>
 				<p className="text-sm text-[#737373] ml-[2rem]">
-					KYC complete: 0/{combinedOwners.length} (hard-coded)
+					KYC complete: {owners.length - kycRequiredLength}/{owners.length}
 				</p>
 			</div>
-			<div
-				className="absolute bottom-3 left-3 m-auto max-w-[268px] h-[40px] flex justify-center items-center gap-1 rounded-lg text-sm text-[#F59E28] bg-[#FFFBEB] p-2">
-				<div className="flex justify-center items-center gap-2">
-					<AiFillWarning color={"#F59E28"} size={20}/>
-					KYC required for 3 wallets
+
+
+			{kycRequired && (
+				<div
+					className="absolute bottom-3 left-3 m-auto max-w-[268px] h-[40px] flex justify-center items-center gap-1 rounded-lg text-sm text-[#F59E28] bg-[#FFFBEB] p-2">
+					<div className="flex justify-center items-center gap-2">
+						<AiFillWarning color={"#F59E28"} size={20}/>
+						KYC required for {kycRequiredLength} wallet{kycRequiredLength === 1 ? "" : "s"}
+					</div>
 				</div>
-			</div>
+			)}
 		</Card>
 	)
 }

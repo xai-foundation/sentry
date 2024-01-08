@@ -185,7 +185,7 @@ export function SentryWallet() {
 				<div
 					className="sticky top-0 flex flex-col items-center w-full h-auto bg-white z-10">
 					<div
-						className="flex flex-row justify-between items-center w-full py-2 gap-2 border-b border-gray-200 pl-10 pr-2">
+						className="flex flex-row justify-between items-center w-full h-16 py-2 gap-2 border-b border-gray-200 pl-10 pr-2">
 						<div className="flex flex-row items-center gap-2">
 							<h2 className="text-lg font-semibold">Sentry Wallet</h2>
 

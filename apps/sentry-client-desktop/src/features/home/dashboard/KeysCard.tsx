@@ -1,17 +1,17 @@
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
 import {useAtomValue, useSetAtom} from "jotai";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
-import {useCombinedOwners} from "@/hooks/useCombinedOwners";
 import {useOperator} from "@/features/operator";
 import {Tooltip} from "@sentry/ui";
 import {AiFillWarning, AiOutlineInfoCircle} from "react-icons/ai";
 import {Card} from "@/features/home/cards/Card";
 import {RiKey2Line} from "react-icons/ri";
+import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 
 export function KeysCard() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {owners, combinedLicensesList} = useAtomValue(chainStateAtom);
-	const {combinedOwners} = useCombinedOwners(owners);
+	const {accruing} = useAtomValue(accruingStateAtom);
 	const keyCount = combinedLicensesList.length;
 	const {publicKey: operatorAddress} = useOperator();
 
@@ -57,17 +57,19 @@ export function KeysCard() {
 					</p>
 				</div>
 				<p className="text-sm text-[#737373] ml-[2rem]">
-					In {combinedOwners.length} wallet{combinedOwners.length === 1 ? "" : "s"}
+					In {owners.length} wallet{owners.length === 1 ? "" : "s"}
 				</p>
 			</div>
 
-			<div
-				className="absolute bottom-3 left-3 m-auto max-w-[268px] h-[40px] flex justify-center items-center gap-1 rounded-lg text-sm text-[#F59E28] bg-[#FFFBEB] p-2">
-				<div className="flex justify-center items-center gap-2">
-					<AiFillWarning color={"#F59E28"} size={20}/>
-					You have unassigned keys
+			{!accruing && (
+				<div
+					className="absolute bottom-3 left-3 m-auto max-w-[268px] h-[40px] flex justify-center items-center gap-1 rounded-lg text-sm text-[#F59E28] bg-[#FFFBEB] p-2">
+					<div className="flex justify-center items-center gap-2">
+						<AiFillWarning color={"#F59E28"} size={20}/>
+						You have unassigned keys
+					</div>
 				</div>
-			</div>
+			)}
 		</Card>
 	)
 }
