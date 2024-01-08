@@ -10,9 +10,9 @@ import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 
 export function KeysCard() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const {owners, combinedLicensesList} = useAtomValue(chainStateAtom);
+	const {owners} = useAtomValue(chainStateAtom);
 	const {accruing} = useAtomValue(accruingStateAtom);
-	const keyCount = combinedLicensesList.length;
+	const keyCount = owners.length;
 	const {publicKey: operatorAddress} = useOperator();
 
 	return (
@@ -20,12 +20,12 @@ export function KeysCard() {
 			<div className="flex flex-row justify-between items-center py-2 px-4 border-b border-[#F5F5F5]">
 				<div className="flex flex-row items-center gap-1 text-[#A3A3A3] text-[15px]">
 					<h2 className="font-medium">Keys</h2>
-
-					<Tooltip
-						header={"Header"}
-						body={"Body"}
-						position={"start"}
-					>
+						<Tooltip
+							header={"Purchased keys must be assigned to Sentry Wallet"}
+							body={"To assign keys, connect all wallets containing Sentry Keys."}
+							body2={"The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry."}
+							position={"start"}
+						>
 						<AiOutlineInfoCircle size={15} color={"#A3A3A3"}/>
 					</Tooltip>
 				</div>

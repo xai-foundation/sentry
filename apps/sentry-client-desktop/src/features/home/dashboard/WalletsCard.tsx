@@ -25,8 +25,8 @@ export function WalletsCard() {
 				<div className="flex flex-row items-center gap-1 text-[#A3A3A3] text-[15px]">
 					<h2 className="font-medium">Wallets</h2>
 					<Tooltip
-						header={"Header"}
-						body={"Body"}
+						header={"Xai Client can track keys only from added wallets"}
+						body={"If you own keys in additional wallets, add them to the client."}
 						position={"start"}
 					>
 						<AiOutlineInfoCircle size={15} color={"#A3A3A3"}/>

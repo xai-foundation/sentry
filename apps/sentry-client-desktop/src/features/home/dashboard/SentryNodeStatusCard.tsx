@@ -48,7 +48,7 @@ export function SentryNodeStatusCard() {
 				</div>
 			)}
 
-			<div className="sticky flex flex-row justify-between items-center py-2 px-4 border-b border-[#F5F5F5]">
+			<div className="sticky flex flex-row justify-between items-center py-2 px-4 border-b border-[#F5F5F5] z-10">
 				<div className="flex flex-row items-center gap-1 text-[#A3A3A3] text-[15px]">
 					<h2 className="font-medium">Sentry Node Status</h2>
 					<Tooltip

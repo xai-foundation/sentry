@@ -165,10 +165,10 @@ export function NetworkRewardsCard() {
 					<div className="flex items-center">
 						<div>
 							<p className="text-2xl font-semibold">
-								84
+								{owners.length * 7}
 							</p>
 							<p className="text-[12px] text-[#A3A3A3]">
-								times per month (on average) (hard-coded)
+								times per month (on average)
 							</p>
 						</div>
 					</div>
