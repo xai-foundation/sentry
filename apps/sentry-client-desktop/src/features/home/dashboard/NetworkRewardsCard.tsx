@@ -9,20 +9,16 @@ import {ethers} from "ethers";
 import {BiLoaderAlt} from "react-icons/bi";
 import {Card} from "@/features/home/cards/Card";
 import {useEffect, useState} from 'react';
-import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {FaCircleCheck} from "react-icons/fa6";
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {MdRefresh} from "react-icons/md";
 
 export function NetworkRewardsCard() {
 	const {owners} = useAtomValue(chainStateAtom);
-	const {balances, isBalancesLoading, balancesFetchedLast, accruing} = useAtomValue(accruingStateAtom);
-
+	const {balances, isBalancesLoading, balancesFetchedLast, accruing, kycRequired} = useAtomValue(accruingStateAtom);
 	const {combinedOwners} = useCombinedOwners(owners);
 	const {data: earnedEsxaiBalance} = useGetWalletBalance(combinedOwners);
-
 	const [currentTime, setCurrentTime] = useState(new Date());
-	const {sentryRunning} = useOperatorRuntime();
 	const {refresh} = useChainDataRefresh();
 
 	// Calculate the time difference in minutes
@@ -151,7 +147,7 @@ export function NetworkRewardsCard() {
 					</div>
 					<div className="flex items-center font-semibold">
 						<p className="text-2xl font-semibold">
-							{sentryRunning ? "Yes" : "No"}
+							{accruing ? "Yes" : "No"}
 						</p>
 					</div>
 				</div>
@@ -179,7 +175,7 @@ export function NetworkRewardsCard() {
 				</div>
 
 			</div>
-			{accruing ? (
+			{accruing && !kycRequired && (
 				<div
 					className="absolute bottom-4 left-0 right-0 m-auto max-w-[268px] flex justify-center items-center gap-1 rounded-lg text-sm text-[#16A34A] bg-[#F0FDF4] p-2">
 					<div className="flex justify-center items-center gap-2">
@@ -187,12 +183,24 @@ export function NetworkRewardsCard() {
 						You are accruing and claiming esXAI
 					</div>
 				</div>
-			) : (
+			)}
+
+			{accruing && kycRequired && (
 				<div
 					className="absolute bottom-3 left-3 m-auto max-w-[268px] flex justify-center items-center gap-1 rounded-lg text-sm text-[#F59E28] bg-[#FFFBEB] p-2">
 					<div className="flex justify-center items-center gap-2">
 						<AiFillWarning color={"#F59E28"} size={20}/>
 						You are accruing but not claiming esXAI
+					</div>
+				</div>
+			)}
+
+			{!accruing && kycRequired && (
+				<div
+					className="absolute bottom-3 left-3 m-auto max-w-[268px] flex justify-center items-center gap-1 rounded-lg text-sm text-[#F59E28] bg-[#FFFBEB] p-2">
+					<div className="flex justify-center items-center gap-2">
+						<AiFillWarning color={"#F59E28"} size={20}/>
+						You are not accruing or claiming esXAI
 					</div>
 				</div>
 			)}
