@@ -10,7 +10,8 @@ import {ethers} from "ethers";
 
 export function ClaimToken() {
 	const {blocked, loading} = useBlockIp({blockUsa: true});
-	const {address} = useAccount();
+	const {address: _address} = useAccount();
+	const address = _address?.toLowerCase();
 	const navigate = useNavigate();
 	const {chain} = useNetwork();
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
@@ -29,7 +30,7 @@ export function ClaimToken() {
 	});
 
 	useEffect(() => {
-		fetch('/xai-drop-permits.JSON')
+		fetch('https://cdn.xai.games/airdrop/xai-drop-permits.JSON')
 			.then(response => response.json())
 			.then(data => setPermits(data));
 	}, []);

@@ -151,6 +151,7 @@ contract XaiGaslessClaim is AccessControlUpgradeable {
             // Check if the user is KYC'd
             require(_referee.isKycApproved(msg.sender), "User is not KYC'd");
         }
+
         bytes32 digest = keccak256(
             abi.encodePacked(
                 "\x19\x01",
@@ -166,6 +167,7 @@ contract XaiGaslessClaim is AccessControlUpgradeable {
             )
         );
 
+        userPermitNonce[msg.sender]++;
 
         address recoveredAddress = ecrecover(digest, v, r, s);
         require(recoveredAddress == permitAdmin, "Invalid auth");
@@ -175,8 +177,6 @@ contract XaiGaslessClaim is AccessControlUpgradeable {
 
         bool success = Xai(xai).transferFrom(allowanceAddress, msg.sender, claimAmount);
         require(success, "Transfer failed");
-
-        userPermitNonce[msg.sender]++;
 
         emit Claim(msg.sender, claimAmount);
     }
