@@ -19,7 +19,8 @@ export let config = {
   "rollupAddress": "0x082742561295f6e1b43c4f5d1e2d52d7FfE082f1",
   "xaiAddress": "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66",
   "xaiDeployedBlockNumber": 157193610,
-  "xaiImplementationAddress": "0x3fb787101dc6be47cfe18aeee15404dcc842e6af"
+  "xaiImplementationAddress": "0x3fb787101dc6be47cfe18aeee15404dcc842e6af",
+  "xaiGaslessClaimAddress": "0x149107dEB70b9514930d8e454Fc32E77C5ABafE0"
 };
 
 export function setConfig(_config: any) { config = _config; }

@@ -5,7 +5,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const config = {
-  defaultNetwork: "arbitrumGoerli",
+  defaultNetwork: "arbitrumOne",
   solidity: {
     version: "0.8.9",
     settings: {
@@ -57,21 +57,39 @@ const config = {
       gasPrice: 20000000000,
     },
     arbitrumSepolia: {
-      url: "https://sepolia-rollup.arbitrum.io/rpc",
+      url: "https://arb-sepolia.g.alchemy.com/v2/8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B",
       accounts: {
         mnemonic: process.env.MNEMONIC,
         count: 30,
       },
       chainId: 421614,
-      gasPrice: 20000000000,
     },
+    sepolia: {
+      url: "https://eth-sepolia.g.alchemy.com/v2/0zXd3gviT-BxO1QiLjttH2DUV5ihyBPs",
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+        count: 30
+      },
+      chainId: 11155111
+    }
   },
   etherscan: {
     apiKey: {
       arbitrumGoerli: process.env.ARBISCAN_API_KEY,
       arbitrumOne: process.env.ARBISCAN_API_KEY,
       arbitrumSepolia: process.env.ARBISCAN_API_KEY,
-    }
+      sepolia: process.env.ETHERSCAN_API_KEY
+    },
+    customChains: [
+      {
+        network: "arbitrumSepolia",
+        chainId: 421614,
+        urls: {
+          apiURL: "https://api-sepolia.arbiscan.io/api",
+          browserURL: "https://sepolia.arbiscan.io/"
+        }
+      }
+    ]
   }
 };
 
