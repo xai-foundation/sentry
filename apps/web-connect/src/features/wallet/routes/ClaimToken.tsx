@@ -30,7 +30,12 @@ export function ClaimToken() {
 	});
 
 	useEffect(() => {
-		fetch('https://cdn.xai.games/airdrop/xai-drop-permits.JSON')
+		fetch('https://cdn.xai.games/airdrop/xai-drop-permits.JSON', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		})
 			.then(response => response.json())
 			.then(data => setPermits(data));
 	}, []);
