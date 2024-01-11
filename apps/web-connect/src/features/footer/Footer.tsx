@@ -64,7 +64,7 @@ export function Footer() {
 				<div className="flex flex-col-reverse md:flex-row justify-between items-start md:items-center gap-8">
 					<div className="flex flex-col items-start gap-2 md:flex-row md:items-center">
 						<div>
-							<p>©2023 XAI. All Rights Reserved</p>
+							<p>©2024 XAI. All Rights Reserved</p>
 						</div>
 
 						<div className="flex items-center gap-2">

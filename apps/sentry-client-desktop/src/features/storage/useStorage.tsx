@@ -5,13 +5,14 @@ const dataAtom = atom<IData | undefined>(undefined);
 
 export type IData = Partial<{
 	addedWallets: string[];
+	whitelistedWallets: string[];
 	kycStartedWallets: string[];
 	sentryRunning: boolean;
 }>;
 
 interface IUseStorageResponse {
 	data?: IData;
-	setData: (data: IData) => void;
+	setData: (data: IData) => Promise<void>;
 	removeData: () => void;
 	loading: boolean;
 	getFilePath: () => Promise<string>;

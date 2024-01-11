@@ -128,7 +128,7 @@ async function main() {
 
   console.log("Deploying NodeLicense...");
   const NodeLicense = await ethers.getContractFactory("NodeLicense");
-  const nodeLicense = await upgrades.deployProxy(NodeLicense, [options.fundsReceiver, options.referralDiscountPercentage, options.referralRewardPercentage], { deployer: deployer });
+  let nodeLicense = await upgrades.deployProxy(NodeLicense, [options.fundsReceiver, options.referralDiscountPercentage, options.referralRewardPercentage], { deployer: deployer });
   const { blockNumber: nodeLicenseDeployedBlockNumber } = await nodeLicense.deploymentTransaction();
   const nodeLicenseAddress = await nodeLicense.getAddress();
 
@@ -198,14 +198,14 @@ async function main() {
   }
 
   // denounce the admin role of the deployer on every contract  
-  await referee.renounceRole(refereeAdminRole, deployerAddress);
-  console.log(`Renounced admin role of ${deployerAddress} on Referee`);
-  await nodeLicense.renounceRole(nodeLicenseAdminRole, deployerAddress);
-  console.log(`Renounced admin role of ${deployerAddress} on NodeLicense`);
-  await esXai.renounceRole(esXaiAdminRole, deployerAddress);
-  console.log(`Renounced admin role of ${deployerAddress} on esXai`);
-  await xai.renounceRole(xaiAdminRole, deployerAddress);
-  console.log(`Renounced admin role of ${deployerAddress} on xai`);
+  // await referee.renounceRole(refereeAdminRole, deployerAddress);
+  // console.log(`Renounced admin role of ${deployerAddress} on Referee`);
+  // await nodeLicense.renounceRole(nodeLicenseAdminRole, deployerAddress);
+  // console.log(`Renounced admin role of ${deployerAddress} on NodeLicense`);
+  // await esXai.renounceRole(esXaiAdminRole, deployerAddress);
+  // console.log(`Renounced admin role of ${deployerAddress} on esXai`);
+  // await xai.renounceRole(xaiAdminRole, deployerAddress);
+  // console.log(`Renounced admin role of ${deployerAddress} on xai`);
 
   // Verify the contracts
   await Promise.all([
@@ -216,6 +216,7 @@ async function main() {
     safeVerify({ contract: gasSubsidy }),
   ]);
   console.log("Contracts verified.");
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere
