@@ -161,8 +161,6 @@ export function SentryWallet() {
 		const uniqueWallets: Set<string> = new Set();
 		let totalKeyLength: number = 0;
 
-		console.log("nodeLicenseStatusMap", nodeLicenseStatusMap)
-
 		new Map([...nodeLicenseStatusMap].filter(([, status]) => {
 			if (selectedWallet === null) {
 				return true;
