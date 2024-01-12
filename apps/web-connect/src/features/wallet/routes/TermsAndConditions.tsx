@@ -86,7 +86,7 @@ export function TermsAndConditions() {
 				distributed to users as part of an Airdrop will not automatically accrue to users’ digital wallets. Each
 				user will be required to claim the Airdrop by visiting <a
 				className="text-[#F30919]"
-				href={"https://sentry.xai.games/#/claimtoken"}>https://sentry.xai.games/#/claimtoken</a> and following
+				href={"https://sentry.xai.games/#/claim-token"}>https://sentry.xai.games/#/claim-token</a> and following
 				the instructions provided on the webpage,
 				including paying associated Xai Network and Ethereum network transaction fees.
 			</p>
@@ -276,7 +276,7 @@ export function TermsAndConditions() {
 			<p>&nbsp;</p>
 			<p className="pl-8"><strong>8.3 <u>Amendments</u>. These Terms may be modified or revised at any time, with or without prior
 				notice to you. The most current version of these Terms will be posted on <a className="text-[#F30919]"
-																							href={"https://sentry.xai.games/#/claimtoken"}>https://sentry.xai.games/#/xai-airdrop-terms-and-conditions</a> (the
+																							href={"https://sentry.xai.games/#/xai-airdrop-terms-and-conditions"}>https://sentry.xai.games/#/xai-airdrop-terms-and-conditions</a> (the
 				“<b>Website</b>”) with the “Last Revised” date at the top. Any modifications or revisions will be
 				effective immediately upon posting the modifications or revisions to the Website. You shall be
 				responsible for reviewing and becoming familiar with any modifications or revisions. You waive any right
