@@ -32,7 +32,7 @@ export const recommendedFundingBalance = ethers.parseEther("0.005");
 export function SentryWallet() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
-	const {ownersLoading, owners, licensesLoading, licensesList} = useAtomValue(chainStateAtom);
+	const {ownersLoading, owners, licensesLoading} = useAtomValue(chainStateAtom);
 	const queryClient = useQueryClient();
 	const {hasAssignedKeys} = useAtomValue(accruingStateAtom);
 
@@ -40,7 +40,6 @@ export function SentryWallet() {
 	const {data: balance} = useBalance(operatorAddress);
 
 	const loading = operatorLoading || ownersLoading || licensesLoading;
-	const keyCount = licensesList.length;
 
 	const [copied, setCopied] = useState<boolean>(false);
 	const [assignedWallet, setAssignedWallet] = useState<{ show: boolean, txHash: string }>({show: false, txHash: ""});
@@ -156,6 +155,37 @@ export function SentryWallet() {
 			})
 		return element;
 	}
+
+
+	function getWalletCounter() {
+		const uniqueWallets: Set<string> = new Set();
+		let totalKeyLength: number = 0;
+
+		console.log("nodeLicenseStatusMap", nodeLicenseStatusMap)
+
+		new Map([...nodeLicenseStatusMap].filter(([, status]) => {
+			if (selectedWallet === null) {
+				return true;
+			}
+			return status.ownerPublicKey === selectedWallet;
+		}))
+			.forEach((status, key) => {
+				uniqueWallets.add(status.ownerPublicKey);
+				totalKeyLength += key.toString().length;
+			});
+
+		return (
+			<>
+				{uniqueWallets.size > 0
+					? (loading
+						? ("Loading...")
+						: (`${totalKeyLength} key${totalKeyLength === 1 ? '' : 's'} in ${uniqueWallets.size} wallet${uniqueWallets.size === 1 ? '' : 's'}`))
+					: ("Allowed wallets not assigned")}
+			</>
+		);
+
+	}
+
 
 	function onCloseWalletConnectedModal() {
 		setAssignedWallet({show: false, txHash: ""});
@@ -303,11 +333,13 @@ export function SentryWallet() {
 					<div className="flex flex-row items-center w-full py-3 pl-10 gap-1">
 						<h2 className="font-semibold">Assigned Keys</h2>
 						<p className="text-sm bg-gray-100 px-2 rounded-2xl text-gray-500">
-							{owners.length > 0 ? (
-								loading ? "Loading..." : `${keyCount} key${keyCount === 1 ? "" : "s"} in ${owners.length} wallet${owners.length === 1 ? "" : "s"}`
-							) : (
-								"Keys not assigned"
-							)}
+							{getWalletCounter()}
+
+							{/*{owners.length > 0 ? (*/}
+							{/*	loading ? "Loading..." : `${keyCount} key${keyCount === 1 ? "" : "s"} in ${owners.length} wallet${owners.length === 1 ? "" : "s"}`*/}
+							{/*) : (*/}
+							{/*	"Keys not assigned"*/}
+							{/*)}*/}
 						</p>
 						{loading ? (
 							<span className="flex items-center text-[15px] text-[#A3A3A3] select-none">
