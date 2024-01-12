@@ -15,6 +15,7 @@
     "deploy-xai-claim-drop": "hardhat run scripts/deployXaiClaimDrop.mjs",
     "upgrade-xai-drop": "hardhat run scripts/upgradeXaiClaimDrop.mjs",
     "create-permit-list": "hardhat run scripts/createPermitList.mjs",
+    "eth-extraction": "hardhat run scripts/ethExtraction.mjs --network hardhat",
     "local": "hardhat node",
     "test": "hardhat test --network localhost",
     "coverage": "hardhat coverage --network localhost --solcoverjs ./.solcover.cjs --temp artifacts --testfiles \"./test/**/*.mjs\"",
