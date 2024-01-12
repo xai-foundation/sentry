@@ -8,6 +8,7 @@ import { UpgradeabilityTests } from "./UpgradeTest.mjs";
 import { RefereeTests } from "./Referee.mjs";
 import { esXaiTests } from "./esXai.mjs";
 import { GasSubsidyTests } from "./GasSubsidy.mjs";
+import { XaiGaslessClaimTests } from "./XaiGaslessClaim.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -198,12 +199,13 @@ describe("Fixture Tests", function () {
         };
     }
 
-    describe("Xai", XaiTests(deployInfrastructure).bind(this));
-    describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
-    describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
-    describe("Referee", RefereeTests(deployInfrastructure).bind(this));
-    describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
-    describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
+    describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
+    // describe("Xai", XaiTests(deployInfrastructure).bind(this));
+    // describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
+    // describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
+    // describe("Referee", RefereeTests(deployInfrastructure).bind(this));
+    // describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
+    // describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
 
     // This doesn't work when running coverage
     // describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));

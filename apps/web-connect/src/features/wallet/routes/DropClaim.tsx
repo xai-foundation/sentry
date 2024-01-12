@@ -7,8 +7,11 @@ import {useListClaimableAmount} from "@/features/checkout/hooks/useListClaimable
 import {BiLoaderAlt} from "react-icons/bi";
 import {config, NodeLicenseAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
+import {useBlockIp} from "@/hooks/useBlockIp";
 
 export function DropClaim() {
+	const {blocked, loading} = useBlockIp({blockUsa: true});
+
 	const {address} = useAccount();
 	const {chain} = useNetwork();
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
@@ -26,6 +29,20 @@ export function DropClaim() {
 			console.warn("Error", error);
 		},
 	});
+
+	if (loading) {
+		return (
+			<div className="w-full h-screen flex justify-center items-center">
+				<BiLoaderAlt className="animate-spin" size={32} color={"#000000"}/>
+			</div>
+		)
+	}
+
+	if (blocked) {
+		return (
+			<pre className="p-2 text-[14px]">Not Found</pre>
+		)
+	}
 
 	return (
 		<div>

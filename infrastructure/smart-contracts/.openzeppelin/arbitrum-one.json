@@ -29,6 +29,11 @@
       "address": "0xbc14d8563b248B79689ECbc43bBa53290e0b6b66",
       "txHash": "0x1e84fa92f23fbccf9cf1643c17925016357a95e123d7d14cc9a77d029d8dbac2",
       "kind": "transparent"
+    },
+    {
+      "address": "0x149107dEB70b9514930d8e454Fc32E77C5ABafE0",
+      "txHash": "0xb0e3d7ccab6861cb4779862ae1087952a0c5aa1fe86e4828e80547fbfdc5c69f",
+      "kind": "transparent"
     }
   ],
   "impls": {
@@ -3673,6 +3678,420 @@
           "t_uint16": {
             "label": "uint16",
             "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "1e8fba5b80aa67fdb4d0f52706f45161da4c81faf6c86af76ed4ecd3ae87e400": {
+      "address": "0xb13f33925e72778Dd0CC836A33E17963388d627d",
+      "txHash": "0xd9b6a9687c9480ead914d549d3d29d3188a267a8ffdff5584fff58106903aac2",
+      "layout": {
+        "solcVersion": "0.8.9",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)179_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:62"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:260"
+          },
+          {
+            "label": "DOMAIN_SEPARATOR",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_bytes32",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:9"
+          },
+          {
+            "label": "PERMIT_TYPEHASH",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_bytes32",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:10"
+          },
+          {
+            "label": "permitAdmin",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_address",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:13"
+          },
+          {
+            "label": "chainId",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_uint256",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:16"
+          },
+          {
+            "label": "xai",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_address",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:19"
+          },
+          {
+            "label": "allowanceAddress",
+            "offset": 0,
+            "slot": "156",
+            "type": "t_address",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:21"
+          },
+          {
+            "label": "userPermitNonce",
+            "offset": 0,
+            "slot": "157",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:24"
+          },
+          {
+            "label": "startTime",
+            "offset": 0,
+            "slot": "158",
+            "type": "t_uint256",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:26"
+          },
+          {
+            "label": "endTime",
+            "offset": 0,
+            "slot": "159",
+            "type": "t_uint256",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:27"
+          },
+          {
+            "label": "nodeLicense",
+            "offset": 0,
+            "slot": "160",
+            "type": "t_address",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:29"
+          },
+          {
+            "label": "referee",
+            "offset": 0,
+            "slot": "161",
+            "type": "t_address",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:30"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)179_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)179_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "483b087af4fc1785221d42dba1289c12c057fa95d3b88e4162eb33e1448fe80b": {
+      "address": "0x3Be02253Be4504a860d8CCB9C5E9284E0461772d",
+      "txHash": "0xc194f2795ee0dc05e77bbd69c30cf2e868cd5491084e5d1e0825d7f5085ec9a2",
+      "layout": {
+        "solcVersion": "0.8.9",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)179_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:62"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:260"
+          },
+          {
+            "label": "DOMAIN_SEPARATOR",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_bytes32",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:9"
+          },
+          {
+            "label": "PERMIT_TYPEHASH",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_bytes32",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:10"
+          },
+          {
+            "label": "permitAdmin",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_address",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:13"
+          },
+          {
+            "label": "chainId",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_uint256",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:16"
+          },
+          {
+            "label": "xai",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_address",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:19"
+          },
+          {
+            "label": "allowanceAddress",
+            "offset": 0,
+            "slot": "156",
+            "type": "t_address",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:21"
+          },
+          {
+            "label": "userPermitNonce",
+            "offset": 0,
+            "slot": "157",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:24"
+          },
+          {
+            "label": "startTime",
+            "offset": 0,
+            "slot": "158",
+            "type": "t_uint256",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:26"
+          },
+          {
+            "label": "endTime",
+            "offset": 0,
+            "slot": "159",
+            "type": "t_uint256",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:27"
+          },
+          {
+            "label": "nodeLicense",
+            "offset": 0,
+            "slot": "160",
+            "type": "t_address",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:29"
+          },
+          {
+            "label": "referee",
+            "offset": 0,
+            "slot": "161",
+            "type": "t_address",
+            "contract": "XaiGaslessClaim",
+            "src": "contracts/drops/XaiGaslessClaim.sol:30"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)179_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)179_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
           },
           "t_uint256": {
             "label": "uint256",

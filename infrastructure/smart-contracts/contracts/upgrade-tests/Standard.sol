@@ -25,3 +25,19 @@ contract CounterContract is AccessControlUpgradeable {
         return _count.current();
     }
 }
+
+contract CounterContract2 is AccessControlUpgradeable {
+    using CountersUpgradeable for CountersUpgradeable.Counter;
+
+    bytes32 public constant COUNTER_ROLE = keccak256("COUNTER_ROLE");
+    CountersUpgradeable.Counter private _count;
+
+    function decrementCount() public {
+        require(hasRole(COUNTER_ROLE, _msgSender()), "CounterContract: must have counter role to decrement");
+        _count.decrement();
+    }
+
+    function getCount() public view returns (uint256) {
+        return _count.current();
+    }
+}

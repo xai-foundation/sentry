@@ -7,21 +7,27 @@
     "deploy": "hardhat run scripts/deploy.mjs",
     "deploy-xai": "hardhat run scripts/deployXai.mjs",
     "deploy-test": "hardhat run scripts/deployCounter.mjs",
+    "upgrade-test": "hardhat run scripts/upgradeCounter.mjs",
     "get-promo-code": "hardhat run scripts/lookupPromoCodeAtBlockNumber.mjs",
     "upgrade-node-license": "hardhat run scripts/upgradeNodeLicense.mjs",
     "operator-report": "hardhat run scripts/createOperatorReport.mjs",
     "add-whitelist-amounts": "hardhat run scripts/addWhitelistAmounts.mjs",
+    "deploy-xai-claim-drop": "hardhat run scripts/deployXaiClaimDrop.mjs",
+    "upgrade-xai-drop": "hardhat run scripts/upgradeXaiClaimDrop.mjs",
+    "create-permit-list": "hardhat run scripts/createPermitList.mjs",
     "local": "hardhat node",
     "test": "hardhat test --network localhost",
-    "coverage": "hardhat coverage --network hardhat --solcoverjs ./.solcover.cjs --temp artifacts --testfiles \"./test/**/*.mjs\"",
+    "coverage": "hardhat coverage --network localhost --solcoverjs ./.solcover.cjs --temp artifacts --testfiles \"./test/**/*.mjs\"",
     "clean": "rimraf artifacts && rimraf cache"
   },
   "dependencies": {
     "@sentry/core": "workspace:*",
+    "@truffle/hdwallet-provider": "^2.1.15",
     "csv": "^6.3.5",
     "dotenv": "^16.3.1",
     "ethers": "6.8.1",
-    "ganache-cli": "^6.12.2"
+    "ganache-cli": "^6.12.2",
+    "web3": "^4.3.0"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-network-helpers": "1.0.9",
