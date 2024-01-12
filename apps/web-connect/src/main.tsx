@@ -17,7 +17,11 @@ const metadata = {
 	icons: ['https://avatars.githubusercontent.com/u/37784886']
 }
 
-const wagmiConfig = defaultWagmiConfig({chains, projectId, metadata})
+const wagmiConfig = defaultWagmiConfig({
+	chains,
+	projectId,
+	metadata
+})
 
 createWeb3Modal({wagmiConfig, projectId, chains})
 

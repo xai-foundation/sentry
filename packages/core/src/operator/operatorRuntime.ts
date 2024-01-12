@@ -1,5 +1,20 @@
 import { ethers } from "ethers";
-import { Challenge, RefereeAbi, claimReward, config, getMintTimestamp, getSubmissionsForChallenges, listChallenges, listNodeLicenses, listOwnersForOperator, listenForChallenges, submitAssertionToChallenge, checkKycStatus, getProvider } from "../index.js";
+import {
+    Challenge,
+    RefereeAbi,
+    claimReward,
+    config,
+    getMintTimestamp,
+    getSubmissionsForChallenges,
+    listChallenges,
+    listNodeLicenses,
+    listOwnersForOperator,
+    listenForChallenges,
+    submitAssertionToChallenge,
+    checkKycStatus,
+    getProvider,
+    version
+} from "../index.js";
 import { retry } from "../index.js";
 
 export enum NodeLicenseStatus {
@@ -24,12 +39,14 @@ export type NodeLicenseStatusMap = Map<bigint, NodeLicenseInformation>;
  * @param {ethers.Signer} signer - The signer.
  * @param {((status: NodeLicenseStatusMap) => void)} [statusCallback] - Optional function to monitor the status of the runtime.
  * @param {((log: string) => void)} [logFunction] - Optional function to log the process.
+ * @param {string[]} [operatorOwners] - Optional array of addresses that should replace "owners" if passed in.
  * @returns {Promise<() => Promise<void>>} The stop function.
  */
 export async function operatorRuntime(
     signer: ethers.Signer,
     statusCallback: (status: NodeLicenseStatusMap) => void = (_) => {},
     logFunction: (log: string) => void = (_) => {},
+    operatorOwners?: string[],
 ): Promise<() => Promise<void>> {
 
     logFunction(`[${new Date().toISOString()}] Booting operator runtime.`);
@@ -57,8 +74,15 @@ export async function operatorRuntime(
 
     // get a list of all the owners that are added to this operator
     logFunction(`[${new Date().toISOString()}] Getting all wallets assigned to the operator.`);
-    const owners = [operatorAddress, ...await retry(async () => await listOwnersForOperator(operatorAddress))];
-    logFunction(`[${new Date().toISOString()}] Received ${owners.length} wallets that are assigned to this operator.`);
+    let owners: string[];
+    if (operatorOwners) {
+        logFunction(`[${new Date().toISOString()}] Operator owners were passed in.`);
+        owners = Array.from(new Set(operatorOwners));
+    } else {
+        logFunction(`[${new Date().toISOString()}] No operator owners were passed in.`);
+        owners = [operatorAddress, ...await retry(async () => await listOwnersForOperator(operatorAddress))];
+    }
+    logFunction(`[${new Date().toISOString()}] Received ${owners.length} wallets to run with this operator. The addresses are: ${owners.join(', ')}`);
 
     // get a list of all the node licenses for each of the owners
     let nodeLicenseIds: bigint[] = [];
@@ -77,6 +101,10 @@ export async function operatorRuntime(
         logFunction(`[${new Date().toISOString()}] Fetched ${licensesOfOwner.length} node licenses for owner ${owner}.`);
     }
     logFunction(`[${new Date().toISOString()}] Total Sentry Keys fetched: ${nodeLicenseIds.length}.`);
+
+    // if (nodeLicenseIds.length === 0) {
+    //     throw new Error("No Sentry Keys found.");
+    // }
 
     // create a mapping of all the timestamps these nodeLicenses were created at, so we can easily check the eligibility later
     logFunction(`[${new Date().toISOString()}] Checking Sentry Key eligibility.`);
@@ -184,7 +212,7 @@ export async function operatorRuntime(
 
         // check to see if the owner of teh license is KYC'd
         const [{isKycApproved}] = await retry(async () => await checkKycStatus([nodeLicenseStatusMap.get(nodeLicenseId)!.ownerPublicKey]));
-        
+
         if (isKycApproved) {
             logFunction(`[${new Date().toISOString()}] Requesting esXAI reward for challenge '${challengeNumber}'.`);
             nodeLicenseStatusMap.set(nodeLicenseId, {
@@ -248,18 +276,18 @@ export async function operatorRuntime(
             });
             safeStatusCallback();
             logFunction(`[${new Date().toISOString()}] Checking for unclaimed rewards on Sentry Key '${nodeLicenseId}'.`);
-    
+
             await getSubmissionsForChallenges(challengeIds, nodeLicenseId, async (submission, index) => {
-    
+
                 const challengeId = challengeIds[index];
-    
+
                 nodeLicenseStatusMap.set(nodeLicenseId, {
                     ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
                     status: `Checking For Unclaimed Rewards on Challenge '${challengeId}'`,
                 });
                 safeStatusCallback();
                 logFunction(`[${new Date().toISOString()}] Checking for unclaimed rewards on Challenge '${challengeId}'.`);
-    
+
                 // call the process claim and update statuses/logs accoridngly
                 if (submission.submitted && !submission.claimed) {
                     nodeLicenseStatusMap.set(nodeLicenseId, {
@@ -271,7 +299,7 @@ export async function operatorRuntime(
                     await processClaimForChallenge(challengeId, nodeLicenseId);
                 }
             });
-    
+
             nodeLicenseStatusMap.set(nodeLicenseId, {
                 ...nodeLicenseStatusMap.get(nodeLicenseId) as NodeLicenseInformation,
                 status: beforeStatus,
@@ -289,7 +317,7 @@ export async function operatorRuntime(
     const fetchBlockNumber = async () => {
         try {
             const blockNumber = await provider.getBlockNumber();
-            logFunction(`[${new Date().toISOString()}] Health Check on JSON RPC, Operator still healthy. Current block number: ${blockNumber}`);
+            logFunction(`[${new Date().toISOString()}] [cli ${version}] Health Check on JSON RPC, Operator still healthy. Current block number: ${blockNumber}`);
         } catch (error) {
             logFunction(`[${new Date().toISOString()}] Error fetching block number, operator may no longer be connected to the JSON RPC: ${JSON.stringify(error)}.`);
         }
