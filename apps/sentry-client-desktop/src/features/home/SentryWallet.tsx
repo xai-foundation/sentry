@@ -158,7 +158,6 @@ export function SentryWallet() {
 
 
 	function getWalletCounter() {
-		const uniqueWallets: Set<string> = new Set();
 		let totalKeyLength: number = 0;
 
 		new Map([...nodeLicenseStatusMap].filter(([, status]) => {
@@ -167,18 +166,17 @@ export function SentryWallet() {
 			}
 			return status.ownerPublicKey === selectedWallet;
 		}))
-			.forEach((status, key) => {
-				uniqueWallets.add(status.ownerPublicKey);
+			.forEach((_, key) => {
 				totalKeyLength += key.toString().length;
 			});
 
 		return (
 			<>
-				{uniqueWallets.size > 0
+				{owners.length > 0
 					? (loading
 						? ("Loading...")
-						: (`${totalKeyLength} key${totalKeyLength === 1 ? '' : 's'} in ${uniqueWallets.size} wallet${uniqueWallets.size === 1 ? '' : 's'}`))
-					: ("Allowed wallets not assigned")}
+						: (`${totalKeyLength} key${totalKeyLength === 1 ? '' : 's'} in ${owners.length} wallet${owners.length === 1 ? '' : 's'}`))
+					: ("No keys")}
 			</>
 		);
 
