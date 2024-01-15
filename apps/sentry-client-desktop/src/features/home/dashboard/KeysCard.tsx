@@ -10,9 +10,9 @@ import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 
 export function KeysCard() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const {owners} = useAtomValue(chainStateAtom);
+	const {owners, licensesList} = useAtomValue(chainStateAtom);
 	const {accruing} = useAtomValue(accruingStateAtom);
-	const keyCount = owners.length;
+	const keyCount = licensesList.length;
 	const {publicKey: operatorAddress} = useOperator();
 
 	return (

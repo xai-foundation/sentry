@@ -11,6 +11,7 @@ import {createStore, Provider as JotaiProvider} from "jotai";
 import {AccruingDataManager} from "@/components/AccruingDataManager";
 import toast, {Toaster} from "react-hot-toast";
 import {Dashboard} from "@/features/home/Dashboard";
+import {GetSentryNode} from "@/features/home/GetSentryNode";
 
 const store = createStore();
 
@@ -45,8 +46,8 @@ export function AppRoutes() {
 
 						<div className="flex-grow">
 							<Routes>
-								<Route path="/" element={<Dashboard/>}/>
-								{/*<Route path="/" element={<GetSentryNode/>}/>*/}
+								<Route path="/" element={<GetSentryNode/>}/>
+								<Route path="/dashboard" element={<Dashboard/>}/>
 								<Route path="/keys" element={<Keys/>}/>
 								<Route path="/sentry-wallet" element={<SentryWallet/>}/>
 								{/*<Route path="/redeem" element={<Redeem/>}/>*/}

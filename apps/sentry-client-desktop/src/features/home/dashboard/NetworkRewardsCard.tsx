@@ -44,8 +44,8 @@ export function NetworkRewardsCard() {
 					<div className="flex flex-row items-center gap-1 text-[#A3A3A3] text-[15px]">
 						<h2 className="font-medium">Network Rewards</h2>
 						<Tooltip
-							header={"Header"}
-							body={"Body"}
+							header={"Generate Network Rewards esXAI"}
+							body={"The more Keys running on a node, the more esXAI rewards are accrued. To claims rewards, the node must be running, the Sentry Wallet must be funded, and the wallets containing the Keys must have passed KYC."}
 							position={"end"}
 						>
 							<AiOutlineInfoCircle size={15} color={"#A3A3A3"}/>
@@ -138,8 +138,11 @@ export function NetworkRewardsCard() {
 					<div className="flex items-center gap-1 text-[15px] text-[#A3A3A3]">
 						<h3 className="font-medium">Am I accruing esXAI?</h3>
 						<Tooltip
-							header={"Header"}
-							body={"Body"}
+							header={"To be accruing esXAI, the following must be true:"}
+							body={"1) Your node must be running"}
+							body2={"2) Your Sentry Wallet must be funded with at least 0.005 AETH"}
+							body3={"3) At least one wallet containing a Key must be assigned to your Sentry"}
+							width={500}
 							position={"end"}
 						>
 							<AiOutlineInfoCircle size={14} color={"#D4D4D4"}/>
@@ -156,7 +159,8 @@ export function NetworkRewardsCard() {
 					<div className="flex items-center gap-1 text-[15px] text-[#A3A3A3]">
 						<h3 className="font-medium">How frequently will I accrue?</h3>
 						<Tooltip
-							body={"esXAI accrued is probabilistic. You accrue more with more keys"}
+							header={"esXAI accrued is probabilistic"}
+							body={"The more Keys you own, the more frequently you will accrue esXAI. The formula to calculate the average number of wins per month is [number of Keys] x 7."}
 							position={"end"}
 						>
 							<AiOutlineInfoCircle size={14} color={"#D4D4D4"}/>

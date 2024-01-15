@@ -13,11 +13,6 @@ export function WalletsCard() {
 	const {owners, ownersKycMap} = useAtomValue(chainStateAtom);
 	const kycRequiredLength = Object.values(ownersKycMap).filter(value => !value).length
 
-
-	console.log("owners", owners)
-	console.log("ownersKycMap", ownersKycMap)
-	console.log("yuh", Object.values(ownersKycMap).filter(value => !value).length)
-
 	return (
 		<Card width={"339px"} height={"187px"}>
 
