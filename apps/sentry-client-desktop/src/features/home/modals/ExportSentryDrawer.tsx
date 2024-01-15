@@ -44,8 +44,10 @@ export function ExportSentryDrawer() {
 		<div>
 			<div className="h-full flex flex-col justify-start items-center">
 				<div
-					className="absolute top-0 w-full h-[4rem] flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
-					<span>Export Sentry Wallet</span>
+					className="w-full h-[4rem] flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
+					<div className="flex flex-row gap-2 items-center">
+						<span>Export Sentry Wallet</span>
+					</div>
 					<div className="cursor-pointer z-10" onClick={() => setDrawerState(null)}>
 						<AiOutlineClose/>
 					</div>
