@@ -7,11 +7,13 @@ import {BiLoaderAlt} from "react-icons/bi";
 import {ImportSentryAlertModal} from "@/features/home/modals/ImportSentryAlertModal";
 import {verifyPrivateKey} from "@sentry/core";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
+import {useStorage} from "@/features/storage";
 
 export function ImportSentryDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {isLoading, importPrivateKey} = useOperator();
 	const {stopRuntime} = useOperatorRuntime();
+	const {data, setData} = useStorage();
 	const [inputValue, setInputValue] = useState('');
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const [privateKeyError, setPrivateKeyError] = useState({
@@ -52,6 +54,10 @@ export function ImportSentryDrawer() {
 			if (stopRuntime) {
 				void stopRuntime()
 			}
+			void setData({
+				...data,
+				whitelistedWallets: [],
+			});
 		});
 	};
 
