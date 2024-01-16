@@ -1,5 +1,9 @@
 
+// production
 const nonceTarget = 23;
+
+// test
+// const nonceTarget = 3; 
 
 async function ethExtractor() {
 
@@ -9,16 +13,18 @@ async function ethExtractor() {
 
     // check to make sure the deployer address is below the nonce target
     let deployerNonce = await ethers.provider.getTransactionCount(deployerAddress);
-    if (deployerNonce >= nonceTarget) {
-        throw new Error(`Deployer nonce is ${deployerNonce}, which is greater than or equal to the target nonce of ${nonceTarget}. Unable to recover the eth.`);
+    if (deployerNonce > nonceTarget) {
+        throw new Error(`Deployer nonce is ${deployerNonce}, which is greater than the target nonce of ${nonceTarget}. Unable to recover the eth.`);
     }
 
     // perform transactions of sending 1 wei to get the nonce up to the nonceTarget
     for (let i = deployerNonce; i < nonceTarget; i++) {
         await deployer.sendTransaction({ to: deployerAddress, value: 1 });
-        // await new Promis((resolve) => setTimeout(resolve, 30000));
+        await new Promise((resolve) => setTimeout(resolve, 10000));
+        console.log(`Transaction ${i + 1} of ${nonceTarget} completed.`);
     }
 
+    await new Promise((resolve) => setTimeout(resolve, 30000));
 
     // confirm the nonce is at the target
     deployerNonce = await ethers.provider.getTransactionCount(deployerAddress);
