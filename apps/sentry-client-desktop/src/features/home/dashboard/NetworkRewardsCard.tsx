@@ -38,29 +38,36 @@ export function NetworkRewardsCard() {
 		: null;
 
 	return (
-		<Card width={"300px"} height={"531px"}>
+		<Card width={"315px"} height={"532px"}>
 
 			<div className="flex flex-row justify-between items-center py-2 px-4 border-b border-[#F5F5F5]">
-					<div className="flex flex-row items-center gap-1 text-[#A3A3A3] text-[15px]">
-						<h2 className="font-medium">Network Rewards</h2>
-						<Tooltip
-							header={"Generate Network Rewards esXAI"}
-							body={"The more Keys running on a node, the more esXAI rewards are accrued. To claims rewards, the node must be running, the Sentry Wallet must be funded, and the wallets containing the Keys must have passed KYC."}
-							position={"end"}
-						>
-							<AiOutlineInfoCircle size={15} color={"#A3A3A3"}/>
-						</Tooltip>
-					</div>
+				<div className="flex flex-row items-center gap-1 text-[#A3A3A3] text-[15px]">
+					<h2 className="font-medium">Network Rewards</h2>
+					<Tooltip
+						header={"Generate Network Rewards esXAI"}
+						body={"The more Keys running on a node, the more esXAI rewards are accrued. To claims rewards, the node must be running, the Sentry Wallet must be funded, and the wallets containing the Keys must have passed KYC."}
+						position={"end"}
+					>
+						<AiOutlineInfoCircle size={15} color={"#A3A3A3"}/>
+					</Tooltip>
+				</div>
 
-					<div className="flex flex-row justify-between items-center gap-1 text-[#A3A3A3]">
-						{!isBalancesLoading && balancesFetchedLast ? (
+				<div className="flex flex-row justify-between items-center gap-1 text-[#A3A3A3]">
+					{!isBalancesLoading && balancesFetchedLast ? (
+						<div className="flex flex-row justify-center items-center gap-1">
+							<p className="flex items-center text-sm">
+								{!isBalancesLoading && balancesFetchedLast && (
+									timeDifference !== null ? `Updated ${timeDifference}m ago` : 'Just now'
+								)}
+							</p>
 							<a onClick={refresh} className="cursor-pointer">
-								<MdRefresh/>
+								<MdRefresh size={14}/>
 							</a>
-						) : (
-							<BiLoaderAlt className="animate-spin w-[18px]" color={"#D4D4D4"}/>
-						)}
-					</div>
+						</div>
+					) : (
+						<BiLoaderAlt className="animate-spin w-[18px]" color={"#D4D4D4"}/>
+					)}
+				</div>
 			</div>
 
 			<div className="flex flex-col mt-4 py-2 px-4 gap-3">
@@ -76,11 +83,6 @@ export function NetworkRewardsCard() {
 							>
 								<AiOutlineInfoCircle size={14} color={"#D4D4D4"}/>
 							</Tooltip>
-							<p className="flex items-center text-sm text-[#D4D4D4]">
-								{!isBalancesLoading && balancesFetchedLast && (
-									timeDifference !== null ? `Updated ${timeDifference}m ago` : 'Just now'
-								)}
-							</p>
 						</div>
 					</div>
 
@@ -97,7 +99,6 @@ export function NetworkRewardsCard() {
 										: parseFloat(ethers.formatEther(earnedEsxaiBalance.reduce((acc, item) => acc + item.esXaiBalance, BigInt(0)))).toFixed(6)
 									: "0"
 								}
-
 							</p>
 						</div>
 					</div>
@@ -201,7 +202,7 @@ export function NetworkRewardsCard() {
 
 			{!accruing && kycRequired && (
 				<div
-					className="absolute bottom-3 left-3 m-auto max-w-[268px] flex justify-center items-center gap-1 rounded-lg text-sm text-[#F59E28] bg-[#FFFBEB] p-2">
+					className="absolute bottom-3 left-3 m-auto max-w-[290px] flex justify-center items-center gap-1 rounded-lg text-sm text-[#F59E28] bg-[#FFFBEB] p-2">
 					<div className="flex justify-center items-center gap-2">
 						<AiFillWarning color={"#F59E28"} size={20}/>
 						You are not accruing or claiming esXAI

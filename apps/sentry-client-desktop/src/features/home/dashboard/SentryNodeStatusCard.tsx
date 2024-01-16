@@ -33,7 +33,7 @@ export function SentryNodeStatusCard() {
 	}
 
 	return (
-		<Card width={"695px"} height={"328px"}>
+		<Card width={"726px"} height={"328px"}>
 			{sentryRunning && (
 				<div className="absolute top-[-10.5rem] left-0 right-0 w-full h-full">
 					<video
@@ -58,9 +58,9 @@ export function SentryNodeStatusCard() {
 					>
 						<AiOutlineInfoCircle size={15} color={"#A3A3A3"}/>
 					</Tooltip>
-					<p className="flex items-center ml-2 text-sm text-[#D4D4D4]">
-						Last challenge 24m ago (hard-coded)
-					</p>
+					{/*<p className="flex items-center ml-2 text-sm text-[#D4D4D4]">*/}
+					{/*	Last challenge 24m ago (hard-coded)*/}
+					{/*</p>*/}
 				</div>
 			</div>
 
