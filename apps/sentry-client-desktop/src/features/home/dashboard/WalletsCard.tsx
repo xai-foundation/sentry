@@ -6,8 +6,11 @@ import {Card} from "@/features/home/cards/Card";
 import {MdWallet} from "react-icons/md";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {useOperator} from "@/features/operator";
+import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
+import {useSetAtom} from "jotai";
 
 export function WalletsCard() {
+	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {kycRequired} = useAtomValue(accruingStateAtom);
 	const {owners, ownersKycMap} = useAtomValue(chainStateAtom);
 	const kycRequiredLength = Object.values(ownersKycMap).filter(value => !value).length
@@ -28,20 +31,20 @@ export function WalletsCard() {
 					</Tooltip>
 				</div>
 				<div className="flex flex-row justify-between items-center gap-1">
+					{kycRequired && (
+						<button
+							className="flex flex-row justify-center items-center gap-2 text-[#737373] text-sm font-medium bg-[#F5F5F5] rounded-md px-4 py-1"
+							onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}
+						>
+							Complete KYC
+						</button>
+					)}
 					<button
 						className="flex flex-row justify-center items-center gap-2 text-[#737373] text-sm font-medium bg-[#F5F5F5] rounded-md px-4 py-1"
 						onClick={() => window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`)}
 					>
 						Assign wallet
 					</button>
-					{kycRequired && (
-						<button
-							className="flex flex-row justify-center items-center gap-2 text-[#737373] text-sm font-medium bg-[#F5F5F5] rounded-md px-4 py-1"
-							onClick={() => window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`)}
-						>
-							Complete KYC
-						</button>
-					)}
 				</div>
 			</div>
 
