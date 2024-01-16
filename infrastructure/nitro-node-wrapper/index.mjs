@@ -18,11 +18,11 @@ import { Bucket, Storage } from "@google-cloud/storage";
 const DOCKER_IMAGE = 'offchainlabs/nitro-node:v2.1.0-72ccc0c';
 
 const DOCKER_CONTAINER_NAME = 'xai-public-node';
-const CONFIG_TEMPLATE = 'goerli.config.tpl.json';
+// const CONFIG_TEMPLATE = 'goerli.config.tpl.json';
+const CONFIG_TEMPLATE = 'arb1.config.tpl.json';
 
-const PATH_TO_NODE_CONFIG_DIR = "./arbitrum";
+const PATH_TO_NODE_CONFIG_DIR = `${process.cwd()}/arbitrum`;
 const PATH_TO_NODE_CONFIG = path.join(PATH_TO_NODE_CONFIG_DIR, "config.json");
-
 
 const createNodeConfig = () => {
     // configure a config for the docker container
@@ -30,8 +30,8 @@ const createNodeConfig = () => {
     config.chain["info-json"] = JSON.stringify(config.chain["info-json"]);
 
     // Check if the directory exists, if not create it
-    if (!fs.existsSync(PATH_TO_NODE_CONFIG)) {
-        fs.mkdirSync(PATH_TO_NODE_CONFIG, { recursive: true, p });
+    if (!fs.existsSync(PATH_TO_NODE_CONFIG_DIR)) {
+        fs.mkdirSync(PATH_TO_NODE_CONFIG_DIR, { recursive: true });
     }
     fs.writeFileSync(PATH_TO_NODE_CONFIG, JSON.stringify(config, null, 2));
     console.log("Config created");
@@ -85,6 +85,7 @@ const onNewAssertion = (json) => {
         sendRoot: state.SendRoot,
         confirmHash,
     }
+    console.log("Posting new confirmed assertion", jsonSave);
 }
 
 const onJSONLog = (json) => {
@@ -96,7 +97,7 @@ const onJSONLog = (json) => {
 
         // if there is an assertion and a state field then this means the validator has found a stateRoot we should process
         if (json.hasOwnProperty('assertion') && json.hasOwnProperty('state')) {
-            onNewAssertion();
+            onNewAssertion(json);
         }
     }
 }
@@ -131,6 +132,21 @@ const setupDockerContainer = async () => {
 
     // Pull the docker container for the nitro node
     // This will not await the full image pull, this needs to be fixed
+
+    // TODO use this to make sure the image exists ?
+    //followProgress(stream, onFinished, [onProgress])
+    // docker.pull(repoTag, function (err, stream) {
+    //     //...
+    //     docker.modem.followProgress(stream, onFinished, onProgress);
+
+    //     function onFinished(err, output) {
+    //         //output is an array with output json parsed objects
+    //         //...
+    //     }
+    //     function onProgress(event) {
+    //         //...
+    //     }
+    // });
     await docker.pull(DOCKER_IMAGE);
 
     // Stop all running containers of the specified image and our specific name
@@ -150,11 +166,15 @@ const setupDockerContainer = async () => {
         }
     }
 
+    //For mainnet we need the init db param set
+    // --init.url="https://snapshot.arbitrum.foundation/arb1/nitro-pruned.tar"
+    // --init.url="file:///path/to/snapshot/in/container/snapshot-file.tar"
+
     // Create the docker container
     const container = await docker.createContainer({
         Image: DOCKER_IMAGE,
         name: DOCKER_CONTAINER_NAME,
-        Cmd: ['--conf.file', '/home/user/.arbitrum/config.json', '--metrics', '--ws.port=8548', '--ws.addr=0.0.0.0', '--ws.origins=*'],
+        Cmd: ['--init.url=file:///home/user/nitro-pruned.tar', '--conf.file', '/home/user/.arbitrum/config.json', '--metrics', '--ws.port=8548', '--ws.addr=0.0.0.0', '--ws.origins=*'],
         Tty: false,
         ExposedPorts: {
             '8547/tcp': {},
@@ -163,8 +183,9 @@ const setupDockerContainer = async () => {
         },
         HostConfig: {
             Binds: [
-                `${process.cwd()}/arbitrum:/home/user/.arbitrum`,
-                `${process.cwd()}/data:/home/user/data:delegated`
+                `${PATH_TO_NODE_CONFIG_DIR}:/home/user/.arbitrum`,
+                `S:\\arb1-node-data:/home/user/data:delegated`,
+                `D:\\ARBITRUM_TMP_DOWNLOAD\\nitro-pruned.tar:/home/user/nitro-pruned.tar`
             ],
             PortBindings: {
                 '8547/tcp': [{ HostPort: '8547' }],

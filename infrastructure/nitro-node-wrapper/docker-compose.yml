@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  your_service_name:
+    image: offchainlabs/nitro-node:${ARBITRUM_NODE_IMAGE_TAG}
+    container_name: xai-public-node
+    command:
+      - --init.url=file:///home/user/nitro-pruned.tar
+      - --conf.file=/home/user/.arbitrum/config.json
+      - --metrics
+      - --ws.port=8548
+      - --ws.addr=0.0.0.0
+      - --ws.origins=*
+    tty: false
+    ports:
+      - "8547:8547"
+      - "8548:8548"
+      - "9642:9642"
+    # restart: always
+    volumes:
+      - ./arbitrum:/home/user/.arbitrum
+      - S:\arb1-node-data:/home/user/data:delegated
+      - D:\ARBITRUM_TMP_DOWNLOAD\nitro-pruned.tar:/home/user/nitro-pruned.tar
