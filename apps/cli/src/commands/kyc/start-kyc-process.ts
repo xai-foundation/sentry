@@ -284,7 +284,7 @@ export function startKycProcess(cli: Vorpal) {
                 if (
                     country === "china" || //China
                     country === "hong kong" || //Hong Kong
-                    country === "macedonia" || //Macedonia
+                    country === "republic of north macedonia" || //Macedonia
                     country === "turkey" || //Turkey
                     country === "ukraine"   //Ukraine
                 ) {
