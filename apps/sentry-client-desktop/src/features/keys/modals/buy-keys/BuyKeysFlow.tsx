@@ -24,7 +24,6 @@ export function BuyKeysFlow() {
 		<div className="relative w-full h-screen flex flex-col gap-8">
 			{/*		Top of buy		*/}
 			<div className="flex flex-col gap-8">
-
 				<div className="flex flex-col gap-2 px-6 pt-8">
 					<div className="flex flex-row items-center gap-2">
 					<span className="flex gap-3 items-center text-lg font-semibold">

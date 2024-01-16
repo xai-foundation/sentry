@@ -25,6 +25,7 @@ import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {AssignKeysSentryNotRunning} from "@/components/AssignKeysSentryNotRunning";
 import {GrRefresh} from "react-icons/gr";
 import {LuListChecks} from "react-icons/lu";
+import {useStorage} from "@/features/storage";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
@@ -50,6 +51,7 @@ export function SentryWallet() {
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
 	const {startRuntime, stopRuntime, sentryRunning, nodeLicenseStatusMap} = useOperatorRuntime();
+	const {data} = useStorage();
 
 
 	const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -156,32 +158,17 @@ export function SentryWallet() {
 		return element;
 	}
 
-
 	function getWalletCounter() {
-		let totalKeyLength: number = 0;
-
-		new Map([...nodeLicenseStatusMap].filter(([, status]) => {
-			if (selectedWallet === null) {
-				return true;
-			}
-			return status.ownerPublicKey === selectedWallet;
-		}))
-			.forEach((_, key) => {
-				totalKeyLength += key.toString().length;
-			});
-
 		return (
 			<>
-				{owners.length > 0
+				{nodeLicenseStatusMap.size > 0
 					? (loading
 						? ("Loading...")
-						: (`${totalKeyLength} key${totalKeyLength === 1 ? '' : 's'} in ${owners.length} wallet${owners.length === 1 ? '' : 's'}`))
+						: (`${nodeLicenseStatusMap.size} key${nodeLicenseStatusMap.size === 1 ? '' : 's'} in ${data?.whitelistedWallets?.length} wallet${data?.whitelistedWallets?.length === 1 ? '' : 's'}`))
 					: ("No keys")}
 			</>
 		);
-
 	}
-
 
 	function onCloseWalletConnectedModal() {
 		setAssignedWallet({show: false, txHash: ""});

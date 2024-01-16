@@ -79,7 +79,6 @@ export function ImportSentryDrawer() {
 				) : (
 					<div className="w-full flex flex-col gap-8">
 						<div className="flex flex-col gap-2 px-6 pt-6">
-
 							<p className="text-[15px] text-[#525252]">
 								By importing a Sentry Wallet, you can continue running your node without the need to
 								leave your local machine on.
