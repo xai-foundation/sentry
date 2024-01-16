@@ -45,7 +45,9 @@ export function ExportSentryDrawer() {
 			<div className="h-full flex flex-col justify-start items-center">
 				<div
 					className="w-full h-[4rem] flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
-					<span>Export Sentry Wallet</span>
+					<div className="flex flex-row gap-2 items-center">
+						<span>Export Sentry Wallet</span>
+					</div>
 					<div className="cursor-pointer z-10" onClick={() => setDrawerState(null)}>
 						<AiOutlineClose/>
 					</div>
@@ -59,16 +61,15 @@ export function ExportSentryDrawer() {
 					</div>
 
 				) : (
-					<div className="w-full flex flex-col gap-8 mt-12">
-						<div className="flex flex-col gap-2 px-6 pt-8">
-
-							<p className="text-[15px] text-[#525252] mt-2">
+					<div className="w-full flex flex-col gap-8">
+						<div className="flex flex-col gap-2 px-6 pt-6">
+							<p className="text-[15px] text-[#525252]">
 								By exporting a Sentry Wallet, you can continue running your node on another client
 								without the need
 								to leave your local machine on.
 							</p>
 
-							<p className="text-[15px] text-[#525252] mt-2">
+							<p className="text-[15px] text-[#525252] mt-4">
 								Here is the private key of the Sentry Wallet
 							</p>
 

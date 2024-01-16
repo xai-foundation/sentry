@@ -42,7 +42,9 @@ import { setOrAddPricingTiersCommand } from './commands/licenses/set-or-add-pric
 import { addPromoCode } from './commands/licenses/add-promo-code.js';
 import { removePromoCode } from './commands/licenses/remove-promo-code.js';
 import { eventListener } from './commands/event-listener.js';
+import { startKycProcess } from './commands/kyc/start-kyc-process.js';
 import { generateRevenueReport } from './commands/licenses/generate-revenue-report.js';
+import {version} from "@sentry/core";
 
 const cli = new Vorpal();
 
@@ -90,7 +92,10 @@ setReferralDiscountAndRewardPercentages(cli);
 setRollupAddress(cli);
 toggleAssertionChecking(cli);
 totalSupply(cli);
+startKycProcess(cli);
 generateRevenueReport(cli);
+
+console.log(`Starting Sentry cli version ${version}`);
 
 cli
     .delimiter('sentry-node$')

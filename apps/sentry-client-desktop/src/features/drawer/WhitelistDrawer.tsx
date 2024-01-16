@@ -1,11 +1,12 @@
 import {useAtomValue, useSetAtom} from "jotai";
 import {drawerStateAtom} from "@/features/drawer/DrawerManager";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
-import {XaiCheckbox} from "@sentry/ui";
+import {Tooltip, XaiCheckbox} from "@sentry/ui";
 import {useEffect, useState} from "react";
 import {useStorage} from "@/features/storage";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {useOperator} from "@/features/operator";
+import {AiOutlineInfoCircle} from "react-icons/ai";
 
 export function WhitelistDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -96,7 +97,15 @@ export function WhitelistDrawer() {
 					to participate in a challenge.
 				</p>
 				<div>
-					<p className="text-[12px]">Your Sentry Wallet</p>
+					<div className="flex gap-1 items-center">
+						<p className="text-[12px]">Your Sentry Wallet</p>
+						<Tooltip
+							body={"You should allow the Sentry Wallet only if it contains at least one Key. Otherwise, it is not necessary to select."}
+							position={"end"}
+						>
+							<AiOutlineInfoCircle size={14} className="text-[#A3A3A3]"/>
+						</Tooltip>
+					</div>
 					{getOperatorItem()}
 					<p className="text-[12px]">Assigned Wallets</p>
 					{getDropdownItems()}

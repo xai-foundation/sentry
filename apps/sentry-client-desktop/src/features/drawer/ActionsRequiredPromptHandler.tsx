@@ -3,10 +3,12 @@ import {AiFillCheckCircle, AiFillWarning} from "react-icons/ai";
 import {useSetAtom, useAtomValue} from "jotai";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
+import {useStorage} from "@/features/storage";
 
 export function ActionsRequiredPromptHandler() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {accruing, kycRequired} = useAtomValue(accruingStateAtom);
+	const {data} = useStorage();
 
 	const {ownersLoading, ownersKycLoading, licensesLoading, combinedLicensesList} = useAtomValue(chainStateAtom);
 	const keyCount = combinedLicensesList.length;
@@ -26,7 +28,7 @@ export function ActionsRequiredPromptHandler() {
 				</button>
 			</div>
 		)
-	} else if (!accruing || kycRequired) {
+	} else if (!accruing || data && data.whitelistedWallets && kycRequired) {
 		return (
 			<div className="flex gap-4 bg-[#FFFBEB] p-2 z-10">
 				<div className="flex flex-row gap-2 items-center">
