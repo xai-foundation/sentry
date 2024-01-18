@@ -21,7 +21,7 @@ export function AssignedKeysCard() {
 
 	return (
 		<SquareCard className="bg-[#F5F5F5]">
-			{!hasAssignedKeys ? (
+			{hasAssignedKeys ? (
 				<IconLabel
 					icon={AiFillCheckCircle}
 					color="#16A34A"
