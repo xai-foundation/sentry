@@ -107,9 +107,9 @@ export function ViewKeysFlow() {
 	if (!loading && !success) {
 		return (
 			<div>
-				<div className="w-full flex flex-col gap-8 mt-12">
-					<div className="flex flex-col gap-2 px-6 pt-8">
-						<p className="text-[15px] text-[#525252] mt-2">
+				<div className="w-full flex flex-col gap-8">
+					<div className="flex flex-col gap-2 px-6 pt-6">
+						<p className="text-[15px] text-[#525252]">
 							Enter the the public key of the wallet you want to view keys for
 						</p>
 

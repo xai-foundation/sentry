@@ -25,6 +25,7 @@ import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {AssignKeysSentryNotRunning} from "@/components/AssignKeysSentryNotRunning";
 import {GrRefresh} from "react-icons/gr";
 import {LuListChecks} from "react-icons/lu";
+import {useStorage} from "@/features/storage";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
@@ -32,7 +33,7 @@ export const recommendedFundingBalance = ethers.parseEther("0.005");
 export function SentryWallet() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
-	const {ownersLoading, owners, licensesLoading} = useAtomValue(chainStateAtom);
+	const {ownersLoading, owners, licensesLoading, licensesList} = useAtomValue(chainStateAtom);
 	const queryClient = useQueryClient();
 	const {hasAssignedKeys} = useAtomValue(accruingStateAtom);
 
@@ -50,7 +51,7 @@ export function SentryWallet() {
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
 	const {startRuntime, stopRuntime, sentryRunning, nodeLicenseStatusMap} = useOperatorRuntime();
-
+	const {data} = useStorage();
 
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const {refresh} = useChainDataRefresh();
@@ -108,18 +109,34 @@ export function SentryWallet() {
 	}
 
 	function getDropdownItems() {
-		return owners.map((wallet, i) => (
-			<p
-				onClick={() => {
-					setSelectedWallet(wallet);
-					setIsOpen(false);
-				}}
-				className="p-2 cursor-pointer hover:bg-gray-100"
-				key={`sentry-item-${i}`}
-			>
-				{wallet}
-			</p>
-		));
+		// If the user has whitelisted wallets, update the dropdown to populate with their whitelistedWallets.
+		if (data?.whitelistedWallets) {
+			return data?.whitelistedWallets.map((wallet, i) => (
+				<p
+					onClick={() => {
+						setSelectedWallet(wallet);
+						setIsOpen(false);
+					}}
+					className="p-2 cursor-pointer hover:bg-gray-100"
+					key={`sentry-item-${i}`}
+				>
+					{wallet}
+				</p>
+			));
+		} else {
+			return owners.map((wallet, i) => (
+				<p
+					onClick={() => {
+						setSelectedWallet(wallet);
+						setIsOpen(false);
+					}}
+					className="p-2 cursor-pointer hover:bg-gray-100"
+					key={`sentry-item-${i}`}
+				>
+					{wallet}
+				</p>
+			));
+		}
 	}
 
 	function getKeys() {
@@ -156,32 +173,23 @@ export function SentryWallet() {
 		return element;
 	}
 
-
 	function getWalletCounter() {
-		let totalKeyLength: number = 0;
-
-		new Map([...nodeLicenseStatusMap].filter(([, status]) => {
-			if (selectedWallet === null) {
-				return true;
-			}
-			return status.ownerPublicKey === selectedWallet;
-		}))
-			.forEach((_, key) => {
-				totalKeyLength += key.toString().length;
-			});
-
+		/**
+		 * By default, use the assignedWallets values.
+		 * If the user has whitelisted wallets, update the counter to populate with their whitelistedWallets values.
+		 */
+		const keysCounter = data?.whitelistedWallets
+			? `${nodeLicenseStatusMap.size} key${nodeLicenseStatusMap.size === 1 ? '' : 's'} in ${data?.whitelistedWallets?.length} wallet${data?.whitelistedWallets?.length === 1 ? '' : 's'}`
+			: `${licensesList.length} key${licensesList.length === 1 ? '' : 's'} in ${owners.length} wallet${owners.length === 1 ? '' : 's'}`
+		
 		return (
 			<>
-				{owners.length > 0
-					? (loading
-						? ("Loading...")
-						: (`${totalKeyLength} key${totalKeyLength === 1 ? '' : 's'} in ${owners.length} wallet${owners.length === 1 ? '' : 's'}`))
+				{nodeLicenseStatusMap.size > 0
+					? (loading ? ("Loading...") : (`${keysCounter}`))
 					: ("No keys")}
 			</>
 		);
-
 	}
-
 
 	function onCloseWalletConnectedModal() {
 		setAssignedWallet({show: false, txHash: ""});
@@ -373,7 +381,7 @@ export function SentryWallet() {
 											onClick={() => setIsOpen(!isOpen)}
 											className={`flex items-center justify-between w-[538px] border-[#A3A3A3] border-r border-l border-t ${!isOpen ? "border-b" : null} border-[#A3A3A3] p-2`}
 										>
-											<p>{selectedWallet || `All assigned wallets (${owners.length})`}</p>
+											<p>{selectedWallet || `All assigned wallets (${data?.whitelistedWallets ? data.whitelistedWallets.length : owners.length})`}</p>
 											<IoIosArrowDown
 												className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
 											/>

@@ -61,10 +61,9 @@ export function ExportSentryDrawer() {
 					</div>
 
 				) : (
-					<div className="w-full flex flex-col gap-8 mt-12">
-						<div className="flex flex-col gap-2 px-6 pt-8">
-
-							<p className="text-[15px] text-[#525252] mt-2">
+					<div className="w-full flex flex-col gap-8">
+						<div className="flex flex-col gap-2 px-6 pt-6">
+							<p className="text-[15px] text-[#525252]">
 								By exporting a Sentry Wallet, you can continue running your node on another client
 								without the need
 								to leave your local machine on.

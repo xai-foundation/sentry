@@ -38,9 +38,6 @@ export function KycRequiredCard({wallet, status}: KycRequiredCardProps) {
 						title={`KYC required: ${clampAddress(wallet)}`}
 					/>
 
-					<p className="text-[15px] text-[#525252] mt-3">
-						180 days remaining for esXAI to be claimed
-					</p>
 					<Blockpass onClick={onStartKyc}/>
 				</>
 			)}
