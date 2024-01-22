@@ -75,9 +75,6 @@
         "port": 6070
     },
     "node": {
-        "caching": {
-            "archive": true
-        },
         "data-availability": {
             "enable": true,
             "parent-chain-node-url": "https://tame-alpha-violet.arbitrum-mainnet.quiknode.pro/d55a31b32f04c82b0e1bcb77f1fc6dcf53147f2a/",
@@ -98,12 +95,13 @@
                 "timeout": "10s",
                 "url": "wss://xai-chain.net/feed"
             }
-        },
-        "forwarding-target": "https://xai-chain.net/rpc/",
-        "rpc": {
-            "tx-fee-cap": 0
-        },
-        "tx-lookup-limit": 0
+        }
+    },
+    "execution": {
+        "forwarding-target": "https://xai-chain.net/rpc",
+        "caching": {
+            "archive": true
+        }
     },
     "parent-chain": {
         "connection": {

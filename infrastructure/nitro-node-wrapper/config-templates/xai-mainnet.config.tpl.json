@@ -1,13 +1,13 @@
 {
     "chain": {
-        "id": 47279324479,
+        "id": 660279,
         "info-json": [
             {
-                "chain-id": 47279324479,
-                "parent-chain-id": 421613,
-                "chain-name": "Xai Orbit Testnet",
+                "chain-id": 660279,
+                "parent-chain-id": 42161,
+                "parent-chain-is-arbitrum": true,
+                "chain-name": "Xai",
                 "chain-config": {
-                    "chainId": 47279324479,
                     "homesteadBlock": 0,
                     "daoForkBlock": null,
                     "daoForkSupport": true,
@@ -30,23 +30,26 @@
                         "EnableArbOS": true,
                         "AllowDebugPrecompiles": false,
                         "DataAvailabilityCommittee": true,
-                        "InitialArbOSVersion": 10,
-                        "InitialChainOwner": "0x9eA24417Ee7722e7EFaf87d2D68d4bC6b41231F7",
-                        "GenesisBlockNum": 0
-                    }
+                        "InitialArbOSVersion": 11,
+                        "GenesisBlockNum": 0,
+                        "MaxCodeSize": 40960,
+                        "MaxInitCodeSize": 81920,
+                        "InitialChainOwner": "0xc7185e37A4aB4Af0E77bC08249CD2590AE3E1b51"
+                    },
+                    "chainId": 660279
                 },
                 "rollup": {
-                    "bridge": "0xf958e56d431eA78C7444Cf6A6184Af732Ae6a8A3",
-                    "inbox": "0x8b842ad88AAffD63d52EC54f6428fb7ff83060a8",
-                    "sequencer-inbox": "0x5fD0cCc5D31748A44b43cf8DFBFA0FAA32665464",
-                    "rollup": "0x082742561295f6e1b43c4f5d1e2d52d7FfE082f1",
-                    "validator-utils": "0x32E35dBDCC3558F6A0f7c3af6B13380FC3E6ce97",
-                    "validator-wallet-creator": "0x237aed14AEA28032B12A389590875Ed8d1D12811",
-                    "deployed-at": 32449497
+                    "bridge": "0x7dd8A76bdAeBE3BBBaCD7Aa87f1D4FDa1E60f94f",
+                    "inbox": "0xaE21fDA3de92dE2FDAF606233b2863782Ba046F9",
+                    "sequencer-inbox": "0x995a9d3ca121D48d21087eDE20bc8acb2398c8B1",
+                    "rollup": "0xC47DacFbAa80Bd9D8112F4e8069482c2A3221336",
+                    "validator-utils": "0x6c21303F5986180B1394d2C89f3e883890E2867b",
+                    "validator-wallet-creator": "0x2b0E04Dc90e3fA58165CB41E2834B44A56E766aF",
+                    "deployed-at": 166757506
                 }
             }
         ],
-        "name": "Xai Orbit Testnet"
+        "name": "Xai"
     },
     "conf": {
         "env-prefix": "NITRO"
@@ -72,44 +75,39 @@
         "port": 6070
     },
     "node": {
-        "caching": {
-            "archive": true
-        },
         "data-availability": {
             "enable": true,
-            "parent-chain-node-url": "https://icy-thrilling-frog.arbitrum-goerli.quiknode.pro/4d27f3253823ff8ec0afbabc49cbe924bfc9acdb/",
+            "parent-chain-node-url": "https://tame-alpha-violet.arbitrum-mainnet.quiknode.pro/d55a31b32f04c82b0e1bcb77f1fc6dcf53147f2a/",
             "request-timeout": "5s",
             "rest-aggregator": {
                 "enable": true,
                 "urls": [
-                    "https://testnet-das-mirror.xai-chain.net/"
+                    "https://xai-chain.net/"
                 ],
                 "wait-before-try-next": "2s"
             },
-            "sequencer-inbox-address": "0x5fD0cCc5D31748A44b43cf8DFBFA0FAA32665464"
+            "sequencer-inbox-address": "0x995a9d3ca121D48d21087eDE20bc8acb2398c8B1"
         },
         "feed": {
             "input": {
                 "reconnect-initial-backoff": "50ms",
                 "reconnect-maximum-backoff": "800ms",
                 "timeout": "10s",
-                "url": "wss://testnet.xai-chain.net/feed"
+                "url": "wss://xai-chain.net/feed"
             }
-        },
-        "forwarding-target": "https://testnet.xai-chain.net/rpc/",
-        "rpc": {
-            "tx-fee-cap": 0
-        },
-        "tx-lookup-limit": 0
+        }
+    },
+    "execution": {
+        "forwarding-target": "https://xai-chain.net/rpc",
+        "caching": {
+            "archive": false
+        }
     },
     "parent-chain": {
         "connection": {
-            "url": "https://icy-thrilling-frog.arbitrum-goerli.quiknode.pro/4d27f3253823ff8ec0afbabc49cbe924bfc9acdb/"
+            "url": "https://tame-alpha-violet.arbitrum-mainnet.quiknode.pro/d55a31b32f04c82b0e1bcb77f1fc6dcf53147f2a/"
         },
-        "id": 421613
-    },
-    "persistent": {
-        "chain": "/home/user/data/"
+        "id": 42161
     },
     "pprof": true,
     "pprof-cfg": {

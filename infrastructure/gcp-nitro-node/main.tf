@@ -35,6 +35,9 @@ resource "google_storage_bucket_iam_member" "bucket_updater" {
   member = "serviceAccount:${google_service_account.bucket_updater.email}"
 }
 
+
+// n1-standard-4 =  4 vCPUs and 15 GB RAM
+// size=2000 =  2000 GB
 resource "google_compute_instance" "default" {
   name         = "arbitrum-full-node"
   machine_type = "n1-standard-4"
