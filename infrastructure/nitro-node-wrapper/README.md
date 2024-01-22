@@ -10,3 +10,10 @@ Since the XAI mainnet node can only sync from a already synced Arb1 node, we use
 Make sure the ENV variables are set either on the machine or by providing a .env file in the dir where the docker-compose.yml is stored (/opt/node/build)
 
 An example of the needed variables is in example.env
+
+
+## Important notice
+
+Stop the containers gently by using a delay
+
+- `docker stop --time=300 $(docker ps -aq)`

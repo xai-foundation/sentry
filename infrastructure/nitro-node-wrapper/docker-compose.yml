@@ -14,8 +14,6 @@ services:
       --http.vhosts=*
     volumes:
       - /opt/arbitrum:/home/user/.arbitrum
-    ports:
-      - "8547:8547" # This should not be needed for connection between containers
     restart: unless-stopped
     dns:
       - 8.8.8.8

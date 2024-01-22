@@ -30,16 +30,12 @@
   "node": {
     "data-availability": {
       "enable": true,
-      "parent-chain-node-url": "http://tame-alpha-violet.arbitrum-mainnet.quiknode.pro/d55a31b32f04c82b0e1bcb77f1fc6dcf53147f2a/",
-      "request-timeout": "5s",
+      "sequencer-inbox-address": "0x995a9d3ca121D48d21087eDE20bc8acb2398c8B1",
+      "parent-chain-node-url": "https://tame-alpha-violet.arbitrum-mainnet.quiknode.pro/d55a31b32f04c82b0e1bcb77f1fc6dcf53147f2a/",
       "rest-aggregator": {
         "enable": true,
-        "urls": [
-          "https://xai-chain.net/"
-        ],
-        "wait-before-try-next": "2s"
-      },
-      "sequencer-inbox-address": "0x995a9d3ca121D48d21087eDE20bc8acb2398c8B1"
+        "online-url-list": "https://xai-chain.net/das-servers"
+      }
     },
     "feed": {
       "input": {
