@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  nitro-node:
+    container_name: arb1-nitro-node
+    image: offchainlabs/nitro-node:v2.2.2-8f33fea
+    command:
+      --init.url="https://snapshot.arbitrum.foundation/arb1/nitro-pruned.tar"
+      --parent-chain.connection.url=${ETH_RPC_URL}
+      --chain.id=42161
+      --http.api=net,web3,eth
+      --http.corsdomain=*
+      --http.addr=0.0.0.0
+      --http.vhosts=*
+    volumes:
+      - /opt/arbitrum:/home/user/.arbitrum
+    restart: unless-stopped
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+
+  xai-node:
+    image: offchainlabs/nitro-node:v2.2.2-8f33fea
+    container_name: xai-public-node
+    command:
+      - --conf.file=/home/user/node-config/config.json
+      - --metrics
+      - --ws.port=8548
+      - --ws.addr=0.0.0.0
+      - --ws.origins=*
+    volumes:
+      - /opt/node/build/xai-mainnet.config.json:/home/user/node-config/config.json
+      - /opt/xai:/home/user/.arbitrum
+    depends_on:
+      - nitro-node
+    restart: unless-stopped
+
+  publisher:
+    image: cryptitaustria/xai-public-node-publisher:latest
+    container_name: js-publisher
+    environment:
+      - PROJECT_ID=${PROJECT_ID}
+      - SERVICE_ACCOUNT_EMAIL=${SERVICE_ACCOUNT_EMAIL}
+      - SERVICE_ACCOUNT_PRIVATE_KEY=${SERVICE_ACCOUNT_PRIVATE_KEY}
+      - BUCKET_NAME=${BUCKET_NAME}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - xai-node
+    restart: unless-stopped
