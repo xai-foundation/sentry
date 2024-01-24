@@ -7,12 +7,49 @@ import {FaCircleCheck} from "react-icons/fa6";
 import {useOperator} from "@/features/operator";
 import {useBalance} from "@/hooks/useBalance";
 import {recommendedFundingBalance} from "@/features/home/SentryWallet";
+import {getLatestChallenge} from "@sentry/core";
+import {ReactNode, useEffect, useState} from "react";
 
 export function SentryNodeStatusCard() {
 	const {publicKey} = useOperator();
 	const {data: balance} = useBalance(publicKey);
 	const {startRuntime, sentryRunning} = useOperatorRuntime();
 	const nodeStatus = balance?.wei !== undefined && balance.wei >= recommendedFundingBalance;
+	const [timeAgoString, setTimeAgoString] = useState<ReactNode | null>(null);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const challengeData = await getLatestChallenge();
+				const createdTimestamp = challengeData?.[1]?.createdTimestamp;
+				setTimeAgoString(createdTimestamp
+					? formatTimeAgo(Number(createdTimestamp) * 1000)
+					: <div>Error retrieving challenge data</div>
+				);
+			} catch (error) {
+				console.error('Error fetching latest challenge:', error);
+				setTimeAgoString(<div>Error fetching latest challenge</div>);
+			}
+		};
+		
+		void fetchData(); // Initial fetch
+
+		const intervalId = setInterval(() => {
+			void fetchData();
+		}, 60000);
+
+		return () => clearInterval(intervalId);
+	}, []);
+
+
+	function formatTimeAgo(createdTimestamp: number): string {
+		const minutesDifference = Math.floor((new Date().getTime() - new Date(createdTimestamp).getTime()) / (1000 * 60));
+		const unit = minutesDifference < 60 ? 'm' : 'h';
+		const value = minutesDifference < 60 ? minutesDifference : Math.floor(minutesDifference / 60);
+
+		return `Last challenge ${value}${unit} ago`;
+	}
+
 
 	function getNodeFunds() {
 		return (
@@ -58,9 +95,10 @@ export function SentryNodeStatusCard() {
 					>
 						<AiOutlineInfoCircle size={15} color={"#A3A3A3"}/>
 					</Tooltip>
-					{/*<p className="flex items-center ml-2 text-sm text-[#D4D4D4]">*/}
-					{/*	Last challenge 24m ago (hard-coded)*/}
-					{/*</p>*/}
+					<p className="flex items-center ml-2 text-sm text-[#D4D4D4]">
+						{/*Last challenge 24m ago (hard-coded)*/}
+						{timeAgoString}
+					</p>
 				</div>
 			</div>
 
