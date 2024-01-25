@@ -31,7 +31,7 @@ export function SentryNodeStatusCard() {
 				setTimeAgoString(<div>Error fetching latest challenge</div>);
 			}
 		};
-		
+
 		void fetchData(); // Initial fetch
 
 		const intervalId = setInterval(() => {

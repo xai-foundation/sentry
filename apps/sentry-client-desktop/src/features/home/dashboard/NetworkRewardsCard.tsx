@@ -21,6 +21,9 @@ export function NetworkRewardsCard() {
 	const [currentTime, setCurrentTime] = useState(new Date());
 	const {refresh} = useChainDataRefresh();
 
+	const [esXaiBalance, setEsXaiBalance] = useState("0");
+	const [accruedEsXaiBalance, setAccruedEsXaiBalance] = useState("0");
+
 	// Calculate the time difference in minutes
 	const calculateTimeDifference = (currentTime: Date, lastUpdateTime: Date) => {
 		return Math.floor((currentTime.getTime() - lastUpdateTime.getTime()) / 60000);
@@ -32,6 +35,35 @@ export function NetworkRewardsCard() {
 		}, 60000);
 		return () => clearInterval(interval);
 	}, []);
+
+	useEffect(() => {
+		getEsxaiBalance();
+		getAccruedEsxaiBalance();
+	}, [isBalancesLoading, balancesFetchedLast, balances, earnedEsxaiBalance]);
+
+
+	// esXAI Balance
+	function getEsxaiBalance() {
+		if (!isBalancesLoading && balancesFetchedLast && earnedEsxaiBalance) {
+			if (parseFloat(ethers.formatEther(earnedEsxaiBalance.reduce((acc, item) => acc + item.esXaiBalance, BigInt(0)))).toFixed(6) === "0.000000") {
+				setEsXaiBalance("0")
+			} else {
+				setEsXaiBalance(parseFloat(ethers.formatEther(earnedEsxaiBalance.reduce((acc, item) => acc + item.esXaiBalance, BigInt(0)))).toFixed(6))
+			}
+		}
+	}
+
+	// Accrued esXAI Balance
+	function getAccruedEsxaiBalance() {
+		if (!isBalancesLoading && balancesFetchedLast && balances) {
+			if (Number(ethers.formatEther(Object.values(balances).reduce((acc, value) => acc + value.totalAccruedEsXai, BigInt(0)))).toFixed(6) === "0.000000") {
+				setAccruedEsXaiBalance("0")
+			} else {
+				setAccruedEsXaiBalance(Number(ethers.formatEther(Object.values(balances).reduce((acc, value) => acc + value.totalAccruedEsXai, BigInt(0)))).toFixed(6))
+			}
+		}
+	}
+
 
 	const timeDifference: number | null = !isBalancesLoading && balancesFetchedLast
 		? calculateTimeDifference(currentTime, balancesFetchedLast)
@@ -93,12 +125,7 @@ export function NetworkRewardsCard() {
 								<XaiLogo className="text-[#A3A3A3] w-[18px] h-[18px]"/>
 							</div>
 							<p className="text-4xl">
-								{!isBalancesLoading && balancesFetchedLast && earnedEsxaiBalance
-									? parseFloat(ethers.formatEther(earnedEsxaiBalance.reduce((acc, item) => acc + item.esXaiBalance, BigInt(0)))).toFixed(6) === "0.000000"
-										? "0"
-										: parseFloat(ethers.formatEther(earnedEsxaiBalance.reduce((acc, item) => acc + item.esXaiBalance, BigInt(0)))).toFixed(6)
-									: "0"
-								}
+								{esXaiBalance}
 							</p>
 						</div>
 					</div>
@@ -124,12 +151,7 @@ export function NetworkRewardsCard() {
 								<XaiLogo className="text-[#A3A3A3] w-[14px] h-[14px]"/>
 							</div>
 							<p className="text-2xl">
-								{!isBalancesLoading && balancesFetchedLast && balances
-									? Number(ethers.formatEther(Object.values(balances).reduce((acc, value) => acc + value.totalAccruedEsXai, BigInt(0)))).toFixed(6) === "0.000000"
-										? "0"
-										: Number(ethers.formatEther(Object.values(balances).reduce((acc, value) => acc + value.totalAccruedEsXai, BigInt(0)))).toFixed(6)
-									: "0"
-								}
+								{accruedEsXaiBalance}
 							</p>
 						</div>
 					</div>
