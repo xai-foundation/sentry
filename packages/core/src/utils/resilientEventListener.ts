@@ -42,6 +42,7 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
         args.log && args.log(`[${new Date().toISOString()}] subscribing to event listener with topic hash: ${topicHash}`);
 
         const request = {
+            jsonrpc: "2.0",
             id: 1,
             method: "eth_subscribe",
             params: [
