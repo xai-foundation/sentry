@@ -52,6 +52,10 @@ curl -o docker-compose.yml https://storage.googleapis.com/xai-sentry-public-node
 curl -o xai-mainnet.config.json https://storage.googleapis.com/xai-sentry-public-node/node-config/xai-mainnet.config.json
 
 # EPORT ENV VARS
+EXPORT ETH_RPC_URL=${eth_rpc_url}
+EXPORT PROJECT_ID=${gcp_project_id}
+EXPORT SERVICE_ACCOUNT_EMAIL=${service_account_email}
+EXPORT SERVICE_ACCOUNT_PRIVATE_KEY=${service_account_api_key}
 EXPORT BUCKET_NAME=${bucket_name}
 
 docker compose up -d

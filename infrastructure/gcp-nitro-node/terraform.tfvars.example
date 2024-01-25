@@ -1,4 +1,5 @@
 gcp_project_id             = "your-gcp-project-id"
 gcp_region                 = "asia-east1"
 gcp_zone                   = "asia-east1-a"
-parent_chain_rpc_url       = "your-ethereum-rpc-url"
+bucket_name                = "bucket-name"
+eth_rpc_url                = "https://eth.public-rpc.com"

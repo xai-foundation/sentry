@@ -49,7 +49,7 @@
   "execution": {
     "forwarding-target": "https://xai-chain.net/rpc",
     "caching": {
-      "archive": false
+      "archive": true
     }
   },
   "parent-chain": {
