@@ -13,3 +13,5 @@ artifacts
 whitelist.csv
 receipt.json
 wallet-xai-drop.json
+eth-extract-test.csv
+eth-refunds.csv
