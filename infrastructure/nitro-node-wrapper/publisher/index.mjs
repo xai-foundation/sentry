@@ -1,7 +1,8 @@
 import Docker from "dockerode";
+import axios from 'axios';
 import fs from 'fs';
 import { Writable } from 'stream';
-import { concat, keccak256 } from "ethers";
+import { concat, keccak256, ethers } from "ethers";
 import { Bucket, Storage } from "@google-cloud/storage";
 
 // create an instance of the bucket
@@ -16,28 +17,6 @@ const storage = new Storage({
 const CLOUD_STORAGE_BUCKET = new Bucket(storage, process.env.BUCKET_NAME)
 const DOCKER_CONTAINER_NAME = 'xai-public-node';
 
-
-// const CONFIG_TEMPLATE = 'xai-goerli.config.tpl.json';
-// const CONFIG_TEMPLATE = 'xai-mainnet.config.tpl.json';
-
-// const PATH_TO_NODE_CONFIG_DIR = `${process.cwd()}/arbitrum`;
-// const PATH_TO_NODE_CONFIG = path.join(PATH_TO_NODE_CONFIG_DIR, "config.json");
-
-// //TODO we should remove this and have the actual config in the github or in the docker image
-// const createNodeConfig = () => {
-//     // configure a config for the docker container
-//     const config = JSON.parse(fs.readFileSync(path.join("./templates", CONFIG_TEMPLATE)));
-//     config.chain["info-json"] = JSON.stringify(config.chain["info-json"]);
-
-//     // Check if the directory exists, if not create it
-//     if (!fs.existsSync(PATH_TO_NODE_CONFIG_DIR)) {
-//         fs.mkdirSync(PATH_TO_NODE_CONFIG_DIR, { recursive: true });
-//     }
-//     fs.writeFileSync(PATH_TO_NODE_CONFIG, JSON.stringify(config, null, 2));
-//     console.log("Config created");
-// }
-
-
 function _tryParseJSONObject(jsonString) {
     try {
         var o = JSON.parse(jsonString);
@@ -48,43 +27,36 @@ function _tryParseJSONObject(jsonString) {
     return null;
 };
 
-//Helper function for the assertion state object, which currently is not a valid JSON object
-function _parseStateObject(stateStringObj) {
-    let parsed = _tryParseJSONObject(stateStringObj);
-    if (parsed == null) {
-        // Adding double quotes around the keys
-        stateStringObj = stateStringObj.replace(/(\w+):/g, '"$1":');
-        // Adding double quotes around the hex values
-        stateStringObj = stateStringObj.replace(/(0x[a-fA-F0-9]+)/g, '"$1"');
-        // Replace space with commas
-        stateStringObj = stateStringObj.trim().replace(/ /g, ',');
-        return _tryParseJSONObject(stateStringObj)
+const _getSendRoot = async (blockHash) => {
+    try {
+        const response = await axios.post(`http://${DOCKER_CONTAINER_NAME}:8547/rpc`, {
+            jsonrpc: '2.0',
+            method: 'eth_getBlockByHash',
+            params: [blockHash, false], // Set to false if you don't need full transaction details
+            id: 1
+        });
+
+        return response.data.result.sendRoot;
+    } catch (error) {
+        console.error('Error in loading block info to get sendRoot', error);
+        throw new Error('Error in loading block info to get sendRoot')
     }
+
 }
 
-
 const onNewAssertion = async (json) => {
-    const state = _parseStateObject(json.state);
 
-    if (state === null) {
-        console.error("Failed to parse state object", json.state);
-        return;
-    }
+    const sendRoot = await _getSendRoot(json.blockHash);
 
-    console.log("Has new assertion");
-
-    // Concatenate the blockHash and sendRoot
-    const concatenatedHashes = concat([state.BlockHash, state.SendRoot]);
-
-    // Create the confirm hash by keccak256
+    // Create the confirm hash
+    const concatenatedHashes = concat([json.blockHash, sendRoot]);
     const confirmHash = keccak256(concatenatedHashes);
 
     // create a JSON object that will get saved to the bucket
-    // TODO save object to google bucket storage!
     const jsonSave = {
-        assertion: json.assertion,
-        blockHash: state.BlockHash,
-        sendRoot: state.SendRoot,
+        assertion: json.node,
+        blockHash: json.blockHash,
+        sendRoot: sendRoot,
         confirmHash,
     }
 
@@ -103,16 +75,10 @@ const onJSONLog = (json) => {
 
         console.log("New container JSON log", json);
         // if there is an assertion and a state field then this means the validator has found a stateRoot we should process
-        if (json.hasOwnProperty('assertion') && json.hasOwnProperty('state')) {
+        if (json.hasOwnProperty('blockHash') && json.hasOwnProperty('msg') && json['msg'] == "found correct assertion") {
             onNewAssertion(json);
         }
     }
-}
-
-const getAssertionsFromContainerLogs = async (container, since) => {
-    //TODO this is not working correctly, its not using the since param and returns the fist 50 logs since container start
-    const logs = await container.logs({ stdout: true, stderr: true, timestamps: true, since });
-    // TODO get assertions from log
 }
 
 const dockerContainerOutputHandler = new Writable({
@@ -138,7 +104,7 @@ const dockerContainerOutputHandler = new Writable({
     }
 });
 
-const setupDockerContainer = async () => {
+const setupDockerContainerListener = async () => {
 
     const docker = new Docker();
     let container;
@@ -161,16 +127,7 @@ const setupDockerContainer = async () => {
         throw new Error("Did not find container " + DOCKER_CONTAINER_NAME);
     }
 
-    try {
-        //TODO get timestamp from last log
-        const lastContainerLog = Date.now() - (60 * 60 * 1000);
-        const assertionsFromLogs = await getAssertionsFromContainerLogs(container, lastContainerLog);
-        //TODO Post missed assertions
-    } catch (error) {
-        console.error("Failed to load recent container logs - continue with current stream", error);
-    }
-
-    // TODO handle errors in here ?
+    // TODO handle errors in here
     // Attach the stdout and stderr to custom streams
     container.attach({ stream: true, stdout: true, stderr: true }, function (err, stream) {
         // Dockerode may demultiplex attach streams for you :)
@@ -200,7 +157,7 @@ const uploadToBucket = async (jsonSave) => {
             destination: destinationPath,
             public: true,
             metadata: {
-                contentType: "application/plain", //application/csv for excel or csv file upload
+                contentType: "application/plain",
             }
         });
         fs.unlinkSync(fileName);
@@ -212,11 +169,7 @@ const uploadToBucket = async (jsonSave) => {
     }
 }
 
-const main = () => {
-    setupDockerContainer()
-        .catch(err => {
-            console.error("Error on runtime", err);
-            //TODO send notification here, container should be restart5ed by docker 
-        })
-}
-main();
+setupDockerContainerListener()
+    .catch(err => {
+        console.error("Error on runtime", err);
+    })
