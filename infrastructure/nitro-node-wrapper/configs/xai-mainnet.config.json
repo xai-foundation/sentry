@@ -17,7 +17,6 @@
       "debug"
     ],
     "corsdomain": "*",
-    "port": 8547,
     "rpcprefix": "/rpc",
     "vhosts": "*"
   },
@@ -31,7 +30,7 @@
     "data-availability": {
       "enable": true,
       "sequencer-inbox-address": "0x995a9d3ca121D48d21087eDE20bc8acb2398c8B1",
-      "parent-chain-node-url": "https://tame-alpha-violet.arbitrum-mainnet.quiknode.pro/d55a31b32f04c82b0e1bcb77f1fc6dcf53147f2a/",
+      "parent-chain-node-url": "http://arb1-nitro-node:8547",
       "rest-aggregator": {
         "enable": true,
         "online-url-list": "https://xai-chain.net/das-servers"
@@ -54,7 +53,7 @@
   },
   "parent-chain": {
     "connection": {
-      "url": "https://tame-alpha-violet.arbitrum-mainnet.quiknode.pro/d55a31b32f04c82b0e1bcb77f1fc6dcf53147f2a/"
+      "url": "http://arb1-nitro-node:8547"
     },
     "id": 42161
   },

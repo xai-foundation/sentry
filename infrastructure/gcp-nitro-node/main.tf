@@ -15,6 +15,10 @@ resource "google_compute_address" "default" {
   name = "node-static-ip"
 }
 
+resource "google_compute_address" "static_ip" {
+  name = "my-static-ip"
+}
+
 resource "google_service_account" "bucket_updater" {
   account_id   = "bucket-updater"
   display_name = "Bucket Updater Service Account"
@@ -42,12 +46,26 @@ resource "google_storage_bucket_iam_member" "bucket_updater" {
   member = "serviceAccount:${google_service_account.bucket_updater.email}"
 }
 
+resource "google_compute_firewall" "outbound_access" {
+  name    = "allow-outbound"
+  network = "default"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80", "443"]
+  }
+
+  direction = "EGRESS"
+  destination_ranges = ["0.0.0.0/0"]
+}
 
 // n1-standard-4 =  4 vCPUs and 15 GB RAM
 // size=2000 =  2000 GB
 resource "google_compute_instance" "default" {
-  name         = "arbitrum-full-node"
-  machine_type = "n1-standard-4"
+  name                = "arbitrum-full-node"
+  machine_type        = "n1-standard-4"
+  deletion_protection = true
+
   boot_disk {
     initialize_params {
       image = "ubuntu-os-cloud/ubuntu-2204-lts"
@@ -57,6 +75,9 @@ resource "google_compute_instance" "default" {
   }
   network_interface {
     network = "default"
+    access_config {
+      nat_ip = google_compute_address.default.address
+    }
   }
 
   metadata_startup_script = local.startup_script
