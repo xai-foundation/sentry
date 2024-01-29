@@ -38,7 +38,7 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
     let keepAliveInterval: NodeJS.Timeout;
     let isStoppedManually = false;
 
-    const log = args.log ? args.log : (value: string, ...values: string[]) => { };
+    const logCb = args.log ? args.log : (value: string, ...values: string[]) => { };
     const callback = args.callback ? args.callback : (log: LogDescription | null, error: any | undefined) => { };
 
     const connect = () => {
@@ -49,7 +49,7 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
             const topicHash = contract.getEvent(args.eventName).getFragment().topicHash;
             let subscriptionId: string;
 
-            log(`[${new Date().toISOString()}] subscribing to event listener with topic hash: ${topicHash}`);
+            logCb(`[${new Date().toISOString()}] subscribing to event listener with topic hash: ${topicHash}`);
 
             const request = {
                 id: 1,
@@ -71,7 +71,7 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
             };
 
             ws.onerror = function error(err: WebSocket.ErrorEvent) {
-                log(`[${new Date().toISOString()}] WebSocket error: ${err.error}: ${err.message}`);
+                logCb(`[${new Date().toISOString()}] WebSocket error: ${err.error}: ${err.message}`);
                 callback(null, { type: "onerror", message: `WebSocket error: ${err.message}` });
             };
 
@@ -82,10 +82,10 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
                 
                 if (!isStoppedManually) {
                     setTimeout(connect, 1000);
-                    log(`[${new Date().toISOString()}] WebSocket closed, reconnecting automatically`);
+                    logCb(`[${new Date().toISOString()}] WebSocket closed, reconnecting automatically`);
                     callback(null, { type: "onclose", message: `WebSocket closed, reconnecting automatically` });
                 } else {
-                    log(`[${new Date().toISOString()}] WebSocket closed`);
+                    logCb(`[${new Date().toISOString()}] WebSocket closed`);
                     callback(null, { type: "onclose", message: `WebSocket closed` });
                 }
             };
@@ -102,33 +102,33 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
 
                     if (parsedData?.id === request.id) {
                         subscriptionId = parsedData.result;
-                        log(`[${new Date().toISOString()}] Subscription to event '${args.eventName}' established with subscription ID '${parsedData.result}'.`);
+                        logCb(`[${new Date().toISOString()}] Subscription to event '${args.eventName}' established with subscription ID '${parsedData.result}'.`);
                     } else if (parsedData?.id === ping.id && parsedData?.result === true) {
-                        log(`[${new Date().toISOString()}] Health check complete, subscription to '${args.eventName}' is still active.`)
+                        logCb(`[${new Date().toISOString()}] Health check complete, subscription to '${args.eventName}' is still active.`)
                         if (pingTimeout) clearInterval(pingTimeout);
                     } else if (parsedData?.method === 'eth_subscription' && parsedData.params.subscription === subscriptionId) {
-                        const log = parsedData.params.result;
-                        const event = contract.interface.parseLog(log);
-                        log(`[${new Date().toISOString()}] Received event ${event?.name}: ${event?.args}`);
-                        callback(event);
+                        const eventResult = parsedData.params.result;
+                        const eventLog = contract.interface.parseLog(eventResult);
+                        logCb(`[${new Date().toISOString()}] Received event ${eventLog?.name}: ${eventLog?.args}`);
+                        callback(eventLog);
                     }
 
                 } catch (error) {
-                    log(`[${new Date().toISOString()}] Error in message handling: ${error}`);
+                    logCb(`[${new Date().toISOString()}] Error in message handling: ${error}`);
                     callback(null, { type: "onmessage", message: `Error in message handling: ${error && (error as Error).message ? (error as Error).message : error as string}` });
                 }
             };
 
             ws.onopen = function open() {
-                log(`[${new Date().toISOString()}] Opened connection to Web Socket RPC`)
+                logCb(`[${new Date().toISOString()}] Opened connection to Web Socket RPC`)
                 ws!.send(JSON.stringify(request));
 
                 keepAliveInterval = setInterval(() => {
                     if (!ws) {
-                        log(`[${new Date().toISOString()}] No websocket, exiting keep alive interval`);
+                        logCb(`[${new Date().toISOString()}] No websocket, exiting keep alive interval`);
                         return;
                     }
-                    log(`[${new Date().toISOString()}] Performing health check on the Web Socket RPC, to maintain subscription to '${args.eventName}'.`);
+                    logCb(`[${new Date().toISOString()}] Performing health check on the Web Socket RPC, to maintain subscription to '${args.eventName}'.`);
 
                     ws.send(JSON.stringify(ping));
                     pingTimeout = setTimeout(() => {
@@ -140,7 +140,7 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
             };
 
         } catch (error) {
-            log(`[${new Date().toISOString()}] Error in connect function: ${error}`);
+            logCb(`[${new Date().toISOString()}] Error in connect function: ${error}`);
             throw error;
         }
     }

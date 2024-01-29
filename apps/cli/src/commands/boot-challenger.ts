@@ -84,6 +84,7 @@ const onAssertionConfirmedCb = async (nodeNum: any, commandInstance: Vorpal.Comm
         commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${nodeNum}`);
         lastAssertionTime = Date.now();
     } catch (error) {
+        commandInstance.log(`[${new Date().toISOString()}] Submit Assertion Error: ${(error as Error).message}`);
         sendNotification(`Submit Assertion Error: ${(error as Error).message}`, commandInstance);
         throw error;
     }
