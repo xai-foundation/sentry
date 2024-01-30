@@ -100,7 +100,6 @@ const checkTimeSinceLastAssertion = async (lastAssertionTime: number, commandIns
         commandInstance.log(`[${new Date().toISOString()}] It has been ${timeSinceLastAssertion} minutes since the last assertion. Please check the Rollup Protocol (${config.rollupAddress}).`);
         sendNotification(`It has been ${timeSinceLastAssertion} minutes since the last assertion. Please check the Rollup Protocol (${config.rollupAddress}).`, commandInstance);
     }
-    lastAssertionTime = currentTime;
 };
 
 const sendNotification = async (message: string, commandInstance: Vorpal.CommandInstance) => {
