@@ -37,6 +37,8 @@ let cachedWebhookUrl: string | undefined;
 let cachedSecretKey: string;
 let lastAssertionTime: number;
 
+let currentNumberOfRetries = 0;
+
 const initCli = async (commandInstance: Vorpal.CommandInstance) => {
 
     const { secretKey } = await commandInstance.prompt(INIT_PROMPTS["secretKeyPrompt"]);
@@ -141,6 +143,7 @@ const startListener = async (commandInstance: Vorpal.CommandInstance) => {
                 try {
                     errorCount = 0;
                     await onAssertionConfirmedCb(nodeNum, commandInstance);
+                    currentNumberOfRetries = 0;
                 } catch {
                     stopListener(listener);
                     resolve(error);
@@ -180,16 +183,16 @@ export function bootChallenger(cli: Vorpal) {
                 checkTimeSinceLastAssertion(lastAssertionTime, commandInstance);
             }, 5 * 60 * 1000);
 
-            for (let i = 0; i <= NUM_ASSERTION_LISTENER_RETRIES; i++) {
+            for (; currentNumberOfRetries <= NUM_ASSERTION_LISTENER_RETRIES; currentNumberOfRetries++) {
                 commandInstance.log(`[${new Date().toISOString()}] The challenger is now listening for assertions...`);
                 await startListener(commandInstance);
 
-                if (i + 1 <= NUM_ASSERTION_LISTENER_RETRIES) {
+                if (currentNumberOfRetries + 1 <= NUM_ASSERTION_LISTENER_RETRIES) {
                     await (new Promise((resolve) => {
                         setTimeout(resolve, 3000);
                     }))
-                    commandInstance.log(`[${new Date().toISOString()}] Challenger restarting with ${NUM_ASSERTION_LISTENER_RETRIES - (i + 1)} attempts left.`);
-                    sendNotification(`Challenger restarting with ${NUM_ASSERTION_LISTENER_RETRIES - (i + 1)} attempts left.`, commandInstance);
+                    commandInstance.log(`[${new Date().toISOString()}] Challenger restarting with ${NUM_ASSERTION_LISTENER_RETRIES - (currentNumberOfRetries + 1)} attempts left.`);
+                    sendNotification(`Challenger restarting with ${NUM_ASSERTION_LISTENER_RETRIES - (currentNumberOfRetries + 1)} attempts left.`, commandInstance);
                 }
 
             }
