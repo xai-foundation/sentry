@@ -23,7 +23,7 @@ export function listenForChallenges(callback: (challengeNumber: bigint, challeng
         abi: RefereeAbi,
         eventName: "ChallengeSubmitted",
         log: console.info,
-        callback: async (log, error, blockHash) => {
+        callback: async (log, error) => {
 
             if(error){
                 //TODO hanlde on error
@@ -39,7 +39,7 @@ export function listenForChallenges(callback: (challengeNumber: bigint, challeng
                 // lookup the challenge
                 const challenge = await getChallenge(challengeNumber);
 
-                void callback(challengeNumber, challenge, log, blockHash);
+                void callback(challengeNumber, challenge, log);
             }
         }
     });
