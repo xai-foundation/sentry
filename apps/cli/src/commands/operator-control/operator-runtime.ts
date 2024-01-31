@@ -1,5 +1,12 @@
 import Vorpal from "vorpal";
-import { getSignerFromPrivateKey, operatorRuntime, listOwnersForOperator } from "@sentry/core";
+import { getSignerFromPrivateKey, operatorRuntime, listOwnersForOperator, Challenge } from "@sentry/core";
+
+interface PublicNodeBucketInformation {
+    assertion: number,
+    blockHash: string,
+    sendRoot: string,
+    confirmHash: string
+}
 
 /**
  * Starts a runtime of the operator.
@@ -38,7 +45,7 @@ export function bootOperator(cli: Vorpal) {
             // If useWhitelist is false, selectedOwners will be undefined
             let selectedOwners;
             if (useWhitelist) {
-                
+
                 const operatorAddress = await signer.getAddress();
                 const owners = await listOwnersForOperator(operatorAddress);
 
@@ -63,8 +70,9 @@ export function bootOperator(cli: Vorpal) {
             stopFunction = await operatorRuntime(
                 signer,
                 undefined,
-                (log) => this.log(log),
+                (log: string) => this.log(log),
                 selectedOwners,
+                (publicNodeData: PublicNodeBucketInformation | undefined, challenge: Challenge, message: string) => this.log(`${message}, publicNodeData: ${JSON.stringify(publicNodeData)}, `)
             );
 
             return new Promise((resolve, reject) => { }); // Keep the command alive

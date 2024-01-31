@@ -1,8 +1,20 @@
-import {NodeLicenseInformation, NodeLicenseStatusMap, operatorRuntime} from "@sentry/core";
+import {Challenge, NodeLicenseInformation, NodeLicenseStatusMap, operatorRuntime} from "@sentry/core";
 import {useOperator} from "@/features/operator";
 import {atom, useAtom} from "jotai";
 import {useEffect, useState} from "react";
 import {useStorage} from "@/features/storage";
+
+
+interface PublicNodeBucketInformation {
+    assertion: number,
+    blockHash: string,
+    sendRoot: string,
+    confirmHash: string
+}
+
+function missmatchInAssertion(publicNodeData: PublicNodeBucketInformation, challenge: Challenge, message: string) {
+	alert(`${publicNodeData}, ${challenge}, ${message}`);
+}
 
 let stop: (() => Promise<void>) | undefined;
 export const sentryRunningAtom = atom(stop != null);
@@ -42,7 +54,7 @@ export function useOperatorRuntime() {
 			await setData({...data, sentryRunning: true});
 
 			// @ts-ignore
-			stop = await operatorRuntime(signer, setNodeLicenseStatusMap, writeLog, whitelistedWallets);
+			stop = await operatorRuntime(signer, setNodeLicenseStatusMap, writeLog, whitelistedWallets, missmatchInAssertion);
 			setRerender((_number) => _number + 1);
 		}
 	}
