@@ -7,7 +7,7 @@ interface ResilientEventListenerArgs {
     abi: InterfaceAbi,
     eventName: string,
     log?: (value: string, ...values: string[]) => void;
-    callback?: (log: LogDescription | null, err?: EventListenerError) => void;
+    callback?: (log: LogDescription | null, err?: EventListenerError, blockHash?: string) => void;
 }
 
 export interface EventListenerError {
@@ -110,7 +110,7 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
                         const eventResult = parsedData.params.result;
                         const eventLog = contract.interface.parseLog(eventResult);
                         logCb(`[${new Date().toISOString()}] Received event ${eventLog?.name}: ${eventLog?.args}`);
-                        callback(eventLog);
+                        callback(eventLog, undefined, eventResult.blockHash);
                     }
 
                 } catch (error) {

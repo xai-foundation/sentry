@@ -16,6 +16,7 @@ import {
     version
 } from "../index.js";
 import { retry } from "../index.js";
+import axios from "axios";
 
 export enum NodeLicenseStatus {
     WAITING_IN_QUEUE = "Booting Operator For Key", // waiting to do an action, but in a queue
@@ -34,6 +35,51 @@ export interface NodeLicenseInformation {
 
 export type NodeLicenseStatusMap = Map<bigint, NodeLicenseInformation>;
 
+interface PublicNodeBucketInformation {
+    assertion: number,
+    blockHash: string,
+    sendRoot: string,
+    confirmHash: string
+}
+
+async function getPublicNodeFromBucket(blockHash: string) {
+    const url = `https://storage.googleapis.com/xai-sentry-public-node/assertions/${blockHash.toLowerCase()}.json`;
+    const response = await axios.get(url);
+
+    if (response.status === 200) {
+        return response.data;
+    } else {
+        throw new Error("Invalid response status " + response.status);
+    }
+}
+
+async function compareWithCDN(blockHash: string, challenge: Challenge, logFunction: (log: string) => void): Promise<{ publicNodeBucket: PublicNodeBucketInformation, error?: string }> {
+
+    let attempt = 0;
+    let success = false;
+    let publicNodeBucket: PublicNodeBucketInformation | undefined;
+
+    while (attempt < 3 && !success) {
+        try {
+            publicNodeBucket = await getPublicNodeFromBucket(blockHash);
+        } catch (error) {
+            logFunction(`[${new Date().toISOString()}] Error loading assertion data from CDN attempt ${attempt + 1}. Error: ${error}`);
+            await new Promise(resolve => setTimeout(resolve, 20000));
+            attempt++;
+        }
+    }
+
+    if (!publicNodeBucket) {
+        throw new Error(`Failed to retrieve public node bucket after ${attempt} attempts`);
+    }
+
+    if (publicNodeBucket.assertion !== Number(challenge.assertionId) || publicNodeBucket.confirmHash !== challenge.assertionStateRootOrConfirmData) {
+        return { publicNodeBucket, error: "Miss match between PublicNode and Challenge." };
+    }
+
+    return { publicNodeBucket }
+}
+
 /**
  * Operator runtime function.
  * @param {ethers.Signer} signer - The signer.
@@ -47,6 +93,8 @@ export async function operatorRuntime(
     statusCallback: (status: NodeLicenseStatusMap) => void = (_) => {},
     logFunction: (log: string) => void = (_) => {},
     operatorOwners?: string[],
+    onAssertionMissmatch: (publicNodeData: PublicNodeBucketInformation | undefined, challenge: Challenge, message: string) => void = (_) => { }
+
 ): Promise<() => Promise<void>> {
 
     logFunction(`[${new Date().toISOString()}] Booting operator runtime.`);
@@ -241,7 +289,22 @@ export async function operatorRuntime(
 
     // start a listener for new challenges
     const challengeNumberMap: { [challengeNumber: string]: boolean } = {};
-    async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: any) {
+    async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: any, blockHash?: string) {
+
+        if (blockHash) {
+            compareWithCDN(blockHash, challenge, logFunction)
+                .then(({ publicNodeBucket, error }) => {
+                    if (error) {
+                        onAssertionMissmatch(publicNodeBucket, challenge, error);
+                        return;
+                    }
+                    logFunction(`[${new Date().toISOString()}] Comparison PublicNode and Challenger was successful.`);
+                })
+                .catch(error => {
+                    // Should we alert with onAssertionMissmatch?
+                    logFunction(`[${new Date().toISOString()}] ${error.message}.`);
+                });
+        }
 
         if (challenge.openForSubmissions) {
             logFunction(`[${new Date().toISOString()}] Received new challenge with number: ${challengeNumber}.`);

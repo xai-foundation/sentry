@@ -11,7 +11,7 @@ import { resilientEventListener } from "../utils/resilientEventListener.js";
  * @param callback - The callback function to be triggered when ChallengeSubmitted event is emitted.
  * @returns A function that can be called to stop listening for the event.
  */
-export function listenForChallenges(callback: (challengeNumber: bigint, challenge: Challenge, event: any) => void): () => void {
+export function listenForChallenges(callback: (challengeNumber: bigint, challenge: Challenge, event: any, blockHash?: string) => void): () => void {
 
     // create a map to keep track of challengeNumbers that have called the callback
     const challengeNumberMap: { [challengeNumber: string]: boolean } = {};
@@ -23,7 +23,13 @@ export function listenForChallenges(callback: (challengeNumber: bigint, challeng
         abi: RefereeAbi,
         eventName: "ChallengeSubmitted",
         log: console.info,
-        callback: async (log) => {
+        callback: async (log, error, blockHash) => {
+
+            if(error){
+                //TODO hanlde on error
+                return;
+            }
+
             const challengeNumber = BigInt(log?.args[0]);
 
             // if the challengeNumber has not been seen before, call the callback and add it to the map
@@ -33,7 +39,7 @@ export function listenForChallenges(callback: (challengeNumber: bigint, challeng
                 // lookup the challenge
                 const challenge = await getChallenge(challengeNumber);
 
-                void callback(challengeNumber, challenge, log);
+                void callback(challengeNumber, challenge, log, blockHash);
             }
         }
     });
