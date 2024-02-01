@@ -4,7 +4,6 @@ A Javascript runtime that reads from a local XAI Node and publishes assertions t
 
 ### Create & Publish the image
 
-- `docker login`
-- `docker build -t <DOCKER_REPO>/xai-public-node-publisher:latest .`
-- `docker tag <DOCKER_REPO>/xai-public-node-publisher:latest <DOCKER_REPO>/xai-public-node-publisher:latest`
-- `docker push <DOCKER_REPO>/xai-public-node-publisher:latest`
+- `docker build -t xaidevelopment/xai-node:latest .`
+- `docker tag xaidevelopment/xai-node:latest xaidevelopment/xai-node:latest`
+- `docker push xaidevelopment/xai-node:latest`

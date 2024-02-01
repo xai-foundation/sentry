@@ -2,7 +2,7 @@ import Docker from "dockerode";
 import axios from 'axios';
 import fs from 'fs';
 import { Writable } from 'stream';
-import { concat, keccak256, ethers } from "ethers";
+import { concat, keccak256 } from "ethers";
 import { Bucket, Storage } from "@google-cloud/storage";
 
 // create an instance of the bucket
@@ -140,7 +140,7 @@ const setupDockerContainerListener = async () => {
 
 const uploadToBucket = async (jsonSave) => {
 
-    const fileName = `${jsonSave.blockHash}.json`;
+    const fileName = `${jsonSave.confirmHash}.json`;
     const localPath = `./${fileName}`;
     const destinationPath = `assertions/${fileName}`;
 
@@ -160,7 +160,7 @@ const uploadToBucket = async (jsonSave) => {
                 contentType: "application/plain",
             }
         });
-        fs.unlinkSync(fileName);
+        fs.unlinkSync(localPath);
         return result[0].metadata.mediaLink;
 
     } catch (error) {
