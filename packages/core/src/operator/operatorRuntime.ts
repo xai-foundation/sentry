@@ -58,23 +58,25 @@ async function compareWithCDN(challenge: Challenge, logFunction: (log: string) =
     let attempt = 0;
     let success = false;
     let publicNodeBucket: PublicNodeBucketInformation | undefined;
+    let lastError;
 
     while (attempt < 3 && !success) {
         try {
             publicNodeBucket = await getPublicNodeFromBucket(challenge.assertionStateRootOrConfirmData);
         } catch (error) {
-            logFunction(`[${new Date().toISOString()}] Error loading assertion data from CDN attempt ${attempt + 1}. Error: ${error}`);
+            // logFunction(`[${new Date().toISOString()}] Error loading assertion data ${challenge.assertionStateRootOrConfirmData} from CDN attempt ${attempt + 1}. Error: ${error}`);
+            lastError = error;
             await new Promise(resolve => setTimeout(resolve, 20000));
             attempt++;
         }
     }
 
     if (!publicNodeBucket) {
-        throw new Error(`Failed to retrieve public node bucket after ${attempt} attempts`);
+        throw new Error(`Failed to retrieve public node bucket data ${challenge.assertionStateRootOrConfirmData} after ${attempt} attempts. ${lastError}`);
     }
 
     if (publicNodeBucket.assertion !== Number(challenge.assertionId)) {
-        return { publicNodeBucket, error: "Miss match between PublicNode and Challenge assertion number!" };
+        return { publicNodeBucket, error: `Miss match between PublicNode and Challenge assertion number '${challenge.assertionId}'!` };
     }
 
     return { publicNodeBucket }
@@ -291,18 +293,22 @@ export async function operatorRuntime(
     const challengeNumberMap: { [challengeNumber: string]: boolean } = {};
     async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: any) {
 
-        compareWithCDN(challenge, logFunction)
-            .then(({ publicNodeBucket, error }) => {
-                if (error) {
-                    onAssertionMissmatch(publicNodeBucket, challenge, error);
-                    return;
-                }
-                logFunction(`[${new Date().toISOString()}] Comparison PublicNode and Challenger was successful.`);
-            })
-            .catch(error => {
-                // Should we alert with onAssertionMissmatch?
-                logFunction(`[${new Date().toISOString()}] ${error.message}.`);
-            });
+        if (event && challenge.rollupUsed === config.rollupAddress) {
+            compareWithCDN(challenge, logFunction)
+                .then(({ publicNodeBucket, error }) => {
+                    if (error) {
+                        onAssertionMissmatch(publicNodeBucket, challenge, error);
+                        return;
+                    }
+                    logFunction(`[${new Date().toISOString()}] Comparison PublicNode and Challenger was successful.`);
+                })
+                .catch(error => {
+                    // TODO @Chris Should we alert with onAssertionMissmatch?
+                    console.log("Error on CND check",)
+                    logFunction(`[${new Date().toISOString()}] Error on CND check ${JSON.stringify(challenge)}.`);
+                    logFunction(`[${new Date().toISOString()}] ${error.message}.`);
+                });
+        }
 
         if (challenge.openForSubmissions) {
             logFunction(`[${new Date().toISOString()}] Received new challenge with number: ${challengeNumber}.`);
