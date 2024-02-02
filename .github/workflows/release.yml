@@ -107,7 +107,7 @@ jobs:
   #         path: release-desktop-windows-latest
 
   checksum-and-release:
-    # needs: sign
+    needs: build
     runs-on: macos-latest
 
     steps:
