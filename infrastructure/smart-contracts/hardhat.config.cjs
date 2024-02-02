@@ -5,7 +5,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const config = {
-  defaultNetwork: "arbitrumOne",
+  defaultNetwork: "hardhat",
   solidity: {
     version: "0.8.9",
     settings: {
@@ -21,10 +21,10 @@ const config = {
   networks: {
     hardhat: {
       forking: {
-        url: "https://icy-thrilling-frog.arbitrum-goerli.quiknode.pro/4d27f3253823ff8ec0afbabc49cbe924bfc9acdb/",
-        // blockNumber: 56122196,
+        url: "https://eth-mainnet.g.alchemy.com/v2/W7dTZrmhSSU7LOtL67I41XGaf2TXeVGo",
+        // blockNumber: 19015040,
       },
-      chainId: 421613,
+      chainId: 1,
       accounts: {
         mnemonic: process.env.MNEMONIC,
         count: 30,
@@ -71,6 +71,14 @@ const config = {
         count: 30
       },
       chainId: 11155111
+    },
+    ethereum: {
+      url: "https://eth-mainnet.g.alchemy.com/v2/W7dTZrmhSSU7LOtL67I41XGaf2TXeVGo",
+      accounts: {
+        mnemonic: process.env.MNEMONIC,
+        count: 30
+      },
+      chainId: 1
     }
   },
   etherscan: {

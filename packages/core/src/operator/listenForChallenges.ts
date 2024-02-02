@@ -23,7 +23,13 @@ export function listenForChallenges(callback: (challengeNumber: bigint, challeng
         abi: RefereeAbi,
         eventName: "ChallengeSubmitted",
         log: console.info,
-        callback: async (log) => {
+        callback: async (log, error) => {
+
+            if(error){
+                //TODO hanlde on error
+                return;
+            }
+
             const challengeNumber = BigInt(log?.args[0]);
 
             // if the challengeNumber has not been seen before, call the callback and add it to the map
