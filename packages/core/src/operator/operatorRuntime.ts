@@ -55,24 +55,24 @@ async function getPublicNodeFromBucket(confirmHash: string) {
 
 async function compareWithCDN(challenge: Challenge, logFunction: (log: string) => void): Promise<{ publicNodeBucket: PublicNodeBucketInformation, error?: string }> {
 
-    let attempt = 0;
-    let success = false;
+    let attempt = 1;
     let publicNodeBucket: PublicNodeBucketInformation | undefined;
     let lastError;
 
-    while (attempt < 3 && !success) {
+    while (attempt <= 3) {
         try {
             publicNodeBucket = await getPublicNodeFromBucket(challenge.assertionStateRootOrConfirmData);
+            break;
         } catch (error) {
-            // logFunction(`[${new Date().toISOString()}] Error loading assertion data ${challenge.assertionStateRootOrConfirmData} from CDN attempt ${attempt + 1}. Error: ${error}`);
+            logFunction(`[${new Date().toISOString()}] Error loading assertion data from CDN for ${challenge.assertionStateRootOrConfirmData} with attempt ${attempt}.\n${error}`);
             lastError = error;
-            await new Promise(resolve => setTimeout(resolve, 20000));
             attempt++;
+            await new Promise(resolve => setTimeout(resolve, 20000));
         }
     }
 
     if (!publicNodeBucket) {
-        throw new Error(`Failed to retrieve public node bucket data ${challenge.assertionStateRootOrConfirmData} after ${attempt} attempts. ${lastError}`);
+        throw new Error(`Failed to retrieve assertion data from CDN for ${challenge.assertionStateRootOrConfirmData} after ${attempt} attempts.\n${lastError}`);
     }
 
     if (publicNodeBucket.assertion !== Number(challenge.assertionId)) {
