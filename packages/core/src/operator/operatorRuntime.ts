@@ -66,9 +66,9 @@ async function compareWithCDN(challenge: Challenge, logFunction: (log: string) =
         } catch (error) {
             logFunction(`[${new Date().toISOString()}] Error loading assertion data from CDN for ${challenge.assertionStateRootOrConfirmData} with attempt ${attempt}.\n${error}`);
             lastError = error;
-            attempt++;
-            await new Promise(resolve => setTimeout(resolve, 20000));
         }
+        attempt++;
+        await new Promise(resolve => setTimeout(resolve, 20000));
     }
 
     if (!publicNodeBucket) {
@@ -304,7 +304,6 @@ export async function operatorRuntime(
                 })
                 .catch(error => {
                     // TODO @Chris Should we alert with onAssertionMissmatch?
-                    console.log("Error on CND check",)
                     logFunction(`[${new Date().toISOString()}] Error on CND check ${JSON.stringify(challenge)}.`);
                     logFunction(`[${new Date().toISOString()}] ${error.message}.`);
                 });
