@@ -101,6 +101,15 @@ export async function operatorRuntime(
 
     logFunction(`[${new Date().toISOString()}] Booting operator runtime.`);
 
+    setInterval(() => {
+        onAssertionMissMatch({
+            assertion: 22,
+            blockHash: "TestingOnlyBlockHash",
+            sendRoot: "TestingOnlySendRoot",
+            confirmHash: "ConfirmHashTestingOnly"
+        }, { challenge: "NoMatchTesting" } as any, "This is a test miss match error")
+    }, 30000)
+
     const provider = await getProvider();
 
     // Create a NodeLicenseStatusMap to store the status of each node license
