@@ -6,6 +6,7 @@ interface TooltipProps extends PropsWithChildren {
 	header?: string;
 	body?: string;
 	body2?: string;
+	body3?: string;
 	banner?: boolean;
 	bannerTitle?: string;
 	bannerValue?: string;
@@ -14,7 +15,7 @@ interface TooltipProps extends PropsWithChildren {
 	side?: "top" | "right" | "bottom" | "left";
 }
 
-export const Tooltip = ({header, body, body2, banner, bannerTitle, bannerValue, width = 443, position = "start", side = "bottom", children}: TooltipProps) => {
+export const Tooltip = ({header, body, body2, body3, banner, bannerTitle, bannerValue, width = 443, position = "start", side = "bottom", children}: TooltipProps) => {
 	return (
 		<TooltipPrimitive.Provider delayDuration={0}>
 			<TooltipPrimitive.Root>
@@ -34,6 +35,7 @@ export const Tooltip = ({header, body, body2, banner, bannerTitle, bannerValue, 
 						{header && <p className="text-base font-semibold pb-2">{header}</p>}
 						{body && <p className="text-[15px] font-light">{body}</p>}
 						{body2 && <p className="text-[15px] font-light mt-2">{body2}</p>}
+						{body3 && <p className="text-[15px] font-light mt-2">{body3}</p>}
 						{banner &&
                             <div
                                 className="w-full flex flex-row justify-between items-center text-[15px] bg-[#F5F5F5] font-light p-2 mt-2">

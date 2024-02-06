@@ -70,7 +70,7 @@ export const GetSentryNodeTooltip = ({width = 443, position = "start", side = "b
 								{getSentryNodeBody()}
 							</div>
 
-							<p className="mt-[14px] text-[14px] text-[#525252]">
+							<p className="mt-[14px] text-sm text-[#525252]">
 								Want to learn more about Sentry Node technical specifications?
 
 								<a
