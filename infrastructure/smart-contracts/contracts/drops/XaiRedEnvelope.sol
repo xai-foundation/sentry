@@ -82,6 +82,7 @@ contract XaiRedEnvelope is AccessControlUpgradeable {
 	}
 
 	function setClaimPeriod(uint256 _startTime, uint256 _endTime) external onlyRole(DEFAULT_ADMIN_ROLE) {
+		require(_startTime < _endTime, "Start time must be before end time");
 		startTime = _startTime;
 		endTime = _endTime;
 		emit ClaimPeriodChanged(_startTime, _endTime);
