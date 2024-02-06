@@ -14,15 +14,16 @@ import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {MdRefresh} from "react-icons/md";
 
 export function NetworkRewardsCard() {
-	const {owners} = useAtomValue(chainStateAtom);
+	const {owners, licensesList} = useAtomValue(chainStateAtom);
 	const {balances, isBalancesLoading, balancesFetchedLast, accruing, kycRequired} = useAtomValue(accruingStateAtom);
 	const {combinedOwners} = useCombinedOwners(owners);
 	const {data: earnedEsxaiBalance} = useGetWalletBalance(combinedOwners);
 	const [currentTime, setCurrentTime] = useState(new Date());
 	const {refresh} = useChainDataRefresh();
+	const keyCount = licensesList.length;
 
-	const [esXaiBalance, setEsXaiBalance] = useState("0");
-	const [accruedEsXaiBalance, setAccruedEsXaiBalance] = useState("0");
+	const [esXaiBalance, setEsXaiBalance] = useState("--");
+	const [accruedEsXaiBalance, setAccruedEsXaiBalance] = useState("--");
 
 	// Calculate the time difference in minutes
 	const calculateTimeDifference = (currentTime: Date, lastUpdateTime: Date) => {
@@ -44,22 +45,22 @@ export function NetworkRewardsCard() {
 
 	// esXAI Balance
 	function getEsxaiBalance() {
-		if (!isBalancesLoading && balancesFetchedLast && earnedEsxaiBalance) {
+		if (earnedEsxaiBalance != null) {
 			if (parseFloat(ethers.formatEther(earnedEsxaiBalance.reduce((acc, item) => acc + item.esXaiBalance, BigInt(0)))).toFixed(6) === "0.000000") {
 				setEsXaiBalance("0")
 			} else {
-				setEsXaiBalance(parseFloat(ethers.formatEther(earnedEsxaiBalance.reduce((acc, item) => acc + item.esXaiBalance, BigInt(0)))).toFixed(6))
+				setEsXaiBalance(parseFloat(ethers.formatEther(earnedEsxaiBalance.reduce((acc, item) => acc + item.esXaiBalance, BigInt(0)))).toFixed(0))
 			}
 		}
 	}
 
 	// Accrued esXAI Balance
 	function getAccruedEsxaiBalance() {
-		if (!isBalancesLoading && balancesFetchedLast && balances) {
+		if (!isBalancesLoading && balancesFetchedLast && balances != null) {
 			if (Number(ethers.formatEther(Object.values(balances).reduce((acc, value) => acc + value.totalAccruedEsXai, BigInt(0)))).toFixed(6) === "0.000000") {
 				setAccruedEsXaiBalance("0")
 			} else {
-				setAccruedEsXaiBalance(Number(ethers.formatEther(Object.values(balances).reduce((acc, value) => acc + value.totalAccruedEsXai, BigInt(0)))).toFixed(6))
+				setAccruedEsXaiBalance(Number(ethers.formatEther(Object.values(balances).reduce((acc, value) => acc + value.totalAccruedEsXai, BigInt(0)))).toFixed(0))
 			}
 		}
 	}
@@ -192,7 +193,7 @@ export function NetworkRewardsCard() {
 					<div className="flex items-center">
 						<div>
 							<p className="text-2xl font-semibold">
-								{owners.length * 7}
+								{keyCount * 7}
 							</p>
 							<p className="text-[12px] text-[#A3A3A3]">
 								times per month (on average)
