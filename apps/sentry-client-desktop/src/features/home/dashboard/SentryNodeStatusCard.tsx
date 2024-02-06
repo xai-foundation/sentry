@@ -1,7 +1,6 @@
 import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
-import {Tooltip} from "@sentry/ui";
-import {AiFillWarning, AiOutlineInfoCircle} from "react-icons/ai";
+import {AiFillWarning} from "react-icons/ai";
 import {Card} from "@/features/home/cards/Card";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useOperator} from "@/features/operator";
@@ -88,15 +87,7 @@ export function SentryNodeStatusCard() {
 			<div className="sticky flex flex-row justify-between items-center py-2 px-4 border-b border-[#F5F5F5] z-10">
 				<div className="flex flex-row items-center gap-1 text-[#A3A3A3] text-[15px]">
 					<h2 className="font-medium">Sentry Node Status</h2>
-					<Tooltip
-						header={"Header"}
-						body={"Body"}
-						position={"start"}
-					>
-						<AiOutlineInfoCircle size={15} color={"#A3A3A3"}/>
-					</Tooltip>
 					<p className="flex items-center ml-2 text-sm text-[#D4D4D4]">
-						{/*Last challenge 24m ago (hard-coded)*/}
 						{timeAgoString}
 					</p>
 				</div>
