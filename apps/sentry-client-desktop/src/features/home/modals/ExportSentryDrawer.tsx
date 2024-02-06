@@ -69,7 +69,7 @@ export function ExportSentryDrawer() {
 								to leave your local machine on.
 							</p>
 
-							<p className="text-[15px] text-[#525252] mt-2">
+							<p className="text-[15px] text-[#525252] mt-4">
 								Here is the private key of the Sentry Wallet
 							</p>
 

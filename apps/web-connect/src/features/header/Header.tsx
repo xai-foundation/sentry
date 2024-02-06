@@ -10,7 +10,7 @@ export function Header() {
 					className="w-[4.3rem] ml-2"
 					onClick={() => navigate("/")}
 				>
-					<XaiLogo/>
+					<XaiLogo className="text-[#F30919]"/>
 				</div>
 				<div>
 					<w3m-button/>

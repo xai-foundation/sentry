@@ -1,5 +1,5 @@
 import Vorpal from "vorpal";
-import { getSignerFromPrivateKey, operatorRuntime, listOwnersForOperator } from "@sentry/core";
+import { getSignerFromPrivateKey, operatorRuntime, listOwnersForOperator, Challenge, PublicNodeBucketInformation } from "@sentry/core";
 
 /**
  * Starts a runtime of the operator.
@@ -59,12 +59,21 @@ export function bootOperator(cli: Vorpal) {
                 }
             }
 
-
             stopFunction = await operatorRuntime(
                 signer,
                 undefined,
-                (log) => this.log(log),
+                (log: string) => this.log(log),
                 selectedOwners,
+                (publicNodeData: PublicNodeBucketInformation | undefined, challenge: Challenge, message: string) => {
+                    const errorMessage = `The comparison between public node and challenge failed:\n` +
+                        `${message}\n\n` +
+                        `Public node data:\n` +
+                        `${JSON.stringify(publicNodeData, null, 2)}\n\n` +
+                        `Challenge data:\n` +
+                        `${JSON.stringify(challenge, null, 2)}\n`;
+
+                    this.log(errorMessage)
+                }
             );
 
             return new Promise((resolve, reject) => { }); // Keep the command alive

@@ -27,7 +27,7 @@ export function BuyKeysFlow() {
 				<div className="flex flex-col gap-2 px-6 pt-8">
 					<div className="flex flex-row items-center gap-2">
 					<span className="flex gap-3 items-center text-lg font-semibold">
-						<XaiLogo className="w-[16px]"/>
+						<XaiLogo className="w-[16px] text-[#F30919]"/>
 						Xai Sentry Node Key
 					</span>
 					</div>

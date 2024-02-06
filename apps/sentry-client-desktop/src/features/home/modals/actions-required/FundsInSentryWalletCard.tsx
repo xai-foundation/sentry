@@ -55,7 +55,7 @@ export function FundsInSentryWalletCard() {
 
 					<div
 						className="h-[48px] px-3 w-full border border-[#A3A3A3] flex flex-row items-center gap-2 justify-between bg-white mt-3">
-						<span className="text-[14px] leading-[14px] text-[#525252]">
+						<span className="text-sm leading-[14px] text-[#525252]">
 							{isOperatorLoading || !operatorAddress ? "Loading..." : clampAddress(operatorAddress)}
 						</span>
 
@@ -74,13 +74,13 @@ export function FundsInSentryWalletCard() {
 					</div>
 
 					<div className="mt-3 flex flex-row gap-1 justify-between">
-						<p className="mb-0 text-[14px] leading-[14px] text-[#525252]">
+						<p className="mb-0 text-sm leading-[14px] text-[#525252]">
 							Recommended minimum balance
 						</p>
 
 						<div className="flex flex-row items-center gap-1">
 							<FaEthereum className="w-4 h-4 mb-[-2px]"/>
-							<p className="text-[#525252] text-[14px] font-semibold">0.005 AETH</p>
+							<p className="text-[#525252] text-sm font-semibold">0.005 AETH</p>
 						</div>
 					</div>
 				</>

@@ -122,7 +122,7 @@ export function ViewKeysFlow() {
 						/>
 
 						{ownerAddressError.error && (
-							<p className="text-[14px] text-[#AB0914]">{ownerAddressError.errorResult}</p>
+							<p className="text-sm text-[#AB0914]">{ownerAddressError.errorResult}</p>
 						)}
 
 						<button
