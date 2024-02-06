@@ -188,7 +188,7 @@ contract XaiRedEnvelope is AccessControlUpgradeable {
 		Referee _referee = Referee(referee);
 		require(_referee.isKycApproved(msg.sender), "User is not KYC'd");
 
-		claimAllowances[msg.sender] = 80 + (8 * balance);
+//		claimAllowances[msg.sender] = 80 + (8 * balance);
 		userXPostVerifications[msg.sender] = xPost;
 	}
 }
