@@ -1,8 +1,19 @@
-import {NodeLicenseInformation, NodeLicenseStatusMap, operatorRuntime} from "@sentry/core";
+import {Challenge, NodeLicenseInformation, NodeLicenseStatusMap, operatorRuntime, PublicNodeBucketInformation} from "@sentry/core";
 import {useOperator} from "@/features/operator";
 import {atom, useAtom} from "jotai";
 import {useEffect, useState} from "react";
 import {useStorage} from "@/features/storage";
+
+function onAssertionMissMatch(publicNodeData: PublicNodeBucketInformation, challenge: Challenge, message: string) {
+	const errorMessage = `The comparison between public node and challenge failed:\n` +
+		`${message}\n\n` +
+		`Public node data:\n` +
+		`${JSON.stringify(publicNodeData, null, 2)}\n\n` +
+		`Challenge data:\n` +
+		`${JSON.stringify(challenge, null, 2)}\n`;
+
+	alert(errorMessage);
+}
 
 let stop: (() => Promise<void>) | undefined;
 export const sentryRunningAtom = atom(stop != null);
@@ -42,7 +53,7 @@ export function useOperatorRuntime() {
 			await setData({...data, sentryRunning: true});
 
 			// @ts-ignore
-			stop = await operatorRuntime(signer, setNodeLicenseStatusMap, writeLog, whitelistedWallets);
+			stop = await operatorRuntime(signer, setNodeLicenseStatusMap, writeLog, whitelistedWallets, onAssertionMissMatch);
 			setRerender((_number) => _number + 1);
 		}
 	}
