@@ -77,7 +77,7 @@ export function bootOperator(cli: Vorpal) {
             stopFunction = await operatorRuntime(
                 signer,
                 undefined,
-                (log: any) => this.log(log),
+                (log: string) => this.log(log),
                 selectedOwners,
             );
 
