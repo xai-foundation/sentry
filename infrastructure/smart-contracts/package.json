@@ -13,6 +13,7 @@
     "operator-report": "hardhat run scripts/createOperatorReport.mjs",
     "add-whitelist-amounts": "hardhat run scripts/addWhitelistAmounts.mjs",
     "deploy-xai-claim-drop": "hardhat run scripts/deployXaiClaimDrop.mjs",
+    "deploy-xai-red-envelope": "hardhat run scripts/deployRedEnvelope2024.mjs",
     "upgrade-xai-drop": "hardhat run scripts/upgradeXaiClaimDrop.mjs",
     "create-permit-list": "hardhat run scripts/createPermitList.mjs",
     "eth-extraction": "hardhat run scripts/ethExtraction.mjs",

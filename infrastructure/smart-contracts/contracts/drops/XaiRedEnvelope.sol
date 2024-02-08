@@ -1,7 +1,6 @@
 pragma solidity ^0.8.0;
 
 import "../Xai.sol";
-import "../Referee.sol";
 import "../NodeLicense.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
@@ -27,13 +26,14 @@ contract XaiRedEnvelope is AccessControlUpgradeable {
 	uint256 public endTime;
 
 	address public nodeLicense;
-	address public referee;
 
 	// Mapping users to how much xai they can claim
 	mapping(address => uint256) public claimAllowances;
 
 	// Mapping of users to X (Formerly Twitter) posts for us to verify
-	mapping(address => string) private userXPostVerifications;
+	mapping(address => string) public userXPostVerifications;
+	// List of users who have submitted claim requests
+	address[] public usersSubmitted;
 
 	event Claim(address indexed user, uint256 amount);
 	event ClaimPeriodChanged(uint256 newStartTime, uint256 newEndTime);
@@ -45,8 +45,7 @@ contract XaiRedEnvelope is AccessControlUpgradeable {
 		address _allowanceAddress,
 		uint256 _startTime,
 		uint256 _endTime,
-		address _nodeLicense,
-		address _referee
+		address _nodeLicense
 	) public initializer {
 		require(permitAdmin == address(0), "Already init");
 
@@ -78,7 +77,6 @@ contract XaiRedEnvelope is AccessControlUpgradeable {
 		xai = _xai;
 		allowanceAddress = _allowanceAddress;
 		nodeLicense = _nodeLicense;
-		referee = _referee;
 	}
 
 	function setClaimPeriod(uint256 _startTime, uint256 _endTime) external onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -180,16 +178,11 @@ contract XaiRedEnvelope is AccessControlUpgradeable {
 		emit Claim(msg.sender, claimAmount);
 	}
 
-	function submitClaimRequest(string memory xPost) {
-		// Check if the user owns a NodeLicense
-		NodeLicense _nodeLicense = NodeLicense(nodeLicense);
-		uint256 balance = _nodeLicense.balanceOf(msg.sender);
-		require(balance > 0, "Cannot claim Xai without licenses");
+	function submitClaimRequest(string memory xPost) public {
+		// Prevent user submitting again
+		require(keccak256(abi.encodePacked(userXPostVerifications[msg.sender])) == keccak256(abi.encodePacked("")), "You have already submitted a tweet.");
 
-		Referee _referee = Referee(referee);
-		require(_referee.isKycApproved(msg.sender), "User is not KYC'd");
-
-//		claimAllowances[msg.sender] = 80 + (8 * balance);
 		userXPostVerifications[msg.sender] = xPost;
+		usersSubmitted.push(msg.sender);
 	}
 }
