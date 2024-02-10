@@ -139,6 +139,25 @@ export const xaiRedEnvelopeAbi = [
 		"type": "event"
 	},
 	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "newStartTime",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "newEndTime",
+				"type": "uint256"
+			}
+		],
+		"name": "SubmissionPeriodChanged",
+		"type": "event"
+	},
+	{
 		"inputs": [],
 		"name": "DEFAULT_ADMIN_ROLE",
 		"outputs": [
@@ -223,6 +242,19 @@ export const xaiRedEnvelopeAbi = [
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "claimEndTime",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "uint256",
@@ -252,7 +284,7 @@ export const xaiRedEnvelopeAbi = [
 	},
 	{
 		"inputs": [],
-		"name": "endTime",
+		"name": "claimStartTime",
 		"outputs": [
 			{
 				"internalType": "uint256",
@@ -343,17 +375,32 @@ export const xaiRedEnvelopeAbi = [
 			},
 			{
 				"internalType": "uint256",
-				"name": "_startTime",
+				"name": "_submissionStartTime",
 				"type": "uint256"
 			},
 			{
 				"internalType": "uint256",
-				"name": "_endTime",
+				"name": "_submissionEndTime",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_claimStartTime",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_claimEndTime",
 				"type": "uint256"
 			},
 			{
 				"internalType": "address",
 				"name": "_nodeLicense",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_referee",
 				"type": "address"
 			}
 		],
@@ -378,6 +425,19 @@ export const xaiRedEnvelopeAbi = [
 	{
 		"inputs": [],
 		"name": "permitAdmin",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "referee",
 		"outputs": [
 			{
 				"internalType": "address",
@@ -456,8 +516,39 @@ export const xaiRedEnvelopeAbi = [
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_startTime",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_endTime",
+				"type": "uint256"
+			}
+		],
+		"name": "setSubmissionPeriod",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
-		"name": "startTime",
+		"name": "submissionEndTime",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "submissionStartTime",
 		"outputs": [
 			{
 				"internalType": "uint256",
