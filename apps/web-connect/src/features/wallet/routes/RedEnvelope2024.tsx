@@ -1,4 +1,4 @@
-import {useAccount, useContractRead, useContractWrite, useNetwork} from "wagmi";
+import {useAccount, useContractRead, useNetwork} from "wagmi";
 import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
 import {BiLoaderAlt} from "react-icons/bi";
 import {useEffect, useState} from "react";
@@ -22,8 +22,8 @@ export function RedEnvelope2024() {
 	// check license balance
 	const [kycStatus, setKycStatus] = useState<{wallet: string, isKycApproved: boolean}>();
 	const [showInput, setShowInput] = useState(() => document.cookie.includes('showInput=true'));
-	const [inputError, setInputError] = useState("");
-	const [value, setValue] = useState("");
+	const [_, setInputError] = useState("");
+	const [value] = useState("");
 
 	useEffect(() => {
 		if (address) {
@@ -59,15 +59,15 @@ export function RedEnvelope2024() {
 	});
 	console.log("isTwitterPostSubmittedData:", isTwitterPostSubmittedData)
 
-	const {isLoading: isSubmitClaimRequestLoading, write, error, isSuccess: isSubmitClaimRequestSuccess} = useContractWrite({
-		address: config.xaiRedEnvelope2024Address  as `0x${string}`,
-		abi: xaiRedEnvelopeAbi,
-		functionName: "submitClaimRequest",
-		args: [value],
-		onError(error) {
-			console.warn("Error", error);
-		},
-	});
+	// const {isLoading: isSubmitClaimRequestLoading, write, error, isSuccess: isSubmitClaimRequestSuccess} = useContractWrite({
+	// 	address: config.xaiRedEnvelope2024Address  as `0x${string}`,
+	// 	abi: xaiRedEnvelopeAbi,
+	// 	functionName: "submitClaimRequest",
+	// 	args: [value],
+	// 	onError(error) {
+	// 		console.warn("Error", error);
+	// 	},
+	// });
 
 	if (loadingGeo) {
 		return (
@@ -83,15 +83,15 @@ export function RedEnvelope2024() {
 		);
 	}
 
-	function attemptSubmit() {
-		setInputError("");
+	// function attemptSubmit() {
+	// 	setInputError("");
 
-		if (validateTweet(value)) {
-			write();
-		} else {
-			setInputError("Please enter a URL to a valid tweet.");
-		}
-	}
+	// 	if (validateTweet(value)) {
+	// 		write();
+	// 	} else {
+	// 		setInputError("Please enter a URL to a valid tweet.");
+	// 	}
+	// }
 
 	function validateTweet(tweet: string): boolean {
 		return tweet.indexOf("twitter.com") > -1 || tweet.indexOf("x.com") > -1;
