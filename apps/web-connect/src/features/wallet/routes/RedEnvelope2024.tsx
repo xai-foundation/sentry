@@ -21,7 +21,7 @@ export function RedEnvelope2024() {
 
 	// check license balance
 	const [kycStatus, setKycStatus] = useState<{wallet: string, isKycApproved: boolean}>();
-	const [showInput, setShowInput] = useState(false);
+	const [showInput, setShowInput] = useState(() => document.cookie.includes('showInput=true'));
 	const [inputError, setInputError] = useState("");
 	const [value, setValue] = useState("");
 
@@ -98,8 +98,8 @@ export function RedEnvelope2024() {
 	}
 
 	const keys = data?.totalLicenses || 0;
-	const approved = kycStatus?.isKycApproved;
-	const userEligible = keys > 0 && approved && (isTwitterPostSubmittedData as string)?.length;
+	const approved = !kycStatus?.isKycApproved;
+	const userEligible = keys > 0 && approved && showInput;
 	const eligibleTokens = 80 + (8 * keys);
 
 	return (
@@ -110,12 +110,12 @@ export function RedEnvelope2024() {
 						src="/images/red-drag.jpeg"
 					/>
 				</div>
-				<h1 className="text-3xl font-semibold text-center">CNY 2024 XAI Claim</h1>
+				<h1 className="text-3xl font-semibold text-center">Lunar New Year: Year of the Dragon - Xai Airdrop</h1>
 
 				{!address && !data && (
 					<>
 						<p className="text-lg text-[#525252] max-w-[590px] text-center mt-6">
-							Welcome to the XAI token claim portal in celebration of Chinese New Year 2024 - Year of the Dragon! If you're a Sentry Key holder who has passed KYC, you’re just one step away from claiming XAI tokens.
+							Welcome to the XAI token claim portal in celebration of Lunar New Year 2024 - Year of the Dragon! If you're a Sentry Key holder who has passed KYC, you’re just one step away from claiming XAI tokens.
 						</p>
 						<p className="text-lg text-[#525252] max-w-[590px] text-center mt-6">
 							Connect your wallet and complete the Tweet quest below. Share your excitement about Xai on X (formerly Twitter), then come back on Friday, 2/23 at 11:00 PM UTC to claim your XAI tokens.
@@ -175,14 +175,14 @@ export function RedEnvelope2024() {
 											Passed KYC
 										</div>
 									</div>
-									<div className="flex gap-2">
+									{/* <div className="flex gap-2">
 										<div>
-											{(isTwitterPostSubmittedData as string)?.length > 0 ? <FaCircleCheck color={"#16A34A"} size={20}/> : <FaCircleXmark color={"#F30919"} size={20}/>}
+											{(isTwitterPostSubmittedData as string)?.length > 0 || showInput ? <FaCircleCheck color={"#16A34A"} size={20}/> : <FaCircleXmark color={"#F30919"} size={20}/>}
 										</div>
 										<div>
 											Submitted Tweet by Thursday, 2/22 at 10:59 PM UTC.
 										</div>
-									</div>
+									</div> */}
 								</div>
 
 								{keys < 1 ? (
@@ -208,9 +208,9 @@ export function RedEnvelope2024() {
 								{/*	Claim available Friday, 2/23 at 11:00 PM UTC to Monday, 3/25 at 10:59 PM UTC.*/}
 								{/*</p>*/}
 
-								{ !isTwitterPostSubmittedData && !showInput && (
+								{!showInput && (
 									<>
-										<div className="mt-6">
+										<div className="mt-6 mb-6">
 											<a
 												className="twitter-share-button"
 												href="https://twitter.com/intent/tweet?text=Xai is a modular execution layer for game logic built on the Arbitrum Orbit stack to facilitate the onboarding of millions of gamers. And now they’re airdropping $XAI to Sentry Node Key holders to celebrate the Year of the Dragon. 🐉🧧"
@@ -219,8 +219,11 @@ export function RedEnvelope2024() {
 												data-size="large"
 											>
 												<button
-													onClick={() => setShowInput(true)}
-													className={`w-full h-16 text-sm text-white p-2 uppercase font-semibold bg-[#F30919]`}
+													onClick={() => {
+														setShowInput(true);
+														document.cookie = "showInput=true; path=/";
+													}}
+													className="w-full h-16 text-sm text-white p-2 uppercase font-semibold bg-[#F30919]"
 												>
 													CLICK HERE TO TWEET
 												</button>
@@ -229,7 +232,7 @@ export function RedEnvelope2024() {
 									</>
 								)}
 
-								{showInput && !isSubmitClaimRequestSuccess && (
+								{/* {showInput && !isSubmitClaimRequestSuccess && (
 									<div>
 										<label className="font-bold block mt-4">
 											Enter the URL of your tweet
@@ -266,13 +269,13 @@ export function RedEnvelope2024() {
 											</p>
 										)}
 									</div>
-								)}
+								)} */}
 
 								{userEligible && (
 									<div>
-										<h3 className="text-xl font-semibold text-center">Submission Successful.</h3>
+										{/* <h3 className="text-xl font-semibold text-center">Submission Successful.</h3> */}
 										<p className="text-center">
-											Congratulations! You've successfully completed all required actions to qualify for claiming XAI tokens for Chinese New Year 2024. Please revisit this page starting from Friday, February 23rd at 11:00 PM UTC until Monday, March 25th at 10:59 PM UTC to claim your {eligibleTokens} Xai.
+											Congratulations! You've successfully completed all required actions to qualify for claiming XAI tokens for Lunar New Year 2024. Please revisit this page starting from Friday, February 23rd at 11:00 PM UTC until Monday, March 25th at 10:59 PM UTC to claim your {eligibleTokens} Xai.
 										</p>
 									</div>
 								)}
