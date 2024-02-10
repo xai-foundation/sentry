@@ -98,7 +98,7 @@ export function RedEnvelope2024() {
 	}
 
 	const keys = data?.totalLicenses || 0;
-	const approved = !kycStatus?.isKycApproved;
+	const approved = kycStatus?.isKycApproved;
 	const userEligible = keys > 0 && approved && showInput;
 	const eligibleTokens = 80 + (8 * keys);
 
