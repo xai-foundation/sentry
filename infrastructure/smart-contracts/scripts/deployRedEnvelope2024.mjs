@@ -1,14 +1,15 @@
 import {safeVerify} from "../utils/safeVerify.mjs";
 
-// develop push
-const xai = "0x1E8C33e287836bB45c3fC644aa9038391b6F561d";
-const nodeLicense = "0x8083285f586b18a25A517a7081AA456B3048c5EB";
-const allowanceAddress = "0xbecbba84BF2d109A4154AAc8f9F9DDDA0808fA95";
-const startTime = Math.round(Date.now() / 1000);
-const endTime = Math.round(startTime + (60 * 60 * 24 * 14));
+const referee = "0xfD41041180571C5D371BEA3D9550E55653671198";
+const xai = "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66";
+const nodeLicense = "0xbc14d8563b248B79689ECbc43bBa53290e0b6b66";
+const allowanceAddress = "0x1F941F7Fb552215af81e6bE87F59578C18783483";
 
-console.log("startTime:", startTime);
-console.log("endTime:", endTime);
+const submissionStartTime = 1707465600;
+const submissionEndTime = 1708642800;
+
+const claimStartTime = 1708729200;
+const claimEndTime = 1711407600;
 
 async function main() {
 
@@ -16,7 +17,6 @@ async function main() {
 	const [deployer] = (await ethers.getSigners());
 	const deployerAddress = await deployer.getAddress();
 	console.log("deployerAddress", deployerAddress);
-	console.log("provider", deployer.provider);
 
 	// deploy red envelope contract
 	console.log("Deploying Xai Red Envelope...");
@@ -25,9 +25,12 @@ async function main() {
 		await deployer.getAddress(),
 		xai,
 		allowanceAddress,
-		startTime,
-		endTime,
-		nodeLicense
+		submissionStartTime,
+		submissionEndTime,
+		claimStartTime,
+		claimEndTime,
+		nodeLicense,
+		referee
 	], { kind: "transparent", deployer });
 	await xaiRedEnvelopeContract.deploymentTransaction();
 	const xaiRedEnvelopeContractAddress = await xaiRedEnvelopeContract.getAddress();
