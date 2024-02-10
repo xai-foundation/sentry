@@ -6,6 +6,7 @@ import {checkKycStatus, xaiRedEnvelopeAbi} from "@sentry/core";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import {FaCircleCheck, FaCircleXmark} from "react-icons/fa6";
 import {Link} from "react-router-dom";
+import { config } from "@sentry/core";
 
 export function RedEnvelope2024() {
 	const {blocked, loading: loadingGeo} = useBlockIp({blockUsa: true});
@@ -25,7 +26,9 @@ export function RedEnvelope2024() {
 	const [value, setValue] = useState("");
 
 	useEffect(() => {
-		void validateKycStatus();
+		if (address) {
+			void validateKycStatus();
+		}
 	}, [address]);
 
 	useEffect(() => {
@@ -39,12 +42,12 @@ export function RedEnvelope2024() {
 	}, [value]);
 
 	async function validateKycStatus(): Promise<void> {
-		const res = await checkKycStatus(address);
+		const res = await checkKycStatus([address!]);
 		setKycStatus(res[0]);
 	}
 
-	const {isLoading: isTwitterPostSubmittedLoading, data: isTwitterPostSubmittedData} = useContractRead({
-		address: "0x09E777Cd84884e1A2dD626977dCec52A4074D3aa" as `0x${string}`,
+	const {data: isTwitterPostSubmittedData} = useContractRead({
+		address: config.xaiRedEnvelope2024Address as `0x${string}`,
 		abi: xaiRedEnvelopeAbi,
 		functionName: "userXPostVerifications",
 		args: [address],
@@ -57,7 +60,7 @@ export function RedEnvelope2024() {
 	console.log("isTwitterPostSubmittedData:", isTwitterPostSubmittedData)
 
 	const {isLoading: isSubmitClaimRequestLoading, write, error, isSuccess: isSubmitClaimRequestSuccess} = useContractWrite({
-		address: "0x09E777Cd84884e1A2dD626977dCec52A4074D3aa" as `0x${string}`,
+		address: config.xaiRedEnvelope2024Address  as `0x${string}`,
 		abi: xaiRedEnvelopeAbi,
 		functionName: "submitClaimRequest",
 		args: [value],
@@ -94,9 +97,9 @@ export function RedEnvelope2024() {
 		return tweet.indexOf("twitter.com") > -1 || tweet.indexOf("x.com") > -1;
 	}
 
-	const keys = data?.totalLicenses;
+	const keys = data?.totalLicenses || 0;
 	const approved = kycStatus?.isKycApproved;
-	const userEligible = data?.totalLicenses > 0 && kycStatus?.isKycApproved && isTwitterPostSubmittedData?.length;
+	const userEligible = keys > 0 && approved && (isTwitterPostSubmittedData as string)?.length;
 	const eligibleTokens = 80 + (8 * keys);
 
 	return (
@@ -129,7 +132,7 @@ export function RedEnvelope2024() {
 					</p>
 				)}
 
-				{address && data && chain.id !== 42161 && (
+				{address && data && chain?.id !== 42161 && (
 				// {address && data && chain.id !== 42170 && (
 					<>
 						<p className="text-lg text-[#525252] max-w-[590px] text-center mt-6">
@@ -141,7 +144,7 @@ export function RedEnvelope2024() {
 					</>
 				)}
 
-				{address && data && chain.id === 42161 && (
+				{address && data && chain?.id === 42161 && (
 				// {address && data && chain.id === 42170 &&(
 					<>
 						{licenseBalanceLoading && (
@@ -174,7 +177,7 @@ export function RedEnvelope2024() {
 									</div>
 									<div className="flex gap-2">
 										<div>
-											{isTwitterPostSubmittedData?.length > 0 ? <FaCircleCheck color={"#16A34A"} size={20}/> : <FaCircleXmark color={"#F30919"} size={20}/>}
+											{(isTwitterPostSubmittedData as string)?.length > 0 ? <FaCircleCheck color={"#16A34A"} size={20}/> : <FaCircleXmark color={"#F30919"} size={20}/>}
 										</div>
 										<div>
 											Submitted Tweet by Thursday, 2/22 at 10:59 PM UTC.
@@ -205,12 +208,12 @@ export function RedEnvelope2024() {
 								{/*	Claim available Friday, 2/23 at 11:00 PM UTC to Monday, 3/25 at 10:59 PM UTC.*/}
 								{/*</p>*/}
 
-								{!isTwitterPostSubmittedData?.length > 0 && !showInput && (
+								{ !isTwitterPostSubmittedData && !showInput && (
 									<>
 										<div className="mt-6">
 											<a
 												className="twitter-share-button"
-												href="https://twitter.com/intent/tweet?text=Xai is a modular execution layer for game logic built on the Arbitrum Orbit stack to facilitate the onboarding of billions of gamers. And they just gave me some free tokens for CNY. 🀄🐉"
+												href="https://twitter.com/intent/tweet?text=Xai is a modular execution layer for game logic built on the Arbitrum Orbit stack to facilitate the onboarding of millions of gamers. And now they’re airdropping $XAI to Sentry Node Key holders to celebrate the Year of the Dragon. 🐉🧧"
 												target="_blank"
 												rel="noopener noreferrer"
 												data-size="large"
