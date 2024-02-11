@@ -8,6 +8,7 @@ import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse.js";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {useAtomValue} from "jotai";
+import {MdOutlineSpaceDashboard} from "react-icons/md";
 
 /**
  * Sidebar component
@@ -27,7 +28,7 @@ export function Sidebar() {
 					className="flex items-center gap-2 text-base font-semibold cursor-pointer"
 					onClick={() => navigate("/")}
 				>
-					<XaiLogo className="w-[16px]"/>
+					<XaiLogo className="w-[16px] text-[#F30919]"/>
 					<h1>Xai Client</h1>
 				</div>
 
@@ -35,24 +36,29 @@ export function Sidebar() {
 					<h2 className="text-gray-400 text-[12px] mb-2 uppercase">Sentry Node</h2>
 
 					<Link
+						to="/dashboard"
+						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
+					>
+						<MdOutlineSpaceDashboard size={15}/> Dashboard
+					</Link>
+
+					<Link
 						to="/keys"
 						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
 					>
 						<RiKey2Line size={15}/> Keys
 					</Link>
+
 					<Link
 						to="/sentry-wallet"
 						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
 					>
 						<div className="w-[15px] h-[15px] flex justify-center items-center">
-							{sentryRunning && hasAssignedKeys && funded
-								? <GreenPulse/>
-								: <YellowPulse/>
-							}
+							{sentryRunning && hasAssignedKeys && funded ? <GreenPulse/> : <YellowPulse/>}
 						</div>
-
 						Sentry Wallet
 					</Link>
+
 					{/*<Link*/}
 					{/*	to="/redeem"*/}
 					{/*	className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"*/}

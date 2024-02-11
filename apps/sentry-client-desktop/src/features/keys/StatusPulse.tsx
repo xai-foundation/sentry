@@ -1,9 +1,29 @@
-export function GreenPulse() {
+interface PulseStyle {
+	size?: "sm" | "md"
+}
+
+export function GreenPulse({size="sm"}: PulseStyle) {
+	let pulseW;
+	let pulseH;
+
+	switch (size) {
+		case "sm":
+			pulseW = "0.5rem";
+			pulseH = "0.5rem";
+			break;
+		case "md":
+			pulseW = "1.25rem";
+			pulseH = "1.25rem";
+			break;
+		default:
+			console.log("Invalid size"); // Handle the case where size is none of the specified values
+	}
+
 	const greenPulseStyle = {
 		background: 'rgba(51, 217, 178, 1)',
 		borderRadius: '50%',
-		height: '8px',
-		width: '8px',
+		height: pulseH,
+		width: pulseW,
 		boxShadow: '0 0 0 0 rgba(51, 217, 178, 1)',
 		transform: 'scale(1)',
 		animation: 'pulse-green 2s infinite',
@@ -14,12 +34,28 @@ export function GreenPulse() {
 	)
 }
 
-export function YellowPulse() {
+export function YellowPulse({size="sm"}: PulseStyle) {
+	let pulseW;
+	let pulseH;
+
+	switch (size) {
+		case "sm":
+			pulseW = "0.5rem";
+			pulseH = "0.5rem";
+			break;
+		case "md":
+			pulseW = "1.25rem";
+			pulseH = "1.25rem";
+			break;
+		default:
+			console.log("Invalid size"); // Handle the case where size is none of the specified values
+	}
+
 	const yellowPulseStyle = {
 		background: 'rgba(255, 177, 66, 1)',
 		borderRadius: '50%',
-		height: '8px',
-		width: '8px',
+		height: pulseH,
+		width: pulseW,
 		boxShadow: '0 0 0 0 rgba(255, 177, 66, 1)',
 		transform: 'scale(1)',
 		animation: 'pulse-yellow 2s infinite',
