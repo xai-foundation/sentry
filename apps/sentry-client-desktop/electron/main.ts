@@ -6,8 +6,47 @@ import express from 'express';
 import net from "net";
 import log from "electron-log";
 import {autoUpdater} from 'electron-updater';
+import * as FileStreamRotator from 'file-stream-rotator'
 
 const isWindows = os.platform() === "win32";
+
+// Create a log directory if it doesn't exist
+const logDirectory = path.join(app.getPath('logs'), 'sentry-desktop');
+fs.existsSync(logDirectory) || fs.mkdirSync(logDirectory);
+// Create a rotating write stream
+const accessLogStream = FileStreamRotator.getStream({
+	date_format: 'YYYYMMDD',
+	filename: path.join(logDirectory, 'access-%DATE%.log'),
+	audit_file: logDirectory,
+	frequency: 'daily',
+	max_logs: '14d'
+});
+
+// Disable file transport in electron-log
+log.transports.file.level = false;
+
+// Custom logging function
+function customLog(level, ...args) {
+	const message = `${new Date().toISOString()} [${level}] ${args.join(' ')}`;
+	accessLogStream.write(message + '\n');
+}
+
+
+const originalLogFunctions = {
+	info: log.info.bind(log),
+	//   warn: log.warn.bind(log),
+	error: log.error.bind(log),
+	//   debug: log.debug.bind(log),
+	//   verbose: log.verbose.bind(log)
+};
+
+// Preserve the default logging and add additional log to file
+Object.keys(originalLogFunctions).forEach(level => {
+	log[level] = (...args) => {
+		customLog(level, ...args);
+		originalLogFunctions[level](...args);
+	};
+});
 
 //-------------------------------------------------------------------
 // Logging

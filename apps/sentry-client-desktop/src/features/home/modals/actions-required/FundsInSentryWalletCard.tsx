@@ -9,6 +9,7 @@ import {useOperator} from "@/features/operator";
 import {useState} from "react";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {useAtomValue} from "jotai";
+import log from "electron-log";
 
 export function FundsInSentryWalletCard() {
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
@@ -26,10 +27,10 @@ export function FundsInSentryWalletCard() {
 					}, 2000);
 				})
 				.catch(err => {
-					console.error('Unable to copy to clipboard: ', err);
+					log.error('Unable to copy to clipboard: ', err);
 				});
 		} else {
-			console.error('Clipboard API not available, unable to copy to clipboard');
+			log.error('Clipboard API not available, unable to copy to clipboard');
 		}
 	}
 
