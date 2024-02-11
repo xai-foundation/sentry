@@ -10,15 +10,22 @@ export function bootOperator(cli: Vorpal) {
 
     cli
         .command('boot-operator', 'Starts a runtime of the operator.')
-        .action(async function (this: Vorpal.CommandInstance) {
-            const walletKeyPrompt: Vorpal.PromptObject = {
-                type: 'password',
-                name: 'walletKey',
-                message: 'Enter the private key of the operator:',
-                mask: '*'
-            };
+        .option('--walletKey [walletKey]', 'Private key of the operator')
+        .option('--useWhitelist [useWhitelist]', 'Flag to use a whitelist for the operator runtime')
+        .option('--owners [owners]', 'Comma separated list of owners to include in the whitelist')
+        .action(async function (this: Vorpal.CommandInstance, args: any) {
+            let { walletKey } = args.options;
 
-            const { walletKey } = await this.prompt(walletKeyPrompt);
+            if (!walletKey) {
+                const walletKeyPrompt: Vorpal.PromptObject = {
+                    type: 'password',
+                    name: 'walletKey',
+                    message: 'Enter the private key of the operator:',
+                    mask: '*'
+                };
+                const { result } = await this.prompt(walletKeyPrompt);
+                walletKey = result.walletKey;
+            }
 
             if (!walletKey || walletKey.length < 1) {
                 throw new Error("No private key passed in. Please provide a valid private key.")
@@ -26,31 +33,38 @@ export function bootOperator(cli: Vorpal) {
 
             const { signer } = getSignerFromPrivateKey(walletKey);
 
-            const whitelistPrompt: Vorpal.PromptObject = {
-                type: 'confirm',
-                name: 'useWhitelist',
-                message: 'Do you want to use a whitelist for the operator runtime?',
-                default: false
-            };
+            let { useWhitelist } = args.options;
+            if (useWhitelist) {
+                useWhitelist = (useWhitelist === 'true' || useWhitelist === true);
+            } else {
+                const whitelistPrompt: Vorpal.PromptObject = {
+                    type: 'confirm',
+                    name: 'useWhitelist',
+                    message: 'Do you want to use a whitelist for the operator runtime?',
+                    default: false
+                };
+                const result = await this.prompt(whitelistPrompt);
+                useWhitelist = result.useWhitelist;
+            }
 
-            const { useWhitelist } = await this.prompt(whitelistPrompt);
-
-            // If useWhitelist is false, selectedOwners will be undefined
             let selectedOwners;
             if (useWhitelist) {
-                
-                const operatorAddress = await signer.getAddress();
-                const owners = await listOwnersForOperator(operatorAddress);
+                if (args.options.owners) {
+                    selectedOwners = args.options.owners.split(',');
+                } else {
+                    const operatorAddress = await signer.getAddress();
+                    const owners = await listOwnersForOperator(operatorAddress);
 
-                const ownerPrompt: Vorpal.PromptObject = {
-                    type: 'checkbox',
-                    name: 'selectedOwners',
-                    message: 'Select the owners for the operator to run for:',
-                    choices: [operatorAddress, ...owners]
-                };
+                    const ownerPrompt: Vorpal.PromptObject = {
+                        type: 'checkbox',
+                        name: 'selectedOwners',
+                        message: 'Select the owners for the operator to run for:',
+                        choices: [operatorAddress, ...owners]
+                    };
 
-                const result = await this.prompt(ownerPrompt);
-                selectedOwners = result.selectedOwners;
+                    const result = await this.prompt(ownerPrompt);
+                    selectedOwners = result.selectedOwners;
+                }
 
                 console.log("selectedOwners", selectedOwners);
 
