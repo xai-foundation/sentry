@@ -1,5 +1,6 @@
 import {PropsWithChildren, useState} from "react";
 import {CountryDropdown} from "@/components/blockpass/CountryDropdown";
+import log from "electron-log";
 
 interface BlockpassProps {
 	onClick?: () => void;
@@ -24,7 +25,7 @@ export function Blockpass({onClick = () => {}, children = "Begin KYC"}: PropsWit
 				return window.electron.openExternal(`https://verify-with.blockpass.org/?clientId=xai_node_007da`);
 			}
 		} else {
-			console.log("Please select a country");
+			log.info("Please select a country");
 		}
 	}
 

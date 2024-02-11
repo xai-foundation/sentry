@@ -8,7 +8,7 @@ import log from "electron-log";
 import {autoUpdater} from 'electron-updater';
 
 const isWindows = os.platform() === "win32";
-
+log.initialize();
 //-------------------------------------------------------------------
 // Logging
 //
