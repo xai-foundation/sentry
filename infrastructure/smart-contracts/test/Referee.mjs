@@ -14,12 +14,12 @@ export function RefereeTests(deployInfrastructure) {
      * @param challengeId The ID of the challenge.
      * @return The winning state root.
      */
-    async function findWinningStateRoot(referee, winnerNodeLicenses, challengeId) {
-        for (let i = 0n;; i++) {
+    async function findWinningStateRoot(referee, winnerNodeLicenses, challengeId, boostFactor = 100) {
+        for (let i = 0n; ; i++) {
             const successorStateRoot = `0x${i.toString(16).padStart(64, '0')}`;
             let isWinnerForAll = true;
             for (const nodeLicenseId of winnerNodeLicenses) {
-                const [isWinner] = await referee.createAssertionHashAndCheckPayout(nodeLicenseId, challengeId, successorStateRoot, "0x0000000000000000000000000000000000000000000000000000000000000000");
+                const [isWinner] = await referee.createAssertionHashAndCheckPayout(nodeLicenseId, challengeId, boostFactor, successorStateRoot, "0x0000000000000000000000000000000000000000000000000000000000000000");
                 if (!isWinner) {
                     isWinnerForAll = false;
                     break;
@@ -31,7 +31,19 @@ export function RefereeTests(deployInfrastructure) {
         }
     }
 
-    return function() {
+    async function getNumWinningStateRoots(referee, numIterations, boostFactor = 100) {
+        let numWinners = 0;
+        for (let i = 0n; i < numIterations; i++) {
+            const successorStateRoot = `0x${i.toString(16).padStart(64, '0')}`;
+            const [isWinner] = await referee.createAssertionHashAndCheckPayout(1, 1, boostFactor, successorStateRoot, "0x0000000000000000000000000000000000000000000000000000000000000000");
+            if (isWinner) {
+                numWinners++;
+            }
+        }
+        return numWinners;
+    }
+
+    return function () {
 
         it("Check to make sure the setChallengerPublicKey actually saves the value and only callable as an admin", async function() {
             const {referee, refereeDefaultAdmin, kycAdmin, challenger} = await loadFixture(deployInfrastructure);
@@ -514,22 +526,100 @@ export function RefereeTests(deployInfrastructure) {
             assert.equal(submission.submitted, false, "Submission was created with invalid successorRoot");
         });
 
-        describe("The rollup protocol should be checking if values are correct", function() {
 
-            it("Check that toggling assertion, makes so you have to send in the correct assertion data from the rollup protocol", async function() {
-                const {referee, refereeDefaultAdmin, challenger} = await loadFixture(deployInfrastructure);
-    
+        describe("The Referee should allow users to stake in V1", function () {
+
+            it("Check that staked amount is taken from user's esXai balance", async function () {
+                const { esXai, referee, addr1, esXaiMinter, nodeLicense } = await loadFixture(deployInfrastructure);
+                const numLicense = await nodeLicense.balanceOf(addr1);
+                const maxAmountStake = await referee.getMaxStakeAmount(numLicense);
+                await esXai.connect(esXaiMinter).mint(addr1, maxAmountStake);
+                const initialBalance = await esXai.balanceOf(addr1);
+                await esXai.connect(addr1).approve(await referee.getAddress(), maxAmountStake);
+                await referee.connect(addr1).stake(maxAmountStake);
+                expect(await referee.stakedAmounts(addr1)).to.equal(maxAmountStake);
+                const balanceAfterStake = await esXai.balanceOf(addr1);
+                expect(balanceAfterStake).to.equal(initialBalance - maxAmountStake);
+                await referee.connect(addr1).unstake(maxAmountStake);
+                const balanceAfterUnstake = await esXai.balanceOf(addr1);
+                expect(balanceAfterUnstake).to.equal(initialBalance);
+            })
+
+            it("Check that maximum staked amount is limited", async function () {
+                const { esXai, referee, addr1, esXaiMinter, nodeLicense } = await loadFixture(deployInfrastructure);
+
+                const numLicense = await nodeLicense.balanceOf(addr1);
+                const maxAmountStake = await referee.getMaxStakeAmount(numLicense);
+                await esXai.connect(esXaiMinter).mint(addr1, maxAmountStake);
+                await esXai.connect(addr1).approve(await referee.getAddress(), maxAmountStake + BigInt(1));
+
+                // Try stake more than allowed per Nodelicense, should fail
+                await expect(referee.connect(addr1).stake(maxAmountStake + BigInt(1))).to.be.revertedWith("Maximum staking amount exceeded");
+
+                // Stake exactly max amount allowed per Nodelicense, should work
+                await referee.connect(addr1).stake(maxAmountStake);
+                expect(await referee.stakedAmounts(addr1)).to.equal(maxAmountStake);
+
+                // Try stake some more, should fail
+                await expect(referee.connect(addr1).stake(BigInt(1))).to.be.revertedWith("Maximum staking amount exceeded");
+                
+                await referee.connect(addr1).unstake(maxAmountStake);
+            })
+
+            it("Check that maximum staked amount increases with more NodeLicenses", async function () {
+                const { esXai, referee, addr1, esXaiMinter, nodeLicense} = await loadFixture(deployInfrastructure);
+                const numLicense = await nodeLicense.balanceOf(addr1);
+                const maxAmountStake = await referee.getMaxStakeAmount(numLicense);
+                await esXai.connect(esXaiMinter).mint(addr1, maxAmountStake + BigInt(1));
+                await esXai.connect(addr1).approve(await referee.getAddress(), maxAmountStake + BigInt(1));
+
+                await referee.connect(addr1).stake(maxAmountStake);
+                await expect(referee.connect(addr1).stake(BigInt(1))).to.be.revertedWith("Maximum staking amount exceeded");
+
+                let price = await nodeLicense.price(1, "");
+                await nodeLicense.connect(addr1).mint(1, "", {value: price});
+
+                await referee.connect(addr1).stake(BigInt(1));
+                expect(await referee.stakedAmounts(addr1)).to.equal(maxAmountStake + BigInt(1));
+                await referee.connect(addr1).unstake(maxAmountStake + BigInt(1));
+            })
+
+            it("Check that reward chance increases with higher boostFactor", async function () {
+                const { referee } = await loadFixture(deployInfrastructure);
+
+                const numIterations = 1000;
+                const baseFactor = 100;
+                const baseNumWins = await getNumWinningStateRoots(referee, numIterations, baseFactor);
+
+                // const boostFactors = [110, 200, 250];
+                const boostFactors = [150, 200, 250]; // 2.5 times base chance
+                for (const boostFactor of boostFactors) {
+                    const boostedNumWins = await getNumWinningStateRoots(referee, numIterations, boostFactor);
+                    expect(boostedNumWins / baseNumWins).to.be.closeTo(boostFactor / baseFactor, 0.5);  // expect to win 2 - 3 times more often
+                }
+            })
+
+            it("Check that reward chance increases with higher staking amount", async function () {
+                // TODO enter 100 challenges without boost and 100 with boost, make sure that we win accordingly
+            })
+        }),
+
+        describe("The rollup protocol should be checking if values are correct", function () {
+
+            it("Check that toggling assertion, makes so you have to send in the correct assertion data from the rollup protocol", async function () {
+                const { referee, refereeDefaultAdmin, challenger } = await loadFixture(deployInfrastructure);
+
                 // check isCheckingAssertions is false
                 const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
                 assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
-    
+
                 // turn on assertion checking
                 await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
-            
+
                 // check isCheckingAssertions is true
                 const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
                 assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
-    
+
                 // get an arbitrary node from the protocol and check to see that the referee actually checks it
                 await referee.connect(challenger).submitChallenge(
                     2252,
