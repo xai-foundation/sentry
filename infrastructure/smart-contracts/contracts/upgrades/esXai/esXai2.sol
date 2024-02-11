@@ -6,7 +6,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
-import "../Xai.sol";
+import "../../Xai.sol";
 
 /**
  * @title esXai
@@ -22,13 +22,14 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     bool private _redemptionActive;
     mapping(address => RedemptionRequest[]) private _redemptionRequests;
     address public esXaiBurnFoundationRecipient;
+    uint256 public esXaiBurnFoundationBasePoints;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[499] private __gap;
+    uint256[498] private __gap;
 
 
     struct RedemptionRequest {
@@ -44,9 +45,11 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     event RedemptionCompleted(address indexed user, uint256 indexed index);
     event RedemptionStatusChanged(bool isActive);
     event XaiAddressChanged(address indexed newXaiAddress);
+    event FoundationBasepointsUpdated(uint256 newBasepoints);
 
-    function initialize (address _esXaiBurnFoundationRecipient) public reinitializer(2) {
+    function initialize (address _esXaiBurnFoundationRecipient, uint256 _esXaiBurnFoundationBasePoints) public reinitializer(2) {
         esXaiBurnFoundationRecipient = _esXaiBurnFoundationRecipient;
+        esXaiBurnFoundationBasePoints = _esXaiBurnFoundationBasePoints;
     }
 
     /**
@@ -211,7 +214,7 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
 
         // If the ratio is less than 1000, mint half of the esXai amount that was not redeemed to the esXaiBurnFoundationRecipient
         if (ratio < 1000) {
-            uint256 foundationXaiAmount = (request.amount - xaiAmount) / 2;
+            uint256 foundationXaiAmount = (request.amount - xaiAmount) * esXaiBurnFoundationBasePoints / 1000;
             Xai(xai).mint(esXaiBurnFoundationRecipient, foundationXaiAmount);
         }
 
@@ -236,5 +239,14 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      */
     function getRedemptionRequestCount(address account) public view returns (uint256) {
         return _redemptionRequests[account].length;
+    }
+
+    /**
+     * @dev Function to get the count of redemption requests for a given address.
+     * @param number The amount to update the basepoints.
+     */
+    function updateFoundationBasepoints(uint256 number) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        esXaiBurnFoundationBasePoints = number;
+        emit FoundationBasepointsUpdated(number); 
     }
 }
