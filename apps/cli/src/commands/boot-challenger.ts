@@ -1,7 +1,7 @@
 import Vorpal from "vorpal";
 import axios from "axios";
 import { ethers } from 'ethers';
-import { config, createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee, EventListenerError } from "@sentry/core";
+import { config, createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee, EventListenerError, findMissedAssertion } from "@sentry/core";
 
 type PromptBodyKey = "secretKeyPrompt" | "walletKeyPrompt" | "webhookUrlPrompt";
 
@@ -153,6 +153,31 @@ const startListener = async (commandInstance: Vorpal.CommandInstance) => {
     })
 }
 
+async function processMissedAssertions(commandInstance: Vorpal.CommandInstance) {
+    commandInstance.log(`[${new Date().toISOString()}] Looking for missed assertions...`);
+
+    const missedAssertionNodeNum = await findMissedAssertion();
+
+    if (missedAssertionNodeNum) {
+        commandInstance.log(`[${new Date().toISOString()}] Found missed assertion with nodeNum: ${missedAssertionNodeNum}. Looking up the assertion information...`);
+        const assertionNode = await getAssertion(missedAssertionNodeNum);
+        commandInstance.log(`[${new Date().toISOString()}] Missed assertion data retrieved. Starting the submission process...`);
+        try {
+            await submitAssertionToReferee(
+                cachedSecretKey,
+                missedAssertionNodeNum,
+                assertionNode,
+                cachedSigner!.signer,
+            );
+            commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${missedAssertionNodeNum}`);
+        } catch (error) {
+            sendNotification(`Submit missed assertion Error: ${(error as Error).message}`, commandInstance);
+            throw error;
+        }
+    } else {
+        commandInstance.log(`[${new Date().toISOString()}] Did not find any missing assertions`);
+    }
+}
 
 /**
  * Starts a runtime of the challenger.
@@ -181,6 +206,15 @@ export function bootChallenger(cli: Vorpal) {
             const assertionCheckInterval = setInterval(() => {
                 checkTimeSinceLastAssertion(lastAssertionTime, commandInstance);
             }, 5 * 60 * 1000);
+
+            try {
+                await processMissedAssertions(commandInstance);
+            } catch (error) {
+                //TODO what should we do if this fails, restarting the cmd won't help, it will most probably fail again
+                commandInstance.log(`[${new Date().toISOString()}] Failed to handle missed assertions - ${(error as Error).message}`);
+                await sendNotification(`Failed to handle missed assertions - ${(error as Error).message}`, commandInstance);
+                return Promise.resolve();
+            }
 
             for (; currentNumberOfRetries <= NUM_ASSERTION_LISTENER_RETRIES; currentNumberOfRetries++) {
                 commandInstance.log(`[${new Date().toISOString()}] The challenger is now listening for assertions...`);
