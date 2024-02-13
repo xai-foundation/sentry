@@ -246,6 +246,7 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      * @param number The amount to update the basepoints.
      */
     function updateFoundationBasepoints(uint256 number) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(number <= 1000, "Invalid basepoints");
         esXaiBurnFoundationBasePoints = number;
         emit FoundationBasepointsUpdated(number); 
     }
