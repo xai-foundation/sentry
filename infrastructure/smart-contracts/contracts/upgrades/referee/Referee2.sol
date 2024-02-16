@@ -70,12 +70,24 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping for users staked amount in V1 staking
     mapping(address => uint256) public stakedAmounts;
 
+    // Minimum amounts of staked esXai to be in the tier of the respective index
+    uint256[] public stakeAmountTierThresholds;
+
+    // Reward chance boost factor based on tier of the respective index
+    uint256[] public stakeAmountBoostFactors;
+
+    // The maximum amount of esXai (in wei) that can be staked per NodeLicense
+    uint256 public maxStakeAmountPerLicense;
+    
+    // Enabling staking on the Referee
+    bool public stakingEnabled;
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[499] private __gap;
+    uint256[495] private __gap;
 
     // Struct for the submissions
     struct Submission {
@@ -117,8 +129,22 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
     event InvalidSubmission(uint256 indexed challengeId, uint256 nodeLicenseId);
     event RewardsClaimed(uint256 indexed challengeId, uint256 amount);
     event ChallengeExpired(uint256 indexed challengeId);
+    event StakingEnabled();
+    event UpdateMaxStakeAmount(uint256 prevAmount, uint256 newAmount);
     event StakedV1(address indexed user, uint256 amount, uint256 totalStaked);
     event UnstakeV1(address indexed user, uint256 amount, uint256 totalStaked);
+
+    function initialize () public reinitializer(2) {
+        maxStakeAmountPerLicense = 2500 * 10 ** 18;
+
+        stakeAmountTierThresholds.push(5000 * 10 ** 18);
+        stakeAmountTierThresholds.push(10000 * 10 ** 18);
+        stakeAmountTierThresholds.push(25000 * 10 ** 18);
+
+        stakeAmountBoostFactors.push(200);
+        stakeAmountBoostFactors.push(300);
+        stakeAmountBoostFactors.push(500);
+    }
 
     /**
      * @notice Returns the combined total supply of esXai Xai, and the unminted allocated tokens.
@@ -467,35 +493,38 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 _challengeId
     ) public {
 
-        Challenge memory currentChallenge  = challenges[_challengeId];
+        Challenge memory challangeToClaimFor  = challenges[_challengeId];
 
         // check the challenge exists by checking the timestamp is not 0
-        require(currentChallenge.createdTimestamp != 0, "The Challenge does not exist for this id");
+        require(challangeToClaimFor.createdTimestamp != 0, "The Challenge does not exist for this id");
 
         // Check if the challenge is closed for submissions
-        require(!currentChallenge.openForSubmissions, "Challenge is still open for submissions");
+        require(!challangeToClaimFor.openForSubmissions, "Challenge is still open for submissions");
 
         // expire the challenge if 180 days old
-        if (block.timestamp >= currentChallenge.createdTimestamp + 180 days) {
+        if (block.timestamp >= challangeToClaimFor.createdTimestamp + 180 days) {
             expireChallengeRewards(_challengeId);
             return;
         }
+        
+        // Check if the challenge rewards have expired
+        require(!challangeToClaimFor.expiredForRewarding, "Challenge rewards have expired");
 
-        // Check that node licenses could even be eligible at the start
-        require(currentChallenge.totalSupplyOfNodesAtChallengeStart > 0, "No NodeLicenses have been minted when this challenge started");
+        // SAVE GAS REMOVE - this is not needed anymore, we know that licenses have been minted
+        // // Check that node licenses could even be eligible at the start
+        // require(challangeToClaimFor.totalSupplyOfNodesAtChallengeStart > 0, "No NodeLicenses have been minted when this challenge started");
 
         // Get the minting timestamp of the nodeLicenseId
         uint256 mintTimestamp = NodeLicense(nodeLicenseAddress).getMintTimestamp(_nodeLicenseId);
 
         // Check if the nodeLicenseId is eligible for a payout
-        require(mintTimestamp < currentChallenge.createdTimestamp, "NodeLicense is not eligible for a payout on this challenge, it was minted after it started");
+        require(mintTimestamp < challangeToClaimFor.createdTimestamp, "NodeLicense is not eligible for a payout on this challenge, it was minted after it started");
 
         // Look up the submission
         Submission memory submission = submissions[_challengeId][_nodeLicenseId];
-        require(submission.submitted, "No submission found for this NodeLicense and challenge");
-
-        // Check if the challenge rewards have expired
-        require(!currentChallenge.expiredForRewarding, "Challenge rewards have expired");
+        
+        // SAVE GAS REMOVE - we already check if the submission is eligibleForPayout
+        // require(submission.submitted, "No submission found for this NodeLicense and challenge");
 
         // Check if the owner of the NodeLicense is KYC'd
         address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
@@ -504,7 +533,7 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
         // Check if the submission has already been claimed
         require(!submission.claimed, "This submission has already been claimed");
 
-        // Already checked on submit, we should not have to check again - the staked amount could be different!
+         // SAVE GAS REMOVE - Already checked on submit, we should not have to check again - the staked amount could be different!
         // uint256 _boostFactor = getBoostFactor(stakedAmounts[owner]);
         // // Check if we are valid for a payout
         // (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _boostFactor, submission.assertionStateRootOrConfirmData, challenges[_challengeId].challengerSignedHash);
@@ -512,7 +541,7 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
         require(submission.eligibleForPayout, "Not valid for a payout");
 
         // Take the amount that was allocated for the rewards and divide it by the number of claimers
-        uint256 reward = currentChallenge.rewardAmountForClaimers / currentChallenge.numberOfEligibleClaimers;
+        uint256 reward = challangeToClaimFor.rewardAmountForClaimers / challangeToClaimFor.numberOfEligibleClaimers;
 
         // mark the submission as claimed
         submissions[_challengeId][_nodeLicenseId].claimed = true;
@@ -617,8 +646,72 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
      * @return The payout chance boostFactor. 200 for double the chance.
      */
     function _getBoostFactor(uint256 stakedAmount) internal view returns (uint256) {
-        // TODO: lookup boostFactor based on numLicenses
-        return 100;
+        if(stakedAmount < stakeAmountTierThresholds[0]){
+            return 100;
+        }
+
+        uint256 length = stakeAmountTierThresholds.length;
+        for (uint256 tier = 1; tier < length; tier++) {
+            if (stakedAmount < stakeAmountTierThresholds[tier]) {
+                return stakeAmountBoostFactors[tier - 1];
+            }
+        }
+        return stakeAmountBoostFactors[length - 1];
+    }
+
+    
+    /**
+     * @notice Enables staking on the Referee.
+     */
+    function enableStaking() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        stakingEnabled = true;
+        emit StakingEnabled();
+    }
+    
+    /**
+     * @dev Admin update the maximum staking amount per NodeLicense
+     * @param newAmount The new maximum amount per NodeLicense
+     */
+    function updateMaxStakePerLicense(uint256 newAmount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(newAmount != 0, "Invalid max amount");
+        uint256 prevAmount = maxStakeAmountPerLicense;
+        maxStakeAmountPerLicense = newAmount;
+        emit UpdateMaxStakeAmount(prevAmount, newAmount);
+    }
+
+    /**
+     * @dev Admin update the tier thresholds and the corresponding reward chance boost
+     * @param index The index if the tier to update
+     * @param newThreshold The new threshold of the tier
+     * @param newBoostFactor The new boost factor for the tier
+     */
+    function updateStakingTier(uint256 index, uint256 newThreshold, uint256 newBoostFactor) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        stakeAmountTierThresholds[index] = newThreshold;
+        stakeAmountBoostFactors[index] = newBoostFactor;
+    }
+
+    /**
+     * @dev Admin add a new staking tier to the end of the tier array
+     * @param newThreshold The new threshold of the tier
+     * @param newBoostFactor The new boost factor for the tier
+     */
+    function addStakingTier(uint256 newThreshold, uint256 newBoostFactor) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        stakeAmountTierThresholds.push(newThreshold);
+        stakeAmountBoostFactors.push(newBoostFactor);
+    }
+
+    /**
+     * @dev Admin remove a staking tier
+     * @param index The index if the tier to remove
+     */
+    function removeStakingTier(uint256 index) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(index < stakeAmountTierThresholds.length, "index out of bound");
+        for (uint i = index; i < stakeAmountTierThresholds.length - 1; i++) {
+            stakeAmountTierThresholds[i] = stakeAmountTierThresholds[i + 1];
+            stakeAmountBoostFactors[i] = stakeAmountBoostFactors[i + 1];
+        }
+        stakeAmountTierThresholds.pop();
+        stakeAmountBoostFactors.pop();
     }
 
     /**
@@ -627,8 +720,7 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
      * @return The maximum allowed staking amount of esXai.
      */
     function _getMaxStakeAmount(uint256 numLicenses) internal view returns (uint256) {
-        // TODO: lookup maxStakeAmount based on numLicenses
-        return (2500 * 10 ** 18) * numLicenses;
+        return maxStakeAmountPerLicense * numLicenses;
     }
     
     /**
@@ -637,7 +729,6 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
      * @return The payout chance boostFactor. 200 for double the chance.
      */
     function getBoostFactor(uint256 stakedAmount) external view returns (uint256) {
-        // TODO: lookup boostFactor based on numLicenses
         return _getBoostFactor(stakedAmount);
     }
 
@@ -647,7 +738,6 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
      * @return The maximum allowed staking amount of esXai.
      */
     function getMaxStakeAmount(uint256 numLicenses) external view returns (uint256) {
-        // TODO: lookup maxStakeAmount based on numLicenses
         return _getMaxStakeAmount(numLicenses);
     }
 
@@ -656,6 +746,7 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
      * @param amount The amount of esXai to stake.
      */
     function stake(uint256 amount) external {
+        require(stakingEnabled, "Staking not enabled");
         // Check how many NodeLicenses owner has.
         uint256 numLicenses = NodeLicense(nodeLicenseAddress).balanceOf(msg.sender);
 

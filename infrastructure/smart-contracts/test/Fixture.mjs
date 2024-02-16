@@ -62,8 +62,9 @@ describe("Fixture Tests", function () {
         await referee.waitForDeployment();
         //Upgrade esXai
         const Referee2 = await ethers.getContractFactory("Referee2");
-        const referee2 = await upgrades.upgradeProxy((await referee.getAddress()), Referee2);
+        const referee2 = await upgrades.upgradeProxy((await referee.getAddress()), Referee2, { call: { fn: "initialize", args: [] } });
         await referee2.waitForDeployment();
+        await referee2.enableStaking();
 
         // Set Rollup Address
         const rollupAddress = config.rollupAddress;

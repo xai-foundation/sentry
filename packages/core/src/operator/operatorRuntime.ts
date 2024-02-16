@@ -211,7 +211,9 @@ export async function operatorRuntime(
             });
             safeStatusCallback();
 
-            const [payoutEligible] = await retry(async () => await refereeContract.createAssertionHashAndCheckPayout(nodeLicenseId, challengeNumber, challenge.assertionStateRootOrConfirmData, challenge.challengerSignedHash));
+            // TODO calculate boost factor
+            const boostFactor = 100;
+            const [payoutEligible] = await retry(async () => await refereeContract.createAssertionHashAndCheckPayout(nodeLicenseId, challengeNumber, boostFactor, challenge.assertionStateRootOrConfirmData, challenge.challengerSignedHash));
             if (!payoutEligible) {
                 logFunction(`[${new Date().toISOString()}] Sentry Key ${nodeLicenseId} did not accrue esXAI for the challenge ${challengeNumber}. A Sentry Key receives esXAI every few days.`);
                 nodeLicenseStatusMap.set(nodeLicenseId, {
