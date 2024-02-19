@@ -686,6 +686,18 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
      * @param newBoostFactor The new boost factor for the tier
      */
     function updateStakingTier(uint256 index, uint256 newThreshold, uint256 newBoostFactor) external onlyRole(DEFAULT_ADMIN_ROLE) {
+
+        require(newBoostFactor <= 5_000, "Invalid boost factor");
+
+        uint256 lastIndex = stakeAmountTierThresholds.length - 1;
+        if(index == 0){
+            require(stakeAmountTierThresholds[1] > newThreshold, "Threshold needs to be monotonically increasing");
+        } else if(index == lastIndex){
+            require(stakeAmountTierThresholds[lastIndex - 1] < newThreshold, "Threshold needs to be monotonically increasing");
+        } else {
+            require(stakeAmountTierThresholds[index + 1] > newThreshold && stakeAmountTierThresholds[index - 1] < newThreshold, "Threshold needs to be monotonically increasing");
+        }
+
         stakeAmountTierThresholds[index] = newThreshold;
         stakeAmountBoostFactors[index] = newBoostFactor;
     }
@@ -696,6 +708,11 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
      * @param newBoostFactor The new boost factor for the tier
      */
     function addStakingTier(uint256 newThreshold, uint256 newBoostFactor) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(newBoostFactor <= 5_000, "Invalid boost factor");
+
+        uint256 lastIndex = stakeAmountTierThresholds.length - 1;
+        require(stakeAmountTierThresholds[lastIndex] < newThreshold, "Threshold needs to be monotonically increasing");
+
         stakeAmountTierThresholds.push(newThreshold);
         stakeAmountBoostFactors.push(newBoostFactor);
     }
@@ -705,7 +722,8 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
      * @param index The index if the tier to remove
      */
     function removeStakingTier(uint256 index) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(index < stakeAmountTierThresholds.length, "index out of bound");
+        require(stakeAmountTierThresholds.length > 1, "Cannot remove last tier");
+        require(index < stakeAmountTierThresholds.length, "Index out of bound");
         for (uint i = index; i < stakeAmountTierThresholds.length - 1; i++) {
             stakeAmountTierThresholds[i] = stakeAmountTierThresholds[i + 1];
             stakeAmountBoostFactors[i] = stakeAmountBoostFactors[i + 1];
