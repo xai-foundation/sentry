@@ -23,16 +23,23 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     mapping(address => RedemptionRequest[]) private _redemptionRequests;
     address public esXaiBurnFoundationRecipient;
     uint256 public esXaiBurnFoundationBasePoints;
+    mapping(address => RedemptionRequestExt[]) private _extRedemptionRequests;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[498] private __gap;
-
+    uint256[497] private __gap;
 
     struct RedemptionRequest {
+        uint256 amount;
+        uint256 startTime;
+        uint256 duration;
+        bool completed;
+    }
+
+    struct RedemptionRequestExt {
         uint256 amount;
         uint256 startTime;
         uint256 duration;
@@ -161,8 +168,8 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         _transfer(msg.sender, address(this), amount);
 
         // Store the redemption request
-        _redemptionRequests[msg.sender].push(RedemptionRequest(amount, block.timestamp, duration, 0, false, false));
-        emit RedemptionStarted(msg.sender, _redemptionRequests[msg.sender].length - 1);
+        _extRedemptionRequests[msg.sender].push(RedemptionRequestExt(amount, block.timestamp, duration, 0, false, false));
+        emit RedemptionStarted(msg.sender, _extRedemptionRequests[msg.sender].length - 1);
     }
 
     /**
@@ -171,7 +178,7 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      */
     function cancelRedemption(uint256 index) public {
         require(_redemptionActive, "Redemption is currently inactive");
-        RedemptionRequest storage request = _redemptionRequests[msg.sender][index];
+        RedemptionRequestExt storage request = _extRedemptionRequests[msg.sender][index];
         require(!request.completed, "Redemption already completed");
 
         // Transfer back the esXai tokens to the sender's account
@@ -190,7 +197,7 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      */
     function completeRedemption(uint256 index) public {
         require(_redemptionActive, "Redemption is currently inactive");
-        RedemptionRequest storage request = _redemptionRequests[msg.sender][index];
+        RedemptionRequestExt storage request = _extRedemptionRequests[msg.sender][index];
         require(!request.completed, "Redemption already completed");
         require(block.timestamp >= request.startTime + request.duration, "Redemption period not yet over");
 
@@ -233,8 +240,8 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      * @param index The index of the redemption request.
      * @return The redemption request.
      */
-    function getRedemptionRequest(address account, uint256 index) public view returns (RedemptionRequest memory) {
-        return _redemptionRequests[account][index];
+    function getRedemptionRequest(address account, uint256 index) public view returns (RedemptionRequestExt memory) {
+        return _extRedemptionRequests[account][index];
     }
 
     /**
@@ -243,7 +250,7 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      * @return The count of redemption requests.
      */
     function getRedemptionRequestCount(address account) public view returns (uint256) {
-        return _redemptionRequests[account].length;
+        return _extRedemptionRequests[account].length;
     }
 
     /**
