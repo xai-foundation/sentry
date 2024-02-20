@@ -36,7 +36,9 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         uint256 amount;
         uint256 startTime;
         uint256 duration;
+        uint256 endTime;
         bool completed;
+        bool cancelled;
     }
 
     event WhitelistUpdated(address account, bool isAdded);
@@ -159,7 +161,7 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         _transfer(msg.sender, address(this), amount);
 
         // Store the redemption request
-        _redemptionRequests[msg.sender].push(RedemptionRequest(amount, block.timestamp, duration, false));
+        _redemptionRequests[msg.sender].push(RedemptionRequest(amount, block.timestamp, duration, 0, false, false));
         emit RedemptionStarted(msg.sender, _redemptionRequests[msg.sender].length - 1);
     }
 
@@ -177,6 +179,8 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
 
         // Mark the redemption request as completed
         request.completed = true;
+        request.cancelled = true;
+        request.endTime = block.timestamp;
         emit RedemptionCancelled(msg.sender, index);
     }
 
@@ -205,6 +209,7 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
 
         // mark the request as completed
         request.completed = true;
+        request.endTime = block.timestamp;
 
         // Burn the esXai tokens
         _burn(address(this), request.amount);
