@@ -1,8 +1,8 @@
 import hardhat from "hardhat";
 const { ethers, upgrades } = hardhat;
 //TODO Add current proxy contract address to update
-const address = "0x2fef24A57705A652A09Dd8aD8c6c7BC99c017c04";
-const foundationReceiver = "0x490A5C858458567Bd58774C123250de11271f165"
+const address = "0x4C749d097832DE2FEcc989ce18fDc5f1BD76700c";
+const foundationReceiver = "0xFCF7248C495d6fd3641eE43F861c48Ebe402c878"
 const foundationBasePoints = BigInt(500);
 
 
