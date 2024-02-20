@@ -108,7 +108,7 @@ export function Checkout() {
 						<div className="w-full flex justify-between items-center border-b border-[#E5E5E5] px-6 py-4">
 							<div className="flex flex-col gap-2">
 								<div className="flex flex-row items-center gap-1">
-									<XaiLogo className="w-[16px]"/>
+									<XaiLogo className="w-[16px] text-[#F30919]"/>
 									<p className="text-lg font-semibold">
 										Xai Sentry Node Key
 									</p>

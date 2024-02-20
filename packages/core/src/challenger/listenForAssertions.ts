@@ -1,7 +1,7 @@
 import { LogDescription } from "ethers";
 import { RollupAdminLogicAbi } from "../abis/RollupAdminLogicAbi.js";
 import { config } from "../config.js";
-import { resilientEventListener } from "../utils/resilientEventListener.js";
+import { resilientEventListener, EventListenerError } from "../utils/resilientEventListener.js";
 
 /**
  * Listens for NodeConfirmed events and triggers a callback function when the event is emitted.
@@ -10,32 +10,43 @@ import { resilientEventListener } from "../utils/resilientEventListener.js";
  * @param log - The logging function to be used for logging.
  * @returns A function that can be called to stop listening for the event.
  */
-export function listenForAssertions(callback: (nodeNum: any, blockHash: any, sendRoot: any, event: any) => void, _log: (log: string) => void): () => void {
+
+export function listenForAssertions(callback: (nodeNum: any, blockHash: any, sendRoot: any, event: any, error?: EventListenerError) => void, _log: (log: string) => void) {
     // create a map to keep track of nodeNums that have called the callback
     const nodeNumMap: { [nodeNum: string]: boolean } = {};
 
     // listen for the NodeConfirmed event
     const listener = resilientEventListener({
-        rpcUrl: "wss://arb-goerli.g.alchemy.com/v2/WNOJEZxrhn3a0PzKUVEZgeRJqxOL7brv",
+        rpcUrl: config.arbitrumOneWebSocketUrl,
         contractAddress: config.rollupAddress,
         abi: RollupAdminLogicAbi,
         eventName: "NodeConfirmed",
         log: _log,
-        callback: (log: LogDescription | null) => {
-            const nodeNum = BigInt(log?.args[0]);
-            const blockHash = log?.args[1];
-            const sendRoot = log?.args[2];
+        callback: (log: LogDescription | null, error?: EventListenerError) => {
 
-            // if the nodeNum has not been seen before, call the callback and add it to the map
-            if (!nodeNumMap[nodeNum.toString()]) {
-                nodeNumMap[nodeNum.toString()] = true;
-                void callback(nodeNum, blockHash, sendRoot, log);
+            if (error) {
+                void callback(undefined, undefined, undefined, undefined, error);
+            } else {
+
+                try {
+                    const nodeNum = BigInt(log?.args[0]);
+                    const blockHash = log?.args[1];
+                    const sendRoot = log?.args[2];
+
+                    // if the nodeNum has not been seen before, call the callback and add it to the map
+                    if (!nodeNumMap[nodeNum.toString()]) {
+                        nodeNumMap[nodeNum.toString()] = true;
+                        void callback(nodeNum, blockHash, sendRoot, log);
+                    }
+                } catch (ex: any) {
+                    void callback(undefined, undefined, undefined, undefined, ex);
+                }
             }
         }
     });
 
     // return a function that can be used to stop listening for the event
-    return () => {
-        listener.stop();
+    return {
+        stop: () => listener.stop()
     };
 }

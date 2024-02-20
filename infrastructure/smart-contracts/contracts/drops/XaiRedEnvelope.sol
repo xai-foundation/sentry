@@ -171,11 +171,10 @@ contract XaiRedEnvelope is AccessControlUpgradeable {
 
 		// Check if the user owns a NodeLicense
 		NodeLicense _nodeLicense = NodeLicense(nodeLicense);
-		if (_nodeLicense.balanceOf(msg.sender) > 0) {
-			Referee _referee = Referee(referee);
-			// Check if the user is KYC'd
-			require(_referee.isKycApproved(msg.sender), "User is not KYC'd");
-		}
+		uint256 balance = _nodeLicense.balanceOf(msg.sender);
+		require(balance > 0, "User does not have a NodeLicense");
+		Referee _referee = Referee(referee);
+		require(_referee.isKycApproved(msg.sender), "User is not KYC'd");
 
 		bytes32 digest = keccak256(
 			abi.encodePacked(
