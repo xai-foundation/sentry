@@ -28,6 +28,7 @@
     "@sentry/core": "workspace:*",
     "@truffle/hdwallet-provider": "^2.1.15",
     "csv": "^6.3.5",
+    "csvtojson": "^2.0.10",
     "dotenv": "^16.3.1",
     "ethers": "6.8.1",
     "ganache-cli": "^6.12.2",

@@ -6,6 +6,7 @@ typechain
 typechain-types
 .idea
 initialXaiMints.csv
+assets
 
 # Hardhat files
 cache
