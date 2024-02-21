@@ -6,7 +6,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
-import "../Xai.sol";
+import "../../Xai.sol";
 
 /**
  * @title esXai
@@ -22,14 +22,15 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     bool private _redemptionActive;
     mapping(address => RedemptionRequest[]) private _redemptionRequests;
     address public esXaiBurnFoundationRecipient;
+    uint256 public esXaiBurnFoundationBasePoints;
+    mapping(address => RedemptionRequestExt[]) private _extRedemptionRequests;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[499] private __gap;
-
+    uint256[497] private __gap;
 
     struct RedemptionRequest {
         uint256 amount;
@@ -38,15 +39,26 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         bool completed;
     }
 
+    struct RedemptionRequestExt {
+        uint256 amount;
+        uint256 startTime;
+        uint256 duration;
+        uint256 endTime;
+        bool completed;
+        bool cancelled;
+    }
+
     event WhitelistUpdated(address account, bool isAdded);
     event RedemptionStarted(address indexed user, uint256 indexed index);
     event RedemptionCancelled(address indexed user, uint256 indexed index);
     event RedemptionCompleted(address indexed user, uint256 indexed index);
     event RedemptionStatusChanged(bool isActive);
     event XaiAddressChanged(address indexed newXaiAddress);
+    event FoundationBasepointsUpdated(uint256 newBasepoints);
 
-    function initialize (address _esXaiBurnFoundationRecipient) public reinitializer(2) {
+    function initialize (address _esXaiBurnFoundationRecipient, uint256 _esXaiBurnFoundationBasePoints) public reinitializer(2) {
         esXaiBurnFoundationRecipient = _esXaiBurnFoundationRecipient;
+        esXaiBurnFoundationBasePoints = _esXaiBurnFoundationBasePoints;
     }
 
     /**
@@ -156,8 +168,8 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         _transfer(msg.sender, address(this), amount);
 
         // Store the redemption request
-        _redemptionRequests[msg.sender].push(RedemptionRequest(amount, block.timestamp, duration, false));
-        emit RedemptionStarted(msg.sender, _redemptionRequests[msg.sender].length - 1);
+        _extRedemptionRequests[msg.sender].push(RedemptionRequestExt(amount, block.timestamp, duration, 0, false, false));
+        emit RedemptionStarted(msg.sender, _extRedemptionRequests[msg.sender].length - 1);
     }
 
     /**
@@ -166,7 +178,7 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      */
     function cancelRedemption(uint256 index) public {
         require(_redemptionActive, "Redemption is currently inactive");
-        RedemptionRequest storage request = _redemptionRequests[msg.sender][index];
+        RedemptionRequestExt storage request = _extRedemptionRequests[msg.sender][index];
         require(!request.completed, "Redemption already completed");
 
         // Transfer back the esXai tokens to the sender's account
@@ -174,6 +186,8 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
 
         // Mark the redemption request as completed
         request.completed = true;
+        request.cancelled = true;
+        request.endTime = block.timestamp;
         emit RedemptionCancelled(msg.sender, index);
     }
 
@@ -183,7 +197,7 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      */
     function completeRedemption(uint256 index) public {
         require(_redemptionActive, "Redemption is currently inactive");
-        RedemptionRequest storage request = _redemptionRequests[msg.sender][index];
+        RedemptionRequestExt storage request = _extRedemptionRequests[msg.sender][index];
         require(!request.completed, "Redemption already completed");
         require(block.timestamp >= request.startTime + request.duration, "Redemption period not yet over");
 
@@ -202,6 +216,7 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
 
         // mark the request as completed
         request.completed = true;
+        request.endTime = block.timestamp;
 
         // Burn the esXai tokens
         _burn(address(this), request.amount);
@@ -211,7 +226,7 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
 
         // If the ratio is less than 1000, mint half of the esXai amount that was not redeemed to the esXaiBurnFoundationRecipient
         if (ratio < 1000) {
-            uint256 foundationXaiAmount = (request.amount - xaiAmount) / 2;
+            uint256 foundationXaiAmount = (request.amount - xaiAmount) * esXaiBurnFoundationBasePoints / 1000;
             Xai(xai).mint(esXaiBurnFoundationRecipient, foundationXaiAmount);
         }
 
@@ -225,8 +240,8 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      * @param index The index of the redemption request.
      * @return The redemption request.
      */
-    function getRedemptionRequest(address account, uint256 index) public view returns (RedemptionRequest memory) {
-        return _redemptionRequests[account][index];
+    function getRedemptionRequest(address account, uint256 index) public view returns (RedemptionRequestExt memory) {
+        return _extRedemptionRequests[account][index];
     }
 
     /**
@@ -235,6 +250,16 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      * @return The count of redemption requests.
      */
     function getRedemptionRequestCount(address account) public view returns (uint256) {
-        return _redemptionRequests[account].length;
+        return _extRedemptionRequests[account].length;
+    }
+
+    /**
+     * @dev Function to get the count of redemption requests for a given address.
+     * @param number The amount to update the basepoints.
+     */
+    function updateFoundationBasepoints(uint256 number) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(number <= 1000, "Invalid basepoints");
+        esXaiBurnFoundationBasePoints = number;
+        emit FoundationBasepointsUpdated(number); 
     }
 }

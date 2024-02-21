@@ -1,5 +1,5 @@
 import WebSocket from 'isomorphic-ws';
-import {Contract, InterfaceAbi, LogDescription} from "ethers";
+import { Contract, InterfaceAbi, LogDescription } from "ethers";
 
 interface ResilientEventListenerArgs {
     rpcUrl: string,
@@ -7,7 +7,12 @@ interface ResilientEventListenerArgs {
     abi: InterfaceAbi,
     eventName: string,
     log?: (value: string, ...values: string[]) => void;
-    callback?: (log: LogDescription | null) => void;
+    callback?: (log: LogDescription | null, err?: EventListenerError) => void;
+}
+
+export interface EventListenerError {
+    message: string;
+    type: "onclose" | "onerror" | "onmessage";
 }
 
 const EXPECTED_PONG_BACK = 15000;
@@ -31,99 +36,123 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
 
     let pingTimeout: NodeJS.Timeout;
     let keepAliveInterval: NodeJS.Timeout;
+    let isStoppedManually = false;
+
+    const logCb = args.log ? args.log : (value: string, ...values: string[]) => { };
+    const callback = args.callback ? args.callback : (log: LogDescription | null, error: any | undefined) => { };
 
     const connect = () => {
-        ws = new WebSocket(args.rpcUrl);
+        try {
+            ws = new WebSocket(args.rpcUrl);
 
-        const contract = new Contract(args.contractAddress, args.abi);
-        const topicHash = contract.getEvent(args.eventName).getFragment().topicHash;
-        let subscriptionId: string;
+            const contract = new Contract(args.contractAddress, args.abi);
+            const topicHash = contract.getEvent(args.eventName).getFragment().topicHash;
+            let subscriptionId: string;
 
-        args.log && args.log(`[${new Date().toISOString()}] subscribing to event listener with topic hash: ${topicHash}`);
+            logCb(`[${new Date().toISOString()}] subscribing to event listener with topic hash: ${topicHash}`);
 
-        const request = {
-            id: 1,
-            method: "eth_subscribe",
-            params: [
-                "logs",
-                {
-                    topics: [topicHash],
-                    address: args.contractAddress,
-                }
-            ]
-        };
+            const request = {
+                id: 1,
+                method: "eth_subscribe",
+                params: [
+                    "logs",
+                    {
+                        topics: [topicHash],
+                        address: args.contractAddress,
+                    }
+                ]
+            };
 
-        // sending this backs should return a result of true
-        const ping = {
-            id: 2,
-            method: "net_listening",
-            params:[],
-        };
+            // sending this backs should return a result of true
+            const ping = {
+                id: 2,
+                method: "net_listening",
+                params: [],
+            };
 
-        ws.onerror = function error(err: any) {
-            args.log && args.log(`[${new Date().toISOString()}] WebSocket error: ${err}`);
-        };
+            ws.onerror = function error(err: WebSocket.ErrorEvent) {
+                logCb(`[${new Date().toISOString()}] WebSocket error: ${err.error}: ${err.message}`);
+                callback(null, { type: "onerror", message: `WebSocket error: ${err.message}` });
+            };
 
-        ws.onclose = function close() {
-            args.log && args.log(`[${new Date().toISOString()}] WebSocket closed`);
-            if (keepAliveInterval) clearInterval(keepAliveInterval);
-            if (pingTimeout) clearTimeout(pingTimeout);
-            ws = null;
-            // Reconnect when the connection is closed
-            setTimeout(connect, 1000);
-        };
-
-        ws.onmessage = function message(event: any) {
-            let parsedData;
-            if (typeof event.data === 'string') {
-                parsedData = JSON.parse(event.data);
-            } else if (event.data instanceof ArrayBuffer) {
-                const dataString = new TextDecoder().decode(event.data);
-                parsedData = JSON.parse(dataString);
-            }
-
-            if (parsedData?.id === request.id) {
-                subscriptionId = parsedData.result;
-                args.log && args.log(`[${new Date().toISOString()}] Subscription to event '${args.eventName}' established with subscription ID '${parsedData.result}'.`);
-            } else if(parsedData?.id === ping.id && parsedData?.result === true) { 
-                args.log && args.log(`[${new Date().toISOString()}] Health check complete, subscription to '${args.eventName}' is still active.`)
-                if (pingTimeout) clearInterval(pingTimeout);
-            } else if (parsedData?.method === 'eth_subscription' && parsedData.params.subscription === subscriptionId) {
-                const log = parsedData.params.result;
-                const event = contract.interface.parseLog(log);
-                args.log && args.log(`[${new Date().toISOString()}] Received event ${event?.name}: ${event?.args}`);
-                args.callback && args.callback(event);
-            }
-        };
-
-        ws.onopen = function open() {
-            args.log && args.log(`[${new Date().toISOString()}] Opened connection to Web Socket RPC`)
-            ws!.send(JSON.stringify(request));
-
-            keepAliveInterval = setInterval(() => {
-                if (!ws) {
-                  args.log && args.log(`[${new Date().toISOString()}] No websocket, exiting keep alive interval`);
-                  return;
-                }
-                args.log && args.log(`[${new Date().toISOString()}] Performing health check on the Web Socket RPC, to maintain subscription to '${args.eventName}'.`);
-        
-                ws.send(JSON.stringify(ping));
-                pingTimeout = setTimeout(() => {
-                  if (ws) ws.terminate();
-                }, EXPECTED_PONG_BACK);
+            ws.onclose = function close() {
+                if (keepAliveInterval) clearInterval(keepAliveInterval);
+                if (pingTimeout) clearTimeout(pingTimeout);
+                ws = null;
                 
-            }, KEEP_ALIVE_CHECK_INTERVAL);
+                if (!isStoppedManually) {
+                    setTimeout(connect, 1000);
+                    logCb(`[${new Date().toISOString()}] WebSocket closed, reconnecting automatically`);
+                    callback(null, { type: "onclose", message: `WebSocket closed, reconnecting automatically` });
+                } else {
+                    logCb(`[${new Date().toISOString()}] WebSocket closed`);
+                    callback(null, { type: "onclose", message: `WebSocket closed` });
+                }
+            };
 
-        };
+            ws.onmessage = function message(event: any) {
+                try {
+                    let parsedData;
+                    if (typeof event.data === 'string') {
+                        parsedData = JSON.parse(event.data);
+                    } else if (event.data instanceof ArrayBuffer) {
+                        const dataString = new TextDecoder().decode(event.data);
+                        parsedData = JSON.parse(dataString);
+                    }
+
+                    if (parsedData?.id === request.id) {
+                        subscriptionId = parsedData.result;
+                        logCb(`[${new Date().toISOString()}] Subscription to event '${args.eventName}' established with subscription ID '${parsedData.result}'.`);
+                    } else if (parsedData?.id === ping.id && parsedData?.result === true) {
+                        logCb(`[${new Date().toISOString()}] Health check complete, subscription to '${args.eventName}' is still active.`)
+                        if (pingTimeout) clearInterval(pingTimeout);
+                    } else if (parsedData?.method === 'eth_subscription' && parsedData.params.subscription === subscriptionId) {
+                        const eventResult = parsedData.params.result;
+                        const eventLog = contract.interface.parseLog(eventResult);
+                        logCb(`[${new Date().toISOString()}] Received event ${eventLog?.name}: ${eventLog?.args}`);
+                        callback(eventLog);
+                    }
+
+                } catch (error) {
+                    logCb(`[${new Date().toISOString()}] Error in message handling: ${error}`);
+                    callback(null, { type: "onmessage", message: `Error in message handling: ${error && (error as Error).message ? (error as Error).message : error as string}` });
+                }
+            };
+
+            ws.onopen = function open() {
+                logCb(`[${new Date().toISOString()}] Opened connection to Web Socket RPC`)
+                ws!.send(JSON.stringify(request));
+
+                keepAliveInterval = setInterval(() => {
+                    if (!ws) {
+                        logCb(`[${new Date().toISOString()}] No websocket, exiting keep alive interval`);
+                        return;
+                    }
+                    logCb(`[${new Date().toISOString()}] Performing health check on the Web Socket RPC, to maintain subscription to '${args.eventName}'.`);
+
+                    ws.send(JSON.stringify(ping));
+                    pingTimeout = setTimeout(() => {
+                        if (ws) ws.terminate();
+                    }, EXPECTED_PONG_BACK);
+
+                }, KEEP_ALIVE_CHECK_INTERVAL);
+
+            };
+
+        } catch (error) {
+            logCb(`[${new Date().toISOString()}] Error in connect function: ${error}`);
+            throw error;
+        }
     }
 
     const stop = () => {
+        isStoppedManually = true;
+        if (keepAliveInterval) clearInterval(keepAliveInterval);
+        if (pingTimeout) clearTimeout(pingTimeout);
         if (ws) {
             ws.close();
             ws = null;
         }
-        if (keepAliveInterval) clearInterval(keepAliveInterval);
-        if (pingTimeout) clearTimeout(pingTimeout);
     };
 
     connect();
