@@ -259,8 +259,7 @@ async function listenForChallengesCallback(challengeNumber: bigint, challenge: C
                 cachedLogger(`Comparison between PublicNode and Challenger was successful.`);
             })
             .catch(error => {
-                // TODO @Chris Should we alert with onAssertionMissmatch?
-                cachedLogger(`Error on CND check ${JSON.stringify(challenge)}.`);
+                cachedLogger(`Error on CND check for challenge ${Number(challenge.assertionId)}.`);
                 cachedLogger(`${error.message}.`);
             });
     }
