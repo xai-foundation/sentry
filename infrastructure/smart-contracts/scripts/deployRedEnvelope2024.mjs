@@ -4,12 +4,8 @@ const referee = "0xfD41041180571C5D371BEA3D9550E55653671198";
 const xai = "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66";
 const nodeLicense = "0xbc14d8563b248B79689ECbc43bBa53290e0b6b66";
 const allowanceAddress = "0x1F941F7Fb552215af81e6bE87F59578C18783483";
-
-const submissionStartTime = 1707465600;
-const submissionEndTime = 1708642800;
-
-const claimStartTime = 1708729200;
-const claimEndTime = 1711407600;
+const startTime = 1708729200;
+const endTime = 1711407600;
 
 async function main() {
 
@@ -25,10 +21,8 @@ async function main() {
 		await deployer.getAddress(),
 		xai,
 		allowanceAddress,
-		submissionStartTime,
-		submissionEndTime,
-		claimStartTime,
-		claimEndTime,
+		startTime,
+		endTime,
 		nodeLicense,
 		referee
 	], { kind: "transparent", deployer });
