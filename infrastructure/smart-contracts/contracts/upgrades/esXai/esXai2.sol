@@ -57,6 +57,7 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     event FoundationBasepointsUpdated(uint256 newBasepoints);
 
     function initialize (address _esXaiBurnFoundationRecipient, uint256 _esXaiBurnFoundationBasePoints) public reinitializer(2) {
+        require(_esXaiBurnFoundationRecipient != address(0) && _esXaiBurnFoundationBasePoints <= 1000, "Invalid initialize");
         esXaiBurnFoundationRecipient = _esXaiBurnFoundationRecipient;
         esXaiBurnFoundationBasePoints = _esXaiBurnFoundationBasePoints;
     }
