@@ -137,13 +137,15 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
     function initialize () public reinitializer(2) {
         maxStakeAmountPerLicense = 2500 * 10 ** 18;
 
-        stakeAmountTierThresholds.push(5000 * 10 ** 18);
-        stakeAmountTierThresholds.push(10000 * 10 ** 18);
-        stakeAmountTierThresholds.push(25000 * 10 ** 18);
+        stakeAmountTierThresholds.push(10_000 * 10 ** 18);
+        stakeAmountTierThresholds.push(50_000 * 10 ** 18);
+        stakeAmountTierThresholds.push(3_000_000 * 10 ** 18);
+        stakeAmountTierThresholds.push(20_000_000 * 10 ** 18);
 
-        stakeAmountBoostFactors.push(200);
-        stakeAmountBoostFactors.push(300);
-        stakeAmountBoostFactors.push(500);
+        stakeAmountBoostFactors.push(2);
+        stakeAmountBoostFactors.push(4);
+        stakeAmountBoostFactors.push(8);
+        stakeAmountBoostFactors.push(16);
     }
 
     /**
@@ -569,7 +571,7 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
      * The threshold is calculated as the maximum uint256 value divided by 100 and then multiplied by the total supply of NodeLicenses.
      * @param _nodeLicenseId The ID of the NodeLicense.
      * @param _challengeId The ID of the challenge.
-     * @param _boostFactor The factor controlling the chance of eligibility for payout in percent (base chance is 1/100 - Example: _boostFactor of 200 will double the payout chance to 1/50).
+     * @param _boostFactor The factor controlling the chance of eligibility for payout as a multiplicator (base chance is 1/100 - Example: _boostFactor 2 will double the payout chance to 1/50, _boostFactor 16 maps to 1/6.25).
      * @param _confirmData The confirm hash, will change to assertionState after BOLD.
      * @param _challengerSignedHash The signed hash for the challenge
      * @return a boolean indicating if the hash is eligible, and the assertionHash.
@@ -584,13 +586,7 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
 
         bytes32 assertionHash = keccak256(abi.encodePacked(_nodeLicenseId, _challengeId, _confirmData, _challengerSignedHash));
         uint256 hashNumber = uint256(assertionHash);
-
-        if (_boostFactor == 0) {
-            return (hashNumber % 100 == 0, assertionHash);
-        }
-
-        uint256 inversePayoutChance = 10_000 / _boostFactor;
-        return (hashNumber % inversePayoutChance == 0, assertionHash);
+        return (hashNumber % 100 < _boostFactor, assertionHash);
     }
 
     /**
@@ -647,7 +643,7 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
      */
     function _getBoostFactor(uint256 stakedAmount) internal view returns (uint256) {
         if(stakedAmount < stakeAmountTierThresholds[0]){
-            return 100;
+            return 1;
         }
 
         uint256 length = stakeAmountTierThresholds.length;
@@ -687,7 +683,7 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
      */
     function updateStakingTier(uint256 index, uint256 newThreshold, uint256 newBoostFactor) external onlyRole(DEFAULT_ADMIN_ROLE) {
 
-        require(newBoostFactor <= 5_000, "Invalid boost factor");
+        require(newBoostFactor > 0 && newBoostFactor <= 100, "Invalid boost factor");
 
         uint256 lastIndex = stakeAmountTierThresholds.length - 1;
         if(index == 0){
@@ -708,7 +704,7 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
      * @param newBoostFactor The new boost factor for the tier
      */
     function addStakingTier(uint256 newThreshold, uint256 newBoostFactor) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(newBoostFactor <= 5_000, "Invalid boost factor");
+        require(newBoostFactor > 0 && newBoostFactor <= 100, "Invalid boost factor");
 
         uint256 lastIndex = stakeAmountTierThresholds.length - 1;
         require(stakeAmountTierThresholds[lastIndex] < newThreshold, "Threshold needs to be monotonically increasing");
