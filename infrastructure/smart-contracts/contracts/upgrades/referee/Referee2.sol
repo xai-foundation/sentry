@@ -135,7 +135,7 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
     event UnstakeV1(address indexed user, uint256 amount, uint256 totalStaked);
 
     function initialize () public reinitializer(2) {
-        maxStakeAmountPerLicense = 2500 * 10 ** 18;
+        maxStakeAmountPerLicense = 25000 * 10 ** 18;
 
         stakeAmountTierThresholds.push(10_000 * 10 ** 18);
         stakeAmountTierThresholds.push(50_000 * 10 ** 18);
