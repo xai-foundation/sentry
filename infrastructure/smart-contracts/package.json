@@ -17,6 +17,7 @@
     "upgrade-xai-drop": "hardhat run scripts/upgradeXaiClaimDrop.mjs",
     "create-permit-list": "hardhat run scripts/createPermitList.mjs",
     "create-cny-permit-list": "hardhat run scripts/createCNYPermitList.mjs",
+    "cny-airdrop": "hardhat run scripts/runCNYAirDrop.mjs",
     "eth-extraction": "hardhat run scripts/ethExtraction.mjs",
     "eth-airdrop": "hardhat run scripts/ethAirdrop.mjs",
     "local": "hardhat node",
