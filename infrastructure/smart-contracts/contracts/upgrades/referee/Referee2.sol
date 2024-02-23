@@ -137,10 +137,10 @@ contract Referee2 is Initializable, AccessControlEnumerableUpgradeable {
     function initialize () public reinitializer(2) {
         maxStakeAmountPerLicense = 25000 * 10 ** 18;
 
+        stakeAmountTierThresholds.push(1_000 * 10 ** 18);
         stakeAmountTierThresholds.push(10_000 * 10 ** 18);
-        stakeAmountTierThresholds.push(50_000 * 10 ** 18);
-        stakeAmountTierThresholds.push(3_000_000 * 10 ** 18);
-        stakeAmountTierThresholds.push(20_000_000 * 10 ** 18);
+        stakeAmountTierThresholds.push(100_000 * 10 ** 18);
+        stakeAmountTierThresholds.push(1_000_000 * 10 ** 18);
 
         stakeAmountBoostFactors.push(2);
         stakeAmountBoostFactors.push(4);
