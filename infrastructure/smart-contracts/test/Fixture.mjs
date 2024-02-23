@@ -9,6 +9,7 @@ import { RefereeTests } from "./Referee.mjs";
 import { esXaiTests } from "./esXai.mjs";
 import { GasSubsidyTests } from "./GasSubsidy.mjs";
 import { XaiGaslessClaimTests } from "./XaiGaslessClaim.mjs";
+import {CNYAirDropTests} from "./CNYAirDrop.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -199,7 +200,8 @@ describe("Fixture Tests", function () {
         };
     }
 
-    describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
+    describe("CNY 2024", CNYAirDropTests.bind(this));
+    // describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
     // describe("Xai", XaiTests(deployInfrastructure).bind(this));
     // describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
     // describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
