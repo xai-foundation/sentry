@@ -1,5 +1,4 @@
 import {runCNYAirDrop} from "../scripts/runCNYAirDrop.mjs";
-import {Contract} from "ethers";
 import { expect } from "chai";
 import {config, XaiAbi} from "@sentry/core";
 import holders from "../assets/csv-output/xai-sentry-holders-cny.json" assert {type: "json"};
@@ -7,20 +6,19 @@ import holders from "../assets/csv-output/xai-sentry-holders-cny.json" assert {t
 export function CNYAirDropTests() {
 	it("Test air drop", async function() {
 		const deployer = await ethers.getImpersonatedSigner("0xA812b027D2ea8268c76883A19e4864E0766A863b");
-		const fromAddress = await ethers.getImpersonatedSigner("0xcae28c3fbec7b206c5d99df0a4cbc523fa9608ba");
+		console.log(deployer.address)
 
-		const [addr1] = (await ethers.getSigners());
-		await addr1.sendTransaction({to: deployer.address, value: 2000000000000000000n});
-
-		const xaiContract = new Contract(config.xaiAddress, XaiAbi);
-		await xaiContract.connect(fromAddress).approve(deployer.address, 800000000000000000000000n); // 800000 xai
+		const xaiContract = new ethers.Contract(config.xaiAddress, XaiAbi);
+		const allowance = await xaiContract.connect(deployer).allowance("0xec57C2bF6B40F9eC0229c13be046087ABA59E9e1", deployer.address);
+		console.log(allowance);
 
 		const balances = {};
 		for (const holder of holders) {
 			balances[holder.userWalletAddress] = await xaiContract.connect(deployer).balanceOf(holder.userWalletAddress);
+			console.log(holder.userWalletAddress, balances[holder.userWalletAddress]);
 		}
 
-		await runCNYAirDrop(deployer, fromAddress.address);
+		await runCNYAirDrop(deployer, "0xec57C2bF6B40F9eC0229c13be046087ABA59E9e1");
 
 		for (const holder of holders) {
 			const updatedBalance = await xaiContract.connect(deployer).balanceOf(holder.userWalletAddress);
