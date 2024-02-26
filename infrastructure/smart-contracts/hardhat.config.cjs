@@ -11,7 +11,7 @@ const accounts = {
 };
 
 const config = {
-  defaultNetwork: "arbitrumNova",
+  defaultNetwork: "hardhat",
   solidity: {
     version: "0.8.9",
     settings: {
@@ -27,8 +27,8 @@ const config = {
   networks: {
     hardhat: {
       forking: {
-        url: "https://eth-mainnet.g.alchemy.com/v2/W7dTZrmhSSU7LOtL67I41XGaf2TXeVGo",
-        // blockNumber: 19015040,
+		  url: "https://tame-alpha-violet.arbitrum-mainnet.quiknode.pro/d55a31b32f04c82b0e1bcb77f1fc6dcf53147f2a/",
+		  blockNumber: 184085729,
       },
       chainId: 1,
       accounts,
