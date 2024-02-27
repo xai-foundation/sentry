@@ -38,7 +38,7 @@ const TableComponent = () => {
                 </span>
               </td>
               <td className="lg:whitespace-nowrap text-graphiteGray lg:px-6 lg:py-4">
-                {data.requirment}
+                {data.requirement}
               </td>
               <td className="whitespace-nowrap text-graphiteGray lg:px-4 py-4">
                 {data.reward}

@@ -1,37 +1,35 @@
-import { TIER_VALUES, POOL_DATA_ROWS, TierInfo } from "../overview/constants/constants";
+import { POOL_DATA_ROWS, TierInfo } from "../overview/constants/constants";
 
 export const getCurrentTierByStaking = (staking: number): TierInfo | undefined => {
-	const currentTier = POOL_DATA_ROWS
-		.find(({ minValue, maxValue }) => {
-			if (minValue === TIER_VALUES.DIAMOND && staking > minValue) {
-				return true;
+
+	let currentTier: TierInfo | undefined;
+
+	if (staking < POOL_DATA_ROWS[1].minValue) {
+		currentTier = POOL_DATA_ROWS[0];
+	} else {
+		for (let i = 1; i < POOL_DATA_ROWS.length; i++) {
+			if (staking < POOL_DATA_ROWS[i].minValue) {
+				currentTier = POOL_DATA_ROWS[i - 1];
+				break;
 			}
-			return staking >= minValue && staking < maxValue
-		});
+		}
+	}
 
 	if (!currentTier) return undefined;
-
-	currentTier.maxValue = currentTier.minValue === TIER_VALUES.DIAMOND ? staking : currentTier.maxValue;
 	return currentTier;
 };
 
-export const getProgressValue = (staking: number, tier?: TierInfo) => {
-	if (staking >= TIER_VALUES.DIAMOND) return 100;
-
-	if (!tier) return 0;
-
-	const { minValue, maxValue } = tier
-
-	if (minValue === TIER_VALUES.DIAMOND) return 100;
-
-	return (staking - minValue) / (maxValue - minValue) * 100;
+export const getProgressValue = (staking: number, currentTier?: TierInfo) => {
+	if (!currentTier) return 0;
+	if (currentTier.index == POOL_DATA_ROWS.length - 1) return 100;
+	const nextTierValue = POOL_DATA_ROWS[currentTier.index + 1].minValue;
+	return (staking - currentTier.minValue) / (nextTierValue - currentTier.minValue) * 100;
 };
 
-export const getAmountRequiredForUpgrade = (staking: number, tier?: TierInfo) => {
-	if (!tier) return 0;
+export const getAmountRequiredForUpgrade = (staking: number, currentTier?: TierInfo) => {
+	if (!currentTier) return 0;
+	if (currentTier.index == POOL_DATA_ROWS.length - 1) return 0;
 
-	if (tier.minValue === TIER_VALUES.DIAMOND) { 
-		return 0;
-	}
-	return (tier?.maxValue + 1 ?? 0) - (staking ?? 0)
+	const nextTierValue = POOL_DATA_ROWS[currentTier.index + 1].minValue;
+	return nextTierValue - staking;
 };
