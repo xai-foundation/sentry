@@ -163,6 +163,7 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      */
     function startRedemption(uint256 amount, uint256 duration) public {
         require(_redemptionActive, "Redemption is currently inactive");
+        require(amount > 0, "Invalid Amount");
         require(balanceOf(msg.sender) >= amount, "Insufficient esXai balance");
         require(duration == 15 days || duration == 90 days || duration == 180 days, "Invalid duration");
 
@@ -181,6 +182,7 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     function cancelRedemption(uint256 index) public {
         require(_redemptionActive, "Redemption is currently inactive");
         RedemptionRequestExt storage request = _extRedemptionRequests[msg.sender][index];
+        require(request.amount > 0, "Invalid request");
         require(!request.completed, "Redemption already completed");
 
         // Transfer back the esXai tokens to the sender's account
@@ -200,6 +202,7 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     function completeRedemption(uint256 index) public {
         require(_redemptionActive, "Redemption is currently inactive");
         RedemptionRequestExt storage request = _extRedemptionRequests[msg.sender][index];
+        require(request.amount > 0, "Invalid request");
         require(!request.completed, "Redemption already completed");
         require(block.timestamp >= request.startTime + request.duration, "Redemption period not yet over");
 
