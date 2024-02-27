@@ -197,7 +197,7 @@ export function WebBuyKeysOrderTotal(
 												</div>
 
 												{discount.error && (
-													<p className="text-[14px] text-[#AB0914]">Invalid referral
+													<p className="text-sm text-[#AB0914]">Invalid referral
 														address</p>
 												)}
 											</div>

@@ -1,0 +1,261 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0x8Fbb4039caA2a7918cb36Ed03F07512A97f0B2f4",
+    "txHash": "0xe8d8e73a87fa9971f1708e16fd1200825b16bf6efc24d786073693503146cf76"
+  },
+  "proxies": [
+    {
+      "address": "0x47F5183Db6714955AAa4acA99703cdF06446c08d",
+      "txHash": "0xb7c397dff70f68588dc690c32488b5f1eb25b247f3287953aa1e4914a368ef7b",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xc8313Ae141eD16876ecbB109367063Bd347893a7",
+      "txHash": "0xc7d656855a6bc7f8e35aeb5cef7a90e065f51ff757e580746b37e859ca4183f6",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x09E777Cd84884e1A2dD626977dCec52A4074D3aa",
+      "txHash": "0x2345989b1f9a1038825dafe41c29c806326f76def6bf90bacdd513ce04d87a39",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "e59643a9817a162f6b6ee613bb047f96e717e6a40609840163b86190db3a3718": {
+      "address": "0xb8A299e51Feb4930E1E24892BA519D40d2E9fB55",
+      "txHash": "0x9ed8dac3b48bf11aa4570d210fbd7de79bacdf5493f6af2035e3b4bdff7794c9",
+      "layout": {
+        "solcVersion": "0.8.9",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)179_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:62"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol:260"
+          },
+          {
+            "label": "DOMAIN_SEPARATOR",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_bytes32",
+            "contract": "XaiRedEnvelope",
+            "src": "contracts/drops/XaiRedEnvelope.sol:8"
+          },
+          {
+            "label": "PERMIT_TYPEHASH",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_bytes32",
+            "contract": "XaiRedEnvelope",
+            "src": "contracts/drops/XaiRedEnvelope.sol:9"
+          },
+          {
+            "label": "permitAdmin",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_address",
+            "contract": "XaiRedEnvelope",
+            "src": "contracts/drops/XaiRedEnvelope.sol:12"
+          },
+          {
+            "label": "chainId",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_uint256",
+            "contract": "XaiRedEnvelope",
+            "src": "contracts/drops/XaiRedEnvelope.sol:15"
+          },
+          {
+            "label": "xai",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_address",
+            "contract": "XaiRedEnvelope",
+            "src": "contracts/drops/XaiRedEnvelope.sol:18"
+          },
+          {
+            "label": "allowanceAddress",
+            "offset": 0,
+            "slot": "156",
+            "type": "t_address",
+            "contract": "XaiRedEnvelope",
+            "src": "contracts/drops/XaiRedEnvelope.sol:20"
+          },
+          {
+            "label": "userPermitNonce",
+            "offset": 0,
+            "slot": "157",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "XaiRedEnvelope",
+            "src": "contracts/drops/XaiRedEnvelope.sol:23"
+          },
+          {
+            "label": "startTime",
+            "offset": 0,
+            "slot": "158",
+            "type": "t_uint256",
+            "contract": "XaiRedEnvelope",
+            "src": "contracts/drops/XaiRedEnvelope.sol:25"
+          },
+          {
+            "label": "endTime",
+            "offset": 0,
+            "slot": "159",
+            "type": "t_uint256",
+            "contract": "XaiRedEnvelope",
+            "src": "contracts/drops/XaiRedEnvelope.sol:26"
+          },
+          {
+            "label": "nodeLicense",
+            "offset": 0,
+            "slot": "160",
+            "type": "t_address",
+            "contract": "XaiRedEnvelope",
+            "src": "contracts/drops/XaiRedEnvelope.sol:28"
+          },
+          {
+            "label": "claimAllowances",
+            "offset": 0,
+            "slot": "161",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "XaiRedEnvelope",
+            "src": "contracts/drops/XaiRedEnvelope.sol:31"
+          },
+          {
+            "label": "userXPostVerifications",
+            "offset": 0,
+            "slot": "162",
+            "type": "t_mapping(t_address,t_string_storage)",
+            "contract": "XaiRedEnvelope",
+            "src": "contracts/drops/XaiRedEnvelope.sol:34"
+          },
+          {
+            "label": "usersSubmitted",
+            "offset": 0,
+            "slot": "163",
+            "type": "t_array(t_address)dyn_storage",
+            "contract": "XaiRedEnvelope",
+            "src": "contracts/drops/XaiRedEnvelope.sol:36"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_string_storage)": {
+            "label": "mapping(address => string)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)179_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(RoleData)179_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    }
+  }
+}

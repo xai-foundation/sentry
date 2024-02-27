@@ -9,6 +9,7 @@ import { RefereeTests } from "./Referee.mjs";
 import { esXaiTests } from "./esXai.mjs";
 import { GasSubsidyTests } from "./GasSubsidy.mjs";
 import { XaiGaslessClaimTests } from "./XaiGaslessClaim.mjs";
+import {CNYAirDropTests} from "./CNYAirDrop.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -65,6 +66,11 @@ describe("Fixture Tests", function () {
         const gasSubsidyPercentage = BigInt(15);
         const referee = await upgrades.deployProxy(Referee, [await esXai.getAddress(), await xai.getAddress(), await gasSubsidy.getAddress(), gasSubsidyPercentage], { deployer: deployer });
         await referee.waitForDeployment();
+        //Upgrade Referee
+        const Referee2 = await ethers.getContractFactory("Referee2");
+        const referee2 = await upgrades.upgradeProxy((await referee.getAddress()), Referee2, { call: { fn: "initialize", args: [] } });
+        await referee2.waitForDeployment();
+        await referee2.enableStaking();
 
         // Set Rollup Address
         const rollupAddress = config.rollupAddress;
@@ -109,6 +115,7 @@ describe("Fixture Tests", function () {
         await esXai.grantRole(esXaiMinterRole, await esXaiMinter.getAddress());
         await esXai.grantRole(esXaiMinterRole, await referee.getAddress());
         await esXai.grantRole(esXaiMinterRole, await xai.getAddress());
+        await esXai.addToWhitelist(await referee.getAddress());
 
         // Setup Node License Roles 
         const nodeLicenseAdminRole = await nodeLicense.DEFAULT_ADMIN_ROLE();
@@ -195,7 +202,7 @@ describe("Fixture Tests", function () {
             secretKeyHex,
             publicKeyHex: "0x" + publicKeyHex,
 
-            referee,
+            referee: referee2,
             nodeLicense,
             gasSubsidy,
             esXai: esXai2,
@@ -204,11 +211,12 @@ describe("Fixture Tests", function () {
         };
     }
 
+    describe("CNY 2024", CNYAirDropTests.bind(this));
     // describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
     // describe("Xai", XaiTests(deployInfrastructure).bind(this));
     describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
     // describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
-    // describe("Referee", RefereeTests(deployInfrastructure).bind(this));
+    describe("Referee", RefereeTests(deployInfrastructure).bind(this));
     // describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
     // describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
 

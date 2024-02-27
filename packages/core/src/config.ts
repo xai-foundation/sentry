@@ -16,11 +16,13 @@ export let config = {
   "refereeAddress": "0xfD41041180571C5D371BEA3D9550E55653671198",
   "refereeDeployedBlockNumber": 157193676,
   "refereeImplementationAddress": "0x29a7b907fdf4a9235f46d891b7aa1e7d3d35a3b6",
-  "rollupAddress": "0x082742561295f6e1b43c4f5d1e2d52d7FfE082f1",
+  "rollupAddress": "0xC47DacFbAa80Bd9D8112F4e8069482c2A3221336",
   "xaiAddress": "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66",
   "xaiDeployedBlockNumber": 157193610,
   "xaiImplementationAddress": "0x3fb787101dc6be47cfe18aeee15404dcc842e6af",
-  "xaiGaslessClaimAddress": "0x149107dEB70b9514930d8e454Fc32E77C5ABafE0"
+  "xaiGaslessClaimAddress": "0x149107dEB70b9514930d8e454Fc32E77C5ABafE0",
+  "xaiRedEnvelope2024Address": "0x080C2e59e963959Bbe9Ea064d1bcBc881F380Ff2",
+  "xaiRedEnvelope2024ImplementationAddress": "0xf26Af8313cB039A58b86c2Ab7aA5c540EcEEB70f"
 };
 
 export function setConfig(_config: any) { config = _config; }

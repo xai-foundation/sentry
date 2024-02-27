@@ -189,7 +189,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 												</div>
 
 												{discount.error && (
-													<p className="text-[14px] text-[#AB0914]">Error with Promo Code</p>
+													<p className="text-sm text-[#AB0914]">Error with Promo Code</p>
 												)}
 											</div>
 										) : (

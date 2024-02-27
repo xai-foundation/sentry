@@ -35,13 +35,13 @@ export function DropClaim() {
 			<div className="w-full h-screen flex justify-center items-center">
 				<BiLoaderAlt className="animate-spin" size={32} color={"#000000"}/>
 			</div>
-		)
+		);
 	}
 
 	if (blocked) {
 		return (
 			<pre className="p-2 text-[14px]">Not Found</pre>
-		)
+		);
 	}
 
 	return (

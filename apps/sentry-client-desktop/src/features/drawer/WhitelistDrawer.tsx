@@ -113,7 +113,7 @@ export function WhitelistDrawer() {
 			</div>
 
 			<div className="w-full flex-shrink-0 h-18 bg-white flex flex-col items-center justify-center px-2">
-				<p className="text-[14px]">
+				<p className="text-sm">
 					Applying changes will restart your sentry
 				</p>
 

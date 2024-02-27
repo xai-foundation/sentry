@@ -13,23 +13,32 @@
     "operator-report": "hardhat run scripts/createOperatorReport.mjs",
     "add-whitelist-amounts": "hardhat run scripts/addWhitelistAmounts.mjs",
     "deploy-xai-claim-drop": "hardhat run scripts/deployXaiClaimDrop.mjs",
+    "deploy-xai-red-envelope": "hardhat run scripts/deployRedEnvelope2024.mjs",
     "upgrade-xai-drop": "hardhat run scripts/upgradeXaiClaimDrop.mjs",
     "create-permit-list": "hardhat run scripts/createPermitList.mjs",
+    "create-cny-permit-list": "hardhat run scripts/createCNYPermitList.mjs",
+    "get-cny-claim-rewards": "hardhat run scripts/getCNYClaimRewards.mjs",
+    "cny-airdrop": "hardhat run scripts/runCNYAirDrop.mjs",
     "eth-extraction": "hardhat run scripts/ethExtraction.mjs",
     "eth-airdrop": "hardhat run scripts/ethAirdrop.mjs",
+    "upgrade-referee": "hardhat run scripts/upgradeReferee.mjs",
     "upgrade-esxai": "hardhat run scripts/upgradeEsXai.mjs",
     "local": "hardhat node",
     "test": "hardhat test --network localhost",
     "coverage": "hardhat coverage --network localhost --solcoverjs ./.solcover.cjs --temp artifacts --testfiles \"./test/**/*.mjs\"",
-    "clean": "rimraf artifacts && rimraf cache"
+    "clean": "rimraf artifacts && rimraf cache",
+    "size": "hardhat size-contracts"
   },
   "dependencies": {
     "@sentry/core": "workspace:*",
     "@truffle/hdwallet-provider": "^2.1.15",
     "csv": "^6.3.5",
+    "csvtojson": "^2.0.10",
     "dotenv": "^16.3.1",
     "ethers": "6.8.1",
     "ganache-cli": "^6.12.2",
+    "hardhat": "^2.2.0",
+    "hardhat-contract-sizer": "^2.10.0",
     "web3": "^4.3.0"
   },
   "devDependencies": {

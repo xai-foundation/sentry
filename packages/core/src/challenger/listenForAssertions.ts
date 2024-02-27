@@ -17,7 +17,7 @@ export function listenForAssertions(callback: (nodeNum: any, blockHash: any, sen
 
     // listen for the NodeConfirmed event
     const listener = resilientEventListener({
-        rpcUrl: "wss://arb-goerli.g.alchemy.com/v2/WNOJEZxrhn3a0PzKUVEZgeRJqxOL7brv",
+        rpcUrl: config.arbitrumOneWebSocketUrl,
         contractAddress: config.rollupAddress,
         abi: RollupAdminLogicAbi,
         eventName: "NodeConfirmed",

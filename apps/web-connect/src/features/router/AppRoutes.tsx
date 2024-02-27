@@ -10,6 +10,8 @@ import {useBlockIp} from "@/hooks/useBlockIp";
 import {BiLoaderAlt} from "react-icons/bi";
 import { ClaimToken } from '../wallet/routes/ClaimToken';
 import { TermsAndConditions } from '../wallet/routes/TermsAndConditions';
+import {RedEnvelope2024} from "@/features/wallet/routes/RedEnvelope2024";
+import {ClaimRedEnvelope2024} from "@/features/wallet/routes/ClaimRedEnvelope2024";
 
 export function AppRoutes() {
 	const {blocked, loading} = useBlockIp({blockUsa: false});
@@ -25,7 +27,7 @@ export function AppRoutes() {
 
 	if (blocked) {
 		return (
-			<pre className="p-2 text-[14px]">Not Found</pre>
+			<pre className="p-2 text-sm">Not Found</pre>
 		)
 	}
 
@@ -39,6 +41,8 @@ export function AppRoutes() {
 					<Route path="/xai-airdrop-terms-and-conditions" element={<TermsAndConditions/>}/>
 					<Route path="/assign-wallet/:operatorAddress" element={<AssignWallet/>}/>
 					<Route path="/unassign-wallet/:operatorAddress" element={<UnassignWallet/>}/>
+					<Route path="/CNY-claim" element={<RedEnvelope2024/>}/>
+					<Route path="/CNY-claim-temp" element={<ClaimRedEnvelope2024/>}/>
 					<Route path="/" element={<Checkout/>}/>
 					<Route path="*" element={<Navigate to="/" replace={true}/>}/>
 				</Routes>

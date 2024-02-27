@@ -6,12 +6,10 @@ import {ChangeEvent, useState} from "react";
 import {BiLoaderAlt} from "react-icons/bi";
 import {ImportSentryAlertModal} from "@/features/home/modals/ImportSentryAlertModal";
 import {verifyPrivateKey} from "@sentry/core";
-import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 
 export function ImportSentryDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {isLoading, importPrivateKey} = useOperator();
-	const {stopRuntime} = useOperatorRuntime();
 	const [inputValue, setInputValue] = useState('');
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const [privateKeyError, setPrivateKeyError] = useState({
@@ -48,10 +46,7 @@ export function ImportSentryDrawer() {
 
 	const handleSetData = () => {
 		importPrivateKey(inputValue).then(() => {
-			setDrawerState(null)
-			if (stopRuntime) {
-				void stopRuntime()
-			}
+			window.location.reload();
 		});
 	};
 
@@ -89,7 +84,7 @@ export function ImportSentryDrawer() {
 								leave your local machine on.
 							</p>
 
-							<p className="text-[15px] text-[#525252] mt-3">
+							<p className="text-[15px] text-[#525252] mt-4">
 								Enter the the private key of the Sentry Wallet you would like to import
 							</p>
 
@@ -103,7 +98,7 @@ export function ImportSentryDrawer() {
 								/>
 
 								{privateKeyError.error && (
-									<p className="w-full text-[14px] text-[#AB0914]">{privateKeyError.message}</p>
+									<p className="w-full text-sm text-[#AB0914]">{privateKeyError.message}</p>
 								)}
 
 								<button
