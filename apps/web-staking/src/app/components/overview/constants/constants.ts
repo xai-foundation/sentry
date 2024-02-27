@@ -8,11 +8,11 @@ export type TierInfo = {
   tierName: string,
   nextTierName: string,
   tierBackgroundColor?: string,
-  requirment: string,
+  requirement: string,
   gradient?: string,
   minValue: number,
-  maxValue: number,
   reward: string,
+  index: number,
 }
 
 export enum TIER_VALUES {
@@ -28,46 +28,46 @@ export const POOL_DATA_ROWS: TierInfo[] = [
     tierName: "BRONZE TIER",
     nextTierName: "Silver Tier",
     tierBackgroundColor: "bg-[#C36522]",
-    requirment: "0 staked esXAI",
+    requirement: "0 staked esXAI",
     minValue: TIER_VALUES.BRONZE,
-    maxValue: TIER_VALUES.SILVER - 1,
     reward: "1x",
+    index: 0
   },
   {
     tierName: "SILVER TIER",
     nextTierName: "Gold Tier",
     tierBackgroundColor: "bg-[#BBBBBB]",
-    requirment: "1,000 staked esXAI",
+    requirement: "1,000 staked esXAI",
     reward: "2x",
     minValue: TIER_VALUES.SILVER,
-    maxValue: TIER_VALUES.GOLD - 1,
+    index: 1
   },
   {
     tierName: "GOLD TIER",
     nextTierName: "Platinum Tier",
     tierBackgroundColor: "bg-[#FFBA18]",
-    requirment: "10,000 staked esXAI",
+    requirement: "10,000 staked esXAI",
     reward: "4x",
     minValue: TIER_VALUES.GOLD,
-    maxValue: TIER_VALUES.PLATINUM - 1,
+    index: 2
   },
   {
     tierName: "PLATINUM TIER",
     nextTierName: "Diamond Tier",
     gradient: "bg-gradient-to-t from-[#5D6874] to-[#E3E3E3]",
-    requirment: "100,000 staked esXAI",
+    requirement: "100,000 staked esXAI",
     reward: "8x",
     minValue: TIER_VALUES.PLATINUM,
-    maxValue: TIER_VALUES.DIAMOND - 1,
+    index: 3
   },
   {
     tierName: "DIAMOND TIER",
     nextTierName: "",
     gradient: "bg-gradient-to-t from-[#99AAF8] to-[#8DFDF9]",
-    requirment: "1,000,000 staked esXAI",
+    requirement: "1,000,000 staked esXAI",
     reward: "16x",
     minValue: TIER_VALUES.DIAMOND,
-    maxValue: Math.max(),
+    index: 4
   },
 ];
 
