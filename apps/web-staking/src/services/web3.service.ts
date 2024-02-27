@@ -168,17 +168,27 @@ export const getEsXaiBalance = async (network: NetworkKey, walletAddress: string
 export const getStakedAmount = async (network: NetworkKey, walletAddress: string): Promise<number> => {
 	const web3Instance = getWeb3Instance(network);
 	const refereeContract = new web3Instance.web3.eth.Contract(RefereeAbi, web3Instance.refereeAddress);
-	const staked = await refereeContract.methods.stakedAmounts(walletAddress).call();
-	return Number(web3Instance.web3.utils.fromWei(staked.toString(), 'ether'));
+	try {
+		const staked = await refereeContract.methods.stakedAmounts(walletAddress).call();
+		return Number(web3Instance.web3.utils.fromWei(staked.toString(), 'ether'));
+	} catch (error) {
+		console.log("Error getting stakedAmount", error);
+		return 0;
+	}
 }
 
 export const getMaxStakedAmount = async (network: NetworkKey, walletAddress: string): Promise<number> => {
 	const web3Instance = getWeb3Instance(network);
 	const refereeContract = new web3Instance.web3.eth.Contract(RefereeAbi, web3Instance.refereeAddress);
 	const numNodeLicenses = await getNodeLicenses(network, walletAddress);
-	const maxStake = await refereeContract.methods.getMaxStakeAmount(numNodeLicenses).call();
-	const stakedAmount = await refereeContract.methods.stakedAmounts(walletAddress).call();
-	return Number(web3Instance.web3.utils.fromWei((maxStake as bigint) - (stakedAmount as bigint), 'ether'));
+	try {
+		const maxStake = await refereeContract.methods.getMaxStakeAmount(numNodeLicenses).call();
+		const stakedAmount = await refereeContract.methods.stakedAmounts(walletAddress).call();
+		return Number(web3Instance.web3.utils.fromWei((maxStake as bigint) - (stakedAmount as bigint), 'ether'));
+	} catch (error) {
+		console.log("Error getting getMaxStakedAmount", error);
+		return 0;
+	}
 }
 
 export const getNodeLicenses = async (network: NetworkKey, walletAddress: string): Promise<number> => {
