@@ -14,7 +14,7 @@ export function RefereeTests(deployInfrastructure) {
      * @param challengeId The ID of the challenge.
      * @return The winning state root.
      */
-    async function findWinningStateRoot(referee, winnerNodeLicenses, challengeId, boostFactor = 100) {
+    async function findWinningStateRoot(referee, winnerNodeLicenses, challengeId, boostFactor = 1) {
         for (let i = 0n; ; i++) {
             const successorStateRoot = `0x${i.toString(16).padStart(64, '0')}`;
             let isWinnerForAll = true;
@@ -40,11 +40,17 @@ export function RefereeTests(deployInfrastructure) {
         return results;
     }
 
-    async function getNumWinningStateRoots(referee, numIterations, boostFactor = 100) {
+    const getLocalAssertionHashAndCheck = (nodeLicenseId, challengeId, boostFactor, confirmData, challengerSignedHash) => {
+        const assertionHash = ethers.keccak256(ethers.solidityPacked(["uint256", "uint256", "bytes", "bytes"], [nodeLicenseId, challengeId, confirmData, challengerSignedHash]));
+        let hashNumber = BigInt(assertionHash);
+        return [Number((hashNumber % BigInt(100))) < boostFactor, assertionHash];
+    }
+
+    function getNumWinningStateRoots(numIterations, boostFactor) {
         let numWinners = 0;
         for (let i = 0n; i < numIterations; i++) {
             const successorStateRoot = `0x${i.toString(16).padStart(64, '0')}`;
-            const [isWinner] = await referee.createAssertionHashAndCheckPayout(1, 1, boostFactor, successorStateRoot, "0x0000000000000000000000000000000000000000000000000000000000000000");
+            const [isWinner] = getLocalAssertionHashAndCheck(1n, 1n, boostFactor, successorStateRoot, "0x0000000000000000000000000000000000000000000000000000000000000000");
             if (isWinner) {
                 numWinners++;
             }
@@ -601,34 +607,45 @@ export function RefereeTests(deployInfrastructure) {
             it("Check that reward chance increases with higher boostFactor", async function () {
                 const { referee } = await loadFixture(deployInfrastructure);
 
-                const numIterations = 1000;
-                const baseFactor = 100;
-                const baseNumWins = await getNumWinningStateRoots(referee, numIterations, baseFactor);
+                const numIterations = 10000;
+                const baseFactor = 1;
+                const baseNumWins = getNumWinningStateRoots(numIterations, baseFactor);
 
-                // const boostFactors = [110, 200, 250];
-                const boostFactors = [150, 200, 250]; // 2.5 times base chance
+                const boostFactors = [2, 4]; // 2 => double the chance, 4 => 4 times the chance to win
                 for (const boostFactor of boostFactors) {
-                    const boostedNumWins = await getNumWinningStateRoots(referee, numIterations, boostFactor);
-                    expect(boostedNumWins / baseNumWins).to.be.closeTo(boostFactor / baseFactor, 0.5);  // expect to win 2 - 3 times more often
+                    const boostedNumWins = getNumWinningStateRoots(numIterations, boostFactor);
+                    expect(boostedNumWins / baseNumWins).to.be.closeTo(boostFactor, 0.5);  // expect to win 2 - 3 times more often
                 }
-            })
+
+                return Promise.resolve();
+            }).timeout(300_000) // 5 min
 
             it("Check that reward chance increases with higher staking amount", async function () {
-                const {referee, operator, challenger, esXai, esXaiMinter, addr1, addr2} = await loadFixture(deployInfrastructure);
+                const { referee, challenger, esXai, esXaiMinter, nodeLicense, addr1, addr2, addr3 } = await loadFixture(deployInfrastructure);
 
-                // Stake as addr2 to provoke boost
-                const baseBoostFactor = 100;
-                const boostedBoostFactor = 300;
-                const stakeAmount = BigInt(10_000 * 10 ** 18);
-                await esXai.connect(esXaiMinter).mint(addr2, stakeAmount);
-                await esXai.connect(addr2).approve(await referee.getAddress(), stakeAmount);
-                await referee.connect(addr2).stake(stakeAmount);
+                // Stake as addr2 to trigger boost to silver tier
+                const stakeAmount2 = BigInt(10_000) * BigInt(10 ** 18);
+                await esXai.connect(esXaiMinter).mint(addr2, stakeAmount2);
+                await esXai.connect(addr2).approve(await referee.getAddress(), stakeAmount2);
+                await referee.connect(addr2).stake(stakeAmount2);
+                const expectedBoostFactor2 = Number(await referee.getBoostFactor(stakeAmount2));
 
-                // Enter 250 challenges as addr1 (no boost) and addr2 (boosted)
+                let price = await nodeLicense.price(100, "");
+                await nodeLicense.connect(addr3).mint(100, "", { value: price });
+
+                // Stake as addr3 to trigger boost to gold tier
+                const stakeAmount3 = BigInt(50_000) * BigInt(10 ** 18);
+                await esXai.connect(esXaiMinter).mint(addr3, stakeAmount3);
+                await esXai.connect(addr3).approve(await referee.getAddress(), stakeAmount3);
+                await referee.connect(addr3).stake(stakeAmount3);
+                const expectedBoostFactor3 = Number(await referee.getBoostFactor(stakeAmount3));
+
+                // Enter 250 challenges as addr1 (no boost), addr2 and addr3 (boosted)
                 const numSubmissions = 250;
                 const stateRoots = await getStateRoots(numSubmissions * 2);
                 let numBasePayouts = 0;
-                let numBoostedPayouts = 0;
+                let numBoostedPayouts2 = 0;
+                let numBoostedPayouts3 = 0;
                 for (let i = 0; i < numSubmissions; i++) {
                     const stateRoot = stateRoots[i];
 
@@ -636,20 +653,21 @@ export function RefereeTests(deployInfrastructure) {
 
                     // Submit a challenge
                     await referee.connect(challenger).submitChallenge(
-                        i+1,
+                        i + 1,
                         i,
                         stateRoot,
                         0,
                         "0x0000000000000000000000000000000000000000000000000000000000000000"
                     );
-    
+
                     // check to see the challenge is open for submissions
                     const { openForSubmissions } = await referee.getChallenge(i);
                     expect(openForSubmissions).to.be.eq(true);
-    
+
                     // Submit assertions
                     await referee.connect(addr1).submitAssertionToChallenge(1, i, stateRoot);
                     await referee.connect(addr2).submitAssertionToChallenge(2, i, stateRoot);
+                    await referee.connect(addr3).submitAssertionToChallenge(12, i, stateRoot);
 
                     // Check submissions, count payouts
                     const submission1 = await referee.getSubmissionsForChallenges([i], 1);
@@ -660,17 +678,28 @@ export function RefereeTests(deployInfrastructure) {
                     const submission2 = await referee.getSubmissionsForChallenges([i], 2);
                     assert.equal(submission2[0].submitted, true, "The submission was not submitted");
                     if (submission2[0].eligibleForPayout) {
-                        numBoostedPayouts++;
+                        numBoostedPayouts2++;
+                    }
+                    const submission3 = await referee.getSubmissionsForChallenges([i], 12);
+                    assert.equal(submission3[0].submitted, true, "The submission was not submitted");
+                    if (submission3[0].eligibleForPayout) {
+                        numBoostedPayouts3++;
                     }
                 }
 
-                // console.log("Base payouts", numBasePayouts);
-                // console.log("Boosted payouts", numBoostedPayouts);
+                const resultingBoostFactor2 = numBoostedPayouts2 / numBasePayouts;
+                const resultingBoostFactor3 = numBoostedPayouts3 / numBasePayouts;
 
-                // Expect to win 2 - 4 times more often
-                expect(numBoostedPayouts / numBasePayouts).to.be.closeTo(boostedBoostFactor / baseBoostFactor, 1);
-            })
-        }),
+                // console.log("Base payouts", numBasePayouts);
+                // console.log(`Boosted payouts (addr2): ${numBoostedPayouts2} - expected boost: ${expectedBoostFactor2} - calculated boost: ${resultingBoostFactor2}`);
+                // console.log(`Boosted payouts (addr3): ${numBoostedPayouts3} - expected boost: ${expectedBoostFactor3} - calculated boost: ${resultingBoostFactor3}`);
+
+                expect(resultingBoostFactor2).to.be.closeTo(expectedBoostFactor2, 1);  // Expect to win 1 - 3 times as often (EV=2)
+                expect(resultingBoostFactor3).to.be.closeTo(expectedBoostFactor3, 2);  // Expect to win 2 - 6 times as often (EV=4)
+
+                return Promise.resolve();
+            }).timeout(300_000) // 5 min
+        })
 
         describe("The rollup protocol should be checking if values are correct", function () {
 
