@@ -26,6 +26,7 @@ import {AssignKeysSentryNotRunning} from "@/components/AssignKeysSentryNotRunnin
 import {GrRefresh} from "react-icons/gr";
 import {LuListChecks} from "react-icons/lu";
 import {useStorage} from "@/features/storage";
+import log from "electron-log";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
@@ -84,10 +85,10 @@ export function SentryWallet() {
 					}, 2000);
 				})
 				.catch(err => {
-					console.error('Unable to copy to clipboard: ', err);
+					log.error('Unable to copy to clipboard: ', err);
 				});
 		} else {
-			console.error('Clipboard API not available, unable to copy to clipboard');
+			log.error('Clipboard API not available, unable to copy to clipboard');
 		}
 	}
 
@@ -101,10 +102,10 @@ export function SentryWallet() {
 					}, 2000);
 				})
 				.catch(err => {
-					console.error('Unable to copy to clipboard: ', err);
+					log.error('Unable to copy to clipboard: ', err);
 				});
 		} else {
-			console.error('Clipboard API not available, unable to copy to clipboard');
+			log.error('Clipboard API not available, unable to copy to clipboard');
 		}
 	}
 

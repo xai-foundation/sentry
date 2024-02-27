@@ -5,6 +5,7 @@ import {useOperator} from "../../operator";
 import {PiCopy} from "react-icons/pi";
 import {useState} from "react";
 import {BiLoaderAlt} from "react-icons/bi";
+import log from "electron-log";
 
 export function ExportSentryDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -21,10 +22,10 @@ export function ExportSentryDrawer() {
 					}, 2000);
 				})
 				.catch(err => {
-					console.error('Unable to copy to clipboard: ', err);
+					log.error('Unable to copy to clipboard: ', err);
 				});
 		} else {
-			console.error('Clipboard API not available, unable to copy to clipboard');
+			log.error('Clipboard API not available, unable to copy to clipboard');
 		}
 	}
 

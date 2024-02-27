@@ -1,3 +1,5 @@
+import log from "electron-log";
+
 interface PulseStyle {
 	size?: "sm" | "md"
 }
@@ -16,7 +18,7 @@ export function GreenPulse({size="sm"}: PulseStyle) {
 			pulseH = "1.25rem";
 			break;
 		default:
-			console.log("Invalid size"); // Handle the case where size is none of the specified values
+			log.info("Invalid size"); // Handle the case where size is none of the specified values
 	}
 
 	const greenPulseStyle = {
@@ -48,7 +50,7 @@ export function YellowPulse({size="sm"}: PulseStyle) {
 			pulseH = "1.25rem";
 			break;
 		default:
-			console.log("Invalid size"); // Handle the case where size is none of the specified values
+			log.info("Invalid size"); // Handle the case where size is none of the specified values
 	}
 
 	const yellowPulseStyle = {
