@@ -10,7 +10,7 @@ export function esXaiTests(deployInfrastructure) {
         it("Check calling the initializer is not allowed afterwards", async function() {
             const {esXai, esXaiMinter, xai} = await loadFixture(deployInfrastructure);
             const expectedRevertMessage = "Initializable: contract is already initialized";
-            await expect(esXai.connect(esXaiMinter).initialize(await xai.getAddress())).to.be.revertedWith(expectedRevertMessage);
+            await expect(esXai.connect(esXaiMinter).initialize(await xai.getAddress(), BigInt(500))).to.be.revertedWith(expectedRevertMessage);
         })
 
         it("Check esXai can be minted by an address with the minter role", async function() {
@@ -128,9 +128,18 @@ export function esXaiTests(deployInfrastructure) {
             await esXai.connect(esXaiDefaultAdmin).changeRedemptionStatus(true);
             const redemptionAmount = BigInt(1000);
             await esXai.connect(esXaiMinter).mint(addr1.address, redemptionAmount * BigInt(3));
-            const durations = [15 * 24 * 60 * 60, 90 * 24 * 60 * 60, 180 * 24 * 60 * 60]; // 15 days, 90 days, 180 days in seconds
+
+            const foundationAddr = await esXai.esXaiBurnFoundationRecipient();
+            const foundationBasePoints = await esXai.esXaiBurnFoundationBasePoints();
+            const durations = [
+                15 * 24 * 60 * 60,  // 15 days
+                90 * 24 * 60 * 60,  // 90 days
+                180 * 24 * 60 * 60  // 180 days
+            ];
             const ratios = [250, 625, 1000]; // corresponding ratios for 15 days, 90 days, 180 days
             for (let i = 0; i < durations.length; i++) {
+                const initialXaiBalance = await xai.balanceOf(addr1.address);
+                const initialFoundationBalance = await xai.balanceOf(foundationAddr);
                 const duration = durations[i];
                 const ratio = ratios[i];
                 await esXai.connect(addr1).startRedemption(redemptionAmount, duration);
@@ -141,11 +150,18 @@ export function esXaiTests(deployInfrastructure) {
                 const finalEsXaiSupply = await esXai.totalSupply();
                 expect(finalEsXaiSupply).to.equal(initialEsXaiSupply - redemptionAmount);
                 const xaiBalance = await xai.balanceOf(addr1.address);
-                expect(xaiBalance).to.equal(redemptionAmount * BigInt(ratio) / BigInt(1000));
-                await xai.connect(addr1).burn(xaiBalance); // burn the xai for the next iteration
+                expect(xaiBalance).to.equal(initialXaiBalance + (redemptionAmount * BigInt(ratio) / BigInt(1000)));
+
+                // check that foundation receives correct split
+                const foundationAmount = (redemptionAmount - (redemptionAmount * BigInt(ratio) / BigInt(1000))) * foundationBasePoints / BigInt(1000);
+                const finalFoundationBalance = await xai.balanceOf(foundationAddr);
+                expect(finalFoundationBalance).to.equal(initialFoundationBalance + foundationAmount);
             }
+            // await xai.connect(addr1).burn((await xai.balanceOf(addr1.address))); // burn the xai for the next iteration
+
             const redemptionRequestCount = await esXai.getRedemptionRequestCount(addr1.address);
             expect(redemptionRequestCount).to.equal(3);
+
         })
 
         it("Check whitelist addresses are added and retrieved correctly", async function() {
@@ -154,10 +170,10 @@ export function esXaiTests(deployInfrastructure) {
             await esXai.connect(esXaiDefaultAdmin).addToWhitelist(addr2.address);
             await esXai.connect(esXaiDefaultAdmin).addToWhitelist(addr3.address);
             const whitelistCount = await esXai.getWhitelistCount();
-            expect(whitelistCount).to.equal(3);
-            const whitelistedAddress1 = await esXai.getWhitelistedAddressAtIndex(0);
-            const whitelistedAddress2 = await esXai.getWhitelistedAddressAtIndex(1);
-            const whitelistedAddress3 = await esXai.getWhitelistedAddressAtIndex(2);
+            expect(whitelistCount).to.equal(4);
+            const whitelistedAddress1 = await esXai.getWhitelistedAddressAtIndex(1);
+            const whitelistedAddress2 = await esXai.getWhitelistedAddressAtIndex(2);
+            const whitelistedAddress3 = await esXai.getWhitelistedAddressAtIndex(3);
             expect(whitelistedAddress1).to.equal(addr1.address);
             expect(whitelistedAddress2).to.equal(addr2.address);
             expect(whitelistedAddress3).to.equal(addr3.address);
