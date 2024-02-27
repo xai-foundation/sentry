@@ -14,7 +14,8 @@ import {
     checkKycStatus,
     getProvider,
     version,
-    Submission
+    Submission,
+    getBoostFactor
 } from "../index.js";
 import { retry } from "../index.js";
 import axios from "axios";
@@ -47,11 +48,11 @@ let cachedSigner: ethers.Signer;
 let cachedLogger: (log: string) => void;
 let safeStatusCallback: () => void;
 let onAssertionMissMatchCb: (publicNodeData: PublicNodeBucketInformation | undefined, challenge: Challenge, message: string) => void;
-let refereeContract: ethers.Contract;
 let nodeLicenseIds: bigint[] = [];
 const mintTimestamps: { [nodeLicenseId: string]: bigint } = {};
 const nodeLicenseStatusMap: NodeLicenseStatusMap = new Map();
 const challengeNumberMap: { [challengeNumber: string]: boolean } = {};
+let cachedBoostFactor: { [ownerAddress: string]: bigint } = {};
 
 async function getPublicNodeFromBucket(confirmHash: string) {
     const url = `https://sentry-public-node.xai.games/assertions/${confirmHash.toLowerCase()}.json`;
@@ -109,6 +110,11 @@ function updateNodeLicenseStatus(nodeLicenseId: bigint, newStatus: NodeLicenseSt
     }
 }
 
+const createAssertionHashAndCheckPayout = (nodeLicenseId: bigint, challengeId: bigint, boostFactor: bigint, confirmData: string, challengerSignedHash: string): [boolean, string] => {
+    const assertionHash = ethers.keccak256(ethers.solidityPacked(["uint256", "uint256", "bytes", "bytes"], [nodeLicenseId, challengeId, confirmData, challengerSignedHash]));
+    return [Number((BigInt(assertionHash) % BigInt(100))) < Number(boostFactor), assertionHash];
+}
+
 /**
  * Processes a new challenge for all the node licenses.
  * @param {bigint} challengeNumber - The challenge number.
@@ -116,7 +122,7 @@ function updateNodeLicenseStatus(nodeLicenseId: bigint, newStatus: NodeLicenseSt
  */
 async function processNewChallenge(challengeNumber: bigint, challenge: Challenge) {
     cachedLogger(`Processing new challenge with number: ${challengeNumber}.`);
-
+    cachedBoostFactor = {};
     for (const nodeLicenseId of nodeLicenseIds) {
 
         cachedLogger(`Checking eligibility for nodeLicenseId ${nodeLicenseId}.`);
@@ -132,8 +138,26 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
 
         // Check if nodeLicense is eligible for a payout
         updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.CHECKING_IF_ELIGIBLE_FOR_PAYOUT);
+
         try {
-            const [payoutEligible] = await retry(() => refereeContract.createAssertionHashAndCheckPayout(nodeLicenseId, challengeNumber, challenge.assertionStateRootOrConfirmData, challenge.challengerSignedHash));
+            const keyOwner = nodeLicenseStatusMap.get(nodeLicenseId)?.ownerPublicKey as string;
+            if (!cachedBoostFactor[keyOwner]) {
+                try {
+                    cachedBoostFactor[keyOwner] = await getBoostFactor(keyOwner);
+                } catch (error: any) {
+                    const errorMessage: string = error && error.message ? error.message : error;
+                    if (errorMessage.includes("missing revert data")) {
+                        cachedLogger(`INFO: boostFactor will be enabled on staking release`);
+                        cachedBoostFactor[keyOwner] = 1n;
+                    } else {
+                        cachedLogger(`Error loading boostFactor: ${errorMessage}`);
+                        throw new Error(`Error loading boostFactor: ${errorMessage}`);
+                    }
+                }
+            }
+
+            const [payoutEligible] = createAssertionHashAndCheckPayout(nodeLicenseId, challengeNumber, cachedBoostFactor[keyOwner], challenge.assertionStateRootOrConfirmData, challenge.challengerSignedHash);
+
             if (!payoutEligible) {
                 cachedLogger(`Sentry Key ${nodeLicenseId} did not accrue esXAI for the challenge ${challengeNumber}. A Sentry Key receives esXAI every few days.`);
                 updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
@@ -315,9 +339,6 @@ export async function operatorRuntime(
         statusCallback(statusCopy);
     };
 
-    // Create an instance of the Referee contract
-    refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, signer);
-
     // get the address of the operator
     const operatorAddress = await signer.getAddress();
     logFunction(`Fetched address of operator ${operatorAddress}.`);
@@ -332,6 +353,7 @@ export async function operatorRuntime(
         logFunction(`No operator owners were passed in.`);
         owners = [operatorAddress, ...await retry(async () => await listOwnersForOperator(operatorAddress))];
     }
+
     logFunction(`Received ${owners.length} wallets to run with this operator. The addresses are: ${owners.join(', ')}`);
 
     // get a list of all the node licenses for each of the owners
@@ -369,10 +391,8 @@ export async function operatorRuntime(
     logFunction(`Started listener for new challenges.`);
 
     logFunction(`Processing open challenges.`);
-    const challenges = await listChallenges(false, listenForChallengesCallback);
+    await listChallenges(false, listenForChallengesCallback);
 
-    const closedChallengeIds = challenges.filter(([_, challenge]) => !challenge.openForSubmissions).map(([challengeNumber]) => challengeNumber);
-    await processClosedChallenges(closedChallengeIds);
     logFunction(`The operator has finished booting. The operator is running successfully. esXAI will accrue every few days.`);
 
     const fetchBlockNumber = async () => {
