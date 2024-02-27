@@ -9,7 +9,6 @@ interface InfoComponentProps {
     tierName: string;
     tierBackgroundColor?: string;
     gradient?: string;
-    maxValue: number;
   };
   showProgressBar?: boolean;
   showTier?: boolean;

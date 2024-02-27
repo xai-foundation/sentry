@@ -136,8 +136,10 @@ const ReviewStakeComponent = ({
       false,
       receipt
     );
-    setTransactionLoading(false);
-    setTimeout(() => router.push("/staking"), 3000);
+    setTimeout(() => {
+      setTransactionLoading(false);
+      router.push("/staking");
+    }, 3000);
   };
 
   return (

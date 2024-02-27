@@ -683,6 +683,44 @@ export const RefereeAbi = [
     "inputs": [
       {
         "internalType": "uint256",
+        "name": "_nodeLicenseId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getBoostFactorForKeyId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "staker",
+        "type": "address"
+      }
+    ],
+    "name": "getBoostFactorForStaker",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
         "name": "_challengeId",
         "type": "uint256"
       }
