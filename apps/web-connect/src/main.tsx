@@ -30,7 +30,7 @@ const wagmiConfig = defaultWagmiConfig({
 createWeb3Modal({wagmiConfig, projectId, chains})
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-	<WagmiConfig config={wagmiConfig}>
+	<WagmiConfig config={wagmiConfig as any}>
 		<React.StrictMode>
 			<AppRoutes/>
 		</React.StrictMode>
