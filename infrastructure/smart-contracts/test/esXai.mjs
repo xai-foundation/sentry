@@ -170,10 +170,10 @@ export function esXaiTests(deployInfrastructure) {
             await esXai.connect(esXaiDefaultAdmin).addToWhitelist(addr2.address);
             await esXai.connect(esXaiDefaultAdmin).addToWhitelist(addr3.address);
             const whitelistCount = await esXai.getWhitelistCount();
-            expect(whitelistCount).to.equal(3);
-            const whitelistedAddress1 = await esXai.getWhitelistedAddressAtIndex(0);
-            const whitelistedAddress2 = await esXai.getWhitelistedAddressAtIndex(1);
-            const whitelistedAddress3 = await esXai.getWhitelistedAddressAtIndex(2);
+            expect(whitelistCount).to.equal(4);
+            const whitelistedAddress1 = await esXai.getWhitelistedAddressAtIndex(1);
+            const whitelistedAddress2 = await esXai.getWhitelistedAddressAtIndex(2);
+            const whitelistedAddress3 = await esXai.getWhitelistedAddressAtIndex(3);
             expect(whitelistedAddress1).to.equal(addr1.address);
             expect(whitelistedAddress2).to.equal(addr2.address);
             expect(whitelistedAddress3).to.equal(addr3.address);
