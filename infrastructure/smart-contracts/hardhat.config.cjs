@@ -26,10 +26,10 @@ const config = {
   },
   networks: {
     hardhat: {
-      forking: {
-		  url: "https://tame-alpha-violet.arbitrum-mainnet.quiknode.pro/d55a31b32f04c82b0e1bcb77f1fc6dcf53147f2a/",
-		  blockNumber: 184085729,
-      },
+      // forking: {
+		  // url: "https://tame-alpha-violet.arbitrum-mainnet.quiknode.pro/d55a31b32f04c82b0e1bcb77f1fc6dcf53147f2a/",
+		  // blockNumber: 184085729,
+      // },
       chainId: 1,
       accounts,
     },  
