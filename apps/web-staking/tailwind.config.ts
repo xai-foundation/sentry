@@ -23,6 +23,7 @@ const config: Config = {
   darkMode: "class",
   plugins: [
     nextui({
+      darkMode: false, // Force light mode by setting darkMode to false
       prefix: "nextui", // prefix for themes variables
       addCommonColors: false, // override common colors (e.g. "blue", "green", "pink").
       defaultTheme: "light", // default theme from the themes object
@@ -50,28 +51,11 @@ const config: Config = {
             shadowGrey: "#00000008"
           }, // light theme colors
         },
-        dark: {
-          layout: {}, // dark theme layout tokens
-          colors: {
-            red: "#f30919",
-            lightBlackDarkWhite: "#ffffff",
-            lightWhiteDarkBlack: "#181818",
-            lightWhitedarkWhite: "#ffffff",
-            creme: "#00000008",
-            silverMist: "#E5E5E5",
-            graphiteGray: "#4A4A4A",
-            slateGray: "#808080",
-            steelGray: "#8D8D8D",
-            whisperWhite: "#EEEEEE",
-            crystalWhite: "#F9F9F9",
-            palePearl: "#EBEBEB",
-            midnight: "#171717",
-            shadowGrey: "#00000008"
-          }, // dark theme colors
-        },
+        // Removed dark theme configuration to force light mode
         // ... custom themes
       },
     }),
   ],
 };
 export default config;
+
