@@ -23,7 +23,7 @@ export default function SidebarComponent() {
 				</div>
 			</div>
 			<div>
-				<div className='mx-5 mb-5'>
+				<div className='mx-5 mb-12'>
 					<LinkLogoComponent link="https://xai-foundation.gitbook.io/xai-network/xai-blockchain/welcome-to-xai" content='GitBook' Icon={GitBook} />
 					<LinkLogoComponent link="https://discord.com/invite/xaigames" content='Discord' Icon={Discord} />
 					<LinkLogoComponent link="https://twitter.com/xai_games" content='X' Icon={X} />

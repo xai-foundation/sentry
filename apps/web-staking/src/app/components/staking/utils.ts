@@ -9,10 +9,12 @@ export const getCurrentTierByStaking = (staking: number): TierInfo | undefined =
 	} else {
 		for (let i = 1; i < POOL_DATA_ROWS.length; i++) {
 			if (staking < POOL_DATA_ROWS[i].minValue) {
-				currentTier = POOL_DATA_ROWS[i - 1];
-				break;
-			}
-		}
+              currentTier = POOL_DATA_ROWS[i - 1];
+              break;
+          } else {
+            currentTier = POOL_DATA_ROWS[i];
+          }
+     }
 	}
 
 	if (!currentTier) return undefined;

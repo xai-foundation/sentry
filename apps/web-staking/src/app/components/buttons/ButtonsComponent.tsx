@@ -63,7 +63,7 @@ export const ConnectButton = ({
       className={
         variant === "overview"
           ? "bg-[#F30919] lg:w-[165px] sm:w-[308px] h-[50px] text-[#EEEEEE] px-[20px] py-[18px] rounded-[8px] hover:bg-[#da1b28] ease-in duration-200"
-          : `bg-[#F30919] w-[165px] text-[#EEEEEE] px-[17px] py-[10px] rounded-[8px] hover:bg-[#da1b28] ease-in duration-200 ${
+          : `bg-[#F30919] w-[115px] md:w-[165px] text-[#EEEEEE] px-[17px] py-[10px] rounded-[8px] hover:bg-[#da1b28] ease-in duration-200 ${
               isFullWidth ? "w-full" : ""
             }`
       }

@@ -75,7 +75,7 @@ export default function RedeemComponent() {
 
 	useEffect(() => {
 		if (review === true || review === undefined) return;
-		getRedemptions(getNetwork(chainId!), address!)
+		getRedemptions(getNetwork(chainId), address!)
 			.then(orderedRedemptions => {
 				setRedemptionHistory(orderedRedemptions);
 			});
@@ -86,7 +86,7 @@ export default function RedeemComponent() {
 		if (count > 1) return;
 
 		setTimeout(() => {
-			getRedemptions(getNetwork(chainId!), address!)
+			getRedemptions(getNetwork(chainId), address!)
 			.then(orderedRedemptions => {
 				setRedemptionHistory(orderedRedemptions);
 				console.log('redemption reloaded and records are for', orderedRedemptions, count);
@@ -99,8 +99,22 @@ export default function RedeemComponent() {
 	// 	setBalance(currency === CURRENCY.XAI ? xaiBalance : esXaiBalance);
 	// }, [xaiBalance, esXaiBalance]);
 
-	const isInvalid = Number(redeemValue) > (currency === CURRENCY.XAI ? xaiBalance : esXaiBalance);
-	const errorMessage = `Not enough ${currency} in wallet `
+	const isInvalid = () => {
+		if (Number(redeemValue) > (currency === CURRENCY.XAI ? xaiBalance : esXaiBalance)) {
+          return true;
+		} 
+		if (redeemValue.split(".")[1] && redeemValue.split(".")[1].length > 18) {
+          return true;
+		}
+	}
+
+	const checkDisabledButton =
+    !address || !redeemValue || Number(redeemValue) <= 0 || isInvalid();
+	
+	const errorMessage =
+    redeemValue.split(".")[1] &&
+    redeemValue.split(".")[1].length > 18 ? "Only 18 decimals are allowed" : `Not enough ${currency} in wallet `;
+
 
 	return (<>
 		{review ?
@@ -125,7 +139,7 @@ export default function RedeemComponent() {
 								value={redeemValue}
 								type="number"
 								onChange={onRedeemValueChange}
-								isInvalid={isInvalid}
+								isInvalid={isInvalid()}
 								errorMessage={errorMessage}
 								endContent={
 									<RightRedeemComponent
@@ -159,7 +173,8 @@ export default function RedeemComponent() {
 								<PrimaryButton
 									onClick={() => setReview(true)}
 									btnText="Continue"
-									className="w-full"
+									className="w-full disabled:opacity-50"
+									isDisabled={checkDisabledButton}
 								/>
 							)}
 						</div>

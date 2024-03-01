@@ -1,10 +1,10 @@
 "use client";
 
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
 import { useState } from "react";
 // import { useRouter } from "next/navigation";
 
-import { RedemptionFactor, getNetwork, getRedemptionPeriod, getWeb3Instance, mapWeb3Error } from "@/services/web3.service";
+import { ACTIVE_NETWORK_IDS, RedemptionFactor, getNetwork, getRedemptionPeriod, getWeb3Instance, mapWeb3Error } from "@/services/web3.service";
 import { CURRENCY } from "./Constants";
 
 import { ButtonBack, PrimaryButton } from "../buttons/ButtonsComponent";
@@ -30,10 +30,18 @@ export default function ReviewRedemptionComponent({ onReturn, receiveValue, amou
 	const [insufficientGas, setInsufficientGas] = useState(false);
 	const [transactionLoading, setTransactionLoading] = useState(false);
 
-	const network = getNetwork(chainId || 42161);
+	const network = getNetwork(chainId);
 	const redemptionPeriodInfo = getRedemptionPeriod(network, factor);
+	const { switchChain } = useSwitchChain();
 
 	const onConfirm = async () => {
+		if (!chainId) {
+			return;
+		}
+		if (!ACTIVE_NETWORK_IDS.includes(chainId)) {
+			switchChain({ chainId: ACTIVE_NETWORK_IDS[0] });
+			return;
+		}
 		let receipt;
 		setTransactionLoading(true);
 		const loading = loadingNotification("Transaction is pending...");
@@ -54,7 +62,7 @@ export default function ReviewRedemptionComponent({ onReturn, receiveValue, amou
 	}
 
 	const onSuccess = async (receipt: string, loadingToast: Id) => {
-		updateNotification("Successful redemption", loadingToast, false, receipt);
+		updateNotification("Successful redemption", loadingToast, false, receipt, chainId);
 		setTimeout(() => {
 			setTransactionLoading(false);
 			onReturn()

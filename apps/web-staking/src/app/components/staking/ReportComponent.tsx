@@ -1,5 +1,7 @@
+import { formatCurrency } from "@/app/utils/formatCurrency";
 import ProgressComponent from "../progress/Progress";
 import PopoverWindow from "./PopoverWindow";
+import { iconType } from "../overview/constants/constants";
 
 interface InfoComponentProps {
   address: string | undefined;
@@ -9,6 +11,8 @@ interface InfoComponentProps {
     tierName: string;
     tierBackgroundColor?: string;
     gradient?: string;
+    icon?: iconType;
+    iconText?: string;
   };
   showProgressBar?: boolean;
   showTier?: boolean;
@@ -37,17 +41,15 @@ const ReportComponent = ({
       </span>
       <span className="lg:flex lg:justify-between">
         <span className="text-lightBlackDarkWhite text-4xl lg:flex">
-          {address ? `${totalStaked?.toFixed(2)} esXAI` : "— esXAI"}
+          {address ? `${totalStaked ? formatCurrency.format(totalStaked) : ""} esXAI` : "— esXAI"}
           {currentTier && showTier && (
-            <div>
-              <span
-                className={`${
-                  currentTier.gradient
-                    ? currentTier.gradient
-                    : currentTier.tierBackgroundColor
-                } px-3 py-1 rounded-2xl text-[10px] text-white align-middle ml-2`}
-              >
-                {currentTier.tierName}
+            <div className="flex items-center ml-1">
+              <span className="relative lg:text-sm sm:text-xs font-semibold text-graphiteGray pr-2 pl-6 py-1 rounded-2xl border">
+                <span className="absolute lg:top-[8px] left-1.5 sm:top-[5px]">
+                  {currentTier.icon &&
+                    currentTier.icon({ width: 15, height: 12 })}
+                </span>
+                {currentTier.iconText}
               </span>
             </div>
           )}
@@ -62,7 +64,7 @@ const ReportComponent = ({
       <span className="text-graphiteGray mr-2 justify-end flex mt-2">
         {address &&
           subTitle &&
-          `${subTitle} ${availableForStaking?.toFixed(2)} esXai`}
+          `${subTitle} ${availableForStaking ? formatCurrency.format(availableForStaking) : ""} esXai`}
         {address && subTitle && <PopoverWindow />}
       </span>
     </div>

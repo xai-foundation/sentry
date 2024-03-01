@@ -14,7 +14,7 @@ export function RefereeTests(deployInfrastructure) {
      * @param challengeId The ID of the challenge.
      * @return The winning state root.
      */
-    async function findWinningStateRoot(referee, winnerNodeLicenses, challengeId, boostFactor = 1) {
+    async function findWinningStateRoot(referee, winnerNodeLicenses, challengeId, boostFactor = 100) {
         for (let i = 0n; ; i++) {
             const successorStateRoot = `0x${i.toString(16).padStart(64, '0')}`;
             let isWinnerForAll = true;
@@ -43,7 +43,7 @@ export function RefereeTests(deployInfrastructure) {
     const getLocalAssertionHashAndCheck = (nodeLicenseId, challengeId, boostFactor, confirmData, challengerSignedHash) => {
         const assertionHash = ethers.keccak256(ethers.solidityPacked(["uint256", "uint256", "bytes", "bytes"], [nodeLicenseId, challengeId, confirmData, challengerSignedHash]));
         let hashNumber = BigInt(assertionHash);
-        return [Number((hashNumber % BigInt(100))) < boostFactor, assertionHash];
+        return [Number((hashNumber % BigInt(10000))) < boostFactor, assertionHash];
     }
 
     function getNumWinningStateRoots(numIterations, boostFactor) {
@@ -608,13 +608,13 @@ export function RefereeTests(deployInfrastructure) {
                 const { referee } = await loadFixture(deployInfrastructure);
 
                 const numIterations = 10000;
-                const baseFactor = 1;
+                const baseFactor = 100;
                 const baseNumWins = getNumWinningStateRoots(numIterations, baseFactor);
 
-                const boostFactors = [2, 4]; // 2 => double the chance, 4 => 4 times the chance to win
+                const boostFactors = [125, 150, 175, 200]; // 125 => 1.25 x the chance, 400 => 4 times the chance to win
                 for (const boostFactor of boostFactors) {
                     const boostedNumWins = getNumWinningStateRoots(numIterations, boostFactor);
-                    expect(boostedNumWins / baseNumWins).to.be.closeTo(boostFactor, 0.5);  // expect to win 2 - 3 times more often
+                    expect(boostedNumWins / baseNumWins).to.be.closeTo(boostFactor / 100, 0.5);  // expect to win 2 - 3 times more often
                 }
 
                 return Promise.resolve();
@@ -641,7 +641,7 @@ export function RefereeTests(deployInfrastructure) {
                 const expectedBoostFactor3 = Number(await referee.getBoostFactor(stakeAmount3));
 
                 // Enter 250 challenges as addr1 (no boost), addr2 and addr3 (boosted)
-                const numSubmissions = 250;
+                const numSubmissions = 1000;
                 const stateRoots = await getStateRoots(numSubmissions * 2);
                 let numBasePayouts = 0;
                 let numBoostedPayouts2 = 0;
@@ -694,8 +694,8 @@ export function RefereeTests(deployInfrastructure) {
                 // console.log(`Boosted payouts (addr2): ${numBoostedPayouts2} - expected boost: ${expectedBoostFactor2} - calculated boost: ${resultingBoostFactor2}`);
                 // console.log(`Boosted payouts (addr3): ${numBoostedPayouts3} - expected boost: ${expectedBoostFactor3} - calculated boost: ${resultingBoostFactor3}`);
 
-                expect(resultingBoostFactor2).to.be.closeTo(expectedBoostFactor2, 1);  // Expect to win 1 - 3 times as often (EV=2)
-                expect(resultingBoostFactor3).to.be.closeTo(expectedBoostFactor3, 2);  // Expect to win 2 - 6 times as often (EV=4)
+                expect(resultingBoostFactor2).to.be.closeTo(expectedBoostFactor2 / 100, 1);  // Expect to win 1 - 3 times as often (EV=2)
+                expect(resultingBoostFactor3).to.be.closeTo(expectedBoostFactor3 / 100, 2);  // Expect to win 2 - 6 times as often (EV=4)
 
                 return Promise.resolve();
             }).timeout(300_000) // 5 min
