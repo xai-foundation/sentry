@@ -1133,13 +1133,6 @@ export const RefereeAbi = [
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "initialize",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
     "inputs": [
       {
         "internalType": "address",

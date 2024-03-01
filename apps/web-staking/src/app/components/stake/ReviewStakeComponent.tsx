@@ -1,8 +1,9 @@
 "use client";
 
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
 
 import {
+  ACTIVE_NETWORK_IDS,
   getNetwork,
   getWeb3Instance,
   mapWeb3Error,
@@ -45,9 +46,10 @@ const ReviewStakeComponent = ({
   const [transactionLoading, setTransactionLoading] = useState(false);
   const [tokensApproved, setTokensApproved] = useState(approved);
 
-  const network = getNetwork(chainId || 42161);
+  const network = getNetwork(chainId);
 
   const { writeContractAsync } = useWriteContract();
+	const { switchChain } = useSwitchChain();
 
   const onStake = async (amount: number) => {
     const weiAmount = getWeb3Instance(network).web3.utils.toWei(
@@ -89,6 +91,14 @@ const ReviewStakeComponent = ({
   };
 
   const onConfirm = async () => {
+
+    if (!chainId) {
+      return;
+    }
+    if (!ACTIVE_NETWORK_IDS.includes(chainId)) {
+      switchChain({ chainId: ACTIVE_NETWORK_IDS[0] });
+      return;
+    }
     let receipt;
     setTransactionLoading(true);
     const loading = loadingNotification("Transaction is pending...");
@@ -109,6 +119,14 @@ const ReviewStakeComponent = ({
   };
 
   const onApprove = async () => {
+
+    if (!chainId) {
+      return;
+    }
+    if (!ACTIVE_NETWORK_IDS.includes(chainId)) {
+      switchChain({ chainId: ACTIVE_NETWORK_IDS[0] });
+      return;
+    }
     let receipt;
     setTransactionLoading(true);
     const loading = loadingNotification("Approval is pending...");
@@ -134,7 +152,8 @@ const ReviewStakeComponent = ({
       `You have successfully ${unstake ? "unstaked" : "staked"} ${inputValue} esXai`,
       loadingToast,
       false,
-      receipt
+      receipt,
+      chainId
     );
     setTimeout(() => {
       setTransactionLoading(false);

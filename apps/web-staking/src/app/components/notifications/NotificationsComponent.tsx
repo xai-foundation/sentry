@@ -1,5 +1,8 @@
+"use client";
+
 import { Id, toast } from "react-toastify";
 import { CheckMark } from "../icons/IconsComponent";
+import { getNetwork, getWeb3Instance } from "@/services/web3.service";
 
 type ToastPositionType =
   | "top-left"
@@ -10,11 +13,11 @@ type ToastPositionType =
   | "bottom-center";
 
 const toastPosition: ToastPositionType = "bottom-right";
-const toastMarkUp = (message: string, receipt?: string) => (
+const toastMarkUp = (message: string, receipt: string, explorer: string) => (
   <>
     <span className="mr-2 font-normal text-base">{message}</span>
     <a
-      href={`https://sepolia.arbiscan.io/tx/${receipt}`}
+      href={`${explorer}tx/${receipt}`}
       target="_blank"
       className="text-red font-medium"
     >
@@ -66,7 +69,8 @@ export function updateNotification(
   message: string,
   loadingToast: Id,
   isError: boolean,
-  receipt?: string
+  receipt?: string,
+  chainId?: number,
 ) {
   if (isError) {
     toast.update(loadingToast, {
@@ -77,7 +81,7 @@ export function updateNotification(
     });
   } else {
     toast.update(loadingToast, {
-      render: toastMarkUp(message, receipt),
+      render: toastMarkUp(message, receipt || "", getWeb3Instance(getNetwork(chainId)).explorer),
       type: "success",
       style: {
         boxShadow: "0px 3px 6px #00000026",

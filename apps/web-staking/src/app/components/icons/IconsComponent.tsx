@@ -178,3 +178,159 @@ export function InfoMark({
     </svg>
   );
 }
+
+export function BronzeTriangle({
+  width = 16,
+  height = 13.5,
+}: {
+  width?: number;
+  height?: number;
+  fill?: string;
+}) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={width}
+      height={height}
+      viewBox="0 0 16 13.518"
+    >
+      <path
+        id="Path_3505"
+        data-name="Path 3505"
+        d="M192.719,5.162l3.657,6.18h-7.314l3.657-6.18m0-4.742-8,13.518h16l-8-13.518h0Z"
+        transform="translate(-184.72 -0.42)"
+        fill="#c36522"
+      />
+    </svg>
+  );
+}
+
+export function SilverTriangle({
+  width = 16,
+  height = 13.5,
+}: {
+  width?: number;
+  height?: number;
+  fill?: string;
+}) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={width}
+      height={height}
+      viewBox="0 0 16 13.518"
+    >
+      <path
+        id="Path_3508"
+        data-name="Path 3508"
+        d="M192.719,5.162l3.657,6.18h-7.314l3.657-6.18m0-4.742-8,13.518h16l-8-13.518h0Z"
+        transform="translate(-184.72 -0.42)"
+        fill="#bbb"
+      />
+    </svg>
+  );
+}
+
+export function GoldTriangle({
+  width = 16,
+  height = 13.5,
+}: {
+  width?: number;
+  height?: number;
+  fill?: string;
+}) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={width}
+      height={height}
+      viewBox="0 0 16 13.518"
+    >
+      <path
+        id="Path_3509"
+        data-name="Path 3509"
+        d="M192.719,5.162l3.657,6.18h-7.314l3.657-6.18m0-4.742-8,13.518h16l-8-13.518h0Z"
+        transform="translate(-184.72 -0.42)"
+        fill="#ffba18"
+      />
+    </svg>
+  );
+}
+
+export function PlatinumTriangle({
+  width = 16,
+  height = 13.5,
+}: {
+  width?: number;
+  height?: number;
+  fill?: string;
+}) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      width={width}
+      height={height}
+      viewBox="0 0 16 13.518"
+    >
+      <defs>
+        <linearGradient
+          id="linear-gradient1"
+          x1="0.5"
+          y1="1.127"
+          x2="0.5"
+          gradientUnits="objectBoundingBox"
+        >
+          <stop offset="0" stopColor="#5d6874" />
+          <stop offset="1" stopColor="#e3e3e3" />
+        </linearGradient>
+      </defs>
+      <path
+        id="Path_3510"
+        data-name="Path 3510"
+        d="M192.719,5.162l3.657,6.18h-7.314l3.657-6.18m0-4.742-8,13.518h16l-8-13.518h0Z"
+        transform="translate(-184.72 -0.42)"
+        fill="url(#linear-gradient1)"
+      />
+    </svg>
+  );
+}
+
+export function DiamondTriangle({
+  width = 16,
+  height = 13.5,
+}: {
+  width?: number;
+  height?: number;
+  fill?: string;
+}) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      width={width}
+      height={height}
+      viewBox="0 0 16 13.518"
+    >
+      <defs>
+        <linearGradient
+          id="linear-gradient2"
+          x1="0.5"
+          y1="1.127"
+          x2="0.5"
+          gradientUnits="objectBoundingBox"
+        >
+          <stop offset="0" stopColor="#99aaf8" />
+          <stop offset="1" stopColor="#8dfdf9" />
+        </linearGradient>
+      </defs>
+      <path
+        id="Path_3511"
+        data-name="Path 3511"
+        d="M192.719,5.162l3.657,6.18h-7.314l3.657-6.18m0-4.742-8,13.518h16l-8-13.518h0Z"
+        transform="translate(-184.72 -0.42)"
+        fill="url(#linear-gradient2)"
+      />
+    </svg>
+  );
+}

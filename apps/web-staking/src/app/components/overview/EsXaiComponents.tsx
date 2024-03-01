@@ -1,3 +1,5 @@
+import { formatCurrency } from "@/app/utils/formatCurrency";
+
 interface EsXaiComponentsProps {
   address: string | undefined;
   esXaiBalance: number;
@@ -9,6 +11,7 @@ const EsXaiComponents = ({
   esXaiBalance,
 }: // totalStaked,
 EsXaiComponentsProps) => {
+
   return (
     <div
       className={
@@ -17,7 +20,7 @@ EsXaiComponentsProps) => {
     >
       <span className="text-graphiteGray text-lg mb-1">Wallet balance</span>
       <span className="text-lightBlackDarkWhite text-4xl font-medium">
-        {address ? `${esXaiBalance.toFixed(1)} esXAI` : "— esXAI"}
+        {address ? `${formatCurrency.format(esXaiBalance)} esXAI` : "— esXAI"}
       </span>
     </div>
   );

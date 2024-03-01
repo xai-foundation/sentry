@@ -26,16 +26,17 @@ const TableComponent = () => {
           return (
             <tr key={index} className={`border-b text-right`}>
               <td
-                className="whitespace-nowrap lg:px-6 lg:py-4 lg:text-base text-lightWhiteDarkBlack text-left font-medium
+                className="whitespace-nowrap lg:px-6 lg:py-4 lg:text-base text-graphiteGray text-left font-medium
               sm:text-xs"
               >
-                <span
-                  className={`${
-                    data.gradient ? data.gradient : data.tierBackgroundColor
-                  } px-3 py-1 rounded-2xl`}
-                >
-                  {data.tierName}
-                </span>
+                <div className="flex items-center">
+                  <span className="relative pr-3 pl-9 py-1 rounded-2xl border">
+                    <span className="absolute lg:top-2 left-3 sm:top-1">
+                      {data.icon && data.icon({ width: 16, height: 13.5 })}
+                    </span>
+                    {data.iconText}
+                  </span>
+                </div>
               </td>
               <td className="lg:whitespace-nowrap text-graphiteGray lg:px-6 lg:py-4">
                 {data.requirement}
