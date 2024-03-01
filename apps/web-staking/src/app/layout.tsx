@@ -4,8 +4,6 @@ import { ContextProvider } from "@/context";
 import "./globals.css";
 import { Providers } from "./providers";
 import WrapperComponent from "./components/navbar/WrapperComponent";
-import { useTheme } from "next-themes";
-import { useEffect } from "react";
 
 export const metadata: Metadata = {
   title: "Xai Staking",
@@ -18,7 +16,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   // const initialState = cookieToInitialState(config, headers().get("cookie"));
-
   return (
     <html lang="en" suppressHydrationWarning={true}>
       <body>

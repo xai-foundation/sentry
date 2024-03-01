@@ -20,16 +20,16 @@ export default function RedemptionPeriod ({ onChange, value }: { onChange: Chang
 				<RadioCard
 					value={REDEMPTION_PERIODS.FIRST_RATE}
 					rightLabel={`${REDEMPTION_PERIODS.FIRST_RATE}${LABEL_RIGHT_SUFFIX}`}
-					label={getRedemptionPeriod(getNetwork(chainId || 42161), 25).label}
+					label={getRedemptionPeriod(getNetwork(chainId), 25).label}
 				/>
 				<RadioCard
 					value={REDEMPTION_PERIODS.SECOND_RATE}
 					rightLabel={`${REDEMPTION_PERIODS.SECOND_RATE}${LABEL_RIGHT_SUFFIX}`} 
-					label={getRedemptionPeriod(getNetwork(chainId || 42161), 62.5).label}/>
+					label={getRedemptionPeriod(getNetwork(chainId), 62.5).label}/>
 				<RadioCard
 					value={REDEMPTION_PERIODS.THIRD_RATE}
 					rightLabel={`${REDEMPTION_PERIODS.THIRD_RATE}${LABEL_RIGHT_SUFFIX}`} 
-					label={getRedemptionPeriod(getNetwork(chainId || 42161), 100).label}/>
+					label={getRedemptionPeriod(getNetwork(chainId), 100).label}/>
 			</RadioGroupWrapper>
 		</div>
 	)

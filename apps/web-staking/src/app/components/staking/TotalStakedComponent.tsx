@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import ReportComponent from "./ReportComponent";
 import { getAmountRequiredForUpgrade, getCurrentTierByStaking, getProgressValue } from "./utils";
 import { useGetMaxTotalStakedHooks } from "@/app/hooks/hooks";
+import { formatCurrency } from "@/app/utils/formatCurrency";
 
 interface StakingCardProps {
   onOpen?: () => void;
@@ -38,7 +39,14 @@ const TotalStakedComponent = ({
     ? getCurrentTierByStaking(totalStaked ?? 0)
     : undefined;
   const remaining = getAmountRequiredForUpgrade(totalStaked, currentTier);
-  const remainingToTierText = (currentTier?.nextTierName === "" || !currentTier || !address) ? "" : `${remaining.toFixed(2)} esXAI to ${currentTier?.nextTierName}`;
+  let remainingToTierText = ""
+  if (currentTier?.nextTierName !== "" && currentTier && address) {
+    if (remaining > 0.001) {
+      remainingToTierText = `${formatCurrency.format(remaining)} esXAI to ${currentTier?.nextTierName}`;
+    } else {
+      remainingToTierText = `< 0.001 esXAI to ${currentTier?.nextTierName}`;
+    }
+  }
   const progressValue = getProgressValue(totalStaked ?? 0, currentTier);
   const { totalMaxStaked } = useGetMaxTotalStakedHooks();
 

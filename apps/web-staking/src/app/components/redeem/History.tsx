@@ -1,12 +1,12 @@
 "use client";
 
 import moment from "moment";
-import { useAccount, useWriteContract } from "wagmi";
+import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
 import { useState } from "react";
 import { Id } from "react-toastify";
 import { useDisclosure } from "@nextui-org/react"
 
-import { OrderedRedemptions, RedemptionRequest, getNetwork, getWeb3Instance, mapWeb3Error } from "@/services/web3.service";
+import { ACTIVE_NETWORK_IDS, OrderedRedemptions, RedemptionRequest, getNetwork, getWeb3Instance, mapWeb3Error } from "@/services/web3.service";
 
 import MainTitle from "../titles/MainTitle";
 import { loadingNotification, updateNotification } from "../notifications/NotificationsComponent";
@@ -108,11 +108,12 @@ function HistoryCard({ receivedAmount, redeemedAmount, receivedCurrency, redeeme
 export default function History({ redemptions, reloadRedemptions }: {
 	redemptions: OrderedRedemptions,
 	reloadRedemptions: () => void
- }) {
+}) {
 	const { address, chainId } = useAccount();
 	const [transactionLoading, setTransactionLoading] = useState(false);
 
-	const network = getNetwork(chainId || 42161);
+	const network = getNetwork(chainId);
+	const { switchChain } = useSwitchChain();
 
 	const { writeContractAsync } = useWriteContract();
 	const router = useRouter();
@@ -136,6 +137,14 @@ export default function History({ redemptions, reloadRedemptions }: {
 	};
 
 	const onClaim = async (redemption: RedemptionRequest) => {
+
+		if (!chainId) {
+			return;
+		}
+		if (!ACTIVE_NETWORK_IDS.includes(chainId)) {
+			switchChain({ chainId: ACTIVE_NETWORK_IDS[0] });
+			return;
+		}
 		let receipt;
 		setTransactionLoading(true);
 		const loading = loadingNotification("Transaction is pending...");
@@ -153,6 +162,14 @@ export default function History({ redemptions, reloadRedemptions }: {
 	}
 
 	const onCancel = async (redemption: RedemptionRequest, onClose: () => void) => {
+
+		if (!chainId) {
+			return;
+		}
+		if (!ACTIVE_NETWORK_IDS.includes(chainId)) {
+			switchChain({ chainId: ACTIVE_NETWORK_IDS[0] });
+			return;
+		}
 		let receipt;
 		setTransactionLoading(true);
 		const loading = loadingNotification("Transaction is canceling...");
@@ -171,7 +188,7 @@ export default function History({ redemptions, reloadRedemptions }: {
 	}
 
 	const onSuccess = async (receipt: string, loadingToast: Id, toastMsg?: string) => {
-		updateNotification(toastMsg ?? `Claim successful`, loadingToast, false, receipt);
+		updateNotification(toastMsg ?? `Claim successful`, loadingToast, false, receipt, chainId);
 		setTransactionLoading(false);
 	}
 

@@ -19,6 +19,11 @@ export type Web3Instance = {
 export const networkKeys = ["arbitrum", "arbitrumSepolia"] as const;
 export type NetworkKey = typeof networkKeys[number];
 
+export const MAINNET_ID = 42161;
+export const TESTNET_ID = 421614;
+
+export const ACTIVE_NETWORK_IDS = process.env.NEXT_PUBLIC_APP_ENV === "development" ? [MAINNET_ID, TESTNET_ID] : [MAINNET_ID];
+
 const web3Instances: { [key in NetworkKey]: Web3Instance } = {
 	'arbitrum': {
 		name: 'Arbitrum Nova',
@@ -29,7 +34,7 @@ const web3Instances: { [key in NetworkKey]: Web3Instance } = {
 		xaiAddress: "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66",
 		esXaiAddress: "0x4C749d097832DE2FEcc989ce18fDc5f1BD76700c",
 		nodeLicenseAddress: "0xbc14d8563b248B79689ECbc43bBa53290e0b6b66",
-		explorer: 'https://arbiscan.com/'
+		explorer: 'https://arbiscan.io/'
 	},
 	'arbitrumSepolia': {
 		name: 'Arbitrum Sepolia',
@@ -116,10 +121,10 @@ export const getChainId = (network: NetworkKey) => {
 	return (web3Instances[network] as Web3Instance).chainId;
 }
 
-export const getNetwork = (chainId: number): NetworkKey => {
+export const getNetwork = (chainId: number = MAINNET_ID): NetworkKey => {
 	const network = (Object.keys(web3Instances) as NetworkKey[]).find((networkKey: NetworkKey) => web3Instances[networkKey]!.chainId == chainId);
 	if (!network) {
-		throw new Error("Invalid chain ID " + chainId);
+		return "arbitrum";
 	}
 	return network;
 }

@@ -7,6 +7,7 @@ export interface PopoverWindowProps {
   width?: number;
   height?: number;
   start?: boolean;
+  small?: boolean;
 }
 
 const PopoverWindow = ({
@@ -14,6 +15,7 @@ const PopoverWindow = ({
   width = 20,
   height = 20,
   start,
+  small,
 }: PopoverWindowProps) => {
   const [openPopover, setOpenPopover] = useState(false);
 
@@ -35,7 +37,7 @@ const PopoverWindow = ({
             }}
             className={`ml-1 ${customClass}`}
           >
-            <InfoMark width={width} height={height} />
+            <InfoMark width={small ? 12 : width} height={small ? 12 : height} />
           </span>
         }
       </PopoverTrigger>

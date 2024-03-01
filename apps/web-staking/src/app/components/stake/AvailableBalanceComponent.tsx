@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import iconToken from "../icons/tokenicon.png";
-
+import PopoverWindow from "../staking/PopoverWindow";
 interface InputRightComponentProps {
   currency: string;
   availableXaiBalance?: number;
@@ -23,6 +23,12 @@ export default function AvailableBalanceComponent({
       <div className="flex flex-col items-end">
         <span className="lg:text-[16px] sm:text-[12px] text-lightGrey">
           Available: {`${availableXaiBalance} esXAI`}
+          <PopoverWindow
+            customClass="cursor-pointer"
+            width={17}
+            height={15}
+            small
+          />
           <span
             className="lg:text-[16px] sm:text-[12px] text-red cursor-pointer"
             onClick={onMaxBtnClick}
