@@ -24,20 +24,20 @@ export const CustomInput = ({
   errorMessage,
 }: CustomInputProps) => {
   
-  const isNumber = type === 'number';
-  const onKeyDown = useCallback((event: KeyboardEvent) => {
-      const ignoredKeys = [8, 40, 38, 39, 37]
-      if ((ignoredKeys.includes(event.keyCode) || event.shiftKey || event.ctrlKey)) return;
-      if (isNumber && isNaN(Number(event.key))) {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-    }, [isNumber]);
+  // const isNumber = type === 'number';
+  // const onKeyDown = useCallback((event: KeyboardEvent) => {
+  //     const ignoredKeys = [8, 40, 38, 39, 37]
+  //     if ((ignoredKeys.includes(event.keyCode) || event.shiftKey || event.ctrlKey)) return;
+  //     if (isNumber && isNaN(Number(event.key))) {
+  //       event.preventDefault();
+  //       event.stopPropagation();
+  //     }
+  //   }, [isNumber]);
 
   return (
     <Input
-      onKeyDown={onKeyDown}
-      type={isNumber ? 'text' : type}
+      // onKeyDown={onKeyDown}
+      type={type}
       value={value}
       classNames={{
         inputWrapper: `relative mb-1 bg-white border data-[hover=true]:bg-white group-data-[focus=true]:bg-white pb-6 h-[120px]`,
@@ -87,7 +87,7 @@ export const StakingInput = ({
       type="number"
       value={value}
       classNames={{
-        inputWrapper: `relative mb-1 bg-white border lg:px-5 sm:pl-3 sm:pr-1 pt-0 pb-8 data-[hover=true]:bg-white group-data-[focus=true]:bg-white h-[140px] max-w-xl`,
+        inputWrapper: `relative mb-1 bg-white border lg:px-5 sm:pl-2 sm:pr-2 pt-0 pb-8 data-[hover=true]:bg-white group-data-[focus=true]:bg-white h-[140px] max-w-xl`,
         label: `text-grey text-lg mb-1`,
         input: `text-[40px] ${isInvalid ? "!text-[#ED5F00]" : " "}`,
         mainWrapper: `w-xl`,

@@ -1,4 +1,5 @@
 import {
+  ACTIVE_NETWORK_IDS,
   OrderedRedemptions,
   RedemptionRequest,
   getNetwork,
@@ -17,6 +18,7 @@ import {
 } from "../notifications/NotificationsComponent";
 import { Id } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { useSwitchChain } from "wagmi";
 
 interface OverviewCardProps {
   title: string;
@@ -28,10 +30,11 @@ export const CardComponent = ({ title, redemptions }: OverviewCardProps) => {
   const [transactionLoading, setTransactionLoading] = useState(false);
   const router = useRouter();
   const { writeContractAsync } = useWriteContract();
+  const { switchChain } = useSwitchChain();
 
   const completeEsXaiRedemption = async (index: number) => {
     return writeContractAsync({
-      address: getWeb3Instance(getNetwork(chainId || 42161)).esXaiAddress as `0x${string}`,
+      address: getWeb3Instance(getNetwork(chainId)).esXaiAddress as `0x${string}`,
       abi: esXaiAbi,
       functionName: "completeRedemption",
       args: [BigInt(index)],
@@ -39,6 +42,13 @@ export const CardComponent = ({ title, redemptions }: OverviewCardProps) => {
   };
 
   const onClaim = async (redemption: RedemptionRequest) => {
+    if (!chainId) {
+      return;
+    }
+    if (!ACTIVE_NETWORK_IDS.includes(chainId)) {
+      switchChain({ chainId: ACTIVE_NETWORK_IDS[0] });
+      return;
+    }
     let receipt;
     setTransactionLoading(true);
     const loading = loadingNotification("Transaction is pending...");
@@ -53,7 +63,7 @@ export const CardComponent = ({ title, redemptions }: OverviewCardProps) => {
   };
 
   const onSuccess = async (receipt: string, loadingToast: Id) => {
-    updateNotification(`Claim successful`, loadingToast, false, receipt);
+    updateNotification(`Claim successful`, loadingToast, false, receipt, chainId);
     setTimeout(() => {
       setTransactionLoading(false);
       router.refresh();
