@@ -112,7 +112,7 @@ function updateNodeLicenseStatus(nodeLicenseId: bigint, newStatus: NodeLicenseSt
 
 const createAssertionHashAndCheckPayout = (nodeLicenseId: bigint, challengeId: bigint, boostFactor: bigint, confirmData: string, challengerSignedHash: string): [boolean, string] => {
     const assertionHash = ethers.keccak256(ethers.solidityPacked(["uint256", "uint256", "bytes", "bytes"], [nodeLicenseId, challengeId, confirmData, challengerSignedHash]));
-    return [Number((BigInt(assertionHash) % BigInt(100))) < Number(boostFactor), assertionHash];
+    return [Number((BigInt(assertionHash) % BigInt(10_000))) < Number(boostFactor), assertionHash];
 }
 
 /**
@@ -148,7 +148,7 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
                     const errorMessage: string = error && error.message ? error.message : error;
                     if (errorMessage.includes("missing revert data")) {
                         cachedLogger(`INFO: boostFactor will be enabled on staking release`);
-                        cachedBoostFactor[keyOwner] = 1n;
+                        cachedBoostFactor[keyOwner] = 100n;
                     } else {
                         cachedLogger(`Error loading boostFactor: ${errorMessage}`);
                         throw new Error(`Error loading boostFactor: ${errorMessage}`);
