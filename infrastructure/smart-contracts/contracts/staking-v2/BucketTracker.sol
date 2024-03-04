@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
+import "./Utlis.sol";
 
 /**
  * @title SafeMathUint
@@ -103,36 +104,6 @@ library SafeMathInt {
         require(a >= 0);
         return uint256(a);
     }
-}
-
-interface IBucketTracker {
-    function owner() external view returns (address);
-
-    function withdrawableDividendOf(
-        address _owner
-    ) external view returns (uint256);
-
-    function balanceOf(address account) external view returns (uint256);
-
-    function getAccount(
-        address _account
-    )
-        external
-        view
-        returns (
-            address account,
-            uint256 withdrawableDividends,
-            uint256 totalDividends,
-            uint256 lastClaimTime
-        );
-
-    function setBalance(address payable account, uint256 newBalance) external;
-
-    function distributeDividends(uint256 amount) external;
-
-    function totalDividendsDistributed() external view returns (uint256);
-
-    function processAccount(address account) external returns (bool);
 }
 
 contract BucketTracker is IBucketTracker {
@@ -301,7 +272,7 @@ contract BucketTracker is IBucketTracker {
     }
 
     function setBalance(
-        address payable account,
+        address account,
         uint256 newBalance
     ) external onlyAdmin {
         if (newBalance > 0) {

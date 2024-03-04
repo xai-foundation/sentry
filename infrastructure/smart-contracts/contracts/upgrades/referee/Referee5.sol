@@ -10,6 +10,7 @@ import "../../nitro-contracts/rollup/IRollupCore.sol";
 import "../../NodeLicense.sol";
 import "../../Xai.sol";
 import "../../esXai.sol";
+import "../../staking-v2/Utlis.sol";
 
 contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -799,33 +800,67 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         emit UnstakeV1(msg.sender, amount, stakedAmounts[msg.sender]);
     }
 
-    function createPool(
+      function createPool(
         uint256[] memory keyIds,
-        uint16 ownerShare,
-        uint16 keysShare,
-        uint16 stakedEsXaiShare
+        uint16 _ownerShare,
+        uint16 _keyBucketShare,
+        uint16 _stakedBucketShare,
+        string memory _name,
+        string memory _description,
+        string memory _logo,
+        string memory _website,
+        string memory _twitter,
+        string memory _discord,
+        string memory _telegram,
+        string memory _instagram,
+        string memory _tiktok,
+        string memory _youtube
     ) external {
+        //TODO require bucketshareMaxValues
+
+        stakingPoolsCount++;
+
+        //TODO whitelsit pool and buckets on esXai !
+        
+        // stakingPools.push(address(newPool))
         //verify shares with bucketshareMaxValues
         //TODO deplyo Proxy for pool and buckets
         //TODO assign keyIds
     }
 
-    function updatePoolMetadata(address pool) external {
+    function updatePoolMetadata(
+        address pool,
+        string memory _name,
+        string memory _description,
+        string memory _logo,
+        string memory _website,
+        string memory _twitter,
+        string memory _discord,
+        string memory _telegram,
+        string memory _instagram,
+        string memory _tiktok,
+        string memory _youtube
+    ) external {
         //TODO deplyo Proxy for pool and buckets
         //TODO assign keyIds
     }
 
     function updateShares(
         address pool,
-        uint16 ownerShare,
-        uint16 keysShare,
-        uint16 stakedEsXaiShare
+        uint16 _ownerShare,
+        uint16 _keyBucketShare,
+        uint16 _stakedBucketShare
     ) external {
+        //TODO require bucketshareMaxValues
         //TODO deplyo Proxy for pool and buckets
         //TODO assign keyIds
     }
 
     function assignKeys(address pool, uint256[] memory keyIds) external {
+        // uint256 keysLength = keyIds.length;
+        // for (uint256 i = 0; i < keysLength; i++) {
+            
+        // }
         //TODO check if user owns key
         //TODO check key, if assigned unassign first
     }
@@ -836,15 +871,44 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function stakeToPool(address pool, uint256 amount) external {
-        //TODO
+
+        IStakingPool stakingPool = IStakingPool(pool);
+        uint256 numLicenses = stakingPool.getStakedKeysCount();
+        uint256 maxStakedAmount = _getMaxStakeAmount(numLicenses);
+        require(stakedAmounts[pool] + amount <= maxStakedAmount, "Maximum staking amount exceeded");
+
+        esXai(esXaiAddress).transferFrom(msg.sender, address(this), amount);
+        stakedAmounts[pool] += amount;
+
+        stakingPool.stakeEsXai(msg.sender, amount);
+
+        //TODO emit V2 event
     }
 
     function unstakeFromPool(address pool, uint256 amount) external {
-        //TODO
+
+        IStakingPool stakingPool = IStakingPool(pool);
+
+        require(stakingPool.getStakedAmounts(msg.sender) >= amount, "Insufficient amount staked");
+        esXai(esXaiAddress).transfer(msg.sender, amount);
+
+        stakedAmounts[pool] -= amount;
+        stakingPool.unstakeEsXai(msg.sender, amount);
+
+        //TODO emit V2 event
+
     }
     
     function claimFromPools(address[] memory pools) external {
-        //TODO
+
+        uint256 poolsLength = pools.length;
+
+        for (uint i = 0; i < poolsLength; i++) {
+            IStakingPool stakingPool = IStakingPool(pools[i]);
+            stakingPool.claimRewards(msg.sender);
+
+            //TODO claim event ?
+        }
     }
 
 }
