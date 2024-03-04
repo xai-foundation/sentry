@@ -101,6 +101,9 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     // Staking Pool share max values owner, keys, stakedEsXai
     uint16[3] public bucketshareMaxValues;
 
+    // The maximum number of NodeLicenses that can be staked to a pool
+    uint256 public maxKeysPerPool;
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
@@ -157,6 +160,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         bucketshareMaxValues[0] = 100;
         bucketshareMaxValues[1] = 550;
         bucketshareMaxValues[2] = 550;
+        maxKeysPerPool = 5000;
     }
     /**
      * @notice Returns the combined total supply of esXai Xai, and the unminted allocated tokens.
@@ -800,7 +804,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         emit UnstakeV1(msg.sender, amount, stakedAmounts[msg.sender]);
     }
 
-      function createPool(
+    function createPool(
         uint256[] memory keyIds,
         uint16 _ownerShare,
         uint16 _keyBucketShare,
@@ -821,7 +825,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         stakingPoolsCount++;
 
         //TODO whitelsit pool and buckets on esXai !
-        
+
         // stakingPools.push(address(newPool))
         //verify shares with bucketshareMaxValues
         //TODO deplyo Proxy for pool and buckets

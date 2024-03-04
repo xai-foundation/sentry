@@ -219,7 +219,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         esXaiStakeBucket.setBalance(owner, stakedAmounts[owner]);
     }
 
-    function claimRewards(address user) external {
+    function claimRewards(address user) external onlyRole(DEFAULT_ADMIN_ROLE) {
         distributeRewards();
 
         if (user == poolOwner) {
@@ -271,6 +271,9 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         view
         returns (
             address owner,
+            uint16 _ownerShare,
+            uint16 _keyBucketShare,
+            uint16 _stakedBucketShare,
             uint256 keyCount,
             uint256 userStakedEsXaiAmount,
             uint256 userClaimAmount,
@@ -315,6 +318,10 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         maxStakedAmount =
             Referee5(refereeAddress).maxStakeAmountPerLicense() *
             keyCount;
+
+        _ownerShare = ownerShare;
+        _keyBucketShare = keyBucketShare;
+        _stakedBucketShare = stakedBucketShare;
 
         _name = name;
         _description = description;

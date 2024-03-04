@@ -5,7 +5,7 @@ pragma solidity ^0.8.9;
 interface IStakingPool {
 
     function getStakedAmounts(address user) external view returns (uint256);
-    
+    function getStakedKeysCountForUser(address user) external view returns (uint256);
     function getStakedKeysCount() external view returns (uint256);
 
     function updateShares(
@@ -59,7 +59,10 @@ interface IStakingPool {
         external
         view
         returns (
-            address owner,
+            address owner,            
+            uint16 _ownerShare,
+            uint16 _keyBucketShare,
+            uint16 _stakedBucketShare,
             uint256 keyCount,
             uint256 userStakedEsXaiAmount,
             uint256 userClaimAmount,
