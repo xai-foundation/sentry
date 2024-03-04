@@ -20,7 +20,7 @@ services:
       - 8.8.4.4
 
   xai-node:
-    image: offchainlabs/nitro-node:v2.2.3-beta.1-3f67f04
+    image: offchainlabs/nitro-node:v2.3.0-3e14543
     container_name: xai-public-node
     command:
       - --conf.file=/home/user/node-config/config.json
