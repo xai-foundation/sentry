@@ -82,6 +82,11 @@ describe("Fixture Tests", function () {
         await referee4.waitForDeployment();
         await referee4.enableStaking();
 
+		const Referee5 = await ethers.getContractFactory("Referee5");
+		const referee5 = await upgrades.upgradeProxy((await referee.getAddress()), Referee5);
+		await referee5.waitForDeployment();
+		await referee5.enableStaking();
+
         // Set Rollup Address
         const rollupAddress = config.rollupAddress;
         await referee.setRollupAddress(rollupAddress);
@@ -212,7 +217,7 @@ describe("Fixture Tests", function () {
             secretKeyHex,
             publicKeyHex: "0x" + publicKeyHex,
 
-            referee: referee4,
+            referee: referee5,
             nodeLicense,
             gasSubsidy,
             esXai: esXai2,
