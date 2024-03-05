@@ -1016,5 +1016,119 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             //TODO claim event ?
         }
     }
+    
+    function getPoolsCount() external view returns (uint256){
+        return stakingPools.length;
+    }
 
+    function getPoolsOfOwnerCount(address owner) external view returns (uint256){
+        return stakingPoolIndicesOfOwner[owner].length;
+    }
+
+    function getPoolOfOwner(
+        address _owner,
+        uint256 index
+    )
+        external
+        view
+        returns (
+            address owner,
+            uint16 _ownerShare,
+            uint16 _keyBucketShare,
+            uint16 _stakedBucketShare,
+            uint256 keyCount,
+            uint256 userStakedEsXaiAmount,
+            uint256 userClaimAmount,
+            uint256[] memory userStakedKeyIds,
+            uint256 totalStakedAmount,
+            uint256 maxStakedAmount,
+            string memory _name,
+            string memory _description,
+            string memory _logo,
+            string memory _socials
+        )
+    {
+        uint256 poolIndex = stakingPoolIndicesOfOwner[owner][index];
+        require(stakingPools[poolIndex] != address(0), "Invalid index");
+        return IStakingPool(stakingPools[poolIndex]).getPoolInfo(_owner);
+    }
+
+    function getPoolsOfOwner(
+        address owner
+    )
+        external
+        view
+        returns (
+            address[] memory poolAddresses,
+            uint256[] memory poolIndices
+        )
+    {
+
+        uint256 ownerPoolsLength = stakingPoolIndicesOfOwner[owner].length;
+
+        poolAddresses = new address[](ownerPoolsLength);
+        poolIndices = new uint256[](ownerPoolsLength);
+
+        for(uint256 i = 0; i < ownerPoolsLength; i++){
+            uint256 poolIndex =  stakingPoolIndicesOfOwner[owner][i];
+            poolIndices[i] = poolIndex;
+            poolAddresses[i] = stakingPools[poolIndex];
+        }
+    }
+
+    function getPoolInfo(
+        address pool,
+        address user
+    )
+        external
+        view
+        returns (
+            address owner,
+            uint16 _ownerShare,
+            uint16 _keyBucketShare,
+            uint16 _stakedBucketShare,
+            uint256 keyCount,
+            uint256 userStakedEsXaiAmount,
+            uint256 userClaimAmount,
+            uint256[] memory userStakedKeyIds,
+            uint256 totalStakedAmount,
+            uint256 maxStakedAmount,
+            string memory _name,
+            string memory _description,
+            string memory _logo,
+            string memory _socials
+        )
+    {
+        require(pool != address(0), "Invalid pool");
+        return IStakingPool(pool).getPoolInfo(user);
+    }
+
+    
+    function getPoolInfoAtIndex(
+        uint256 index,
+        address user
+    )
+        external
+        view
+        returns (
+            address owner,
+            uint16 _ownerShare,
+            uint16 _keyBucketShare,
+            uint16 _stakedBucketShare,
+            uint256 keyCount,
+            uint256 userStakedEsXaiAmount,
+            uint256 userClaimAmount,
+            uint256[] memory userStakedKeyIds,
+            uint256 totalStakedAmount,
+            uint256 maxStakedAmount,
+            string memory _name,
+            string memory _description,
+            string memory _logo,
+            string memory _socials
+        )
+    {
+        require(stakingPools[index] != address(0), "Invalid index");
+        return IStakingPool(stakingPools[index]).getPoolInfo(user);
+    }
+    
 }
