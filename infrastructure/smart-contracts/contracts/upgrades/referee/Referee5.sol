@@ -11,8 +11,6 @@ import "../../NodeLicense.sol";
 import "../../Xai.sol";
 import "../../esXai.sol";
 import "../../staking-v2/Utlis.sol";
-import "../../staking-v2/StakingPool.sol";
-import "../../staking-v2/BucketTracker.sol";
 import "../../staking-v2/TransparentUpgradable.sol";
 
 contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
@@ -168,7 +166,11 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     event StakedV1(address indexed user, uint256 amount, uint256 totalStaked);
     event UnstakeV1(address indexed user, uint256 amount, uint256 totalStaked);
 
-    function initialize (address _stakingPoolProxyAdmin) public reinitializer(4) {
+    function initialize(
+        address _stakingPoolProxyAdmin,
+        address _stakingPoolImplementation,
+        address _bucketImplementation
+    ) public reinitializer(4) {
         bucketshareMaxValues[0] = 100;
         bucketshareMaxValues[1] = 550;
         bucketshareMaxValues[2] = 550;
@@ -176,8 +178,8 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
 
         stakingPoolProxyAdmin = _stakingPoolProxyAdmin;
 
-        stakingPoolImplementation = address(new StakingPool());
-        bucketImplementation = address(new BucketTracker());
+        stakingPoolImplementation = _stakingPoolImplementation;
+        bucketImplementation = _bucketImplementation;
     }
 
     /**
@@ -858,43 +860,45 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
                 ""
             );
 
-        address poolProxyAddress = address(poolProxy);
-        address keyBucketProxyAddress = address(keyBucketProxy);
-        address stakedBucketProxyAddress = address(stakedBucketProxy);
-
-        IStakingPool(poolProxyAddress).initialize(
+        IStakingPool(address(poolProxy)).initialize(
             address(this),
             esXaiAddress,
             msg.sender,
-            keyBucketProxyAddress,
-            stakedBucketProxyAddress,
+            address(keyBucketProxy),
+            address(stakedBucketProxy)
+        );
+        
+        IStakingPool(address(poolProxy)).updateShares(
             _ownerShare,
             _keyBucketShare,
-            _stakedBucketShare,
+            _stakedBucketShare
+        );
+        
+        IStakingPool(address(poolProxy)).updateMetadata(
             _name,
             _description,
             _logo,
             _socials
         );
 
-        IBucketTracker(keyBucketProxyAddress).initialize(
-            poolProxyAddress,
+        IBucketTracker(address(keyBucketProxy)).initialize(
+            address(poolProxy),
             esXaiAddress
         );
-        IBucketTracker(stakedBucketProxyAddress).initialize(
-            poolProxyAddress,
+        IBucketTracker(address(stakedBucketProxy)).initialize(
+            address(poolProxy),
             esXaiAddress
         );
 
         stakingPoolIndicesOfOwner[msg.sender].push(stakingPoolsCount);
         stakingPoolsCount++;
-        stakingPools.push(poolProxyAddress);
+        stakingPools.push(address(poolProxy));
 
-        esXai(esXaiAddress).addToWhitelist(poolProxyAddress);
-        esXai(esXaiAddress).addToWhitelist(keyBucketProxyAddress);
-        esXai(esXaiAddress).addToWhitelist(stakedBucketProxyAddress);
+        esXai(esXaiAddress).addToWhitelist(address(poolProxy));
+        esXai(esXaiAddress).addToWhitelist(address(keyBucketProxy));
+        esXai(esXaiAddress).addToWhitelist(address(stakedBucketProxy));
 
-        _assignKeys(poolProxyAddress, keyIds);
+        _assignKeys(address(poolProxy), keyIds);
     }
 
     function updatePoolMetadata(
@@ -1032,23 +1036,15 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         external
         view
         returns (
-            address owner,
-            uint16 _ownerShare,
-            uint16 _keyBucketShare,
-            uint16 _stakedBucketShare,
-            uint256 keyCount,
-            uint256 userStakedEsXaiAmount,
-            uint256 userClaimAmount,
-            uint256[] memory userStakedKeyIds,
-            uint256 totalStakedAmount,
-            uint256 maxStakedAmount,
-            string memory _name,
-            string memory _description,
-            string memory _logo,
-            string memory _socials
+            IStakingPool.PoolBaseInfo memory baseInfo,
+            uint256[] memory,
+            string memory,
+            string memory,
+            string memory,
+            string memory
         )
     {
-        uint256 poolIndex = stakingPoolIndicesOfOwner[owner][index];
+        uint256 poolIndex = stakingPoolIndicesOfOwner[_owner][index];
         require(stakingPools[poolIndex] != address(0), "Invalid index");
         return IStakingPool(stakingPools[poolIndex]).getPoolInfo(_owner);
     }
@@ -1083,26 +1079,17 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         external
         view
         returns (
-            address owner,
-            uint16 _ownerShare,
-            uint16 _keyBucketShare,
-            uint16 _stakedBucketShare,
-            uint256 keyCount,
-            uint256 userStakedEsXaiAmount,
-            uint256 userClaimAmount,
-            uint256[] memory userStakedKeyIds,
-            uint256 totalStakedAmount,
-            uint256 maxStakedAmount,
-            string memory _name,
-            string memory _description,
-            string memory _logo,
-            string memory _socials
+            IStakingPool.PoolBaseInfo memory baseInfo,
+            uint256[] memory,
+            string memory,
+            string memory,
+            string memory,
+            string memory
         )
     {
         require(pool != address(0), "Invalid pool");
         return IStakingPool(pool).getPoolInfo(user);
     }
-
     
     function getPoolInfoAtIndex(
         uint256 index,
@@ -1111,20 +1098,12 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         external
         view
         returns (
-            address owner,
-            uint16 _ownerShare,
-            uint16 _keyBucketShare,
-            uint16 _stakedBucketShare,
-            uint256 keyCount,
-            uint256 userStakedEsXaiAmount,
-            uint256 userClaimAmount,
-            uint256[] memory userStakedKeyIds,
-            uint256 totalStakedAmount,
-            uint256 maxStakedAmount,
-            string memory _name,
-            string memory _description,
-            string memory _logo,
-            string memory _socials
+            IStakingPool.PoolBaseInfo memory baseInfo,
+            uint256[] memory,
+            string memory,
+            string memory,
+            string memory,
+            string memory
         )
     {
         require(stakingPools[index] != address(0), "Invalid index");

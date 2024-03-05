@@ -41,14 +41,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         address _esXaiAddress,
         address _owner,
         address _keyBucket,
-        address _esXaiStakeBucket,
-        uint16 _ownerShare,
-        uint16 _keyBucketShare,
-        uint16 _stakedBucketShare,
-        string memory _name,
-        string memory _description,
-        string memory _logo,
-        string memory _socials
+        address _esXaiStakeBucket
     ) external {
         require(poolOwner == address(0), "Invalid init");
         __AccessControl_init();
@@ -61,18 +54,6 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         esXaiStakeBucket = IBucketTracker(_esXaiStakeBucket);
 
         poolOwner = _owner;
-
-        ownerShare = _ownerShare;
-        keyBucketShare = _keyBucketShare;
-        stakedBucketShare = _stakedBucketShare;
-
-        name = _name;
-        description = _description;
-        logo = _logo;
-        socials = _socials;
-
-        //Create buckets
-        //new TrackerBucket() // TODO this needs to be an Upgradable too!
     }
     
     function getPoolOwner() external view returns (address) {
@@ -250,25 +231,17 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         external
         view
         returns (
-            address owner,
-            uint16 _ownerShare,
-            uint16 _keyBucketShare,
-            uint16 _stakedBucketShare,
-            uint256 keyCount,
-            uint256 userStakedEsXaiAmount,
-            uint256 userClaimAmount,
+            PoolBaseInfo memory baseInfo,
             uint256[] memory userStakedKeyIds,
-            uint256 totalStakedAmount,
-            uint256 maxStakedAmount,
             string memory _name,
             string memory _description,
             string memory _logo,
             string memory _socials
         )
     {
-        owner = poolOwner;
-        keyCount = keyBucket.totalSupply();
-        userStakedEsXaiAmount = stakedAmounts[user];
+        baseInfo.owner = poolOwner;
+        baseInfo.keyCount = keyBucket.totalSupply();
+        baseInfo.userStakedEsXaiAmount = stakedAmounts[user];
 
         uint256 claimAmountKeyBucket = keyBucket.withdrawableDividendOf(user);
         uint256 claimAmountStakedBucket = esXaiStakeBucket
@@ -279,23 +252,23 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
             uint256 ownerAmount
         ) = _getUndistributedClaimAmount(user);
 
-        userClaimAmount =
+        baseInfo.userClaimAmount =
             claimAmountKeyBucket +
             claimAmountStakedBucket +
             claimAmount;
         if (user == poolOwner) {
-            userClaimAmount += poolOwnerClaimableRewards + ownerAmount;
+            baseInfo.userClaimAmount += poolOwnerClaimableRewards + ownerAmount;
         }
 
         userStakedKeyIds = stakedKeysOfOwner[user];
-        totalStakedAmount = esXaiStakeBucket.totalSupply();
-        maxStakedAmount =
+        baseInfo.totalStakedAmount = esXaiStakeBucket.totalSupply();
+        baseInfo.maxStakedAmount =
             Referee5(refereeAddress).maxStakeAmountPerLicense() *
-            keyCount;
+            baseInfo.keyCount;
 
-        _ownerShare = ownerShare;
-        _keyBucketShare = keyBucketShare;
-        _stakedBucketShare = stakedBucketShare;
+        baseInfo.ownerShare = ownerShare;
+        baseInfo.keyBucketShare = keyBucketShare;
+        baseInfo.stakedBucketShare = stakedBucketShare;
 
         _name = name;
         _description = description;

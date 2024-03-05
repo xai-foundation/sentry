@@ -3,19 +3,26 @@
 pragma solidity ^0.8.9;
 
 interface IStakingPool {
+    
+    struct PoolBaseInfo {
+        address poolAddress;
+        address owner;
+        uint16 ownerShare;
+        uint16 keyBucketShare;
+        uint16 stakedBucketShare;
+        uint256 keyCount;
+        uint256 userStakedEsXaiAmount;
+        uint256 userClaimAmount;
+        uint256 totalStakedAmount;
+        uint256 maxStakedAmount;
+    }
+
     function initialize(
         address _refereeAddress,
         address _esXaiAddress,
         address _owner,
         address _keyBucket,
-        address _esXaiStakeBucket,
-        uint16 _ownerShare,
-        uint16 _keyBucketShare,
-        uint16 _stakedBucketShare,
-        string memory _name,
-        string memory _description,
-        string memory _logo,
-        string memory _socials
+        address _esXaiStakeBucket
     ) external;
 
     function getPoolOwner() external view returns (address);
@@ -61,16 +68,8 @@ interface IStakingPool {
         external
         view
         returns (
-            address owner,
-            uint16 _ownerShare,
-            uint16 _keyBucketShare,
-            uint16 _stakedBucketShare,
-            uint256 keyCount,
-            uint256 userStakedEsXaiAmount,
-            uint256 userClaimAmount,
+            PoolBaseInfo memory baseInfo,
             uint256[] memory userStakedKeyIds,
-            uint256 totalStakedAmount,
-            uint256 maxStakedAmount,
             string memory _name,
             string memory _description,
             string memory _logo,
