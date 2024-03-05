@@ -1118,7 +1118,6 @@ export function RefereeTests(deployInfrastructure) {
 					).to.be.revertedWith("");
 				})
 			});
-
 		});
 
 		// describe("The rollup protocol should be checking if values are correct", function () {
