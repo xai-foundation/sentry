@@ -46,6 +46,8 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         address _refereeAddress,
         address _esXaiAddress,
         address _owner,
+        address _keyBucket,
+        address _esXaiStakeBucket,
         uint16 _ownerShare,
         uint16 _keyBucketShare,
         uint16 _stakedBucketShare,
@@ -66,6 +68,9 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         esXaiAddress = _esXaiAddress;
         refereeAddress = _refereeAddress;
 
+        keyBucket = IBucketTracker(_keyBucket);
+        esXaiStakeBucket = IBucketTracker(_esXaiStakeBucket);
+
         poolOwner = _owner;
 
         ownerShare = _ownerShare;
@@ -85,6 +90,10 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
 
         //Create buckets
         //new TrackerBucket() // TODO this needs to be an Upgradable too!
+    }
+    
+    function getPoolOwner() external view returns (address) {
+        return poolOwner;
     }
 
     function getStakedKeysCount() external view returns (uint256) {

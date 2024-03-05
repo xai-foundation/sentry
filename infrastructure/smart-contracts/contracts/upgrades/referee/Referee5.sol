@@ -11,6 +11,9 @@ import "../../NodeLicense.sol";
 import "../../Xai.sol";
 import "../../esXai.sol";
 import "../../staking-v2/Utlis.sol";
+import "../../staking-v2/StakingPool.sol";
+import "../../staking-v2/BucketTracker.sol";
+import "../../staking-v2/TransparentUpgradable.sol";
 
 contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -104,12 +107,21 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     // The maximum number of NodeLicenses that can be staked to a pool
     uint256 public maxKeysPerPool;
 
+    // The proxy admin for the staking pools and buckets
+    address public stakingPoolProxyAdmin;
+
+    // The current staking pool implementation
+    address public stakingPoolImplementation;
+
+    // The current key & esXai bucket tracker implenetation
+    address public bucketImplementation;
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[489] private __gap;
+    uint256[486] private __gap;
 
     // Struct for the submissions
     struct Submission {
@@ -156,12 +168,18 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     event StakedV1(address indexed user, uint256 amount, uint256 totalStaked);
     event UnstakeV1(address indexed user, uint256 amount, uint256 totalStaked);
 
-    function initialize () public reinitializer(4) {
+    function initialize (address _stakingPoolProxyAdmin) public reinitializer(4) {
         bucketshareMaxValues[0] = 100;
         bucketshareMaxValues[1] = 550;
         bucketshareMaxValues[2] = 550;
         maxKeysPerPool = 5000;
+
+        stakingPoolProxyAdmin = _stakingPoolProxyAdmin;
+
+        stakingPoolImplementation = address(new StakingPool());
+        bucketImplementation = address(new BucketTracker());
     }
+
     /**
      * @notice Returns the combined total supply of esXai Xai, and the unminted allocated tokens.
      * @dev This function fetches the total supply of esXai, Xai, and unminted allocated tokens and returns their sum.
@@ -820,16 +838,75 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         string memory _tiktok,
         string memory _youtube
     ) external {
-        //TODO require bucketshareMaxValues
+        require(keyIds.length > 0, "Pool requires at least 1 key");
+        require(
+            _ownerShare <= bucketshareMaxValues[0] &&
+                _keyBucketShare <= bucketshareMaxValues[1] &&
+                _stakedBucketShare <= bucketshareMaxValues[2] &&
+                _ownerShare + _keyBucketShare + _stakedBucketShare == 1000,
+            "Invalid shares"
+        );
 
+        TransparentUpgradeableProxyImplementation poolProxy = new TransparentUpgradeableProxyImplementation(
+                stakingPoolImplementation,
+                stakingPoolProxyAdmin,
+                ""
+            );
+        TransparentUpgradeableProxyImplementation keyBucketProxy = new TransparentUpgradeableProxyImplementation(
+                bucketImplementation,
+                stakingPoolProxyAdmin,
+                ""
+            );
+
+        TransparentUpgradeableProxyImplementation stakedBucketProxy = new TransparentUpgradeableProxyImplementation(
+                bucketImplementation,
+                stakingPoolProxyAdmin,
+                ""
+            );
+
+        address poolProxyAddress = address(poolProxy);
+        address keyBucketProxyAddress = address(keyBucketProxy);
+        address stakedBucketProxyAddress = address(stakedBucketProxy);
+
+        IStakingPool(poolProxyAddress).initialize(
+            address(this),
+            esXaiAddress,
+            msg.sender,
+            keyBucketProxyAddress,
+            stakedBucketProxyAddress,
+            _ownerShare,
+            _keyBucketShare,
+            _stakedBucketShare,
+            _name,
+            _description,
+            _logo,
+            _website,
+            _twitter,
+            _discord,
+            _telegram,
+            _instagram,
+            _tiktok,
+            _youtube
+        );
+
+        IBucketTracker(keyBucketProxyAddress).initialize(
+            poolProxyAddress,
+            esXaiAddress
+        );
+        IBucketTracker(stakedBucketProxyAddress).initialize(
+            poolProxyAddress,
+            esXaiAddress
+        );
+
+        stakingPoolIndicesOfOwner[msg.sender].push(stakingPoolsCount);
         stakingPoolsCount++;
+        stakingPools.push(poolProxyAddress);
 
-        //TODO whitelsit pool and buckets on esXai !
+        esXai(esXaiAddress).addToWhitelist(poolProxyAddress);
+        esXai(esXaiAddress).addToWhitelist(keyBucketProxyAddress);
+        esXai(esXaiAddress).addToWhitelist(stakedBucketProxyAddress);
 
-        // stakingPools.push(address(newPool))
-        //verify shares with bucketshareMaxValues
-        //TODO deplyo Proxy for pool and buckets
-        //TODO assign keyIds
+        _assignKeys(poolProxyAddress, keyIds);
     }
 
     function updatePoolMetadata(
@@ -845,8 +922,20 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         string memory _tiktok,
         string memory _youtube
     ) external {
-        //TODO deplyo Proxy for pool and buckets
-        //TODO assign keyIds
+        IStakingPool stakingPool = IStakingPool(pool);
+        require(stakingPool.getPoolOwner() == msg.sender, "Invalid auth");
+        stakingPool.updateMetadata(
+            _name,
+            _description,
+            _logo,
+            _website,
+            _twitter,
+            _discord,
+            _telegram,
+            _instagram,
+            _tiktok,
+            _youtube
+        );
     }
 
     function updateShares(
@@ -855,23 +944,60 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         uint16 _keyBucketShare,
         uint16 _stakedBucketShare
     ) external {
-        //TODO require bucketshareMaxValues
-        //TODO deplyo Proxy for pool and buckets
-        //TODO assign keyIds
+        IStakingPool stakingPool = IStakingPool(pool);
+        require(stakingPool.getPoolOwner() == msg.sender, "Invalid auth");
+        require(
+            _ownerShare <= bucketshareMaxValues[0] &&
+                _keyBucketShare <= bucketshareMaxValues[1] &&
+                _stakedBucketShare <= bucketshareMaxValues[2] &&
+                _ownerShare + _keyBucketShare + _stakedBucketShare == 1000,
+            "Invalid shares"
+        );
+        stakingPool.updateShares(
+            _ownerShare,
+            _keyBucketShare,
+            _stakedBucketShare
+        );
+    }
+
+    function _assignKeys(address pool, uint256[] memory keyIds) internal {
+        uint256 keysLength = keyIds.length;
+        NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
+        for (uint256 i = 0; i < keysLength; i++) {
+            uint256 keyId = keyIds[i];
+            require(assignedKeyToPool[keyId] == address(0), "Key already assigned");
+            require(nodeLicenseContract.ownerOf(keyId) == msg.sender, "Not owner of key");
+            assignedKeyToPool[keyId] = pool;
+        }
+        IStakingPool(pool).stakeKeys(msg.sender, keyIds);
+        assignedKeysOfUserCount[msg.sender] += keysLength;
+        
+        //TODO emit V2 event
     }
 
     function assignKeys(address pool, uint256[] memory keyIds) external {
-        // uint256 keysLength = keyIds.length;
-        // for (uint256 i = 0; i < keysLength; i++) {
-            
-        // }
-        //TODO check if user owns key
-        //TODO check key, if assigned unassign first
+        require(pool != address(0), "Invalid pool");
+        require(keyIds.length > 0, "Must at least stake 1 key");
+
+        _assignKeys(pool, keyIds);
     }
 
     function unassignKeys(address pool, uint256[] memory keyIds) external {
-        //TODO check if user owns key
-        //TODO
+        require(pool != address(0), "Invalid pool");
+        require(keyIds.length > 0, "Must at least unstake 1 key");
+
+        uint256 keysLength = keyIds.length;
+        NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
+        for (uint256 i = 0; i < keysLength; i++) {
+            uint256 keyId = keyIds[i];
+            require(assignedKeyToPool[keyId] == pool, "Key not assigned to pool");
+            require(nodeLicenseContract.ownerOf(keyId) == msg.sender, "Not owner of key");
+            assignedKeyToPool[keyId] = pool;
+        }
+        IStakingPool(pool).unstakeKey(msg.sender, keyIds);
+        assignedKeysOfUserCount[msg.sender] -= keysLength;
+
+        //TODO emit V2 event
     }
 
     function stakeToPool(address pool, uint256 amount) external {
