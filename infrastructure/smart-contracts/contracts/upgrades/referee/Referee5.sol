@@ -830,13 +830,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         string memory _name,
         string memory _description,
         string memory _logo,
-        string memory _website,
-        string memory _twitter,
-        string memory _discord,
-        string memory _telegram,
-        string memory _instagram,
-        string memory _tiktok,
-        string memory _youtube
+        string memory _socials
     ) external {
         require(keyIds.length > 0, "Pool requires at least 1 key");
         require(
@@ -880,13 +874,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             _name,
             _description,
             _logo,
-            _website,
-            _twitter,
-            _discord,
-            _telegram,
-            _instagram,
-            _tiktok,
-            _youtube
+            _socials
         );
 
         IBucketTracker(keyBucketProxyAddress).initialize(
@@ -914,13 +902,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         string memory _name,
         string memory _description,
         string memory _logo,
-        string memory _website,
-        string memory _twitter,
-        string memory _discord,
-        string memory _telegram,
-        string memory _instagram,
-        string memory _tiktok,
-        string memory _youtube
+        string memory _socials
     ) external {
         IStakingPool stakingPool = IStakingPool(pool);
         require(stakingPool.getPoolOwner() == msg.sender, "Invalid auth");
@@ -928,13 +910,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             _name,
             _description,
             _logo,
-            _website,
-            _twitter,
-            _discord,
-            _telegram,
-            _instagram,
-            _tiktok,
-            _youtube
+            _socials
         );
     }
 

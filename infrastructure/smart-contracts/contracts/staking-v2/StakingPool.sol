@@ -20,13 +20,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
     string public name;
     string public description;
     string public logo;
-    string public website;
-    string public twitter;
-    string public discord;
-    string public telegram;
-    string public instagram;
-    string public tiktok;
-    string public youtube;
+    string public socials;
 
     uint16 public ownerShare;
     uint16 public keyBucketShare;
@@ -54,14 +48,9 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         string memory _name,
         string memory _description,
         string memory _logo,
-        string memory _website,
-        string memory _twitter,
-        string memory _discord,
-        string memory _telegram,
-        string memory _instagram,
-        string memory _tiktok,
-        string memory _youtube
-    ) external initializer {
+        string memory _socials
+    ) external {
+        require(poolOwner == address(0), "Invalid init");
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
 
@@ -80,13 +69,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         name = _name;
         description = _description;
         logo = _logo;
-        website = _website;
-        twitter = _twitter;
-        discord = _discord;
-        telegram = _telegram;
-        instagram = _instagram;
-        tiktok = _tiktok;
-        youtube = _youtube;
+        socials = _socials;
 
         //Create buckets
         //new TrackerBucket() // TODO this needs to be an Upgradable too!
@@ -152,24 +135,12 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         string memory _name,
         string memory _description,
         string memory _logo,
-        string memory _website,
-        string memory _twitter,
-        string memory _discord,
-        string memory _telegram,
-        string memory _instagram,
-        string memory _tiktok,
-        string memory _youtube
+        string memory _socials
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         name = _name;
         description = _description;
         logo = _logo;
-        website = _website;
-        twitter = _twitter;
-        discord = _discord;
-        telegram = _telegram;
-        instagram = _instagram;
-        tiktok = _tiktok;
-        youtube = _youtube;
+        socials = _socials;
     }
 
     function stakeKeys(
@@ -292,13 +263,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
             string memory _name,
             string memory _description,
             string memory _logo,
-            string memory _website,
-            string memory _twitter,
-            string memory _discord,
-            string memory _telegram,
-            string memory _instagram,
-            string memory _tiktok,
-            string memory _youtube
+            string memory _socials
         )
     {
         owner = poolOwner;
@@ -335,12 +300,6 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         _name = name;
         _description = description;
         _logo = logo;
-        _website = website;
-        _twitter = twitter;
-        _discord = discord;
-        _telegram = telegram;
-        _instagram = instagram;
-        _tiktok = tiktok;
-        _youtube = youtube;
+        _socials = socials;
     }
 }

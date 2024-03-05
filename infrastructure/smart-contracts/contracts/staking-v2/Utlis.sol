@@ -15,13 +15,7 @@ interface IStakingPool {
         string memory _name,
         string memory _description,
         string memory _logo,
-        string memory _website,
-        string memory _twitter,
-        string memory _discord,
-        string memory _telegram,
-        string memory _instagram,
-        string memory _tiktok,
-        string memory _youtube
+        string memory _socials
     ) external;
 
     function getPoolOwner() external view returns (address);
@@ -44,13 +38,7 @@ interface IStakingPool {
         string memory _name,
         string memory _description,
         string memory _logo,
-        string memory _website,
-        string memory _twitter,
-        string memory _discord,
-        string memory _telegram,
-        string memory _instagram,
-        string memory _tiktok,
-        string memory _youtube
+        string memory _socials
     ) external;
 
     function stakeKeys(address owner, uint256[] memory keyIds) external;
@@ -86,13 +74,7 @@ interface IStakingPool {
             string memory _name,
             string memory _description,
             string memory _logo,
-            string memory _website,
-            string memory _twitter,
-            string memory _discord,
-            string memory _telegram,
-            string memory _instagram,
-            string memory _tiktok,
-            string memory _youtube
+            string memory _socials
         );
 }
 
