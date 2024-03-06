@@ -20,7 +20,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
     string public name;
     string public description;
     string public logo;
-    string public socials;
+    string[] public socials;
 
     uint16 public ownerShare;
     uint16 public keyBucketShare;
@@ -32,7 +32,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
 
     mapping(address => uint256[]) public stakedKeysOfOwner;
     mapping(uint256 => uint256) public keyIdIndex;
-    mapping(address => uint256) public stakedAmounts; //TODO do we needs this ? Can it not be BucketBalance ?
+    mapping(address => uint256) public stakedAmounts;
 
     uint256[500] __gap;
 
@@ -116,7 +116,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         string memory _name,
         string memory _description,
         string memory _logo,
-        string memory _socials
+        string[] memory _socials
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         name = _name;
         description = _description;
@@ -236,10 +236,12 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
             string memory _name,
             string memory _description,
             string memory _logo,
-            string memory _socials
+            string[] memory _socials
         )
     {
         baseInfo.owner = poolOwner;
+        baseInfo.keyBucketTracker = address(keyBucket);
+        baseInfo.esXaiBucketTracker = address(esXaiStakeBucket);
         baseInfo.keyCount = keyBucket.totalSupply();
         baseInfo.userStakedEsXaiAmount = stakedAmounts[user];
 

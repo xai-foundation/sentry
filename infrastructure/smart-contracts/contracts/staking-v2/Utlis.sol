@@ -3,18 +3,19 @@
 pragma solidity ^0.8.9;
 
 interface IStakingPool {
-    
     struct PoolBaseInfo {
         address poolAddress;
         address owner;
-        uint16 ownerShare;
-        uint16 keyBucketShare;
-        uint16 stakedBucketShare;
+        address keyBucketTracker;
+        address esXaiBucketTracker;
         uint256 keyCount;
         uint256 userStakedEsXaiAmount;
         uint256 userClaimAmount;
         uint256 totalStakedAmount;
         uint256 maxStakedAmount;
+        uint16 ownerShare;
+        uint16 keyBucketShare;
+        uint16 stakedBucketShare;
     }
 
     function initialize(
@@ -45,7 +46,7 @@ interface IStakingPool {
         string memory _name,
         string memory _description,
         string memory _logo,
-        string memory _socials
+        string[] memory _socials
     ) external;
 
     function stakeKeys(address owner, uint256[] memory keyIds) external;
@@ -73,7 +74,7 @@ interface IStakingPool {
             string memory _name,
             string memory _description,
             string memory _logo,
-            string memory _socials
+            string[] memory _socials
         );
 }
 
