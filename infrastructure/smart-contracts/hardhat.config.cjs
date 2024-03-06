@@ -11,18 +11,31 @@ const accounts = {
 };
 
 const config = {
-  defaultNetwork: "hardhat",
+  defaultNetwork: "xai",
   solidity: {
-    version: "0.8.9",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200,
-        details: {
-          yul: true
+    compilers: [
+      {
+        version: "0.8.9",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+            details: {
+              yul: true
+            }
+          }
+        }
+      },
+      {
+        version: "0.4.18",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200
+          }
         }
       }
-    }
+    ]
   },
   networks: {
     hardhat: {
@@ -32,12 +45,16 @@ const config = {
       // },
       chainId: 1,
       accounts,
-    },  
+    },
     xai: {
-      url: "https://testnet.xai-chain.net/rpc",
-      chainId: 47279324479,
+      url: "https://xai-chain.net/rpc",
+      chainId: 660279,
       accounts,
-      gasPrice: 20000000000,
+    }, 
+    xaiTestnet2: {
+      url: " https://testnet-v2.xai-chain.net/rpc",
+      chainId: 37714555429,
+      accounts,
     },
     arbitrumOne: {
       url: "https://tame-alpha-violet.arbitrum-mainnet.quiknode.pro/d55a31b32f04c82b0e1bcb77f1fc6dcf53147f2a/",
