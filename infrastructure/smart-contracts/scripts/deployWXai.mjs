@@ -1,5 +1,3 @@
-import { ethers } from "ethers";
-
 async function main() {
 	// get the deployer
 	const [deployer] = await ethers.getSigners();
@@ -10,7 +8,6 @@ async function main() {
 	console.log("Deploying WETH9 Contract...");
 	const WETH9Contract = await ethers.getContractFactory("WETH9");
 	const weth9 = await WETH9Contract.deploy();
-	await weth9.deployed();
 	console.log("WETH9 Contract deployed to:", weth9.address);
 }
 
