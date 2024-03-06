@@ -3,9 +3,37 @@
 pragma solidity ^0.8.9;
 
 interface IStakingPool {
+    struct PoolBaseInfo {
+        address poolAddress;
+        address owner;
+        address keyBucketTracker;
+        address esXaiBucketTracker;
+        uint256 keyCount;
+        uint256 userStakedEsXaiAmount;
+        uint256 userClaimAmount;
+        uint256 totalStakedAmount;
+        uint256 maxStakedAmount;
+        uint16 ownerShare;
+        uint16 keyBucketShare;
+        uint16 stakedBucketShare;
+    }
+
+    function initialize(
+        address _refereeAddress,
+        address _esXaiAddress,
+        address _owner,
+        address _keyBucket,
+        address _esXaiStakeBucket
+    ) external;
+
+    function getPoolOwner() external view returns (address);
 
     function getStakedAmounts(address user) external view returns (uint256);
-    function getStakedKeysCountForUser(address user) external view returns (uint256);
+
+    function getStakedKeysCountForUser(
+        address user
+    ) external view returns (uint256);
+
     function getStakedKeysCount() external view returns (uint256);
 
     function updateShares(
@@ -18,34 +46,16 @@ interface IStakingPool {
         string memory _name,
         string memory _description,
         string memory _logo,
-        string memory _website,
-        string memory _twitter,
-        string memory _discord,
-        string memory _telegram,
-        string memory _instagram,
-        string memory _tiktok,
-        string memory _youtube
+        string[] memory _socials
     ) external;
 
-    function stakeKeys(
-        address owner,
-        uint256[] memory keyIds
-    ) external;
+    function stakeKeys(address owner, uint256[] memory keyIds) external;
 
-    function unstakeKey(
-        address owner,
-        uint256[] memory keyIds
-    ) external;
+    function unstakeKey(address owner, uint256[] memory keyIds) external;
 
-    function stakeEsXai(
-        address owner,
-        uint256 amount
-    ) external;
+    function stakeEsXai(address owner, uint256 amount) external;
 
-    function unstakeEsXai(
-        address owner,
-        uint256 amount
-    ) external;
+    function unstakeEsXai(address owner, uint256 amount) external;
 
     function claimRewards(address user) external;
 
@@ -59,31 +69,18 @@ interface IStakingPool {
         external
         view
         returns (
-            address owner,            
-            uint16 _ownerShare,
-            uint16 _keyBucketShare,
-            uint16 _stakedBucketShare,
-            uint256 keyCount,
-            uint256 userStakedEsXaiAmount,
-            uint256 userClaimAmount,
+            PoolBaseInfo memory baseInfo,
             uint256[] memory userStakedKeyIds,
-            uint256 totalStakedAmount,
-            uint256 maxStakedAmount,
             string memory _name,
             string memory _description,
             string memory _logo,
-            string memory _website,
-            string memory _twitter,
-            string memory _discord,
-            string memory _telegram,
-            string memory _instagram,
-            string memory _tiktok,
-            string memory _youtube
+            string[] memory _socials
         );
 }
 
-
 interface IBucketTracker {
+    function initialize(address _trackerOwner, address _esXaiAddress) external;
+
     function owner() external view returns (address);
 
     function withdrawableDividendOf(

@@ -11,6 +11,7 @@ import "../../NodeLicense.sol";
 import "../../Xai.sol";
 import "../../esXai.sol";
 import "../../staking-v2/Utlis.sol";
+import "../../staking-v2/TransparentUpgradable.sol";
 
 contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -83,33 +84,24 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     // Enabling staking on the Referee
     bool public stakingEnabled;
 
-    // Total count of created pools
-    uint256 public stakingPoolsCount;
-
-    // Staking pool contract addresses
-    address[] public stakingPools;
-    
-    // The indices of the pools created by the user
-    mapping(address => uint256[]) public stakingPoolIndicesOfOwner;
-
-    // Mapping for amount of assigned keys of a user
-    mapping(address => uint256) public assignedKeysOfUserCount;
-
     // Mapping for a key id assigned to a staking pool
     mapping(uint256 => address) public assignedKeyToPool;
 
-    // Staking Pool share max values owner, keys, stakedEsXai
-    uint16[3] public bucketshareMaxValues;
+    // Mapping for pool to assigned key count for calculating max stake amount
+    mapping(address => uint256) public assignedKeysToPoolCount;
 
     // The maximum number of NodeLicenses that can be staked to a pool
     uint256 public maxKeysPerPool;
+
+    // The pool factory contract that is allowed to update the stake state of the Referee
+    address public poolFactoryAddress;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[489] private __gap;
+    uint256[493] private __gap;
 
     // Struct for the submissions
     struct Submission {
@@ -153,15 +145,22 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     event ChallengeExpired(uint256 indexed challengeId);
     event StakingEnabled();
     event UpdateMaxStakeAmount(uint256 prevAmount, uint256 newAmount);
+    event UpdateMaxKeysPerPool(uint256 prevAmount, uint256 newAmount);
     event StakedV1(address indexed user, uint256 amount, uint256 totalStaked);
     event UnstakeV1(address indexed user, uint256 amount, uint256 totalStaked);
 
-    function initialize () public reinitializer(4) {
-        bucketshareMaxValues[0] = 100;
-        bucketshareMaxValues[1] = 550;
-        bucketshareMaxValues[2] = 550;
+    modifier onlyPoolFactory() {
+        require(msg.sender == poolFactoryAddress, "Poolfactory required");
+        _;
+    }
+
+    function initialize(
+        address _poolFactoryAddress
+    ) public reinitializer(4) {
+        poolFactoryAddress = _poolFactoryAddress;
         maxKeysPerPool = 5000;
     }
+
     /**
      * @notice Returns the combined total supply of esXai Xai, and the unminted allocated tokens.
      * @dev This function fetches the total supply of esXai, Xai, and unminted allocated tokens and returns their sum.
@@ -693,6 +692,17 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         maxStakeAmountPerLicense = newAmount;
         emit UpdateMaxStakeAmount(prevAmount, newAmount);
     }
+    
+    /**
+     * @dev Admin update the maximum number of NodeLicense staked in a pool
+     * @param newAmount The new maximum amount per NodeLicense
+     */
+    function updateMaxKeysPerPool(uint256 newAmount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(newAmount != 0, "Invalid max amount");
+        uint256 prevAmount = maxKeysPerPool;
+        maxKeysPerPool = newAmount;
+        emit UpdateMaxKeysPerPool(prevAmount, newAmount);
+    }
 
     /**
      * @dev Admin update the tier thresholds and the corresponding reward chance boost
@@ -794,7 +804,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     /**
-     * @dev Function that lets a user unstake esXai that have previously been staked.
+     * @dev Function that lets a user unstake V1 esXai that have previously been staked.
      * @param amount The amount of esXai to unstake.
      */
     function unstake(uint256 amount) external {
@@ -804,115 +814,42 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         emit UnstakeV1(msg.sender, amount, stakedAmounts[msg.sender]);
     }
 
-    function createPool(
-        uint256[] memory keyIds,
-        uint16 _ownerShare,
-        uint16 _keyBucketShare,
-        uint16 _stakedBucketShare,
-        string memory _name,
-        string memory _description,
-        string memory _logo,
-        string memory _website,
-        string memory _twitter,
-        string memory _discord,
-        string memory _telegram,
-        string memory _instagram,
-        string memory _tiktok,
-        string memory _youtube
-    ) external {
-        //TODO require bucketshareMaxValues
-
-        stakingPoolsCount++;
-
-        //TODO whitelsit pool and buckets on esXai !
-
-        // stakingPools.push(address(newPool))
-        //verify shares with bucketshareMaxValues
-        //TODO deplyo Proxy for pool and buckets
-        //TODO assign keyIds
+    function assignKeys(address pool, address owner, uint256[] memory keyIds) external onlyPoolFactory {
+        uint256 keysLength = keyIds.length;
+        require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "Maximum staking amount exceeded");
+        
+        NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
+        for (uint256 i = 0; i < keysLength; i++) {
+            uint256 keyId = keyIds[i];
+            require(assignedKeyToPool[keyId] == address(0), "Key already assigned");
+            require(nodeLicenseContract.ownerOf(keyId) == owner, "Not owner of key");
+            assignedKeyToPool[keyId] = pool;
+        }
+        assignedKeysToPoolCount[pool] += keysLength;
     }
 
-    function updatePoolMetadata(
-        address pool,
-        string memory _name,
-        string memory _description,
-        string memory _logo,
-        string memory _website,
-        string memory _twitter,
-        string memory _discord,
-        string memory _telegram,
-        string memory _instagram,
-        string memory _tiktok,
-        string memory _youtube
-    ) external {
-        //TODO deplyo Proxy for pool and buckets
-        //TODO assign keyIds
+    function unassignKeys(address pool, address owner, uint256[] memory keyIds) external onlyPoolFactory {
+        uint256 keysLength = keyIds.length;
+        NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
+        for (uint256 i = 0; i < keysLength; i++) {
+            uint256 keyId = keyIds[i];
+            require(assignedKeyToPool[keyId] == pool, "Key not assigned to pool");
+            require(nodeLicenseContract.ownerOf(keyId) == owner, "Not owner of key");
+            assignedKeyToPool[keyId] = pool;
+        }
+        IStakingPool(pool).unstakeKey(msg.sender, keyIds);
+        assignedKeysToPoolCount[pool] -= keysLength;
     }
 
-    function updateShares(
-        address pool,
-        uint16 _ownerShare,
-        uint16 _keyBucketShare,
-        uint16 _stakedBucketShare
-    ) external {
-        //TODO require bucketshareMaxValues
-        //TODO deplyo Proxy for pool and buckets
-        //TODO assign keyIds
-    }
-
-    function assignKeys(address pool, uint256[] memory keyIds) external {
-        // uint256 keysLength = keyIds.length;
-        // for (uint256 i = 0; i < keysLength; i++) {
-            
-        // }
-        //TODO check if user owns key
-        //TODO check key, if assigned unassign first
-    }
-
-    function unassignKeys(address pool, uint256[] memory keyIds) external {
-        //TODO check if user owns key
-        //TODO
-    }
-
-    function stakeToPool(address pool, uint256 amount) external {
-
-        IStakingPool stakingPool = IStakingPool(pool);
-        uint256 numLicenses = stakingPool.getStakedKeysCount();
-        uint256 maxStakedAmount = _getMaxStakeAmount(numLicenses);
+    function stakeToPool(address pool, uint256 amount) external onlyPoolFactory {
+        uint256 maxStakedAmount = _getMaxStakeAmount(assignedKeysToPoolCount[pool]);
         require(stakedAmounts[pool] + amount <= maxStakedAmount, "Maximum staking amount exceeded");
 
-        esXai(esXaiAddress).transferFrom(msg.sender, address(this), amount);
         stakedAmounts[pool] += amount;
-
-        stakingPool.stakeEsXai(msg.sender, amount);
-
-        //TODO emit V2 event
     }
 
-    function unstakeFromPool(address pool, uint256 amount) external {
-
-        IStakingPool stakingPool = IStakingPool(pool);
-
-        require(stakingPool.getStakedAmounts(msg.sender) >= amount, "Insufficient amount staked");
-        esXai(esXaiAddress).transfer(msg.sender, amount);
-
+    function unstakeFromPool(address pool, uint256 amount) external onlyPoolFactory {
+        require(stakedAmounts[pool] >= amount, "Invalid amount");
         stakedAmounts[pool] -= amount;
-        stakingPool.unstakeEsXai(msg.sender, amount);
-
-        //TODO emit V2 event
-
     }
-    
-    function claimFromPools(address[] memory pools) external {
-
-        uint256 poolsLength = pools.length;
-
-        for (uint i = 0; i < poolsLength; i++) {
-            IStakingPool stakingPool = IStakingPool(pools[i]);
-            stakingPool.claimRewards(msg.sender);
-
-            //TODO claim event ?
-        }
-    }
-
 }

@@ -20,13 +20,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
     string public name;
     string public description;
     string public logo;
-    string public website;
-    string public twitter;
-    string public discord;
-    string public telegram;
-    string public instagram;
-    string public tiktok;
-    string public youtube;
+    string[] public socials;
 
     uint16 public ownerShare;
     uint16 public keyBucketShare;
@@ -38,7 +32,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
 
     mapping(address => uint256[]) public stakedKeysOfOwner;
     mapping(uint256 => uint256) public keyIdIndex;
-    mapping(address => uint256) public stakedAmounts; //TODO do we needs this ? Can it not be BucketBalance ?
+    mapping(address => uint256) public stakedAmounts;
 
     uint256[500] __gap;
 
@@ -46,45 +40,24 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         address _refereeAddress,
         address _esXaiAddress,
         address _owner,
-        uint16 _ownerShare,
-        uint16 _keyBucketShare,
-        uint16 _stakedBucketShare,
-        string memory _name,
-        string memory _description,
-        string memory _logo,
-        string memory _website,
-        string memory _twitter,
-        string memory _discord,
-        string memory _telegram,
-        string memory _instagram,
-        string memory _tiktok,
-        string memory _youtube
-    ) external initializer {
+        address _keyBucket,
+        address _esXaiStakeBucket
+    ) external {
+        require(poolOwner == address(0), "Invalid init");
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
 
         esXaiAddress = _esXaiAddress;
         refereeAddress = _refereeAddress;
 
+        keyBucket = IBucketTracker(_keyBucket);
+        esXaiStakeBucket = IBucketTracker(_esXaiStakeBucket);
+
         poolOwner = _owner;
-
-        ownerShare = _ownerShare;
-        keyBucketShare = _keyBucketShare;
-        stakedBucketShare = _stakedBucketShare;
-
-        name = _name;
-        description = _description;
-        logo = _logo;
-        website = _website;
-        twitter = _twitter;
-        discord = _discord;
-        telegram = _telegram;
-        instagram = _instagram;
-        tiktok = _tiktok;
-        youtube = _youtube;
-
-        //Create buckets
-        //new TrackerBucket() // TODO this needs to be an Upgradable too!
+    }
+    
+    function getPoolOwner() external view returns (address) {
+        return poolOwner;
     }
 
     function getStakedKeysCount() external view returns (uint256) {
@@ -143,24 +116,12 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         string memory _name,
         string memory _description,
         string memory _logo,
-        string memory _website,
-        string memory _twitter,
-        string memory _discord,
-        string memory _telegram,
-        string memory _instagram,
-        string memory _tiktok,
-        string memory _youtube
+        string[] memory _socials
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         name = _name;
         description = _description;
         logo = _logo;
-        website = _website;
-        twitter = _twitter;
-        discord = _discord;
-        telegram = _telegram;
-        instagram = _instagram;
-        tiktok = _tiktok;
-        youtube = _youtube;
+        socials = _socials;
     }
 
     function stakeKeys(
@@ -270,31 +231,19 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         external
         view
         returns (
-            address owner,
-            uint16 _ownerShare,
-            uint16 _keyBucketShare,
-            uint16 _stakedBucketShare,
-            uint256 keyCount,
-            uint256 userStakedEsXaiAmount,
-            uint256 userClaimAmount,
+            PoolBaseInfo memory baseInfo,
             uint256[] memory userStakedKeyIds,
-            uint256 totalStakedAmount,
-            uint256 maxStakedAmount,
             string memory _name,
             string memory _description,
             string memory _logo,
-            string memory _website,
-            string memory _twitter,
-            string memory _discord,
-            string memory _telegram,
-            string memory _instagram,
-            string memory _tiktok,
-            string memory _youtube
+            string[] memory _socials
         )
     {
-        owner = poolOwner;
-        keyCount = keyBucket.totalSupply();
-        userStakedEsXaiAmount = stakedAmounts[user];
+        baseInfo.owner = poolOwner;
+        baseInfo.keyBucketTracker = address(keyBucket);
+        baseInfo.esXaiBucketTracker = address(esXaiStakeBucket);
+        baseInfo.keyCount = keyBucket.totalSupply();
+        baseInfo.userStakedEsXaiAmount = stakedAmounts[user];
 
         uint256 claimAmountKeyBucket = keyBucket.withdrawableDividendOf(user);
         uint256 claimAmountStakedBucket = esXaiStakeBucket
@@ -305,33 +254,27 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
             uint256 ownerAmount
         ) = _getUndistributedClaimAmount(user);
 
-        userClaimAmount =
+        baseInfo.userClaimAmount =
             claimAmountKeyBucket +
             claimAmountStakedBucket +
             claimAmount;
         if (user == poolOwner) {
-            userClaimAmount += poolOwnerClaimableRewards + ownerAmount;
+            baseInfo.userClaimAmount += poolOwnerClaimableRewards + ownerAmount;
         }
 
         userStakedKeyIds = stakedKeysOfOwner[user];
-        totalStakedAmount = esXaiStakeBucket.totalSupply();
-        maxStakedAmount =
+        baseInfo.totalStakedAmount = esXaiStakeBucket.totalSupply();
+        baseInfo.maxStakedAmount =
             Referee5(refereeAddress).maxStakeAmountPerLicense() *
-            keyCount;
+            baseInfo.keyCount;
 
-        _ownerShare = ownerShare;
-        _keyBucketShare = keyBucketShare;
-        _stakedBucketShare = stakedBucketShare;
+        baseInfo.ownerShare = ownerShare;
+        baseInfo.keyBucketShare = keyBucketShare;
+        baseInfo.stakedBucketShare = stakedBucketShare;
 
         _name = name;
         _description = description;
         _logo = logo;
-        _website = website;
-        _twitter = twitter;
-        _discord = discord;
-        _telegram = telegram;
-        _instagram = instagram;
-        _tiktok = tiktok;
-        _youtube = youtube;
+        _socials = socials;
     }
 }
