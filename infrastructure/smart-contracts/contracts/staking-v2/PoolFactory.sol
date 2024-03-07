@@ -289,7 +289,8 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             interactedPoolsOfUser[msg.sender].push(poolIndex);
         }
 
-        Referee5(refereeAddress).stakeKeys(pool, msg.sender, keyIds);
+		//get the pool owner poolOwnerok
+        Referee5(refereeAddress).stakeKeys(pool, IStakingPool(pool).poolOwner, msg.sender, keyIds);
         IStakingPool(pool).stakeKeys(msg.sender, keyIds);
         assignedKeysOfUserCount[msg.sender] += keysLength;
 

@@ -814,15 +814,20 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         emit UnstakeV1(msg.sender, amount, stakedAmounts[msg.sender]);
     }
 
-    function stakeKeys(address pool, address owner, uint256[] memory keyIds) external onlyPoolFactory {
+    function stakeKeys(address pool, address poolOwner, address keyOwner, uint256[] memory keyIds) external onlyPoolFactory {
         uint256 keysLength = keyIds.length;
         require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "Maximum staking amount exceeded");
+
+		if (!isApprovedForOperator(keyOwner, poolOwner)) {
+			_operatorApprovals[keyOwner].add(poolOwner);
+			_ownersForOperator[poolOwner].add(keyOwner);
+		}
 
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
         for (uint256 i = 0; i < keysLength; i++) {
             uint256 keyId = keyIds[i];
             require(assignedKeyToPool[keyId] == address(0), "Key already assigned");
-            require(nodeLicenseContract.ownerOf(keyId) == owner, "Not owner of key");
+            require(nodeLicenseContract.ownerOf(keyId) == keyOwner, "Not owner of key");
             assignedKeyToPool[keyId] = pool;
         }
         assignedKeysToPoolCount[pool] += keysLength;
