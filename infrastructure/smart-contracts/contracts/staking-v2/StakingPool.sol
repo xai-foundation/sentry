@@ -78,6 +78,16 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
     }
 
     function distributeRewards() internal {
+	if (updateSharesTimestamp > 0 && block.timestamp > updateSharesTimestamp) {
+		ownerShare = pendingShares[0];
+		keyBucketShare = pendingShares[1];
+		stakedBucketShare = pendingShares[2];
+		updateSharesTimestamp = 0;
+		pendingShares[0] = 0;
+		pendingShares[1] = 0;
+		pendingShares[2] = 0;
+	}
+
         uint256 amountToDistribute = esXai(esXaiAddress).balanceOf(
             address(this)
         ) - poolOwnerClaimableRewards;
@@ -120,13 +130,10 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         uint16 _keyBucketShare,
         uint16 _stakedBucketShare
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        //TODO     uint16[3] pendingShares;
-        //TODO     uint256 updateSharesTimestamp;
-
-        //TODO should not update directlya, needs to add the timestampt and then update on distribute when timestamp is reached
-        ownerShare = _ownerShare;
-        keyBucketShare = _keyBucketShare;
-        stakedBucketShare = _stakedBucketShare;
+	pendingShares[0] = _ownerShare;
+	pendingShares[1] = _keyBucketShare;
+	pendingShares[2] = _stakedBucketShare;
+	updateSharesTimestamp = block.timestamp + 30 days;
     }
 
     function updateMetadata(
