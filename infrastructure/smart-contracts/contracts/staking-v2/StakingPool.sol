@@ -6,7 +6,7 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "../upgrades/referee/Referee5.sol";
 import "./BucketTracker.sol";
 import "../esXai.sol";
-import "./Utlis.sol";
+import "./Utils.sol";
 
 contract StakingPool is IStakingPool, AccessControlUpgradeable {
     bytes32 public constant POOL_ADMIN = keccak256("POOL_ADMIN");
@@ -83,9 +83,9 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
             return;
         }
 
-        uint256 amountForKeys = (amountToDistribute * keyBucketShare) / 100;
+        uint256 amountForKeys = (amountToDistribute * keyBucketShare) / 10_000;
         uint256 amountForStaked = (amountToDistribute * stakedBucketShare) /
-            100;
+            10_000;
 
         esXai(esXaiAddress).transfer(address(keyBucket), amountForKeys);
         keyBucket.distributeDividends(amountForKeys);

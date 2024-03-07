@@ -79,17 +79,26 @@ interface IStakingPool {
 }
 
 interface IBucketTracker {
-    function initialize(address _trackerOwner, address _esXaiAddress) external;
+    function initialize(
+        address _trackerOwner,
+        address _esXaiAddress,
+        string memory __name,
+        string memory __symbol,
+        uint256 __decimals
+    ) external;
 
     function owner() external view returns (address);
+
+    function totalSupply() external view returns (uint256);
+    function name() external view returns (string memory);
+    function symbol() external view returns (string memory);
+    function decimals() external view returns (uint256);
+    function balanceOf(address account) external view returns (uint256);
 
     function withdrawableDividendOf(
         address _owner
     ) external view returns (uint256);
 
-    function totalSupply() external view returns (uint256);
-
-    function balanceOf(address account) external view returns (uint256);
 
     function getAccount(
         address _account

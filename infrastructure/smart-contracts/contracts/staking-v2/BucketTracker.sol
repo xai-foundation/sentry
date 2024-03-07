@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
-import "./Utlis.sol";
+import "./Utils.sol";
 
 /**
  * @title SafeMathUint
@@ -119,6 +119,9 @@ contract BucketTracker is IBucketTracker {
     uint256 private _totalSupply;
     address public trackerOwner;
     address public esXaiAddress;
+    string _name;
+    string _symbol;
+    uint256 _decimals;
 
     uint256 internal constant magnitude = 2 ** 128;
     uint256 internal magnifiedDividendPerShare;
@@ -128,21 +131,37 @@ contract BucketTracker is IBucketTracker {
 
     uint256[500] __gap;
 
+    event Transfer(address indexed from, address indexed to, uint value);
     event DividendsDistributed(address indexed from, uint256 weiAmount);
     event DividendWithdrawn(address indexed to, uint256 weiAmount);
     event Claim(address indexed account, uint256 amount);
 
-    function initialize(address _trackerOwner, address _esXaiAddress) external {
+    function initialize(address _trackerOwner, address _esXaiAddress, string memory __name, string memory __symbol, uint256 __decimals) external {
         require(trackerOwner == address(0), "Invalid init");
         require(_trackerOwner != address(0), "Owner cannot be 0 address");
         require(_esXaiAddress != address(0), "EsXai cannot be 0 address");
         trackerOwner = _trackerOwner;
         esXaiAddress = _esXaiAddress;
+        _name = __name;
+        _symbol = __symbol;
+        _decimals = __decimals;
     }
 
     modifier onlyAdmin() {
         require(trackerOwner == msg.sender, "Unauthorized");
         _;
+    }
+    
+    function name() public view returns (string memory) {
+        return _name;
+    }
+    
+    function symbol() public view returns (string memory) {
+        return _symbol;
+    }
+    
+    function decimals() public view returns (uint256) {
+        return _decimals;
     }
 
     function totalDividendsDistributed() external view returns (uint256) {
@@ -228,6 +247,8 @@ contract BucketTracker is IBucketTracker {
 
         magnifiedDividendCorrections[account] -= (magnifiedDividendPerShare *
             value).toInt256Safe();
+
+        emit Transfer(address(0), account, value);
     }
 
     function _burn(address account, uint256 value) internal {
@@ -237,6 +258,8 @@ contract BucketTracker is IBucketTracker {
 
         magnifiedDividendCorrections[account] += (magnifiedDividendPerShare *
             value).toInt256Safe();
+            
+        emit Transfer(account, address(0), value);
     }
 
     function _setBalance(address account, uint256 newBalance) internal {

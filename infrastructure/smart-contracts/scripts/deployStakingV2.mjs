@@ -1,5 +1,6 @@
 import hardhat from "hardhat";
 const { ethers, upgrades } = hardhat;
+import { safeVerify } from "../utils/safeVerify.mjs";
 
 const address = "0xfD41041180571C5D371BEA3D9550E55653671198";
 
@@ -34,6 +35,8 @@ async function main() {
     await upgrades.upgradeProxy(address, referee, { call: { fn: "initialize", args: [poolFactoryAddress] } });
     console.log("Upgraded");
 
+    await safeVerify({ contract: poolFactory });
+
     await run("verify:verify", {
         address: address,
         constructorArguments: [],
@@ -44,7 +47,7 @@ async function main() {
         address: bucketImplAddress,
         constructorArguments: [],
     });
-    
+
     await run("verify:verify", {
         address: poolImplAddress,
         constructorArguments: [],
@@ -53,9 +56,10 @@ async function main() {
     console.log("verified")
 }
 
+
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
 main().catch((error) => {
     console.error(error);
     process.exitCode = 1;
-  });
+});

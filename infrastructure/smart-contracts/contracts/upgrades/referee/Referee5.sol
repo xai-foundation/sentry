@@ -10,7 +10,7 @@ import "../../nitro-contracts/rollup/IRollupCore.sol";
 import "../../NodeLicense.sol";
 import "../../Xai.sol";
 import "../../esXai.sol";
-import "../../staking-v2/Utlis.sol";
+import "../../staking-v2/Utils.sol";
 import "../../staking-v2/TransparentUpgradable.sol";
 
 contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
@@ -101,7 +101,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[493] private __gap;
+    uint256[491] private __gap;
 
     // Struct for the submissions
     struct Submission {
@@ -817,7 +817,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     function assignKeys(address pool, address owner, uint256[] memory keyIds) external onlyPoolFactory {
         uint256 keysLength = keyIds.length;
         require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "Maximum staking amount exceeded");
-        
+
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
         for (uint256 i = 0; i < keysLength; i++) {
             uint256 keyId = keyIds[i];

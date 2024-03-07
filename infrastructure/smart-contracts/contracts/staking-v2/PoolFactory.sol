@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/math/Math.sol";
 import "../upgrades/referee/Referee5.sol";
 import "../Xai.sol";
 import "../esXai.sol";
-import "../staking-v2/Utlis.sol";
+import "../staking-v2/Utils.sol";
 import "../staking-v2/TransparentUpgradable.sol";
 
 contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
@@ -29,7 +29,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     // Staking pool contract addresses
     address[] public stakingPools;
 
-    // Staking Pool share max values owner, keys, stakedEsXai
+    // Staking Pool share max values owner, keys, stakedEsXai in basepoints (5% => 500)
     uint16[3] public bucketshareMaxValues;
 
     // The proxy admin for the staking pools and buckets
@@ -40,12 +40,13 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
     // The current key & esXai bucket tracker implenetation
     address public bucketImplementation;
-    
+
     mapping(address => uint256[]) public interactedPoolsOfUser;
 
     // mapping user address to pool index to index in user array, used for removing from user array without interation
-    mapping(address => mapping(uint256 => uint256)) public userToInteractedPoolIds;
-    
+    mapping(address => mapping(uint256 => uint256))
+        public userToInteractedPoolIds;
+
     // Mapping for amount of assigned keys of a user
     mapping(address => uint256) public assignedKeysOfUserCount;
 
@@ -57,19 +58,50 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     uint256[500] private __gap;
 
     event StakingEnabled();
-    event StakedV2(address indexed user, uint256 amount, uint256 totalStaked);
-    event UnstakeV2(address indexed user, uint256 amount, uint256 totalStaked);
+    event UpdatePoolProxyAdmin(address previousAdmin, address newAdmin);
+    event UpdatePoolImplementation(
+        address prevImplementation,
+        address newImplementation
+    );
+    event UpdateBucketImplementation(
+        address prevImplementation,
+        address newImplementation
+    );
+    event Staked(
+        address indexed user,
+        address indexed pool,
+        uint256 amount,
+        uint256 totalStaked
+    );
+    event Unstake(
+        address indexed user,
+        address indexed pool,
+        uint256 amount,
+        uint256 totalStaked
+    );
+    event StakedKeys(
+        address indexed user,
+        address indexed pool,
+        uint256 amount,
+        uint256 totalKeysStaked
+    );
+    event UnstakeKeys(
+        address indexed user,
+        address indexed pool,
+        uint256 amount,
+        uint256 totalKeysStaked
+    );
 
     function initialize(
         address _stakingPoolProxyAdmin,
         address _stakingPoolImplementation,
         address _bucketImplementation
-    ) public {
+    ) public initializer {
         __AccessControlEnumerable_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        bucketshareMaxValues[0] = 100;
-        bucketshareMaxValues[1] = 550;
-        bucketshareMaxValues[2] = 550;
+        bucketshareMaxValues[0] = 1000; // => 10%
+        bucketshareMaxValues[1] = 5500; // => 55%
+        bucketshareMaxValues[2] = 5500; // => 55%
 
         stakingPoolProxyAdmin = _stakingPoolProxyAdmin;
         stakingPoolImplementation = _stakingPoolImplementation;
@@ -77,11 +109,38 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     /**
-     * @notice Enables staking on the Referee.
+     * @notice Enables staking on the Factory.
      */
     function enableStaking() external onlyRole(DEFAULT_ADMIN_ROLE) {
         stakingEnabled = true;
         emit StakingEnabled();
+    }
+
+    function updateProxyAdmin(
+        address newAdmin
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(newAdmin != address(0), "Invalid Admin");
+        address previousAdmin = stakingPoolProxyAdmin;
+        stakingPoolProxyAdmin = newAdmin;
+        emit UpdatePoolProxyAdmin(previousAdmin, newAdmin);
+    }
+
+    function updatePoolImplementation(
+        address newImplementation
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(newImplementation != address(0), "Invalid Implementation");
+        address prevImplementation = stakingPoolImplementation;
+        stakingPoolImplementation = newImplementation;
+        emit UpdatePoolImplementation(prevImplementation, newImplementation);
+    }
+
+    function updateBucketImplementation(
+        address newImplementation
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(newImplementation != address(0), "Invalid Implementation");
+        address prevImplementation = bucketImplementation;
+        bucketImplementation = newImplementation;
+        emit UpdateBucketImplementation(prevImplementation, newImplementation);
     }
 
     function createPool(
@@ -92,7 +151,9 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         string memory _name,
         string memory _description,
         string memory _logo,
-        string[] memory _socials
+        string[] memory _socials,
+        string[] memory trackerNames,
+        string[] memory trackerSymbols
     ) external {
         require(keyIds.length > 0, "Pool requires at least 1 key");
         require(
@@ -143,11 +204,17 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
         IBucketTracker(address(keyBucketProxy)).initialize(
             address(poolProxy),
-            esXaiAddress
+            esXaiAddress,
+            trackerNames[0],
+            trackerSymbols[0],
+            0
         );
         IBucketTracker(address(stakedBucketProxy)).initialize(
             address(poolProxy),
-            esXaiAddress
+            esXaiAddress,
+            trackerNames[1],
+            trackerSymbols[1],
+            18
         );
 
         stakingPools.push(address(poolProxy));
@@ -256,7 +323,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             ] = interactedPoolsOfUser[msg.sender][userLength - 1];
             interactedPoolsOfUser[msg.sender].pop();
         }
-        
+
         assignedKeysOfUserCount[msg.sender] -= keysLength;
 
         //TODO emit V2 event
@@ -292,7 +359,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             stakingPool.getStakedAmounts(msg.sender) >= amount,
             "Insufficient amount staked"
         );
-        
+
         esXai(esXaiAddress).transfer(msg.sender, amount);
 
         Referee5(refereeAddress).unstakeFromPool(address(stakingPool), amount);
@@ -377,9 +444,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         return interactedPoolsOfUser[user];
     }
 
-    function getPoolsOfUserCount(
-        address user
-    ) external view returns (uint256) {
+    function getPoolsOfUserCount(address user) external view returns (uint256) {
         return interactedPoolsOfUser[user].length;
     }
 
