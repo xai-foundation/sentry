@@ -303,7 +303,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         _stakeKeys(poolIndex, keyIds);
     }
 
-    function unassignKeys(uint256 poolIndex, uint256[] memory keyIds) external {
+    function unstakeKeys(uint256 poolIndex, uint256[] memory keyIds) external {
         address pool = stakingPools[poolIndex];
         require(pool != address(0), "Invalid pool");
         uint256 keysLength = keyIds.length;
