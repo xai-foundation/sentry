@@ -1,5 +1,6 @@
 import hardhat from "hardhat";
 const { ethers, upgrades } = hardhat;
+import { esXaiAbi, config } from "@sentry/core";
 import { safeVerify } from "../utils/safeVerify.mjs";
 
 const address = "0xfD41041180571C5D371BEA3D9550E55653671198";
@@ -34,6 +35,11 @@ async function main() {
     console.log("Got factory");
     await upgrades.upgradeProxy(address, referee, { call: { fn: "initialize", args: [poolFactoryAddress] } });
     console.log("Upgraded");
+
+    //Give PoolFactory auth to whitelist new pools & buckets on esXai
+    const esXai = await new ethers.Contract(config.esXaiAddress, esXaiAbi, deployer);
+    const esXaiAdminRole = await esXai.DEFAULT_ADMIN_ROLE();
+    await esXai.grantRole(esXaiAdminRole, poolFactoryAddress);
 
     await safeVerify({ contract: poolFactory });
 
