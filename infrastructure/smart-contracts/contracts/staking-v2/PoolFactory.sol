@@ -227,7 +227,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         esXai(esXaiAddress).addToWhitelist(address(keyBucketProxy));
         esXai(esXaiAddress).addToWhitelist(address(stakedBucketProxy));
 
-        _assignKeys(stakingPools.length - 1, keyIds);
+        _stakeKeys(stakingPools.length - 1, keyIds);
     }
 
     function updatePoolMetadata(
@@ -272,7 +272,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         keyAmount = IStakingPool(pool).getStakedKeysCountForUser(user);
     }
 
-    function _assignKeys(uint256 poolIndex, uint256[] memory keyIds) internal {
+    function _stakeKeys(uint256 poolIndex, uint256[] memory keyIds) internal {
         uint256 keysLength = keyIds.length;
         address pool = stakingPools[poolIndex];
 
@@ -289,18 +289,18 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             interactedPoolsOfUser[msg.sender].push(poolIndex);
         }
 
-        Referee5(refereeAddress).assignKeys(pool, msg.sender, keyIds);
+        Referee5(refereeAddress).stakeKeys(pool, msg.sender, keyIds);
         IStakingPool(pool).stakeKeys(msg.sender, keyIds);
         assignedKeysOfUserCount[msg.sender] += keysLength;
 
         //TODO emit V2 event
     }
 
-    function assignKeys(uint256 poolIndex, uint256[] memory keyIds) external {
+    function stakeKeys(uint256 poolIndex, uint256[] memory keyIds) external {
         require(stakingPools[poolIndex] != address(0), "Invalid pool");
         require(keyIds.length > 0, "Must at least stake 1 key");
 
-        _assignKeys(poolIndex, keyIds);
+        _stakeKeys(poolIndex, keyIds);
     }
 
     function unassignKeys(uint256 poolIndex, uint256[] memory keyIds) external {
@@ -310,8 +310,8 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
         require(keysLength > 0, "Must at least unstake 1 key");
 
-        Referee5(refereeAddress).unassignKeys(pool, msg.sender, keyIds);
-        IStakingPool(stakingPools[poolIndex]).unstakeKey(msg.sender, keyIds);
+        Referee5(refereeAddress).unstakeKeys(pool, msg.sender, keyIds);
+        IStakingPool(stakingPools[poolIndex]).unstakeKeys(msg.sender, keyIds);
 
         (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
             stakingPools[poolIndex],
@@ -333,7 +333,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         //TODO emit V2 event
     }
 
-    function stakeToPool(uint256 poolIndex, uint256 amount) external {
+    function stakeEsXai(uint256 poolIndex, uint256 amount) external {
         IStakingPool stakingPool = IStakingPool(stakingPools[poolIndex]);
 
         (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
@@ -347,7 +347,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             interactedPoolsOfUser[msg.sender].push(poolIndex);
         }
 
-        Referee5(refereeAddress).stakeToPool(address(stakingPool), amount);
+        Referee5(refereeAddress).stakeEsXai(address(stakingPool), amount);
 
         esXai(esXaiAddress).transferFrom(msg.sender, address(this), amount);
 
@@ -356,7 +356,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         //TODO emit V2 event
     }
 
-    function unstakeFromPool(uint256 poolIndex, uint256 amount) external {
+    function unstakeEsXai(uint256 poolIndex, uint256 amount) external {
         IStakingPool stakingPool = IStakingPool(stakingPools[poolIndex]);
 
         require(
@@ -366,7 +366,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
         esXai(esXaiAddress).transfer(msg.sender, amount);
 
-        Referee5(refereeAddress).unstakeFromPool(address(stakingPool), amount);
+        Referee5(refereeAddress).unstakeEsXai(address(stakingPool), amount);
 
         stakingPool.unstakeEsXai(msg.sender, amount);
 

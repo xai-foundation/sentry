@@ -139,7 +139,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         keyBucket.setBalance(owner, stakedKeysOfOwner[owner].length);
     }
 
-    function unstakeKey(
+    function unstakeKeys(
         address owner,
         uint256[] memory keyIds
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {

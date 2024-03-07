@@ -814,7 +814,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         emit UnstakeV1(msg.sender, amount, stakedAmounts[msg.sender]);
     }
 
-    function assignKeys(address pool, address owner, uint256[] memory keyIds) external onlyPoolFactory {
+    function stakeKeys(address pool, address owner, uint256[] memory keyIds) external onlyPoolFactory {
         uint256 keysLength = keyIds.length;
         require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "Maximum staking amount exceeded");
 
@@ -828,7 +828,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         assignedKeysToPoolCount[pool] += keysLength;
     }
 
-    function unassignKeys(address pool, address owner, uint256[] memory keyIds) external onlyPoolFactory {
+    function unstakeKeys(address pool, address owner, uint256[] memory keyIds) external onlyPoolFactory {
         uint256 keysLength = keyIds.length;
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
         for (uint256 i = 0; i < keysLength; i++) {
@@ -837,18 +837,16 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             require(nodeLicenseContract.ownerOf(keyId) == owner, "Not owner of key");
             assignedKeyToPool[keyId] = pool;
         }
-        IStakingPool(pool).unstakeKey(msg.sender, keyIds);
         assignedKeysToPoolCount[pool] -= keysLength;
     }
 
-    function stakeToPool(address pool, uint256 amount) external onlyPoolFactory {
+    function stakeEsXai(address pool, uint256 amount) external onlyPoolFactory {
         uint256 maxStakedAmount = _getMaxStakeAmount(assignedKeysToPoolCount[pool]);
         require(stakedAmounts[pool] + amount <= maxStakedAmount, "Maximum staking amount exceeded");
-
         stakedAmounts[pool] += amount;
     }
 
-    function unstakeFromPool(address pool, uint256 amount) external onlyPoolFactory {
+    function unstakeEsXai(address pool, uint256 amount) external onlyPoolFactory {
         require(stakedAmounts[pool] >= amount, "Invalid amount");
         stakedAmounts[pool] -= amount;
     }

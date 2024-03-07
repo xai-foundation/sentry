@@ -51,7 +51,7 @@ interface IStakingPool {
 
     function stakeKeys(address owner, uint256[] memory keyIds) external;
 
-    function unstakeKey(address owner, uint256[] memory keyIds) external;
+    function unstakeKeys(address owner, uint256[] memory keyIds) external;
 
     function stakeEsXai(address owner, uint256 amount) external;
 
