@@ -34,6 +34,9 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
     mapping(uint256 => uint256) public keyIdIndex;
     mapping(address => uint256) public stakedAmounts;
 
+    uint16[3] pendingShares;
+    uint256 updateSharesTimestamp;
+
     uint256[500] __gap;
 
     function initialize(
@@ -42,7 +45,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         address _owner,
         address _keyBucket,
         address _esXaiStakeBucket
-    ) external {
+    ) public initializer {
         require(poolOwner == address(0), "Invalid init");
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -55,7 +58,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
 
         poolOwner = _owner;
     }
-    
+
     function getPoolOwner() external view returns (address) {
         return poolOwner;
     }
@@ -101,12 +104,26 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
             amountForKeys -
             amountForStaked;
     }
+    
+    function initShares(
+        uint16 _ownerShare,
+        uint16 _keyBucketShare,
+        uint16 _stakedBucketShare
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        ownerShare = _ownerShare;
+        keyBucketShare = _keyBucketShare;
+        stakedBucketShare = _stakedBucketShare;
+    }
 
     function updateShares(
         uint16 _ownerShare,
         uint16 _keyBucketShare,
         uint16 _stakedBucketShare
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        //TODO     uint16[3] pendingShares;
+        //TODO     uint256 updateSharesTimestamp;
+
+        //TODO should not update directlya, needs to add the timestampt and then update on distribute when timestamp is reached
         ownerShare = _ownerShare;
         keyBucketShare = _keyBucketShare;
         stakedBucketShare = _stakedBucketShare;
@@ -236,7 +253,9 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
             string memory _name,
             string memory _description,
             string memory _logo,
-            string[] memory _socials
+            string[] memory _socials,
+            uint16[] memory _pendingShares,
+            uint256 _updateSharesTimestamp
         )
     {
         baseInfo.owner = poolOwner;
@@ -276,5 +295,12 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         _description = description;
         _logo = logo;
         _socials = socials;
+
+        _pendingShares = new uint16[](3);
+        _pendingShares[0] = pendingShares[0];
+        _pendingShares[1] = pendingShares[1];
+        _pendingShares[2] = pendingShares[2];
+
+        _updateSharesTimestamp = updateSharesTimestamp;
     }
 }

@@ -36,6 +36,12 @@ interface IStakingPool {
 
     function getStakedKeysCount() external view returns (uint256);
 
+    function initShares(
+        uint16 _ownerShare,
+        uint16 _keyBucketShare,
+        uint16 _stakedBucketShare
+    ) external;
+
     function updateShares(
         uint16 _ownerShare,
         uint16 _keyBucketShare,
@@ -74,7 +80,9 @@ interface IStakingPool {
             string memory _name,
             string memory _description,
             string memory _logo,
-            string[] memory _socials
+            string[] memory _socials,
+            uint16[] memory _pendingShares,
+            uint256 _updateSharesTimestamp
         );
 }
 
@@ -90,15 +98,18 @@ interface IBucketTracker {
     function owner() external view returns (address);
 
     function totalSupply() external view returns (uint256);
+
     function name() external view returns (string memory);
+
     function symbol() external view returns (string memory);
+
     function decimals() external view returns (uint256);
+
     function balanceOf(address account) external view returns (uint256);
 
     function withdrawableDividendOf(
         address _owner
     ) external view returns (uint256);
-
 
     function getAccount(
         address _account

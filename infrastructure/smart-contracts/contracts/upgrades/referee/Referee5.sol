@@ -850,4 +850,11 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         require(stakedAmounts[pool] >= amount, "Invalid amount");
         stakedAmounts[pool] -= amount;
     }
+
+    function areKeysStaked(uint256[] memory keyIds) external view returns (bool[] memory isStaked) {
+        isStaked = new bool[](keyIds.length);
+        for(uint256 i; i < keyIds.length; i++){
+            isStaked[i] = assignedKeyToPool[keyIds[i]] != address(0);
+        }
+    }
 }

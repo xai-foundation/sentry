@@ -102,8 +102,8 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         __AccessControlEnumerable_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         bucketshareMaxValues[0] = 1000; // => 10%
-        bucketshareMaxValues[1] = 5500; // => 55%
-        bucketshareMaxValues[2] = 5500; // => 55%
+        bucketshareMaxValues[1] = 9000; // => 55%
+        bucketshareMaxValues[2] = 3000; // => 55%
 
         refereeAddress = _refereeAddress;
         esXaiAddress = _esXaiAddress;
@@ -164,7 +164,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             _ownerShare <= bucketshareMaxValues[0] &&
                 _keyBucketShare <= bucketshareMaxValues[1] &&
                 _stakedBucketShare <= bucketshareMaxValues[2] &&
-                _ownerShare + _keyBucketShare + _stakedBucketShare == 1000,
+                _ownerShare + _keyBucketShare + _stakedBucketShare == 10_000,
             "Invalid shares"
         );
 
@@ -193,7 +193,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             address(stakedBucketProxy)
         );
 
-        IStakingPool(address(poolProxy)).updateShares(
+        IStakingPool(address(poolProxy)).initShares(
             _ownerShare,
             _keyBucketShare,
             _stakedBucketShare
@@ -254,7 +254,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             _ownerShare <= bucketshareMaxValues[0] &&
                 _keyBucketShare <= bucketshareMaxValues[1] &&
                 _stakedBucketShare <= bucketshareMaxValues[2] &&
-                _ownerShare + _keyBucketShare + _stakedBucketShare == 1000,
+                _ownerShare + _keyBucketShare + _stakedBucketShare == 10_000,
             "Invalid shares"
         );
         stakingPool.updateShares(
@@ -416,7 +416,9 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             string memory,
             string memory,
             string memory,
-            string[] memory _socials
+            string[] memory _socials,
+            uint16[] memory _pendingShares,
+            uint256 _updateSharesTimestamp
         )
     {
         require(pool != address(0), "Invalid pool");
@@ -435,7 +437,9 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             string memory,
             string memory,
             string memory,
-            string[] memory _socials
+            string[] memory _socials,
+            uint16[] memory _pendingShares,
+            uint256 _updateSharesTimestamp
         )
     {
         require(stakingPools[index] != address(0), "Invalid index");
@@ -457,5 +461,9 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         uint256 index
     ) external view returns (uint256) {
         return interactedPoolsOfUser[user][index];
+    }
+
+    function getPoolAddress(uint256 poolIndex) external view returns (address) {
+        return stakingPools[poolIndex];
     }
 }
