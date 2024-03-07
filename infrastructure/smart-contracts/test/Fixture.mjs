@@ -61,11 +61,26 @@ describe("Fixture Tests", function () {
         const gasSubsidy = await upgrades.deployProxy(GasSubsidy, [], { deployer: deployer });
         await gasSubsidy.waitForDeployment();
 
+		// Deploy the Staking Pool (implementation only)
+		const StakingPool = await ethers.deployContract("StakingPool");
+		await StakingPool.waitForDeployment();
+
+		// Deploy the Bucket Tracker (implementation only)
+		const BucketTracker = await ethers.deployContract("BucketTracker");
+		await BucketTracker.waitForDeployment();
+
+		// Deploy the Pool Factory
+		const PoolFactory = await ethers.getContractFactory("PoolFactory");
+		const poolFactory = await upgrades.deployProxy(PoolFactory, [await deployer.getAddress(), await StakingPool.getAddress(), await BucketTracker.getAddress()], { kind: "transparent", deployer });
+		const tx = await poolFactory.deploymentTransaction();
+		await tx.wait(3);
+
         // Deploy Referee
         const Referee = await ethers.getContractFactory("Referee");
         const gasSubsidyPercentage = BigInt(15);
         const referee = await upgrades.deployProxy(Referee, [await esXai.getAddress(), await xai.getAddress(), await gasSubsidy.getAddress(), gasSubsidyPercentage], { deployer: deployer });
         await referee.waitForDeployment();
+
         //Upgrade Referee
         const Referee2 = await ethers.getContractFactory("Referee2");
         const referee2 = await upgrades.upgradeProxy((await referee.getAddress()), Referee2, { call: { fn: "initialize", args: [] } });
@@ -83,7 +98,7 @@ describe("Fixture Tests", function () {
         await referee4.enableStaking();
 
 		const Referee5 = await ethers.getContractFactory("Referee5");
-		const referee5 = await upgrades.upgradeProxy((await referee.getAddress()), Referee5);
+		const referee5 = await upgrades.upgradeProxy((await referee.getAddress()), Referee5, { call: { fn: "initialize", args: [(await poolFactory.getAddress())] } });
 		await referee5.waitForDeployment();
 		await referee5.enableStaking();
 
@@ -222,7 +237,8 @@ describe("Fixture Tests", function () {
             gasSubsidy,
             esXai: esXai2,
             xai,
-            rollupContract
+            rollupContract,
+			poolFactory,
         };
     }
 

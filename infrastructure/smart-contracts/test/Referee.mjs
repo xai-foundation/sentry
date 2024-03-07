@@ -708,43 +708,49 @@ export function RefereeTests(deployInfrastructure) {
 
 		describe("Staking V2", function () {
 			describe("Create Pool #187167264", function () {
+				// Pool initialization metadata
+				const poolName = "Testing Pool";
+				const poolDescription = "This is for testing purposes only!!";
+				const poolLogo = "logo";
+				const poolSocials = [
+					"website",
+					"twitter",
+					"discord",
+					"telegram",
+					"instagram",
+					"tiktok",
+					"youtube"
+				];
+
 				it("Check that the shares cannot go over the max values (bucketshareMaxValues = ordered owner, keys, esXaiStaker)", async function () {
-					const {referee, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+					const {addr1, nodeLicense, poolFactory} = await loadFixture(deployInfrastructure);
 
 					// Mint a node key & save the id
 					const price = await nodeLicense.price(1, "");
 					await nodeLicense.connect(addr1).mint(1, "", {value: price});
 					const mintedKeyId = await nodeLicense.totalSupply();
 
-					// Create a pool
-					const bucketShareMaxValues = await referee.connect(addr1).bucketshareMaxValues();
+					// Fail to create a pool
+					const bucketShareMaxValues = await poolFactory.connect(addr1).bucketshareMaxValues();
 					await expect(
-						referee.connect(addr1).createPool(
+						poolFactory.connect(addr1).createPool(
 							[mintedKeyId],
 							bucketShareMaxValues[0] + 1,
 							bucketShareMaxValues[1] + 1,
 							bucketShareMaxValues[2] + 1,
-							"Testing Pool",
-							"This is for testing purposes only!!",
-							"logo",
-							"website",
-							"twitter",
-							"discord",
-							"telegram",
-							"instagram",
-							"tiktok",
-							"youtube"
+							poolName,
+							poolDescription,
+							poolLogo,
+							poolSocials,
 						)
-					).to.be.revertedWith("");//todo reason
+					).to.be.revertedWith("Invalid shares");
 				})
 
-				it("Check that Pool exists (stakingPoolsCount, stakingPools[])", async function () {
-					const {referee, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+				it("Check that Pool exists (stakingPoolsCount, stakingPools[]) & the metadata is correct", async function () {
+					const {addr1, nodeLicense, poolFactory} = await loadFixture(deployInfrastructure);
 
-					// Verfiy that there are no pools yet
-					const stakingPoolsCount1 = await referee.connect(addr1).stakingPoolsCount();
-					const stakingPools1 = await referee.connect(addr1).stakingPools();
-					expect(stakingPoolsCount1).to.equal(0);
+					// Verify that there are no pools yet
+					const stakingPools1 = await poolFactory.connect(addr1).stakingPools();
 					expect(stakingPools1.length).to.equal(0);
 
 					// Mint a node key & save the id
@@ -753,44 +759,41 @@ export function RefereeTests(deployInfrastructure) {
 					const mintedKeyId = await nodeLicense.totalSupply();
 
 					// Create a pool
-					const bucketShareMaxValues = await referee.connect(addr1).bucketshareMaxValues();
-					const poolName = "Testing Pool";
-					await referee.connect(addr1).createPool(
+					const bucketShareMaxValues = await poolFactory.connect(addr1).bucketshareMaxValues();
+					await poolFactory.connect(addr1).createPool(
 						[mintedKeyId],
 						bucketShareMaxValues[0],
 						bucketShareMaxValues[1],
 						bucketShareMaxValues[2],
 						poolName,
-						"This is for testing purposes only!!",
-						"logo",
-						"website",
-						"twitter",
-						"discord",
-						"telegram",
-						"instagram",
-						"tiktok",
-						"youtube"
+						poolDescription,
+						poolLogo,
+						poolSocials
 					);
 
-					// Check that there is now 1 pool
-					const stakingPoolsCount2 = await referee.connect(addr1).stakingPoolsCount();
-					const stakingPools2 = await referee.connect(addr1).stakingPools();
-					expect(stakingPoolsCount2).to.equal(1);
+					// Check that there is now 1 pool & create instance of the deployed pool
+					const stakingPools2 = await poolFactory.connect(addr1).stakingPools();
 					expect(stakingPools2.length).to.equal(1);
+					const stakingPool = await ethers.getContractAt("StakingPool", stakingPools2[0]);
 
-					// Create instance of the deployed pool
-					const StakingPool = await ethers.getContractFactory("StakingPool");
-					const stakingPool = StakingPool.attach(stakingPools2[0]);
-
-					// Check the owner & name of the new pool are correct
+					// Check the owner, name, description, logo, and socials of the new pool are correct
 					const stakingPoolOwner = await stakingPool.connect(addr1).poolOwner();
 					const stakingPoolName = await stakingPool.connect(addr1).name();
+					const stakingPoolDescription = await stakingPool.connect(addr1).description();
+					const stakingPoolLogo = await stakingPool.connect(addr1).logo();
+					const stakingPoolSocials = await stakingPool.connect(addr1).socials();
 					expect(stakingPoolOwner).to.equal(addr1.address);
 					expect(stakingPoolName).to.equal(poolName);
+					expect(stakingPoolDescription).to.equal(poolName);
+					expect(stakingPoolLogo).to.equal(poolLogo);
+					expect(stakingPoolSocials).to.equal(poolSocials);
+					for (let i = 0; i < poolSocials.length; i++) {
+						expect(poolSocials[i]).to.equal(stakingPoolSocials[i]);
+					}
 				});
 
 				it("Check that the Pool is created & the share values are correct", async function () {
-					const {referee, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+					const {addr1, nodeLicense, poolFactory} = await loadFixture(deployInfrastructure);
 
 					// Mint a node key & save the id
 					const price = await nodeLicense.price(1, "");
@@ -798,29 +801,22 @@ export function RefereeTests(deployInfrastructure) {
 					const mintedKeyId = await nodeLicense.totalSupply();
 
 					// Create the Pool
-					const bucketShareMaxValues = await referee.connect(addr1).bucketshareMaxValues();
-					await referee.connect(addr1).createPool(
+					const bucketShareMaxValues = await poolFactory.connect(addr1).bucketshareMaxValues();
+					await poolFactory.connect(addr1).createPool(
 						[mintedKeyId],
 						bucketShareMaxValues[0],
 						bucketShareMaxValues[1],
 						bucketShareMaxValues[2],
-						"Testing Pool",
-						"This is for testing purposes only!!",
-						"logo",
-						"website",
-						"twitter",
-						"discord",
-						"telegram",
-						"instagram",
-						"tiktok",
-						"youtube"
+						poolName,
+						poolDescription,
+						poolLogo,
+						poolSocials
 					);
 
 					// Create instance of the deployed pool
-					const stakingPools = await referee.connect(addr1).stakingPools();
+					const stakingPools = await poolFactory.connect(addr1).stakingPools();
 					expect(stakingPools.length).to.equal(1);
-					const StakingPool = await ethers.getContractFactory("StakingPool");
-					const stakingPool = StakingPool.attach(stakingPools[0]);
+					const stakingPool = await ethers.getContractAt("StakingPool", stakingPools[0]);
 
 					// Verify the values are as expected after creation
 					const ownerShare = await stakingPool.connect(addr1).ownerShare();
@@ -832,7 +828,7 @@ export function RefereeTests(deployInfrastructure) {
 				});
 
 				it("Check that it has 1 key assigned and the Pool Info returns the expected values", async function () {
-					const {referee, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+					const {esXai, referee, addr1, nodeLicense, poolFactory} = await loadFixture(deployInfrastructure);
 
 					// Mint a node key & save the id
 					const price = await nodeLicense.price(1, "");
@@ -840,29 +836,22 @@ export function RefereeTests(deployInfrastructure) {
 					const mintedKeyId = await nodeLicense.totalSupply();
 
 					// Create a pool
-					const bucketShareMaxValues = await referee.connect(addr1).bucketshareMaxValues();
-					await referee.connect(addr1).createPool(
+					const bucketShareMaxValues = await poolFactory.connect(addr1).bucketshareMaxValues();
+					await poolFactory.connect(addr1).createPool(
 						[mintedKeyId],
 						bucketShareMaxValues[0],
 						bucketShareMaxValues[1],
 						bucketShareMaxValues[2],
-						"Testing Pool",
-						"This is for testing purposes only!!",
-						"logo",
-						"website",
-						"twitter",
-						"discord",
-						"telegram",
-						"instagram",
-						"tiktok",
-						"youtube"
+						poolName,
+						poolDescription,
+						poolLogo,
+						poolSocials
 					);
 
 					// Create instance of the deployed pool
-					const stakingPools = await referee.connect(addr1).stakingPools();
+					const stakingPools = await poolFactory.connect(addr1).stakingPools();
 					expect(stakingPools.length).to.equal(1);
-					const StakingPool = await ethers.getContractFactory("StakingPool");
-					const stakingPool = StakingPool.attach(stakingPools[0]);
+					const stakingPool = await ethers.getContractAt("StakingPool", stakingPools[0]);
 
 					// Verify the minted key is assigned to the first pool
 					const assignedKeys = await referee.connect(addr1).assignedKeyToPool();
@@ -873,127 +862,12 @@ export function RefereeTests(deployInfrastructure) {
 					const esXaiAddress = await stakingPool.connect(addr1).esXaiAddress();
 					const poolOwner = await stakingPool.connect(addr1).poolOwner();
 					expect(refereeAddress).to.equal(referee.address);
-					expect(esXaiAddress).to.equal(esXai);
+					expect(esXaiAddress).to.equal(esXai.address);
 					expect(poolOwner).to.equal(addr1.address);
 				});
 
-				it("Check that the Referee knows the Pools of owner (stakingPoolIndicesOfOwner)", async function () {
-					const {referee, addr1, addr2, nodeLicense} = await loadFixture(deployInfrastructure);
-					const bucketShareMaxValues = await referee.connect(addr1).bucketshareMaxValues();
-
-					// Mint a 3 node keys & save the ids
-					const price = await nodeLicense.price(1, "");
-					await nodeLicense.connect(addr1).mint(1, "", {value: price});
-					const mintedKeyId1 = await nodeLicense.totalSupply();
-					await nodeLicense.connect(addr2).mint(1, "", {value: price});
-					const mintedKeyId2 = await nodeLicense.totalSupply();
-					await nodeLicense.connect(addr1).mint(1, "", {value: price});
-					const mintedKeyId3 = await nodeLicense.totalSupply();
-
-					// Create a pool as addr1
-					await referee.connect(addr1).createPool(
-						[mintedKeyId1],
-						bucketShareMaxValues[0],
-						bucketShareMaxValues[1],
-						bucketShareMaxValues[2],
-						"Testing Pool",
-						"This is for testing purposes only!!",
-						"logo",
-						"website",
-						"twitter",
-						"discord",
-						"telegram",
-						"instagram",
-						"tiktok",
-						"youtube"
-					);
-
-					// Create a pool as addr2
-					await referee.connect(addr2).createPool(
-						[mintedKeyId2],
-						bucketShareMaxValues[0],
-						bucketShareMaxValues[1],
-						bucketShareMaxValues[2],
-						"Testing Pool 2",
-						"This is for testing purposes only!! 2",
-						"logo 2",
-						"website 2",
-						"twitter 2",
-						"discord 2",
-						"telegram 2",
-						"instagram 2",
-						"tiktok 2",
-						"youtube 2"
-					);
-
-					// Create a second pool as addr1
-					await referee.connect(addr1).createPool(
-						[mintedKeyId3],
-						bucketShareMaxValues[0],
-						bucketShareMaxValues[1],
-						bucketShareMaxValues[2],
-						"Testing Pool 3",
-						"This is for testing purposes only!! 3",
-						"logo 3",
-						"website 3",
-						"twitter 3",
-						"discord 3",
-						"telegram 3",
-						"instagram 3",
-						"tiktok 3",
-						"youtube 3"
-					);
-
-					// CHeck that the pool indices are correctly associated with the respective address
-					const stakingPoolIndicesOfOwner = await referee.connect(addr1).stakingPoolIndicesOfOwner();
-					expect(stakingPoolIndicesOfOwner[addr1.address][0]).to.equal(0);
-					expect(stakingPoolIndicesOfOwner[addr2.address][0]).to.equal(1);
-					expect(stakingPoolIndicesOfOwner[addr1.address][1]).to.equal(2);
-				});
-
-				it("Check that the metadata gets returned from the Pool info", async function () {
-					const {referee, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
-
-					// Mint a node key & save the id
-					const price = await nodeLicense.price(1, "");
-					await nodeLicense.connect(addr1).mint(1, "", {value: price});
-					const mintedKeyId = await nodeLicense.totalSupply();
-
-					// Create a pool
-					const bucketShareMaxValues = await referee.connect(addr1).bucketshareMaxValues();
-					await referee.connect(addr1).createPool(
-						[mintedKeyId],
-						bucketShareMaxValues[0],
-						bucketShareMaxValues[1],
-						bucketShareMaxValues[2],
-						"Testing Pool",
-						"This is for testing purposes only!!",
-						"logo",
-						"website",
-						"twitter",
-						"discord",
-						"telegram",
-						"instagram",
-						"tiktok",
-						"youtube"
-					);
-
-					// Create instance of the deployed pool
-					const stakingPools = await referee.connect(addr1).stakingPools();
-					const StakingPool = await ethers.getContractFactory("StakingPool");
-					const stakingPool = StakingPool.attach(stakingPools[0]);
-
-					// Check the owner & name of the new pool are correct
-					const stakingPoolOwner = await stakingPool.connect(addr1).poolOwner();
-					const stakingPoolName = await stakingPool.connect(addr1).name();
-					expect(stakingPoolOwner).to.equal(addr1.address);
-					expect(stakingPoolName).to.equal(poolName);
-
-					//TODO metadata after conversion to array
-				});
-
 				it("Verify that the owner can un-stake keys so long as they have more than 1 in the Pool", async function () {
-					const {referee, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+					const {referee, addr1, nodeLicense, poolFactory} = await loadFixture(deployInfrastructure);
 
 					// Mint 2 node keys & save the ids
 					const price = await nodeLicense.price(1, "");
@@ -1003,38 +877,29 @@ export function RefereeTests(deployInfrastructure) {
 					const mintedKeyId2 = await nodeLicense.totalSupply();
 
 					// Create a pool
-					const bucketShareMaxValues = await referee.connect(addr1).bucketshareMaxValues();
-					await referee.connect(addr1).createPool(
+					const bucketShareMaxValues = await poolFactory.connect(addr1).bucketshareMaxValues();
+					await poolFactory.connect(addr1).createPool(
 						[mintedKeyId1, mintedKeyId2],
 						bucketShareMaxValues[0],
 						bucketShareMaxValues[1],
 						bucketShareMaxValues[2],
-						"Testing Pool",
-						"This is for testing purposes only!!",
-						"logo",
-						"website",
-						"twitter",
-						"discord",
-						"telegram",
-						"instagram",
-						"tiktok",
-						"youtube"
+						poolName,
+						poolDescription,
+						poolLogo,
+						poolSocials
 					);
 
-					// Get the pool index & address
-					const stakingPools = await referee.connect(addr1).stakingPools();
-					const stakingPoolIndicesOfOwner = await referee.connect(addr1).stakingPoolIndicesOfOwner();
-					const poolIndex = stakingPoolIndicesOfOwner[addr1.address][0];
+					// Make sure the pool exists
+					const stakingPools = await poolFactory.connect(addr1).stakingPools();
 					expect(stakingPools.length).to.equal(1);
-					expect(poolIndex).to.equal(0);
 
 					// Fetch the keys -> pool map && verify both minted keys are assigned to the same pool
 					const keyPools1 = await referee.connect(addr1).assignedKeyToPool();
-					expect(keyPools1[mintedKeyId1]).to.equal(stakingPools[poolIndex]);
-					expect(keyPools1[mintedKeyId2]).to.equal(stakingPools[poolIndex]);
+					expect(keyPools1[mintedKeyId1]).to.equal(stakingPools[0]);
+					expect(keyPools1[mintedKeyId2]).to.equal(stakingPools[0]);
 
 					// Successfully un-stake 1 key
-					await referee.connect(addr1).unstakeFromPool(stakingPools[poolIndex], 1);
+					await poolFactory.connect(addr1).unassignKeys(0, [mintedKeyId1]);
 
 					// Verify that key 1 is no longer assigned to any pool
 					const keyPools2 = await referee.connect(addr1).assignedKeyToPool();
