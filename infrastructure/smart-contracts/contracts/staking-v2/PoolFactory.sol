@@ -159,6 +159,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         string[] memory trackerNames,
         string[] memory trackerSymbols
     ) external {
+		require(stakingEnabled, "Staking must be enabled");
         require(keyIds.length > 0, "Pool requires at least 1 key");
         require(
             _ownerShare <= bucketshareMaxValues[0] &&
