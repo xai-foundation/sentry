@@ -303,7 +303,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         uint256 keysLength = keyIds.length;
         require(keysLength > 0, "Must at least unstake 1 key");
 
-        Referee5(refereeAddress).unstakeKeys(pool, IStakingPool(pool).getPoolOwner(), msg.sender, keyIds, IStakingPool(pool).getStakedAmounts(msg.sender));
+        Referee5(refereeAddress).unstakeKeys(pool, IStakingPool(pool).getPoolOwner(), msg.sender, keyIds, IStakingPool(pool).getStakedKeysCountForUser(msg.sender));
         IStakingPool(pool).unstakeKeys(msg.sender, keyIds);
 
         (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
