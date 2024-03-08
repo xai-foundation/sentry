@@ -251,39 +251,29 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         return _getUndistributedClaimAmount(user);
     }
 
-    function getPoolBaseInfo()
+    function getPoolInfo()
         external
         view
         returns (
-            PoolBaseInfo memory baseInfo
+            PoolBaseInfo memory baseInfo,
+            string memory _name,
+            string memory _description,
+            string memory _logo,
+            string[] memory _socials,
+            uint16[] memory _pendingShares
         )
     {
+        baseInfo.poolAddress = address(this);
         baseInfo.owner = poolOwner;
         baseInfo.keyBucketTracker = address(keyBucket);
         baseInfo.esXaiBucketTracker = address(esXaiStakeBucket);
         baseInfo.keyCount = keyBucket.totalSupply();
         baseInfo.totalStakedAmount = esXaiStakeBucket.totalSupply();
-        baseInfo.maxStakedAmount =
-            Referee5(refereeAddress).maxStakeAmountPerLicense() *
-            baseInfo.keyCount;
-
         baseInfo.ownerShare = ownerShare;
         baseInfo.keyBucketShare = keyBucketShare;
         baseInfo.stakedBucketShare = stakedBucketShare;
-    }
-
-    function getPoolInfo()
-        external
-        view
-        returns (
-            string memory _name,
-            string memory _description,
-            string memory _logo,
-            string[] memory _socials,
-            uint16[] memory _pendingShares,
-            uint256 _updateSharesTimestamp
-        )
-    {
+        baseInfo.updateSharesTimestamp = updateSharesTimestamp;
+        
         _name = name;
         _description = description;
         _logo = logo;
@@ -293,8 +283,6 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         _pendingShares[0] = pendingShares[0];
         _pendingShares[1] = pendingShares[1];
         _pendingShares[2] = pendingShares[2];
-
-        _updateSharesTimestamp = updateSharesTimestamp;
     }
 
     function getUserPoolData(
