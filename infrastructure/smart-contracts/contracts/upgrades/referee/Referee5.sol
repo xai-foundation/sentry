@@ -95,13 +95,16 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
 
     // The pool factory contract that is allowed to update the stake state of the Referee
     address public poolFactoryAddress;
+    
+    // Mapping for amount of assigned keys of a user
+    mapping(address => uint256) public assignedKeysOfUserCount;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[491] private __gap;
+    uint256[490] private __gap;
 
     // Struct for the submissions
     struct Submission {
@@ -826,11 +829,20 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             assignedKeyToPool[keyId] = pool;
         }
         assignedKeysToPoolCount[pool] += keysLength;
+        assignedKeysOfUserCount[owner] += keysLength;
     }
 
-    function unstakeKeys(address pool, address owner, uint256[] memory keyIds) external onlyPoolFactory {
+    function unstakeKeys(address pool, address owner, bool isPoolOwner, uint256[] memory keyIds) external onlyPoolFactory {
         uint256 keysLength = keyIds.length;
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
+
+        if (isPoolOwner) {
+            require(
+                assignedKeysOfUserCount[owner] > keysLength,
+                "Pool owner needs at least 1 staked key"
+            );
+        }
+
         for (uint256 i = 0; i < keysLength; i++) {
             uint256 keyId = keyIds[i];
             require(assignedKeyToPool[keyId] == pool, "Key not assigned to pool");
@@ -838,6 +850,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             assignedKeyToPool[keyId] = address(0);
         }
         assignedKeysToPoolCount[pool] -= keysLength;
+        assignedKeysOfUserCount[owner] -= keysLength;
     }
 
     function stakeEsXai(address pool, uint256 amount) external onlyPoolFactory {

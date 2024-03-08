@@ -47,9 +47,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     mapping(address => mapping(address => uint256))
         public userToInteractedPoolIds;
 
-    // Mapping for amount of assigned keys of a user
-    mapping(address => uint256) public assignedKeysOfUserCount;
-
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
@@ -274,8 +271,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function _stakeKeys(address pool, uint256[] memory keyIds) internal {
-        uint256 keysLength = keyIds.length;
-
         //Check if we already know that the user has interacted with this pool
         //If not add pool index to
         (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
@@ -291,7 +286,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
         Referee5(refereeAddress).stakeKeys(pool, msg.sender, keyIds);
         IStakingPool(pool).stakeKeys(msg.sender, keyIds);
-        assignedKeysOfUserCount[msg.sender] += keysLength;
 
         //TODO emit V2 event
     }
@@ -308,14 +302,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         uint256 keysLength = keyIds.length;
         require(keysLength > 0, "Must at least unstake 1 key");
 
-        if (msg.sender == IStakingPool(pool).getPoolOwner()) {
-            require(
-                assignedKeysOfUserCount[msg.sender] > keysLength,
-                "Pool owner needs at least 1 staked key"
-            );
-        }
-
-        Referee5(refereeAddress).unstakeKeys(pool, msg.sender, keyIds);
+        Referee5(refereeAddress).unstakeKeys(pool, msg.sender, IStakingPool(pool).getPoolOwner() == msg.sender, keyIds);
         IStakingPool(pool).unstakeKeys(msg.sender, keyIds);
 
         (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
@@ -330,8 +317,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             ] = interactedPoolsOfUser[msg.sender][userLength - 1];
             interactedPoolsOfUser[msg.sender].pop();
         }
-
-        assignedKeysOfUserCount[msg.sender] -= keysLength;
 
         //TODO emit V2 event
     }
