@@ -284,7 +284,8 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             interactedPoolsOfUser[msg.sender].push(pool);
         }
 
-        Referee5(refereeAddress).stakeKeys(pool, msg.sender, IStakingPool(pool).getPoolOwner(), keyIds);
+		//get the pool owner poolOwner
+        Referee5(refereeAddress).stakeKeys(pool, IStakingPool(pool).getPoolOwner(), msg.sender, keyIds);
         IStakingPool(pool).stakeKeys(msg.sender, keyIds);
 
         //TODO emit V2 event
@@ -302,7 +303,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         uint256 keysLength = keyIds.length;
         require(keysLength > 0, "Must at least unstake 1 key");
 
-        Referee5(refereeAddress).unstakeKeys(pool, msg.sender, IStakingPool(pool).getPoolOwner(), keyIds);
+        Referee5(refereeAddress).unstakeKeys(pool, IStakingPool(pool).getPoolOwner(), msg.sender, keyIds, IStakingPool(pool).getStakedKeysCountForUser(msg.sender));
         IStakingPool(pool).unstakeKeys(msg.sender, keyIds);
 
         (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(

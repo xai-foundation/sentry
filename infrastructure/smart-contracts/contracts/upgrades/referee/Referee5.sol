@@ -817,11 +817,14 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         emit UnstakeV1(msg.sender, amount, stakedAmounts[msg.sender]);
     }
 
-    function stakeKeys(address pool, address staker, address poolOwner, uint256[] memory keyIds) external onlyPoolFactory {
+    function stakeKeys(address pool, address poolOwner, address staker, uint256[] memory keyIds) external onlyPoolFactory {
         uint256 keysLength = keyIds.length;
         require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "Maximum staking amount exceeded");
 
-        //TODO approve poolOwner
+		if (staker != poolOwner && !isApprovedForOperator(staker, poolOwner)) {
+			_operatorApprovals[staker].add(poolOwner);
+			_ownersForOperator[poolOwner].add(staker);
+		}
 
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
         for (uint256 i = 0; i < keysLength; i++) {
@@ -834,7 +837,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         assignedKeysOfUserCount[staker] += keysLength;
     }
 
-    function unstakeKeys(address pool, address staker, address poolOwner, uint256[] memory keyIds) external onlyPoolFactory {
+    function unstakeKeys(address pool, address poolOwner, address staker, uint256[] memory keyIds, uint256 userStakedKeyCount) external onlyPoolFactory {
         uint256 keysLength = keyIds.length;
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
 
@@ -843,9 +846,12 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
                 assignedKeysOfUserCount[staker] > keysLength,
                 "Pool owner needs at least 1 staked key"
             );
-        }
-
-        //TODO remove approval
+        } else {
+			if (userStakedKeyCount - keysLength < 1) {
+				_operatorApprovals[staker].remove(poolOwner);
+				_ownersForOperator[poolOwner].remove(staker);
+			}
+		}
 
         for (uint256 i = 0; i < keysLength; i++) {
             uint256 keyId = keyIds[i];
