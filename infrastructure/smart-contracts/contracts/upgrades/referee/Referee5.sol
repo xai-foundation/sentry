@@ -95,13 +95,16 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
 
     // The pool factory contract that is allowed to update the stake state of the Referee
     address public poolFactoryAddress;
+    
+    // Mapping for amount of assigned keys of a user
+    mapping(address => uint256) public assignedKeysOfUserCount;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[491] private __gap;
+    uint256[490] private __gap;
 
     // Struct for the submissions
     struct Submission {
@@ -814,7 +817,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         emit UnstakeV1(msg.sender, amount, stakedAmounts[msg.sender]);
     }
 
-    function stakeKeys(address pool, address poolOwner, address keyOwner, uint256[] memory keyIds) external onlyPoolFactory {
+    function stakeKeys(address pool, address poolOwner, address staker, uint256[] memory keyIds) external onlyPoolFactory {
         uint256 keysLength = keyIds.length;
         require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "Maximum staking amount exceeded");
 
@@ -827,22 +830,34 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         for (uint256 i = 0; i < keysLength; i++) {
             uint256 keyId = keyIds[i];
             require(assignedKeyToPool[keyId] == address(0), "Key already assigned");
-            require(nodeLicenseContract.ownerOf(keyId) == keyOwner, "Not owner of key");
+            require(nodeLicenseContract.ownerOf(keyId) == staker, "Not owner of key");
             assignedKeyToPool[keyId] = pool;
         }
         assignedKeysToPoolCount[pool] += keysLength;
+        assignedKeysOfUserCount[staker] += keysLength;
     }
 
-    function unstakeKeys(address pool, address owner, uint256[] memory keyIds) external onlyPoolFactory {
+    function unstakeKeys(address pool, address staker, address poolOwner, uint256[] memory keyIds) external onlyPoolFactory {
         uint256 keysLength = keyIds.length;
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
+
+        if (staker == poolOwner) {
+            require(
+                assignedKeysOfUserCount[staker] > keysLength,
+                "Pool owner needs at least 1 staked key"
+            );
+        }
+
+        //TODO remove approval
+
         for (uint256 i = 0; i < keysLength; i++) {
             uint256 keyId = keyIds[i];
             require(assignedKeyToPool[keyId] == pool, "Key not assigned to pool");
-            require(nodeLicenseContract.ownerOf(keyId) == owner, "Not owner of key");
-            assignedKeyToPool[keyId] = pool;
+            require(nodeLicenseContract.ownerOf(keyId) == staker, "Not owner of key");
+            assignedKeyToPool[keyId] = address(0);
         }
         assignedKeysToPoolCount[pool] -= keysLength;
+        assignedKeysOfUserCount[staker] -= keysLength;
     }
 
     function stakeEsXai(address pool, uint256 amount) external onlyPoolFactory {
@@ -856,7 +871,22 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         stakedAmounts[pool] -= amount;
     }
 
-    function areKeysStaked(uint256[] memory keyIds) external view returns (bool[] memory isStaked) {
+    function getUnstakedKeyIdsFromUser(address user, uint16 offset, uint16 pageLimit) external view returns (uint256[] memory unstakedKeyIds) {
+        uint256 userKeyBalance = NodeLicense(nodeLicenseAddress).balanceOf(user);
+        unstakedKeyIds = new uint256[](pageLimit);
+        uint256 currentIndexUnstaked = 0;
+        uint256 limit = offset + pageLimit;
+
+        for(uint256 i = offset; i < userKeyBalance && i < limit; i++){
+            uint256 keyId = NodeLicense(nodeLicenseAddress).tokenOfOwnerByIndex(user, i);
+            if(assignedKeyToPool[keyId] == address(0)){
+                unstakedKeyIds[currentIndexUnstaked] = keyId;
+                currentIndexUnstaked++;
+            }
+        }
+    }
+
+    function checkKeysAreStaked(uint256[] memory keyIds) external view returns (bool[] memory isStaked) {
         isStaked = new bool[](keyIds.length);
         for(uint256 i; i < keyIds.length; i++){
             isStaked[i] = assignedKeyToPool[keyIds[i]] != address(0);
