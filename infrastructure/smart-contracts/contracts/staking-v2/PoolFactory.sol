@@ -41,10 +41,10 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     // The current key & esXai bucket tracker implenetation
     address public bucketImplementation;
 
-    mapping(address => uint256[]) public interactedPoolsOfUser;
+    mapping(address => address[]) public interactedPoolsOfUser;
 
-    // mapping user address to pool index to index in user array, used for removing from user array without interation
-    mapping(address => mapping(uint256 => uint256))
+    // mapping user address to pool address to index in user array, used for removing from user array without interation
+    mapping(address => mapping(address => uint256))
         public userToInteractedPoolIds;
 
     // Mapping for amount of assigned keys of a user
@@ -67,13 +67,13 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         address prevImplementation,
         address newImplementation
     );
-    event Staked(
+    event StakeEsXai(
         address indexed user,
         address indexed pool,
         uint256 amount,
         uint256 totalStaked
     );
-    event Unstake(
+    event UnstakeEsXai(
         address indexed user,
         address indexed pool,
         uint256 amount,
@@ -159,7 +159,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         string[] memory trackerNames,
         string[] memory trackerSymbols
     ) external {
-		require(stakingEnabled, "Staking must be enabled");
+        require(stakingEnabled, "Staking must be enabled");
         require(keyIds.length > 0, "Pool requires at least 1 key");
         require(
             _ownerShare <= bucketshareMaxValues[0] &&
@@ -228,7 +228,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         esXai(esXaiAddress).addToWhitelist(address(keyBucketProxy));
         esXai(esXaiAddress).addToWhitelist(address(stakedBucketProxy));
 
-        _stakeKeys(stakingPools.length - 1, keyIds);
+        _stakeKeys(address(poolProxy), keyIds);
     }
 
     function updatePoolMetadata(
@@ -273,9 +273,8 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         keyAmount = IStakingPool(pool).getStakedKeysCountForUser(user);
     }
 
-    function _stakeKeys(uint256 poolIndex, uint256[] memory keyIds) internal {
+    function _stakeKeys(address pool, uint256[] memory keyIds) internal {
         uint256 keysLength = keyIds.length;
-        address pool = stakingPools[poolIndex];
 
         //Check if we already know that the user has interacted with this pool
         //If not add pool index to
@@ -284,10 +283,10 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             msg.sender
         );
         if (stakeAmount == 0 && keyAmount == 0) {
-            userToInteractedPoolIds[msg.sender][
-                poolIndex
-            ] = interactedPoolsOfUser[msg.sender].length;
-            interactedPoolsOfUser[msg.sender].push(poolIndex);
+            userToInteractedPoolIds[msg.sender][pool] = interactedPoolsOfUser[
+                msg.sender
+            ].length;
+            interactedPoolsOfUser[msg.sender].push(pool);
         }
 
         Referee5(refereeAddress).stakeKeys(pool, msg.sender, keyIds);
@@ -297,31 +296,34 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         //TODO emit V2 event
     }
 
-    function stakeKeys(uint256 poolIndex, uint256[] memory keyIds) external {
-        require(stakingPools[poolIndex] != address(0), "Invalid pool");
+    function stakeKeys(address pool, uint256[] memory keyIds) external {
+        require(pool != address(0), "Invalid pool");
         require(keyIds.length > 0, "Must at least stake 1 key");
 
-        _stakeKeys(poolIndex, keyIds);
+        _stakeKeys(pool, keyIds);
     }
 
-    function unstakeKeys(uint256 poolIndex, uint256[] memory keyIds) external {
-        address pool = stakingPools[poolIndex];
+    function unstakeKeys(address pool, uint256[] memory keyIds) external {
         require(pool != address(0), "Invalid pool");
         uint256 keysLength = keyIds.length;
-
         require(keysLength > 0, "Must at least unstake 1 key");
 
+        if (msg.sender == IStakingPool(pool).getPoolOwner()) {
+            require(
+                assignedKeysOfUserCount[msg.sender] > keysLength,
+                "Pool owner needs at least 1 staked key"
+            );
+        }
+
         Referee5(refereeAddress).unstakeKeys(pool, msg.sender, keyIds);
-        IStakingPool(stakingPools[poolIndex]).unstakeKeys(msg.sender, keyIds);
+        IStakingPool(pool).unstakeKeys(msg.sender, keyIds);
 
         (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
-            stakingPools[poolIndex],
+            pool,
             msg.sender
         );
         if (stakeAmount == 0 && keyAmount == 0) {
-            uint256 indexOfPool = userToInteractedPoolIds[msg.sender][
-                poolIndex
-            ];
+            uint256 indexOfPool = userToInteractedPoolIds[msg.sender][pool];
             uint256 userLength = interactedPoolsOfUser[msg.sender].length;
             interactedPoolsOfUser[msg.sender][
                 indexOfPool
@@ -334,18 +336,18 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         //TODO emit V2 event
     }
 
-    function stakeEsXai(uint256 poolIndex, uint256 amount) external {
-        IStakingPool stakingPool = IStakingPool(stakingPools[poolIndex]);
+    function stakeEsXai(address pool, uint256 amount) external {
+        IStakingPool stakingPool = IStakingPool(pool);
 
         (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
-            stakingPools[poolIndex],
+            pool,
             msg.sender
         );
         if (stakeAmount == 0 && keyAmount == 0) {
-            userToInteractedPoolIds[msg.sender][
-                poolIndex
-            ] = interactedPoolsOfUser[msg.sender].length;
-            interactedPoolsOfUser[msg.sender].push(poolIndex);
+            userToInteractedPoolIds[msg.sender][pool] = interactedPoolsOfUser[
+                msg.sender
+            ].length;
+            interactedPoolsOfUser[msg.sender].push(pool);
         }
 
         Referee5(refereeAddress).stakeEsXai(address(stakingPool), amount);
@@ -357,8 +359,8 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         //TODO emit V2 event
     }
 
-    function unstakeEsXai(uint256 poolIndex, uint256 amount) external {
-        IStakingPool stakingPool = IStakingPool(stakingPools[poolIndex]);
+    function unstakeEsXai(address pool, uint256 amount) external {
+        IStakingPool stakingPool = IStakingPool(pool);
 
         require(
             stakingPool.getStakedAmounts(msg.sender) >= amount,
@@ -367,18 +369,16 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
         esXai(esXaiAddress).transfer(msg.sender, amount);
 
-        Referee5(refereeAddress).unstakeEsXai(address(stakingPool), amount);
+        Referee5(refereeAddress).unstakeEsXai(pool, amount);
 
         stakingPool.unstakeEsXai(msg.sender, amount);
 
         (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
-            stakingPools[poolIndex],
+            pool,
             msg.sender
         );
         if (stakeAmount == 0 && keyAmount == 0) {
-            uint256 indexOfPool = userToInteractedPoolIds[msg.sender][
-                poolIndex
-            ];
+            uint256 indexOfPool = userToInteractedPoolIds[msg.sender][pool];
             uint256 userLength = interactedPoolsOfUser[msg.sender].length;
             interactedPoolsOfUser[msg.sender][
                 indexOfPool
@@ -388,13 +388,11 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         //TODO emit V2 event
     }
 
-    function claimFromPools(uint256[] memory poolIndices) external {
-        uint256 poolsLength = poolIndices.length;
+    function claimFromPools(address[] memory pools) external {
+        uint256 poolsLength = pools.length;
 
         for (uint i = 0; i < poolsLength; i++) {
-            IStakingPool stakingPool = IStakingPool(
-                stakingPools[poolIndices[i]]
-            );
+            IStakingPool stakingPool = IStakingPool(pools[i]);
             stakingPool.claimRewards(msg.sender);
 
             //TODO claim event ?
@@ -405,51 +403,9 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         return stakingPools.length;
     }
 
-    function getPoolInfo(
-        address pool,
-        address user
-    )
-        external
-        view
-        returns (
-            IStakingPool.PoolBaseInfo memory baseInfo,
-            uint256[] memory,
-            string memory,
-            string memory,
-            string memory,
-            string[] memory _socials,
-            uint16[] memory _pendingShares,
-            uint256 _updateSharesTimestamp
-        )
-    {
-        require(pool != address(0), "Invalid pool");
-        return IStakingPool(pool).getPoolInfo(user);
-    }
-
-    function getPoolInfoAtIndex(
-        uint256 index,
-        address user
-    )
-        external
-        view
-        returns (
-            IStakingPool.PoolBaseInfo memory baseInfo,
-            uint256[] memory,
-            string memory,
-            string memory,
-            string memory,
-            string[] memory _socials,
-            uint16[] memory _pendingShares,
-            uint256 _updateSharesTimestamp
-        )
-    {
-        require(stakingPools[index] != address(0), "Invalid index");
-        return IStakingPool(stakingPools[index]).getPoolInfo(user);
-    }
-
     function getPoolIndicesOfUser(
         address user
-    ) external view returns (uint256[] memory) {
+    ) external view returns (address[] memory) {
         return interactedPoolsOfUser[user];
     }
 
@@ -457,14 +413,14 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         return interactedPoolsOfUser[user].length;
     }
 
-    function getPoolIndexOfUser(
-        address user,
-        uint256 index
-    ) external view returns (uint256) {
-        return interactedPoolsOfUser[user][index];
-    }
-
     function getPoolAddress(uint256 poolIndex) external view returns (address) {
         return stakingPools[poolIndex];
+    }
+
+    function getPoolAddressOfUser(
+        address user,
+        uint256 index
+    ) external view returns (address) {
+        return interactedPoolsOfUser[user][index];
     }
 }

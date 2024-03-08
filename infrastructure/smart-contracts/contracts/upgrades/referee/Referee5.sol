@@ -835,7 +835,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             uint256 keyId = keyIds[i];
             require(assignedKeyToPool[keyId] == pool, "Key not assigned to pool");
             require(nodeLicenseContract.ownerOf(keyId) == owner, "Not owner of key");
-            assignedKeyToPool[keyId] = pool;
+            assignedKeyToPool[keyId] = address(0);
         }
         assignedKeysToPoolCount[pool] -= keysLength;
     }
@@ -851,7 +851,22 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         stakedAmounts[pool] -= amount;
     }
 
-    function areKeysStaked(uint256[] memory keyIds) external view returns (bool[] memory isStaked) {
+    function getUnstakedKeyIdsFromUser(address user, uint16 offset, uint16 pageLimit) external view returns (uint256[] memory unstakedKeyIds) {
+        uint256 userKeyBalance = NodeLicense(nodeLicenseAddress).balanceOf(user);
+        unstakedKeyIds = new uint256[](pageLimit);
+        uint256 currentIndexUnstaked = 0;
+        uint256 limit = offset + pageLimit;
+
+        for(uint256 i = offset; i < userKeyBalance && i < limit; i++){
+            uint256 keyId = NodeLicense(nodeLicenseAddress).tokenOfOwnerByIndex(user, i);
+            if(assignedKeyToPool[keyId] == address(0)){
+                unstakedKeyIds[currentIndexUnstaked] = keyId;
+                currentIndexUnstaked++;
+            }
+        }
+    }
+
+    function checkKeysAreStaked(uint256[] memory keyIds) external view returns (bool[] memory isStaked) {
         isStaked = new bool[](keyIds.length);
         for(uint256 i; i < keyIds.length; i++){
             isStaked[i] = assignedKeyToPool[keyIds[i]] != address(0);

@@ -9,10 +9,9 @@ interface IStakingPool {
         address keyBucketTracker;
         address esXaiBucketTracker;
         uint256 keyCount;
-        uint256 userStakedEsXaiAmount;
-        uint256 userClaimAmount;
         uint256 totalStakedAmount;
         uint256 maxStakedAmount;
+        uint256 updateSharesTimestamp;
         uint16 ownerShare;
         uint16 keyBucketShare;
         uint16 stakedBucketShare;
@@ -68,21 +67,35 @@ interface IStakingPool {
     function getUndistributedClaimAmount(
         address user
     ) external view returns (uint256 claimAmount, uint256 ownerAmount);
-
-    function getPoolInfo(
-        address user
-    )
+    
+    function getPoolBaseInfo()
         external
         view
         returns (
-            PoolBaseInfo memory baseInfo,
-            uint256[] memory userStakedKeyIds,
+            PoolBaseInfo memory baseInfo
+        );
+
+    function getPoolInfo()
+        external
+        view
+        returns (
             string memory _name,
             string memory _description,
             string memory _logo,
             string[] memory _socials,
             uint16[] memory _pendingShares,
             uint256 _updateSharesTimestamp
+        );
+
+    function getUserPoolData(
+        address user
+    )
+        external
+        view
+        returns (
+            uint256 userStakedEsXaiAmount,
+            uint256 userClaimAmount,
+            uint256[] memory userStakedKeyIds
         );
 }
 

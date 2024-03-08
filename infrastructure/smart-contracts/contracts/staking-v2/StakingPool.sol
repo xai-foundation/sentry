@@ -78,15 +78,17 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
     }
 
     function distributeRewards() internal {
-		if (updateSharesTimestamp > 0 && block.timestamp > updateSharesTimestamp) {
-			ownerShare = pendingShares[0];
-			keyBucketShare = pendingShares[1];
-			stakedBucketShare = pendingShares[2];
-			updateSharesTimestamp = 0;
-			pendingShares[0] = 0;
-			pendingShares[1] = 0;
-			pendingShares[2] = 0;
-		}
+        if (
+            updateSharesTimestamp > 0 && block.timestamp > updateSharesTimestamp
+        ) {
+            ownerShare = pendingShares[0];
+            keyBucketShare = pendingShares[1];
+            stakedBucketShare = pendingShares[2];
+            updateSharesTimestamp = 0;
+            pendingShares[0] = 0;
+            pendingShares[1] = 0;
+            pendingShares[2] = 0;
+        }
 
         uint256 amountToDistribute = esXai(esXaiAddress).balanceOf(
             address(this)
@@ -114,7 +116,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
             amountForKeys -
             amountForStaked;
     }
-    
+
     function initShares(
         uint16 _ownerShare,
         uint16 _keyBucketShare,
@@ -130,10 +132,10 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         uint16 _keyBucketShare,
         uint16 _stakedBucketShare
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-		pendingShares[0] = _ownerShare;
-		pendingShares[1] = _keyBucketShare;
-		pendingShares[2] = _stakedBucketShare;
-		updateSharesTimestamp = block.timestamp + 30 days;
+        pendingShares[0] = _ownerShare;
+        pendingShares[1] = _keyBucketShare;
+        pendingShares[2] = _stakedBucketShare;
+        updateSharesTimestamp = block.timestamp + 30 days;
     }
 
     function updateMetadata(
@@ -249,46 +251,17 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         return _getUndistributedClaimAmount(user);
     }
 
-    function getPoolInfo(
-        address user
-    )
+    function getPoolBaseInfo()
         external
         view
         returns (
-            PoolBaseInfo memory baseInfo,
-            uint256[] memory userStakedKeyIds,
-            string memory _name,
-            string memory _description,
-            string memory _logo,
-            string[] memory _socials,
-            uint16[] memory _pendingShares,
-            uint256 _updateSharesTimestamp
+            PoolBaseInfo memory baseInfo
         )
     {
         baseInfo.owner = poolOwner;
         baseInfo.keyBucketTracker = address(keyBucket);
         baseInfo.esXaiBucketTracker = address(esXaiStakeBucket);
         baseInfo.keyCount = keyBucket.totalSupply();
-        baseInfo.userStakedEsXaiAmount = stakedAmounts[user];
-
-        uint256 claimAmountKeyBucket = keyBucket.withdrawableDividendOf(user);
-        uint256 claimAmountStakedBucket = esXaiStakeBucket
-            .withdrawableDividendOf(user);
-
-        (
-            uint256 claimAmount,
-            uint256 ownerAmount
-        ) = _getUndistributedClaimAmount(user);
-
-        baseInfo.userClaimAmount =
-            claimAmountKeyBucket +
-            claimAmountStakedBucket +
-            claimAmount;
-        if (user == poolOwner) {
-            baseInfo.userClaimAmount += poolOwnerClaimableRewards + ownerAmount;
-        }
-
-        userStakedKeyIds = stakedKeysOfOwner[user];
         baseInfo.totalStakedAmount = esXaiStakeBucket.totalSupply();
         baseInfo.maxStakedAmount =
             Referee5(refereeAddress).maxStakeAmountPerLicense() *
@@ -297,7 +270,20 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         baseInfo.ownerShare = ownerShare;
         baseInfo.keyBucketShare = keyBucketShare;
         baseInfo.stakedBucketShare = stakedBucketShare;
+    }
 
+    function getPoolInfo()
+        external
+        view
+        returns (
+            string memory _name,
+            string memory _description,
+            string memory _logo,
+            string[] memory _socials,
+            uint16[] memory _pendingShares,
+            uint256 _updateSharesTimestamp
+        )
+    {
         _name = name;
         _description = description;
         _logo = logo;
@@ -309,5 +295,38 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         _pendingShares[2] = pendingShares[2];
 
         _updateSharesTimestamp = updateSharesTimestamp;
+    }
+
+    function getUserPoolData(
+        address user
+    )
+        external
+        view
+        returns (
+            uint256 userStakedEsXaiAmount,
+            uint256 userClaimAmount,
+            uint256[] memory userStakedKeyIds
+        )
+    {
+        userStakedEsXaiAmount = stakedAmounts[user];
+
+        uint256 claimAmountKeyBucket = keyBucket.withdrawableDividendOf(user);
+        uint256 claimAmountStakedBucket = esXaiStakeBucket
+            .withdrawableDividendOf(user);
+
+        (
+            uint256 claimAmount,
+            uint256 ownerAmount
+        ) = _getUndistributedClaimAmount(user);
+
+        userClaimAmount =
+            claimAmountKeyBucket +
+            claimAmountStakedBucket +
+            claimAmount;
+        if (user == poolOwner) {
+            userClaimAmount += poolOwnerClaimableRewards + ownerAmount;
+        }
+
+        userStakedKeyIds = stakedKeysOfOwner[user];
     }
 }
