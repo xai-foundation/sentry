@@ -817,40 +817,44 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         emit UnstakeV1(msg.sender, amount, stakedAmounts[msg.sender]);
     }
 
-    function stakeKeys(address pool, address owner, uint256[] memory keyIds) external onlyPoolFactory {
+    function stakeKeys(address pool, address staker, address poolOwner, uint256[] memory keyIds) external onlyPoolFactory {
         uint256 keysLength = keyIds.length;
         require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "Maximum staking amount exceeded");
+
+        //TODO approve poolOwner
 
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
         for (uint256 i = 0; i < keysLength; i++) {
             uint256 keyId = keyIds[i];
             require(assignedKeyToPool[keyId] == address(0), "Key already assigned");
-            require(nodeLicenseContract.ownerOf(keyId) == owner, "Not owner of key");
+            require(nodeLicenseContract.ownerOf(keyId) == staker, "Not owner of key");
             assignedKeyToPool[keyId] = pool;
         }
         assignedKeysToPoolCount[pool] += keysLength;
-        assignedKeysOfUserCount[owner] += keysLength;
+        assignedKeysOfUserCount[staker] += keysLength;
     }
 
-    function unstakeKeys(address pool, address owner, bool isPoolOwner, uint256[] memory keyIds) external onlyPoolFactory {
+    function unstakeKeys(address pool, address staker, address poolOwner, uint256[] memory keyIds) external onlyPoolFactory {
         uint256 keysLength = keyIds.length;
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
 
-        if (isPoolOwner) {
+        if (staker == poolOwner) {
             require(
-                assignedKeysOfUserCount[owner] > keysLength,
+                assignedKeysOfUserCount[staker] > keysLength,
                 "Pool owner needs at least 1 staked key"
             );
         }
 
+        //TODO remove approval
+
         for (uint256 i = 0; i < keysLength; i++) {
             uint256 keyId = keyIds[i];
             require(assignedKeyToPool[keyId] == pool, "Key not assigned to pool");
-            require(nodeLicenseContract.ownerOf(keyId) == owner, "Not owner of key");
+            require(nodeLicenseContract.ownerOf(keyId) == staker, "Not owner of key");
             assignedKeyToPool[keyId] = address(0);
         }
         assignedKeysToPoolCount[pool] -= keysLength;
-        assignedKeysOfUserCount[owner] -= keysLength;
+        assignedKeysOfUserCount[staker] -= keysLength;
     }
 
     function stakeEsXai(address pool, uint256 amount) external onlyPoolFactory {
