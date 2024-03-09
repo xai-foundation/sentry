@@ -480,16 +480,17 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         }
 
 		// Support v1 (no pools) & v2 (pools)
-		uint256 stakedAmount = assignedKeyToPool[_nodeLicenseId] == address(0) ? stakedAmounts[licenseOwner] : stakedAmounts[assignedKeyToPool[_nodeLicenseId]];
-		if (assignedKeyToPool[_nodeLicenseId] == address(0)) {
+		address assignedPool = assignedKeyToPool[_nodeLicenseId];
+		uint256 stakedAmount = stakedAmounts[assignedPool];
+		if (assignedPool == address(0)) {
+			stakedAmount = stakedAmounts[licenseOwner];
 			uint256 ownerUnstakedAmount = NodeLicense(nodeLicenseAddress).balanceOf(licenseOwner) - assignedKeysOfUserCount[licenseOwner];
-
-			if (ownerUnstakedAmount * maxStakeAmountPerLicense < stakedAmounts[licenseOwner]) {
+			if (ownerUnstakedAmount * maxStakeAmountPerLicense < stakedAmount) {
 				stakedAmount = ownerUnstakedAmount * maxStakeAmountPerLicense;
 			}
 		} else {
-			if (assignedKeysToPoolCount[assignedKeyToPool[_nodeLicenseId]] * maxStakeAmountPerLicense < stakedAmounts[assignedKeyToPool[_nodeLicenseId]]) {
-				stakedAmount = assignedKeysToPoolCount[assignedKeyToPool[_nodeLicenseId]] * maxStakeAmountPerLicense;
+			if (assignedKeysToPoolCount[assignedPool] * maxStakeAmountPerLicense < stakedAmount) {
+				stakedAmount = assignedKeysToPoolCount[assignedPool] * maxStakeAmountPerLicense;
 			}
 		}
 
