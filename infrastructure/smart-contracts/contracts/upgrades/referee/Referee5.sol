@@ -479,8 +479,23 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             return;
         }
 
+        // Support v1 (no pools) & v2 (pools)
+		address assignedPool = assignedKeyToPool[_nodeLicenseId];
+		uint256 stakedAmount = stakedAmounts[assignedPool];
+		if (assignedPool == address(0)) {
+			stakedAmount = stakedAmounts[licenseOwner];
+			uint256 ownerUnstakedAmount = NodeLicense(nodeLicenseAddress).balanceOf(licenseOwner) - assignedKeysOfUserCount[licenseOwner];
+			if (ownerUnstakedAmount * maxStakeAmountPerLicense < stakedAmount) {
+				stakedAmount = ownerUnstakedAmount * maxStakeAmountPerLicense;
+			}
+		} else {
+			if (assignedKeysToPoolCount[assignedPool] * maxStakeAmountPerLicense < stakedAmount) {
+				stakedAmount = assignedKeysToPoolCount[assignedPool] * maxStakeAmountPerLicense;
+			}
+		}
+
         // Check the user is actually eligible for receiving a reward, do not count them in numberOfEligibleClaimers if they are not able to receive a reward
-        (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _getBoostFactor(stakedAmounts[licenseOwner]), _confirmData, challenges[_challengeId].challengerSignedHash);
+        (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _getBoostFactor(stakedAmount), _confirmData, challenges[_challengeId].challengerSignedHash);
 
         // Require to win assertion for submission
         require(hashEligible, "Key is not eligible");
