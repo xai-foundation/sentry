@@ -818,6 +818,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function stakeKeys(address pool, address poolOwner, address staker, uint256[] memory keyIds) external onlyPoolFactory {
+		require(isKycApproved(staker), "Must complete KYC");
         uint256 keysLength = keyIds.length;
         require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "Maximum staking amount exceeded");
 

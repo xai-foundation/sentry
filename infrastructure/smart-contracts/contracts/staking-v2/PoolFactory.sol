@@ -158,7 +158,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     ) external {
         require(stakingEnabled, "Staking must be enabled");
         require(keyIds.length > 0, "Pool requires at least 1 key");
-		require(Referee5(refereeAddress).isKycApproved(msg.sender), "Must complete KYC");
         require(
             _ownerShare <= bucketshareMaxValues[0] &&
                 _keyBucketShare <= bucketshareMaxValues[1] &&
@@ -295,7 +294,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     function stakeKeys(address pool, uint256[] memory keyIds) external {
         require(pool != address(0), "Invalid pool");
         require(keyIds.length > 0, "Must at least stake 1 key");
-		require(Referee5(refereeAddress).isKycApproved(msg.sender), "Must complete KYC");
 
         _stakeKeys(pool, keyIds);
     }
