@@ -479,8 +479,22 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             return;
         }
 
+		// Support v1 (no pools) & v2 (pools)
+		uint256 stakedAmount = assignedKeyToPool[_nodeLicenseId] == address(0) ? stakedAmounts[licenseOwner] : stakedAmounts[assignedKeyToPool[_nodeLicenseId]];
+		if (assignedKeyToPool[_nodeLicenseId] == address(0)) {
+			uint256 ownerUnstakedAmount = NodeLicense(nodeLicenseAddress).balanceOf(licenseOwner) - assignedKeysOfUserCount[licenseOwner];
+
+			if (ownerUnstakedAmount * maxStakeAmountPerLicense < stakedAmounts[licenseOwner]) {
+				stakedAmount = ownerUnstakedAmount * maxStakeAmountPerLicense;
+			}
+		} else {
+			if (assignedKeysToPoolCount[assignedKeyToPool[_nodeLicenseId]] * maxStakeAmountPerLicense < stakedAmounts[assignedKeyToPool[_nodeLicenseId]]) {
+				stakedAmount = assignedKeysToPoolCount[assignedKeyToPool[_nodeLicenseId]] * maxStakeAmountPerLicense;
+			}
+		}
+
         // Check the user is actually eligible for receiving a reward, do not count them in numberOfEligibleClaimers if they are not able to receive a reward
-        (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _getBoostFactor(stakedAmounts[licenseOwner]), _confirmData, challenges[_challengeId].challengerSignedHash);
+        (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _getBoostFactor(stakedAmount), _confirmData, challenges[_challengeId].challengerSignedHash);
 
         // Require to win assertion for submission
         require(hashEligible, "Key is not eligible");
@@ -663,7 +677,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
      * @return The payout chance boostFactor. 200 for double the chance.
      */
     function _getBoostFactor(uint256 stakedAmount) internal view returns (uint256) {
-        if(stakedAmount < stakeAmountTierThresholds[0]){
+        if (stakedAmount < stakeAmountTierThresholds[0]) {
             return 100;
         }
 
