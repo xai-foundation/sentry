@@ -223,8 +223,8 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
     ) internal view returns (uint256 claimAmount, uint256 ownerAmount) {
         uint256 poolAmount = esXai(esXaiAddress).balanceOf(address(this));
 
-        uint256 amountForKeys = (poolAmount * keyBucketShare) / 100;
-        uint256 amountForStaked = (poolAmount * stakedBucketShare) / 100;
+        uint256 amountForKeys = (poolAmount * keyBucketShare) / 10_000;
+        uint256 amountForStaked = (poolAmount * stakedBucketShare) / 10_000;
         ownerAmount = poolAmount - amountForKeys - amountForStaked;
 
         uint256 balanceInKeyBucket = keyBucket.balanceOf(user);
