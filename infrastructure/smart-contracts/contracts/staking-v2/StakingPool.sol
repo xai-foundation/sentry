@@ -116,10 +116,8 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
             }
         }
 
-        if (amountForKeys > 0) {
-            esXai(esXaiAddress).transfer(address(keyBucket), amountForKeys);
-            keyBucket.distributeDividends(amountForKeys);
-        }
+        esXai(esXaiAddress).transfer(address(keyBucket), amountForKeys);
+        keyBucket.distributeDividends(amountForKeys);
 
         poolOwnerClaimableRewards +=
             amountToDistribute -
