@@ -68,26 +68,24 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         address indexed user,
         address indexed pool,
         uint256 amount,
-        uint256 totalStaked
+        uint256 totalUserEsXaiStaked,
+        uint256 totalEsXaiStaked
     );
     event UnstakeEsXai(
         address indexed user,
         address indexed pool,
         uint256 amount,
-        uint256 totalStaked
+        uint256 totalUserEsXaiStaked,
+        uint256 totalEsXaiStaked
     );
     event StakedKeys(
         address indexed user,
         address indexed pool,
         uint256 amount,
+        uint256 totalUserKeysStaked,
         uint256 totalKeysStaked
     );
-    event UnstakeKeys(
-        address indexed user,
-        address indexed pool,
-        uint256 amount,
-        uint256 totalKeysStaked
-    );
+    event ClaimFromPool(address indexed user, address indexed pool);
 
     function initialize(
         address _refereeAddress,
@@ -299,7 +297,13 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         );
         IStakingPool(pool).stakeKeys(msg.sender, keyIds);
 
-        //TODO emit V2 event
+        emit StakedKeys(
+            msg.sender,
+            pool,
+            keyIds.length,
+            IStakingPool(pool).getStakedKeysCountForUser(msg.sender),
+            IStakingPool(pool).getStakedKeysCount()
+        );
     }
 
     function stakeKeys(address pool, uint256[] memory keyIds) external {
@@ -336,7 +340,13 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             interactedPoolsOfUser[msg.sender].pop();
         }
 
-        //TODO emit V2 event
+        emit UnstakeKeys(
+            msg.sender,
+            pool,
+            keyIds.length,
+            IStakingPool(pool).getStakedKeysCountForUser(msg.sender),
+            IStakingPool(pool).getStakedKeysCount()
+        );
     }
 
     function stakeEsXai(address pool, uint256 amount) external {
@@ -359,7 +369,13 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
         stakingPool.stakeEsXai(msg.sender, amount);
 
-        //TODO emit V2 event
+        emit StakeEsXai(
+            msg.sender,
+            pool,
+            amount,
+            stakeAmount + amount,
+            Referee5(refereeAddress).stakedAmounts(pool)
+        );
     }
 
     function unstakeEsXai(address pool, uint256 amount) external {
@@ -388,17 +404,23 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             ] = interactedPoolsOfUser[msg.sender][userLength - 1];
             interactedPoolsOfUser[msg.sender].pop();
         }
-        //TODO emit V2 event
+
+        emit StakeEsXai(
+            msg.sender,
+            pool,
+            amount,
+            stakeAmount + amount,
+            Referee5(refereeAddress).stakedAmounts(pool)
+        );
     }
 
     function claimFromPools(address[] memory pools) external {
         uint256 poolsLength = pools.length;
 
         for (uint i = 0; i < poolsLength; i++) {
-            IStakingPool stakingPool = IStakingPool(pools[i]);
-            stakingPool.claimRewards(msg.sender);
-
-            //TODO claim event ?
+            address stakingPool = pools[i];
+            IStakingPool(stakingPool).claimRewards(msg.sender);
+            emit ClaimFromPool(msg.sender, stakingPool);
         }
     }
 

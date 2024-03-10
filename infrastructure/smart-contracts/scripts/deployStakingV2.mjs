@@ -50,6 +50,10 @@ async function main() {
     const esXaiAdminRole = await esXai.DEFAULT_ADMIN_ROLE();
     await esXai.grantRole(esXaiAdminRole, poolFactoryAddress);
     console.log("Granted role");
+    //Add PoolFactory to whitelist
+    await esXai.addToWhitelist(poolFactoryAddress);
+    console.log("Added PoolFactory to esXai whitelist");
+    
 
     // Upgrade the referee
     const referee = await ethers.getContractFactory("Referee5");
