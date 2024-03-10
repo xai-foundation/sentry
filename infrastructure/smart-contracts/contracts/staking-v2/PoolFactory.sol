@@ -78,7 +78,14 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         uint256 totalUserEsXaiStaked,
         uint256 totalEsXaiStaked
     );
-    event StakedKeys(
+    event StakeKeys(
+        address indexed user,
+        address indexed pool,
+        uint256 amount,
+        uint256 totalUserKeysStaked,
+        uint256 totalKeysStaked
+    );
+    event UnstakeKeys(
         address indexed user,
         address indexed pool,
         uint256 amount,
@@ -297,7 +304,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         );
         IStakingPool(pool).stakeKeys(msg.sender, keyIds);
 
-        emit StakedKeys(
+        emit StakeKeys(
             msg.sender,
             pool,
             keyIds.length,
