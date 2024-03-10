@@ -166,66 +166,72 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             "Invalid shares"
         );
 
-        TransparentUpgradeableProxyImplementation poolProxy = new TransparentUpgradeableProxyImplementation(
+        address poolProxy = address(
+            new TransparentUpgradeableProxyImplementation(
                 stakingPoolImplementation,
                 stakingPoolProxyAdmin,
                 ""
-            );
-        TransparentUpgradeableProxyImplementation keyBucketProxy = new TransparentUpgradeableProxyImplementation(
+            )
+        );
+        address keyBucketProxy = address(
+            new TransparentUpgradeableProxyImplementation(
                 bucketImplementation,
                 stakingPoolProxyAdmin,
                 ""
-            );
-
-        TransparentUpgradeableProxyImplementation stakedBucketProxy = new TransparentUpgradeableProxyImplementation(
-                bucketImplementation,
-                stakingPoolProxyAdmin,
-                ""
-            );
-
-        IStakingPool(address(poolProxy)).initialize(
-            address(this),
-            esXaiAddress,
-            msg.sender,
-            address(keyBucketProxy),
-            address(stakedBucketProxy)
+            )
         );
 
-        IStakingPool(address(poolProxy)).initShares(
+        address esXaiBucketProxy = address(
+            new TransparentUpgradeableProxyImplementation(
+                bucketImplementation,
+                stakingPoolProxyAdmin,
+                ""
+            )
+        );
+
+        IStakingPool(poolProxy).initialize(
+            refereeAddress,
+            esXaiAddress,
+            msg.sender,
+            keyBucketProxy,
+            esXaiBucketProxy
+        );
+
+        IStakingPool(poolProxy).initShares(
             _ownerShare,
             _keyBucketShare,
             _stakedBucketShare
         );
 
-        IStakingPool(address(poolProxy)).updateMetadata(
+        IStakingPool(poolProxy).updateMetadata(
             _name,
             _description,
             _logo,
             _socials
         );
 
-        IBucketTracker(address(keyBucketProxy)).initialize(
-            address(poolProxy),
+        IBucketTracker(keyBucketProxy).initialize(
+            poolProxy,
             esXaiAddress,
             trackerNames[0],
             trackerSymbols[0],
             0
         );
-        IBucketTracker(address(stakedBucketProxy)).initialize(
-            address(poolProxy),
+        IBucketTracker(esXaiBucketProxy).initialize(
+            poolProxy,
             esXaiAddress,
             trackerNames[1],
             trackerSymbols[1],
             18
         );
 
-        stakingPools.push(address(poolProxy));
+        stakingPools.push(poolProxy);
 
-        esXai(esXaiAddress).addToWhitelist(address(poolProxy));
-        esXai(esXaiAddress).addToWhitelist(address(keyBucketProxy));
-        esXai(esXaiAddress).addToWhitelist(address(stakedBucketProxy));
+        esXai(esXaiAddress).addToWhitelist(poolProxy);
+        esXai(esXaiAddress).addToWhitelist(keyBucketProxy);
+        esXai(esXaiAddress).addToWhitelist(esXaiBucketProxy);
 
-        _stakeKeys(address(poolProxy), keyIds);
+        _stakeKeys(poolProxy, keyIds);
     }
 
     function updatePoolMetadata(
@@ -284,8 +290,13 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             interactedPoolsOfUser[msg.sender].push(pool);
         }
 
-		//get the pool owner poolOwner
-        Referee5(refereeAddress).stakeKeys(pool, IStakingPool(pool).getPoolOwner(), msg.sender, keyIds);
+        //get the pool owner poolOwner
+        Referee5(refereeAddress).stakeKeys(
+            pool,
+            IStakingPool(pool).getPoolOwner(),
+            msg.sender,
+            keyIds
+        );
         IStakingPool(pool).stakeKeys(msg.sender, keyIds);
 
         //TODO emit V2 event
@@ -303,7 +314,13 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         uint256 keysLength = keyIds.length;
         require(keysLength > 0, "Must at least unstake 1 key");
 
-        Referee5(refereeAddress).unstakeKeys(pool, IStakingPool(pool).getPoolOwner(), msg.sender, keyIds, IStakingPool(pool).getStakedKeysCountForUser(msg.sender));
+        Referee5(refereeAddress).unstakeKeys(
+            pool,
+            IStakingPool(pool).getPoolOwner(),
+            msg.sender,
+            keyIds,
+            IStakingPool(pool).getStakedKeysCountForUser(msg.sender)
+        );
         IStakingPool(pool).unstakeKeys(msg.sender, keyIds);
 
         (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
