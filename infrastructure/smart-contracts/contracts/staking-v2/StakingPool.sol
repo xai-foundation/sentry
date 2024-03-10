@@ -103,10 +103,13 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
             10_000;
 
         if (amountForStaked > 0) {
+            //If there are no esXai stakers we will distribute to keys and owner proportional to their shares
             if (esXaiStakeBucket.totalSupply() == 0) {
                 amountForKeys +=
                     (amountForStaked * keyBucketShare) /
                     (keyBucketShare + ownerShare);
+
+                amountForStaked = 0;
             } else {
                 esXai(esXaiAddress).transfer(
                     address(esXaiStakeBucket),
