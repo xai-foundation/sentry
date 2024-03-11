@@ -47,12 +47,33 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     mapping(address => mapping(address => uint256))
         public userToInteractedPoolIds;
 
+    // mapping userAddress to unstake requests, unstake has a delay of 30 days
+    mapping(address => UnstakeRequest[]) private unstakeRequests;
+
+    // mapping userAddress to poolAddress to requested unstake key amount
+    mapping(address => mapping(address => uint256))
+        private userRequestedUnstakeKeyAmount;
+
+    // mapping userAddress to poolAddress to requested unstake esXai amount
+    mapping(address => mapping(address => uint256))
+        private userRequestedUnstakeEsXaiAmount;
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
     uint256[500] private __gap;
+
+    struct UnstakeRequest {
+        bool open;
+        bool isKeyRequest;
+        address poolAddress;
+        uint256 amount;
+        uint256 startTime;
+        uint256 endTime;
+        uint256[5] __gap;
+    }
 
     event StakingEnabled();
     event UpdatePoolProxyAdmin(address previousAdmin, address newAdmin);
@@ -93,6 +114,14 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         uint256 totalKeysStaked
     );
     event ClaimFromPool(address indexed user, address indexed pool);
+
+    event UnstakeRequestStarted(
+        address indexed user,
+        address indexed pool,
+        uint256 indexed index,
+        uint256 amount,
+        bool isKey
+    );
 
     function initialize(
         address _refereeAddress,
@@ -308,7 +337,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             msg.sender,
             pool,
             keyIds.length,
-            IStakingPool(pool).getStakedKeysCountForUser(msg.sender),
+            keyAmount + keyIds.length,
             IStakingPool(pool).getStakedKeysCount()
         );
     }
@@ -320,10 +349,76 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         _stakeKeys(pool, keyIds);
     }
 
-    function unstakeKeys(address pool, uint256[] memory keyIds) external {
-        require(pool != address(0), "Invalid pool");
+    function createUnstakeKeyRequest(address pool, uint256 keyAmount) external {
+        require(keyAmount > 0, "Invalid Amount");
+        require(
+            IStakingPool(pool).getStakedKeysCountForUser(msg.sender) >=
+                keyAmount + userRequestedUnstakeKeyAmount[msg.sender][pool],
+            "Insufficient keys staked"
+        );
+
+        unstakeRequests[msg.sender].push(
+            UnstakeRequest(
+                true,
+                true,
+                pool,
+                keyAmount,
+                block.timestamp,
+                0,
+                [uint256(0), 0, 0, 0, 0]
+            )
+        );
+
+        userRequestedUnstakeKeyAmount[msg.sender][pool] += keyAmount;
+
+        emit UnstakeRequestStarted(
+            msg.sender,
+            pool,
+            unstakeRequests[msg.sender].length - 1,
+            keyAmount,
+            true
+        );
+    }
+
+    function createUnstakeEsXaiRequest(address pool, uint256 amount) external {
+        require(amount > 0, "Invalid Amount");
+        require(
+            IStakingPool(pool).getStakedAmounts(msg.sender) >=
+                amount + userRequestedUnstakeEsXaiAmount[msg.sender][pool],
+            "Insufficient esXai staked"
+        );
+
+        unstakeRequests[msg.sender].push(
+            UnstakeRequest(
+                true,
+                false,
+                pool,
+                amount,
+                block.timestamp,
+                0,
+                [uint256(0), 0, 0, 0, 0]
+            )
+        );
+        
+        userRequestedUnstakeEsXaiAmount[msg.sender][pool] += amount;
+
+        emit UnstakeRequestStarted(
+            msg.sender,
+            pool,
+            unstakeRequests[msg.sender].length - 1,
+            amount,
+            false
+        );
+    }
+
+    function unstakeKeys(uint256 unstakeRequetIndex, uint256[] memory keyIds) external {
+        UnstakeRequest storage request = unstakeRequests[msg.sender][unstakeRequetIndex];
+        address pool = request.poolAddress;
         uint256 keysLength = keyIds.length;
-        require(keysLength > 0, "Must at least unstake 1 key");
+        
+        require(request.open && request.isKeyRequest, "Invalid request");
+        require(block.timestamp >= request.startTime + 30 days, "Wait period not yet over");
+        require(keysLength > 0 && request.amount == keyIds.length, "Invalid key amount");
 
         Referee5(refereeAddress).unstakeKeys(
             pool,
@@ -346,18 +441,26 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             ] = interactedPoolsOfUser[msg.sender][userLength - 1];
             interactedPoolsOfUser[msg.sender].pop();
         }
+        
+        userRequestedUnstakeKeyAmount[msg.sender][pool] -= keyAmount;
+        request.open = false;
+        request.endTime = block.timestamp;
 
         emit UnstakeKeys(
             msg.sender,
             pool,
             keyIds.length,
-            IStakingPool(pool).getStakedKeysCountForUser(msg.sender),
+            keyAmount - keyIds.length,
             IStakingPool(pool).getStakedKeysCount()
         );
     }
 
-    function stakeEsXai(address pool, uint256 amount) external {
-        IStakingPool stakingPool = IStakingPool(pool);
+    function stakeEsXai(uint256 unstakeRequetIndex, uint256 amount) external {
+        UnstakeRequest storage request = unstakeRequests[msg.sender][unstakeRequetIndex];
+        address pool = request.poolAddress;
+        require(request.open && !request.isKeyRequest, "Invalid request");
+        require(block.timestamp >= request.startTime + 30 days, "Wait period not yet over");
+        require(amount > 0 && request.amount == amount, "Invalid esXai amount");
 
         (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
             pool,
@@ -370,11 +473,15 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             interactedPoolsOfUser[msg.sender].push(pool);
         }
 
-        Referee5(refereeAddress).stakeEsXai(address(stakingPool), amount);
+        Referee5(refereeAddress).stakeEsXai(pool, amount);
 
         esXai(esXaiAddress).transferFrom(msg.sender, address(this), amount);
 
-        stakingPool.stakeEsXai(msg.sender, amount);
+        IStakingPool(pool).stakeEsXai(msg.sender, amount);
+        
+        userRequestedUnstakeEsXaiAmount[msg.sender][pool] -= amount;
+        request.open = false;
+        request.endTime = block.timestamp;
 
         emit StakeEsXai(
             msg.sender,
@@ -386,23 +493,19 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function unstakeEsXai(address pool, uint256 amount) external {
-        IStakingPool stakingPool = IStakingPool(pool);
-
-        require(
-            stakingPool.getStakedAmounts(msg.sender) >= amount,
-            "Insufficient amount staked"
+        (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
+            pool,
+            msg.sender
         );
+
+        require(stakeAmount >= amount, "Insufficient amount staked");
 
         esXai(esXaiAddress).transfer(msg.sender, amount);
 
         Referee5(refereeAddress).unstakeEsXai(pool, amount);
 
-        stakingPool.unstakeEsXai(msg.sender, amount);
+        IStakingPool(pool).unstakeEsXai(msg.sender, amount);
 
-        (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
-            pool,
-            msg.sender
-        );
         if (stakeAmount == 0 && keyAmount == 0) {
             uint256 indexOfPool = userToInteractedPoolIds[msg.sender][pool];
             uint256 userLength = interactedPoolsOfUser[msg.sender].length;
@@ -412,11 +515,11 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             interactedPoolsOfUser[msg.sender].pop();
         }
 
-        emit StakeEsXai(
+        emit UnstakeEsXai(
             msg.sender,
             pool,
             amount,
-            stakeAmount + amount,
+            stakeAmount - amount,
             Referee5(refereeAddress).stakedAmounts(pool)
         );
     }
@@ -454,5 +557,26 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         uint256 index
     ) external view returns (address) {
         return interactedPoolsOfUser[user][index];
+    }
+
+    function getUnstakeRequest(
+        address account,
+        uint256 index
+    ) public view returns (UnstakeRequest memory) {
+        return unstakeRequests[account][index];
+    }
+
+    function getUnstakeRequestCount(
+        address account
+    ) public view returns (uint256) {
+        return unstakeRequests[account].length;
+    }
+
+    function getUserRequestedUnstakeAmounts(
+        address user,
+        address pool
+    ) external view returns (uint256 keyAmount, uint256 esXaiAmount) {
+        keyAmount = userRequestedUnstakeKeyAmount[user][pool];
+        esXaiAmount = userRequestedUnstakeEsXaiAmount[user][pool];
     }
 }
