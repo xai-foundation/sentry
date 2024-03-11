@@ -3,10 +3,11 @@ version: '3'
 services:
   nitro-node:
     container_name: arb1-nitro-node
-    image: offchainlabs/nitro-node:v2.2.2-8f33fea
+    image: offchainlabs/nitro-node:v2.3.1-26fad6f
     command:
       --init.url="https://snapshot.arbitrum.foundation/arb1/nitro-pruned.tar"
       --parent-chain.connection.url=${ETH_RPC_URL}
+      --parent-chain.blob-client.beacon-url=${ETH_RPC_URL}
       --chain.id=42161
       --http.api=net,web3,eth
       --http.corsdomain=*
@@ -20,7 +21,7 @@ services:
       - 8.8.4.4
 
   xai-node:
-    image: offchainlabs/nitro-node:v2.3.0-3e14543
+    image: offchainlabs/nitro-node:v2.3.1-26fad6f
     container_name: xai-public-node
     command:
       - --conf.file=/home/user/node-config/config.json
