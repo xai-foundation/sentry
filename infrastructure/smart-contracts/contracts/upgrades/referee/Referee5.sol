@@ -493,7 +493,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
 
 		for (uint256 i = 0; i < keyLength; i++) {
             uint256 _nodeLicenseId = _nodeLicenseIds[i];
-            if(!submissions[_challengeId][_nodeLicenseId].submitted){
+            if (!submissions[_challengeId][_nodeLicenseId].submitted) {
                 _submitAssertion(_nodeLicenseId, _challengeId, _confirmData);
             }
 		}
