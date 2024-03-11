@@ -1,0 +1,129 @@
+{
+    "chain": {
+        "id": 47279324479,
+        "info-json": [
+            {
+                "chain-id": 47279324479,
+                "parent-chain-id": 421613,
+                "chain-name": "Xai Orbit Testnet",
+                "chain-config": {
+                    "chainId": 47279324479,
+                    "homesteadBlock": 0,
+                    "daoForkBlock": null,
+                    "daoForkSupport": true,
+                    "eip150Block": 0,
+                    "eip150Hash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    "eip155Block": 0,
+                    "eip158Block": 0,
+                    "byzantiumBlock": 0,
+                    "constantinopleBlock": 0,
+                    "petersburgBlock": 0,
+                    "istanbulBlock": 0,
+                    "muirGlacierBlock": 0,
+                    "berlinBlock": 0,
+                    "londonBlock": 0,
+                    "clique": {
+                        "period": 0,
+                        "epoch": 0
+                    },
+                    "arbitrum": {
+                        "EnableArbOS": true,
+                        "AllowDebugPrecompiles": false,
+                        "DataAvailabilityCommittee": true,
+                        "InitialArbOSVersion": 10,
+                        "InitialChainOwner": "0x9eA24417Ee7722e7EFaf87d2D68d4bC6b41231F7",
+                        "GenesisBlockNum": 0
+                    }
+                },
+                "rollup": {
+                    "bridge": "0xf958e56d431eA78C7444Cf6A6184Af732Ae6a8A3",
+                    "inbox": "0x8b842ad88AAffD63d52EC54f6428fb7ff83060a8",
+                    "sequencer-inbox": "0x5fD0cCc5D31748A44b43cf8DFBFA0FAA32665464",
+                    "rollup": "0x082742561295f6e1b43c4f5d1e2d52d7FfE082f1",
+                    "validator-utils": "0x32E35dBDCC3558F6A0f7c3af6B13380FC3E6ce97",
+                    "validator-wallet-creator": "0x237aed14AEA28032B12A389590875Ed8d1D12811",
+                    "deployed-at": 32449497
+                }
+            }
+        ],
+        "name": "Xai Orbit Testnet"
+    },
+    "conf": {
+        "env-prefix": "NITRO"
+    },
+    "http": {
+        "addr": "0.0.0.0",
+        "api": [
+            "eth",
+            "net",
+            "web3",
+            "arb",
+            "debug"
+        ],
+        "corsdomain": "*",
+        "port": 8547,
+        "rpcprefix": "/rpc",
+        "vhosts": "*"
+    },
+    "log-type": "json",
+    "metrics": true,
+    "metrics-server": {
+        "addr": "0.0.0.0",
+        "port": 6070
+    },
+    "node": {
+        "data-availability": {
+            "enable": true,
+            "parent-chain-node-url": "https://icy-thrilling-frog.arbitrum-goerli.quiknode.pro/4d27f3253823ff8ec0afbabc49cbe924bfc9acdb/",
+            "request-timeout": "5s",
+            "rest-aggregator": {
+                "enable": true,
+                "urls": [
+                    "https://testnet-das-mirror.xai-chain.net/"
+                ],
+                "wait-before-try-next": "2s"
+            },
+            "sequencer-inbox-address": "0x5fD0cCc5D31748A44b43cf8DFBFA0FAA32665464"
+        },
+        "feed": {
+            "input": {
+                "reconnect-initial-backoff": "50ms",
+                "reconnect-maximum-backoff": "800ms",
+                "timeout": "10s",
+                "url": "wss://testnet.xai-chain.net/feed"
+            }
+        }
+    },
+    "parent-chain": {
+        "connection": {
+            "url": "https://icy-thrilling-frog.arbitrum-goerli.quiknode.pro/4d27f3253823ff8ec0afbabc49cbe924bfc9acdb/"
+        },
+        "id": 421613
+    },
+    "execution": {
+        "forwarding-target": "https://xai-chain.net/rpc",
+        "caching": {
+            "archive": true
+        }
+    },
+    "persistent": {
+        "chain": "/home/user/data/"
+    },
+    "pprof": true,
+    "pprof-cfg": {
+        "addr": "0.0.0.0",
+        "port": "6071"
+    },
+    "ws": {
+        "addr": "0.0.0.0",
+        "api": [
+            "net",
+            "web3",
+            "eth",
+            "arb"
+        ],
+        "port": 8548,
+        "rpcprefix": "/ws",
+        "origins": "*"
+    }
+}
