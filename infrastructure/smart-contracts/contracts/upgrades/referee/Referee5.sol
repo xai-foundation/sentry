@@ -156,23 +156,6 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         require(msg.sender == poolFactoryAddress, "Poolfactory required");
         _;
     }
-    
-    modifier checkChallengeRewardValididty(uint256 _challengeId) {
-        Challenge memory challengeToClaimFor  = challenges[_challengeId];
-        // check the challenge exists by checking the timestamp is not 0
-        require(challengeToClaimFor.createdTimestamp != 0, "The Challenge does not exist for this id");
-        // Check if the challenge is closed for submissions
-        require(!challengeToClaimFor.openForSubmissions, "Challenge is still open for submissions");
-        // expire the challenge if 180 days old
-        if (block.timestamp >= challengeToClaimFor.createdTimestamp + 180 days) {
-            expireChallengeRewards(_challengeId);
-            return;
-        }
-        // Check if the challenge rewards have expired
-        require(!challengeToClaimFor.expiredForRewarding, "Challenge rewards have expired");
-
-        _;
-    }
 
     function initialize(
         address _poolFactoryAddress
@@ -516,10 +499,18 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
 		}
 	}
     
-    function _getStakedAmount(uint256 _nodeLicenseId, address licenseOwner) internal returns(uint256 stakedAmount) {
+    function _submitAssertion(uint256 _nodeLicenseId, uint256 _challengeId, bytes memory _confirmData) internal {
+        
+        address licenseOwner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
+        require(
+            licenseOwner == msg.sender ||
+            isApprovedForOperator(licenseOwner, msg.sender),
+            "Caller must be the owner of the NodeLicense or an approved operator"
+        );
+
         // Support v1 (no pools) & v2 (pools)
         address assignedPool = assignedKeyToPool[_nodeLicenseId];
-		stakedAmount = stakedAmounts[assignedPool];
+		uint256 stakedAmount = stakedAmounts[assignedPool];
 		if (assignedPool == address(0)) {
 			stakedAmount = stakedAmounts[licenseOwner];
 			uint256 ownerUnstakedAmount = NodeLicense(nodeLicenseAddress).balanceOf(licenseOwner) - assignedKeysOfUserCount[licenseOwner];
@@ -531,18 +522,6 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
 				stakedAmount = assignedKeysToPoolCount[assignedPool] * maxStakeAmountPerLicense;
 			}
 		}
-    }
-
-    function _submitAssertion(uint256 _nodeLicenseId, uint256 _challengeId, bytes memory _confirmData) internal {
-        
-        address licenseOwner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
-        require(
-            licenseOwner == msg.sender ||
-            isApprovedForOperator(licenseOwner, msg.sender),
-            "Caller must be the owner of the NodeLicense or an approved operator"
-        );
-
-		uint256 stakedAmount = _getStakedAmount(_nodeLicenseId, licenseOwner);
 
         // Check the user is actually eligible for receiving a reward, do not count them in numberOfEligibleClaimers if they are not able to receive a reward
         (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _getBoostFactor(stakedAmount), _confirmData, challenges[_challengeId].challengerSignedHash);
@@ -578,14 +557,25 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     function claimReward(
         uint256 _nodeLicenseId,
         uint256 _challengeId
-    ) public checkChallengeRewardValididty(_challengeId) {
-        Challenge memory challangeToClaimFor  = challenges[_challengeId];
+    ) public {
+        Challenge memory challengeToClaimFor  = challenges[_challengeId];
+        // check the challenge exists by checking the timestamp is not 0
+        require(challengeToClaimFor.createdTimestamp != 0, "The Challenge does not exist for this id");
+        // Check if the challenge is closed for submissions
+        require(!challengeToClaimFor.openForSubmissions, "Challenge is still open for submissions");
+        // expire the challenge if 180 days old
+        if (block.timestamp >= challengeToClaimFor.createdTimestamp + 180 days) {
+            expireChallengeRewards(_challengeId);
+            return;
+        }
+        // Check if the challenge rewards have expired
+        require(!challengeToClaimFor.expiredForRewarding, "Challenge rewards have expired");
 
         // Get the minting timestamp of the nodeLicenseId
         uint256 mintTimestamp = NodeLicense(nodeLicenseAddress).getMintTimestamp(_nodeLicenseId);
 
         // Check if the nodeLicenseId is eligible for a payout
-        require(mintTimestamp < challangeToClaimFor.createdTimestamp, "NodeLicense is not eligible for a payout on this challenge, it was minted after it started");
+        require(mintTimestamp < challengeToClaimFor.createdTimestamp, "NodeLicense is not eligible for a payout on this challenge, it was minted after it started");
 
         // Look up the submission
         Submission memory submission = submissions[_challengeId][_nodeLicenseId];
@@ -600,7 +590,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         require(submission.eligibleForPayout, "Not valid for a payout");
 
         // Take the amount that was allocated for the rewards and divide it by the number of claimers
-        uint256 reward = challangeToClaimFor.rewardAmountForClaimers / challangeToClaimFor.numberOfEligibleClaimers;
+        uint256 reward = challengeToClaimFor.rewardAmountForClaimers / challengeToClaimFor.numberOfEligibleClaimers;
 
         // mark the submission as claimed
         submissions[_challengeId][_nodeLicenseId].claimed = true;
@@ -624,9 +614,22 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
 	function claimMultipleRewards(
 		uint256[] memory _nodeLicenseIds,
 		uint256 _challengeId
-	) external checkChallengeRewardValididty(_challengeId) {
-		Challenge memory challangeToClaimFor  = challenges[_challengeId];
-        uint256 reward = challangeToClaimFor.rewardAmountForClaimers / challangeToClaimFor.numberOfEligibleClaimers;
+	) external {
+        
+        Challenge memory challengeToClaimFor  = challenges[_challengeId];
+        // check the challenge exists by checking the timestamp is not 0
+        require(challengeToClaimFor.createdTimestamp != 0, "The Challenge does not exist for this id");
+        // Check if the challenge is closed for submissions
+        require(!challengeToClaimFor.openForSubmissions, "Challenge is still open for submissions");
+        // expire the challenge if 180 days old
+        if (block.timestamp >= challengeToClaimFor.createdTimestamp + 180 days) {
+            expireChallengeRewards(_challengeId);
+            return;
+        }
+        // Check if the challenge rewards have expired
+        require(!challengeToClaimFor.expiredForRewarding, "Challenge rewards have expired");
+
+        uint256 reward = challengeToClaimFor.rewardAmountForClaimers / challengeToClaimFor.numberOfEligibleClaimers;
         uint256 keyLength = _nodeLicenseIds.length;
         uint256 claimCount = 0;
 
@@ -640,7 +643,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             // Check if the nodeLicenseId is eligible for a payout
             if(
                 isKycApproved(owner) &&
-                mintTimestamp < challangeToClaimFor.createdTimestamp && 
+                mintTimestamp < challengeToClaimFor.createdTimestamp && 
                 !submission.claimed &&
                 submission.eligibleForPayout
             ) {
@@ -663,13 +666,6 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         _allocatedTokens -= claimCount * reward;
         emit BatchRewardsClaimed(_challengeId, claimCount * reward, claimCount);
 	}
-
-    function _executeClaim(
-        uint256 _nodeLicenseId,
-        uint256 _challengeId
-    ) internal {
-        
-    }
 
     /**
      * @notice Creates an assertion hash and determines if the hash payout is below the threshold.
