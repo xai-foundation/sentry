@@ -136,7 +136,13 @@ contract BucketTracker is IBucketTracker {
     event DividendWithdrawn(address indexed to, uint256 weiAmount);
     event Claim(address indexed account, uint256 amount);
 
-    function initialize(address _trackerOwner, address _esXaiAddress, string memory __name, string memory __symbol, uint256 __decimals) external {
+    function initialize(
+        address _trackerOwner,
+        address _esXaiAddress,
+        string memory __name,
+        string memory __symbol,
+        uint256 __decimals
+    ) external {
         require(trackerOwner == address(0), "Invalid init");
         require(_trackerOwner != address(0), "Owner cannot be 0 address");
         require(_esXaiAddress != address(0), "EsXai cannot be 0 address");
@@ -151,15 +157,15 @@ contract BucketTracker is IBucketTracker {
         require(trackerOwner == msg.sender, "Unauthorized");
         _;
     }
-    
+
     function name() public view returns (string memory) {
         return _name;
     }
-    
+
     function symbol() public view returns (string memory) {
         return _symbol;
     }
-    
+
     function decimals() public view returns (uint256) {
         return _decimals;
     }
@@ -258,7 +264,7 @@ contract BucketTracker is IBucketTracker {
 
         magnifiedDividendCorrections[account] += (magnifiedDividendPerShare *
             value).toInt256Safe();
-            
+
         emit Transfer(account, address(0), value);
     }
 
@@ -298,11 +304,7 @@ contract BucketTracker is IBucketTracker {
         address account,
         uint256 newBalance
     ) external onlyAdmin {
-        if (newBalance > 0) {
-            _setBalance(account, newBalance);
-        } else {
-            _setBalance(account, 0);
-        }
+        _setBalance(account, newBalance);
         processAccount(account);
     }
 
