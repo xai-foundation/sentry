@@ -518,6 +518,23 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         emit AssertionSubmitted(_challengeId, _nodeLicenseId);
     }
 
+	function submitMultipleAssertions(
+		uint256[] memory _nodeLicenseIds,
+		uint256 _challengeId,
+		bytes memory _confirmData
+	) external {
+		require(challenges[_challengeId].openForSubmissions, "Challenge is not open for submissions");
+
+		if (keccak256(abi.encodePacked(_confirmData)) != keccak256(abi.encodePacked(challenges[_challengeId].assertionStateRootOrConfirmData))) {
+//			emit InvalidSubmission(_challengeId, _nodeLicenseId);
+			return;
+		}
+
+		for (uint256 i = 0; i < _nodeLicenseIds.length; i++) {
+			submitAssertionToChallenge(_nodeLicenseIds[i], _challengeId, _confirmData);
+		}
+	}
+
     /**
      * @notice Claims a reward for a successful assertion.
      * @dev This function looks up the submission, checks if the challenge is closed for submissions, and if valid for a payout, sends a reward.
@@ -528,7 +545,6 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 _nodeLicenseId,
         uint256 _challengeId
     ) public {
-
         Challenge memory challangeToClaimFor  = challenges[_challengeId];
 
         // check the challenge exists by checking the timestamp is not 0
@@ -597,6 +613,17 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         // unallocate the tokens that have now been converted to esXai
         _allocatedTokens -= reward;
     }
+
+	function claimMultipleRewards(
+		uint256[] memory _nodeLicenseIds,
+		uint256 _challengeId
+	) external {
+		Challenge memory challangeToClaimFor  = challenges[_challengeId];
+
+		for (uint256 i = 0; i < _nodeLicenseIds.length; i++) {
+			claimReward(_nodeLicenseIds[i], _challengeId);
+		}
+	}
 
     /**
      * @notice Creates an assertion hash and determines if the hash payout is below the threshold.
