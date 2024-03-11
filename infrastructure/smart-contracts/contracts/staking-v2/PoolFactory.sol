@@ -70,8 +70,8 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         bool isKeyRequest;
         address poolAddress;
         uint256 amount;
-        uint256 startTime;
-        uint256 endTime;
+        uint256 lockTime;
+        uint256 completeTime;
         uint256[5] __gap;
     }
 
@@ -363,7 +363,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
                 true,
                 pool,
                 keyAmount,
-                block.timestamp,
+                block.timestamp + 30 days,
                 0,
                 [uint256(0), 0, 0, 0, 0]
             )
@@ -394,7 +394,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
                 false,
                 pool,
                 amount,
-                block.timestamp,
+                block.timestamp + 30 days,
                 0,
                 [uint256(0), 0, 0, 0, 0]
             )
@@ -417,7 +417,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         uint256 keysLength = keyIds.length;
         
         require(request.open && request.isKeyRequest, "Invalid request");
-        require(block.timestamp >= request.startTime + 30 days, "Wait period not yet over");
+        require(block.timestamp >= request.lockTime, "Wait period not yet over");
         require(keysLength > 0 && request.amount == keyIds.length, "Invalid key amount");
 
         Referee5(refereeAddress).unstakeKeys(
@@ -444,7 +444,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         
         userRequestedUnstakeKeyAmount[msg.sender][pool] -= keyAmount;
         request.open = false;
-        request.endTime = block.timestamp;
+        request.completeTime = block.timestamp;
 
         emit UnstakeKeys(
             msg.sender,
@@ -459,7 +459,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         UnstakeRequest storage request = unstakeRequests[msg.sender][unstakeRequetIndex];
         address pool = request.poolAddress;
         require(request.open && !request.isKeyRequest, "Invalid request");
-        require(block.timestamp >= request.startTime + 30 days, "Wait period not yet over");
+        require(block.timestamp >= request.lockTime, "Wait period not yet over");
         require(amount > 0 && request.amount == amount, "Invalid esXai amount");
 
         (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
@@ -481,7 +481,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         
         userRequestedUnstakeEsXaiAmount[msg.sender][pool] -= amount;
         request.open = false;
-        request.endTime = block.timestamp;
+        request.completeTime = block.timestamp;
 
         emit StakeEsXai(
             msg.sender,
