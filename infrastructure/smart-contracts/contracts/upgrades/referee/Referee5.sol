@@ -760,7 +760,6 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         }
         return stakeAmountBoostFactors[length - 1];
     }
-
     
     /**
      * @notice Enables staking on the Referee.
@@ -846,34 +845,6 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     /**
-     * @dev Looks up maximum allowed staking amount of esXai based on number of NodeLicenses.
-     * @param numLicenses The number of NodeLicenses of the owner.
-     * @return The maximum allowed staking amount of esXai.
-     */
-//    function getMaxStakeAmount(uint256 numLicenses) public view returns (uint256) {
-//        return maxStakeAmountPerLicense * numLicenses;
-//    }
-    
-    /**
-     * @dev Looks up payout boostFactor based on the staking tier.
-     * @param stakedAmount The staked amount.
-     * @return The payout chance boostFactor. 2 for double the chance.
-     */
-//    function getBoostFactor(uint256 stakedAmount) external view returns (uint256) {
-//        return _getBoostFactor(stakedAmount);
-//    }
-
-    /**
-     * @dev Looks up payout boostFactor based on the staking tier for a specific license key.
-     * @param _nodeLicenseId The Node License Key Id.
-     * @return The payout chance boostFactor.
-     */
-//    function getBoostFactorForKeyId(uint256 _nodeLicenseId) external view returns (uint256) {
-//        address licenseOwner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
-//        return _getBoostFactor(stakedAmounts[licenseOwner]);
-//    }
-
-    /**
      * @dev Looks up payout boostFactor based on the staking tier for a staker wallet.
      * @param staker The address of the staker or pool.
      * @return The payout chance boostFactor.
@@ -881,15 +852,6 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     function getBoostFactorForStaker(address staker) external view returns (uint256) {
         return _getBoostFactor(stakedAmounts[staker]);
     }
-
-    /**
-     * @dev Looks up maximum allowed staking amount of esXai based on number of NodeLicenses.
-     * @param numLicenses The number of NodeLicenses of the owner.
-     * @return The maximum allowed staking amount of esXai.
-     */
-//    function getMaxStakeAmount(uint256 numLicenses) external view returns (uint256) {
-//        return _getMaxStakeAmount(numLicenses);
-//    }
 
     /**
      * @dev Function that lets a user unstake V1 esXai that have previously been staked.
@@ -950,7 +912,6 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function stakeEsXai(address pool, uint256 amount) external onlyPoolFactory {
-//        uint256 maxStakedAmount = getMaxStakeAmount(assignedKeysToPoolCount[pool]);
         uint256 maxStakedAmount = maxStakeAmountPerLicense * assignedKeysToPoolCount[pool];
         require(stakedAmounts[pool] + amount <= maxStakedAmount, "49");
         stakedAmounts[pool] += amount;
