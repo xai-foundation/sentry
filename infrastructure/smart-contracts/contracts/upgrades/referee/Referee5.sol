@@ -601,19 +601,19 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         // increment the amount claimed on the challenge
         challenges[_challengeId].amountClaimedByClaimers += reward;
 
-        address receiver = assignedKeyToPool[_nodeLicenseId];
-        if(receiver == address(0)){
-            receiver = owner;
+        address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
+        if(rewardReceiver == address(0)){
+            rewardReceiver = owner;
         }
 
         // Mint the reward to the owner of the nodeLicense
-        esXai(esXaiAddress).mint(receiver, reward);
+        esXai(esXaiAddress).mint(rewardReceiver, reward);
 
         // Emit the RewardsClaimed event
         emit RewardsClaimed(_challengeId, reward);
 
         // Increment the total claims of this address
-        _lifetimeClaims[receiver] += reward;
+        _lifetimeClaims[rewardReceiver] += reward;
 
         // unallocate the tokens that have now been converted to esXai
         _allocatedTokens -= reward;
@@ -621,7 +621,8 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
 
 	function claimMultipleRewards(
 		uint256[] memory _nodeLicenseIds,
-		uint256 _challengeId
+		uint256 _challengeId,
+        address claimForAddressInBatch
 	) external {
         
         Challenge memory challengeToClaimFor  = challenges[_challengeId];
@@ -641,6 +642,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 reward = challengeToClaimFor.rewardAmountForClaimers / challengeToClaimFor.numberOfEligibleClaimers;
         uint256 keyLength = _nodeLicenseIds.length;
         uint256 claimCount = 0;
+        uint256 poolMintAmount = 0;
 
 		for (uint256 i = 0; i < keyLength; i++) {
             uint256 _nodeLicenseId = _nodeLicenseIds[i];
@@ -662,20 +664,28 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
                 // increment the amount claimed on the challenge
                 challenges[_challengeId].amountClaimedByClaimers += reward;
                 
-                address receiver = assignedKeyToPool[_nodeLicenseId];
-                if(receiver == address(0)){
-                    receiver = owner;
+                address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
+                if(rewardReceiver == address(0)){
+                    rewardReceiver = owner;
                 }
 
-                // Mint the reward to the owner of the nodeLicense
-                esXai(esXaiAddress).mint(owner, reward);
-
-                // Increment the total claims of this address
-                _lifetimeClaims[owner] += reward;
+                //If we have set the poolAddress we will only claim if the license is staked to that pool
+                if(claimForAddressInBatch != address(0) && rewardReceiver == claimForAddressInBatch){
+                    poolMintAmount += reward;
+                }else{
+                    // Mint the reward to the owner of the nodeLicense
+                    esXai(esXaiAddress).mint(rewardReceiver, reward);
+                    _lifetimeClaims[rewardReceiver] += reward;
+                }
 
                 claimCount++;
             }
 		}
+
+        if(poolMintAmount > 0){
+            esXai(esXaiAddress).mint(claimForAddressInBatch, poolMintAmount);
+            _lifetimeClaims[claimForAddressInBatch] += poolMintAmount;
+        }
         
         _allocatedTokens -= claimCount * reward;
         emit BatchRewardsClaimed(_challengeId, claimCount * reward, claimCount);
