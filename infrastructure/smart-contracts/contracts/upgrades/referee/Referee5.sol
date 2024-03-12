@@ -97,12 +97,15 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping for amount of assigned keys of a user
     mapping(address => uint256) public assignedKeysOfUserCount;
 
+    // Mapping for user to pool to count of pools from owner
+    mapping(address => mapping(address => uint256)) public userToPoolsOfOwnerCount;
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[490] private __gap;
+    uint256[489] private __gap;
 
     // Struct for the submissions
     struct Submission {
@@ -598,14 +601,19 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         // increment the amount claimed on the challenge
         challenges[_challengeId].amountClaimedByClaimers += reward;
 
+        address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
+        if(rewardReceiver == address(0)){
+            rewardReceiver = owner;
+        }
+
         // Mint the reward to the owner of the nodeLicense
-        esXai(esXaiAddress).mint(owner, reward);
+        esXai(esXaiAddress).mint(rewardReceiver, reward);
 
         // Emit the RewardsClaimed event
         emit RewardsClaimed(_challengeId, reward);
 
         // Increment the total claims of this address
-        _lifetimeClaims[owner] += reward;
+        _lifetimeClaims[rewardReceiver] += reward;
 
         // unallocate the tokens that have now been converted to esXai
         _allocatedTokens -= reward;
@@ -613,7 +621,8 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
 
 	function claimMultipleRewards(
 		uint256[] memory _nodeLicenseIds,
-		uint256 _challengeId
+		uint256 _challengeId,
+        address claimForAddressInBatch
 	) external {
         
         Challenge memory challengeToClaimFor  = challenges[_challengeId];
@@ -633,6 +642,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 reward = challengeToClaimFor.rewardAmountForClaimers / challengeToClaimFor.numberOfEligibleClaimers;
         uint256 keyLength = _nodeLicenseIds.length;
         uint256 claimCount = 0;
+        uint256 poolMintAmount = 0;
 
 		for (uint256 i = 0; i < keyLength; i++) {
             uint256 _nodeLicenseId = _nodeLicenseIds[i];
@@ -653,16 +663,29 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
 
                 // increment the amount claimed on the challenge
                 challenges[_challengeId].amountClaimedByClaimers += reward;
+                
+                address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
+                if(rewardReceiver == address(0)){
+                    rewardReceiver = owner;
+                }
 
-                // Mint the reward to the owner of the nodeLicense
-                esXai(esXaiAddress).mint(owner, reward);
-
-                // Increment the total claims of this address
-                _lifetimeClaims[owner] += reward;
+                //If we have set the poolAddress we will only claim if the license is staked to that pool
+                if(claimForAddressInBatch != address(0) && rewardReceiver == claimForAddressInBatch){
+                    poolMintAmount += reward;
+                }else{
+                    // Mint the reward to the owner of the nodeLicense
+                    esXai(esXaiAddress).mint(rewardReceiver, reward);
+                    _lifetimeClaims[rewardReceiver] += reward;
+                }
 
                 claimCount++;
             }
 		}
+
+        if(poolMintAmount > 0){
+            esXai(esXaiAddress).mint(claimForAddressInBatch, poolMintAmount);
+            _lifetimeClaims[claimForAddressInBatch] += poolMintAmount;
+        }
         
         _allocatedTokens -= claimCount * reward;
         emit BatchRewardsClaimed(_challengeId, claimCount * reward, claimCount);
@@ -870,8 +893,8 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "43");
 
 		if (staker != poolOwner && !isApprovedForOperator(staker, poolOwner)) {
-			_operatorApprovals[staker].add(poolOwner);
-			_ownersForOperator[poolOwner].add(staker);
+            _operatorApprovals[staker].add(poolOwner);
+            _ownersForOperator[poolOwner].add(staker);
 		}
 
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
@@ -881,13 +904,17 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             require(nodeLicenseContract.ownerOf(keyId) == staker, "45");
             assignedKeyToPool[keyId] = pool;
         }
+
+        userToPoolsOfOwnerCount[msg.sender][poolOwner] += keysLength;
         assignedKeysToPoolCount[pool] += keysLength;
         assignedKeysOfUserCount[staker] += keysLength;
     }
 
-    function unstakeKeys(address pool, address poolOwner, address staker, uint256[] memory keyIds, uint256 userStakedKeyCount) external onlyPoolFactory {
+    function unstakeKeys(address pool, address poolOwner, address staker, uint256[] memory keyIds) external onlyPoolFactory {
         uint256 keysLength = keyIds.length;
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
+        
+        userToPoolsOfOwnerCount[msg.sender][poolOwner] -= keysLength;
 
         if (staker == poolOwner) {
             require(
@@ -895,7 +922,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
                 "46"
             );
         } else {
-			if (userStakedKeyCount - keysLength < 1) {
+			if (userToPoolsOfOwnerCount[msg.sender][poolOwner] == 0) {
 				_operatorApprovals[staker].remove(poolOwner);
 				_ownersForOperator[poolOwner].remove(staker);
 			}
