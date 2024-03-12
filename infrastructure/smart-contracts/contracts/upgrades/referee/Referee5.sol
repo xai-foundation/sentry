@@ -183,7 +183,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         isCheckingAssertions = !isCheckingAssertions;
         emit AssertionCheckingToggled(isCheckingAssertions);
     }
-
+	
     /**
      * @notice Sets the challengerPublicKey.
      * @param _challengerPublicKey The public key of the challenger.
@@ -665,14 +665,14 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
                 challenges[_challengeId].amountClaimedByClaimers += reward;
                 
                 address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
-                if(rewardReceiver == address(0)){
+                if (rewardReceiver == address(0)) {
                     rewardReceiver = owner;
                 }
 
                 //If we have set the poolAddress we will only claim if the license is staked to that pool
-                if(claimForAddressInBatch != address(0) && rewardReceiver == claimForAddressInBatch){
+                if (claimForAddressInBatch != address(0) && rewardReceiver == claimForAddressInBatch) {
                     poolMintAmount += reward;
-                }else{
+                } else {
                     // Mint the reward to the owner of the nodeLicense
                     esXai(esXaiAddress).mint(rewardReceiver, reward);
                     _lifetimeClaims[rewardReceiver] += reward;
@@ -682,7 +682,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             }
 		}
 
-        if(poolMintAmount > 0){
+        if (poolMintAmount > 0) {
             esXai(esXaiAddress).mint(claimForAddressInBatch, poolMintAmount);
             _lifetimeClaims[claimForAddressInBatch] += poolMintAmount;
         }
@@ -949,25 +949,25 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         stakedAmounts[pool] -= amount;
     }
 
-    function getUnstakedKeyIdsFromUser(address user, uint16 offset, uint16 pageLimit) external view returns (uint256[] memory unstakedKeyIds) {
-        uint256 userKeyBalance = NodeLicense(nodeLicenseAddress).balanceOf(user);
-        unstakedKeyIds = new uint256[](pageLimit);
-        uint256 currentIndexUnstaked = 0;
-        uint256 limit = offset + pageLimit;
-
-        for(uint256 i = offset; i < userKeyBalance && i < limit; i++){
-            uint256 keyId = NodeLicense(nodeLicenseAddress).tokenOfOwnerByIndex(user, i);
-            if(assignedKeyToPool[keyId] == address(0)){
-                unstakedKeyIds[currentIndexUnstaked] = keyId;
-                currentIndexUnstaked++;
-            }
-        }
-    }
-
-    function checkKeysAreStaked(uint256[] memory keyIds) external view returns (bool[] memory isStaked) {
-        isStaked = new bool[](keyIds.length);
-        for(uint256 i; i < keyIds.length; i++){
-            isStaked[i] = assignedKeyToPool[keyIds[i]] != address(0);
-        }
-    }
+//    function getUnstakedKeyIdsFromUser(address user, uint16 offset, uint16 pageLimit) external view returns (uint256[] memory unstakedKeyIds) {
+//        uint256 userKeyBalance = NodeLicense(nodeLicenseAddress).balanceOf(user);
+//        unstakedKeyIds = new uint256[](pageLimit);
+//        uint256 currentIndexUnstaked = 0;
+//        uint256 limit = offset + pageLimit;
+//
+//        for (uint256 i = offset; i < userKeyBalance && i < limit; i++){
+//            uint256 keyId = NodeLicense(nodeLicenseAddress).tokenOfOwnerByIndex(user, i);
+//            if (assignedKeyToPool[keyId] == address(0)) {
+//                unstakedKeyIds[currentIndexUnstaked] = keyId;
+//                currentIndexUnstaked++;
+//            }
+//        }
+//    }
+//
+//    function checkKeysAreStaked(uint256[] memory keyIds) external view returns (bool[] memory isStaked) {
+//        isStaked = new bool[](keyIds.length);
+//        for (uint256 i; i < keyIds.length; i++) {
+//            isStaked[i] = assignedKeyToPool[keyIds[i]] != address(0);
+//        }
+//    }
 }

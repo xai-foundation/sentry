@@ -578,4 +578,26 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         keyAmount = userRequestedUnstakeKeyAmount[user][pool];
         esXaiAmount = userRequestedUnstakeEsXaiAmount[user][pool];
     }
+
+	function getUnstakedKeyIdsFromUser(address user, uint16 offset, uint16 pageLimit) external view returns (uint256[] memory unstakedKeyIds) {
+		uint256 userKeyBalance = NodeLicense(nodeLicenseAddress).balanceOf(user);
+		unstakedKeyIds = new uint256[](pageLimit);
+		uint256 currentIndexUnstaked = 0;
+		uint256 limit = offset + pageLimit;
+
+		for (uint256 i = offset; i < userKeyBalance && i < limit; i++){
+			uint256 keyId = NodeLicense(nodeLicenseAddress).tokenOfOwnerByIndex(user, i);
+			if (Referee5(refereeAddress).assignedKeyToPool(keyId) == address(0)) {
+				unstakedKeyIds[currentIndexUnstaked] = keyId;
+				currentIndexUnstaked++;
+			}
+		}
+	}
+
+	function checkKeysAreStaked(uint256[] memory keyIds) external view returns (bool[] memory isStaked) {
+		isStaked = new bool[](keyIds.length);
+		for (uint256 i; i < keyIds.length; i++) {
+			isStaked[i] = Referee5(refereeAddress).assignedKeyToPool(keyIds[i]) != address(0);
+		}
+	}
 }
