@@ -424,8 +424,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             pool,
             IStakingPool(pool).getPoolOwner(),
             msg.sender,
-            keyIds,
-            IStakingPool(pool).getStakedKeysCountForUser(msg.sender)
+            keyIds
         );
         IStakingPool(pool).unstakeKeys(msg.sender, keyIds);
 
