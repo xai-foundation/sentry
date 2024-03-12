@@ -11,6 +11,58 @@ import "../../NodeLicense.sol";
 import "../../Xai.sol";
 import "../../esXai.sol";
 
+// Error Codes
+// 1: Only PoolFactory can call this function.
+// 2: Index out of bounds.
+// 3: Index out of bounds.
+// 4: Index out of bounds.
+// 5: There are no more tiers, we are too close to the end.
+// 6: There are no more accurate tiers.
+// 7: Rollup address must be set before submitting a challenge.
+// 8: Challenger public key must be set before submitting a challenge.
+// 9: This assertionId and rollupAddress combo has already been submitted.
+// 10: The _predecessorAssertionId is incorrect.
+// 11: The _confirmData is incorrect.
+// 12: The _assertionTimestamp did not match the block this assertion was created at.
+// 13: Challenge with this id has not been created.
+// 14: Challenge is not open for submissions.
+// 15: _nodeLicenseId has already been submitted for this challenge.
+// 16: Challenge is not open for submissions.
+// 17: Caller must be the owner of the NodeLicense or an approved operator.
+// 18: The Challenge does not exist for this id.
+// 19: Challenge is still open for submissions.
+// 20: Challenge rewards have expired.
+// 21: NodeLicense is not eligible for a payout on this challenge, it was minted after it started.
+// 22: Owner of the NodeLicense is not KYC'd.
+// 23: This submission has already been claimed.
+// 24: Not valid for a payout.
+// 25: The Challenge does not exist for this id.
+// 26: Challenge is still open for submissions.
+// 27: Challenge rewards have expired.
+// 28: The Challenge does not exist for this id.
+// 29: Challenge is not old enough to expire rewards.
+// 30: The challenge is already expired.
+// 31: Invalid max amount.
+// 32: Invalid max amount.
+// 33: Invalid boost factor.
+// 34: Threshold needs to be monotonically increasing.
+// 35: Threshold needs to be monotonically increasing.
+// 36: Threshold needs to be monotonically increasing.
+// 37: Invalid boost factor.
+// 38: Threshold needs to be monotonically increasing.
+// 39: Cannot remove last tier.
+// 40: Index out of bounds.
+// 41: Insufficient amount staked.
+// 42: Must complete KYC.
+// 43: Maximum staking amount exceeded.
+// 44: Key already assigned.
+// 45: Not owner of key.
+// 46: Pool owner needs at least 1 staked key.
+// 47: Key not assigned to pool.
+// 48: Not owner of key.
+// 49: Maximum staking amount exceeded.
+// 50: Invalid amount.
+
 contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
