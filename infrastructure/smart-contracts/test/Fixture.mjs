@@ -10,6 +10,7 @@ import { esXaiTests } from "./esXai.mjs";
 import { GasSubsidyTests } from "./GasSubsidy.mjs";
 import { XaiGaslessClaimTests } from "./XaiGaslessClaim.mjs";
 import {CNYAirDropTests} from "./CNYAirDrop.mjs";
+import {StakingV2} from "./StakingV2.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -231,7 +232,8 @@ describe("Fixture Tests", function () {
     // describe("Xai", XaiTests(deployInfrastructure).bind(this));
     // describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
     // describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
-    describe("Referee", RefereeTests(deployInfrastructure).bind(this));
+    // describe("Referee", RefereeTests(deployInfrastructure).bind(this));
+    describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
     // describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
     // describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
 
