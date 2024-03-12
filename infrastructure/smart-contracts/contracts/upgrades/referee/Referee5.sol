@@ -97,12 +97,15 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping for amount of assigned keys of a user
     mapping(address => uint256) public assignedKeysOfUserCount;
 
+    // Mapping for user to pool to count of pools from owner
+    mapping(address => mapping(address => uint256)) public userToPoolsOfOwnerCount;
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[490] private __gap;
+    uint256[489] private __gap;
 
     // Struct for the submissions
     struct Submission {
@@ -598,14 +601,19 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         // increment the amount claimed on the challenge
         challenges[_challengeId].amountClaimedByClaimers += reward;
 
+        address receiver = assignedKeyToPool[_nodeLicenseId];
+        if(receiver == address(0)){
+            receiver = owner;
+        }
+
         // Mint the reward to the owner of the nodeLicense
-        esXai(esXaiAddress).mint(owner, reward);
+        esXai(esXaiAddress).mint(receiver, reward);
 
         // Emit the RewardsClaimed event
         emit RewardsClaimed(_challengeId, reward);
 
         // Increment the total claims of this address
-        _lifetimeClaims[owner] += reward;
+        _lifetimeClaims[receiver] += reward;
 
         // unallocate the tokens that have now been converted to esXai
         _allocatedTokens -= reward;
@@ -652,6 +660,11 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
 
                 // increment the amount claimed on the challenge
                 challenges[_challengeId].amountClaimedByClaimers += reward;
+                
+                address receiver = assignedKeyToPool[_nodeLicenseId];
+                if(receiver == address(0)){
+                    receiver = owner;
+                }
 
                 // Mint the reward to the owner of the nodeLicense
                 esXai(esXaiAddress).mint(owner, reward);
@@ -907,8 +920,8 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "Maximum staking amount exceeded");
 
 		if (staker != poolOwner && !isApprovedForOperator(staker, poolOwner)) {
-			_operatorApprovals[staker].add(poolOwner);
-			_ownersForOperator[poolOwner].add(staker);
+            _operatorApprovals[staker].add(poolOwner);
+            _ownersForOperator[poolOwner].add(staker);
 		}
 
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
@@ -918,13 +931,17 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             require(nodeLicenseContract.ownerOf(keyId) == staker, "Not owner of key");
             assignedKeyToPool[keyId] = pool;
         }
+
+        userToPoolsOfOwnerCount[msg.sender][poolOwner] += keysLength;
         assignedKeysToPoolCount[pool] += keysLength;
         assignedKeysOfUserCount[staker] += keysLength;
     }
 
-    function unstakeKeys(address pool, address poolOwner, address staker, uint256[] memory keyIds, uint256 userStakedKeyCount) external onlyPoolFactory {
+    function unstakeKeys(address pool, address poolOwner, address staker, uint256[] memory keyIds) external onlyPoolFactory {
         uint256 keysLength = keyIds.length;
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
+        
+        userToPoolsOfOwnerCount[msg.sender][poolOwner] -= keysLength;
 
         if (staker == poolOwner) {
             require(
@@ -932,7 +949,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
                 "Pool owner needs at least 1 staked key"
             );
         } else {
-			if (userStakedKeyCount - keysLength < 1) {
+			if (userToPoolsOfOwnerCount[msg.sender][poolOwner] == 0) {
 				_operatorApprovals[staker].remove(poolOwner);
 				_ownersForOperator[poolOwner].remove(staker);
 			}
