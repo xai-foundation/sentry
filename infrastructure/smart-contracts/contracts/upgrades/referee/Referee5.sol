@@ -97,8 +97,8 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping for amount of assigned keys of a user
     mapping(address => uint256) public assignedKeysOfUserCount;
 
-    // Mapping for user to pool to count of pools from owner
-    mapping(address => mapping(address => uint256)) public userToPoolsOfOwnerCount;
+    // Mapping for user address => pool owner address => amount of keys to track total keys staker has in all pools owned by the pool owner
+    mapping(address => mapping(address => uint256)) public stakerKeysToPoolOwner;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
@@ -529,10 +529,6 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         // Check the user is actually eligible for receiving a reward, do not count them in numberOfEligibleClaimers if they are not able to receive a reward
         (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _getBoostFactor(stakedAmount), _confirmData, challenges[_challengeId].challengerSignedHash);
 
-        // Needs to be allowed again - operators need to be able to submit even if they did not win, we had to add this because of a operator version missmatch
-        // // Require to win assertion for submission
-        // require(hashEligible, "Key is not eligible");
-
         // Store the assertionSubmission to a map
         submissions[_challengeId][_nodeLicenseId] = Submission({
             submitted: true,
@@ -905,7 +901,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             assignedKeyToPool[keyId] = pool;
         }
 
-        userToPoolsOfOwnerCount[msg.sender][poolOwner] += keysLength;
+		stakerKeysToPoolOwner[msg.sender][poolOwner] += keysLength;
         assignedKeysToPoolCount[pool] += keysLength;
         assignedKeysOfUserCount[staker] += keysLength;
     }
@@ -913,8 +909,8 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     function unstakeKeys(address pool, address poolOwner, address staker, uint256[] memory keyIds) external onlyPoolFactory {
         uint256 keysLength = keyIds.length;
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
-        
-        userToPoolsOfOwnerCount[msg.sender][poolOwner] -= keysLength;
+
+		stakerKeysToPoolOwner[msg.sender][poolOwner] -= keysLength;
 
         if (staker == poolOwner) {
             require(
@@ -922,7 +918,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
                 "46"
             );
         } else {
-			if (userToPoolsOfOwnerCount[msg.sender][poolOwner] == 0) {
+			if (stakerKeysToPoolOwner[msg.sender][poolOwner] == 0) {
 				_operatorApprovals[staker].remove(poolOwner);
 				_ownersForOperator[poolOwner].remove(staker);
 			}
