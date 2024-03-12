@@ -10,8 +10,6 @@ import "../../nitro-contracts/rollup/IRollupCore.sol";
 import "../../NodeLicense.sol";
 import "../../Xai.sol";
 import "../../esXai.sol";
-import "../../staking-v2/Utils.sol";
-import "../../staking-v2/TransparentUpgradable.sol";
 
 contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -99,12 +97,15 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping for amount of assigned keys of a user
     mapping(address => uint256) public assignedKeysOfUserCount;
 
+    // Mapping for user address => pool owner address => amount of keys to track total keys staker has in all pools owned by the pool owner
+    mapping(address => mapping(address => uint256)) public stakerKeysToPoolOwner;
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[490] private __gap;
+    uint256[489] private __gap;
 
     // Struct for the submissions
     struct Submission {
@@ -144,7 +145,9 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     event Approval(address indexed owner, address indexed operator, bool approved);
     event KycStatusChanged(address indexed wallet, bool isKycApproved);
     event InvalidSubmission(uint256 indexed challengeId, uint256 nodeLicenseId);
+    event InvalidBatchSubmission(uint256 indexed challengeId, address operator, uint256 keysLength);
     event RewardsClaimed(uint256 indexed challengeId, uint256 amount);
+    event BatchRewardsClaimed(uint256 indexed challengeId, uint256 totalReward, uint256 keysLength);
     event ChallengeExpired(uint256 indexed challengeId);
     event StakingEnabled();
     event UpdateMaxStakeAmount(uint256 prevAmount, uint256 newAmount);
@@ -153,7 +156,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     event UnstakeV1(address indexed user, uint256 amount, uint256 totalStaked);
 
     modifier onlyPoolFactory() {
-        require(msg.sender == poolFactoryAddress, "Poolfactory required");
+        require(msg.sender == poolFactoryAddress, "1");
         _;
     }
 
@@ -170,7 +173,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
      * @return uint256 The combined total supply of esXai, Xai, and the unminted allocated tokens.
      */
     function getCombinedTotalSupply() public view returns (uint256) {
-        return  esXai(esXaiAddress).totalSupply() + Xai(xaiAddress).totalSupply() + _allocatedTokens;
+        return esXai(esXaiAddress).totalSupply() + Xai(xaiAddress).totalSupply() + _allocatedTokens;
     }
 
     /**
@@ -180,7 +183,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         isCheckingAssertions = !isCheckingAssertions;
         emit AssertionCheckingToggled(isCheckingAssertions);
     }
-
+	
     /**
      * @notice Sets the challengerPublicKey.
      * @param _challengerPublicKey The public key of the challenger.
@@ -241,7 +244,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
      * @return The address of the operator.
      */
     function getOperatorAtIndex(address owner, uint256 index) public view returns (address) {
-        require(index < getOperatorCount(owner), "Index out of bounds");
+        require(index < getOperatorCount(owner), "2");
         return _operatorApprovals[owner].at(index);
     }
 
@@ -261,7 +264,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
      * @return The address of the owner.
      */
     function getOwnerForOperatorAtIndex(address operator, uint256 index) public view returns (address) {
-        require(index < _ownersForOperator[operator].length(), "Index out of bounds");
+        require(index < _ownersForOperator[operator].length(), "3");
         return _ownersForOperator[operator].at(index);
     }
 
@@ -307,7 +310,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
      * @return The address of the wallet.
      */
     function getKycWalletAtIndex(uint256 index) public view returns (address) {
-        require(index < getKycWalletCount(), "Index out of bounds");
+        require(index < getKycWalletCount(), "4");
         return kycWallets.at(index);
     }
 
@@ -342,10 +345,10 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
 
         uint256 totalSupply = getCombinedTotalSupply();
         uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
-        require(maxSupply > totalSupply, "There are no more tiers, we are too close to the end");
+        require(maxSupply > totalSupply, "5");
 
         uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply)); // calculate which tier we are in starting from 0
-        require(tier < 23, "There are no more accurate tiers");
+        require(tier < 23, "6");
 
         uint256 emissionTier = maxSupply / (2**(tier + 1)); // equal to the amount of tokens that are emitted during this tier
 
@@ -373,14 +376,14 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     ) public onlyRole(CHALLENGER_ROLE) {
 
         // check the rollupAddress is set
-        require(rollupAddress != address(0), "Rollup address must be set before submitting a challenge");
+        require(rollupAddress != address(0), "7");
 
         // check the challengerPublicKey is set
-        require(challengerPublicKey.length != 0, "Challenger public key must be set before submitting a challenge");
+        require(challengerPublicKey.length != 0, "8");
 
         // check the assertionId and rollupAddress combo haven't been submitted yet
         bytes32 comboHash = keccak256(abi.encodePacked(_assertionId, rollupAddress));
-        require(!rollupAssertionTracker[comboHash], "This assertionId and rollupAddress combo has already been submitted");
+        require(!rollupAssertionTracker[comboHash], "9");
         rollupAssertionTracker[comboHash] = true;
 
         // verify the data inside the hash matched the data pulled from the rollup contract
@@ -389,9 +392,9 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             // get the node information from the rollup.
             Node memory node = IRollupCore(rollupAddress).getNode(_assertionId);
 
-            require(node.prevNum == _predecessorAssertionId, "The _predecessorAssertionId is incorrect.");
-            require(node.confirmData == _confirmData, "The _confirmData is incorrect.");
-            require(node.createdAtBlock == _assertionTimestamp, "The _assertionTimestamp did not match the block this assertion was created at.");
+            require(node.prevNum == _predecessorAssertionId, "10");
+            require(node.confirmData == _confirmData, "11");
+            require(node.createdAtBlock == _assertionTimestamp, "12");
         }
 
         // we need to determine how much token will be emitted
@@ -446,7 +449,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
      * @return The challenge corresponding to the given ID.
      */
     function getChallenge(uint256 _challengeId) public view returns (Challenge memory) {
-        require(_challengeId < challengeCounter, "challenge with this id, has not been created.");
+        require(_challengeId < challengeCounter, "13");
         return challenges[_challengeId];
     }
 
@@ -460,18 +463,12 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 _challengeId,
         bytes memory _confirmData
     ) public {
-        address licenseOwner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
-        require(
-            licenseOwner == msg.sender ||
-            isApprovedForOperator(licenseOwner, msg.sender),
-            "Caller must be the owner of the NodeLicense or an approved operator"
-        );
 
         // Check the challenge is open for submissions
-        require(challenges[_challengeId].openForSubmissions, "Challenge is not open for submissions");
+        require(challenges[_challengeId].openForSubmissions, "14");
         
         // Check that _nodeLicenseId hasn't already been submitted for this challenge
-        require(!submissions[_challengeId][_nodeLicenseId].submitted, "_nodeLicenseId has already been submitted for this challenge");
+        require(!submissions[_challengeId][_nodeLicenseId].submitted, "15");
 
         // If the submission successor hash, doesn't match the one submitted by the challenger, then end early and emit an event
         if (keccak256(abi.encodePacked(_confirmData)) != keccak256(abi.encodePacked(challenges[_challengeId].assertionStateRootOrConfirmData))) {
@@ -479,8 +476,43 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             return;
         }
 
+        _submitAssertion(_nodeLicenseId, _challengeId, _confirmData);
+    }
+
+	function submitMultipleAssertions(
+		uint256[] memory _nodeLicenseIds,
+		uint256 _challengeId,
+		bytes memory _confirmData
+	) external {
+        
+		require(challenges[_challengeId].openForSubmissions, "16");
+        
+        uint256 keyLength = _nodeLicenseIds.length;
+
+		if (keccak256(abi.encodePacked(_confirmData)) != keccak256(abi.encodePacked(challenges[_challengeId].assertionStateRootOrConfirmData))) {
+            emit InvalidBatchSubmission(_challengeId, msg.sender, keyLength);
+			return;
+		}
+
+		for (uint256 i = 0; i < keyLength; i++) {
+            uint256 _nodeLicenseId = _nodeLicenseIds[i];
+            if (!submissions[_challengeId][_nodeLicenseId].submitted) {
+                _submitAssertion(_nodeLicenseId, _challengeId, _confirmData);
+            }
+		}
+	}
+    
+    function _submitAssertion(uint256 _nodeLicenseId, uint256 _challengeId, bytes memory _confirmData) internal {
+        
+        address licenseOwner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
+        require(
+            licenseOwner == msg.sender ||
+            isApprovedForOperator(licenseOwner, msg.sender),
+            "17"
+        );
+
         // Support v1 (no pools) & v2 (pools)
-		address assignedPool = assignedKeyToPool[_nodeLicenseId];
+        address assignedPool = assignedKeyToPool[_nodeLicenseId];
 		uint256 stakedAmount = stakedAmounts[assignedPool];
 		if (assignedPool == address(0)) {
 			stakedAmount = stakedAmounts[licenseOwner];
@@ -496,9 +528,6 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
 
         // Check the user is actually eligible for receiving a reward, do not count them in numberOfEligibleClaimers if they are not able to receive a reward
         (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _getBoostFactor(stakedAmount), _confirmData, challenges[_challengeId].challengerSignedHash);
-
-        // Require to win assertion for submission
-        require(hashEligible, "Key is not eligible");
 
         // Store the assertionSubmission to a map
         submissions[_challengeId][_nodeLicenseId] = Submission({
@@ -528,56 +557,39 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 _nodeLicenseId,
         uint256 _challengeId
     ) public {
-
-        Challenge memory challangeToClaimFor  = challenges[_challengeId];
-
+        Challenge memory challengeToClaimFor  = challenges[_challengeId];
         // check the challenge exists by checking the timestamp is not 0
-        require(challangeToClaimFor.createdTimestamp != 0, "The Challenge does not exist for this id");
-
+        require(challengeToClaimFor.createdTimestamp != 0, "18");
         // Check if the challenge is closed for submissions
-        require(!challangeToClaimFor.openForSubmissions, "Challenge is still open for submissions");
-
+        require(!challengeToClaimFor.openForSubmissions, "19");
         // expire the challenge if 180 days old
-        if (block.timestamp >= challangeToClaimFor.createdTimestamp + 180 days) {
+        if (block.timestamp >= challengeToClaimFor.createdTimestamp + 180 days) {
             expireChallengeRewards(_challengeId);
             return;
         }
-        
         // Check if the challenge rewards have expired
-        require(!challangeToClaimFor.expiredForRewarding, "Challenge rewards have expired");
-
-        // SAVE GAS REMOVE - this is not needed anymore, we know that licenses have been minted
-        // // Check that node licenses could even be eligible at the start
-        // require(challangeToClaimFor.totalSupplyOfNodesAtChallengeStart > 0, "No NodeLicenses have been minted when this challenge started");
+        require(!challengeToClaimFor.expiredForRewarding, "20");
 
         // Get the minting timestamp of the nodeLicenseId
         uint256 mintTimestamp = NodeLicense(nodeLicenseAddress).getMintTimestamp(_nodeLicenseId);
 
         // Check if the nodeLicenseId is eligible for a payout
-        require(mintTimestamp < challangeToClaimFor.createdTimestamp, "NodeLicense is not eligible for a payout on this challenge, it was minted after it started");
+        require(mintTimestamp < challengeToClaimFor.createdTimestamp, "21");
 
         // Look up the submission
         Submission memory submission = submissions[_challengeId][_nodeLicenseId];
-        
-        // SAVE GAS REMOVE - we already check if the submission is eligibleForPayout
-        // require(submission.submitted, "No submission found for this NodeLicense and challenge");
 
         // Check if the owner of the NodeLicense is KYC'd
         address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
-        require(isKycApproved(owner), "Owner of the NodeLicense is not KYC'd");
+        require(isKycApproved(owner), "22");
 
         // Check if the submission has already been claimed
-        require(!submission.claimed, "This submission has already been claimed");
+        require(!submission.claimed, "23");
 
-         // SAVE GAS REMOVE - Already checked on submit, we should not have to check again - the staked amount could be different!
-        // uint256 _boostFactor = getBoostFactor(stakedAmounts[owner]);
-        // // Check if we are valid for a payout
-        // (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _boostFactor, submission.assertionStateRootOrConfirmData, challenges[_challengeId].challengerSignedHash);
-        // require(hashEligible, "Not valid for a payout");
-        require(submission.eligibleForPayout, "Not valid for a payout");
+        require(submission.eligibleForPayout, "24");
 
         // Take the amount that was allocated for the rewards and divide it by the number of claimers
-        uint256 reward = challangeToClaimFor.rewardAmountForClaimers / challangeToClaimFor.numberOfEligibleClaimers;
+        uint256 reward = challengeToClaimFor.rewardAmountForClaimers / challengeToClaimFor.numberOfEligibleClaimers;
 
         // mark the submission as claimed
         submissions[_challengeId][_nodeLicenseId].claimed = true;
@@ -585,18 +597,95 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         // increment the amount claimed on the challenge
         challenges[_challengeId].amountClaimedByClaimers += reward;
 
+        address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
+        if(rewardReceiver == address(0)){
+            rewardReceiver = owner;
+        }
+
         // Mint the reward to the owner of the nodeLicense
-        esXai(esXaiAddress).mint(owner, reward);
+        esXai(esXaiAddress).mint(rewardReceiver, reward);
 
         // Emit the RewardsClaimed event
         emit RewardsClaimed(_challengeId, reward);
 
         // Increment the total claims of this address
-        _lifetimeClaims[owner] += reward;
+        _lifetimeClaims[rewardReceiver] += reward;
 
         // unallocate the tokens that have now been converted to esXai
         _allocatedTokens -= reward;
     }
+
+	function claimMultipleRewards(
+		uint256[] memory _nodeLicenseIds,
+		uint256 _challengeId,
+        address claimForAddressInBatch
+	) external {
+        
+        Challenge memory challengeToClaimFor  = challenges[_challengeId];
+        // check the challenge exists by checking the timestamp is not 0
+        require(challengeToClaimFor.createdTimestamp != 0, "25");
+        // Check if the challenge is closed for submissions
+        require(!challengeToClaimFor.openForSubmissions, "26");
+        // expire the challenge if 180 days old
+        if (block.timestamp >= challengeToClaimFor.createdTimestamp + 180 days) {
+            expireChallengeRewards(_challengeId);
+            return;
+        }
+
+        // Check if the challenge rewards have expired
+        require(!challengeToClaimFor.expiredForRewarding, "27");
+
+        uint256 reward = challengeToClaimFor.rewardAmountForClaimers / challengeToClaimFor.numberOfEligibleClaimers;
+        uint256 keyLength = _nodeLicenseIds.length;
+        uint256 claimCount = 0;
+        uint256 poolMintAmount = 0;
+
+		for (uint256 i = 0; i < keyLength; i++) {
+            uint256 _nodeLicenseId = _nodeLicenseIds[i];
+
+            uint256 mintTimestamp = NodeLicense(nodeLicenseAddress).getMintTimestamp(_nodeLicenseId);
+            address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
+            Submission memory submission = submissions[_challengeId][_nodeLicenseId];
+
+            // Check if the nodeLicenseId is eligible for a payout
+            if (
+                isKycApproved(owner) &&
+                mintTimestamp < challengeToClaimFor.createdTimestamp && 
+                !submission.claimed &&
+                submission.eligibleForPayout
+            ) {
+                // mark the submission as claimed
+                submissions[_challengeId][_nodeLicenseId].claimed = true;
+
+                // increment the amount claimed on the challenge
+                challenges[_challengeId].amountClaimedByClaimers += reward;
+                
+                address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
+                if (rewardReceiver == address(0)) {
+                    rewardReceiver = owner;
+                }
+
+                //If we have set the poolAddress we will only claim if the license is staked to that pool
+                if (claimForAddressInBatch != address(0) && rewardReceiver == claimForAddressInBatch) {
+                    poolMintAmount += reward;
+                } else {
+                    // Mint the reward to the owner of the nodeLicense
+                    esXai(esXaiAddress).mint(rewardReceiver, reward);
+                    _lifetimeClaims[rewardReceiver] += reward;
+                }
+
+                claimCount++;
+            }
+		}
+
+        if (poolMintAmount > 0) {
+            esXai(esXaiAddress).mint(claimForAddressInBatch, poolMintAmount);
+            _lifetimeClaims[claimForAddressInBatch] += poolMintAmount;
+        }
+        
+        _allocatedTokens -= claimCount * reward;
+        emit BatchRewardsClaimed(_challengeId, claimCount * reward, claimCount);
+	}
 
     /**
      * @notice Creates an assertion hash and determines if the hash payout is below the threshold.
@@ -645,13 +734,13 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
      */
     function expireChallengeRewards(uint256 _challengeId) public {
         // check the challenge exists by checking the timestamp is not 0
-        require(challenges[_challengeId].createdTimestamp != 0, "The Challenge does not exist for this id");
+        require(challenges[_challengeId].createdTimestamp != 0, "28");
 
         // Check if the challenge is at least 180 days old
-        require(block.timestamp >= challenges[_challengeId].createdTimestamp + 180 days, "Challenge is not old enough to expire rewards");
+        require(block.timestamp >= challenges[_challengeId].createdTimestamp + 180 days, "29");
 
         // Check the challenge isn't already expired
-        require(challenges[_challengeId].expiredForRewarding == false, "The challenge is already expired");
+        require(challenges[_challengeId].expiredForRewarding == false, "30");
 
         // Remove the unclaimed tokens from the allocation
         _allocatedTokens -= challenges[_challengeId].rewardAmountForClaimers - challenges[_challengeId].amountClaimedByClaimers;
@@ -690,7 +779,6 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         }
         return stakeAmountBoostFactors[length - 1];
     }
-
     
     /**
      * @notice Enables staking on the Referee.
@@ -705,7 +793,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
      * @param newAmount The new maximum amount per NodeLicense
      */
     function updateMaxStakePerLicense(uint256 newAmount) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(newAmount != 0, "Invalid max amount");
+        require(newAmount != 0, "31");
         uint256 prevAmount = maxStakeAmountPerLicense;
         maxStakeAmountPerLicense = newAmount;
         emit UpdateMaxStakeAmount(prevAmount, newAmount);
@@ -716,7 +804,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
      * @param newAmount The new maximum amount per NodeLicense
      */
     function updateMaxKeysPerPool(uint256 newAmount) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(newAmount != 0, "Invalid max amount");
+        require(newAmount != 0, "32");
         uint256 prevAmount = maxKeysPerPool;
         maxKeysPerPool = newAmount;
         emit UpdateMaxKeysPerPool(prevAmount, newAmount);
@@ -730,15 +818,15 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
      */
     function updateStakingTier(uint256 index, uint256 newThreshold, uint256 newBoostFactor) external onlyRole(DEFAULT_ADMIN_ROLE) {
 
-        require(newBoostFactor > 0 && newBoostFactor <= 100, "Invalid boost factor");
+        require(newBoostFactor > 0 && newBoostFactor <= 100, "33");
 
         uint256 lastIndex = stakeAmountTierThresholds.length - 1;
         if(index == 0){
-            require(stakeAmountTierThresholds[1] > newThreshold, "Threshold needs to be monotonically increasing");
+            require(stakeAmountTierThresholds[1] > newThreshold, "34");
         } else if(index == lastIndex){
-            require(stakeAmountTierThresholds[lastIndex - 1] < newThreshold, "Threshold needs to be monotonically increasing");
+            require(stakeAmountTierThresholds[lastIndex - 1] < newThreshold, "35");
         } else {
-            require(stakeAmountTierThresholds[index + 1] > newThreshold && stakeAmountTierThresholds[index - 1] < newThreshold, "Threshold needs to be monotonically increasing");
+            require(stakeAmountTierThresholds[index + 1] > newThreshold && stakeAmountTierThresholds[index - 1] < newThreshold, "36");
         }
 
         stakeAmountTierThresholds[index] = newThreshold;
@@ -751,10 +839,10 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
      * @param newBoostFactor The new boost factor for the tier
      */
     function addStakingTier(uint256 newThreshold, uint256 newBoostFactor) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(newBoostFactor > 0 && newBoostFactor <= 100, "Invalid boost factor");
+        require(newBoostFactor > 0 && newBoostFactor <= 100, "37");
 
         uint256 lastIndex = stakeAmountTierThresholds.length - 1;
-        require(stakeAmountTierThresholds[lastIndex] < newThreshold, "Threshold needs to be monotonically increasing");
+        require(stakeAmountTierThresholds[lastIndex] < newThreshold, "38");
 
         stakeAmountTierThresholds.push(newThreshold);
         stakeAmountBoostFactors.push(newBoostFactor);
@@ -765,42 +853,14 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
      * @param index The index if the tier to remove
      */
     function removeStakingTier(uint256 index) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(stakeAmountTierThresholds.length > 1, "Cannot remove last tier");
-        require(index < stakeAmountTierThresholds.length, "Index out of bound");
+        require(stakeAmountTierThresholds.length > 1, "39");
+        require(index < stakeAmountTierThresholds.length, "40");
         for (uint i = index; i < stakeAmountTierThresholds.length - 1; i++) {
             stakeAmountTierThresholds[i] = stakeAmountTierThresholds[i + 1];
             stakeAmountBoostFactors[i] = stakeAmountBoostFactors[i + 1];
         }
         stakeAmountTierThresholds.pop();
         stakeAmountBoostFactors.pop();
-    }
-
-    /**
-     * @dev Looks up maximum allowed staking amount of esXai based on number of NodeLicenses.
-     * @param numLicenses The number of NodeLicenses of the owner.
-     * @return The maximum allowed staking amount of esXai.
-     */
-    function _getMaxStakeAmount(uint256 numLicenses) internal view returns (uint256) {
-        return maxStakeAmountPerLicense * numLicenses;
-    }
-    
-    /**
-     * @dev Looks up payout boostFactor based on the staking tier.
-     * @param stakedAmount The staked amount.
-     * @return The payout chance boostFactor. 2 for double the chance.
-     */
-    function getBoostFactor(uint256 stakedAmount) external view returns (uint256) {
-        return _getBoostFactor(stakedAmount);
-    }
-
-    /**
-     * @dev Looks up payout boostFactor based on the staking tier for a specific license key.
-     * @param _nodeLicenseId The Node License Key Id.
-     * @return The payout chance boostFactor.
-     */
-    function getBoostFactorForKeyId(uint256 _nodeLicenseId) external view returns (uint256) {
-        address licenseOwner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
-        return _getBoostFactor(stakedAmounts[licenseOwner]);
     }
 
     /**
@@ -813,57 +873,52 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     /**
-     * @dev Looks up maximum allowed staking amount of esXai based on number of NodeLicenses.
-     * @param numLicenses The number of NodeLicenses of the owner.
-     * @return The maximum allowed staking amount of esXai.
-     */
-    function getMaxStakeAmount(uint256 numLicenses) external view returns (uint256) {
-        return _getMaxStakeAmount(numLicenses);
-    }
-
-    /**
      * @dev Function that lets a user unstake V1 esXai that have previously been staked.
      * @param amount The amount of esXai to unstake.
      */
     function unstake(uint256 amount) external {
-        require(stakedAmounts[msg.sender] >= amount, "Insufficient amount staked");
+        require(stakedAmounts[msg.sender] >= amount, "41");
         esXai(esXaiAddress).transfer(msg.sender, amount);
         stakedAmounts[msg.sender] -= amount;
         emit UnstakeV1(msg.sender, amount, stakedAmounts[msg.sender]);
     }
 
     function stakeKeys(address pool, address poolOwner, address staker, uint256[] memory keyIds) external onlyPoolFactory {
-		require(isKycApproved(staker), "Must complete KYC");
+		require(isKycApproved(staker), "42");
         uint256 keysLength = keyIds.length;
-        require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "Maximum staking amount exceeded");
+        require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "43");
 
 		if (staker != poolOwner && !isApprovedForOperator(staker, poolOwner)) {
-			_operatorApprovals[staker].add(poolOwner);
-			_ownersForOperator[poolOwner].add(staker);
+            _operatorApprovals[staker].add(poolOwner);
+            _ownersForOperator[poolOwner].add(staker);
 		}
 
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
         for (uint256 i = 0; i < keysLength; i++) {
             uint256 keyId = keyIds[i];
-            require(assignedKeyToPool[keyId] == address(0), "Key already assigned");
-            require(nodeLicenseContract.ownerOf(keyId) == staker, "Not owner of key");
+            require(assignedKeyToPool[keyId] == address(0), "44");
+            require(nodeLicenseContract.ownerOf(keyId) == staker, "45");
             assignedKeyToPool[keyId] = pool;
         }
+
+		stakerKeysToPoolOwner[msg.sender][poolOwner] += keysLength;
         assignedKeysToPoolCount[pool] += keysLength;
         assignedKeysOfUserCount[staker] += keysLength;
     }
 
-    function unstakeKeys(address pool, address poolOwner, address staker, uint256[] memory keyIds, uint256 userStakedKeyCount) external onlyPoolFactory {
+    function unstakeKeys(address pool, address poolOwner, address staker, uint256[] memory keyIds) external onlyPoolFactory {
         uint256 keysLength = keyIds.length;
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
+
+		stakerKeysToPoolOwner[msg.sender][poolOwner] -= keysLength;
 
         if (staker == poolOwner) {
             require(
                 assignedKeysOfUserCount[staker] > keysLength,
-                "Pool owner needs at least 1 staked key"
+                "46"
             );
         } else {
-			if (userStakedKeyCount - keysLength < 1) {
+			if (stakerKeysToPoolOwner[msg.sender][poolOwner] == 0) {
 				_operatorApprovals[staker].remove(poolOwner);
 				_ownersForOperator[poolOwner].remove(staker);
 			}
@@ -871,8 +926,8 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
 
         for (uint256 i = 0; i < keysLength; i++) {
             uint256 keyId = keyIds[i];
-            require(assignedKeyToPool[keyId] == pool, "Key not assigned to pool");
-            require(nodeLicenseContract.ownerOf(keyId) == staker, "Not owner of key");
+            require(assignedKeyToPool[keyId] == pool, "47");
+            require(nodeLicenseContract.ownerOf(keyId) == staker, "48");
             assignedKeyToPool[keyId] = address(0);
         }
         assignedKeysToPoolCount[pool] -= keysLength;
@@ -880,35 +935,13 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function stakeEsXai(address pool, uint256 amount) external onlyPoolFactory {
-        uint256 maxStakedAmount = _getMaxStakeAmount(assignedKeysToPoolCount[pool]);
-        require(stakedAmounts[pool] + amount <= maxStakedAmount, "Maximum staking amount exceeded");
+        uint256 maxStakedAmount = maxStakeAmountPerLicense * assignedKeysToPoolCount[pool];
+        require(stakedAmounts[pool] + amount <= maxStakedAmount, "49");
         stakedAmounts[pool] += amount;
     }
 
     function unstakeEsXai(address pool, uint256 amount) external onlyPoolFactory {
-        require(stakedAmounts[pool] >= amount, "Invalid amount");
+        require(stakedAmounts[pool] >= amount, "50");
         stakedAmounts[pool] -= amount;
-    }
-
-    function getUnstakedKeyIdsFromUser(address user, uint16 offset, uint16 pageLimit) external view returns (uint256[] memory unstakedKeyIds) {
-        uint256 userKeyBalance = NodeLicense(nodeLicenseAddress).balanceOf(user);
-        unstakedKeyIds = new uint256[](pageLimit);
-        uint256 currentIndexUnstaked = 0;
-        uint256 limit = offset + pageLimit;
-
-        for(uint256 i = offset; i < userKeyBalance && i < limit; i++){
-            uint256 keyId = NodeLicense(nodeLicenseAddress).tokenOfOwnerByIndex(user, i);
-            if(assignedKeyToPool[keyId] == address(0)){
-                unstakedKeyIds[currentIndexUnstaked] = keyId;
-                currentIndexUnstaked++;
-            }
-        }
-    }
-
-    function checkKeysAreStaked(uint256[] memory keyIds) external view returns (bool[] memory isStaked) {
-        isStaked = new bool[](keyIds.length);
-        for(uint256 i; i < keyIds.length; i++){
-            isStaked[i] = assignedKeyToPool[keyIds[i]] != address(0);
-        }
     }
 }
