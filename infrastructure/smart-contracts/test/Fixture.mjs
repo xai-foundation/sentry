@@ -62,7 +62,17 @@ describe("Fixture Tests", function () {
         const gasSubsidy = await upgrades.deployProxy(GasSubsidy, [], { deployer: deployer });
         await gasSubsidy.waitForDeployment();
 
-        // Deploy Referee
+		// Deploy the Staking Pool (implementation only)
+		const StakingPool = await ethers.deployContract("StakingPool");
+		await StakingPool.waitForDeployment();
+		const stakingPoolImplAddress = await StakingPool.getAddress();
+
+		// Deploy the Bucket Tracker (implementation only)
+		const BucketTracker = await ethers.deployContract("BucketTracker");
+		await BucketTracker.waitForDeployment();
+		const bucketImplAddress = await BucketTracker.getAddress();
+
+		// Deploy Referee
         const Referee = await ethers.getContractFactory("Referee");
         const gasSubsidyPercentage = BigInt(15);
         const referee = await upgrades.deployProxy(Referee, [await esXai.getAddress(), await xai.getAddress(), await gasSubsidy.getAddress(), gasSubsidyPercentage], { deployer: deployer });
@@ -83,8 +93,21 @@ describe("Fixture Tests", function () {
         await referee4.waitForDeployment();
         await referee4.enableStaking();
 
+		// Deploy the Pool Factory
+		const PoolFactory = await ethers.getContractFactory("PoolFactory");
+		const poolFactory = await upgrades.deployProxy(PoolFactory, [
+			await referee.getAddress(),
+			await esXai.getAddress(),
+			await deployer.getAddress(),
+			stakingPoolImplAddress,
+			bucketImplAddress
+		], { kind: "transparent", deployer });
+		const poolFactoryTx = await poolFactory.deploymentTransaction();
+		// await poolFactoryTx.wait(3);
+		const poolFactoryAddress = await poolFactory.getAddress();
+
 		const Referee5 = await ethers.getContractFactory("Referee5");
-		const referee5 = await upgrades.upgradeProxy((await referee.getAddress()), Referee5);
+		const referee5 = await upgrades.upgradeProxy((await referee.getAddress()), Referee5, { call: { fn: "initialize", args: [poolFactoryAddress] } });
 		await referee5.waitForDeployment();
 		await referee5.enableStaking();
 
@@ -220,6 +243,7 @@ describe("Fixture Tests", function () {
 
             referee: referee5,
             nodeLicense,
+			poolFactory,
             gasSubsidy,
             esXai: esXai2,
             xai,
