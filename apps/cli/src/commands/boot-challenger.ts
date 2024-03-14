@@ -130,6 +130,9 @@ const startListener = async (commandInstance: Vorpal.CommandInstance) => {
             async (nodeNum: any, blockHash: any, sendRoot: any, event: any, error?: EventListenerError) => {
                 if (error) {
                     errorCount++;
+                    if (error.type == "onclose" || error.type == "onerror") {
+                        await processMissedAssertions(commandInstance);
+                    }
                     // We should allow a defined number of consecutive WS errors before restarting the websocket at all
                     if (errorCount > NUM_CON_WS_ALLOWED_ERRORS) {
                         stopListener(listener);
