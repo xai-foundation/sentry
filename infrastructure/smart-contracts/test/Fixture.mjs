@@ -11,6 +11,7 @@ import { GasSubsidyTests } from "./GasSubsidy.mjs";
 import { XaiGaslessClaimTests } from "./XaiGaslessClaim.mjs";
 import {CNYAirDropTests} from "./CNYAirDrop.mjs";
 import {StakingV2} from "./StakingV2.mjs";
+import {extractAbi} from "../utils/exportAbi.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -66,6 +67,7 @@ describe("Fixture Tests", function () {
 		const StakingPool = await ethers.deployContract("StakingPool");
 		await StakingPool.waitForDeployment();
 		const stakingPoolImplAddress = await StakingPool.getAddress();
+		await extractAbi("StakingPool", StakingPool);
 
 		// Deploy the Bucket Tracker (implementation only)
 		const BucketTracker = await ethers.deployContract("BucketTracker");
@@ -102,8 +104,7 @@ describe("Fixture Tests", function () {
 			stakingPoolImplAddress,
 			bucketImplAddress
 		], { kind: "transparent", deployer });
-		const poolFactoryTx = await poolFactory.deploymentTransaction();
-		// await poolFactoryTx.wait(3);
+		await poolFactory.enableStaking();
 		const poolFactoryAddress = await poolFactory.getAddress();
 
 		const Referee5 = await ethers.getContractFactory("Referee5");
@@ -150,6 +151,7 @@ describe("Fixture Tests", function () {
         // Setup esXai Roles
         const esXaiAdminRole = await esXai.DEFAULT_ADMIN_ROLE();
         await esXai.grantRole(esXaiAdminRole, await esXaiDefaultAdmin.getAddress());
+        await esXai.grantRole(esXaiAdminRole, await poolFactory.getAddress());
         const esXaiMinterRole = await esXai.MINTER_ROLE();
         await esXai.grantRole(esXaiMinterRole, await esXaiMinter.getAddress());
         await esXai.grantRole(esXaiMinterRole, await referee.getAddress());
@@ -175,14 +177,17 @@ describe("Fixture Tests", function () {
         const challengerRole = await referee.CHALLENGER_ROLE();
         await referee.grantRole(challengerRole, await challenger.getAddress());
         const kycAdminRole = await referee.KYC_ADMIN_ROLE();
-        await referee.grantRole(kycAdminRole, await kycAdmin.getAddress());   
+        await referee.grantRole(kycAdminRole, await kycAdmin.getAddress());
+		const poolFactoryAdminRole = await poolFactory.DEFAULT_ADMIN_ROLE();
+		await poolFactory.grantRole(poolFactoryAdminRole, refereeDefaultAdmin.getAddress());
 
-        // Renounce the default admin role of the deployer
+		// Renounce the default admin role of the deployer
         await referee.renounceRole(refereeAdminRole, await deployer.getAddress());
         await nodeLicense.renounceRole(nodeLicenseAdminRole, await deployer.getAddress());
         await gasSubsidy.renounceRole(gasSubsidyAdminRole, await deployer.getAddress());
         await esXai.renounceRole(esXaiAdminRole, await deployer.getAddress());
         await xai.renounceRole(xaiAdminRole, await deployer.getAddress());
+        await poolFactory.renounceRole(poolFactoryAdminRole, await deployer.getAddress());
 
         // Mint addr1 a node license
         let price = await nodeLicense.price(1, "");
