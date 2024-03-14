@@ -194,9 +194,9 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         require(keyIds.length > 0, "Pool requires at least 1 key");
         require(
             _ownerShare <= bucketshareMaxValues[0] &&
-                _keyBucketShare <= bucketshareMaxValues[1] &&
-                _stakedBucketShare <= bucketshareMaxValues[2] &&
-                _ownerShare + _keyBucketShare + _stakedBucketShare == 10_000,
+			_keyBucketShare <= bucketshareMaxValues[1] &&
+			_stakedBucketShare <= bucketshareMaxValues[2] &&
+			_ownerShare + _keyBucketShare + _stakedBucketShare == 10_000,
             "Invalid shares"
         );
 
