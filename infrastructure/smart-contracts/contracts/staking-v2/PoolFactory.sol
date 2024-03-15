@@ -415,23 +415,28 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         UnstakeRequest storage request = unstakeRequests[msg.sender][unstakeRequetIndex];
         address pool = request.poolAddress;
         uint256 keysLength = keyIds.length;
+        (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
+            pool,
+            msg.sender
+        );
         
         require(request.open && request.isKeyRequest, "Invalid request");
         require(block.timestamp >= request.lockTime, "Wait period not yet over");
         require(keysLength > 0 && request.amount == keyIds.length, "Invalid key amount");
+        
+        address poolOwner = IStakingPool(pool).getPoolOwner();
+        if(poolOwner == msg.sender){
+            require(keyAmount > keyIds.length, "Pool owner needs at least 1 staked key");
+        }
 
         Referee5(refereeAddress).unstakeKeys(
             pool,
-            IStakingPool(pool).getPoolOwner(),
+            poolOwner,
             msg.sender,
             keyIds
         );
         IStakingPool(pool).unstakeKeys(msg.sender, keyIds);
 
-        (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
-            pool,
-            msg.sender
-        );
         if (stakeAmount == 0 && keyAmount == 0) {
             uint256 indexOfPool = userToInteractedPoolIds[msg.sender][pool];
             uint256 userLength = interactedPoolsOfUser[msg.sender].length;
