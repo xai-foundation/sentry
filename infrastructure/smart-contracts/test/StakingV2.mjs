@@ -429,6 +429,43 @@ export function StakingV2(deployInfrastructure) {
 				expect(pendingKeyBucketShare).to.equal(updatedKeyBucketShare);
 				expect(pendingEsXaiBucketShare).to.equal(updatedEsXaiBucketShare);
 			});
+
+			it("Check that the shares cannot go over the max values (bucketshareMaxValues = ordered owner, keys, esXaiStaker)", async function () {
+				const {poolFactory, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+
+				// Mint a node key & save the id
+				const price = await nodeLicense.price(1, "");
+				await nodeLicense.connect(addr1).mint(1, "", {value: price});
+				const mintedKeyId = await nodeLicense.totalSupply();
+
+				// Create a pool
+				await poolFactory.connect(addr1).createPool(
+					[mintedKeyId],
+					validShareValues[0],
+					validShareValues[1],
+					validShareValues[2],
+					poolName,
+					poolDescription,
+					poolLogo,
+					poolSocials,
+					poolTrackerNames,
+					poolTrackerSymbols
+				);
+
+				// Create instance of the deployed pool
+				const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+
+				// Anticipate failure of setting share values above the configured maximums
+				await expect(
+					poolFactory.connect(addr1).updateShares(
+						stakingPoolAddress,
+						validShareValues[0] + 1n,
+						validShareValues[1] + 1n,
+						validShareValues[2] + 1n
+					)
+				).to.be.revertedWith("Invalid shares");
+			});
+
 		});
 	}
 }
