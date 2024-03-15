@@ -5,26 +5,26 @@ import {StakingPoolAbi} from "@sentry/core";
 
 export function StakingV2(deployInfrastructure) {
 	return function () {
+		let bucketshareMaxValues = [];
+		const validShareValues = [500n, 8500n, 1000n];
+		const poolName = "Testing Pool";
+		const poolDescription = "This is for testing purposes only!!";
+		const poolLogo = "Pool Logo";
+		const poolSocials = ["Social 1", "Social 2", "Social 3"];
+		const poolTrackerNames = ["Tracker Name 1", "Tracker Name 2", "Tracker Name 3"];
+		const poolTrackerSymbols = ["Tracker Symbol 1", "Tracker Symbol 2", "Tracker Symbol 3"];
+
+		beforeEach(async function() {
+			const {poolFactory, addr1} = await loadFixture(deployInfrastructure);
+
+			// Get the bucket share max values
+			const bucketShareMaxValues0 = await poolFactory.connect(addr1).bucketshareMaxValues(0);
+			const bucketShareMaxValues1 = await poolFactory.connect(addr1).bucketshareMaxValues(1);
+			const bucketShareMaxValues2 = await poolFactory.connect(addr1).bucketshareMaxValues(2);
+			bucketshareMaxValues = [bucketShareMaxValues0, bucketShareMaxValues1, bucketShareMaxValues2];
+		});
+
 		describe("Create Pool #187167264", function () {
-			let bucketshareMaxValues = [];
-			const validShareValues = [500n, 8500n, 1000n];
-			const poolName = "Testing Pool";
-			const poolDescription = "This is for testing purposes only!!";
-			const poolLogo = "Pool Logo";
-			const poolSocials = ["Social 1", "Social 2", "Social 3"];
-			const poolTrackerNames = ["Tracker Name 1", "Tracker Name 2", "Tracker Name 3"];
-			const poolTrackerSymbols = ["Tracker Symbol 1", "Tracker Symbol 2", "Tracker Symbol 3"];
-
-			beforeEach(async function() {
-				const {poolFactory, addr1} = await loadFixture(deployInfrastructure);
-
-				// Get the bucket share max values
-				const bucketShareMaxValues0 = await poolFactory.connect(addr1).bucketshareMaxValues(0);
-				const bucketShareMaxValues1 = await poolFactory.connect(addr1).bucketshareMaxValues(1);
-				const bucketShareMaxValues2 = await poolFactory.connect(addr1).bucketshareMaxValues(2);
-				bucketshareMaxValues = [bucketShareMaxValues0, bucketShareMaxValues1, bucketShareMaxValues2];
-			});
-
 			it("Must specify at least 1 key to create a pool with", async function () {
 				const {poolFactory, addr1} = await loadFixture(deployInfrastructure);
 
@@ -327,7 +327,7 @@ export function StakingV2(deployInfrastructure) {
 				expect(assignedKeyPool1).to.equal(stakingPoolAddress);
 				expect(assignedKeyCount1).to.equal(1);
 
-				// Successfully un-stake 1 key (must wait 30 days)
+				// Fail to un-stake 1 key because can't go to 0
 				await poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 1);
 				await ethers.provider.send("evm_increaseTime", [2592000]);
 				await ethers.provider.send("evm_mine");
@@ -370,6 +370,64 @@ export function StakingV2(deployInfrastructure) {
 					poolFactory.connect(addr1).updateBucketImplementation(await poolFactory.getAddress())
 				).to.be.revertedWith(defaultAdminAccessControlError);
 				await poolFactory.connect(refereeDefaultAdmin).updateBucketImplementation(await poolFactory.getAddress());
+			});
+		});
+
+		describe("Update Pool #187167268", function () {
+			it("Check that the Pool shares are updated", async function () {
+				const {poolFactory, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+
+				// Mint 2 node keys & save the ids
+				const price1 = await nodeLicense.price(1, "");
+				await nodeLicense.connect(addr1).mint(1, "", {value: price1});
+				const mintedKeyId1 = await nodeLicense.totalSupply();
+				const price2 = await nodeLicense.price(1, "");
+				await nodeLicense.connect(addr1).mint(1, "", {value: price2});
+				const mintedKeyId2 = await nodeLicense.totalSupply();
+
+				// Create a pool
+				await poolFactory.connect(addr1).createPool(
+					[mintedKeyId1],
+					validShareValues[0],
+					validShareValues[1],
+					validShareValues[2],
+					poolName,
+					poolDescription,
+					poolLogo,
+					poolSocials,
+					poolTrackerNames,
+					poolTrackerSymbols
+				);
+
+				// Create instance of the deployed pool
+				const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+				const stakingPool = new Contract(stakingPoolAddress, StakingPoolAbi);
+
+				// Submit the updated share values
+				const pendingOwnerShare = validShareValues[0] - 2n;
+				const pendingKeyBucketShare = validShareValues[1] + 1n;
+				const pendingEsXaiBucketShare = validShareValues[2] + 1n;
+				await poolFactory.connect(addr1).updateShares(
+					stakingPoolAddress,
+					pendingOwnerShare,
+					pendingKeyBucketShare,
+					pendingEsXaiBucketShare,
+				);
+
+				// Wait 30 days
+				await ethers.provider.send("evm_increaseTime", [2592000]);
+				await ethers.provider.send("evm_mine");
+
+				// Stake another key to the pool to proc the distributeRewards function, thus updating the share values
+				await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, [mintedKeyId2]);
+
+				// Get & check the updated share values
+				const updatedOwnerShare = await stakingPool.connect(addr1).ownerShare();
+				const updatedKeyBucketShare = await stakingPool.connect(addr1).keyBucketShare();
+				const updatedEsXaiBucketShare = await stakingPool.connect(addr1).stakedBucketShare();
+				expect(pendingOwnerShare).to.equal(updatedOwnerShare);
+				expect(pendingKeyBucketShare).to.equal(updatedKeyBucketShare);
+				expect(pendingEsXaiBucketShare).to.equal(updatedEsXaiBucketShare);
 			});
 		});
 	}
