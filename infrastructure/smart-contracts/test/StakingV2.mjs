@@ -456,12 +456,43 @@ export function StakingV2(deployInfrastructure) {
 				const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
 
 				// Anticipate failure of setting share values above the configured maximums
+				// Owner share above maximum
 				await expect(
 					poolFactory.connect(addr1).updateShares(
 						stakingPoolAddress,
 						validShareValues[0] + 1n,
+						validShareValues[1],
+						validShareValues[2]
+					)
+				).to.be.revertedWith("Invalid shares");
+
+				// Key bucket share above maximum
+				await expect(
+					poolFactory.connect(addr1).updateShares(
+						stakingPoolAddress,
+						validShareValues[0],
 						validShareValues[1] + 1n,
+						validShareValues[2]
+					)
+				).to.be.revertedWith("Invalid shares");
+
+				// Staked esXai bucket share above maximum
+				await expect(
+					poolFactory.connect(addr1).updateShares(
+						stakingPoolAddress,
+						validShareValues[0],
+						validShareValues[1],
 						validShareValues[2] + 1n
+					)
+				).to.be.revertedWith("Invalid shares");
+
+				// All shares within valid limits but do not equal 10000
+				await expect(
+					poolFactory.connect(addr1).updateShares(
+						stakingPoolAddress,
+						validShareValues[0] - 1n,
+						validShareValues[1] - 1n,
+						validShareValues[2] - 1n
 					)
 				).to.be.revertedWith("Invalid shares");
 			});
