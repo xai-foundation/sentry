@@ -859,5 +859,25 @@ export function StakingV2(deployInfrastructure) {
 				).to.be.revertedWith("43");
 			});
 		});
+
+		describe("Stake esXai to pool #187167334", function () {
+			it("Verify esXai balance of user decrease and balance of Referee increases by amount", async function () {
+				const {poolFactory, referee, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+
+
+			});
+
+			it("Verify the Pool Info for the staked user (should have userStakedEsXaiAmount, totalStakedAmount)", async function () {
+
+			});
+
+			it("Cannot stake more than the max stake amount of the pool (calculated by staked keys * maxStakeAmountPerLicense)", async function () {
+
+			});
+
+			it("Stake another key and check that more esXai can be staked", async function () {
+
+			});
+		});
 	}
 }
