@@ -14,7 +14,7 @@ export function StakingV2(deployInfrastructure) {
 		const poolTrackerNames = ["Tracker Name 1", "Tracker Name 2", "Tracker Name 3"];
 		const poolTrackerSymbols = ["Tracker Symbol 1", "Tracker Symbol 2", "Tracker Symbol 3"];
 
-		beforeEach(async function() {
+		beforeEach(async function () {
 			const {poolFactory, addr1} = await loadFixture(deployInfrastructure);
 
 			// Get the bucket share max values
@@ -196,7 +196,7 @@ export function StakingV2(deployInfrastructure) {
 				const mintedKeyId = await nodeLicense.totalSupply();
 
 				// Create a pool
-				 await poolFactory.connect(addr1).createPool(
+				await poolFactory.connect(addr1).createPool(
 					[mintedKeyId],
 					validShareValues[0],
 					validShareValues[1],
@@ -497,6 +497,367 @@ export function StakingV2(deployInfrastructure) {
 				).to.be.revertedWith("Invalid shares");
 			});
 
+			it("Check that the metadata gets returned from the poolInfo", async function () {
+				const {poolFactory, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+
+				// Mint a node key & save the id
+				const price = await nodeLicense.price(1, "");
+				await nodeLicense.connect(addr1).mint(1, "", {value: price});
+				const mintedKeyId = await nodeLicense.totalSupply();
+
+				// Create a pool
+				await poolFactory.connect(addr1).createPool(
+					[mintedKeyId],
+					validShareValues[0],
+					validShareValues[1],
+					validShareValues[2],
+					poolName,
+					poolDescription,
+					poolLogo,
+					poolSocials,
+					poolTrackerNames,
+					poolTrackerSymbols
+				);
+
+				// Create instance of the deployed pool
+				const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+				const stakingPool = new Contract(stakingPoolAddress, StakingPoolAbi);
+
+				// Get & check the initial metadata
+				const keyBucketAddress1 = await stakingPool.connect(addr1).keyBucket();
+				const esXaiStakeBucketAddress1 = await stakingPool.connect(addr1).esXaiStakeBucket();
+				const stakingPoolInfo1 = await stakingPool.connect(addr1).getPoolInfo();
+
+				// PoolBaseInfo
+				expect(stakingPoolInfo1[0].length).to.equal(10);
+				expect(stakingPoolInfo1[0][0]).to.equal(stakingPoolAddress);
+				expect(stakingPoolInfo1[0][1]).to.equal(await addr1.getAddress());
+				expect(stakingPoolInfo1[0][2]).to.equal(keyBucketAddress1);
+				expect(stakingPoolInfo1[0][3]).to.equal(esXaiStakeBucketAddress1);
+				expect(stakingPoolInfo1[0][4]).to.equal(1);
+				expect(stakingPoolInfo1[0][5]).to.equal(0);
+				expect(stakingPoolInfo1[0][6]).to.equal(0);
+				expect(stakingPoolInfo1[0][7]).to.equal(validShareValues[0]);
+				expect(stakingPoolInfo1[0][8]).to.equal(validShareValues[1]);
+				expect(stakingPoolInfo1[0][9]).to.equal(validShareValues[2]);
+
+				// Rest of the metadata
+				expect(stakingPoolInfo1[1]).to.equal(poolName);
+				expect(stakingPoolInfo1[2]).to.equal(poolDescription);
+				expect(stakingPoolInfo1[3]).to.equal(poolLogo);
+				expect(stakingPoolInfo1[4].length).to.equal(3);
+				expect(stakingPoolInfo1[4].length).to.equal(poolSocials.length);
+				expect(stakingPoolInfo1[4][0]).to.equal(poolSocials[0]);
+				expect(stakingPoolInfo1[4][1]).to.equal(poolSocials[1]);
+				expect(stakingPoolInfo1[4][2]).to.equal(poolSocials[2]);
+				expect(stakingPoolInfo1[5].length).to.equal(3);
+				expect(stakingPoolInfo1[5][0]).to.equal(0n);
+				expect(stakingPoolInfo1[5][1]).to.equal(0n);
+				expect(stakingPoolInfo1[5][2]).to.equal(0n);
+
+				// Update the metadata
+				const updatedName = poolName + "2";
+				const updatedDescription = poolDescription + "2";
+				const updatedLogo = poolLogo + "2";
+				const updatedSocials = poolSocials.map(social => social + "2");
+
+				await poolFactory.connect(addr1).updatePoolMetadata(
+					stakingPoolAddress,
+					updatedName,
+					updatedDescription,
+					updatedLogo,
+					updatedSocials,
+				);
+
+				// Get & check the updated metadata
+				const keyBucketAddress2 = await stakingPool.connect(addr1).keyBucket();
+				const esXaiStakeBucketAddress2 = await stakingPool.connect(addr1).esXaiStakeBucket();
+				const stakingPoolInfo2 = await stakingPool.connect(addr1).getPoolInfo();
+
+				// PoolBaseInfo
+				expect(stakingPoolInfo2[0].length).to.equal(10);
+				expect(stakingPoolInfo2[0][0]).to.equal(stakingPoolAddress);
+				expect(stakingPoolInfo2[0][1]).to.equal(await addr1.getAddress());
+				expect(stakingPoolInfo2[0][2]).to.equal(keyBucketAddress2);
+				expect(stakingPoolInfo2[0][3]).to.equal(esXaiStakeBucketAddress2);
+				expect(stakingPoolInfo2[0][4]).to.equal(1);
+				expect(stakingPoolInfo2[0][5]).to.equal(0);
+				expect(stakingPoolInfo2[0][6]).to.equal(0);
+				expect(stakingPoolInfo2[0][7]).to.equal(validShareValues[0]);
+				expect(stakingPoolInfo2[0][8]).to.equal(validShareValues[1]);
+				expect(stakingPoolInfo2[0][9]).to.equal(validShareValues[2]);
+
+				// Rest of the metadata
+				expect(stakingPoolInfo2[1]).to.equal(updatedName);
+				expect(stakingPoolInfo2[2]).to.equal(updatedDescription);
+				expect(stakingPoolInfo2[3]).to.equal(updatedLogo);
+				expect(stakingPoolInfo2[4].length).to.equal(3);
+				expect(stakingPoolInfo2[4].length).to.equal(poolSocials.length);
+				expect(stakingPoolInfo2[4][0]).to.equal(updatedSocials[0]);
+				expect(stakingPoolInfo2[4][1]).to.equal(updatedSocials[1]);
+				expect(stakingPoolInfo2[4][2]).to.equal(updatedSocials[2]);
+				expect(stakingPoolInfo2[5].length).to.equal(3);
+				expect(stakingPoolInfo2[5][0]).to.equal(0n);
+				expect(stakingPoolInfo2[5][1]).to.equal(0n);
+				expect(stakingPoolInfo2[5][2]).to.equal(0n);
+			});
+		});
+
+		describe("Stake Key to pool #187167267", function () {
+			it("Verify the Pool Info for the staked user (should have keyCount, userStakedKeyIds)", async function () {
+				const {poolFactory, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+
+				// Mint a node key & save the id
+				const price = await nodeLicense.price(1, "");
+				await nodeLicense.connect(addr1).mint(1, "", {value: price});
+				const mintedKeyId = await nodeLicense.totalSupply();
+
+				// Create a pool
+				await poolFactory.connect(addr1).createPool(
+					[mintedKeyId],
+					validShareValues[0],
+					validShareValues[1],
+					validShareValues[2],
+					poolName,
+					poolDescription,
+					poolLogo,
+					poolSocials,
+					poolTrackerNames,
+					poolTrackerSymbols
+				);
+
+				// Create reference of the deployed pool's address
+				const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+				const stakingPool = new Contract(stakingPoolAddress, StakingPoolAbi);
+
+				// Get the pool data & verify the key info matches
+				const stakedKeysCountForUser = await stakingPool.connect(addr1).getStakedKeysCountForUser(await addr1.getAddress());
+				const userPoolData = await stakingPool.connect(addr1).getUserPoolData(await addr1.getAddress());
+
+				expect(stakedKeysCountForUser).to.equal(1);
+				expect(userPoolData.userStakedKeyIds.length).to.equal(1);
+				expect(userPoolData.userStakedKeyIds[0]).to.equal(mintedKeyId);
+			});
+
+			it("Check that the key is assigned to the pool in the Referee (assignedKeyToPool)", async function () {
+				const {poolFactory, referee, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+
+				// Mint a node key & save the id
+				const price = await nodeLicense.price(1, "");
+				await nodeLicense.connect(addr1).mint(1, "", {value: price});
+				const mintedKeyId = await nodeLicense.totalSupply();
+
+				// Create a pool
+				await poolFactory.connect(addr1).createPool(
+					[mintedKeyId],
+					validShareValues[0],
+					validShareValues[1],
+					validShareValues[2],
+					poolName,
+					poolDescription,
+					poolLogo,
+					poolSocials,
+					poolTrackerNames,
+					poolTrackerSymbols
+				);
+
+				// Save the new staking pool's address
+				const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+
+				// Compare the pool of the assigned key to the just-created pool
+				const assignedKeyPool = await referee.connect(addr1).assignedKeyToPool(mintedKeyId);
+				expect(assignedKeyPool).to.equal(stakingPoolAddress);
+			});
+
+			it("Check that the key is assigned to the pool in the Referee (assignedKeyToPool)", async function () {
+				const {poolFactory, referee, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+				const address = await addr1.getAddress();
+
+				// Check the user's initial assigned key count
+				const keyCount1 = await referee.connect(addr1).assignedKeysOfUserCount(address);
+				expect(keyCount1).to.equal(0);
+
+				// Mint a node key & save the id
+				const price = await nodeLicense.price(1, "");
+				await nodeLicense.connect(addr1).mint(1, "", {value: price});
+				const mintedKeyId = await nodeLicense.totalSupply();
+
+				// Create a pool
+				await poolFactory.connect(addr1).createPool(
+					[mintedKeyId],
+					validShareValues[0],
+					validShareValues[1],
+					validShareValues[2],
+					poolName,
+					poolDescription,
+					poolLogo,
+					poolSocials,
+					poolTrackerNames,
+					poolTrackerSymbols
+				);
+
+				// Check the user's updated assigned key count
+				const keyCount2 = await referee.connect(addr1).assignedKeysOfUserCount(address);
+				expect(keyCount2).to.equal(1);
+			});
+
+			it("Cannot stake the same key twice", async function () {
+				const {poolFactory, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+
+				// Mint 2 node keys & save the ids
+				const price1 = await nodeLicense.price(1, "");
+				await nodeLicense.connect(addr1).mint(1, "", {value: price1});
+				const mintedKeyId1 = await nodeLicense.totalSupply();
+				const price2 = await nodeLicense.price(1, "");
+				await nodeLicense.connect(addr1).mint(1, "", {value: price2});
+				const mintedKeyId2 = await nodeLicense.totalSupply();
+
+				// Fail to create a pool
+				await expect(
+					poolFactory.connect(addr1).createPool(
+						[mintedKeyId1, mintedKeyId1],
+						validShareValues[0],
+						validShareValues[1],
+						validShareValues[2],
+						poolName,
+						poolDescription,
+						poolLogo,
+						poolSocials,
+						poolTrackerNames,
+						poolTrackerSymbols
+					)
+				).to.be.revertedWith("44");
+
+				// Create a pool
+				await poolFactory.connect(addr1).createPool(
+					[mintedKeyId1],
+					validShareValues[0],
+					validShareValues[1],
+					validShareValues[2],
+					poolName,
+					poolDescription,
+					poolLogo,
+					poolSocials,
+					poolTrackerNames,
+					poolTrackerSymbols
+				);
+
+				// Save the new staking pool's address
+				const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+
+				// Fail to stake a key twice at the same time
+				await expect(
+					poolFactory.connect(addr1).stakeKeys(
+						stakingPoolAddress,
+						[mintedKeyId2, mintedKeyId2]
+					)
+				).to.be.revertedWith("44");
+			});
+
+			it("Cannot stake an already staked key", async function () {
+				const {poolFactory, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+
+				// Mint 2 node keys & save the ids
+				const price1 = await nodeLicense.price(1, "");
+				await nodeLicense.connect(addr1).mint(1, "", {value: price1});
+				const mintedKeyId1 = await nodeLicense.totalSupply();
+				const price2 = await nodeLicense.price(1, "");
+				await nodeLicense.connect(addr1).mint(1, "", {value: price2});
+				const mintedKeyId2 = await nodeLicense.totalSupply();
+
+				// Create pool 1
+				await poolFactory.connect(addr1).createPool(
+					[mintedKeyId1],
+					validShareValues[0],
+					validShareValues[1],
+					validShareValues[2],
+					poolName,
+					poolDescription,
+					poolLogo,
+					poolSocials,
+					poolTrackerNames,
+					poolTrackerSymbols
+				);
+
+				// Fail to create another pool with the same key id
+				await expect(
+					poolFactory.connect(addr1).createPool(
+						[mintedKeyId1],
+						validShareValues[0],
+						validShareValues[1],
+						validShareValues[2],
+						poolName,
+						poolDescription,
+						poolLogo,
+						poolSocials,
+						poolTrackerNames,
+						poolTrackerSymbols
+					)
+				).to.be.revertedWith("44");
+
+				// Create pool 2
+				await poolFactory.connect(addr1).createPool(
+					[mintedKeyId2],
+					validShareValues[0],
+					validShareValues[1],
+					validShareValues[2],
+					poolName,
+					poolDescription,
+					poolLogo,
+					poolSocials,
+					poolTrackerNames,
+					poolTrackerSymbols
+				);
+
+				// Save the new staking pool's address
+				const stakingPoolAddress1 = await poolFactory.connect(addr1).getPoolAddress(0);
+				const stakingPoolAddress2 = await poolFactory.connect(addr1).getPoolAddress(1);
+
+				// Fail to stake key 1 in pool 1
+				await expect(
+					poolFactory.connect(addr1).stakeKeys(
+						stakingPoolAddress1,
+						[mintedKeyId1]
+					)
+				).to.be.revertedWith("44");
+
+				// Fail to stake key 1 in pool 2
+				await expect(
+					poolFactory.connect(addr1).stakeKeys(
+						stakingPoolAddress2,
+						[mintedKeyId1]
+					)
+				).to.be.revertedWith("44");
+			});
+
+			it("Cannot stake more keys than maxKeysPerPool", async function () {
+				const {poolFactory, referee, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+
+				// Mint a node key & save the id
+				const price = await nodeLicense.price(1, "");
+				await nodeLicense.connect(addr1).mint(1, "", {value: price});
+				const mintedKeyId = await nodeLicense.totalSupply();
+
+				// Make key id array with length 1 greater than the maximum allowed keys per pool
+				const maxKeysPerPool = await referee.connect(addr1).maxKeysPerPool();
+				const keys = new Array(Number(maxKeysPerPool) + 1).fill(mintedKeyId);
+
+				// Fail to create a pool
+				await expect(
+					poolFactory.connect(addr1).createPool(
+						keys,
+						validShareValues[0],
+						validShareValues[1],
+						validShareValues[2],
+						poolName,
+						poolDescription,
+						poolLogo,
+						poolSocials,
+						poolTrackerNames,
+						poolTrackerSymbols
+					)
+				).to.be.revertedWith("43");
+			});
 		});
 	}
 }
