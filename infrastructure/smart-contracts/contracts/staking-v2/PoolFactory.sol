@@ -461,11 +461,11 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function unstakeKeys(
-        uint256 unstakeRequetIndex,
+        uint256 unstakeRequestIndex,
         uint256[] memory keyIds
     ) external {
         UnstakeRequest storage request = unstakeRequests[msg.sender][
-            unstakeRequetIndex
+            unstakeRequestIndex
         ];
         address pool = request.poolAddress;
         uint256 keysLength = keyIds.length;
@@ -514,9 +514,9 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         );
     }
 
-    function stakeEsXai(uint256 unstakeRequetIndex, uint256 amount) external {
+    function stakeEsXai(uint256 unstakeRequestIndex, uint256 amount) external {
         UnstakeRequest storage request = unstakeRequests[msg.sender][
-            unstakeRequetIndex
+            unstakeRequestIndex
         ];
         address pool = request.poolAddress;
         require(request.open && !request.isKeyRequest, "Invalid request");
