@@ -953,7 +953,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             assignedKeyToPool[keyId] = pool;
         }
 
-		stakerKeysToPoolOwner[msg.sender][poolOwner] += keysLength;
+		stakerKeysToPoolOwner[staker][poolOwner] += keysLength;
         assignedKeysToPoolCount[pool] += keysLength;
         assignedKeysOfUserCount[staker] += keysLength;
     }
@@ -962,18 +962,11 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 keysLength = keyIds.length;
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
 
-		stakerKeysToPoolOwner[msg.sender][poolOwner] -= keysLength;
+		stakerKeysToPoolOwner[staker][poolOwner] -= keysLength;
 
-        if (staker == poolOwner) {
-            require(
-                assignedKeysOfUserCount[staker] > keysLength,
-                "46"
-            );
-        } else {
-			if (stakerKeysToPoolOwner[msg.sender][poolOwner] == 0) {
-				_operatorApprovals[staker].remove(poolOwner);
-				_ownersForOperator[poolOwner].remove(staker);
-			}
+        if (staker != poolOwner && stakerKeysToPoolOwner[staker][poolOwner] == 0) {
+            _operatorApprovals[staker].remove(poolOwner);
+            _ownersForOperator[poolOwner].remove(staker);
 		}
 
         for (uint256 i = 0; i < keysLength; i++) {
