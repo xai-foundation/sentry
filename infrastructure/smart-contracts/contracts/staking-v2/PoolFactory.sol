@@ -514,18 +514,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         );
     }
 
-    function stakeEsXai(uint256 unstakeRequestIndex, uint256 amount) external {
-        UnstakeRequest storage request = unstakeRequests[msg.sender][
-            unstakeRequestIndex
-        ];
-        address pool = request.poolAddress;
-        require(request.open && !request.isKeyRequest, "Invalid request");
-        require(
-            block.timestamp >= request.lockTime,
-            "Wait period not yet over"
-        );
-        require(amount > 0 && request.amount == amount, "Invalid esXai amount");
-
+    function stakeEsXai(address pool, uint256 amount) external {
         (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
             pool,
             msg.sender
@@ -556,7 +545,16 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         );
     }
 
-    function unstakeEsXai(address pool, uint256 amount) external {
+    function unstakeEsXai(uint256 unstakeRequestIndex, uint256 amount) external {
+		UnstakeRequest storage request = unstakeRequests[msg.sender][unstakeRequestIndex];
+		address pool = request.poolAddress;
+		require(request.open && !request.isKeyRequest, "Invalid request");
+		require(
+			block.timestamp >= request.lockTime,
+			"Wait period not yet over"
+		);
+		require(amount > 0 && request.amount == amount, "Invalid esXai amount");
+
         (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
             pool,
             msg.sender
