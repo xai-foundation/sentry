@@ -501,7 +501,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             interactedPoolsOfUser[msg.sender].pop();
         }
 
-        userRequestedUnstakeKeyAmount[msg.sender][pool] -= keyAmount;
+        userRequestedUnstakeKeyAmount[msg.sender][pool] -= keysLength;
         request.open = false;
         request.completeTime = block.timestamp;
 
