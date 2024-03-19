@@ -157,6 +157,7 @@ describe("Fixture Tests", function () {
         await esXai.grantRole(esXaiMinterRole, await referee.getAddress());
         await esXai.grantRole(esXaiMinterRole, await xai.getAddress());
         await esXai.addToWhitelist(await referee.getAddress());
+        await esXai.addToWhitelist(await poolFactory.getAddress());
 
         // Setup Node License Roles 
         const nodeLicenseAdminRole = await nodeLicense.DEFAULT_ADMIN_ROLE();
