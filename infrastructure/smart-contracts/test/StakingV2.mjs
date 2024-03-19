@@ -327,11 +327,10 @@ export function StakingV2(deployInfrastructure) {
 				expect(assignedKeyPool1).to.equal(stakingPoolAddress);
 				expect(assignedKeyCount1).to.equal(1);
 
-				// Fail to un-stake 1 key because can't go to 0
-				await poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 1);
-				await ethers.provider.send("evm_increaseTime", [2592000]);
-				await ethers.provider.send("evm_mine");
-				await expect(poolFactory.connect(addr1).unstakeKeys(0, [mintedKeyId])).to.be.revertedWith("46");
+				// Fail to create un-stake request for 1 key because can't go to 0
+				await expect(
+					poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 1)
+				).to.be.revertedWith("Insufficient keys staked");
 
 				// Verify the minted key is still assigned to the correct pool
 				const assignedKeyPool2 = await referee.connect(addr1).assignedKeyToPool(mintedKeyId);
