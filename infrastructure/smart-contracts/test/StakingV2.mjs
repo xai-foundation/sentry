@@ -414,7 +414,7 @@ export function StakingV2(deployInfrastructure) {
 				);
 
 				// Wait 30 days
-				await ethers.provider.send("evm_increaseTime", [2592000]);
+				await ethers.provider.send("evm_increaseTime", [3888000]);
 				await ethers.provider.send("evm_mine");
 
 				// Stake another key to the pool to proc the distributeRewards function, thus updating the share values
