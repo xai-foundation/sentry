@@ -146,7 +146,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         pendingShares[0] = _ownerShare;
         pendingShares[1] = _keyBucketShare;
         pendingShares[2] = _stakedBucketShare;
-        updateSharesTimestamp = block.timestamp + 30 days;
+        updateSharesTimestamp = block.timestamp + 45 days;
     }
 
     function updateMetadata(
