@@ -413,7 +413,7 @@ export function StakingV2(deployInfrastructure) {
 					pendingEsXaiBucketShare,
 				);
 
-				// Wait 30 days
+				// Wait 45 days
 				await ethers.provider.send("evm_increaseTime", [3888000]);
 				await ethers.provider.send("evm_mine");
 
