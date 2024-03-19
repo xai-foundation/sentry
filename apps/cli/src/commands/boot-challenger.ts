@@ -130,17 +130,16 @@ const startListener = async (commandInstance: Vorpal.CommandInstance) => {
             async (nodeNum: any, blockHash: any, sendRoot: any, event: any, error?: EventListenerError) => {
                 if (error) {
                     errorCount++;
-                    if (error.type == "onclose" || error.type == "onerror") {
-                        await processMissedAssertions(commandInstance);
-                    }
                     // We should allow a defined number of consecutive WS errors before restarting the websocket at all
                     if (errorCount > NUM_CON_WS_ALLOWED_ERRORS) {
                         stopListener(listener);
                         resolve(error);
+                    } else {
+                        //If the websocket just reconnected automatically we only want to try to re-post the last possibly missed challenge
+                        await processMissedAssertions(commandInstance);
                     }
                     return;
                 }
-
 
                 try {
                     errorCount = 0;
@@ -209,17 +208,17 @@ export function bootChallenger(cli: Vorpal) {
             const assertionCheckInterval = setInterval(() => {
                 checkTimeSinceLastAssertion(lastAssertionTime, commandInstance);
             }, 5 * 60 * 1000);
-            
-            try {
-                await processMissedAssertions(commandInstance);
-            } catch (error) {
-                //TODO what should we do if this fails, restarting the cmd won't help, it will most probably fail again
-                commandInstance.log(`[${new Date().toISOString()}] Failed to handle missed assertions - ${(error as Error).message}`);
-                await sendNotification(`Failed to handle missed assertions - ${(error as Error).message}`, commandInstance);
-                return Promise.resolve();
-            }
 
             for (; currentNumberOfRetries <= NUM_ASSERTION_LISTENER_RETRIES; currentNumberOfRetries++) {
+                try {
+                    await processMissedAssertions(commandInstance);
+                } catch (error) {
+                    //TODO what should we do if this fails, restarting the cmd won't help, it will most probably fail again
+                    commandInstance.log(`[${new Date().toISOString()}] Failed to handle missed assertions - ${(error as Error).message}`);
+                    await sendNotification(`Failed to handle missed assertions - ${(error as Error).message}`, commandInstance);
+                    // return Promise.resolve();
+                }
+
                 commandInstance.log(`[${new Date().toISOString()}] The challenger is now listening for assertions...`);
                 await startListener(commandInstance);
 
