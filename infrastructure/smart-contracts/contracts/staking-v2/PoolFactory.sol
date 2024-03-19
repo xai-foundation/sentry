@@ -532,10 +532,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
         IStakingPool(pool).stakeEsXai(msg.sender, amount);
 
-        userRequestedUnstakeEsXaiAmount[msg.sender][pool] -= amount;
-        request.open = false;
-        request.completeTime = block.timestamp;
-
         emit StakeEsXai(
             msg.sender,
             pool,
@@ -576,6 +572,10 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             ] = interactedPoolsOfUser[msg.sender][userLength - 1];
             interactedPoolsOfUser[msg.sender].pop();
         }
+
+		userRequestedUnstakeEsXaiAmount[msg.sender][pool] -= amount;
+		request.open = false;
+		request.completeTime = block.timestamp;
 
         emit UnstakeEsXai(
             msg.sender,
