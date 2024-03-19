@@ -283,7 +283,7 @@ export function StakingV2(deployInfrastructure) {
 
 				// Successfully un-stake 1 key (must wait 30 days)
 				await poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 1);
-				await ethers.provider.send("evm_increaseTime", [2592000]);
+				await ethers.provider.send("evm_increaseTime", [2592000 * 2]);
 				await ethers.provider.send("evm_mine");
 				await poolFactory.connect(addr1).unstakeKeys(0, [mintedKeyId1]);
 
@@ -862,9 +862,9 @@ export function StakingV2(deployInfrastructure) {
 
 		describe("Stake esXai to pool #187167334", function () {
 			it("Verify esXai balance of user decrease and balance of Referee increases by amount", async function () {
-				const {poolFactory, referee, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+				const {poolFactory, referee, addr1, nodeLicense, esXai, esXaiMinter} = await loadFixture(deployInfrastructure);
 
-
+				await esXai.connect(esXaiMinter).mint(await addr1.getAddress(), 10_000);
 			});
 
 			it("Verify the Pool Info for the staked user (should have userStakedEsXaiAmount, totalStakedAmount)", async function () {
