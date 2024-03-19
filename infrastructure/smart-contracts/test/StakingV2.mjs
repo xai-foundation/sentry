@@ -668,7 +668,7 @@ export function StakingV2(deployInfrastructure) {
 				expect(assignedKeyPool).to.equal(stakingPoolAddress);
 			});
 
-			it("Check that the key is assigned to the pool in the Referee (assignedKeyToPool)", async function () {
+			it("Check that the key is assigned to the pool in the Referee for a user (assignedKeysOfUserCount)", async function () {
 				const {poolFactory, referee, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
 				const address = await addr1.getAddress();
 
@@ -860,7 +860,7 @@ export function StakingV2(deployInfrastructure) {
 		});
 
 		describe("Stake esXai to pool #187167334", function () {
-			it("Verify esXai balance of user decrease and balance of Referee increases by amount", async function () {
+			it("Verify esXai balance of user decrease and balance of PoolFactory increases by amount", async function () {
 				const {poolFactory, addr1, nodeLicense, esXai, esXaiMinter} = await loadFixture(deployInfrastructure);
 
 				// Mint 10k esXai to addr1
