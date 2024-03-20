@@ -480,7 +480,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             "Wait period not yet over"
         );
         require(
-            keysLength > 0 && request.amount == keyIds.length,
+            keysLength > 0 && request.amount == keysLength,
             "Invalid key amount"
         );
 
@@ -492,7 +492,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         );
         IStakingPool(pool).unstakeKeys(msg.sender, keyIds);
 
-        if (stakeAmount == 0 && keyAmount == 0) {
+        if (stakeAmount == 0 && keyAmount - keysLength == 0) {
             uint256 indexOfPool = userToInteractedPoolIds[msg.sender][pool];
             uint256 userLength = interactedPoolsOfUser[msg.sender].length;
             interactedPoolsOfUser[msg.sender][
@@ -508,8 +508,8 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         emit UnstakeKeys(
             msg.sender,
             pool,
-            keyIds.length,
-            keyAmount - keyIds.length,
+            keysLength,
+            keyAmount - keysLength,
             IStakingPool(pool).getStakedKeysCount()
         );
     }
@@ -564,7 +564,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
         IStakingPool(pool).unstakeEsXai(msg.sender, amount);
 
-        if (stakeAmount == 0 && keyAmount == 0) {
+        if (stakeAmount - amount == 0 && keyAmount == 0) {
             uint256 indexOfPool = userToInteractedPoolIds[msg.sender][pool];
             uint256 userLength = interactedPoolsOfUser[msg.sender].length;
             interactedPoolsOfUser[msg.sender][
