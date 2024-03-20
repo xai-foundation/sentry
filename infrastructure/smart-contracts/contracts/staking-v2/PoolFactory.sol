@@ -134,8 +134,8 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         __AccessControlEnumerable_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         bucketshareMaxValues[0] = 1000; // => 10%
-        bucketshareMaxValues[1] = 9000; // => 55%
-        bucketshareMaxValues[2] = 3000; // => 55%
+        bucketshareMaxValues[1] = 9000; // => 90%
+        bucketshareMaxValues[2] = 3000; // => 30%
 
         refereeAddress = _refereeAddress;
         esXaiAddress = _esXaiAddress;
