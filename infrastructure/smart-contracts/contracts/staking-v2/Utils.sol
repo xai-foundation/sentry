@@ -26,6 +26,8 @@ interface IStakingPool {
 
     function getPoolOwner() external view returns (address);
 
+    function getDelegateOwner() external view returns (address);
+
     function getStakedAmounts(address user) external view returns (uint256);
 
     function getStakedKeysCountForUser(
@@ -33,6 +35,8 @@ interface IStakingPool {
     ) external view returns (uint256);
 
     function getStakedKeysCount() external view returns (uint256);
+
+	function updateDelegateOwner(address delegate) external;
 
     function initShares(
         uint16 _ownerShare,

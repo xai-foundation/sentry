@@ -58,6 +58,12 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     mapping(address => mapping(address => uint256))
         private userRequestedUnstakeEsXaiAmount;
 
+	// mapping delegates to pools they are delegates of
+	mapping(address => address[]) private poolsOfDelegate;
+
+	// mapping of pool address to indices in the poolsOfDelegate[delegate] array
+	mapping(address => uint256) private poolsOfDelegateIndices;
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
@@ -115,6 +121,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     );
 
     event ClaimFromPool(address indexed user, address indexed pool);
+	event UpdatePoolDelegate(address indexed delegate, address indexed pool);
 
     event UnstakeRequestStarted(
         address indexed user,
@@ -302,6 +309,28 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             _stakedBucketShare
         );
     }
+
+	function updateDelegateOwner(address pool, address delegate) external {
+		IStakingPool stakingPool = IStakingPool(pool);
+		require(stakingPool.getPoolOwner() == msg.sender, "Invalid auth");
+		require(msg.sender != delegate, "Invalid delegate");
+		stakingPool.updateDelegateOwner(delegate);
+
+		// If staking pool already has delegate, remove pool from delegate's list
+		if (stakingPool.getDelegateOwner() != address(0)) {
+			uint256 indexOfPoolToRemove = poolsOfDelegateIndices[pool]; // index of pool in question in delegate's list
+			address lastDelegatePoolId = poolsOfDelegate[delegate][poolsOfDelegate[delegate].length - 1];
+
+			poolsOfDelegateIndices[lastDelegatePoolId] = indexOfPoolToRemove;
+			poolsOfDelegate[delegate][indexOfPoolToRemove] = lastDelegatePoolId;
+			poolsOfDelegate[delegate].pop();
+		}
+
+		// Add pool to delegate's list
+		poolsOfDelegateIndices[pool] = poolsOfDelegate[delegate].length;
+		poolsOfDelegate[delegate].push(pool);
+		emit UpdatePoolDelegate(delegate, pool);
+	}
 
     function userPoolInfo(
         address pool,
@@ -595,6 +624,10 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             emit ClaimFromPool(msg.sender, stakingPool);
         }
     }
+
+	function getDelegatePools() external returns (address[] memory) {
+		return poolsOfDelegate[msg.sender];
+	}
 
     function getPoolsCount() external view returns (uint256) {
         return stakingPools.length;

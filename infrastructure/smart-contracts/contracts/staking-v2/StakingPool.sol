@@ -15,6 +15,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
     address public esXaiAddress;
 
     address public poolOwner;
+	address public delegateOwner;
 
     //Pool Metadata
     string public name;
@@ -66,6 +67,10 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         return poolOwner;
     }
 
+	function getDelegateOwner() external view returns (address) {
+		return delegateOwner;
+	}
+
     function getStakedKeysCount() external view returns (uint256) {
         return keyBucket.totalSupply();
     }
@@ -82,6 +87,10 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
 
 	function getStakedKeys() external view returns (uint256[] memory) {
 		return stakedKeys;
+	}
+
+	function updateDelegateOwner(address delegate) external onlyRole(DEFAULT_ADMIN_ROLE) {
+		delegateOwner = delegate;
 	}
 
     function distributeRewards() internal {
