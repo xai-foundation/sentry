@@ -59,10 +59,10 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         private userRequestedUnstakeEsXaiAmount;
 
 	// mapping delegates to pools they are delegates of
-	mapping(address => address[]) private poolsOfDelegate;
+	mapping(address => address[]) public poolsOfDelegate;
 
 	// mapping of pool address to indices in the poolsOfDelegate[delegate] array
-	mapping(address => uint256) private poolsOfDelegateIndices;
+	mapping(address => uint256) public poolsOfDelegateIndices;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
@@ -633,8 +633,12 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         }
     }
 
-	function getDelegatePools() external returns (address[] memory) {
-		return poolsOfDelegate[msg.sender];
+	function getDelegatePools(address delegate) external returns (address[] memory) {
+		return poolsOfDelegate[delegate];
+	}
+
+	function isDelegateOfPool(address delegate, address pool) external returns (bool) {
+		return poolsOfDelegate[delegate][poolsOfDelegateIndices[pool]] == pool;
 	}
 
     function getPoolsCount() external view returns (uint256) {

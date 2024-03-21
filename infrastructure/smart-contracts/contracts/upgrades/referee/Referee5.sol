@@ -10,6 +10,7 @@ import "../../nitro-contracts/rollup/IRollupCore.sol";
 import "../../NodeLicense.sol";
 import "../../Xai.sol";
 import "../../esXai.sol";
+import "../../staking-v2/PoolFactory.sol";
 
 // Error Codes
 // 1: Only PoolFactory can call this function.
@@ -28,7 +29,7 @@ import "../../esXai.sol";
 // 14: Challenge is not open for submissions.
 // 15: _nodeLicenseId has already been submitted for this challenge.
 // 16: Challenge is not open for submissions.
-// 17: Caller must be the owner of the NodeLicense or an approved operator.
+// 17: Caller must be the owner of the NodeLicense, an approved operator, or the delegator owner of the pool.
 // 18: The Challenge does not exist for this id.
 // 19: Challenge is still open for submissions.
 // 20: Challenge rewards have expired.
@@ -557,14 +558,19 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     function _submitAssertion(uint256 _nodeLicenseId, uint256 _challengeId, bytes memory _confirmData) internal {
         
         address licenseOwner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
+        address assignedPool = assignedKeyToPool[_nodeLicenseId];
+
         require(
             licenseOwner == msg.sender ||
-            isApprovedForOperator(licenseOwner, msg.sender),
+            isApprovedForOperator(licenseOwner, msg.sender) ||
+			(
+				assignedPool != address(0) &&
+				PoolFactory(poolFactoryAddress).isDelegateOfPool(msg.sender, assignedPool)
+			),
             "17"
         );
 
         // Support v1 (no pools) & v2 (pools)
-        address assignedPool = assignedKeyToPool[_nodeLicenseId];
 		uint256 stakedAmount = stakedAmounts[assignedPool];
 		if (assignedPool == address(0)) {
 			stakedAmount = stakedAmounts[licenseOwner];
@@ -650,7 +656,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         challenges[_challengeId].amountClaimedByClaimers += reward;
 
         address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
-        if(rewardReceiver == address(0)){
+        if (rewardReceiver == address(0)) {
             rewardReceiver = owner;
         }
 
