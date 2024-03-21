@@ -20,6 +20,7 @@ interface IStakingPool {
         address _refereeAddress,
         address _esXaiAddress,
         address _owner,
+        address _delegateOwner,
         address _keyBucket,
         address _esXaiStakeBucket
     ) external;

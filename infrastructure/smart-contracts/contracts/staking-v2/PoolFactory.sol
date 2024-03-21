@@ -196,7 +196,8 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         string memory _logo,
         string[] memory _socials,
         string[] memory trackerNames,
-        string[] memory trackerSymbols
+        string[] memory trackerSymbols,
+		address _delegateOwner
     ) external {
         require(stakingEnabled, "Staking must be enabled");
         require(keyIds.length > 0, "Pool requires at least 1 key");
@@ -207,6 +208,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
                 _ownerShare + _keyBucketShare + _stakedBucketShare == 10_000,
             "Invalid shares"
         );
+		require(msg.sender != _delegateOwner, "Invalid delegate");
 
         address poolProxy = address(
             new TransparentUpgradeableProxyImplementation(
@@ -235,9 +237,14 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             refereeAddress,
             esXaiAddress,
             msg.sender,
+			_delegateOwner,
             keyBucketProxy,
             esXaiBucketProxy
         );
+
+		// Add pool to delegate's list
+		poolsOfDelegateIndices[poolProxy] = poolsOfDelegate[_delegateOwner].length;
+		poolsOfDelegate[_delegateOwner].push(poolProxy);
 
         IStakingPool(poolProxy).initShares(
             _ownerShare,
@@ -259,6 +266,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             trackerSymbols[0],
             0
         );
+
         IBucketTracker(esXaiBucketProxy).initialize(
             poolProxy,
             esXaiAddress,

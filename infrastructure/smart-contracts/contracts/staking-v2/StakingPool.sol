@@ -47,6 +47,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         address _refereeAddress,
         address _esXaiAddress,
         address _owner,
+        address _delegateOwner,
         address _keyBucket,
         address _esXaiStakeBucket
     ) public initializer {
@@ -61,6 +62,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         esXaiStakeBucket = IBucketTracker(_esXaiStakeBucket);
 
         poolOwner = _owner;
+		delegateOwner = _delegateOwner;
     }
 
     function getPoolOwner() external view returns (address) {
