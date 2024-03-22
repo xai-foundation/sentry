@@ -461,7 +461,9 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             );
         }
 
-        unstakeRequests[msg.sender].push(
+		UnstakeRequest[] storage userRequests = unstakeRequests[msg.sender];
+
+		userRequests.push(
             UnstakeRequest(
                 true,
                 true,
@@ -478,7 +480,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         emit UnstakeRequestStarted(
             msg.sender,
             pool,
-            unstakeRequests[msg.sender].length - 1,
+			userRequests.length - 1,
             keyAmount,
             true
         );
@@ -496,8 +498,10 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             stakedKeysCount == userRequestedUnstakeKeyAmount[msg.sender][pool] + 1,
             "22"
         );
-        
-        unstakeRequests[msg.sender].push(
+
+		UnstakeRequest[] storage userRequests = unstakeRequests[msg.sender];
+
+		userRequests.push(
             UnstakeRequest(
                 true,
                 true,
@@ -514,7 +518,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         emit UnstakeRequestStarted(
             msg.sender,
             pool,
-            unstakeRequests[msg.sender].length - 1,
+				userRequests.length - 1,
             1,
             true
         );
@@ -529,7 +533,9 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         );
 		require(poolsCreatedViaFactory[pool], "25");
 
-        unstakeRequests[msg.sender].push(
+		UnstakeRequest[] storage userRequests = unstakeRequests[msg.sender];
+
+		userRequests.push(
             UnstakeRequest(
                 true,
                 false,
@@ -546,7 +552,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         emit UnstakeRequestStarted(
             msg.sender,
             pool,
-            unstakeRequests[msg.sender].length - 1,
+			userRequests.length - 1,
             amount,
             false
         );
