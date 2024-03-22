@@ -15,7 +15,9 @@ import {
     getProvider,
     version,
     Submission,
-    getBoostFactor
+    getBoostFactor,
+    getUserPools,
+    getKeysOfPool,
 } from "../index.js";
 import { retry } from "../index.js";
 import axios from "axios";
@@ -53,6 +55,7 @@ const mintTimestamps: { [nodeLicenseId: string]: bigint } = {};
 const nodeLicenseStatusMap: NodeLicenseStatusMap = new Map();
 const challengeNumberMap: { [challengeNumber: string]: boolean } = {};
 let cachedBoostFactor: { [ownerAddress: string]: bigint } = {};
+const keyIdToPoolAddress: { [keyId: string]: string } = {};
 
 async function getPublicNodeFromBucket(confirmHash: string) {
     const url = `https://sentry-public-node.xai.games/assertions/${confirmHash.toLowerCase()}.json`;
@@ -273,6 +276,9 @@ async function processClosedChallenges(challengeIds: bigint[]) {
 
 // start a listener for new challenges
 async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: any) {
+
+    //TODO on every submit and on every claim we need to check if the key is still in the pool
+
     if (event && challenge.rollupUsed === config.rollupAddress) {
         compareWithCDN(challenge)
             .then(({ publicNodeBucket, error }) => {
@@ -367,9 +373,42 @@ export async function operatorRuntime(
                 status: NodeLicenseStatus.WAITING_IN_QUEUE,
             });
         });
+
         nodeLicenseIds = [...nodeLicenseIds, ...licensesOfOwner];
         logFunction(`Fetched ${licensesOfOwner.length} node licenses for owner ${owner}.`);
     }
+
+    // Get Pool related keys
+    // Get all user pool addresses as owner and delegated
+    const operatorPools = await getUserPools(operatorAddress);
+
+    if (operatorPools.length) {
+        logFunction(`Found ${operatorPools.length} pools for operator.`);
+        //For each pool we need to fetch all keys
+
+        for (const pool of operatorPools) {
+            //Check every key and find out if its already in the nodeLicenseIds list
+            logFunction(`Fetching node licenses for pool ${pool}.`);
+
+            const keys = await getKeysOfPool(pool);
+
+            for (const key of keys) {
+                if (!nodeLicenseIds.includes(key)) {
+                    logFunction(`Fetched Sentry Key ${key.toString()} staked in pool ${pool}.`);
+                    nodeLicenseStatusMap.set(key, {
+                        ownerPublicKey: pool,
+                        status: NodeLicenseStatus.WAITING_IN_QUEUE,
+                    });
+                    keyIdToPoolAddress[key.toString()] = pool;
+                    nodeLicenseIds.push(key);
+
+                } else {
+                    logFunction(`Sentry Key ${key.toString()} already in list of operator keys - not added for pool operation.`);
+                }
+            }
+        }
+    }
+
     logFunction(`Total Sentry Keys fetched: ${nodeLicenseIds.length}.`);
 
     // if (nodeLicenseIds.length === 0) {
