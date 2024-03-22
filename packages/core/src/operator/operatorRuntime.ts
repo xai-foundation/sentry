@@ -60,6 +60,7 @@ let cachedBoostFactor: { [ownerAddress: string]: bigint } = {};
 let operatorAddress: string;
 let keyIdToPoolAddress: { [keyId: string]: string } = {};
 let operatorPoolAddresses: string[];
+const isKYCMap: { [keyId: string]: boolean } = {};
 
 async function getPublicNodeFromBucket(confirmHash: string) {
     const url = `https://sentry-public-node.xai.games/assertions/${confirmHash.toLowerCase()}.json`;
@@ -309,16 +310,19 @@ async function processClaimForChallenge(challengeNumber: bigint, nodeLicenseId: 
     updateNodeLicenseStatus(nodeLicenseId, `Checking KYC Status`);
     safeStatusCallback();
 
-    let isKycApproved: boolean;
-    try {
-        // check to see if the owner of the license is KYC'd
-        // TODO we can cache the KYC status per key
-        [{ isKycApproved }] = await retry(async () => await checkKycStatus([nodeLicenseStatusMap.get(nodeLicenseId)!.ownerPublicKey]));
-    } catch (error: any) {
-        cachedLogger(`Error checking KYC for Sentry Key ${nodeLicenseId} - ${error && error.message ? error.message : error}`);
-        updateNodeLicenseStatus(nodeLicenseId, `Failed to check KYC status`);
-        safeStatusCallback();
-        return;
+    let isKycApproved: boolean = isKYCMap[nodeLicenseId.toString()];
+
+    if (!isKYCMap[nodeLicenseId.toString()]) {
+        try {
+            // check to see if the owner of the license is KYC'd
+            // TODO we can cache the KYC status per key
+            [{ isKycApproved }] = await retry(async () => await checkKycStatus([nodeLicenseStatusMap.get(nodeLicenseId)!.ownerPublicKey]));
+        } catch (error: any) {
+            cachedLogger(`Error checking KYC for Sentry Key ${nodeLicenseId} - ${error && error.message ? error.message : error}`);
+            updateNodeLicenseStatus(nodeLicenseId, `Failed to check KYC status`);
+            safeStatusCallback();
+            return;
+        }
     }
 
     if (!isKycApproved) {
@@ -326,6 +330,8 @@ async function processClaimForChallenge(challengeNumber: bigint, nodeLicenseId: 
         updateNodeLicenseStatus(nodeLicenseId, `Cannot Claim, Failed KYC`);
         safeStatusCallback();
         return;
+    } else {
+        isKYCMap[nodeLicenseId.toString()] = true;
     }
 
     cachedLogger(`Requesting esXAI reward for challenge '${challengeNumber}'.`);
