@@ -132,7 +132,13 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         address prevImplementation,
         address newImplementation
     );
-    event StakeEsXai(
+	event PoolCreated(
+		uint256 indexed poolIndex,
+		address indexed poolAddress,
+		address indexed poolOwner,
+		uint256 stakedKeyCount
+	);
+	event StakeEsXai(
         address indexed user,
         address indexed pool,
         uint256 amount,
@@ -285,7 +291,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
 		// Add pool to delegate's list
 		if (_delegateOwner != address(0)) {
-
 			poolsOfDelegateIndices[poolProxy] = poolsOfDelegate[_delegateOwner].length;
 			poolsOfDelegate[_delegateOwner].push(poolProxy);
 		}
@@ -327,6 +332,8 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         esXai(esXaiAddress).addToWhitelist(esXaiBucketProxy);
 
         _stakeKeys(poolProxy, keyIds);
+		uint256 keyQuantity = keyIds.length;
+		emit PoolCreated(stakingPools.length - 1, poolProxy, msg.sender, keyQuantity);
     }
 
     function updatePoolMetadata(
