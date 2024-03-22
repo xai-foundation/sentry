@@ -150,9 +150,6 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping for amount of assigned keys of a user
     mapping(address => uint256) public assignedKeysOfUserCount;
 
-    // Mapping for user address => pool owner address => amount of keys to track total keys staker has in all pools owned by the pool owner
-    mapping(address => mapping(address => uint256)) public stakerKeysToPoolOwner;
-
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
@@ -946,11 +943,6 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 keysLength = keyIds.length;
         require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "43");
 
-		if (staker != poolOwner && !isApprovedForOperator(staker, poolOwner)) {
-            _operatorApprovals[staker].add(poolOwner);
-            _ownersForOperator[poolOwner].add(staker);
-		}
-
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
         for (uint256 i = 0; i < keysLength; i++) {
             uint256 keyId = keyIds[i];
@@ -959,7 +951,6 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             assignedKeyToPool[keyId] = pool;
         }
 
-		stakerKeysToPoolOwner[staker][poolOwner] += keysLength;
         assignedKeysToPoolCount[pool] += keysLength;
         assignedKeysOfUserCount[staker] += keysLength;
     }
@@ -967,13 +958,6 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     function unstakeKeys(address pool, address poolOwner, address staker, uint256[] memory keyIds) external onlyPoolFactory {
         uint256 keysLength = keyIds.length;
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
-
-		stakerKeysToPoolOwner[staker][poolOwner] -= keysLength;
-
-        if (staker != poolOwner && stakerKeysToPoolOwner[staker][poolOwner] == 0) {
-            _operatorApprovals[staker].remove(poolOwner);
-            _ownersForOperator[poolOwner].remove(staker);
-		}
 
         for (uint256 i = 0; i < keysLength; i++) {
             uint256 keyId = keyIds[i];
