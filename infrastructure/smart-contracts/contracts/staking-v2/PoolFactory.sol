@@ -579,13 +579,12 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         );
         IStakingPool(pool).unstakeKeys(msg.sender, keyIds);
 
-        if (stakeAmount == 0 && keyAmount - keysLength == 0) {
-            uint256 indexOfPool = userToInteractedPoolIds[msg.sender][pool];
-            uint256 userLength = interactedPoolsOfUser[msg.sender].length;
-            interactedPoolsOfUser[msg.sender][
-                indexOfPool
-            ] = interactedPoolsOfUser[msg.sender][userLength - 1];
-            interactedPoolsOfUser[msg.sender].pop();
+        if (
+			stakeAmount == 0 &&
+			keyAmount - keysLength == 0 &&
+			IStakingPool(pool).getPoolOwner() != msg.sender
+		) {
+			removeUserFromPool(msg.sender, pool);
         }
 
         userRequestedUnstakeKeyAmount[msg.sender][pool] -= keysLength;
@@ -654,13 +653,12 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
         IStakingPool(pool).unstakeEsXai(msg.sender, amount);
 
-        if (stakeAmount - amount == 0 && keyAmount == 0) {
-            uint256 indexOfPool = userToInteractedPoolIds[msg.sender][pool];
-            uint256 userLength = interactedPoolsOfUser[msg.sender].length;
-            interactedPoolsOfUser[msg.sender][
-                indexOfPool
-            ] = interactedPoolsOfUser[msg.sender][userLength - 1];
-            interactedPoolsOfUser[msg.sender].pop();
+        if (
+			stakeAmount - amount == 0 &&
+			keyAmount == 0 &&
+			IStakingPool(pool).getPoolOwner() != msg.sender
+		) {
+			removeUserFromPool(msg.sender, pool);
         }
 
 		userRequestedUnstakeEsXaiAmount[msg.sender][pool] -= amount;
@@ -675,6 +673,15 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             Referee5(refereeAddress).stakedAmounts(pool)
         );
     }
+
+	function removeUserFromPool(address user, address pool) internal {
+		uint256 indexOfPool = userToInteractedPoolIds[user][pool];
+		uint256 userLength = interactedPoolsOfUser[user].length;
+		interactedPoolsOfUser[user][
+			indexOfPool
+		] = interactedPoolsOfUser[user][userLength - 1];
+		interactedPoolsOfUser[user].pop();
+	}
 
     function claimFromPools(address[] memory pools) external {
         uint256 poolsLength = pools.length;
