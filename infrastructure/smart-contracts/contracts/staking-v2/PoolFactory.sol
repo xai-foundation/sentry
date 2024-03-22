@@ -340,8 +340,9 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 		if (delegate != address(0)) {
 			poolsOfDelegateIndices[pool] = poolsOfDelegate[delegate].length;
 			poolsOfDelegate[delegate].push(pool);
-			emit UpdatePoolDelegate(delegate, pool);
 		}
+
+		emit UpdatePoolDelegate(delegate, pool);
 	}
 
     function userPoolInfo(
