@@ -120,6 +120,20 @@ export const StakingPoolAbi = [
   },
   {
     "type": "function",
+    "name": "delegateOwner",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "description",
     "constant": true,
     "stateMutability": "view",
@@ -149,6 +163,20 @@ export const StakingPoolAbi = [
   {
     "type": "function",
     "name": "esXaiStakeBucket",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "address",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getDelegateOwner",
     "constant": true,
     "stateMutability": "view",
     "payable": false,
@@ -284,6 +312,20 @@ export const StakingPoolAbi = [
     "outputs": [
       {
         "type": "uint256",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getStakedKeys",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256[]",
         "name": ""
       }
     ]
@@ -449,6 +491,10 @@ export const StakingPoolAbi = [
       {
         "type": "address",
         "name": "_owner"
+      },
+      {
+        "type": "address",
+        "name": "_delegateOwner"
       },
       {
         "type": "address",
@@ -714,6 +760,44 @@ export const StakingPoolAbi = [
   },
   {
     "type": "function",
+    "name": "stakedKeys",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "stakedKeysIndices",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
     "name": "stakedKeysOfOwner",
     "constant": true,
     "stateMutability": "view",
@@ -784,6 +868,19 @@ export const StakingPoolAbi = [
       {
         "type": "uint256[]",
         "name": "keyIds"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "updateDelegateOwner",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "delegate"
       }
     ],
     "outputs": []

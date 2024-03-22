@@ -13,6 +13,7 @@ export function StakingV2(deployInfrastructure) {
 		const poolSocials = ["Social 1", "Social 2", "Social 3"];
 		const poolTrackerNames = ["Tracker Name 1", "Tracker Name 2", "Tracker Name 3"];
 		const poolTrackerSymbols = ["Tracker Symbol 1", "Tracker Symbol 2", "Tracker Symbol 3"];
+		const noDelegateOwner = ethers.ZeroAddress;
 
 		beforeEach(async function () {
 			const {poolFactory, addr1} = await loadFixture(deployInfrastructure);
@@ -40,7 +41,8 @@ export function StakingV2(deployInfrastructure) {
 						poolLogo,
 						poolSocials,
 						poolTrackerNames,
-						poolTrackerSymbols
+						poolTrackerSymbols,
+						noDelegateOwner
 					)
 				).to.be.revertedWith("Pool requires at least 1 key");
 			});
@@ -65,7 +67,8 @@ export function StakingV2(deployInfrastructure) {
 						poolLogo,
 						poolSocials,
 						poolTrackerNames,
-						poolTrackerSymbols
+						poolTrackerSymbols,
+						noDelegateOwner
 					)
 				).to.be.revertedWith("Invalid shares");
 			})
@@ -93,7 +96,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Check that there is now 1 pool
@@ -130,7 +134,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
@@ -165,7 +170,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
@@ -206,7 +212,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
@@ -267,7 +274,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create reference of the deployed pool's address
@@ -315,7 +323,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create reference of the deployed pool's address
@@ -395,7 +404,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
@@ -448,7 +458,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
@@ -515,7 +526,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
@@ -622,7 +634,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
@@ -657,7 +670,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Save the new staking pool's address
@@ -692,7 +706,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Check the user's updated assigned key count
@@ -723,7 +738,8 @@ export function StakingV2(deployInfrastructure) {
 						poolLogo,
 						poolSocials,
 						poolTrackerNames,
-						poolTrackerSymbols
+						poolTrackerSymbols,
+						noDelegateOwner
 					)
 				).to.be.revertedWith("44");
 
@@ -738,7 +754,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Save the new staking pool's address
@@ -775,7 +792,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Fail to create another pool with the same key id
@@ -790,7 +808,8 @@ export function StakingV2(deployInfrastructure) {
 						poolLogo,
 						poolSocials,
 						poolTrackerNames,
-						poolTrackerSymbols
+						poolTrackerSymbols,
+						noDelegateOwner
 					)
 				).to.be.revertedWith("44");
 
@@ -805,7 +824,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Save the new staking pool addresses
@@ -853,7 +873,8 @@ export function StakingV2(deployInfrastructure) {
 						poolLogo,
 						poolSocials,
 						poolTrackerNames,
-						poolTrackerSymbols
+						poolTrackerSymbols,
+						noDelegateOwner
 					)
 				).to.be.revertedWith("43");
 			});
@@ -885,7 +906,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Save the new staking pool's address
@@ -931,7 +953,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
@@ -968,7 +991,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
@@ -1008,7 +1032,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
