@@ -15,6 +15,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
     address public esXaiAddress;
 
     address public poolOwner;
+	address public delegateOwner;
 
     //Pool Metadata
     string public name;
@@ -34,6 +35,9 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
     mapping(uint256 => uint256) public keyIdIndex;
     mapping(address => uint256) public stakedAmounts;
 
+	uint256[] public stakedKeys;
+	mapping(uint256 => uint256) public stakedKeysIndices;
+
     uint16[3] pendingShares;
     uint256 updateSharesTimestamp;
 
@@ -43,6 +47,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         address _refereeAddress,
         address _esXaiAddress,
         address _owner,
+        address _delegateOwner,
         address _keyBucket,
         address _esXaiStakeBucket
     ) public initializer {
@@ -57,11 +62,16 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         esXaiStakeBucket = IBucketTracker(_esXaiStakeBucket);
 
         poolOwner = _owner;
+		delegateOwner = _delegateOwner;
     }
 
     function getPoolOwner() external view returns (address) {
         return poolOwner;
     }
+
+	function getDelegateOwner() external view returns (address) {
+		return delegateOwner;
+	}
 
     function getStakedKeysCount() external view returns (uint256) {
         return keyBucket.totalSupply();
@@ -76,6 +86,14 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
     function getStakedAmounts(address user) external view returns (uint256) {
         return stakedAmounts[user];
     }
+
+	function getStakedKeys() external view returns (uint256[] memory) {
+		return stakedKeys;
+	}
+
+	function updateDelegateOwner(address delegate) external onlyRole(DEFAULT_ADMIN_ROLE) {
+		delegateOwner = delegate;
+	}
 
     function distributeRewards() internal {
         if (
@@ -167,8 +185,13 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         uint256 keyLength = keyIds.length;
         for (uint i = 0; i < keyLength; i++) {
+			// Update indexes of this user's staked keys
             keyIdIndex[keyIds[i]] = stakedKeysOfOwner[owner].length;
             stakedKeysOfOwner[owner].push(keyIds[i]);
+
+			// Update indexes of the pool's staked keys
+			stakedKeysIndices[keyIds[i]] = stakedKeys.length;
+			stakedKeys.push(keyIds[i]);
         }
 
         distributeRewards();
@@ -182,14 +205,23 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         uint256 keyLength = keyIds.length;
         for (uint i = 0; i < keyLength; i++) {
-            uint256 indexOfKeyToRemove = keyIdIndex[keyIds[i]];
-            uint256 lastKeyId = stakedKeysOfOwner[owner][
+			// Update indexes of this user's staked keys
+            uint256 indexOfOwnerKeyToRemove = keyIdIndex[keyIds[i]];
+            uint256 lastOwnerKeyId = stakedKeysOfOwner[owner][
                 stakedKeysOfOwner[owner].length - 1
             ];
 
-            keyIdIndex[lastKeyId] = indexOfKeyToRemove;
-            stakedKeysOfOwner[owner][indexOfKeyToRemove] = lastKeyId;
+            keyIdIndex[lastOwnerKeyId] = indexOfOwnerKeyToRemove;
+            stakedKeysOfOwner[owner][indexOfOwnerKeyToRemove] = lastOwnerKeyId;
             stakedKeysOfOwner[owner].pop();
+
+			// Update indexes of the pool's staked keys
+			uint256 indexOfStakedKeyToRemove = stakedKeysIndices[keyIds[i]];
+			uint256 lastStakedKeyId = stakedKeys[stakedKeys.length - 1];
+
+			stakedKeysIndices[lastStakedKeyId] = indexOfStakedKeyToRemove;
+			stakedKeys[indexOfStakedKeyToRemove] = lastStakedKeyId;
+			stakedKeys.pop();
         }
 
         distributeRewards();

@@ -13,6 +13,7 @@ export function StakingV2(deployInfrastructure) {
 		const poolSocials = ["Social 1", "Social 2", "Social 3"];
 		const poolTrackerNames = ["Tracker Name 1", "Tracker Name 2", "Tracker Name 3"];
 		const poolTrackerSymbols = ["Tracker Symbol 1", "Tracker Symbol 2", "Tracker Symbol 3"];
+		const noDelegateOwner = ethers.ZeroAddress;
 
 		beforeEach(async function () {
 			const {poolFactory, addr1} = await loadFixture(deployInfrastructure);
@@ -40,9 +41,10 @@ export function StakingV2(deployInfrastructure) {
 						poolLogo,
 						poolSocials,
 						poolTrackerNames,
-						poolTrackerSymbols
+						poolTrackerSymbols,
+						noDelegateOwner
 					)
-				).to.be.revertedWith("Pool requires at least 1 key");
+				).to.be.revertedWith("5");
 			});
 
 			it("Check that the shares cannot go over the max values (bucketshareMaxValues = ordered owner, keys, esXaiStaker)", async function () {
@@ -65,9 +67,10 @@ export function StakingV2(deployInfrastructure) {
 						poolLogo,
 						poolSocials,
 						poolTrackerNames,
-						poolTrackerSymbols
+						poolTrackerSymbols,
+						noDelegateOwner
 					)
-				).to.be.revertedWith("Invalid shares");
+				).to.be.revertedWith("6");
 			})
 
 			it("Check that Pool exists (stakingPoolsCount, stakingPools[])", async function () {
@@ -93,7 +96,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Check that there is now 1 pool
@@ -130,7 +134,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
@@ -165,7 +170,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
@@ -206,7 +212,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
@@ -267,7 +274,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create reference of the deployed pool's address
@@ -315,7 +323,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create reference of the deployed pool's address
@@ -330,7 +339,7 @@ export function StakingV2(deployInfrastructure) {
 				// Fail to create un-stake request for 1 key because can't go to 0
 				await expect(
 					poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 1)
-				).to.be.revertedWith("Insufficient keys staked");
+				).to.be.revertedWith("18");
 
 				// Verify the minted key is still assigned to the correct pool
 				const assignedKeyPool2 = await referee.connect(addr1).assignedKeyToPool(mintedKeyId);
@@ -395,7 +404,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
@@ -448,7 +458,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
@@ -463,7 +474,7 @@ export function StakingV2(deployInfrastructure) {
 						validShareValues[1],
 						validShareValues[2]
 					)
-				).to.be.revertedWith("Invalid shares");
+				).to.be.revertedWith("10");
 
 				// Key bucket share above maximum
 				await expect(
@@ -473,7 +484,7 @@ export function StakingV2(deployInfrastructure) {
 						validShareValues[1] + 1n,
 						validShareValues[2]
 					)
-				).to.be.revertedWith("Invalid shares");
+				).to.be.revertedWith("10");
 
 				// Staked esXai bucket share above maximum
 				await expect(
@@ -483,7 +494,7 @@ export function StakingV2(deployInfrastructure) {
 						validShareValues[1],
 						validShareValues[2] + 1n
 					)
-				).to.be.revertedWith("Invalid shares");
+				).to.be.revertedWith("10");
 
 				// All shares within valid limits but do not equal 10000
 				await expect(
@@ -493,7 +504,7 @@ export function StakingV2(deployInfrastructure) {
 						validShareValues[1] - 1n,
 						validShareValues[2] - 1n
 					)
-				).to.be.revertedWith("Invalid shares");
+				).to.be.revertedWith("10");
 			});
 
 			it("Check that the metadata gets returned from the poolInfo", async function () {
@@ -515,7 +526,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
@@ -622,7 +634,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
@@ -657,7 +670,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Save the new staking pool's address
@@ -692,7 +706,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Check the user's updated assigned key count
@@ -723,7 +738,8 @@ export function StakingV2(deployInfrastructure) {
 						poolLogo,
 						poolSocials,
 						poolTrackerNames,
-						poolTrackerSymbols
+						poolTrackerSymbols,
+						noDelegateOwner
 					)
 				).to.be.revertedWith("44");
 
@@ -738,7 +754,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Save the new staking pool's address
@@ -775,7 +792,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Fail to create another pool with the same key id
@@ -790,7 +808,8 @@ export function StakingV2(deployInfrastructure) {
 						poolLogo,
 						poolSocials,
 						poolTrackerNames,
-						poolTrackerSymbols
+						poolTrackerSymbols,
+						noDelegateOwner
 					)
 				).to.be.revertedWith("44");
 
@@ -805,7 +824,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Save the new staking pool addresses
@@ -853,9 +873,77 @@ export function StakingV2(deployInfrastructure) {
 						poolLogo,
 						poolSocials,
 						poolTrackerNames,
-						poolTrackerSymbols
+						poolTrackerSymbols,
+						noDelegateOwner
 					)
 				).to.be.revertedWith("43");
+			});
+
+			it("Pool owner can only un-stake the genesis key ", async function () {
+				const {poolFactory, referee, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+
+				// Mint 2 node keys & save the ids
+				const price = await nodeLicense.price(1, "");
+				await nodeLicense.connect(addr1).mint(1, "", {value: price});
+				const mintedKeyId1 = await nodeLicense.totalSupply();
+				await nodeLicense.connect(addr1).mint(1, "", {value: price});
+				const mintedKeyId2 = await nodeLicense.totalSupply();
+
+				// Creat a pool
+				await poolFactory.connect(addr1).createPool(
+					[mintedKeyId1, mintedKeyId2],
+					validShareValues[0],
+					validShareValues[1],
+					validShareValues[2],
+					poolName,
+					poolDescription,
+					poolLogo,
+					poolSocials,
+					poolTrackerNames,
+					poolTrackerSymbols,
+					noDelegateOwner
+				);
+
+				// Verify user has 2 keys staked
+				const address = await addr1.getAddress();
+				const balance1 = await referee.connect(addr1).assignedKeysOfUserCount(address);
+				expect(balance1).to.equal(2);
+
+				// Grab the address of the deployed pool
+				const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+
+				// Fail to un-stake both keys
+				await expect(
+					poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 2)
+				).to.be.revertedWith("18");
+
+				// Fail to create genesis key un-stake request with 2 keys still staked
+				await expect(
+					poolFactory.connect(addr1).createUnstakeOwnerLastKeyRequest(stakingPoolAddress)
+				).to.be.revertedWith("22");
+
+				// Successfully create un-stake request for 1 key
+				await poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 1);
+
+				// Fail to un-stake last key with normal "createUnstakeKeyRequest" function
+				await expect(
+					poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 1)
+				).to.be.revertedWith("18");
+
+				// Successfully create un-stake request for genesis key
+				await poolFactory.connect(addr1).createUnstakeOwnerLastKeyRequest(stakingPoolAddress);
+
+				// Wait 60 days
+				await ethers.provider.send("evm_increaseTime", [2592000 * 2]);
+				await ethers.provider.send("evm_mine");
+
+				// Successfully redeem both un-stake requests
+				await poolFactory.connect(addr1).unstakeKeys(0, [mintedKeyId1]);
+				await poolFactory.connect(addr1).unstakeKeys(1, [mintedKeyId2]);
+
+				// Verify user has 0 keys staked
+				const balance2 = await referee.connect(addr1).assignedKeysOfUserCount(address);
+				expect(balance2).to.equal(0);
 			});
 		});
 
@@ -885,7 +973,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Save the new staking pool's address
@@ -931,7 +1020,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
@@ -968,7 +1058,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
@@ -1008,7 +1099,8 @@ export function StakingV2(deployInfrastructure) {
 					poolLogo,
 					poolSocials,
 					poolTrackerNames,
-					poolTrackerSymbols
+					poolTrackerSymbols,
+					noDelegateOwner
 				);
 
 				// Create instance of the deployed pool
@@ -1036,6 +1128,111 @@ export function StakingV2(deployInfrastructure) {
 				// Check the PoolFactory's balance after stake & confirm it is correct
 				const poolFactoryBalance = await esXai.connect(addr1).balanceOf(await poolFactory.getAddress());
 				expect(poolFactoryBalance).to.equal(mintAmount);
+			});
+		});
+
+		describe("Verify boost factor #187167332", function () {
+			it("Verify pool increases boost factor with increasing staked esXai", async function () {
+				const {poolFactory, addr1, nodeLicense, referee, refereeDefaultAdmin, esXai, esXaiMinter} = await loadFixture(deployInfrastructure);
+
+				// Mint key to make basic pool
+				const price = await nodeLicense.price(1, "");
+				await nodeLicense.connect(addr1).mint(1, "", {value: price});
+				const mintedKeyId = await nodeLicense.totalSupply();
+
+				await poolFactory.connect(addr1).createPool(
+					[mintedKeyId],
+					validShareValues[0],
+					validShareValues[1],
+					validShareValues[2],
+					poolName,
+					poolDescription,
+					poolLogo,
+					poolSocials,
+					poolTrackerNames,
+					poolTrackerSymbols,
+					noDelegateOwner
+				);
+
+				// Save the new pool's address
+				const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+
+				// Expect this pool with no esXai to be in the "not a tier" tier (hardcoded return value in Referee5's _getBoostFactor)
+				const poolBoostFactor1 = await referee.connect(refereeDefaultAdmin).getBoostFactorForStaker(stakingPoolAddress);
+				expect(poolBoostFactor1).to.equal(100);
+
+				// Find min esXai threshold (tier 1); mint, grant allowance, and stake
+				const minEsXaiThreshold = await referee.connect(refereeDefaultAdmin).stakeAmountTierThresholds(0);
+				await esXai.connect(esXaiMinter).mint(await addr1.getAddress(), minEsXaiThreshold);
+				await esXai.connect(addr1).increaseAllowance(await poolFactory.getAddress(), minEsXaiThreshold);
+				await poolFactory.connect(addr1).stakeEsXai(stakingPoolAddress, minEsXaiThreshold);
+
+				// Expect this pool to now be in tier 1 (index 0)
+				const minBoostFactor = await referee.connect(refereeDefaultAdmin).stakeAmountBoostFactors(0);
+				const poolBoostFactor2 = await referee.connect(refereeDefaultAdmin).getBoostFactorForStaker(stakingPoolAddress);
+				expect(poolBoostFactor2).to.equal(minBoostFactor);
+			});
+
+			it("Verify that a pool with enough esXai is in a higher tier", async function () {
+				const {poolFactory, addr1, nodeLicense, referee, refereeDefaultAdmin, esXai, esXaiMinter} = await loadFixture(deployInfrastructure);
+
+				// Manually find the highest stake tier thresholds as we have no way to check the array lengths (no functions to get length, and public array's cannot be length-queried)
+				let highestFoundStakeAmountTierThreshold = 0;
+				let searchingForMaxTier = true;
+				let highestFoundTier = 0;
+				while (searchingForMaxTier) {
+					try {
+						highestFoundStakeAmountTierThreshold = await referee.connect(refereeDefaultAdmin).stakeAmountTierThresholds(highestFoundTier);
+						highestFoundTier++;
+					} catch {
+						searchingForMaxTier = false;
+						if (highestFoundTier > 0) {
+							highestFoundTier--;
+						}
+					}
+				}
+
+				// Determine how many keys we will need to reach the highest esXai stake allowance tier
+				const maxStakeAmountPerLicense = await referee.connect(refereeDefaultAdmin).maxStakeAmountPerLicense();
+				const keysForHighestTier = highestFoundStakeAmountTierThreshold / maxStakeAmountPerLicense;
+				const startingSupply = await nodeLicense.totalSupply();
+				const price = await nodeLicense.price(keysForHighestTier, "");
+				await nodeLicense.connect(addr1).mint(keysForHighestTier, "", {value: price});
+				const endingSupply = await nodeLicense.totalSupply();
+
+				// Save the key ids we minted to an array for pool creation
+				const keyIds = [];
+				for (let i = startingSupply; i < endingSupply; i++) {
+					keyIds.push(i + 1n);
+				}
+
+				// Creat a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
+				await poolFactory.connect(addr1).createPool(
+					keyIds,
+					validShareValues[0],
+					validShareValues[1],
+					validShareValues[2],
+					poolName,
+					poolDescription,
+					poolLogo,
+					poolSocials,
+					poolTrackerNames,
+					poolTrackerSymbols,
+					noDelegateOwner
+				);
+
+				// Save the new pool's address
+				const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+
+				// Mint the required esXai to addr1, add the allowance to the pool factory, and then stake that amount
+				await esXai.connect(esXaiMinter).mint(await addr1.getAddress(), highestFoundStakeAmountTierThreshold);
+				await esXai.connect(addr1).increaseAllowance(await poolFactory.getAddress(), highestFoundStakeAmountTierThreshold);
+				await poolFactory.connect(addr1).stakeEsXai(stakingPoolAddress, highestFoundStakeAmountTierThreshold);
+
+				// Check the expected boost factor at the $highestFoundTier & compare it to the pool's
+				const maxBoostFactor = await referee.connect(refereeDefaultAdmin).stakeAmountBoostFactors(highestFoundTier);
+				const poolBoostFactor2 = await referee.connect(refereeDefaultAdmin).getBoostFactorForStaker(stakingPoolAddress);
+				expect(poolBoostFactor2).to.equal(maxBoostFactor);
 			});
 		});
 	}

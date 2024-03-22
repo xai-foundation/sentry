@@ -10,6 +10,7 @@ import "../../nitro-contracts/rollup/IRollupCore.sol";
 import "../../NodeLicense.sol";
 import "../../Xai.sol";
 import "../../esXai.sol";
+import "../../staking-v2/PoolFactory.sol";
 
 // Error Codes
 // 1: Only PoolFactory can call this function.
@@ -28,7 +29,7 @@ import "../../esXai.sol";
 // 14: Challenge is not open for submissions.
 // 15: _nodeLicenseId has already been submitted for this challenge.
 // 16: Challenge is not open for submissions.
-// 17: Caller must be the owner of the NodeLicense or an approved operator.
+// 17: Caller must be the owner of the NodeLicense, an approved operator, or the delegator owner of the pool.
 // 18: The Challenge does not exist for this id.
 // 19: Challenge is still open for submissions.
 // 20: Challenge rewards have expired.
@@ -149,15 +150,12 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping for amount of assigned keys of a user
     mapping(address => uint256) public assignedKeysOfUserCount;
 
-    // Mapping for user address => pool owner address => amount of keys to track total keys staker has in all pools owned by the pool owner
-    mapping(address => mapping(address => uint256)) public stakerKeysToPoolOwner;
-
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[489] private __gap;
+    uint256[490] private __gap;
 
     // Struct for the submissions
     struct Submission {
@@ -557,14 +555,19 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     function _submitAssertion(uint256 _nodeLicenseId, uint256 _challengeId, bytes memory _confirmData) internal {
         
         address licenseOwner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
+        address assignedPool = assignedKeyToPool[_nodeLicenseId];
+
         require(
             licenseOwner == msg.sender ||
-            isApprovedForOperator(licenseOwner, msg.sender),
+            isApprovedForOperator(licenseOwner, msg.sender) ||
+			(
+				assignedPool != address(0) &&
+				PoolFactory(poolFactoryAddress).isDelegateOfPoolOrOwner(msg.sender, assignedPool)
+			),
             "17"
         );
 
         // Support v1 (no pools) & v2 (pools)
-        address assignedPool = assignedKeyToPool[_nodeLicenseId];
 		uint256 stakedAmount = stakedAmounts[assignedPool];
 		if (assignedPool == address(0)) {
 			stakedAmount = stakedAmounts[licenseOwner];
@@ -650,7 +653,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         challenges[_challengeId].amountClaimedByClaimers += reward;
 
         address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
-        if(rewardReceiver == address(0)){
+        if (rewardReceiver == address(0)) {
             rewardReceiver = owner;
         }
 
@@ -819,7 +822,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
      * @return The payout chance boostFactor. 200 for double the chance.
      */
     function _getBoostFactor(uint256 stakedAmount) internal view returns (uint256) {
-        if(stakedAmount < stakeAmountTierThresholds[0]){
+        if (stakedAmount < stakeAmountTierThresholds[0]) {
             return 100;
         }
 
@@ -873,9 +876,9 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         require(newBoostFactor > 0 && newBoostFactor <= 100, "33");
 
         uint256 lastIndex = stakeAmountTierThresholds.length - 1;
-        if(index == 0){
+        if (index == 0) {
             require(stakeAmountTierThresholds[1] > newThreshold, "34");
-        } else if(index == lastIndex){
+        } else if (index == lastIndex) {
             require(stakeAmountTierThresholds[lastIndex - 1] < newThreshold, "35");
         } else {
             require(stakeAmountTierThresholds[index + 1] > newThreshold && stakeAmountTierThresholds[index - 1] < newThreshold, "36");
@@ -935,15 +938,10 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         emit UnstakeV1(msg.sender, amount, stakedAmounts[msg.sender]);
     }
 
-    function stakeKeys(address pool, address poolOwner, address staker, uint256[] memory keyIds) external onlyPoolFactory {
+    function stakeKeys(address pool, address staker, uint256[] memory keyIds) external onlyPoolFactory {
 		require(isKycApproved(staker), "42");
         uint256 keysLength = keyIds.length;
         require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "43");
-
-		if (staker != poolOwner && !isApprovedForOperator(staker, poolOwner)) {
-            _operatorApprovals[staker].add(poolOwner);
-            _ownersForOperator[poolOwner].add(staker);
-		}
 
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
         for (uint256 i = 0; i < keysLength; i++) {
@@ -953,21 +951,13 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             assignedKeyToPool[keyId] = pool;
         }
 
-		stakerKeysToPoolOwner[staker][poolOwner] += keysLength;
         assignedKeysToPoolCount[pool] += keysLength;
         assignedKeysOfUserCount[staker] += keysLength;
     }
 
-    function unstakeKeys(address pool, address poolOwner, address staker, uint256[] memory keyIds) external onlyPoolFactory {
+    function unstakeKeys(address pool, address staker, uint256[] memory keyIds) external onlyPoolFactory {
         uint256 keysLength = keyIds.length;
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
-
-		stakerKeysToPoolOwner[staker][poolOwner] -= keysLength;
-
-        if (staker != poolOwner && stakerKeysToPoolOwner[staker][poolOwner] == 0) {
-            _operatorApprovals[staker].remove(poolOwner);
-            _ownersForOperator[poolOwner].remove(staker);
-		}
 
         for (uint256 i = 0; i < keysLength; i++) {
             uint256 keyId = keyIds[i];
