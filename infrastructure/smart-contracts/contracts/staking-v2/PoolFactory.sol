@@ -405,11 +405,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         );
 
         if (stakeAmount == 0 && keyAmount == 0) {
-			address[] storage userPools = interactedPoolsOfUser[msg.sender];
-			if (userPools.length < 1 || pool != userPools[userToInteractedPoolIds[msg.sender][pool]]) {
-				userToInteractedPoolIds[msg.sender][pool] = userPools.length;
-				userPools.push(pool);
-			}
+			associateUserWithPool(pool);
         }
 
         // Get the pool owner poolOwner
@@ -618,11 +614,9 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             pool,
             msg.sender
         );
+
         if (stakeAmount == 0 && keyAmount == 0) {
-            userToInteractedPoolIds[msg.sender][pool] = interactedPoolsOfUser[
-                msg.sender
-            ].length;
-            interactedPoolsOfUser[msg.sender].push(pool);
+			associateUserWithPool(pool);
         }
 
         Referee5(refereeAddress).stakeEsXai(pool, amount);
@@ -639,6 +633,14 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             Referee5(refereeAddress).stakedAmounts(pool)
         );
     }
+
+	function associateUserWithPool(address pool) internal {
+		address[] storage userPools = interactedPoolsOfUser[msg.sender];
+		if (userPools.length < 1 || pool != userPools[userToInteractedPoolIds[msg.sender][pool]]) {
+			userToInteractedPoolIds[msg.sender][pool] = userPools.length;
+			userPools.push(pool);
+		}
+	}
 
     function unstakeEsXai(uint256 unstakeRequestIndex, uint256 amount) external {
 		UnstakeRequest storage request = unstakeRequests[msg.sender][unstakeRequestIndex];
