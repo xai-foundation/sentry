@@ -878,6 +878,73 @@ export function StakingV2(deployInfrastructure) {
 					)
 				).to.be.revertedWith("43");
 			});
+
+			it("Pool owner can only un-stake the genesis key ", async function () {
+				const {poolFactory, referee, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+
+				// Mint 2 node keys & save the ids
+				const price = await nodeLicense.price(1, "");
+				await nodeLicense.connect(addr1).mint(1, "", {value: price});
+				const mintedKeyId1 = await nodeLicense.totalSupply();
+				await nodeLicense.connect(addr1).mint(1, "", {value: price});
+				const mintedKeyId2 = await nodeLicense.totalSupply();
+
+				// Creat a pool
+				await poolFactory.connect(addr1).createPool(
+					[mintedKeyId1, mintedKeyId2],
+					validShareValues[0],
+					validShareValues[1],
+					validShareValues[2],
+					poolName,
+					poolDescription,
+					poolLogo,
+					poolSocials,
+					poolTrackerNames,
+					poolTrackerSymbols,
+					noDelegateOwner
+				);
+
+				// Verify user has 2 keys staked
+				const address = await addr1.getAddress();
+				const balance1 = await referee.connect(addr1).assignedKeysOfUserCount(address);
+				expect(balance1).to.equal(2);
+
+				// Grab the address of the deployed pool
+				const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+
+				// Fail to un-stake both keys
+				await expect(
+					poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 2)
+				).to.be.revertedWith("18");
+
+				// Fail to create genesis key un-stake request with 2 keys still staked
+				await expect(
+					poolFactory.connect(addr1).createUnstakeOwnerLastKeyRequest(stakingPoolAddress)
+				).to.be.revertedWith("22");
+
+				// Successfully create un-stake request for 1 key
+				await poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 1);
+
+				// Fail to un-stake last key with normal "createUnstakeKeyRequest" function
+				await expect(
+					poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 1)
+				).to.be.revertedWith("18");
+
+				// Successfully create un-stake request for genesis key
+				await poolFactory.connect(addr1).createUnstakeOwnerLastKeyRequest(stakingPoolAddress);
+
+				// Wait 60 days
+				await ethers.provider.send("evm_increaseTime", [2592000 * 2]);
+				await ethers.provider.send("evm_mine");
+
+				// Successfully redeem both un-stake requests
+				await poolFactory.connect(addr1).unstakeKeys(0, [mintedKeyId1]);
+				await poolFactory.connect(addr1).unstakeKeys(1, [mintedKeyId2]);
+
+				// Verify user has 0 keys staked
+				const balance2 = await referee.connect(addr1).assignedKeysOfUserCount(address);
+				expect(balance2).to.equal(0);
+			});
 		});
 
 		describe("Stake esXai to pool #187167334", function () {
