@@ -822,7 +822,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
      * @return The payout chance boostFactor. 200 for double the chance.
      */
     function _getBoostFactor(uint256 stakedAmount) internal view returns (uint256) {
-        if(stakedAmount < stakeAmountTierThresholds[0]){
+        if (stakedAmount < stakeAmountTierThresholds[0]) {
             return 100;
         }
 
@@ -876,9 +876,9 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         require(newBoostFactor > 0 && newBoostFactor <= 100, "33");
 
         uint256 lastIndex = stakeAmountTierThresholds.length - 1;
-        if(index == 0){
+        if (index == 0) {
             require(stakeAmountTierThresholds[1] > newThreshold, "34");
-        } else if(index == lastIndex){
+        } else if (index == lastIndex) {
             require(stakeAmountTierThresholds[lastIndex - 1] < newThreshold, "35");
         } else {
             require(stakeAmountTierThresholds[index + 1] > newThreshold && stakeAmountTierThresholds[index - 1] < newThreshold, "36");

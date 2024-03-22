@@ -1130,5 +1130,108 @@ export function StakingV2(deployInfrastructure) {
 				expect(poolFactoryBalance).to.equal(mintAmount);
 			});
 		});
+
+		describe("Verify boost factor #187167332", function () {
+			it("Verify pool increases boost factor with increasing staked esXai", async function () {
+				const {poolFactory, addr1, nodeLicense, referee, refereeDefaultAdmin, esXai, esXaiMinter} = await loadFixture(deployInfrastructure);
+
+				// Mint key to make basic pool
+				const price = await nodeLicense.price(1, "");
+				await nodeLicense.connect(addr1).mint(1, "", {value: price});
+				const mintedKeyId = await nodeLicense.totalSupply();
+
+				await poolFactory.connect(addr1).createPool(
+					[mintedKeyId],
+					validShareValues[0],
+					validShareValues[1],
+					validShareValues[2],
+					poolName,
+					poolDescription,
+					poolLogo,
+					poolSocials,
+					poolTrackerNames,
+					poolTrackerSymbols,
+					noDelegateOwner
+				);
+
+				// Save the new pool's address
+				const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+
+				// Expect this pool with no esXai to be in the "not a tier" tier (hardcoded return value in Referee5's _getBoostFactor)
+				const poolBoostFactor1 = await referee.connect(refereeDefaultAdmin).getBoostFactorForStaker(stakingPoolAddress);
+				expect(poolBoostFactor1).to.equal(100);
+
+				// Find min esXai threshold (tier 1); mint, grant allowance, and stake
+				const minEsXaiThreshold = await referee.connect(refereeDefaultAdmin).stakeAmountTierThresholds(0);
+				await esXai.connect(esXaiMinter).mint(await addr1.getAddress(), minEsXaiThreshold);
+				await esXai.connect(addr1).increaseAllowance(await poolFactory.getAddress(), minEsXaiThreshold);
+				await poolFactory.connect(addr1).stakeEsXai(stakingPoolAddress, minEsXaiThreshold);
+
+				// Expect this pool to now be in tier 1 (index 0)
+				const minBoostFactor = await referee.connect(refereeDefaultAdmin).stakeAmountBoostFactors(0);
+				const poolBoostFactor2 = await referee.connect(refereeDefaultAdmin).getBoostFactorForStaker(stakingPoolAddress);
+				expect(poolBoostFactor2).to.equal(minBoostFactor);
+			});
+
+			it("Verify that a pool with enough esXai is in a higher tier", async function () {
+				const {poolFactory, addr1, nodeLicense, referee, refereeDefaultAdmin, esXai, esXaiMinter} = await loadFixture(deployInfrastructure);
+
+				// Manually find the highest stake tier thresholds as we have no way to check the array lengths (no functions to get length, and public array's cannot be length-queried)
+				let highestFoundStakeAmountTierThreshold = 0;
+				let searchingForMaxTier = true;
+				let highestFoundTier = 0;
+				while (searchingForMaxTier) {
+					try {
+						highestFoundStakeAmountTierThreshold = await referee.connect(refereeDefaultAdmin).stakeAmountTierThresholds(highestFoundTier);
+						highestFoundTier++;
+					} catch {
+						searchingForMaxTier = false;
+						highestFoundTier--;
+					}
+				}
+
+				// Determine how many keys we will need to reach the highest esXai stake allowance tier
+				const maxStakeAmountPerLicense = await referee.connect(refereeDefaultAdmin).maxStakeAmountPerLicense();
+				const keysForHighestTier = highestFoundStakeAmountTierThreshold / maxStakeAmountPerLicense;
+				const startingSupply = await nodeLicense.totalSupply();
+				const price = await nodeLicense.price(keysForHighestTier, "");
+				await nodeLicense.connect(addr1).mint(keysForHighestTier, "", {value: price});
+				const endingSupply = await nodeLicense.totalSupply();
+
+				// Save the key ids we minted to an array for pool creation
+				const keyIds = [];
+				for (let i = startingSupply; i < endingSupply; i++) {
+					keyIds.push(i + 1n);
+				}
+
+				// Creat a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
+				await poolFactory.connect(addr1).createPool(
+					keyIds,
+					validShareValues[0],
+					validShareValues[1],
+					validShareValues[2],
+					poolName,
+					poolDescription,
+					poolLogo,
+					poolSocials,
+					poolTrackerNames,
+					poolTrackerSymbols,
+					noDelegateOwner
+				);
+
+				// Save the new pool's address
+				const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+
+				// Mint the required esXai to addr1, add the allowance to the pool factory, and then stake that amount
+				await esXai.connect(esXaiMinter).mint(await addr1.getAddress(), highestFoundStakeAmountTierThreshold);
+				await esXai.connect(addr1).increaseAllowance(await poolFactory.getAddress(), highestFoundStakeAmountTierThreshold);
+				await poolFactory.connect(addr1).stakeEsXai(stakingPoolAddress, highestFoundStakeAmountTierThreshold);
+
+				// Check the expected boost factor at the $highestFoundTier & compare it to the pool's
+				const maxBoostFactor = await referee.connect(refereeDefaultAdmin).stakeAmountBoostFactors(highestFoundTier);
+				const poolBoostFactor2 = await referee.connect(refereeDefaultAdmin).getBoostFactorForStaker(stakingPoolAddress);
+				expect(poolBoostFactor2).to.equal(maxBoostFactor);
+			});
+		});
 	}
 }
