@@ -6,3 +6,4 @@ export * from "./transferBaseCurrency.js";
 export * from "./getSubmissionsForChallenges.js";
 export * from "./claimReward.js";
 export * from "./getBoostFactor.js";
+export * from "./submitMultipleAssertions.js";

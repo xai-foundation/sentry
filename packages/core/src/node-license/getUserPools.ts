@@ -2,6 +2,8 @@ import { ethers } from 'ethers';
 import { config } from '../config.js';
 import { getProvider } from '../utils/getProvider.js';
 import { retry } from "../index.js";
+import { PoolFactoryAbi } from '../abis/PoolFactoryAbi.js';
+import { StakingPoolAbi } from '../abis/StakingPoolAbi.js';
 
 /**
  * Fetches all pools the ownerAddress is either owner of or delegated operator of.

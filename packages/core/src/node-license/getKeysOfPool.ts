@@ -2,6 +2,7 @@ import { ethers } from 'ethers';
 import { config } from '../config.js';
 import { getProvider } from '../utils/getProvider.js';
 import { retry } from "../index.js";
+import { StakingPoolAbi } from '../abis/StakingPoolAbi.js';
 
 /**
  * Fetches all keys staked in a pool.

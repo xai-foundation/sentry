@@ -18,9 +18,11 @@ import {
     getBoostFactor,
     getUserPools,
     getKeysOfPool,
+    submitMultipleAssertions,
 } from "../index.js";
 import { retry } from "../index.js";
 import axios from "axios";
+import { PoolFactoryAbi } from "../abis/PoolFactoryAbi.js";
 
 export enum NodeLicenseStatus {
     WAITING_IN_QUEUE = "Booting Operator For Key", // waiting to do an action, but in a queue
@@ -55,7 +57,9 @@ const mintTimestamps: { [nodeLicenseId: string]: bigint } = {};
 const nodeLicenseStatusMap: NodeLicenseStatusMap = new Map();
 const challengeNumberMap: { [challengeNumber: string]: boolean } = {};
 let cachedBoostFactor: { [ownerAddress: string]: bigint } = {};
-const keyIdToPoolAddress: { [keyId: string]: string } = {};
+let operatorAddress: string;
+let keyIdToPoolAddress: { [keyId: string]: string } = {};
+let operatorPoolAddresses: string[];
 
 async function getPublicNodeFromBucket(confirmHash: string) {
     const url = `https://sentry-public-node.xai.games/assertions/${confirmHash.toLowerCase()}.json`;
@@ -118,6 +122,95 @@ const createAssertionHashAndCheckPayout = (nodeLicenseId: bigint, challengeId: b
     return [Number((BigInt(assertionHash) % BigInt(10_000))) < Number(boostFactor), assertionHash];
 }
 
+const checkV2Enabled = async (): Promise<boolean> => {
+    const provider = getProvider();
+    const poolFactoryContract = new ethers.Contract(config.poolFactoryAddress, PoolFactoryAbi, provider);
+    try {
+        const enabled = await poolFactoryContract.stakingEnabled();
+        return enabled
+    } catch (error: any) {
+        const errorMessage: string = error && error.message ? error.message : error;
+        if (!errorMessage.includes("missing revert data")) {
+            cachedLogger(`Error: Failed to load staking enabled from PoolFactory ` + errorMessage);
+        }
+        return false;
+    }
+}
+
+const reloadPoolKeys = async () => {
+    operatorPoolAddresses = await getUserPools(operatorAddress);
+
+    if (operatorPoolAddresses.length) {
+
+        const currentPoolKeys: { [key: string]: string } = {};
+
+        cachedLogger(`Found ${operatorPoolAddresses.length} pools for operator.`);
+
+        for (const pool of operatorPoolAddresses) {
+            //Check every key and find out if its already in the nodeLicenseIds list
+            cachedLogger(`Fetching node licenses for pool ${pool}.`);
+
+            const keys = await getKeysOfPool(pool);
+
+            for (const key of keys) {
+
+                if (nodeLicenseIds.includes(BigInt(key))) {
+                    cachedLogger(`Fetched Sentry Key ${key.toString()} staked in pool ${pool}.`);
+                    nodeLicenseStatusMap.set(key, {
+                        ownerPublicKey: pool,
+                        status: NodeLicenseStatus.WAITING_IN_QUEUE,
+                    });
+                    currentPoolKeys[key.toString()] = pool;
+                    nodeLicenseIds.push(key);
+                } else {
+                    //If we had the key in the list we need to check if the pool address changed
+                    const nodeLicenseInfo = nodeLicenseStatusMap.get(key);
+                    if (nodeLicenseInfo) {
+                        if (nodeLicenseInfo.ownerPublicKey != pool) {
+                            nodeLicenseInfo.ownerPublicKey = pool;
+                            nodeLicenseStatusMap.set(key, nodeLicenseInfo);
+                            safeStatusCallback();
+                        }
+                    }
+                }
+            }
+        }
+
+        //We have the refreshed list of pool keys
+        //We need to remove every key that was added from the previous pool keys and is not in the current keys anymore because it got unstaked
+        const cachedPoolKeys = Object.keys(keyIdToPoolAddress);
+        if (cachedPoolKeys.length > 0) {
+            for (const key of cachedPoolKeys) {
+                if (!currentPoolKeys[key]) {
+                    cachedLogger(`Removing unstaked key ${key} from operator list.`);
+                    const indexOfKeyInList = nodeLicenseIds.indexOf(BigInt(key));
+                    if (indexOfKeyInList > -1) {
+                        nodeLicenseIds.splice(indexOfKeyInList, 1);
+                        nodeLicenseStatusMap.delete(BigInt(key));
+                    }
+                }
+            }
+        }
+
+        //Update current key to pool map
+        keyIdToPoolAddress = currentPoolKeys;
+
+    } else {
+        const poolKeys = Object.keys(keyIdToPoolAddress);
+        if (poolKeys.length > 0) {
+            for (const key of poolKeys) {
+                const indexOfKeyInList = nodeLicenseIds.indexOf(BigInt(key));
+                if (indexOfKeyInList > -1) {
+                    nodeLicenseIds.splice(indexOfKeyInList, 1);
+                    nodeLicenseStatusMap.delete(BigInt(key));
+                }
+            }
+
+            keyIdToPoolAddress = {};
+        }
+    }
+}
+
 /**
  * Processes a new challenge for all the node licenses.
  * @param {bigint} challengeNumber - The challenge number.
@@ -126,6 +219,13 @@ const createAssertionHashAndCheckPayout = (nodeLicenseId: bigint, challengeId: b
 async function processNewChallenge(challengeNumber: bigint, challenge: Challenge) {
     cachedLogger(`Processing new challenge with number: ${challengeNumber}.`);
     cachedBoostFactor = {};
+
+    const stakingV2Enabled = await checkV2Enabled();
+    const batchedWinnerKeys: bigint[] = []
+    if (stakingV2Enabled) {
+        await reloadPoolKeys();
+    }
+
     for (const nodeLicenseId of nodeLicenseIds) {
 
         cachedLogger(`Checking eligibility for nodeLicenseId ${nodeLicenseId}.`);
@@ -179,9 +279,14 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
                 updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
                 continue;
             }
-            // Submit the claim to the challenge
-            cachedLogger(`Submitting assertion for Sentry Key ${nodeLicenseId} to challenge ${challengeNumber}.`);
-            await retry(() => submitAssertionToChallenge(nodeLicenseId, challengeNumber, challenge.assertionStateRootOrConfirmData, cachedSigner));
+
+            if (!stakingV2Enabled) {
+                // Submit the claim to the challenge
+                cachedLogger(`Submitting assertion for Sentry Key ${nodeLicenseId} to challenge ${challengeNumber}.`);
+                await retry(() => submitAssertionToChallenge(nodeLicenseId, challengeNumber, challenge.assertionStateRootOrConfirmData, cachedSigner));
+            } else {
+                batchedWinnerKeys.push(nodeLicenseId);
+            }
 
         } catch (error: any) {
             cachedLogger(`Error submitting assertion for Sentry Key ${nodeLicenseId} to challenge ${challengeNumber} - ${error && error.message ? error.message : error}`);
@@ -191,6 +296,12 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
         cachedLogger(`Submitted assertion for Sentry Key ${nodeLicenseId} to challenge ${challengeNumber}. You have accrued esXAI.`);
         updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
 
+    }
+
+
+    if (stakingV2Enabled && batchedWinnerKeys.length) {
+        await submitMultipleAssertions(batchedWinnerKeys, challengeNumber, challenge.assertionStateRootOrConfirmData, cachedSigner, cachedLogger);
+        cachedLogger(`Submitted assertion for ${batchedWinnerKeys.length} Sentry Keys `);
     }
 }
 
@@ -335,7 +446,6 @@ export async function operatorRuntime(
 
     const provider = getProvider();
 
-
     // Create a wrapper for the statusCallback to always send back a fresh copy of the map, so the other side doesn't mutate the map
     safeStatusCallback = () => {
         // Create a fresh copy of the map
@@ -346,7 +456,7 @@ export async function operatorRuntime(
     };
 
     // get the address of the operator
-    const operatorAddress = await signer.getAddress();
+    operatorAddress = await signer.getAddress();
     logFunction(`Fetched address of operator ${operatorAddress}.`);
 
     // get a list of all the owners that are added to this operator
@@ -378,32 +488,38 @@ export async function operatorRuntime(
         logFunction(`Fetched ${licensesOfOwner.length} node licenses for owner ${owner}.`);
     }
 
-    // Get Pool related keys
-    // Get all user pool addresses as owner and delegated
-    const operatorPools = await getUserPools(operatorAddress);
+    //Check if v2 is enabled
+    // Create an instance of the Referee contract
+    const stakingV2Enabled = await checkV2Enabled();
 
-    if (operatorPools.length) {
-        logFunction(`Found ${operatorPools.length} pools for operator.`);
-        //For each pool we need to fetch all keys
+    if (stakingV2Enabled) {
+        logFunction(`Staking V2 enabled, loading pool keys`);
+        // Get Pool related keys
+        // Get all user pool addresses as owner and delegated
+        operatorPoolAddresses = await getUserPools(operatorAddress);
 
-        for (const pool of operatorPools) {
-            //Check every key and find out if its already in the nodeLicenseIds list
-            logFunction(`Fetching node licenses for pool ${pool}.`);
+        if (operatorPoolAddresses.length) {
+            logFunction(`Found ${operatorPoolAddresses.length} pools for operator.`);
+            //For each pool we need to fetch all keys
 
-            const keys = await getKeysOfPool(pool);
+            for (const pool of operatorPoolAddresses) {
+                //Check every key and find out if its already in the nodeLicenseIds list
+                logFunction(`Fetching node licenses for pool ${pool}.`);
 
-            for (const key of keys) {
-                if (!nodeLicenseIds.includes(key)) {
-                    logFunction(`Fetched Sentry Key ${key.toString()} staked in pool ${pool}.`);
-                    nodeLicenseStatusMap.set(key, {
-                        ownerPublicKey: pool,
-                        status: NodeLicenseStatus.WAITING_IN_QUEUE,
-                    });
-                    keyIdToPoolAddress[key.toString()] = pool;
-                    nodeLicenseIds.push(key);
+                const keys = await getKeysOfPool(pool);
 
-                } else {
-                    logFunction(`Sentry Key ${key.toString()} already in list of operator keys - not added for pool operation.`);
+                for (const key of keys) {
+                    if (!nodeLicenseIds.includes(key)) {
+                        logFunction(`Fetched Sentry Key ${key.toString()} staked in pool ${pool}.`);
+                        nodeLicenseStatusMap.set(key, {
+                            ownerPublicKey: pool,
+                            status: NodeLicenseStatus.WAITING_IN_QUEUE,
+                        });
+                        keyIdToPoolAddress[key.toString()] = pool;
+                        nodeLicenseIds.push(key);
+                    } else {
+                        logFunction(`Sentry Key ${key.toString()} already in list of operator keys - not added for pool operation.`);
+                    }
                 }
             }
         }
