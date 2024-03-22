@@ -565,7 +565,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             isApprovedForOperator(licenseOwner, msg.sender) ||
 			(
 				assignedPool != address(0) &&
-				PoolFactory(poolFactoryAddress).isDelegateOfPool(msg.sender, assignedPool)
+				PoolFactory(poolFactoryAddress).isDelegateOfPoolOrOwner(msg.sender, assignedPool)
 			),
             "17"
         );
