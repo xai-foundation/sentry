@@ -1,7 +1,9 @@
 import Vorpal from "vorpal";
 import axios from "axios";
 import { ethers } from 'ethers';
-import { config, createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee, EventListenerError } from "@sentry/core";
+import { config, createBlsKeyPair, getAssertion, getSignerFromPrivateKey, getProvider, RefereeAbi, submitAssertionToReferee, EventListenerError } from "@sentry/core";
+
+import crypto from 'crypto';
 
 type PromptBodyKey = "secretKeyPrompt" | "walletKeyPrompt" | "webhookUrlPrompt";
 
@@ -27,6 +29,8 @@ const INIT_PROMPTS: { [key in PromptBodyKey]: Vorpal.PromptObject } = {
 
 const NUM_ASSERTION_LISTENER_RETRIES: number = 3; //The number of restart attempts if the listener errors
 const NUM_CON_WS_ALLOWED_ERRORS: number = 10; //The number of consecutive WS error we allow before restarting the listener
+const CHALLENGER_TESTNET_TIME: number = 5; //The number of minutes the challenger should call for a challenge
+const TEST_START_COUNTER: number = 200; //The number needs to be added to the counter to get available challenges
 
 // Prompt input cache
 let cachedSigner: {
@@ -95,7 +99,7 @@ const onAssertionConfirmedCb = async (nodeNum: any, commandInstance: Vorpal.Comm
 const checkTimeSinceLastAssertion = async (lastAssertionTime: number, commandInstance: Vorpal.CommandInstance) => {
     const currentTime = Date.now();
     commandInstance.log(`[${new Date().toISOString()}] The currentTime is ${currentTime}`);
-    if (currentTime - lastAssertionTime > 70 * 60 * 1000) {
+    if (currentTime - lastAssertionTime > (CHALLENGER_TESTNET_TIME + 1) * 60 * 1000) {
         const timeSinceLastAssertion = Math.round((currentTime - lastAssertionTime) / 60000);
         commandInstance.log(`[${new Date().toISOString()}] It has been ${timeSinceLastAssertion} minutes since the last assertion. Please check the Rollup Protocol (${config.rollupAddress}).`);
         sendNotification(`It has been ${timeSinceLastAssertion} minutes since the last assertion. Please check the Rollup Protocol (${config.rollupAddress}).`, commandInstance);
@@ -112,44 +116,66 @@ const sendNotification = async (message: string, commandInstance: Vorpal.Command
     }
 }
 
+function generateRandomHexHash() {
+    // 32 bytes is 256 bits, and each byte is represented by two hex characters
+    const randomBytes = crypto.randomBytes(32);
+    return "0x" + randomBytes.toString('hex');
+}
+
+const testnetChallenger = async (commandInstance: Vorpal.CommandInstance) => {
+
+    // Get the provider
+    const provider = getProvider();
+
+    // Create an instance of the Referee contract
+    const refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, cachedSigner.signer);
+
+    let counter = Number(await refereeContract.challengeCounter());
+    commandInstance.log(`[${new Date().toISOString()}] Current ChallengeCount = ${counter + TEST_START_COUNTER}`);
+
+    // Create a fake challenge
+    let lastChallenge = {
+        assertionId: BigInt(counter + TEST_START_COUNTER),
+        predecessorAssertionId: BigInt(counter + TEST_START_COUNTER - 1),
+        confirmData: generateRandomHexHash(),
+        assertionTimestamp: Math.floor(Date.now() / 1000),
+        challengerSignedHash: generateRandomHexHash()
+    }
+
+    commandInstance.log(`[${new Date().toISOString()}] Assertion data retrieved. Starting the submission process...`);
+    try {
+        // Submit fake challenge
+        await refereeContract.submitChallenge(
+            lastChallenge.assertionId,
+            lastChallenge.predecessorAssertionId,
+            lastChallenge.confirmData,
+            Number(lastChallenge.assertionTimestamp),
+            lastChallenge.challengerSignedHash
+        );
+        commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${lastChallenge.assertionId}`);
+        lastAssertionTime = Date.now();
+    } catch (error) {
+        commandInstance.log(`[${new Date().toISOString()}] Submit Assertion Error: ${(error as Error).message}`);
+        sendNotification(`Submit Assertion Error: ${(error as Error).message}`, commandInstance);
+        throw error;
+    }
+
+}
 
 const startListener = async (commandInstance: Vorpal.CommandInstance) => {
 
-    let errorCount = 0;
-    let isStopping = false;
-
-    const stopListener = (listener: any) => {
-        if (!isStopping) {
-            isStopping = true;
-            listener.stop();
-        }
-    }
-
     return new Promise((resolve) => {
-        const listener = listenForAssertions(
-            async (nodeNum: any, blockHash: any, sendRoot: any, event: any, error?: EventListenerError) => {
-                if (error) {
-                    errorCount++;
-                    // We should allow a defined number of consecutive WS errors before restarting the websocket at all
-                    if (errorCount > NUM_CON_WS_ALLOWED_ERRORS) {
-                        stopListener(listener);
-                        resolve(error);
-                    }
-                    return;
-                }
 
+        try {
+            commandInstance.log(`[${new Date().toISOString()}] Start listening to challenges...`);
+            testnetChallenger(commandInstance);
+            setInterval(function () {
+                testnetChallenger(commandInstance);
+            }, CHALLENGER_TESTNET_TIME * 60 * 1000);
+        } catch (error) {
+            resolve(error);
+        }
 
-                try {
-                    errorCount = 0;
-                    await onAssertionConfirmedCb(nodeNum, commandInstance);
-                    currentNumberOfRetries = 0;
-                } catch {
-                    stopListener(listener);
-                    resolve(error);
-                }
-            },
-            (v: string) => commandInstance.log(v),
-        );
     })
 }
 
@@ -180,21 +206,21 @@ export function bootChallenger(cli: Vorpal) {
             // Check if submit assertion has not been run for over 1 hour and 10 minutes
             const assertionCheckInterval = setInterval(() => {
                 checkTimeSinceLastAssertion(lastAssertionTime, commandInstance);
-            }, 5 * 60 * 1000);
+            }, 1 * 60 * 1000);
 
-            for (; currentNumberOfRetries <= NUM_ASSERTION_LISTENER_RETRIES; currentNumberOfRetries++) {
-                commandInstance.log(`[${new Date().toISOString()}] The challenger is now listening for assertions...`);
-                await startListener(commandInstance);
+            commandInstance.log(`[${new Date().toISOString()}] The challenger is now listening for assertions...`);
+            await startListener(commandInstance);
+            // for (; currentNumberOfRetries <= NUM_ASSERTION_LISTENER_RETRIES; currentNumberOfRetries++) {
 
-                if (currentNumberOfRetries + 1 <= NUM_ASSERTION_LISTENER_RETRIES) {
-                    await (new Promise((resolve) => {
-                        setTimeout(resolve, 3000);
-                    }))
-                    commandInstance.log(`[${new Date().toISOString()}] Challenger restarting with ${NUM_ASSERTION_LISTENER_RETRIES - (currentNumberOfRetries + 1)} attempts left.`);
-                    sendNotification(`Challenger restarting with ${NUM_ASSERTION_LISTENER_RETRIES - (currentNumberOfRetries + 1)} attempts left.`, commandInstance);
-                }
+            //     if (currentNumberOfRetries + 1 <= NUM_ASSERTION_LISTENER_RETRIES) {
+            //         await (new Promise((resolve) => {
+            //             setTimeout(resolve, 3000);
+            //         }))
+            //         commandInstance.log(`[${new Date().toISOString()}] Challenger restarting with ${NUM_ASSERTION_LISTENER_RETRIES - (currentNumberOfRetries + 1)} attempts left.`);
+            //         sendNotification(`Challenger restarting with ${NUM_ASSERTION_LISTENER_RETRIES - (currentNumberOfRetries + 1)} attempts left.`, commandInstance);
+            //     }
 
-            }
+            // }
 
             clearInterval(assertionCheckInterval);
             commandInstance.log(`[${new Date().toISOString()}] Challenger has stopped after ${NUM_ASSERTION_LISTENER_RETRIES} attempts.`);

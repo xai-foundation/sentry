@@ -274,18 +274,20 @@ async function processClosedChallenges(challengeIds: bigint[]) {
 // start a listener for new challenges
 async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: any) {
     if (event && challenge.rollupUsed === config.rollupAddress) {
-        compareWithCDN(challenge)
-            .then(({ publicNodeBucket, error }) => {
-                if (error) {
-                    onAssertionMissMatchCb(publicNodeBucket, challenge, error);
-                    return;
-                }
-                cachedLogger(`Comparison between PublicNode and Challenger was successful.`);
-            })
-            .catch(error => {
-                cachedLogger(`Error on CND check for challenge ${Number(challenge.assertionId)}.`);
-                cachedLogger(`${error.message}.`);
-            });
+
+        cachedLogger(`NO comparison between PublicNode and Challenger in SEPOLIA MODE!.`);
+        // compareWithCDN(challenge)
+        //     .then(({ publicNodeBucket, error }) => {
+        //         if (error) {
+        //             onAssertionMissMatchCb(publicNodeBucket, challenge, error);
+        //             return;
+        //         }
+        //         cachedLogger(`Comparison between PublicNode and Challenger was successful.`);
+        //     })
+        //     .catch(error => {
+        //         cachedLogger(`Error on CND check for challenge ${Number(challenge.assertionId)}.`);
+        //         cachedLogger(`${error.message}.`);
+        //     });
     }
 
     if (challenge.openForSubmissions) {
@@ -390,15 +392,19 @@ export async function operatorRuntime(
     const closeChallengeListener = listenForChallenges(listenForChallengesCallback);
     logFunction(`Started listener for new challenges.`);
 
+    logFunction(`SEPOLIAMODE!`);
+    logFunction(`SEPOLIAMODE!`);
+    logFunction(`SEPOLIAMODE!`);
+    logFunction(`SEPOLIAMODE!`);
     logFunction(`Processing open challenges.`);
-    await listChallenges(false, listenForChallengesCallback);
+    await listChallenges(true, listenForChallengesCallback);
 
     logFunction(`The operator has finished booting. The operator is running successfully. esXAI will accrue every few days.`);
 
     const fetchBlockNumber = async () => {
         try {
             const blockNumber = await provider.getBlockNumber();
-            logFunction(`[cli ${version}] Health Check on JSON RPC, Operator still healthy. Current block number: ${blockNumber}`);
+            logFunction(`[cli SEPOLIA-1.1.4] Health Check on JSON RPC, Operator still healthy. Current block number: ${blockNumber}`);
         } catch (error) {
             logFunction(`Error fetching block number, operator may no longer be connected to the JSON RPC: ${JSON.stringify(error)}.`);
         }
