@@ -285,6 +285,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
 		// Add pool to delegate's list
 		if (_delegateOwner != address(0)) {
+
 			poolsOfDelegateIndices[poolProxy] = poolsOfDelegate[_delegateOwner].length;
 			poolsOfDelegate[_delegateOwner].push(poolProxy);
 		}
@@ -404,11 +405,10 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         );
 
         if (stakeAmount == 0 && keyAmount == 0) {
-			if (pool != interactedPoolsOfUser[msg.sender][userToInteractedPoolIds[msg.sender][pool]]) {
-				userToInteractedPoolIds[msg.sender][pool] = interactedPoolsOfUser[
-					msg.sender
-				].length;
-				interactedPoolsOfUser[msg.sender].push(pool);
+			address[] storage userPools = interactedPoolsOfUser[msg.sender];
+			if (userPools.length < 1 || pool != userPools[userToInteractedPoolIds[msg.sender][pool]]) {
+				userToInteractedPoolIds[msg.sender][pool] = userPools.length;
+				userPools.push(pool);
 			}
         }
 
@@ -445,16 +445,18 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             msg.sender
         );
 
+		uint256 requestKeys = userRequestedUnstakeKeyAmount[msg.sender][pool];
+
         if (IStakingPool(pool).getPoolOwner() == msg.sender) {
             require(
                 stakedKeysCount >
-                    keyAmount + userRequestedUnstakeKeyAmount[msg.sender][pool],
+                    keyAmount + requestKeys,
                 "18"
             );
         } else {
             require(
                 stakedKeysCount >=
-                    keyAmount + userRequestedUnstakeKeyAmount[msg.sender][pool],
+                    keyAmount + requestKeys,
                 "19"
             );
         }
@@ -471,7 +473,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             )
         );
 
-        userRequestedUnstakeKeyAmount[msg.sender][pool] += keyAmount;
+		userRequestedUnstakeKeyAmount[msg.sender][pool] += keyAmount;
 
         emit UnstakeRequestStarted(
             msg.sender,
