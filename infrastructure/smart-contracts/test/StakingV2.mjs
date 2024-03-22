@@ -44,7 +44,7 @@ export function StakingV2(deployInfrastructure) {
 						poolTrackerSymbols,
 						noDelegateOwner
 					)
-				).to.be.revertedWith("Pool requires at least 1 key");
+				).to.be.revertedWith("5");
 			});
 
 			it("Check that the shares cannot go over the max values (bucketshareMaxValues = ordered owner, keys, esXaiStaker)", async function () {
@@ -70,7 +70,7 @@ export function StakingV2(deployInfrastructure) {
 						poolTrackerSymbols,
 						noDelegateOwner
 					)
-				).to.be.revertedWith("Invalid shares");
+				).to.be.revertedWith("6");
 			})
 
 			it("Check that Pool exists (stakingPoolsCount, stakingPools[])", async function () {
@@ -339,7 +339,7 @@ export function StakingV2(deployInfrastructure) {
 				// Fail to create un-stake request for 1 key because can't go to 0
 				await expect(
 					poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 1)
-				).to.be.revertedWith("Insufficient keys staked");
+				).to.be.revertedWith("18");
 
 				// Verify the minted key is still assigned to the correct pool
 				const assignedKeyPool2 = await referee.connect(addr1).assignedKeyToPool(mintedKeyId);
@@ -474,7 +474,7 @@ export function StakingV2(deployInfrastructure) {
 						validShareValues[1],
 						validShareValues[2]
 					)
-				).to.be.revertedWith("Invalid shares");
+				).to.be.revertedWith("10");
 
 				// Key bucket share above maximum
 				await expect(
@@ -484,7 +484,7 @@ export function StakingV2(deployInfrastructure) {
 						validShareValues[1] + 1n,
 						validShareValues[2]
 					)
-				).to.be.revertedWith("Invalid shares");
+				).to.be.revertedWith("10");
 
 				// Staked esXai bucket share above maximum
 				await expect(
@@ -494,7 +494,7 @@ export function StakingV2(deployInfrastructure) {
 						validShareValues[1],
 						validShareValues[2] + 1n
 					)
-				).to.be.revertedWith("Invalid shares");
+				).to.be.revertedWith("10");
 
 				// All shares within valid limits but do not equal 10000
 				await expect(
@@ -504,7 +504,7 @@ export function StakingV2(deployInfrastructure) {
 						validShareValues[1] - 1n,
 						validShareValues[2] - 1n
 					)
-				).to.be.revertedWith("Invalid shares");
+				).to.be.revertedWith("10");
 			});
 
 			it("Check that the metadata gets returned from the poolInfo", async function () {
