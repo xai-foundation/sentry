@@ -208,7 +208,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
                 _ownerShare + _keyBucketShare + _stakedBucketShare == 10_000,
             "Invalid shares"
         );
-		require(msg.sender != _delegateOwner && _delegateOwner != address(0), "Invalid delegate");
+		require(msg.sender != _delegateOwner, "Invalid delegate");
 
         address poolProxy = address(
             new TransparentUpgradeableProxyImplementation(
