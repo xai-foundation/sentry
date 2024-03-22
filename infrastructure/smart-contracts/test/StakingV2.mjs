@@ -1186,7 +1186,9 @@ export function StakingV2(deployInfrastructure) {
 						highestFoundTier++;
 					} catch {
 						searchingForMaxTier = false;
-						highestFoundTier--;
+						if (highestFoundTier > 0) {
+							highestFoundTier--;
+						}
 					}
 				}
 
