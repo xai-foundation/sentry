@@ -243,8 +243,10 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         );
 
 		// Add pool to delegate's list
-		poolsOfDelegateIndices[poolProxy] = poolsOfDelegate[_delegateOwner].length;
-		poolsOfDelegate[_delegateOwner].push(poolProxy);
+		if (_delegateOwner != address(0)) {
+			poolsOfDelegateIndices[poolProxy] = poolsOfDelegate[_delegateOwner].length;
+			poolsOfDelegate[_delegateOwner].push(poolProxy);
+		}
 
         IStakingPool(poolProxy).initShares(
             _ownerShare,
@@ -335,9 +337,11 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 		}
 
 		// Add pool to delegate's list
-		poolsOfDelegateIndices[pool] = poolsOfDelegate[delegate].length;
-		poolsOfDelegate[delegate].push(pool);
-		emit UpdatePoolDelegate(delegate, pool);
+		if (delegate != address(0)) {
+			poolsOfDelegateIndices[pool] = poolsOfDelegate[delegate].length;
+			poolsOfDelegate[delegate].push(pool);
+			emit UpdatePoolDelegate(delegate, pool);
+		}
 	}
 
     function userPoolInfo(
