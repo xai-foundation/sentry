@@ -396,20 +396,23 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function _stakeKeys(address pool, uint256[] memory keyIds) internal {
-        //Check if we already know that the user has interacted with this pool
-        //If not add pool index to
+        // Check if we already know that the user has interacted with this pool
+        // If not add pool index to
         (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
             pool,
             msg.sender
         );
+
         if (stakeAmount == 0 && keyAmount == 0) {
-            userToInteractedPoolIds[msg.sender][pool] = interactedPoolsOfUser[
-                msg.sender
-            ].length;
-            interactedPoolsOfUser[msg.sender].push(pool);
+			if (pool != interactedPoolsOfUser[msg.sender][userToInteractedPoolIds[msg.sender][pool]]) {
+				userToInteractedPoolIds[msg.sender][pool] = interactedPoolsOfUser[
+					msg.sender
+				].length;
+				interactedPoolsOfUser[msg.sender].push(pool);
+			}
         }
 
-        //get the pool owner poolOwner
+        // Get the pool owner poolOwner
         Referee5(refereeAddress).stakeKeys(
             pool,
             msg.sender,
@@ -694,11 +697,11 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         }
     }
 
-	function getDelegatePools(address delegate) external returns (address[] memory) {
+	function getDelegatePools(address delegate) external view returns (address[] memory) {
 		return poolsOfDelegate[delegate];
 	}
 
-	function isDelegateOfPoolOrOwner(address delegate, address pool) external returns (bool) {
+	function isDelegateOfPoolOrOwner(address delegate, address pool) external view returns (bool) {
 		return poolsOfDelegate[delegate][poolsOfDelegateIndices[pool]] == pool || IStakingPool(pool).getPoolOwner() == delegate;
 	}
 
