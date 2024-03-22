@@ -20,6 +20,7 @@ interface IStakingPool {
         address _refereeAddress,
         address _esXaiAddress,
         address _owner,
+		address _delegateOwner,
         address _delegateOwner,
         address _keyBucket,
         address _esXaiStakeBucket
@@ -30,6 +31,8 @@ interface IStakingPool {
     function getDelegateOwner() external view returns (address);
 
     function getStakedAmounts(address user) external view returns (uint256);
+
+	function updateDelegateOwner(address delegate) external;
 
     function getStakedKeysCountForUser(
         address user
