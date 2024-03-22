@@ -370,7 +370,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         //get the pool owner poolOwner
         Referee5(refereeAddress).stakeKeys(
             pool,
-            IStakingPool(pool).getPoolOwner(),
             msg.sender,
             keyIds
         );
@@ -528,7 +527,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
         Referee5(refereeAddress).unstakeKeys(
             pool,
-            IStakingPool(pool).getPoolOwner(),
             msg.sender,
             keyIds
         );
