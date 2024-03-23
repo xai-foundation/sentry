@@ -38,7 +38,13 @@ async function main() {
 
     console.log("Deploying PoolFactory Upgradable...");
     const PoolFactory = await ethers.getContractFactory("PoolFactory");
-    const poolFactory = await upgrades.deployProxy(PoolFactory, [config.refereeAddress, config.esXaiAddress, deployerAddress, poolImplAddress, bucketImplAddress], { kind: "transparent", deployer });
+
+    const poolFactory = await upgrades.deployProxy(
+        PoolFactory,
+        [config.refereeAddress, config.esXaiAddress, config.nodeLicenseAddress, deployerAddress, poolImplAddress, bucketImplAddress],
+        { kind: "transparent", deployer }
+    );
+
     const tx = await poolFactory.deploymentTransaction();
     await tx.wait(3);
     const poolFactoryAddress = await poolFactory.getAddress();
@@ -53,7 +59,7 @@ async function main() {
     //Add PoolFactory to whitelist
     await esXai.addToWhitelist(poolFactoryAddress);
     console.log("Added PoolFactory to esXai whitelist");
-    
+
 
     // Upgrade the referee
     const referee = await ethers.getContractFactory("Referee5");

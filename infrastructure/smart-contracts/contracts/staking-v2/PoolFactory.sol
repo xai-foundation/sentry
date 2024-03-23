@@ -181,6 +181,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     function initialize(
         address _refereeAddress,
         address _esXaiAddress,
+        address _nodeLicenseAddress,
         address _stakingPoolProxyAdmin,
         address _stakingPoolImplementation,
         address _bucketImplementation
@@ -192,6 +193,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         bucketshareMaxValues[2] = 300_000; // => 30%
 
         refereeAddress = _refereeAddress;
+        nodeLicenseAddress = _nodeLicenseAddress;
         esXaiAddress = _esXaiAddress;
         stakingPoolProxyAdmin = _stakingPoolProxyAdmin;
         stakingPoolImplementation = _stakingPoolImplementation;
@@ -370,7 +372,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 		IStakingPool stakingPool = IStakingPool(pool);
 		require(stakingPool.getPoolOwner() == msg.sender, "11");
 		require(msg.sender != delegate, "12");
-		stakingPool.updateDelegateOwner(delegate);
 
 		// If staking pool already has delegate, remove pool from delegate's list
 		if (stakingPool.getDelegateOwner() != address(0)) {
@@ -387,6 +388,8 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 			poolsOfDelegateIndices[pool] = poolsOfDelegate[delegate].length;
 			poolsOfDelegate[delegate].push(pool);
 		}
+        
+		stakingPool.updateDelegateOwner(delegate);
 
 		emit UpdatePoolDelegate(delegate, pool);
 	}
