@@ -481,7 +481,7 @@ export async function operatorRuntime(
     cachedSigner = signer;
     onAssertionMissMatchCb = onAssertionMissMatch;
 
-    logFunction(`Booting operator runtime.`);
+    logFunction(`Booting operator runtime version [${version}].`);
 
     const provider = getProvider();
 
