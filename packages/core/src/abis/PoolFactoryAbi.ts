@@ -1,4 +1,4 @@
-export const PoolFactoryAbi = [
+export const PoolFactoryAbi =[
 	{
 		"anonymous": false,
 		"inputs": [
@@ -841,7 +841,7 @@ export const PoolFactoryAbi = [
 						"type": "uint256[5]"
 					}
 				],
-				"internalType": "struct NewPoolFactory2.UnstakeRequest",
+				"internalType": "struct PoolFactory.UnstakeRequest",
 				"name": "",
 				"type": "tuple"
 			}

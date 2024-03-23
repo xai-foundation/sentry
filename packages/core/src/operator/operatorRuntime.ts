@@ -145,6 +145,8 @@ const reloadPoolKeys = async () => {
 
     if (operatorPoolAddresses.length) {
 
+
+        //We have pools, add all new keys, update all pool addresses and remove all unstaked keys if they were not in the list before
         const currentPoolKeys: { [key: string]: string } = {};
 
         cachedLogger(`Found ${operatorPoolAddresses.length} pools for operator.`);
@@ -157,24 +159,30 @@ const reloadPoolKeys = async () => {
 
             for (const key of keys) {
 
+                isKYCMap[key.toString()] = true; //If key is in pool it has to be KYCd
+                currentPoolKeys[key.toString()] = pool;
+
                 if (!nodeLicenseIds.includes(BigInt(key))) {
+                    //Add the key from the pool to the list
                     cachedLogger(`Fetched Sentry Key ${key.toString()} staked in pool ${pool}.`);
                     nodeLicenseStatusMap.set(key, {
                         ownerPublicKey: pool,
                         status: NodeLicenseStatus.WAITING_IN_QUEUE,
                     });
-                    currentPoolKeys[key.toString()] = pool;
                     nodeLicenseIds.push(key);
-                    isKYCMap[key.toString()] = true; //If key is in pool it has to be KYCd
                 } else {
-                    //If we had the key in the list we need to check if the pool address changed
+                    //We already operate that key, if its from an owner, we need to remember the previous saved owner
                     const nodeLicenseInfo = nodeLicenseStatusMap.get(key);
                     if (nodeLicenseInfo) {
-                        if (nodeLicenseInfo.ownerPublicKey != pool) {
-                            nodeLicenseInfo.ownerPublicKey = pool;
-                            nodeLicenseStatusMap.set(key, nodeLicenseInfo);
-                            safeStatusCallback();
+                        if (!keyToOwner[key.toString()]) {
+                            //This key came from an owner not a pool, save the owner
+                            keyToOwner[key.toString()] = nodeLicenseInfo.ownerPublicKey;
                         }
+
+                        //set the owner to the pool for the batch claim later
+                        nodeLicenseInfo.ownerPublicKey = pool;
+                        nodeLicenseStatusMap.set(key, nodeLicenseInfo);
+                        safeStatusCallback();
                     }
                 }
             }
@@ -540,6 +548,8 @@ export async function operatorRuntime(
                 const keys = await getKeysOfPool(pool);
 
                 for (const key of keys) {
+                    isKYCMap[key.toString()] = true; //If key is in pool it has to be KYCd
+
                     if (!nodeLicenseIds.includes(key)) {
                         logFunction(`Fetched Sentry Key ${key.toString()} staked in pool ${pool}.`);
                         nodeLicenseStatusMap.set(key, {
@@ -548,7 +558,6 @@ export async function operatorRuntime(
                         });
                         keyIdToPoolAddress[key.toString()] = pool;
                         nodeLicenseIds.push(key);
-                        isKYCMap[key.toString()] = true; //If key is in pool it has to be KYCd
                     } else {
 
                         //Change pool owner of cached key and remember the owner so we can map back later on

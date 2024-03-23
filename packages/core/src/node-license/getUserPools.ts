@@ -31,7 +31,7 @@ export async function getUserPools(
         const stakingPoolContract = new ethers.Contract(userPoolAddresses[index], StakingPoolAbi, provider);
 
         // Get userStaked keys for each pool where is poolOwner is owner
-        const poolOwner: string = await retry(async () => await stakingPoolContract.owner());
+        const poolOwner: string = await retry(async () => await stakingPoolContract.getPoolOwner());
         if (poolOwner == ownerAddress) {
             ownerPoolAddresses.push(userPoolAddresses[index]);
         }
