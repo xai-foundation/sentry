@@ -6,7 +6,7 @@ import {StakingPoolAbi} from "@sentry/core";
 export function StakingV2(deployInfrastructure) {
 	return function () {
 		let bucketshareMaxValues = [];
-		const validShareValues = [500n, 8500n, 1000n];
+		const validShareValues = [50_000n, 850_000n, 100_000n];
 		const poolName = "Testing Pool";
 		const poolDescription = "This is for testing purposes only!!";
 		const poolLogo = "Pool Logo";
@@ -146,6 +146,7 @@ export function StakingV2(deployInfrastructure) {
 				const ownerShare = await stakingPool.connect(addr1).ownerShare();
 				const keyBucketShare = await stakingPool.connect(addr1).keyBucketShare();
 				const stakedBucketShare = await stakingPool.connect(addr1).stakedBucketShare();
+
 				expect(ownerShare).to.equal(validShareValues[0]);
 				expect(keyBucketShare).to.equal(validShareValues[1]);
 				expect(stakedBucketShare).to.equal(validShareValues[2]);
