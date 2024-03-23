@@ -430,18 +430,20 @@ async function listenForChallengesCallback(challengeNumber: bigint, challenge: C
     //TODO on every submit and on every claim we need to check if the key is still in the pool
 
     if (event && challenge.rollupUsed === config.rollupAddress) {
-        compareWithCDN(challenge)
-            .then(({ publicNodeBucket, error }) => {
-                if (error) {
-                    onAssertionMissMatchCb(publicNodeBucket, challenge, error);
-                    return;
-                }
-                cachedLogger(`Comparison between PublicNode and Challenger was successful.`);
-            })
-            .catch(error => {
-                cachedLogger(`Error on CND check for challenge ${Number(challenge.assertionId)}.`);
-                cachedLogger(`${error.message}.`);
-            });
+
+        cachedLogger(`NO comparison between PublicNode and Challenger in SEPOLIA MODE!.`);
+        // compareWithCDN(challenge)
+        //     .then(({ publicNodeBucket, error }) => {
+        //         if (error) {
+        //             onAssertionMissMatchCb(publicNodeBucket, challenge, error);
+        //             return;
+        //         }
+        //         cachedLogger(`Comparison between PublicNode and Challenger was successful.`);
+        //     })
+        //     .catch(error => {
+        //         cachedLogger(`Error on CND check for challenge ${Number(challenge.assertionId)}.`);
+        //         cachedLogger(`${error.message}.`);
+        //     });
     }
 
     if (challenge.openForSubmissions) {
@@ -595,8 +597,12 @@ export async function operatorRuntime(
     const closeChallengeListener = listenForChallenges(listenForChallengesCallback);
     logFunction(`Started listener for new challenges.`);
 
+    logFunction(`SEPOLIAMODE!`);
+    logFunction(`SEPOLIAMODE!`);
+    logFunction(`SEPOLIAMODE!`);
+    logFunction(`SEPOLIAMODE!`);
     logFunction(`Processing open challenges.`);
-    await listChallenges(false, listenForChallengesCallback);
+    await listChallenges(true, listenForChallengesCallback);
 
     logFunction(`The operator has finished booting. The operator is running successfully. esXAI will accrue every few days.`);
 
