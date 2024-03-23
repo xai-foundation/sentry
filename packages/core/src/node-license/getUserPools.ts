@@ -37,7 +37,7 @@ export async function getUserPools(
         }
     }
 
-    const userDelegatedPoolAddresses: string[] = await retry(async () => await factoryContract.poolsOfDelegate(ownerAddress));
+    const userDelegatedPoolAddresses: string[] = await retry(async () => await factoryContract.getDelegatePools(ownerAddress));
 
     // Merge both arrays
     const mergedPoolAddresses = [...ownerPoolAddresses, ...userDelegatedPoolAddresses];
