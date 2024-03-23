@@ -61,6 +61,7 @@ let operatorAddress: string;
 let keyIdToPoolAddress: { [keyId: string]: string } = {};
 let operatorPoolAddresses: string[];
 const isKYCMap: { [keyId: string]: boolean } = {};
+const keyToOwner: { [keyId: string]: string } = {}; //Used to remember the owner of the key should it have been put into the pool list
 
 async function getPublicNodeFromBucket(confirmHash: string) {
     const url = `https://sentry-public-node.xai.games/assertions/${confirmHash.toLowerCase()}.json`;
@@ -155,7 +156,7 @@ const reloadPoolKeys = async () => {
 
             for (const key of keys) {
 
-                if (nodeLicenseIds.includes(BigInt(key))) {
+                if (!nodeLicenseIds.includes(BigInt(key))) {
                     cachedLogger(`Fetched Sentry Key ${key.toString()} staked in pool ${pool}.`);
                     nodeLicenseStatusMap.set(key, {
                         ownerPublicKey: pool,
@@ -183,11 +184,26 @@ const reloadPoolKeys = async () => {
         if (cachedPoolKeys.length > 0) {
             for (const key of cachedPoolKeys) {
                 if (!currentPoolKeys[key]) {
-                    cachedLogger(`Removing unstaked key ${key} from operator list.`);
-                    const indexOfKeyInList = nodeLicenseIds.indexOf(BigInt(key));
-                    if (indexOfKeyInList > -1) {
-                        nodeLicenseIds.splice(indexOfKeyInList, 1);
-                        nodeLicenseStatusMap.delete(BigInt(key));
+
+                    if (keyToOwner[key]) {
+                        //If the key was in the list before any pools
+                        //We just want to update the owner back to the key owner
+                        const nodeLicenseInfo = nodeLicenseStatusMap.get(BigInt(key));
+                        if (nodeLicenseInfo) {
+                            nodeLicenseInfo.ownerPublicKey = keyToOwner[key];
+                            nodeLicenseStatusMap.set(BigInt(key), nodeLicenseInfo);
+                            safeStatusCallback();
+                        }
+
+                    } else {
+                        //If the key came only from a pool then we remove from the list of keys
+                        cachedLogger(`Removing unstaked key ${key} from operator list.`);
+                        const indexOfKeyInList = nodeLicenseIds.indexOf(BigInt(key));
+                        if (indexOfKeyInList > -1) {
+                            nodeLicenseIds.splice(indexOfKeyInList, 1);
+                            nodeLicenseStatusMap.delete(BigInt(key));
+                        }
+
                     }
                 }
             }
@@ -197,13 +213,29 @@ const reloadPoolKeys = async () => {
         keyIdToPoolAddress = currentPoolKeys;
 
     } else {
+
+        //We dont have any pools anymore, we need to remove all keys from the list that came from pools only
         const poolKeys = Object.keys(keyIdToPoolAddress);
         if (poolKeys.length > 0) {
             for (const key of poolKeys) {
                 const indexOfKeyInList = nodeLicenseIds.indexOf(BigInt(key));
                 if (indexOfKeyInList > -1) {
-                    nodeLicenseIds.splice(indexOfKeyInList, 1);
-                    nodeLicenseStatusMap.delete(BigInt(key));
+
+                    if (keyToOwner[key]) {
+                        //If we had this key as approved operator / owner we just map back the owner key
+                        const nodeLicenseInfo = nodeLicenseStatusMap.get(BigInt(key));
+                        if (nodeLicenseInfo) {
+                            nodeLicenseInfo.ownerPublicKey = keyToOwner[key];
+                            nodeLicenseStatusMap.set(BigInt(key), nodeLicenseInfo);
+                            safeStatusCallback();
+                        }
+
+                    } else {
+                        nodeLicenseIds.splice(indexOfKeyInList, 1);
+                        nodeLicenseStatusMap.delete(BigInt(key));
+                        safeStatusCallback();
+                    }
+
                 }
             }
 
@@ -523,7 +555,16 @@ export async function operatorRuntime(
                         keyIdToPoolAddress[key.toString()] = pool;
                         nodeLicenseIds.push(key);
                     } else {
-                        logFunction(`Sentry Key ${key.toString()} already in list of operator keys - not added for pool operation.`);
+
+                        //Change pool owner of cached key and remember the owner so we can map back later on
+                        const nodeLicenseInfo = nodeLicenseStatusMap.get(key);
+                        if (nodeLicenseInfo) {
+                            keyToOwner[key.toString()] = nodeLicenseInfo.ownerPublicKey;
+                            nodeLicenseInfo.ownerPublicKey = pool;
+                            nodeLicenseStatusMap.set(key, nodeLicenseInfo);
+                            safeStatusCallback();
+                        }
+
                     }
                 }
             }
