@@ -404,7 +404,7 @@ export async function operatorRuntime(
     const fetchBlockNumber = async () => {
         try {
             const blockNumber = await provider.getBlockNumber();
-            logFunction(`[cli SEPOLIA-1.1.4] Health Check on JSON RPC, Operator still healthy. Current block number: ${blockNumber}`);
+            logFunction(`[cli ${version}] Health Check on JSON RPC, Operator still healthy. Current block number: ${blockNumber}`);
         } catch (error) {
             logFunction(`Error fetching block number, operator may no longer be connected to the JSON RPC: ${JSON.stringify(error)}.`);
         }
