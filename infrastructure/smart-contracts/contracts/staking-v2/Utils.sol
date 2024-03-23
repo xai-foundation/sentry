@@ -11,9 +11,9 @@ interface IStakingPool {
         uint256 keyCount;
         uint256 totalStakedAmount;
         uint256 updateSharesTimestamp;
-        uint16 ownerShare;
-        uint16 keyBucketShare;
-        uint16 stakedBucketShare;
+		uint32 ownerShare;
+		uint32 keyBucketShare;
+		uint32 stakedBucketShare;
     }
 
     function initialize(
@@ -40,15 +40,15 @@ interface IStakingPool {
     function getStakedKeysCount() external view returns (uint256);
 
     function initShares(
-        uint16 _ownerShare,
-        uint16 _keyBucketShare,
-        uint16 _stakedBucketShare
+		uint32 _ownerShare,
+		uint32 _keyBucketShare,
+		uint32 _stakedBucketShare
     ) external;
 
     function updateShares(
-        uint16 _ownerShare,
-        uint16 _keyBucketShare,
-        uint16 _stakedBucketShare
+		uint32 _ownerShare,
+		uint32 _keyBucketShare,
+		uint32 _stakedBucketShare
     ) external;
 
     function updateMetadata(
@@ -81,7 +81,7 @@ interface IStakingPool {
             string memory _description,
             string memory _logo,
             string[] memory _socials,
-            uint16[] memory _pendingShares
+			uint32[] memory _pendingShares
         );
 
     function getUserPoolData(

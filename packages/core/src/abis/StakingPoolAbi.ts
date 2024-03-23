@@ -229,15 +229,15 @@ export const StakingPoolAbi = [
             "name": "updateSharesTimestamp"
           },
           {
-            "type": "uint16",
+            "type": "uint32",
             "name": "ownerShare"
           },
           {
-            "type": "uint16",
+            "type": "uint32",
             "name": "keyBucketShare"
           },
           {
-            "type": "uint16",
+            "type": "uint32",
             "name": "stakedBucketShare"
           }
         ]
@@ -259,7 +259,7 @@ export const StakingPoolAbi = [
         "name": "_socials"
       },
       {
-        "type": "uint16[]",
+        "type": "uint32[]",
         "name": "_pendingShares"
       }
     ]
@@ -460,15 +460,15 @@ export const StakingPoolAbi = [
     "payable": false,
     "inputs": [
       {
-        "type": "uint16",
+        "type": "uint32",
         "name": "_ownerShare"
       },
       {
-        "type": "uint16",
+        "type": "uint32",
         "name": "_keyBucketShare"
       },
       {
-        "type": "uint16",
+        "type": "uint32",
         "name": "_stakedBucketShare"
       }
     ],
@@ -530,7 +530,7 @@ export const StakingPoolAbi = [
     "inputs": [],
     "outputs": [
       {
-        "type": "uint16",
+        "type": "uint32",
         "name": ""
       }
     ]
@@ -591,7 +591,7 @@ export const StakingPoolAbi = [
     "inputs": [],
     "outputs": [
       {
-        "type": "uint16",
+        "type": "uint32",
         "name": ""
       }
     ]
@@ -753,7 +753,7 @@ export const StakingPoolAbi = [
     "inputs": [],
     "outputs": [
       {
-        "type": "uint16",
+        "type": "uint32",
         "name": ""
       }
     ]
@@ -917,15 +917,15 @@ export const StakingPoolAbi = [
     "payable": false,
     "inputs": [
       {
-        "type": "uint16",
+        "type": "uint32",
         "name": "_ownerShare"
       },
       {
-        "type": "uint16",
+        "type": "uint32",
         "name": "_keyBucketShare"
       },
       {
-        "type": "uint16",
+        "type": "uint32",
         "name": "_stakedBucketShare"
       }
     ],
