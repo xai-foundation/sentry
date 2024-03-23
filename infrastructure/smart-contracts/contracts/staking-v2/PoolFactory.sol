@@ -376,7 +376,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 		IStakingPool stakingPool = IStakingPool(pool);
 		require(stakingPool.getPoolOwner() == msg.sender, "11");
 		require(msg.sender != delegate, "12");
-		stakingPool.updateDelegateOwner(delegate);
 
 		// If staking pool already has delegate, remove pool from delegate's list
 		if (stakingPool.getDelegateOwner() != address(0)) {
@@ -393,6 +392,8 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 			poolsOfDelegateIndices[pool] = poolsOfDelegate[delegate].length;
 			poolsOfDelegate[delegate].push(pool);
 		}
+        
+		stakingPool.updateDelegateOwner(delegate);
 
 		emit UpdatePoolDelegate(delegate, pool);
 	}
