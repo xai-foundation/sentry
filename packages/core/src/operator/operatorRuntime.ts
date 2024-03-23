@@ -550,6 +550,8 @@ export async function operatorRuntime(
                 const keys = await getKeysOfPool(pool);
 
                 for (const key of keys) {
+                    isKYCMap[key.toString()] = true; //If key is in pool it has to be KYCd
+
                     if (!nodeLicenseIds.includes(key)) {
                         logFunction(`Fetched Sentry Key ${key.toString()} staked in pool ${pool}.`);
                         nodeLicenseStatusMap.set(key, {
@@ -558,7 +560,6 @@ export async function operatorRuntime(
                         });
                         keyIdToPoolAddress[key.toString()] = pool;
                         nodeLicenseIds.push(key);
-                        isKYCMap[key.toString()] = true; //If key is in pool it has to be KYCd
                     } else {
 
                         //Change pool owner of cached key and remember the owner so we can map back later on
