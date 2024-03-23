@@ -258,6 +258,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
                 ""
             )
         );
+
         address keyBucketProxy = address(
             new TransparentUpgradeableProxyImplementation(
                 bucketImplementation,

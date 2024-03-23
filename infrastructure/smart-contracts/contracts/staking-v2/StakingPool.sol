@@ -7,7 +7,6 @@ import "../upgrades/referee/Referee5.sol";
 import "./BucketTracker.sol";
 import "../esXai.sol";
 import "./Utils.sol";
-import "hardhat/console.sol";
 
 contract StakingPool is IStakingPool, AccessControlUpgradeable {
     bytes32 public constant POOL_ADMIN = keccak256("POOL_ADMIN");
@@ -152,23 +151,9 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
 		uint32 _keyBucketShare,
 		uint32 _stakedBucketShare
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-		console.log(
-			"INITIALIZING SHARES",
-			_ownerShare,
-			_keyBucketShare,
-			_stakedBucketShare
-		);
-
         ownerShare = _ownerShare;
         keyBucketShare = _keyBucketShare;
         stakedBucketShare = _stakedBucketShare;
-
-		console.log(
-			"INITIALIZING SHARES 2",
-			ownerShare,
-			keyBucketShare,
-			stakedBucketShare
-		);
     }
 
     function updateShares(

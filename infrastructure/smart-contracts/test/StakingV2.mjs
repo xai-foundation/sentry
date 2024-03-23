@@ -147,11 +147,6 @@ export function StakingV2(deployInfrastructure) {
 				const keyBucketShare = await stakingPool.connect(addr1).keyBucketShare();
 				const stakedBucketShare = await stakingPool.connect(addr1).stakedBucketShare();
 
-				console.log("ownerShare:", ownerShare);
-				console.log("keyBucketShare:", keyBucketShare);
-				console.log("stakedBucketShare:", stakedBucketShare);
-				console.log("big data;", await stakingPool.connect(addr1).getPoolInfo());
-
 				expect(ownerShare).to.equal(validShareValues[0]);
 				expect(keyBucketShare).to.equal(validShareValues[1]);
 				expect(stakedBucketShare).to.equal(validShareValues[2]);
