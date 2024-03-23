@@ -181,6 +181,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     function initialize(
         address _refereeAddress,
         address _esXaiAddress,
+        address _nodeLicenseAddress,
         address _stakingPoolProxyAdmin,
         address _stakingPoolImplementation,
         address _bucketImplementation
@@ -192,6 +193,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         bucketshareMaxValues[2] = 3000; // => 30%
 
         refereeAddress = _refereeAddress;
+        nodeLicenseAddress = _nodeLicenseAddress;
         esXaiAddress = _esXaiAddress;
         stakingPoolProxyAdmin = _stakingPoolProxyAdmin;
         stakingPoolImplementation = _stakingPoolImplementation;
