@@ -10,6 +10,8 @@ import { esXaiTests } from "./esXai.mjs";
 import { GasSubsidyTests } from "./GasSubsidy.mjs";
 import { XaiGaslessClaimTests } from "./XaiGaslessClaim.mjs";
 import {CNYAirDropTests} from "./CNYAirDrop.mjs";
+import {StakingV2} from "./StakingV2.mjs";
+import {extractAbi} from "../utils/exportAbi.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -61,7 +63,18 @@ describe("Fixture Tests", function () {
         const gasSubsidy = await upgrades.deployProxy(GasSubsidy, [], { deployer: deployer });
         await gasSubsidy.waitForDeployment();
 
-        // Deploy Referee
+		// Deploy the Staking Pool (implementation only)
+		const StakingPool = await ethers.deployContract("StakingPool");
+		await StakingPool.waitForDeployment();
+		const stakingPoolImplAddress = await StakingPool.getAddress();
+		await extractAbi("StakingPool", StakingPool);
+
+		// Deploy the Bucket Tracker (implementation only)
+		const BucketTracker = await ethers.deployContract("BucketTracker");
+		await BucketTracker.waitForDeployment();
+		const bucketImplAddress = await BucketTracker.getAddress();
+
+		// Deploy Referee
         const Referee = await ethers.getContractFactory("Referee");
         const gasSubsidyPercentage = BigInt(15);
         const referee = await upgrades.deployProxy(Referee, [await esXai.getAddress(), await xai.getAddress(), await gasSubsidy.getAddress(), gasSubsidyPercentage], { deployer: deployer });
@@ -81,6 +94,23 @@ describe("Fixture Tests", function () {
         const referee4 = await upgrades.upgradeProxy((await referee.getAddress()), Referee4);
         await referee4.waitForDeployment();
         await referee4.enableStaking();
+
+		// Deploy the Pool Factory
+		const PoolFactory = await ethers.getContractFactory("PoolFactory");
+		const poolFactory = await upgrades.deployProxy(PoolFactory, [
+			await referee.getAddress(),
+			await esXai.getAddress(),
+			await deployer.getAddress(),
+			stakingPoolImplAddress,
+			bucketImplAddress
+		], { kind: "transparent", deployer });
+		await poolFactory.enableStaking();
+		const poolFactoryAddress = await poolFactory.getAddress();
+
+		const Referee5 = await ethers.getContractFactory("Referee5");
+		const referee5 = await upgrades.upgradeProxy((await referee.getAddress()), Referee5, { call: { fn: "initialize", args: [poolFactoryAddress] } });
+		await referee5.waitForDeployment();
+		await referee5.enableStaking();
 
         // Set Rollup Address
         const rollupAddress = config.rollupAddress;
@@ -121,11 +151,13 @@ describe("Fixture Tests", function () {
         // Setup esXai Roles
         const esXaiAdminRole = await esXai.DEFAULT_ADMIN_ROLE();
         await esXai.grantRole(esXaiAdminRole, await esXaiDefaultAdmin.getAddress());
+        await esXai.grantRole(esXaiAdminRole, await poolFactory.getAddress());
         const esXaiMinterRole = await esXai.MINTER_ROLE();
         await esXai.grantRole(esXaiMinterRole, await esXaiMinter.getAddress());
         await esXai.grantRole(esXaiMinterRole, await referee.getAddress());
         await esXai.grantRole(esXaiMinterRole, await xai.getAddress());
         await esXai.addToWhitelist(await referee.getAddress());
+        await esXai.addToWhitelist(await poolFactory.getAddress());
 
         // Setup Node License Roles 
         const nodeLicenseAdminRole = await nodeLicense.DEFAULT_ADMIN_ROLE();
@@ -146,14 +178,17 @@ describe("Fixture Tests", function () {
         const challengerRole = await referee.CHALLENGER_ROLE();
         await referee.grantRole(challengerRole, await challenger.getAddress());
         const kycAdminRole = await referee.KYC_ADMIN_ROLE();
-        await referee.grantRole(kycAdminRole, await kycAdmin.getAddress());   
+        await referee.grantRole(kycAdminRole, await kycAdmin.getAddress());
+		const poolFactoryAdminRole = await poolFactory.DEFAULT_ADMIN_ROLE();
+		await poolFactory.grantRole(poolFactoryAdminRole, refereeDefaultAdmin.getAddress());
 
-        // Renounce the default admin role of the deployer
+		// Renounce the default admin role of the deployer
         await referee.renounceRole(refereeAdminRole, await deployer.getAddress());
         await nodeLicense.renounceRole(nodeLicenseAdminRole, await deployer.getAddress());
         await gasSubsidy.renounceRole(gasSubsidyAdminRole, await deployer.getAddress());
         await esXai.renounceRole(esXaiAdminRole, await deployer.getAddress());
         await xai.renounceRole(xaiAdminRole, await deployer.getAddress());
+        await poolFactory.renounceRole(poolFactoryAdminRole, await deployer.getAddress());
 
         // Mint addr1 a node license
         let price = await nodeLicense.price(1, "");
@@ -212,8 +247,9 @@ describe("Fixture Tests", function () {
             secretKeyHex,
             publicKeyHex: "0x" + publicKeyHex,
 
-            referee: referee4,
+            referee: referee5,
             nodeLicense,
+			poolFactory,
             gasSubsidy,
             esXai: esXai2,
             xai,
@@ -226,7 +262,8 @@ describe("Fixture Tests", function () {
     // describe("Xai", XaiTests(deployInfrastructure).bind(this));
     // describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
     // describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
-    describe("Referee", RefereeTests(deployInfrastructure).bind(this));
+    // describe("Referee", RefereeTests(deployInfrastructure).bind(this));
+    describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
     // describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
     // describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
 
