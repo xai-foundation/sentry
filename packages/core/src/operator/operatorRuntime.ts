@@ -164,6 +164,7 @@ const reloadPoolKeys = async () => {
                     });
                     currentPoolKeys[key.toString()] = pool;
                     nodeLicenseIds.push(key);
+                    isKYCMap[key.toString()] = true; //If key is in pool it has to be KYCd
                 } else {
                     //If we had the key in the list we need to check if the pool address changed
                     const nodeLicenseInfo = nodeLicenseStatusMap.get(key);
@@ -185,6 +186,8 @@ const reloadPoolKeys = async () => {
             for (const key of cachedPoolKeys) {
                 if (!currentPoolKeys[key]) {
 
+                    isKYCMap[key.toString()] = false; //Remove kyc cache
+                    
                     if (keyToOwner[key]) {
                         //If the key was in the list before any pools
                         //We just want to update the owner back to the key owner
@@ -221,6 +224,7 @@ const reloadPoolKeys = async () => {
                 const indexOfKeyInList = nodeLicenseIds.indexOf(BigInt(key));
                 if (indexOfKeyInList > -1) {
 
+                    isKYCMap[key.toString()] = false; //Remove kyc cache
                     if (keyToOwner[key]) {
                         //If we had this key as approved operator / owner we just map back the owner key
                         const nodeLicenseInfo = nodeLicenseStatusMap.get(BigInt(key));
@@ -556,6 +560,7 @@ export async function operatorRuntime(
                         });
                         keyIdToPoolAddress[key.toString()] = pool;
                         nodeLicenseIds.push(key);
+                        isKYCMap[key.toString()] = true; //If key is in pool it has to be KYCd
                     } else {
 
                         //Change pool owner of cached key and remember the owner so we can map back later on
