@@ -19,6 +19,7 @@ import {
     getUserPools,
     getKeysOfPool,
     submitMultipleAssertions,
+    claimRewardsBulk
 } from "../index.js";
 import { retry } from "../index.js";
 import axios from "axios";
@@ -341,81 +342,63 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
     }
 }
 
-async function processClaimForChallenge(challengeNumber: bigint, nodeLicenseId: bigint) {
-    cachedLogger(`Checking KYC status of '${nodeLicenseStatusMap.get(nodeLicenseId)?.ownerPublicKey}' for Sentry Key '${nodeLicenseId}'.`);
-    updateNodeLicenseStatus(nodeLicenseId, `Checking KYC Status`);
-    safeStatusCallback();
+async function processClaimForChallenge(challengeNumber: bigint, eligibleNodeLicenseIds: bigint[]) {
+    const claimGroups: Map<string, bigint[]> = new Map();
 
-    let isKycApproved: boolean = isKYCMap[nodeLicenseId.toString()];
+    // Group eligible nodeLicenseIds by their claimForAddressInBatch
+    for (const nodeLicenseId of eligibleNodeLicenseIds) {
+        let claimForAddressInBatch: string;
 
-    if (!isKYCMap[nodeLicenseId.toString()]) {
+        // Determine the claimForAddressInBatch based on whether the key is in a pool
+        if (keyIdToPoolAddress[nodeLicenseId.toString()]) {
+            claimForAddressInBatch = keyIdToPoolAddress[nodeLicenseId.toString()];
+        } else {
+            const nodeLicenseInfo = nodeLicenseStatusMap.get(nodeLicenseId);
+            claimForAddressInBatch = nodeLicenseInfo ? nodeLicenseInfo.ownerPublicKey : '';
+        }
+
+        if (!claimGroups.has(claimForAddressInBatch)) {
+            claimGroups.set(claimForAddressInBatch, []);
+        }
+        claimGroups.get(claimForAddressInBatch)?.push(nodeLicenseId);
+    }
+
+    // Perform the bulk claim for each group
+    for (const [claimForAddress, nodeLicenses] of claimGroups) {
+        if (nodeLicenses.length === 0) continue; // Skip if no licenses to claim for
+
         try {
-            // check to see if the owner of the license is KYC'd
-            // TODO we can cache the KYC status per key
-            [{ isKycApproved }] = await retry(async () => await checkKycStatus([nodeLicenseStatusMap.get(nodeLicenseId)!.ownerPublicKey]));
+            await claimRewardsBulk(nodeLicenses, challengeNumber, claimForAddress, cachedSigner);
+            cachedLogger(`Bulk claim successful for address ${claimForAddress} and challenge ${challengeNumber}`);
         } catch (error: any) {
-            cachedLogger(`Error checking KYC for Sentry Key ${nodeLicenseId} - ${error && error.message ? error.message : error}`);
-            updateNodeLicenseStatus(nodeLicenseId, `Failed to check KYC status`);
-            safeStatusCallback();
-            return;
+            cachedLogger(`Error during bulk claim for address ${claimForAddress} and challenge ${challengeNumber}: ${error.message}`);
         }
     }
-
-    if (!isKycApproved) {
-        cachedLogger(`Checked KYC status of '${nodeLicenseStatusMap.get(nodeLicenseId)?.ownerPublicKey}' for Sentry Key '${nodeLicenseId}'. It was not KYC'd and not able to claim the reward.`);
-        updateNodeLicenseStatus(nodeLicenseId, `Cannot Claim, Failed KYC`);
-        safeStatusCallback();
-        return;
-    } else {
-        isKYCMap[nodeLicenseId.toString()] = true;
-    }
-
-    cachedLogger(`Requesting esXAI reward for challenge '${challengeNumber}'.`);
-    updateNodeLicenseStatus(nodeLicenseId, `Requesting esXAI reward for challenge '${challengeNumber}'.`);
-    safeStatusCallback();
-
-    try {
-        await retry(() => claimReward(nodeLicenseId, challengeNumber, cachedSigner));
-    } catch (error: any) {
-        cachedLogger(`Error claiming reward for Sentry Key ${nodeLicenseId} to challenge ${challengeNumber} - ${error && error.message ? error.message : error}`);
-        updateNodeLicenseStatus(nodeLicenseId, `Failed to claim reward`);
-        safeStatusCallback();
-        return;
-    }
-
-    cachedLogger(`esXAI claim was successful for Challenge '${challengeNumber}'.`);
-    updateNodeLicenseStatus(nodeLicenseId, `esXAI claim was successful for Challenge '${challengeNumber}'`);
-    safeStatusCallback();
 }
 
-const onFoundClosedSubmission = async (challengeId: bigint, nodeLicenseId: bigint, unclaimed: boolean) => {
-    cachedLogger(`Checking for unclaimed rewards on Challenge '${challengeId}'.`);
-    updateNodeLicenseStatus(nodeLicenseId, `Checking For Unclaimed Rewards on Challenge '${challengeId}'`);
-    safeStatusCallback();
-    // call the process claim and update statuses/logs accoridngly
-    if (unclaimed) {
-        updateNodeLicenseStatus(nodeLicenseId, `Found Unclaimed Reward for Challenge '${challengeId}'`);
-        safeStatusCallback();
-        cachedLogger(`Found unclaimed reward for challenge '${challengeId}'.`);
-        await processClaimForChallenge(challengeId, nodeLicenseId);
-    }
-}
-
-// create a function that checks all the submissions for a closed challenge
 async function processClosedChallenges(challengeIds: bigint[]) {
+    const challengeToEligibleNodeLicensesMap: Map<bigint, bigint[]> = new Map();
+
     for (const nodeLicenseId of nodeLicenseIds) {
         const beforeStatus = nodeLicenseStatusMap.get(nodeLicenseId)?.status;
         updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.QUERYING_FOR_UNCLAIMED_SUBMISSIONS);
         cachedLogger(`Checking for unclaimed rewards on Sentry Key '${nodeLicenseId}'.`);
-        let lastProcessedChallengeIndex = 0;
 
         try {
-            await getSubmissionsForChallenges(challengeIds, nodeLicenseId, (submission: Submission, index: number) => {
-                lastProcessedChallengeIndex = index;
-                return onFoundClosedSubmission(challengeIds[index], nodeLicenseId, submission.eligibleForPayout && !submission.claimed);
+            const submissions = await getSubmissionsForChallenges(challengeIds, nodeLicenseId);
+            
+            // Iterate over each submission to process it
+            submissions.forEach(submission => {
+                if (submission.eligibleForPayout && !submission.claimed) {
+                    const challengeId = submission.challengeId;
+                    if (!challengeToEligibleNodeLicensesMap.has(challengeId)) {
+                        challengeToEligibleNodeLicensesMap.set(challengeId, []);
+                    }
+                    challengeToEligibleNodeLicensesMap.get(challengeId)?.push(BigInt(submission.nodeLicenseId));
+                }
             });
         } catch (error: any) {
-            cachedLogger(`Error processing submissions for Sentry Key ${nodeLicenseId} processed ${lastProcessedChallengeIndex}/${challengeIds.length} challenges - ${error && error.message ? error.message : error}`);
+            cachedLogger(`Error processing submissions for Sentry Key ${nodeLicenseId} - ${error && error.message ? error.message : error}`);
         }
 
         if (beforeStatus) {
@@ -423,8 +406,15 @@ async function processClosedChallenges(challengeIds: bigint[]) {
             safeStatusCallback();
         }
     }
-}
 
+    // Iterate over the map and call processClaimForChallenge for each challenge with its unique list of eligible nodeLicenseIds
+    for (const [challengeId, nodeLicenseIds] of challengeToEligibleNodeLicensesMap) {
+        const uniqueNodeLicenseIds = [...new Set(nodeLicenseIds)]; // Remove duplicates
+        if (uniqueNodeLicenseIds.length > 0) {
+            await processClaimForChallenge(challengeId, uniqueNodeLicenseIds);
+        }
+    }
+}
 
 // start a listener for new challenges
 async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: any) {
