@@ -10,8 +10,6 @@ import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "../upgrades/referee/Referee5.sol";
 import "../Xai.sol";
 import "../esXai.sol";
-import "../staking-v2/Utils.sol";
-//import "../staking-v2/TransparentUpgradable.sol";
 import "./StakingPool.sol";
 import "./PoolBeacon.sol";
 
@@ -197,33 +195,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         emit StakingEnabled();
     }
 
-//    function updateProxyAdmin(
-//        address newAdmin
-//    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-//        require(newAdmin != address(0), "1");
-//        address previousAdmin = stakingPoolProxyAdmin;
-//        stakingPoolProxyAdmin = newAdmin;
-//        emit UpdatePoolProxyAdmin(previousAdmin, newAdmin);
-//    }
-
-//    function updatePoolImplementation(
-//        address newImplementation
-//    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-//        require(newImplementation != address(0), "2");
-//        address prevImplementation = stakingPoolImplementation;
-//        stakingPoolImplementation = newImplementation;
-//        emit UpdatePoolImplementation(prevImplementation, newImplementation);
-//    }
-//
-//    function updateBucketImplementation(
-//        address newImplementation
-//    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-//        require(newImplementation != address(0), "3");
-//        address prevImplementation = bucketImplementation;
-//        bucketImplementation = newImplementation;
-//        emit UpdateBucketImplementation(prevImplementation, newImplementation);
-//    }
-
 	function createPool(
 		address _delegateOwner,
 		uint256[] memory _keyIds,
@@ -278,7 +249,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 			_poolSocials
 		);
 
-		IBucketTracker(keyBucketProxy).initialize(
+		BucketTracker(keyBucketProxy).initialize(
 			poolProxy,
 			esXaiAddress,
 			trackerDetails[0][0],
@@ -286,7 +257,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 			0
 		);
 
-		IBucketTracker(esXaiBucketProxy).initialize(
+		BucketTracker(esXaiBucketProxy).initialize(
 			poolProxy,
 			esXaiAddress,
 			trackerDetails[1][0],
@@ -512,9 +483,9 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
 	function associateUserWithPool(address user, address pool) internal {
 		// TODO TEST PREVENTING DUPLICATES WORKS
-		address[] storage userPools = interactedPoolsOfUser[msg.sender];
-		if (userPools.length < 1 || pool != userPools[userToInteractedPoolIds[msg.sender][pool]]) {
-			userToInteractedPoolIds[msg.sender][pool] = userPools.length;
+		address[] storage userPools = interactedPoolsOfUser[user];
+		if (userPools.length < 1 || pool != userPools[userToInteractedPoolIds[user][pool]]) {
+			userToInteractedPoolIds[user][pool] = userPools.length;
 			userPools.push(pool);
 		}
 	}

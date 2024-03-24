@@ -6,7 +6,6 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "../upgrades/referee/Referee5.sol";
 import "./BucketTracker.sol";
 import "../esXai.sol";
-import "./Utils.sol";
 
 contract StakingPool is AccessControlUpgradeable {
     bytes32 public constant POOL_ADMIN = keccak256("POOL_ADMIN");
@@ -28,8 +27,8 @@ contract StakingPool is AccessControlUpgradeable {
 	uint32 public stakedBucketShare;
 
     uint256 public poolOwnerClaimableRewards;
-    IBucketTracker public keyBucket;
-    IBucketTracker public esXaiStakeBucket;
+    BucketTracker public keyBucket;
+    BucketTracker public esXaiStakeBucket;
 
     mapping(address => uint256[]) public stakedKeysOfOwner;
     mapping(uint256 => uint256) public keyIdIndex;
@@ -89,8 +88,8 @@ contract StakingPool is AccessControlUpgradeable {
         esXaiAddress = _esXaiAddress;
         refereeAddress = _refereeAddress;
 
-        keyBucket = IBucketTracker(_keyBucket);
-        esXaiStakeBucket = IBucketTracker(_esXaiStakeBucket);
+        keyBucket = BucketTracker(_keyBucket);
+        esXaiStakeBucket = BucketTracker(_esXaiStakeBucket);
 
         poolOwner = _owner;
 		delegateOwner = _delegateOwner;
