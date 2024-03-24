@@ -1,0 +1,18 @@
+{
+    "targets": {
+      "build": {
+        "dependsOn": [
+          {
+            "target": "build",
+            "projects": "dependencies"
+          }
+        ],
+        "outputs": [
+          "{projectRoot}/dist",
+          "{projectRoot}/release", 
+          "{projectRoot}/build",
+          "{projectRoot}/tsconfig.tsbuildinfo"
+        ]
+    }
+  }
+}

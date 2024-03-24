@@ -15,7 +15,7 @@
     "docs": "pnpm -filter @sentry/docs run start",
     "lint": "pnpm recursive run lint",
     "web": "pnpm -filter @sentry/web-connect run dev",
-    "postinstall": "node ./postinstall"
+    "postinstall": "node ./postinstall && cd apps/web-staking && npm install"
   },
   "dependencies": {
     "ethers": "6.8.1"
@@ -29,6 +29,7 @@
     "eslint-plugin-only-warn": "^1.1.0",
     "rimraf": "5.0.1",
     "typescript": "^5.2.2",
-    "unzipper": "0.10.14"
+    "unzipper": "0.10.14",
+    "nx": "18.1.2"
   }
 }

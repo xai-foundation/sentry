@@ -30,7 +30,7 @@ export function LinkComponent({
 interface LinkLogoComponentProps {
   link: string;
   content: string;
-  Icon: ElementType<any, keyof JSX.IntrinsicElements>;
+  Icon: ElementType;
 }
 
 export function LinkLogoComponent({
