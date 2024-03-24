@@ -12,6 +12,7 @@ import { XaiGaslessClaimTests } from "./XaiGaslessClaim.mjs";
 import {CNYAirDropTests} from "./CNYAirDrop.mjs";
 import {StakingV2} from "./StakingV2.mjs";
 import {extractAbi} from "../utils/exportAbi.mjs";
+import {Beacons} from "./Beacons.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -95,11 +96,19 @@ describe("Fixture Tests", function () {
         await referee4.waitForDeployment();
         await referee4.enableStaking();
 
+		// Deploy Node License
+		const NodeLicense = await ethers.getContractFactory("NodeLicense");
+		const referralDiscountPercentage = BigInt(10);
+		const referralRewardPercentage = BigInt(2);
+		const nodeLicense = await upgrades.deployProxy(NodeLicense, [await fundsReceiver.getAddress(), referralDiscountPercentage, referralRewardPercentage], { deployer: deployer });
+		await nodeLicense.waitForDeployment();
+
 		// Deploy the Pool Factory
 		const PoolFactory = await ethers.getContractFactory("PoolFactory");
 		const poolFactory = await upgrades.deployProxy(PoolFactory, [
 			await referee.getAddress(),
 			await esXai.getAddress(),
+			await nodeLicense.getAddress(),
 			await deployer.getAddress(),
 			stakingPoolImplAddress,
 			bucketImplAddress
@@ -119,13 +128,6 @@ describe("Fixture Tests", function () {
         // Attach a contract of the Rollup Contract
         // const RollupUserLogic = await ethers.getContractFactory("RollupUserLogic");
         const rollupContract = await ethers.getContractAt("RollupUserLogic", rollupAddress);
-
-        // Deploy Node License
-        const NodeLicense = await ethers.getContractFactory("NodeLicense");
-        const referralDiscountPercentage = BigInt(10);
-        const referralRewardPercentage = BigInt(2);
-        const nodeLicense = await upgrades.deployProxy(NodeLicense, [await fundsReceiver.getAddress(), referralDiscountPercentage, referralRewardPercentage], { deployer: deployer });
-        await nodeLicense.waitForDeployment();
 
         // Set the Node License Address
         await referee.setNodeLicenseAddress(await nodeLicense.getAddress());
@@ -263,7 +265,8 @@ describe("Fixture Tests", function () {
     // describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
     // describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
     // describe("Referee", RefereeTests(deployInfrastructure).bind(this));
-    describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
+    // describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
+    describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
     // describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
     // describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
 
