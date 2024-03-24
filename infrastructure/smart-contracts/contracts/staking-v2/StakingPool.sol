@@ -8,7 +8,7 @@ import "./BucketTracker.sol";
 import "../esXai.sol";
 import "./Utils.sol";
 
-contract StakingPool is IStakingPool, AccessControlUpgradeable {
+contract StakingPool is AccessControlUpgradeable {
     bytes32 public constant POOL_ADMIN = keccak256("POOL_ADMIN");
 
     address public refereeAddress;
@@ -41,7 +41,38 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
 	uint32[3] pendingShares;
     uint256 updateSharesTimestamp;
 
+	// mapping userAddress to unstake requests, unstake has a delay of 30 days
+	mapping(address => UnstakeRequest[]) private unstakeRequests;
+
+	// mapping userAddress to requested unstake key amount
+	mapping(address => uint256) private userRequestedUnstakeKeyAmount;
+
+	// mapping userAddress to requested unstake esXai amount
+	mapping(address => uint256) private userRequestedUnstakeEsXaiAmount;
+
     uint256[500] __gap;
+
+	struct PoolBaseInfo {
+		address poolAddress;
+		address owner;
+		address keyBucketTracker;
+		address esXaiBucketTracker;
+		uint256 keyCount;
+		uint256 totalStakedAmount;
+		uint256 updateSharesTimestamp;
+		uint32 ownerShare;
+		uint32 keyBucketShare;
+		uint32 stakedBucketShare;
+	}
+
+	struct UnstakeRequest {
+		bool open;
+		bool isKeyRequest;
+		uint256 amount;
+		uint256 lockTime;
+		uint256 completeTime;
+		uint256[5] __gap;
+	}
 
     function initialize(
         address _refereeAddress,
@@ -117,8 +148,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         }
 
         uint256 amountForKeys = (amountToDistribute * keyBucketShare) / 1_000_000;
-        uint256 amountForStaked = (amountToDistribute * stakedBucketShare) /
-		1_000_000;
+        uint256 amountForStaked = (amountToDistribute * stakedBucketShare) / 1_000_000;
 
         if (amountForStaked > 0) {
             //If there are no esXai stakers we will distribute to keys and owner proportional to their shares
@@ -197,13 +227,103 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         keyBucket.setBalance(owner, stakedKeysOfOwner[owner].length);
     }
 
+	function createUnstakeKeyRequest(address user, uint256 keyAmount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+		uint256 stakedKeysCount = stakedKeysOfOwner[user].length;
+		uint256 requestKeys = userRequestedUnstakeKeyAmount[user];
+
+		if (poolOwner == user) {
+			require(
+				stakedKeysCount >
+				keyAmount + requestKeys,
+				"18"
+			);
+		} else {
+			require(
+				stakedKeysCount >=
+				keyAmount + requestKeys,
+				"19"
+			);
+		}
+
+		UnstakeRequest[] storage userRequests = unstakeRequests[user];
+
+		userRequests.push(
+			UnstakeRequest(
+				true,
+				true,
+				keyAmount,
+				block.timestamp + 30 days,
+				0,
+				[uint256(0), 0, 0, 0, 0]
+			)
+		);
+
+		userRequestedUnstakeKeyAmount[user] += keyAmount;
+	}
+
+	function createUnstakeOwnerLastKeyRequest(address owner) external onlyRole(DEFAULT_ADMIN_ROLE) {
+		require(owner == poolOwner, "20");
+		uint256 stakedKeysCount = stakedKeysOfOwner[owner].length;
+
+		require(
+			stakedKeysCount == userRequestedUnstakeKeyAmount[owner] + 1,
+			"22"
+		);
+
+		UnstakeRequest[] storage userRequests = unstakeRequests[owner];
+
+		userRequests.push(
+			UnstakeRequest(
+				true,
+				true,
+				1,
+				block.timestamp + 60 days,
+				0,
+				[uint256(0), 0, 0, 0, 0]
+			)
+		);
+
+		userRequestedUnstakeKeyAmount[owner] += 1;
+	}
+
+	function createUnstakeEsXaiRequest(address user, uint256 amount) external {
+		require(stakedAmounts[user] >= amount + userRequestedUnstakeEsXaiAmount[user], "24");
+		UnstakeRequest[] storage userRequests = unstakeRequests[user];
+
+		userRequests.push(
+			UnstakeRequest(
+				true,
+				false,
+				amount,
+				block.timestamp + 30 days,
+				0,
+				[uint256(0), 0, 0, 0, 0]
+			)
+		);
+
+		userRequestedUnstakeEsXaiAmount[user] += amount;
+	}
+
+	function isUserEngagedWithPool(address user) external view returns (bool) {
+		return user == poolOwner ||
+			stakedAmounts[user] > 0 ||
+			stakedKeysOfOwner[user].length > 0;
+	}
+
     function unstakeKeys(
         address owner,
+		uint256 unstakeRequestIndex,
         uint256[] memory keyIds
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        uint256 keyLength = keyIds.length;
-        for (uint i = 0; i < keyLength; i++) {
-			// Update indexes of this user's staked keys
+		UnstakeRequest storage request = unstakeRequests[owner][unstakeRequestIndex];
+        uint256 keysLength = keyIds.length;
+
+		require(request.open && request.isKeyRequest, "27");
+		require(block.timestamp >= request.lockTime, "28");
+		require(keysLength > 0 && request.amount == keysLength, "29");
+
+        for (uint i = 0; i < keysLength; i++) {
+			// Update indexes of this owner's staked keys
             uint256 indexOfOwnerKeyToRemove = keyIdIndex[keyIds[i]];
             uint256 lastOwnerKeyId = stakedKeysOfOwner[owner][
                 stakedKeysOfOwner[owner].length - 1
@@ -225,6 +345,10 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         distributeRewards();
         keyBucket.processAccount(owner);
         keyBucket.setBalance(owner, stakedKeysOfOwner[owner].length);
+
+		userRequestedUnstakeKeyAmount[owner] -= keysLength;
+		request.open = false;
+		request.completeTime = block.timestamp;
     }
 
     function stakeEsXai(
@@ -239,12 +363,24 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
 
     function unstakeEsXai(
         address owner,
+		uint256 unstakeRequestIndex,
         uint256 amount
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+		UnstakeRequest storage request = unstakeRequests[owner][unstakeRequestIndex];
+
+		require(request.open && !request.isKeyRequest, "32");
+		require(block.timestamp >= request.lockTime, "33");
+		require(amount > 0 && request.amount == amount, "34");
+		require(stakedAmounts[owner] >= amount, "35");
+
         stakedAmounts[owner] -= amount;
         distributeRewards();
         esXaiStakeBucket.processAccount(owner);
         esXaiStakeBucket.setBalance(owner, stakedAmounts[owner]);
+
+		userRequestedUnstakeEsXaiAmount[owner] -= amount;
+		request.open = false;
+		request.completeTime = block.timestamp;
     }
 
     function claimRewards(address user) external onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -357,4 +493,23 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
 
         userStakedKeyIds = stakedKeysOfOwner[user];
     }
+
+	function getUnstakeRequest(
+		address account,
+		uint256 index
+	) public view returns (UnstakeRequest memory) {
+		return unstakeRequests[account][index];
+	}
+
+	function getUnstakeRequestCount(address account) public view returns (uint256) {
+		return unstakeRequests[account].length;
+	}
+
+	function getUserRequestedUnstakeAmounts(
+		address user,
+		address pool
+	) external view returns (uint256 keyAmount, uint256 esXaiAmount) {
+		keyAmount = userRequestedUnstakeKeyAmount[user];
+		esXaiAmount = userRequestedUnstakeEsXaiAmount[user];
+	}
 }

@@ -12,6 +12,7 @@ import "../Xai.sol";
 import "../esXai.sol";
 import "../staking-v2/Utils.sol";
 //import "../staking-v2/TransparentUpgradable.sol";
+import "./StakingPool.sol";
 import "./PoolBeacon.sol";
 
 // Error Codes
@@ -84,19 +85,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     mapping(address => address[]) public interactedPoolsOfUser;
 
     // mapping user address to pool address to index in user array, used for removing from user array without interation
-    mapping(address => mapping(address => uint256))
-        public userToInteractedPoolIds;
-
-    // mapping userAddress to unstake requests, unstake has a delay of 30 days
-    mapping(address => UnstakeRequest[]) private unstakeRequests;
-
-    // mapping userAddress to poolAddress to requested unstake key amount
-    mapping(address => mapping(address => uint256))
-        private userRequestedUnstakeKeyAmount;
-
-    // mapping userAddress to poolAddress to requested unstake esXai amount
-    mapping(address => mapping(address => uint256))
-        private userRequestedUnstakeEsXaiAmount;
+    mapping(address => mapping(address => uint256)) public userToInteractedPoolIds;
 
 	// mapping delegates to pools they are delegates of
 	mapping(address => address[]) public poolsOfDelegate;
@@ -117,16 +106,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
     uint256[500] private __gap;
-
-    struct UnstakeRequest {
-        bool open;
-        bool isKeyRequest;
-        address poolAddress;
-        uint256 amount;
-        uint256 lockTime;
-        uint256 completeTime;
-        uint256[5] __gap;
-    }
 
     event StakingEnabled();
     event UpdatePoolProxyAdmin(address previousAdmin, address newAdmin);
@@ -218,14 +197,14 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         emit StakingEnabled();
     }
 
-    function updateProxyAdmin(
-        address newAdmin
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(newAdmin != address(0), "1");
-        address previousAdmin = stakingPoolProxyAdmin;
-        stakingPoolProxyAdmin = newAdmin;
-        emit UpdatePoolProxyAdmin(previousAdmin, newAdmin);
-    }
+//    function updateProxyAdmin(
+//        address newAdmin
+//    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+//        require(newAdmin != address(0), "1");
+//        address previousAdmin = stakingPoolProxyAdmin;
+//        stakingPoolProxyAdmin = newAdmin;
+//        emit UpdatePoolProxyAdmin(previousAdmin, newAdmin);
+//    }
 
 //    function updatePoolImplementation(
 //        address newImplementation
@@ -279,7 +258,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 			)
 		);
 
-		IStakingPool(poolProxy).initialize(
+		StakingPool(poolProxy).initialize(
 			refereeAddress,
 			esXaiAddress,
 			msg.sender,
@@ -288,13 +267,13 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 			esXaiBucketProxy
 		);
 
-		IStakingPool(poolProxy).initShares(
+		StakingPool(poolProxy).initShares(
 			_shareConfig[0],
 			_shareConfig[1],
 			_shareConfig[2]
 		);
 
-		IStakingPool(poolProxy).updateMetadata(
+		StakingPool(poolProxy).updateMetadata(
 			_poolMetadata,
 			_poolSocials
 		);
@@ -332,119 +311,18 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 		emit PoolCreated(stakingPools.length - 1, poolProxy, msg.sender, _keyIds.length);
 	}
 
-//    function createPool(
-//        uint256[] memory keyIds,
-//        uint32 _ownerShare,
-//		uint32 _keyBucketShare,
-//		uint32 _stakedBucketShare,
-//        string memory _name,
-//        string memory _description,
-//        string memory _logo,
-//        string[] memory _socials,
-//        string[] memory trackerNames,
-//        string[] memory trackerSymbols,
-//		address _delegateOwner
-//    ) external {
-//        require(stakingEnabled, "4");
-//        require(keyIds.length > 0, "5");
-//		require(validateShareValues(_ownerShare, _keyBucketShare, _stakedBucketShare), "6");
-//		require(msg.sender != _delegateOwner, "7");
-
-//        address poolProxy = address(
-//            new TransparentUpgradeableProxyImplementation(
-//                stakingPoolImplementation,
-//                stakingPoolProxyAdmin,
-//                ""
-//            )
-//        );
-//
-//        address keyBucketProxy = address(
-//            new TransparentUpgradeableProxyImplementation(
-//                bucketImplementation,
-//                stakingPoolProxyAdmin,
-//                ""
-//            )
-//        );
-//
-//        address esXaiBucketProxy = address(
-//            new TransparentUpgradeableProxyImplementation(
-//                bucketImplementation,
-//                stakingPoolProxyAdmin,
-//                ""
-//            )
-//        );
-//
-//        IStakingPool(poolProxy).initialize(
-//            refereeAddress,
-//            esXaiAddress,
-//            msg.sender,
-//			_delegateOwner,
-//            keyBucketProxy,
-//            esXaiBucketProxy
-//        );
-//
-//		// Add pool to delegate's list
-//		if (_delegateOwner != address(0)) {
-//			poolsOfDelegateIndices[poolProxy] = poolsOfDelegate[_delegateOwner].length;
-//			poolsOfDelegate[_delegateOwner].push(poolProxy);
-//		}
-//
-//        IStakingPool(poolProxy).initShares(
-//            _ownerShare,
-//            _keyBucketShare,
-//            _stakedBucketShare
-//        );
-//
-//        IStakingPool(poolProxy).updateMetadata(
-//            _name,
-//            _description,
-//            _logo,
-//            _socials
-//        );
-//
-//        IBucketTracker(keyBucketProxy).initialize(
-//            poolProxy,
-//            esXaiAddress,
-//            trackerNames[0],
-//            trackerSymbols[0],
-//            0
-//        );
-//
-//        IBucketTracker(esXaiBucketProxy).initialize(
-//            poolProxy,
-//            esXaiAddress,
-//            trackerNames[1],
-//            trackerSymbols[1],
-//            18
-//        );
-//
-//        stakingPools.push(poolProxy);
-//		poolsCreatedViaFactory[poolProxy] = true;
-//
-//        esXai(esXaiAddress).addToWhitelist(poolProxy);
-//        esXai(esXaiAddress).addToWhitelist(keyBucketProxy);
-//        esXai(esXaiAddress).addToWhitelist(esXaiBucketProxy);
-//
-//        _stakeKeys(poolProxy, keyIds);
-//		uint256 keyQuantity = keyIds.length;
-//		emit PoolCreated(stakingPools.length - 1, poolProxy, msg.sender, keyQuantity);
-//    }
-
     function updatePoolMetadata(
         address pool,
 		string[3] memory _poolMetadata,
 		string[] memory _poolSocials
     ) external {
-        IStakingPool stakingPool = IStakingPool(pool);
+        StakingPool stakingPool = StakingPool(pool);
         require(stakingPool.getPoolOwner() == msg.sender, "8");
         stakingPool.updateMetadata(_poolMetadata, _poolSocials);
     }
 
-    function updateShares(
-        address pool,
-		uint32[3] memory _shareConfig
-    ) external {
-        IStakingPool stakingPool = IStakingPool(pool);
+    function updateShares(address pool, uint32[3] memory _shareConfig) external {
+        StakingPool stakingPool = StakingPool(pool);
         require(stakingPool.getPoolOwner() == msg.sender, "9");
 		require(validateShareValues(_shareConfig), "10");
         stakingPool.updateShares(
@@ -454,7 +332,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         );
     }
 
-//	function validateShareValues(uint32 _ownerShare, uint32 _keyBucketShare, uint32 _stakedBucketShare) internal returns (bool) {
 	function validateShareValues(uint32[3] memory _shareConfig) internal returns (bool) {
 		return _shareConfig[0] <= bucketshareMaxValues[0] &&
 			_shareConfig[1] <= bucketshareMaxValues[1] &&
@@ -463,7 +340,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 	}
 
 	function updateDelegateOwner(address pool, address delegate) external {
-		IStakingPool stakingPool = IStakingPool(pool);
+		StakingPool stakingPool = StakingPool(pool);
 		require(stakingPool.getPoolOwner() == msg.sender, "11");
 		require(msg.sender != delegate, "12");
 
@@ -492,36 +369,25 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         address pool,
         address user
     ) internal view returns (uint256 stakeAmount, uint256 keyAmount) {
-        stakeAmount = IStakingPool(pool).getStakedAmounts(user);
-        keyAmount = IStakingPool(pool).getStakedKeysCountForUser(user);
+        stakeAmount = StakingPool(pool).getStakedAmounts(user);
+        keyAmount = StakingPool(pool).getStakedKeysCountForUser(user);
     }
 
     function _stakeKeys(address pool, uint256[] memory keyIds) internal {
-        // Check if we already know that the user has interacted with this pool
-        // If not add pool index to
-        (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
-            pool,
-            msg.sender
-        );
+        Referee5(refereeAddress).stakeKeys(pool, msg.sender, keyIds);
+		StakingPool stakingPool = StakingPool(pool);
+		stakingPool.stakeKeys(msg.sender, keyIds);
 
-        if (stakeAmount == 0 && keyAmount == 0) {
-			associateUserWithPool(pool);
-        }
-
-        // Get the pool owner poolOwner
-        Referee5(refereeAddress).stakeKeys(
-            pool,
-            msg.sender,
-            keyIds
-        );
-        IStakingPool(pool).stakeKeys(msg.sender, keyIds);
+		if (stakingPool.isUserEngagedWithPool(msg.sender)) {
+			associateUserWithPool(msg.sender, pool);
+		}
 
         emit StakeKeys(
             msg.sender,
             pool,
             keyIds.length,
-            keyAmount + keyIds.length,
-            IStakingPool(pool).getStakedKeysCount()
+			stakingPool.getStakedKeysCountForUser(msg.sender),
+			stakingPool.getStakedKeysCount()
         );
     }
 
@@ -536,85 +402,25 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     function createUnstakeKeyRequest(address pool, uint256 keyAmount) external {
         require(keyAmount > 0, "16");
 		require(poolsCreatedViaFactory[pool], "17");
-
-        uint256 stakedKeysCount = IStakingPool(pool).getStakedKeysCountForUser(
-            msg.sender
-        );
-
-		uint256 requestKeys = userRequestedUnstakeKeyAmount[msg.sender][pool];
-
-        if (IStakingPool(pool).getPoolOwner() == msg.sender) {
-            require(
-                stakedKeysCount >
-                    keyAmount + requestKeys,
-                "18"
-            );
-        } else {
-            require(
-                stakedKeysCount >=
-                    keyAmount + requestKeys,
-                "19"
-            );
-        }
-
-		UnstakeRequest[] storage userRequests = unstakeRequests[msg.sender];
-
-		userRequests.push(
-            UnstakeRequest(
-                true,
-                true,
-                pool,
-                keyAmount,
-                block.timestamp + 30 days,
-                0,
-                [uint256(0), 0, 0, 0, 0]
-            )
-        );
-
-		userRequestedUnstakeKeyAmount[msg.sender][pool] += keyAmount;
+		StakingPool(pool).createUnstakeKeyRequest(msg.sender, keyAmount);
 
         emit UnstakeRequestStarted(
             msg.sender,
             pool,
-			userRequests.length - 1,
+			StakingPool(pool).getUnstakeRequestCount(msg.sender) - 1,
             keyAmount,
             true
         );
     }
 
     function createUnstakeOwnerLastKeyRequest(address pool) external {
-        require(IStakingPool(pool).getPoolOwner() == msg.sender, "20");
 		require(poolsCreatedViaFactory[pool], "21");
-
-        uint256 stakedKeysCount = IStakingPool(pool).getStakedKeysCountForUser(
-            msg.sender
-        );
-
-        require(
-            stakedKeysCount == userRequestedUnstakeKeyAmount[msg.sender][pool] + 1,
-            "22"
-        );
-
-		UnstakeRequest[] storage userRequests = unstakeRequests[msg.sender];
-
-		userRequests.push(
-            UnstakeRequest(
-                true,
-                true,
-                pool,
-                1,
-                block.timestamp + 60 days,
-                0,
-                [uint256(0), 0, 0, 0, 0]
-            )
-        );
-
-        userRequestedUnstakeKeyAmount[msg.sender][pool] += 1;
+		StakingPool(pool).createUnstakeOwnerLastKeyRequest(msg.sender);
 
         emit UnstakeRequestStarted(
             msg.sender,
             pool,
-				userRequests.length - 1,
+			StakingPool(pool).getUnstakeRequestCount(msg.sender) - 1,
             1,
             true
         );
@@ -622,170 +428,96 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
     function createUnstakeEsXaiRequest(address pool, uint256 amount) external {
         require(amount > 0, "23");
-        require(
-            IStakingPool(pool).getStakedAmounts(msg.sender) >=
-                amount + userRequestedUnstakeEsXaiAmount[msg.sender][pool],
-            "24"
-        );
 		require(poolsCreatedViaFactory[pool], "25");
-
-		UnstakeRequest[] storage userRequests = unstakeRequests[msg.sender];
-
-		userRequests.push(
-            UnstakeRequest(
-                true,
-                false,
-                pool,
-                amount,
-                block.timestamp + 30 days,
-                0,
-                [uint256(0), 0, 0, 0, 0]
-            )
-        );
-
-        userRequestedUnstakeEsXaiAmount[msg.sender][pool] += amount;
+		StakingPool(pool).createUnstakeEsXaiRequest(msg.sender, amount);
 
         emit UnstakeRequestStarted(
             msg.sender,
             pool,
-			userRequests.length - 1,
+			StakingPool(pool).getUnstakeRequestCount(msg.sender) - 1,
             amount,
             false
         );
     }
 
     function unstakeKeys(
+		address pool,
         uint256 unstakeRequestIndex,
         uint256[] memory keyIds
     ) external {
-        UnstakeRequest storage request = unstakeRequests[msg.sender][
-            unstakeRequestIndex
-        ];
-        address pool = request.poolAddress;
 		require(poolsCreatedViaFactory[pool], "26");
-        uint256 keysLength = keyIds.length;
-        (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
-            pool,
-            msg.sender
-        );
 
-        require(request.open && request.isKeyRequest, "27");
-        require(
-            block.timestamp >= request.lockTime,
-            "28"
-        );
-        require(
-            keysLength > 0 && request.amount == keysLength,
-            "29"
-        );
+        Referee5(refereeAddress).unstakeKeys(pool, msg.sender, keyIds);
+		StakingPool stakingPool = StakingPool(pool);
+		stakingPool.unstakeKeys(msg.sender, unstakeRequestIndex, keyIds);
 
-        Referee5(refereeAddress).unstakeKeys(
-            pool,
-            msg.sender,
-            keyIds
-        );
-        IStakingPool(pool).unstakeKeys(msg.sender, keyIds);
-
-        if (
-			stakeAmount == 0 &&
-			keyAmount - keysLength == 0 &&
-			IStakingPool(pool).getPoolOwner() != msg.sender
-		) {
+		if (!stakingPool.isUserEngagedWithPool(msg.sender)) {
 			removeUserFromPool(msg.sender, pool);
-        }
-
-        userRequestedUnstakeKeyAmount[msg.sender][pool] -= keysLength;
-        request.open = false;
-        request.completeTime = block.timestamp;
+		}
 
         emit UnstakeKeys(
             msg.sender,
             pool,
-            keysLength,
-            keyAmount - keysLength,
-            IStakingPool(pool).getStakedKeysCount()
+			keyIds.length,
+			stakingPool.getStakedKeysCountForUser(msg.sender),
+			stakingPool.getStakedKeysCount()
         );
     }
 
     function stakeEsXai(address pool, uint256 amount) external {
 		require(poolsCreatedViaFactory[pool], "30");
 
-        (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
-            pool,
-            msg.sender
-        );
-
-        if (stakeAmount == 0 && keyAmount == 0) {
-			associateUserWithPool(pool);
-        }
-
         Referee5(refereeAddress).stakeEsXai(pool, amount);
-
         esXai(esXaiAddress).transferFrom(msg.sender, address(this), amount);
+		StakingPool stakingPool = StakingPool(pool);
+		stakingPool.stakeEsXai(msg.sender, amount);
 
-        IStakingPool(pool).stakeEsXai(msg.sender, amount);
+		if (stakingPool.isUserEngagedWithPool(msg.sender)) {
+			associateUserWithPool(msg.sender, pool);
+		}
 
         emit StakeEsXai(
             msg.sender,
             pool,
             amount,
-            stakeAmount + amount,
+            stakingPool.getStakedAmounts(msg.sender),
             Referee5(refereeAddress).stakedAmounts(pool)
         );
     }
 
-	function associateUserWithPool(address pool) internal {
+    function unstakeEsXai(
+		address pool,
+		uint256 unstakeRequestIndex,
+		uint256 amount
+	) external {
+		require(poolsCreatedViaFactory[pool], "31");
+
+        esXai(esXaiAddress).transfer(msg.sender, amount);
+        Referee5(refereeAddress).unstakeEsXai(pool, amount);
+		StakingPool stakingPool = StakingPool(pool);
+		stakingPool.unstakeEsXai(msg.sender, unstakeRequestIndex, amount);
+
+        if (!stakingPool.isUserEngagedWithPool(msg.sender)) {
+			removeUserFromPool(msg.sender, pool);
+        }
+
+        emit UnstakeEsXai(
+            msg.sender,
+            pool,
+            amount,
+			stakingPool.getStakedAmounts(msg.sender),
+            Referee5(refereeAddress).stakedAmounts(pool)
+        );
+    }
+
+	function associateUserWithPool(address user, address pool) internal {
+		// TODO TEST PREVENTING DUPLICATES WORKS
 		address[] storage userPools = interactedPoolsOfUser[msg.sender];
 		if (userPools.length < 1 || pool != userPools[userToInteractedPoolIds[msg.sender][pool]]) {
 			userToInteractedPoolIds[msg.sender][pool] = userPools.length;
 			userPools.push(pool);
 		}
 	}
-
-    function unstakeEsXai(uint256 unstakeRequestIndex, uint256 amount) external {
-		UnstakeRequest storage request = unstakeRequests[msg.sender][unstakeRequestIndex];
-		address pool = request.poolAddress;
-		require(poolsCreatedViaFactory[pool], "31");
-		require(request.open && !request.isKeyRequest, "32");
-		require(
-			block.timestamp >= request.lockTime,
-			"33"
-		);
-		require(amount > 0 && request.amount == amount, "34");
-
-        (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
-            pool,
-            msg.sender
-        );
-
-        require(stakeAmount >= amount, "35");
-
-        esXai(esXaiAddress).transfer(msg.sender, amount);
-
-        Referee5(refereeAddress).unstakeEsXai(pool, amount);
-
-        IStakingPool(pool).unstakeEsXai(msg.sender, amount);
-
-        if (
-			stakeAmount - amount == 0 &&
-			keyAmount == 0 &&
-			IStakingPool(pool).getPoolOwner() != msg.sender
-		) {
-			removeUserFromPool(msg.sender, pool);
-        }
-
-		userRequestedUnstakeEsXaiAmount[msg.sender][pool] -= amount;
-		request.open = false;
-		request.completeTime = block.timestamp;
-
-        emit UnstakeEsXai(
-            msg.sender,
-            pool,
-            amount,
-            stakeAmount - amount,
-            Referee5(refereeAddress).stakedAmounts(pool)
-        );
-    }
 
 	function removeUserFromPool(address user, address pool) internal {
 		uint256 indexOfPool = userToInteractedPoolIds[user][pool];
@@ -802,7 +534,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         for (uint i = 0; i < poolsLength; i++) {
             address stakingPool = pools[i];
 			require(poolsCreatedViaFactory[stakingPool], "36");
-            IStakingPool(stakingPool).claimRewards(msg.sender);
+            StakingPool(stakingPool).claimRewards(msg.sender);
             emit ClaimFromPool(msg.sender, stakingPool);
         }
     }
@@ -812,7 +544,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 	}
 
 	function isDelegateOfPoolOrOwner(address delegate, address pool) external view returns (bool) {
-		return poolsOfDelegate[delegate][poolsOfDelegateIndices[pool]] == pool || IStakingPool(pool).getPoolOwner() == delegate;
+		return poolsOfDelegate[delegate][poolsOfDelegateIndices[pool]] == pool || StakingPool(pool).getPoolOwner() == delegate;
 	}
 
     function getPoolsCount() external view returns (uint256) {
@@ -838,27 +570,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         uint256 index
     ) external view returns (address) {
         return interactedPoolsOfUser[user][index];
-    }
-
-    function getUnstakeRequest(
-        address account,
-        uint256 index
-    ) public view returns (UnstakeRequest memory) {
-        return unstakeRequests[account][index];
-    }
-
-    function getUnstakeRequestCount(
-        address account
-    ) public view returns (uint256) {
-        return unstakeRequests[account].length;
-    }
-
-    function getUserRequestedUnstakeAmounts(
-        address user,
-        address pool
-    ) external view returns (uint256 keyAmount, uint256 esXaiAmount) {
-        keyAmount = userRequestedUnstakeKeyAmount[user][pool];
-        esXaiAmount = userRequestedUnstakeEsXaiAmount[user][pool];
     }
 
     function getUnstakedKeyIdsFromUser(
