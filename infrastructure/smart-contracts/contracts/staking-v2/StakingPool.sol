@@ -397,7 +397,7 @@ contract StakingPool is AccessControlUpgradeable {
     function _getUndistributedClaimAmount(
         address user
     ) internal view returns (uint256 claimAmount, uint256 ownerAmount) {
-        uint256 poolAmount = esXai(esXaiAddress).balanceOf(address(this));
+        uint256 poolAmount = esXai(esXaiAddress).balanceOf(address(this)) - poolOwnerClaimableRewards;
 
         uint256 amountForKeyBucket = (poolAmount * keyBucketShare) / 1_000_000;
         uint256 amountForEsXaiBucket = (poolAmount * stakedBucketShare) /
@@ -468,7 +468,9 @@ contract StakingPool is AccessControlUpgradeable {
         returns (
             uint256 userStakedEsXaiAmount,
             uint256 userClaimAmount,
-            uint256[] memory userStakedKeyIds
+            uint256[] memory userStakedKeyIds,
+            uint256 unstakeRequestkeyAmount, 
+            uint256 unstakeRequestesXaiAmount
         )
     {
         userStakedEsXaiAmount = stakedAmounts[user];
@@ -491,6 +493,9 @@ contract StakingPool is AccessControlUpgradeable {
         }
 
         userStakedKeyIds = stakedKeysOfOwner[user];
+        
+		unstakeRequestkeyAmount = userRequestedUnstakeKeyAmount[user];
+		unstakeRequestesXaiAmount = userRequestedUnstakeEsXaiAmount[user];
     }
 
 	function getUnstakeRequest(
@@ -505,8 +510,7 @@ contract StakingPool is AccessControlUpgradeable {
 	}
 
 	function getUserRequestedUnstakeAmounts(
-		address user,
-		address pool
+		address user
 	) external view returns (uint256 keyAmount, uint256 esXaiAmount) {
 		keyAmount = userRequestedUnstakeKeyAmount[user];
 		esXaiAmount = userRequestedUnstakeEsXaiAmount[user];
