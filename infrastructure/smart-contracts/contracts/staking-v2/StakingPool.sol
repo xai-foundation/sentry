@@ -168,14 +168,12 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
     }
 
     function updateMetadata(
-        string memory _name,
-        string memory _description,
-        string memory _logo,
+		string[3] memory _metaData,
         string[] memory _socials
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        name = _name;
-        description = _description;
-        logo = _logo;
+        name = _metaData[0];
+        description = _metaData[1];
+        logo = _metaData[2];
         socials = _socials;
     }
 

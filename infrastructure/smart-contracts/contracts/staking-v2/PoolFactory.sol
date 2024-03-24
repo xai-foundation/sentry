@@ -6,11 +6,13 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgrad
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
+import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "../upgrades/referee/Referee5.sol";
 import "../Xai.sol";
 import "../esXai.sol";
 import "../staking-v2/Utils.sol";
-import "../staking-v2/TransparentUpgradable.sol";
+//import "../staking-v2/TransparentUpgradable.sol";
+import "./PoolBeacon.sol";
 
 // Error Codes
 // 1: Invalid Proxy Admin
@@ -105,6 +107,10 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 	// mapping of pool address => true if create via this factory
 	mapping(address => bool) public poolsCreatedViaFactory;
 
+	PoolBeacon public poolBeacon;
+	PoolBeacon public keyBucketBeacon;
+	PoolBeacon public esXaiBeacon;
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
@@ -198,6 +204,10 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         stakingPoolProxyAdmin = _stakingPoolProxyAdmin;
         stakingPoolImplementation = _stakingPoolImplementation;
         bucketImplementation = _bucketImplementation;
+
+		poolBeacon = new PoolBeacon(_stakingPoolImplementation);
+		keyBucketBeacon = new PoolBeacon(_bucketImplementation);
+		poolBeacon = new PoolBeacon(_bucketImplementation);
     }
 
     /**
@@ -217,74 +227,93 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         emit UpdatePoolProxyAdmin(previousAdmin, newAdmin);
     }
 
-    function updatePoolImplementation(
-        address newImplementation
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(newImplementation != address(0), "2");
-        address prevImplementation = stakingPoolImplementation;
-        stakingPoolImplementation = newImplementation;
-        emit UpdatePoolImplementation(prevImplementation, newImplementation);
-    }
+//    function updatePoolImplementation(
+//        address newImplementation
+//    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+//        require(newImplementation != address(0), "2");
+//        address prevImplementation = stakingPoolImplementation;
+//        stakingPoolImplementation = newImplementation;
+//        emit UpdatePoolImplementation(prevImplementation, newImplementation);
+//    }
+//
+//    function updateBucketImplementation(
+//        address newImplementation
+//    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+//        require(newImplementation != address(0), "3");
+//        address prevImplementation = bucketImplementation;
+//        bucketImplementation = newImplementation;
+//        emit UpdateBucketImplementation(prevImplementation, newImplementation);
+//    }
 
-    function updateBucketImplementation(
-        address newImplementation
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(newImplementation != address(0), "3");
-        address prevImplementation = bucketImplementation;
-        bucketImplementation = newImplementation;
-        emit UpdateBucketImplementation(prevImplementation, newImplementation);
-    }
-
-    function createPool(
-        uint256[] memory keyIds,
-        uint32 _ownerShare,
-		uint32 _keyBucketShare,
-		uint32 _stakedBucketShare,
-        string memory _name,
-        string memory _description,
-        string memory _logo,
-        string[] memory _socials,
-        string[] memory trackerNames,
-        string[] memory trackerSymbols,
-		address _delegateOwner
-    ) external {
-        require(stakingEnabled, "4");
-        require(keyIds.length > 0, "5");
-		require(validateShareValues(_ownerShare, _keyBucketShare, _stakedBucketShare), "6");
+	function createPool(
+		address _delegateOwner,
+		uint256[] memory _keyIds,
+		uint32[3] memory _shareConfig,
+		string[3] memory _poolMetadata,
+		string[] memory _poolSocials,
+		string[2][2] memory trackerDetails
+	) external {
+		require(stakingEnabled, "4");
+		require(_keyIds.length > 0, "5");
+		require(validateShareValues(_shareConfig), "6");
 		require(msg.sender != _delegateOwner, "7");
 
-        address poolProxy = address(
-            new TransparentUpgradeableProxyImplementation(
-                stakingPoolImplementation,
-                stakingPoolProxyAdmin,
-                ""
-            )
-        );
+		address poolProxy = address(
+			new BeaconProxy(
+				address(poolBeacon),
+				""
+			)
+		);
 
-        address keyBucketProxy = address(
-            new TransparentUpgradeableProxyImplementation(
-                bucketImplementation,
-                stakingPoolProxyAdmin,
-                ""
-            )
-        );
+		address keyBucketProxy = address(
+			new BeaconProxy(
+				address(keyBucketBeacon),
+				""
+			)
+		);
 
-        address esXaiBucketProxy = address(
-            new TransparentUpgradeableProxyImplementation(
-                bucketImplementation,
-                stakingPoolProxyAdmin,
-                ""
-            )
-        );
+		address esXaiBucketProxy = address(
+			new BeaconProxy(
+				address(esXaiBeacon),
+				""
+			)
+		);
 
-        IStakingPool(poolProxy).initialize(
-            refereeAddress,
-            esXaiAddress,
-            msg.sender,
+		IStakingPool(poolProxy).initialize(
+			refereeAddress,
+			esXaiAddress,
+			msg.sender,
 			_delegateOwner,
-            keyBucketProxy,
-            esXaiBucketProxy
-        );
+			keyBucketProxy,
+			esXaiBucketProxy
+		);
+
+		IStakingPool(poolProxy).initShares(
+			_shareConfig[0],
+			_shareConfig[1],
+			_shareConfig[2]
+		);
+
+		IStakingPool(poolProxy).updateMetadata(
+			_poolMetadata,
+			_poolSocials
+		);
+
+		IBucketTracker(keyBucketProxy).initialize(
+			poolProxy,
+			esXaiAddress,
+			trackerDetails[0][0],
+			trackerDetails[0][1],
+			0
+		);
+
+		IBucketTracker(esXaiBucketProxy).initialize(
+			poolProxy,
+			esXaiAddress,
+			trackerDetails[1][0],
+			trackerDetails[1][1],
+			18
+		);
 
 		// Add pool to delegate's list
 		if (_delegateOwner != address(0)) {
@@ -292,80 +321,145 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 			poolsOfDelegate[_delegateOwner].push(poolProxy);
 		}
 
-        IStakingPool(poolProxy).initShares(
-            _ownerShare,
-            _keyBucketShare,
-            _stakedBucketShare
-        );
-
-        IStakingPool(poolProxy).updateMetadata(
-            _name,
-            _description,
-            _logo,
-            _socials
-        );
-
-        IBucketTracker(keyBucketProxy).initialize(
-            poolProxy,
-            esXaiAddress,
-            trackerNames[0],
-            trackerSymbols[0],
-            0
-        );
-
-        IBucketTracker(esXaiBucketProxy).initialize(
-            poolProxy,
-            esXaiAddress,
-            trackerNames[1],
-            trackerSymbols[1],
-            18
-        );
-
-        stakingPools.push(poolProxy);
+		stakingPools.push(poolProxy);
 		poolsCreatedViaFactory[poolProxy] = true;
 
-        esXai(esXaiAddress).addToWhitelist(poolProxy);
-        esXai(esXaiAddress).addToWhitelist(keyBucketProxy);
-        esXai(esXaiAddress).addToWhitelist(esXaiBucketProxy);
+		esXai(esXaiAddress).addToWhitelist(poolProxy);
+		esXai(esXaiAddress).addToWhitelist(keyBucketProxy);
+		esXai(esXaiAddress).addToWhitelist(esXaiBucketProxy);
 
-        _stakeKeys(poolProxy, keyIds);
-		uint256 keyQuantity = keyIds.length;
-		emit PoolCreated(stakingPools.length - 1, poolProxy, msg.sender, keyQuantity);
-    }
+        _stakeKeys(poolProxy, _keyIds);
+		emit PoolCreated(stakingPools.length - 1, poolProxy, msg.sender, _keyIds.length);
+	}
+
+//    function createPool(
+//        uint256[] memory keyIds,
+//        uint32 _ownerShare,
+//		uint32 _keyBucketShare,
+//		uint32 _stakedBucketShare,
+//        string memory _name,
+//        string memory _description,
+//        string memory _logo,
+//        string[] memory _socials,
+//        string[] memory trackerNames,
+//        string[] memory trackerSymbols,
+//		address _delegateOwner
+//    ) external {
+//        require(stakingEnabled, "4");
+//        require(keyIds.length > 0, "5");
+//		require(validateShareValues(_ownerShare, _keyBucketShare, _stakedBucketShare), "6");
+//		require(msg.sender != _delegateOwner, "7");
+
+//        address poolProxy = address(
+//            new TransparentUpgradeableProxyImplementation(
+//                stakingPoolImplementation,
+//                stakingPoolProxyAdmin,
+//                ""
+//            )
+//        );
+//
+//        address keyBucketProxy = address(
+//            new TransparentUpgradeableProxyImplementation(
+//                bucketImplementation,
+//                stakingPoolProxyAdmin,
+//                ""
+//            )
+//        );
+//
+//        address esXaiBucketProxy = address(
+//            new TransparentUpgradeableProxyImplementation(
+//                bucketImplementation,
+//                stakingPoolProxyAdmin,
+//                ""
+//            )
+//        );
+//
+//        IStakingPool(poolProxy).initialize(
+//            refereeAddress,
+//            esXaiAddress,
+//            msg.sender,
+//			_delegateOwner,
+//            keyBucketProxy,
+//            esXaiBucketProxy
+//        );
+//
+//		// Add pool to delegate's list
+//		if (_delegateOwner != address(0)) {
+//			poolsOfDelegateIndices[poolProxy] = poolsOfDelegate[_delegateOwner].length;
+//			poolsOfDelegate[_delegateOwner].push(poolProxy);
+//		}
+//
+//        IStakingPool(poolProxy).initShares(
+//            _ownerShare,
+//            _keyBucketShare,
+//            _stakedBucketShare
+//        );
+//
+//        IStakingPool(poolProxy).updateMetadata(
+//            _name,
+//            _description,
+//            _logo,
+//            _socials
+//        );
+//
+//        IBucketTracker(keyBucketProxy).initialize(
+//            poolProxy,
+//            esXaiAddress,
+//            trackerNames[0],
+//            trackerSymbols[0],
+//            0
+//        );
+//
+//        IBucketTracker(esXaiBucketProxy).initialize(
+//            poolProxy,
+//            esXaiAddress,
+//            trackerNames[1],
+//            trackerSymbols[1],
+//            18
+//        );
+//
+//        stakingPools.push(poolProxy);
+//		poolsCreatedViaFactory[poolProxy] = true;
+//
+//        esXai(esXaiAddress).addToWhitelist(poolProxy);
+//        esXai(esXaiAddress).addToWhitelist(keyBucketProxy);
+//        esXai(esXaiAddress).addToWhitelist(esXaiBucketProxy);
+//
+//        _stakeKeys(poolProxy, keyIds);
+//		uint256 keyQuantity = keyIds.length;
+//		emit PoolCreated(stakingPools.length - 1, poolProxy, msg.sender, keyQuantity);
+//    }
 
     function updatePoolMetadata(
         address pool,
-        string memory _name,
-        string memory _description,
-        string memory _logo,
-        string[] memory _socials
+		string[3] memory _poolMetadata,
+		string[] memory _poolSocials
     ) external {
         IStakingPool stakingPool = IStakingPool(pool);
         require(stakingPool.getPoolOwner() == msg.sender, "8");
-        stakingPool.updateMetadata(_name, _description, _logo, _socials);
+        stakingPool.updateMetadata(_poolMetadata, _poolSocials);
     }
 
     function updateShares(
         address pool,
-		uint32 _ownerShare,
-		uint32 _keyBucketShare,
-		uint32 _stakedBucketShare
+		uint32[3] memory _shareConfig
     ) external {
         IStakingPool stakingPool = IStakingPool(pool);
         require(stakingPool.getPoolOwner() == msg.sender, "9");
-		require(validateShareValues(_ownerShare, _keyBucketShare, _stakedBucketShare), "10");
+		require(validateShareValues(_shareConfig), "10");
         stakingPool.updateShares(
-            _ownerShare,
-            _keyBucketShare,
-            _stakedBucketShare
+			_shareConfig[0],
+			_shareConfig[1],
+			_shareConfig[2]
         );
     }
 
-	function validateShareValues(uint32 _ownerShare, uint32 _keyBucketShare, uint32 _stakedBucketShare) internal returns (bool) {
-		return _ownerShare <= bucketshareMaxValues[0] &&
-			_keyBucketShare <= bucketshareMaxValues[1] &&
-			_stakedBucketShare <= bucketshareMaxValues[2] &&
-			_ownerShare + _keyBucketShare + _stakedBucketShare == 1_000_000;
+//	function validateShareValues(uint32 _ownerShare, uint32 _keyBucketShare, uint32 _stakedBucketShare) internal returns (bool) {
+	function validateShareValues(uint32[3] memory _shareConfig) internal returns (bool) {
+		return _shareConfig[0] <= bucketshareMaxValues[0] &&
+			_shareConfig[1] <= bucketshareMaxValues[1] &&
+			_shareConfig[2] <= bucketshareMaxValues[2] &&
+			_shareConfig[0] + _shareConfig[1] + _shareConfig[2] == 1_000_000;
 	}
 
 	function updateDelegateOwner(address pool, address delegate) external {

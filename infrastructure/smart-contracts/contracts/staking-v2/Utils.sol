@@ -23,7 +23,7 @@ interface IStakingPool {
 		address _delegateOwner,
         address _keyBucket,
         address _esXaiStakeBucket
-    ) external;
+	) external;
 
     function getPoolOwner() external view returns (address);
 
@@ -52,9 +52,7 @@ interface IStakingPool {
     ) external;
 
     function updateMetadata(
-        string memory _name,
-        string memory _description,
-        string memory _logo,
+		string[3] memory _metaData,
         string[] memory _socials
     ) external;
 
