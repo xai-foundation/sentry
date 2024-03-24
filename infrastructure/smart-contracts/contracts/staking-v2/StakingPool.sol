@@ -23,9 +23,9 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
     string public logo;
     string[] public socials;
 
-    uint16 public ownerShare;
-    uint16 public keyBucketShare;
-    uint16 public stakedBucketShare;
+	uint32 public ownerShare;
+	uint32 public keyBucketShare;
+	uint32 public stakedBucketShare;
 
     uint256 public poolOwnerClaimableRewards;
     IBucketTracker public keyBucket;
@@ -38,7 +38,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
 	uint256[] public stakedKeys;
 	mapping(uint256 => uint256) public stakedKeysIndices;
 
-    uint16[3] pendingShares;
+	uint32[3] pendingShares;
     uint256 updateSharesTimestamp;
 
     uint256[500] __gap;
@@ -116,9 +116,9 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
             return;
         }
 
-        uint256 amountForKeys = (amountToDistribute * keyBucketShare) / 10_000;
+        uint256 amountForKeys = (amountToDistribute * keyBucketShare) / 1_000_000;
         uint256 amountForStaked = (amountToDistribute * stakedBucketShare) /
-            10_000;
+		1_000_000;
 
         if (amountForStaked > 0) {
             //If there are no esXai stakers we will distribute to keys and owner proportional to their shares
@@ -147,9 +147,9 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
     }
 
     function initShares(
-        uint16 _ownerShare,
-        uint16 _keyBucketShare,
-        uint16 _stakedBucketShare
+        uint32 _ownerShare,
+		uint32 _keyBucketShare,
+		uint32 _stakedBucketShare
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         ownerShare = _ownerShare;
         keyBucketShare = _keyBucketShare;
@@ -157,9 +157,9 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
     }
 
     function updateShares(
-        uint16 _ownerShare,
-        uint16 _keyBucketShare,
-        uint16 _stakedBucketShare
+		uint32 _ownerShare,
+		uint32 _keyBucketShare,
+		uint32 _stakedBucketShare
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         pendingShares[0] = _ownerShare;
         pendingShares[1] = _keyBucketShare;
@@ -266,9 +266,9 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
     ) internal view returns (uint256 claimAmount, uint256 ownerAmount) {
         uint256 poolAmount = esXai(esXaiAddress).balanceOf(address(this));
 
-        uint256 amountForKeyBucket = (poolAmount * keyBucketShare) / 10_000;
+        uint256 amountForKeyBucket = (poolAmount * keyBucketShare) / 1_000_000;
         uint256 amountForEsXaiBucket = (poolAmount * stakedBucketShare) /
-            10_000;
+		1_000_000;
 
         ownerAmount = poolAmount - amountForKeyBucket - amountForEsXaiBucket;
 
@@ -302,7 +302,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
             string memory _description,
             string memory _logo,
             string[] memory _socials,
-            uint16[] memory _pendingShares
+			uint32[] memory _pendingShares
         )
     {
         baseInfo.poolAddress = address(this);
@@ -321,7 +321,7 @@ contract StakingPool is IStakingPool, AccessControlUpgradeable {
         _logo = logo;
         _socials = socials;
 
-        _pendingShares = new uint16[](3);
+        _pendingShares = new uint32[](3);
         _pendingShares[0] = pendingShares[0];
         _pendingShares[1] = pendingShares[1];
         _pendingShares[2] = pendingShares[2];

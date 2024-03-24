@@ -67,8 +67,8 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     // Staking pool contract addresses
     address[] public stakingPools;
 
-    // Staking Pool share max values owner, keys, stakedEsXai in basepoints (5% => 500)
-    uint16[3] public bucketshareMaxValues;
+    // Staking Pool share max values owner, keys, stakedEsXai in basepoints (5% => 50_000)
+    uint32[3] public bucketshareMaxValues;
 
     // The proxy admin for the staking pools and buckets
     address public stakingPoolProxyAdmin;
@@ -188,9 +188,9 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     ) public initializer {
         __AccessControlEnumerable_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        bucketshareMaxValues[0] = 1000; // => 10%
-        bucketshareMaxValues[1] = 9000; // => 90%
-        bucketshareMaxValues[2] = 3000; // => 30%
+        bucketshareMaxValues[0] = 100_000; // => 10%
+        bucketshareMaxValues[1] = 900_000; // => 90%
+        bucketshareMaxValues[2] = 300_000; // => 30%
 
         refereeAddress = _refereeAddress;
         nodeLicenseAddress = _nodeLicenseAddress;
@@ -237,9 +237,9 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
     function createPool(
         uint256[] memory keyIds,
-        uint16 _ownerShare,
-        uint16 _keyBucketShare,
-        uint16 _stakedBucketShare,
+        uint32 _ownerShare,
+		uint32 _keyBucketShare,
+		uint32 _stakedBucketShare,
         string memory _name,
         string memory _description,
         string memory _logo,
@@ -250,13 +250,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     ) external {
         require(stakingEnabled, "4");
         require(keyIds.length > 0, "5");
-        require(
-            _ownerShare <= bucketshareMaxValues[0] &&
-                _keyBucketShare <= bucketshareMaxValues[1] &&
-                _stakedBucketShare <= bucketshareMaxValues[2] &&
-                _ownerShare + _keyBucketShare + _stakedBucketShare == 10_000,
-            "6"
-        );
+		require(validateShareValues(_ownerShare, _keyBucketShare, _stakedBucketShare), "6");
 		require(msg.sender != _delegateOwner, "7");
 
         address poolProxy = address(
@@ -266,6 +260,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
                 ""
             )
         );
+
         address keyBucketProxy = address(
             new TransparentUpgradeableProxyImplementation(
                 bucketImplementation,
@@ -352,25 +347,26 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
     function updateShares(
         address pool,
-        uint16 _ownerShare,
-        uint16 _keyBucketShare,
-        uint16 _stakedBucketShare
+		uint32 _ownerShare,
+		uint32 _keyBucketShare,
+		uint32 _stakedBucketShare
     ) external {
         IStakingPool stakingPool = IStakingPool(pool);
         require(stakingPool.getPoolOwner() == msg.sender, "9");
-        require(
-            _ownerShare <= bucketshareMaxValues[0] &&
-                _keyBucketShare <= bucketshareMaxValues[1] &&
-                _stakedBucketShare <= bucketshareMaxValues[2] &&
-                _ownerShare + _keyBucketShare + _stakedBucketShare == 10_000,
-            "10"
-        );
+		require(validateShareValues(_ownerShare, _keyBucketShare, _stakedBucketShare), "10");
         stakingPool.updateShares(
             _ownerShare,
             _keyBucketShare,
             _stakedBucketShare
         );
     }
+
+	function validateShareValues(uint32 _ownerShare, uint32 _keyBucketShare, uint32 _stakedBucketShare) internal returns (bool) {
+		return _ownerShare <= bucketshareMaxValues[0] &&
+			_keyBucketShare <= bucketshareMaxValues[1] &&
+			_stakedBucketShare <= bucketshareMaxValues[2] &&
+			_ownerShare + _keyBucketShare + _stakedBucketShare == 1_000_000;
+	}
 
 	function updateDelegateOwner(address pool, address delegate) external {
 		IStakingPool stakingPool = IStakingPool(pool);
