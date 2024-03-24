@@ -373,14 +373,15 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 		require(stakingPool.getPoolOwner() == msg.sender, "11");
 		require(msg.sender != delegate, "12");
 
-		// If staking pool already has delegate, remove pool from delegate's list
-		if (stakingPool.getDelegateOwner() != address(0)) {
+		// If staking pool already has delegate, remove pool from old delegate's list
+        address oldDelegate = stakingPool.getDelegateOwner();
+		if (oldDelegate != address(0)) {
 			uint256 indexOfPoolToRemove = poolsOfDelegateIndices[pool]; // index of pool in question in delegate's list
-			address lastDelegatePoolId = poolsOfDelegate[delegate][poolsOfDelegate[delegate].length - 1];
+			address lastDelegatePoolId = poolsOfDelegate[oldDelegate][poolsOfDelegate[oldDelegate].length - 1];
 
 			poolsOfDelegateIndices[lastDelegatePoolId] = indexOfPoolToRemove;
-			poolsOfDelegate[delegate][indexOfPoolToRemove] = lastDelegatePoolId;
-			poolsOfDelegate[delegate].pop();
+			poolsOfDelegate[oldDelegate][indexOfPoolToRemove] = lastDelegatePoolId;
+			poolsOfDelegate[oldDelegate].pop();
 		}
 
 		// Add pool to delegate's list
