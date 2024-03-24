@@ -361,7 +361,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         );
     }
 
-	function validateShareValues(uint32 _ownerShare, uint32 _keyBucketShare, uint32 _stakedBucketShare) internal returns (bool) {
+	function validateShareValues(uint32 _ownerShare, uint32 _keyBucketShare, uint32 _stakedBucketShare) internal view returns (bool) {
 		return _ownerShare <= bucketshareMaxValues[0] &&
 			_keyBucketShare <= bucketshareMaxValues[1] &&
 			_stakedBucketShare <= bucketshareMaxValues[2] &&
