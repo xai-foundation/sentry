@@ -1,9 +1,12 @@
 {
-    "root": "apps/cli",
-    "sourceRoot": "apps/cli/src",
-    "projectType": "application",
     "targets": {
       "build": {
+        "dependsOn": [
+          {
+            "target": "build",
+            "projects": "dependencies"
+          }
+        ],
         "outputs": [
           "{projectRoot}/dist",
           "{projectRoot}/release", 

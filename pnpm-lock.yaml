@@ -227,9 +227,12 @@ importers:
       '@sentry/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@wagmi/core':
+        specifier: 1.4.5
+        version: 1.4.5(@types/react@18.2.21)(react@18.2.0)(typescript@5.2.2)(viem@1.15.1)
       '@web3modal/wagmi':
-        specifier: ^3.1.0
-        version: 3.1.0(@types/react@18.2.21)(@wagmi/core@2.6.9)(typescript@5.2.2)(viem@1.15.1)
+        specifier: 3.1.0
+        version: 3.1.0(@types/react@18.2.21)(@wagmi/core@1.4.5)(typescript@5.2.2)(viem@1.15.1)
       axios:
         specifier: ^1.6.2
         version: 1.6.2(debug@4.3.4)
@@ -255,7 +258,7 @@ importers:
         specifier: ^1.15.1
         version: 1.15.1(typescript@5.2.2)
       wagmi:
-        specifier: ^1.4.5
+        specifier: 1.4.5
         version: 1.4.5(@types/react@18.2.21)(react-dom@18.2.0)(react@18.2.0)(typescript@5.2.2)(viem@1.15.1)
     devDependencies:
       '@types/react':
@@ -4034,7 +4037,7 @@ packages:
     dependencies:
       '@types/debug': 4.1.8
       debug: 4.3.4(supports-color@8.1.1)
-      semver: 7.5.4
+      semver: 7.6.0
       superstruct: 1.0.3
     transitivePeerDependencies:
       - supports-color
@@ -6852,7 +6855,7 @@ packages:
       '@babel/parser': 7.23.0
       '@vue/shared': 3.3.6
       estree-walker: 2.0.2
-      source-map-js: 1.0.2
+      source-map-js: 1.2.0
     dev: false
     optional: true
 
@@ -6878,7 +6881,7 @@ packages:
       estree-walker: 2.0.2
       magic-string: 0.30.5
       postcss: 8.4.38
-      source-map-js: 1.0.2
+      source-map-js: 1.2.0
     dev: false
     optional: true
 
@@ -7005,32 +7008,6 @@ packages:
       - lokijs
       - react
       - supports-color
-      - utf-8-validate
-      - zod
-    dev: false
-
-  /@wagmi/core@2.6.9(@types/react@18.2.21)(react@18.2.0)(typescript@5.2.2)(viem@1.15.1):
-    resolution: {integrity: sha512-AbNbHK+m60mfMTds0flv5YYJGp+JSz8O8ikzX+T7MdemFrYA9tZr6G+iSEnf+JLtcgiaCgQqUwac/WmmTkDiMA==}
-    peerDependencies:
-      '@tanstack/query-core': '>=5.0.0'
-      typescript: '>=5.0.4'
-      viem: 2.x
-    peerDependenciesMeta:
-      '@tanstack/query-core':
-        optional: true
-      typescript:
-        optional: true
-    dependencies:
-      eventemitter3: 5.0.1
-      mipd: 0.0.5(typescript@5.2.2)
-      typescript: 5.2.2
-      viem: 1.15.1(typescript@5.2.2)
-      zustand: 4.4.1(@types/react@18.2.21)(react@18.2.0)
-    transitivePeerDependencies:
-      - '@types/react'
-      - bufferutil
-      - immer
-      - react
       - utf-8-validate
       - zod
     dev: false
@@ -7444,7 +7421,7 @@ packages:
       qrcode: 1.5.3
     dev: false
 
-  /@web3modal/wagmi@3.1.0(@types/react@18.2.21)(@wagmi/core@2.6.9)(typescript@5.2.2)(viem@1.15.1):
+  /@web3modal/wagmi@3.1.0(@types/react@18.2.21)(@wagmi/core@1.4.5)(typescript@5.2.2)(viem@1.15.1):
     resolution: {integrity: sha512-PSzhHtj2GTY+36d6lbfzl4EVeuzA4XcMOW7+/CyLFzUDpG4BI5fsKrDbc7NqZU6L6BjN9dPi/oZO/Q+PM8MrPw==}
     peerDependencies:
       '@wagmi/core': '>=1'
@@ -7457,7 +7434,7 @@ packages:
       vue:
         optional: true
     dependencies:
-      '@wagmi/core': 2.6.9(@types/react@18.2.21)(react@18.2.0)(typescript@5.2.2)(viem@1.15.1)
+      '@wagmi/core': 1.4.5(@types/react@18.2.21)(react@18.2.0)(typescript@5.2.2)(viem@1.15.1)
       '@web3modal/polyfills': 3.1.0
       '@web3modal/scaffold': 3.1.0(@types/react@18.2.21)(react@18.2.0)
       viem: 1.15.1(typescript@5.2.2)
@@ -14596,12 +14573,6 @@ packages:
       '@types/trusted-types': 2.0.5
     dev: false
 
-  /lit-html@3.0.0:
-    resolution: {integrity: sha512-DNJIE8dNY0dQF2Gs0sdMNUppMQT2/CvV4OVnSdg7BXAsGqkVwsE5bqQ04POfkYH5dBIuGnJYdFz5fYYyNnOxiA==}
-    dependencies:
-      '@types/trusted-types': 2.0.5
-    dev: false
-
   /lit-html@3.1.2:
     resolution: {integrity: sha512-3OBZSUrPnAHoKJ9AMjRL/m01YJxQMf+TMHanNtTHG68ubjnZxK0RFl102DPzsw4mWnHibfZIBJm3LWCZ/LmMvg==}
     requiresBuild: true
@@ -14622,7 +14593,7 @@ packages:
     dependencies:
       '@lit/reactive-element': 2.0.0
       lit-element: 4.0.0
-      lit-html: 3.0.0
+      lit-html: 3.1.2
     dev: false
 
   /loader-runner@4.3.0:
@@ -15751,22 +15722,6 @@ packages:
       minipass: 3.3.6
       yallist: 4.0.0
     dev: true
-
-  /mipd@0.0.5(typescript@5.2.2):
-    resolution: {integrity: sha512-gbKA784D2WKb5H/GtqEv+Ofd1S9Zj+Z/PGDIl1u1QAbswkxD28BQ5bSXQxkeBzPBABg1iDSbiwGG1XqlOxRspA==}
-    peerDependencies:
-      typescript: '>=5.0.4'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      typescript: 5.2.2
-      viem: 1.15.1(typescript@5.2.2)
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
-      - zod
-    dev: false
 
   /mkdirp-classic@0.5.3:
     resolution: {integrity: sha512-gKLcREMhtuZRwRAfqP3RFW+TK4JqApVBtOIftVgjuABpAtpxhPGaDcfvbhNvD0B8iD1oUr/txX35NjcaY6Ns/A==}
@@ -18718,7 +18673,6 @@ packages:
     hasBin: true
     dependencies:
       lru-cache: 6.0.0
-    dev: true
 
   /send@0.18.0:
     resolution: {integrity: sha512-qqWzuOjSFOuqPjFe4NOsMLafToQQwBSOEpS+FwEt3A2V3vKubTquT3vmLTQpFgMXp8AlFWFuP1qKaJZOtPpVXg==}
@@ -22255,26 +22209,6 @@ packages:
 
   /zod@3.22.4:
     resolution: {integrity: sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==}
-    dev: false
-
-  /zustand@4.4.1(@types/react@18.2.21)(react@18.2.0):
-    resolution: {integrity: sha512-QCPfstAS4EBiTQzlaGP1gmorkh/UL1Leaj2tdj+zZCZ/9bm0WS7sI2wnfD5lpOszFqWJ1DcPnGoY8RDL61uokw==}
-    engines: {node: '>=12.7.0'}
-    peerDependencies:
-      '@types/react': '>=16.8'
-      immer: '>=9.0'
-      react: '>=16.8'
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-      immer:
-        optional: true
-      react:
-        optional: true
-    dependencies:
-      '@types/react': 18.2.21
-      react: 18.2.0
-      use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
   /zustand@4.4.4(@types/react@18.2.21)(react@18.2.0):
