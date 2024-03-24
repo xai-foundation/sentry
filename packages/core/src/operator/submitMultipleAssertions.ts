@@ -34,7 +34,9 @@ export async function submitMultipleAssertions(
             batch,
             challengeId,
             successorConfirmData
-        ), 3));
+        ), 3).catch((error) => {
+            logger(`Error on batch submission for keys ${batch.map(k => k.toString()).join(", ")}`);
+        }));
 
         logger(`Submitted batch for keys ${batch.map(k => k.toString()).join(", ")}`);
     }
