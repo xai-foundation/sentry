@@ -22,6 +22,7 @@ async function main() {
     const bucketImplAddress = await BucketTracker.getAddress();
     console.log("Deployed Impl", bucketImplAddress)
 
+
     //ONLY NEEDED IN PROD DEPLOY FOR AUTO VERIFICATION FROM FACTORY CONTRACTS
     console.log("Deploying TransparentUpgradeableProxyImplementationPool...");
     const TransparentUpgradeableProxyImplementationPool = await ethers.deployContract("TransparentUpgradeableProxyImplementation", [poolImplAddress, deployerAddress, "0x"]);
@@ -49,6 +50,11 @@ async function main() {
     await tx.wait(3);
     const poolFactoryAddress = await poolFactory.getAddress();
     console.log("PoolFactory deployed to:", poolFactoryAddress);
+
+    //TODO DEPLOY PoolProxyDeployer upgradable with init
+    //TODO DEPLOY PoolProxyDeployer upgradable with init
+    //TODO DEPLOY PoolProxyDeployer upgradable with init
+    //TODO DEPLOY PoolProxyDeployer upgradable with init
 
     // Give PoolFactory auth to whitelist new pools & buckets on esXai
     console.log("Adding esXai DEFAULT_ADMIN_ROLE to PoolFactory...");
