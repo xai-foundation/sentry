@@ -1,0 +1,15 @@
+{
+    "root": "apps/cli",
+    "sourceRoot": "apps/cli/src",
+    "projectType": "application",
+    "targets": {
+      "build": {
+        "outputs": [
+          "{projectRoot}/dist",
+          "{projectRoot}/release", 
+          "{projectRoot}/build",
+          "{projectRoot}/tsconfig.tsbuildinfo"
+        ]
+    }
+  }
+}

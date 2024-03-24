@@ -1,0 +1,13 @@
+{
+	"root": "apps/web-connect",
+	"sourceRoot": "apps/web-connect/src",
+	"projectType": "application",
+	"targets": {
+		"build": {
+			"outputs": [
+				"{projectRoot}/dist",
+				"{workspaceRoot}/apps/sentry-client-desktop/public/web"
+			]
+		}
+	}
+}

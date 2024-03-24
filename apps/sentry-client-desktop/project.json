@@ -1,0 +1,15 @@
+{
+	"root": "apps/sentry-client-desktop",
+	"sourceRoot": "apps/sentry-client-desktop/src",
+	"projectType": "application",
+	"targets": {
+		"build": {
+			"outputs": [
+				"{projectRoot}/dist",
+				"{projectRoot}/release",
+				"{projectRoot}/dist-electron",
+				"{projectRoot}/tsconfig.tsbuildinfo"
+			]
+		}
+	}
+}
