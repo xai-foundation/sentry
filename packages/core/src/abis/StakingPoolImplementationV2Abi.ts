@@ -24,6 +24,10 @@ export const StakingPoolImplementationV2Abi = [
       {
         "type": "uint256",
         "name": "_keys"
+      },
+      {
+        "type": "uint256",
+        "name": "_some"
       }
     ],
     "outputs": []
@@ -52,6 +56,20 @@ export const StakingPoolImplementationV2Abi = [
     "outputs": [
       {
         "type": "string",
+        "name": ""
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "some",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [],
+    "outputs": [
+      {
+        "type": "uint256",
         "name": ""
       }
     ]
