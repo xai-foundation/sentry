@@ -326,13 +326,8 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
                 continue;
             }
 
-            if (!stakingV2Enabled) {
-                // Submit the claim to the challenge
-                cachedLogger(`Submitting assertion for Sentry Key ${nodeLicenseId} to challenge ${challengeNumber}.`);
-                await retry(() => submitAssertionToChallenge(nodeLicenseId, challengeNumber, challenge.assertionStateRootOrConfirmData, cachedSigner));
-            } else {
-                batchedWinnerKeys.push(nodeLicenseId);
-            }
+            cachedLogger(`Adding Sentry Key ${nodeLicenseId} to batch for bulk submission for challenge ${challengeNumber}.`);
+            batchedWinnerKeys.push(nodeLicenseId);
 
         } catch (error: any) {
             cachedLogger(`Error submitting assertion for Sentry Key ${nodeLicenseId} to challenge ${challengeNumber} - ${error && error.message ? error.message : error}`);
@@ -344,7 +339,7 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
 
     }
 
-    if (stakingV2Enabled && batchedWinnerKeys.length) {
+    if (batchedWinnerKeys.length) {
         await submitMultipleAssertions(batchedWinnerKeys, challengeNumber, challenge.assertionStateRootOrConfirmData, cachedSigner, cachedLogger);
         cachedLogger(`Submitted assertion for ${batchedWinnerKeys.length} Sentry Keys `);
     }
