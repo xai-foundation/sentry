@@ -285,33 +285,32 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             _shareConfig[0] + _shareConfig[1] + _shareConfig[2] == 1_000_000;
     }
 
-    function updateDelegateOwner(address pool, address delegate) external {
-        StakingPool stakingPool = StakingPool(pool);
-        require(stakingPool.getPoolOwner() == msg.sender, "11");
-        require(msg.sender != delegate, "12");
+	function updateDelegateOwner(address pool, address delegate) external {
+		StakingPool stakingPool = StakingPool(pool);
+		require(stakingPool.getPoolOwner() == msg.sender, "11");
+		require(msg.sender != delegate, "12");
 
-        // If staking pool already has delegate, remove pool from delegate's list
-        if (stakingPool.getDelegateOwner() != address(0)) {
-            uint256 indexOfPoolToRemove = poolsOfDelegateIndices[pool]; // index of pool in question in delegate's list
-            address lastDelegatePoolId = poolsOfDelegate[delegate][
-                poolsOfDelegate[delegate].length - 1
-            ];
+		// If staking pool already has delegate, remove pool from old delegate's list
+        address oldDelegate = stakingPool.getDelegateOwner();
+		if (oldDelegate != address(0)) {
+			uint256 indexOfPoolToRemove = poolsOfDelegateIndices[pool]; // index of pool in question in delegate's list
+			address lastDelegatePoolId = poolsOfDelegate[oldDelegate][poolsOfDelegate[oldDelegate].length - 1];
 
-            poolsOfDelegateIndices[lastDelegatePoolId] = indexOfPoolToRemove;
-            poolsOfDelegate[delegate][indexOfPoolToRemove] = lastDelegatePoolId;
-            poolsOfDelegate[delegate].pop();
-        }
+			poolsOfDelegateIndices[lastDelegatePoolId] = indexOfPoolToRemove;
+			poolsOfDelegate[oldDelegate][indexOfPoolToRemove] = lastDelegatePoolId;
+			poolsOfDelegate[oldDelegate].pop();
+		}
 
-        // Add pool to delegate's list
-        if (delegate != address(0)) {
-            poolsOfDelegateIndices[pool] = poolsOfDelegate[delegate].length;
-            poolsOfDelegate[delegate].push(pool);
-        }
+		// Add pool to delegate's list
+		if (delegate != address(0)) {
+			poolsOfDelegateIndices[pool] = poolsOfDelegate[delegate].length;
+			poolsOfDelegate[delegate].push(pool);
+		}
+        
+		stakingPool.updateDelegateOwner(delegate);
 
-        stakingPool.updateDelegateOwner(delegate);
-
-        emit UpdatePoolDelegate(delegate, pool);
-    }
+		emit UpdatePoolDelegate(delegate, pool);
+	}
 
     function userPoolInfo(
         address pool,
