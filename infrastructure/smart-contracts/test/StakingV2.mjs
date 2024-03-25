@@ -30,9 +30,14 @@ export function StakingV2(deployInfrastructure) {
 		const poolName = "Testing Pool";
 		const poolDescription = "This is for testing purposes only!!";
 		const poolLogo = "Pool Logo";
+		const poolMetaData = [poolName, poolDescription, poolLogo];
 		const poolSocials = ["Social 1", "Social 2", "Social 3"];
 		const poolTrackerNames = ["Tracker Name 1", "Tracker Name 2", "Tracker Name 3"];
 		const poolTrackerSymbols = ["Tracker Symbol 1", "Tracker Symbol 2", "Tracker Symbol 3"];
+		const poolTrackerDetails = [
+			["Tracker Name 1", "TS1"],
+			["Tracker Name 2", "TS2"],
+		];
 		const noDelegateOwner = ethers.ZeroAddress;
 
 		beforeEach(async function () {
@@ -52,17 +57,12 @@ export function StakingV2(deployInfrastructure) {
 				// Fail to create a pool
 				await expect(
 					poolFactory.connect(addr1).createPool(
+						noDelegateOwner,
 						[],
-						validShareValues[0],
-						validShareValues[1],
-						validShareValues[2],
-						poolName,
-						poolDescription,
-						poolLogo,
+						validShareValues,
+						poolMetaData,
 						poolSocials,
-						poolTrackerNames,
-						poolTrackerSymbols,
-						noDelegateOwner
+						poolTrackerDetails
 					)
 				).to.be.revertedWith("5");
 			});
@@ -78,17 +78,16 @@ export function StakingV2(deployInfrastructure) {
 				// Fail to create a pool
 				await expect(
 					poolFactory.connect(addr1).createPool(
+						noDelegateOwner,
 						[mintedKeyId],
-						bucketshareMaxValues[0] + 1n,
-						bucketshareMaxValues[1] + 1n,
-						bucketshareMaxValues[2] + 1n,
-						poolName,
-						poolDescription,
-						poolLogo,
+						[
+							bucketshareMaxValues[0] + 1n,
+							bucketshareMaxValues[1] + 1n,
+							bucketshareMaxValues[2] + 1n,
+						],
+						poolMetaData,
 						poolSocials,
-						poolTrackerNames,
-						poolTrackerSymbols,
-						noDelegateOwner
+						poolTrackerDetails
 					)
 				).to.be.revertedWith("6");
 			})
@@ -107,17 +106,12 @@ export function StakingV2(deployInfrastructure) {
 
 				// Create a pool
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Check that there is now 1 pool
@@ -145,17 +139,12 @@ export function StakingV2(deployInfrastructure) {
 
 				// Create a pool
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Create instance of the deployed pool
@@ -182,17 +171,12 @@ export function StakingV2(deployInfrastructure) {
 
 				// Create a pool
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Create instance of the deployed pool
@@ -224,17 +208,12 @@ export function StakingV2(deployInfrastructure) {
 
 				// Create a pool
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Create instance of the deployed pool
@@ -286,17 +265,12 @@ export function StakingV2(deployInfrastructure) {
 
 				// Create a pool
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId1, mintedKeyId2],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Create reference of the deployed pool's address
@@ -314,7 +288,7 @@ export function StakingV2(deployInfrastructure) {
 				await poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 1);
 				await ethers.provider.send("evm_increaseTime", [2592000 * 2]);
 				await ethers.provider.send("evm_mine");
-				await poolFactory.connect(addr1).unstakeKeys(0, [mintedKeyId1]);
+				await poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 0, [mintedKeyId1]);
 
 				// Verify the minted key is assigned to the first pool
 				const assignedKey1Pool2 = await referee.connect(addr1).assignedKeyToPool(mintedKeyId1);
@@ -335,17 +309,12 @@ export function StakingV2(deployInfrastructure) {
 
 				// Create a pool
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Create reference of the deployed pool's address
@@ -382,23 +351,11 @@ export function StakingV2(deployInfrastructure) {
 				).to.be.revertedWith(defaultAdminAccessControlError);
 				await poolFactory.connect(refereeDefaultAdmin).enableStaking();
 
-				// Update proxy admin fail & success
+				// Update PoolProxyDeployer fail & success
 				await expect(
-					poolFactory.connect(addr1).updateProxyAdmin(await poolFactory.getAddress())
+					poolFactory.connect(addr1).updatePoolProxyDeployer(await addr1.getAddress())
 				).to.be.revertedWith(defaultAdminAccessControlError);
-				await poolFactory.connect(refereeDefaultAdmin).updateProxyAdmin(await poolFactory.getAddress());
-
-				// Update pool implementation fail & success
-				await expect(
-					poolFactory.connect(addr1).updatePoolImplementation(await poolFactory.getAddress())
-				).to.be.revertedWith(defaultAdminAccessControlError);
-				await poolFactory.connect(refereeDefaultAdmin).updatePoolImplementation(await poolFactory.getAddress());
-
-				// Update bucket implementation fail & success
-				await expect(
-					poolFactory.connect(addr1).updateBucketImplementation(await poolFactory.getAddress())
-				).to.be.revertedWith(defaultAdminAccessControlError);
-				await poolFactory.connect(refereeDefaultAdmin).updateBucketImplementation(await poolFactory.getAddress());
+				await poolFactory.connect(refereeDefaultAdmin).updatePoolProxyDeployer(await addr1.getAddress());
 			});
 		});
 
@@ -416,17 +373,12 @@ export function StakingV2(deployInfrastructure) {
 
 				// Create a pool
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId1],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Create instance of the deployed pool
@@ -439,9 +391,11 @@ export function StakingV2(deployInfrastructure) {
 				const pendingEsXaiBucketShare = validShareValues[2] + 1n;
 				await poolFactory.connect(addr1).updateShares(
 					stakingPoolAddress,
-					pendingOwnerShare,
-					pendingKeyBucketShare,
-					pendingEsXaiBucketShare,
+					[
+						pendingOwnerShare,
+						pendingKeyBucketShare,
+						pendingEsXaiBucketShare,
+					]
 				);
 
 				// Wait 45 days
@@ -470,17 +424,12 @@ export function StakingV2(deployInfrastructure) {
 
 				// Create a pool
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Create instance of the deployed pool
@@ -491,9 +440,11 @@ export function StakingV2(deployInfrastructure) {
 				await expect(
 					poolFactory.connect(addr1).updateShares(
 						stakingPoolAddress,
-						validShareValues[0] + 1n,
-						validShareValues[1],
-						validShareValues[2]
+						[
+							validShareValues[0] + 1n,
+							validShareValues[1],
+							validShareValues[2]
+						]
 					)
 				).to.be.revertedWith("10");
 
@@ -501,9 +452,11 @@ export function StakingV2(deployInfrastructure) {
 				await expect(
 					poolFactory.connect(addr1).updateShares(
 						stakingPoolAddress,
-						validShareValues[0],
-						validShareValues[1] + 1n,
-						validShareValues[2]
+						[
+							validShareValues[0],
+							validShareValues[1] + 1n,
+							validShareValues[2]
+						]
 					)
 				).to.be.revertedWith("10");
 
@@ -511,9 +464,11 @@ export function StakingV2(deployInfrastructure) {
 				await expect(
 					poolFactory.connect(addr1).updateShares(
 						stakingPoolAddress,
-						validShareValues[0],
-						validShareValues[1],
-						validShareValues[2] + 1n
+						[
+							validShareValues[0],
+							validShareValues[1],
+							validShareValues[2] + 1n
+						]
 					)
 				).to.be.revertedWith("10");
 
@@ -521,9 +476,11 @@ export function StakingV2(deployInfrastructure) {
 				await expect(
 					poolFactory.connect(addr1).updateShares(
 						stakingPoolAddress,
-						validShareValues[0] - 1n,
-						validShareValues[1] - 1n,
-						validShareValues[2] - 1n
+						[
+							validShareValues[0] - 1n,
+							validShareValues[1] - 1n,
+							validShareValues[2] - 1n
+						]
 					)
 				).to.be.revertedWith("10");
 			});
@@ -538,17 +495,12 @@ export function StakingV2(deployInfrastructure) {
 
 				// Create a pool
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Create instance of the deployed pool
@@ -595,9 +547,11 @@ export function StakingV2(deployInfrastructure) {
 
 				await poolFactory.connect(addr1).updatePoolMetadata(
 					stakingPoolAddress,
-					updatedName,
-					updatedDescription,
-					updatedLogo,
+					[
+						updatedName,
+						updatedDescription,
+						updatedLogo,
+					],
 					updatedSocials,
 				);
 
@@ -646,17 +600,12 @@ export function StakingV2(deployInfrastructure) {
 
 				// Create a pool
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Create instance of the deployed pool
@@ -682,17 +631,12 @@ export function StakingV2(deployInfrastructure) {
 
 				// Create a pool
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Save the new staking pool's address
@@ -718,17 +662,12 @@ export function StakingV2(deployInfrastructure) {
 
 				// Create a pool
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Check the user's updated assigned key count
@@ -750,33 +689,23 @@ export function StakingV2(deployInfrastructure) {
 				// Fail to create a pool
 				await expect(
 					poolFactory.connect(addr1).createPool(
+						noDelegateOwner,
 						[mintedKeyId1, mintedKeyId1],
-						validShareValues[0],
-						validShareValues[1],
-						validShareValues[2],
-						poolName,
-						poolDescription,
-						poolLogo,
+						validShareValues,
+						poolMetaData,
 						poolSocials,
-						poolTrackerNames,
-						poolTrackerSymbols,
-						noDelegateOwner
+						poolTrackerDetails
 					)
 				).to.be.revertedWith("44");
 
 				// Create a pool
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId1],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Save the new staking pool's address
@@ -804,49 +733,34 @@ export function StakingV2(deployInfrastructure) {
 
 				// Create pool 1
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId1],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Fail to create another pool with the same key id
 				await expect(
 					poolFactory.connect(addr1).createPool(
+						noDelegateOwner,
 						[mintedKeyId1],
-						validShareValues[0],
-						validShareValues[1],
-						validShareValues[2],
-						poolName,
-						poolDescription,
-						poolLogo,
+						validShareValues,
+						poolMetaData,
 						poolSocials,
-						poolTrackerNames,
-						poolTrackerSymbols,
-						noDelegateOwner
+						poolTrackerDetails
 					)
 				).to.be.revertedWith("44");
 
 				// Create pool 2
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId2],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Save the new staking pool addresses
@@ -885,17 +799,12 @@ export function StakingV2(deployInfrastructure) {
 				// Fail to create a pool
 				await expect(
 					poolFactory.connect(addr1).createPool(
+						noDelegateOwner,
 						keys,
-						validShareValues[0],
-						validShareValues[1],
-						validShareValues[2],
-						poolName,
-						poolDescription,
-						poolLogo,
+						validShareValues,
+						poolMetaData,
 						poolSocials,
-						poolTrackerNames,
-						poolTrackerSymbols,
-						noDelegateOwner
+						poolTrackerDetails
 					)
 				).to.be.revertedWith("43");
 			});
@@ -912,17 +821,12 @@ export function StakingV2(deployInfrastructure) {
 
 				// Creat a pool
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId1, mintedKeyId2],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Verify user has 2 keys staked
@@ -959,12 +863,56 @@ export function StakingV2(deployInfrastructure) {
 				await ethers.provider.send("evm_mine");
 
 				// Successfully redeem both un-stake requests
-				await poolFactory.connect(addr1).unstakeKeys(0, [mintedKeyId1]);
-				await poolFactory.connect(addr1).unstakeKeys(1, [mintedKeyId2]);
+				await poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 0, [mintedKeyId1]);
+				await poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 1, [mintedKeyId2]);
 
 				// Verify user has 0 keys staked
 				const balance2 = await referee.connect(addr1).assignedKeysOfUserCount(address);
 				expect(balance2).to.equal(0);
+			});
+
+			it("Verify that a user does not get duplicate pools in their interactedPoolsOfUser array", async function () {
+				const {poolFactory, referee, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+
+				// Mint 2 node keys & save the ids
+				const price = await nodeLicense.price(1, "");
+				await nodeLicense.connect(addr1).mint(1, "", {value: price});
+				const mintedKeyId1 = await nodeLicense.totalSupply();
+				await nodeLicense.connect(addr1).mint(1, "", {value: price});
+				const mintedKeyId2 = await nodeLicense.totalSupply();
+
+				// Creat a pool
+				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
+					[mintedKeyId1],
+					validShareValues,
+					poolMetaData,
+					poolSocials,
+					poolTrackerDetails
+				);
+
+				// Create reference of the deployed pool's address
+				const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+
+				// Make sure the user only has 1 associated pool right now
+				const address = await addr1.getAddress();
+				const userPoolsCount1 = await poolFactory.connect(addr1).getPoolsOfUserCount(address);
+				const userPoolsIndices1 = await poolFactory.connect(addr1).getPoolIndicesOfUser(address);
+				const userPoolAddressOfUser1 = await poolFactory.connect(addr1).getPoolAddressOfUser(address, userPoolsCount1 - 1n);
+				expect(userPoolsCount1).to.equal(1);
+				expect(userPoolsIndices1[0]).to.equal(stakingPoolAddress);
+				expect(userPoolAddressOfUser1).to.equal(stakingPoolAddress);
+
+				// Successfully stake second key
+				await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, [mintedKeyId2]);
+
+				// Make sure the user still only has 1 associated pool
+				const userPoolsCount2 = await poolFactory.connect(addr1).getPoolsOfUserCount(address);
+				const userPoolsIndices2 = await poolFactory.connect(addr1).getPoolIndicesOfUser(address);
+				const userPoolAddressOfUser2 = await poolFactory.connect(addr1).getPoolAddressOfUser(address, userPoolsCount1 - 1n);
+				expect(userPoolsCount2).to.equal(1);
+				expect(userPoolsIndices2[0]).to.equal(stakingPoolAddress);
+				expect(userPoolAddressOfUser2).to.equal(stakingPoolAddress);
 			});
 		});
 
@@ -985,17 +933,12 @@ export function StakingV2(deployInfrastructure) {
 
 				// Creat a pool
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Save the new staking pool's address
@@ -1032,17 +975,12 @@ export function StakingV2(deployInfrastructure) {
 
 				// Creat a pool
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Create instance of the deployed pool
@@ -1070,17 +1008,12 @@ export function StakingV2(deployInfrastructure) {
 
 				// Creat a pool
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Create instance of the deployed pool
@@ -1111,17 +1044,12 @@ export function StakingV2(deployInfrastructure) {
 
 				// Creat a pool
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId1],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Create instance of the deployed pool
@@ -1162,17 +1090,12 @@ export function StakingV2(deployInfrastructure) {
 				const mintedKeyId = await nodeLicense.totalSupply();
 
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					[mintedKeyId],
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Save the new pool's address
@@ -1216,17 +1139,12 @@ export function StakingV2(deployInfrastructure) {
 
 				// Creat a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
 				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
 					keyIds,
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Save the new pool's address
@@ -1270,17 +1188,12 @@ export function StakingV2(deployInfrastructure) {
 
 				// Creat a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
 				await poolFactory.connect(addr2).createPool(
+					noDelegateOwner,
 					keyIds,
-					validShareValues[0],
-					validShareValues[1],
-					validShareValues[2],
-					poolName,
-					poolDescription,
-					poolLogo,
+					validShareValues,
+					poolMetaData,
 					poolSocials,
-					poolTrackerNames,
-					poolTrackerSymbols,
-					noDelegateOwner
+					poolTrackerDetails
 				);
 
 				// Save the new pool's address
