@@ -72,15 +72,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     // Staking Pool share max values owner, keys, stakedEsXai in basepoints (5% => 50_000)
     uint32[3] public bucketshareMaxValues;
 
-    // The proxy admin for the staking pools and buckets
-    address public stakingPoolProxyAdmin;
-
-    // The current staking pool implementation
-    address public stakingPoolImplementation;
-
-    // The current key & esXai bucket tracker implenetation
-    address public bucketImplementation;
-
+    // Mapping all pool addresses of a specific user
     mapping(address => address[]) public interactedPoolsOfUser;
 
     // mapping user address to pool address to index in user array, used for removing from user array without interation
@@ -106,15 +98,8 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     uint256[500] private __gap;
 
     event StakingEnabled();
-    event UpdatePoolProxyAdmin(address previousAdmin, address newAdmin);
-    event UpdatePoolImplementation(
-        address prevImplementation,
-        address newImplementation
-    );
-    event UpdateBucketImplementation(
-        address prevImplementation,
-        address newImplementation
-    );
+    event PoolProxyDeployerUpdated(address oldDeployer, address newDeployer);
+
     event PoolCreated(
         uint256 indexed poolIndex,
         address indexed poolAddress,
@@ -164,11 +149,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     function initialize(
         address _refereeAddress,
         address _esXaiAddress,
-        address _nodeLicenseAddress,
-        address _stakingPoolProxyAdmin,
-        address _stakingPoolImplementation,
-        address _bucketImplementation,
-        address _deployerAddress
+        address _nodeLicenseAddress
     ) public initializer {
         __AccessControlEnumerable_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -179,11 +160,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         refereeAddress = _refereeAddress;
         nodeLicenseAddress = _nodeLicenseAddress;
         esXaiAddress = _esXaiAddress;
-        stakingPoolProxyAdmin = _stakingPoolProxyAdmin;
-        stakingPoolImplementation = _stakingPoolImplementation;
-        bucketImplementation = _bucketImplementation;
-
-        deployerAddress = _deployerAddress;
     }
 
     /**
@@ -192,6 +168,12 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     function enableStaking() external onlyRole(DEFAULT_ADMIN_ROLE) {
         stakingEnabled = true;
         emit StakingEnabled();
+    }
+
+    function updatePoolProxyDeployer(address newDeployer) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        address prevDeployer = deployerAddress;
+        deployerAddress = newDeployer;
+        emit PoolProxyDeployerUpdated(prevDeployer, deployerAddress);
     }
 
     function createPool(

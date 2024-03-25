@@ -10,7 +10,6 @@ contract PoolBeacon is Ownable {
 
 	constructor(address _implementation) {
 		beacon = new UpgradeableBeacon(_implementation);
-		transferOwnership(tx.origin);
 	}
 
 	function update(address _implementation) public onlyOwner {
