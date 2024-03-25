@@ -37,10 +37,10 @@ contract PoolProxyDeployer is
             address esXaiBucketProxy
         )
     {
-        poolProxy = address(new BeaconProxy(address(poolBeacon), ""));
+        poolProxy = address(new BeaconProxy(poolBeacon, ""));
 
-        keyBucketProxy = address(new BeaconProxy(address(keyBucketBeacon), ""));
+        keyBucketProxy = address(new BeaconProxy(keyBucketBeacon, ""));
 
-        esXaiBucketProxy = address(new BeaconProxy(address(esXaiBeacon), ""));
+        esXaiBucketProxy = address(new BeaconProxy(esXaiBeacon, ""));
     }
 }
