@@ -325,9 +325,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.stakeKeys(msg.sender, keyIds);
 
-        if (stakingPool.isUserEngagedWithPool(msg.sender)) {
-            associateUserWithPool(msg.sender, pool);
-        }
+        associateUserWithPool(msg.sender, pool);
 
         emit StakeKeys(
             msg.sender,
@@ -419,9 +417,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.stakeEsXai(msg.sender, amount);
 
-        if (stakingPool.isUserEngagedWithPool(msg.sender)) {
-            associateUserWithPool(msg.sender, pool);
-        }
+        associateUserWithPool(msg.sender, pool);
 
         emit StakeEsXai(
             msg.sender,
