@@ -312,14 +312,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 		emit UpdatePoolDelegate(delegate, pool);
 	}
 
-    function userPoolInfo(
-        address pool,
-        address user
-    ) internal view returns (uint256 stakeAmount, uint256 keyAmount) {
-        stakeAmount = StakingPool(pool).getStakedAmounts(user);
-        keyAmount = StakingPool(pool).getStakedKeysCountForUser(user);
-    }
-
     function _stakeKeys(address pool, uint256[] memory keyIds) internal {
         Referee5(refereeAddress).stakeKeys(pool, msg.sender, keyIds);
         StakingPool stakingPool = StakingPool(pool);
