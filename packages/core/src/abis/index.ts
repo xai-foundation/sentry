@@ -1,6 +1,8 @@
 
+export * from "./BucketTrackerAbi.js";
 export * from "./GasSubsidyAbi.js";
 export * from "./NodeLicenseAbi.js";
+export * from "./PoolBeaconAbi.js";
 export * from "./RefereeAbi.js";
 export * from "./RollupAdminLogicAbi.js";
 export * from "./StakingPoolAbi.js";

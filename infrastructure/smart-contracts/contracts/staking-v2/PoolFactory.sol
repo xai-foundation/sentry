@@ -75,7 +75,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping all pool addresses of a specific user
     mapping(address => address[]) public interactedPoolsOfUser;
 
-    // mapping user address to pool address to index in user array, used for removing from user array without interation
+    // mapping user address to pool address to index in user array, used for removing from user array without iteration
     mapping(address => mapping(address => uint256))
         public userToInteractedPoolIds;
 
@@ -459,7 +459,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function associateUserWithPool(address user, address pool) internal {
-        // TODO TEST PREVENTING DUPLICATES WORKS
         address[] storage userPools = interactedPoolsOfUser[user];
         if (
             userPools.length < 1 ||

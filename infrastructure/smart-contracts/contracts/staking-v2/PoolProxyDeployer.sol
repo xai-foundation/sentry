@@ -25,7 +25,7 @@ contract PoolProxyDeployer is
         _grantRole(DEFAULT_ADMIN_ROLE, poolFactoryAddress);
         poolBeacon = _poolBeacon;
         keyBucketBeacon = _keyBucketBeacon;
-        poolBeacon = _esXaiBeacon;
+		esXaiBeacon = _esXaiBeacon;
     }
 
     function createPool()

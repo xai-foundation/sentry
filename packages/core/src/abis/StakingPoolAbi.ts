@@ -525,6 +525,14 @@ export const StakingPoolAbi = [
       {
         "type": "uint256[]",
         "name": "userStakedKeyIds"
+      },
+      {
+        "type": "uint256",
+        "name": "unstakeRequestkeyAmount"
+      },
+      {
+        "type": "uint256",
+        "name": "unstakeRequestesXaiAmount"
       }
     ]
   },
@@ -538,10 +546,6 @@ export const StakingPoolAbi = [
       {
         "type": "address",
         "name": "user"
-      },
-      {
-        "type": "address",
-        "name": "pool"
       }
     ],
     "outputs": [
