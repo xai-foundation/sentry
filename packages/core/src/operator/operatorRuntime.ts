@@ -63,6 +63,7 @@ let keyIdToPoolAddress: { [keyId: string]: string } = {};
 let operatorPoolAddresses: string[];
 const isKYCMap: { [keyId: string]: boolean } = {};
 const keyToOwner: { [keyId: string]: string } = {}; //Used to remember the owner of the key should it have been put into the pool list
+const KEYS_PER_BATCH = 100;
 
 async function getPublicNodeFromBucket(confirmHash: string) {
     const url = `https://sentry-public-node.xai.games/assertions/${confirmHash.toLowerCase()}.json`;
@@ -340,7 +341,7 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
     }
 
     if (batchedWinnerKeys.length) {
-        await submitMultipleAssertions(batchedWinnerKeys, challengeNumber, challenge.assertionStateRootOrConfirmData, cachedSigner, cachedLogger);
+        await submitMultipleAssertions(batchedWinnerKeys, challengeNumber, challenge.assertionStateRootOrConfirmData, KEYS_PER_BATCH, cachedSigner, cachedLogger);
         cachedLogger(`Submitted assertion for ${batchedWinnerKeys.length} Sentry Keys `);
     }
 }
@@ -371,7 +372,7 @@ async function processClaimForChallenge(challengeNumber: bigint, eligibleNodeLic
         if (nodeLicenses.length === 0) continue; // Skip if no licenses to claim for
 
         try {
-            await claimRewardsBulk(nodeLicenses, challengeNumber, claimForAddress, cachedSigner);
+            await claimRewardsBulk(nodeLicenses, challengeNumber, claimForAddress, KEYS_PER_BATCH, cachedSigner, cachedLogger);
             cachedLogger(`Bulk claim successful for address ${claimForAddress} and challenge ${challengeNumber}`);
         } catch (error: any) {
             cachedLogger(`Error during bulk claim for address ${claimForAddress} and challenge ${challengeNumber}: ${error.message}`);

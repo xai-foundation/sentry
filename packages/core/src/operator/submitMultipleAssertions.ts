@@ -8,12 +8,14 @@ import { retry } from '../index.js';
  * @param nodeLicenseId - The ID of the NodeLicense.
  * @param challengeId - The ID of the challenge.
  * @param successorConfirmData - The successor confirm data.
+ * @param keysPerBatch - The number of keys we claim for per batched transaction.
  * @param signer - The signer to interact with the contract.
  */
 export async function submitMultipleAssertions(
     nodeLicenseIds: bigint[],
     challengeId: bigint,
     successorConfirmData: string,
+    keysPerBatch: number = 100,
     signer: ethers.Signer,
     logger: (message: string) => void
 ): Promise<void[]> {
@@ -21,11 +23,11 @@ export async function submitMultipleAssertions(
     // Create an instance of the Referee contract
     const refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, signer);
 
-    const BATCH_SIZE = 50;
+    const BATCH_SIZE = keysPerBatch;
 
     const promises: Promise<void>[] = []
 
-    //Break up keys in batches of 50
+    //Break up keys in batches of BATCH_SIZE
     for (let i = 0; i < nodeLicenseIds.length; i += BATCH_SIZE) {
         const batch = nodeLicenseIds.slice(i, i + BATCH_SIZE);
 
@@ -34,11 +36,14 @@ export async function submitMultipleAssertions(
             batch,
             challengeId,
             successorConfirmData
-        ), 3).catch((error) => {
-            logger(`Error on batch submission for keys ${batch.map(k => k.toString()).join(", ")}`);
-        }));
-
-        logger(`Submitted batch for keys ${batch.map(k => k.toString()).join(", ")}`);
+        ), 3)
+            .then(() => {
+                logger(`Submitted batch for keys ${batch.map(k => k.toString()).join(", ")}`);
+            })
+            .catch((error) => {
+                logger(`Error on batch submission for keys ${batch.map(k => k.toString()).join(", ")} ${error}`);
+            })
+        );
     }
 
     return Promise.all(promises);
