@@ -12,6 +12,7 @@ import { XaiGaslessClaimTests } from "./XaiGaslessClaim.mjs";
 import {CNYAirDropTests} from "./CNYAirDrop.mjs";
 import {StakingV2} from "./StakingV2.mjs";
 import {extractAbi} from "../utils/exportAbi.mjs";
+import {Beacons} from "./Beacons.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -69,16 +70,23 @@ describe("Fixture Tests", function () {
 		const stakingPoolImplAddress = await StakingPool.getAddress();
 		await extractAbi("StakingPool", StakingPool);
 
-		// Deploy the Bucket Tracker (implementation only)
-		const BucketTracker = await ethers.deployContract("BucketTracker");
-		await BucketTracker.waitForDeployment();
-		const bucketImplAddress = await BucketTracker.getAddress();
+		// Deploy the Key Bucket Tracker (implementation only)
+		const KeyBucketTracker = await ethers.deployContract("BucketTracker");
+		await KeyBucketTracker.waitForDeployment();
+		const keyBucketTrackerImplAddress = await KeyBucketTracker.getAddress();
+		await extractAbi("BucketTracker", KeyBucketTracker);
+
+		// Deploy the esXai Bucket Tracker (implementation only)
+		const EsXaiBucketTracker = await ethers.deployContract("BucketTracker");
+		await EsXaiBucketTracker.waitForDeployment();
+		const esXaiBucketTrackerImplAddress = await EsXaiBucketTracker.getAddress();
 
 		// Deploy Referee
         const Referee = await ethers.getContractFactory("Referee");
         const gasSubsidyPercentage = BigInt(15);
         const referee = await upgrades.deployProxy(Referee, [await esXai.getAddress(), await xai.getAddress(), await gasSubsidy.getAddress(), gasSubsidyPercentage], { deployer: deployer });
         await referee.waitForDeployment();
+
         //Upgrade Referee
         const Referee2 = await ethers.getContractFactory("Referee2");
         const referee2 = await upgrades.upgradeProxy((await referee.getAddress()), Referee2, { call: { fn: "initialize", args: [] } });
@@ -95,18 +103,55 @@ describe("Fixture Tests", function () {
         await referee4.waitForDeployment();
         await referee4.enableStaking();
 
+		// Deploy Node License
+		const NodeLicense = await ethers.getContractFactory("NodeLicense");
+		const referralDiscountPercentage = BigInt(10);
+		const referralRewardPercentage = BigInt(2);
+		const nodeLicense = await upgrades.deployProxy(NodeLicense, [await fundsReceiver.getAddress(), referralDiscountPercentage, referralRewardPercentage], { deployer: deployer });
+		await nodeLicense.waitForDeployment();
+
 		// Deploy the Pool Factory
 		const PoolFactory = await ethers.getContractFactory("PoolFactory");
 		const poolFactory = await upgrades.deployProxy(PoolFactory, [
 			await referee.getAddress(),
 			await esXai.getAddress(),
-			await deployer.getAddress(),
-			stakingPoolImplAddress,
-			bucketImplAddress
+			await nodeLicense.getAddress()
 		], { kind: "transparent", deployer });
+		await poolFactory.waitForDeployment();
 		await poolFactory.enableStaking();
 		const poolFactoryAddress = await poolFactory.getAddress();
 
+		// Deploy the StakingPool's PoolBeacon
+		const StakingPoolPoolBeacon = await ethers.deployContract("PoolBeacon", [stakingPoolImplAddress]);
+		await StakingPoolPoolBeacon.waitForDeployment();
+		const stakingPoolPoolBeaconAddress = await StakingPoolPoolBeacon.getAddress();
+		await extractAbi("PoolBeacon", StakingPoolPoolBeacon);
+
+		// Deploy the key BucketTracker's PoolBeacon
+		const KeyBucketTrackerPoolBeacon = await ethers.deployContract("PoolBeacon", [keyBucketTrackerImplAddress]);
+		await KeyBucketTrackerPoolBeacon.waitForDeployment();
+		const keyBucketTrackerPoolBeaconAddress = await KeyBucketTrackerPoolBeacon.getAddress();
+
+		// Deploy the esXai BucketTracker's PoolBeacon
+		const EsXaiBucketTrackerPoolBeacon = await ethers.deployContract("PoolBeacon", [esXaiBucketTrackerImplAddress]);
+		await EsXaiBucketTrackerPoolBeacon.waitForDeployment();
+		const esXaiBucketTrackerPoolBeaconAddress = await EsXaiBucketTrackerPoolBeacon.getAddress();
+
+		// Deploy the PoolProxyDeployer
+		const PoolProxyDeployer = await ethers.getContractFactory("PoolProxyDeployer");
+		const poolProxyDeployer = await upgrades.deployProxy(PoolProxyDeployer, [
+			poolFactoryAddress,
+			stakingPoolPoolBeaconAddress,
+			keyBucketTrackerPoolBeaconAddress,
+			esXaiBucketTrackerPoolBeaconAddress,
+		]);
+		await poolProxyDeployer.waitForDeployment();
+		const poolProxyDeployerAddress = await poolProxyDeployer.getAddress();
+
+		// Update the PoolFactory with the PoolProxyDeployer's address
+		await poolFactory.updatePoolProxyDeployer(poolProxyDeployerAddress);
+
+		// Referee5
 		const Referee5 = await ethers.getContractFactory("Referee5");
 		const referee5 = await upgrades.upgradeProxy((await referee.getAddress()), Referee5, { call: { fn: "initialize", args: [poolFactoryAddress] } });
 		await referee5.waitForDeployment();
@@ -119,13 +164,6 @@ describe("Fixture Tests", function () {
         // Attach a contract of the Rollup Contract
         // const RollupUserLogic = await ethers.getContractFactory("RollupUserLogic");
         const rollupContract = await ethers.getContractAt("RollupUserLogic", rollupAddress);
-
-        // Deploy Node License
-        const NodeLicense = await ethers.getContractFactory("NodeLicense");
-        const referralDiscountPercentage = BigInt(10);
-        const referralRewardPercentage = BigInt(2);
-        const nodeLicense = await upgrades.deployProxy(NodeLicense, [await fundsReceiver.getAddress(), referralDiscountPercentage, referralRewardPercentage], { deployer: deployer });
-        await nodeLicense.waitForDeployment();
 
         // Set the Node License Address
         await referee.setNodeLicenseAddress(await nodeLicense.getAddress());
@@ -264,6 +302,7 @@ describe("Fixture Tests", function () {
     // describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
     // describe("Referee", RefereeTests(deployInfrastructure).bind(this));
     describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
+    describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
     // describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
     // describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
 
