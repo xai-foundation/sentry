@@ -15,42 +15,39 @@ import "./PoolProxyDeployer.sol";
 import "./PoolBeacon.sol";
 
 // Error Codes
-// 1: Invalid Proxy Admin
-// 2: Invalid Pool Implementation
-// 3: Invalid Bucket Implementation
-// 4: Staking must be enabled before creating pool
-// 5: At least 1 key needed to create a pool
-// 6: Share configuration is invalid; _ownerShare, _keyBucketShare, and _stakedBucketShare must be less than or equal to the set bucketshareMaxValues[0], [1], and [2] values respectively. All 3 must also add up 10,000
-// 7: Delegate cannot be pool creator
+// 1: Staking must be enabled before creating pool
+// 2: At least 1 key needed to create a pool
+// 3: Share configuration is invalid; _ownerShare, _keyBucketShare, and _stakedBucketShare must be less than or equal to the set bucketshareMaxValues[0], [1], and [2] values respectively. All 3 must also add up 10,000
+// 4: Delegate cannot be pool creator
+// 5: Invalid auth: msg.sender must be pool owner
+// 6: Invalid auth: msg.sender must be pool owner
+// 7: Share configuration is invalid; _ownerShare, _keyBucketShare, and _stakedBucketShare must be less than or equal to the set bucketshareMaxValues[0], [1], and [2] values respectively. All 3 must also add up 10,000
 // 8: Invalid auth: msg.sender must be pool owner
-// 9: Invalid auth: msg.sender must be pool owner
-// 10: Share configuration is invalid; _ownerShare, _keyBucketShare, and _stakedBucketShare must be less than or equal to the set bucketshareMaxValues[0], [1], and [2] values respectively. All 3 must also add up 10,000
-// 11: Invalid auth: msg.sender must be pool owner
-// 12: New delegate cannot be pool owner
-// 13: Invalid pool; cannot be 0 address
-// 14: Invalid key stake; must at least stake 1 key
-// 15: Invalid pool for key stake; pool needs to have been created via the PoolFactory
-// 16: Invalid key un-stake; must un-stake at least 1 key
-// 17: Invalid pool for key un-stake request; pool needs to have been created via the PoolFactory
-// 18: Invalid un-stake; not enough keys for owner to un-stake this many - to un-stake all keys, first un-stake all buy 1, then use createUnstakeOwnerLastKeyRequest
-// 19: Invalid un-stake; not enough keys for you to un-stake this many - your staked key amount must be greater than or equal to the combined total of any pending un-stake requests with this pool & the current un-stake request
-// 20: This can only be called by the pool owner
-// 21: Invalid pool for owner last key un-stake request; pool needs to have been created via the PoolFactory
-// 22: Owner must have one more key stakes than any pending un-stake requests from the same pool; if you have no un-stake requests waiting, you must have 1 key staked
-// 23: Invalid esXai un-stake request; amount must be greater than 0
-// 24: Invalid esXai un-stake request; your requested esXai amount must be greater than equal to the combined total of any pending un-stake requests with this pool & the current un-stake request
-// 25: Invalid pool for esXai un-stake request; pool needs to have been created via the PoolFactory
-// 26: Invalid pool for key un-stake; pool needs to have been created via the PoolFactory
-// 27: Request must be open & a key request
-// 28: Wait period for this key un-stake request is not yet over
-// 29: You must un-stake at least 1 key, and the amount must match the un-stake request
-// 30: Invalid pool for esXai stake; pool needs to have been created via the PoolFactory
-// 31: Invalid pool for esXai un-stake; pool needs to have been created via the PoolFactory
-// 32: Request must be open & an esXai request
-// 33: Wait period for this esXai un-stake request is not yet over
-// 34: You must un-stake at least 1 esXai, and the amount must match the un-stake request
-// 35: You must have at least the desired un-stake amount staked in order to un-stake
-// 36: Invalid pool for claim; pool needs to have been created via the PoolFactory
+// 9: New delegate cannot be pool owner
+// 10: Invalid pool; cannot be 0 address
+// 11: Invalid key stake; must at least stake 1 key
+// 12: Invalid pool for key stake; pool needs to have been created via the PoolFactory
+// 13: Invalid key un-stake; must un-stake at least 1 key
+// 14: Invalid pool for key un-stake request; pool needs to have been created via the PoolFactory
+// 15: Invalid un-stake; not enough keys for owner to un-stake this many - to un-stake all keys, first un-stake all buy 1, then use createUnstakeOwnerLastKeyRequest
+// 16: Invalid un-stake; not enough keys for you to un-stake this many - your staked key amount must be greater than or equal to the combined total of any pending un-stake requests with this pool & the current un-stake request
+// 17: This can only be called by the pool owner
+// 18: Invalid pool for owner last key un-stake request; pool needs to have been created via the PoolFactory
+// 19: Owner must have one more key stakes than any pending un-stake requests from the same pool; if you have no un-stake requests waiting, you must have 1 key staked
+// 20: Invalid esXai un-stake request; amount must be greater than 0
+// 21: Invalid esXai un-stake request; your requested esXai amount must be greater than equal to the combined total of any pending un-stake requests with this pool & the current un-stake request
+// 22: Invalid pool for esXai un-stake request; pool needs to have been created via the PoolFactory
+// 23: Invalid pool for key un-stake; pool needs to have been created via the PoolFactory
+// 24: Request must be open & a key request
+// 25: Wait period for this key un-stake request is not yet over
+// 26: You must un-stake at least 1 key, and the amount must match the un-stake request
+// 27: Invalid pool for esXai stake; pool needs to have been created via the PoolFactory
+// 28: Invalid pool for esXai un-stake; pool needs to have been created via the PoolFactory
+// 29: Request must be open & an esXai request
+// 30: Wait period for this esXai un-stake request is not yet over
+// 31: You must un-stake at least 1 esXai, and the amount must match the un-stake request
+// 32: You must have at least the desired un-stake amount staked in order to un-stake
+// 33: Invalid pool for claim; pool needs to have been created via the PoolFactory
 
 contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -184,10 +181,10 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         string[] memory _poolSocials,
         string[2][2] memory trackerDetails
     ) external {
-        require(stakingEnabled, "4");
-        require(_keyIds.length > 0, "5");
-        require(validateShareValues(_shareConfig), "6");
-        require(msg.sender != _delegateOwner, "7");
+        require(stakingEnabled, "1");
+        require(_keyIds.length > 0, "2");
+        require(validateShareValues(_shareConfig), "3");
+        require(msg.sender != _delegateOwner, "4");
 
         (
             address poolProxy,
@@ -257,7 +254,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         string[] memory _poolSocials
     ) external {
         StakingPool stakingPool = StakingPool(pool);
-        require(stakingPool.getPoolOwner() == msg.sender, "8");
+        require(stakingPool.getPoolOwner() == msg.sender, "5");
         stakingPool.updateMetadata(_poolMetadata, _poolSocials);
     }
 
@@ -266,8 +263,8 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         uint32[3] memory _shareConfig
     ) external {
         StakingPool stakingPool = StakingPool(pool);
-        require(stakingPool.getPoolOwner() == msg.sender, "9");
-        require(validateShareValues(_shareConfig), "10");
+        require(stakingPool.getPoolOwner() == msg.sender, "6");
+        require(validateShareValues(_shareConfig), "7");
         stakingPool.updateShares(
             _shareConfig[0],
             _shareConfig[1],
@@ -287,8 +284,8 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
 	function updateDelegateOwner(address pool, address delegate) external {
 		StakingPool stakingPool = StakingPool(pool);
-		require(stakingPool.getPoolOwner() == msg.sender, "11");
-		require(msg.sender != delegate, "12");
+		require(stakingPool.getPoolOwner() == msg.sender, "8");
+		require(msg.sender != delegate, "9");
 
 		// If staking pool already has delegate, remove pool from old delegate's list
         address oldDelegate = stakingPool.getDelegateOwner();
@@ -329,16 +326,16 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function stakeKeys(address pool, uint256[] memory keyIds) external {
-        require(pool != address(0), "13");
-        require(keyIds.length > 0, "14");
-        require(poolsCreatedViaFactory[pool], "15");
+        require(pool != address(0), "10");
+        require(keyIds.length > 0, "11");
+        require(poolsCreatedViaFactory[pool], "12");
 
         _stakeKeys(pool, keyIds);
     }
 
     function createUnstakeKeyRequest(address pool, uint256 keyAmount) external {
-        require(keyAmount > 0, "16");
-        require(poolsCreatedViaFactory[pool], "17");
+        require(keyAmount > 0, "13");
+        require(poolsCreatedViaFactory[pool], "14");
         StakingPool(pool).createUnstakeKeyRequest(msg.sender, keyAmount);
 
         emit UnstakeRequestStarted(
@@ -351,7 +348,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function createUnstakeOwnerLastKeyRequest(address pool) external {
-        require(poolsCreatedViaFactory[pool], "21");
+        require(poolsCreatedViaFactory[pool], "18");
         StakingPool(pool).createUnstakeOwnerLastKeyRequest(msg.sender);
 
         emit UnstakeRequestStarted(
@@ -364,8 +361,8 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function createUnstakeEsXaiRequest(address pool, uint256 amount) external {
-        require(amount > 0, "23");
-        require(poolsCreatedViaFactory[pool], "25");
+        require(amount > 0, "20");
+        require(poolsCreatedViaFactory[pool], "22");
         StakingPool(pool).createUnstakeEsXaiRequest(msg.sender, amount);
 
         emit UnstakeRequestStarted(
@@ -382,7 +379,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         uint256 unstakeRequestIndex,
         uint256[] memory keyIds
     ) external {
-        require(poolsCreatedViaFactory[pool], "26");
+        require(poolsCreatedViaFactory[pool], "23");
 
         Referee5(refereeAddress).unstakeKeys(pool, msg.sender, keyIds);
         StakingPool stakingPool = StakingPool(pool);
@@ -402,7 +399,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function stakeEsXai(address pool, uint256 amount) external {
-        require(poolsCreatedViaFactory[pool], "30");
+        require(poolsCreatedViaFactory[pool], "27");
 
         Referee5(refereeAddress).stakeEsXai(pool, amount);
         esXai(esXaiAddress).transferFrom(msg.sender, address(this), amount);
@@ -425,7 +422,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         uint256 unstakeRequestIndex,
         uint256 amount
     ) external {
-        require(poolsCreatedViaFactory[pool], "31");
+        require(poolsCreatedViaFactory[pool], "28");
 
         esXai(esXaiAddress).transfer(msg.sender, amount);
         Referee5(refereeAddress).unstakeEsXai(pool, amount);
@@ -459,9 +456,13 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     function removeUserFromPool(address user, address pool) internal {
         uint256 indexOfPool = userToInteractedPoolIds[user][pool];
         uint256 userLength = interactedPoolsOfUser[user].length;
-        interactedPoolsOfUser[user][indexOfPool] = interactedPoolsOfUser[user][
+        address lastPool = interactedPoolsOfUser[user][
             userLength - 1
         ];
+        
+        interactedPoolsOfUser[user][indexOfPool] = lastPool;
+        userToInteractedPoolIds[user][lastPool] = indexOfPool;
+
         interactedPoolsOfUser[user].pop();
     }
 
@@ -470,7 +471,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
         for (uint i = 0; i < poolsLength; i++) {
             address stakingPool = pools[i];
-            require(poolsCreatedViaFactory[stakingPool], "36");
+            require(poolsCreatedViaFactory[stakingPool], "33");
             StakingPool(stakingPool).claimRewards(msg.sender);
             emit ClaimFromPool(msg.sender, stakingPool);
         }

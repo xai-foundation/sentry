@@ -234,13 +234,13 @@ contract StakingPool is AccessControlUpgradeable {
 			require(
 				stakedKeysCount >
 				keyAmount + requestKeys,
-				"18"
+				"15"
 			);
 		} else {
 			require(
 				stakedKeysCount >=
 				keyAmount + requestKeys,
-				"19"
+				"16"
 			);
 		}
 
@@ -261,12 +261,12 @@ contract StakingPool is AccessControlUpgradeable {
 	}
 
 	function createUnstakeOwnerLastKeyRequest(address owner) external onlyRole(DEFAULT_ADMIN_ROLE) {
-		require(owner == poolOwner, "20");
+		require(owner == poolOwner, "17");
 		uint256 stakedKeysCount = stakedKeysOfOwner[owner].length;
 
 		require(
 			stakedKeysCount == userRequestedUnstakeKeyAmount[owner] + 1,
-			"22"
+			"19"
 		);
 
 		UnstakeRequest[] storage userRequests = unstakeRequests[owner];
@@ -286,7 +286,7 @@ contract StakingPool is AccessControlUpgradeable {
 	}
 
 	function createUnstakeEsXaiRequest(address user, uint256 amount) external {
-		require(stakedAmounts[user] >= amount + userRequestedUnstakeEsXaiAmount[user], "24");
+		require(stakedAmounts[user] >= amount + userRequestedUnstakeEsXaiAmount[user], "21");
 		UnstakeRequest[] storage userRequests = unstakeRequests[user];
 
 		userRequests.push(
@@ -317,9 +317,9 @@ contract StakingPool is AccessControlUpgradeable {
 		UnstakeRequest storage request = unstakeRequests[owner][unstakeRequestIndex];
         uint256 keysLength = keyIds.length;
 
-		require(request.open && request.isKeyRequest, "27");
-		require(block.timestamp >= request.lockTime, "28");
-		require(keysLength > 0 && request.amount == keysLength, "29");
+		require(request.open && request.isKeyRequest, "24");
+		require(block.timestamp >= request.lockTime, "25");
+		require(keysLength > 0 && request.amount == keysLength, "26");
 
         for (uint i = 0; i < keysLength; i++) {
 			// Update indexes of this owner's staked keys
@@ -367,10 +367,10 @@ contract StakingPool is AccessControlUpgradeable {
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
 		UnstakeRequest storage request = unstakeRequests[owner][unstakeRequestIndex];
 
-		require(request.open && !request.isKeyRequest, "32");
-		require(block.timestamp >= request.lockTime, "33");
-		require(amount > 0 && request.amount == amount, "34");
-		require(stakedAmounts[owner] >= amount, "35");
+		require(request.open && !request.isKeyRequest, "29");
+		require(block.timestamp >= request.lockTime, "30");
+		require(amount > 0 && request.amount == amount, "31");
+		require(stakedAmounts[owner] >= amount, "32");
 
         stakedAmounts[owner] -= amount;
         distributeRewards();
