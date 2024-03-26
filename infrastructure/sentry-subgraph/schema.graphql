@@ -1,0 +1,135 @@
+type XaiAdminChanged @entity(immutable: true) {
+  id: Bytes!
+  previousAdmin: Bytes! # address
+  newAdmin: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type XaiBeaconUpgraded @entity(immutable: true) {
+  id: Bytes!
+  beacon: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type XaiUpgraded @entity(immutable: true) {
+  id: Bytes!
+  implementation: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+type esXaiAdminChanged @entity(immutable: true) {
+  id: Bytes!
+  previousAdmin: Bytes! # address
+  newAdmin: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type esXaiBeaconUpgraded @entity(immutable: true) {
+  id: Bytes!
+  beacon: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type esXaiUpgraded @entity(immutable: true) {
+  id: Bytes!
+  implementation: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+type NodeLicenseAdminChanged @entity(immutable: true) {
+  id: Bytes!
+  previousAdmin: Bytes! # address
+  newAdmin: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type NodeLicenseBeaconUpgraded @entity(immutable: true) {
+  id: Bytes!
+  beacon: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type NodeLicenseUpgraded @entity(immutable: true) {
+  id: Bytes!
+  implementation: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+type GasSubsidyAdminChanged @entity(immutable: true) {
+  id: Bytes!
+  previousAdmin: Bytes! # address
+  newAdmin: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type GasSubsidyBeaconUpgraded @entity(immutable: true) {
+  id: Bytes!
+  beacon: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type GasSubsidyUpgraded @entity(immutable: true) {
+  id: Bytes!
+  implementation: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RefereeStakingTier @entity(immutable: true) {
+  id: ID!
+  index: BigInt!
+  threshold: BigInt!
+  boostFactor: BigInt!
+}
+
+type RefereeStake @entity(immutable: true) {
+  id: ID!
+  nodeLicenseId: BigInt!
+  challengeId: BigInt!
+  boostFactor: BigInt!
+  confirmData: Bytes!
+}
+
+type RefereeChallenge @entity(immutable: true) {
+  id: ID!
+  nodeLicenseId: BigInt!
+  challengeId: BigInt!
+  boostFactor: BigInt!
+  confirmData: Bytes!
+  challengerSignedHash: Bytes!
+}
+
+type RefereeAssertion @entity(immutable: true) {
+  id: ID!
+  assertionId: BigInt!
+  predecessorAssertionId: BigInt!
+  confirmData: Bytes!
+  assertionTimestamp: BigInt!
+  challengerSignedHash: Bytes!
+}
+
+type RefereeKYCStatus @entity(immutable: true) {
+  id: ID!
+  wallet: Bytes! # address
+  isApproved: Boolean!
+}

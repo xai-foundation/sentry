@@ -1,0 +1,223 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: Referee
+    network: arbitrum-one
+    source:
+      address: "0xfD41041180571C5D371BEA3D9550E55653671198"
+      abi: Referee
+      startBlock: 157193676
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - RoleAdminChanged
+        - RoleGranted
+        - Approval
+        - AssertionCheckingToggled
+        - UpdateMaxStakeAmount
+        - RoleRevoked
+        - RollupAddressChanged
+        - RewardsClaimed
+        - NodeLicenseAddressChanged
+        - KycStatusChanged
+        - ChallengerPublicKeyChanged
+        - ChallengeClosed
+        - ChallengeExpired
+        - ChallengeSubmitted
+      abis:
+        - name: Referee
+          file: ./abis/Referee.json
+      eventHandlers:
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: Approval(indexed address,indexed address,bool)
+          handler: handleApproval
+        - event: AssertionCheckingToggled(bool)
+          handler: handleAssertionCheckingToggled
+        - event: UpdateMaxStakeAmount(uint256,uint256)
+          handler: handleUpdateMaxStakeAmount
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: RollupAddressChanged(address)
+          handler: handleRollupAddressChanged
+        - event: RewardsClaimed(indexed uint256,uint256)
+          handler: handleRewardsClaimed
+        - event: NodeLicenseAddressChanged(address)
+          handler: handleNodeLicenseAddressChanged
+        - event: KycStatusChanged(indexed address,bool)
+          handler: handleKycStatusChanged
+        - event: ChallengerPublicKeyChanged(bytes)
+          handler: handleChallengerPublicKeyChanged
+        - event: ChallengeClosed(indexed uint256)
+          handler: handleChallengeClosed
+        - event: ChallengeExpired(indexed uint256)
+          handler: handleChallengeExpired
+        - event: ChallengeSubmitted(indexed uint256)
+          handler: handleChallengeSubmitted
+      file: ./src/referee.ts
+  - kind: ethereum
+    name: Xai
+    network: arbitrum-one
+    source:
+      address: "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66"
+      abi: Xai
+      startBlock: 157193610
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Approval
+        - ConvertedToEsXai
+        - EsXaiAddressSet
+        - Initialized
+        - RoleAdminChanged
+        - RoleGranted
+        - RoleRevoked
+        - Transfer
+      abis:
+        - name: Xai
+          file: ./abis/Xai.json
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handleApproval
+        - event: ConvertedToEsXai(indexed address,uint256)
+          handler: handleConvertedToEsXai
+        - event: EsXaiAddressSet(indexed address)
+          handler: handleEsXaiAddressSet
+        - event: Initialized(uint8)
+          handler: handleInitialized
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+      file: ./src/xai.ts
+  - kind: ethereum
+    name: esXai
+    network: arbitrum-one
+    source:
+      address: "0x4C749d097832DE2FEcc989ce18fDc5f1BD76700c"
+      abi: esXai
+      startBlock: 157193630
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Approval
+        - FoundationBasepointsUpdated
+        - Initialized
+        - RedemptionCancelled
+        - RedemptionCompleted
+        - RedemptionStarted
+        - RedemptionStatusChanged
+        - RoleAdminChanged
+      abis:
+        - name: esXai
+          file: ./abis/esXai.json
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,uint256)
+          handler: handleApproval
+        - event: FoundationBasepointsUpdated(uint256)
+          handler: handleFoundationBasepointsUpdated
+        - event: Initialized(uint8)
+          handler: handleInitialized
+        - event: RedemptionCancelled(indexed address,indexed uint256)
+          handler: handleRedemptionCancelled
+        - event: RedemptionCompleted(indexed address,indexed uint256)
+          handler: handleRedemptionCompleted
+        - event: RedemptionStarted(indexed address,indexed uint256)
+          handler: handleRedemptionStarted
+        - event: RedemptionStatusChanged(bool)
+          handler: handleRedemptionStatusChanged
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+      file: ./src/es-xai.ts
+  - kind: ethereum
+    name: NodeLicense
+    network: arbitrum-one
+    source:
+      address: "0xbc14d8563b248B79689ECbc43bBa53290e0b6b66"
+      abi: NodeLicense
+      startBlock: 157193743
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Approval
+        - ApprovalForAll
+        - ClaimableChanged
+        - FundsReceiverChanged
+        - FundsWithdrawn
+        - Initialized
+        - PricingTierSetOrAdded
+        - PromoCodeCreated
+        - PromoCodeRemoved
+        - ReferralReward
+      abis:
+        - name: NodeLicense
+          file: ./abis/NodeLicense.json
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,indexed uint256)
+          handler: handleApproval
+        - event: ApprovalForAll(indexed address,indexed address,bool)
+          handler: handleApprovalForAll
+        - event: ClaimableChanged(indexed address,bool)
+          handler: handleClaimableChanged
+        - event: FundsReceiverChanged(indexed address,address)
+          handler: handleFundsReceiverChanged
+        - event: FundsWithdrawn(indexed address,uint256)
+          handler: handleFundsWithdrawn
+        - event: Initialized(uint8)
+          handler: handleInitialized
+        - event: PricingTierSetOrAdded(uint256,uint256,uint256)
+          handler: handlePricingTierSetOrAdded
+        - event: PromoCodeCreated(string,address)
+          handler: handlePromoCodeCreated
+        - event: PromoCodeRemoved(string)
+          handler: handlePromoCodeRemoved
+        - event: ReferralReward(indexed address,indexed address,uint256)
+          handler: handleReferralReward
+      file: ./src/node-license.ts
+  - kind: ethereum
+    name: GasSubsidy
+    network: arbitrum-one
+    source:
+      address: "0x94F4aBC83eae00b693286B6eDCa09e1D76183C97"
+      abi: GasSubsidy
+      startBlock: 157193649
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Initialized
+        - RoleAdminChanged
+        - RoleGranted
+        - RoleRevoked
+      abis:
+        - name: GasSubsidy
+          file: ./abis/GasSubsidy.json
+      eventHandlers:
+        - event: Initialized(uint8)
+          handler: handleInitialized
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+      file: ./src/gas-subsidy.ts
