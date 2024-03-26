@@ -21,6 +21,7 @@
     "cny-airdrop": "hardhat run scripts/runCNYAirDrop.mjs",
     "eth-extraction": "hardhat run scripts/ethExtraction.mjs",
     "eth-airdrop": "hardhat run scripts/ethAirdrop.mjs",
+    "deploy-wrapped-xai": "hardhat run scripts/deployWXai.mjs",
     "upgrade-referee": "hardhat run scripts/upgradeReferee.mjs",
     "upgrade-esxai": "hardhat run scripts/upgradeEsXai.mjs",
     "local": "hardhat node",
