@@ -329,14 +329,14 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
 
             cachedLogger(`Adding Sentry Key ${nodeLicenseId} to batch for bulk submission for challenge ${challengeNumber}.`);
             batchedWinnerKeys.push(nodeLicenseId);
+            updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
 
         } catch (error: any) {
             cachedLogger(`Error submitting assertion for Sentry Key ${nodeLicenseId} to challenge ${challengeNumber} - ${error && error.message ? error.message : error}`);
             continue;
         }
 
-        cachedLogger(`Submitted assertion for Sentry Key ${nodeLicenseId} to challenge ${challengeNumber}. You have accrued esXAI.`);
-        updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
+        // cachedLogger(`Submitted assertion for Sentry Key ${nodeLicenseId} to challenge ${challengeNumber}. You have accrued esXAI.`);
 
     }
 

@@ -18,13 +18,11 @@ export async function claimRewardsBulk(
     keysPerBatch: number = 100,
     signer: ethers.Signer,
     logger: (message: string) => void
-): Promise<void[]> {
+): Promise<void> {
     // Create an instance of the Referee contract
     const refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, signer);
 
     const BATCH_SIZE = keysPerBatch;
-
-    const promises: Promise<void>[] = []
 
     // Convert BigInts to strings for the contract call
     const challengeIdStr = challengeId.toString();
@@ -35,21 +33,17 @@ export async function claimRewardsBulk(
         const nodeLicenseIdsStr = batch.map(id => id.toString());
 
         // Submit the assertion to the Referee contract
-        promises.push(
-            retry(() => refereeContract.claimMultipleRewards(
-                nodeLicenseIdsStr,
-                challengeIdStr,
-                claimForAddressInBatch
-            ), 3)
-                .then(() => {
-                    logger(`Submitted batch claim for keys ${batch.map(k => k.toString()).join(", ")}`);
-                })
-                .catch((error) => {
-                    logger(`Error on batch claim for keys ${batch.map(k => k.toString()).join(", ")} ${error}`);
-                })
-        );
+        await retry(() => refereeContract.claimMultipleRewards(
+            nodeLicenseIdsStr,
+            challengeIdStr,
+            claimForAddressInBatch
+        ), 3)
+            .then(() => {
+                logger(`Submitted batch claim for keys ${batch.map(k => k.toString()).join(", ")}`);
+            })
+            .catch((error) => {
+                logger(`Error on batch claim for keys ${batch.map(k => k.toString()).join(", ")} ${error}`);
+            })
 
     }
-
-    return Promise.all(promises);
 }
