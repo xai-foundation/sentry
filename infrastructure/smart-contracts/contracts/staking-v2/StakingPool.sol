@@ -397,7 +397,7 @@ contract StakingPool is AccessControlUpgradeable {
     function _getUndistributedClaimAmount(
         address user
     ) internal view returns (uint256 claimAmount, uint256 ownerAmount) {
-        uint256 poolAmount = esXai(esXaiAddress).balanceOf(address(this)) - poolOwnerClaimableRewards;
+        uint256 poolAmount = esXai(esXaiAddress).balanceOf(address(this));
 
         uint256 amountForKeyBucket = (poolAmount * keyBucketShare) / 1_000_000;
         uint256 amountForEsXaiBucket = (poolAmount * stakedBucketShare) /
@@ -414,8 +414,7 @@ contract StakingPool is AccessControlUpgradeable {
         }
 
         if (userBalanceInEsXaiBucket != 0) {
-            uint256 amountPerStakedEsXai = amountForEsXaiBucket /
-                esXaiStakeBucket.totalSupply();
+            uint256 amountPerStakedEsXai = amountForEsXaiBucket / esXaiStakeBucket.totalSupply();
             claimAmount += amountPerStakedEsXai * userBalanceInEsXaiBucket;
         }
     }
