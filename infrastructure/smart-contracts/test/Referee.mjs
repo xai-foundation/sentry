@@ -4,6 +4,15 @@ import {winningHashForNodeLicense0} from "./AssertionData.mjs";
 import {Contract} from "ethers";
 // import {ethers} from "ethers/src.ts";
 
+export 	async function getStateRoots(count) {
+	let results = [];
+	for (let i = 0n; i < count; i++) {
+		const successorStateRoot = `0x${i.toString(16).padStart(64, '0')}`;
+		results.push(successorStateRoot);
+	}
+	return results;
+}
+
 export function RefereeTests(deployInfrastructure) {
 
 	/**
@@ -31,15 +40,6 @@ export function RefereeTests(deployInfrastructure) {
 				return successorStateRoot;
 			}
 		}
-	}
-
-	async function getStateRoots(count) {
-		let results = [];
-		for (let i = 0n; i < count; i++) {
-			const successorStateRoot = `0x${i.toString(16).padStart(64, '0')}`;
-			results.push(successorStateRoot);
-		}
-		return results;
 	}
 
 	const getLocalAssertionHashAndCheck = (nodeLicenseId, challengeId, boostFactor, confirmData, challengerSignedHash) => {
@@ -547,444 +547,268 @@ export function RefereeTests(deployInfrastructure) {
 			assert.equal(submission.submitted, false, "Submission was created with invalid successorRoot");
 		});
 
-		// describe("The Referee should allow users to stake in V1", function () {
-		//
-		//     it("Check that staked/unstaked amount is taken/given from user's esXai balance", async function () {
-		//         const { esXai, referee, addr1, esXaiMinter, nodeLicense } = await loadFixture(deployInfrastructure);
-		//         const numLicense = await nodeLicense.balanceOf(addr1);
-		//         const maxAmountStake = await referee.getMaxStakeAmount(numLicense);
-		//         await esXai.connect(esXaiMinter).mint(addr1, maxAmountStake);
-		//         const initialBalance = await esXai.balanceOf(addr1);
-		//         const initialRefereeBalance = await esXai.balanceOf((await referee.getAddress()));
-		//         await esXai.connect(addr1).approve(await referee.getAddress(), maxAmountStake);
-		//         await referee.connect(addr1).stake(maxAmountStake);
-		//         expect(await referee.stakedAmounts(addr1)).to.equal(maxAmountStake);
-		//         const balanceAfterStake = await esXai.balanceOf(addr1);
-		//         const balanceRefereeAfterStake = await esXai.balanceOf((await referee.getAddress()));
-		//         expect(balanceAfterStake).to.equal(initialBalance - maxAmountStake);
-		//         expect(balanceRefereeAfterStake).to.equal(initialRefereeBalance + maxAmountStake);
-		//         await referee.connect(addr1).unstake(maxAmountStake);
-		//         const balanceAfterUnstake = await esXai.balanceOf(addr1);
-		//         const balanceRefereeAfterUnstake = await esXai.balanceOf((await referee.getAddress()));
-		//         expect(balanceAfterUnstake).to.equal(initialBalance);
-		//         expect(balanceRefereeAfterUnstake).to.equal(initialRefereeBalance);
-		//     })
-		//
-		//     it("Check that maximum staked amount is limited", async function () {
-		//         const { esXai, referee, addr1, esXaiMinter, nodeLicense } = await loadFixture(deployInfrastructure);
-		//
-		//         const numLicense = await nodeLicense.balanceOf(addr1);
-		//         const maxAmountStake = await referee.getMaxStakeAmount(numLicense);
-		//         await esXai.connect(esXaiMinter).mint(addr1, maxAmountStake);
-		//         await esXai.connect(addr1).approve(await referee.getAddress(), maxAmountStake + BigInt(1));
-		//
-		//         // Try stake more than allowed per Nodelicense, should fail
-		//         await expect(referee.connect(addr1).stake(maxAmountStake + BigInt(1))).to.be.revertedWith("Maximum staking amount exceeded");
-		//
-		//         // Stake exactly max amount allowed per Nodelicense, should work
-		//         await referee.connect(addr1).stake(maxAmountStake);
-		//         expect(await referee.stakedAmounts(addr1)).to.equal(maxAmountStake);
-		//
-		//         // Try stake some more, should fail
-		//         await expect(referee.connect(addr1).stake(BigInt(1))).to.be.revertedWith("Maximum staking amount exceeded");
-		//
-		//         await referee.connect(addr1).unstake(maxAmountStake);
-		//     })
-		//
-		//     it("Check that maximum staked amount increases with more NodeLicenses", async function () {
-		//         const { esXai, referee, addr1, esXaiMinter, nodeLicense} = await loadFixture(deployInfrastructure);
-		//         const numLicense = await nodeLicense.balanceOf(addr1);
-		//         const maxAmountStake = await referee.getMaxStakeAmount(numLicense);
-		//         await esXai.connect(esXaiMinter).mint(addr1, maxAmountStake + BigInt(1));
-		//         await esXai.connect(addr1).approve(await referee.getAddress(), maxAmountStake + BigInt(1));
-		//
-		//         await referee.connect(addr1).stake(maxAmountStake);
-		//         await expect(referee.connect(addr1).stake(BigInt(1))).to.be.revertedWith("Maximum staking amount exceeded");
-		//
-		//         let price = await nodeLicense.price(1, "");
-		//         await nodeLicense.connect(addr1).mint(1, "", {value: price});
-		//
-		//         await referee.connect(addr1).stake(BigInt(1));
-		//         expect(await referee.stakedAmounts(addr1)).to.equal(maxAmountStake + BigInt(1));
-		//         await referee.connect(addr1).unstake(maxAmountStake + BigInt(1));
-		//     })
-		//
-		//     it("Check that reward chance increases with higher boostFactor", async function () {
-		//         const { referee } = await loadFixture(deployInfrastructure);
-		//
-		//         const numIterations = 10000;
-		//         const baseFactor = 100;
-		//         const baseNumWins = getNumWinningStateRoots(numIterations, baseFactor);
-		//
-		//         const boostFactors = [125, 150, 175, 200]; // 125 => 1.25 x the chance, 400 => 4 times the chance to win
-		//         for (const boostFactor of boostFactors) {
-		//             const boostedNumWins = getNumWinningStateRoots(numIterations, boostFactor);
-		//             expect(boostedNumWins / baseNumWins).to.be.closeTo(boostFactor / 100, 0.5);  // expect to win 2 - 3 times more often
-		//         }
-		//
-		//         return Promise.resolve();
-		//     }).timeout(300_000) // 5 min
-		//
-		//     it("Check that reward chance increases with higher staking amount", async function () {
-		//         const { referee, challenger, esXai, esXaiMinter, nodeLicense, addr1, addr2, addr3 } = await loadFixture(deployInfrastructure);
-		//
-		//         // Stake as addr2 to trigger boost to silver tier
-		//         const stakeAmount2 = BigInt(10_000) * BigInt(10 ** 18);
-		//         await esXai.connect(esXaiMinter).mint(addr2, stakeAmount2);
-		//         await esXai.connect(addr2).approve(await referee.getAddress(), stakeAmount2);
-		//         await referee.connect(addr2).stake(stakeAmount2);
-		//         const expectedBoostFactor2 = Number(await referee.getBoostFactor(stakeAmount2));
-		//
-		//         let price = await nodeLicense.price(100, "");
-		//         await nodeLicense.connect(addr3).mint(100, "", { value: price });
-		//
-		//         // Stake as addr3 to trigger boost to gold tier
-		//         const stakeAmount3 = BigInt(50_000) * BigInt(10 ** 18);
-		//         await esXai.connect(esXaiMinter).mint(addr3, stakeAmount3);
-		//         await esXai.connect(addr3).approve(await referee.getAddress(), stakeAmount3);
-		//         await referee.connect(addr3).stake(stakeAmount3);
-		//         const expectedBoostFactor3 = Number(await referee.getBoostFactor(stakeAmount3));
-		//
-		//         // Enter 250 challenges as addr1 (no boost), addr2 and addr3 (boosted)
-		//         const numSubmissions = 1000;
-		//         const stateRoots = await getStateRoots(numSubmissions * 2);
-		//         let numBasePayouts = 0;
-		//         let numBoostedPayouts2 = 0;
-		//         let numBoostedPayouts3 = 0;
-		//         for (let i = 0; i < numSubmissions; i++) {
-		//             const stateRoot = stateRoots[i];
-		//
-		//             // console.log("Iteration", i);
-		//
-		//             // Submit a challenge
-		//             await referee.connect(challenger).submitChallenge(
-		//                 i + 1,
-		//                 i,
-		//                 stateRoot,
-		//                 0,
-		//                 "0x0000000000000000000000000000000000000000000000000000000000000000"
-		//             );
-		//
-		//             // check to see the challenge is open for submissions
-		//             const { openForSubmissions } = await referee.getChallenge(i);
-		//             expect(openForSubmissions).to.be.eq(true);
-		//
-		//             // Submit assertions
-		//             await referee.connect(addr1).submitAssertionToChallenge(1, i, stateRoot);
-		//             await referee.connect(addr2).submitAssertionToChallenge(2, i, stateRoot);
-		//             await referee.connect(addr3).submitAssertionToChallenge(12, i, stateRoot);
-		//
-		//             // Check submissions, count payouts
-		//             const submission1 = await referee.getSubmissionsForChallenges([i], 1);
-		//             assert.equal(submission1[0].submitted, true, "The submission was not submitted");
-		//             if (submission1[0].eligibleForPayout) {
-		//                 numBasePayouts++;
-		//             }
-		//             const submission2 = await referee.getSubmissionsForChallenges([i], 2);
-		//             assert.equal(submission2[0].submitted, true, "The submission was not submitted");
-		//             if (submission2[0].eligibleForPayout) {
-		//                 numBoostedPayouts2++;
-		//             }
-		//             const submission3 = await referee.getSubmissionsForChallenges([i], 12);
-		//             assert.equal(submission3[0].submitted, true, "The submission was not submitted");
-		//             if (submission3[0].eligibleForPayout) {
-		//                 numBoostedPayouts3++;
-		//             }
-		//         }
-		//
-		//         const resultingBoostFactor2 = numBoostedPayouts2 / numBasePayouts;
-		//         const resultingBoostFactor3 = numBoostedPayouts3 / numBasePayouts;
-		//
-		//         // console.log("Base payouts", numBasePayouts);
-		//         // console.log(`Boosted payouts (addr2): ${numBoostedPayouts2} - expected boost: ${expectedBoostFactor2} - calculated boost: ${resultingBoostFactor2}`);
-		//         // console.log(`Boosted payouts (addr3): ${numBoostedPayouts3} - expected boost: ${expectedBoostFactor3} - calculated boost: ${resultingBoostFactor3}`);
-		//
-		//         expect(resultingBoostFactor2).to.be.closeTo(expectedBoostFactor2 / 100, 1);  // Expect to win 1 - 3 times as often (EV=2)
-		//         expect(resultingBoostFactor3).to.be.closeTo(expectedBoostFactor3 / 100, 2);  // Expect to win 2 - 6 times as often (EV=4)
-		//
-		//         return Promise.resolve();
-		//     }).timeout(300_000) // 5 min
-		// })
+		describe("The Referee should allow users to stake in V1", function () {
 
-		// describe("Staking V2", function () {
-		// 	describe("Update Pool #187167268", function () {
-		// 		it("Check that the Pool shares are updated", async function () {
-		// 			const {referee, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
-		//
-		// 			// Mint a node key & save the id
-		// 			const price = await nodeLicense.price(1, "");
-		// 			await nodeLicense.connect(addr1).mint(1, "", {value: price});
-		// 			const mintedKeyId = await nodeLicense.totalSupply();
-		//
-		// 			// Create a Pool
-		// 			const bucketShareMaxValues = await referee.connect(addr1).bucketshareMaxValues();
-		// 			await referee.connect(addr1).createPool(
-		// 				[mintedKeyId],
-		// 				bucketShareMaxValues[0],
-		// 				bucketShareMaxValues[1],
-		// 				bucketShareMaxValues[2],
-		// 				"Testing Pool",
-		// 				"This is for testing purposes only!!",
-		// 				"logo",
-		// 				"website",
-		// 				"twitter",
-		// 				"discord",
-		// 				"telegram",
-		// 				"instagram",
-		// 				"tiktok",
-		// 				"youtube"
-		// 			);
-		//
-		// 			// Create instance of the deployed pool
-		// 			const stakingPools = await referee.connect(addr1).stakingPools();
-		// 			expect(stakingPools.length).to.equal(1);
-		// 			const StakingPool = await ethers.getContractFactory("StakingPool");
-		// 			const stakingPool = StakingPool.attach(stakingPools[0]);
-		//
-		// 			// Verify the values are as expected after creation
-		// 			const ownerShare1 = await stakingPool.connect(addr1).ownerShare();
-		// 			const keyBucketShare1 = await stakingPool.connect(addr1).keyBucketShare();
-		// 			const stakedBucketShare1 = await stakingPool.connect(addr1).stakedBucketShare();
-		// 			expect(ownerShare1).to.equal(bucketShareMaxValues[0]);
-		// 			expect(keyBucketShare1).to.equal(bucketShareMaxValues[1]);
-		// 			expect(stakedBucketShare1).to.equal(bucketShareMaxValues[2]);
-		//
-		// 			// Save the desired updated share values to variables
-		// 			const newOwnerShare = bucketShareMaxValues[0] - 1;
-		// 			const newKeyBucketShare = bucketShareMaxValues[1] - 1;
-		// 			const newStakedBucketShare = bucketShareMaxValues[2] - 1;
-		//
-		// 			// Update the share values
-		// 			await referee.connect(addr1).updateShares(
-		// 				stakingPools[0],
-		// 				newOwnerShare,
-		// 				newKeyBucketShare,
-		// 				newStakedBucketShare,
-		// 			);
-		//
-		// 			// Verify the values are as expected after updating
-		// 			const ownerShare2 = await stakingPool.connect(addr1).ownerShare();
-		// 			const keyBucketShare2 = await stakingPool.connect(addr1).keyBucketShare();
-		// 			const stakedBucketShare2 = await stakingPool.connect(addr1).stakedBucketShare();
-		// 			expect(ownerShare2).to.equal(newOwnerShare);
-		// 			expect(keyBucketShare2).to.equal(newKeyBucketShare);
-		// 			expect(stakedBucketShare2).to.equal(newStakedBucketShare);
-		// 		});
-		//
-		// 		it("Check that the shares cannot go over the max values (bucketshareMaxValues = ordered owner, keys, esXaiStaker)", async function () {
-		// 			const {referee, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
-		//
-		// 			// Mint a node key & save the id
-		// 			const price = await nodeLicense.price(1, "");
-		// 			await nodeLicense.connect(addr1).mint(1, "", {value: price});
-		// 			const mintedKeyId = await nodeLicense.totalSupply();
-		//
-		// 			// Create a Pool
-		// 			const bucketShareMaxValues = await referee.connect(addr1).bucketshareMaxValues();
-		// 			await referee.connect(addr1).createPool(
-		// 				[mintedKeyId],
-		// 				bucketShareMaxValues[0],
-		// 				bucketShareMaxValues[1],
-		// 				bucketShareMaxValues[2],
-		// 				"Testing Pool",
-		// 				"This is for testing purposes only!!",
-		// 				"logo",
-		// 				"website",
-		// 				"twitter",
-		// 				"discord",
-		// 				"telegram",
-		// 				"instagram",
-		// 				"tiktok",
-		// 				"youtube"
-		// 			);
-		//
-		// 			// Create instance of the deployed pool
-		// 			const stakingPools = await referee.connect(addr1).stakingPools();
-		// 			expect(stakingPools.length).to.equal(1);
-		// 			const StakingPool = await ethers.getContractFactory("StakingPool");
-		// 			const stakingPool = StakingPool.attach(stakingPools[0]);
-		//
-		// 			// Check that the share values are configured correctly after pool creation
-		// 			const ownerShare = await stakingPool.connect(addr1).ownerShare();
-		// 			const keyBucketShare = await stakingPool.connect(addr1).keyBucketShare();
-		// 			const stakedBucketShare = await stakingPool.connect(addr1).stakedBucketShare();
-		// 			expect(ownerShare).to.equal(bucketShareMaxValues[0]);
-		// 			expect(keyBucketShare).to.equal(bucketShareMaxValues[1]);
-		// 			expect(stakedBucketShare).to.equal(bucketShareMaxValues[2]);
-		//
-		// 			// Anticipate failure of setting share values above the configured maximums
-		// 			await expect(
-		// 				referee.connect(addr1).updateShares(
-		// 					stakingPools[0],
-		// 					bucketShareMaxValues[0] + 1,
-		// 					bucketShareMaxValues[1] + 1,
-		// 					bucketShareMaxValues[2] + 1
-		// 				)
-		// 			).to.be.revertedWith("");// TODO error message
-		// 		});
-		//
-		// 		it("Check that the metadata gets returned from the poolInfo", async function () {
-		// 			const {referee, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
-		//
-		// 			// Mint a node key & save the id
-		// 			const price = await nodeLicense.price(1, "");
-		// 			await nodeLicense.connect(addr1).mint(1, "", {value: price});
-		// 			const mintedKeyId = await nodeLicense.totalSupply();
-		//
-		// 			// Create a Pool
-		// 			const bucketShareMaxValues = await referee.connect(addr1).bucketshareMaxValues();
-		// 			await referee.connect(addr1).createPool(
-		// 				[mintedKeyId],
-		// 				bucketShareMaxValues[0],
-		// 				bucketShareMaxValues[1],
-		// 				bucketShareMaxValues[2],
-		// 				"Testing Pool",
-		// 				"This is for testing purposes only!!",
-		// 				"logo",
-		// 				"website",
-		// 				"twitter",
-		// 				"discord",
-		// 				"telegram",
-		// 				"instagram",
-		// 				"tiktok",
-		// 				"youtube"
-		// 			);
-		//
-		// 			// Get the pool index & address
-		// 			const stakingPools = await referee.connect(addr1).stakingPools();
-		// 			const stakingPoolIndicesOfOwner = await referee.connect(addr1).stakingPoolIndicesOfOwner();
-		// 			const poolIndex = stakingPoolIndicesOfOwner[addr1.address][0];
-		// 			expect(stakingPools.length).to.equal(1);
-		// 			expect(poolIndex).to.equal(0);
-		//
-		// 			// Successfully update the pool with new metadata
-		// 			await referee.connect(addr1).updatePoolMetadata(
-		// 				stakingPools[0],
-		// 				"Testing Pool update",
-		// 				"This is for testing purposes only!! update",
-		// 				"logo update",
-		// 				"website update",
-		// 				"twitter update",
-		// 				"discord update",
-		// 				"telegram update",
-		// 				"instagram update",
-		// 				"tiktok update",
-		// 				"youtube update"
-		// 			);
-		//
-		// 			// Create instance of the deployed pool
-		// 			const StakingPool = await ethers.getContractFactory("StakingPool");
-		// 			const stakingPool = StakingPool.attach(stakingPools[0]);
-		//
-		// 			// Check that all the metadata has been updated correctly
-		// 			//TODO metadata after conversion to array
-		// 		});
-		// 	});
-		// });
+		    it("Check that staked/unstaked amount is taken/given from user's esXai balance", async function () {
+		        const { esXai, referee, addr1, esXaiMinter, nodeLicense } = await loadFixture(deployInfrastructure);
+		        const numLicense = await nodeLicense.balanceOf(addr1);
+		        const maxAmountStake = await referee.getMaxStakeAmount(numLicense);
+		        await esXai.connect(esXaiMinter).mint(addr1, maxAmountStake);
+		        const initialBalance = await esXai.balanceOf(addr1);
+		        const initialRefereeBalance = await esXai.balanceOf((await referee.getAddress()));
+		        await esXai.connect(addr1).approve(await referee.getAddress(), maxAmountStake);
+		        await referee.connect(addr1).stake(maxAmountStake);
+		        expect(await referee.stakedAmounts(addr1)).to.equal(maxAmountStake);
+		        const balanceAfterStake = await esXai.balanceOf(addr1);
+		        const balanceRefereeAfterStake = await esXai.balanceOf((await referee.getAddress()));
+		        expect(balanceAfterStake).to.equal(initialBalance - maxAmountStake);
+		        expect(balanceRefereeAfterStake).to.equal(initialRefereeBalance + maxAmountStake);
+		        await referee.connect(addr1).unstake(maxAmountStake);
+		        const balanceAfterUnstake = await esXai.balanceOf(addr1);
+		        const balanceRefereeAfterUnstake = await esXai.balanceOf((await referee.getAddress()));
+		        expect(balanceAfterUnstake).to.equal(initialBalance);
+		        expect(balanceRefereeAfterUnstake).to.equal(initialRefereeBalance);
+		    })
 
-		// describe("The rollup protocol should be checking if values are correct", function () {
-		//
-		//     it("Check that toggling assertion, makes so you have to send in the correct assertion data from the rollup protocol", async function () {
-		//         const { referee, refereeDefaultAdmin, challenger } = await loadFixture(deployInfrastructure);
-		//
-		//         // check isCheckingAssertions is false
-		//         const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
-		//         assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
-		//
-		//         // turn on assertion checking
-		//         await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
-		//
-		//         // check isCheckingAssertions is true
-		//         const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
-		//         assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
-		//
-		//         // get an arbitrary node from the protocol and check to see that the referee actually checks it
-		//         await referee.connect(challenger).submitChallenge(
-		//             2252,
-		//             2251,
-		//             "0x2fd53fdb1cd3d34d509978b94af510451ab103c5ba7aef645fd27c97af8aacb0",
-		//             10117582,
-		//             "0x0000000000000000000000000000000000000000000000000000000000000000"
-		//         );
-		//     })
-		//
-		//     it("Check that passing an incorrect _predecessorAssertionId throws an error", async function() {
-		//
-		//         const {referee, refereeDefaultAdmin, challenger} = await loadFixture(deployInfrastructure);
-		//
-		//         // check isCheckingAssertions is false
-		//         const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
-		//         assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
-		//
-		//         // turn on assertion checking
-		//         await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
-		//
-		//         // check isCheckingAssertions is true
-		//         const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
-		//         assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
-		//
-		//         await expect(
-		//             referee.connect(challenger).submitChallenge(
-		//                 2252,
-		//                 9999,
-		//                 "0x2fd53fdb1cd3d34d509978b94af510451ab103c5ba7aef645fd27c97af8aacb0",
-		//                 10117582,
-		//                 "0x0000000000000000000000000000000000000000000000000000000000000000"
-		//             )
-		//         ).to.be.revertedWith("The _predecessorAssertionId is incorrect.");
-		//     })
-		//
-		//     it("Check that passing an incorrect _confirmData throws an error", async function() {
-		//
-		//         const {referee, refereeDefaultAdmin, challenger} = await loadFixture(deployInfrastructure);
-		//
-		//         // check isCheckingAssertions is false
-		//         const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
-		//         assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
-		//
-		//         // turn on assertion checking
-		//         await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
-		//
-		//         // check isCheckingAssertions is true
-		//         const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
-		//         assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
-		//
-		//         await expect(
-		//             referee.connect(challenger).submitChallenge(
-		//                 2252,
-		//                 2251,
-		//                 "0x0000000000000000000000000000000000000000000000000000000000000000",
-		//                 10117582,
-		//                 "0x0000000000000000000000000000000000000000000000000000000000000000"
-		//             )
-		//         ).to.be.revertedWith("The _confirmData is incorrect.");
-		//     })
-		//
-		//     it("Check that passing an incorrect _assertionTimestamp throws an error", async function() {
-		//
-		//         const {referee, refereeDefaultAdmin, challenger} = await loadFixture(deployInfrastructure);
-		//
-		//         // check isCheckingAssertions is false
-		//         const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
-		//         assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
-		//
-		//         // turn on assertion checking
-		//         await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
-		//
-		//         // check isCheckingAssertions is true
-		//         const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
-		//         assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
-		//
-		//         await expect(
-		//             referee.connect(challenger).submitChallenge(
-		//                 2252,
-		//                 2251,
-		//                 "0x2fd53fdb1cd3d34d509978b94af510451ab103c5ba7aef645fd27c97af8aacb0",
-		//                 99999999,
-		//                 "0x0000000000000000000000000000000000000000000000000000000000000000"
-		//             )
-		//         ).to.be.revertedWith("The _assertionTimestamp did not match the block this assertion was created at.");
-		//     })
-		// })
+		    it("Check that maximum staked amount is limited", async function () {
+		        const { esXai, referee, addr1, esXaiMinter, nodeLicense } = await loadFixture(deployInfrastructure);
+
+		        const numLicense = await nodeLicense.balanceOf(addr1);
+		        const maxAmountStake = await referee.getMaxStakeAmount(numLicense);
+		        await esXai.connect(esXaiMinter).mint(addr1, maxAmountStake);
+		        await esXai.connect(addr1).approve(await referee.getAddress(), maxAmountStake + BigInt(1));
+
+		        // Try stake more than allowed per Nodelicense, should fail
+		        await expect(referee.connect(addr1).stake(maxAmountStake + BigInt(1))).to.be.revertedWith("Maximum staking amount exceeded");
+
+		        // Stake exactly max amount allowed per Nodelicense, should work
+		        await referee.connect(addr1).stake(maxAmountStake);
+		        expect(await referee.stakedAmounts(addr1)).to.equal(maxAmountStake);
+
+		        // Try stake some more, should fail
+		        await expect(referee.connect(addr1).stake(BigInt(1))).to.be.revertedWith("Maximum staking amount exceeded");
+
+		        await referee.connect(addr1).unstake(maxAmountStake);
+		    })
+
+		    it("Check that maximum staked amount increases with more NodeLicenses", async function () {
+		        const { esXai, referee, addr1, esXaiMinter, nodeLicense} = await loadFixture(deployInfrastructure);
+		        const numLicense = await nodeLicense.balanceOf(addr1);
+		        const maxAmountStake = await referee.getMaxStakeAmount(numLicense);
+		        await esXai.connect(esXaiMinter).mint(addr1, maxAmountStake + BigInt(1));
+		        await esXai.connect(addr1).approve(await referee.getAddress(), maxAmountStake + BigInt(1));
+
+		        await referee.connect(addr1).stake(maxAmountStake);
+		        await expect(referee.connect(addr1).stake(BigInt(1))).to.be.revertedWith("Maximum staking amount exceeded");
+
+		        let price = await nodeLicense.price(1, "");
+		        await nodeLicense.connect(addr1).mint(1, "", {value: price});
+
+		        await referee.connect(addr1).stake(BigInt(1));
+		        expect(await referee.stakedAmounts(addr1)).to.equal(maxAmountStake + BigInt(1));
+		        await referee.connect(addr1).unstake(maxAmountStake + BigInt(1));
+		    })
+
+		    it("Check that reward chance increases with higher boostFactor", async function () {
+		        const { referee } = await loadFixture(deployInfrastructure);
+
+		        const numIterations = 10000;
+		        const baseFactor = 100;
+		        const baseNumWins = getNumWinningStateRoots(numIterations, baseFactor);
+
+		        const boostFactors = [125, 150, 175, 200]; // 125 => 1.25 x the chance, 400 => 4 times the chance to win
+		        for (const boostFactor of boostFactors) {
+		            const boostedNumWins = getNumWinningStateRoots(numIterations, boostFactor);
+		            expect(boostedNumWins / baseNumWins).to.be.closeTo(boostFactor / 100, 0.5);  // expect to win 2 - 3 times more often
+		        }
+
+		        return Promise.resolve();
+		    }).timeout(300_000) // 5 min
+
+		    it("Check that reward chance increases with higher staking amount", async function () {
+		        const { referee, challenger, esXai, esXaiMinter, nodeLicense, addr1, addr2, addr3 } = await loadFixture(deployInfrastructure);
+
+		        // Stake as addr2 to trigger boost to silver tier
+		        const stakeAmount2 = BigInt(10_000) * BigInt(10 ** 18);
+		        await esXai.connect(esXaiMinter).mint(addr2, stakeAmount2);
+		        await esXai.connect(addr2).approve(await referee.getAddress(), stakeAmount2);
+		        await referee.connect(addr2).stake(stakeAmount2);
+		        const expectedBoostFactor2 = Number(await referee.getBoostFactor(stakeAmount2));
+
+		        let price = await nodeLicense.price(100, "");
+		        await nodeLicense.connect(addr3).mint(100, "", { value: price });
+
+		        // Stake as addr3 to trigger boost to gold tier
+		        const stakeAmount3 = BigInt(50_000) * BigInt(10 ** 18);
+		        await esXai.connect(esXaiMinter).mint(addr3, stakeAmount3);
+		        await esXai.connect(addr3).approve(await referee.getAddress(), stakeAmount3);
+		        await referee.connect(addr3).stake(stakeAmount3);
+		        const expectedBoostFactor3 = Number(await referee.getBoostFactor(stakeAmount3));
+
+		        // Enter 250 challenges as addr1 (no boost), addr2 and addr3 (boosted)
+		        const numSubmissions = 1000;
+		        const stateRoots = await getStateRoots(numSubmissions * 2);
+		        let numBasePayouts = 0;
+		        let numBoostedPayouts2 = 0;
+		        let numBoostedPayouts3 = 0;
+		        for (let i = 0; i < numSubmissions; i++) {
+		            const stateRoot = stateRoots[i];
+
+		            // console.log("Iteration", i);
+
+		            // Submit a challenge
+		            await referee.connect(challenger).submitChallenge(
+		                i + 1,
+		                i,
+		                stateRoot,
+		                0,
+		                "0x0000000000000000000000000000000000000000000000000000000000000000"
+		            );
+
+		            // check to see the challenge is open for submissions
+		            const { openForSubmissions } = await referee.getChallenge(i);
+		            expect(openForSubmissions).to.be.eq(true);
+
+		            // Submit assertions
+		            await referee.connect(addr1).submitAssertionToChallenge(1, i, stateRoot);
+		            await referee.connect(addr2).submitAssertionToChallenge(2, i, stateRoot);
+		            await referee.connect(addr3).submitAssertionToChallenge(12, i, stateRoot);
+
+		            // Check submissions, count payouts
+		            const submission1 = await referee.getSubmissionsForChallenges([i], 1);
+		            assert.equal(submission1[0].submitted, true, "The submission was not submitted");
+		            if (submission1[0].eligibleForPayout) {
+		                numBasePayouts++;
+		            }
+		            const submission2 = await referee.getSubmissionsForChallenges([i], 2);
+		            assert.equal(submission2[0].submitted, true, "The submission was not submitted");
+		            if (submission2[0].eligibleForPayout) {
+		                numBoostedPayouts2++;
+		            }
+		            const submission3 = await referee.getSubmissionsForChallenges([i], 12);
+		            assert.equal(submission3[0].submitted, true, "The submission was not submitted");
+		            if (submission3[0].eligibleForPayout) {
+		                numBoostedPayouts3++;
+		            }
+		        }
+
+		        const resultingBoostFactor2 = numBoostedPayouts2 / numBasePayouts;
+		        const resultingBoostFactor3 = numBoostedPayouts3 / numBasePayouts;
+
+		        // console.log("Base payouts", numBasePayouts);
+		        // console.log(`Boosted payouts (addr2): ${numBoostedPayouts2} - expected boost: ${expectedBoostFactor2} - calculated boost: ${resultingBoostFactor2}`);
+		        // console.log(`Boosted payouts (addr3): ${numBoostedPayouts3} - expected boost: ${expectedBoostFactor3} - calculated boost: ${resultingBoostFactor3}`);
+
+		        expect(resultingBoostFactor2).to.be.closeTo(expectedBoostFactor2 / 100, 1);  // Expect to win 1 - 3 times as often (EV=2)
+		        expect(resultingBoostFactor3).to.be.closeTo(expectedBoostFactor3 / 100, 2);  // Expect to win 2 - 6 times as often (EV=4)
+
+		        return Promise.resolve();
+		    }).timeout(300_000) // 5 min
+		})
+
+		describe("The rollup protocol should be checking if values are correct", function () {
+
+		    it("Check that toggling assertion, makes so you have to send in the correct assertion data from the rollup protocol", async function () {
+		        const { referee, refereeDefaultAdmin, challenger } = await loadFixture(deployInfrastructure);
+
+		        // check isCheckingAssertions is false
+		        const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
+		        assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
+
+		        // turn on assertion checking
+		        await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
+
+		        // check isCheckingAssertions is true
+		        const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
+		        assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
+
+		        // get an arbitrary node from the protocol and check to see that the referee actually checks it
+		        await referee.connect(challenger).submitChallenge(
+		            2252,
+		            2251,
+		            "0x2fd53fdb1cd3d34d509978b94af510451ab103c5ba7aef645fd27c97af8aacb0",
+		            10117582,
+		            "0x0000000000000000000000000000000000000000000000000000000000000000"
+		        );
+		    })
+
+		    it("Check that passing an incorrect _predecessorAssertionId throws an error", async function() {
+
+		        const {referee, refereeDefaultAdmin, challenger} = await loadFixture(deployInfrastructure);
+
+		        // check isCheckingAssertions is false
+		        const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
+		        assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
+
+		        // turn on assertion checking
+		        await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
+
+		        // check isCheckingAssertions is true
+		        const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
+		        assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
+
+		        await expect(
+		            referee.connect(challenger).submitChallenge(
+		                2252,
+		                9999,
+		                "0x2fd53fdb1cd3d34d509978b94af510451ab103c5ba7aef645fd27c97af8aacb0",
+		                10117582,
+		                "0x0000000000000000000000000000000000000000000000000000000000000000"
+		            )
+		        ).to.be.revertedWith("The _predecessorAssertionId is incorrect.");
+		    })
+
+		    it("Check that passing an incorrect _confirmData throws an error", async function() {
+
+		        const {referee, refereeDefaultAdmin, challenger} = await loadFixture(deployInfrastructure);
+
+		        // check isCheckingAssertions is false
+		        const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
+		        assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
+
+		        // turn on assertion checking
+		        await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
+
+		        // check isCheckingAssertions is true
+		        const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
+		        assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
+
+		        await expect(
+		            referee.connect(challenger).submitChallenge(
+		                2252,
+		                2251,
+		                "0x0000000000000000000000000000000000000000000000000000000000000000",
+		                10117582,
+		                "0x0000000000000000000000000000000000000000000000000000000000000000"
+		            )
+		        ).to.be.revertedWith("The _confirmData is incorrect.");
+		    })
+
+		    it("Check that passing an incorrect _assertionTimestamp throws an error", async function() {
+
+		        const {referee, refereeDefaultAdmin, challenger} = await loadFixture(deployInfrastructure);
+
+		        // check isCheckingAssertions is false
+		        const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
+		        assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
+
+		        // turn on assertion checking
+		        await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
+
+		        // check isCheckingAssertions is true
+		        const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
+		        assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
+
+		        await expect(
+		            referee.connect(challenger).submitChallenge(
+		                2252,
+		                2251,
+		                "0x2fd53fdb1cd3d34d509978b94af510451ab103c5ba7aef645fd27c97af8aacb0",
+		                99999999,
+		                "0x0000000000000000000000000000000000000000000000000000000000000000"
+		            )
+		        ).to.be.revertedWith("The _assertionTimestamp did not match the block this assertion was created at.");
+		    })
+		})
 	}
 }
