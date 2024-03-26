@@ -277,7 +277,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
     function validateShareValues(
         uint32[3] memory _shareConfig
-    ) internal returns (bool) {
+    ) internal view returns (bool) {
         return
             _shareConfig[0] <= bucketshareMaxValues[0] &&
             _shareConfig[1] <= bucketshareMaxValues[1] &&
@@ -312,22 +312,12 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 		emit UpdatePoolDelegate(delegate, pool);
 	}
 
-    function userPoolInfo(
-        address pool,
-        address user
-    ) internal view returns (uint256 stakeAmount, uint256 keyAmount) {
-        stakeAmount = StakingPool(pool).getStakedAmounts(user);
-        keyAmount = StakingPool(pool).getStakedKeysCountForUser(user);
-    }
-
     function _stakeKeys(address pool, uint256[] memory keyIds) internal {
         Referee5(refereeAddress).stakeKeys(pool, msg.sender, keyIds);
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.stakeKeys(msg.sender, keyIds);
 
-        if (stakingPool.isUserEngagedWithPool(msg.sender)) {
-            associateUserWithPool(msg.sender, pool);
-        }
+        associateUserWithPool(msg.sender, pool);
 
         emit StakeKeys(
             msg.sender,
@@ -419,9 +409,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.stakeEsXai(msg.sender, amount);
 
-        if (stakingPool.isUserEngagedWithPool(msg.sender)) {
-            associateUserWithPool(msg.sender, pool);
-        }
+        associateUserWithPool(msg.sender, pool);
 
         emit StakeEsXai(
             msg.sender,
