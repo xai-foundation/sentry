@@ -18,21 +18,19 @@ export async function submitMultipleAssertions(
     keysPerBatch: number = 100,
     signer: ethers.Signer,
     logger: (message: string) => void
-): Promise<void[]> {
+): Promise<void> {
 
     // Create an instance of the Referee contract
     const refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, signer);
 
     const BATCH_SIZE = keysPerBatch;
 
-    const promises: Promise<void>[] = []
-
     //Break up keys in batches of BATCH_SIZE
     for (let i = 0; i < nodeLicenseIds.length; i += BATCH_SIZE) {
         const batch = nodeLicenseIds.slice(i, i + BATCH_SIZE);
 
         // Submit the assertion to the Referee contract
-        promises.push(retry(() => refereeContract.submitMultipleAssertions(
+        await retry(() => refereeContract.submitMultipleAssertions(
             batch,
             challengeId,
             successorConfirmData
@@ -43,8 +41,5 @@ export async function submitMultipleAssertions(
             .catch((error) => {
                 logger(`Error on batch submission for keys ${batch.map(k => k.toString()).join(", ")} ${error}`);
             })
-        );
     }
-
-    return Promise.all(promises);
 }
