@@ -98,6 +98,8 @@ generateRevenueReport(cli);
 displayNodeAgreement(cli);
 
 console.log(`Starting Sentry cli version ${version}`);
+console.log(`Stake and redeem esXAI at https://app.xai.games`);
+console.log("");
 
 cli
     .delimiter('sentry-node$')
