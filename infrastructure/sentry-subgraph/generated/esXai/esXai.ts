@@ -300,7 +300,7 @@ export class XaiAddressChanged__Params {
   }
 }
 
-export class esXai__getRedemptionRequestResultValue0Struct extends ethereum.Tuple {
+export class EsXai__getRedemptionRequestResultValue0Struct extends ethereum.Tuple {
   get amount(): BigInt {
     return this[0].toBigInt();
   }
@@ -330,9 +330,9 @@ export class esXai__getRedemptionRequestResultValue0Struct extends ethereum.Tupl
   }
 }
 
-export class esXai extends ethereum.SmartContract {
-  static bind(address: Address): esXai {
-    return new esXai("esXai", address);
+export class EsXai extends ethereum.SmartContract {
+  static bind(address: Address): EsXai {
+    return new EsXai("EsXai", address);
   }
 
   DEFAULT_ADMIN_ROLE(): Bytes {
@@ -532,7 +532,7 @@ export class esXai extends ethereum.SmartContract {
   getRedemptionRequest(
     account: Address,
     index: BigInt,
-  ): esXai__getRedemptionRequestResultValue0Struct {
+  ): EsXai__getRedemptionRequestResultValue0Struct {
     let result = super.call(
       "getRedemptionRequest",
       "getRedemptionRequest(address,uint256):((uint256,uint256,uint256,uint256,bool,bool,uint256[5]))",
@@ -542,7 +542,7 @@ export class esXai extends ethereum.SmartContract {
       ],
     );
 
-    return changetype<esXai__getRedemptionRequestResultValue0Struct>(
+    return changetype<EsXai__getRedemptionRequestResultValue0Struct>(
       result[0].toTuple(),
     );
   }
@@ -550,7 +550,7 @@ export class esXai extends ethereum.SmartContract {
   try_getRedemptionRequest(
     account: Address,
     index: BigInt,
-  ): ethereum.CallResult<esXai__getRedemptionRequestResultValue0Struct> {
+  ): ethereum.CallResult<EsXai__getRedemptionRequestResultValue0Struct> {
     let result = super.tryCall(
       "getRedemptionRequest",
       "getRedemptionRequest(address,uint256):((uint256,uint256,uint256,uint256,bool,bool,uint256[5]))",
@@ -564,7 +564,7 @@ export class esXai extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      changetype<esXai__getRedemptionRequestResultValue0Struct>(
+      changetype<EsXai__getRedemptionRequestResultValue0Struct>(
         value[0].toTuple(),
       ),
     );

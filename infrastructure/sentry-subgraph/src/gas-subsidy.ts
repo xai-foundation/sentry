@@ -1,16 +1,22 @@
 import {
-  AdminChanged as AdminChangedEvent,
-  BeaconUpgraded as BeaconUpgradedEvent,
-  Upgraded as UpgradedEvent,
+  Initialized as InitializedEvent,
+  RoleAdminChanged as RoleAdminChangedEvent,
+  RoleGranted as RoleGrantedEvent,
+  RoleRevoked as RoleRevokedEvent,
 } from "../generated/GasSubsidy/GasSubsidy"
-import { AdminChanged, BeaconUpgraded, Upgraded } from "../generated/schema"
+import {
+  GasSubsidyRoleAdminChanged as RoleAdminChanged,
+  GasSubsidyRoleGranted as RoleGranted,
+  GasSubsidyRoleRevoked as RoleRevoked,
+} from "../generated/schema"
 
-export function handleAdminChanged(event: AdminChangedEvent): void {
-  let entity = new AdminChanged(
+export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
+  let entity = new RoleAdminChanged(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
-  entity.previousAdmin = event.params.previousAdmin
-  entity.newAdmin = event.params.newAdmin
+  entity.role = event.params.role
+  entity.previousAdminRole = event.params.previousAdminRole
+  entity.newAdminRole = event.params.newAdminRole
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
@@ -19,11 +25,13 @@ export function handleAdminChanged(event: AdminChangedEvent): void {
   entity.save()
 }
 
-export function handleBeaconUpgraded(event: BeaconUpgradedEvent): void {
-  let entity = new BeaconUpgraded(
+export function handleRoleGranted(event: RoleGrantedEvent): void {
+  let entity = new RoleGranted(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
-  entity.beacon = event.params.beacon
+  entity.role = event.params.role
+  entity.account = event.params.account
+  entity.sender = event.params.sender
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
@@ -32,11 +40,13 @@ export function handleBeaconUpgraded(event: BeaconUpgradedEvent): void {
   entity.save()
 }
 
-export function handleUpgraded(event: UpgradedEvent): void {
-  let entity = new Upgraded(
+export function handleRoleRevoked(event: RoleRevokedEvent): void {
+  let entity = new RoleRevoked(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
-  entity.implementation = event.params.implementation
+  entity.role = event.params.role
+  entity.account = event.params.account
+  entity.sender = event.params.sender
 
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp

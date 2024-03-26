@@ -357,49 +357,27 @@
   {
     "inputs": [],
     "name": "CHALLENGER_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "KYC_ADMIN_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "wallet",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "wallet", "type": "address" }
     ],
     "name": "addKycWallet",
     "outputs": [],
@@ -408,16 +386,8 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "newThreshold",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "newBoostFactor",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "newThreshold", "type": "uint256" },
+      { "internalType": "uint256", "name": "newBoostFactor", "type": "uint256" }
     ],
     "name": "addStakingTier",
     "outputs": [],
@@ -428,16 +398,8 @@
     "inputs": [],
     "name": "calculateChallengeEmissionAndTier",
     "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
     ],
     "stateMutability": "view",
     "type": "function"
@@ -445,54 +407,24 @@
   {
     "inputs": [],
     "name": "challengeCounter",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "challengerPublicKey",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
+    "outputs": [{ "internalType": "bytes", "name": "", "type": "bytes" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "name": "challenges",
     "outputs": [
-      {
-        "internalType": "bool",
-        "name": "openForSubmissions",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "expiredForRewarding",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint64",
-        "name": "assertionId",
-        "type": "uint64"
-      },
+      { "internalType": "bool", "name": "openForSubmissions", "type": "bool" },
+      { "internalType": "bool", "name": "expiredForRewarding", "type": "bool" },
+      { "internalType": "uint64", "name": "assertionId", "type": "uint64" },
       {
         "internalType": "bytes32",
         "name": "assertionStateRootOrConfirmData",
@@ -513,11 +445,7 @@
         "name": "activeChallengerPublicKey",
         "type": "bytes"
       },
-      {
-        "internalType": "address",
-        "name": "rollupUsed",
-        "type": "address"
-      },
+      { "internalType": "address", "name": "rollupUsed", "type": "address" },
       {
         "internalType": "uint256",
         "name": "createdTimestamp",
@@ -559,11 +487,7 @@
         "name": "_nodeLicenseId",
         "type": "uint256"
       },
-      {
-        "internalType": "uint256",
-        "name": "_challengeId",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "_challengeId", "type": "uint256" }
     ],
     "name": "claimReward",
     "outputs": [],
@@ -577,21 +501,9 @@
         "name": "_nodeLicenseId",
         "type": "uint256"
       },
-      {
-        "internalType": "uint256",
-        "name": "_challengeId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_boostFactor",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes",
-        "name": "_confirmData",
-        "type": "bytes"
-      },
+      { "internalType": "uint256", "name": "_challengeId", "type": "uint256" },
+      { "internalType": "uint256", "name": "_boostFactor", "type": "uint256" },
+      { "internalType": "bytes", "name": "_confirmData", "type": "bytes" },
       {
         "internalType": "bytes",
         "name": "_challengerSignedHash",
@@ -600,16 +512,8 @@
     ],
     "name": "createAssertionHashAndCheckPayout",
     "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
+      { "internalType": "bool", "name": "", "type": "bool" },
+      { "internalType": "bytes32", "name": "", "type": "bytes32" }
     ],
     "stateMutability": "pure",
     "type": "function"
@@ -624,23 +528,13 @@
   {
     "inputs": [],
     "name": "esXaiAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_challengeId",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "_challengeId", "type": "uint256" }
     ],
     "name": "expireChallengeRewards",
     "outputs": [],
@@ -650,80 +544,40 @@
   {
     "inputs": [],
     "name": "gasSubsidyRecipient",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "stakedAmount",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "stakedAmount", "type": "uint256" }
     ],
     "name": "getBoostFactor",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_nodeLicenseId",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "_nodeLicenseId", "type": "uint256" }
     ],
     "name": "getBoostFactorForKeyId",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "staker",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "staker", "type": "address" }
     ],
     "name": "getBoostFactorForStaker",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "_challengeId",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "_challengeId", "type": "uint256" }
     ],
     "name": "getChallenge",
     "outputs": [
@@ -739,11 +593,7 @@
             "name": "expiredForRewarding",
             "type": "bool"
           },
-          {
-            "internalType": "uint64",
-            "name": "assertionId",
-            "type": "uint64"
-          },
+          { "internalType": "uint64", "name": "assertionId", "type": "uint64" },
           {
             "internalType": "bytes32",
             "name": "assertionStateRootOrConfirmData",
@@ -811,212 +661,98 @@
   {
     "inputs": [],
     "name": "getCombinedTotalSupply",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "index", "type": "uint256" }
     ],
     "name": "getKycWalletAtIndex",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "getKycWalletCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "numLicenses",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "numLicenses", "type": "uint256" }
     ],
     "name": "getMaxStakeAmount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "owner", "type": "address" },
+      { "internalType": "uint256", "name": "index", "type": "uint256" }
     ],
     "name": "getOperatorAtIndex",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "owner", "type": "address" }
     ],
     "name": "getOperatorCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "operator",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "operator", "type": "address" }
     ],
     "name": "getOwnerCountForOperator",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "operator",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "operator", "type": "address" },
+      { "internalType": "uint256", "name": "index", "type": "uint256" }
     ],
     "name": "getOwnerForOperatorAtIndex",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "role",
-        "type": "bytes32"
-      }
+      { "internalType": "bytes32", "name": "role", "type": "bytes32" }
     ],
     "name": "getRoleAdmin",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "role",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      }
+      { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+      { "internalType": "uint256", "name": "index", "type": "uint256" }
     ],
     "name": "getRoleMember",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "role",
-        "type": "bytes32"
-      }
+      { "internalType": "bytes32", "name": "role", "type": "bytes32" }
     ],
     "name": "getRoleMemberCount",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -1027,26 +763,14 @@
         "name": "_challengeIds",
         "type": "uint256[]"
       },
-      {
-        "internalType": "uint256",
-        "name": "_nodeLicenseId",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "_nodeLicenseId", "type": "uint256" }
     ],
     "name": "getSubmissionsForChallenges",
     "outputs": [
       {
         "components": [
-          {
-            "internalType": "bool",
-            "name": "submitted",
-            "type": "bool"
-          },
-          {
-            "internalType": "bool",
-            "name": "claimed",
-            "type": "bool"
-          },
+          { "internalType": "bool", "name": "submitted", "type": "bool" },
+          { "internalType": "bool", "name": "claimed", "type": "bool" },
           {
             "internalType": "bool",
             "name": "eligibleForPayout",
@@ -1073,35 +797,17 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "owner", "type": "address" }
     ],
     "name": "getTotalClaims",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "role",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
+      { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+      { "internalType": "address", "name": "account", "type": "address" }
     ],
     "name": "grantRole",
     "outputs": [],
@@ -1110,117 +816,57 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "role",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
+      { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+      { "internalType": "address", "name": "account", "type": "address" }
     ],
     "name": "hasRole",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "operator",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "owner", "type": "address" },
+      { "internalType": "address", "name": "operator", "type": "address" }
     ],
     "name": "isApprovedForOperator",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "isCheckingAssertions",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "wallet",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "wallet", "type": "address" }
     ],
     "name": "isKycApproved",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "maxStakeAmountPerLicense",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "nodeLicenseAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "wallet",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "wallet", "type": "address" }
     ],
     "name": "removeKycWallet",
     "outputs": [],
@@ -1229,11 +875,7 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "index", "type": "uint256" }
     ],
     "name": "removeStakingTier",
     "outputs": [],
@@ -1242,16 +884,8 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "role",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
+      { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+      { "internalType": "address", "name": "account", "type": "address" }
     ],
     "name": "renounceRole",
     "outputs": [],
@@ -1260,16 +894,8 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "role",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
+      { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+      { "internalType": "address", "name": "account", "type": "address" }
     ],
     "name": "revokeRole",
     "outputs": [],
@@ -1279,47 +905,21 @@
   {
     "inputs": [],
     "name": "rollupAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
+    "inputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "name": "rollupAssertionTracker",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "operator",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "approved",
-        "type": "bool"
-      }
+      { "internalType": "address", "name": "operator", "type": "address" },
+      { "internalType": "bool", "name": "approved", "type": "bool" }
     ],
     "name": "setApprovalForOperator",
     "outputs": [],
@@ -1354,11 +954,7 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_rollupAddress",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_rollupAddress", "type": "address" }
     ],
     "name": "setRollupAddress",
     "outputs": [],
@@ -1367,11 +963,7 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "stake",
     "outputs": [],
@@ -1379,110 +971,44 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "name": "stakeAmountBoostFactors",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "inputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "name": "stakeAmountTierThresholds",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "name": "stakedAmounts",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "stakingEnabled",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "", "type": "uint256" },
+      { "internalType": "uint256", "name": "", "type": "uint256" }
     ],
     "name": "submissions",
     "outputs": [
-      {
-        "internalType": "bool",
-        "name": "submitted",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "claimed",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "eligibleForPayout",
-        "type": "bool"
-      },
-      {
-        "internalType": "uint256",
-        "name": "nodeLicenseId",
-        "type": "uint256"
-      },
+      { "internalType": "bool", "name": "submitted", "type": "bool" },
+      { "internalType": "bool", "name": "claimed", "type": "bool" },
+      { "internalType": "bool", "name": "eligibleForPayout", "type": "bool" },
+      { "internalType": "uint256", "name": "nodeLicenseId", "type": "uint256" },
       {
         "internalType": "bytes",
         "name": "assertionStateRootOrConfirmData",
@@ -1499,16 +1025,8 @@
         "name": "_nodeLicenseId",
         "type": "uint256"
       },
-      {
-        "internalType": "uint256",
-        "name": "_challengeId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes",
-        "name": "_confirmData",
-        "type": "bytes"
-      }
+      { "internalType": "uint256", "name": "_challengeId", "type": "uint256" },
+      { "internalType": "bytes", "name": "_confirmData", "type": "bytes" }
     ],
     "name": "submitAssertionToChallenge",
     "outputs": [],
@@ -1517,21 +1035,13 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "uint64",
-        "name": "_assertionId",
-        "type": "uint64"
-      },
+      { "internalType": "uint64", "name": "_assertionId", "type": "uint64" },
       {
         "internalType": "uint64",
         "name": "_predecessorAssertionId",
         "type": "uint64"
       },
-      {
-        "internalType": "bytes32",
-        "name": "_confirmData",
-        "type": "bytes32"
-      },
+      { "internalType": "bytes32", "name": "_confirmData", "type": "bytes32" },
       {
         "internalType": "uint64",
         "name": "_assertionTimestamp",
@@ -1550,20 +1060,10 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes4",
-        "name": "interfaceId",
-        "type": "bytes4"
-      }
+      { "internalType": "bytes4", "name": "interfaceId", "type": "bytes4" }
     ],
     "name": "supportsInterface",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -1576,11 +1076,7 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "unstake",
     "outputs": [],
@@ -1589,11 +1085,7 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "newAmount",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "newAmount", "type": "uint256" }
     ],
     "name": "updateMaxStakePerLicense",
     "outputs": [],
@@ -1602,21 +1094,9 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "newThreshold",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "newBoostFactor",
-        "type": "uint256"
-      }
+      { "internalType": "uint256", "name": "index", "type": "uint256" },
+      { "internalType": "uint256", "name": "newThreshold", "type": "uint256" },
+      { "internalType": "uint256", "name": "newBoostFactor", "type": "uint256" }
     ],
     "name": "updateStakingTier",
     "outputs": [],
@@ -1626,13 +1106,7 @@
   {
     "inputs": [],
     "name": "xaiAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   }

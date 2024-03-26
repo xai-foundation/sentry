@@ -5,64 +5,31 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: Referee
+    name: GasSubsidy
     network: arbitrum-one
     source:
-      address: "0xfD41041180571C5D371BEA3D9550E55653671198"
-      abi: Referee
-      startBlock: 157193676
+      address: "0x94F4aBC83eae00b693286B6eDCa09e1D76183C97"
+      abi: GasSubsidy
+      startBlock: 157193649
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - RoleAdminChanged
-        - RoleGranted
-        - Approval
-        - AssertionCheckingToggled
-        - UpdateMaxStakeAmount
-        - RoleRevoked
-        - RollupAddressChanged
-        - RewardsClaimed
-        - NodeLicenseAddressChanged
-        - KycStatusChanged
-        - ChallengerPublicKeyChanged
-        - ChallengeClosed
-        - ChallengeExpired
-        - ChallengeSubmitted
+        - GasSubsidyRoleAdminChanged
+        - GasSubsidyRoleGranted
+        - GasSubsidyRoleRevoked
       abis:
-        - name: Referee
-          file: ./abis/Referee.json
+        - name: GasSubsidy
+          file: ./abis/GasSubsidy.json
       eventHandlers:
         - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
           handler: handleRoleGranted
-        - event: Approval(indexed address,indexed address,bool)
-          handler: handleApproval
-        - event: AssertionCheckingToggled(bool)
-          handler: handleAssertionCheckingToggled
-        - event: UpdateMaxStakeAmount(uint256,uint256)
-          handler: handleUpdateMaxStakeAmount
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-        - event: RollupAddressChanged(address)
-          handler: handleRollupAddressChanged
-        - event: RewardsClaimed(indexed uint256,uint256)
-          handler: handleRewardsClaimed
-        - event: NodeLicenseAddressChanged(address)
-          handler: handleNodeLicenseAddressChanged
-        - event: KycStatusChanged(indexed address,bool)
-          handler: handleKycStatusChanged
-        - event: ChallengerPublicKeyChanged(bytes)
-          handler: handleChallengerPublicKeyChanged
-        - event: ChallengeClosed(indexed uint256)
-          handler: handleChallengeClosed
-        - event: ChallengeExpired(indexed uint256)
-          handler: handleChallengeExpired
-        - event: ChallengeSubmitted(indexed uint256)
-          handler: handleChallengeSubmitted
-      file: ./src/referee.ts
+      file: ./src/gas-subsidy.ts
   - kind: ethereum
     name: Xai
     network: arbitrum-one
@@ -105,28 +72,33 @@ dataSources:
           handler: handleTransfer
       file: ./src/xai.ts
   - kind: ethereum
-    name: esXai
+    name: EsXai
     network: arbitrum-one
     source:
       address: "0x4C749d097832DE2FEcc989ce18fDc5f1BD76700c"
-      abi: esXai
+      abi: EsXai
       startBlock: 157193630
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - Approval
+        - EsXaiApproval
         - FoundationBasepointsUpdated
-        - Initialized
+        - EsXaiInitialized
         - RedemptionCancelled
         - RedemptionCompleted
         - RedemptionStarted
         - RedemptionStatusChanged
-        - RoleAdminChanged
+        - EsXaiRoleAdminChanged
+        - EsXaiRoleGranted
+        - EsXaiRoleRevoked
+        - EsXaiTransfer
+        - WhitelistUpdated
+        - XaiAddressChanged
       abis:
-        - name: esXai
-          file: ./abis/esXai.json
+        - name: EsXai
+          file: ./abis/EsXai.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
           handler: handleApproval
@@ -144,7 +116,94 @@ dataSources:
           handler: handleRedemptionStatusChanged
         - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer
+        - event: WhitelistUpdated(address,bool)
+          handler: handleWhitelistUpdated
+        - event: XaiAddressChanged(indexed address)
+          handler: handleXaiAddressChanged
       file: ./src/es-xai.ts
+  - kind: ethereum
+    name: Referee
+    network: arbitrum-one
+    source:
+      address: "0xfD41041180571C5D371BEA3D9550E55653671198"
+      abi: Referee
+      startBlock: 157193676
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - RefereeApproval
+        - AssertionCheckingToggled
+        - AssertionSubmitted
+        - ChallengeClosed
+        - ChallengeExpired
+        - ChallengeSubmitted
+        - ChallengerPublicKeyChanged
+        - RefereeInitialized
+        - InvalidSubmission
+        - KycStatusChanged
+        - NodeLicenseAddressChanged
+        - RewardsClaimed
+        - RefereeRoleAdminChanged
+        - RefereeRoleGranted
+        - RefereeRoleRevoked
+        - RollupAddressChanged
+        - StakedV1
+        - StakingEnabled
+        - UnstakeV1
+        - UpdateMaxStakeAmount
+      abis:
+        - name: Referee
+          file: ./abis/Referee.json
+      eventHandlers:
+        - event: Approval(indexed address,indexed address,bool)
+          handler: handleApproval
+        - event: AssertionCheckingToggled(bool)
+          handler: handleAssertionCheckingToggled
+        - event: AssertionSubmitted(indexed uint256,indexed uint256)
+          handler: handleAssertionSubmitted
+        - event: ChallengeClosed(indexed uint256)
+          handler: handleChallengeClosed
+        - event: ChallengeExpired(indexed uint256)
+          handler: handleChallengeExpired
+        - event: ChallengeSubmitted(indexed uint256)
+          handler: handleChallengeSubmitted
+        - event: ChallengerPublicKeyChanged(bytes)
+          handler: handleChallengerPublicKeyChanged
+        - event: Initialized(uint8)
+          handler: handleInitialized
+        - event: InvalidSubmission(indexed uint256,uint256)
+          handler: handleInvalidSubmission
+        - event: KycStatusChanged(indexed address,bool)
+          handler: handleKycStatusChanged
+        - event: NodeLicenseAddressChanged(address)
+          handler: handleNodeLicenseAddressChanged
+        - event: RewardsClaimed(indexed uint256,uint256)
+          handler: handleRewardsClaimed
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: RollupAddressChanged(address)
+          handler: handleRollupAddressChanged
+        - event: StakedV1(indexed address,uint256,uint256)
+          handler: handleStakedV1
+        - event: StakingEnabled()
+          handler: handleStakingEnabled
+        - event: UnstakeV1(indexed address,uint256,uint256)
+          handler: handleUnstakeV1
+        - event: UpdateMaxStakeAmount(uint256,uint256)
+          handler: handleUpdateMaxStakeAmount
+      file: ./src/referee.ts
   - kind: ethereum
     name: NodeLicense
     network: arbitrum-one
@@ -157,16 +216,25 @@ dataSources:
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - Approval
+        - NodeLicenseApproval
         - ApprovalForAll
         - ClaimableChanged
         - FundsReceiverChanged
         - FundsWithdrawn
-        - Initialized
+        - NodeLicenseInitialized
         - PricingTierSetOrAdded
         - PromoCodeCreated
         - PromoCodeRemoved
         - ReferralReward
+        - ReferralRewardPercentagesChanged
+        - RefundOccurred
+        - RewardClaimed
+        - NodeLicenseRoleAdminChanged
+        - NodeLicenseRoleGranted
+        - NodeLicenseRoleRevoked
+        - NodeLicenseTransfer
+        - WhitelistAmountRedeemed
+        - WhitelistAmountUpdatedByAdmin
       abis:
         - name: NodeLicense
           file: ./abis/NodeLicense.json
@@ -191,33 +259,22 @@ dataSources:
           handler: handlePromoCodeRemoved
         - event: ReferralReward(indexed address,indexed address,uint256)
           handler: handleReferralReward
-      file: ./src/node-license.ts
-  - kind: ethereum
-    name: GasSubsidy
-    network: arbitrum-one
-    source:
-      address: "0x94F4aBC83eae00b693286B6eDCa09e1D76183C97"
-      abi: GasSubsidy
-      startBlock: 157193649
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.7
-      language: wasm/assemblyscript
-      entities:
-        - Initialized
-        - RoleAdminChanged
-        - RoleGranted
-        - RoleRevoked
-      abis:
-        - name: GasSubsidy
-          file: ./abis/GasSubsidy.json
-      eventHandlers:
-        - event: Initialized(uint8)
-          handler: handleInitialized
+        - event: ReferralRewardPercentagesChanged(uint256,uint256)
+          handler: handleReferralRewardPercentagesChanged
+        - event: RefundOccurred(indexed address,uint256)
+          handler: handleRefundOccurred
+        - event: RewardClaimed(indexed address,uint256)
+          handler: handleRewardClaimed
         - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
           handler: handleRoleAdminChanged
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
           handler: handleRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
           handler: handleRoleRevoked
-      file: ./src/gas-subsidy.ts
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+        - event: WhitelistAmountRedeemed(indexed address,uint16)
+          handler: handleWhitelistAmountRedeemed
+        - event: WhitelistAmountUpdatedByAdmin(indexed address,uint16)
+          handler: handleWhitelistAmountUpdatedByAdmin
+      file: ./src/node-license.ts
