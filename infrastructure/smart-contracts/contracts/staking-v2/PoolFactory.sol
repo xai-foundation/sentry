@@ -12,6 +12,44 @@ import "../esXai.sol";
 import "../staking-v2/Utils.sol";
 import "../staking-v2/TransparentUpgradable.sol";
 
+// Error Codes
+// 1: Invalid Proxy Admin
+// 2: Invalid Pool Implementation
+// 3: Invalid Bucket Implementation
+// 4: Staking must be enabled before creating pool
+// 5: At least 1 key needed to create a pool
+// 6: Share configuration is invalid; _ownerShare, _keyBucketShare, and _stakedBucketShare must be less than or equal to the set bucketshareMaxValues[0], [1], and [2] values respectively. All 3 must also add up 10,000
+// 7: Delegate cannot be pool creator
+// 8: Invalid auth: msg.sender must be pool owner
+// 9: Invalid auth: msg.sender must be pool owner
+// 10: Share configuration is invalid; _ownerShare, _keyBucketShare, and _stakedBucketShare must be less than or equal to the set bucketshareMaxValues[0], [1], and [2] values respectively. All 3 must also add up 10,000
+// 11: Invalid auth: msg.sender must be pool owner
+// 12: New delegate cannot be pool owner
+// 13: Invalid pool; cannot be 0 address
+// 14: Invalid key stake; must at least stake 1 key
+// 15: Invalid pool for key stake; pool needs to have been created via the PoolFactory
+// 16: Invalid key un-stake; must un-stake at least 1 key
+// 17: Invalid pool for key un-stake request; pool needs to have been created via the PoolFactory
+// 18: Invalid un-stake; not enough keys for owner to un-stake this many - to un-stake all keys, first un-stake all buy 1, then use createUnstakeOwnerLastKeyRequest
+// 19: Invalid un-stake; not enough keys for you to un-stake this many - your staked key amount must be greater than or equal to the combined total of any pending un-stake requests with this pool & the current un-stake request
+// 20: This can only be called by the pool owner
+// 21: Invalid pool for owner last key un-stake request; pool needs to have been created via the PoolFactory
+// 22: Owner must have one more key stakes than any pending un-stake requests from the same pool; if you have no un-stake requests waiting, you must have 1 key staked
+// 23: Invalid esXai un-stake request; amount must be greater than 0
+// 24: Invalid esXai un-stake request; your requested esXai amount must be greater than equal to the combined total of any pending un-stake requests with this pool & the current un-stake request
+// 25: Invalid pool for esXai un-stake request; pool needs to have been created via the PoolFactory
+// 26: Invalid pool for key un-stake; pool needs to have been created via the PoolFactory
+// 27: Request must be open & a key request
+// 28: Wait period for this key un-stake request is not yet over
+// 29: You must un-stake at least 1 key, and the amount must match the un-stake request
+// 30: Invalid pool for esXai stake; pool needs to have been created via the PoolFactory
+// 31: Invalid pool for esXai un-stake; pool needs to have been created via the PoolFactory
+// 32: Request must be open & an esXai request
+// 33: Wait period for this esXai un-stake request is not yet over
+// 34: You must un-stake at least 1 esXai, and the amount must match the un-stake request
+// 35: You must have at least the desired un-stake amount staked in order to un-stake
+// 36: Invalid pool for claim; pool needs to have been created via the PoolFactory
+
 contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
@@ -58,6 +96,15 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     mapping(address => mapping(address => uint256))
         private userRequestedUnstakeEsXaiAmount;
 
+	// mapping delegates to pools they are delegates of
+	mapping(address => address[]) public poolsOfDelegate;
+
+	// mapping of pool address to indices in the poolsOfDelegate[delegate] array
+	mapping(address => uint256) public poolsOfDelegateIndices;
+
+	// mapping of pool address => true if create via this factory
+	mapping(address => bool) public poolsCreatedViaFactory;
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
@@ -85,7 +132,13 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         address prevImplementation,
         address newImplementation
     );
-    event StakeEsXai(
+	event PoolCreated(
+		uint256 indexed poolIndex,
+		address indexed poolAddress,
+		address indexed poolOwner,
+		uint256 stakedKeyCount
+	);
+	event StakeEsXai(
         address indexed user,
         address indexed pool,
         uint256 amount,
@@ -113,7 +166,9 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         uint256 totalUserKeysStaked,
         uint256 totalKeysStaked
     );
+
     event ClaimFromPool(address indexed user, address indexed pool);
+	event UpdatePoolDelegate(address indexed delegate, address indexed pool);
 
     event UnstakeRequestStarted(
         address indexed user,
@@ -126,6 +181,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     function initialize(
         address _refereeAddress,
         address _esXaiAddress,
+        address _nodeLicenseAddress,
         address _stakingPoolProxyAdmin,
         address _stakingPoolImplementation,
         address _bucketImplementation
@@ -133,10 +189,11 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         __AccessControlEnumerable_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         bucketshareMaxValues[0] = 1000; // => 10%
-        bucketshareMaxValues[1] = 9000; // => 55%
-        bucketshareMaxValues[2] = 3000; // => 55%
+        bucketshareMaxValues[1] = 9000; // => 90%
+        bucketshareMaxValues[2] = 3000; // => 30%
 
         refereeAddress = _refereeAddress;
+        nodeLicenseAddress = _nodeLicenseAddress;
         esXaiAddress = _esXaiAddress;
         stakingPoolProxyAdmin = _stakingPoolProxyAdmin;
         stakingPoolImplementation = _stakingPoolImplementation;
@@ -154,7 +211,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     function updateProxyAdmin(
         address newAdmin
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(newAdmin != address(0), "Invalid Admin");
+        require(newAdmin != address(0), "1");
         address previousAdmin = stakingPoolProxyAdmin;
         stakingPoolProxyAdmin = newAdmin;
         emit UpdatePoolProxyAdmin(previousAdmin, newAdmin);
@@ -163,7 +220,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     function updatePoolImplementation(
         address newImplementation
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(newImplementation != address(0), "Invalid Implementation");
+        require(newImplementation != address(0), "2");
         address prevImplementation = stakingPoolImplementation;
         stakingPoolImplementation = newImplementation;
         emit UpdatePoolImplementation(prevImplementation, newImplementation);
@@ -172,7 +229,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     function updateBucketImplementation(
         address newImplementation
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(newImplementation != address(0), "Invalid Implementation");
+        require(newImplementation != address(0), "3");
         address prevImplementation = bucketImplementation;
         bucketImplementation = newImplementation;
         emit UpdateBucketImplementation(prevImplementation, newImplementation);
@@ -188,17 +245,19 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         string memory _logo,
         string[] memory _socials,
         string[] memory trackerNames,
-        string[] memory trackerSymbols
+        string[] memory trackerSymbols,
+		address _delegateOwner
     ) external {
-        require(stakingEnabled, "Staking must be enabled");
-        require(keyIds.length > 0, "Pool requires at least 1 key");
+        require(stakingEnabled, "4");
+        require(keyIds.length > 0, "5");
         require(
             _ownerShare <= bucketshareMaxValues[0] &&
-			_keyBucketShare <= bucketshareMaxValues[1] &&
-			_stakedBucketShare <= bucketshareMaxValues[2] &&
-			_ownerShare + _keyBucketShare + _stakedBucketShare == 10_000,
-            "Invalid shares"
+                _keyBucketShare <= bucketshareMaxValues[1] &&
+                _stakedBucketShare <= bucketshareMaxValues[2] &&
+                _ownerShare + _keyBucketShare + _stakedBucketShare == 10_000,
+            "6"
         );
+		require(msg.sender != _delegateOwner, "7");
 
         address poolProxy = address(
             new TransparentUpgradeableProxyImplementation(
@@ -227,9 +286,16 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             refereeAddress,
             esXaiAddress,
             msg.sender,
+			_delegateOwner,
             keyBucketProxy,
             esXaiBucketProxy
         );
+
+		// Add pool to delegate's list
+		if (_delegateOwner != address(0)) {
+			poolsOfDelegateIndices[poolProxy] = poolsOfDelegate[_delegateOwner].length;
+			poolsOfDelegate[_delegateOwner].push(poolProxy);
+		}
 
         IStakingPool(poolProxy).initShares(
             _ownerShare,
@@ -251,6 +317,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             trackerSymbols[0],
             0
         );
+
         IBucketTracker(esXaiBucketProxy).initialize(
             poolProxy,
             esXaiAddress,
@@ -260,12 +327,15 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         );
 
         stakingPools.push(poolProxy);
+		poolsCreatedViaFactory[poolProxy] = true;
 
         esXai(esXaiAddress).addToWhitelist(poolProxy);
         esXai(esXaiAddress).addToWhitelist(keyBucketProxy);
         esXai(esXaiAddress).addToWhitelist(esXaiBucketProxy);
 
         _stakeKeys(poolProxy, keyIds);
+		uint256 keyQuantity = keyIds.length;
+		emit PoolCreated(stakingPools.length - 1, poolProxy, msg.sender, keyQuantity);
     }
 
     function updatePoolMetadata(
@@ -276,7 +346,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         string[] memory _socials
     ) external {
         IStakingPool stakingPool = IStakingPool(pool);
-        require(stakingPool.getPoolOwner() == msg.sender, "Invalid auth");
+        require(stakingPool.getPoolOwner() == msg.sender, "8");
         stakingPool.updateMetadata(_name, _description, _logo, _socials);
     }
 
@@ -287,13 +357,13 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         uint16 _stakedBucketShare
     ) external {
         IStakingPool stakingPool = IStakingPool(pool);
-        require(stakingPool.getPoolOwner() == msg.sender, "Invalid auth");
+        require(stakingPool.getPoolOwner() == msg.sender, "9");
         require(
             _ownerShare <= bucketshareMaxValues[0] &&
                 _keyBucketShare <= bucketshareMaxValues[1] &&
                 _stakedBucketShare <= bucketshareMaxValues[2] &&
                 _ownerShare + _keyBucketShare + _stakedBucketShare == 10_000,
-            "Invalid shares"
+            "10"
         );
         stakingPool.updateShares(
             _ownerShare,
@@ -301,6 +371,32 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             _stakedBucketShare
         );
     }
+
+	function updateDelegateOwner(address pool, address delegate) external {
+		IStakingPool stakingPool = IStakingPool(pool);
+		require(stakingPool.getPoolOwner() == msg.sender, "11");
+		require(msg.sender != delegate, "12");
+
+		// If staking pool already has delegate, remove pool from delegate's list
+		if (stakingPool.getDelegateOwner() != address(0)) {
+			uint256 indexOfPoolToRemove = poolsOfDelegateIndices[pool]; // index of pool in question in delegate's list
+			address lastDelegatePoolId = poolsOfDelegate[delegate][poolsOfDelegate[delegate].length - 1];
+
+			poolsOfDelegateIndices[lastDelegatePoolId] = indexOfPoolToRemove;
+			poolsOfDelegate[delegate][indexOfPoolToRemove] = lastDelegatePoolId;
+			poolsOfDelegate[delegate].pop();
+		}
+
+		// Add pool to delegate's list
+		if (delegate != address(0)) {
+			poolsOfDelegateIndices[pool] = poolsOfDelegate[delegate].length;
+			poolsOfDelegate[delegate].push(pool);
+		}
+        
+		stakingPool.updateDelegateOwner(delegate);
+
+		emit UpdatePoolDelegate(delegate, pool);
+	}
 
     function userPoolInfo(
         address pool,
@@ -311,23 +407,20 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function _stakeKeys(address pool, uint256[] memory keyIds) internal {
-        //Check if we already know that the user has interacted with this pool
-        //If not add pool index to
+        // Check if we already know that the user has interacted with this pool
+        // If not add pool index to
         (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
             pool,
             msg.sender
         );
+
         if (stakeAmount == 0 && keyAmount == 0) {
-            userToInteractedPoolIds[msg.sender][pool] = interactedPoolsOfUser[
-                msg.sender
-            ].length;
-            interactedPoolsOfUser[msg.sender].push(pool);
+			associateUserWithPool(pool);
         }
 
-        //get the pool owner poolOwner
+        // Get the pool owner poolOwner
         Referee5(refereeAddress).stakeKeys(
             pool,
-            IStakingPool(pool).getPoolOwner(),
             msg.sender,
             keyIds
         );
@@ -343,21 +436,40 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function stakeKeys(address pool, uint256[] memory keyIds) external {
-        require(pool != address(0), "Invalid pool");
-        require(keyIds.length > 0, "Must at least stake 1 key");
+        require(pool != address(0), "13");
+        require(keyIds.length > 0, "14");
+        require(poolsCreatedViaFactory[pool], "15");
 
         _stakeKeys(pool, keyIds);
     }
 
     function createUnstakeKeyRequest(address pool, uint256 keyAmount) external {
-        require(keyAmount > 0, "Invalid Amount");
-        require(
-            IStakingPool(pool).getStakedKeysCountForUser(msg.sender) >=
-                keyAmount + userRequestedUnstakeKeyAmount[msg.sender][pool],
-            "Insufficient keys staked"
+        require(keyAmount > 0, "16");
+		require(poolsCreatedViaFactory[pool], "17");
+
+        uint256 stakedKeysCount = IStakingPool(pool).getStakedKeysCountForUser(
+            msg.sender
         );
 
-        unstakeRequests[msg.sender].push(
+		uint256 requestKeys = userRequestedUnstakeKeyAmount[msg.sender][pool];
+
+        if (IStakingPool(pool).getPoolOwner() == msg.sender) {
+            require(
+                stakedKeysCount >
+                    keyAmount + requestKeys,
+                "18"
+            );
+        } else {
+            require(
+                stakedKeysCount >=
+                    keyAmount + requestKeys,
+                "19"
+            );
+        }
+
+		UnstakeRequest[] storage userRequests = unstakeRequests[msg.sender];
+
+		userRequests.push(
             UnstakeRequest(
                 true,
                 true,
@@ -369,26 +481,67 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             )
         );
 
-        userRequestedUnstakeKeyAmount[msg.sender][pool] += keyAmount;
+		userRequestedUnstakeKeyAmount[msg.sender][pool] += keyAmount;
 
         emit UnstakeRequestStarted(
             msg.sender,
             pool,
-            unstakeRequests[msg.sender].length - 1,
+			userRequests.length - 1,
             keyAmount,
             true
         );
     }
 
+    function createUnstakeOwnerLastKeyRequest(address pool) external {
+        require(IStakingPool(pool).getPoolOwner() == msg.sender, "20");
+		require(poolsCreatedViaFactory[pool], "21");
+
+        uint256 stakedKeysCount = IStakingPool(pool).getStakedKeysCountForUser(
+            msg.sender
+        );
+
+        require(
+            stakedKeysCount == userRequestedUnstakeKeyAmount[msg.sender][pool] + 1,
+            "22"
+        );
+
+		UnstakeRequest[] storage userRequests = unstakeRequests[msg.sender];
+
+		userRequests.push(
+            UnstakeRequest(
+                true,
+                true,
+                pool,
+                1,
+                block.timestamp + 60 days,
+                0,
+                [uint256(0), 0, 0, 0, 0]
+            )
+        );
+
+        userRequestedUnstakeKeyAmount[msg.sender][pool] += 1;
+
+        emit UnstakeRequestStarted(
+            msg.sender,
+            pool,
+				userRequests.length - 1,
+            1,
+            true
+        );
+    }
+
     function createUnstakeEsXaiRequest(address pool, uint256 amount) external {
-        require(amount > 0, "Invalid Amount");
+        require(amount > 0, "23");
         require(
             IStakingPool(pool).getStakedAmounts(msg.sender) >=
                 amount + userRequestedUnstakeEsXaiAmount[msg.sender][pool],
-            "Insufficient esXai staked"
+            "24"
         );
+		require(poolsCreatedViaFactory[pool], "25");
 
-        unstakeRequests[msg.sender].push(
+		UnstakeRequest[] storage userRequests = unstakeRequests[msg.sender];
+
+		userRequests.push(
             UnstakeRequest(
                 true,
                 false,
@@ -399,77 +552,81 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
                 [uint256(0), 0, 0, 0, 0]
             )
         );
-        
+
         userRequestedUnstakeEsXaiAmount[msg.sender][pool] += amount;
 
         emit UnstakeRequestStarted(
             msg.sender,
             pool,
-            unstakeRequests[msg.sender].length - 1,
+			userRequests.length - 1,
             amount,
             false
         );
     }
 
-    function unstakeKeys(uint256 unstakeRequetIndex, uint256[] memory keyIds) external {
-        UnstakeRequest storage request = unstakeRequests[msg.sender][unstakeRequetIndex];
+    function unstakeKeys(
+        uint256 unstakeRequestIndex,
+        uint256[] memory keyIds
+    ) external {
+        UnstakeRequest storage request = unstakeRequests[msg.sender][
+            unstakeRequestIndex
+        ];
         address pool = request.poolAddress;
+		require(poolsCreatedViaFactory[pool], "26");
         uint256 keysLength = keyIds.length;
-        
-        require(request.open && request.isKeyRequest, "Invalid request");
-        require(block.timestamp >= request.lockTime, "Wait period not yet over");
-        require(keysLength > 0 && request.amount == keyIds.length, "Invalid key amount");
+        (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
+            pool,
+            msg.sender
+        );
+
+        require(request.open && request.isKeyRequest, "27");
+        require(
+            block.timestamp >= request.lockTime,
+            "28"
+        );
+        require(
+            keysLength > 0 && request.amount == keysLength,
+            "29"
+        );
 
         Referee5(refereeAddress).unstakeKeys(
             pool,
-            IStakingPool(pool).getPoolOwner(),
             msg.sender,
             keyIds
         );
         IStakingPool(pool).unstakeKeys(msg.sender, keyIds);
 
-        (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
-            pool,
-            msg.sender
-        );
-        if (stakeAmount == 0 && keyAmount == 0) {
-            uint256 indexOfPool = userToInteractedPoolIds[msg.sender][pool];
-            uint256 userLength = interactedPoolsOfUser[msg.sender].length;
-            interactedPoolsOfUser[msg.sender][
-                indexOfPool
-            ] = interactedPoolsOfUser[msg.sender][userLength - 1];
-            interactedPoolsOfUser[msg.sender].pop();
+        if (
+			stakeAmount == 0 &&
+			keyAmount - keysLength == 0 &&
+			IStakingPool(pool).getPoolOwner() != msg.sender
+		) {
+			removeUserFromPool(msg.sender, pool);
         }
-        
-        userRequestedUnstakeKeyAmount[msg.sender][pool] -= keyAmount;
+
+        userRequestedUnstakeKeyAmount[msg.sender][pool] -= keysLength;
         request.open = false;
         request.completeTime = block.timestamp;
 
         emit UnstakeKeys(
             msg.sender,
             pool,
-            keyIds.length,
-            keyAmount - keyIds.length,
+            keysLength,
+            keyAmount - keysLength,
             IStakingPool(pool).getStakedKeysCount()
         );
     }
 
-    function stakeEsXai(uint256 unstakeRequetIndex, uint256 amount) external {
-        UnstakeRequest storage request = unstakeRequests[msg.sender][unstakeRequetIndex];
-        address pool = request.poolAddress;
-        require(request.open && !request.isKeyRequest, "Invalid request");
-        require(block.timestamp >= request.lockTime, "Wait period not yet over");
-        require(amount > 0 && request.amount == amount, "Invalid esXai amount");
+    function stakeEsXai(address pool, uint256 amount) external {
+		require(poolsCreatedViaFactory[pool], "30");
 
         (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
             pool,
             msg.sender
         );
+
         if (stakeAmount == 0 && keyAmount == 0) {
-            userToInteractedPoolIds[msg.sender][pool] = interactedPoolsOfUser[
-                msg.sender
-            ].length;
-            interactedPoolsOfUser[msg.sender].push(pool);
+			associateUserWithPool(pool);
         }
 
         Referee5(refereeAddress).stakeEsXai(pool, amount);
@@ -477,10 +634,6 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         esXai(esXaiAddress).transferFrom(msg.sender, address(this), amount);
 
         IStakingPool(pool).stakeEsXai(msg.sender, amount);
-        
-        userRequestedUnstakeEsXaiAmount[msg.sender][pool] -= amount;
-        request.open = false;
-        request.completeTime = block.timestamp;
 
         emit StakeEsXai(
             msg.sender,
@@ -491,13 +644,31 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         );
     }
 
-    function unstakeEsXai(address pool, uint256 amount) external {
+	function associateUserWithPool(address pool) internal {
+		address[] storage userPools = interactedPoolsOfUser[msg.sender];
+		if (userPools.length < 1 || pool != userPools[userToInteractedPoolIds[msg.sender][pool]]) {
+			userToInteractedPoolIds[msg.sender][pool] = userPools.length;
+			userPools.push(pool);
+		}
+	}
+
+    function unstakeEsXai(uint256 unstakeRequestIndex, uint256 amount) external {
+		UnstakeRequest storage request = unstakeRequests[msg.sender][unstakeRequestIndex];
+		address pool = request.poolAddress;
+		require(poolsCreatedViaFactory[pool], "31");
+		require(request.open && !request.isKeyRequest, "32");
+		require(
+			block.timestamp >= request.lockTime,
+			"33"
+		);
+		require(amount > 0 && request.amount == amount, "34");
+
         (uint256 stakeAmount, uint256 keyAmount) = userPoolInfo(
             pool,
             msg.sender
         );
 
-        require(stakeAmount >= amount, "Insufficient amount staked");
+        require(stakeAmount >= amount, "35");
 
         esXai(esXaiAddress).transfer(msg.sender, amount);
 
@@ -505,14 +676,17 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
         IStakingPool(pool).unstakeEsXai(msg.sender, amount);
 
-        if (stakeAmount == 0 && keyAmount == 0) {
-            uint256 indexOfPool = userToInteractedPoolIds[msg.sender][pool];
-            uint256 userLength = interactedPoolsOfUser[msg.sender].length;
-            interactedPoolsOfUser[msg.sender][
-                indexOfPool
-            ] = interactedPoolsOfUser[msg.sender][userLength - 1];
-            interactedPoolsOfUser[msg.sender].pop();
+        if (
+			stakeAmount - amount == 0 &&
+			keyAmount == 0 &&
+			IStakingPool(pool).getPoolOwner() != msg.sender
+		) {
+			removeUserFromPool(msg.sender, pool);
         }
+
+		userRequestedUnstakeEsXaiAmount[msg.sender][pool] -= amount;
+		request.open = false;
+		request.completeTime = block.timestamp;
 
         emit UnstakeEsXai(
             msg.sender,
@@ -523,15 +697,33 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         );
     }
 
+	function removeUserFromPool(address user, address pool) internal {
+		uint256 indexOfPool = userToInteractedPoolIds[user][pool];
+		uint256 userLength = interactedPoolsOfUser[user].length;
+		interactedPoolsOfUser[user][
+			indexOfPool
+		] = interactedPoolsOfUser[user][userLength - 1];
+		interactedPoolsOfUser[user].pop();
+	}
+
     function claimFromPools(address[] memory pools) external {
         uint256 poolsLength = pools.length;
 
         for (uint i = 0; i < poolsLength; i++) {
             address stakingPool = pools[i];
+			require(poolsCreatedViaFactory[stakingPool], "36");
             IStakingPool(stakingPool).claimRewards(msg.sender);
             emit ClaimFromPool(msg.sender, stakingPool);
         }
     }
+
+	function getDelegatePools(address delegate) external view returns (address[] memory) {
+		return poolsOfDelegate[delegate];
+	}
+
+	function isDelegateOfPoolOrOwner(address delegate, address pool) external view returns (bool) {
+		return poolsOfDelegate[delegate][poolsOfDelegateIndices[pool]] == pool || IStakingPool(pool).getPoolOwner() == delegate;
+	}
 
     function getPoolsCount() external view returns (uint256) {
         return stakingPools.length;
@@ -579,25 +771,40 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         esXaiAmount = userRequestedUnstakeEsXaiAmount[user][pool];
     }
 
-	function getUnstakedKeyIdsFromUser(address user, uint16 offset, uint16 pageLimit) external view returns (uint256[] memory unstakedKeyIds) {
-		uint256 userKeyBalance = NodeLicense(nodeLicenseAddress).balanceOf(user);
-		unstakedKeyIds = new uint256[](pageLimit);
-		uint256 currentIndexUnstaked = 0;
-		uint256 limit = offset + pageLimit;
+    function getUnstakedKeyIdsFromUser(
+        address user,
+        uint16 offset,
+        uint16 pageLimit
+    ) external view returns (uint256[] memory unstakedKeyIds) {
+        uint256 userKeyBalance = NodeLicense(nodeLicenseAddress).balanceOf(
+            user
+        );
+        unstakedKeyIds = new uint256[](pageLimit);
+        uint256 currentIndexUnstaked = 0;
+        uint256 limit = offset + pageLimit;
 
-		for (uint256 i = offset; i < userKeyBalance && i < limit; i++){
-			uint256 keyId = NodeLicense(nodeLicenseAddress).tokenOfOwnerByIndex(user, i);
-			if (Referee5(refereeAddress).assignedKeyToPool(keyId) == address(0)) {
-				unstakedKeyIds[currentIndexUnstaked] = keyId;
-				currentIndexUnstaked++;
-			}
-		}
-	}
+        for (uint256 i = offset; i < userKeyBalance && i < limit; i++) {
+            uint256 keyId = NodeLicense(nodeLicenseAddress).tokenOfOwnerByIndex(
+                user,
+                i
+            );
+            if (
+                Referee5(refereeAddress).assignedKeyToPool(keyId) == address(0)
+            ) {
+                unstakedKeyIds[currentIndexUnstaked] = keyId;
+                currentIndexUnstaked++;
+            }
+        }
+    }
 
-	function checkKeysAreStaked(uint256[] memory keyIds) external view returns (bool[] memory isStaked) {
-		isStaked = new bool[](keyIds.length);
-		for (uint256 i; i < keyIds.length; i++) {
-			isStaked[i] = Referee5(refereeAddress).assignedKeyToPool(keyIds[i]) != address(0);
-		}
-	}
+    function checkKeysAreStaked(
+        uint256[] memory keyIds
+    ) external view returns (bool[] memory isStaked) {
+        isStaked = new bool[](keyIds.length);
+        for (uint256 i; i < keyIds.length; i++) {
+            isStaked[i] =
+                Referee5(refereeAddress).assignedKeyToPool(keyIds[i]) !=
+                address(0);
+        }
+    }
 }
