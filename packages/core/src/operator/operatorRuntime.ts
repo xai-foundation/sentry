@@ -63,7 +63,7 @@ let keyIdToPoolAddress: { [keyId: string]: string } = {};
 let operatorPoolAddresses: string[];
 const isKYCMap: { [keyId: string]: boolean } = {};
 const keyToOwner: { [keyId: string]: string } = {}; //Used to remember the owner of the key should it have been put into the pool list
-const KEYS_PER_BATCH = 100;
+let KEYS_PER_BATCH = 100;
 
 async function getPublicNodeFromBucket(confirmHash: string) {
     const url = `https://sentry-public-node.xai.games/assertions/${confirmHash.toLowerCase()}.json`;
@@ -197,7 +197,7 @@ const reloadPoolKeys = async () => {
                 if (!currentPoolKeys[key]) {
 
                     isKYCMap[key.toString()] = false; //Remove kyc cache
-                    
+
                     if (keyToOwner[key]) {
                         //If the key was in the list before any pools
                         //We just want to update the owner back to the key owner
@@ -390,7 +390,7 @@ async function processClosedChallenges(challengeIds: bigint[]) {
 
         try {
             const submissions = await getSubmissionsForChallenges(challengeIds, nodeLicenseId);
-            
+
             // Iterate over each submission to process it
             submissions.forEach(submission => {
                 if (submission.eligibleForPayout && !submission.claimed) {
@@ -469,15 +469,20 @@ export async function operatorRuntime(
     statusCallback: (status: NodeLicenseStatusMap) => void = (_) => { },
     logFunction: (log: string) => void = (_) => { },
     operatorOwners?: string[],
-    onAssertionMissMatch: (publicNodeData: PublicNodeBucketInformation | undefined, challenge: Challenge, message: string) => void = (_) => { }
+    onAssertionMissMatch: (publicNodeData: PublicNodeBucketInformation | undefined, challenge: Challenge, message: string) => void = (_) => { },
+    DEV_BATCH_SIZE: number = 100
 
 ): Promise<() => Promise<void>> {
+
 
     cachedLogger = logFunction;
     cachedSigner = signer;
     onAssertionMissMatchCb = onAssertionMissMatch;
 
     logFunction(`Booting operator runtime version [${version}].`);
+    
+    KEYS_PER_BATCH = DEV_BATCH_SIZE;
+    logFunction(`DEV Mode setting batch count to [${KEYS_PER_BATCH}].`);
 
     const provider = getProvider();
 
