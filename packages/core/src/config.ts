@@ -13,7 +13,7 @@ export let config = {
   "nodeLicenseAddress": "0x07C05C6459B0F86A6aBB3DB71C259595d22af3C2",
   "nodeLicenseDeployedBlockNumber": 157193743,
   "nodeLicenseImplementationAddress": "0xf765452e587ad0ae785dc984963897c05d4c8c71",
-  "refereeAddress": "0xFaBd7d8D3540254E94811FB33A94537c04D3fEB7",
+  "refereeAddress": "0xF84D76755a68bE9DFdab9a0b6d934896Ceab957b",
   "refereeDeployedBlockNumber": 157193676,
   "refereeImplementationAddress": "0x29a7b907fdf4a9235f46d891b7aa1e7d3d35a3b6",
   "rollupAddress": "0xC47DacFbAa80Bd9D8112F4e8069482c2A3221336",

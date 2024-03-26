@@ -29,7 +29,7 @@ const INIT_PROMPTS: { [key in PromptBodyKey]: Vorpal.PromptObject } = {
 
 const NUM_ASSERTION_LISTENER_RETRIES: number = 3; //The number of restart attempts if the listener errors
 const NUM_CON_WS_ALLOWED_ERRORS: number = 10; //The number of consecutive WS error we allow before restarting the listener
-const CHALLENGER_TESTNET_TIME: number = 5; //The number of minutes the challenger should call for a challenge
+const CHALLENGER_TESTNET_TIME: number = 7; //The number of minutes the challenger should call for a challenge
 const TEST_START_COUNTER: number = 200; //The number needs to be added to the counter to get available challenges
 
 // Prompt input cache
