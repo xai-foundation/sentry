@@ -26,17 +26,22 @@ async function main() {
 	console.log("New implementation validated as upgrade safe");
 
 	// Deploy the new implementation
+	console.log("Deploying the new implementation");
 	const NewImplementation = await ethers.deployContract(newContractImplementationName);
 	await NewImplementation.waitForDeployment();
 	const newImplementationAddress = await NewImplementation.getAddress();
 
 	// Update the beacon with the new implementation address
+	console.log("Updating the beacon with the new implementation address");
 	await beacon.update(newImplementationAddress);
 
+	console.log("Verifying the new implementation");
 	await run("verify:verify", {
 		address: newImplementationAddress,
 		constructorArguments: [],
 	});
+
+	console.log("Done!");
 }
 
 // We recommend this pattern to be able to use async/await everywhere
