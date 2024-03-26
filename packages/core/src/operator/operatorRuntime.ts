@@ -63,7 +63,7 @@ let keyIdToPoolAddress: { [keyId: string]: string } = {};
 let operatorPoolAddresses: string[];
 const isKYCMap: { [keyId: string]: boolean } = {};
 const keyToOwner: { [keyId: string]: string } = {}; //Used to remember the owner of the key should it have been put into the pool list
-const KEYS_PER_BATCH = 100;
+let KEYS_PER_BATCH = 100;
 
 async function getPublicNodeFromBucket(confirmHash: string) {
     const url = `https://sentry-public-node.xai.games/assertions/${confirmHash.toLowerCase()}.json`;
@@ -197,7 +197,7 @@ const reloadPoolKeys = async () => {
                 if (!currentPoolKeys[key]) {
 
                     isKYCMap[key.toString()] = false; //Remove kyc cache
-                    
+
                     if (keyToOwner[key]) {
                         //If the key was in the list before any pools
                         //We just want to update the owner back to the key owner
@@ -390,7 +390,7 @@ async function processClosedChallenges(challengeIds: bigint[]) {
 
         try {
             const submissions = await getSubmissionsForChallenges(challengeIds, nodeLicenseId);
-            
+
             // Iterate over each submission to process it
             submissions.forEach(submission => {
                 if (submission.eligibleForPayout && !submission.claimed) {
@@ -426,18 +426,20 @@ async function listenForChallengesCallback(challengeNumber: bigint, challenge: C
     //TODO on every submit and on every claim we need to check if the key is still in the pool
 
     if (event && challenge.rollupUsed === config.rollupAddress) {
-        compareWithCDN(challenge)
-            .then(({ publicNodeBucket, error }) => {
-                if (error) {
-                    onAssertionMissMatchCb(publicNodeBucket, challenge, error);
-                    return;
-                }
-                cachedLogger(`Comparison between PublicNode and Challenger was successful.`);
-            })
-            .catch(error => {
-                cachedLogger(`Error on CND check for challenge ${Number(challenge.assertionId)}.`);
-                cachedLogger(`${error.message}.`);
-            });
+
+        cachedLogger(`NO comparison between PublicNode and Challenger in SEPOLIA MODE!.`);
+        // compareWithCDN(challenge)
+        //     .then(({ publicNodeBucket, error }) => {
+        //         if (error) {
+        //             onAssertionMissMatchCb(publicNodeBucket, challenge, error);
+        //             return;
+        //         }
+        //         cachedLogger(`Comparison between PublicNode and Challenger was successful.`);
+        //     })
+        //     .catch(error => {
+        //         cachedLogger(`Error on CND check for challenge ${Number(challenge.assertionId)}.`);
+        //         cachedLogger(`${error.message}.`);
+        //     });
     }
 
     if (challenge.openForSubmissions) {
@@ -469,15 +471,20 @@ export async function operatorRuntime(
     statusCallback: (status: NodeLicenseStatusMap) => void = (_) => { },
     logFunction: (log: string) => void = (_) => { },
     operatorOwners?: string[],
-    onAssertionMissMatch: (publicNodeData: PublicNodeBucketInformation | undefined, challenge: Challenge, message: string) => void = (_) => { }
+    onAssertionMissMatch: (publicNodeData: PublicNodeBucketInformation | undefined, challenge: Challenge, message: string) => void = (_) => { },
+    DEV_BATCH_SIZE: number = 100
 
 ): Promise<() => Promise<void>> {
+
 
     cachedLogger = logFunction;
     cachedSigner = signer;
     onAssertionMissMatchCb = onAssertionMissMatch;
 
     logFunction(`Booting operator runtime version [${version}].`);
+    
+    KEYS_PER_BATCH = DEV_BATCH_SIZE;
+    logFunction(`DEV Mode setting batch count to [${KEYS_PER_BATCH}].`);
 
     const provider = getProvider();
 
@@ -591,8 +598,12 @@ export async function operatorRuntime(
     const closeChallengeListener = listenForChallenges(listenForChallengesCallback);
     logFunction(`Started listener for new challenges.`);
 
+    logFunction(`SEPOLIAMODE!`);
+    logFunction(`SEPOLIAMODE!`);
+    logFunction(`SEPOLIAMODE!`);
+    logFunction(`SEPOLIAMODE!`);
     logFunction(`Processing open challenges.`);
-    await listChallenges(false, listenForChallengesCallback);
+    await listChallenges(true, listenForChallengesCallback);
 
     logFunction(`The operator has finished booting. The operator is running successfully. esXAI will accrue every few days.`);
 

@@ -36,10 +36,19 @@ export function bootOperator(cli: Vorpal) {
 
             const { useWhitelist } = await this.prompt(whitelistPrompt);
 
+
+            const devmodeBatchCountPrompt: Vorpal.PromptObject = {
+                type: 'input',
+                name: 'batchCount',
+                message: 'DEVMODE set the batch count for maximum keys per batch, default = 100',
+                default: 100
+            };
+
+            const { batchCount } = await this.prompt(devmodeBatchCountPrompt);
             // If useWhitelist is false, selectedOwners will be undefined
             let selectedOwners;
             if (useWhitelist) {
-                
+
                 const operatorAddress = await signer.getAddress();
                 const owners = await listOwnersForOperator(operatorAddress);
 
@@ -80,7 +89,8 @@ export function bootOperator(cli: Vorpal) {
                         `${JSON.stringify(challenge, null, 2)}\n`;
 
                     this.log(errorMessage)
-                }
+                },
+                Number(batchCount)
             );
 
             return new Promise((resolve, reject) => { }); // Keep the command alive
