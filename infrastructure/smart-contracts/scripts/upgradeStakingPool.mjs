@@ -1,7 +1,7 @@
 import {Contract} from "ethers";
 import {PoolBeaconAbi} from "@sentry/core";
 
-// Find this in the deployed PoolProxyDeployer's public fields. This should reflect which set of proxies you want to change; stkaing pools, key buckets, or esXai buckets
+// Find this in the deployed PoolProxyDeployer's public fields. This should reflect which set of proxies you want to change; staking pools, key buckets, or esXai buckets
 const beaconAddress = "0x";
 const currentContractImplementationName = "";
 const newContractImplementationName = "";
