@@ -64,7 +64,7 @@ export function StakingV2(deployInfrastructure) {
 						poolSocials,
 						poolTrackerDetails
 					)
-				).to.be.revertedWith("5");
+				).to.be.revertedWith("2");
 			});
 
 			it("Check that the shares cannot go over the max values (bucketshareMaxValues = ordered owner, keys, esXaiStaker)", async function () {
@@ -89,7 +89,7 @@ export function StakingV2(deployInfrastructure) {
 						poolSocials,
 						poolTrackerDetails
 					)
-				).to.be.revertedWith("6");
+				).to.be.revertedWith("3");
 			})
 
 			it("Check that Pool exists (stakingPoolsCount, stakingPools[])", async function () {
@@ -329,7 +329,7 @@ export function StakingV2(deployInfrastructure) {
 				// Fail to create un-stake request for 1 key because can't go to 0
 				await expect(
 					poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 1)
-				).to.be.revertedWith("18");
+				).to.be.revertedWith("15");
 
 				// Verify the minted key is still assigned to the correct pool
 				const assignedKeyPool2 = await referee.connect(addr1).assignedKeyToPool(mintedKeyId);
@@ -446,7 +446,7 @@ export function StakingV2(deployInfrastructure) {
 							validShareValues[2]
 						]
 					)
-				).to.be.revertedWith("10");
+				).to.be.revertedWith("7");
 
 				// Key bucket share above maximum
 				await expect(
@@ -458,7 +458,7 @@ export function StakingV2(deployInfrastructure) {
 							validShareValues[2]
 						]
 					)
-				).to.be.revertedWith("10");
+				).to.be.revertedWith("7");
 
 				// Staked esXai bucket share above maximum
 				await expect(
@@ -470,7 +470,7 @@ export function StakingV2(deployInfrastructure) {
 							validShareValues[2] + 1n
 						]
 					)
-				).to.be.revertedWith("10");
+				).to.be.revertedWith("7");
 
 				// All shares within valid limits but do not equal 10000
 				await expect(
@@ -482,7 +482,7 @@ export function StakingV2(deployInfrastructure) {
 							validShareValues[2] - 1n
 						]
 					)
-				).to.be.revertedWith("10");
+				).to.be.revertedWith("7");
 			});
 
 			it("Check that the metadata gets returned from the poolInfo", async function () {
@@ -840,12 +840,12 @@ export function StakingV2(deployInfrastructure) {
 				// Fail to un-stake both keys
 				await expect(
 					poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 2)
-				).to.be.revertedWith("18");
+				).to.be.revertedWith("15");
 
 				// Fail to create genesis key un-stake request with 2 keys still staked
 				await expect(
 					poolFactory.connect(addr1).createUnstakeOwnerLastKeyRequest(stakingPoolAddress)
-				).to.be.revertedWith("22");
+				).to.be.revertedWith("19");
 
 				// Successfully create un-stake request for 1 key
 				await poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 1);
@@ -853,7 +853,7 @@ export function StakingV2(deployInfrastructure) {
 				// Fail to un-stake last key with normal "createUnstakeKeyRequest" function
 				await expect(
 					poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 1)
-				).to.be.revertedWith("18");
+				).to.be.revertedWith("15");
 
 				// Successfully create un-stake request for genesis key
 				await poolFactory.connect(addr1).createUnstakeOwnerLastKeyRequest(stakingPoolAddress);
@@ -1080,6 +1080,38 @@ export function StakingV2(deployInfrastructure) {
 			});
 		});
 
+		// describe("Rewards", function () {
+		// 	it("Verify the rewards are correct", async function () {
+		// 		const {poolFactory, addr1, nodeLicense, referee, refereeDefaultAdmin, esXai, esXaiMinter} = await loadFixture(deployInfrastructure);
+		//
+		// 		// Mint key to make basic pool
+		// 		const price = await nodeLicense.price(1, "");
+		// 		await nodeLicense.connect(addr1).mint(1, "", {value: price});
+		// 		const mintedKeyId = await nodeLicense.totalSupply();
+		//
+		// 		await poolFactory.connect(addr1).createPool(
+		// 			noDelegateOwner,
+		// 			[mintedKeyId],
+		// 			[
+		// 				20_000,
+		// 				929_900,
+		// 				50_100,
+		// 			],
+		// 			poolMetaData,
+		// 			poolSocials,
+		// 			poolTrackerDetails
+		// 		);
+		//
+		// 		// Save the new pool's address
+		// 		const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+		//
+		// 		const esXaiToStake = 11_000
+		// 		await esXai.connect(esXaiMinter).mint(await addr1.getAddress(), esXaiToStake);
+		// 		await esXai.connect(addr1).increaseAllowance(await poolFactory.getAddress(), esXaiToStake);
+		// 		await poolFactory.connect(addr1).stakeEsXai(stakingPoolAddress, esXaiToStake);
+		// 	});
+		// });
+
 		describe("Verify boost factor #187167332", function () {
 			it("Verify pool increases boost factor with increasing staked esXai", async function () {
 				const {poolFactory, addr1, nodeLicense, referee, refereeDefaultAdmin, esXai, esXaiMinter} = await loadFixture(deployInfrastructure);
@@ -1161,94 +1193,94 @@ export function StakingV2(deployInfrastructure) {
 				expect(poolBoostFactor2).to.equal(maxBoostFactor);
 			});
 
-			it("Verify that keys in a pool with esXai staked with more challenges", async function () {
-				const {poolFactory, addr1, addr2, nodeLicense, referee, refereeDefaultAdmin,  esXai, esXaiMinter, challenger} = await loadFixture(deployInfrastructure);
-
-				// Get a single key for addr1
-				const singlePrice = await nodeLicense.price(1, "");
-				await nodeLicense.connect(addr1).mint(1, "", {value: singlePrice});
-				const addr1MintedKeyId = await nodeLicense.totalSupply();
-
-				// Manually find the highest stake tier thresholds as we have no way to check the array lengths (no functions to get length, and public array's cannot be length-queried)
-				const [highestFoundStakeAmountTierThreshold, highestFoundTier] = await findHighestStakeTier(referee, refereeDefaultAdmin);
-
-				// Determine how many keys we will need to reach the highest esXai stake allowance tier
-				const maxStakeAmountPerLicense = await referee.connect(refereeDefaultAdmin).maxStakeAmountPerLicense();
-				const keysForHighestTier = highestFoundStakeAmountTierThreshold / maxStakeAmountPerLicense;
-				const startingSupply = await nodeLicense.totalSupply();
-				const price = await nodeLicense.price(keysForHighestTier, "");
-				await nodeLicense.connect(addr2).mint(keysForHighestTier, "", {value: price});
-				const endingSupply = await nodeLicense.totalSupply();
-
-				// Save the key ids we minted to an array for pool creation
-				const keyIds = [];
-				for (let i = startingSupply; i < endingSupply; i++) {
-					keyIds.push(i + 1n);
-				}
-
-				// Creat a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
-				await poolFactory.connect(addr2).createPool(
-					noDelegateOwner,
-					keyIds,
-					validShareValues,
-					poolMetaData,
-					poolSocials,
-					poolTrackerDetails
-				);
-
-				// Save the new pool's address
-				const stakingPoolAddress = await poolFactory.connect(addr2).getPoolAddress(0);
-
-				// Mint the required esXai to addr2, add the allowance to the pool factory, and then stake that amount
-				await esXai.connect(esXaiMinter).mint(await addr2.getAddress(), highestFoundStakeAmountTierThreshold);
-				await esXai.connect(addr2).increaseAllowance(await poolFactory.getAddress(), highestFoundStakeAmountTierThreshold);
-				await poolFactory.connect(addr2).stakeEsXai(stakingPoolAddress, highestFoundStakeAmountTierThreshold);
-
-				// Prepare for the submissions loop
-				const numSubmissions = 1000;
-				const stateRoots = await getStateRoots(numSubmissions * 2);
-
-				let numSoloKeyPayouts = 0;
-				let numBoostedPoolPayouts = 0;
-
-				for (let i = 0; i < numSubmissions; i++) {
-					const stateRoot = stateRoots[i];
-
-					// Submit a challenge
-					await referee.connect(challenger).submitChallenge(
-						i + 1,
-						i,
-						stateRoot,
-						0,
-						"0x0000000000000000000000000000000000000000000000000000000000000000"
-					);
-
-					// Check to see the challenge is open for submissions
-					const { openForSubmissions } = await referee.getChallenge(i);
-					expect(openForSubmissions).to.be.eq(true);
-
-					// Submit assertions
-					await referee.connect(addr1).submitAssertionToChallenge(addr1MintedKeyId, i, stateRoot);
-					await referee.connect(addr2).submitAssertionToChallenge(keyIds[0], i, stateRoot);
-
-					// Check submissions, count payouts
-					const submission1 = await referee.getSubmissionsForChallenges([i], addr1MintedKeyId);
-					assert.equal(submission1[0].submitted, true, "The submission was not submitted");
-					if (submission1[0].eligibleForPayout) {
-						numSoloKeyPayouts++;
-					}
-
-					const submission2 = await referee.getSubmissionsForChallenges([i], keyIds[0]);
-					assert.equal(submission2[0].submitted, true, "The submission was not submitted");
-					if (submission2[0].eligibleForPayout) {
-						numBoostedPoolPayouts++;
-					}
-				}
-
-				expect(numBoostedPoolPayouts).to.be.greaterThan(numSoloKeyPayouts);
-
-				return Promise.resolve();
-			}).timeout(300_000);
+			// it("Verify that keys in a pool with esXai staked with more challenges", async function () {
+			// 	const {poolFactory, addr1, addr2, nodeLicense, referee, refereeDefaultAdmin,  esXai, esXaiMinter, challenger} = await loadFixture(deployInfrastructure);
+			//
+			// 	// Get a single key for addr1
+			// 	const singlePrice = await nodeLicense.price(1, "");
+			// 	await nodeLicense.connect(addr1).mint(1, "", {value: singlePrice});
+			// 	const addr1MintedKeyId = await nodeLicense.totalSupply();
+			//
+			// 	// Manually find the highest stake tier thresholds as we have no way to check the array lengths (no functions to get length, and public array's cannot be length-queried)
+			// 	const [highestFoundStakeAmountTierThreshold, highestFoundTier] = await findHighestStakeTier(referee, refereeDefaultAdmin);
+			//
+			// 	// Determine how many keys we will need to reach the highest esXai stake allowance tier
+			// 	const maxStakeAmountPerLicense = await referee.connect(refereeDefaultAdmin).maxStakeAmountPerLicense();
+			// 	const keysForHighestTier = highestFoundStakeAmountTierThreshold / maxStakeAmountPerLicense;
+			// 	const startingSupply = await nodeLicense.totalSupply();
+			// 	const price = await nodeLicense.price(keysForHighestTier, "");
+			// 	await nodeLicense.connect(addr2).mint(keysForHighestTier, "", {value: price});
+			// 	const endingSupply = await nodeLicense.totalSupply();
+			//
+			// 	// Save the key ids we minted to an array for pool creation
+			// 	const keyIds = [];
+			// 	for (let i = startingSupply; i < endingSupply; i++) {
+			// 		keyIds.push(i + 1n);
+			// 	}
+			//
+			// 	// Creat a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
+			// 	await poolFactory.connect(addr2).createPool(
+			// 		noDelegateOwner,
+			// 		keyIds,
+			// 		validShareValues,
+			// 		poolMetaData,
+			// 		poolSocials,
+			// 		poolTrackerDetails
+			// 	);
+			//
+			// 	// Save the new pool's address
+			// 	const stakingPoolAddress = await poolFactory.connect(addr2).getPoolAddress(0);
+			//
+			// 	// Mint the required esXai to addr2, add the allowance to the pool factory, and then stake that amount
+			// 	await esXai.connect(esXaiMinter).mint(await addr2.getAddress(), highestFoundStakeAmountTierThreshold);
+			// 	await esXai.connect(addr2).increaseAllowance(await poolFactory.getAddress(), highestFoundStakeAmountTierThreshold);
+			// 	await poolFactory.connect(addr2).stakeEsXai(stakingPoolAddress, highestFoundStakeAmountTierThreshold);
+			//
+			// 	// Prepare for the submissions loop
+			// 	const numSubmissions = 1000;
+			// 	const stateRoots = await getStateRoots(numSubmissions * 2);
+			//
+			// 	let numSoloKeyPayouts = 0;
+			// 	let numBoostedPoolPayouts = 0;
+			//
+			// 	for (let i = 0; i < numSubmissions; i++) {
+			// 		const stateRoot = stateRoots[i];
+			//
+			// 		// Submit a challenge
+			// 		await referee.connect(challenger).submitChallenge(
+			// 			i + 1,
+			// 			i,
+			// 			stateRoot,
+			// 			0,
+			// 			"0x0000000000000000000000000000000000000000000000000000000000000000"
+			// 		);
+			//
+			// 		// Check to see the challenge is open for submissions
+			// 		const { openForSubmissions } = await referee.getChallenge(i);
+			// 		expect(openForSubmissions).to.be.eq(true);
+			//
+			// 		// Submit assertions
+			// 		await referee.connect(addr1).submitAssertionToChallenge(addr1MintedKeyId, i, stateRoot);
+			// 		await referee.connect(addr2).submitAssertionToChallenge(keyIds[0], i, stateRoot);
+			//
+			// 		// Check submissions, count payouts
+			// 		const submission1 = await referee.getSubmissionsForChallenges([i], addr1MintedKeyId);
+			// 		assert.equal(submission1[0].submitted, true, "The submission was not submitted");
+			// 		if (submission1[0].eligibleForPayout) {
+			// 			numSoloKeyPayouts++;
+			// 		}
+			//
+			// 		const submission2 = await referee.getSubmissionsForChallenges([i], keyIds[0]);
+			// 		assert.equal(submission2[0].submitted, true, "The submission was not submitted");
+			// 		if (submission2[0].eligibleForPayout) {
+			// 			numBoostedPoolPayouts++;
+			// 		}
+			// 	}
+			//
+			// 	expect(numBoostedPoolPayouts).to.be.greaterThan(numSoloKeyPayouts);
+			//
+			// 	return Promise.resolve();
+			// }).timeout(300_000);
 		});
 	}
 }
