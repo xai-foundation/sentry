@@ -456,9 +456,13 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     function removeUserFromPool(address user, address pool) internal {
         uint256 indexOfPool = userToInteractedPoolIds[user][pool];
         uint256 userLength = interactedPoolsOfUser[user].length;
-        interactedPoolsOfUser[user][indexOfPool] = interactedPoolsOfUser[user][
+        address lastPool = interactedPoolsOfUser[user][
             userLength - 1
         ];
+        
+        interactedPoolsOfUser[user][indexOfPool] = lastPool;
+        userToInteractedPoolIds[user][lastPool] = indexOfPool;
+
         interactedPoolsOfUser[user].pop();
     }
 
