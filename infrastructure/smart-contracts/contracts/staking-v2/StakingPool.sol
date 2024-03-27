@@ -285,7 +285,7 @@ contract StakingPool is AccessControlUpgradeable {
 		userRequestedUnstakeKeyAmount[owner] += 1;
 	}
 
-	function createUnstakeEsXaiRequest(address user, uint256 amount) external {
+	function createUnstakeEsXaiRequest(address user, uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
 		require(stakedAmounts[user] >= amount + userRequestedUnstakeEsXaiAmount[user], "21");
 		UnstakeRequest[] storage userRequests = unstakeRequests[user];
 
