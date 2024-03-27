@@ -17,10 +17,10 @@
 
 
 
-########################################################
-# EsXaiEvents.graphql                                  #
-# schema/EsXaiEvents.graphql                           #
-########################################################
+######################################################################
+# EsXaiEvents.graphql                                                #
+# schema/events/EsXaiEvents.graphql                                  #
+######################################################################
 type EsXaiApprovalEvent @entity(immutable: true) {
   id: Bytes!
   owner: Bytes! # address
@@ -139,10 +139,10 @@ type EsXaiXaiAddressChangedEvent @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-######################################################
-# GasSubsidy.graphql                                 #
-# schema/GasSubsidy.graphql                          #
-######################################################
+####################################################################
+# GasSubsidy.graphql                                               #
+# schema/events/GasSubsidy.graphql                                 #
+####################################################################
 type GasSubsidyRoleAdminChangedEvent @entity(immutable: true) {
   id: Bytes!
   role: Bytes! # bytes32
@@ -173,10 +173,10 @@ type GasSubsidyRoleRevokedEvent @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-########################################################
-# NodeLicense.graphql                                  #
-# schema/NodeLicense.graphql                           #
-########################################################
+######################################################################
+# NodeLicense.graphql                                                #
+# schema/events/NodeLicense.graphql                                  #
+######################################################################
 type NodeLicenseApprovalEvent @entity(immutable: true) {
   id: Bytes!
   owner: Bytes! # address
@@ -353,10 +353,10 @@ type NodeLicenseWhitelistAmountUpdatedByAdminEvent @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-################################################
-# Referee.graphql                              #
-# schema/Referee.graphql                       #
-################################################
+##############################################################
+# Referee.graphql                                            #
+# schema/events/Referee.graphql                              #
+##############################################################
 type RefereeApprovalEvent @entity(immutable: true) {
   id: Bytes!
   owner: Bytes! # address
@@ -533,10 +533,10 @@ type RefereeUpdateMaxStakeAmountEvent @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-####################################################
-# XaiEvents.graphql                                #
-# schema/XaiEvents.graphql                         #
-####################################################
+##################################################################
+# XaiEvents.graphql                                              #
+# schema/events/XaiEvents.graphql                                #
+##################################################################
 type XaiApprovalEvent @entity(immutable: true) {
   id: Bytes!
   owner: Bytes! # address

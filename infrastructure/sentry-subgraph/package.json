@@ -2,8 +2,8 @@
   "name": "sentry",
   "license": "UNLICENSED",
   "scripts": {
-    "codegen": "graph codegen",
-    "build": "node build.js && graph build ",
+    "codegen": "node compile-schema.js && graph codegen",
+    "build": "node compile-schema.js && graph build ",
     "create-local": "graph create --node http://localhost:8020/ Xai-Foundation/sentry",
     "remove-local": "graph remove --node http://localhost:8020/ Xai-Foundation/sentry",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 Xai-Foundation/sentry",
