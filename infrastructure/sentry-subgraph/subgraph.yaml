@@ -84,18 +84,18 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - EsXaiApproval
-        - FoundationBasepointsUpdated
+        - EsXaiFoundationBasepointsUpdated
         - EsXaiInitialized
-        - RedemptionCancelled
-        - RedemptionCompleted
-        - RedemptionStarted
-        - RedemptionStatusChanged
+        - EsXaiRedemptionCancelled
+        - EsXaiRedemptionCompleted
+        - EsXaiRedemptionStarted
+        - EsXaiRedemptionStatusChanged
         - EsXaiRoleAdminChanged
         - EsXaiRoleGranted
         - EsXaiRoleRevoked
         - EsXaiTransfer
-        - WhitelistUpdated
-        - XaiAddressChanged
+        - EsXaiWhitelistUpdated
+        - EsXaiXaiAddressChanged
       abis:
         - name: EsXai
           file: ./abis/EsXai.json

@@ -14,23 +14,23 @@ import {
   XaiAddressChanged as XaiAddressChangedEvent,
 } from "../generated/EsXai/EsXai"
 import {
-  Approval,
-  FoundationBasepointsUpdated,
-  Initialized,
-  RedemptionCancelled,
-  RedemptionCompleted,
-  RedemptionStarted,
-  RedemptionStatusChanged,
-  RoleAdminChanged,
-  RoleGranted,
-  RoleRevoked,
-  Transfer,
-  WhitelistUpdated,
-  XaiAddressChanged,
+  EsXaiApproval,
+  EsXaiFoundationBasepointsUpdated,
+  EsXaiInitialized,
+  EsXaiRedemptionCancelled,
+  EsXaiRedemptionCompleted,
+  EsXaiRedemptionStarted,
+  EsXaiRedemptionStatusChanged,
+  EsXaiRoleAdminChanged,
+  EsXaiRoleGranted,
+  EsXaiRoleRevoked,
+  EsXaiTransfer,
+  EsXaiWhitelistUpdated,
+  EsXaiXaiAddressChanged,
 } from "../generated/schema"
 
 export function handleApproval(event: ApprovalEvent): void {
-  let entity = new Approval(
+  let entity = new EsXaiApproval(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.owner = event.params.owner
@@ -47,7 +47,7 @@ export function handleApproval(event: ApprovalEvent): void {
 export function handleFoundationBasepointsUpdated(
   event: FoundationBasepointsUpdatedEvent,
 ): void {
-  let entity = new FoundationBasepointsUpdated(
+  let entity = new EsXaiFoundationBasepointsUpdated(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.newBasepoints = event.params.newBasepoints
@@ -60,7 +60,7 @@ export function handleFoundationBasepointsUpdated(
 }
 
 export function handleInitialized(event: InitializedEvent): void {
-  let entity = new Initialized(
+  let entity = new EsXaiInitialized(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.version = event.params.version
@@ -75,7 +75,7 @@ export function handleInitialized(event: InitializedEvent): void {
 export function handleRedemptionCancelled(
   event: RedemptionCancelledEvent,
 ): void {
-  let entity = new RedemptionCancelled(
+  let entity = new EsXaiRedemptionCancelled(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.user = event.params.user
@@ -91,7 +91,7 @@ export function handleRedemptionCancelled(
 export function handleRedemptionCompleted(
   event: RedemptionCompletedEvent,
 ): void {
-  let entity = new RedemptionCompleted(
+  let entity = new EsXaiRedemptionCompleted(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.user = event.params.user
@@ -105,7 +105,7 @@ export function handleRedemptionCompleted(
 }
 
 export function handleRedemptionStarted(event: RedemptionStartedEvent): void {
-  let entity = new RedemptionStarted(
+  let entity = new EsXaiRedemptionStarted(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.user = event.params.user
@@ -121,7 +121,7 @@ export function handleRedemptionStarted(event: RedemptionStartedEvent): void {
 export function handleRedemptionStatusChanged(
   event: RedemptionStatusChangedEvent,
 ): void {
-  let entity = new RedemptionStatusChanged(
+  let entity = new EsXaiRedemptionStatusChanged(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.isActive = event.params.isActive
@@ -134,7 +134,7 @@ export function handleRedemptionStatusChanged(
 }
 
 export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
-  let entity = new RoleAdminChanged(
+  let entity = new EsXaiRoleAdminChanged(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.role = event.params.role
@@ -149,7 +149,7 @@ export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
 }
 
 export function handleRoleGranted(event: RoleGrantedEvent): void {
-  let entity = new RoleGranted(
+  let entity = new EsXaiRoleGranted(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.role = event.params.role
@@ -164,7 +164,7 @@ export function handleRoleGranted(event: RoleGrantedEvent): void {
 }
 
 export function handleRoleRevoked(event: RoleRevokedEvent): void {
-  let entity = new RoleRevoked(
+  let entity = new EsXaiRoleRevoked(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.role = event.params.role
@@ -179,7 +179,7 @@ export function handleRoleRevoked(event: RoleRevokedEvent): void {
 }
 
 export function handleTransfer(event: TransferEvent): void {
-  let entity = new Transfer(
+  let entity = new EsXaiTransfer(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.from = event.params.from
@@ -194,7 +194,7 @@ export function handleTransfer(event: TransferEvent): void {
 }
 
 export function handleWhitelistUpdated(event: WhitelistUpdatedEvent): void {
-  let entity = new WhitelistUpdated(
+  let entity = new EsXaiWhitelistUpdated(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.account = event.params.account
@@ -208,7 +208,7 @@ export function handleWhitelistUpdated(event: WhitelistUpdatedEvent): void {
 }
 
 export function handleXaiAddressChanged(event: XaiAddressChangedEvent): void {
-  let entity = new XaiAddressChanged(
+  let entity = new EsXaiXaiAddressChanged(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.newXaiAddress = event.params.newXaiAddress

@@ -101,6 +101,7 @@ type XaiTransfer @entity(immutable: true) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
+
 type EsXaiApproval @entity(immutable: true) {
   id: Bytes!
   owner: Bytes! # address
@@ -111,7 +112,7 @@ type EsXaiApproval @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type FoundationBasepointsUpdated @entity(immutable: true) {
+type EsXaiFoundationBasepointsUpdated @entity(immutable: true) {
   id: Bytes!
   newBasepoints: BigInt! # uint256
   blockNumber: BigInt!
@@ -127,7 +128,7 @@ type EsXaiInitialized @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RedemptionCancelled @entity(immutable: true) {
+type EsXaiRedemptionCancelled @entity(immutable: true) {
   id: Bytes!
   user: Bytes! # address
   index: BigInt! # uint256
@@ -136,7 +137,7 @@ type RedemptionCancelled @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RedemptionCompleted @entity(immutable: true) {
+type EsXaiRedemptionCompleted @entity(immutable: true) {
   id: Bytes!
   user: Bytes! # address
   index: BigInt! # uint256
@@ -145,7 +146,7 @@ type RedemptionCompleted @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RedemptionStarted @entity(immutable: true) {
+type EsXaiRedemptionStarted @entity(immutable: true) {
   id: Bytes!
   user: Bytes! # address
   index: BigInt! # uint256
@@ -154,7 +155,7 @@ type RedemptionStarted @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RedemptionStatusChanged @entity(immutable: true) {
+type EsXaiRedemptionStatusChanged @entity(immutable: true) {
   id: Bytes!
   isActive: Boolean! # bool
   blockNumber: BigInt!
@@ -202,10 +203,18 @@ type EsXaiTransfer @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type WhitelistUpdated @entity(immutable: true) {
+type EsXaiWhitelistUpdated @entity(immutable: true) {
   id: Bytes!
   account: Bytes! # address
   isAdded: Boolean! # bool
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type EsXaiXaiAddressChanged @entity(immutable: true) {
+  id: Bytes!
+  newXaiAddress: Bytes! # address
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
