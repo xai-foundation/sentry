@@ -87,26 +87,32 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			expect(stakingPoolBalance).to.equal(poolAmount);
 
 			// Calculate rewards for each bucket & amount per key/esXai
-			const amountForKeyBucket = Math.floor((poolAmount * keyBucketShare) / rewardModifier);
-			const amountForEsXaiBucket = Math.floor((poolAmount * esXaiBucketShare) / rewardModifier);
+			const amountForKeyBucket = (poolAmount * keyBucketShare) / rewardModifier;
+			const amountForEsXaiBucket = (poolAmount * esXaiBucketShare) / rewardModifier;
 			const keyBucketTotalSupply = addr1KeyQuantity + addr2KeysToStake + addr3KeysToStake;
-			const amountPerKey = Math.floor(amountForKeyBucket / keyBucketTotalSupply);
+			const amountPerKey = amountForKeyBucket / keyBucketTotalSupply;
 			const esXaiBucketTotalSupply = addr2EsXaiToStake + addr3EsXaiToStake;
-			const amountPerEsXaiStaked = Math.floor(amountForEsXaiBucket / esXaiBucketTotalSupply);
+			const amountPerEsXaiStaked = amountForEsXaiBucket / esXaiBucketTotalSupply;
 
 			// Determine addr2 owed amount
-			const addr2AmountFromKeys = Math.floor(addr2KeysToStake * amountPerKey);
-			const addr2AmountFromEsXai = Math.floor(addr2EsXaiToStake * amountPerEsXaiStaked);
-			const addr2TotalClaimAmount = BigInt(addr2AmountFromKeys + addr2AmountFromEsXai);
+			const addr2AmountFromKeys = addr2KeysToStake * amountPerKey;
+			const addr2AmountFromEsXai = addr2EsXaiToStake * amountPerEsXaiStaked;
+			const addr2TotalClaimAmount = addr2AmountFromKeys + addr2AmountFromEsXai;
 			const addr2UndistributedClaimAmount1 = await stakingPool.connect(addr2).getUndistributedClaimAmount(addr2Address);
-			expect(addr2UndistributedClaimAmount1[0]).to.equal(addr2TotalClaimAmount);
+			expect(addr2UndistributedClaimAmount1[0]).to.equal(BigInt(Math.floor(addr2TotalClaimAmount)));
 
 			// Determine addr3 owed amount
-			const addr3AmountFromKeys = Math.floor(addr3KeysToStake * amountPerKey);
-			const addr3AmountFromEsXai = Math.floor(addr3EsXaiToStake * amountPerEsXaiStaked);
+			const addr3AmountFromKeys = addr3KeysToStake * amountPerKey;
+			const addr3AmountFromEsXai = addr3EsXaiToStake * amountPerEsXaiStaked;
 			const addr3UndistributedClaimAmount1 = await stakingPool.connect(addr3).getUndistributedClaimAmount(addr3Address);
-			const addr3TotalClaimAmount = BigInt(addr3AmountFromKeys + addr3AmountFromEsXai);
-			expect(addr3UndistributedClaimAmount1[0]).to.equal(addr3TotalClaimAmount);
+			const addr3TotalClaimAmount = addr3AmountFromKeys + addr3AmountFromEsXai;
+			expect(addr3UndistributedClaimAmount1[0]).to.equal(BigInt(Math.floor(addr3TotalClaimAmount)));
+
+			// addr2 claims from pools
+			const addr2balance1Pre = await esXai.connect(addr2).balanceOf(addr2Address);
+			await poolFactory.connect(addr2).claimFromPools([stakingPoolAddress]);
+			const addr2balance1Post = await esXai.connect(addr2).balanceOf(addr2Address);
+			expect(addr2balance1Post).to.equal(addr2balance1Pre + BigInt(Math.floor(addr2TotalClaimAmount)));
 		});
 	}
 }
