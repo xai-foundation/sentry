@@ -48,7 +48,7 @@ import "./PoolBeacon.sol";
 // 31: You must un-stake at least 1 esXai, and the amount must match the un-stake request
 // 32: You must have at least the desired un-stake amount staked in order to un-stake
 // 33: Invalid pool for claim; pool needs to have been created via the PoolFactory
-// 34: Invalid udpate delegate; pool needs to have been created via the PoolFactory
+// 34: Invalid delegate update; pool needs to have been created via the PoolFactory
 
 contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
