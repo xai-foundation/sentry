@@ -400,8 +400,7 @@ contract StakingPool is AccessControlUpgradeable {
         uint256 poolAmount = esXai(esXaiAddress).balanceOf(address(this)) - poolOwnerClaimableRewards;
 
         uint256 amountForKeyBucket = (poolAmount * keyBucketShare) / 1_000_000;
-        uint256 amountForEsXaiBucket = (poolAmount * stakedBucketShare) /
-		1_000_000;
+        uint256 amountForEsXaiBucket = (poolAmount * stakedBucketShare) / 1_000_000;
 
         ownerAmount = poolAmount - amountForKeyBucket - amountForEsXaiBucket;
 
@@ -409,14 +408,13 @@ contract StakingPool is AccessControlUpgradeable {
         uint256 userBalanceInEsXaiBucket = esXaiStakeBucket.balanceOf(user);
 
         if (userBalanceInKeyBucket != 0) {
-            uint256 amountPerKey = amountForKeyBucket / keyBucket.totalSupply();
-            claimAmount += amountPerKey * userBalanceInKeyBucket;
+            uint256 amountPerKey = amountForKeyBucket * 1_000_000 / keyBucket.totalSupply();
+            claimAmount += amountPerKey * userBalanceInKeyBucket / 1_000_000;
         }
 
         if (userBalanceInEsXaiBucket != 0) {
-            uint256 amountPerStakedEsXai = amountForEsXaiBucket /
-                esXaiStakeBucket.totalSupply();
-            claimAmount += amountPerStakedEsXai * userBalanceInEsXaiBucket;
+            uint256 amountPerStakedEsXai = amountForEsXaiBucket * 1_000_000 / esXaiStakeBucket.totalSupply();
+            claimAmount += amountPerStakedEsXai * userBalanceInEsXaiBucket / 1_000_000;
         }
     }
 
