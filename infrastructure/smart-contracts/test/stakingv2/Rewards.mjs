@@ -11,11 +11,12 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 		noDelegateOwner,
 	} = poolConfigurations;
 
+	const rewardModifier = 1_000_000;
+
 	return function () {
 		it("Verify the rewards are correct", async function () {
-			const {poolFactory, addr1, addr2, addr3, nodeLicense, kycAdmin, referee, refereeDefaultAdmin, esXai, esXaiMinter} = await loadFixture(deployInfrastructure);
+			const {poolFactory, addr1, addr2, addr3, nodeLicense, kycAdmin, referee, esXai, esXaiMinter} = await loadFixture(deployInfrastructure);
 
-			const rewardModifier = 1_000_000;
 
 			// Mint key to make basic pool
 			const addr1KeyQuantity = 1;
@@ -154,6 +155,201 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const addr3TotalClaimAmount2 = addr3AmountFromKeys2 + addr3AmountFromEsXai2;
 			const addr3UndistributedClaimAmount3 = await stakingPool.connect(addr2).getUndistributedClaimAmount(addr3Address);
 			expect(addr3UndistributedClaimAmount3[0]).to.equal(BigInt(Math.floor(addr3TotalClaimAmount2)));
+		});
+
+		it("Change reward breakdown does not effect reward value before 45 days are up", async function () {
+			const {poolFactory, addr1, addr2, nodeLicense, esXai, esXaiMinter} = await loadFixture(deployInfrastructure);
+
+			// Mint key to make basic pool
+			const addr1KeyQuantity = 1;
+			const price = await nodeLicense.price(addr1KeyQuantity, "");
+			await nodeLicense.connect(addr1).mint(addr1KeyQuantity, "", {value: price});
+			const mintedKeyId = await nodeLicense.totalSupply();
+
+			const ownerShare1 = 50_000; // 5 %
+			const keyBucketShare1 = 800_000; // 80 %
+			const esXaiBucketShare1 = 150_000; // 15 %
+
+			const ownerShare2 = 25_000; // 2.5 %
+			const keyBucketShare2 = 700_000; // 70 %
+			const esXaiBucketShare2 = 275_000; // 27.5 %
+
+			await poolFactory.connect(addr1).createPool(
+				noDelegateOwner,
+				[mintedKeyId],
+				[
+					ownerShare1,
+					keyBucketShare1,
+					esXaiBucketShare1
+				],
+				poolMetaData,
+				poolSocials,
+				poolTrackerDetails
+			);
+
+			// Save reference to the new staking pool
+			const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+			const stakingPool = new Contract(stakingPoolAddress, StakingPoolAbi);
+
+			// addresses
+			const addr2Address = await addr2.getAddress();
+			const poolFactoryAddress = await poolFactory.getAddress();
+
+			// Mint a key to addr2 & stake
+			const addr2KeysToStake = 1;
+			const price2 = await nodeLicense.price(addr2KeysToStake, "");
+			await nodeLicense.connect(addr2).mint(addr2KeysToStake, "", {value: price2});
+			const mintedKeyId2 = await nodeLicense.totalSupply();
+			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2]);
+
+			// Mint & stake 1000 esXai for addr2
+			const addr2EsXaiToStake = 1000;
+			await esXai.connect(esXaiMinter).mint(addr2Address, addr2EsXaiToStake);
+			await esXai.connect(addr2).increaseAllowance(poolFactoryAddress, addr2EsXaiToStake);
+			await poolFactory.connect(addr2).stakeEsXai(stakingPoolAddress, addr2EsXaiToStake);
+
+			// Mint 100,000 esXai to the stakingPool
+			const poolAmount = 100_000;
+			await esXai.connect(esXaiMinter).mint(stakingPoolAddress, poolAmount);
+			const stakingPoolBalance = await esXai.connect(addr1).balanceOf(stakingPoolAddress);
+			expect(stakingPoolBalance).to.equal(poolAmount);
+
+			// Update the share values
+			await poolFactory.connect(addr1).updateShares(
+				stakingPoolAddress,
+				[
+					ownerShare2,
+					keyBucketShare2,
+					esXaiBucketShare2,
+				],
+			);
+
+			// Calculate rewards for each bucket & amount per key/esXai for the initial share values
+			const amountForKeyBucket = (poolAmount * keyBucketShare1) / rewardModifier;
+			const amountForEsXaiBucket = (poolAmount * esXaiBucketShare1) / rewardModifier;
+			const keyBucketTotalSupply = addr1KeyQuantity + addr2KeysToStake;
+			const amountPerKey = amountForKeyBucket / keyBucketTotalSupply;
+			const esXaiBucketTotalSupply = addr2EsXaiToStake;
+			const amountPerEsXaiStaked = amountForEsXaiBucket / esXaiBucketTotalSupply;
+
+			// Determine addr2 owed amount
+			const addr2AmountFromKeys = addr2KeysToStake * amountPerKey;
+			const addr2AmountFromEsXai = addr2EsXaiToStake * amountPerEsXaiStaked;
+			const addr2TotalClaimAmount = addr2AmountFromKeys + addr2AmountFromEsXai;
+			const addr2UndistributedClaimAmount1 = await stakingPool.connect(addr2).getUndistributedClaimAmount(addr2Address);
+			expect(addr2UndistributedClaimAmount1[0]).to.equal(BigInt(Math.floor(addr2TotalClaimAmount)));
+
+			// addr2 claim rewards
+			const addr2balance1Pre = await esXai.connect(addr2).balanceOf(addr2Address);
+			await poolFactory.connect(addr2).claimFromPools([stakingPoolAddress]);
+			const addr2balance1Post = await esXai.connect(addr2).balanceOf(addr2Address);
+			expect(addr2balance1Post).to.equal(addr2balance1Pre + BigInt(Math.floor(addr2TotalClaimAmount)));
+		});
+
+		it("Change reward breakdown changes reward value after 45 days", async function () {
+			const {poolFactory, addr1, addr2, nodeLicense, esXai, esXaiMinter} = await loadFixture(deployInfrastructure);
+
+			// Mint key to make basic pool
+			const addr1KeyQuantity = 1;
+			const price = await nodeLicense.price(addr1KeyQuantity, "");
+			await nodeLicense.connect(addr1).mint(addr1KeyQuantity, "", {value: price});
+			const mintedKeyId = await nodeLicense.totalSupply();
+
+			const ownerShare1 = 50_000; // 5 %
+			const keyBucketShare1 = 800_000; // 80 %
+			const esXaiBucketShare1 = 150_000; // 15 %
+
+			const ownerShare2 = 25_000; // 2.5 %
+			const keyBucketShare2 = 700_000; // 70 %
+			const esXaiBucketShare2 = 275_000; // 27.5 %
+
+			await poolFactory.connect(addr1).createPool(
+				noDelegateOwner,
+				[mintedKeyId],
+				[
+					ownerShare1,
+					keyBucketShare1,
+					esXaiBucketShare1
+				],
+				poolMetaData,
+				poolSocials,
+				poolTrackerDetails
+			);
+
+			// Save reference to the new staking pool
+			const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+			const stakingPool = new Contract(stakingPoolAddress, StakingPoolAbi);
+
+			// addresses
+			const addr2Address = await addr2.getAddress();
+			const poolFactoryAddress = await poolFactory.getAddress();
+
+			// Mint a key to addr2 & stake
+			const addr2KeysToStake = 1;
+			const price2 = await nodeLicense.price(addr2KeysToStake, "");
+			await nodeLicense.connect(addr2).mint(addr2KeysToStake, "", {value: price2});
+			const mintedKeyId2 = await nodeLicense.totalSupply();
+			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2]);
+
+			// Mint & stake 1000 esXai for addr2
+			const addr2EsXaiToStake = 1000;
+			await esXai.connect(esXaiMinter).mint(addr2Address, addr2EsXaiToStake);
+			await esXai.connect(addr2).increaseAllowance(poolFactoryAddress, addr2EsXaiToStake);
+			await poolFactory.connect(addr2).stakeEsXai(stakingPoolAddress, addr2EsXaiToStake);
+
+			// Mint 100,000 esXai to the stakingPool
+			const poolAmount = 100_000;
+			await esXai.connect(esXaiMinter).mint(stakingPoolAddress, poolAmount);
+			const stakingPoolBalance = await esXai.connect(addr1).balanceOf(stakingPoolAddress);
+			expect(stakingPoolBalance).to.equal(poolAmount);
+
+			// Update the share values
+			await poolFactory.connect(addr1).updateShares(
+				stakingPoolAddress,
+				[
+					ownerShare2,
+					keyBucketShare2,
+					esXaiBucketShare2,
+				],
+			);
+
+			// Calculate rewards for each bucket & amount per key/esXai for the initial share values
+			const amountForKeyBucket = (poolAmount * keyBucketShare1) / rewardModifier;
+			const amountForEsXaiBucket = (poolAmount * esXaiBucketShare1) / rewardModifier;
+			const keyBucketTotalSupply = addr1KeyQuantity + addr2KeysToStake;
+			const amountPerKey = amountForKeyBucket / keyBucketTotalSupply;
+			const esXaiBucketTotalSupply = addr2EsXaiToStake;
+			const amountPerEsXaiStaked = amountForEsXaiBucket / esXaiBucketTotalSupply;
+
+			// Determine addr2 owed amount
+			const addr2AmountFromKeys = addr2KeysToStake * amountPerKey;
+			const addr2AmountFromEsXai = addr2EsXaiToStake * amountPerEsXaiStaked;
+			const addr2TotalClaimAmount = addr2AmountFromKeys + addr2AmountFromEsXai;
+			const addr2UndistributedClaimAmount1 = await stakingPool.connect(addr2).getUndistributedClaimAmount(addr2Address);
+			expect(addr2UndistributedClaimAmount1[0]).to.equal(BigInt(Math.floor(addr2TotalClaimAmount)));
+
+			// Wait 45 days
+			await ethers.provider.send("evm_increaseTime", [86400 * 45]);
+			await ethers.provider.send("evm_mine");
+
+			// Calculate rewards for each bucket & amount per key/esXai for the updated share values
+			const amountForKeyBucket2 = (poolAmount * keyBucketShare2) / rewardModifier;
+			const amountForEsXaiBucket2 = (poolAmount * esXaiBucketShare2) / rewardModifier;
+			const keyBucketTotalSupply2 = addr1KeyQuantity + addr2KeysToStake;
+			const amountPerKey2 = amountForKeyBucket2 / keyBucketTotalSupply2;
+			const esXaiBucketTotalSupply2 = addr2EsXaiToStake;
+			const amountPerEsXaiStaked2 = amountForEsXaiBucket2 / esXaiBucketTotalSupply2;
+
+			// Determine addr2 owed amount with updated shares
+			const addr2AmountFromKeys2 = addr2KeysToStake * amountPerKey2;
+			const addr2AmountFromEsXai2 = addr2EsXaiToStake * amountPerEsXaiStaked2;
+			const addr2TotalClaimAmount2 = addr2AmountFromKeys2 + addr2AmountFromEsXai2;
+
+			// addr2 claim rewards
+			const addr2balance1Pre = await esXai.connect(addr2).balanceOf(addr2Address);
+			await poolFactory.connect(addr2).claimFromPools([stakingPoolAddress]);
+			const addr2balance1Post = await esXai.connect(addr2).balanceOf(addr2Address);
+			expect(addr2balance1Post).to.equal(addr2balance1Pre + BigInt(Math.floor(addr2TotalClaimAmount2)));
 		});
 	}
 }
