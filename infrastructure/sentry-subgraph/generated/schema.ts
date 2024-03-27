@@ -5167,7 +5167,7 @@ export class NodeLicenseApproval extends Entity {
   }
 }
 
-export class ApprovalForAll extends Entity {
+export class NodeLicenseApprovalForAll extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -5175,25 +5175,28 @@ export class ApprovalForAll extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save ApprovalForAll entity without an ID");
+    assert(
+      id != null,
+      "Cannot save NodeLicenseApprovalForAll entity without an ID",
+    );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type ApprovalForAll must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type NodeLicenseApprovalForAll must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("ApprovalForAll", id.toBytes().toHexString(), this);
+      store.set("NodeLicenseApprovalForAll", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): ApprovalForAll | null {
-    return changetype<ApprovalForAll | null>(
-      store.get_in_block("ApprovalForAll", id.toHexString()),
+  static loadInBlock(id: Bytes): NodeLicenseApprovalForAll | null {
+    return changetype<NodeLicenseApprovalForAll | null>(
+      store.get_in_block("NodeLicenseApprovalForAll", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): ApprovalForAll | null {
-    return changetype<ApprovalForAll | null>(
-      store.get("ApprovalForAll", id.toHexString()),
+  static load(id: Bytes): NodeLicenseApprovalForAll | null {
+    return changetype<NodeLicenseApprovalForAll | null>(
+      store.get("NodeLicenseApprovalForAll", id.toHexString()),
     );
   }
 
@@ -5289,7 +5292,7 @@ export class ApprovalForAll extends Entity {
   }
 }
 
-export class ClaimableChanged extends Entity {
+export class NodeLicenseClaimableChanged extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -5297,25 +5300,32 @@ export class ClaimableChanged extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save ClaimableChanged entity without an ID");
+    assert(
+      id != null,
+      "Cannot save NodeLicenseClaimableChanged entity without an ID",
+    );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type ClaimableChanged must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type NodeLicenseClaimableChanged must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("ClaimableChanged", id.toBytes().toHexString(), this);
+      store.set(
+        "NodeLicenseClaimableChanged",
+        id.toBytes().toHexString(),
+        this,
+      );
     }
   }
 
-  static loadInBlock(id: Bytes): ClaimableChanged | null {
-    return changetype<ClaimableChanged | null>(
-      store.get_in_block("ClaimableChanged", id.toHexString()),
+  static loadInBlock(id: Bytes): NodeLicenseClaimableChanged | null {
+    return changetype<NodeLicenseClaimableChanged | null>(
+      store.get_in_block("NodeLicenseClaimableChanged", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): ClaimableChanged | null {
-    return changetype<ClaimableChanged | null>(
-      store.get("ClaimableChanged", id.toHexString()),
+  static load(id: Bytes): NodeLicenseClaimableChanged | null {
+    return changetype<NodeLicenseClaimableChanged | null>(
+      store.get("NodeLicenseClaimableChanged", id.toHexString()),
     );
   }
 
@@ -5398,7 +5408,7 @@ export class ClaimableChanged extends Entity {
   }
 }
 
-export class FundsReceiverChanged extends Entity {
+export class NodeLicenseFundsReceiverChanged extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -5406,25 +5416,32 @@ export class FundsReceiverChanged extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save FundsReceiverChanged entity without an ID");
+    assert(
+      id != null,
+      "Cannot save NodeLicenseFundsReceiverChanged entity without an ID",
+    );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type FundsReceiverChanged must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type NodeLicenseFundsReceiverChanged must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("FundsReceiverChanged", id.toBytes().toHexString(), this);
+      store.set(
+        "NodeLicenseFundsReceiverChanged",
+        id.toBytes().toHexString(),
+        this,
+      );
     }
   }
 
-  static loadInBlock(id: Bytes): FundsReceiverChanged | null {
-    return changetype<FundsReceiverChanged | null>(
-      store.get_in_block("FundsReceiverChanged", id.toHexString()),
+  static loadInBlock(id: Bytes): NodeLicenseFundsReceiverChanged | null {
+    return changetype<NodeLicenseFundsReceiverChanged | null>(
+      store.get_in_block("NodeLicenseFundsReceiverChanged", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): FundsReceiverChanged | null {
-    return changetype<FundsReceiverChanged | null>(
-      store.get("FundsReceiverChanged", id.toHexString()),
+  static load(id: Bytes): NodeLicenseFundsReceiverChanged | null {
+    return changetype<NodeLicenseFundsReceiverChanged | null>(
+      store.get("NodeLicenseFundsReceiverChanged", id.toHexString()),
     );
   }
 
@@ -5507,7 +5524,7 @@ export class FundsReceiverChanged extends Entity {
   }
 }
 
-export class FundsWithdrawn extends Entity {
+export class NodeLicenseFundsWithdrawn extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -5515,25 +5532,28 @@ export class FundsWithdrawn extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save FundsWithdrawn entity without an ID");
+    assert(
+      id != null,
+      "Cannot save NodeLicenseFundsWithdrawn entity without an ID",
+    );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type FundsWithdrawn must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type NodeLicenseFundsWithdrawn must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("FundsWithdrawn", id.toBytes().toHexString(), this);
+      store.set("NodeLicenseFundsWithdrawn", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): FundsWithdrawn | null {
-    return changetype<FundsWithdrawn | null>(
-      store.get_in_block("FundsWithdrawn", id.toHexString()),
+  static loadInBlock(id: Bytes): NodeLicenseFundsWithdrawn | null {
+    return changetype<NodeLicenseFundsWithdrawn | null>(
+      store.get_in_block("NodeLicenseFundsWithdrawn", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): FundsWithdrawn | null {
-    return changetype<FundsWithdrawn | null>(
-      store.get("FundsWithdrawn", id.toHexString()),
+  static load(id: Bytes): NodeLicenseFundsWithdrawn | null {
+    return changetype<NodeLicenseFundsWithdrawn | null>(
+      store.get("NodeLicenseFundsWithdrawn", id.toHexString()),
     );
   }
 
@@ -5715,7 +5735,7 @@ export class NodeLicenseInitialized extends Entity {
   }
 }
 
-export class PricingTierSetOrAdded extends Entity {
+export class NodeLicensePricingTierSetOrAdded extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -5725,26 +5745,30 @@ export class PricingTierSetOrAdded extends Entity {
     let id = this.get("id");
     assert(
       id != null,
-      "Cannot save PricingTierSetOrAdded entity without an ID",
+      "Cannot save NodeLicensePricingTierSetOrAdded entity without an ID",
     );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type PricingTierSetOrAdded must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type NodeLicensePricingTierSetOrAdded must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("PricingTierSetOrAdded", id.toBytes().toHexString(), this);
+      store.set(
+        "NodeLicensePricingTierSetOrAdded",
+        id.toBytes().toHexString(),
+        this,
+      );
     }
   }
 
-  static loadInBlock(id: Bytes): PricingTierSetOrAdded | null {
-    return changetype<PricingTierSetOrAdded | null>(
-      store.get_in_block("PricingTierSetOrAdded", id.toHexString()),
+  static loadInBlock(id: Bytes): NodeLicensePricingTierSetOrAdded | null {
+    return changetype<NodeLicensePricingTierSetOrAdded | null>(
+      store.get_in_block("NodeLicensePricingTierSetOrAdded", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): PricingTierSetOrAdded | null {
-    return changetype<PricingTierSetOrAdded | null>(
-      store.get("PricingTierSetOrAdded", id.toHexString()),
+  static load(id: Bytes): NodeLicensePricingTierSetOrAdded | null {
+    return changetype<NodeLicensePricingTierSetOrAdded | null>(
+      store.get("NodeLicensePricingTierSetOrAdded", id.toHexString()),
     );
   }
 
@@ -5840,7 +5864,7 @@ export class PricingTierSetOrAdded extends Entity {
   }
 }
 
-export class PromoCodeCreated extends Entity {
+export class NodeLicensePromoCodeCreated extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -5848,25 +5872,32 @@ export class PromoCodeCreated extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save PromoCodeCreated entity without an ID");
+    assert(
+      id != null,
+      "Cannot save NodeLicensePromoCodeCreated entity without an ID",
+    );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type PromoCodeCreated must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type NodeLicensePromoCodeCreated must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("PromoCodeCreated", id.toBytes().toHexString(), this);
+      store.set(
+        "NodeLicensePromoCodeCreated",
+        id.toBytes().toHexString(),
+        this,
+      );
     }
   }
 
-  static loadInBlock(id: Bytes): PromoCodeCreated | null {
-    return changetype<PromoCodeCreated | null>(
-      store.get_in_block("PromoCodeCreated", id.toHexString()),
+  static loadInBlock(id: Bytes): NodeLicensePromoCodeCreated | null {
+    return changetype<NodeLicensePromoCodeCreated | null>(
+      store.get_in_block("NodeLicensePromoCodeCreated", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): PromoCodeCreated | null {
-    return changetype<PromoCodeCreated | null>(
-      store.get("PromoCodeCreated", id.toHexString()),
+  static load(id: Bytes): NodeLicensePromoCodeCreated | null {
+    return changetype<NodeLicensePromoCodeCreated | null>(
+      store.get("NodeLicensePromoCodeCreated", id.toHexString()),
     );
   }
 
@@ -5949,7 +5980,7 @@ export class PromoCodeCreated extends Entity {
   }
 }
 
-export class PromoCodeRemoved extends Entity {
+export class NodeLicensePromoCodeRemoved extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -5957,25 +5988,32 @@ export class PromoCodeRemoved extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save PromoCodeRemoved entity without an ID");
+    assert(
+      id != null,
+      "Cannot save NodeLicensePromoCodeRemoved entity without an ID",
+    );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type PromoCodeRemoved must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type NodeLicensePromoCodeRemoved must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("PromoCodeRemoved", id.toBytes().toHexString(), this);
+      store.set(
+        "NodeLicensePromoCodeRemoved",
+        id.toBytes().toHexString(),
+        this,
+      );
     }
   }
 
-  static loadInBlock(id: Bytes): PromoCodeRemoved | null {
-    return changetype<PromoCodeRemoved | null>(
-      store.get_in_block("PromoCodeRemoved", id.toHexString()),
+  static loadInBlock(id: Bytes): NodeLicensePromoCodeRemoved | null {
+    return changetype<NodeLicensePromoCodeRemoved | null>(
+      store.get_in_block("NodeLicensePromoCodeRemoved", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): PromoCodeRemoved | null {
-    return changetype<PromoCodeRemoved | null>(
-      store.get("PromoCodeRemoved", id.toHexString()),
+  static load(id: Bytes): NodeLicensePromoCodeRemoved | null {
+    return changetype<NodeLicensePromoCodeRemoved | null>(
+      store.get("NodeLicensePromoCodeRemoved", id.toHexString()),
     );
   }
 
@@ -6045,7 +6083,7 @@ export class PromoCodeRemoved extends Entity {
   }
 }
 
-export class ReferralReward extends Entity {
+export class NodeLicenseReferralReward extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -6053,25 +6091,28 @@ export class ReferralReward extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save ReferralReward entity without an ID");
+    assert(
+      id != null,
+      "Cannot save NodeLicenseReferralReward entity without an ID",
+    );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type ReferralReward must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type NodeLicenseReferralReward must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("ReferralReward", id.toBytes().toHexString(), this);
+      store.set("NodeLicenseReferralReward", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): ReferralReward | null {
-    return changetype<ReferralReward | null>(
-      store.get_in_block("ReferralReward", id.toHexString()),
+  static loadInBlock(id: Bytes): NodeLicenseReferralReward | null {
+    return changetype<NodeLicenseReferralReward | null>(
+      store.get_in_block("NodeLicenseReferralReward", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): ReferralReward | null {
-    return changetype<ReferralReward | null>(
-      store.get("ReferralReward", id.toHexString()),
+  static load(id: Bytes): NodeLicenseReferralReward | null {
+    return changetype<NodeLicenseReferralReward | null>(
+      store.get("NodeLicenseReferralReward", id.toHexString()),
     );
   }
 
@@ -6167,7 +6208,7 @@ export class ReferralReward extends Entity {
   }
 }
 
-export class ReferralRewardPercentagesChanged extends Entity {
+export class NodeLicenseReferralRewardPercentagesChanged extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -6177,30 +6218,38 @@ export class ReferralRewardPercentagesChanged extends Entity {
     let id = this.get("id");
     assert(
       id != null,
-      "Cannot save ReferralRewardPercentagesChanged entity without an ID",
+      "Cannot save NodeLicenseReferralRewardPercentagesChanged entity without an ID",
     );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type ReferralRewardPercentagesChanged must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type NodeLicenseReferralRewardPercentagesChanged must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
       store.set(
-        "ReferralRewardPercentagesChanged",
+        "NodeLicenseReferralRewardPercentagesChanged",
         id.toBytes().toHexString(),
         this,
       );
     }
   }
 
-  static loadInBlock(id: Bytes): ReferralRewardPercentagesChanged | null {
-    return changetype<ReferralRewardPercentagesChanged | null>(
-      store.get_in_block("ReferralRewardPercentagesChanged", id.toHexString()),
+  static loadInBlock(
+    id: Bytes,
+  ): NodeLicenseReferralRewardPercentagesChanged | null {
+    return changetype<NodeLicenseReferralRewardPercentagesChanged | null>(
+      store.get_in_block(
+        "NodeLicenseReferralRewardPercentagesChanged",
+        id.toHexString(),
+      ),
     );
   }
 
-  static load(id: Bytes): ReferralRewardPercentagesChanged | null {
-    return changetype<ReferralRewardPercentagesChanged | null>(
-      store.get("ReferralRewardPercentagesChanged", id.toHexString()),
+  static load(id: Bytes): NodeLicenseReferralRewardPercentagesChanged | null {
+    return changetype<NodeLicenseReferralRewardPercentagesChanged | null>(
+      store.get(
+        "NodeLicenseReferralRewardPercentagesChanged",
+        id.toHexString(),
+      ),
     );
   }
 
@@ -6283,7 +6332,7 @@ export class ReferralRewardPercentagesChanged extends Entity {
   }
 }
 
-export class RefundOccurred extends Entity {
+export class NodeLicenseRefundOccurred extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -6291,25 +6340,28 @@ export class RefundOccurred extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save RefundOccurred entity without an ID");
+    assert(
+      id != null,
+      "Cannot save NodeLicenseRefundOccurred entity without an ID",
+    );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type RefundOccurred must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type NodeLicenseRefundOccurred must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("RefundOccurred", id.toBytes().toHexString(), this);
+      store.set("NodeLicenseRefundOccurred", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): RefundOccurred | null {
-    return changetype<RefundOccurred | null>(
-      store.get_in_block("RefundOccurred", id.toHexString()),
+  static loadInBlock(id: Bytes): NodeLicenseRefundOccurred | null {
+    return changetype<NodeLicenseRefundOccurred | null>(
+      store.get_in_block("NodeLicenseRefundOccurred", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): RefundOccurred | null {
-    return changetype<RefundOccurred | null>(
-      store.get("RefundOccurred", id.toHexString()),
+  static load(id: Bytes): NodeLicenseRefundOccurred | null {
+    return changetype<NodeLicenseRefundOccurred | null>(
+      store.get("NodeLicenseRefundOccurred", id.toHexString()),
     );
   }
 
@@ -6392,7 +6444,7 @@ export class RefundOccurred extends Entity {
   }
 }
 
-export class RewardClaimed extends Entity {
+export class NodeLicenseRewardClaimed extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -6400,25 +6452,28 @@ export class RewardClaimed extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save RewardClaimed entity without an ID");
+    assert(
+      id != null,
+      "Cannot save NodeLicenseRewardClaimed entity without an ID",
+    );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type RewardClaimed must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type NodeLicenseRewardClaimed must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("RewardClaimed", id.toBytes().toHexString(), this);
+      store.set("NodeLicenseRewardClaimed", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): RewardClaimed | null {
-    return changetype<RewardClaimed | null>(
-      store.get_in_block("RewardClaimed", id.toHexString()),
+  static loadInBlock(id: Bytes): NodeLicenseRewardClaimed | null {
+    return changetype<NodeLicenseRewardClaimed | null>(
+      store.get_in_block("NodeLicenseRewardClaimed", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): RewardClaimed | null {
-    return changetype<RewardClaimed | null>(
-      store.get("RewardClaimed", id.toHexString()),
+  static load(id: Bytes): NodeLicenseRewardClaimed | null {
+    return changetype<NodeLicenseRewardClaimed | null>(
+      store.get("NodeLicenseRewardClaimed", id.toHexString()),
     );
   }
 
@@ -7002,7 +7057,7 @@ export class NodeLicenseTransfer extends Entity {
   }
 }
 
-export class WhitelistAmountRedeemed extends Entity {
+export class NodeLicenseWhitelistAmountRedeemed extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -7012,26 +7067,33 @@ export class WhitelistAmountRedeemed extends Entity {
     let id = this.get("id");
     assert(
       id != null,
-      "Cannot save WhitelistAmountRedeemed entity without an ID",
+      "Cannot save NodeLicenseWhitelistAmountRedeemed entity without an ID",
     );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type WhitelistAmountRedeemed must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type NodeLicenseWhitelistAmountRedeemed must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("WhitelistAmountRedeemed", id.toBytes().toHexString(), this);
+      store.set(
+        "NodeLicenseWhitelistAmountRedeemed",
+        id.toBytes().toHexString(),
+        this,
+      );
     }
   }
 
-  static loadInBlock(id: Bytes): WhitelistAmountRedeemed | null {
-    return changetype<WhitelistAmountRedeemed | null>(
-      store.get_in_block("WhitelistAmountRedeemed", id.toHexString()),
+  static loadInBlock(id: Bytes): NodeLicenseWhitelistAmountRedeemed | null {
+    return changetype<NodeLicenseWhitelistAmountRedeemed | null>(
+      store.get_in_block(
+        "NodeLicenseWhitelistAmountRedeemed",
+        id.toHexString(),
+      ),
     );
   }
 
-  static load(id: Bytes): WhitelistAmountRedeemed | null {
-    return changetype<WhitelistAmountRedeemed | null>(
-      store.get("WhitelistAmountRedeemed", id.toHexString()),
+  static load(id: Bytes): NodeLicenseWhitelistAmountRedeemed | null {
+    return changetype<NodeLicenseWhitelistAmountRedeemed | null>(
+      store.get("NodeLicenseWhitelistAmountRedeemed", id.toHexString()),
     );
   }
 
@@ -7114,7 +7176,7 @@ export class WhitelistAmountRedeemed extends Entity {
   }
 }
 
-export class WhitelistAmountUpdatedByAdmin extends Entity {
+export class NodeLicenseWhitelistAmountUpdatedByAdmin extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -7124,30 +7186,35 @@ export class WhitelistAmountUpdatedByAdmin extends Entity {
     let id = this.get("id");
     assert(
       id != null,
-      "Cannot save WhitelistAmountUpdatedByAdmin entity without an ID",
+      "Cannot save NodeLicenseWhitelistAmountUpdatedByAdmin entity without an ID",
     );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type WhitelistAmountUpdatedByAdmin must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type NodeLicenseWhitelistAmountUpdatedByAdmin must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
       store.set(
-        "WhitelistAmountUpdatedByAdmin",
+        "NodeLicenseWhitelistAmountUpdatedByAdmin",
         id.toBytes().toHexString(),
         this,
       );
     }
   }
 
-  static loadInBlock(id: Bytes): WhitelistAmountUpdatedByAdmin | null {
-    return changetype<WhitelistAmountUpdatedByAdmin | null>(
-      store.get_in_block("WhitelistAmountUpdatedByAdmin", id.toHexString()),
+  static loadInBlock(
+    id: Bytes,
+  ): NodeLicenseWhitelistAmountUpdatedByAdmin | null {
+    return changetype<NodeLicenseWhitelistAmountUpdatedByAdmin | null>(
+      store.get_in_block(
+        "NodeLicenseWhitelistAmountUpdatedByAdmin",
+        id.toHexString(),
+      ),
     );
   }
 
-  static load(id: Bytes): WhitelistAmountUpdatedByAdmin | null {
-    return changetype<WhitelistAmountUpdatedByAdmin | null>(
-      store.get("WhitelistAmountUpdatedByAdmin", id.toHexString()),
+  static load(id: Bytes): NodeLicenseWhitelistAmountUpdatedByAdmin | null {
+    return changetype<NodeLicenseWhitelistAmountUpdatedByAdmin | null>(
+      store.get("NodeLicenseWhitelistAmountUpdatedByAdmin", id.toHexString()),
     );
   }
 

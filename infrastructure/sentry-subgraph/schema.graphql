@@ -412,7 +412,7 @@ type NodeLicenseApproval @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type ApprovalForAll @entity(immutable: true) {
+type NodeLicenseApprovalForAll @entity(immutable: true) {
   id: Bytes!
   owner: Bytes! # address
   operator: Bytes! # address
@@ -422,7 +422,7 @@ type ApprovalForAll @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type ClaimableChanged @entity(immutable: true) {
+type NodeLicenseClaimableChanged @entity(immutable: true) {
   id: Bytes!
   admin: Bytes! # address
   newClaimableState: Boolean! # bool
@@ -431,7 +431,7 @@ type ClaimableChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type FundsReceiverChanged @entity(immutable: true) {
+type NodeLicenseFundsReceiverChanged @entity(immutable: true) {
   id: Bytes!
   admin: Bytes! # address
   newFundsReceiver: Bytes! # address
@@ -440,7 +440,7 @@ type FundsReceiverChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type FundsWithdrawn @entity(immutable: true) {
+type NodeLicenseFundsWithdrawn @entity(immutable: true) {
   id: Bytes!
   admin: Bytes! # address
   amount: BigInt! # uint256
@@ -457,7 +457,7 @@ type NodeLicenseInitialized @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type PricingTierSetOrAdded @entity(immutable: true) {
+type NodeLicensePricingTierSetOrAdded @entity(immutable: true) {
   id: Bytes!
   index: BigInt! # uint256
   price: BigInt! # uint256
@@ -467,7 +467,7 @@ type PricingTierSetOrAdded @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type PromoCodeCreated @entity(immutable: true) {
+type NodeLicensePromoCodeCreated @entity(immutable: true) {
   id: Bytes!
   promoCode: String! # string
   recipient: Bytes! # address
@@ -476,7 +476,7 @@ type PromoCodeCreated @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type PromoCodeRemoved @entity(immutable: true) {
+type NodeLicensePromoCodeRemoved @entity(immutable: true) {
   id: Bytes!
   promoCode: String! # string
   blockNumber: BigInt!
@@ -484,7 +484,7 @@ type PromoCodeRemoved @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type ReferralReward @entity(immutable: true) {
+type NodeLicenseReferralReward @entity(immutable: true) {
   id: Bytes!
   buyer: Bytes! # address
   referralAddress: Bytes! # address
@@ -494,7 +494,7 @@ type ReferralReward @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type ReferralRewardPercentagesChanged @entity(immutable: true) {
+type NodeLicenseReferralRewardPercentagesChanged @entity(immutable: true) {
   id: Bytes!
   referralDiscountPercentage: BigInt! # uint256
   referralRewardPercentage: BigInt! # uint256
@@ -503,7 +503,7 @@ type ReferralRewardPercentagesChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefundOccurred @entity(immutable: true) {
+type NodeLicenseRefundOccurred @entity(immutable: true) {
   id: Bytes!
   refundee: Bytes! # address
   amount: BigInt! # uint256
@@ -512,7 +512,7 @@ type RefundOccurred @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RewardClaimed @entity(immutable: true) {
+type NodeLicenseRewardClaimed @entity(immutable: true) {
   id: Bytes!
   claimer: Bytes! # address
   amount: BigInt! # uint256
@@ -561,7 +561,7 @@ type NodeLicenseTransfer @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type WhitelistAmountRedeemed @entity(immutable: true) {
+type NodeLicenseWhitelistAmountRedeemed @entity(immutable: true) {
   id: Bytes!
   redeemer: Bytes! # address
   newAmount: Int! # uint16
@@ -570,7 +570,7 @@ type WhitelistAmountRedeemed @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type WhitelistAmountUpdatedByAdmin @entity(immutable: true) {
+type NodeLicenseWhitelistAmountUpdatedByAdmin @entity(immutable: true) {
   id: Bytes!
   redeemer: Bytes! # address
   newAmount: Int! # uint16
@@ -578,3 +578,4 @@ type WhitelistAmountUpdatedByAdmin @entity(immutable: true) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
+

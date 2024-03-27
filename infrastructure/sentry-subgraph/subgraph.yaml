@@ -217,24 +217,24 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - NodeLicenseApproval
-        - ApprovalForAll
-        - ClaimableChanged
-        - FundsReceiverChanged
-        - FundsWithdrawn
+        - NodeLicenseApprovalForAll
+        - NodeLicenseClaimableChanged
+        - NodeLicenseFundsReceiverChanged
+        - NodeLicenseFundsWithdrawn
         - NodeLicenseInitialized
-        - PricingTierSetOrAdded
-        - PromoCodeCreated
-        - PromoCodeRemoved
-        - ReferralReward
-        - ReferralRewardPercentagesChanged
-        - RefundOccurred
-        - RewardClaimed
+        - NodeLicensePricingTierSetOrAdded
+        - NodeLicensePromoCodeCreated
+        - NodeLicensePromoCodeRemoved
+        - NodeLicenseReferralReward
+        - NodeLicenseReferralRewardPercentagesChanged
+        - NodeLicenseRefundOccurred
+        - NodeLicenseRewardClaimed
         - NodeLicenseRoleAdminChanged
         - NodeLicenseRoleGranted
         - NodeLicenseRoleRevoked
         - NodeLicenseTransfer
-        - WhitelistAmountRedeemed
-        - WhitelistAmountUpdatedByAdmin
+        - NodeLicenseWhitelistAmountRedeemed
+        - NodeLicenseWhitelistAmountUpdatedByAdmin
       abis:
         - name: NodeLicense
           file: ./abis/NodeLicense.json
