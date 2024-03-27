@@ -9,18 +9,18 @@ import {
   Transfer as TransferEvent,
 } from "../generated/Xai/Xai"
 import {
-  Approval,
-  ConvertedToEsXai,
-  EsXaiAddressSet,
-  Initialized,
-  RoleAdminChanged,
-  RoleGranted,
-  RoleRevoked,
-  Transfer,
+  XaiApproval,
+  XaiConvertedToEsXai,
+  XaiEsXaiAddressSet,
+  XaiInitialized,
+  XaiRoleAdminChanged,
+  XaiRoleGranted,
+  XaiRoleRevoked,
+  XaiTransfer,
 } from "../generated/schema"
 
-export function handleApproval(event: ApprovalEvent): void {
-  let entity = new Approval(
+export function handleXaiApproval(event: ApprovalEvent): void {
+  let entity = new XaiApproval(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.owner = event.params.owner
@@ -34,8 +34,8 @@ export function handleApproval(event: ApprovalEvent): void {
   entity.save()
 }
 
-export function handleConvertedToEsXai(event: ConvertedToEsXaiEvent): void {
-  let entity = new ConvertedToEsXai(
+export function handleXaiConvertedToEsXai(event: ConvertedToEsXaiEvent): void {
+  let entity = new XaiConvertedToEsXai(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.user = event.params.user
@@ -48,8 +48,8 @@ export function handleConvertedToEsXai(event: ConvertedToEsXaiEvent): void {
   entity.save()
 }
 
-export function handleEsXaiAddressSet(event: EsXaiAddressSetEvent): void {
-  let entity = new EsXaiAddressSet(
+export function handleXaiEsXaiAddressSet(event: EsXaiAddressSetEvent): void {
+  let entity = new XaiEsXaiAddressSet(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.newEsXaiAddress = event.params.newEsXaiAddress
@@ -61,8 +61,8 @@ export function handleEsXaiAddressSet(event: EsXaiAddressSetEvent): void {
   entity.save()
 }
 
-export function handleInitialized(event: InitializedEvent): void {
-  let entity = new Initialized(
+export function handleXaiInitialized(event: InitializedEvent): void {
+  let entity = new XaiInitialized(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.version = event.params.version
@@ -74,8 +74,8 @@ export function handleInitialized(event: InitializedEvent): void {
   entity.save()
 }
 
-export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
-  let entity = new RoleAdminChanged(
+export function handleXaiRoleAdminChanged(event: RoleAdminChangedEvent): void {
+  let entity = new XaiRoleAdminChanged(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.role = event.params.role
@@ -89,8 +89,8 @@ export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
   entity.save()
 }
 
-export function handleRoleGranted(event: RoleGrantedEvent): void {
-  let entity = new RoleGranted(
+export function handleXaiRoleGranted(event: RoleGrantedEvent): void {
+  let entity = new XaiRoleGranted(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.role = event.params.role
@@ -104,8 +104,8 @@ export function handleRoleGranted(event: RoleGrantedEvent): void {
   entity.save()
 }
 
-export function handleRoleRevoked(event: RoleRevokedEvent): void {
-  let entity = new RoleRevoked(
+export function handleXaiRoleRevoked(event: RoleRevokedEvent): void {
+  let entity = new XaiRoleRevoked(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.role = event.params.role
@@ -119,8 +119,8 @@ export function handleRoleRevoked(event: RoleRevokedEvent): void {
   entity.save()
 }
 
-export function handleTransfer(event: TransferEvent): void {
-  let entity = new Transfer(
+export function handleXaiTransfer(event: TransferEvent): void {
+  let entity = new XaiTransfer(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.from = event.params.from

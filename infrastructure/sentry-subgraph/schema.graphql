@@ -27,7 +27,7 @@ type GasSubsidyRoleRevoked @entity(immutable: true) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
-type Approval @entity(immutable: true) {
+type XaiApproval @entity(immutable: true) {
   id: Bytes!
   owner: Bytes! # address
   spender: Bytes! # address
@@ -37,7 +37,7 @@ type Approval @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type ConvertedToEsXai @entity(immutable: true) {
+type XaiConvertedToEsXai @entity(immutable: true) {
   id: Bytes!
   user: Bytes! # address
   amount: BigInt! # uint256
@@ -46,7 +46,7 @@ type ConvertedToEsXai @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type EsXaiAddressSet @entity(immutable: true) {
+type XaiEsXaiAddressSet @entity(immutable: true) {
   id: Bytes!
   newEsXaiAddress: Bytes! # address
   blockNumber: BigInt!
@@ -54,7 +54,7 @@ type EsXaiAddressSet @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type Initialized @entity(immutable: true) {
+type XaiInitialized @entity(immutable: true) {
   id: Bytes!
   version: Int! # uint8
   blockNumber: BigInt!
@@ -62,7 +62,7 @@ type Initialized @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RoleAdminChanged @entity(immutable: true) {
+type XaiRoleAdminChanged @entity(immutable: true) {
   id: Bytes!
   role: Bytes! # bytes32
   previousAdminRole: Bytes! # bytes32
@@ -72,7 +72,7 @@ type RoleAdminChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RoleGranted @entity(immutable: true) {
+type XaiRoleGranted @entity(immutable: true) {
   id: Bytes!
   role: Bytes! # bytes32
   account: Bytes! # address
@@ -82,7 +82,7 @@ type RoleGranted @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RoleRevoked @entity(immutable: true) {
+type XaiRoleRevoked @entity(immutable: true) {
   id: Bytes!
   role: Bytes! # bytes32
   account: Bytes! # address
@@ -92,7 +92,7 @@ type RoleRevoked @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type Transfer @entity(immutable: true) {
+type XaiTransfer @entity(immutable: true) {
   id: Bytes!
   from: Bytes! # address
   to: Bytes! # address
@@ -228,7 +228,7 @@ type RefereeApproval @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type AssertionCheckingToggled @entity(immutable: true) {
+type RefereeAssertionCheckingToggled @entity(immutable: true) {
   id: Bytes!
   newState: Boolean! # bool
   blockNumber: BigInt!
@@ -236,7 +236,7 @@ type AssertionCheckingToggled @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type AssertionSubmitted @entity(immutable: true) {
+type RefereeAssertionSubmitted @entity(immutable: true) {
   id: Bytes!
   challengeId: BigInt! # uint256
   nodeLicenseId: BigInt! # uint256
@@ -245,7 +245,7 @@ type AssertionSubmitted @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type ChallengeClosed @entity(immutable: true) {
+type RefereeChallengeClosed @entity(immutable: true) {
   id: Bytes!
   challengeNumber: BigInt! # uint256
   blockNumber: BigInt!
@@ -253,7 +253,7 @@ type ChallengeClosed @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type ChallengeExpired @entity(immutable: true) {
+type RefereeChallengeExpired @entity(immutable: true) {
   id: Bytes!
   challengeId: BigInt! # uint256
   blockNumber: BigInt!
@@ -261,7 +261,7 @@ type ChallengeExpired @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type ChallengeSubmitted @entity(immutable: true) {
+type RefereeChallengeSubmitted @entity(immutable: true) {
   id: Bytes!
   challengeNumber: BigInt! # uint256
   blockNumber: BigInt!
@@ -269,7 +269,7 @@ type ChallengeSubmitted @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type ChallengerPublicKeyChanged @entity(immutable: true) {
+type RefereeChallengerPublicKeyChanged @entity(immutable: true) {
   id: Bytes!
   newChallengerPublicKey: Bytes! # bytes
   blockNumber: BigInt!
@@ -285,7 +285,7 @@ type RefereeInitialized @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type InvalidSubmission @entity(immutable: true) {
+type RefereeInvalidSubmission @entity(immutable: true) {
   id: Bytes!
   challengeId: BigInt! # uint256
   nodeLicenseId: BigInt! # uint256
@@ -294,7 +294,7 @@ type InvalidSubmission @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type KycStatusChanged @entity(immutable: true) {
+type RefereeKycStatusChanged @entity(immutable: true) {
   id: Bytes!
   wallet: Bytes! # address
   isKycApproved: Boolean! # bool
@@ -303,7 +303,7 @@ type KycStatusChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NodeLicenseAddressChanged @entity(immutable: true) {
+type RefereeNodeLicenseAddressChanged @entity(immutable: true) {
   id: Bytes!
   newNodeLicenseAddress: Bytes! # address
   blockNumber: BigInt!
@@ -311,7 +311,7 @@ type NodeLicenseAddressChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RewardsClaimed @entity(immutable: true) {
+type RefereeRewardsClaimed @entity(immutable: true) {
   id: Bytes!
   challengeId: BigInt! # uint256
   amount: BigInt! # uint256
@@ -350,7 +350,7 @@ type RefereeRoleRevoked @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RollupAddressChanged @entity(immutable: true) {
+type RefereeRollupAddressChanged @entity(immutable: true) {
   id: Bytes!
   newRollupAddress: Bytes! # address
   blockNumber: BigInt!
@@ -358,7 +358,7 @@ type RollupAddressChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type StakedV1 @entity(immutable: true) {
+type RefereeStakedV1 @entity(immutable: true) {
   id: Bytes!
   user: Bytes! # address
   amount: BigInt! # uint256
@@ -368,15 +368,14 @@ type StakedV1 @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type StakingEnabled @entity(immutable: true) {
+type RefereeStakingEnabled @entity(immutable: true) {
   id: Bytes!
-
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
 
-type UnstakeV1 @entity(immutable: true) {
+type RefereeUnstakeV1 @entity(immutable: true) {
   id: Bytes!
   user: Bytes! # address
   amount: BigInt! # uint256
@@ -386,7 +385,7 @@ type UnstakeV1 @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type UpdateMaxStakeAmount @entity(immutable: true) {
+type RefereeUpdateMaxStakeAmount @entity(immutable: true) {
   id: Bytes!
   prevAmount: BigInt! # uint256
   newAmount: BigInt! # uint256

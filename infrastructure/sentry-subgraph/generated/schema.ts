@@ -386,7 +386,7 @@ export class GasSubsidyRoleRevoked extends Entity {
   }
 }
 
-export class Approval extends Entity {
+export class XaiApproval extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -394,24 +394,26 @@ export class Approval extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save Approval entity without an ID");
+    assert(id != null, "Cannot save XaiApproval entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type Approval must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type XaiApproval must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("Approval", id.toBytes().toHexString(), this);
+      store.set("XaiApproval", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): Approval | null {
-    return changetype<Approval | null>(
-      store.get_in_block("Approval", id.toHexString()),
+  static loadInBlock(id: Bytes): XaiApproval | null {
+    return changetype<XaiApproval | null>(
+      store.get_in_block("XaiApproval", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): Approval | null {
-    return changetype<Approval | null>(store.get("Approval", id.toHexString()));
+  static load(id: Bytes): XaiApproval | null {
+    return changetype<XaiApproval | null>(
+      store.get("XaiApproval", id.toHexString()),
+    );
   }
 
   get id(): Bytes {
@@ -506,7 +508,7 @@ export class Approval extends Entity {
   }
 }
 
-export class ConvertedToEsXai extends Entity {
+export class XaiConvertedToEsXai extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -514,25 +516,25 @@ export class ConvertedToEsXai extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save ConvertedToEsXai entity without an ID");
+    assert(id != null, "Cannot save XaiConvertedToEsXai entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type ConvertedToEsXai must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type XaiConvertedToEsXai must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("ConvertedToEsXai", id.toBytes().toHexString(), this);
+      store.set("XaiConvertedToEsXai", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): ConvertedToEsXai | null {
-    return changetype<ConvertedToEsXai | null>(
-      store.get_in_block("ConvertedToEsXai", id.toHexString()),
+  static loadInBlock(id: Bytes): XaiConvertedToEsXai | null {
+    return changetype<XaiConvertedToEsXai | null>(
+      store.get_in_block("XaiConvertedToEsXai", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): ConvertedToEsXai | null {
-    return changetype<ConvertedToEsXai | null>(
-      store.get("ConvertedToEsXai", id.toHexString()),
+  static load(id: Bytes): XaiConvertedToEsXai | null {
+    return changetype<XaiConvertedToEsXai | null>(
+      store.get("XaiConvertedToEsXai", id.toHexString()),
     );
   }
 
@@ -615,7 +617,7 @@ export class ConvertedToEsXai extends Entity {
   }
 }
 
-export class EsXaiAddressSet extends Entity {
+export class XaiEsXaiAddressSet extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -623,25 +625,25 @@ export class EsXaiAddressSet extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save EsXaiAddressSet entity without an ID");
+    assert(id != null, "Cannot save XaiEsXaiAddressSet entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type EsXaiAddressSet must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type XaiEsXaiAddressSet must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("EsXaiAddressSet", id.toBytes().toHexString(), this);
+      store.set("XaiEsXaiAddressSet", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): EsXaiAddressSet | null {
-    return changetype<EsXaiAddressSet | null>(
-      store.get_in_block("EsXaiAddressSet", id.toHexString()),
+  static loadInBlock(id: Bytes): XaiEsXaiAddressSet | null {
+    return changetype<XaiEsXaiAddressSet | null>(
+      store.get_in_block("XaiEsXaiAddressSet", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): EsXaiAddressSet | null {
-    return changetype<EsXaiAddressSet | null>(
-      store.get("EsXaiAddressSet", id.toHexString()),
+  static load(id: Bytes): XaiEsXaiAddressSet | null {
+    return changetype<XaiEsXaiAddressSet | null>(
+      store.get("XaiEsXaiAddressSet", id.toHexString()),
     );
   }
 
@@ -711,7 +713,7 @@ export class EsXaiAddressSet extends Entity {
   }
 }
 
-export class Initialized extends Entity {
+export class XaiInitialized extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -719,25 +721,25 @@ export class Initialized extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save Initialized entity without an ID");
+    assert(id != null, "Cannot save XaiInitialized entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type Initialized must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type XaiInitialized must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("Initialized", id.toBytes().toHexString(), this);
+      store.set("XaiInitialized", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): Initialized | null {
-    return changetype<Initialized | null>(
-      store.get_in_block("Initialized", id.toHexString()),
+  static loadInBlock(id: Bytes): XaiInitialized | null {
+    return changetype<XaiInitialized | null>(
+      store.get_in_block("XaiInitialized", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): Initialized | null {
-    return changetype<Initialized | null>(
-      store.get("Initialized", id.toHexString()),
+  static load(id: Bytes): XaiInitialized | null {
+    return changetype<XaiInitialized | null>(
+      store.get("XaiInitialized", id.toHexString()),
     );
   }
 
@@ -807,7 +809,7 @@ export class Initialized extends Entity {
   }
 }
 
-export class RoleAdminChanged extends Entity {
+export class XaiRoleAdminChanged extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -815,25 +817,25 @@ export class RoleAdminChanged extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save RoleAdminChanged entity without an ID");
+    assert(id != null, "Cannot save XaiRoleAdminChanged entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type RoleAdminChanged must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type XaiRoleAdminChanged must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("RoleAdminChanged", id.toBytes().toHexString(), this);
+      store.set("XaiRoleAdminChanged", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): RoleAdminChanged | null {
-    return changetype<RoleAdminChanged | null>(
-      store.get_in_block("RoleAdminChanged", id.toHexString()),
+  static loadInBlock(id: Bytes): XaiRoleAdminChanged | null {
+    return changetype<XaiRoleAdminChanged | null>(
+      store.get_in_block("XaiRoleAdminChanged", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): RoleAdminChanged | null {
-    return changetype<RoleAdminChanged | null>(
-      store.get("RoleAdminChanged", id.toHexString()),
+  static load(id: Bytes): XaiRoleAdminChanged | null {
+    return changetype<XaiRoleAdminChanged | null>(
+      store.get("XaiRoleAdminChanged", id.toHexString()),
     );
   }
 
@@ -929,7 +931,7 @@ export class RoleAdminChanged extends Entity {
   }
 }
 
-export class RoleGranted extends Entity {
+export class XaiRoleGranted extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -937,25 +939,25 @@ export class RoleGranted extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save RoleGranted entity without an ID");
+    assert(id != null, "Cannot save XaiRoleGranted entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type RoleGranted must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type XaiRoleGranted must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("RoleGranted", id.toBytes().toHexString(), this);
+      store.set("XaiRoleGranted", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): RoleGranted | null {
-    return changetype<RoleGranted | null>(
-      store.get_in_block("RoleGranted", id.toHexString()),
+  static loadInBlock(id: Bytes): XaiRoleGranted | null {
+    return changetype<XaiRoleGranted | null>(
+      store.get_in_block("XaiRoleGranted", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): RoleGranted | null {
-    return changetype<RoleGranted | null>(
-      store.get("RoleGranted", id.toHexString()),
+  static load(id: Bytes): XaiRoleGranted | null {
+    return changetype<XaiRoleGranted | null>(
+      store.get("XaiRoleGranted", id.toHexString()),
     );
   }
 
@@ -1051,7 +1053,7 @@ export class RoleGranted extends Entity {
   }
 }
 
-export class RoleRevoked extends Entity {
+export class XaiRoleRevoked extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -1059,25 +1061,25 @@ export class RoleRevoked extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save RoleRevoked entity without an ID");
+    assert(id != null, "Cannot save XaiRoleRevoked entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type RoleRevoked must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type XaiRoleRevoked must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("RoleRevoked", id.toBytes().toHexString(), this);
+      store.set("XaiRoleRevoked", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): RoleRevoked | null {
-    return changetype<RoleRevoked | null>(
-      store.get_in_block("RoleRevoked", id.toHexString()),
+  static loadInBlock(id: Bytes): XaiRoleRevoked | null {
+    return changetype<XaiRoleRevoked | null>(
+      store.get_in_block("XaiRoleRevoked", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): RoleRevoked | null {
-    return changetype<RoleRevoked | null>(
-      store.get("RoleRevoked", id.toHexString()),
+  static load(id: Bytes): XaiRoleRevoked | null {
+    return changetype<XaiRoleRevoked | null>(
+      store.get("XaiRoleRevoked", id.toHexString()),
     );
   }
 
@@ -1173,7 +1175,7 @@ export class RoleRevoked extends Entity {
   }
 }
 
-export class Transfer extends Entity {
+export class XaiTransfer extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -1181,24 +1183,26 @@ export class Transfer extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save Transfer entity without an ID");
+    assert(id != null, "Cannot save XaiTransfer entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type Transfer must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type XaiTransfer must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("Transfer", id.toBytes().toHexString(), this);
+      store.set("XaiTransfer", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): Transfer | null {
-    return changetype<Transfer | null>(
-      store.get_in_block("Transfer", id.toHexString()),
+  static loadInBlock(id: Bytes): XaiTransfer | null {
+    return changetype<XaiTransfer | null>(
+      store.get_in_block("XaiTransfer", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): Transfer | null {
-    return changetype<Transfer | null>(store.get("Transfer", id.toHexString()));
+  static load(id: Bytes): XaiTransfer | null {
+    return changetype<XaiTransfer | null>(
+      store.get("XaiTransfer", id.toHexString()),
+    );
   }
 
   get id(): Bytes {
@@ -2858,7 +2862,7 @@ export class RefereeApproval extends Entity {
   }
 }
 
-export class AssertionCheckingToggled extends Entity {
+export class RefereeAssertionCheckingToggled extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -2868,26 +2872,30 @@ export class AssertionCheckingToggled extends Entity {
     let id = this.get("id");
     assert(
       id != null,
-      "Cannot save AssertionCheckingToggled entity without an ID",
+      "Cannot save RefereeAssertionCheckingToggled entity without an ID",
     );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type AssertionCheckingToggled must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type RefereeAssertionCheckingToggled must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("AssertionCheckingToggled", id.toBytes().toHexString(), this);
+      store.set(
+        "RefereeAssertionCheckingToggled",
+        id.toBytes().toHexString(),
+        this,
+      );
     }
   }
 
-  static loadInBlock(id: Bytes): AssertionCheckingToggled | null {
-    return changetype<AssertionCheckingToggled | null>(
-      store.get_in_block("AssertionCheckingToggled", id.toHexString()),
+  static loadInBlock(id: Bytes): RefereeAssertionCheckingToggled | null {
+    return changetype<RefereeAssertionCheckingToggled | null>(
+      store.get_in_block("RefereeAssertionCheckingToggled", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): AssertionCheckingToggled | null {
-    return changetype<AssertionCheckingToggled | null>(
-      store.get("AssertionCheckingToggled", id.toHexString()),
+  static load(id: Bytes): RefereeAssertionCheckingToggled | null {
+    return changetype<RefereeAssertionCheckingToggled | null>(
+      store.get("RefereeAssertionCheckingToggled", id.toHexString()),
     );
   }
 
@@ -2957,7 +2965,7 @@ export class AssertionCheckingToggled extends Entity {
   }
 }
 
-export class AssertionSubmitted extends Entity {
+export class RefereeAssertionSubmitted extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -2965,25 +2973,28 @@ export class AssertionSubmitted extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save AssertionSubmitted entity without an ID");
+    assert(
+      id != null,
+      "Cannot save RefereeAssertionSubmitted entity without an ID",
+    );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type AssertionSubmitted must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type RefereeAssertionSubmitted must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("AssertionSubmitted", id.toBytes().toHexString(), this);
+      store.set("RefereeAssertionSubmitted", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): AssertionSubmitted | null {
-    return changetype<AssertionSubmitted | null>(
-      store.get_in_block("AssertionSubmitted", id.toHexString()),
+  static loadInBlock(id: Bytes): RefereeAssertionSubmitted | null {
+    return changetype<RefereeAssertionSubmitted | null>(
+      store.get_in_block("RefereeAssertionSubmitted", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): AssertionSubmitted | null {
-    return changetype<AssertionSubmitted | null>(
-      store.get("AssertionSubmitted", id.toHexString()),
+  static load(id: Bytes): RefereeAssertionSubmitted | null {
+    return changetype<RefereeAssertionSubmitted | null>(
+      store.get("RefereeAssertionSubmitted", id.toHexString()),
     );
   }
 
@@ -3066,7 +3077,7 @@ export class AssertionSubmitted extends Entity {
   }
 }
 
-export class ChallengeClosed extends Entity {
+export class RefereeChallengeClosed extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -3074,25 +3085,28 @@ export class ChallengeClosed extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save ChallengeClosed entity without an ID");
+    assert(
+      id != null,
+      "Cannot save RefereeChallengeClosed entity without an ID",
+    );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type ChallengeClosed must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type RefereeChallengeClosed must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("ChallengeClosed", id.toBytes().toHexString(), this);
+      store.set("RefereeChallengeClosed", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): ChallengeClosed | null {
-    return changetype<ChallengeClosed | null>(
-      store.get_in_block("ChallengeClosed", id.toHexString()),
+  static loadInBlock(id: Bytes): RefereeChallengeClosed | null {
+    return changetype<RefereeChallengeClosed | null>(
+      store.get_in_block("RefereeChallengeClosed", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): ChallengeClosed | null {
-    return changetype<ChallengeClosed | null>(
-      store.get("ChallengeClosed", id.toHexString()),
+  static load(id: Bytes): RefereeChallengeClosed | null {
+    return changetype<RefereeChallengeClosed | null>(
+      store.get("RefereeChallengeClosed", id.toHexString()),
     );
   }
 
@@ -3162,7 +3176,7 @@ export class ChallengeClosed extends Entity {
   }
 }
 
-export class ChallengeExpired extends Entity {
+export class RefereeChallengeExpired extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -3170,25 +3184,28 @@ export class ChallengeExpired extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save ChallengeExpired entity without an ID");
+    assert(
+      id != null,
+      "Cannot save RefereeChallengeExpired entity without an ID",
+    );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type ChallengeExpired must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type RefereeChallengeExpired must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("ChallengeExpired", id.toBytes().toHexString(), this);
+      store.set("RefereeChallengeExpired", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): ChallengeExpired | null {
-    return changetype<ChallengeExpired | null>(
-      store.get_in_block("ChallengeExpired", id.toHexString()),
+  static loadInBlock(id: Bytes): RefereeChallengeExpired | null {
+    return changetype<RefereeChallengeExpired | null>(
+      store.get_in_block("RefereeChallengeExpired", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): ChallengeExpired | null {
-    return changetype<ChallengeExpired | null>(
-      store.get("ChallengeExpired", id.toHexString()),
+  static load(id: Bytes): RefereeChallengeExpired | null {
+    return changetype<RefereeChallengeExpired | null>(
+      store.get("RefereeChallengeExpired", id.toHexString()),
     );
   }
 
@@ -3258,7 +3275,7 @@ export class ChallengeExpired extends Entity {
   }
 }
 
-export class ChallengeSubmitted extends Entity {
+export class RefereeChallengeSubmitted extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -3266,25 +3283,28 @@ export class ChallengeSubmitted extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save ChallengeSubmitted entity without an ID");
+    assert(
+      id != null,
+      "Cannot save RefereeChallengeSubmitted entity without an ID",
+    );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type ChallengeSubmitted must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type RefereeChallengeSubmitted must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("ChallengeSubmitted", id.toBytes().toHexString(), this);
+      store.set("RefereeChallengeSubmitted", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): ChallengeSubmitted | null {
-    return changetype<ChallengeSubmitted | null>(
-      store.get_in_block("ChallengeSubmitted", id.toHexString()),
+  static loadInBlock(id: Bytes): RefereeChallengeSubmitted | null {
+    return changetype<RefereeChallengeSubmitted | null>(
+      store.get_in_block("RefereeChallengeSubmitted", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): ChallengeSubmitted | null {
-    return changetype<ChallengeSubmitted | null>(
-      store.get("ChallengeSubmitted", id.toHexString()),
+  static load(id: Bytes): RefereeChallengeSubmitted | null {
+    return changetype<RefereeChallengeSubmitted | null>(
+      store.get("RefereeChallengeSubmitted", id.toHexString()),
     );
   }
 
@@ -3354,7 +3374,7 @@ export class ChallengeSubmitted extends Entity {
   }
 }
 
-export class ChallengerPublicKeyChanged extends Entity {
+export class RefereeChallengerPublicKeyChanged extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -3364,26 +3384,30 @@ export class ChallengerPublicKeyChanged extends Entity {
     let id = this.get("id");
     assert(
       id != null,
-      "Cannot save ChallengerPublicKeyChanged entity without an ID",
+      "Cannot save RefereeChallengerPublicKeyChanged entity without an ID",
     );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type ChallengerPublicKeyChanged must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type RefereeChallengerPublicKeyChanged must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("ChallengerPublicKeyChanged", id.toBytes().toHexString(), this);
+      store.set(
+        "RefereeChallengerPublicKeyChanged",
+        id.toBytes().toHexString(),
+        this,
+      );
     }
   }
 
-  static loadInBlock(id: Bytes): ChallengerPublicKeyChanged | null {
-    return changetype<ChallengerPublicKeyChanged | null>(
-      store.get_in_block("ChallengerPublicKeyChanged", id.toHexString()),
+  static loadInBlock(id: Bytes): RefereeChallengerPublicKeyChanged | null {
+    return changetype<RefereeChallengerPublicKeyChanged | null>(
+      store.get_in_block("RefereeChallengerPublicKeyChanged", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): ChallengerPublicKeyChanged | null {
-    return changetype<ChallengerPublicKeyChanged | null>(
-      store.get("ChallengerPublicKeyChanged", id.toHexString()),
+  static load(id: Bytes): RefereeChallengerPublicKeyChanged | null {
+    return changetype<RefereeChallengerPublicKeyChanged | null>(
+      store.get("RefereeChallengerPublicKeyChanged", id.toHexString()),
     );
   }
 
@@ -3549,7 +3573,7 @@ export class RefereeInitialized extends Entity {
   }
 }
 
-export class InvalidSubmission extends Entity {
+export class RefereeInvalidSubmission extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -3557,25 +3581,28 @@ export class InvalidSubmission extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save InvalidSubmission entity without an ID");
+    assert(
+      id != null,
+      "Cannot save RefereeInvalidSubmission entity without an ID",
+    );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type InvalidSubmission must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type RefereeInvalidSubmission must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("InvalidSubmission", id.toBytes().toHexString(), this);
+      store.set("RefereeInvalidSubmission", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): InvalidSubmission | null {
-    return changetype<InvalidSubmission | null>(
-      store.get_in_block("InvalidSubmission", id.toHexString()),
+  static loadInBlock(id: Bytes): RefereeInvalidSubmission | null {
+    return changetype<RefereeInvalidSubmission | null>(
+      store.get_in_block("RefereeInvalidSubmission", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): InvalidSubmission | null {
-    return changetype<InvalidSubmission | null>(
-      store.get("InvalidSubmission", id.toHexString()),
+  static load(id: Bytes): RefereeInvalidSubmission | null {
+    return changetype<RefereeInvalidSubmission | null>(
+      store.get("RefereeInvalidSubmission", id.toHexString()),
     );
   }
 
@@ -3658,7 +3685,7 @@ export class InvalidSubmission extends Entity {
   }
 }
 
-export class KycStatusChanged extends Entity {
+export class RefereeKycStatusChanged extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -3666,25 +3693,28 @@ export class KycStatusChanged extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save KycStatusChanged entity without an ID");
+    assert(
+      id != null,
+      "Cannot save RefereeKycStatusChanged entity without an ID",
+    );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type KycStatusChanged must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type RefereeKycStatusChanged must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("KycStatusChanged", id.toBytes().toHexString(), this);
+      store.set("RefereeKycStatusChanged", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): KycStatusChanged | null {
-    return changetype<KycStatusChanged | null>(
-      store.get_in_block("KycStatusChanged", id.toHexString()),
+  static loadInBlock(id: Bytes): RefereeKycStatusChanged | null {
+    return changetype<RefereeKycStatusChanged | null>(
+      store.get_in_block("RefereeKycStatusChanged", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): KycStatusChanged | null {
-    return changetype<KycStatusChanged | null>(
-      store.get("KycStatusChanged", id.toHexString()),
+  static load(id: Bytes): RefereeKycStatusChanged | null {
+    return changetype<RefereeKycStatusChanged | null>(
+      store.get("RefereeKycStatusChanged", id.toHexString()),
     );
   }
 
@@ -3767,7 +3797,7 @@ export class KycStatusChanged extends Entity {
   }
 }
 
-export class NodeLicenseAddressChanged extends Entity {
+export class RefereeNodeLicenseAddressChanged extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -3777,26 +3807,30 @@ export class NodeLicenseAddressChanged extends Entity {
     let id = this.get("id");
     assert(
       id != null,
-      "Cannot save NodeLicenseAddressChanged entity without an ID",
+      "Cannot save RefereeNodeLicenseAddressChanged entity without an ID",
     );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type NodeLicenseAddressChanged must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type RefereeNodeLicenseAddressChanged must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("NodeLicenseAddressChanged", id.toBytes().toHexString(), this);
+      store.set(
+        "RefereeNodeLicenseAddressChanged",
+        id.toBytes().toHexString(),
+        this,
+      );
     }
   }
 
-  static loadInBlock(id: Bytes): NodeLicenseAddressChanged | null {
-    return changetype<NodeLicenseAddressChanged | null>(
-      store.get_in_block("NodeLicenseAddressChanged", id.toHexString()),
+  static loadInBlock(id: Bytes): RefereeNodeLicenseAddressChanged | null {
+    return changetype<RefereeNodeLicenseAddressChanged | null>(
+      store.get_in_block("RefereeNodeLicenseAddressChanged", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): NodeLicenseAddressChanged | null {
-    return changetype<NodeLicenseAddressChanged | null>(
-      store.get("NodeLicenseAddressChanged", id.toHexString()),
+  static load(id: Bytes): RefereeNodeLicenseAddressChanged | null {
+    return changetype<RefereeNodeLicenseAddressChanged | null>(
+      store.get("RefereeNodeLicenseAddressChanged", id.toHexString()),
     );
   }
 
@@ -3866,7 +3900,7 @@ export class NodeLicenseAddressChanged extends Entity {
   }
 }
 
-export class RewardsClaimed extends Entity {
+export class RefereeRewardsClaimed extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -3874,25 +3908,28 @@ export class RewardsClaimed extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save RewardsClaimed entity without an ID");
+    assert(
+      id != null,
+      "Cannot save RefereeRewardsClaimed entity without an ID",
+    );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type RewardsClaimed must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type RefereeRewardsClaimed must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("RewardsClaimed", id.toBytes().toHexString(), this);
+      store.set("RefereeRewardsClaimed", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): RewardsClaimed | null {
-    return changetype<RewardsClaimed | null>(
-      store.get_in_block("RewardsClaimed", id.toHexString()),
+  static loadInBlock(id: Bytes): RefereeRewardsClaimed | null {
+    return changetype<RefereeRewardsClaimed | null>(
+      store.get_in_block("RefereeRewardsClaimed", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): RewardsClaimed | null {
-    return changetype<RewardsClaimed | null>(
-      store.get("RewardsClaimed", id.toHexString()),
+  static load(id: Bytes): RefereeRewardsClaimed | null {
+    return changetype<RefereeRewardsClaimed | null>(
+      store.get("RefereeRewardsClaimed", id.toHexString()),
     );
   }
 
@@ -4344,7 +4381,7 @@ export class RefereeRoleRevoked extends Entity {
   }
 }
 
-export class RollupAddressChanged extends Entity {
+export class RefereeRollupAddressChanged extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -4352,25 +4389,32 @@ export class RollupAddressChanged extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save RollupAddressChanged entity without an ID");
+    assert(
+      id != null,
+      "Cannot save RefereeRollupAddressChanged entity without an ID",
+    );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type RollupAddressChanged must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type RefereeRollupAddressChanged must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("RollupAddressChanged", id.toBytes().toHexString(), this);
+      store.set(
+        "RefereeRollupAddressChanged",
+        id.toBytes().toHexString(),
+        this,
+      );
     }
   }
 
-  static loadInBlock(id: Bytes): RollupAddressChanged | null {
-    return changetype<RollupAddressChanged | null>(
-      store.get_in_block("RollupAddressChanged", id.toHexString()),
+  static loadInBlock(id: Bytes): RefereeRollupAddressChanged | null {
+    return changetype<RefereeRollupAddressChanged | null>(
+      store.get_in_block("RefereeRollupAddressChanged", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): RollupAddressChanged | null {
-    return changetype<RollupAddressChanged | null>(
-      store.get("RollupAddressChanged", id.toHexString()),
+  static load(id: Bytes): RefereeRollupAddressChanged | null {
+    return changetype<RefereeRollupAddressChanged | null>(
+      store.get("RefereeRollupAddressChanged", id.toHexString()),
     );
   }
 
@@ -4440,7 +4484,7 @@ export class RollupAddressChanged extends Entity {
   }
 }
 
-export class StakedV1 extends Entity {
+export class RefereeStakedV1 extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -4448,228 +4492,25 @@ export class StakedV1 extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save StakedV1 entity without an ID");
+    assert(id != null, "Cannot save RefereeStakedV1 entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type StakedV1 must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type RefereeStakedV1 must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("StakedV1", id.toBytes().toHexString(), this);
+      store.set("RefereeStakedV1", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): StakedV1 | null {
-    return changetype<StakedV1 | null>(
-      store.get_in_block("StakedV1", id.toHexString()),
+  static loadInBlock(id: Bytes): RefereeStakedV1 | null {
+    return changetype<RefereeStakedV1 | null>(
+      store.get_in_block("RefereeStakedV1", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): StakedV1 | null {
-    return changetype<StakedV1 | null>(store.get("StakedV1", id.toHexString()));
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBytes();
-    }
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get user(): Bytes {
-    let value = this.get("user");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBytes();
-    }
-  }
-
-  set user(value: Bytes) {
-    this.set("user", Value.fromBytes(value));
-  }
-
-  get amount(): BigInt {
-    let value = this.get("amount");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set amount(value: BigInt) {
-    this.set("amount", Value.fromBigInt(value));
-  }
-
-  get totalStaked(): BigInt {
-    let value = this.get("totalStaked");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set totalStaked(value: BigInt) {
-    this.set("totalStaked", Value.fromBigInt(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBytes();
-    }
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class StakingEnabled extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save StakingEnabled entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type StakingEnabled must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
-      );
-      store.set("StakingEnabled", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static loadInBlock(id: Bytes): StakingEnabled | null {
-    return changetype<StakingEnabled | null>(
-      store.get_in_block("StakingEnabled", id.toHexString()),
-    );
-  }
-
-  static load(id: Bytes): StakingEnabled | null {
-    return changetype<StakingEnabled | null>(
-      store.get("StakingEnabled", id.toHexString()),
-    );
-  }
-
-  get id(): Bytes {
-    let value = this.get("id");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBytes();
-    }
-  }
-
-  set id(value: Bytes) {
-    this.set("id", Value.fromBytes(value));
-  }
-
-  get blockNumber(): BigInt {
-    let value = this.get("blockNumber");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set blockNumber(value: BigInt) {
-    this.set("blockNumber", Value.fromBigInt(value));
-  }
-
-  get blockTimestamp(): BigInt {
-    let value = this.get("blockTimestamp");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBigInt();
-    }
-  }
-
-  set blockTimestamp(value: BigInt) {
-    this.set("blockTimestamp", Value.fromBigInt(value));
-  }
-
-  get transactionHash(): Bytes {
-    let value = this.get("transactionHash");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBytes();
-    }
-  }
-
-  set transactionHash(value: Bytes) {
-    this.set("transactionHash", Value.fromBytes(value));
-  }
-}
-
-export class UnstakeV1 extends Entity {
-  constructor(id: Bytes) {
-    super();
-    this.set("id", Value.fromBytes(id));
-  }
-
-  save(): void {
-    let id = this.get("id");
-    assert(id != null, "Cannot save UnstakeV1 entity without an ID");
-    if (id) {
-      assert(
-        id.kind == ValueKind.BYTES,
-        `Entities of type UnstakeV1 must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
-      );
-      store.set("UnstakeV1", id.toBytes().toHexString(), this);
-    }
-  }
-
-  static loadInBlock(id: Bytes): UnstakeV1 | null {
-    return changetype<UnstakeV1 | null>(
-      store.get_in_block("UnstakeV1", id.toHexString()),
-    );
-  }
-
-  static load(id: Bytes): UnstakeV1 | null {
-    return changetype<UnstakeV1 | null>(
-      store.get("UnstakeV1", id.toHexString()),
+  static load(id: Bytes): RefereeStakedV1 | null {
+    return changetype<RefereeStakedV1 | null>(
+      store.get("RefereeStakedV1", id.toHexString()),
     );
   }
 
@@ -4765,7 +4606,7 @@ export class UnstakeV1 extends Entity {
   }
 }
 
-export class UpdateMaxStakeAmount extends Entity {
+export class RefereeStakingEnabled extends Entity {
   constructor(id: Bytes) {
     super();
     this.set("id", Value.fromBytes(id));
@@ -4773,25 +4614,240 @@ export class UpdateMaxStakeAmount extends Entity {
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save UpdateMaxStakeAmount entity without an ID");
+    assert(
+      id != null,
+      "Cannot save RefereeStakingEnabled entity without an ID",
+    );
     if (id) {
       assert(
         id.kind == ValueKind.BYTES,
-        `Entities of type UpdateMaxStakeAmount must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+        `Entities of type RefereeStakingEnabled must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
       );
-      store.set("UpdateMaxStakeAmount", id.toBytes().toHexString(), this);
+      store.set("RefereeStakingEnabled", id.toBytes().toHexString(), this);
     }
   }
 
-  static loadInBlock(id: Bytes): UpdateMaxStakeAmount | null {
-    return changetype<UpdateMaxStakeAmount | null>(
-      store.get_in_block("UpdateMaxStakeAmount", id.toHexString()),
+  static loadInBlock(id: Bytes): RefereeStakingEnabled | null {
+    return changetype<RefereeStakingEnabled | null>(
+      store.get_in_block("RefereeStakingEnabled", id.toHexString()),
     );
   }
 
-  static load(id: Bytes): UpdateMaxStakeAmount | null {
-    return changetype<UpdateMaxStakeAmount | null>(
-      store.get("UpdateMaxStakeAmount", id.toHexString()),
+  static load(id: Bytes): RefereeStakingEnabled | null {
+    return changetype<RefereeStakingEnabled | null>(
+      store.get("RefereeStakingEnabled", id.toHexString()),
+    );
+  }
+
+  get id(): Bytes {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get blockNumber(): BigInt {
+    let value = this.get("blockNumber");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
+  }
+
+  get blockTimestamp(): BigInt {
+    let value = this.get("blockTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockTimestamp(value: BigInt) {
+    this.set("blockTimestamp", Value.fromBigInt(value));
+  }
+
+  get transactionHash(): Bytes {
+    let value = this.get("transactionHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set transactionHash(value: Bytes) {
+    this.set("transactionHash", Value.fromBytes(value));
+  }
+}
+
+export class RefereeUnstakeV1 extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save RefereeUnstakeV1 entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type RefereeUnstakeV1 must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("RefereeUnstakeV1", id.toBytes().toHexString(), this);
+    }
+  }
+
+  static loadInBlock(id: Bytes): RefereeUnstakeV1 | null {
+    return changetype<RefereeUnstakeV1 | null>(
+      store.get_in_block("RefereeUnstakeV1", id.toHexString()),
+    );
+  }
+
+  static load(id: Bytes): RefereeUnstakeV1 | null {
+    return changetype<RefereeUnstakeV1 | null>(
+      store.get("RefereeUnstakeV1", id.toHexString()),
+    );
+  }
+
+  get id(): Bytes {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set id(value: Bytes) {
+    this.set("id", Value.fromBytes(value));
+  }
+
+  get user(): Bytes {
+    let value = this.get("user");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set user(value: Bytes) {
+    this.set("user", Value.fromBytes(value));
+  }
+
+  get amount(): BigInt {
+    let value = this.get("amount");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
+  }
+
+  get totalStaked(): BigInt {
+    let value = this.get("totalStaked");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalStaked(value: BigInt) {
+    this.set("totalStaked", Value.fromBigInt(value));
+  }
+
+  get blockNumber(): BigInt {
+    let value = this.get("blockNumber");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockNumber(value: BigInt) {
+    this.set("blockNumber", Value.fromBigInt(value));
+  }
+
+  get blockTimestamp(): BigInt {
+    let value = this.get("blockTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set blockTimestamp(value: BigInt) {
+    this.set("blockTimestamp", Value.fromBigInt(value));
+  }
+
+  get transactionHash(): Bytes {
+    let value = this.get("transactionHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set transactionHash(value: Bytes) {
+    this.set("transactionHash", Value.fromBytes(value));
+  }
+}
+
+export class RefereeUpdateMaxStakeAmount extends Entity {
+  constructor(id: Bytes) {
+    super();
+    this.set("id", Value.fromBytes(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(
+      id != null,
+      "Cannot save RefereeUpdateMaxStakeAmount entity without an ID",
+    );
+    if (id) {
+      assert(
+        id.kind == ValueKind.BYTES,
+        `Entities of type RefereeUpdateMaxStakeAmount must have an ID of type Bytes but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set(
+        "RefereeUpdateMaxStakeAmount",
+        id.toBytes().toHexString(),
+        this,
+      );
+    }
+  }
+
+  static loadInBlock(id: Bytes): RefereeUpdateMaxStakeAmount | null {
+    return changetype<RefereeUpdateMaxStakeAmount | null>(
+      store.get_in_block("RefereeUpdateMaxStakeAmount", id.toHexString()),
+    );
+  }
+
+  static load(id: Bytes): RefereeUpdateMaxStakeAmount | null {
+    return changetype<RefereeUpdateMaxStakeAmount | null>(
+      store.get("RefereeUpdateMaxStakeAmount", id.toHexString()),
     );
   }
 

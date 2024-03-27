@@ -42,34 +42,34 @@ dataSources:
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - Approval
-        - ConvertedToEsXai
-        - EsXaiAddressSet
-        - Initialized
-        - RoleAdminChanged
-        - RoleGranted
-        - RoleRevoked
-        - Transfer
+        - XaiApproval
+        - XaiConvertedToEsXai
+        - XaiEsXaiAddressSet
+        - XaiInitialized
+        - XaiRoleAdminChanged
+        - XaiRoleGranted
+        - XaiRoleRevoked
+        - XaiTransfer
       abis:
         - name: Xai
           file: ./abis/Xai.json
       eventHandlers:
         - event: Approval(indexed address,indexed address,uint256)
-          handler: handleApproval
+          handler: handleXaiApproval
         - event: ConvertedToEsXai(indexed address,uint256)
-          handler: handleConvertedToEsXai
+          handler: handleXaiConvertedToEsXai
         - event: EsXaiAddressSet(indexed address)
-          handler: handleEsXaiAddressSet
+          handler: handleXaiEsXaiAddressSet
         - event: Initialized(uint8)
-          handler: handleInitialized
+          handler: handleXaiInitialized
         - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-          handler: handleRoleAdminChanged
+          handler: handleXaiRoleAdminChanged
         - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
+          handler: handleXaiRoleGranted
         - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
+          handler: handleXaiRoleRevoked
         - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
+          handler: handleXaiTransfer
       file: ./src/xai.ts
   - kind: ethereum
     name: EsXai
@@ -139,26 +139,26 @@ dataSources:
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - RefereeApproval
-        - AssertionCheckingToggled
-        - AssertionSubmitted
-        - ChallengeClosed
-        - ChallengeExpired
-        - ChallengeSubmitted
-        - ChallengerPublicKeyChanged
+        - RefereeRefereeApproval
+        - RefereeAssertionCheckingToggled
+        - RefereeAssertionSubmitted
+        - RefereeChallengeClosed
+        - RefereeChallengeExpired
+        - RefereeChallengeSubmitted
+        - RefereeChallengerPublicKeyChanged
         - RefereeInitialized
-        - InvalidSubmission
-        - KycStatusChanged
-        - NodeLicenseAddressChanged
-        - RewardsClaimed
+        - RefereeInvalidSubmission
+        - RefereeKycStatusChanged
+        - RefereeNodeLicenseAddressChanged
+        - RefereeRewardsClaimed
         - RefereeRoleAdminChanged
         - RefereeRoleGranted
         - RefereeRoleRevoked
-        - RollupAddressChanged
-        - StakedV1
-        - StakingEnabled
-        - UnstakeV1
-        - UpdateMaxStakeAmount
+        - RefereeRollupAddressChanged
+        - RefereeStakedV1
+        - RefereeStakingEnabled
+        - RefereeUnstakeV1
+        - RefereeUpdateMaxStakeAmount
       abis:
         - name: Referee
           file: ./abis/Referee.json
