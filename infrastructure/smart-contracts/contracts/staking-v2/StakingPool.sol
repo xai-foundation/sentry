@@ -6,6 +6,7 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "../upgrades/referee/Referee5.sol";
 import "./BucketTracker.sol";
 import "../esXai.sol";
+import "hardhat/console.sol";
 
 contract StakingPool is AccessControlUpgradeable {
     bytes32 public constant POOL_ADMIN = keccak256("POOL_ADMIN");
@@ -398,24 +399,34 @@ contract StakingPool is AccessControlUpgradeable {
         address user
     ) internal view returns (uint256 claimAmount, uint256 ownerAmount) {
         uint256 poolAmount = esXai(esXaiAddress).balanceOf(address(this));
+		console.log("poolAmount", poolAmount);
 
         uint256 amountForKeyBucket = (poolAmount * keyBucketShare) / 1_000_000;
+		console.log("amountForKeyBucket", amountForKeyBucket);
         uint256 amountForEsXaiBucket = (poolAmount * stakedBucketShare) /
 		1_000_000;
+		console.log("amountForEsXaiBucket", amountForEsXaiBucket);
 
         ownerAmount = poolAmount - amountForKeyBucket - amountForEsXaiBucket;
+		console.log("ownerAmount", ownerAmount);
 
         uint256 userBalanceInKeyBucket = keyBucket.balanceOf(user);
+		console.log("userBalanceInKeyBucket", userBalanceInKeyBucket);
         uint256 userBalanceInEsXaiBucket = esXaiStakeBucket.balanceOf(user);
+		console.log("userBalanceInEsXaiBucket", userBalanceInEsXaiBucket);
 
         if (userBalanceInKeyBucket != 0) {
             uint256 amountPerKey = amountForKeyBucket / keyBucket.totalSupply();
+			console.log("if 1 amountPerKey", amountPerKey);
             claimAmount += amountPerKey * userBalanceInKeyBucket;
+			console.log("if 1", claimAmount);
         }
 
         if (userBalanceInEsXaiBucket != 0) {
             uint256 amountPerStakedEsXai = amountForEsXaiBucket / esXaiStakeBucket.totalSupply();
+			console.log("if 2 amountPerStakedEsXai", amountPerStakedEsXai);
             claimAmount += amountPerStakedEsXai * userBalanceInEsXaiBucket;
+			console.log("if 2", claimAmount);
         }
     }
 
