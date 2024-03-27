@@ -17,7 +17,6 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 		it("Verify the rewards are correct", async function () {
 			const {poolFactory, addr1, addr2, addr3, nodeLicense, kycAdmin, referee, esXai, esXaiMinter} = await loadFixture(deployInfrastructure);
 
-
 			// Mint key to make basic pool
 			const addr1KeyQuantity = 1;
 			const price = await nodeLicense.price(addr1KeyQuantity, "");
