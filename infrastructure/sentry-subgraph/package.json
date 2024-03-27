@@ -3,7 +3,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "codegen": "graph codegen",
-    "build": "graph build",
+    "build": "node build.js && graph build ",
     "create-local": "graph create --node http://localhost:8020/ Xai-Foundation/sentry",
     "remove-local": "graph remove --node http://localhost:8020/ Xai-Foundation/sentry",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 Xai-Foundation/sentry",

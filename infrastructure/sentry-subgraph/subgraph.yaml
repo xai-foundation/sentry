@@ -2,7 +2,7 @@ specVersion: 1.0.0
 indexerHints:
   prune: auto
 schema:
-  file: ./schema/Schema.graphql
+  file: ./schema.graphql
 dataSources:
   - kind: ethereum
     name: GasSubsidy
