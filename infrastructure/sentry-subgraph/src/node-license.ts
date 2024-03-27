@@ -20,29 +20,29 @@ import {
   WhitelistAmountUpdatedByAdmin as WhitelistAmountUpdatedByAdminEvent,
 } from "../generated/NodeLicense/NodeLicense"
 import {
-  NodeLicenseApproval,
-  NodeLicenseApprovalForAll,
-  NodeLicenseClaimableChanged,
-  NodeLicenseFundsReceiverChanged,
-  NodeLicenseFundsWithdrawn,
-  NodeLicenseInitialized,
-  NodeLicensePricingTierSetOrAdded,
-  NodeLicensePromoCodeCreated,
-  NodeLicensePromoCodeRemoved,
-  NodeLicenseReferralReward,
-  NodeLicenseReferralRewardPercentagesChanged,
-  NodeLicenseRefundOccurred,
-  NodeLicenseRewardClaimed,
-  NodeLicenseRoleAdminChanged,
-  NodeLicenseRoleGranted,
-  NodeLicenseRoleRevoked,
-  NodeLicenseTransfer,
-  NodeLicenseWhitelistAmountRedeemed,
-  NodeLicenseWhitelistAmountUpdatedByAdmin,
+  NodeLicenseApprovalEvent,
+  NodeLicenseApprovalForAllEvent,
+  NodeLicenseClaimableChangedEvent,
+  NodeLicenseFundsReceiverChangedEvent,
+  NodeLicenseFundsWithdrawnEvent,
+  NodeLicenseInitializedEvent,
+  NodeLicensePricingTierSetOrAddedEvent,
+  NodeLicensePromoCodeCreatedEvent,
+  NodeLicensePromoCodeRemovedEvent,
+  NodeLicenseReferralRewardEvent,
+  NodeLicenseReferralRewardPercentagesChangedEvent,
+  NodeLicenseRefundOccurredEvent,
+  NodeLicenseRewardClaimedEvent,
+  NodeLicenseRoleAdminChangedEvent,
+  NodeLicenseRoleGrantedEvent,
+  NodeLicenseRoleRevokedEvent,
+  NodeLicenseTransferEvent,
+  NodeLicenseWhitelistAmountRedeemedEvent,
+  NodeLicenseWhitelistAmountUpdatedByAdminEvent,
 } from "../generated/schema"
 
 export function handleApproval(event: ApprovalEvent): void {
-  let entity = new NodeLicenseApproval(
+  let entity = new NodeLicenseApprovalEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.owner = event.params.owner
@@ -57,7 +57,7 @@ export function handleApproval(event: ApprovalEvent): void {
 }
 
 export function handleApprovalForAll(event: ApprovalForAllEvent): void {
-  let entity = new NodeLicenseApprovalForAll(
+  let entity = new NodeLicenseApprovalForAllEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.owner = event.params.owner
@@ -72,7 +72,7 @@ export function handleApprovalForAll(event: ApprovalForAllEvent): void {
 }
 
 export function handleClaimableChanged(event: ClaimableChangedEvent): void {
-  let entity = new NodeLicenseClaimableChanged(
+  let entity = new NodeLicenseClaimableChangedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.admin = event.params.admin
@@ -88,7 +88,7 @@ export function handleClaimableChanged(event: ClaimableChangedEvent): void {
 export function handleFundsReceiverChanged(
   event: FundsReceiverChangedEvent,
 ): void {
-  let entity = new NodeLicenseFundsReceiverChanged(
+  let entity = new NodeLicenseFundsReceiverChangedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.admin = event.params.admin
@@ -102,7 +102,7 @@ export function handleFundsReceiverChanged(
 }
 
 export function handleFundsWithdrawn(event: FundsWithdrawnEvent): void {
-  let entity = new NodeLicenseFundsWithdrawn(
+  let entity = new NodeLicenseFundsWithdrawnEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.admin = event.params.admin
@@ -116,7 +116,7 @@ export function handleFundsWithdrawn(event: FundsWithdrawnEvent): void {
 }
 
 export function handleInitialized(event: InitializedEvent): void {
-  let entity = new NodeLicenseInitialized(
+  let entity = new NodeLicenseInitializedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.version = event.params.version
@@ -131,7 +131,7 @@ export function handleInitialized(event: InitializedEvent): void {
 export function handlePricingTierSetOrAdded(
   event: PricingTierSetOrAddedEvent,
 ): void {
-  let entity = new NodeLicensePricingTierSetOrAdded(
+  let entity = new NodeLicensePricingTierSetOrAddedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.index = event.params.index
@@ -146,7 +146,7 @@ export function handlePricingTierSetOrAdded(
 }
 
 export function handlePromoCodeCreated(event: PromoCodeCreatedEvent): void {
-  let entity = new NodeLicensePromoCodeCreated(
+  let entity = new NodeLicensePromoCodeCreatedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.promoCode = event.params.promoCode
@@ -160,7 +160,7 @@ export function handlePromoCodeCreated(event: PromoCodeCreatedEvent): void {
 }
 
 export function handlePromoCodeRemoved(event: PromoCodeRemovedEvent): void {
-  let entity = new NodeLicensePromoCodeRemoved(
+  let entity = new NodeLicensePromoCodeRemovedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.promoCode = event.params.promoCode
@@ -173,7 +173,7 @@ export function handlePromoCodeRemoved(event: PromoCodeRemovedEvent): void {
 }
 
 export function handleReferralReward(event: ReferralRewardEvent): void {
-  let entity = new NodeLicenseReferralReward(
+  let entity = new NodeLicenseReferralRewardEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.buyer = event.params.buyer
@@ -190,7 +190,7 @@ export function handleReferralReward(event: ReferralRewardEvent): void {
 export function handleReferralRewardPercentagesChanged(
   event: ReferralRewardPercentagesChangedEvent,
 ): void {
-  let entity = new NodeLicenseReferralRewardPercentagesChanged(
+  let entity = new NodeLicenseReferralRewardPercentagesChangedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.referralDiscountPercentage = event.params.referralDiscountPercentage
@@ -204,7 +204,7 @@ export function handleReferralRewardPercentagesChanged(
 }
 
 export function handleRefundOccurred(event: RefundOccurredEvent): void {
-  let entity = new NodeLicenseRefundOccurred(
+  let entity = new NodeLicenseRefundOccurredEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.refundee = event.params.refundee
@@ -218,7 +218,7 @@ export function handleRefundOccurred(event: RefundOccurredEvent): void {
 }
 
 export function handleRewardClaimed(event: RewardClaimedEvent): void {
-  let entity = new NodeLicenseRewardClaimed(
+  let entity = new NodeLicenseRewardClaimedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.claimer = event.params.claimer
@@ -232,7 +232,7 @@ export function handleRewardClaimed(event: RewardClaimedEvent): void {
 }
 
 export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
-  let entity = new NodeLicenseRoleAdminChanged(
+  let entity = new NodeLicenseRoleAdminChangedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.role = event.params.role
@@ -247,7 +247,7 @@ export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
 }
 
 export function handleRoleGranted(event: RoleGrantedEvent): void {
-  let entity = new NodeLicenseRoleGranted(
+  let entity = new NodeLicenseRoleGrantedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.role = event.params.role
@@ -262,7 +262,7 @@ export function handleRoleGranted(event: RoleGrantedEvent): void {
 }
 
 export function handleRoleRevoked(event: RoleRevokedEvent): void {
-  let entity = new NodeLicenseRoleRevoked(
+  let entity = new NodeLicenseRoleRevokedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.role = event.params.role
@@ -277,7 +277,7 @@ export function handleRoleRevoked(event: RoleRevokedEvent): void {
 }
 
 export function handleTransfer(event: TransferEvent): void {
-  let entity = new NodeLicenseTransfer(
+  let entity = new NodeLicenseTransferEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.from = event.params.from
@@ -294,7 +294,7 @@ export function handleTransfer(event: TransferEvent): void {
 export function handleWhitelistAmountRedeemed(
   event: WhitelistAmountRedeemedEvent,
 ): void {
-  let entity = new NodeLicenseWhitelistAmountRedeemed(
+  let entity = new NodeLicenseWhitelistAmountRedeemedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.redeemer = event.params.redeemer
@@ -310,7 +310,7 @@ export function handleWhitelistAmountRedeemed(
 export function handleWhitelistAmountUpdatedByAdmin(
   event: WhitelistAmountUpdatedByAdminEvent,
 ): void {
-  let entity = new NodeLicenseWhitelistAmountUpdatedByAdmin(
+  let entity = new NodeLicenseWhitelistAmountUpdatedByAdminEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.redeemer = event.params.redeemer

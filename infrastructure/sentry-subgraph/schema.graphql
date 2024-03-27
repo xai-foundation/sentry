@@ -1,4 +1,4 @@
-type GasSubsidyRoleAdminChanged @entity(immutable: true) {
+type GasSubsidyRoleAdminChangedEvent @entity(immutable: true) {
   id: Bytes!
   role: Bytes! # bytes32
   previousAdminRole: Bytes! # bytes32
@@ -8,7 +8,7 @@ type GasSubsidyRoleAdminChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type GasSubsidyRoleGranted @entity(immutable: true) {
+type GasSubsidyRoleGrantedEvent @entity(immutable: true) {
   id: Bytes!
   role: Bytes! # bytes32
   account: Bytes! # address
@@ -18,7 +18,7 @@ type GasSubsidyRoleGranted @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type GasSubsidyRoleRevoked @entity(immutable: true) {
+type GasSubsidyRoleRevokedEvent @entity(immutable: true) {
   id: Bytes!
   role: Bytes! # bytes32
   account: Bytes! # address
@@ -27,7 +27,7 @@ type GasSubsidyRoleRevoked @entity(immutable: true) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
-type XaiApproval @entity(immutable: true) {
+type XaiApprovalEvent @entity(immutable: true) {
   id: Bytes!
   owner: Bytes! # address
   spender: Bytes! # address
@@ -37,7 +37,7 @@ type XaiApproval @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type XaiConvertedToEsXai @entity(immutable: true) {
+type XaiConvertedToEsXaiEvent @entity(immutable: true) {
   id: Bytes!
   user: Bytes! # address
   amount: BigInt! # uint256
@@ -46,7 +46,7 @@ type XaiConvertedToEsXai @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type XaiEsXaiAddressSet @entity(immutable: true) {
+type XaiEsXaiAddressSetEvent @entity(immutable: true) {
   id: Bytes!
   newEsXaiAddress: Bytes! # address
   blockNumber: BigInt!
@@ -54,7 +54,7 @@ type XaiEsXaiAddressSet @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type XaiInitialized @entity(immutable: true) {
+type XaiInitializedEvent @entity(immutable: true) {
   id: Bytes!
   version: Int! # uint8
   blockNumber: BigInt!
@@ -62,7 +62,7 @@ type XaiInitialized @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type XaiRoleAdminChanged @entity(immutable: true) {
+type XaiRoleAdminChangedEvent @entity(immutable: true) {
   id: Bytes!
   role: Bytes! # bytes32
   previousAdminRole: Bytes! # bytes32
@@ -72,7 +72,7 @@ type XaiRoleAdminChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type XaiRoleGranted @entity(immutable: true) {
+type XaiRoleGrantedEvent @entity(immutable: true) {
   id: Bytes!
   role: Bytes! # bytes32
   account: Bytes! # address
@@ -82,7 +82,7 @@ type XaiRoleGranted @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type XaiRoleRevoked @entity(immutable: true) {
+type XaiRoleRevokedEvent @entity(immutable: true) {
   id: Bytes!
   role: Bytes! # bytes32
   account: Bytes! # address
@@ -92,7 +92,7 @@ type XaiRoleRevoked @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type XaiTransfer @entity(immutable: true) {
+type XaiTransferEvent @entity(immutable: true) {
   id: Bytes!
   from: Bytes! # address
   to: Bytes! # address
@@ -102,7 +102,7 @@ type XaiTransfer @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type EsXaiApproval @entity(immutable: true) {
+type EsXaiApprovalEvent @entity(immutable: true) {
   id: Bytes!
   owner: Bytes! # address
   spender: Bytes! # address
@@ -112,7 +112,7 @@ type EsXaiApproval @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type EsXaiFoundationBasepointsUpdated @entity(immutable: true) {
+type EsXaiFoundationBasepointsUpdatedEvent @entity(immutable: true) {
   id: Bytes!
   newBasepoints: BigInt! # uint256
   blockNumber: BigInt!
@@ -120,7 +120,7 @@ type EsXaiFoundationBasepointsUpdated @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type EsXaiInitialized @entity(immutable: true) {
+type EsXaiInitializedEvent @entity(immutable: true) {
   id: Bytes!
   version: Int! # uint8
   blockNumber: BigInt!
@@ -128,7 +128,7 @@ type EsXaiInitialized @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type EsXaiRedemptionCancelled @entity(immutable: true) {
+type EsXaiRedemptionCancelledEvent @entity(immutable: true) {
   id: Bytes!
   user: Bytes! # address
   index: BigInt! # uint256
@@ -137,7 +137,7 @@ type EsXaiRedemptionCancelled @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type EsXaiRedemptionCompleted @entity(immutable: true) {
+type EsXaiRedemptionCompletedEvent @entity(immutable: true) {
   id: Bytes!
   user: Bytes! # address
   index: BigInt! # uint256
@@ -146,7 +146,7 @@ type EsXaiRedemptionCompleted @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type EsXaiRedemptionStarted @entity(immutable: true) {
+type EsXaiRedemptionStartedEvent @entity(immutable: true) {
   id: Bytes!
   user: Bytes! # address
   index: BigInt! # uint256
@@ -155,7 +155,7 @@ type EsXaiRedemptionStarted @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type EsXaiRedemptionStatusChanged @entity(immutable: true) {
+type EsXaiRedemptionStatusChangedEvent @entity(immutable: true) {
   id: Bytes!
   isActive: Boolean! # bool
   blockNumber: BigInt!
@@ -163,7 +163,7 @@ type EsXaiRedemptionStatusChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type EsXaiRoleAdminChanged @entity(immutable: true) {
+type EsXaiRoleAdminChangedEvent @entity(immutable: true) {
   id: Bytes!
   role: Bytes! # bytes32
   previousAdminRole: Bytes! # bytes32
@@ -173,7 +173,7 @@ type EsXaiRoleAdminChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type EsXaiRoleGranted @entity(immutable: true) {
+type EsXaiRoleGrantedEvent @entity(immutable: true) {
   id: Bytes!
   role: Bytes! # bytes32
   account: Bytes! # address
@@ -183,7 +183,7 @@ type EsXaiRoleGranted @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type EsXaiRoleRevoked @entity(immutable: true) {
+type EsXaiRoleRevokedEvent @entity(immutable: true) {
   id: Bytes!
   role: Bytes! # bytes32
   account: Bytes! # address
@@ -193,7 +193,7 @@ type EsXaiRoleRevoked @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type EsXaiTransfer @entity(immutable: true) {
+type EsXaiTransferEvent @entity(immutable: true) {
   id: Bytes!
   from: Bytes! # address
   to: Bytes! # address
@@ -203,7 +203,7 @@ type EsXaiTransfer @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type EsXaiWhitelistUpdated @entity(immutable: true) {
+type EsXaiWhitelistUpdatedEvent @entity(immutable: true) {
   id: Bytes!
   account: Bytes! # address
   isAdded: Boolean! # bool
@@ -212,7 +212,7 @@ type EsXaiWhitelistUpdated @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type EsXaiXaiAddressChanged @entity(immutable: true) {
+type EsXaiXaiAddressChangedEvent @entity(immutable: true) {
   id: Bytes!
   newXaiAddress: Bytes! # address
   blockNumber: BigInt!
@@ -220,14 +220,14 @@ type EsXaiXaiAddressChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type XaiAddressChanged @entity(immutable: true) {
+type XaiAddressChangedEvent @entity(immutable: true) {
   id: Bytes!
   newXaiAddress: Bytes! # address
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
-type RefereeApproval @entity(immutable: true) {
+type RefereeApprovalEvent @entity(immutable: true) {
   id: Bytes!
   owner: Bytes! # address
   operator: Bytes! # address
@@ -237,7 +237,7 @@ type RefereeApproval @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefereeAssertionCheckingToggled @entity(immutable: true) {
+type RefereeAssertionCheckingToggledEvent @entity(immutable: true) {
   id: Bytes!
   newState: Boolean! # bool
   blockNumber: BigInt!
@@ -245,7 +245,7 @@ type RefereeAssertionCheckingToggled @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefereeAssertionSubmitted @entity(immutable: true) {
+type RefereeAssertionSubmittedEvent @entity(immutable: true) {
   id: Bytes!
   challengeId: BigInt! # uint256
   nodeLicenseId: BigInt! # uint256
@@ -254,7 +254,7 @@ type RefereeAssertionSubmitted @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefereeChallengeClosed @entity(immutable: true) {
+type RefereeChallengeClosedEvent @entity(immutable: true) {
   id: Bytes!
   challengeNumber: BigInt! # uint256
   blockNumber: BigInt!
@@ -262,7 +262,7 @@ type RefereeChallengeClosed @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefereeChallengeExpired @entity(immutable: true) {
+type RefereeChallengeExpiredEvent @entity(immutable: true) {
   id: Bytes!
   challengeId: BigInt! # uint256
   blockNumber: BigInt!
@@ -270,7 +270,7 @@ type RefereeChallengeExpired @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefereeChallengeSubmitted @entity(immutable: true) {
+type RefereeChallengeSubmittedEvent @entity(immutable: true) {
   id: Bytes!
   challengeNumber: BigInt! # uint256
   blockNumber: BigInt!
@@ -278,7 +278,7 @@ type RefereeChallengeSubmitted @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefereeChallengerPublicKeyChanged @entity(immutable: true) {
+type RefereeChallengerPublicKeyChangedEvent @entity(immutable: true) {
   id: Bytes!
   newChallengerPublicKey: Bytes! # bytes
   blockNumber: BigInt!
@@ -286,7 +286,7 @@ type RefereeChallengerPublicKeyChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefereeInitialized @entity(immutable: true) {
+type RefereeInitializedEvent @entity(immutable: true) {
   id: Bytes!
   version: Int! # uint8
   blockNumber: BigInt!
@@ -294,7 +294,7 @@ type RefereeInitialized @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefereeInvalidSubmission @entity(immutable: true) {
+type RefereeInvalidSubmissionEvent @entity(immutable: true) {
   id: Bytes!
   challengeId: BigInt! # uint256
   nodeLicenseId: BigInt! # uint256
@@ -303,7 +303,7 @@ type RefereeInvalidSubmission @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefereeKycStatusChanged @entity(immutable: true) {
+type RefereeKycStatusChangedEvent @entity(immutable: true) {
   id: Bytes!
   wallet: Bytes! # address
   isKycApproved: Boolean! # bool
@@ -312,7 +312,7 @@ type RefereeKycStatusChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefereeNodeLicenseAddressChanged @entity(immutable: true) {
+type RefereeNodeLicenseAddressChangedEvent @entity(immutable: true) {
   id: Bytes!
   newNodeLicenseAddress: Bytes! # address
   blockNumber: BigInt!
@@ -320,7 +320,7 @@ type RefereeNodeLicenseAddressChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefereeRewardsClaimed @entity(immutable: true) {
+type RefereeRewardsClaimedEvent @entity(immutable: true) {
   id: Bytes!
   challengeId: BigInt! # uint256
   amount: BigInt! # uint256
@@ -329,7 +329,7 @@ type RefereeRewardsClaimed @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefereeRoleAdminChanged @entity(immutable: true) {
+type RefereeRoleAdminChangedEvent @entity(immutable: true) {
   id: Bytes!
   role: Bytes! # bytes32
   previousAdminRole: Bytes! # bytes32
@@ -339,7 +339,7 @@ type RefereeRoleAdminChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefereeRoleGranted @entity(immutable: true) {
+type RefereeRoleGrantedEvent @entity(immutable: true) {
   id: Bytes!
   role: Bytes! # bytes32
   account: Bytes! # address
@@ -349,7 +349,7 @@ type RefereeRoleGranted @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefereeRoleRevoked @entity(immutable: true) {
+type RefereeRoleRevokedEvent @entity(immutable: true) {
   id: Bytes!
   role: Bytes! # bytes32
   account: Bytes! # address
@@ -359,7 +359,7 @@ type RefereeRoleRevoked @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefereeRollupAddressChanged @entity(immutable: true) {
+type RefereeRollupAddressChangedEvent @entity(immutable: true) {
   id: Bytes!
   newRollupAddress: Bytes! # address
   blockNumber: BigInt!
@@ -367,7 +367,7 @@ type RefereeRollupAddressChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefereeStakedV1 @entity(immutable: true) {
+type RefereeStakedV1Event @entity(immutable: true) {
   id: Bytes!
   user: Bytes! # address
   amount: BigInt! # uint256
@@ -377,14 +377,14 @@ type RefereeStakedV1 @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefereeStakingEnabled @entity(immutable: true) {
+type RefereeStakingEnabledEvent @entity(immutable: true) {
   id: Bytes!
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
 
-type RefereeUnstakeV1 @entity(immutable: true) {
+type RefereeUnstakeV1Event @entity(immutable: true) {
   id: Bytes!
   user: Bytes! # address
   amount: BigInt! # uint256
@@ -394,7 +394,7 @@ type RefereeUnstakeV1 @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefereeUpdateMaxStakeAmount @entity(immutable: true) {
+type RefereeUpdateMaxStakeAmountEvent @entity(immutable: true) {
   id: Bytes!
   prevAmount: BigInt! # uint256
   newAmount: BigInt! # uint256
@@ -402,7 +402,7 @@ type RefereeUpdateMaxStakeAmount @entity(immutable: true) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
-type NodeLicenseApproval @entity(immutable: true) {
+type NodeLicenseApprovalEvent @entity(immutable: true) {
   id: Bytes!
   owner: Bytes! # address
   approved: Bytes! # address
@@ -412,7 +412,7 @@ type NodeLicenseApproval @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NodeLicenseApprovalForAll @entity(immutable: true) {
+type NodeLicenseApprovalForAllEvent @entity(immutable: true) {
   id: Bytes!
   owner: Bytes! # address
   operator: Bytes! # address
@@ -422,7 +422,7 @@ type NodeLicenseApprovalForAll @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NodeLicenseClaimableChanged @entity(immutable: true) {
+type NodeLicenseClaimableChangedEvent @entity(immutable: true) {
   id: Bytes!
   admin: Bytes! # address
   newClaimableState: Boolean! # bool
@@ -431,7 +431,7 @@ type NodeLicenseClaimableChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NodeLicenseFundsReceiverChanged @entity(immutable: true) {
+type NodeLicenseFundsReceiverChangedEvent @entity(immutable: true) {
   id: Bytes!
   admin: Bytes! # address
   newFundsReceiver: Bytes! # address
@@ -440,7 +440,7 @@ type NodeLicenseFundsReceiverChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NodeLicenseFundsWithdrawn @entity(immutable: true) {
+type NodeLicenseFundsWithdrawnEvent @entity(immutable: true) {
   id: Bytes!
   admin: Bytes! # address
   amount: BigInt! # uint256
@@ -449,7 +449,7 @@ type NodeLicenseFundsWithdrawn @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NodeLicenseInitialized @entity(immutable: true) {
+type NodeLicenseInitializedEvent @entity(immutable: true) {
   id: Bytes!
   version: Int! # uint8
   blockNumber: BigInt!
@@ -457,7 +457,7 @@ type NodeLicenseInitialized @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NodeLicensePricingTierSetOrAdded @entity(immutable: true) {
+type NodeLicensePricingTierSetOrAddedEvent @entity(immutable: true) {
   id: Bytes!
   index: BigInt! # uint256
   price: BigInt! # uint256
@@ -467,7 +467,7 @@ type NodeLicensePricingTierSetOrAdded @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NodeLicensePromoCodeCreated @entity(immutable: true) {
+type NodeLicensePromoCodeCreatedEvent @entity(immutable: true) {
   id: Bytes!
   promoCode: String! # string
   recipient: Bytes! # address
@@ -476,7 +476,7 @@ type NodeLicensePromoCodeCreated @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NodeLicensePromoCodeRemoved @entity(immutable: true) {
+type NodeLicensePromoCodeRemovedEvent @entity(immutable: true) {
   id: Bytes!
   promoCode: String! # string
   blockNumber: BigInt!
@@ -484,7 +484,7 @@ type NodeLicensePromoCodeRemoved @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NodeLicenseReferralReward @entity(immutable: true) {
+type NodeLicenseReferralRewardEvent @entity(immutable: true) {
   id: Bytes!
   buyer: Bytes! # address
   referralAddress: Bytes! # address
@@ -494,7 +494,7 @@ type NodeLicenseReferralReward @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NodeLicenseReferralRewardPercentagesChanged @entity(immutable: true) {
+type NodeLicenseReferralRewardPercentagesChangedEvent @entity(immutable: true) {
   id: Bytes!
   referralDiscountPercentage: BigInt! # uint256
   referralRewardPercentage: BigInt! # uint256
@@ -503,7 +503,7 @@ type NodeLicenseReferralRewardPercentagesChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NodeLicenseRefundOccurred @entity(immutable: true) {
+type NodeLicenseRefundOccurredEvent @entity(immutable: true) {
   id: Bytes!
   refundee: Bytes! # address
   amount: BigInt! # uint256
@@ -512,7 +512,7 @@ type NodeLicenseRefundOccurred @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NodeLicenseRewardClaimed @entity(immutable: true) {
+type NodeLicenseRewardClaimedEvent @entity(immutable: true) {
   id: Bytes!
   claimer: Bytes! # address
   amount: BigInt! # uint256
@@ -520,8 +520,7 @@ type NodeLicenseRewardClaimed @entity(immutable: true) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
-
-type NodeLicenseRoleAdminChanged @entity(immutable: true) {
+type NodeLicenseRoleAdminChangedEvent @entity(immutable: true) {
   id: Bytes!
   role: Bytes! # bytes32
   previousAdminRole: Bytes! # bytes32
@@ -531,7 +530,7 @@ type NodeLicenseRoleAdminChanged @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NodeLicenseRoleGranted @entity(immutable: true) {
+type NodeLicenseRoleGrantedEvent @entity(immutable: true) {
   id: Bytes!
   role: Bytes! # bytes32
   account: Bytes! # address
@@ -541,7 +540,7 @@ type NodeLicenseRoleGranted @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NodeLicenseRoleRevoked @entity(immutable: true) {
+type NodeLicenseRoleRevokedEvent @entity(immutable: true) {
   id: Bytes!
   role: Bytes! # bytes32
   account: Bytes! # address
@@ -551,7 +550,7 @@ type NodeLicenseRoleRevoked @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NodeLicenseTransfer @entity(immutable: true) {
+type NodeLicenseTransferEvent @entity(immutable: true) {
   id: Bytes!
   from: Bytes! # address
   to: Bytes! # address
@@ -561,7 +560,7 @@ type NodeLicenseTransfer @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NodeLicenseWhitelistAmountRedeemed @entity(immutable: true) {
+type NodeLicenseWhitelistAmountRedeemedEvent @entity(immutable: true) {
   id: Bytes!
   redeemer: Bytes! # address
   newAmount: Int! # uint16
@@ -570,7 +569,7 @@ type NodeLicenseWhitelistAmountRedeemed @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type NodeLicenseWhitelistAmountUpdatedByAdmin @entity(immutable: true) {
+type NodeLicenseWhitelistAmountUpdatedByAdminEvent @entity(immutable: true) {
   id: Bytes!
   redeemer: Bytes! # address
   newAmount: Int! # uint16

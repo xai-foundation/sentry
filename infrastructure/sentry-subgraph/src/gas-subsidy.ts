@@ -5,13 +5,13 @@ import {
   RoleRevoked as RoleRevokedEvent,
 } from "../generated/GasSubsidy/GasSubsidy"
 import {
-  GasSubsidyRoleAdminChanged as RoleAdminChanged,
-  GasSubsidyRoleGranted as RoleGranted,
-  GasSubsidyRoleRevoked as RoleRevoked,
+  GasSubsidyRoleAdminChangedEvent,
+  GasSubsidyRoleGrantedEvent,
+  GasSubsidyRoleRevokedEvent,
 } from "../generated/schema"
 
 export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
-  let entity = new RoleAdminChanged(
+  let entity = new GasSubsidyRoleAdminChangedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.role = event.params.role
@@ -26,7 +26,7 @@ export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
 }
 
 export function handleRoleGranted(event: RoleGrantedEvent): void {
-  let entity = new RoleGranted(
+  let entity = new GasSubsidyRoleGrantedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.role = event.params.role
@@ -41,7 +41,7 @@ export function handleRoleGranted(event: RoleGrantedEvent): void {
 }
 
 export function handleRoleRevoked(event: RoleRevokedEvent): void {
-  let entity = new RoleRevoked(
+  let entity = new GasSubsidyRoleRevokedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.role = event.params.role

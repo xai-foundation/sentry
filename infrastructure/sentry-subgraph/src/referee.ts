@@ -21,30 +21,30 @@ import {
   UpdateMaxStakeAmount as UpdateMaxStakeAmountEvent,
 } from "../generated/Referee/Referee"
 import {
-  RefereeApproval,
-  RefereeAssertionCheckingToggled,
-  RefereeAssertionSubmitted,
-  RefereeChallengeClosed,
-  RefereeChallengeExpired,
-  RefereeChallengeSubmitted,
-  RefereeChallengerPublicKeyChanged,
-  RefereeInitialized,
-  RefereeInvalidSubmission,
-  RefereeKycStatusChanged,
-  RefereeNodeLicenseAddressChanged,
-  RefereeRewardsClaimed,
-  RefereeRoleAdminChanged,
-  RefereeRoleGranted,
-  RefereeRoleRevoked,
-  RefereeRollupAddressChanged,
-  RefereeStakedV1,
-  RefereeStakingEnabled,
-  RefereeUnstakeV1,
-  RefereeUpdateMaxStakeAmount,
+  RefereeApprovalEvent,
+  RefereeAssertionCheckingToggledEvent,
+  RefereeAssertionSubmittedEvent,
+  RefereeChallengeClosedEvent,
+  RefereeChallengeExpiredEvent,
+  RefereeChallengeSubmittedEvent,
+  RefereeChallengerPublicKeyChangedEvent,
+  RefereeInitializedEvent,
+  RefereeInvalidSubmissionEvent,
+  RefereeKycStatusChangedEvent,
+  RefereeNodeLicenseAddressChangedEvent,
+  RefereeRewardsClaimedEvent,
+  RefereeRoleAdminChangedEvent,
+  RefereeRoleGrantedEvent,
+  RefereeRoleRevokedEvent,
+  RefereeRollupAddressChangedEvent,
+  RefereeStakedV1Event,
+  RefereeStakingEnabledEvent,
+  RefereeUnstakeV1Event,
+  RefereeUpdateMaxStakeAmountEvent,
 } from "../generated/schema"
 
 export function handleApproval(event: ApprovalEvent): void {
-  let entity = new RefereeApproval(
+  let entity = new RefereeApprovalEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.owner = event.params.owner
@@ -61,7 +61,7 @@ export function handleApproval(event: ApprovalEvent): void {
 export function handleAssertionCheckingToggled(
   event: AssertionCheckingToggledEvent,
 ): void {
-  let entity = new RefereeAssertionCheckingToggled(
+  let entity = new RefereeAssertionCheckingToggledEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.newState = event.params.newState
@@ -74,7 +74,7 @@ export function handleAssertionCheckingToggled(
 }
 
 export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
-  let entity = new RefereeAssertionSubmitted(
+  let entity = new RefereeAssertionSubmittedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.challengeId = event.params.challengeId
@@ -88,7 +88,7 @@ export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
 }
 
 export function handleChallengeClosed(event: ChallengeClosedEvent): void {
-  let entity = new RefereeChallengeClosed(
+  let entity = new RefereeChallengeClosedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.challengeNumber = event.params.challengeNumber
@@ -101,7 +101,7 @@ export function handleChallengeClosed(event: ChallengeClosedEvent): void {
 }
 
 export function handleChallengeExpired(event: ChallengeExpiredEvent): void {
-  let entity = new RefereeChallengeExpired(
+  let entity = new RefereeChallengeExpiredEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.challengeId = event.params.challengeId
@@ -114,7 +114,7 @@ export function handleChallengeExpired(event: ChallengeExpiredEvent): void {
 }
 
 export function handleChallengeSubmitted(event: ChallengeSubmittedEvent): void {
-  let entity = new RefereeChallengeSubmitted(
+  let entity = new RefereeChallengeSubmittedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.challengeNumber = event.params.challengeNumber
@@ -129,7 +129,7 @@ export function handleChallengeSubmitted(event: ChallengeSubmittedEvent): void {
 export function handleChallengerPublicKeyChanged(
   event: ChallengerPublicKeyChangedEvent,
 ): void {
-  let entity = new RefereeChallengerPublicKeyChanged(
+  let entity = new RefereeChallengerPublicKeyChangedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.newChallengerPublicKey = event.params.newChallengerPublicKey
@@ -142,7 +142,7 @@ export function handleChallengerPublicKeyChanged(
 }
 
 export function handleInitialized(event: InitializedEvent): void {
-  let entity = new RefereeInitialized(
+  let entity = new RefereeInitializedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.version = event.params.version
@@ -155,7 +155,7 @@ export function handleInitialized(event: InitializedEvent): void {
 }
 
 export function handleInvalidSubmission(event: InvalidSubmissionEvent): void {
-  let entity = new RefereeInvalidSubmission(
+  let entity = new RefereeInvalidSubmissionEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.challengeId = event.params.challengeId
@@ -169,7 +169,7 @@ export function handleInvalidSubmission(event: InvalidSubmissionEvent): void {
 }
 
 export function handleKycStatusChanged(event: KycStatusChangedEvent): void {
-  let entity = new RefereeKycStatusChanged(
+  let entity = new RefereeKycStatusChangedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.wallet = event.params.wallet
@@ -185,7 +185,7 @@ export function handleKycStatusChanged(event: KycStatusChangedEvent): void {
 export function handleNodeLicenseAddressChanged(
   event: NodeLicenseAddressChangedEvent,
 ): void {
-  let entity = new RefereeNodeLicenseAddressChanged(
+  let entity = new RefereeNodeLicenseAddressChangedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.newNodeLicenseAddress = event.params.newNodeLicenseAddress
@@ -198,7 +198,7 @@ export function handleNodeLicenseAddressChanged(
 }
 
 export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
-  let entity = new RefereeRewardsClaimed(
+  let entity = new RefereeRewardsClaimedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.challengeId = event.params.challengeId
@@ -212,7 +212,7 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
 }
 
 export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
-  let entity = new RefereeRoleAdminChanged(
+  let entity = new RefereeRoleAdminChangedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.role = event.params.role
@@ -227,7 +227,7 @@ export function handleRoleAdminChanged(event: RoleAdminChangedEvent): void {
 }
 
 export function handleRoleGranted(event: RoleGrantedEvent): void {
-  let entity = new RefereeRoleGranted(
+  let entity = new RefereeRoleGrantedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.role = event.params.role
@@ -242,7 +242,7 @@ export function handleRoleGranted(event: RoleGrantedEvent): void {
 }
 
 export function handleRoleRevoked(event: RoleRevokedEvent): void {
-  let entity = new RefereeRoleRevoked(
+  let entity = new RefereeRoleRevokedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.role = event.params.role
@@ -259,7 +259,7 @@ export function handleRoleRevoked(event: RoleRevokedEvent): void {
 export function handleRollupAddressChanged(
   event: RollupAddressChangedEvent,
 ): void {
-  let entity = new RefereeRollupAddressChanged(
+  let entity = new RefereeRollupAddressChangedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.newRollupAddress = event.params.newRollupAddress
@@ -272,7 +272,7 @@ export function handleRollupAddressChanged(
 }
 
 export function handleStakedV1(event: StakedV1Event): void {
-  let entity = new RefereeStakedV1(
+  let entity = new RefereeStakedV1Event(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.user = event.params.user
@@ -287,7 +287,7 @@ export function handleStakedV1(event: StakedV1Event): void {
 }
 
 export function handleStakingEnabled(event: StakingEnabledEvent): void {
-  let entity = new RefereeStakingEnabled(
+  let entity = new RefereeStakingEnabledEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
 
@@ -299,7 +299,7 @@ export function handleStakingEnabled(event: StakingEnabledEvent): void {
 }
 
 export function handleUnstakeV1(event: UnstakeV1Event): void {
-  let entity = new RefereeUnstakeV1(
+  let entity = new RefereeUnstakeV1Event(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.user = event.params.user
@@ -316,7 +316,7 @@ export function handleUnstakeV1(event: UnstakeV1Event): void {
 export function handleUpdateMaxStakeAmount(
   event: UpdateMaxStakeAmountEvent,
 ): void {
-  let entity = new RefereeUpdateMaxStakeAmount(
+  let entity = new RefereeUpdateMaxStakeAmountEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
   entity.prevAmount = event.params.prevAmount
