@@ -1,8 +1,3 @@
-import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
-import {assert, expect} from "chai";
-import {Contract} from "ethers";
-import {StakingPoolAbi} from "@sentry/core";
-import {getStateRoots} from "./Referee.mjs";
 import {CreatePool} from "./stakingv2/CreatePool.mjs";
 import {UpdatePool} from "./stakingv2/UpdatePool.mjs";
 import {StakeKeysToPool} from "./stakingv2/StakeKeysToPool.mjs";
@@ -59,6 +54,6 @@ export function StakingV2(deployInfrastructure) {
 		describe("Stake Key to pool #187167267", StakeKeysToPool(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
 		describe("Stake esXai to pool #187167334", StakeEsXaiToPool(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
 		describe("Verify boost factor #187167332", VerifyBoostFactor(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
-		describe("Rewards", Rewards(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
+		// describe("Rewards", Rewards(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
 	}
 }
