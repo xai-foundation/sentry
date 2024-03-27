@@ -6,7 +6,6 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "../upgrades/referee/Referee5.sol";
 import "./BucketTracker.sol";
 import "../esXai.sol";
-import "hardhat/console.sol";
 
 contract StakingPool is AccessControlUpgradeable {
     bytes32 public constant POOL_ADMIN = keccak256("POOL_ADMIN");
@@ -398,7 +397,7 @@ contract StakingPool is AccessControlUpgradeable {
     function _getUndistributedClaimAmount(
         address user
     ) internal view returns (uint256 claimAmount, uint256 ownerAmount) {
-        uint256 poolAmount = esXai(esXaiAddress).balanceOf(address(this));
+        uint256 poolAmount = esXai(esXaiAddress).balanceOf(address(this)) - poolOwnerClaimableRewards;
 
         uint256 amountForKeyBucket = (poolAmount * keyBucketShare) / 1_000_000;
         uint256 amountForEsXaiBucket = (poolAmount * stakedBucketShare) / 1_000_000;

@@ -1,7 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {Contract} from "ethers";
-import {StakingPoolAbi} from "@sentry/core";
+import {BucketTrackerAbi, StakingPoolAbi} from "@sentry/core";
 
 export function Rewards(deployInfrastructure, poolConfigurations) {
 	const {
@@ -108,11 +108,23 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const addr3TotalClaimAmount = addr3AmountFromKeys + addr3AmountFromEsXai;
 			expect(addr3UndistributedClaimAmount1[0]).to.equal(BigInt(Math.floor(addr3TotalClaimAmount)));
 
-			// addr2 claims from pools
+			// addr2 claims from pool
 			const addr2balance1Pre = await esXai.connect(addr2).balanceOf(addr2Address);
 			await poolFactory.connect(addr2).claimFromPools([stakingPoolAddress]);
 			const addr2balance1Post = await esXai.connect(addr2).balanceOf(addr2Address);
 			expect(addr2balance1Post).to.equal(addr2balance1Pre + BigInt(Math.floor(addr2TotalClaimAmount)));
+
+			// addr3 claims from pool
+			const addr3balance1Pre = await esXai.connect(addr2).balanceOf(addr3Address);
+			await poolFactory.connect(addr3).claimFromPools([stakingPoolAddress]);
+			const addr3balance1Post = await esXai.connect(addr3).balanceOf(addr3Address);
+			expect(addr3balance1Post).to.equal(addr3balance1Pre + BigInt(Math.floor(addr3TotalClaimAmount)));
+
+			// Verify both users have no more undistributed claim amounts
+			const addr2UndistributedClaimAmount2 = await stakingPool.connect(addr2).getUndistributedClaimAmount(addr2Address);
+			const addr3UndistributedClaimAmount2 = await stakingPool.connect(addr3).getUndistributedClaimAmount(addr3Address);
+			expect(addr2UndistributedClaimAmount2[0]).to.equal(0);
+			expect(addr3UndistributedClaimAmount2[0]).to.equal(0);
 		});
 	}
 }
