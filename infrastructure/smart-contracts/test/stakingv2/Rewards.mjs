@@ -497,7 +497,7 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const addr4balance2 = await esXai.connect(addr3).balanceOf(addr4Address);
 			expect(addr4balance2).to.equal(0);
 
-			// addr4 claims from pool
+			// addr4 claims from pool & verify esXai balance is still 0
 			const addr4balance3 = await esXai.connect(addr4).balanceOf(addr4Address);
 			await poolFactory.connect(addr4).claimFromPools([stakingPoolAddress]);
 			const addr4balance4 = await esXai.connect(addr4).balanceOf(addr4Address);
