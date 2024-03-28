@@ -134,15 +134,18 @@ const startListener = async (commandInstance: Vorpal.CommandInstance) => {
                     if (errorCount > NUM_CON_WS_ALLOWED_ERRORS) {
                         stopListener(listener);
                         resolve(error);
-                    } else {
-                        //If the websocket just reconnected automatically we only want to try to re-post the last possibly missed challenge
-                        await processMissedAssertions(commandInstance).catch(() => {});
                     }
                     return;
                 }
 
+                if(errorCount != 0) {
+                    //If the websocket just reconnected automatically we only want to try to re-post the last possibly missed challenge
+                    await processMissedAssertions(commandInstance).catch(() => {});
+                }
+
+                errorCount = 0;
+                
                 try {
-                    errorCount = 0;
                     await onAssertionConfirmedCb(nodeNum, commandInstance);
                     currentNumberOfRetries = 0;
                 } catch {
