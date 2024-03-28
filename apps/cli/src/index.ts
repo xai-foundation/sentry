@@ -44,6 +44,7 @@ import { removePromoCode } from './commands/licenses/remove-promo-code.js';
 import { eventListener } from './commands/event-listener.js';
 import { startKycProcess } from './commands/kyc/start-kyc-process.js';
 import { generateRevenueReport } from './commands/licenses/generate-revenue-report.js';
+import { displayNodeAgreement } from './commands/display-node-agreement.js';
 import {version} from "@sentry/core";
 
 const cli = new Vorpal();
@@ -94,6 +95,7 @@ toggleAssertionChecking(cli);
 totalSupply(cli);
 startKycProcess(cli);
 generateRevenueReport(cli);
+displayNodeAgreement(cli);
 
 console.log(`Starting Sentry cli version ${version}`);
 
