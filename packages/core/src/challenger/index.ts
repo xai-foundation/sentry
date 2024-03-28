@@ -5,3 +5,4 @@ export * from "./isCheckingAssertions.js";
 export * from "./listChallenges.js";
 export * from "./getChallenge.js";
 export * from "./getLatestChallenge.js";
+export * from "./findMissedAssertion.js";
