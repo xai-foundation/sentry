@@ -136,7 +136,7 @@ const startListener = async (commandInstance: Vorpal.CommandInstance) => {
                         resolve(error);
                     } else {
                         //If the websocket just reconnected automatically we only want to try to re-post the last possibly missed challenge
-                        await processMissedAssertions(commandInstance);
+                        await processMissedAssertions(commandInstance).catch(() => {});
                     }
                     return;
                 }
