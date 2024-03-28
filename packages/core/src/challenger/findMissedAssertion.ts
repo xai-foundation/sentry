@@ -2,6 +2,7 @@ import { ethers, keccak256 } from 'ethers';
 import { RefereeAbi } from '../abis/index.js';
 import { RollupAdminLogicAbi } from "../abis/RollupAdminLogicAbi.js";
 import { config } from '../config.js';
+import { getProvider } from '../index.js';
 
 /**
  * Finds the last assertion event from the rollup contract and returns the nodeNum if not already written to referee contract
@@ -9,16 +10,16 @@ import { config } from '../config.js';
  */
 export async function findMissedAssertion(): Promise<number | null> {
 
-    const rollupProvider = new ethers.JsonRpcProvider(config.arbitrumOneJsonRpcUrl);
+    const provider = getProvider();
     const blockRangePerRequest = 10000;
 
     const contract = new ethers.Contract(
         config.rollupAddress,
         RollupAdminLogicAbi,
-        rollupProvider
+        provider
     )
 
-    const latestBlock = await rollupProvider.getBlockNumber();
+    const latestBlock = await provider.getBlockNumber();
 
     let toBlock = latestBlock;
     let fromBlock = Math.max(latestBlock - blockRangePerRequest, 0);
