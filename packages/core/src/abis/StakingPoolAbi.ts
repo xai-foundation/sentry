@@ -425,6 +425,14 @@ export const StakingPoolAbi = [
     "outputs": [
       {
         "type": "uint256",
+        "name": "claimAmountFromKeys"
+      },
+      {
+        "type": "uint256",
+        "name": "claimAmountFromEsXai"
+      },
+      {
+        "type": "uint256",
         "name": "claimAmount"
       },
       {

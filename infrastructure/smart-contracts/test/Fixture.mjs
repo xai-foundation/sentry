@@ -38,6 +38,7 @@ describe("Fixture Tests", function () {
             addr1,
             addr2,
             addr3,
+            addr4,
             operator,
         ] = await ethers.getSigners();
 
@@ -278,6 +279,7 @@ describe("Fixture Tests", function () {
             addr1,
             addr2,
             addr3,
+            addr4,
             operator,
             rollupController,
 

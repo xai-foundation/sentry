@@ -396,7 +396,12 @@ contract StakingPool is AccessControlUpgradeable {
 
     function _getUndistributedClaimAmount(
         address user
-    ) internal view returns (uint256 claimAmount, uint256 ownerAmount) {
+    ) internal view returns (
+		uint256 claimAmountFromKeys,
+		uint256 claimAmountFromEsXai,
+		uint256 claimAmount,
+		uint256 ownerAmount
+	) {
         uint256 poolAmount = esXai(esXaiAddress).balanceOf(address(this)) - poolOwnerClaimableRewards;
 
         uint256 amountForKeyBucket = (poolAmount * keyBucketShare) / 1_000_000;
@@ -409,18 +414,25 @@ contract StakingPool is AccessControlUpgradeable {
 
         if (userBalanceInKeyBucket != 0) {
             uint256 amountPerKey = amountForKeyBucket * 1_000_000 / keyBucket.totalSupply();
-            claimAmount += amountPerKey * userBalanceInKeyBucket / 1_000_000;
+			claimAmountFromKeys = amountPerKey * userBalanceInKeyBucket / 1_000_000;
+            claimAmount += claimAmountFromKeys;
         }
 
         if (userBalanceInEsXaiBucket != 0) {
             uint256 amountPerStakedEsXai = amountForEsXaiBucket * 1_000_000 / esXaiStakeBucket.totalSupply();
-            claimAmount += amountPerStakedEsXai * userBalanceInEsXaiBucket / 1_000_000;
+			claimAmountFromEsXai = amountPerStakedEsXai * userBalanceInEsXaiBucket / 1_000_000;
+            claimAmount += claimAmountFromEsXai;
         }
     }
 
     function getUndistributedClaimAmount(
         address user
-    ) external view returns (uint256 claimAmount, uint256 ownerAmount) {
+    ) external view returns (
+		uint256 claimAmountFromKeys,
+		uint256 claimAmountFromEsXai,
+		uint256 claimAmount,
+		uint256 ownerAmount
+	) {
         return _getUndistributedClaimAmount(user);
     }
 
@@ -477,10 +489,7 @@ contract StakingPool is AccessControlUpgradeable {
         uint256 claimAmountStakedBucket = esXaiStakeBucket
             .withdrawableDividendOf(user);
 
-        (
-            uint256 claimAmount,
-            uint256 ownerAmount
-        ) = _getUndistributedClaimAmount(user);
+        (, , uint256 claimAmount, uint256 ownerAmount) = _getUndistributedClaimAmount(user);
 
         userClaimAmount =
             claimAmountKeyBucket +
