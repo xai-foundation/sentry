@@ -100,14 +100,14 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const addr2AmountFromEsXai = addr2EsXaiToStake * amountPerEsXaiStaked;
 			const addr2TotalClaimAmount = addr2AmountFromKeys + addr2AmountFromEsXai;
 			const addr2UndistributedClaimAmount1 = await stakingPool.connect(addr2).getUndistributedClaimAmount(addr2Address);
-			expect(addr2UndistributedClaimAmount1[0]).to.equal(BigInt(Math.floor(addr2TotalClaimAmount)));
+			expect(addr2UndistributedClaimAmount1[2]).to.equal(BigInt(Math.floor(addr2TotalClaimAmount)));
 
 			// Determine addr3 owed amount
 			const addr3AmountFromKeys = addr3KeysToStake * amountPerKey;
 			const addr3AmountFromEsXai = addr3EsXaiToStake * amountPerEsXaiStaked;
 			const addr3UndistributedClaimAmount1 = await stakingPool.connect(addr3).getUndistributedClaimAmount(addr3Address);
 			const addr3TotalClaimAmount = addr3AmountFromKeys + addr3AmountFromEsXai;
-			expect(addr3UndistributedClaimAmount1[0]).to.equal(BigInt(Math.floor(addr3TotalClaimAmount)));
+			expect(addr3UndistributedClaimAmount1[2]).to.equal(BigInt(Math.floor(addr3TotalClaimAmount)));
 
 			// addr2 claims from pool
 			const addr2balance1Pre = await esXai.connect(addr2).balanceOf(addr2Address);
@@ -124,8 +124,8 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			// Verify both users have no more undistributed claim amounts
 			const addr2UndistributedClaimAmount2 = await stakingPool.connect(addr2).getUndistributedClaimAmount(addr2Address);
 			const addr3UndistributedClaimAmount2 = await stakingPool.connect(addr3).getUndistributedClaimAmount(addr3Address);
-			expect(addr2UndistributedClaimAmount2[0]).to.equal(0);
-			expect(addr3UndistributedClaimAmount2[0]).to.equal(0);
+			expect(addr2UndistributedClaimAmount2[2]).to.equal(0);
+			expect(addr3UndistributedClaimAmount2[2]).to.equal(0);
 
 			// Mint 1,000,000 esXai to the stakingPool
 			const poolAmount2 = poolAmount * 10;
@@ -147,14 +147,14 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const addr2AmountFromEsXai2 = addr2EsXaiToStake * amountPerEsXaiStaked2;
 			const addr2TotalClaimAmount2 = addr2AmountFromKeys2 + addr2AmountFromEsXai2;
 			const addr2UndistributedClaimAmount3 = await stakingPool.connect(addr2).getUndistributedClaimAmount(addr2Address);
-			expect(addr2UndistributedClaimAmount3[0]).to.equal(BigInt(Math.floor(addr2TotalClaimAmount2)));
+			expect(addr2UndistributedClaimAmount3[2]).to.equal(BigInt(Math.floor(addr2TotalClaimAmount2)));
 
 			// Calculate new owed amount for addr3
 			const addr3AmountFromKeys2 = addr3KeysToStake * amountPerKey2;
 			const addr3AmountFromEsXai2 = addr3EsXaiToStake * amountPerEsXaiStaked2;
 			const addr3TotalClaimAmount2 = addr3AmountFromKeys2 + addr3AmountFromEsXai2;
 			const addr3UndistributedClaimAmount3 = await stakingPool.connect(addr2).getUndistributedClaimAmount(addr3Address);
-			expect(addr3UndistributedClaimAmount3[0]).to.equal(BigInt(Math.floor(addr3TotalClaimAmount2)));
+			expect(addr3UndistributedClaimAmount3[2]).to.equal(BigInt(Math.floor(addr3TotalClaimAmount2)));
 		});
 
 		it("Change reward breakdown does not effect reward value before 45 days are up", async function () {
@@ -237,7 +237,7 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const addr2AmountFromEsXai = addr2EsXaiToStake * amountPerEsXaiStaked;
 			const addr2TotalClaimAmount = addr2AmountFromKeys + addr2AmountFromEsXai;
 			const addr2UndistributedClaimAmount1 = await stakingPool.connect(addr2).getUndistributedClaimAmount(addr2Address);
-			expect(addr2UndistributedClaimAmount1[0]).to.equal(BigInt(Math.floor(addr2TotalClaimAmount)));
+			expect(addr2UndistributedClaimAmount1[2]).to.equal(BigInt(Math.floor(addr2TotalClaimAmount)));
 
 			// addr2 claim rewards
 			const addr2balance1Pre = await esXai.connect(addr2).balanceOf(addr2Address);
@@ -326,7 +326,7 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const addr2AmountFromEsXai = addr2EsXaiToStake * amountPerEsXaiStaked;
 			const addr2TotalClaimAmount = addr2AmountFromKeys + addr2AmountFromEsXai;
 			const addr2UndistributedClaimAmount1 = await stakingPool.connect(addr2).getUndistributedClaimAmount(addr2Address);
-			expect(addr2UndistributedClaimAmount1[0]).to.equal(BigInt(Math.floor(addr2TotalClaimAmount)));
+			expect(addr2UndistributedClaimAmount1[2]).to.equal(BigInt(Math.floor(addr2TotalClaimAmount)));
 
 			// Wait 45 days
 			await ethers.provider.send("evm_increaseTime", [86400 * 45]);
@@ -438,14 +438,14 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const addr2AmountFromEsXai = addr2EsXaiToStake * amountPerEsXaiStaked;
 			const addr2TotalClaimAmount = addr2AmountFromKeys + addr2AmountFromEsXai;
 			const addr2UndistributedClaimAmount1 = await stakingPool.connect(addr2).getUndistributedClaimAmount(addr2Address);
-			expect(addr2UndistributedClaimAmount1[0]).to.equal(BigInt(Math.floor(addr2TotalClaimAmount)));
+			expect(addr2UndistributedClaimAmount1[2]).to.equal(BigInt(Math.floor(addr2TotalClaimAmount)));
 
 			// Determine addr3 owed amount
 			const addr3AmountFromKeys = addr3KeysToStake * amountPerKey;
 			const addr3AmountFromEsXai = addr3EsXaiToStake * amountPerEsXaiStaked;
 			const addr3UndistributedClaimAmount1 = await stakingPool.connect(addr3).getUndistributedClaimAmount(addr3Address);
 			const addr3TotalClaimAmount = addr3AmountFromKeys + addr3AmountFromEsXai;
-			expect(addr3UndistributedClaimAmount1[0]).to.equal(BigInt(Math.floor(addr3TotalClaimAmount)));
+			expect(addr3UndistributedClaimAmount1[2]).to.equal(BigInt(Math.floor(addr3TotalClaimAmount)));
 
 			// addr2 claims from pool
 			const addr2balance1Pre = await esXai.connect(addr2).balanceOf(addr2Address);
@@ -462,8 +462,8 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			// Verify both users have no more undistributed claim amounts
 			const addr2UndistributedClaimAmount2 = await stakingPool.connect(addr2).getUndistributedClaimAmount(addr2Address);
 			const addr3UndistributedClaimAmount2 = await stakingPool.connect(addr3).getUndistributedClaimAmount(addr3Address);
-			expect(addr2UndistributedClaimAmount2[0]).to.equal(0);
-			expect(addr3UndistributedClaimAmount2[0]).to.equal(0);
+			expect(addr2UndistributedClaimAmount2[2]).to.equal(0);
+			expect(addr3UndistributedClaimAmount2[2]).to.equal(0);
 
 			// Mint 100,000 esXai to the stakingPool
 			const poolAmount2 = poolAmount;
@@ -475,8 +475,8 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			// Check that addr2 & addr3 have the same claim amounts as the first iteration (because same amount was minted to pool again)
 			const addr2UndistributedClaimAmount3 = await stakingPool.connect(addr2).getUndistributedClaimAmount(addr2Address);
 			const addr3UndistributedClaimAmount3 = await stakingPool.connect(addr3).getUndistributedClaimAmount(addr3Address);
-			expect(addr2UndistributedClaimAmount3[0]).to.equal(addr2UndistributedClaimAmount1[0]);
-			expect(addr3UndistributedClaimAmount3[0]).to.equal(addr3UndistributedClaimAmount1[0]);
+			expect(addr2UndistributedClaimAmount3[2]).to.equal(addr2UndistributedClaimAmount1[2]);
+			expect(addr3UndistributedClaimAmount3[2]).to.equal(addr3UndistributedClaimAmount1[2]);
 
 			// Expect addr4 to have no esXai yet
 			const addr4balance1 = await esXai.connect(addr3).balanceOf(addr4Address);
@@ -547,9 +547,178 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const addr4UndistributedClaimAmount4 = await stakingPool.connect(addr4).getUndistributedClaimAmount(addr4Address);
 
 			// Verify all 3 users; addr2, addr3, and addr4 have correct expected reward quantities after latest mint to staking pool
-			expect(addr2UndistributedClaimAmount4[0]).to.equal(BigInt(addr2TotalClaimAmount4));
-			expect(addr3UndistributedClaimAmount4[0]).to.equal(BigInt(addr3TotalClaimAmount4));
-			expect(addr4UndistributedClaimAmount4[0]).to.equal(BigInt(addr4TotalClaimAmount4));
+			expect(addr2UndistributedClaimAmount4[2]).to.equal(BigInt(addr2TotalClaimAmount4));
+			expect(addr3UndistributedClaimAmount4[2]).to.equal(BigInt(addr3TotalClaimAmount4));
+			expect(addr4UndistributedClaimAmount4[2]).to.equal(BigInt(addr4TotalClaimAmount4));
+		});
+
+		it("Test reward breakdown with greatly varying degrees of staked esXai amounts", async function () {
+			const {poolFactory, addr1, addr2, addr3, addr4, nodeLicense, esXai, esXaiMinter, referee, kycAdmin} = await loadFixture(deployInfrastructure);
+
+			const ownerShare = 20_000; // 2 %
+			const keyBucketShare = 843_750; // 84.375 %
+			const esXaiBucketShare = 136_250; // 13.625 %
+
+			// Mint key to make basic pool
+			const addr1KeyQuantity = 1;
+			const price = await nodeLicense.price(addr1KeyQuantity, "");
+			await nodeLicense.connect(addr1).mint(addr1KeyQuantity, "", {value: price});
+			const mintedKeyId = await nodeLicense.totalSupply();
+
+			await poolFactory.connect(addr1).createPool(
+				noDelegateOwner,
+				[mintedKeyId],
+				[
+					ownerShare,
+					keyBucketShare,
+					esXaiBucketShare,
+				],
+				poolMetaData,
+				poolSocials,
+				poolTrackerDetails
+			);
+
+			// Save reference to the new staking pool
+			const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+			const stakingPool = new Contract(stakingPoolAddress, StakingPoolAbi);
+
+			// addresses
+			const addr2Address = await addr2.getAddress();
+			const addr3Address = await addr3.getAddress();
+			const addr4Address = await addr4.getAddress();
+			const poolFactoryAddress = await poolFactory.getAddress();
+
+			// Mint a key to addr2 & stake
+			const addr2KeysToStake = 1;
+			const price2 = await nodeLicense.price(addr2KeysToStake, "");
+			await nodeLicense.connect(addr2).mint(addr2KeysToStake, "", {value: price2});
+			const mintedKeyId2 = await nodeLicense.totalSupply();
+			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2]);
+
+			// Mint & stake 10_000 esXai for addr2
+			const addr2EsXaiToStake = 10_000;
+			await esXai.connect(esXaiMinter).mint(addr2Address, addr2EsXaiToStake);
+			await esXai.connect(addr2).increaseAllowance(poolFactoryAddress, addr2EsXaiToStake);
+			await poolFactory.connect(addr2).stakeEsXai(stakingPoolAddress, addr2EsXaiToStake);
+
+			// Mint a key to addr3 & stake
+			const addr3KeysToStake = 1;
+			const price3 = await nodeLicense.price(addr3KeysToStake, "");
+			await nodeLicense.connect(addr3).mint(addr3KeysToStake, "", {value: price3});
+			const mintedKeyId3 = await nodeLicense.totalSupply();
+			await referee.connect(kycAdmin).addKycWallet(addr3Address);
+			await poolFactory.connect(addr3).stakeKeys(stakingPoolAddress, [mintedKeyId3]);
+
+			// Mint & stake 10_000_000 esXai for addr3
+			const addr3EsXaiToStake = 10_000_000;
+			await esXai.connect(esXaiMinter).mint(addr3Address, addr3EsXaiToStake);
+			await esXai.connect(addr3).increaseAllowance(poolFactoryAddress, addr3EsXaiToStake);
+			await poolFactory.connect(addr3).stakeEsXai(stakingPoolAddress, addr3EsXaiToStake);
+
+			// Mint 100,000 esXai to the stakingPool
+			const poolAmount = 100_000;
+			await esXai.connect(esXaiMinter).mint(stakingPoolAddress, poolAmount);
+			const stakingPoolBalance = await esXai.connect(addr1).balanceOf(stakingPoolAddress);
+			expect(stakingPoolBalance).to.equal(poolAmount);
+
+			// Get current expected values
+			const addr2UndistributedClaimAmount1 = await stakingPool.connect(addr2).getUndistributedClaimAmount(addr2Address);
+			const addr3UndistributedClaimAmount1 = await stakingPool.connect(addr3).getUndistributedClaimAmount(addr3Address);
+			expect(addr3UndistributedClaimAmount1[2]).to.be.greaterThan(addr2UndistributedClaimAmount1[2]);
+
+			// Mint & stake enough esXai for addr2 to tie addr3 (this does claiming from the stake action)
+			const addr2EsXaiToStake2 = addr3EsXaiToStake - addr2EsXaiToStake;
+			await esXai.connect(esXaiMinter).mint(addr2Address, addr2EsXaiToStake2);
+			await esXai.connect(addr2).increaseAllowance(poolFactoryAddress, addr2EsXaiToStake2);
+			await poolFactory.connect(addr2).stakeEsXai(stakingPoolAddress, addr2EsXaiToStake2);
+
+			// Mint 100,000 esXai to the stakingPool again
+			const poolAmount2 = 100_000;
+			await esXai.connect(esXaiMinter).mint(stakingPoolAddress, poolAmount2);
+			const stakingPoolBalance2 = await esXai.connect(addr1).balanceOf(stakingPoolAddress);
+			const poolOwnerClaimableRewards = await stakingPool.connect(addr1).poolOwnerClaimableRewards();
+			expect(stakingPoolBalance2).to.equal(BigInt(poolAmount2) + poolOwnerClaimableRewards);
+
+			// Get updated expected values that should now be equal
+			const addr2UndistributedClaimAmount2 = await stakingPool.connect(addr2).getUndistributedClaimAmount(addr2Address);
+			const addr3UndistributedClaimAmount2 = await stakingPool.connect(addr3).getUndistributedClaimAmount(addr3Address);
+			expect(addr2UndistributedClaimAmount2[2]).to.equal(addr3UndistributedClaimAmount2[2]);
+		});
+
+		it("Verify outcome when not enough esXai in pool to distribute to holders", async function () {
+			const {poolFactory, addr1, addr2, addr3, addr4, nodeLicense, esXai, esXaiMinter, referee, kycAdmin} = await loadFixture(deployInfrastructure);
+
+			const ownerShare = 20_000; // 2 %
+			const keyBucketShare = 843_750; // 84.375 %
+			const esXaiBucketShare = 136_250; // 13.625 %
+
+			// Mint key to make basic pool
+			const addr1KeyQuantity = 1;
+			const price = await nodeLicense.price(addr1KeyQuantity, "");
+			await nodeLicense.connect(addr1).mint(addr1KeyQuantity, "", {value: price});
+			const mintedKeyId = await nodeLicense.totalSupply();
+
+			await poolFactory.connect(addr1).createPool(
+				noDelegateOwner,
+				[mintedKeyId],
+				[
+					ownerShare,
+					keyBucketShare,
+					esXaiBucketShare,
+				],
+				poolMetaData,
+				poolSocials,
+				poolTrackerDetails
+			);
+
+			// Save reference to the new staking pool
+			const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+			const stakingPool = new Contract(stakingPoolAddress, StakingPoolAbi);
+
+			// addresses
+			const addr2Address = await addr2.getAddress();
+			const addr3Address = await addr3.getAddress();
+			const addr4Address = await addr4.getAddress();
+			const poolFactoryAddress = await poolFactory.getAddress();
+
+			// Mint a key to addr2 & stake
+			const addr2KeysToStake = 1;
+			const price2 = await nodeLicense.price(addr2KeysToStake, "");
+			await nodeLicense.connect(addr2).mint(addr2KeysToStake, "", {value: price2});
+			const mintedKeyId2 = await nodeLicense.totalSupply();
+			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2]);
+
+			// Mint & stake 10_000 esXai for addr2
+			const addr2EsXaiToStake = 10_000;
+			await esXai.connect(esXaiMinter).mint(addr2Address, addr2EsXaiToStake);
+			await esXai.connect(addr2).increaseAllowance(poolFactoryAddress, addr2EsXaiToStake);
+			await poolFactory.connect(addr2).stakeEsXai(stakingPoolAddress, addr2EsXaiToStake);
+
+			// Mint a key to addr3 & stake
+			const addr3KeysToStake = addr2KeysToStake;
+			const price3 = await nodeLicense.price(addr3KeysToStake, "");
+			await nodeLicense.connect(addr3).mint(addr3KeysToStake, "", {value: price3});
+			const mintedKeyId3 = await nodeLicense.totalSupply();
+			await referee.connect(kycAdmin).addKycWallet(addr3Address);
+			await poolFactory.connect(addr3).stakeKeys(stakingPoolAddress, [mintedKeyId3]);
+
+			// Mint & stake 10_000 esXai for addr3
+			const addr3EsXaiToStake = addr2EsXaiToStake;
+			await esXai.connect(esXaiMinter).mint(addr3Address, addr3EsXaiToStake);
+			await esXai.connect(addr3).increaseAllowance(poolFactoryAddress, addr3EsXaiToStake);
+			await poolFactory.connect(addr3).stakeEsXai(stakingPoolAddress, addr3EsXaiToStake);
+
+			// Mint 1 esXai to the stakingPool
+			const poolAmount = 1;
+			await esXai.connect(esXaiMinter).mint(stakingPoolAddress, poolAmount);
+			const stakingPoolBalance = await esXai.connect(addr1).balanceOf(stakingPoolAddress);
+			expect(stakingPoolBalance).to.equal(poolAmount);
+
+			// Get current expected values
+			const addr2UndistributedClaimAmount1 = await stakingPool.connect(addr2).getUndistributedClaimAmount(addr2Address);
+			const addr3UndistributedClaimAmount1 = await stakingPool.connect(addr3).getUndistributedClaimAmount(addr3Address);
+			expect(addr2UndistributedClaimAmount1[2]).to.equal(0);
+			expect(addr2UndistributedClaimAmount1[2]).to.equal(addr3UndistributedClaimAmount1[2]);
 		});
 	}
 }
