@@ -1,0 +1,5 @@
+sources:
+  - name: sentry
+    handler:
+      graphql:
+        endpoint: https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry/version/v0.0.5/api

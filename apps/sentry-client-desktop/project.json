@@ -1,7 +1,5 @@
 {
-	"root": "apps/sentry-client-desktop",
-	"sourceRoot": "apps/sentry-client-desktop/src",
-	"projectType": "application",
+	"name": "@sentry/sentry-client-desktop",
 	"targets": {
 		"build": {
 			"outputs": [

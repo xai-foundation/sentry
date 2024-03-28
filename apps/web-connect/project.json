@@ -1,7 +1,5 @@
 {
-	"root": "apps/web-connect",
-	"sourceRoot": "apps/web-connect/src",
-	"projectType": "application",
+	"name": "@sentry/web-connect",
 	"targets": {
 		"build": {
 			"outputs": [

@@ -1,5 +1,5 @@
 {
-  "name": "sentry",
+  "name": "@sentry/sentry-subgraph",
   "license": "UNLICENSED",
   "scripts": {
     "codegen": "node compile-schema.js && graph codegen",

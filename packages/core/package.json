@@ -14,6 +14,7 @@
   "author": "",
   "license": "UNLICENSED",
   "dependencies": {
+    "@sentry/sentry-subgraph-client": "workspace:*",
     "@noble/curves": "^1.2.0",
     "alchemy-sdk": "^3.1.0",
     "axios": "^1.6.2",

@@ -1,4 +1,5 @@
 {
+  "name": "@sentry/cli",
     "targets": {
       "build": {
         "dependsOn": [
