@@ -4,6 +4,7 @@ import {StakeKeysToPool} from "./stakingv2/StakeKeysToPool.mjs";
 import {StakeEsXaiToPool} from "./stakingv2/StakeEsXaiToPool.mjs";
 import {VerifyBoostFactor} from "./stakingv2/VerifyBoostFactor.mjs";
 import {Rewards} from "./stakingv2/Rewards.mjs";
+import {SubmittingAndClaiming} from "./stakingv2/SubmittingAndClaiming.mjs";
 
 export async function findHighestStakeTier(referee, refAdmin) {
 	let highestFoundStakeAmountTierThreshold = 0;
@@ -53,7 +54,8 @@ export function StakingV2(deployInfrastructure) {
 		// describe("Update Pool #187167268", UpdatePool(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
 		// describe("Stake Key to pool #187167267", StakeKeysToPool(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
 		// describe("Stake esXai to pool #187167334", StakeEsXaiToPool(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
-		// describe("Verify boost factor #187167332", VerifyBoostFactor(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
+		describe("Verify boost factor #187167332", VerifyBoostFactor(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
 		describe("Rewards", Rewards(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
+		// describe("Submitting & Claiming", SubmittingAndClaiming(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
 	}
 }
