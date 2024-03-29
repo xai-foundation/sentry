@@ -12,7 +12,7 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 	} = poolConfigurations;
 
 	return function () {
-		it("Operator should be able to submit multiple assertions & bulk claim for multiple winning keys in a pool (single license holder)", async function () {
+		it("Pool owner should be able to submit multiple assertions & bulk claim for multiple winning keys in a pool (single license holder)", async function () {
 			const {poolFactory, addr1, addr2, nodeLicense, referee, operator, esXai, esXaiMinter, challenger} = await loadFixture(deployInfrastructure);
 
 			// Get a single key for addr1
@@ -66,11 +66,11 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			expect(openForSubmissions).to.equal(true);
 
 			// Approve the operator for addr2
-			const operatorAddress = await operator.getAddress();
-			await referee.connect(addr2).setApprovalForOperator(operatorAddress, true);
+			// const operatorAddress = await operator.getAddress();
+			// await referee.connect(addr2).setApprovalForOperator(operatorAddress, true);
 
 			// Submit a winning hash
-			await referee.connect(operator).submitMultipleAssertions(addr2MintedKeyIds, challengeId, winningStateRoot);
+			await referee.connect(addr1).submitMultipleAssertions(addr2MintedKeyIds, challengeId, winningStateRoot);
 
 			// Grab both the submissions & expect them to both be eligible
 			const submission1 = await referee.getSubmissionsForChallenges([challengeId], addr2MintedKeyIds[0]);
@@ -99,7 +99,7 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			expect(poolBalanceBalance2).to.be.greaterThan(poolBalanceBalance1);
 		});
 
-		it("Operator should be able to submit multiple assertions & bulk claim for multiple winning keys in a pool (multiple license holders)", async function () {
+		it("Pool delegate should be able to submit multiple assertions & bulk claim for multiple winning keys in a pool (multiple license holders)", async function () {
 			const {poolFactory, addr1, addr2, addr3, nodeLicense, referee, operator, esXai, esXaiMinter, challenger, kycAdmin} = await loadFixture(deployInfrastructure);
 
 			// Get a single key for addr1
@@ -107,9 +107,11 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			await nodeLicense.connect(addr1).mint(1, "", {value: singlePrice});
 			const addr1MintedKeyId = await nodeLicense.totalSupply();
 
+			const operatorAddress = await operator.getAddress();
+
 			// Creat a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
 			await poolFactory.connect(addr1).createPool(
-				noDelegateOwner,
+				operatorAddress,
 				[addr1MintedKeyId],
 				validShareValues,
 				poolMetaData,
@@ -156,9 +158,9 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			expect(openForSubmissions).to.equal(true);
 
 			// Approve the operator for addr2 & addr3
-			const operatorAddress = await operator.getAddress();
-			await referee.connect(addr2).setApprovalForOperator(operatorAddress, true);
-			await referee.connect(addr3).setApprovalForOperator(operatorAddress, true);
+			// const operatorAddress = await operator.getAddress();
+			// await referee.connect(addr2).setApprovalForOperator(operatorAddress, true);
+			// await referee.connect(addr3).setApprovalForOperator(operatorAddress, true);
 
 			// Submit a winning hash
 			await referee.connect(operator).submitMultipleAssertions(keys, challengeId, winningStateRoot);
