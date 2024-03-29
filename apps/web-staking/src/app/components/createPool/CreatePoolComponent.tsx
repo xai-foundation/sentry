@@ -17,6 +17,8 @@ import StakePoolKeyComponent from "./StakePoolKeyComponent";
 import { post } from "@/services/requestService";
 import DelegateAddressComponent from "./DelegateAddressComponent";
 
+export const zeroAddress = "0x0000000000000000000000000000000000000000";
+
 const CreatePoolComponent = () => {
   const router = useRouter();
   const [errorValidationDetails, setErrorValidationDetails] = useState(false);
@@ -67,7 +69,7 @@ const CreatePoolComponent = () => {
       const receipt = await executeContractWrite(
         WriteFunctions.createPool,
         [
-          delegateAddress,
+          delegateAddress || zeroAddress,
           keyIds,
           [
             BigInt((Number(rewardsValues.owner) * POOL_SHARES_BASE).toFixed(0)),
