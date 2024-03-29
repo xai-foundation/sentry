@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
-import { PoolInput } from "../input/InputComponent";
+
 import { SOCIAL_LINKS } from "./constants/constants";
+import { PoolInput } from "../input/InputComponent";
 import MainTitle from "../titles/MainTitle";
 
 type Links = {
@@ -20,7 +21,6 @@ interface SocialLinks {
 
 const SocialLinksComponent = ({ socialLinks, setSocialLinks }: SocialLinks) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    
     setSocialLinks({
       ...socialLinks,
       [e.target.name]: e.target.value,
@@ -28,9 +28,9 @@ const SocialLinksComponent = ({ socialLinks, setSocialLinks }: SocialLinks) => {
   };
   return (
     <>
-      <div className="border-t-1 w-full py-5">
+      <div className="w-full border-t-1 py-5">
         <MainTitle title="Socials" classNames="text-xl font-bold !mb-8" />
-        <ul className="grid grid-rows-2 lg:grid-flow-col sm:grid-flow-row gap-4 w-full py-4">
+        <ul className="grid w-full grid-rows-2 gap-4 py-4 sm:grid-flow-row lg:grid-flow-col">
           {SOCIAL_LINKS.map((item, index) => (
             <li key={index} className="mb-7">
               <PoolInput

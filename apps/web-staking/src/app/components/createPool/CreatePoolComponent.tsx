@@ -12,19 +12,16 @@ import { useRouter } from "next/navigation";
 import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
 import { loadingNotification, updateNotification } from "../notifications/NotificationsComponent";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
-import { POOL_SHARES_BASE, getNetwork, getPoolAddressOfUserAtIndex, getPoolsOfUserCount, getUnstakedKeysOfUser, mapWeb3Error } from "@/services/web3.service";
+import { POOL_SHARES_BASE, getNetwork, getPoolAddressOfUserAtIndex, getPoolsOfUserCount, getUnstakedKeysOfUser, mapWeb3Error, ZERO_ADDRESS } from "@/services/web3.service";
 import StakePoolKeyComponent from "./StakePoolKeyComponent";
 import { post } from "@/services/requestService";
 import DelegateAddressComponent from "./DelegateAddressComponent";
-
-export const zeroAddress = "0x0000000000000000000000000000000000000000";
 
 const CreatePoolComponent = () => {
   const router = useRouter();
   const [errorValidationDetails, setErrorValidationDetails] = useState(false);
   const [errorValidationRewards, setErrorValidationRewards] = useState(false);
   const [errorValidationAddress, setErrorValidationAddress] = useState(false);
-  const [errorSameWallets, setErrorSameWallets] = useState(false);
   const [showStakePoolKey, setShowStakePoolKey] = useState(false);
 
   const { address, chainId } = useAccount();
@@ -69,7 +66,7 @@ const CreatePoolComponent = () => {
       const receipt = await executeContractWrite(
         WriteFunctions.createPool,
         [
-          delegateAddress || zeroAddress,
+          delegateAddress || ZERO_ADDRESS,
           keyIds,
           [
             BigInt((Number(rewardsValues.owner) * POOL_SHARES_BASE).toFixed(0)),
@@ -166,7 +163,6 @@ const CreatePoolComponent = () => {
               setDelegateAddress={setDelegateAddress}
               error={errorValidationAddress}
               setError={setErrorValidationAddress}
-              setErrorSameWallets={setErrorSameWallets}
             />
 
             <SocialLinksComponent
@@ -183,8 +179,7 @@ const CreatePoolComponent = () => {
                 isDisabled={
                   errorValidationDetails ||
                   errorValidationRewards ||
-                  errorValidationAddress ||
-                  errorSameWallets
+                  errorValidationAddress
                 }
               />
             </div>

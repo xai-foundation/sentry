@@ -49,20 +49,22 @@ const SearchBarComponent = ({
             onChange={(e) => setSearchValue(e.target.value)}
           />
         </div>
-        <div className="flex items-center">
+        <div className="flex sm:flex-col lg:flex-row lg:items-center">
           <div className="flex mr-5">
-            <div className="py-[2px] mr-[10px]">
-              <input
-                checked={filterCheckbox}
-                className="accent-red w-4 h-3.5 border-0 rounded-md focus:ring-0"
-                type="checkbox"
-                onChange={(e) => setFilterCheckbox(e.target.checked)}
-              />
-            </div>
-            <div>
-              <span className="text-graphiteGray">
-                Hide full capacity pools
-              </span>
+            <div className="flex ml-2">
+              <div className="py-[2px] mr-[10px]">
+                <input
+                  checked={filterCheckbox}
+                  className="accent-red w-4 h-3.5 border-0 rounded-md focus:ring-0"
+                  type="checkbox"
+                  onChange={(e) => setFilterCheckbox(e.target.checked)}
+                />
+              </div>
+              <div>
+                <span className="text-graphiteGray sm:text-sm lg:text-base">
+                  Hide full capacity pools
+                </span>
+              </div>
             </div>
           </div>
 
@@ -70,14 +72,14 @@ const SearchBarComponent = ({
             <Button
               onClick={() => onToggleShowKeys(false)}
               className={`font-medium border border-crystalWhite py-3 px-7 bg-crystalWhite rounded-3xl ${!showTableKeys && "bg-lightWhiteDarkBlack border-[#DDDDDD]"
-                }`}
+              }`}
             >
               esXAI staking
             </Button>
             <Button
               onClick={() => onToggleShowKeys(true)}
               className={`font-medium border border-crystalWhite py-3 px-7 bg-crystalWhite rounded-3xl ${showTableKeys && "bg-lightWhiteDarkBlack border-[#DDDDDD]"
-                }`}
+              }`}
             >
               Key staking
             </Button>

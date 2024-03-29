@@ -7,7 +7,6 @@ interface DelegateAddressProps {
   ownerAddress: string | undefined;
   delegateAddress: string;
   setDelegateAddress: Dispatch<SetStateAction<string>>;
-  setErrorSameWallets: Dispatch<SetStateAction<boolean>>;
   error: boolean;
   setError: Dispatch<SetStateAction<boolean>>;
 }
@@ -16,30 +15,38 @@ const DelegateAddressComponent = ({
   ownerAddress,
   delegateAddress,
   setDelegateAddress,
-  setErrorSameWallets,
   error,
   setError,
 }: DelegateAddressProps) => {
+
+  const [errorMessage, setErrorMessage] = useState("");
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDelegateAddress(e.target.value);
-    e.target.value.match(/^(0x)[0-9a-f]{40}$/i) || e.target.value === ""
-      ? setError(false)
-      : setError(true);
+
+    const value = e.target.value;
+    setDelegateAddress(value);
+
+    if ( value !== ""&& !value.match(/^(0x)[0-9a-f]{40}$/i)) {
+      setErrorMessage("This is not a valid public address.")
+      setError(true)
+    } else if (ownerAddress === value) {
+      setErrorMessage("You cannot delegate to yourself.")
+      setError(true)
+    } else {
+      setError(false);
+      setErrorMessage("")
+    }
   };
-  
-  useEffect(() => {
-    ownerAddress === delegateAddress
-      ? setErrorSameWallets(true)
-      : setErrorSameWallets(false);
-  }, [delegateAddress, ownerAddress, setErrorSameWallets]);
 
   return (
     <div className="border-t-1 w-full py-5 lg:mb-[50px]">
-      <MainTitle
-        title="Delegate address"
-        classNames="text-xl font-bold !mb-8"
-      />
-      <div className="flex justify-between">
+      <div className="w-full py-3 border-b-1">
+        <MainTitle
+          title="Delegate address"
+          classNames="text-xl font-bold !mb-0"
+        />
+      </div>
+      <div className="flex justify-between pt-4">
         <span className="block mb-4 max-w-[70%] text-graphiteGray">
           This field is optional and is used if you want to delegate operator
           control of the keys in your pool to another address you own.
@@ -58,11 +65,8 @@ const DelegateAddressComponent = ({
         placeholder="Enter delegate address here"
         onChange={handleChange}
         value={delegateAddress}
-        isInvalid={
-          (delegateAddress.length > 0 && error) ||
-          ownerAddress === delegateAddress
-        }
-        errorMessage="This is not a valid public address."
+        isInvalid={error}
+        errorMessage={errorMessage}
       />
     </div>
   );

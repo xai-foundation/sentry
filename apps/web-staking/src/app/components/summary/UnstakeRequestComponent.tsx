@@ -39,24 +39,14 @@ const UnstakeRequestComponent = ({ unstakeRequest, isClaimable, onClaimRequest }
 
 		return currency;
 	}
-	
+
 	useEffect(() => {
-
-		if (timeLeft && timeLeft <= 500) {
-			setTimeLeft(null);
-			setClaimable(true);
+		if (timeLeft && timeLeft > 0) {
+			setTimeout(() => {
+				setTimeLeft(null);
+				setClaimable(true);
+			}, timeLeft);
 		}
-
-		if (!timeLeft) return;
-
-		const interval = setInterval(() => {
-			if (timeLeft < 1000) {
-				setTimeLeft(500); // avoid showing "a few seconds" after last second
-			}
-			setTimeLeft(timeLeft - 1000);
-		}, 1000);
-
-		return () => clearInterval(interval);
 	}, [timeLeft]);
 
 	return (

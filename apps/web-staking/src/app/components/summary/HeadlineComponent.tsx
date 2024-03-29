@@ -1,5 +1,5 @@
 import { PoolInfo } from "@/types/Pool";
-import { ButtonBack, SecondaryButton } from "../buttons/ButtonsComponent";
+import { SecondaryButton } from "../buttons/ButtonsComponent";
 import { useRouter } from "next/navigation";
 import { ErrorCircle, InfoMark } from "../icons/IconsComponent";
 
@@ -37,7 +37,8 @@ const HeadlineComponent = ({ poolInfo, walletAddress }: { poolInfo: PoolInfo, wa
             </span>
             <div className="text-[#ED5F00]">
               <div className="text-small font-bold">The pool owner has changed the rewards to allocate {poolInfo.pendingShares[0]}%/{poolInfo.pendingShares[1]}%/{poolInfo.pendingShares[2]}% to Owner/Keys/esXai</div>
-              <div className="text-tiny">This change will go into effect on {new Date(poolInfo.updateSharesTimestamp * 1000).toISOString().split("T")[0]}</div>
+              <div className="text-tiny">This change will go into effect
+                on {new Date(poolInfo.updateSharesTimestamp).toISOString().split("T")[0]}</div>
             </div>
           </div>
         }
