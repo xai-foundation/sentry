@@ -85,16 +85,18 @@ export function ButtonBack({
   btnText,
   height = 16,
   width = 16,
+  extraClasses,
 }: {
   onClick: () => void;
   btnText: string;
   height?: number;
   width?: number;
+  extraClasses?: string;
 }) {
   return (
     <div
       onClick={onClick}
-      className="flex cursor-pointer items-center gap-2 border-1 border-transparent p-1 hover:rounded-md hover:border-palePearl hover:bg-crystalWhite"
+      className={`flex cursor-pointer items-center gap-2 border-1 border-transparent p-1 hover:rounded-md hover:border-palePearl hover:bg-crystalWhite ${extraClasses}`}
     >
       <BackArrow height={height} width={width} />
       <span>{btnText}</span>

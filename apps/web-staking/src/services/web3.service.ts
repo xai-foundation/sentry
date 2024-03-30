@@ -31,6 +31,8 @@ export const TESTNET_ID = 421614;
 
 export const ACTIVE_NETWORK_IDS = process.env.NEXT_PUBLIC_APP_ENV === "development" ? [MAINNET_ID, TESTNET_ID] : [MAINNET_ID];
 
+export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+
 const web3Instances: { [key in NetworkKey]: Web3Instance } = {
 	'arbitrum': {
 		name: 'Arbitrum Nova',
@@ -408,6 +410,14 @@ export const getPoolInfo = async (network: NetworkKey, poolAddress: string, user
 		userInfo = await stakingPoolContract.methods.getUserPoolData(userAddress).call() as RawUserInfo;
 	}
 	return toPoolInfo(web3Instance, poolInfo, userInfo, maxKeyCount, maxStakePerLicense);
+}
+
+export const getDelegateOwner = async (network: NetworkKey, poolAddress: string): Promise<string> => {
+	const web3Instance = getWeb3Instance(network);
+	const stakingPoolContract = new web3Instance.web3.eth.Contract(StakingPoolAbi, poolAddress);
+
+	const delegate = await stakingPoolContract.methods.getDelegateOwner().call();
+	return delegate == ZERO_ADDRESS ? "" : delegate;
 }
 
 export const getRawPoolInfo = async (network: NetworkKey, poolAddress: string): Promise<RawPoolInfo> => {

@@ -29,7 +29,7 @@ const SummaryUnstakingSection = ({
                 {unstakeRequests.open.length} pending
               </span>
             )}
-            {unstakeRequests.claimable.length && (
+            {unstakeRequests.claimable.length > 0 && (
               <>
                 <span className="mx-1 block">&#183;</span>
                 <span className="block">

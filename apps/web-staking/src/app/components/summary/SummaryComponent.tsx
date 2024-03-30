@@ -7,7 +7,7 @@ import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
 import PoolTierCard from "@/app/components/pool/PoolTierCard";
 import HeadlineComponent from "@/app/components/summary/HeadlineComponent";
 import StakingCards from "@/app/components/summary/StakingCards";
-import SummaryDescriptions from "@/app/components/summary/SummaryDescriptions";
+import SummaryDescriptions from "@/app/components/summary/summaryDescriptions/SummaryDescriptions";
 import { useGetUnstakeRequests, useGetUserPoolInfo } from "@/app/hooks/hooks";
 import { sendUpdatePoolRequest } from "@/services/requestService";
 import {
@@ -41,7 +41,10 @@ const SummaryComponent = () => {
     refreshUnstakeRequests,
   );
 
-  const { userPool: poolInfo } = useGetUserPoolInfo(poolAddress, refreshPoolInfo);
+  const { userPool: poolInfo } = useGetUserPoolInfo(
+    poolAddress,
+    refreshPoolInfo,
+  );
 
   const onClaim = async () => {
     setTransactionLoading(true);
@@ -63,11 +66,9 @@ const SummaryComponent = () => {
           receipt,
           chainId,
         );
-        setRefreshPoolInfo(true);
+        setRefreshPoolInfo(!refreshPoolInfo);
         setTransactionLoading(false);
-        setRefreshPoolInfo(false);
       }, 3000);
-
     } catch (ex: any) {
       const error = mapWeb3Error(ex);
       updateNotification(error, loading, true);
@@ -117,7 +118,6 @@ const SummaryComponent = () => {
           switchChain,
         );
       }
-
     } catch (ex: any) {
       const error = mapWeb3Error(ex);
       updateNotification(error, loading, true);
@@ -153,7 +153,7 @@ const SummaryComponent = () => {
         <div className="flex w-full flex-col items-center px-4 lg:px-[75px] xl:px-[150px]">
           <>
             <HeadlineComponent poolInfo={poolInfo} walletAddress={address} />
-            <div className="mt-2 flex w-full justify-start">
+            <div className="mt-2 flex w-full justify-start xl:hidden">
               <ButtonBack btnText={"Back"} onClick={() => router.back()} />
             </div>
             <SummaryDescriptions

@@ -18,6 +18,7 @@ import {
   OrderedUnstakeRequests,
   getUnstakeRequest,
   getMaxKeyCount,
+  getDelegateOwner,
 } from "@/services/web3.service";
 import { useEffect, useRef, useState } from "react";
 import { useAccount } from "wagmi";
@@ -354,6 +355,7 @@ export const useGetPoolInfoHooks = () => {
     trackerName: "",
     trackerTicker: "",
   });
+  const [delegateAddress, setDelegateAddress] = useState("");
   const [isLoading, setisLoading] = useState(false);
   const { poolAddress } = useParams<{ poolAddress: string }>();
   const { address, chainId } = useAccount();
@@ -391,9 +393,12 @@ export const useGetPoolInfoHooks = () => {
           tiktok: poolInfo.meta.tiktok,
         });
         setTokenTracker({
-          trackerName: "", // TODO - we will need tracker name property
-          trackerTicker: "", // TODO - we will need tracker ticker property
+          trackerName: "",
+          trackerTicker: "",
         });
+
+        const delegate = await getDelegateOwner(getNetwork(chainId), poolAddress)
+        setDelegateAddress(delegate);
         setisLoading(false);
       } catch (error) {
         console.error(error);
@@ -414,6 +419,8 @@ export const useGetPoolInfoHooks = () => {
     isLoading,
     setRewardsValues,
     poolAddress,
+    delegateAddress,
+    setDelegateAddress,
   };
 };
 
