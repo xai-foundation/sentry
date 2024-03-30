@@ -489,9 +489,11 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         address delegate,
         address pool
     ) external view returns (bool) {
-        return
-            poolsOfDelegate[delegate][poolsOfDelegateIndices[pool]] == pool ||
-            StakingPool(pool).getPoolOwner() == delegate;
+        return (
+			poolsOfDelegate[delegate].length > poolsOfDelegateIndices[pool] &&
+			poolsOfDelegate[delegate][poolsOfDelegateIndices[pool]] == pool
+		) ||
+		StakingPool(pool).getPoolOwner() == delegate;
     }
 
     function getPoolsCount() external view returns (uint256) {
