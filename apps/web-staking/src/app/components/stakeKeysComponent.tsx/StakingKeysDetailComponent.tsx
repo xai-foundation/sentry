@@ -7,6 +7,7 @@ import AvailableBalanceComponent from "../stake/AvailableBalanceComponent";
 import { PoolInfo } from "@/types/Pool";
 import { Avatar } from "@nextui-org/react";
 import StakeKeysDetailReviewComponent from "./StakeKeysDetailReviewComponent";
+import WarningComponent from "@/app/components/createPool/WarningComponent";
 
 interface StakePoolKeytProps {
 	userPool: PoolInfo;
@@ -23,6 +24,7 @@ export default function StakingKeysDetailComponent({
 }: StakePoolKeytProps) {
 	const [inputValue, setInputValue] = useState("");
 	const [reviewVisible, setReviewVisible] = useState(false);
+	const [checkbox, setCheckbox] = useState(false);
 	const { unstakedKeyCount } = useGetUnstakedNodeLicenseCount();
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const roundNum = Math.round(Number(e.target.value));
@@ -58,7 +60,7 @@ export default function StakingKeysDetailComponent({
 	};
 
 	const checkDisabledButton =
-		!address || !inputValue || Number(inputValue) <= 0 || validationInput();
+		!address || !inputValue || Number(inputValue) <= 0 || validationInput() || !checkbox;
 
 	return (
 		<>
@@ -75,11 +77,25 @@ export default function StakingKeysDetailComponent({
 					<MainTitle title={unstakeKey ? "Unstake keys" : "Stake keys"} />
 
 					{userPool &&
-						<div className="flex items-center mb-4">
-							<span className="mr-2">{unstakeKey ? 'Unstake from:' : 'Stake to:'}</span>
-							<Avatar src={userPool.meta.logo} className="w-[32px] h-[32px] mr-2" />
-							<span className="text-graphiteGray">{userPool.meta.name}</span>
-						</div>
+						<>
+							<div className="max-w-xl w-full p-3">
+								<WarningComponent
+									title="By staking keys with this pool, you will give the pool the ability to operate your keys and perform assertions and claims"
+									description="Your key’s rewards will be distributed to the staking pool, and the pools reward tiers will apply to your key"
+									checkboxText="I agree to allow the pool to operate my keys and perform assertions and claims with my keys"
+									onAcceptTerms={() => {}}
+									includeYouMustAgreeMessage={true}
+									checkbox={checkbox}
+									setCheckbox={setCheckbox}
+								/>
+							</div>
+
+							<div className="flex items-center mb-4">
+								<span className="mr-2">{unstakeKey ? 'Unstake from:' : 'Stake to:'}</span>
+								<Avatar src={userPool.meta.logo} className="w-[32px] h-[32px] mr-2" />
+								<span className="text-graphiteGray">{userPool.meta.name}</span>
+							</div>
+						</>
 					}
 
 					<StakingInput

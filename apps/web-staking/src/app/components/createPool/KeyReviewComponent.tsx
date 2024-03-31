@@ -31,6 +31,9 @@ const KeyReviewComponent = ({
         <ButtonBack onClick={onBack} btnText="Back" />
         <MainTitle title={`Review stake`} />
         <WarningComponent
+	      title="The final key you unstake from this pool will take 60 days to unstake."
+	      description="All other keys you unstake will take 30 days to unstake."
+	      checkboxText="I understand the unstake periods for my keys."
           onAcceptTerms={onAcceptTerms}
           checkbox={checkbox}
           setCheckbox={setChecbox}
