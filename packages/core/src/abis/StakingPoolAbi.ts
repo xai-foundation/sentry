@@ -131,6 +131,10 @@ export const StakingPoolAbi = [
       {
         "type": "uint256",
         "name": "amount"
+      },
+      {
+        "type": "uint256",
+        "name": "period"
       }
     ],
     "outputs": []
@@ -148,6 +152,10 @@ export const StakingPoolAbi = [
       {
         "type": "uint256",
         "name": "keyAmount"
+      },
+      {
+        "type": "uint256",
+        "name": "period"
       }
     ],
     "outputs": []
@@ -161,6 +169,10 @@ export const StakingPoolAbi = [
       {
         "type": "address",
         "name": "owner"
+      },
+      {
+        "type": "uint256",
+        "name": "period"
       }
     ],
     "outputs": []
