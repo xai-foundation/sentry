@@ -265,7 +265,7 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			await ethers.provider.send("evm_increaseTime", [remainderWaitTime]);
 			await ethers.provider.send("evm_mine");
 
-			// Successfully un-stake addr2 key after only waiting the remainder time
+			// Successfully un-stake addr2 esXai after only waiting the remainder time
 			await poolFactory.connect(addr1).unstakeEsXai(stakingPoolAddress, 1, mintAmount)
 
 			// Confirm addr2 has no esXai staked
