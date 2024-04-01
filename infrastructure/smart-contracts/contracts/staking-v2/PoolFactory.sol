@@ -189,9 +189,9 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 		uint256 _unstakeGenesisKeyDelayPeriod,
 		uint256 _unstakeEsXaiDelayPeriod
 	) external onlyRole(DEFAULT_ADMIN_ROLE) {
-		unstakeKeysDelayPeriod = _unstakeKeysDelayPeriod * 1 days;
-		unstakeGenesisKeyDelayPeriod = _unstakeGenesisKeyDelayPeriod * 1 days;
-		unstakeEsXaiDelayPeriod = _unstakeEsXaiDelayPeriod * 1 days;
+		unstakeKeysDelayPeriod = _unstakeKeysDelayPeriod;
+		unstakeGenesisKeyDelayPeriod = _unstakeGenesisKeyDelayPeriod;
+		unstakeEsXaiDelayPeriod = _unstakeEsXaiDelayPeriod;
 	}
 
     function createPool(

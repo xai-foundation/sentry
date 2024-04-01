@@ -3,8 +3,6 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {Contract} from "ethers";
 import {StakingPoolAbi} from "@sentry/core";
 
-const daySecondsBigInt = 86400n;
-
 export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 	const {
 		validShareValues,
@@ -61,12 +59,12 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			const unstakeKeysDelayPeriod2 = await poolFactory.connect(addr1).unstakeKeysDelayPeriod();
 			const unstakeGenesisKeyDelayPeriod2 = await poolFactory.connect(addr1).unstakeGenesisKeyDelayPeriod();
 			const unstakeEsXaiDelayPeriod2 = await poolFactory.connect(addr1).unstakeEsXaiDelayPeriod();
-			expect(unstakeKeysDelayPeriod2).to.equal(newUnStakeKeysDelay * daySecondsBigInt);
-			expect(unstakeGenesisKeyDelayPeriod2).to.equal(unstakeGenesisKeyDelayPeriod1 * daySecondsBigInt);
-			expect(unstakeEsXaiDelayPeriod2).to.equal(unstakeEsXaiDelayPeriod1 * daySecondsBigInt);
+			expect(unstakeKeysDelayPeriod2).to.equal(newUnStakeKeysDelay);
+			expect(unstakeGenesisKeyDelayPeriod2).to.equal(unstakeGenesisKeyDelayPeriod1);
+			expect(unstakeEsXaiDelayPeriod2).to.equal(unstakeEsXaiDelayPeriod1);
 
 			// Wait (unstakeKeysDelayPeriod1) days
-			const initialWaitTimeInSeconds = Number(daySecondsBigInt * unstakeKeysDelayPeriod1);
+			const initialWaitTimeInSeconds = Number(unstakeKeysDelayPeriod1);
 			await ethers.provider.send("evm_increaseTime", [initialWaitTimeInSeconds]);
 			await ethers.provider.send("evm_mine");
 
@@ -87,7 +85,7 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			).to.be.revertedWith("25");
 
 			// Wait remainder time
-			const updatedWaitTimeInSeconds = Number(daySecondsBigInt * unstakeKeysDelayPeriod2);
+			const updatedWaitTimeInSeconds = Number(unstakeKeysDelayPeriod2);
 			const remainderWaitTime = updatedWaitTimeInSeconds - initialWaitTimeInSeconds;
 			await ethers.provider.send("evm_increaseTime", [remainderWaitTime]);
 			await ethers.provider.send("evm_mine");
@@ -145,12 +143,12 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			const unstakeKeysDelayPeriod2 = await poolFactory.connect(addr1).unstakeKeysDelayPeriod();
 			const unstakeGenesisKeyDelayPeriod2 = await poolFactory.connect(addr1).unstakeGenesisKeyDelayPeriod();
 			const unstakeEsXaiDelayPeriod2 = await poolFactory.connect(addr1).unstakeEsXaiDelayPeriod();
-			expect(unstakeKeysDelayPeriod2).to.equal(unstakeKeysDelayPeriod1 * daySecondsBigInt);
-			expect(unstakeGenesisKeyDelayPeriod2).to.equal(newUnStakeGenesisKeyDelay * daySecondsBigInt);
-			expect(unstakeEsXaiDelayPeriod2).to.equal(unstakeEsXaiDelayPeriod1 * daySecondsBigInt);
+			expect(unstakeKeysDelayPeriod2).to.equal(unstakeKeysDelayPeriod1);
+			expect(unstakeGenesisKeyDelayPeriod2).to.equal(newUnStakeGenesisKeyDelay);
+			expect(unstakeEsXaiDelayPeriod2).to.equal(unstakeEsXaiDelayPeriod1);
 
 			// Wait (unstakeGenesisKeyDelayPeriod1) days
-			const initialWaitTimeInSeconds = Number(daySecondsBigInt * unstakeGenesisKeyDelayPeriod1);
+			const initialWaitTimeInSeconds = Number(unstakeGenesisKeyDelayPeriod1);
 			await ethers.provider.send("evm_increaseTime", [initialWaitTimeInSeconds]);
 			await ethers.provider.send("evm_mine");
 
@@ -171,7 +169,7 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			).to.be.revertedWith("25");
 
 			// Wait remainder time
-			const updatedWaitTimeInSeconds = Number(daySecondsBigInt * unstakeGenesisKeyDelayPeriod2);
+			const updatedWaitTimeInSeconds = Number(unstakeGenesisKeyDelayPeriod2);
 			const remainderWaitTime = updatedWaitTimeInSeconds - initialWaitTimeInSeconds;
 			await ethers.provider.send("evm_increaseTime", [remainderWaitTime]);
 			await ethers.provider.send("evm_mine");
@@ -233,12 +231,12 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			const unstakeKeysDelayPeriod2 = await poolFactory.connect(addr1).unstakeKeysDelayPeriod();
 			const unstakeGenesisKeyDelayPeriod2 = await poolFactory.connect(addr1).unstakeGenesisKeyDelayPeriod();
 			const unstakeEsXaiDelayPeriod2 = await poolFactory.connect(addr1).unstakeEsXaiDelayPeriod();
-			expect(unstakeKeysDelayPeriod2).to.equal(unstakeKeysDelayPeriod1 * daySecondsBigInt);
-			expect(unstakeGenesisKeyDelayPeriod2).to.equal(unstakeGenesisKeyDelayPeriod1 * daySecondsBigInt);
-			expect(unstakeEsXaiDelayPeriod2).to.equal(newUnStakeEsXaiDelay * daySecondsBigInt);
+			expect(unstakeKeysDelayPeriod2).to.equal(unstakeKeysDelayPeriod1);
+			expect(unstakeGenesisKeyDelayPeriod2).to.equal(unstakeGenesisKeyDelayPeriod1);
+			expect(unstakeEsXaiDelayPeriod2).to.equal(newUnStakeEsXaiDelay);
 
 			// Wait (unstakeEsXaiDelayPeriod1) days
-			const initialWaitTimeInSeconds = Number(daySecondsBigInt * unstakeEsXaiDelayPeriod1);
+			const initialWaitTimeInSeconds = Number(unstakeEsXaiDelayPeriod1);
 			await ethers.provider.send("evm_increaseTime", [initialWaitTimeInSeconds]);
 			await ethers.provider.send("evm_mine");
 
@@ -260,7 +258,7 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			).to.be.revertedWith("30");
 
 			// Wait remainder time
-			const updatedWaitTimeInSeconds = Number(daySecondsBigInt * unstakeEsXaiDelayPeriod2);
+			const updatedWaitTimeInSeconds = Number(unstakeEsXaiDelayPeriod2);
 			const remainderWaitTime = updatedWaitTimeInSeconds - initialWaitTimeInSeconds;
 			await ethers.provider.send("evm_increaseTime", [remainderWaitTime]);
 			await ethers.provider.send("evm_mine");
