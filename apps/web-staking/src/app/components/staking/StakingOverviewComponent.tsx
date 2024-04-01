@@ -34,7 +34,7 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
 
   useEffect(() => {
     setCurrentTotalClaimableAmount(totalClaimableAmount);
-  }, [isLoading]);
+  }, [isLoading, totalClaimableAmount]);
 
   const onClaimAll = async () => {
     if (isLoading || transactionLoading) {
@@ -120,14 +120,14 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   return (
     <div className="flex sm:flex-col items-start lg:px-6 sm:px-3 sm:w-full">
       <AgreeModalComponent address={address} />
-      <div className="sm:flex sm:justify-between sm:w-full">
+      <div className="flex justify-between w-full sm:flex-col lg:flex-row sm:mb-6 lg:mb-0">
         <MainTitle title={"Staking"} classNames="" />
 
         {address && <ClaimableRewardsComponent
-          disabled={isLoading || transactionLoading || currentTotalClaimableAmount === 0}
-          totalClaimAmount={currentTotalClaimableAmount}
-          onClick={onClaimAll}
-        />}
+            disabled={isLoading || transactionLoading || currentTotalClaimableAmount === 0}
+            totalClaimAmount={currentTotalClaimableAmount}
+            onClick={onClaimAll}
+          />}
 
       </div>
 
@@ -150,6 +150,7 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
         page={currentPage}
         totalPages={Math.ceil(pagedPools.count / 10)}
         setPage={setPage}
+        address={address}
       />
     </div>
   );

@@ -5,9 +5,8 @@ import greenIcon from "../../icons/greenIcon.png";
 import Image from "next/image";
 import CustomPopover from "../../popovers/PopoversComponents";
 import { Snippet, Tooltip } from "@nextui-org/react";
-import { PoolInfo } from "@/types/Pool";
 
-const SummaryAddress = ({ poolInfo }: { poolInfo: PoolInfo }) => {
+const SummaryAddress = ({ delegateAddress }: { delegateAddress: string }) => {
   const [openTooltip, setOpenTooltip] = useState(false);
 
   return (
@@ -16,7 +15,7 @@ const SummaryAddress = ({ poolInfo }: { poolInfo: PoolInfo }) => {
         Delegate address:
       </span>
       <span className="text-graphiteGray">
-        {`${poolInfo?.owner.slice(0, 6)}...${poolInfo?.owner.slice(-4)}`}
+        {delegateAddress ? `${delegateAddress.slice(0, 6)}...${delegateAddress.slice(-4)}` : "..."}
       </span>
       <div>
         <Tooltip
@@ -32,7 +31,7 @@ const SummaryAddress = ({ poolInfo }: { poolInfo: PoolInfo }) => {
           placement="bottom-end"
         >
           <Snippet
-            codeString={poolInfo?.owner}
+            codeString={delegateAddress}
             disableTooltip
             hideSymbol
             timeout={0}

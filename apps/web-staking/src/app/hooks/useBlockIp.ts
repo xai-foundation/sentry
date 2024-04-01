@@ -1,8 +1,10 @@
 "use client";
 
 import axios from "axios";
-import {useEffect, useState} from "react";
-import {usePathname} from "next/navigation";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useAccount } from "wagmi";
+import { MAINNET_ID } from "@/services/web3.service";
 
 enum IpBanType {
 	INVALID_IP = "INVALID_IP",
@@ -20,35 +22,37 @@ interface checkIpProps {
 	geoBanType: GeoBanType;
 }
 
-export function useBlockIp({blockUsa}: {blockUsa: boolean}) {
+export function useBlockIp() {
 	const [blocked, setBlocked] = useState(true);
 	const [loading, setLoading] = useState(true);
+	const { chainId } = useAccount();
 
 	const pathname = usePathname();
 
 	useEffect(() => {
-		void checkIp();
-	}, [pathname, blockUsa]);
+		const blockUsa = chainId === MAINNET_ID;
+		async function checkIp() {
+			try {
+				const { data } = await axios.post(`https://centralized-services.expopulus.com/check-ip`);
+				const invalidIp = data.reasons?.find(({ type }: checkIpProps) => type === "INVALID_IP");
+				const ofacSanction = data.reasons?.find(({ type, geoBanType }: checkIpProps) => type === "GEO" && geoBanType === "OFAC_SANCTIONS");
 
-	async function checkIp() {
-		try {
-			const {data} = await axios.post(`https://centralized-services.expopulus.com/check-ip`);
-			const invalidIp = data.reasons?.find(({type}: checkIpProps) => type === "INVALID_IP");
-			const ofacSanction = data.reasons?.find(({type, geoBanType}: checkIpProps) => type === "GEO" && geoBanType === "OFAC_SANCTIONS");
+				if (!invalidIp || !ofacSanction) {
+					setBlocked(false);
+					setLoading(false);
+				}
 
-			if (!invalidIp || !ofacSanction) {
-				setBlocked(false);
-				setLoading(false);
+				if (!!invalidIp || !!ofacSanction || (blockUsa && data.country === "US")) {
+					setBlocked(true);
+					setLoading(false);
+				}
+			} catch (e: any) {
+				console.error(e.response.data);
 			}
-
-			if (!!invalidIp || !!ofacSanction || (blockUsa && data.country === "US")) {
-				setBlocked(true);
-				setLoading(false);
-			}
-		} catch (e: any) {
-			console.error(e.response.data);
 		}
-	}
+
+		void checkIp();
+	}, [pathname, chainId]);
 
 	return {
 		blocked,

@@ -23,6 +23,7 @@ const StakeComponent = ({ poolAddress }: StakeProps) => {
   const [inputValue, setInputValue] = useState("");
   const { esXaiBalance } = useGetBalanceHooks();
   const { allowance } = useGetEsXaiAllowance();
+  const unstake = searchParams.get("unstake") === "true";
 
   const { userPool } = useGetUserPoolInfo(poolAddress);
 
@@ -40,23 +41,21 @@ const StakeComponent = ({ poolAddress }: StakeProps) => {
     return Math.min(Math.max(userPool.maxStakedAmount - userPool.totalStakedAmount, 0), esXaiBalance);
   }
 
-  function validationInput() {
-    if (
-      unstake
-        ? Number(inputValue) > getMaxEsXaiForUnstake()
-        : Number(inputValue) > getMaxEsXaiForStake()
-    ) {
-      return true;
-    }
-
+  function isInvalidInput() {
     if (inputValue.length > 18) {
       return true;
     }
+
+    if(unstake){
+      return Number(inputValue) > getMaxEsXaiForUnstake();
+    }
+
+    return Number(inputValue) > getMaxEsXaiForStake();
   }
 
-  const unstake = searchParams.get("unstake") === "true";
-  const checkDisabledButton =
-    !address || !inputValue || Number(inputValue) <= 0 || validationInput();
+  const confirmButtonDisabled = () => {
+    return !address || !inputValue || Number(inputValue) <= 0 || isInvalidInput()
+  }
 
   return (
     <div className="flex w-full flex-col items-center sm:p-2 lg:p-0">
@@ -87,7 +86,7 @@ const StakeComponent = ({ poolAddress }: StakeProps) => {
             label={`${unstake ? 'You unstake' : 'You stake'}`}
             placeholder="0"
             onChange={(e) => setInputValue(e.target.value)}
-            isInvalid={validationInput()}
+            isInvalid={isInvalidInput()}
             unstake={unstake}
             endContent={
               <AvailableBalanceComponent
@@ -107,7 +106,7 @@ const StakeComponent = ({ poolAddress }: StakeProps) => {
             }}
             btnText="Continue"
             className="w-full disabled:opacity-50"
-            isDisabled={checkDisabledButton}
+            isDisabled={confirmButtonDisabled()}
           />
         </div>
       )}

@@ -242,7 +242,7 @@ export const useGetUserPoolInfo = (poolAddress: string | null, refresh: boolean 
   const [userPool, setUserPool] = useState<PoolInfo>();
 
   useEffect(() => {
-    if (!address || !chainId || !poolAddress) {
+    if (!poolAddress) {
       return;
     }
 
@@ -267,8 +267,14 @@ export const useFindBlackListWordsHooks = ({
   description,
   logoUrl,
 }: PoolDetails) => {
-  const [badInputName, setBadInputName] = useState(false);
-  const [badInputDescription, setBadInputDescription] = useState(false);
+  const [isBadInputName, setIsBadInputName] = useState({
+    isError: false,
+    blacklistWord: "",
+  });
+  const [isBadInputDescription, setIsBadInputDescription] = useState({
+    isError: false,
+    blacklistWord: "",
+  });
   const [debouncedInputValue, setDebouncedInputValue] = useState({
     name: "",
     description: "",
@@ -283,15 +289,19 @@ export const useFindBlackListWordsHooks = ({
   }, [description, logoUrl, name]);
 
   const checkBlackListWords = ({ name, description }: PoolDetails) => {
-    setBadInputName(false);
-    setBadInputDescription(false);
+    setIsBadInputName({ isError: false, blacklistWord: "" });
+    setIsBadInputDescription({ isError: false, blacklistWord: "" });
+    let nameBadWords = "";
+    let descriptionBadWords = "";
 
     BLACK_LIST.forEach((word) => {
-      if (name.toLowerCase().includes(word)) {
-        setBadInputName(true);
+      if (name.toLowerCase().includes(word.toLocaleLowerCase())) {
+        nameBadWords += ", " + word;
+        setIsBadInputName({ isError: true, blacklistWord: nameBadWords.replace(/^(,+)/, '').trim() });
       }
-      if (description.toLowerCase().includes(word)) {
-        setBadInputDescription(true);
+      if (description.toLowerCase().includes(word.toLocaleLowerCase())) {
+        descriptionBadWords += ", " + word;
+        setIsBadInputDescription({ isError: true, blacklistWord: descriptionBadWords.replace(/^(,+)/, "").trim() });
       }
     });
   };
@@ -300,7 +310,7 @@ export const useFindBlackListWordsHooks = ({
     checkBlackListWords(debouncedInputValue);
   }, [debouncedInputValue]);
 
-  return { badInputName, badInputDescription };
+  return { isBadInputName, isBadInputDescription };
 };
 
 export const useGetMaxBucketShares = () => {

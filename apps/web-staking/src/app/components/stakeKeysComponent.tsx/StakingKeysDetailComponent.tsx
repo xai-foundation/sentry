@@ -24,7 +24,7 @@ export default function StakingKeysDetailComponent({
 }: StakePoolKeytProps) {
 	const [inputValue, setInputValue] = useState("");
 	const [reviewVisible, setReviewVisible] = useState(false);
-	const [checkbox, setCheckbox] = useState(false);
+	const [checkbox, setCheckbox] = useState(unstakeKey ? true : false); // only show and require checkbox when staking
 	const { unstakedKeyCount } = useGetUnstakedNodeLicenseCount();
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const roundNum = Math.round(Number(e.target.value));
@@ -52,15 +52,16 @@ export default function StakingKeysDetailComponent({
 		return Math.min(100, unstakedKeyCount, maxKeyPerPool - userPool.keyCount)
 	}
 
-	const validationInput = () => {
+	const isInvalidInput = () => {
 		if (unstakeKey) {
 			return Number(inputValue) > getMaxKeysForUnstake();
 		}
 		return Number(inputValue) > getMaxKeysForStake();
 	};
 
-	const checkDisabledButton =
-		!address || !inputValue || Number(inputValue) <= 0 || validationInput() || !checkbox;
+	const confirmButtonDisabled = () => {
+		return !address || !inputValue || Number(inputValue) <= 0 || isInvalidInput() || !checkbox;
+	}
 
 	return (
 		<>
@@ -84,7 +85,7 @@ export default function StakingKeysDetailComponent({
 										title="By staking keys with this pool, you will give the pool the ability to operate your keys and perform assertions and claims"
 										description="Your key’s rewards will be distributed to the staking pool, and the pools reward tiers will apply to your key"
 										checkboxText="I agree to allow the pool to operate my keys and perform assertions and claims with my keys"
-										onAcceptTerms={() => {}}
+										onAcceptTerms={() => { }}
 										includeYouMustAgreeMessage={true}
 										checkbox={checkbox}
 										setCheckbox={setCheckbox}
@@ -105,7 +106,7 @@ export default function StakingKeysDetailComponent({
 						label={unstakeKey ? "You unstake" : "You stake"}
 						placeholder="0"
 						onChange={handleChange}
-						isInvalid={validationInput()}
+						isInvalid={isInvalidInput()}
 						keys
 						endContent={
 							<AvailableBalanceComponent
@@ -122,7 +123,7 @@ export default function StakingKeysDetailComponent({
 						}}
 						btnText="Continue"
 						className="w-full disabled:opacity-50"
-						isDisabled={checkDisabledButton}
+						isDisabled={confirmButtonDisabled()}
 					/>
 				</div>
 			)}
