@@ -40,7 +40,7 @@ contract StakingPool is AccessControlUpgradeable {
 	uint32[3] pendingShares;
     uint256 updateSharesTimestamp;
 
-	// mapping userAddress to unstake requests, unstake has a delay of 30 days
+	// mapping userAddress to unstake requests, currently unstaking requires a waiting period set in the PoolFactory
 	mapping(address => UnstakeRequest[]) private unstakeRequests;
 
 	// mapping userAddress to requested unstake key amount
@@ -226,7 +226,7 @@ contract StakingPool is AccessControlUpgradeable {
         keyBucket.setBalance(owner, stakedKeysOfOwner[owner].length);
     }
 
-	function createUnstakeKeyRequest(address user, uint256 keyAmount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+	function createUnstakeKeyRequest(address user, uint256 keyAmount, uint256 period) external onlyRole(DEFAULT_ADMIN_ROLE) {
 		uint256 stakedKeysCount = stakedKeysOfOwner[user].length;
 		uint256 requestKeys = userRequestedUnstakeKeyAmount[user];
 
@@ -251,7 +251,7 @@ contract StakingPool is AccessControlUpgradeable {
 				true,
 				true,
 				keyAmount,
-				block.timestamp + 30 days,
+				block.timestamp + period,
 				0,
 				[uint256(0), 0, 0, 0, 0]
 			)
@@ -260,7 +260,7 @@ contract StakingPool is AccessControlUpgradeable {
 		userRequestedUnstakeKeyAmount[user] += keyAmount;
 	}
 
-	function createUnstakeOwnerLastKeyRequest(address owner) external onlyRole(DEFAULT_ADMIN_ROLE) {
+	function createUnstakeOwnerLastKeyRequest(address owner, uint256 period) external onlyRole(DEFAULT_ADMIN_ROLE) {
 		require(owner == poolOwner, "17");
 		uint256 stakedKeysCount = stakedKeysOfOwner[owner].length;
 
@@ -276,7 +276,7 @@ contract StakingPool is AccessControlUpgradeable {
 				true,
 				true,
 				1,
-				block.timestamp + 60 days,
+				block.timestamp + period,
 				0,
 				[uint256(0), 0, 0, 0, 0]
 			)
@@ -285,7 +285,7 @@ contract StakingPool is AccessControlUpgradeable {
 		userRequestedUnstakeKeyAmount[owner] += 1;
 	}
 
-	function createUnstakeEsXaiRequest(address user, uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+	function createUnstakeEsXaiRequest(address user, uint256 amount, uint256 period) external onlyRole(DEFAULT_ADMIN_ROLE) {
 		require(stakedAmounts[user] >= amount + userRequestedUnstakeEsXaiAmount[user], "21");
 		UnstakeRequest[] storage userRequests = unstakeRequests[user];
 
@@ -294,7 +294,7 @@ contract StakingPool is AccessControlUpgradeable {
 				true,
 				false,
 				amount,
-				block.timestamp + 30 days,
+				block.timestamp + period,
 				0,
 				[uint256(0), 0, 0, 0, 0]
 			)

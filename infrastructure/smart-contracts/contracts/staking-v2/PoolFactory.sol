@@ -86,7 +86,13 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     // mapping of pool address => true if create via this factory
     mapping(address => bool) public poolsCreatedViaFactory;
 
+	// address of the contract that handles deploying staking pool & bucket proxies
     address public deployerAddress;
+
+	// periods (in days) to lock keys/esXai for when user creates an unstake request
+	uint256 public unstakeKeysDelayPeriod;
+	uint256 public unstakeGenesisKeyDelayPeriod;
+	uint256 public unstakeEsXaiDelayPeriod;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
@@ -158,6 +164,10 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         refereeAddress = _refereeAddress;
         nodeLicenseAddress = _nodeLicenseAddress;
         esXaiAddress = _esXaiAddress;
+
+		unstakeKeysDelayPeriod = 30 days;
+		unstakeGenesisKeyDelayPeriod = 60 days;
+		unstakeEsXaiDelayPeriod = 30 days;
     }
 
     /**
@@ -173,6 +183,16 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         deployerAddress = newDeployer;
         emit PoolProxyDeployerUpdated(prevDeployer, deployerAddress);
     }
+
+	function updateUnStakeDelayPeriods(
+		uint256 _unstakeKeysDelayPeriod,
+		uint256 _unstakeGenesisKeyDelayPeriod,
+		uint256 _unstakeEsXaiDelayPeriod
+	) external onlyRole(DEFAULT_ADMIN_ROLE) {
+		unstakeKeysDelayPeriod = _unstakeKeysDelayPeriod;
+		unstakeGenesisKeyDelayPeriod = _unstakeGenesisKeyDelayPeriod;
+		unstakeEsXaiDelayPeriod = _unstakeEsXaiDelayPeriod;
+	}
 
     function createPool(
         address _delegateOwner,
@@ -338,7 +358,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     function createUnstakeKeyRequest(address pool, uint256 keyAmount) external {
         require(keyAmount > 0, "13");
         require(poolsCreatedViaFactory[pool], "14");
-        StakingPool(pool).createUnstakeKeyRequest(msg.sender, keyAmount);
+        StakingPool(pool).createUnstakeKeyRequest(msg.sender, keyAmount, unstakeKeysDelayPeriod);
 
         emit UnstakeRequestStarted(
             msg.sender,
@@ -351,7 +371,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
     function createUnstakeOwnerLastKeyRequest(address pool) external {
         require(poolsCreatedViaFactory[pool], "18");
-        StakingPool(pool).createUnstakeOwnerLastKeyRequest(msg.sender);
+        StakingPool(pool).createUnstakeOwnerLastKeyRequest(msg.sender, unstakeGenesisKeyDelayPeriod);
 
         emit UnstakeRequestStarted(
             msg.sender,
@@ -365,7 +385,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     function createUnstakeEsXaiRequest(address pool, uint256 amount) external {
         require(amount > 0, "20");
         require(poolsCreatedViaFactory[pool], "22");
-        StakingPool(pool).createUnstakeEsXaiRequest(msg.sender, amount);
+        StakingPool(pool).createUnstakeEsXaiRequest(msg.sender, amount, unstakeEsXaiDelayPeriod);
 
         emit UnstakeRequestStarted(
             msg.sender,
