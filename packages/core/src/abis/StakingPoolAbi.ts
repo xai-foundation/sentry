@@ -320,6 +320,18 @@ export const StakingPoolAbi = [
       {
         "type": "uint32[]",
         "name": "_pendingShares"
+      },
+      {
+        "type": "uint256",
+        "name": "_ownerStakedKeys"
+      },
+      {
+        "type": "uint256",
+        "name": "_ownerRequestedUnstakeKeyAmount"
+      },
+      {
+        "type": "uint256",
+        "name": "_ownerLatestUnstakeRequestCompletionTime"
       }
     ]
   },

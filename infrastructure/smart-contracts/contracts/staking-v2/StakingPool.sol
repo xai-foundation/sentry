@@ -475,8 +475,8 @@ contract StakingPool is AccessControlUpgradeable {
 		_ownerStakedKeys = stakedKeysOfOwner[poolOwner].length;
 		_ownerRequestedUnstakeKeyAmount = userRequestedUnstakeKeyAmount[poolOwner];
 
-		if (_ownerStakedKeys == _ownerRequestedUnstakeKeyAmount && unstakeRequests[poolOwner].length > 0) {
-			_ownerLatestUnstakeRequestCompletionTime = unstakeRequests[poolOwner][unstakeRequests[poolOwner].length - 1].completeTime;
+		if (_ownerStakedKeys == _ownerRequestedUnstakeKeyAmount && _ownerRequestedUnstakeKeyAmount > 0) {
+			_ownerLatestUnstakeRequestCompletionTime = unstakeRequests[poolOwner][unstakeRequests[poolOwner].length - 1].lockTime;
 		}
     }
 

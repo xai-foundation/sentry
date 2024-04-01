@@ -61,9 +61,9 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			const unstakeKeysDelayPeriod2 = await poolFactory.connect(addr1).unstakeKeysDelayPeriod();
 			const unstakeGenesisKeyDelayPeriod2 = await poolFactory.connect(addr1).unstakeGenesisKeyDelayPeriod();
 			const unstakeEsXaiDelayPeriod2 = await poolFactory.connect(addr1).unstakeEsXaiDelayPeriod();
-			expect(unstakeKeysDelayPeriod2).to.equal(newUnStakeKeysDelay);
-			expect(unstakeGenesisKeyDelayPeriod2).to.equal(unstakeGenesisKeyDelayPeriod1);
-			expect(unstakeEsXaiDelayPeriod2).to.equal(unstakeEsXaiDelayPeriod1);
+			expect(unstakeKeysDelayPeriod2).to.equal(newUnStakeKeysDelay * daySecondsBigInt);
+			expect(unstakeGenesisKeyDelayPeriod2).to.equal(unstakeGenesisKeyDelayPeriod1 * daySecondsBigInt);
+			expect(unstakeEsXaiDelayPeriod2).to.equal(unstakeEsXaiDelayPeriod1 * daySecondsBigInt);
 
 			// Wait (unstakeKeysDelayPeriod1) days
 			const initialWaitTimeInSeconds = Number(daySecondsBigInt * unstakeKeysDelayPeriod1);
@@ -145,9 +145,9 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			const unstakeKeysDelayPeriod2 = await poolFactory.connect(addr1).unstakeKeysDelayPeriod();
 			const unstakeGenesisKeyDelayPeriod2 = await poolFactory.connect(addr1).unstakeGenesisKeyDelayPeriod();
 			const unstakeEsXaiDelayPeriod2 = await poolFactory.connect(addr1).unstakeEsXaiDelayPeriod();
-			expect(unstakeKeysDelayPeriod2).to.equal(unstakeKeysDelayPeriod1);
-			expect(unstakeGenesisKeyDelayPeriod2).to.equal(newUnStakeGenesisKeyDelay);
-			expect(unstakeEsXaiDelayPeriod2).to.equal(unstakeEsXaiDelayPeriod1);
+			expect(unstakeKeysDelayPeriod2).to.equal(unstakeKeysDelayPeriod1 * daySecondsBigInt);
+			expect(unstakeGenesisKeyDelayPeriod2).to.equal(newUnStakeGenesisKeyDelay * daySecondsBigInt);
+			expect(unstakeEsXaiDelayPeriod2).to.equal(unstakeEsXaiDelayPeriod1 * daySecondsBigInt);
 
 			// Wait (unstakeGenesisKeyDelayPeriod1) days
 			const initialWaitTimeInSeconds = Number(daySecondsBigInt * unstakeGenesisKeyDelayPeriod1);
@@ -233,9 +233,9 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			const unstakeKeysDelayPeriod2 = await poolFactory.connect(addr1).unstakeKeysDelayPeriod();
 			const unstakeGenesisKeyDelayPeriod2 = await poolFactory.connect(addr1).unstakeGenesisKeyDelayPeriod();
 			const unstakeEsXaiDelayPeriod2 = await poolFactory.connect(addr1).unstakeEsXaiDelayPeriod();
-			expect(unstakeKeysDelayPeriod2).to.equal(unstakeKeysDelayPeriod1);
-			expect(unstakeGenesisKeyDelayPeriod2).to.equal(unstakeGenesisKeyDelayPeriod1);
-			expect(unstakeEsXaiDelayPeriod2).to.equal(newUnStakeEsXaiDelay);
+			expect(unstakeKeysDelayPeriod2).to.equal(unstakeKeysDelayPeriod1 * daySecondsBigInt);
+			expect(unstakeGenesisKeyDelayPeriod2).to.equal(unstakeGenesisKeyDelayPeriod1 * daySecondsBigInt);
+			expect(unstakeEsXaiDelayPeriod2).to.equal(newUnStakeEsXaiDelay * daySecondsBigInt);
 
 			// Wait (unstakeEsXaiDelayPeriod1) days
 			const initialWaitTimeInSeconds = Number(daySecondsBigInt * unstakeEsXaiDelayPeriod1);
@@ -274,6 +274,58 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			const stakedAmount = await stakingPool.connect(addr1).stakedAmounts(addr1Address);
 			expect(balance).to.equal(mintAmount);
 			expect(stakedAmount).to.equal(0);
+		});
+
+		it("Pool Info should return info about the pool owner's key un-stake info", async function () {
+			const {poolFactory, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+
+			// Mint a node key & save the id
+			const price = await nodeLicense.price(1, "");
+			await nodeLicense.connect(addr1).mint(1, "", {value: price});
+			const mintedKeyId = await nodeLicense.totalSupply();
+
+			// Create a pool
+			await poolFactory.connect(addr1).createPool(
+				noDelegateOwner,
+				[mintedKeyId],
+				validShareValues,
+				poolMetaData,
+				poolSocials,
+				poolTrackerDetails
+			);
+
+			// Save the pool factory's address
+			const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+			const stakingPool = new Contract(stakingPoolAddress, StakingPoolAbi);
+
+			// Check the pool info first make sure it checks out
+			const poolInfo1 = await stakingPool.connect(addr1).getPoolInfo();
+			expect(poolInfo1._ownerStakedKeys).to.equal(1);
+			expect(poolInfo1._ownerRequestedUnstakeKeyAmount).to.equal(0);
+			expect(poolInfo1._ownerLatestUnstakeRequestCompletionTime).to.equal(0);
+
+			// Calculate the minimum time that the lock period will be on the upcoming request
+			const lastKeyDelayPeriod = await poolFactory.connect(addr1).unstakeGenesisKeyDelayPeriod();
+			const nowInSeconds = Math.floor(Date.now() / 1000);
+			const minimumLockTime = lastKeyDelayPeriod + BigInt(nowInSeconds);
+
+			// Create the un-stake request and check the updated pool info
+			await poolFactory.connect(addr1).createUnstakeOwnerLastKeyRequest(stakingPoolAddress);
+			const poolInfo2 = await stakingPool.connect(addr1).getPoolInfo();
+			expect(poolInfo2._ownerStakedKeys).to.equal(1);
+			expect(poolInfo2._ownerRequestedUnstakeKeyAmount).to.equal(1);
+			expect(poolInfo2._ownerLatestUnstakeRequestCompletionTime).to.be.greaterThan(0);
+			expect(poolInfo2._ownerLatestUnstakeRequestCompletionTime).to.be.greaterThanOrEqual(minimumLockTime);
+
+			// Wait long enough to be able to complete the un-stake request
+			await ethers.provider.send("evm_increaseTime", [Number(lastKeyDelayPeriod)]);
+			await ethers.provider.send("evm_mine");
+
+			// Finish the un-stake request & check final pool info
+			await poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 0, [mintedKeyId]);
+			const poolInfo3 = await stakingPool.connect(addr1).getPoolInfo();
+			expect(poolInfo3._ownerStakedKeys).to.equal(0);
+			expect(poolInfo3._ownerRequestedUnstakeKeyAmount).to.equal(0);
 		});
 	}
 }
