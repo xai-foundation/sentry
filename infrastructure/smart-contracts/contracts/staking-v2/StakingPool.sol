@@ -40,7 +40,7 @@ contract StakingPool is AccessControlUpgradeable {
 	uint32[3] pendingShares;
     uint256 updateSharesTimestamp;
 
-	// mapping userAddress to unstake requests, unstake has a delay of 30 days
+	// mapping userAddress to unstake requests, currently unstaking requires a waiting period set in the PoolFactory
 	mapping(address => UnstakeRequest[]) private unstakeRequests;
 
 	// mapping userAddress to requested unstake key amount
@@ -251,7 +251,7 @@ contract StakingPool is AccessControlUpgradeable {
 				true,
 				true,
 				keyAmount,
-				block.timestamp + (period * 1 days),
+				block.timestamp + period,
 				0,
 				[uint256(0), 0, 0, 0, 0]
 			)
@@ -276,7 +276,7 @@ contract StakingPool is AccessControlUpgradeable {
 				true,
 				true,
 				1,
-				block.timestamp + (period * 1 days),
+				block.timestamp + period,
 				0,
 				[uint256(0), 0, 0, 0, 0]
 			)
@@ -294,7 +294,7 @@ contract StakingPool is AccessControlUpgradeable {
 				true,
 				false,
 				amount,
-				block.timestamp + (period * 1 days),
+				block.timestamp + period,
 				0,
 				[uint256(0), 0, 0, 0, 0]
 			)
