@@ -1,3 +1,6 @@
+"use client";
+import {useState} from "react";
+
 export function SwitchArrows({ width = 24, height = 24, className, fill = "#181818" }: { width?: number, height?: number, fill?: string, className?: string }) {
 
   return (
@@ -489,20 +492,38 @@ export function InfoPointBlue({
 export function PieChart({
   width = 16,
   height = 16,
-  fill = "#c36522",
+  fill = "#FFA366",
+  hoverFill = "#c36522",
 }: {
   width?: number;
   height?: number;
   fill?: string;
+  hoverFill?: string;
 }
 ) {
+	const [hover, setHover] = useState(false);
+
+	function toggleHover(_hover: boolean): () => void {
+		return () => {
+			setHover(_hover);
+		}
+	}
+
 	return (
-		<svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 16 16">
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width={width}
+			height={height}
+			viewBox="0 0 16 16"
+			onMouseEnter={toggleHover(true)}
+			onMouseLeave={toggleHover(false)}
+		>
 			<path
 				id="Path_3616"
 				data-name="Path 3616"
 				d="M9.218,2.049v8.782H18A8.02,8.02,0,1,1,9.218,2.049Zm1.6,0A8.022,8.022,0,0,1,18,9.228H10.822Z"
-				transform="translate(-2 -2.049)" fill={fill}
+				transform="translate(-2 -2.049)"
+				fill={hover ? hoverFill : fill}
 			/>
 		</svg>
 	);
