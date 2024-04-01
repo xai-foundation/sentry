@@ -18,10 +18,10 @@ const WarningComponent = ({
           <ErrorCircle width={20} height={20} />
         </div>
         <span className="text-[#C36522] font-bold">
-          At least one key must always be staked with this pool
+          The final key you unstake from this pool will take 60 days to unstake.
         </span>
         <span className="text-[#C36522]">
-          Pools cannot be deleted, so one key will always be staked.
+          All other keys you unstake will take 30 days to unstake.
         </span>
       </div>
       <div className="flex pl-[10px] pr-[50px] mb-[50px]">
@@ -36,8 +36,7 @@ const WarningComponent = ({
         </div>
         <div>
           <span className="text-graphiteGray">
-            I understand that one key will be always be staked once this pool
-            has been created
+            I understand the unstake periods for my keys
           </span>
         </div>
       </div>
