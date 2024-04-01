@@ -331,7 +331,7 @@ export const StakingPoolAbi = [
       },
       {
         "type": "uint256",
-        "name": "_ownerLatestUnstakeRequestCompletionTime"
+        "name": "_ownerLatestUnstakeRequestLockTime"
       }
     ]
   },

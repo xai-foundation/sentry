@@ -302,7 +302,7 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			const poolInfo1 = await stakingPool.connect(addr1).getPoolInfo();
 			expect(poolInfo1._ownerStakedKeys).to.equal(1);
 			expect(poolInfo1._ownerRequestedUnstakeKeyAmount).to.equal(0);
-			expect(poolInfo1._ownerLatestUnstakeRequestCompletionTime).to.equal(0);
+			expect(poolInfo1._ownerLatestUnstakeRequestLockTime).to.equal(0);
 
 			// Calculate the minimum time that the lock period will be on the upcoming request
 			const lastKeyDelayPeriod = await poolFactory.connect(addr1).unstakeGenesisKeyDelayPeriod();
@@ -314,8 +314,8 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			const poolInfo2 = await stakingPool.connect(addr1).getPoolInfo();
 			expect(poolInfo2._ownerStakedKeys).to.equal(1);
 			expect(poolInfo2._ownerRequestedUnstakeKeyAmount).to.equal(1);
-			expect(poolInfo2._ownerLatestUnstakeRequestCompletionTime).to.be.greaterThan(0);
-			expect(poolInfo2._ownerLatestUnstakeRequestCompletionTime).to.be.greaterThanOrEqual(minimumLockTime);
+			expect(poolInfo2._ownerLatestUnstakeRequestLockTime).to.be.greaterThan(0);
+			expect(poolInfo2._ownerLatestUnstakeRequestLockTime).to.be.greaterThanOrEqual(minimumLockTime);
 
 			// Wait long enough to be able to complete the un-stake request
 			await ethers.provider.send("evm_increaseTime", [Number(lastKeyDelayPeriod)]);
@@ -325,7 +325,7 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			await poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 0, [mintedKeyId]);
 			const poolInfo3 = await stakingPool.connect(addr1).getPoolInfo();
 			expect(poolInfo3._ownerStakedKeys).to.equal(0);
-			expect(poolInfo3._ownerRequestedUnstakeKeyAmount).to.equal(0);
+			expect(poolInfo3._ownerLatestUnstakeRequestLockTime).to.equal(0);
 		});
 	}
 }
