@@ -165,9 +165,9 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         nodeLicenseAddress = _nodeLicenseAddress;
         esXaiAddress = _esXaiAddress;
 
-		unstakeKeysDelayPeriod = 30;
-		unstakeGenesisKeyDelayPeriod = 60;
-		unstakeEsXaiDelayPeriod = 30;
+		unstakeKeysDelayPeriod = 30 days;
+		unstakeGenesisKeyDelayPeriod = 60 days;
+		unstakeEsXaiDelayPeriod = 30 days;
     }
 
     /**
