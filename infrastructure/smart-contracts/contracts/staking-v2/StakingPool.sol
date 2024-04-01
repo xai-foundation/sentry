@@ -445,7 +445,10 @@ contract StakingPool is AccessControlUpgradeable {
             string memory _description,
             string memory _logo,
             string[] memory _socials,
-			uint32[] memory _pendingShares
+			uint32[] memory _pendingShares,
+			uint256 _ownerStakedKeys,
+			uint256 _ownerRequestedUnstakeKeyAmount,
+			uint256 _ownerLatestUnstakeRequestLockTime
         )
     {
         baseInfo.poolAddress = address(this);
@@ -468,6 +471,13 @@ contract StakingPool is AccessControlUpgradeable {
         _pendingShares[0] = pendingShares[0];
         _pendingShares[1] = pendingShares[1];
         _pendingShares[2] = pendingShares[2];
+
+		_ownerStakedKeys = stakedKeysOfOwner[poolOwner].length;
+		_ownerRequestedUnstakeKeyAmount = userRequestedUnstakeKeyAmount[poolOwner];
+
+		if (_ownerStakedKeys == _ownerRequestedUnstakeKeyAmount && _ownerRequestedUnstakeKeyAmount > 0) {
+			_ownerLatestUnstakeRequestLockTime = unstakeRequests[poolOwner][unstakeRequests[poolOwner].length - 1].lockTime;
+		}
     }
 
     function getUserPoolData(

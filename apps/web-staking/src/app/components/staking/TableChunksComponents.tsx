@@ -8,6 +8,8 @@ import { formatCurrencyNoDecimals } from "@/app/utils/formatCurrency";
 
 export function TableRowPool({ pool, tier }: { pool: PoolInfo, tier: TierInfo & { icon: iconType } }) {
 
+	console.log("pool", pool);
+
   return (
     <td className="lg:whitespace-nowrap flex items-center lg:p-4 sm:p-2 sm:py-3 lg:text-base text-graphiteGray text-left font-medium sm:text-xs">
       <Link href={`/pool/${pool.address}/summary`} className="flex items-center">
@@ -33,7 +35,6 @@ export function TableRowPool({ pool, tier }: { pool: PoolInfo, tier: TierInfo & 
           }
         >
           <span className="mx-2 cursor-pointer sm:mt-2 lg:mt-0">
-            {/*<ErrorCircle width={17} height={17} />*/}
 	          <PieChart/>
           </span>
         </Tooltip>

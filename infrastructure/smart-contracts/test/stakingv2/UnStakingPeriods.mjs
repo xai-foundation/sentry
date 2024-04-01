@@ -3,8 +3,6 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {Contract} from "ethers";
 import {StakingPoolAbi} from "@sentry/core";
 
-const daySecondsBigInt = 86400n;
-
 export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 	const {
 		validShareValues,
@@ -66,7 +64,7 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			expect(unstakeEsXaiDelayPeriod2).to.equal(unstakeEsXaiDelayPeriod1);
 
 			// Wait (unstakeKeysDelayPeriod1) days
-			const initialWaitTimeInSeconds = Number(daySecondsBigInt * unstakeKeysDelayPeriod1);
+			const initialWaitTimeInSeconds = Number(unstakeKeysDelayPeriod1);
 			await ethers.provider.send("evm_increaseTime", [initialWaitTimeInSeconds]);
 			await ethers.provider.send("evm_mine");
 
@@ -87,7 +85,7 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			).to.be.revertedWith("25");
 
 			// Wait remainder time
-			const updatedWaitTimeInSeconds = Number(daySecondsBigInt * unstakeKeysDelayPeriod2);
+			const updatedWaitTimeInSeconds = Number(unstakeKeysDelayPeriod2);
 			const remainderWaitTime = updatedWaitTimeInSeconds - initialWaitTimeInSeconds;
 			await ethers.provider.send("evm_increaseTime", [remainderWaitTime]);
 			await ethers.provider.send("evm_mine");
@@ -150,7 +148,7 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			expect(unstakeEsXaiDelayPeriod2).to.equal(unstakeEsXaiDelayPeriod1);
 
 			// Wait (unstakeGenesisKeyDelayPeriod1) days
-			const initialWaitTimeInSeconds = Number(daySecondsBigInt * unstakeGenesisKeyDelayPeriod1);
+			const initialWaitTimeInSeconds = Number(unstakeGenesisKeyDelayPeriod1);
 			await ethers.provider.send("evm_increaseTime", [initialWaitTimeInSeconds]);
 			await ethers.provider.send("evm_mine");
 
@@ -171,7 +169,7 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			).to.be.revertedWith("25");
 
 			// Wait remainder time
-			const updatedWaitTimeInSeconds = Number(daySecondsBigInt * unstakeGenesisKeyDelayPeriod2);
+			const updatedWaitTimeInSeconds = Number(unstakeGenesisKeyDelayPeriod2);
 			const remainderWaitTime = updatedWaitTimeInSeconds - initialWaitTimeInSeconds;
 			await ethers.provider.send("evm_increaseTime", [remainderWaitTime]);
 			await ethers.provider.send("evm_mine");
@@ -238,7 +236,7 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			expect(unstakeEsXaiDelayPeriod2).to.equal(newUnStakeEsXaiDelay);
 
 			// Wait (unstakeEsXaiDelayPeriod1) days
-			const initialWaitTimeInSeconds = Number(daySecondsBigInt * unstakeEsXaiDelayPeriod1);
+			const initialWaitTimeInSeconds = Number(unstakeEsXaiDelayPeriod1);
 			await ethers.provider.send("evm_increaseTime", [initialWaitTimeInSeconds]);
 			await ethers.provider.send("evm_mine");
 
@@ -260,7 +258,7 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			).to.be.revertedWith("30");
 
 			// Wait remainder time
-			const updatedWaitTimeInSeconds = Number(daySecondsBigInt * unstakeEsXaiDelayPeriod2);
+			const updatedWaitTimeInSeconds = Number(unstakeEsXaiDelayPeriod2);
 			const remainderWaitTime = updatedWaitTimeInSeconds - initialWaitTimeInSeconds;
 			await ethers.provider.send("evm_increaseTime", [remainderWaitTime]);
 			await ethers.provider.send("evm_mine");
@@ -274,6 +272,58 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			const stakedAmount = await stakingPool.connect(addr1).stakedAmounts(addr1Address);
 			expect(balance).to.equal(mintAmount);
 			expect(stakedAmount).to.equal(0);
+		});
+
+		it("Pool Info should return info about the pool owner's key un-stake info", async function () {
+			const {poolFactory, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+
+			// Mint a node key & save the id
+			const price = await nodeLicense.price(1, "");
+			await nodeLicense.connect(addr1).mint(1, "", {value: price});
+			const mintedKeyId = await nodeLicense.totalSupply();
+
+			// Create a pool
+			await poolFactory.connect(addr1).createPool(
+				noDelegateOwner,
+				[mintedKeyId],
+				validShareValues,
+				poolMetaData,
+				poolSocials,
+				poolTrackerDetails
+			);
+
+			// Save the pool factory's address
+			const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+			const stakingPool = new Contract(stakingPoolAddress, StakingPoolAbi);
+
+			// Check the pool info first make sure it checks out
+			const poolInfo1 = await stakingPool.connect(addr1).getPoolInfo();
+			expect(poolInfo1._ownerStakedKeys).to.equal(1);
+			expect(poolInfo1._ownerRequestedUnstakeKeyAmount).to.equal(0);
+			expect(poolInfo1._ownerLatestUnstakeRequestLockTime).to.equal(0);
+
+			// Calculate the minimum time that the lock period will be on the upcoming request
+			const lastKeyDelayPeriod = await poolFactory.connect(addr1).unstakeGenesisKeyDelayPeriod();
+			const nowInSeconds = Math.floor(Date.now() / 1000);
+			const minimumLockTime = lastKeyDelayPeriod + BigInt(nowInSeconds);
+
+			// Create the un-stake request and check the updated pool info
+			await poolFactory.connect(addr1).createUnstakeOwnerLastKeyRequest(stakingPoolAddress);
+			const poolInfo2 = await stakingPool.connect(addr1).getPoolInfo();
+			expect(poolInfo2._ownerStakedKeys).to.equal(1);
+			expect(poolInfo2._ownerRequestedUnstakeKeyAmount).to.equal(1);
+			expect(poolInfo2._ownerLatestUnstakeRequestLockTime).to.be.greaterThan(0);
+			expect(poolInfo2._ownerLatestUnstakeRequestLockTime).to.be.greaterThanOrEqual(minimumLockTime);
+
+			// Wait long enough to be able to complete the un-stake request
+			await ethers.provider.send("evm_increaseTime", [Number(lastKeyDelayPeriod)]);
+			await ethers.provider.send("evm_mine");
+
+			// Finish the un-stake request & check final pool info
+			await poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 0, [mintedKeyId]);
+			const poolInfo3 = await stakingPool.connect(addr1).getPoolInfo();
+			expect(poolInfo3._ownerStakedKeys).to.equal(0);
+			expect(poolInfo3._ownerLatestUnstakeRequestLockTime).to.equal(0);
 		});
 	}
 }
