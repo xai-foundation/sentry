@@ -78,17 +78,19 @@ export default function StakingKeysDetailComponent({
 
 					{userPool &&
 						<>
-							<div className="max-w-xl w-full p-3">
-								<WarningComponent
-									title="By staking keys with this pool, you will give the pool the ability to operate your keys and perform assertions and claims"
-									description="Your key’s rewards will be distributed to the staking pool, and the pools reward tiers will apply to your key"
-									checkboxText="I agree to allow the pool to operate my keys and perform assertions and claims with my keys"
-									onAcceptTerms={() => {}}
-									includeYouMustAgreeMessage={true}
-									checkbox={checkbox}
-									setCheckbox={setCheckbox}
-								/>
-							</div>
+							{!unstakeKey && (
+								<div className="max-w-xl w-full p-3">
+									<WarningComponent
+										title="By staking keys with this pool, you will give the pool the ability to operate your keys and perform assertions and claims"
+										description="Your key’s rewards will be distributed to the staking pool, and the pools reward tiers will apply to your key"
+										checkboxText="I agree to allow the pool to operate my keys and perform assertions and claims with my keys"
+										onAcceptTerms={() => {}}
+										includeYouMustAgreeMessage={true}
+										checkbox={checkbox}
+										setCheckbox={setCheckbox}
+									/>
+								</div>
+							)}
 
 							<div className="flex items-center mb-4">
 								<span className="mr-2">{unstakeKey ? 'Unstake from:' : 'Stake to:'}</span>
