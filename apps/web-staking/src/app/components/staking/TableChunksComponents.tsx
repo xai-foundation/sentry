@@ -3,7 +3,7 @@ import { ExternalLinkComponent } from "../links/LinkComponent";
 import { PoolInfo, TierInfo } from "@/types/Pool";
 import { iconType } from "../dashboard/constants/constants";
 import Link from "next/link";
-import { ErrorCircle } from "../icons/IconsComponent";
+import {ErrorCircle, PieChart} from "../icons/IconsComponent";
 import { formatCurrencyNoDecimals } from "@/app/utils/formatCurrency";
 
 export function TableRowPool({ pool, tier }: { pool: PoolInfo, tier: TierInfo & { icon: iconType } }) {
@@ -24,15 +24,17 @@ export function TableRowPool({ pool, tier }: { pool: PoolInfo, tier: TierInfo & 
       </Link>
       {(pool.updateSharesTimestamp >= Date.now()) &&
         <Tooltip
+	      className="bg-[#FFF9ED] border-[#C36522] border"
           content={
             <div className="px-1 py-2">
-              <div className="text-small font-bold">The pool owner has changed the rewards to allocate {pool.pendingShares[0]}%/{pool.pendingShares[1]}%/{pool.pendingShares[2]}% to Owner/Keys/esXai</div>
-              <div className="text-tiny">This change will go into effect on {new Date(pool.updateSharesTimestamp).toISOString().split("T")[0]}</div>
+              <div className="text-small font-bold text-[#C36522]">The pool owner has changed the rewards to allocate {pool.pendingShares[0]}%/{pool.pendingShares[1]}%/{pool.pendingShares[2]}% to Owner/Keys/esXai</div>
+              <div className="text-tiny text-[#C36522]">This change will go into effect on {new Date(pool.updateSharesTimestamp).toISOString().split("T")[0]}</div>
             </div>
           }
         >
           <span className="mx-2 cursor-pointer sm:mt-2 lg:mt-0">
-            <ErrorCircle width={17} height={17} />
+            {/*<ErrorCircle width={17} height={17} />*/}
+	          <PieChart/>
           </span>
         </Tooltip>
       }
