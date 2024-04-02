@@ -4,8 +4,10 @@ import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
 
 import {
   ACTIVE_NETWORK_IDS,
+  addUnstakeRequest,
   getNetwork,
   getWeb3Instance,
+  getWeiAmount,
   mapWeb3Error,
 } from "@/services/web3.service";
 
@@ -21,15 +23,20 @@ import {
 import { Id } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { esXaiAbi } from "@/assets/abi/esXaiAbi";
+import { PoolInfo } from "@/types/Pool";
+import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
+import { Avatar } from "@nextui-org/react";
+import { sendUpdatePoolRequest } from "@/services/requestService";
 
 interface ReviewStakeProps {
   onBack: () => void;
   title: string;
-  inputValue?: number;
+  inputValue?: string;
   totalStaked?: number;
   unstake?: boolean;
   approved: boolean;
   maxStake: number;
+  pool?: PoolInfo;
 }
 
 const ReviewStakeComponent = ({
@@ -39,7 +46,8 @@ const ReviewStakeComponent = ({
   totalStaked,
   unstake,
   approved,
-  maxStake
+  maxStake,
+  pool
 }: ReviewStakeProps) => {
   const router = useRouter();
   const { address, chainId } = useAccount();
@@ -49,22 +57,9 @@ const ReviewStakeComponent = ({
   const network = getNetwork(chainId);
 
   const { writeContractAsync } = useWriteContract();
-	const { switchChain } = useSwitchChain();
+  const { switchChain } = useSwitchChain();
 
-  const onStake = async (amount: number) => {
-    const weiAmount = getWeb3Instance(network).web3.utils.toWei(
-      amount,
-      "ether"
-    );
-    return writeContractAsync({
-      address: getWeb3Instance(network).refereeAddress as `0x${string}`,
-      abi: RefereeAbi,
-      functionName: "stake",
-      args: [BigInt(weiAmount)],
-    });
-  };
-
-  const onUnstake = async (amount: number) => {
+  const onUnstake = async (amount: string) => {
     const weiAmount = getWeb3Instance(network).web3.utils.toWei(
       amount,
       "ether"
@@ -86,11 +81,12 @@ const ReviewStakeComponent = ({
       address: getWeb3Instance(network).esXaiAddress as `0x${string}`,
       abi: esXaiAbi,
       functionName: "approve",
-      args: [getWeb3Instance(network).refereeAddress as `0x${string}`, BigInt("115792089237316195423570985008687907853269984665640564039457584007913129639935")],
+      args: [getWeb3Instance(network).poolFactoryAddress as `0x${string}`, BigInt("115792089237316195423570985008687907853269984665640564039457584007913129639935")],
     });
   };
 
   const onConfirm = async () => {
+
 
     if (!chainId) {
       return;
@@ -105,16 +101,38 @@ const ReviewStakeComponent = ({
     try {
       // TODO: check eth balance enough for gas
       if (unstake) {
-        receipt = await onUnstake(inputValue || 0);
+        if (pool) {
+          receipt = await executeContractWrite(
+            WriteFunctions.createUnstakeEsXaiRequest,
+            [pool.address, BigInt(getWeiAmount(Number(inputValue)))],
+            chainId,
+            writeContractAsync,
+            switchChain
+          );
+        } else {
+          receipt = await onUnstake(inputValue || "0");
+        }
+
+
       } else {
-        receipt = await onStake(inputValue || 0);
+        if (!pool) {
+          return;
+        }
+        receipt = await executeContractWrite(
+          WriteFunctions.stakeEsXai,
+          [pool.address, BigInt(getWeiAmount(Number(inputValue)))],
+          chainId,
+          writeContractAsync,
+          switchChain
+        );
       }
+
       onSuccess(receipt, loading);
     } catch (ex: any) {
       const error = mapWeb3Error(ex);
       updateNotification(error, loading, true);
       setTransactionLoading(false);
-      setTimeout(() => router.push("/staking"), 3000);
+      setTimeout(() => router.refresh(), 3000);
     }
   };
 
@@ -143,7 +161,7 @@ const ReviewStakeComponent = ({
       const error = mapWeb3Error(ex);
       updateNotification(error, loading, true);
       setTransactionLoading(false);
-      setTimeout(() => router.push("/staking"), 3000);
+      setTimeout(() => router.push(`/pool/${pool?.address}/summary`), 3000);
     }
   }
 
@@ -157,9 +175,33 @@ const ReviewStakeComponent = ({
     );
     setTimeout(() => {
       setTransactionLoading(false);
-      router.push("/staking");
+      if (pool) {
+
+        sendUpdatePoolRequest(pool.address, chainId);
+
+        if (unstake) {
+          addUnstakeRequest(getNetwork(chainId), address!, pool.address)
+            .then(() => {
+              router.push(`/pool/${pool.address}/summary`);
+            })
+        } else {
+          router.push(`/pool/${pool.address}/summary`);
+        }
+      } else {
+
+        router.push(`/staking`);
+      }
+
     }, 3000);
   };
+
+  const getUnstakeLabel = () => {
+    if (pool) {
+      return (totalStaked! - Number(inputValue!)).toFixed(2);
+    }
+
+    return `${totalStaked! - Number(inputValue!)} esXai`;
+  }
 
   return (
     <main className="flex w-full flex-col items-center">
@@ -172,13 +214,19 @@ const ReviewStakeComponent = ({
           label={unstake ? "You unstake" : "You stake"}
           value={`${inputValue} esXai`}
         />
+
+        {pool && <div className="flex items-center mb-4">
+          <span className="mr-2">Staking to:</span>
+          <Avatar src={pool.meta.logo} className="w-[32px] h-[32px] mr-2" />
+          <span className="text-graphiteGray">{pool.meta.name}</span>
+        </div>}
+
         <HeroStat
-          label={`Your staking balance after this ${unstake ? "unstake" : "stake"
-            }`}
+          label={`Your staking balance after this ${unstake ? "unstake" : "stake"}`}
           value={
             unstake
-              ? `${totalStaked! - inputValue!} esXai`
-              : `${inputValue! + totalStaked!} esXai`
+              ? `${getUnstakeLabel()}`
+              : `${Number(inputValue!) + totalStaked!} esXai`
           }
         />
         {tokensApproved ?
@@ -195,7 +243,6 @@ const ReviewStakeComponent = ({
             btnText={`${transactionLoading ? "Waiting for approved tokens..." : "Approve"}`}
             className={`w-full mt-6 font-bold ${transactionLoading && "bg-[#B1B1B1] disabled"}`}
           />
-
         }
 
       </div>

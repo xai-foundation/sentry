@@ -1,7 +1,7 @@
 import { formatCurrency } from "@/app/utils/formatCurrency";
 import ProgressComponent from "../progress/Progress";
 import PopoverWindow from "./PopoverWindow";
-import { iconType } from "../overview/constants/constants";
+import { iconType } from "@/app/components/dashboard/constants/constants";
 
 interface InfoComponentProps {
   address: string | undefined;

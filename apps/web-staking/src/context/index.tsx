@@ -23,13 +23,14 @@ createWeb3Modal({
 
 export function ContextProvider({
   children,
-  initialState
+  // initialState
 }: {
   children: ReactNode
-  initialState?: State
+  // initialState?: State
 }) {
   return (
-    <WagmiProvider config={config} initialState={initialState}>
+    // <WagmiProvider config={config} initialState={initialState}>
+    <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   )

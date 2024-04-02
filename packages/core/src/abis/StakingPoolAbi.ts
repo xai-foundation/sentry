@@ -131,6 +131,10 @@ export const StakingPoolAbi = [
       {
         "type": "uint256",
         "name": "amount"
+      },
+      {
+        "type": "uint256",
+        "name": "period"
       }
     ],
     "outputs": []
@@ -148,6 +152,10 @@ export const StakingPoolAbi = [
       {
         "type": "uint256",
         "name": "keyAmount"
+      },
+      {
+        "type": "uint256",
+        "name": "period"
       }
     ],
     "outputs": []
@@ -161,6 +169,10 @@ export const StakingPoolAbi = [
       {
         "type": "address",
         "name": "owner"
+      },
+      {
+        "type": "uint256",
+        "name": "period"
       }
     ],
     "outputs": []
@@ -308,6 +320,18 @@ export const StakingPoolAbi = [
       {
         "type": "uint32[]",
         "name": "_pendingShares"
+      },
+      {
+        "type": "uint256",
+        "name": "_ownerStakedKeys"
+      },
+      {
+        "type": "uint256",
+        "name": "_ownerRequestedUnstakeKeyAmount"
+      },
+      {
+        "type": "uint256",
+        "name": "_ownerLatestUnstakeRequestLockTime"
       }
     ]
   },
@@ -423,6 +447,14 @@ export const StakingPoolAbi = [
       }
     ],
     "outputs": [
+      {
+        "type": "uint256",
+        "name": "claimAmountFromKeys"
+      },
+      {
+        "type": "uint256",
+        "name": "claimAmountFromEsXai"
+      },
       {
         "type": "uint256",
         "name": "claimAmount"

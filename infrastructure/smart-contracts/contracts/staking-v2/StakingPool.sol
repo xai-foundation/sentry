@@ -40,7 +40,7 @@ contract StakingPool is AccessControlUpgradeable {
 	uint32[3] pendingShares;
     uint256 updateSharesTimestamp;
 
-	// mapping userAddress to unstake requests, unstake has a delay of 30 days
+	// mapping userAddress to unstake requests, currently unstaking requires a waiting period set in the PoolFactory
 	mapping(address => UnstakeRequest[]) private unstakeRequests;
 
 	// mapping userAddress to requested unstake key amount
@@ -226,7 +226,7 @@ contract StakingPool is AccessControlUpgradeable {
         keyBucket.setBalance(owner, stakedKeysOfOwner[owner].length);
     }
 
-	function createUnstakeKeyRequest(address user, uint256 keyAmount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+	function createUnstakeKeyRequest(address user, uint256 keyAmount, uint256 period) external onlyRole(DEFAULT_ADMIN_ROLE) {
 		uint256 stakedKeysCount = stakedKeysOfOwner[user].length;
 		uint256 requestKeys = userRequestedUnstakeKeyAmount[user];
 
@@ -251,7 +251,7 @@ contract StakingPool is AccessControlUpgradeable {
 				true,
 				true,
 				keyAmount,
-				block.timestamp + 30 days,
+				block.timestamp + period,
 				0,
 				[uint256(0), 0, 0, 0, 0]
 			)
@@ -260,7 +260,7 @@ contract StakingPool is AccessControlUpgradeable {
 		userRequestedUnstakeKeyAmount[user] += keyAmount;
 	}
 
-	function createUnstakeOwnerLastKeyRequest(address owner) external onlyRole(DEFAULT_ADMIN_ROLE) {
+	function createUnstakeOwnerLastKeyRequest(address owner, uint256 period) external onlyRole(DEFAULT_ADMIN_ROLE) {
 		require(owner == poolOwner, "17");
 		uint256 stakedKeysCount = stakedKeysOfOwner[owner].length;
 
@@ -276,7 +276,7 @@ contract StakingPool is AccessControlUpgradeable {
 				true,
 				true,
 				1,
-				block.timestamp + 60 days,
+				block.timestamp + period,
 				0,
 				[uint256(0), 0, 0, 0, 0]
 			)
@@ -285,7 +285,7 @@ contract StakingPool is AccessControlUpgradeable {
 		userRequestedUnstakeKeyAmount[owner] += 1;
 	}
 
-	function createUnstakeEsXaiRequest(address user, uint256 amount) external {
+	function createUnstakeEsXaiRequest(address user, uint256 amount, uint256 period) external onlyRole(DEFAULT_ADMIN_ROLE) {
 		require(stakedAmounts[user] >= amount + userRequestedUnstakeEsXaiAmount[user], "21");
 		UnstakeRequest[] storage userRequests = unstakeRequests[user];
 
@@ -294,7 +294,7 @@ contract StakingPool is AccessControlUpgradeable {
 				true,
 				false,
 				amount,
-				block.timestamp + 30 days,
+				block.timestamp + period,
 				0,
 				[uint256(0), 0, 0, 0, 0]
 			)
@@ -396,12 +396,16 @@ contract StakingPool is AccessControlUpgradeable {
 
     function _getUndistributedClaimAmount(
         address user
-    ) internal view returns (uint256 claimAmount, uint256 ownerAmount) {
+    ) internal view returns (
+		uint256 claimAmountFromKeys,
+		uint256 claimAmountFromEsXai,
+		uint256 claimAmount,
+		uint256 ownerAmount
+	) {
         uint256 poolAmount = esXai(esXaiAddress).balanceOf(address(this)) - poolOwnerClaimableRewards;
 
         uint256 amountForKeyBucket = (poolAmount * keyBucketShare) / 1_000_000;
-        uint256 amountForEsXaiBucket = (poolAmount * stakedBucketShare) /
-		1_000_000;
+        uint256 amountForEsXaiBucket = (poolAmount * stakedBucketShare) / 1_000_000;
 
         ownerAmount = poolAmount - amountForKeyBucket - amountForEsXaiBucket;
 
@@ -409,20 +413,26 @@ contract StakingPool is AccessControlUpgradeable {
         uint256 userBalanceInEsXaiBucket = esXaiStakeBucket.balanceOf(user);
 
         if (userBalanceInKeyBucket != 0) {
-            uint256 amountPerKey = amountForKeyBucket / keyBucket.totalSupply();
-            claimAmount += amountPerKey * userBalanceInKeyBucket;
+            uint256 amountPerKey = amountForKeyBucket * 1_000_000 / keyBucket.totalSupply();
+			claimAmountFromKeys = amountPerKey * userBalanceInKeyBucket / 1_000_000;
+            claimAmount += claimAmountFromKeys;
         }
 
         if (userBalanceInEsXaiBucket != 0) {
-            uint256 amountPerStakedEsXai = amountForEsXaiBucket /
-                esXaiStakeBucket.totalSupply();
-            claimAmount += amountPerStakedEsXai * userBalanceInEsXaiBucket;
+            uint256 amountPerStakedEsXai = amountForEsXaiBucket * 1_000_000 / esXaiStakeBucket.totalSupply();
+			claimAmountFromEsXai = amountPerStakedEsXai * userBalanceInEsXaiBucket / 1_000_000;
+            claimAmount += claimAmountFromEsXai;
         }
     }
 
     function getUndistributedClaimAmount(
         address user
-    ) external view returns (uint256 claimAmount, uint256 ownerAmount) {
+    ) external view returns (
+		uint256 claimAmountFromKeys,
+		uint256 claimAmountFromEsXai,
+		uint256 claimAmount,
+		uint256 ownerAmount
+	) {
         return _getUndistributedClaimAmount(user);
     }
 
@@ -435,7 +445,10 @@ contract StakingPool is AccessControlUpgradeable {
             string memory _description,
             string memory _logo,
             string[] memory _socials,
-			uint32[] memory _pendingShares
+			uint32[] memory _pendingShares,
+			uint256 _ownerStakedKeys,
+			uint256 _ownerRequestedUnstakeKeyAmount,
+			uint256 _ownerLatestUnstakeRequestLockTime
         )
     {
         baseInfo.poolAddress = address(this);
@@ -458,6 +471,13 @@ contract StakingPool is AccessControlUpgradeable {
         _pendingShares[0] = pendingShares[0];
         _pendingShares[1] = pendingShares[1];
         _pendingShares[2] = pendingShares[2];
+
+		_ownerStakedKeys = stakedKeysOfOwner[poolOwner].length;
+		_ownerRequestedUnstakeKeyAmount = userRequestedUnstakeKeyAmount[poolOwner];
+
+		if (_ownerStakedKeys == _ownerRequestedUnstakeKeyAmount && _ownerRequestedUnstakeKeyAmount > 0) {
+			_ownerLatestUnstakeRequestLockTime = unstakeRequests[poolOwner][unstakeRequests[poolOwner].length - 1].lockTime;
+		}
     }
 
     function getUserPoolData(
@@ -479,10 +499,7 @@ contract StakingPool is AccessControlUpgradeable {
         uint256 claimAmountStakedBucket = esXaiStakeBucket
             .withdrawableDividendOf(user);
 
-        (
-            uint256 claimAmount,
-            uint256 ownerAmount
-        ) = _getUndistributedClaimAmount(user);
+        (, , uint256 claimAmount, uint256 ownerAmount) = _getUndistributedClaimAmount(user);
 
         userClaimAmount =
             claimAmountKeyBucket +

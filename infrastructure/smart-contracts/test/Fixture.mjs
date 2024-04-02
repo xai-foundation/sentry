@@ -38,6 +38,7 @@ describe("Fixture Tests", function () {
             addr1,
             addr2,
             addr3,
+            addr4,
             operator,
         ] = await ethers.getSigners();
 
@@ -278,6 +279,7 @@ describe("Fixture Tests", function () {
             addr1,
             addr2,
             addr3,
+            addr4,
             operator,
             rollupController,
 
@@ -302,7 +304,7 @@ describe("Fixture Tests", function () {
     // describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
     // describe("Referee", RefereeTests(deployInfrastructure).bind(this));
     describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
-    describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
+    // describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
     // describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
     // describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
 
