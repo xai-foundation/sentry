@@ -23,6 +23,7 @@ import {ethers} from "ethers";
 import {BiLoaderAlt} from "react-icons/bi";
 import {useGetWalletBalance} from "@/hooks/useGetWalletBalance";
 import {useGetSingleWalletBalance} from "@/hooks/useGetSingleWalletBalance";
+import log from "electron-log";
 
 interface HasKeysProps {
 	combinedOwners: string[],
@@ -213,10 +214,10 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					}, 1500);
 				})
 				.catch(err => {
-					console.error('Unable to copy to clipboard: ', err);
+					log.error('Unable to copy to clipboard: ', err);
 				});
 		} else {
-			console.error('Clipboard API not available, unable to copy to clipboard');
+			log.error('Clipboard API not available, unable to copy to clipboard');
 		}
 	}
 

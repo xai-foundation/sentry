@@ -6,6 +6,7 @@ import * as Sentry from "@sentry/react";
 import {HttpClient} from "@sentry/integrations";
 import "./index.css";
 import {createRoutesFromChildren, matchRoutes, useLocation, useNavigationType} from "react-router-dom";
+import log from "electron-log";
 
 const rootElement = document.getElementById('root')!
 
@@ -55,5 +56,5 @@ postMessage({payload: 'removeLoading'}, '*')
 
 // Use contextBridge
 window.ipcRenderer.on('main-process-message', (_event, message) => {
-	console.log(message)
+	log.info(message)
 })

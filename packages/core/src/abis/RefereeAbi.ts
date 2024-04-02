@@ -1,1253 +1,1639 @@
 export const RefereeAbi = [
   {
-    "type": "event",
     "anonymous": false,
-    "name": "Approval",
     "inputs": [
       {
-        "type": "address",
+        "indexed": true,
+        "internalType": "address",
         "name": "owner",
-        "indexed": true
+        "type": "address"
       },
       {
-        "type": "address",
+        "indexed": true,
+        "internalType": "address",
         "name": "operator",
-        "indexed": true
+        "type": "address"
       },
       {
-        "type": "bool",
+        "indexed": false,
+        "internalType": "bool",
         "name": "approved",
-        "indexed": false
+        "type": "bool"
       }
-    ]
+    ],
+    "name": "Approval",
+    "type": "event"
   },
   {
-    "type": "event",
     "anonymous": false,
-    "name": "AssertionCheckingToggled",
     "inputs": [
       {
-        "type": "bool",
+        "indexed": false,
+        "internalType": "bool",
         "name": "newState",
-        "indexed": false
+        "type": "bool"
       }
-    ]
+    ],
+    "name": "AssertionCheckingToggled",
+    "type": "event"
   },
   {
-    "type": "event",
     "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "challengeId",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "nodeLicenseId",
+        "type": "uint256"
+      }
+    ],
     "name": "AssertionSubmitted",
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "challengeId",
-        "indexed": true
-      },
-      {
-        "type": "uint256",
-        "name": "nodeLicenseId",
-        "indexed": true
-      }
-    ]
+    "type": "event"
   },
   {
-    "type": "event",
     "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "challengeNumber",
+        "type": "uint256"
+      }
+    ],
     "name": "ChallengeClosed",
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "challengeNumber",
-        "indexed": true
-      }
-    ]
+    "type": "event"
   },
   {
-    "type": "event",
     "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "challengeId",
+        "type": "uint256"
+      }
+    ],
     "name": "ChallengeExpired",
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "challengeId",
-        "indexed": true
-      }
-    ]
+    "type": "event"
   },
   {
-    "type": "event",
     "anonymous": false,
-    "name": "ChallengeSubmitted",
     "inputs": [
       {
-        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256",
         "name": "challengeNumber",
-        "indexed": true
+        "type": "uint256"
       }
-    ]
+    ],
+    "name": "ChallengeSubmitted",
+    "type": "event"
   },
   {
-    "type": "event",
     "anonymous": false,
-    "name": "ChallengerPublicKeyChanged",
     "inputs": [
       {
-        "type": "bytes",
+        "indexed": false,
+        "internalType": "bytes",
         "name": "newChallengerPublicKey",
-        "indexed": false
+        "type": "bytes"
       }
-    ]
+    ],
+    "name": "ChallengerPublicKeyChanged",
+    "type": "event"
   },
   {
-    "type": "event",
     "anonymous": false,
-    "name": "Initialized",
     "inputs": [
       {
-        "type": "uint8",
+        "indexed": false,
+        "internalType": "uint8",
         "name": "version",
-        "indexed": false
+        "type": "uint8"
       }
-    ]
+    ],
+    "name": "Initialized",
+    "type": "event"
   },
   {
-    "type": "event",
     "anonymous": false,
-    "name": "InvalidSubmission",
     "inputs": [
       {
-        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256",
         "name": "challengeId",
-        "indexed": true
+        "type": "uint256"
       },
       {
-        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256",
         "name": "nodeLicenseId",
-        "indexed": false
+        "type": "uint256"
       }
-    ]
+    ],
+    "name": "InvalidSubmission",
+    "type": "event"
   },
   {
-    "type": "event",
     "anonymous": false,
-    "name": "KycStatusChanged",
     "inputs": [
       {
-        "type": "address",
+        "indexed": true,
+        "internalType": "address",
         "name": "wallet",
-        "indexed": true
+        "type": "address"
       },
       {
-        "type": "bool",
+        "indexed": false,
+        "internalType": "bool",
         "name": "isKycApproved",
-        "indexed": false
+        "type": "bool"
       }
-    ]
+    ],
+    "name": "KycStatusChanged",
+    "type": "event"
   },
   {
-    "type": "event",
     "anonymous": false,
-    "name": "NodeLicenseAddressChanged",
     "inputs": [
       {
-        "type": "address",
+        "indexed": false,
+        "internalType": "address",
         "name": "newNodeLicenseAddress",
-        "indexed": false
+        "type": "address"
       }
-    ]
+    ],
+    "name": "NodeLicenseAddressChanged",
+    "type": "event"
   },
   {
-    "type": "event",
     "anonymous": false,
-    "name": "RewardsClaimed",
     "inputs": [
       {
-        "type": "uint256",
+        "indexed": true,
+        "internalType": "uint256",
         "name": "challengeId",
-        "indexed": true
+        "type": "uint256"
       },
       {
-        "type": "uint256",
+        "indexed": false,
+        "internalType": "uint256",
         "name": "amount",
-        "indexed": false
+        "type": "uint256"
       }
-    ]
+    ],
+    "name": "RewardsClaimed",
+    "type": "event"
   },
   {
-    "type": "event",
     "anonymous": false,
-    "name": "RoleAdminChanged",
     "inputs": [
       {
-        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32",
         "name": "role",
-        "indexed": true
+        "type": "bytes32"
       },
       {
-        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32",
         "name": "previousAdminRole",
-        "indexed": true
+        "type": "bytes32"
       },
       {
-        "type": "bytes32",
+        "indexed": true,
+        "internalType": "bytes32",
         "name": "newAdminRole",
-        "indexed": true
+        "type": "bytes32"
       }
-    ]
+    ],
+    "name": "RoleAdminChanged",
+    "type": "event"
   },
   {
-    "type": "event",
     "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
     "name": "RoleGranted",
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role",
-        "indexed": true
-      },
-      {
-        "type": "address",
-        "name": "account",
-        "indexed": true
-      },
-      {
-        "type": "address",
-        "name": "sender",
-        "indexed": true
-      }
-    ]
+    "type": "event"
   },
   {
-    "type": "event",
     "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      }
+    ],
     "name": "RoleRevoked",
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role",
-        "indexed": true
-      },
-      {
-        "type": "address",
-        "name": "account",
-        "indexed": true
-      },
-      {
-        "type": "address",
-        "name": "sender",
-        "indexed": true
-      }
-    ]
+    "type": "event"
   },
   {
-    "type": "event",
     "anonymous": false,
-    "name": "RollupAddressChanged",
     "inputs": [
       {
-        "type": "address",
+        "indexed": false,
+        "internalType": "address",
         "name": "newRollupAddress",
-        "indexed": false
+        "type": "address"
       }
-    ]
+    ],
+    "name": "RollupAddressChanged",
+    "type": "event"
   },
   {
-    "type": "function",
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "totalStaked",
+        "type": "uint256"
+      }
+    ],
+    "name": "StakedV1",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [],
+    "name": "StakingEnabled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "totalStaked",
+        "type": "uint256"
+      }
+    ],
+    "name": "UnstakeV1",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "prevAmount",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "UpdateMaxStakeAmount",
+    "type": "event"
+  },
+  {
+    "inputs": [],
     "name": "CHALLENGER_ROLE",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
     "outputs": [
       {
-        "type": "bytes32",
-        "name": ""
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
     "outputs": [
       {
-        "type": "bytes32",
-        "name": ""
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [],
     "name": "KYC_ADMIN_ROLE",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
     "outputs": [
       {
-        "type": "bytes32",
-        "name": ""
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "wallet",
+        "type": "address"
+      }
+    ],
     "name": "addKycWallet",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "wallet"
-      }
-    ],
-    "outputs": []
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "newThreshold",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "newBoostFactor",
+        "type": "uint256"
+      }
+    ],
+    "name": "addStakingTier",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "calculateChallengeEmissionAndTier",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
     "outputs": [
       {
-        "type": "uint256",
-        "name": ""
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       },
       {
-        "type": "uint256",
-        "name": ""
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [],
     "name": "challengeCounter",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
     "outputs": [
       {
-        "type": "uint256",
-        "name": ""
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [],
     "name": "challengerPublicKey",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
     "outputs": [
       {
-        "type": "bytes",
-        "name": ""
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "name": "challenges",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ],
     "outputs": [
       {
-        "type": "bool",
-        "name": "openForSubmissions"
+        "internalType": "bool",
+        "name": "openForSubmissions",
+        "type": "bool"
       },
       {
-        "type": "bool",
-        "name": "expiredForRewarding"
+        "internalType": "bool",
+        "name": "expiredForRewarding",
+        "type": "bool"
       },
       {
-        "type": "uint64",
-        "name": "assertionId"
+        "internalType": "uint64",
+        "name": "assertionId",
+        "type": "uint64"
       },
       {
-        "type": "bytes32",
-        "name": "assertionStateRootOrConfirmData"
+        "internalType": "bytes32",
+        "name": "assertionStateRootOrConfirmData",
+        "type": "bytes32"
       },
       {
-        "type": "uint64",
-        "name": "assertionTimestamp"
+        "internalType": "uint64",
+        "name": "assertionTimestamp",
+        "type": "uint64"
       },
       {
-        "type": "bytes",
-        "name": "challengerSignedHash"
+        "internalType": "bytes",
+        "name": "challengerSignedHash",
+        "type": "bytes"
       },
       {
-        "type": "bytes",
-        "name": "activeChallengerPublicKey"
+        "internalType": "bytes",
+        "name": "activeChallengerPublicKey",
+        "type": "bytes"
       },
       {
-        "type": "address",
-        "name": "rollupUsed"
+        "internalType": "address",
+        "name": "rollupUsed",
+        "type": "address"
       },
       {
-        "type": "uint256",
-        "name": "createdTimestamp"
+        "internalType": "uint256",
+        "name": "createdTimestamp",
+        "type": "uint256"
       },
       {
-        "type": "uint256",
-        "name": "totalSupplyOfNodesAtChallengeStart"
+        "internalType": "uint256",
+        "name": "totalSupplyOfNodesAtChallengeStart",
+        "type": "uint256"
       },
       {
-        "type": "uint256",
-        "name": "rewardAmountForClaimers"
+        "internalType": "uint256",
+        "name": "rewardAmountForClaimers",
+        "type": "uint256"
       },
       {
-        "type": "uint256",
-        "name": "amountForGasSubsidy"
+        "internalType": "uint256",
+        "name": "amountForGasSubsidy",
+        "type": "uint256"
       },
       {
-        "type": "uint256",
-        "name": "numberOfEligibleClaimers"
+        "internalType": "uint256",
+        "name": "numberOfEligibleClaimers",
+        "type": "uint256"
       },
       {
-        "type": "uint256",
-        "name": "amountClaimedByClaimers"
+        "internalType": "uint256",
+        "name": "amountClaimedByClaimers",
+        "type": "uint256"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_nodeLicenseId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_challengeId",
+        "type": "uint256"
+      }
+    ],
     "name": "claimReward",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "_nodeLicenseId"
-      },
-      {
-        "type": "uint256",
-        "name": "_challengeId"
-      }
-    ],
-    "outputs": []
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_nodeLicenseId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_challengeId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_boostFactor",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_confirmData",
+        "type": "bytes"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_challengerSignedHash",
+        "type": "bytes"
+      }
+    ],
     "name": "createAssertionHashAndCheckPayout",
-    "constant": true,
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
     "stateMutability": "pure",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "_nodeLicenseId"
-      },
-      {
-        "type": "uint256",
-        "name": "_challengeId"
-      },
-      {
-        "type": "bytes",
-        "name": "_confirmData"
-      },
-      {
-        "type": "bytes",
-        "name": "_challengerSignedHash"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bool",
-        "name": ""
-      },
-      {
-        "type": "bytes32",
-        "name": ""
-      }
-    ]
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [],
+    "name": "enableStaking",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "esXaiAddress",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
     "outputs": [
       {
-        "type": "address",
-        "name": ""
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_challengeId",
+        "type": "uint256"
+      }
+    ],
     "name": "expireChallengeRewards",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "_challengeId"
-      }
-    ],
-    "outputs": []
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [],
     "name": "gasSubsidyRecipient",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
     "outputs": [
       {
-        "type": "address",
-        "name": ""
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "stakedAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "getBoostFactor",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_nodeLicenseId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getBoostFactorForKeyId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "staker",
+        "type": "address"
+      }
+    ],
+    "name": "getBoostFactorForStaker",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_challengeId",
+        "type": "uint256"
+      }
+    ],
     "name": "getChallenge",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "_challengeId"
-      }
-    ],
     "outputs": [
       {
-        "type": "tuple",
-        "name": "",
         "components": [
           {
-            "type": "bool",
-            "name": "openForSubmissions"
+            "internalType": "bool",
+            "name": "openForSubmissions",
+            "type": "bool"
           },
           {
-            "type": "bool",
-            "name": "expiredForRewarding"
+            "internalType": "bool",
+            "name": "expiredForRewarding",
+            "type": "bool"
           },
           {
-            "type": "uint64",
-            "name": "assertionId"
+            "internalType": "uint64",
+            "name": "assertionId",
+            "type": "uint64"
           },
           {
-            "type": "bytes32",
-            "name": "assertionStateRootOrConfirmData"
+            "internalType": "bytes32",
+            "name": "assertionStateRootOrConfirmData",
+            "type": "bytes32"
           },
           {
-            "type": "uint64",
-            "name": "assertionTimestamp"
+            "internalType": "uint64",
+            "name": "assertionTimestamp",
+            "type": "uint64"
           },
           {
-            "type": "bytes",
-            "name": "challengerSignedHash"
+            "internalType": "bytes",
+            "name": "challengerSignedHash",
+            "type": "bytes"
           },
           {
-            "type": "bytes",
-            "name": "activeChallengerPublicKey"
+            "internalType": "bytes",
+            "name": "activeChallengerPublicKey",
+            "type": "bytes"
           },
           {
-            "type": "address",
-            "name": "rollupUsed"
+            "internalType": "address",
+            "name": "rollupUsed",
+            "type": "address"
           },
           {
-            "type": "uint256",
-            "name": "createdTimestamp"
+            "internalType": "uint256",
+            "name": "createdTimestamp",
+            "type": "uint256"
           },
           {
-            "type": "uint256",
-            "name": "totalSupplyOfNodesAtChallengeStart"
+            "internalType": "uint256",
+            "name": "totalSupplyOfNodesAtChallengeStart",
+            "type": "uint256"
           },
           {
-            "type": "uint256",
-            "name": "rewardAmountForClaimers"
+            "internalType": "uint256",
+            "name": "rewardAmountForClaimers",
+            "type": "uint256"
           },
           {
-            "type": "uint256",
-            "name": "amountForGasSubsidy"
+            "internalType": "uint256",
+            "name": "amountForGasSubsidy",
+            "type": "uint256"
           },
           {
-            "type": "uint256",
-            "name": "numberOfEligibleClaimers"
+            "internalType": "uint256",
+            "name": "numberOfEligibleClaimers",
+            "type": "uint256"
           },
           {
-            "type": "uint256",
-            "name": "amountClaimedByClaimers"
+            "internalType": "uint256",
+            "name": "amountClaimedByClaimers",
+            "type": "uint256"
           }
-        ]
+        ],
+        "internalType": "struct Referee2.Challenge",
+        "name": "",
+        "type": "tuple"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [],
     "name": "getCombinedTotalSupply",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
     "outputs": [
       {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getKycWalletAtIndex",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "index"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "address",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getKycWalletCount",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getOperatorAtIndex",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "owner"
-      },
-      {
-        "type": "uint256",
-        "name": "index"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "address",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getOperatorCount",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "owner"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getOwnerCountForOperator",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "operator"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getOwnerForOperatorAtIndex",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "operator"
-      },
-      {
-        "type": "uint256",
-        "name": "index"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "address",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getRoleAdmin",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bytes32",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getRoleMember",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role"
-      },
-      {
-        "type": "uint256",
-        "name": "index"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "address",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getRoleMemberCount",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getSubmissionsForChallenges",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256[]",
-        "name": "_challengeIds"
-      },
-      {
-        "type": "uint256",
-        "name": "_nodeLicenseId"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "tuple[]",
+        "internalType": "uint256",
         "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "getKycWalletAtIndex",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getKycWalletCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "numLicenses",
+        "type": "uint256"
+      }
+    ],
+    "name": "getMaxStakeAmount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "getOperatorAtIndex",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
+    "name": "getOperatorCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      }
+    ],
+    "name": "getOwnerCountForOperator",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "getOwnerForOperatorAtIndex",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getRoleAdmin",
+    "outputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "getRoleMember",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      }
+    ],
+    "name": "getRoleMemberCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256[]",
+        "name": "_challengeIds",
+        "type": "uint256[]"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_nodeLicenseId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getSubmissionsForChallenges",
+    "outputs": [
+      {
         "components": [
           {
-            "type": "bool",
-            "name": "submitted"
+            "internalType": "bool",
+            "name": "submitted",
+            "type": "bool"
           },
           {
-            "type": "bool",
-            "name": "claimed"
+            "internalType": "bool",
+            "name": "claimed",
+            "type": "bool"
           },
           {
-            "type": "bool",
-            "name": "eligibleForPayout"
+            "internalType": "bool",
+            "name": "eligibleForPayout",
+            "type": "bool"
           },
           {
-            "type": "uint256",
-            "name": "nodeLicenseId"
+            "internalType": "uint256",
+            "name": "nodeLicenseId",
+            "type": "uint256"
           },
           {
-            "type": "bytes",
-            "name": "assertionStateRootOrConfirmData"
+            "internalType": "bytes",
+            "name": "assertionStateRootOrConfirmData",
+            "type": "bytes"
           }
-        ]
+        ],
+        "internalType": "struct Referee2.Submission[]",
+        "name": "",
+        "type": "tuple[]"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      }
+    ],
     "name": "getTotalClaims",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "owner"
-      }
-    ],
     "outputs": [
       {
-        "type": "uint256",
-        "name": ""
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
     "name": "grantRole",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role"
-      },
-      {
-        "type": "address",
-        "name": "account"
-      }
-    ],
-    "outputs": []
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
     "name": "hasRole",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role"
-      },
-      {
-        "type": "address",
-        "name": "account"
-      }
-    ],
     "outputs": [
       {
-        "type": "bool",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "initialize",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "_esXaiAddress"
-      },
-      {
-        "type": "address",
-        "name": "_xaiAddress"
-      },
-      {
-        "type": "address",
-        "name": "_gasSubsidyAddress"
-      },
-      {
-        "type": "uint256",
-        "name": "gasSubsidyPercentage_"
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
-    "outputs": []
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "owner",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      }
+    ],
     "name": "isApprovedForOperator",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "owner"
-      },
-      {
-        "type": "address",
-        "name": "operator"
-      }
-    ],
     "outputs": [
       {
-        "type": "bool",
-        "name": ""
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [],
     "name": "isCheckingAssertions",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
     "outputs": [
       {
-        "type": "bool",
-        "name": ""
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "wallet",
+        "type": "address"
+      }
+    ],
     "name": "isKycApproved",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "wallet"
-      }
-    ],
     "outputs": [
       {
-        "type": "bool",
-        "name": ""
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [],
+    "name": "maxStakeAmountPerLicense",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "nodeLicenseAddress",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
     "outputs": [
       {
-        "type": "address",
-        "name": ""
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "wallet",
+        "type": "address"
+      }
+    ],
     "name": "removeKycWallet",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "wallet"
-      }
-    ],
-    "outputs": []
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      }
+    ],
+    "name": "removeStakingTier",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
     "name": "renounceRole",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role"
-      },
-      {
-        "type": "address",
-        "name": "account"
-      }
-    ],
-    "outputs": []
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "role",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "address",
+        "name": "account",
+        "type": "address"
+      }
+    ],
     "name": "revokeRole",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role"
-      },
-      {
-        "type": "address",
-        "name": "account"
-      }
-    ],
-    "outputs": []
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [],
     "name": "rollupAddress",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
     "outputs": [
       {
-        "type": "address",
-        "name": ""
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "",
+        "type": "bytes32"
+      }
+    ],
     "name": "rollupAssertionTracker",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": ""
-      }
-    ],
     "outputs": [
       {
-        "type": "bool",
-        "name": ""
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "operator",
+        "type": "address"
+      },
+      {
+        "internalType": "bool",
+        "name": "approved",
+        "type": "bool"
+      }
+    ],
     "name": "setApprovalForOperator",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "operator"
-      },
-      {
-        "type": "bool",
-        "name": "approved"
-      }
-    ],
-    "outputs": []
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "_challengerPublicKey",
+        "type": "bytes"
+      }
+    ],
     "name": "setChallengerPublicKey",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes",
-        "name": "_challengerPublicKey"
-      }
-    ],
-    "outputs": []
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_nodeLicenseAddress",
+        "type": "address"
+      }
+    ],
     "name": "setNodeLicenseAddress",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "_nodeLicenseAddress"
-      }
-    ],
-    "outputs": []
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_rollupAddress",
+        "type": "address"
+      }
+    ],
     "name": "setRollupAddress",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "_rollupAddress"
-      }
-    ],
-    "outputs": []
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "stake",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "stakeAmountBoostFactors",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "stakeAmountTierThresholds",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "name": "stakedAmounts",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stakingEnabled",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
     "name": "submissions",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      },
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ],
     "outputs": [
       {
-        "type": "bool",
-        "name": "submitted"
+        "internalType": "bool",
+        "name": "submitted",
+        "type": "bool"
       },
       {
-        "type": "bool",
-        "name": "claimed"
+        "internalType": "bool",
+        "name": "claimed",
+        "type": "bool"
       },
       {
-        "type": "bool",
-        "name": "eligibleForPayout"
+        "internalType": "bool",
+        "name": "eligibleForPayout",
+        "type": "bool"
       },
       {
-        "type": "uint256",
-        "name": "nodeLicenseId"
+        "internalType": "uint256",
+        "name": "nodeLicenseId",
+        "type": "uint256"
       },
       {
-        "type": "bytes",
-        "name": "assertionStateRootOrConfirmData"
+        "internalType": "bytes",
+        "name": "assertionStateRootOrConfirmData",
+        "type": "bytes"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_nodeLicenseId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_challengeId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_confirmData",
+        "type": "bytes"
+      }
+    ],
     "name": "submitAssertionToChallenge",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "_nodeLicenseId"
-      },
-      {
-        "type": "uint256",
-        "name": "_challengeId"
-      },
-      {
-        "type": "bytes",
-        "name": "_confirmData"
-      }
-    ],
-    "outputs": []
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "uint64",
+        "name": "_assertionId",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "_predecessorAssertionId",
+        "type": "uint64"
+      },
+      {
+        "internalType": "bytes32",
+        "name": "_confirmData",
+        "type": "bytes32"
+      },
+      {
+        "internalType": "uint64",
+        "name": "_assertionTimestamp",
+        "type": "uint64"
+      },
+      {
+        "internalType": "bytes",
+        "name": "_challengerSignedHash",
+        "type": "bytes"
+      }
+    ],
     "name": "submitChallenge",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint64",
-        "name": "_assertionId"
-      },
-      {
-        "type": "uint64",
-        "name": "_predecessorAssertionId"
-      },
-      {
-        "type": "bytes32",
-        "name": "_confirmData"
-      },
-      {
-        "type": "uint64",
-        "name": "_assertionTimestamp"
-      },
-      {
-        "type": "bytes",
-        "name": "_challengerSignedHash"
-      }
-    ],
-    "outputs": []
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
   },
   {
-    "type": "function",
+    "inputs": [
+      {
+        "internalType": "bytes4",
+        "name": "interfaceId",
+        "type": "bytes4"
+      }
+    ],
     "name": "supportsInterface",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
+    "outputs": [
       {
-        "type": "bytes4",
-        "name": "interfaceId"
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
       }
     ],
-    "outputs": [
-      {
-        "type": "bool",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "toggleAssertionChecking",
-    "constant": false,
-    "payable": false,
-    "inputs": [],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "xaiAddress",
-    "constant": true,
     "stateMutability": "view",
-    "payable": false,
+    "type": "function"
+  },
+  {
     "inputs": [],
+    "name": "toggleAssertionChecking",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
+      }
+    ],
+    "name": "unstake",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "newAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateMaxStakePerLicense",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "index",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "newThreshold",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "newBoostFactor",
+        "type": "uint256"
+      }
+    ],
+    "name": "updateStakingTier",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "xaiAddress",
     "outputs": [
       {
-        "type": "address",
-        "name": ""
+        "internalType": "address",
+        "name": "",
+        "type": "address"
       }
-    ]
+    ],
+    "stateMutability": "view",
+    "type": "function"
   }
 ];

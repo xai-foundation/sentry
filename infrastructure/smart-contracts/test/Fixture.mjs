@@ -9,6 +9,7 @@ import { RefereeTests } from "./Referee.mjs";
 import { esXaiTests } from "./esXai.mjs";
 import { GasSubsidyTests } from "./GasSubsidy.mjs";
 import { XaiGaslessClaimTests } from "./XaiGaslessClaim.mjs";
+import {CNYAirDropTests} from "./CNYAirDrop.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -46,6 +47,11 @@ describe("Fixture Tests", function () {
         const EsXai = await ethers.getContractFactory("esXai");
         const esXai = await upgrades.deployProxy(EsXai, [await xai.getAddress()], { deployer: deployer });
         await esXai.waitForDeployment();
+        
+        //Upgrade esXai
+        const EsXai2 = await ethers.getContractFactory("esXai2");
+        const esXai2 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai2, { call: { fn: "initialize", args: [(await deployer.getAddress()), BigInt(500)] } });
+        await esXai2.waitForDeployment();
 
         // Set esXai on Xai
         await xai.setEsXaiAddress(await esXai.getAddress());
@@ -60,6 +66,21 @@ describe("Fixture Tests", function () {
         const gasSubsidyPercentage = BigInt(15);
         const referee = await upgrades.deployProxy(Referee, [await esXai.getAddress(), await xai.getAddress(), await gasSubsidy.getAddress(), gasSubsidyPercentage], { deployer: deployer });
         await referee.waitForDeployment();
+        //Upgrade Referee
+        const Referee2 = await ethers.getContractFactory("Referee2");
+        const referee2 = await upgrades.upgradeProxy((await referee.getAddress()), Referee2, { call: { fn: "initialize", args: [] } });
+        await referee2.waitForDeployment();
+        await referee2.enableStaking();
+                
+        const Referee3 = await ethers.getContractFactory("Referee3");
+        const referee3 = await upgrades.upgradeProxy((await referee.getAddress()), Referee3, { call: { fn: "initialize", args: [] } });
+        await referee3.waitForDeployment();
+        await referee3.enableStaking();
+
+        const Referee4 = await ethers.getContractFactory("Referee4");
+        const referee4 = await upgrades.upgradeProxy((await referee.getAddress()), Referee4);
+        await referee4.waitForDeployment();
+        await referee4.enableStaking();
 
         // Set Rollup Address
         const rollupAddress = config.rollupAddress;
@@ -104,6 +125,7 @@ describe("Fixture Tests", function () {
         await esXai.grantRole(esXaiMinterRole, await esXaiMinter.getAddress());
         await esXai.grantRole(esXaiMinterRole, await referee.getAddress());
         await esXai.grantRole(esXaiMinterRole, await xai.getAddress());
+        await esXai.addToWhitelist(await referee.getAddress());
 
         // Setup Node License Roles 
         const nodeLicenseAdminRole = await nodeLicense.DEFAULT_ADMIN_ROLE();
@@ -190,20 +212,21 @@ describe("Fixture Tests", function () {
             secretKeyHex,
             publicKeyHex: "0x" + publicKeyHex,
 
-            referee,
+            referee: referee4,
             nodeLicense,
             gasSubsidy,
-            esXai,
+            esXai: esXai2,
             xai,
             rollupContract
         };
     }
 
-    describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
+    // describe("CNY 2024", CNYAirDropTests.bind(this));
+    // describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
     // describe("Xai", XaiTests(deployInfrastructure).bind(this));
     // describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
     // describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
-    // describe("Referee", RefereeTests(deployInfrastructure).bind(this));
+    describe("Referee", RefereeTests(deployInfrastructure).bind(this));
     // describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
     // describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
 

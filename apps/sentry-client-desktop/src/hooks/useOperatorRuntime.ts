@@ -3,6 +3,7 @@ import {useOperator} from "@/features/operator";
 import {atom, useAtom} from "jotai";
 import {useEffect, useState} from "react";
 import {useStorage} from "@/features/storage";
+import log from "electron-log";
 
 function onAssertionMissMatch(publicNodeData: PublicNodeBucketInformation, challenge: Challenge, message: string) {
 	const errorMessage = `The comparison between public node and challenge failed:\n` +
@@ -36,16 +37,20 @@ export function useOperatorRuntime() {
 		}
 	}, [signer]);
 
-	function writeLog(log: string) {
-		console.info(log); // for debugging purposes
-		const _logs = runtimeLogs.concat([]);
-		if (_logs.length === 1000) {
-			_logs.shift();
-		}
+    function writeLog(message: string) {
+        if (message.startsWith("Error")) {
+            log.error(message);
+        } else {
+            log.info(message);
+        }
+        const _logs = runtimeLogs.concat([]);
+        if (_logs.length === 1000) {
+            _logs.shift();
+        }
 
-		_logs.push(log);
-		setRuntimeLogs(_logs);
-	}
+        _logs.push(message);
+        setRuntimeLogs(_logs);
+    }
 
 	async function startRuntime() {
 		if (!sentryRunning && stop === undefined) {

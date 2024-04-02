@@ -8,6 +8,7 @@ import {useBalance} from "@/hooks/useBalance";
 import {recommendedFundingBalance} from "@/features/home/SentryWallet";
 import {getLatestChallenge} from "@sentry/core";
 import {ReactNode, useEffect, useState} from "react";
+import log from "electron-log";
 
 export function SentryNodeStatusCard() {
 	const {publicKey} = useOperator();
@@ -26,7 +27,7 @@ export function SentryNodeStatusCard() {
 					: <div>Error retrieving challenge data</div>
 				);
 			} catch (error) {
-				console.error('Error fetching latest challenge:', error);
+				log.error('Error fetching latest challenge:', error);
 				setTimeAgoString(<div>Error fetching latest challenge</div>);
 			}
 		};

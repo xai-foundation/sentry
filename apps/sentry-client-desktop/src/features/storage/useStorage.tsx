@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 import {atom, useAtom} from 'jotai';
+import log from "electron-log";
 
 const dataAtom = atom<IData | undefined>(undefined);
 
@@ -57,7 +58,7 @@ export function useStorage(): IUseStorageResponse {
 			await window.ipcRenderer.invoke('fs-writeFileSync', filePath, JSON.stringify(newData));
 			setData(newData);
 		} catch (error) {
-			console.error(error);
+			log.error(error);
 		} finally {
 			setLoading(false);
 		}
@@ -70,7 +71,7 @@ export function useStorage(): IUseStorageResponse {
 			await window.ipcRenderer.invoke('fs-unlinkSync', filePath);
 			setData(undefined);
 		} catch (error) {
-			console.error(error);
+			log.error(error);
 		} finally {
 			setLoading(false);
 		}
