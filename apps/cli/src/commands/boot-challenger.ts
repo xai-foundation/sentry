@@ -27,6 +27,7 @@ const INIT_PROMPTS: { [key in PromptBodyKey]: Vorpal.PromptObject } = {
 
 const NUM_ASSERTION_LISTENER_RETRIES: number = 3; //The number of restart attempts if the listener errors
 const NUM_CON_WS_ALLOWED_ERRORS: number = 10; //The number of consecutive WS error we allow before restarting the listener
+const SLACK_WEBHOOK_URL: string = "";
 
 // Prompt input cache
 let cachedSigner: {
@@ -103,12 +104,14 @@ const checkTimeSinceLastAssertion = async (lastAssertionTime: number, commandIns
 };
 
 const sendNotification = async (message: string, commandInstance: Vorpal.CommandInstance) => {
-    if (cachedWebhookUrl) {
-        try {
+    try {
+        if (cachedWebhookUrl) {
             await axios.post(cachedWebhookUrl, { text: message });
-        } catch (error) {
-            commandInstance.log(`[${new Date().toISOString()}] Failed to send notification request ${error && (error as Error).message ? (error as Error).message : error}`);
         }
+        await axios.post(SLACK_WEBHOOK_URL, { text: message });
+
+    } catch (error) {
+        commandInstance.log(`[${new Date().toISOString()}] Failed to send notification request ${error && (error as Error).message ? (error as Error).message : error}`);
     }
 }
 
@@ -138,13 +141,13 @@ const startListener = async (commandInstance: Vorpal.CommandInstance) => {
                     return;
                 }
 
-                if(errorCount != 0) {
+                if (errorCount != 0) {
                     //If the websocket just reconnected automatically we only want to try to re-post the last possibly missed challenge
-                    await processMissedAssertions(commandInstance).catch(() => {});
+                    await processMissedAssertions(commandInstance).catch(() => { });
                 }
 
                 errorCount = 0;
-                
+
                 try {
                     await onAssertionConfirmedCb(nodeNum, commandInstance);
                     currentNumberOfRetries = 0;
@@ -227,7 +230,20 @@ export function bootChallenger(cli: Vorpal) {
 
                 if (currentNumberOfRetries + 1 <= NUM_ASSERTION_LISTENER_RETRIES) {
                     await (new Promise((resolve) => {
-                        setTimeout(resolve, 3000);
+                        let timeoutDuration = 0; // Default immediate timeout
+
+                        if (currentNumberOfRetries == 0) {
+                            timeoutDuration = 0;
+                        } else if (currentNumberOfRetries == 1) {
+                            timeoutDuration = 300000; // 5 minutes in milliseconds
+                        } else {
+                            timeoutDuration = 900000; // 15 minutes in milliseconds
+                        }
+
+                        if (timeoutDuration > 0) {
+                            setTimeout(resolve, timeoutDuration);
+                        }
+
                     }))
                     commandInstance.log(`[${new Date().toISOString()}] Challenger restarting with ${NUM_ASSERTION_LISTENER_RETRIES - (currentNumberOfRetries + 1)} attempts left.`);
                     sendNotification(`Challenger restarting with ${NUM_ASSERTION_LISTENER_RETRIES - (currentNumberOfRetries + 1)} attempts left.`, commandInstance);
