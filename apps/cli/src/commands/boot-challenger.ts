@@ -25,9 +25,11 @@ const INIT_PROMPTS: { [key in PromptBodyKey]: Vorpal.PromptObject } = {
     }
 }
 
-const NUM_ASSERTION_LISTENER_RETRIES: number = 3; //The number of restart attempts if the listener errors
+const NUM_ASSERTION_LISTENER_RETRIES: number = 3 as const; //The number of restart attempts if the listener errors
 const NUM_CON_WS_ALLOWED_ERRORS: number = 10; //The number of consecutive WS error we allow before restarting the listener
-const SLACK_WEBHOOK_URL: string = "";
+
+//@dev This has to match NUM_ASSERTION_LISTENER_RETRIES
+const ASSERTION_LISTENER_RETRY_DELAYS: [number, number, number] = [30_000, 180_000, 600_000] as const; //Delays for auto restart the challenger, on the first error it will wait 30 seconds, then 3 minutes then 10 minutes before trying to restart.
 
 // Prompt input cache
 let cachedSigner: {
@@ -104,14 +106,12 @@ const checkTimeSinceLastAssertion = async (lastAssertionTime: number, commandIns
 };
 
 const sendNotification = async (message: string, commandInstance: Vorpal.CommandInstance) => {
-    try {
-        if (cachedWebhookUrl) {
-            await axios.post(cachedWebhookUrl, { text: message });
+    if (cachedWebhookUrl) {
+        try {
+            await axios.post(cachedWebhookUrl, { text: `@channel ${message}` });
+        } catch (error) {
+            commandInstance.log(`[${new Date().toISOString()}] Failed to send notification request ${error && (error as Error).message ? (error as Error).message : error}`);
         }
-        await axios.post(SLACK_WEBHOOK_URL, { text: message });
-
-    } catch (error) {
-        commandInstance.log(`[${new Date().toISOString()}] Failed to send notification request ${error && (error as Error).message ? (error as Error).message : error}`);
     }
 }
 
@@ -222,29 +222,21 @@ export function bootChallenger(cli: Vorpal) {
                     //TODO what should we do if this fails, restarting the cmd won't help, it will most probably fail again
                     commandInstance.log(`[${new Date().toISOString()}] Failed to handle missed assertions - ${(error as Error).message}`);
                     await sendNotification(`Failed to handle missed assertions - ${(error as Error).message}`, commandInstance);
-                    // return Promise.resolve();
                 }
 
                 commandInstance.log(`[${new Date().toISOString()}] The challenger is now listening for assertions...`);
                 await startListener(commandInstance);
 
                 if (currentNumberOfRetries + 1 <= NUM_ASSERTION_LISTENER_RETRIES) {
+                    const delayPerRetry = ASSERTION_LISTENER_RETRY_DELAYS[currentNumberOfRetries];
+                    commandInstance.log(`[${new Date().toISOString()}] Challenger restarting after ${delayPerRetry / 1000} seconds`);
+                    sendNotification(`Challenger restarting after ${delayPerRetry / 1000} seconds`, commandInstance);
+
+                    //Wait for delay per retry
                     await (new Promise((resolve) => {
-                        let timeoutDuration = 0; // Default immediate timeout
-
-                        if (currentNumberOfRetries == 0) {
-                            timeoutDuration = 0;
-                        } else if (currentNumberOfRetries == 1) {
-                            timeoutDuration = 300000; // 5 minutes in milliseconds
-                        } else {
-                            timeoutDuration = 900000; // 15 minutes in milliseconds
-                        }
-
-                        if (timeoutDuration > 0) {
-                            setTimeout(resolve, timeoutDuration);
-                        }
-
+                        setTimeout(resolve, delayPerRetry);
                     }))
+                    
                     commandInstance.log(`[${new Date().toISOString()}] Challenger restarting with ${NUM_ASSERTION_LISTENER_RETRIES - (currentNumberOfRetries + 1)} attempts left.`);
                     sendNotification(`Challenger restarting with ${NUM_ASSERTION_LISTENER_RETRIES - (currentNumberOfRetries + 1)} attempts left.`, commandInstance);
                 }
