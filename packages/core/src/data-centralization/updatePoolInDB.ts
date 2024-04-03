@@ -23,7 +23,7 @@ export async function updatePoolInDB(
     const maxStakedAmount = Number(baseInfo.keyCount) * maxStakePerLicense;
 
     const amountForTier = Math.min(Number(formatEther(baseInfo.totalStakedAmount.toString())), maxStakedAmount);
-    const tierIndex = await getTierIndexByStakedAmount(BigInt(amountForTier));
+    const tierIndex = await getTierIndexByStakedAmount(amountForTier);
 
     const pendingShares: number[] = poolInfo._pendingShares.map(p => Number(p) / POOL_SHARES_BASE);
 

@@ -1,5 +1,5 @@
 import { RefereeAbi, config, getProvider } from "../index.js";
-import { ethers } from 'ethers';
+import { ethers, formatEther } from 'ethers';
 
 /**
  * Get the current tier index by staked amount - in our databse the lowest tier is 0 = bronze.
@@ -8,16 +8,16 @@ import { ethers } from 'ethers';
  * @param stakedAmount - The amount staked in the pool
  * @returns - The index of the tier, 0 for bronze, 1 for silver, 2 for gold, 3 for platinum, 4 for diamond 
  */
-export async function getTierIndexByStakedAmount(stakedAmount: bigint): Promise<number> {
+export async function getTierIndexByStakedAmount(stakedAmount: number): Promise<number> {
     const provider = getProvider();
     const refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, provider);
 
     //We might want to cache the tiers and not fetch them on every pool update.
-    const tierThresholds: bigint[] = [
-        await refereeContract.stakeAmountTierThresholds(0n),
-        await refereeContract.stakeAmountTierThresholds(1n),
-        await refereeContract.stakeAmountTierThresholds(2n),
-        await refereeContract.stakeAmountTierThresholds(3n)
+    const tierThresholds: number[] = [
+        Number(formatEther(await refereeContract.stakeAmountTierThresholds(0n))),
+        Number(formatEther(await refereeContract.stakeAmountTierThresholds(1n))),
+        Number(formatEther(await refereeContract.stakeAmountTierThresholds(2n))),
+        Number(formatEther(await refereeContract.stakeAmountTierThresholds(3n)))
     ];
 
     for (let i = 0; i < tierThresholds.length; i++) {
