@@ -24,7 +24,8 @@ export let config = {
   "xaiRedEnvelope2024Address": "0x080C2e59e963959Bbe9Ea064d1bcBc881F380Ff2",
   "xaiRedEnvelope2024ImplementationAddress": "0xf26Af8313cB039A58b86c2Ab7aA5c540EcEEB70f",
   "poolFactoryAddress": "0x0",
-  "poolFactoryAddressImplementationAddress": "0x0"
+  "poolFactoryAddressImplementationAddress": "0x0",
+  "defaultNetworkName": "arbitrum"
 };
 
 export function setConfig(_config: any) { config = _config; }
