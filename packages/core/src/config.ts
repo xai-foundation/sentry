@@ -24,7 +24,8 @@ export let config = {
   "xaiRedEnvelope2024Address": "0x080C2e59e963959Bbe9Ea064d1bcBc881F380Ff2",
   "xaiRedEnvelope2024ImplementationAddress": "0xf26Af8313cB039A58b86c2Ab7aA5c540EcEEB70f",
   "poolFactoryAddress": "0x87Ae2373007C01FBCED0dCCe4a23CA3f17D1fA9A",
-  "poolFactoryAddressImplementationAddress": "0x87Ae2373007C01FBCED0dCCe4a23CA3f17D1fA9A"
+  "poolFactoryAddressImplementationAddress": "0x87Ae2373007C01FBCED0dCCe4a23CA3f17D1fA9A",
+  "defaultNetworkName": "arbitrumSepolia"
 };
 
 export function setConfig(_config: any) { config = _config; }
