@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
+import { useEffect, useRef, useState } from "react";
+import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import SearchBarComponent from "./SearchBarComponent";
 import AvailablePoolsTableComponent from "./AvailablePoolsTableComponent";
 import StakedPoolsTable from "./StakedPoolsTable";
@@ -15,26 +15,54 @@ import { useGetUserInteractedPools } from "@/app/hooks/hooks";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import { loadingNotification, updateNotification } from "../notifications/NotificationsComponent";
 import { getNetwork, getTotalClaimAmount, mapWeb3Error } from "@/services/web3.service";
+import { Id } from "react-toastify";
 
 export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPools }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { userPools, isLoading, totalClaimableAmount } = useGetUserInteractedPools();
 
-  const [transactionLoading, setTransactionLoading] = useState(false);
   const [searchValue, setSearchValue] = useState(searchParams.get("search") || "");
   const [currentPage, setCurrentPage] = useState(searchParams.get("page") ? Number(searchParams.get("page")) : 1);
   const [showTableKeys, setShowTableKeys] = useState(searchParams.get("showKeys") ? searchParams.get("showKeys") === "true" : false);
-  const [hideFullKeys, setHideFullKeys] = useState(searchParams.get("hideFullKeys") ? searchParams.get("hideFullKeys") === "true" : true);
+  const [hideFullKeys, setHideFullKeys] = useState(searchParams.get("hideFullKeys") ? searchParams.get("hideFullKeys") === "true" : false);
   const [hideFullEsXai, setHideFullEsXai] = useState(searchParams.get("hideFull") ? searchParams.get("hideFull") === "true" : true);
   const [currentTotalClaimableAmount, setCurrentTotalClaimableAmount] = useState<number>(totalClaimableAmount);
   const { address, chainId } = useAccount();
   const { switchChain } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
+  const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
+  const toastId = useRef<Id>();
+
+  // Substitute Timeouts with useWaitForTransaction
+  const { data, isError, isLoading: transactionLoading, isSuccess, status } = useWaitForTransactionReceipt({
+    hash: receipt,
+  });
 
   useEffect(() => {
     setCurrentTotalClaimableAmount(totalClaimableAmount);
   }, [isLoading, totalClaimableAmount]);
+
+  useEffect(() => {
+    if (isSuccess) {
+      updateNotification(
+        "Successfully claimed",
+        toastId.current as Id,
+        false,
+        receipt,
+        chainId
+      );
+
+      getTotalClaimAmount(getNetwork(chainId), userPools.map(p => p.address), address!)
+        .then(totalClaim => {
+          setCurrentTotalClaimableAmount(totalClaim);
+        });
+    }
+    if (isError) {
+      const error = mapWeb3Error(status);
+      updateNotification(error, toastId.current as Id, true);
+    }
+  }, [isSuccess, isError]);
 
   const onClaimAll = async () => {
     if (isLoading || transactionLoading) {
@@ -43,39 +71,20 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
 
     const poolsToClaim = userPools.filter(p => p.userClaimAmount && p.userClaimAmount > 0).map(p => p.address);
 
-    setTransactionLoading(true);
-    const loading = loadingNotification("Transaction pending...");
+    toastId.current = loadingNotification("Transaction pending...");
     try {
 
-      const receipt = await executeContractWrite(
+      setReceipt(await executeContractWrite(
         WriteFunctions.claimFromPools,
         [poolsToClaim.slice(0, 10)], //TODO test if this works for more than 10 pools in 1 transaction
         chainId,
         writeContractAsync,
         switchChain
-      );
-
-      setTimeout(async () => {
-        updateNotification(
-          "Successfully claimed",
-          loading,
-          false,
-          receipt,
-          chainId
-        );
-
-        getTotalClaimAmount(getNetwork(chainId), userPools.map(p => p.address), address!)
-          .then(totalClaim => {
-            setTransactionLoading(false);
-            setCurrentTotalClaimableAmount(totalClaim);
-          });
-
-      }, 3000);
+      ) as `0x${string}`);
 
     } catch (ex: any) {
       const error = mapWeb3Error(ex);
-      updateNotification(error, loading, true);
-      setTransactionLoading(false);
+      updateNotification(error, toastId.current as Id, true);
     }
   };
 
@@ -124,10 +133,10 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
         <MainTitle title={"Staking"} classNames="" />
 
         {address && <ClaimableRewardsComponent
-            disabled={isLoading || transactionLoading || currentTotalClaimableAmount === 0}
-            totalClaimAmount={currentTotalClaimableAmount}
-            onClick={onClaimAll}
-          />}
+          disabled={isLoading || transactionLoading || currentTotalClaimableAmount === 0}
+          totalClaimAmount={currentTotalClaimableAmount}
+          onClick={onClaimAll}
+        />}
 
       </div>
 

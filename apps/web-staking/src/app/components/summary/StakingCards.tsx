@@ -73,7 +73,6 @@ const StakingCards = ({
               title={"Pool capacity"}
               content={`${poolInfo?.maxStakedAmount} esXAI`}
             />
-            <PoolStakingInfoChild title={"esXAI rewards"} content={"5.6%"} />
           </div>
         </div>
       </PoolStakingInfo>
@@ -108,10 +107,6 @@ const StakingCards = ({
             <PoolStakingInfoChild
               title={"Pool capacity"}
               content={`${poolInfo?.maxKeyCount} keys`}
-            />
-            <PoolStakingInfoChild
-              title={"Key rewards"}
-              content={`${poolInfo?.keyBucketShare} esXAI`}
             />
           </div>
         </div>

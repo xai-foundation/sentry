@@ -1,8 +1,8 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
+import { useEffect, useRef, useState } from "react";
+import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
 import { PoolDetails } from "@/app/components/createPool/PoolDetailsComponent";
 import StakePoolKeyComponent from "@/app/components/createPool/StakePoolKeyComponent";
@@ -18,14 +18,21 @@ import {
 } from "@/services/web3.service";
 import { executeContractWrite, WriteFunctions } from "@/services/web3.writes";
 import { PoolInfo } from "@/types/Pool";
-import { sendUpdatePoolRequest } from "@/services/requestService";
+import { Id } from "react-toastify";
 
 export default function StakeForPoolComponent() {
   const router = useRouter();
   const { chainId, address } = useAccount();
   const { poolAddress, isStake } = useParams<{ poolAddress: string, isStake: string }>();
   const [poolInfo, setPoolInfo] = useState({} as PoolInfo);
-  const [transactionLoading, setTransactionLoading] = useState(false);
+  const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
+  const toastId = useRef<Id>()
+
+  // Substitute Timeouts with useWaitForTransaction
+  const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
+    hash: receipt,
+  });
+
   const poolDetails: PoolDetails = {
     logoUrl: poolInfo?.meta.logo,
     name: poolInfo?.meta.name,
@@ -50,77 +57,63 @@ export default function StakeForPoolComponent() {
       });
   }, [address, poolAddress, chainId]);
 
+  useEffect(() => {
+    if (isSuccess) {
+      updateNotification(
+        `${Boolean(isStake) ? "Successfully stakedKeys" : "Successfully unstakedKeys"}`,
+        toastId.current as Id,
+        false,
+        receipt,
+        chainId
+      );
+    }
+    if (isError) {
+      const error = mapWeb3Error(status);
+      updateNotification(error, toastId.current as Id, true);
+    }
+  }, [isSuccess, isError]);
+
   const onStakeKeys = async (numKeys: number) => {
-    setTransactionLoading(true);
-    const loading = loadingNotification("Transaction pending...");
+    toastId.current = loadingNotification("Transaction pending...");
     try {
       const keyIds = await getUnstakedKeysOfUser(
         getNetwork(chainId),
         address as string,
         Number(numKeys)
       );
-      const receipt = await executeContractWrite(
+      setReceipt(await executeContractWrite(
         WriteFunctions.stakeKeys,
         [poolAddress, keyIds],
         chainId,
         writeContractAsync,
         switchChain
-      );
+      ) as `0x${string}`);
 
-      setTimeout(async () => {
-        updateNotification(
-          "Successfully stakedKeys",
-          loading,
-          false,
-          receipt,
-          chainId
-        );
-
-        sendUpdatePoolRequest(poolAddress, chainId);
-        setTransactionLoading(false);
-        //router.refresh()
-      }, 3000);
     } catch (ex: any) {
       const error = mapWeb3Error(ex);
-      updateNotification(error, loading, true);
-      setTransactionLoading(false);
+      updateNotification(error, toastId.current, true);
     }
   };
 
   const onUnstakeKeys = async (numKeys: number) => {
-    setTransactionLoading(true);
-    const loading = loadingNotification("Transaction pending...");
+    toastId.current = loadingNotification("Transaction pending...");
     try {
       const keyIds = await getUnstakedKeysOfUser(
         getNetwork(chainId),
         address as string,
         Number(numKeys)
       );
-      const receipt = await executeContractWrite(
+      setReceipt(await executeContractWrite(
         WriteFunctions.stakeKeys,
         [poolAddress, keyIds],
         chainId,
         writeContractAsync,
         switchChain
-      );
+      ) as `0x${string}`);
 
-
-      setTimeout(async () => {
-        updateNotification(
-          "Successfully stakedKeys",
-          loading,
-          false,
-          receipt,
-          chainId
-        );
-        sendUpdatePoolRequest(poolAddress, chainId);
-        setTransactionLoading(false);
-        //router.refresh()
-      }, 3000);
     } catch (ex: any) {
       const error = mapWeb3Error(ex);
-      updateNotification(error, loading, true);
-      setTransactionLoading(false);
+      updateNotification(error, toastId.current as Id, true);
     }
   };
 
@@ -132,7 +125,7 @@ export default function StakeForPoolComponent() {
           poolDetailsValues={poolDetails}
           onBack={() => router.back()}
           address={address}
-          transactionLoading={transactionLoading}
+          transactionLoading={isLoading}
           stakeKey={Boolean(isStake)}
         />
       }

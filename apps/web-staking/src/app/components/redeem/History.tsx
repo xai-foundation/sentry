@@ -1,8 +1,8 @@
 "use client";
 
 import moment from "moment";
-import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
-import { useState } from "react";
+import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { useEffect, useRef, useState } from "react";
 import { Id } from "react-toastify";
 import { useDisclosure } from "@nextui-org/react"
 
@@ -109,59 +109,64 @@ export default function History({ redemptions, reloadRedemptions }: {
 	reloadRedemptions: () => void
 }) {
 	const { chainId } = useAccount();
-	const [transactionLoading, setTransactionLoading] = useState(false);
+	const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
+	const [isCancel, setIsCancel] = useState(false);
 
 	const { switchChain } = useSwitchChain();
 	const { writeContractAsync } = useWriteContract();
 
+	// Substitute Timeouts with useWaitForTransaction
+	const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
+		hash: receipt,
+	});
+
+	const toastId = useRef<Id>();
+
+	useEffect(() => {
+		if (isSuccess) {
+			updateNotification(isCancel ? 'Cancel successful' : `Claim successful`, toastId.current as Id, false, receipt, chainId);
+			reloadRedemptions();
+		}
+		if (isError) {
+			const error = mapWeb3Error(status);
+			updateNotification(error, toastId.current as Id, true);
+		}
+	}, [isSuccess, isError]);
+
 	const onClaim = async (redemption: RedemptionRequest) => {
-		setTransactionLoading(true);
-		const loading = loadingNotification("Transaction is pending...");
+		setIsCancel(false);
+		toastId.current = loadingNotification("Transaction is pending...");
 		try {
-			const receipt = await executeContractWrite(
+			setReceipt(await executeContractWrite(
 				WriteFunctions.completeRedemption,
 				[BigInt(redemption.index)],
 				chainId,
 				writeContractAsync,
 				switchChain
-			);
-			onSuccess(receipt, loading);
-			setTimeout(() => {
-				reloadRedemptions();
-			}, 3000)
+			) as `0x${string}`);
+
 		} catch (ex: any) {
 			const error = mapWeb3Error(ex);
-			updateNotification(error, loading, true);
-			setTransactionLoading(false);
+			updateNotification(error, toastId.current, true);
 		}
 	}
 
 	const onCancel = async (redemption: RedemptionRequest, onClose: () => void) => {
-		setTransactionLoading(true);
-		const loading = loadingNotification("Transaction is canceling...");
+		setIsCancel(true);
+		toastId.current = loadingNotification("Transaction is canceling...");
 		try {
-			const receipt = await executeContractWrite(
+			setReceipt(await executeContractWrite(
 				WriteFunctions.cancelRedemption,
 				[BigInt(redemption.index)],
 				chainId,
 				writeContractAsync,
 				switchChain
-			);
-			onSuccess(receipt, loading, 'Cancel successful');
-			setTimeout(() => {
-				onClose();
-				reloadRedemptions();
-			}, 3000);
+			) as `0x${string}`);
+			onClose();
 		} catch (ex: any) {
 			const error = mapWeb3Error(ex);
-			updateNotification(error, loading, true);
-			setTransactionLoading(false);
+			updateNotification(error, toastId.current as Id, true);
 		}
-	}
-
-	const onSuccess = async (receipt: string, loadingToast: Id, toastMsg?: string) => {
-		updateNotification(toastMsg ?? `Claim successful`, loadingToast, false, receipt, chainId);
-		setTransactionLoading(false);
 	}
 
 	return (
@@ -178,7 +183,7 @@ export default function History({ redemptions, reloadRedemptions }: {
 									onClaim={() => onClaim(r)}
 									onCancel={(onClose) => onCancel(r, onClose)}
 									claimable={true}
-									claimDisabled={transactionLoading}
+									claimDisabled={isLoading}
 									receivedAmount={r.receiveAmount}
 									redeemedAmount={r.redeemAmount}
 									receivedCurrency="XAI"

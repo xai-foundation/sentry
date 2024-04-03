@@ -4,10 +4,10 @@ import { Progress } from "@nextui-org/react";
 
 const PoolCapacity = ({ pool }: { pool: PoolInfo }) => {
   return (
-    <div className="px-5 pt-3 pb-5 w-full">
+    <div className="p-5 w-full border-t-1">
       <span className="text-graphiteGray font-medium ">Staking capacity</span>
-      <div className="grid grid-cols-2 gap-4 text-graphiteGray text-sm mt-3">
-        <div>
+      <div className="flex gap-4 justify-between text-graphiteGray text-sm mt-3">
+        <div className="w-full max-w-[50%]">
           <span>
             {formatCurrencyCompact.format(pool.totalStakedAmount)}/{formatCurrencyCompact.format(pool.maxStakedAmount)} esXAI
           </span>
@@ -21,7 +21,7 @@ const PoolCapacity = ({ pool }: { pool: PoolInfo }) => {
             }}
           />
         </div>
-        <div>
+        <div className="w-full max-w-[50%]">
           <span className="justify-self-start">
             {formatCurrencyNoDecimals.format(pool.keyCount)}/{formatCurrencyNoDecimals.format(pool.maxKeyCount)} keys
           </span>
@@ -31,7 +31,7 @@ const PoolCapacity = ({ pool }: { pool: PoolInfo }) => {
             aria-labelledby="progress"
             value={(pool.keyCount / pool.maxKeyCount) * 100 ?? 0}
             classNames={{
-              indicator: "bg-red",
+              indicator: "bg-red"
             }}
           />
         </div>

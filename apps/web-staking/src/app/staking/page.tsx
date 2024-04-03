@@ -15,7 +15,7 @@ export default async function Staking({ searchParams }: { searchParams: { page: 
 
   const searchName = searchParams.search || "";
   const hideFullEsXai = searchParams.hideFull ? searchParams.hideFull === "true" : true;
-  const hideFullKeys = searchParams.hideFullKeys ? searchParams.hideFullKeys === "true" : true;
+  const hideFullKeys = searchParams.hideFullKeys ? searchParams.hideFullKeys === "true" : false;
 
   let pagedPools: PagedPools;
   try {

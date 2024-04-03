@@ -1,7 +1,7 @@
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Id } from "react-toastify";
-import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
+import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
 import { PrimaryButton } from "@/app/components/buttons/ButtonsComponent";
 import { ExternalLinkComponent } from "@/app/components/links/LinkComponent";
@@ -21,6 +21,7 @@ import {
   mapWeb3Error,
   RedemptionRequest,
 } from "@/services/web3.service";
+import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 
 interface DashboardStakingInfoProps {
   totalStaked: number;
@@ -42,23 +43,20 @@ const DashboardStakingInfo = ({
   const calculatedClaimableRedemptions = claimable.reduce((acc, redemption) => {
     return (acc += redemption.receiveAmount);
   }, 0);
-  const [redemptionTransactionLoading, setRedemptionTransactionLoading] =
-    useState(false);
+
+  const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
 
   const { chainId } = useAccount();
   const { switchChain } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
   const router = useRouter();
 
-  const completeEsXaiRedemption = async (index: number) => {
-    return writeContractAsync({
-      address: getWeb3Instance(getNetwork(chainId))
-        .esXaiAddress as `0x${string}`,
-      abi: esXaiAbi,
-      functionName: "completeRedemption",
-      args: [BigInt(index)],
-    });
-  };
+  // Substitute Timeouts with useWaitForTransaction
+  const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
+    hash: receipt,
+  });
+
+  const toastId = useRef<Id>();
 
   const onClaimXai = async (redemption: RedemptionRequest) => {
     if (!chainId) {
@@ -68,31 +66,43 @@ const DashboardStakingInfo = ({
       switchChain({ chainId: ACTIVE_NETWORK_IDS[0] });
       return;
     }
-    let receipt;
-    setRedemptionTransactionLoading(true);
-    const loading = loadingNotification("Transaction is pending...");
+    toastId.current = loadingNotification("Transaction is pending...");
     try {
-      receipt = await completeEsXaiRedemption(redemption.index);
-      onSuccess(receipt, loading);
+      setReceipt(await executeContractWrite(
+        WriteFunctions.completeRedemption,
+        [
+          BigInt(redemption.index)
+        ],
+        chainId,
+        writeContractAsync,
+        switchChain
+      ) as `0x${string}`);
     } catch (ex: any) {
       const error = mapWeb3Error(ex);
-      updateNotification(error, loading, true);
-      setRedemptionTransactionLoading(false);
+      updateNotification(error, toastId.current as Id, true);
     }
   };
 
-  const onSuccess = async (receipt: string, loadingToast: Id) => {
+  useEffect(() => {
+    if (isSuccess) {
+      onSuccess();
+    }
+    if (isError) {
+      const error = mapWeb3Error(status);
+      updateNotification(error, toastId.current as Id, true);
+      router.refresh();
+    }
+  }, [isSuccess, isError]);
+
+  const onSuccess = async () => {
     updateNotification(
       "Claim successful",
-      loadingToast,
+      toastId.current as Id,
       false,
       receipt,
       chainId,
     );
-    setTimeout(() => {
-      setRedemptionTransactionLoading(false);
-      router.refresh();
-    }, 3000);
+    router.refresh();
   };
 
   return (
@@ -115,7 +125,7 @@ const DashboardStakingInfo = ({
               btnText="Claim"
               onClick={() => onClaimXai(claimable[0]!)}
               className="w-full max-w-[120px] !py-[5px] font-semibold lg:mr-3"
-              isDisabled={redemptionTransactionLoading}
+              isDisabled={isLoading}
             />
           )}
         </div>

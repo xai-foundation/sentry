@@ -64,6 +64,19 @@ const PoolSchema = new mongoose.Schema<IPool>({
     },
     updateSharesTimestamp: {
         type: Number,
+        required: true
+    },
+    ownerStakedKeys: {
+        type: Number,
+        required: true
+    },
+    ownerRequestedUnstakeKeyAmount: {
+        type: Number,
+        required: true
+    },
+    ownerLatestUnstakeRequestCompletionTime: {
+        type: Number,
+        required: true
     },
     pendingShares: {
         type: [Number],

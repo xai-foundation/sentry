@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGetPoolInfoHooks } from "@/app/hooks/hooks";
 import { useRouter } from "next/navigation";
 import PoolDetailsComponent from "../createPool/PoolDetailsComponent";
@@ -13,11 +13,11 @@ import {
   loadingNotification,
   updateNotification,
 } from "../notifications/NotificationsComponent";
-import { ZERO_ADDRESS, getNetwork, mapWeb3Error } from "@/services/web3.service";
-import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
+import { ZERO_ADDRESS, mapWeb3Error } from "@/services/web3.service";
+import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
-import { post, sendUpdatePoolRequest } from "@/services/requestService";
 import DelegateAddressComponent from "../createPool/DelegateAddressComponent";
+import { Id } from "react-toastify";
 
 const EditDetailsComponent = () => {
   const {
@@ -34,22 +34,46 @@ const EditDetailsComponent = () => {
     setDelegateAddress,
   } = useGetPoolInfoHooks();
   const { address, chainId } = useAccount();
-  const [transactionLoading, setTransactionLoading] = useState(false);
-  const [transactionAddressLoading, setTransactionAddressLoading] = useState(false);
+  const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
+  const [isUpdateAddress, setIsUpdateAddress] = useState(false);
 
   const { switchChain } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
   const [errorValidationDetails, setErrorValidationDetails] = useState(false);
   const [errorValidationAddress, setErrorValidationAddress] = useState(false);
+
+  // Substitute Timeouts with useWaitForTransaction
+  const { data, isError, isLoading: transactionLoading, isSuccess, status } = useWaitForTransactionReceipt({
+    hash: receipt,
+  });
+
   const router = useRouter();
 
+  const toastId = useRef<Id>();
+
+  useEffect(() => {
+    if (isSuccess) {
+      updateNotification(
+        `${isUpdateAddress ? "Your pool delegate address was updated successfully" : "Your pool details were updated successfully"}`,
+        toastId.current as Id,
+        false,
+        receipt,
+        chainId
+      );
+      router.push(`/pool/${poolAddress}/summary`);
+    }
+    if (isError) {
+      const error = mapWeb3Error(status);
+      updateNotification(error, toastId.current as Id, true);
+    }
+  }, [isSuccess, isError]);
+
   const onConfirm = async () => {
-    setTransactionLoading(true);
-    const loading = loadingNotification("Transaction pending...");
+    setIsUpdateAddress(false);
+    toastId.current = loadingNotification("Transaction pending...");
     try {
 
-
-      const receipt = await executeContractWrite(
+      setReceipt(await executeContractWrite(
         WriteFunctions.updatePoolMetadata,
         [
           poolAddress,
@@ -71,67 +95,30 @@ const EditDetailsComponent = () => {
         chainId,
         writeContractAsync,
         switchChain
-      );
-
-      setTimeout(async () => {
-        updateNotification(
-          "Your pool details were updated successfully",
-          loading,
-          false,
-          receipt,
-          chainId
-        );
-        setTransactionLoading(false);
-
-        // Update on Data base
-        await updateDetailsOnDb(poolAddress, chainId);
-
-        router.push(`/pool/${poolAddress}/summary`);
-      }, 3000);
+      ) as `0x${string}`);
 
     } catch (ex: any) {
       const error = mapWeb3Error(ex);
-      updateNotification(error, loading, true);
-      setTransactionLoading(false);
+      updateNotification(error, toastId.current as Id, true);
     }
   };
 
   const onConfirmEditAddress = async () => {
-    setTransactionAddressLoading(true);
-    const loading = loadingNotification("Transaction pending...");
+    setIsUpdateAddress(true);
+    toastId.current = loadingNotification("Transaction pending...");
     try {
-      const receipt = await executeContractWrite(
+      setReceipt(await executeContractWrite(
         WriteFunctions.updateDelegateOwner,
         [poolAddress, delegateAddress || ZERO_ADDRESS],
         chainId,
         writeContractAsync,
         switchChain
-      );
+      ) as `0x${string}`);
 
-      setTimeout(async () => {
-        updateNotification(
-          "Your pool delegate address was updated successfully",
-          loading,
-          false,
-          receipt,
-          chainId
-        );
-        setTransactionAddressLoading(false);
-
-        // Update on Data base
-        await updateDetailsOnDb(poolAddress, chainId);
-
-        router.push(`/pool/${poolAddress}/summary`);
-      }, 3000);
     } catch (ex: any) {
       const error = mapWeb3Error(ex);
-      updateNotification(error, loading, true);
-      setTransactionAddressLoading(false);
+      updateNotification(error, toastId.current as Id, true);
     }
-  };
-
-  const updateDetailsOnDb = async (poolAddress: string, chainId: number | undefined): Promise<any> => {
-    await sendUpdatePoolRequest(poolAddress, chainId);
   };
 
   return (
@@ -164,8 +151,7 @@ const EditDetailsComponent = () => {
               className="font-semibold disabled:opacity-50"
               isDisabled={
                 errorValidationDetails ||
-                transactionLoading ||
-                transactionAddressLoading
+                transactionLoading
               }
             />
           </div>
@@ -185,8 +171,7 @@ const EditDetailsComponent = () => {
                 className="font-semibold disabled:opacity-50"
                 isDisabled={
                   errorValidationAddress ||
-                  transactionLoading ||
-                  transactionAddressLoading
+                  transactionLoading
                 }
               />
             </div>

@@ -14,12 +14,14 @@ interface SummaryDescriptionsProps {
   poolInfo: PoolInfo;
   onClaim: () => void;
   transactionLoading: boolean;
+  chainId?: number | undefined;
 }
 
 const SummaryDescriptions = ({
   poolInfo,
   onClaim,
   transactionLoading,
+  chainId,
 }: SummaryDescriptionsProps) => {
   const {
     rewardsValues: { owner, keyholder, staker },
@@ -36,7 +38,7 @@ const SummaryDescriptions = ({
             <div className="mt-2 flex w-full justify-start">
               <ButtonBack
                 btnText={"Back"}
-                onClick={() => router.back()}
+                onClick={window && window.history.length > 2 ? () => router.back() : () => router.push(`/staking?chainId=${chainId}`)}
                 extraClasses="h-[35px]"
               />
             </div>

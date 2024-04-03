@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ButtonBack,
   PrimaryButton,
@@ -9,14 +9,14 @@ import { ErrorCircle } from "../icons/IconsComponent";
 import RewardComponent from "../createPool/RewardComponent";
 import MainTitle from "../titles/MainTitle";
 import { useGetPoolInfoHooks } from "@/app/hooks/hooks";
-import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
+import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import {
   loadingNotification,
   updateNotification,
 } from "../notifications/NotificationsComponent";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import { POOL_SHARES_BASE, mapWeb3Error } from "@/services/web3.service";
-import { sendUpdatePoolRequest } from "@/services/requestService";
+import { Id } from "react-toastify";
 
 const EditRewardsComponent = () => {
   const { rewardsValues, setRewardsValues, isLoading, poolAddress } =
@@ -24,16 +24,23 @@ const EditRewardsComponent = () => {
   const [errorValidationRewards, setErrorValidationRewards] = useState(false);
   const router = useRouter();
   const { chainId } = useAccount();
-  const [transactionLoading, setTransactionLoading] = useState(false);
 
   const { switchChain } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
+  
+  const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
+
+  // Substitute Timeouts with useWaitForTransaction
+  const { data, isError, isLoading: transactionLoading, isSuccess, status } = useWaitForTransactionReceipt({
+    hash: receipt,
+  });
+
+  const toastId = useRef<Id>();
 
   const onConfirm = async () => {
-    setTransactionLoading(true);
-    const loading = loadingNotification("Transaction pending...");
+    toastId.current = loadingNotification("Transaction pending...");
     try {
-      const receipt = await executeContractWrite(
+      setReceipt(await executeContractWrite(
         WriteFunctions.updateShares,
         [
           poolAddress,
@@ -46,33 +53,30 @@ const EditRewardsComponent = () => {
         chainId,
         writeContractAsync,
         switchChain
-      );
-
-      setTimeout(async () => {
-        updateNotification(
-          "Your rewards were updated successfully",
-          loading,
-          false,
-          receipt,
-          chainId
-        );
-        setTransactionLoading(false);
-
-        // Update Rewards on Data base
-        await updateRewardsOnDb(poolAddress, chainId);
-
-        router.push(`/pool/${poolAddress}/summary`);
-      }, 3000);
+      ) as `0x${string}`);
+  
     } catch (ex: any) {
       const error = mapWeb3Error(ex);
-      updateNotification(error, loading, true);
-      setTransactionLoading(false);
+      updateNotification(error, toastId.current as Id, true);
     }
   };
 
-  const updateRewardsOnDb = async (poolAddress: string, chainId: number | undefined): Promise<any> => {
-    await sendUpdatePoolRequest(poolAddress, chainId);
-  }
+  useEffect(() => {
+    if (isSuccess) {
+      updateNotification(
+        "Your rewards were updated successfully",
+        toastId.current as Id,
+        false,
+        receipt,
+        chainId
+      );
+      router.push(`/pool/${poolAddress}/summary`);
+    }
+    if (isError) {
+      const error = mapWeb3Error(status);
+      updateNotification(error, toastId.current as Id, true);
+    }
+  }, [isSuccess, isError]);
 
   return (
     <>

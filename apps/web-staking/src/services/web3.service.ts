@@ -36,8 +36,8 @@ export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 const web3Instances: { [key in NetworkKey]: Web3Instance } = {
 	'arbitrum': {
 		name: 'Arbitrum Nova',
-		web3: new Web3(process.env.MAINNET_RPC || 'https://arb1.arbitrum.io/rpc'),
-		rpcUrl: process.env.MAINNET_RPC || 'https://arb1.arbitrum.io/rpc',
+		web3: new Web3('https://arb1.arbitrum.io/rpc'),
+		rpcUrl: 'https://arb1.arbitrum.io/rpc',
 		chainId: 42161,
 		refereeAddress: "0xfD41041180571C5D371BEA3D9550E55653671198",
 		xaiAddress: "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66",
@@ -385,6 +385,9 @@ type RawPoolInfo = {
 	_logo: string;
 	_socials: Socials;
 	_pendingShares: PendingShares;
+	_ownerStakedKeys: BigInt;
+	_ownerRequestedUnstakeKeyAmount: BigInt;
+	_ownerLatestUnstakeRequestLockTime: BigInt;
 };
 
 // User-specific data type
@@ -589,12 +592,17 @@ export const toPoolInfo = (
 	let ownerShare = Number(baseInfo.ownerShare) / POOL_SHARES_BASE;
 	let keyBucketShare = Number(baseInfo.keyBucketShare) / POOL_SHARES_BASE;
 	let stakedBucketShare = Number(baseInfo.stakedBucketShare) / POOL_SHARES_BASE;
+	let ownerLatestUnstakeRequestCompletionTime = Number(rawPoolInfo._ownerLatestUnstakeRequestLockTime) * 1000;
 
 	if (updateSharesTimestamp != 0 && updateSharesTimestamp <= Date.now()) {
 		ownerShare = pendingShares[0]
 		keyBucketShare = pendingShares[1]
 		stakedBucketShare = pendingShares[2]
 		updateSharesTimestamp = 0;
+	}
+
+	if (ownerLatestUnstakeRequestCompletionTime != 0 && ownerLatestUnstakeRequestCompletionTime <= Date.now()) {
+		ownerLatestUnstakeRequestCompletionTime = 0;
 	}
 
 	const amountForTier = Math.min(Number(web3Instance.web3.utils.fromWei(baseInfo.totalStakedAmount.toString(), 'ether')), Number(baseInfo.keyCount) * maxStakePerLicense);
@@ -607,6 +615,9 @@ export const toPoolInfo = (
 		keyCount: Number(baseInfo.keyCount),
 		totalStakedAmount: Number(web3Instance.web3.utils.fromWei(baseInfo.totalStakedAmount.toString(), 'ether')),
 		updateSharesTimestamp,
+		ownerStakedKeys: Number(rawPoolInfo._ownerStakedKeys),
+		ownerRequestedUnstakeKeyAmount: Number(rawPoolInfo._ownerRequestedUnstakeKeyAmount),
+		ownerLatestUnstakeRequestCompletionTime,
 		ownerShare,
 		keyBucketShare,
 		stakedBucketShare,

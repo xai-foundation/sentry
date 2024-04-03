@@ -38,19 +38,3 @@ const sendRequest = async (url: string, options: RequestInit): Promise<any> => {
         return await response.json();
     }
 };
-
-
-export const sendUpdatePoolRequest = async (poolAddress: string, chainId: number | undefined): Promise<any> => {
-    try {
-        await post({
-            body: {
-                poolAddress,
-                network: getNetwork(chainId),
-            },
-            url: "/api/updatePool"
-        });
-    } catch (error: any) {
-        console.error('Error updating pool:', error.message);
-        return { error: error.message };
-    }
-};

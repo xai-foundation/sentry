@@ -1,5 +1,5 @@
 "use client";
-import {useState} from "react";
+import { useState } from "react";
 
 export function SwitchArrows({ width = 24, height = 24, className, fill = "#181818" }: { width?: number, height?: number, fill?: string, className?: string }) {
 
@@ -501,30 +501,71 @@ export function PieChart({
   hoverFill?: string;
 }
 ) {
-	const [hover, setHover] = useState(false);
+  const [hover, setHover] = useState(false);
 
-	function toggleHover(_hover: boolean): () => void {
-		return () => {
-			setHover(_hover);
-		}
-	}
+  function toggleHover(_hover: boolean): () => void {
+    return () => {
+      setHover(_hover);
+    }
+  }
 
-	return (
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			width={width}
-			height={height}
-			viewBox="0 0 16 16"
-			onMouseEnter={toggleHover(true)}
-			onMouseLeave={toggleHover(false)}
-		>
-			<path
-				id="Path_3616"
-				data-name="Path 3616"
-				d="M9.218,2.049v8.782H18A8.02,8.02,0,1,1,9.218,2.049Zm1.6,0A8.022,8.022,0,0,1,18,9.228H10.822Z"
-				transform="translate(-2 -2.049)"
-				fill={hover ? hoverFill : fill}
-			/>
-		</svg>
-	);
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={width}
+      height={height}
+      viewBox="0 0 16 16"
+      onMouseEnter={toggleHover(true)}
+      onMouseLeave={toggleHover(false)}
+    >
+      <path
+        id="Path_3616"
+        data-name="Path 3616"
+        d="M9.218,2.049v8.782H18A8.02,8.02,0,1,1,9.218,2.049Zm1.6,0A8.022,8.022,0,0,1,18,9.228H10.822Z"
+        transform="translate(-2 -2.049)"
+        fill={hover ? hoverFill : fill}
+      />
+    </svg>
+  );
+}
+
+export function Key({
+  width = 16,
+  height = 16,
+  fill = "#FFA366",
+  hoverFill = "#c36522",
+}: {
+  width?: number;
+  height?: number;
+  fill?: string;
+  hoverFill?: string;
+}
+) {
+  const [hover, setHover] = useState(false);
+
+  function toggleHover(_hover: boolean): () => void {
+    return () => {
+      setHover(_hover);
+    }
+  }
+
+  return (
+
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={width}
+      height={height}
+      viewBox="0 0 18.081 17.374"
+      onMouseEnter={toggleHover(true)}
+      onMouseLeave={toggleHover(false)}
+    >
+      <path
+        id="Path_3620"
+        data-name="Path 3620"
+        d="M10.313,11.566l7.94-7.94,2.121,2.121L18.96,7.161l2.121,2.121-3.536,3.536L15.425,10.7l-2.99,2.99a5,5,0,1,1-2.121-2.121Zm-.9,5.849a2,2,0,1,0-2.828,0A2,2,0,0,0,9.414,17.414Z"
+        transform="translate(-3 -3.626)"
+        fill={hover ? hoverFill : fill}
+      />
+    </svg>
+  );
 }

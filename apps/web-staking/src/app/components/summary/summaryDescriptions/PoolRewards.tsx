@@ -21,7 +21,7 @@ const PoolRewards = ({
       className={`mb-6 flex h-[80px] w-full max-w-full items-center justify-between rounded-2xl bg-crystalWhite  px-5 py-3  xl:mb-0 xl:max-w-[355px] ${extraClasses}`}
     >
       <div>
-        <span className="block">Pool rewards</span>
+        <span className="block">Your rewards</span>
         <span className="block text-2xl font-bold text-lightBlackDarkWhite">
           {poolInfo?.userClaimAmount} esXAI
         </span>

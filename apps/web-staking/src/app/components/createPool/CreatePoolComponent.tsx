@@ -2,33 +2,38 @@ import MainTitle from "@/app/components/titles/MainTitle";
 import PoolDetailsComponent from "@/app/components/createPool/PoolDetailsComponent";
 import SocialLinksComponent from "@/app/components/createPool/SocialLinksComponent";
 import RewardComponent, { Rewards } from "@/app/components/createPool/RewardComponent";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ButtonBack,
   PrimaryButton,
   SecondaryButton,
 } from "@/app/components/buttons/ButtonsComponent";
 import { useRouter } from "next/navigation";
-import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
+import { useAccount, useSwitchChain, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { loadingNotification, updateNotification } from "../notifications/NotificationsComponent";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import { POOL_SHARES_BASE, getNetwork, getPoolAddressOfUserAtIndex, getPoolsOfUserCount, getUnstakedKeysOfUser, mapWeb3Error, ZERO_ADDRESS } from "@/services/web3.service";
 import StakePoolKeyComponent from "./StakePoolKeyComponent";
-import { post } from "@/services/requestService";
 import DelegateAddressComponent from "./DelegateAddressComponent";
+import { Id } from "react-toastify";
 
 const CreatePoolComponent = () => {
   const router = useRouter();
   const [errorValidationDetails, setErrorValidationDetails] = useState(false);
   const [errorValidationRewards, setErrorValidationRewards] = useState(false);
   const [errorValidationAddress, setErrorValidationAddress] = useState(false);
+  const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
   const [showStakePoolKey, setShowStakePoolKey] = useState(false);
 
   const { address, chainId } = useAccount();
-  const [transactionLoading, setTransactionLoading] = useState(false);
 
   const { switchChain } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
+
+  // Substitute Timeouts with useWaitForTransaction
+  const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
+    hash: receipt,
+  });
 
   const [poolDetailsValues, setPoolDetailsValues] = useState({
     name: "",
@@ -54,16 +59,18 @@ const CreatePoolComponent = () => {
     trackerTicker: "",
   });
   const [delegateAddress, setDelegateAddress] = useState("");
+  const [currentPoolCount, setCurrentPoolCount] = useState<number>();
+  const toastId = useRef<Id>();
 
   const onConfirm = async (numKeys: number) => {
-    setTransactionLoading(true);
-    const loading = loadingNotification("Transaction pending...");
-    try {
-      
-      const keyIds = await getUnstakedKeysOfUser(getNetwork(chainId), address as string, numKeys);
-      const currentPoolCount = await getPoolsOfUserCount(getNetwork(chainId), address as string);
 
-      const receipt = await executeContractWrite(
+    toastId.current = loadingNotification("Transaction pending...");
+
+    try {
+
+      const keyIds = await getUnstakedKeysOfUser(getNetwork(chainId), address as string, numKeys);
+      setCurrentPoolCount(await getPoolsOfUserCount(getNetwork(chainId), address as string));
+      setReceipt(await executeContractWrite(
         WriteFunctions.createPool,
         [
           delegateAddress || ZERO_ADDRESS,
@@ -87,39 +94,31 @@ const CreatePoolComponent = () => {
         chainId,
         writeContractAsync,
         switchChain
-      );
-
-      setTimeout(async () => {
-        const newPoolAddress = await getPoolAddressOfUserAtIndex(getNetwork(chainId), address as string, currentPoolCount);
-        updateNotification("Pool created", loading, false, receipt, chainId);
-        setTransactionLoading(false);
-
-        // Send data to Backend
-        await writeToDb(newPoolAddress, chainId);
-
-        router.push(`/pool/${newPoolAddress}/summary`)
-      }, 3000);
+      ) as `0x${string}`);
 
     } catch (ex: any) {
       const error = mapWeb3Error(ex);
-      updateNotification(error, loading, true);
-      setTransactionLoading(false);
+      updateNotification(error, toastId.current as Id, true);
     }
   }
 
-  // write pool to database
-  const writeToDb = async (newPoolAddress: string, chainId: number | undefined): Promise<any> => {
+  useEffect(() => {
+    if (isSuccess) {
+      waitForTransactionStatus();
+    }
+    if (isError) {
+      const error = mapWeb3Error(status);
+      updateNotification(error, toastId.current as Id, true);
+    }
+  }, [isSuccess, isError]);
+
+  const waitForTransactionStatus = async () => {
     try {
-      await post({
-        body: {
-          poolAddress: newPoolAddress,
-          network: getNetwork(chainId)
-        },
-        url: "/api/createPool"
-      });
-    } catch (error: any) {
-      console.error('Error creating pool:', error.message);
-      return { error: error.message };
+      const newPoolAddress = await getPoolAddressOfUserAtIndex(getNetwork(chainId), address as string, currentPoolCount as number);
+      updateNotification("Pool created", toastId.current as Id, false, receipt, chainId);
+      router.push(`/pool/${newPoolAddress}/summary`);
+    } catch (ex: any) {
+      console.error('Error getting new Pool Address', ex);
     }
   };
 
@@ -132,7 +131,7 @@ const CreatePoolComponent = () => {
             poolDetailsValues={poolDetailsValues}
             onBack={() => setShowStakePoolKey(false)}
             address={address}
-            transactionLoading={transactionLoading}
+            transactionLoading={isLoading}
             stakeKey={true}
           />
         </div>
