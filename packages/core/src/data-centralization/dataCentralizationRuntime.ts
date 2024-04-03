@@ -3,6 +3,7 @@ import { EventListenerError, resilientEventListener } from '../utils/resilientEv
 import { LogDescription } from 'ethers';
 import { config } from '../config.js';
 import { PoolFactoryAbi } from '../abis/PoolFactoryAbi.js';
+import { updatePoolInDB } from './updatePoolInDB.js';
 
 /**
  * Arguments required to initialize the data centralization runtime.
@@ -19,7 +20,7 @@ interface DataCentralizationRuntimeArgs {
  * @param {DataCentralizationRuntimeArgs} args - The arguments required for the runtime.
  * @returns {Promise<() => Promise<void>>} A function to stop the runtime.
  */
-async function dataCentralizationRuntime({
+export async function dataCentralizationRuntime({
 	mongoUri,
 	logFunction = (_) => { }
 }: DataCentralizationRuntimeArgs): Promise<() => Promise<void>> {

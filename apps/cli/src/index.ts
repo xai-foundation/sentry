@@ -45,6 +45,9 @@ import { eventListener } from './commands/event-listener.js';
 import { startKycProcess } from './commands/kyc/start-kyc-process.js';
 import { generateRevenueReport } from './commands/licenses/generate-revenue-report.js';
 import { displayNodeAgreement } from './commands/display-node-agreement.js';
+import { startCentralizationRuntime } from './commands/start-centralization-runtime.js';
+
+
 import {version} from "@sentry/core";
 
 const cli = new Vorpal();
@@ -96,6 +99,7 @@ totalSupply(cli);
 startKycProcess(cli);
 generateRevenueReport(cli);
 displayNodeAgreement(cli);
+startCentralizationRuntime(cli);
 
 console.log(`Starting Sentry cli version ${version}`);
 console.log(`Stake and redeem esXAI at https://app.xai.games`);
