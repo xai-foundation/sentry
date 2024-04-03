@@ -15,6 +15,14 @@ interface DataCentralizationRuntimeArgs {
 	logFunction?: (log: string) => void;
 }
 
+const toSaveString = (obj: any) => {
+	return JSON.stringify(obj, (key, value) =>
+		typeof value === 'bigint'
+			? value.toString()
+			: value // return everything else unchanged
+	);
+}
+
 /**
  * Initializes the data centralization runtime with MongoDB and event listeners.
  * @param {DataCentralizationRuntimeArgs} args - The arguments required for the runtime.
@@ -35,46 +43,44 @@ export async function dataCentralizationRuntime({
 	}
 
 	// Establish a single event listener for multiple events for data centralization.
-	const events = [
-		'PoolCreated',
-		'StakeEsXai',
-		'UnstakeEsXai',
-		'StakeKeys',
-		'UnstakeKeys',
-		'UpdatePoolDelegate',
-		'UnstakeRequestStarted',
-		'UpdateShares',
-	];
+	// Map poolfactory event to index of pool address in event logs
+	const eventToPoolAddressInLog: { [eventName: string]: number } = {
+		'PoolCreated': 1,
+		'StakeEsXai': 1,
+		'UnstakeEsXai': 1,
+		'StakeKeys': 1,
+		'UnstakeKeys': 1,
+		'UpdatePoolDelegate': 1,
+		'UnstakeRequestStarted': 1,
+		'UpdateShares': 0,
+	}
 
 	const stopListener = resilientEventListener({
 		rpcUrl: config.arbitrumOneWebSocketUrl,
 		contractAddress: config.poolFactoryAddress,
 		abi: PoolFactoryAbi,
-		eventName: events,
+		eventName: Object.keys(eventToPoolAddressInLog),
 		log: logFunction,
 		callback: (log: LogDescription | null, err?: EventListenerError) => {
 			if (err) {
 				logFunction(`Error listening to event: ${err.message}`);
 			} else if (log) {
-				logFunction(`Event ${log.name} received: ${JSON.stringify(log.args)}`);
-                switch(log.name) {
-                    case "PoolCreated":
-                    break;
-                    case "StakeEsXai":
-                    break;
-                    case "UnstakeEsXai":
-                    break;
-                    case "StakeKeys":
-                    break;
-                    case "UnstakeKeys":
-                    break;
-                    case "UpdatePoolDelegate":
-                    break;
-                    case "UnstakeRequestStarted":
-                    break;
-                    case "UpdateShares":
-                    break;
-                }
+				logFunction(`Event ${log.name} received: ${toSaveString(log.args)}`);
+
+				const poolAddress = log.args[eventToPoolAddressInLog[log.name]];
+				if (!poolAddress) {
+					logFunction(`Error finding poolAddress on event ${log.name}`);
+					return;
+				}
+
+				updatePoolInDB(poolAddress)
+					.then(() => {
+						logFunction("Updated pool:" + poolAddress)
+					})
+					.catch(err => {
+						logFunction(`Error updating pool ${poolAddress} on event ${log.name}, error: ${err}`);
+					});
+
 			} else {
 				logFunction(`Received null log description.`);
 			}
