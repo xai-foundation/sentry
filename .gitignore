@@ -22,3 +22,7 @@ infrastructure/CodeSignTool-*
 
 
 .nx/cache
+mochawesome-report
+.nyc_output
+coverage
+./coverage.json

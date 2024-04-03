@@ -1,14 +1,15 @@
 {
   "name": "@sentry/core",
   "version": "1.0.0",
-  "description": "",
+  "description": "Core",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "type": "module",
   "scripts": {
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
     "lint": "eslint . --ext .ts,.tsx",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "mocha -r ts-node/register -r tsconfig-paths/register 'src/**/*.spec.ts' --reporter mochawesome --reporter-options html=false",
+    "coverage": "nyc pnpm run test"
   },
   "keywords": [],
   "author": "",

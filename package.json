@@ -7,6 +7,7 @@
   "author": "",
   "main": "index.js",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "build": "pnpm -r --filter !xai-staking-internal run build",
     "clean": "pnpm recursive run clean",
     "cli": "pnpm -filter @sentry/core run build && pnpm -r -filter @sentry/sentry-node-cli run compile && pnpm -r -filter @sentry/sentry-node-cli run start",
@@ -21,15 +22,32 @@
     "ethers": "6.8.1"
   },
   "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@nx/js": "^18.2.2",
+    "@nx/workspace": "^18.2.2",
+    "@types/chai": "^4.3.14",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.12.3",
+    "@types/proxyquire": "^1.3.31",
+    "@types/sinon": "^17.0.3",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
     "@typescript-eslint/parser": "^6.6.0",
+    "chai": "4.3.10",
     "concurrently": "8.2.1",
     "copyfiles": "2.4.1",
     "eslint": "^8.48.0",
     "eslint-plugin-only-warn": "^1.1.0",
+    "mocha": "^10.4.0",
+    "mochawesome": "^7.1.3",
+    "mochawesome-merge": "^4.3.0",
+    "mochawesome-report-generator": "^6.2.0",
+    "nx": "18.1.2",
+    "nyc": "^15.1.0",
+    "proxyquire": "^2.1.3",
     "rimraf": "5.0.1",
+    "sinon": "^17.0.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5.2.2",
-    "unzipper": "0.10.14",
-    "nx": "18.1.2"
+    "unzipper": "0.10.14"
   }
 }
