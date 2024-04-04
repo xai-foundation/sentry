@@ -1,4 +1,4 @@
-export const PoolFactoryAbi =[
+export const PoolFactoryAbi = [
 	{
 		"anonymous": false,
 		"inputs": [
@@ -60,6 +60,25 @@ export const PoolFactoryAbi =[
 			}
 		],
 		"name": "PoolCreated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "oldDeployer",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "newDeployer",
+				"type": "address"
+			}
+		],
+		"name": "PoolProxyDeployerUpdated",
 		"type": "event"
 	},
 	{
@@ -332,25 +351,6 @@ export const PoolFactoryAbi =[
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "prevImplementation",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "newImplementation",
-				"type": "address"
-			}
-		],
-		"name": "UpdateBucketImplementation",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
 				"indexed": true,
 				"internalType": "address",
 				"name": "delegate",
@@ -370,38 +370,13 @@ export const PoolFactoryAbi =[
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": false,
+				"indexed": true,
 				"internalType": "address",
-				"name": "prevImplementation",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "newImplementation",
+				"name": "pool",
 				"type": "address"
 			}
 		],
-		"name": "UpdatePoolImplementation",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "previousAdmin",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "newAdmin",
-				"type": "address"
-			}
-		],
-		"name": "UpdatePoolProxyAdmin",
+		"name": "UpdateShares",
 		"type": "event"
 	},
 	{
@@ -418,19 +393,6 @@ export const PoolFactoryAbi =[
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "bucketImplementation",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "uint256",
@@ -441,9 +403,9 @@ export const PoolFactoryAbi =[
 		"name": "bucketshareMaxValues",
 		"outputs": [
 			{
-				"internalType": "uint16",
+				"internalType": "uint32",
 				"name": "",
-				"type": "uint16"
+				"type": "uint32"
 			}
 		],
 		"stateMutability": "view",
@@ -484,59 +446,34 @@ export const PoolFactoryAbi =[
 	{
 		"inputs": [
 			{
-				"internalType": "uint256[]",
-				"name": "keyIds",
-				"type": "uint256[]"
-			},
-			{
-				"internalType": "uint16",
-				"name": "_ownerShare",
-				"type": "uint16"
-			},
-			{
-				"internalType": "uint16",
-				"name": "_keyBucketShare",
-				"type": "uint16"
-			},
-			{
-				"internalType": "uint16",
-				"name": "_stakedBucketShare",
-				"type": "uint16"
-			},
-			{
-				"internalType": "string",
-				"name": "_name",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_description",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_logo",
-				"type": "string"
-			},
-			{
-				"internalType": "string[]",
-				"name": "_socials",
-				"type": "string[]"
-			},
-			{
-				"internalType": "string[]",
-				"name": "trackerNames",
-				"type": "string[]"
-			},
-			{
-				"internalType": "string[]",
-				"name": "trackerSymbols",
-				"type": "string[]"
-			},
-			{
 				"internalType": "address",
 				"name": "_delegateOwner",
 				"type": "address"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "_keyIds",
+				"type": "uint256[]"
+			},
+			{
+				"internalType": "uint32[3]",
+				"name": "_shareConfig",
+				"type": "uint32[3]"
+			},
+			{
+				"internalType": "string[3]",
+				"name": "_poolMetadata",
+				"type": "string[3]"
+			},
+			{
+				"internalType": "string[]",
+				"name": "_poolSocials",
+				"type": "string[]"
+			},
+			{
+				"internalType": "string[2][2]",
+				"name": "trackerDetails",
+				"type": "string[2][2]"
 			}
 		],
 		"name": "createPool",
@@ -591,6 +528,19 @@ export const PoolFactoryAbi =[
 		"name": "createUnstakeOwnerLastKeyRequest",
 		"outputs": [],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "deployerAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -792,86 +742,6 @@ export const PoolFactoryAbi =[
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "index",
-				"type": "uint256"
-			}
-		],
-		"name": "getUnstakeRequest",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "bool",
-						"name": "open",
-						"type": "bool"
-					},
-					{
-						"internalType": "bool",
-						"name": "isKeyRequest",
-						"type": "bool"
-					},
-					{
-						"internalType": "address",
-						"name": "poolAddress",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "amount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "lockTime",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "completeTime",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256[5]",
-						"name": "__gap",
-						"type": "uint256[5]"
-					}
-				],
-				"internalType": "struct PoolFactory.UnstakeRequest",
-				"name": "",
-				"type": "tuple"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "account",
-				"type": "address"
-			}
-		],
-		"name": "getUnstakeRequestCount",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
 				"name": "user",
 				"type": "address"
 			},
@@ -892,35 +762,6 @@ export const PoolFactoryAbi =[
 				"internalType": "uint256[]",
 				"name": "unstakedKeyIds",
 				"type": "uint256[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "user",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "pool",
-				"type": "address"
-			}
-		],
-		"name": "getUserRequestedUnstakeAmounts",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "keyAmount",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "esXaiAmount",
-				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -966,39 +807,6 @@ export const PoolFactoryAbi =[
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_refereeAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_esXaiAddress",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_stakingPoolProxyAdmin",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_stakingPoolImplementation",
-				"type": "address"
-			},
-			{
-				"internalType": "address",
-				"name": "_bucketImplementation",
-				"type": "address"
-			}
-		],
-		"name": "initialize",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -1223,32 +1031,6 @@ export const PoolFactoryAbi =[
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "stakingPoolImplementation",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "stakingPoolProxyAdmin",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
 		"inputs": [
 			{
 				"internalType": "uint256",
@@ -1289,6 +1071,11 @@ export const PoolFactoryAbi =[
 	{
 		"inputs": [
 			{
+				"internalType": "address",
+				"name": "pool",
+				"type": "address"
+			},
+			{
 				"internalType": "uint256",
 				"name": "unstakeRequestIndex",
 				"type": "uint256"
@@ -1305,7 +1092,38 @@ export const PoolFactoryAbi =[
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "unstakeEsXaiDelayPeriod",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "unstakeGenesisKeyDelayPeriod",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
+			{
+				"internalType": "address",
+				"name": "pool",
+				"type": "address"
+			},
 			{
 				"internalType": "uint256",
 				"name": "unstakeRequestIndex",
@@ -1323,16 +1141,16 @@ export const PoolFactoryAbi =[
 		"type": "function"
 	},
 	{
-		"inputs": [
+		"inputs": [],
+		"name": "unstakeKeysDelayPeriod",
+		"outputs": [
 			{
-				"internalType": "address",
-				"name": "newImplementation",
-				"type": "address"
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
-		"name": "updateBucketImplementation",
-		"outputs": [],
-		"stateMutability": "nonpayable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -1357,40 +1175,17 @@ export const PoolFactoryAbi =[
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "newImplementation",
-				"type": "address"
-			}
-		],
-		"name": "updatePoolImplementation",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
 				"name": "pool",
 				"type": "address"
 			},
 			{
-				"internalType": "string",
-				"name": "_name",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_description",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_logo",
-				"type": "string"
+				"internalType": "string[3]",
+				"name": "_poolMetadata",
+				"type": "string[3]"
 			},
 			{
 				"internalType": "string[]",
-				"name": "_socials",
+				"name": "_poolSocials",
 				"type": "string[]"
 			}
 		],
@@ -1403,11 +1198,11 @@ export const PoolFactoryAbi =[
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "newAdmin",
+				"name": "newDeployer",
 				"type": "address"
 			}
 		],
-		"name": "updateProxyAdmin",
+		"name": "updatePoolProxyDeployer",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -1420,22 +1215,35 @@ export const PoolFactoryAbi =[
 				"type": "address"
 			},
 			{
-				"internalType": "uint16",
-				"name": "_ownerShare",
-				"type": "uint16"
-			},
-			{
-				"internalType": "uint16",
-				"name": "_keyBucketShare",
-				"type": "uint16"
-			},
-			{
-				"internalType": "uint16",
-				"name": "_stakedBucketShare",
-				"type": "uint16"
+				"internalType": "uint32[3]",
+				"name": "_shareConfig",
+				"type": "uint32[3]"
 			}
 		],
 		"name": "updateShares",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_unstakeKeysDelayPeriod",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_unstakeGenesisKeyDelayPeriod",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_unstakeEsXaiDelayPeriod",
+				"type": "uint256"
+			}
+		],
+		"name": "updateUnStakeDelayPeriods",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
