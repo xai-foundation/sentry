@@ -57,7 +57,7 @@ export async function findMissedAssertion(): Promise<number | null> {
     const refereeContract = new ethers.Contract(
         config.refereeAddress,
         RefereeAbi,
-        new ethers.JsonRpcProvider(config.arbitrumOneJsonRpcUrl)
+        provider
     )
     const comboHash = keccak256(ethers.solidityPacked(['uint64', 'address'], [Number(nodeNum), ethers.getAddress(config.rollupAddress)]));
     const isSubmitted = await refereeContract.rollupAssertionTracker(comboHash);
