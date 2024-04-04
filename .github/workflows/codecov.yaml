@@ -13,18 +13,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '18.15.0'
+          
+      - name: Install pnpm
+        run: npm i -g nx pnpm
 
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build project
-        run: pnpm run build
-
-      - name: Create coverage directory on runner
-        run: mkdir -p ./coverage/summary
-
       - name: Generate coverage report
-        run: pnpm run coverage
+        run: nx coverage-report
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4.0.1
