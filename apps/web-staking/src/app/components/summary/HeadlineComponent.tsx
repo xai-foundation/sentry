@@ -1,10 +1,12 @@
 import { PoolInfo } from "@/types/Pool";
 import { SecondaryButton } from "../buttons/ButtonsComponent";
 import { useRouter } from "next/navigation";
-import { ErrorCircle, InfoMark } from "../icons/IconsComponent";
+import { ErrorCircle, InfoMark, PieChart } from "../icons/IconsComponent";
+import moment from "moment";
 
 const HeadlineComponent = ({ poolInfo, walletAddress }: { poolInfo: PoolInfo, walletAddress: `0x${string}` | undefined }) => {
   const router = useRouter();
+  moment.relativeTimeThreshold('d', 61);
   return (
     <div className="w-full">
       {poolInfo.owner === walletAddress && (
@@ -33,12 +35,11 @@ const HeadlineComponent = ({ poolInfo, walletAddress }: { poolInfo: PoolInfo, wa
         {(poolInfo.updateSharesTimestamp >= Date.now()) &&
           <div className="bg-[#ED5F00]/10 p-3 my-5 rounded-md flex items-center justify-start gap-3">
             <span className="mx-2">
-              <ErrorCircle width={17} height={17} />
+              <PieChart />
             </span>
             <div className="text-[#ED5F00]">
               <div className="text-small font-bold">The pool owner has changed the rewards to allocate {poolInfo.pendingShares[0]}%/{poolInfo.pendingShares[1]}%/{poolInfo.pendingShares[2]}% to Owner/Keys/esXai</div>
-              <div className="text-tiny">This change will go into effect
-                on {new Date(poolInfo.updateSharesTimestamp).toISOString().split("T")[0]}</div>
+              <div className="text-tiny">{moment.duration(poolInfo.updateSharesTimestamp - Date.now()).humanize()} remaining until changes take effect.</div>
             </div>
           </div>
         }

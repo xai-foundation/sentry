@@ -9,6 +9,9 @@ import {
 import PaginationComponent from "../pagination/PaginationComponent";
 import { getCurrentTierByStaking } from "./utils";
 import { iconType } from "@/app/components/dashboard/constants/constants";
+import { ConnectButton } from "../buttons/ButtonsComponent";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAccount } from "wagmi";
 
 const POOL_DATA_COLUMS = [
   "Pool",
@@ -23,6 +26,7 @@ interface AvailableTableProps {
   page: number;
   totalPages: number;
   setPage: (page: number) => void;
+  address: string | undefined;
 }
 
 const AvailablePoolsTableComponent = ({
@@ -30,8 +34,11 @@ const AvailablePoolsTableComponent = ({
   pools,
   page,
   totalPages,
-  setPage
+  setPage,
+  address,
 }: AvailableTableProps) => {
+  const { open } = useWeb3Modal();
+  const { isDisconnected } = useAccount();
 
   return (
     <>
@@ -50,7 +57,7 @@ const AvailablePoolsTableComponent = ({
             })}
           </tr>
         </thead>
-        {pools.length > 0 && (
+        {pools.length > 0 && !isDisconnected && (
           <tbody>
             {pools.map((pool, index) => {
               return (
@@ -65,15 +72,20 @@ const AvailablePoolsTableComponent = ({
           </tbody>
         )}
       </table>
-      {pools.length === 0 && <NoResultComponent />}
+      {pools.length === 0 && address && <NoResultComponent />}
+      <div className="flex sm:justify-center w-full">
+        {isDisconnected && (
+          <ConnectButton address={address} onOpen={open} />
+        )}
+      </div>
       <div className="flex sm:justify-center lg:justify-start w-full">
-      <PaginationComponent
-        pools={pools}
-        page={page}
-        setPage={setPage}
-        totalPages={totalPages}
+        <PaginationComponent
+          pools={pools}
+          page={page}
+          setPage={setPage}
+          totalPages={totalPages}
         />
-     </div>
+      </div>
     </>
   );
 };

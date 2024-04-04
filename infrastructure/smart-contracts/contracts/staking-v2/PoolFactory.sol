@@ -141,6 +141,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
     event ClaimFromPool(address indexed user, address indexed pool);
     event UpdatePoolDelegate(address indexed delegate, address indexed pool);
+    event UpdateShares(address indexed pool);
 
     event UnstakeRequestStarted(
         address indexed user,
@@ -291,6 +292,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
             _shareConfig[1],
             _shareConfig[2]
         );
+        emit UpdateShares(pool);
     }
 
     function validateShareValues(

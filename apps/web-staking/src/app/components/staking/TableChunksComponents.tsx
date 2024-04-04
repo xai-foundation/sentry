@@ -5,10 +5,10 @@ import { iconType } from "../dashboard/constants/constants";
 import Link from "next/link";
 import {ErrorCircle, PieChart} from "../icons/IconsComponent";
 import { formatCurrencyNoDecimals } from "@/app/utils/formatCurrency";
+import moment from "moment";
 
 export function TableRowPool({ pool, tier }: { pool: PoolInfo, tier: TierInfo & { icon: iconType } }) {
-
-	console.log("pool", pool);
+  moment.relativeTimeThreshold('d', 61);
 
   return (
     <td className="lg:whitespace-nowrap flex items-center lg:p-4 sm:p-2 sm:py-3 lg:text-base text-graphiteGray text-left font-medium sm:text-xs">
@@ -30,7 +30,7 @@ export function TableRowPool({ pool, tier }: { pool: PoolInfo, tier: TierInfo & 
           content={
             <div className="px-1 py-2">
               <div className="text-small font-bold text-[#C36522]">The pool owner has changed the rewards to allocate {pool.pendingShares[0]}%/{pool.pendingShares[1]}%/{pool.pendingShares[2]}% to Owner/Keys/esXai</div>
-              <div className="text-tiny text-[#C36522]">This change will go into effect on {new Date(pool.updateSharesTimestamp).toISOString().split("T")[0]}</div>
+              <div className="text-tiny text-[#C36522]">{moment.duration(pool.updateSharesTimestamp - Date.now()).humanize()} remaining until changes take effect.</div>
             </div>
           }
         >
@@ -157,6 +157,7 @@ export function TableHead({
       )}
       {index === 1 ? (
         <ExternalLinkComponent
+          externalTab
           link="https://xai-foundation.gitbook.io/xai-network"
           content="Learn more"
           customClass="!text-base"
@@ -166,6 +167,7 @@ export function TableHead({
       )}
       {index === 0 ? (
         <ExternalLinkComponent
+          externalTab
           link="https://xai-foundation.gitbook.io/xai-network"
           content="Learn more"
           customClass="lg:!text-base sm:text-sm sm:block lg:hidden"
@@ -195,6 +197,7 @@ export function TableHeadStaking({
       <span className={`sm:block sm:w-[25%] lg:inline lg:mr-2 ${index === 5 && "sm:hidden lg:block"}`}>{column}</span>
       {index === 1 ? (
         <ExternalLinkComponent
+          externalTab
           link="https://xai-foundation.gitbook.io/xai-network"
           content="Learn more"
           customClass="!text-base"
@@ -204,6 +207,7 @@ export function TableHeadStaking({
       )}
       {index === 0 ? (
         <ExternalLinkComponent
+          externalTab
           link="https://xai-foundation.gitbook.io/xai-network"
           content="Learn more"
           customClass="lg:!text-base sm:text-sm sm:block lg:hidden"

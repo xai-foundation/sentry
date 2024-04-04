@@ -12,7 +12,7 @@ const PoolOverviewComponent = () => {
           title="Pool staking tiers"
           classNames="text-xl font-bold mr-4"
         />
-        <ExternalLinkComponent link={learnMoreLink} content={"Learn more"} />
+        <ExternalLinkComponent externalTab link={learnMoreLink} content={"Learn more"} />
       </div>
       <TableComponent />
     </PoolWrapper>

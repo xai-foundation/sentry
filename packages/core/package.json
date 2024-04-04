@@ -17,7 +17,8 @@
     "@noble/curves": "^1.2.0",
     "alchemy-sdk": "^3.1.0",
     "axios": "^1.6.2",
-    "isomorphic-ws": "^5.0.0"
+    "isomorphic-ws": "^5.0.0",
+    "mongoose": "^8.2.1"
   },
   "devDependencies": {
     "@types/node": "^20.6.0",

@@ -40,11 +40,9 @@ const PoolDetailsComponent = ({
 }: PoolDetailsProps) => {
   const { name, description, logoUrl } = poolDetailsValues;
   const { trackerName, trackerTicker } = tokenTracker;
-  const { badInputName, badInputDescription } =
-    useFindBlackListWordsHooks(poolDetailsValues);
+  const { isBadInputName, isBadInputDescription } = useFindBlackListWordsHooks(poolDetailsValues);
   const inputNameRequirements = name.length < 5 || name.length > 24;
-  const inputDescriptionRequirements =
-    description.length < 10 || description.length > 400;
+  const inputDescriptionRequirements = description.length < 10 || description.length > 400;
   const inputTrackerNameRequirements = tokenTracker.trackerName.length > 24;
   const inputTickerRequirements = tokenTracker.trackerTicker.length > 6;
 
@@ -53,10 +51,19 @@ const PoolDetailsComponent = ({
     inputDescriptionRequirements ||
     inputTrackerNameRequirements ||
     inputTickerRequirements ||
-    badInputName || badInputDescription
+    isBadInputName.isError ||
+    isBadInputDescription.isError
       ? setError(true)
       : setError(false);
-  }, [badInputDescription, badInputName, inputDescriptionRequirements, inputNameRequirements, inputTickerRequirements, inputTrackerNameRequirements, setError]);
+  }, [
+    isBadInputDescription,
+    isBadInputName,
+    inputDescriptionRequirements,
+    inputNameRequirements,
+    inputTickerRequirements,
+    inputTrackerNameRequirements,
+    setError,
+  ]);
 
   const handleChangeDetails = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPoolDetailsValues({
@@ -79,8 +86,20 @@ const PoolDetailsComponent = ({
     if (name.length < 5) {
       return ERROR_MESSAGE.ENTER_TEXT;
     }
-    if (badInputName) {
-      return ERROR_MESSAGE.BAD_WORD_MESSAGE;
+    if (isBadInputName.isError) {
+      return `${ERROR_MESSAGE.BAD_WORD_MESSAGE}"${isBadInputName.blacklistWord}"`;
+    }
+  };
+
+  const showErrorMessageDescription = () => {
+    if (description.length > 400) {
+      return ERROR_MESSAGE.DESCRIPTION_LENGTH;
+    }
+    if (description.length < 10) {
+      return ERROR_MESSAGE.DESCRIPTION;
+    }
+    if (isBadInputDescription.isError) {
+      return `${ERROR_MESSAGE.BAD_WORD_MESSAGE}"${isBadInputDescription.blacklistWord}"`;
     }
   };
 
@@ -96,7 +115,7 @@ const PoolDetailsComponent = ({
               name="name"
               label={LABELS.NAME}
               placeholder={PLACEHOLDERS.NAME}
-              isInvalid={inputNameRequirements || badInputName}
+              isInvalid={inputNameRequirements || isBadInputName.isError}
               errorMessage={showErrorMessageName()}
               type="text"
               onChange={handleChangeDetails}
@@ -109,12 +128,8 @@ const PoolDetailsComponent = ({
             name="description"
             label={LABELS.DESCRIPTION}
             placeholder={PLACEHOLDERS.DESCRIPTION}
-            errorMessage={
-              badInputDescription
-                ? ERROR_MESSAGE.BAD_WORD_MESSAGE
-                : ERROR_MESSAGE.DESCRIPTION
-            }
-            isInvalid={inputDescriptionRequirements || badInputDescription}
+            isInvalid={inputDescriptionRequirements || isBadInputDescription.isError}
+            errorMessage={showErrorMessageDescription()}
             onChange={handleChangeDetails}
             value={description}
           />

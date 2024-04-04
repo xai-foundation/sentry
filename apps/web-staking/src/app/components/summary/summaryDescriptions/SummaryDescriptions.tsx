@@ -23,6 +23,7 @@ const SummaryDescriptions = ({
 }: SummaryDescriptionsProps) => {
   const {
     rewardsValues: { owner, keyholder, staker },
+    delegateAddress,
   } = useGetPoolInfoHooks();
 
   const router = useRouter();
@@ -89,7 +90,7 @@ const SummaryDescriptions = ({
       <div className="mt-4 w-full text-graphiteGray">
         {poolInfo?.meta?.description}
       </div>
-      <SummaryAddress poolInfo={poolInfo} />
+      {(delegateAddress.length > 0) && <SummaryAddress delegateAddress={delegateAddress} />}
     </>
   );
 };

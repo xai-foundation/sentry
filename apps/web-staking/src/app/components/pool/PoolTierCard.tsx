@@ -45,6 +45,7 @@ const PoolTierCard = ({ poolInfo }: PoolTierCardProps) => {
       <div className="flex w-full justify-between">
         <span className="block text-graphiteGray">Current tier</span>
         <ExternalLinkComponent
+          externalTab
           link="https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-nodes-explained/accruing-node-rewards"
           content={"Learn more"}
           customClass="font-medium"
