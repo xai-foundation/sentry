@@ -46,6 +46,19 @@ export type PublicNodeBucketInformation = {
     confirmHash: string
 }
 
+type CachedSubmissionStatus = {
+    submitted: boolean,
+    claimed: boolean,
+    // eligible: boolean,
+    eligibleForPayout: boolean
+}
+type ChallengeCache = {
+    [keyId: string]: CachedSubmissionStatus
+}
+const challengeCache: {
+    [challenge: string]: ChallengeCache
+} = {}
+
 let owners: string[];
 let cachedSigner: ethers.Signer;
 let cachedLogger: (log: string) => void;
@@ -262,6 +275,10 @@ const reloadPoolKeys = async () => {
     }
 }
 
+const saveSubmissionStatus = (challengeNumber: bigint, nodeLicenseId: bigint, status: CachedSubmissionStatus) => {
+    challengeCache[challengeNumber.toString()][nodeLicenseId.toString()] = status;
+}
+
 /**
  * Processes a new challenge for all the node licenses.
  * @param {bigint} challengeNumber - The challenge number.
@@ -278,6 +295,10 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
         await syncOwnerStakedKeys();
     }
 
+    if (!challengeCache[challengeNumber.toString()]) {
+        challengeCache[challengeNumber.toString()] = {};
+    }
+
     for (const nodeLicenseId of nodeLicenseIds) {
 
         cachedLogger(`Checking eligibility for nodeLicenseId ${nodeLicenseId}.`);
@@ -288,6 +309,11 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
         if (challenge.createdTimestamp <= mintTimestamps[nodeLicenseId.toString()]) {
             cachedLogger(`Sentry Key ${nodeLicenseId} is not eligible for challenge ${challengeNumber}.`);
             updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
+            saveSubmissionStatus(challengeNumber, nodeLicenseId, {
+                submitted: false,
+                claimed: false,
+                eligibleForPayout: false
+            })
             continue;
         }
 
@@ -318,6 +344,11 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
             if (!payoutEligible) {
                 cachedLogger(`Sentry Key ${nodeLicenseId} did not accrue esXAI for the challenge ${challengeNumber}. A Sentry Key receives esXAI every few days.`);
                 updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
+                saveSubmissionStatus(challengeNumber, nodeLicenseId, {
+                    submitted: false,
+                    claimed: false,
+                    eligibleForPayout: false
+                });
                 continue;
             }
         } catch (error: any) {
@@ -325,12 +356,16 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
             continue;
         }
 
-        // Check if nodeLicense has already submitted
         try {
             const [{ submitted }] = await retry(() => getSubmissionsForChallenges([challengeNumber], nodeLicenseId));
             if (submitted) {
                 cachedLogger(`Sentry Key ${nodeLicenseId} has submitted for challenge ${challengeNumber} by another node. If multiple nodes are running, this message can be ignored.`);
                 updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
+                saveSubmissionStatus(challengeNumber, nodeLicenseId, {
+                    submitted: true,
+                    claimed: false,
+                    eligibleForPayout: true
+                });
                 continue;
             }
 
@@ -349,6 +384,13 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
 
     if (batchedWinnerKeys.length) {
         await submitMultipleAssertions(batchedWinnerKeys, challengeNumber, challenge.assertionStateRootOrConfirmData, KEYS_PER_BATCH, cachedSigner, cachedLogger);
+        batchedWinnerKeys.forEach(key => {
+            saveSubmissionStatus(challengeNumber, key, {
+                submitted: true,
+                claimed: false,
+                eligibleForPayout: true
+            });
+        })
         cachedLogger(`Submitted assertion for ${batchedWinnerKeys.length} Sentry Keys `);
     }
 }
@@ -387,27 +429,47 @@ async function processClaimForChallenge(challengeNumber: bigint, eligibleNodeLic
     }
 }
 
-async function processClosedChallenges(challengeIds: bigint[]) {
+async function processClosedChallenges(challengeId: bigint) {
     const challengeToEligibleNodeLicensesMap: Map<bigint, bigint[]> = new Map();
+
+    if (!challengeCache[challengeId.toString()]) {
+        challengeCache[challengeId.toString()] = {};
+    }
 
     for (const nodeLicenseId of nodeLicenseIds) {
         const beforeStatus = nodeLicenseStatusMap.get(nodeLicenseId)?.status;
         updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.QUERYING_FOR_UNCLAIMED_SUBMISSIONS);
-        cachedLogger(`Checking for unclaimed rewards on Sentry Key '${nodeLicenseId}'.`);
 
         try {
-            const submissions = await getSubmissionsForChallenges(challengeIds, nodeLicenseId);
-
-            // Iterate over each submission to process it
-            submissions.forEach(submission => {
-                if (submission.eligibleForPayout && !submission.claimed) {
-                    const challengeId = submission.challengeId;
-                    if (!challengeToEligibleNodeLicensesMap.has(challengeId)) {
-                        challengeToEligibleNodeLicensesMap.set(challengeId, []);
-                    }
-                    challengeToEligibleNodeLicensesMap.get(challengeId)?.push(BigInt(submission.nodeLicenseId));
+            if (!challengeCache[challengeId.toString()][nodeLicenseId.toString()]) {
+                cachedLogger(`Checking for unclaimed rewards on Sentry Key '${nodeLicenseId}'.`);
+                const submissions = await getSubmissionsForChallenges([challengeId], nodeLicenseId);
+                if (submissions.length) {
+                    saveSubmissionStatus(challengeId, nodeLicenseId, {
+                        submitted: true,
+                        claimed: submissions[0].claimed,
+                        eligibleForPayout: submissions[0].eligibleForPayout
+                    });
+                } else {
+                    saveSubmissionStatus(challengeId, nodeLicenseId, {
+                        submitted: false,
+                        claimed: false,
+                        eligibleForPayout: false
+                    });
                 }
-            });
+
+            }
+
+            let submissionStatus = challengeCache[challengeId.toString()][nodeLicenseId.toString()];
+
+            if (submissionStatus.submitted && submissionStatus.eligibleForPayout && !submissionStatus.claimed) {
+                // const challengeId = submission.challengeId;
+                if (!challengeToEligibleNodeLicensesMap.has(challengeId)) {
+                    challengeToEligibleNodeLicensesMap.set(challengeId, []);
+                }
+                challengeToEligibleNodeLicensesMap.get(challengeId)?.push(BigInt(nodeLicenseId));
+            }
+            // });
         } catch (error: any) {
             cachedLogger(`Error processing submissions for Sentry Key ${nodeLicenseId} - ${error && error.message ? error.message : error}`);
         }
@@ -423,6 +485,14 @@ async function processClosedChallenges(challengeIds: bigint[]) {
         const uniqueNodeLicenseIds = [...new Set(nodeLicenseIds)]; // Remove duplicates
         if (uniqueNodeLicenseIds.length > 0) {
             await processClaimForChallenge(challengeId, uniqueNodeLicenseIds);
+            uniqueNodeLicenseIds.forEach(key => {
+                saveSubmissionStatus(challengeId, key, {
+                    submitted: true,
+                    claimed: true,
+                    eligibleForPayout: true,
+                });
+            })
+
         }
     }
 }
@@ -459,7 +529,7 @@ async function listenForChallengesCallback(challengeNumber: bigint, challenge: C
 
     // check the previous challenge, that should be closed now
     if (challengeNumber > BigInt(1)) {
-        await processClosedChallenges([challengeNumber - BigInt(1)]);
+        await processClosedChallenges(challengeNumber - BigInt(1));
     }
 }
 
