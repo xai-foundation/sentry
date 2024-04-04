@@ -1,8 +1,6 @@
 import { ethers } from "ethers";
 import {
     Challenge,
-    RefereeAbi,
-    claimReward,
     config,
     getMintTimestamp,
     getSubmissionsForChallenges,
@@ -10,16 +8,15 @@ import {
     listNodeLicenses,
     listOwnersForOperator,
     listenForChallenges,
-    submitAssertionToChallenge,
-    checkKycStatus,
     getProvider,
     version,
-    Submission,
     getBoostFactor,
-    getUserPools,
+    getOwnerOrDelegatePools,
     getKeysOfPool,
     submitMultipleAssertions,
-    claimRewardsBulk
+    claimRewardsBulk,
+    getUserInteractedPools,
+    getUserStakedKeysOfPool
 } from "../index.js";
 import { retry } from "../index.js";
 import axios from "axios";
@@ -49,6 +46,7 @@ export type PublicNodeBucketInformation = {
     confirmHash: string
 }
 
+let owners: string[];
 let cachedSigner: ethers.Signer;
 let cachedLogger: (log: string) => void;
 let safeStatusCallback: () => void;
@@ -63,6 +61,7 @@ let keyIdToPoolAddress: { [keyId: string]: string } = {};
 let operatorPoolAddresses: string[];
 const isKYCMap: { [keyId: string]: boolean } = {};
 const keyToOwner: { [keyId: string]: string } = {}; //Used to remember the owner of the key should it have been put into the pool list
+let ownerStakedKey: { [keyId: string]: string } = {}; //Used to remember if a key came from an owner and was staked into a pool we don't operate
 const KEYS_PER_BATCH = 100;
 
 async function getPublicNodeFromBucket(confirmHash: string) {
@@ -142,7 +141,7 @@ const checkV2Enabled = async (): Promise<boolean> => {
 }
 
 const reloadPoolKeys = async () => {
-    operatorPoolAddresses = await getUserPools(operatorAddress);
+    operatorPoolAddresses = await getOwnerOrDelegatePools(operatorAddress);
 
     if (operatorPoolAddresses.length) {
 
@@ -159,6 +158,11 @@ const reloadPoolKeys = async () => {
             const keys = await getKeysOfPool(pool);
 
             for (const key of keys) {
+
+                if (ownerStakedKey[key.toString()]) {
+                    //Make sure we don't keep them in this map so we don't remove them when re-syncing
+                    delete ownerStakedKey[key.toString()];
+                }
 
                 isKYCMap[key.toString()] = true; //If key is in pool it has to be KYCd
                 currentPoolKeys[key.toString()] = pool;
@@ -197,7 +201,7 @@ const reloadPoolKeys = async () => {
                 if (!currentPoolKeys[key]) {
 
                     isKYCMap[key.toString()] = false; //Remove kyc cache
-                    
+
                     if (keyToOwner[key]) {
                         //If the key was in the list before any pools
                         //We just want to update the owner back to the key owner
@@ -271,6 +275,7 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
     const batchedWinnerKeys: bigint[] = []
     if (stakingV2Enabled) {
         await reloadPoolKeys();
+        await syncOwnerStakedKeys();
     }
 
     for (const nodeLicenseId of nodeLicenseIds) {
@@ -294,6 +299,8 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
             if (!cachedBoostFactor[keyOwner]) {
                 try {
                     cachedBoostFactor[keyOwner] = await getBoostFactor(keyOwner);
+                    cachedLogger(`Found chance boost of ${Number(cachedBoostFactor[keyOwner]) / 100}% for ${keyIdToPoolAddress[nodeLicenseId.toString()] ? "pool" : "owner"} ${keyOwner}`);
+
                 } catch (error: any) {
                     const errorMessage: string = error && error.message ? error.message : error;
                     if (errorMessage.includes("missing revert data")) {
@@ -390,7 +397,7 @@ async function processClosedChallenges(challengeIds: bigint[]) {
 
         try {
             const submissions = await getSubmissionsForChallenges(challengeIds, nodeLicenseId);
-            
+
             // Iterate over each submission to process it
             submissions.forEach(submission => {
                 if (submission.eligibleForPayout && !submission.claimed) {
@@ -456,6 +463,74 @@ async function listenForChallengesCallback(challengeNumber: bigint, challenge: C
     }
 }
 
+
+// Sync all staked keys from owners to their pools so we load the correct boostFactor and do the correct bulk claim
+// This will load all staked keys for each owner for all pools they have staked in
+async function syncOwnerStakedKeys() {
+
+    const currentOwnerStakedKeys: { [keyId: string]: string } = {};
+
+    for (const owner of owners) {
+        const ownerInteractedPools = await getUserInteractedPools(owner);
+
+        if (ownerInteractedPools.length) {
+
+            for (const pool of ownerInteractedPools) {
+
+                const keys = await getUserStakedKeysOfPool(pool, owner);
+                for (const key of keys) {
+
+                    //The key needs to be in the list already
+                    //We just need to check if we already mapped the pool because it was staked in one of the operators owned / delegated pools
+
+                    if (!nodeLicenseIds.includes(key)) {
+                        cachedLogger(`Error key not found in list of keys to operate, restart the operator to reload ${key.toString()}.`);
+                        continue;
+                    }
+
+                    if (!keyIdToPoolAddress[key.toString()]) {
+                        if (!ownerStakedKey[key.toString()]) {
+                            cachedLogger(`Sentry Key ${key.toString()} staked in pool ${pool}.`);
+                        }
+                        isKYCMap[key.toString()] = true; //If key is in pool it has to be KYCd
+                        keyIdToPoolAddress[key.toString()] = pool;
+                        currentOwnerStakedKeys[key.toString()] = pool;
+
+                        const nodeLicenseInfo = nodeLicenseStatusMap.get(key);
+                        if (nodeLicenseInfo) {
+                            keyToOwner[key.toString()] = nodeLicenseInfo.ownerPublicKey;
+                            nodeLicenseInfo.ownerPublicKey = pool;
+                            nodeLicenseStatusMap.set(key, nodeLicenseInfo);
+                            safeStatusCallback();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //Make sure we update if a key is no longer staked
+    const cachedStakedKeys = Object.keys(ownerStakedKey);
+    for (const key of cachedStakedKeys) {
+
+        if (!currentOwnerStakedKeys[key]) {
+            //This key was staked in a pool but was unstaked
+            isKYCMap[key] = false; //Remove kyc cache
+            cachedLogger(`Sentry Key ${key} no longer staked in pool ${keyIdToPoolAddress[key]}.`);
+
+            delete keyIdToPoolAddress[key]; // remove mapped pool
+            const nodeLicenseInfo = nodeLicenseStatusMap.get(BigInt(key));
+            if (nodeLicenseInfo) {
+                nodeLicenseInfo.ownerPublicKey = keyToOwner[key];
+                nodeLicenseStatusMap.set(BigInt(key), nodeLicenseInfo);
+                safeStatusCallback();
+            }
+        }
+    }
+
+    ownerStakedKey = currentOwnerStakedKeys;
+}
+
 /**
  * Operator runtime function.
  * @param {ethers.Signer} signer - The signer.
@@ -496,7 +571,6 @@ export async function operatorRuntime(
 
     // get a list of all the owners that are added to this operator
     logFunction(`Getting all wallets assigned to the operator.`);
-    let owners: string[];
     if (operatorOwners) {
         logFunction(`Operator owners were passed in.`);
         owners = Array.from(new Set(operatorOwners));
@@ -531,7 +605,7 @@ export async function operatorRuntime(
         logFunction(`Staking V2 enabled, loading pool keys`);
         // Get Pool related keys
         // Get all user pool addresses as owner and delegated
-        operatorPoolAddresses = await getUserPools(operatorAddress);
+        operatorPoolAddresses = await getOwnerOrDelegatePools(operatorAddress);
 
         if (operatorPoolAddresses.length) {
             logFunction(`Found ${operatorPoolAddresses.length} pools for operator.`);
@@ -545,6 +619,7 @@ export async function operatorRuntime(
 
                 for (const key of keys) {
                     isKYCMap[key.toString()] = true; //If key is in pool it has to be KYCd
+                    keyIdToPoolAddress[key.toString()] = pool;
 
                     if (!nodeLicenseIds.includes(key)) {
                         logFunction(`Fetched Sentry Key ${key.toString()} staked in pool ${pool}.`);
@@ -552,7 +627,6 @@ export async function operatorRuntime(
                             ownerPublicKey: pool,
                             status: NodeLicenseStatus.WAITING_IN_QUEUE,
                         });
-                        keyIdToPoolAddress[key.toString()] = pool;
                         nodeLicenseIds.push(key);
                     } else {
 
@@ -569,6 +643,8 @@ export async function operatorRuntime(
                 }
             }
         }
+
+        await syncOwnerStakedKeys();
     }
 
     logFunction(`Total Sentry Keys fetched: ${nodeLicenseIds.length}.`);

@@ -10,7 +10,7 @@ import { StakingPoolAbi } from '../abis/StakingPoolAbi.js';
  * @param ownerAddress - The address of the owner.
  * @returns An array of pool addresses.
  */
-export async function getUserPools(
+export async function getOwnerOrDelegatePools(
     ownerAddress: string
 ): Promise<string[]> {
 
