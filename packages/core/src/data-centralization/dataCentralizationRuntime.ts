@@ -53,6 +53,7 @@ export async function dataCentralizationRuntime({
 		'UpdatePoolDelegate': 1,
 		'UnstakeRequestStarted': 1,
 		'UpdateShares': 0,
+		'UpdateMetadata': 0
 	}
 
 	const stopListener = resilientEventListener({
