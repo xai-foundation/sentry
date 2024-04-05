@@ -5,10 +5,13 @@
 			"options": {
 				"commands": [
 					{
+						"command": "mkdir -p mochawesome-report && find mochawesome-report -mindepth 1 -delete"
+					},
+					{
 						"command": "npx nx run-many --target=test --exclude @sentry/smart-contracts @sentry/sentry-subgraph || true"
 					},
 					{
-						"command": "npx mochawesome-merge apps/**/mochawesome-report/*.json -o ./mochawesome-report/mochawesome-merge.json"
+						"command": "npx mochawesome-merge '**/mochawesome-report/*.json' -o ./mochawesome-report/mochawesome-merge.json"
 					},
 					{
 						"command": "npx marge ./mochawesome-report/mochawesome-merge.json --reportDir ./mochawesome-report --inline --autoOpen"
@@ -28,7 +31,7 @@
 						"command": "npx nx run-many --target=coverage --exclude @sentry/smart-contracts @sentry/sentry-subgraph || true"
 					},
 					{
-						"command": "npx mochawesome-merge 'apps/**/mochawesome-report/*.json' -o ./mochawesome-report/mochawesome-merge.json"
+						"command": "npx mochawesome-merge '**/mochawesome-report/*.json' -o ./mochawesome-report/mochawesome-merge.json"
 					},
 					{
 						"command": "npx marge ./mochawesome-report/mochawesome-merge.json --reportDir ./mochawesome-report --inline"

@@ -8,7 +8,7 @@
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
     "lint": "eslint . --ext .ts,.tsx",
     "build": "tsc",
-    "test": "mocha -r ts-node/register -r tsconfig-paths/register 'src/**/*.spec.ts' --reporter mochawesome --reporter-options html=false",
+    "test": "TS_NODE_PROJECT=tsconfig.spec.json mocha -r ts-node/register -r tsconfig-paths/register 'src/**/*.spec.ts' --reporter mochawesome --reporter-options overwrite=true,html=false",
     "coverage": "nyc pnpm run test"
   },
   "keywords": [],
