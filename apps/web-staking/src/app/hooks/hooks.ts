@@ -291,15 +291,18 @@ export const useFindBlackListWordsHooks = ({
   const checkBlackListWords = ({ name, description }: PoolDetails) => {
     setIsBadInputName({ isError: false, blacklistWord: "" });
     setIsBadInputDescription({ isError: false, blacklistWord: "" });
+
+    const poolNameInput = name.toLowerCase().split(" ");
+    const poolDescriptionInput = description.toLowerCase().split(" ");
     let nameBadWords = "";
     let descriptionBadWords = "";
 
     BLACK_LIST.forEach((word) => {
-      if (name.toLowerCase().includes(word.toLocaleLowerCase())) {
+      if (poolNameInput.includes(word.toLowerCase())) {
         nameBadWords += ", " + word;
         setIsBadInputName({ isError: true, blacklistWord: nameBadWords.replace(/^(,+)/, '').trim() });
       }
-      if (description.toLowerCase().includes(word.toLocaleLowerCase())) {
+      if (poolDescriptionInput.includes(word.toLowerCase())) {
         descriptionBadWords += ", " + word;
         setIsBadInputDescription({ isError: true, blacklistWord: descriptionBadWords.replace(/^(,+)/, "").trim() });
       }

@@ -93,6 +93,20 @@ export default function StakingKeysDetailComponent({
 								</div>
 							)}
 
+							{unstakeKey && address == userPool.owner && userPool.userStakedKeyIds.length - (userPool.unstakeRequestkeyAmount || 0) == 1 && (
+								<div className="max-w-xl w-full p-3">
+									<WarningComponent
+										title="You are unstaking the genesis key from your pool"
+										description="This will require a 60 days unstaking period. Once unstaked, the genesis key will be locked for 60 days until it is claimable."
+										onAcceptTerms={() => { }}
+										includeYouMustAgreeMessage={false}
+										includeCheckbox={false}
+										checkbox={checkbox}
+										setCheckbox={setCheckbox}
+									/>
+								</div>
+							)}
+
 							<div className="flex items-center mb-4">
 								<span className="mr-2">{unstakeKey ? 'Unstake from:' : 'Stake to:'}</span>
 								<Avatar src={userPool.meta.logo} className="w-[32px] h-[32px] mr-2" />

@@ -17,6 +17,9 @@ export default interface IPool extends IDocument {
 	keyBucketShare: number,
 	stakedBucketShare: number,
 	updateSharesTimestamp?: number,
+	ownerStakedKeys: number,
+	ownerRequestedUnstakeKeyAmount: number,
+	ownerLatestUnstakeRequestCompletionTime: number,
 	pendingShares?: number[];
 	userStakedKeyIds: number[],
 	socials: [website: string, twitter: string, discord: string, telegram: string, instagram: string, tiktok: string, youtube: string],

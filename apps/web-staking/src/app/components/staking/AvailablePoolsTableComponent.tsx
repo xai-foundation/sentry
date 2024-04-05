@@ -17,7 +17,7 @@ const POOL_DATA_COLUMS = [
   "Pool",
   "Tier",
   "Key staking capacity",
-  "Daily key rewards",
+  "Reward breakdown"
 ];
 
 interface AvailableTableProps {
@@ -62,8 +62,14 @@ const AvailablePoolsTableComponent = ({
             {pools.map((pool, index) => {
               return (
                 <tr key={index} className={`border-b text-right`}>
-                  <TableRowPool pool={pool} tier={getCurrentTierByStaking(Math.min(pool.totalStakedAmount, pool.maxStakedAmount)) as TierInfo & { icon: iconType }} />
-                  <TableRowLabel tier={getCurrentTierByStaking(Math.min(pool.totalStakedAmount, pool.maxStakedAmount)) as TierInfo & { icon: iconType }} />
+                  <TableRowPool pool={pool}
+                                tier={getCurrentTierByStaking(Math.min(pool.totalStakedAmount, pool.maxStakedAmount)) as TierInfo & {
+                                  icon: iconType
+                                }} />
+                  <TableRowLabel
+                    tier={getCurrentTierByStaking(Math.min(pool.totalStakedAmount, pool.maxStakedAmount)) as TierInfo & {
+                      icon: iconType
+                    }} poolAddress={pool.address} />
                   <TableRowCapacity pool={pool} showTableKeys={showTableKeys} />
                   <TableRowRewards pool={pool} showTableKeys={showTableKeys} />
                 </tr>

@@ -1,15 +1,14 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
-import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
+import { useEffect, useRef, useState } from "react";
+import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
 import PoolTierCard from "@/app/components/pool/PoolTierCard";
 import HeadlineComponent from "@/app/components/summary/HeadlineComponent";
 import StakingCards from "@/app/components/summary/StakingCards";
 import SummaryDescriptions from "@/app/components/summary/summaryDescriptions/SummaryDescriptions";
 import { useGetUnstakeRequests, useGetUserPoolInfo } from "@/app/hooks/hooks";
-import { sendUpdatePoolRequest } from "@/services/requestService";
 import {
   UnstakeRequest,
   getWeiAmount,
@@ -24,10 +23,10 @@ import {
   loadingNotification,
   updateNotification,
 } from "../notifications/NotificationsComponent";
+import { Id } from "react-toastify";
 
 const SummaryComponent = () => {
   const router = useRouter();
-  const [transactionLoading, setTransactionLoading] = useState(false);
   const [refreshPoolInfo, setRefreshPoolInfo] = useState(false);
   const [refreshUnstakeRequests, setRefreshUnstakeRequests] = useState(false);
   // const [poolInfo, setData] = useState<PoolInfo>();
@@ -41,38 +40,62 @@ const SummaryComponent = () => {
     refreshUnstakeRequests,
   );
 
+  const [isClaimRequest, setIsClaimRequest] = useState(false);
+  const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
+  const toastId = useRef<Id>();
+  const [unstakeRequestIndex, setUnstakeRequestIndex] = useState<number>();
+
+  // Substitute Timeouts with useWaitForTransaction
+  const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
+    hash: receipt,
+  });
+
   const { userPool: poolInfo } = useGetUserPoolInfo(
     poolAddress,
     refreshPoolInfo,
   );
 
+  useEffect(() => {
+    if (isSuccess) {
+      updateNotification(
+        "Successfully claimed",
+        toastId.current as Id,
+        false,
+        receipt,
+        chainId,
+      );
+      setRefreshPoolInfo(!refreshPoolInfo);
+      if (isClaimRequest) {
+        updateRequestClaimed(
+          getNetwork(chainId),
+          address!,
+          poolAddress,
+          unstakeRequestIndex as number,
+        );
+        setRefreshUnstakeRequests(!refreshUnstakeRequests);
+      }
+    }
+    if (isError) {
+      const error = mapWeb3Error(status);
+      updateNotification(error, toastId.current as Id, true);
+    }
+  }, [isSuccess, isError]);
+
   const onClaim = async () => {
-    setTransactionLoading(true);
-    const loading = loadingNotification("Transaction pending...");
+    setIsClaimRequest(false);
+    toastId.current = loadingNotification("Transaction pending...");
     try {
-      const receipt = await executeContractWrite(
+      setReceipt(await executeContractWrite(
         WriteFunctions.claimFromPools,
         [[poolAddress]],
         chainId,
         writeContractAsync,
         switchChain,
-      );
+      ) as `0x${string}`);
 
-      setTimeout(async () => {
-        updateNotification(
-          "Successfully claimed",
-          loading,
-          false,
-          receipt,
-          chainId,
-        );
-        setRefreshPoolInfo(!refreshPoolInfo);
-        setTransactionLoading(false);
-      }, 3000);
     } catch (ex: any) {
       const error = mapWeb3Error(ex);
-      updateNotification(error, loading, true);
-      setTransactionLoading(false);
+      updateNotification(error, toastId.current, true);
     }
   };
 
@@ -95,18 +118,17 @@ const SummaryComponent = () => {
   };
 
   const onClaimRequest = async (unstakeRequest: UnstakeRequest) => {
-    const loading = loadingNotification("Transaction pending...");
-    setTransactionLoading(true);
-    let receipt: string;
+    setIsClaimRequest(true);
+    toastId.current = loadingNotification("Transaction pending...");
 
     try {
       if (unstakeRequest.isKeyRequest) {
-        receipt = await completeKeyRequest(
+        setReceipt(await completeKeyRequest(
           unstakeRequest.index,
           unstakeRequest.amount,
-        );
+        ) as `0x${string}`);
       } else {
-        receipt = await executeContractWrite(
+        setReceipt(await executeContractWrite(
           WriteFunctions.unstakeEsXai,
           [
             poolAddress,
@@ -116,35 +138,17 @@ const SummaryComponent = () => {
           chainId,
           writeContractAsync,
           switchChain,
-        );
+        ) as `0x${string}`);
       }
+      setUnstakeRequestIndex(unstakeRequest.index);
+
+
     } catch (ex: any) {
       const error = mapWeb3Error(ex);
-      updateNotification(error, loading, true);
-      setTransactionLoading(false);
+      updateNotification(error, toastId.current, true);
       return;
     }
 
-    setTimeout(async () => {
-      updateNotification(
-        "Successfully claimed",
-        loading,
-        false,
-        receipt,
-        chainId,
-      );
-
-      sendUpdatePoolRequest(poolAddress, chainId);
-      setRefreshPoolInfo(!refreshPoolInfo);
-      updateRequestClaimed(
-        getNetwork(chainId),
-        address!,
-        poolAddress,
-        unstakeRequest.index,
-      );
-      setRefreshUnstakeRequests(!refreshUnstakeRequests);
-      setTransactionLoading(false);
-    }, 3000);
   };
 
   return (
@@ -154,12 +158,13 @@ const SummaryComponent = () => {
           <>
             <HeadlineComponent poolInfo={poolInfo} walletAddress={address} />
             <div className="mt-2 flex w-full justify-start xl:hidden">
-              <ButtonBack btnText={"Back"} onClick={() => router.back()} />
+              <ButtonBack btnText={"Back"} onClick={window && window.history.length > 2 ? () => router.back() : () => router.push(`/staking?chainId=${chainId}`)} />
             </div>
             <SummaryDescriptions
               poolInfo={poolInfo}
               onClaim={onClaim}
-              transactionLoading={transactionLoading}
+              chainId={chainId}
+              transactionLoading={isLoading}
             />
 
             {poolInfo?.tier && <PoolTierCard poolInfo={poolInfo} />}

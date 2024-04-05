@@ -8,6 +8,7 @@ import {
   TableRowStaked,
   TableRowAvatarV1,
   TableHeadStaking,
+  TableRowStakedV1,
 } from "./TableChunksComponents";
 import MessageComponent from "./MessageComponent";
 import { PoolInfo, TierInfo } from "@/types/Pool";
@@ -16,18 +17,17 @@ import { useGetTotalStakedHooks } from "@/app/hooks/hooks";
 import { getCurrentTierByStaking } from "./utils";
 import { formatCurrencyNoDecimals } from "@/app/utils/formatCurrency";
 
+const POOL_DATA_COLUMNS_STAKED = [
+  "Pool",
+  "Tier",
+  "esXAI staked",
+  "Keys staked",
+  ""
+] as const;
+
 const StakedPoolsTable = ({ userPools }: { userPools: PoolInfo[] }) => {
   const [showMessage, setShowMessage] = useState(true);
   const { totalStaked } = useGetTotalStakedHooks();
-
-  const POOL_DATA_COLUMS_STAKED = [
-    "Pool",
-    "Tier",
-    "esXAI staked",
-    "Rewards",
-    "Keys staked",
-    "Key rewards",
-  ];
 
   return (
     <>
@@ -43,7 +43,7 @@ const StakedPoolsTable = ({ userPools }: { userPools: PoolInfo[] }) => {
       <table className="min-w-full text-base font-light mb-[50px]">
         <thead className="border-b">
           <tr>
-            {POOL_DATA_COLUMS_STAKED.map((column, index) => {
+            {POOL_DATA_COLUMNS_STAKED.map((column, index) => {
               return (
                 <TableHeadStaking
                   key={index}
@@ -62,10 +62,10 @@ const StakedPoolsTable = ({ userPools }: { userPools: PoolInfo[] }) => {
               <TableRowLabelV1
                 tier={getCurrentTierByStaking(totalStaked) as TierInfo & { icon: iconType }}
               />
-              <TableRowStaked value={`${formatCurrencyNoDecimals.format(totalStaked)} esXAI`} />
-              <TableRowStaked value="—" customClass="sm:indent-3 lg:indent-0" />
-              <TableRowStaked value="—" customClass="lg:table-cell sm:hidden" />
-              <TableRowKeysRewards value="—" />
+              <TableRowStakedV1 value={`${formatCurrencyNoDecimals.format(totalStaked)} esXAI`} />
+              <TableRowStakedV1 value="—" customClass="sm:indent-3 lg:indent-0" />
+              <TableRowStakedV1 value="—" customClass="lg:table-cell sm:hidden" />
+              <TableRowKeysRewards totalStaked={totalStaked} />
             </tr>
           }
         </tbody>
@@ -75,13 +75,13 @@ const StakedPoolsTable = ({ userPools }: { userPools: PoolInfo[] }) => {
               return (
                 <tr key={index} className={`border-b text-right`}>
                   <TableRowPool pool={pool} tier={getCurrentTierByStaking(Math.min(pool.totalStakedAmount, pool.maxStakedAmount)) as TierInfo & { icon: iconType }} />
-                  <TableRowLabel tier={getCurrentTierByStaking(Math.min(pool.totalStakedAmount, pool.maxStakedAmount)) as TierInfo & { icon: iconType }} />
-                  <TableRowStaked value={`${pool.userStakedEsXaiAmount ? formatCurrencyNoDecimals.format(pool.userStakedEsXaiAmount) : pool.userStakedEsXaiAmount} esXAI`} />
-                  <TableRowStaked value={`0 esXAI`} customClass="lg:table-cell sm:hidden" />
-                  <TableRowStaked
-                    value={`${formatCurrencyNoDecimals.format(pool.userStakedKeyIds.length)} keys`}
-                  />
-                  <TableRowKeysRewards pool={pool} />
+                  <TableRowLabel
+                    tier={getCurrentTierByStaking(Math.min(pool.totalStakedAmount, pool.maxStakedAmount)) as TierInfo & {
+                      icon: iconType
+                    }} poolAddress={pool.address} fullWidth />
+                  <TableRowStaked value={`${pool.userStakedEsXaiAmount ? formatCurrencyNoDecimals.format(pool.userStakedEsXaiAmount) : pool.userStakedEsXaiAmount} esXAI`} poolAddress={pool.address} />
+                  <TableRowStaked value={`${formatCurrencyNoDecimals.format(pool.userStakedKeyIds.length)} keys`} poolAddress={pool.address} />
+                  <TableRowKeysRewards pool={pool} totalStaked={totalStaked} />
                 </tr>
               )
             })

@@ -150,15 +150,15 @@ const PoolDetailsComponent = ({
                 name="trackerName"
                 value={trackerName}
                 onChange={handleChangeTracker}
-                label="Token tracker name"
-                placeholder="Enter name here"
-                isInvalid={inputTrackerNameRequirements}
-                errorMessage={ERROR_MESSAGE.TRACKER_NAME}
-                endContent={
-                  <div className="absolute bottom-[58px] left-[145px]">
+                label={
+                  <div className="flex items-center">
+                     Token tracker name
                     <PopoverWindow tokenText />
                   </div>
                 }
+                placeholder="Enter name here"
+                isInvalid={inputTrackerNameRequirements}
+                errorMessage={ERROR_MESSAGE.TRACKER_NAME}
               />
             </div>
             <div className="lg:w-[30%] sm:w-full">

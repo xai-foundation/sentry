@@ -1,16 +1,15 @@
 import MainTitle from "../titles/MainTitle";
 import { Avatar } from "@nextui-org/react";
 import { ButtonBack, PrimaryButton } from "../buttons/ButtonsComponent";
-import { useState } from "react";
-import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
-import { addUnstakeRequest, getNetwork, getStakedKeysOfUserInPool, getUnstakedKeysOfUser, mapWeb3Error } from "@/services/web3.service";
+import { useEffect, useRef, useState } from "react";
+import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { addUnstakeRequest, getNetwork, getUnstakedKeysOfUser, mapWeb3Error } from "@/services/web3.service";
 import { loadingNotification, updateNotification } from "../notifications/NotificationsComponent";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import { PoolInfo } from "@/types/Pool";
 import { Id } from "react-toastify";
 
 import { useRouter } from "next/navigation";
-import { sendUpdatePoolRequest } from "@/services/requestService";
 
 
 interface KeyReviewProps {
@@ -24,10 +23,28 @@ export default function StakeKeysDetailReviewComponent({ pool, inputValue, onBac
 
 	const router = useRouter();
 
-	const [transactionLoading, setTransactionLoading] = useState(false);
+	const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
+
 	const { address, chainId } = useAccount();
 	const { switchChain } = useSwitchChain();
 	const { writeContractAsync } = useWriteContract();
+
+	// Substitute Timeouts with useWaitForTransaction
+	const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
+		hash: receipt,
+	});
+
+	const toastId = useRef<Id>();
+
+	useEffect(() => {
+		if (isSuccess) {
+			onSuccess();
+		}
+		if (isError) {
+			const error = mapWeb3Error(status);
+			updateNotification(error, toastId.current as Id, true);
+		}
+	}, [isSuccess, isError]);
 
 	const onConfirm = async () => {
 
@@ -35,9 +52,7 @@ export default function StakeKeysDetailReviewComponent({ pool, inputValue, onBac
 			return;
 		}
 
-		let receipt;
-		setTransactionLoading(true);
-		const loading = loadingNotification("Transaction is pending...");
+		toastId.current = loadingNotification("Transaction is pending...");
 		try {
 			// TODO: check eth balance enough for gas
 			// TODO: get keys to unstake
@@ -49,65 +64,57 @@ export default function StakeKeysDetailReviewComponent({ pool, inputValue, onBac
 				}
 
 				if (isOwnerLastKey) {
-					receipt = await executeContractWrite(
+					setReceipt(await executeContractWrite(
 						WriteFunctions.createUnstakeOwnerLastKeyRequest,
 						[pool.address],
 						chainId,
 						writeContractAsync,
 						switchChain
-					);
+					) as `0x${string}`);
 				} else {
-					receipt = await executeContractWrite(
+					setReceipt(await executeContractWrite(
 						WriteFunctions.createUnstakeKeyRequest,
 						[pool.address, BigInt(inputValue)],
 						chainId,
 						writeContractAsync,
 						switchChain
-					);
+					) as `0x${string}`);
 				}
 			} else {
 				const keyIds = await getUnstakedKeysOfUser(getNetwork(chainId), address as string, Number(inputValue));
-				receipt = await executeContractWrite(
+				setReceipt(await executeContractWrite(
 					WriteFunctions.stakeKeys,
 					[pool.address, keyIds],
 					chainId,
 					writeContractAsync,
 					switchChain
-				);
+				) as `0x${string}`);
 			}
-			onSuccess(receipt, loading);
 		} catch (ex: any) {
 			const error = mapWeb3Error(ex);
-			updateNotification(error, loading, true);
-			setTransactionLoading(false);
-			setTimeout(() => router.back(), 3000);
+			updateNotification(error, toastId.current as Id, true);
+			router.back();
 		}
 	}
 
-	const onSuccess = async (receipt: string, loadingToast: Id) => {
+	const onSuccess = async () => {
 		updateNotification(
 			`You have successfully ${unstake ? "unstaked" : "staked"} ${inputValue} Keys`,
-			loadingToast,
+			toastId.current as Id,
 			false,
 			receipt,
 			chainId
 		);
-		setTimeout(() => {
 
-			sendUpdatePoolRequest(pool.address, chainId);
-			setTransactionLoading(false);
+		if (unstake) {
+			addUnstakeRequest(getNetwork(chainId), address!, pool.address)
+				.then(() => {
+					router.push(`/pool/${pool.address}/summary`);
+				})
 
-			if (unstake) {
-				addUnstakeRequest(getNetwork(chainId), address!, pool.address)
-					.then(() => {
-						router.push(`/pool/${pool.address}/summary`);
-					})
-
-			} else {
-				router.push(`/pool/${pool.address}/summary`);
-			}
-
-		}, 3000);
+		} else {
+			router.push(`/pool/${pool.address}/summary`);
+		}
 	};
 
 	return (
@@ -127,9 +134,9 @@ export default function StakeKeysDetailReviewComponent({ pool, inputValue, onBac
 				/>
 				<PrimaryButton
 					onClick={onConfirm}
-					btnText={`${transactionLoading ? "Waiting for confirmation..." : "Confirm"
+					btnText={`${isLoading ? "Waiting for confirmation..." : "Confirm"
 						}`}
-					className={`w-full mt-6 font-bold ${transactionLoading && "bg-[#B1B1B1] disabled"
+					className={`w-full mt-6 font-bold ${isLoading && "bg-[#B1B1B1] disabled"
 						} disabled:opacity-50`}
 				/>
 			</div>

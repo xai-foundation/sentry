@@ -52,26 +52,29 @@ export type UserPoolDataType = {
 }
 
 export type PoolInfo = {
-	address: string;							// address of the pool contract
-	owner: string;								// address of the user that created the pool
-	keyBucketTracker: string;					// the key bucket tracker contract address
-	esXaiBucketTracker: string;					// the esXai bucket tracker contract address
-	keyCount: number;							// current number of NodeLicenses allocated to the pool
-	totalStakedAmount: number;					// The total esXai staked in that pool
-	maxStakedAmount: number;					// The maximum capacity of esXai for this pool
-	ownerShare: number;							// The share for the pool owner
-	keyBucketShare: number;						// The share for the key staker
-	stakedBucketShare: number;					// The share for the esXai staker
-	maxKeyCount: number;						// maximum number of NodeLicenses that can be allocated to the pool
-	userStakedEsXaiAmount?: number;				// current amount of esXai the given user has staked on the pool
-	unstakeRequestkeyAmount?: number,			// pending unstake key amount from user
-	unstakeRequestesXaiAmount?: number,			// pending unstake esXai amount from user
-	userClaimAmount?: number;		    		// available claim amount for pool
-	userStakedKeyIds: number[];	    			// current number of NodeLicense keys staked on the pool by the given user
-	tier?: TierInfo;	       	 				// current reward tier of the pool
-	meta: PoolMetadata;							// metadata about the pool
-	pendingShares: number[]; 					// new pending shares set by the owner (owner, keys, esXai)
-	updateSharesTimestamp: number;				// timestamp when the pending shares will take effect, 0 if there are no pending shares
+	address: string;										// address of the pool contract
+	owner: string;											// address of the user that created the pool
+	keyBucketTracker: string;								// the key bucket tracker contract address
+	esXaiBucketTracker: string;								// the esXai bucket tracker contract address
+	keyCount: number;										// current number of NodeLicenses allocated to the pool
+	totalStakedAmount: number;								// The total esXai staked in that pool
+	maxStakedAmount: number;								// The maximum capacity of esXai for this pool
+	ownerShare: number;										// The share for the pool owner
+	keyBucketShare: number;									// The share for the key staker
+	stakedBucketShare: number;								// The share for the esXai staker
+	maxKeyCount: number;									// maximum number of NodeLicenses that can be allocated to the pool
+	userStakedEsXaiAmount?: number;							// current amount of esXai the given user has staked on the pool
+	unstakeRequestkeyAmount?: number,						// pending unstake key amount from user
+	unstakeRequestesXaiAmount?: number,						// pending unstake esXai amount from user
+	userClaimAmount?: number;		    					// available claim amount for pool
+	userStakedKeyIds: number[];	    						// current number of NodeLicense keys staked on the pool by the given user
+	tier?: TierInfo;	       	 							// current reward tier of the pool
+	meta: PoolMetadata;										// metadata about the pool
+	pendingShares: number[]; 								// new pending shares set by the owner (owner, keys, esXai)
+	updateSharesTimestamp: number;							// timestamp when the pending shares will take effect, 0 if there are no pending shares
+	ownerStakedKeys: number;								// Amount of keys staked by the owner
+	ownerRequestedUnstakeKeyAmount: number;					// Amount of unstake requested keys by the owner
+	ownerLatestUnstakeRequestCompletionTime: number;		// timestamp when the genesis key is claimable
 }
 
 export type CreatePool = {
@@ -94,6 +97,9 @@ export type CreatePool = {
 	pendingShares: number[];
 	socials: string[];
 	network: string;
+	ownerStakedKeys: number;
+	ownerRequestedUnstakeKeyAmount: number;
+	ownerLatestUnstakeRequestCompletionTime: number;
 }
 
 export type UpdateablePoolProps = {
@@ -111,6 +117,9 @@ export type UpdateablePoolProps = {
 	pendingShares?: number[];
 	socials?: string[];
 	visibility?: string;
+	ownerStakedKeys?: number;
+	ownerRequestedUnstakeKeyAmount?: number;
+	ownerLatestUnstakeRequestCompletionTime?: number;
 }
 
 /* export type Socials = {

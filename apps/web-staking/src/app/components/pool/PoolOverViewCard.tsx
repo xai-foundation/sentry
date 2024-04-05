@@ -16,16 +16,22 @@ const PoolOverViewCard = ({ poolInfo }: { poolInfo: PoolInfo }) => {
       customStyle="mr-0 md:mr-4 mb-4 w-[340px]"
     >
       <Link href={`/pool/${poolInfo.address}/summary`}>
-        <div className="border-b-1 border-b-light-grey pb-4 p-5">
-          <Avatar src={poolInfo.meta.logo} className="w-[64px] h-[64px] mb-4" />
+        <div className="flex flex-col justify-between h-full">
+          <div className="px-5 pt-5 h-full">
+            <Avatar src={poolInfo.meta.logo} className="w-[64px] h-[64px] mb-4" />
             <MainTitle
               title={poolInfo.meta.name}
               classNames="text-2xl font-medium !mb-4"
             />
-          <ListLabel tier={getCurrentTierByStaking(Math.min(poolInfo.totalStakedAmount, poolInfo.maxStakedAmount)) as TierInfo & { icon: iconType }} />
-          <KeyRewardsComponent pool={poolInfo} />
+          </div>
+          <div className="px-5 mb-[30px]">
+            <ListLabel
+              tier={getCurrentTierByStaking(Math.min(poolInfo.totalStakedAmount, poolInfo.maxStakedAmount)) as TierInfo & {
+                icon: iconType
+              }} />
+          </div>
+          <PoolCapacity pool={poolInfo} />
         </div>
-        <PoolCapacity pool={poolInfo} />
       </Link>
     </BorderWrapperComponent>
   );

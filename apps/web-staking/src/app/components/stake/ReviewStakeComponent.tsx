@@ -1,6 +1,6 @@
 "use client";
 
-import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
+import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
 import {
   ACTIVE_NETWORK_IDS,
@@ -15,7 +15,7 @@ import { ButtonBack, PrimaryButton } from "../buttons/ButtonsComponent";
 import MainTitle from "../titles/MainTitle";
 
 import { RefereeAbi } from "@/assets/abi/RefereeAbi";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   loadingNotification,
   updateNotification,
@@ -26,7 +26,6 @@ import { esXaiAbi } from "@/assets/abi/esXaiAbi";
 import { PoolInfo } from "@/types/Pool";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import { Avatar } from "@nextui-org/react";
-import { sendUpdatePoolRequest } from "@/services/requestService";
 
 interface ReviewStakeProps {
   onBack: () => void;
@@ -51,13 +50,21 @@ const ReviewStakeComponent = ({
 }: ReviewStakeProps) => {
   const router = useRouter();
   const { address, chainId } = useAccount();
-  const [transactionLoading, setTransactionLoading] = useState(false);
   const [tokensApproved, setTokensApproved] = useState(approved);
+  const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
 
   const network = getNetwork(chainId);
 
   const { writeContractAsync } = useWriteContract();
   const { switchChain } = useSwitchChain();
+
+  // Substitute Timeouts with useWaitForTransaction
+  const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
+    hash: receipt,
+  });
+
+
+  const toastId = useRef<Id>();
 
   const onUnstake = async (amount: string) => {
     const weiAmount = getWeb3Instance(network).web3.utils.toWei(
@@ -87,7 +94,6 @@ const ReviewStakeComponent = ({
 
   const onConfirm = async () => {
 
-
     if (!chainId) {
       return;
     }
@@ -95,22 +101,20 @@ const ReviewStakeComponent = ({
       switchChain({ chainId: ACTIVE_NETWORK_IDS[0] });
       return;
     }
-    let receipt;
-    setTransactionLoading(true);
-    const loading = loadingNotification("Transaction is pending...");
+    toastId.current = loadingNotification("Transaction is pending...");
     try {
       // TODO: check eth balance enough for gas
       if (unstake) {
         if (pool) {
-          receipt = await executeContractWrite(
+          setReceipt(await executeContractWrite(
             WriteFunctions.createUnstakeEsXaiRequest,
             [pool.address, BigInt(getWeiAmount(Number(inputValue)))],
             chainId,
             writeContractAsync,
             switchChain
-          );
+          ) as `0x${string}`);
         } else {
-          receipt = await onUnstake(inputValue || "0");
+          setReceipt(await onUnstake(inputValue || "0"));
         }
 
 
@@ -118,21 +122,20 @@ const ReviewStakeComponent = ({
         if (!pool) {
           return;
         }
-        receipt = await executeContractWrite(
+        setReceipt(await executeContractWrite(
           WriteFunctions.stakeEsXai,
           [pool.address, BigInt(getWeiAmount(Number(inputValue)))],
           chainId,
           writeContractAsync,
           switchChain
-        );
+        ) as `0x${string}`);
       }
 
-      onSuccess(receipt, loading);
+      // onSuccess(receipt, loading);
     } catch (ex: any) {
       const error = mapWeb3Error(ex);
-      updateNotification(error, loading, true);
-      setTransactionLoading(false);
-      setTimeout(() => router.refresh(), 3000);
+      updateNotification(error, toastId.current as Id, true);
+      router.refresh();
     }
   };
 
@@ -145,54 +148,56 @@ const ReviewStakeComponent = ({
       switchChain({ chainId: ACTIVE_NETWORK_IDS[0] });
       return;
     }
-    let receipt;
-    setTransactionLoading(true);
-    const loading = loadingNotification("Approval is pending...");
+
+    toastId.current = loadingNotification("Approval is pending...");
+
     try {
-      receipt = await approveTokens();
+      setReceipt(await approveTokens());
       updateNotification(
         `Successfully approved tokens`,
-        loading,
+        toastId.current as Id,
         false
       );
-      setTimeout(() => setTransactionLoading(false), 3000);
       setTokensApproved(true);
     } catch (ex: any) {
       const error = mapWeb3Error(ex);
-      updateNotification(error, loading, true);
-      setTransactionLoading(false);
-      setTimeout(() => router.push(`/pool/${pool?.address}/summary`), 3000);
+      updateNotification(error, toastId.current as Id, true);
+      router.push(`/pool/${pool?.address}/summary`);
     }
   }
 
-  const onSuccess = async (receipt: string, loadingToast: Id) => {
+  useEffect(() => {
+    if (isSuccess) {
+      onSuccess();
+    }
+    if (isError) {
+      router.push(`/pool/${pool?.address}/summary`);
+      const error = mapWeb3Error(status);
+      updateNotification(error, toastId.current as Id, true);
+    }
+  }, [isSuccess, isError]);
+
+  const onSuccess = async () => {
     updateNotification(
       `You have successfully ${unstake ? "unstaked" : "staked"} ${inputValue} esXai`,
-      loadingToast,
+      toastId.current as Id,
       false,
       receipt,
       chainId
     );
-    setTimeout(() => {
-      setTransactionLoading(false);
-      if (pool) {
+    if (pool) {
 
-        sendUpdatePoolRequest(pool.address, chainId);
-
-        if (unstake) {
-          addUnstakeRequest(getNetwork(chainId), address!, pool.address)
-            .then(() => {
-              router.push(`/pool/${pool.address}/summary`);
-            })
-        } else {
-          router.push(`/pool/${pool.address}/summary`);
-        }
+      if (unstake) {
+        addUnstakeRequest(getNetwork(chainId), address!, pool.address)
+          .then(() => {
+            router.push(`/pool/${pool.address}/summary`);
+          })
       } else {
-
-        router.push(`/staking`);
+        router.push(`/pool/${pool.address}/summary`);
       }
-
-    }, 3000);
+    } else {
+      router.push(`/staking`);
+    }
   };
 
   const getUnstakeLabel = () => {
@@ -232,16 +237,16 @@ const ReviewStakeComponent = ({
         {tokensApproved ?
           <PrimaryButton
             onClick={onConfirm}
-            btnText={`${transactionLoading ? "Waiting for confirmation..." : "Confirm"
+            btnText={`${isLoading ? "Waiting for confirmation..." : "Confirm"
               }`}
-            className={`w-full mt-6 font-bold ${transactionLoading && "bg-[#B1B1B1] disabled"
+            className={`w-full mt-6 font-bold ${isLoading && "bg-[#B1B1B1] disabled"
               }`}
           />
           :
           <PrimaryButton
             onClick={onApprove}
-            btnText={`${transactionLoading ? "Waiting for approved tokens..." : "Approve"}`}
-            className={`w-full mt-6 font-bold ${transactionLoading && "bg-[#B1B1B1] disabled"}`}
+            btnText={`${isLoading ? "Waiting for approved tokens..." : "Approve"}`}
+            className={`w-full mt-6 font-bold ${isLoading && "bg-[#B1B1B1] disabled"}`}
           />
         }
 

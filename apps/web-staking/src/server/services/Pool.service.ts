@@ -8,84 +8,6 @@ import { NetworkKey } from "@/services/web3.service";
 
 export type PoolFilter = IPool | { _id: ObjectId | string } | { poolAddress: string };
 
-export async function createPool(createPoolInput: CreatePool): Promise<ObjectId> {
-
-	//TODO create new pool
-	const foundPoolAddress = await executeQuery(PoolModel.exists({ poolAddress: createPoolInput.poolAddress }), true) as IPool | null;
-	if (foundPoolAddress) {
-		return foundPoolAddress._id;
-	}
-
-	/**
-	 * @dev Assumes that pool has been created on blockchain and gets added to Db after blockchain transaction was successful
-	 */
-	try {
-		const newPool = new PoolModel({
-			poolAddress: createPoolInput.poolAddress,
-			poolIndex: createPoolInput.poolIndex,
-			owner: createPoolInput.owner,
-			name: createPoolInput.name.trim(),
-			description: createPoolInput.description.trim(),
-			logo: createPoolInput.logo,
-			keyBucketTracker: createPoolInput.keyBucketTracker,
-			esXaiBucketTracker: createPoolInput.esXaiBucketTracker,
-			keyCount: createPoolInput.keyCount,
-			totalStakedAmount: createPoolInput.totalStakedAmount,
-			maxStakedAmount: createPoolInput.maxStakedAmount,
-			tierIndex: createPoolInput.tierIndex || 0,
-			ownerShare: createPoolInput.ownerShare,
-			keyBucketShare: createPoolInput.keyBucketShare,
-			stakedBucketShare: createPoolInput.stakedBucketShare,
-			updateSharesTimestamp: createPoolInput.updateSharesTimestamp,
-			pendingShares: createPoolInput.pendingShares,
-			socials: createPoolInput.socials,
-			visibility: 'active',
-			network: createPoolInput.network,
-		});
-
-		await newPool.save();
-		return newPool._id;
-	} catch (error) {
-		throw new Error(`ERROR @createPool: ${error}`);
-	}
-};
-
-
-/**
- * UPDATE POOL
- */
-
-type UpdateableProps = "name" | "description" | "logo" | "keyCount" | "totalStakedAmount" | "maxStakedAmount" | "tierIndex" | "ownerShare" | "keyBucketShare" | "stakedBucketShare" | "updateSharesTimestamp" | "pendingShares" | "socials" | "visibility";
-type UpdatablePoolProperties = { [key in UpdateableProps]?: string | string[] | number | number[] };
-const updateableProperties: UpdateableProps[] = ["name", "description", "logo", "keyCount", "totalStakedAmount", "maxStakedAmount", "tierIndex", "ownerShare", "keyBucketShare", "stakedBucketShare", "updateSharesTimestamp", "pendingShares", "socials", "visibility"];
-
-export async function updatePool(filter: FilterQuery<IPool>, properties: UpdateablePoolProps) {
-
-	let updated: IPool | null = null;
-
-	try {
-		const propertiesToUpdate: { $set: UpdatablePoolProperties } = {
-			'$set': {}
-		}
-
-		updateableProperties.forEach(updateableProperty => {
-			if (typeof properties[updateableProperty] !== undefined) {
-				propertiesToUpdate['$set'][updateableProperty] = properties[updateableProperty];
-			};
-		});
-
-		updated = await executeQuery(PoolModel.findOneAndUpdate(filter, propertiesToUpdate).lean()) as IPool | null;
-	} catch (error) {
-		throw new Error(`ERROR @updatePool: ${error}`);
-	};
-
-	if (!updated) {
-		throw "Update invalid";
-	};
-
-	return updated;
-}
-
 export async function findPool(filter: FilterQuery<IPool>): Promise<PoolInfo | null> {
 
 	try {
@@ -207,6 +129,9 @@ export function mapPool(pool: IPool): PoolInfo {
 			youtube: pool.socials[6] || "",
 		},
 		updateSharesTimestamp: pool.updateSharesTimestamp || 0,
+		ownerStakedKeys: pool.ownerStakedKeys,
+		ownerRequestedUnstakeKeyAmount: pool.ownerRequestedUnstakeKeyAmount,
+		ownerLatestUnstakeRequestCompletionTime: pool.ownerLatestUnstakeRequestCompletionTime,
 		pendingShares: pool.pendingShares || [0, 0, 0],
 	}
 };

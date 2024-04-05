@@ -64,7 +64,7 @@ export const CustomInput = ({
 };
 
 interface StakingInputProps {
-  label: string | undefined;
+  label: string | undefined | ReactNode;
   endContent?: ReactNode;
   startContent?: ReactNode;
   value?: string | (readonly string[] & string) | undefined;

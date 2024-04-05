@@ -36,10 +36,10 @@ export async function submitMultipleAssertions(
             successorConfirmData
         ), 3)
             .then(() => {
-                logger(`Submitted batch for keys ${batch.map(k => k.toString()).join(", ")}`);
+                logger(`Submitted batch assertion for challenge ${challengeId.toString()} for keys ${batch.map(k => k.toString()).join(", ")}`);
             })
             .catch((error) => {
-                logger(`Error on batch submission for keys ${batch.map(k => k.toString()).join(", ")} ${error}`);
+                logger(`Error on batch assertion for challenge ${challengeId.toString()} for keys ${batch.map(k => k.toString()).join(", ")} ${error}`);
             })
     }
 }
