@@ -142,6 +142,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
     event ClaimFromPool(address indexed user, address indexed pool);
     event UpdatePoolDelegate(address indexed delegate, address indexed pool);
     event UpdateShares(address indexed pool);
+    event UpdateMetadata(address indexed pool);
 
     event UnstakeRequestStarted(
         address indexed user,
@@ -278,6 +279,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         StakingPool stakingPool = StakingPool(pool);
         require(stakingPool.getPoolOwner() == msg.sender, "5");
         stakingPool.updateMetadata(_poolMetadata, _poolSocials);
+        emit UpdateMetadata(pool);
     }
 
     function updateShares(
