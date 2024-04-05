@@ -40,10 +40,10 @@
 						"command": "find ./ ! -path \"*/node_modules/*\" -name 'coverage-final.json' -exec bash -c 'mkdir -p coverage/temp && cp \"$1\" \"coverage/temp/$(echo \"$1\" | sed \"s/\\//_/g\" | sed \"s/^\\._//\").json\"' -- {} \\;"
 					},
 					{
-						"command": "nyc merge coverage/temp coverage/monorepo-coverage.json && rm -rf coverage/temp"
+						"command": "nyc merge coverage/temp coverage/monorepo-coverage.json"
 					},
 					{
-						"command": "nyc report --reporter html --exclude-after-remap=false -t coverage --report-dir coverage/summary"
+						"command": "nyc report --reporter html --exclude-after-remap=false -t coverage --report-dir coverage"
 					}
 				],
 				"parallel": false
