@@ -39,10 +39,10 @@ export async function claimRewardsBulk(
             claimForAddressInBatch
         ), 3)
             .then(() => {
-                logger(`Submitted batch claim for keys ${batch.map(k => k.toString()).join(", ")}`);
+                logger(`Submitted batch claim for challenge ${challengeId.toString()} for keys ${batch.map(k => k.toString()).join(", ")}`);
             })
             .catch((error) => {
-                logger(`Error on batch claim for keys ${batch.map(k => k.toString()).join(", ")} ${error}`);
+                logger(`Error on batch claim for challenge ${challengeId.toString()} for keys ${batch.map(k => k.toString()).join(", ")} ${error}`);
             })
 
     }
