@@ -8,8 +8,7 @@
   "private": true,
   "scripts": {
     "clean": "rimraf dist && rimraf tsconfig.tsbuildinfo",
-    "test:components": "vitest run --reporter=json > test-results.json",
-    "mochawesomeify": "node --loader ts-node/esm scripts/transformVitestToMochawesome.ts"
+    "test:components": "vitest"
   },
   "dependencies": {
     "react-icons": "^4.11.0"
