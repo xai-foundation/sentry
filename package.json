@@ -25,6 +25,9 @@
     "@istanbuljs/nyc-config-typescript": "^1.0.2",
     "@nx/js": "18.0.3",
     "@nx/workspace": "18.0.3",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^14.3.0",
+    "@testing-library/user-event": "^14.5.2",
     "@types/chai": "^4.3.4",
     "@types/mocha": "^10.0.0",
     "@types/node": "^20.12.3",
@@ -49,6 +52,7 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.2.2",
-    "unzipper": "0.10.14"
+    "unzipper": "0.10.14",
+    "vitest": "^1.4.0"
   }
 }
