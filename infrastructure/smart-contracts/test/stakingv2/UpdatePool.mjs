@@ -54,8 +54,19 @@ export function UpdatePool(deployInfrastructure, poolConfigurations) {
 				]
 			);
 
-			// Wait 45 days
-			await ethers.provider.send("evm_increaseTime", [3888000]);
+			
+			// Check that the values did not update right away
+			const currentOwnerShare = await stakingPool.connect(addr1).ownerShare();
+			const currentKeyBucketShare = await stakingPool.connect(addr1).keyBucketShare();
+			const currentEsXaiBucketShare = await stakingPool.connect(addr1).stakedBucketShare();
+			expect(validShareValues[0]).to.equal(currentOwnerShare);
+			expect(validShareValues[1]).to.equal(currentKeyBucketShare);
+			expect(validShareValues[2]).to.equal(currentEsXaiBucketShare);
+			
+			
+			// Wait for the delayPeriod
+			const delayPeriod = await poolFactory.updateRewardBreakdownDelayPeriod();
+			await ethers.provider.send("evm_increaseTime", [Number(delayPeriod)]);
 			await ethers.provider.send("evm_mine");
 
 			// Stake another key to the pool to proc the distributeRewards function, thus updating the share values

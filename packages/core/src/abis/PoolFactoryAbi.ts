@@ -349,6 +349,12 @@ export const PoolFactoryAbi = [
     },
     {
         "anonymous": false,
+        "inputs": [],
+        "name": "UpdateDelayPeriods",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
         "inputs": [
             {
                 "indexed": true,
@@ -823,6 +829,13 @@ export const PoolFactoryAbi = [
         "type": "function"
     },
     {
+        "inputs": [],
+        "name": "initialize",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
         "inputs": [
             {
                 "internalType": "address",
@@ -1169,6 +1182,34 @@ export const PoolFactoryAbi = [
     {
         "inputs": [
             {
+                "internalType": "uint256",
+                "name": "_unstakeKeysDelayPeriod",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_unstakeGenesisKeyDelayPeriod",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_unstakeEsXaiDelayPeriod",
+                "type": "uint256"
+            },
+            {
+                "internalType": "uint256",
+                "name": "_updateRewardBreakdownDelayPeriod",
+                "type": "uint256"
+            }
+        ],
+        "name": "updateDelayPeriods",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
                 "internalType": "address",
                 "name": "pool",
                 "type": "address"
@@ -1221,6 +1262,19 @@ export const PoolFactoryAbi = [
         "type": "function"
     },
     {
+        "inputs": [],
+        "name": "updateRewardBreakdownDelayPeriod",
+        "outputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [
             {
                 "internalType": "address",
@@ -1234,29 +1288,6 @@ export const PoolFactoryAbi = [
             }
         ],
         "name": "updateShares",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "uint256",
-                "name": "_unstakeKeysDelayPeriod",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_unstakeGenesisKeyDelayPeriod",
-                "type": "uint256"
-            },
-            {
-                "internalType": "uint256",
-                "name": "_unstakeEsXaiDelayPeriod",
-                "type": "uint256"
-            }
-        ],
-        "name": "updateUnStakeDelayPeriods",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
