@@ -1,7 +1,25 @@
-import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
-import {assert, expect} from "chai";
-import {findHighestStakeTier} from "../StakingV2.mjs";
-import {getStateRoots} from "../Referee.mjs";
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import { assert, expect } from "chai";
+import { findHighestStakeTier } from "../StakingV2.mjs";
+import { getStateRoots } from "../Referee.mjs";
+
+const mitBatchedLicenses = async (amount, nodeLicenseContract) => {
+
+	let amountLeft = amount;
+	while (amountLeft != 0) {
+
+		if (amountLeft > 50) {
+			const price = await nodeLicenseContract.price(50, "");
+			await nodeLicenseContract.mint(50, "", { value: price });
+			amountLeft -= 50n;
+		} else {
+			const price = await nodeLicenseContract.price(amountLeft, "");
+			await nodeLicenseContract.mint(amountLeft, "", { value: price });
+			amountLeft = 0n;
+		}
+
+	}
+}
 
 export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 	const {
@@ -26,7 +44,7 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 
 			// Mint key to make basic pool
 			const price = await nodeLicense.price(1, "");
-			await nodeLicense.connect(addr1).mint(1, "", {value: price});
+			await nodeLicense.connect(addr1).mint(1, "", { value: price });
 			const mintedKeyId = await nodeLicense.totalSupply();
 
 			await poolFactory.connect(addr1).createPool(
@@ -75,8 +93,9 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 			const maxStakeAmountPerLicense = await referee.connect(refereeDefaultAdmin).maxStakeAmountPerLicense();
 			const keysForHighestTier = highestFoundStakeAmountTierThreshold / maxStakeAmountPerLicense;
 			const startingSupply = await nodeLicense.totalSupply();
-			const price = await nodeLicense.price(keysForHighestTier, "");
-			await nodeLicense.connect(addr1).mint(keysForHighestTier, "", {value: price});
+			await mitBatchedLicenses(keysForHighestTier, nodeLicense.connect(addr1));
+			// const price = await nodeLicense.price(keysForHighestTier, "");
+			// await nodeLicense.connect(addr1).mint(keysForHighestTier, "", { value: price });
 			const endingSupply = await nodeLicense.totalSupply();
 
 			// Save the key ids we minted to an array for pool creation
@@ -86,14 +105,33 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 			}
 
 			// Creat a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
-			await poolFactory.connect(addr1).createPool(
-				noDelegateOwner,
-				keyIds,
-				validShareValues,
-				poolMetaData,
-				poolSocials,
-				poolTrackerDetails
-			);
+			if (keyIds.length > 200) {
+
+				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
+					keyIds.splice(0, 100),
+					validShareValues,
+					poolMetaData,
+					poolSocials,
+					poolTrackerDetails
+				);
+				const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+
+				while (keyIds.length > 0) {
+					await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, keyIds.splice(0, 100))
+				}
+
+			} else {
+				await poolFactory.connect(addr1).createPool(
+					noDelegateOwner,
+					keyIds,
+					validShareValues,
+					poolMetaData,
+					poolSocials,
+					poolTrackerDetails
+				);
+			}
+
 
 			// Save the new pool's address
 			const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
@@ -109,12 +147,12 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 			expect(poolBoostFactor2).to.equal(maxBoostFactor);
 		});
 
-		it("Verify that keys in a pool with esXai staked with more challenges", async function () {
-			const {poolFactory, addr1, addr2, nodeLicense, referee, refereeDefaultAdmin,  esXai, esXaiMinter, challenger} = await loadFixture(deployInfrastructure);
+		it("Verify that keys in a pool with esXai staked wins more challenges", async function () {
+			const { poolFactory, addr1, addr2, nodeLicense, referee, refereeDefaultAdmin, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
 
 			// Get a single key for addr1
 			const singlePrice = await nodeLicense.price(1, "");
-			await nodeLicense.connect(addr1).mint(1, "", {value: singlePrice});
+			await nodeLicense.connect(addr1).mint(1, "", { value: singlePrice });
 			const addr1MintedKeyId = await nodeLicense.totalSupply();
 
 			// Manually find the highest stake tier thresholds as we have no way to check the array lengths (no functions to get length, and public array's cannot be length-queried)
@@ -124,8 +162,9 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 			const maxStakeAmountPerLicense = await referee.connect(refereeDefaultAdmin).maxStakeAmountPerLicense();
 			const keysForHighestTier = highestFoundStakeAmountTierThreshold / maxStakeAmountPerLicense;
 			const startingSupply = await nodeLicense.totalSupply();
-			const price = await nodeLicense.price(keysForHighestTier, "");
-			await nodeLicense.connect(addr2).mint(keysForHighestTier, "", {value: price});
+			await mitBatchedLicenses(keysForHighestTier, nodeLicense.connect(addr2));
+			// const price = await nodeLicense.price(keysForHighestTier, "");
+			// await nodeLicense.connect(addr2).mint(keysForHighestTier, "", { value: price });
 			const endingSupply = await nodeLicense.totalSupply();
 
 			// Save the key ids we minted to an array for pool creation
@@ -135,14 +174,33 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 			}
 
 			// Creat a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
-			await poolFactory.connect(addr2).createPool(
-				noDelegateOwner,
-				keyIds,
-				validShareValues,
-				poolMetaData,
-				poolSocials,
-				poolTrackerDetails
-			);
+			if (keyIds.length > 100) {
+
+				const _keyIds = [...keyIds];
+
+				await poolFactory.connect(addr2).createPool(
+					noDelegateOwner,
+					_keyIds.splice(0, 100),
+					validShareValues,
+					poolMetaData,
+					poolSocials,
+					poolTrackerDetails
+				);
+				const stakingPoolAddress = await poolFactory.connect(addr2).getPoolAddress(0);
+				while (_keyIds.length > 0) {
+					await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, _keyIds.splice(0, 100))
+				}
+
+			} else {
+				await poolFactory.connect(addr2).createPool(
+					noDelegateOwner,
+					keyIds,
+					validShareValues,
+					poolMetaData,
+					poolSocials,
+					poolTrackerDetails
+				);
+			}
 
 			// Save the new pool's address
 			const stakingPoolAddress = await poolFactory.connect(addr2).getPoolAddress(0);

@@ -89,10 +89,13 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 	// address of the contract that handles deploying staking pool & bucket proxies
     address public deployerAddress;
 
-	// periods (in days) to lock keys/esXai for when user creates an unstake request
+	// periods (in seconds) to lock keys/esXai for when user creates an unstake request
 	uint256 public unstakeKeysDelayPeriod;
 	uint256 public unstakeGenesisKeyDelayPeriod;
 	uint256 public unstakeEsXaiDelayPeriod;
+    
+    // period (in seconds) to update reward breakdown changes
+	uint256 public updateRewardBreakdownDelayPeriod;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
@@ -103,6 +106,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 
     event StakingEnabled();
     event PoolProxyDeployerUpdated(address oldDeployer, address newDeployer);
+    event UpdateDelayPeriods();
 
     event PoolCreated(
         uint256 indexed poolIndex,
@@ -170,6 +174,7 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
 		unstakeKeysDelayPeriod = 30 days;
 		unstakeGenesisKeyDelayPeriod = 60 days;
 		unstakeEsXaiDelayPeriod = 30 days;
+        updateRewardBreakdownDelayPeriod = 45 days;
     }
 
     /**
@@ -186,14 +191,17 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         emit PoolProxyDeployerUpdated(prevDeployer, deployerAddress);
     }
 
-	function updateUnStakeDelayPeriods(
+	function updateDelayPeriods(
 		uint256 _unstakeKeysDelayPeriod,
 		uint256 _unstakeGenesisKeyDelayPeriod,
-		uint256 _unstakeEsXaiDelayPeriod
+		uint256 _unstakeEsXaiDelayPeriod,
+		uint256 _updateRewardBreakdownDelayPeriod
 	) external onlyRole(DEFAULT_ADMIN_ROLE) {
 		unstakeKeysDelayPeriod = _unstakeKeysDelayPeriod;
 		unstakeGenesisKeyDelayPeriod = _unstakeGenesisKeyDelayPeriod;
 		unstakeEsXaiDelayPeriod = _unstakeEsXaiDelayPeriod;
+        updateRewardBreakdownDelayPeriod = _updateRewardBreakdownDelayPeriod;
+        emit UpdateDelayPeriods();
 	}
 
     function createPool(
@@ -292,7 +300,8 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         stakingPool.updateShares(
             _shareConfig[0],
             _shareConfig[1],
-            _shareConfig[2]
+            _shareConfig[2],
+            updateRewardBreakdownDelayPeriod
         );
         emit UpdateShares(pool);
     }

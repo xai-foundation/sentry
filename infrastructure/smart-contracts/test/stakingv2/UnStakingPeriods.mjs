@@ -46,13 +46,15 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			const unstakeKeysDelayPeriod1 = await poolFactory.connect(addr1).unstakeKeysDelayPeriod();
 			const unstakeGenesisKeyDelayPeriod1 = await poolFactory.connect(addr1).unstakeGenesisKeyDelayPeriod();
 			const unstakeEsXaiDelayPeriod1 = await poolFactory.connect(addr1).unstakeEsXaiDelayPeriod();
+			const updateRewardsDelayPeriod1 = await poolFactory.connect(addr1).updateRewardBreakdownDelayPeriod();
 
 			// admin updates un-stake keys period
 			const newUnStakeKeysDelay = unstakeKeysDelayPeriod1 * 2n;
-			await poolFactory.connect(refereeDefaultAdmin).updateUnStakeDelayPeriods(
+			await poolFactory.connect(refereeDefaultAdmin).updateDelayPeriods(
 				newUnStakeKeysDelay,
 				unstakeGenesisKeyDelayPeriod1,
 				unstakeEsXaiDelayPeriod1,
+				updateRewardsDelayPeriod1
 			);
 
 			// Get the updated delay periods & make sure they are all correct
@@ -130,13 +132,15 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			const unstakeKeysDelayPeriod1 = await poolFactory.connect(addr1).unstakeKeysDelayPeriod();
 			const unstakeGenesisKeyDelayPeriod1 = await poolFactory.connect(addr1).unstakeGenesisKeyDelayPeriod();
 			const unstakeEsXaiDelayPeriod1 = await poolFactory.connect(addr1).unstakeEsXaiDelayPeriod();
+			const updateRewardsDelayPeriod1 = await poolFactory.connect(addr1).updateRewardBreakdownDelayPeriod();
 
 			// admin updates un-stake keys period
 			const newUnStakeGenesisKeyDelay = unstakeGenesisKeyDelayPeriod1 * 2n;
-			await poolFactory.connect(refereeDefaultAdmin).updateUnStakeDelayPeriods(
+			await poolFactory.connect(refereeDefaultAdmin).updateDelayPeriods(
 				unstakeKeysDelayPeriod1,
 				newUnStakeGenesisKeyDelay,
 				unstakeEsXaiDelayPeriod1,
+				updateRewardsDelayPeriod1
 			);
 
 			// Get the updated delay periods & make sure they are all correct
@@ -218,13 +222,15 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			const unstakeKeysDelayPeriod1 = await poolFactory.connect(addr1).unstakeKeysDelayPeriod();
 			const unstakeGenesisKeyDelayPeriod1 = await poolFactory.connect(addr1).unstakeGenesisKeyDelayPeriod();
 			const unstakeEsXaiDelayPeriod1 = await poolFactory.connect(addr1).unstakeEsXaiDelayPeriod();
+			const updateRewardsDelayPeriod1 = await poolFactory.connect(addr1).updateRewardBreakdownDelayPeriod();
 
 			// admin updates un-stake keys period
 			const newUnStakeEsXaiDelay = unstakeEsXaiDelayPeriod1 * 2n;
-			await poolFactory.connect(refereeDefaultAdmin).updateUnStakeDelayPeriods(
+			await poolFactory.connect(refereeDefaultAdmin).updateDelayPeriods(
 				unstakeKeysDelayPeriod1,
 				unstakeGenesisKeyDelayPeriod1,
 				newUnStakeEsXaiDelay,
+				updateRewardsDelayPeriod1
 			);
 
 			// Get the updated delay periods & make sure they are all correct
