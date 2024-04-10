@@ -120,6 +120,65 @@ export const StakingPoolAbi = [
   },
   {
     "type": "function",
+    "name": "createUnstakeEsXaiRequest",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user"
+      },
+      {
+        "type": "uint256",
+        "name": "amount"
+      },
+      {
+        "type": "uint256",
+        "name": "period"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "createUnstakeKeyRequest",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user"
+      },
+      {
+        "type": "uint256",
+        "name": "keyAmount"
+      },
+      {
+        "type": "uint256",
+        "name": "period"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "createUnstakeOwnerLastKeyRequest",
+    "constant": false,
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "owner"
+      },
+      {
+        "type": "uint256",
+        "name": "period"
+      }
+    ],
+    "outputs": []
+  },
+  {
+    "type": "function",
     "name": "delegateOwner",
     "constant": true,
     "stateMutability": "view",
@@ -261,6 +320,18 @@ export const StakingPoolAbi = [
       {
         "type": "uint32[]",
         "name": "_pendingShares"
+      },
+      {
+        "type": "uint256",
+        "name": "_ownerStakedKeys"
+      },
+      {
+        "type": "uint256",
+        "name": "_ownerRequestedUnstakeKeyAmount"
+      },
+      {
+        "type": "uint256",
+        "name": "_ownerLatestUnstakeRequestLockTime"
       }
     ]
   },
@@ -378,11 +449,87 @@ export const StakingPoolAbi = [
     "outputs": [
       {
         "type": "uint256",
+        "name": "claimAmountFromKeys"
+      },
+      {
+        "type": "uint256",
+        "name": "claimAmountFromEsXai"
+      },
+      {
+        "type": "uint256",
         "name": "claimAmount"
       },
       {
         "type": "uint256",
         "name": "ownerAmount"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getUnstakeRequest",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "account"
+      },
+      {
+        "type": "uint256",
+        "name": "index"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "tuple",
+        "name": "",
+        "components": [
+          {
+            "type": "bool",
+            "name": "open"
+          },
+          {
+            "type": "bool",
+            "name": "isKeyRequest"
+          },
+          {
+            "type": "uint256",
+            "name": "amount"
+          },
+          {
+            "type": "uint256",
+            "name": "lockTime"
+          },
+          {
+            "type": "uint256",
+            "name": "completeTime"
+          },
+          {
+            "type": "uint256[5]",
+            "name": "__gap"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getUnstakeRequestCount",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "account"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": ""
       }
     ]
   },
@@ -410,6 +557,37 @@ export const StakingPoolAbi = [
       {
         "type": "uint256[]",
         "name": "userStakedKeyIds"
+      },
+      {
+        "type": "uint256",
+        "name": "unstakeRequestkeyAmount"
+      },
+      {
+        "type": "uint256",
+        "name": "unstakeRequestesXaiAmount"
+      }
+    ]
+  },
+  {
+    "type": "function",
+    "name": "getUserRequestedUnstakeAmounts",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "uint256",
+        "name": "keyAmount"
+      },
+      {
+        "type": "uint256",
+        "name": "esXaiAmount"
       }
     ]
   },
@@ -506,6 +684,25 @@ export const StakingPoolAbi = [
       }
     ],
     "outputs": []
+  },
+  {
+    "type": "function",
+    "name": "isUserEngagedWithPool",
+    "constant": true,
+    "stateMutability": "view",
+    "payable": false,
+    "inputs": [
+      {
+        "type": "address",
+        "name": "user"
+      }
+    ],
+    "outputs": [
+      {
+        "type": "bool",
+        "name": ""
+      }
+    ]
   },
   {
     "type": "function",
@@ -850,6 +1047,10 @@ export const StakingPoolAbi = [
       },
       {
         "type": "uint256",
+        "name": "unstakeRequestIndex"
+      },
+      {
+        "type": "uint256",
         "name": "amount"
       }
     ],
@@ -864,6 +1065,10 @@ export const StakingPoolAbi = [
       {
         "type": "address",
         "name": "owner"
+      },
+      {
+        "type": "uint256",
+        "name": "unstakeRequestIndex"
       },
       {
         "type": "uint256[]",
@@ -892,16 +1097,8 @@ export const StakingPoolAbi = [
     "payable": false,
     "inputs": [
       {
-        "type": "string",
-        "name": "_name"
-      },
-      {
-        "type": "string",
-        "name": "_description"
-      },
-      {
-        "type": "string",
-        "name": "_logo"
+        "type": "string[3]",
+        "name": "_metaData"
       },
       {
         "type": "string[]",

@@ -8,10 +8,7 @@ import { useEffect } from "react";
 export default function WrapperComponent({ children }: { children: React.ReactNode }) {
 	
 	const { setTheme } = useTheme()
-
-	useEffect(() => {
-	  setTheme("light")
-	}, [])
+	setTheme("light");
 
 	return (
 		<>

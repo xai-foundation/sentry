@@ -1,4 +1,5 @@
 import { Button } from "@nextui-org/button";
+
 import { BackArrow } from "../icons/IconsComponent";
 
 interface CustomButtonProps {
@@ -16,9 +17,10 @@ export const PrimaryButton = ({
   className,
   isDisabled,
 }: CustomButtonProps) => {
+  const disabledStyles = isDisabled ? "!bg-[#F1F1F1] text-[#D4D4D4]" : "";
   return (
     <Button
-      className={`bg-[#F30919] text-[#EEEEEE] px-[17px] py-[10px] rounded-[8px] hover:bg-[#da1b28] ease-in duration-200 ${className}`}
+      className={`rounded-[8px] bg-[#F30919] px-[17px] py-[10px] text-[#EEEEEE] duration-200 ease-in hover:bg-[#da1b28] ${className} ${disabledStyles}`}
       type="submit"
       onClick={() => onClick()}
       disabled={isDisabled}
@@ -33,14 +35,14 @@ export const SecondaryButton = ({
   btnText,
   className,
   size,
-  hoverClassName = 'hover:bg-[#da1b28] hover:text-[#EEEEEE] '
+  hoverClassName = "hover:bg-[#da1b28] hover:text-[#EEEEEE] ",
 }: CustomButtonProps) => {
   return (
     <PrimaryButton
       size={size}
       onClick={onClick}
       btnText={btnText}
-      className={`bg-[#EEEEEE] text-[#F30919] px-[20px] py-[18px] rounded-[8px] font-medium ease-in duration-250 ${className} ${hoverClassName}`}
+      className={`rounded-[8px] bg-[#EEEEEE] px-[20px] py-[18px] font-medium text-[#F30919] duration-250 ease-in ${className} ${hoverClassName}`}
     />
   );
 };
@@ -62,10 +64,11 @@ export const ConnectButton = ({
     <Button
       className={
         variant === "overview"
-          ? "bg-[#F30919] lg:w-[165px] sm:w-[308px] h-[50px] text-[#EEEEEE] px-[20px] py-[18px] rounded-[8px] hover:bg-[#da1b28] ease-in duration-200"
-          : `bg-[#F30919] w-[115px] md:w-[165px] text-[#EEEEEE] px-[17px] py-[10px] rounded-[8px] hover:bg-[#da1b28] ease-in duration-200 ${
-              isFullWidth ? "w-full" : ""
-            }`
+          ? "h-[50px] rounded-[8px] bg-[#F30919] px-[20px] py-[18px] text-[#EEEEEE] duration-200 ease-in hover:bg-[#da1b28] sm:w-[308px] lg:w-[165px]"
+          : `w-[115px] rounded-[8px] bg-[#F30919] px-[17px] py-[10px] text-[#EEEEEE] duration-200 ease-in hover:bg-[#da1b28] md:w-[165px] ${
+              isFullWidth ? "!w-full" : ""
+            } 
+          ${address && "border-1 border-[#E4E4E4] bg-white text-lightBlackDarkWhite hover:bg-[#E4E4E4]"}`
       }
       type="submit"
       onClick={() => onOpen()}
@@ -82,16 +85,18 @@ export function ButtonBack({
   btnText,
   height = 16,
   width = 16,
+  extraClasses,
 }: {
   onClick: () => void;
   btnText: string;
   height?: number;
   width?: number;
+  extraClasses?: string;
 }) {
   return (
     <div
       onClick={onClick}
-      className="flex items-center hover:bg-crystalWhite hover:border-palePearl border-1 border-transparent hover:rounded-md gap-2 py-1 px-1 cursor-pointer"
+      className={`flex cursor-pointer items-center gap-2 border-1 border-transparent p-1 hover:rounded-md hover:border-palePearl hover:bg-crystalWhite ${extraClasses}`}
     >
       <BackArrow height={height} width={width} />
       <span>{btnText}</span>

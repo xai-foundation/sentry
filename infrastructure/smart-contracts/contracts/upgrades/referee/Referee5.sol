@@ -214,7 +214,19 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         address _poolFactoryAddress
     ) public reinitializer(4) {
         poolFactoryAddress = _poolFactoryAddress;
-        maxKeysPerPool = 5000;
+        
+        maxStakeAmountPerLicense = 12500 * 10 ** 18;
+        maxKeysPerPool = 600;
+
+        stakeAmountTierThresholds[0] = 10_000 * 10 ** 18;
+        stakeAmountTierThresholds[1] = 100_000 * 10 ** 18;
+        stakeAmountTierThresholds[2] = 500_000 * 10 ** 18;
+        stakeAmountTierThresholds[3] = 5_000_000 * 10 ** 18;
+
+        stakeAmountBoostFactors[0] = 150;
+        stakeAmountBoostFactors[1] = 200;
+        stakeAmountBoostFactors[2] = 300;
+        stakeAmountBoostFactors[3] = 600;
     }
 
     /**
@@ -526,7 +538,12 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
             return;
         }
 
-        _submitAssertion(_nodeLicenseId, _challengeId, _confirmData);
+        address licenseOwner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
+        address assignedPool = assignedKeyToPool[_nodeLicenseId];
+        
+        require(isValidOperator(licenseOwner, assignedPool), "17");
+
+        _submitAssertion(_nodeLicenseId, _challengeId, _confirmData, licenseOwner, assignedPool);
     }
 
 	function submitMultipleAssertions(
@@ -547,26 +564,28 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
 		for (uint256 i = 0; i < keyLength; i++) {
             uint256 _nodeLicenseId = _nodeLicenseIds[i];
             if (!submissions[_challengeId][_nodeLicenseId].submitted) {
-                _submitAssertion(_nodeLicenseId, _challengeId, _confirmData);
+                
+                address licenseOwner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
+                address assignedPool = assignedKeyToPool[_nodeLicenseId];
+
+                if(isValidOperator(licenseOwner, assignedPool)){
+                    _submitAssertion(_nodeLicenseId, _challengeId, _confirmData, licenseOwner, assignedPool);
+                }
             }
 		}
 	}
-    
-    function _submitAssertion(uint256 _nodeLicenseId, uint256 _challengeId, bytes memory _confirmData) internal {
-        
-        address licenseOwner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
-        address assignedPool = assignedKeyToPool[_nodeLicenseId];
 
-        require(
-            licenseOwner == msg.sender ||
+    function isValidOperator(address licenseOwner, address assignedPool) internal view returns (bool) {
+        return licenseOwner == msg.sender ||
             isApprovedForOperator(licenseOwner, msg.sender) ||
-			(
-				assignedPool != address(0) &&
-				PoolFactory(poolFactoryAddress).isDelegateOfPoolOrOwner(msg.sender, assignedPool)
-			),
-            "17"
-        );
-
+            (
+                assignedPool != address(0) &&
+                PoolFactory(poolFactoryAddress).isDelegateOfPoolOrOwner(msg.sender, assignedPool)
+            );
+    }
+    
+    function _submitAssertion(uint256 _nodeLicenseId, uint256 _challengeId, bytes memory _confirmData, address licenseOwner, address assignedPool) internal {
+        
         // Support v1 (no pools) & v2 (pools)
 		uint256 stakedAmount = stakedAmounts[assignedPool];
 		if (assignedPool == address(0)) {

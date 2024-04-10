@@ -2,7 +2,6 @@ import {expect, assert} from "chai";
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {winningHashForNodeLicense0} from "./AssertionData.mjs";
 import {Contract} from "ethers";
-// import {ethers} from "ethers/src.ts";
 
 export 	async function getStateRoots(count) {
 	let results = [];
@@ -13,34 +12,34 @@ export 	async function getStateRoots(count) {
 	return results;
 }
 
-export function RefereeTests(deployInfrastructure) {
-
-	/**
-	 * @notice Iterates over a range of state roots to find a winning state root.
-	 * @dev This function iterates over a range of state roots, creating an assertion hash for each one and checking if it is a winner.
-	 * A state root is considered a winner if the assertion hash is below the threshold for all node licenses.
-	 * The function will continue to iterate until a winning state root is found.
-	 * @param referee The referee contract instance.
-	 * @param winnerNodeLicenses An array of node licenses that are potential winners.
-	 * @param challengeId The ID of the challenge.
-	 * @return The winning state root.
-	 */
-	async function findWinningStateRoot(referee, winnerNodeLicenses, challengeId, boostFactor = 100) {
-		for (let i = 0n; ; i++) {
-			const successorStateRoot = `0x${i.toString(16).padStart(64, '0')}`;
-			let isWinnerForAll = true;
-			for (const nodeLicenseId of winnerNodeLicenses) {
-				const [isWinner] = await referee.createAssertionHashAndCheckPayout(nodeLicenseId, challengeId, boostFactor, successorStateRoot, "0x0000000000000000000000000000000000000000000000000000000000000000");
-				if (!isWinner) {
-					isWinnerForAll = false;
-					break;
-				}
-			}
-			if (isWinnerForAll) {
-				return successorStateRoot;
+/**
+ * @notice Iterates over a range of state roots to find a winning state root.
+ * @dev This function iterates over a range of state roots, creating an assertion hash for each one and checking if it is a winner.
+ * A state root is considered a winner if the assertion hash is below the threshold for all node licenses.
+ * The function will continue to iterate until a winning state root is found.
+ * @param referee The referee contract instance.
+ * @param winnerNodeLicenses An array of node licenses that are potential winners.
+ * @param challengeId The ID of the challenge.
+ * @return The winning state root.
+ */
+export async function findWinningStateRoot(referee, winnerNodeLicenses, challengeId, boostFactor = 100) {
+	for (let i = 0n; ; i++) {
+		const successorStateRoot = `0x${i.toString(16).padStart(64, '0')}`;
+		let isWinnerForAll = true;
+		for (const nodeLicenseId of winnerNodeLicenses) {
+			const [isWinner] = await referee.createAssertionHashAndCheckPayout(nodeLicenseId, challengeId, boostFactor, successorStateRoot, "0x0000000000000000000000000000000000000000000000000000000000000000");
+			if (!isWinner) {
+				isWinnerForAll = false;
+				break;
 			}
 		}
+		if (isWinnerForAll) {
+			return successorStateRoot;
+		}
 	}
+}
+
+export function RefereeTests(deployInfrastructure) {
 
 	const getLocalAssertionHashAndCheck = (nodeLicenseId, challengeId, boostFactor, confirmData, challengerSignedHash) => {
 		const assertionHash = ethers.keccak256(ethers.solidityPacked(["uint256", "uint256", "bytes", "bytes"], [nodeLicenseId, challengeId, confirmData, challengerSignedHash]));
