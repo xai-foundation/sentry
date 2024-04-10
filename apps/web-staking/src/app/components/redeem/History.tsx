@@ -1,21 +1,22 @@
 "use client";
 
 import moment from "moment";
-import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
-import { useEffect, useRef, useState } from "react";
+import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
+import { useState } from "react";
 import { Id } from "react-toastify";
 import { useDisclosure } from "@nextui-org/react"
 
-import { OrderedRedemptions, RedemptionRequest, mapWeb3Error } from "@/services/web3.service";
+import { ACTIVE_NETWORK_IDS, OrderedRedemptions, RedemptionRequest, getNetwork, getWeb3Instance, mapWeb3Error } from "@/services/web3.service";
 
 import MainTitle from "../titles/MainTitle";
 import { loadingNotification, updateNotification } from "../notifications/NotificationsComponent";
 
 import { PrimaryButton, SecondaryButton } from "../buttons/ButtonsComponent";
+import { esXaiAbi } from "@/assets/abi/esXaiAbi";
 import { useCallback } from "react";
 import { ModalComponent } from "../modal/ModalComponent";
 import { MODAL_BODY_TEXT } from "./Constants";
-import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
+import { useRouter } from "next/navigation";
 
 interface HistoryCardProps {
 	receivedAmount: number,
@@ -108,65 +109,87 @@ export default function History({ redemptions, reloadRedemptions }: {
 	redemptions: OrderedRedemptions,
 	reloadRedemptions: () => void
 }) {
-	const { chainId } = useAccount();
-	const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
-	const [isCancel, setIsCancel] = useState(false);
+	const { address, chainId } = useAccount();
+	const [transactionLoading, setTransactionLoading] = useState(false);
 
+	const network = getNetwork(chainId);
 	const { switchChain } = useSwitchChain();
+
 	const { writeContractAsync } = useWriteContract();
+	const router = useRouter();
 
-	// Substitute Timeouts with useWaitForTransaction
-	const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
-		hash: receipt,
-	});
+	const completeEsXaiRedemption = async (index: number) => {
+		return writeContractAsync({
+			address: getWeb3Instance(network).esXaiAddress as `0x${string}`,
+			abi: esXaiAbi,
+			functionName: "completeRedemption",
+			args: [BigInt(index)]
+		});
+	};
 
-	const toastId = useRef<Id>();
-
-	useEffect(() => {
-		if (isSuccess) {
-			updateNotification(isCancel ? 'Cancel successful' : `Claim successful`, toastId.current as Id, false, receipt, chainId);
-			reloadRedemptions();
-		}
-		if (isError) {
-			const error = mapWeb3Error(status);
-			updateNotification(error, toastId.current as Id, true);
-		}
-	}, [isSuccess, isError]);
+	const cancelEsXiRedemption = async (index: number) => {
+		return writeContractAsync({
+			address: getWeb3Instance(network).esXaiAddress as `0x${string}`,
+			abi: esXaiAbi,
+			functionName: "cancelRedemption",
+			args: [BigInt(index)]
+		});
+	};
 
 	const onClaim = async (redemption: RedemptionRequest) => {
-		setIsCancel(false);
-		toastId.current = loadingNotification("Transaction is pending...");
-		try {
-			setReceipt(await executeContractWrite(
-				WriteFunctions.completeRedemption,
-				[BigInt(redemption.index)],
-				chainId,
-				writeContractAsync,
-				switchChain
-			) as `0x${string}`);
 
+		if (!chainId) {
+			return;
+		}
+		if (!ACTIVE_NETWORK_IDS.includes(chainId)) {
+			switchChain({ chainId: ACTIVE_NETWORK_IDS[0] });
+			return;
+		}
+		let receipt;
+		setTransactionLoading(true);
+		const loading = loadingNotification("Transaction is pending...");
+		try {
+			receipt = await completeEsXaiRedemption(redemption.index);
+			onSuccess(receipt, loading);
+			setTimeout(() => {
+				reloadRedemptions();
+			}, 3000)
 		} catch (ex: any) {
 			const error = mapWeb3Error(ex);
-			updateNotification(error, toastId.current, true);
+			updateNotification(error, loading, true);
+			setTransactionLoading(false);
 		}
 	}
 
 	const onCancel = async (redemption: RedemptionRequest, onClose: () => void) => {
-		setIsCancel(true);
-		toastId.current = loadingNotification("Transaction is canceling...");
+
+		if (!chainId) {
+			return;
+		}
+		if (!ACTIVE_NETWORK_IDS.includes(chainId)) {
+			switchChain({ chainId: ACTIVE_NETWORK_IDS[0] });
+			return;
+		}
+		let receipt;
+		setTransactionLoading(true);
+		const loading = loadingNotification("Transaction is canceling...");
 		try {
-			setReceipt(await executeContractWrite(
-				WriteFunctions.cancelRedemption,
-				[BigInt(redemption.index)],
-				chainId,
-				writeContractAsync,
-				switchChain
-			) as `0x${string}`);
-			onClose();
+			receipt = await cancelEsXiRedemption(redemption.index);
+			onSuccess(receipt, loading, 'Cancel successful');
+			setTimeout(() => {
+				onClose();
+				reloadRedemptions();
+			}, 3000);
 		} catch (ex: any) {
 			const error = mapWeb3Error(ex);
-			updateNotification(error, toastId.current as Id, true);
+			updateNotification(error, loading, true);
+			setTransactionLoading(false);
 		}
+	}
+
+	const onSuccess = async (receipt: string, loadingToast: Id, toastMsg?: string) => {
+		updateNotification(toastMsg ?? `Claim successful`, loadingToast, false, receipt, chainId);
+		setTransactionLoading(false);
 	}
 
 	return (
@@ -183,7 +206,7 @@ export default function History({ redemptions, reloadRedemptions }: {
 									onClaim={() => onClaim(r)}
 									onCancel={(onClose) => onCancel(r, onClose)}
 									claimable={true}
-									claimDisabled={isLoading}
+									claimDisabled={transactionLoading}
 									receivedAmount={r.receiveAmount}
 									redeemedAmount={r.redeemAmount}
 									receivedCurrency="XAI"

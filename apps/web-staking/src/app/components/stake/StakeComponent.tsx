@@ -1,100 +1,76 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { ButtonBack, PrimaryButton } from "../buttons/ButtonsComponent";
 import { StakingInput } from "../input/InputComponent";
 import MainTitle from "../titles/MainTitle";
 import AvailableBalanceComponent from "./AvailableBalanceComponent";
 import ReviewStakeComponent from "./ReviewStakeComponent";
-import { useGetBalanceHooks, useGetEsXaiAllowance, useGetUserPoolInfo } from "@/app/hooks/hooks";
-import { useAccount } from "wagmi";
-import { Avatar } from "@nextui-org/react";
+import { useGetBalanceHooks, useGetEsXaiAllowance, useGetMaxTotalStakedHooks, useGetTotalStakedHooks } from "@/app/hooks/hooks";
 
 interface StakeProps {
-  poolAddress: string;
+  title: string;
+  address: string | undefined;
+  unstake?: boolean;
 }
 
-const StakeComponent = ({ poolAddress }: StakeProps) => {
-  const { address } = useAccount();
+const StakeComponent = ({ title, address, unstake }: StakeProps) => {
   const router = useRouter();
-  const searchParams = useSearchParams()
   const [reviewVisible, setReviewVisible] = useState(false);
   const [inputValue, setInputValue] = useState("");
   const { esXaiBalance } = useGetBalanceHooks();
+  const { totalStaked } = useGetTotalStakedHooks();
+  const { totalMaxStaked } = useGetMaxTotalStakedHooks();
   const { allowance } = useGetEsXaiAllowance();
-  const unstake = searchParams.get("unstake") === "true";
 
-  const { userPool } = useGetUserPoolInfo(poolAddress);
+  const checkDisabledButton =
+    !address || !inputValue || Number(inputValue) <= 0 || validationInput();
 
-  const getMaxEsXaiForUnstake = () => {
-    if (!userPool || !userPool.userStakedEsXaiAmount) {
-      return 0;
-    }
-    return userPool.userStakedEsXaiAmount - (userPool.unstakeRequestesXaiAmount || 0);
-  }
-
-  const getMaxEsXaiForStake = () => {
-    if (!userPool) {
-      return 0;
-    }
-    return Math.min(Math.max(userPool.maxStakedAmount - userPool.totalStakedAmount, 0), esXaiBalance);
-  }
-
-  function isInvalidInput() {
-    if (inputValue.length > 18) {
+  function validationInput() {
+    if (
+      unstake
+        ? Number(inputValue) > totalStaked
+        : Number(inputValue) > Math.min(totalMaxStaked, esXaiBalance)
+    ) {
       return true;
     }
 
-    if(unstake){
-      return Number(inputValue) > getMaxEsXaiForUnstake();
+    if (inputValue.length > 18) {
+      return true;
     }
-
-    return Number(inputValue) > getMaxEsXaiForStake();
-  }
-
-  const confirmButtonDisabled = () => {
-    return !address || !inputValue || Number(inputValue) <= 0 || isInvalidInput()
   }
 
   return (
-    <div className="flex w-full flex-col items-center sm:p-2 lg:p-0">
+    <>
       {reviewVisible ? (
         <ReviewStakeComponent
           onBack={() => setReviewVisible(false)}
-          title={unstake ? "Unstake esXai" : "Stake esXai"}
+          title={title}
           inputValue={inputValue}
-          totalStaked={userPool?.userStakedEsXaiAmount}
-          maxStake={getMaxEsXaiForStake()}
+          totalStaked={totalStaked}
+          maxStake={Math.min(totalMaxStaked, esXaiBalance)}
           unstake={unstake}
-          approved={allowance >= Number(inputValue)}
-          pool={userPool}
+          approved={unstake ? true : allowance >= Number(inputValue)}
         />
       ) : (
         <div className="flex flex-col items-start">
           <ButtonBack onClick={() => router.back()} btnText="Back" />
-          <MainTitle title={unstake ? "Unstake esXai" : "Stake esXai"} />
-
-          {userPool && <div className="flex items-center mb-4">
-            <span className="mr-2">{unstake ? 'Unstake from:' : 'Stake to:'}</span>
-            <Avatar src={userPool.meta.logo} className="w-[32px] h-[32px] mr-2" />
-            <span className="text-graphiteGray">{userPool.meta.name}</span>
-          </div>}
-
+          <MainTitle title={title} />
           <StakingInput
             value={inputValue}
             label={`${unstake ? 'You unstake' : 'You stake'}`}
             placeholder="0"
             onChange={(e) => setInputValue(e.target.value)}
-            isInvalid={isInvalidInput()}
+            isInvalid={validationInput()}
             unstake={unstake}
             endContent={
               <AvailableBalanceComponent
                 currency="esXAI"
-                availableXaiBalance={unstake ? getMaxEsXaiForUnstake() : getMaxEsXaiForStake()}
+                availableXaiBalance={unstake ? totalStaked : Math.min(totalMaxStaked, esXaiBalance)}
                 onMaxBtnClick={() =>
                   setInputValue(
-                    unstake ? String(getMaxEsXaiForUnstake()) : String(getMaxEsXaiForStake())
+                    unstake ? String(totalStaked) : String(Math.min(totalMaxStaked, esXaiBalance))
                   )
                 }
               />
@@ -106,11 +82,11 @@ const StakeComponent = ({ poolAddress }: StakeProps) => {
             }}
             btnText="Continue"
             className="w-full disabled:opacity-50"
-            isDisabled={confirmButtonDisabled()}
+            isDisabled={checkDisabledButton}
           />
         </div>
       )}
-    </div>
+    </>
   );
 };
 

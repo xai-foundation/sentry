@@ -1,27 +1,21 @@
-import Web3, { Contract } from "web3";
-import { PoolFactoryAbi } from "@/assets/abi/PoolFactoryAbi";
+import Web3, { Contract, EventLog } from "web3";
 import { RefereeAbi } from "../assets/abi/RefereeAbi";
 import { XaiAbi } from "@/assets/abi/XaiAbi";
 import { esXaiAbi } from "@/assets/abi/esXaiAbi";
 import { NodeLicenseAbi } from "@/assets/abi/NodeLicenseAbi";
-import { getCurrentTierByStaking } from "@/app/components/staking/utils";
-import { StakingPoolAbi } from "@/assets/abi/StakingPoolAbi";
-import { PoolInfo } from "@/types/Pool";
 
 export type Web3Instance = {
 	name: string,
-	web3: Web3,
+	web3: Web3, //TODOD type ; TODO will this still work with ethers ?
 	rpcUrl: string,
 	chainId: number,
 	refereeAddress: string,
 	xaiAddress: string,
 	esXaiAddress: string,
 	nodeLicenseAddress: string,
-	poolFactoryAddress: string,
-	explorer: string
+	explorer: string,
+	poolFactoryAddress: string
 }
-
-const IS_BACKEND = (typeof window === 'undefined') ? true : false as const;
 
 export const networkKeys = ["arbitrum", "arbitrumSepolia"] as const;
 export type NetworkKey = typeof networkKeys[number];
@@ -30,8 +24,6 @@ export const MAINNET_ID = 42161;
 export const TESTNET_ID = 421614;
 
 export const ACTIVE_NETWORK_IDS = process.env.NEXT_PUBLIC_APP_ENV === "development" ? [MAINNET_ID, TESTNET_ID] : [MAINNET_ID];
-
-export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
 const web3Instances: { [key in NetworkKey]: Web3Instance } = {
 	'arbitrum': {
@@ -91,54 +83,38 @@ export const getRedemptionPeriod = (network: NetworkKey, factor: RedemptionFacto
 	return RedemptionPeriodsByNetwork[network][factor];
 }
 
-
 export type MappedWeb3Error =
 	"Staking not enabled" |
 	"Redemption is currently inactive" |
 	"Insufficient funds" |
 	"User rejected the request" |
 	"Maximum staking amount exceeded" |
-	"Must complete KYC" |
 	"Something went wrong";
 
-//TODO make this loop over expected errors
 export const mapWeb3Error = (error: any): MappedWeb3Error => {
 	error = error.toString();
-	if (hasErrorCode(1, error)) {
+	if (error.includes("Staking not enabled")) {
 		// feature is disabled on contract-side
-		return "Staking not enabled";
+		return "Staking not enabled";;
 	} else if (error.includes("Redemption is currently inactive")) {
 		// feature is disabled on contract-side
-		return "Redemption is currently inactive";
+		return "Redemption is currently inactive";;
 	} else if (error.includes("Insufficient funds")) {
 		// user does not have enough coin to pay for transaction
 		return "Insufficient funds";
 	} else if (error.includes("User rejected the request")) {
 		// user clicked 'Reject' in wallet provider
 		return "User rejected the request";
-	} else if (hasErrorCode(43, error) || hasErrorCode(49, error)) {
+	} else if (error.includes("Maximum staking amount exceeded")) {
 		// user clicked 'Confirm' in stake 
 		return "Maximum staking amount exceeded";
-	}
-	else if (hasErrorCode(42, error)) {
-		// user clicked 'Confirm' in stake 
-		return "Must complete KYC";
 	} else {
 		// unknown error
 		console.error("Blockchain transaction failed with error", error);
 		return "Something went wrong";
 	}
-};
+}
 
-export const hasErrorCode = (code: number, error: string): boolean => {
-	if (error.includes(`reverted with the following reason:\n${code}\n`)) {
-		return true;
-	} else {
-		return false;
-	}
-};
-
-type PoolFactoryContract = Contract<typeof PoolFactoryAbi>;
 type RefereeContract = Contract<typeof RefereeAbi>;
 type XaiContract = Contract<typeof XaiAbi>;
 type esXaiContract = Contract<typeof esXaiAbi>;
@@ -179,9 +155,8 @@ export const getWeb3Instance = (network: NetworkKey): Web3Instance => {
 	return web3;
 }
 
-export const getWeiAmount = (amount: number): string => {
-	const web3Instance = getWeb3Instance("arbitrum");
-	return web3Instance.web3.utils.toWei(amount.toFixed(18), 'ether');
+export const isZeroAddress = (address: string) => {
+	return parseInt(address, 16) === 0;
 }
 
 export const getXaiBalance = async (network: NetworkKey, walletAddress: string): Promise<number> => {
@@ -213,27 +188,17 @@ export const getStakedAmount = async (network: NetworkKey, walletAddress: string
 export const getMaxStakedAmount = async (network: NetworkKey, walletAddress: string): Promise<number> => {
 	const web3Instance = getWeb3Instance(network);
 	const refereeContract = new web3Instance.web3.eth.Contract(RefereeAbi, web3Instance.refereeAddress);
-	const numNodeLicenses = await getNodeLicenses(network, walletAddress);
 	try {
-		const maxStakePerKey = await refereeContract.methods.maxStakeAmountPerLicense().call() as bigint;
-		const maxStake = maxStakePerKey * BigInt(numNodeLicenses)
-		const stakedAmount = await refereeContract.methods.stakedAmounts(walletAddress).call();
-		return Number(web3Instance.web3.utils.fromWei((maxStake as bigint) - (stakedAmount as bigint), 'ether'));
+		const numNodeLicenses = await getNodeLicenses(network, walletAddress);
+		const maxStakePerLicense = Number(web3Instance.web3.utils.fromWei((await refereeContract.methods.maxStakeAmountPerLicense().call() as bigint), 'ether'))
+		const maxStake = numNodeLicenses * maxStakePerLicense;
+		const stakedAmount = Number(web3Instance.web3.utils.fromWei((await refereeContract.methods.stakedAmounts(walletAddress).call() as bigint), 'ether'));
+		console.log("getMaxStakedAmount", maxStake, stakedAmount, maxStake - stakedAmount)
+		return maxStake - stakedAmount;
 	} catch (error) {
 		console.log("Error getting getMaxStakedAmount", error);
 		return 0;
 	}
-}
-
-let MAX_STAKE_PER_LICENSE = 0;
-export const getMaxStakedAmountPerLicense = async (network: NetworkKey): Promise<number> => {
-	if (MAX_STAKE_PER_LICENSE === 0 || IS_BACKEND) {
-		const web3Instance = getWeb3Instance(network);
-		const refereeContract = new web3Instance.web3.eth.Contract(RefereeAbi, web3Instance.refereeAddress);
-		const maxStake = await refereeContract.methods.maxStakeAmountPerLicense().call();
-		MAX_STAKE_PER_LICENSE = Number(web3Instance.web3.utils.fromWei((maxStake as bigint), 'ether'));
-	}
-	return MAX_STAKE_PER_LICENSE;
 }
 
 export const getNodeLicenses = async (network: NetworkKey, walletAddress: string): Promise<number> => {
@@ -335,451 +300,6 @@ export const getRedemptions = async (network: NetworkKey, walletAddress: string)
 export const getEsXaiAllowance = async (network: NetworkKey, owner: string): Promise<number> => {
 	const web3Instance = getWeb3Instance(network);
 	const esXaiContract = new web3Instance.web3.eth.Contract(esXaiAbi, web3Instance.esXaiAddress);
-	const allowance = await esXaiContract.methods.allowance(owner, web3Instance.poolFactoryAddress).call();
+	const allowance = await esXaiContract.methods.allowance(owner, web3Instance.refereeAddress).call();
 	return Number(web3Instance.web3.utils.fromWei(allowance.toString(), 'ether'));
-}
-
-/**
- * @param network The blockchain network to connect to
- * @returns The total number of pools known to the contract
- */
-export const getPoolsCount = async (network: NetworkKey): Promise<number> => {
-	const web3Instance = getWeb3Instance(network);
-	const factoryContract = new web3Instance.web3.eth.Contract(PoolFactoryAbi, web3Instance.poolFactoryAddress);
-	const numPools = await factoryContract.methods.getPoolsCount().call();
-	return Number(numPools);
-}
-
-/**
- * @param network The blockchain network to connect to
- * @param user The account for which to query number of pools
- * @returns The number of pools owned by user
- */
-export const getPoolsOfUserCount = async (network: NetworkKey, user: string): Promise<number> => {
-	const web3Instance = getWeb3Instance(network);
-	const factoryContract = new web3Instance.web3.eth.Contract(PoolFactoryAbi, web3Instance.poolFactoryAddress);
-	const numPools = await factoryContract.methods.getPoolsOfUserCount(user).call();
-	return Number(numPools);
-}
-
-type BaseInfo = {
-	poolAddress: string;
-	owner: string;
-	keyBucketTracker: string;
-	esXaiBucketTracker: string;
-	keyCount: BigInt;
-	totalStakedAmount: BigInt;
-	updateSharesTimestamp: BigInt;
-	ownerShare: BigInt;
-	keyBucketShare: BigInt;
-	stakedBucketShare: BigInt;
-};
-
-type Socials = [string, string, string, string, string, string, string];
-type PendingShares = [BigInt, BigInt, BigInt];
-
-type RawPoolInfo = {
-	baseInfo: BaseInfo;
-	_name: string;
-	_description: string;
-	_logo: string;
-	_socials: Socials;
-	_pendingShares: PendingShares;
-	_ownerStakedKeys: BigInt;
-	_ownerRequestedUnstakeKeyAmount: BigInt;
-	_ownerLatestUnstakeRequestLockTime: BigInt;
-};
-
-// User-specific data type
-type RawUserInfo = {
-	userStakedEsXaiAmount: BigInt;
-	userClaimAmount: BigInt;
-	userStakedKeyIds: BigInt[];
-	unstakeRequestkeyAmount: BigInt,
-	unstakeRequestesXaiAmount: BigInt,
-};
-
-export const getPoolInfo = async (network: NetworkKey, poolAddress: string, userAddress?: string): Promise<PoolInfo> => {
-	const web3Instance = getWeb3Instance(network);
-	const stakingPoolContract = new web3Instance.web3.eth.Contract(StakingPoolAbi, poolAddress);
-
-	const poolInfo = await stakingPoolContract.methods.getPoolInfo().call() as RawPoolInfo;
-
-	const maxKeyCount = await getMaxKeyCount(network);
-	const maxStakePerLicense = await getMaxStakedAmountPerLicense(network);
-
-	let userInfo: RawUserInfo | undefined;
-	if (userAddress) {
-		userInfo = await stakingPoolContract.methods.getUserPoolData(userAddress).call() as RawUserInfo;
-	}
-	return toPoolInfo(web3Instance, poolInfo, userInfo, maxKeyCount, maxStakePerLicense);
-}
-
-export const getDelegateOwner = async (network: NetworkKey, poolAddress: string): Promise<string> => {
-	const web3Instance = getWeb3Instance(network);
-	const stakingPoolContract = new web3Instance.web3.eth.Contract(StakingPoolAbi, poolAddress);
-
-	const delegate = await stakingPoolContract.methods.getDelegateOwner().call();
-	return delegate == ZERO_ADDRESS ? "" : delegate;
-}
-
-export const getRawPoolInfo = async (network: NetworkKey, poolAddress: string): Promise<RawPoolInfo> => {
-	const web3Instance = getWeb3Instance(network);
-	const stakingPoolContract = new web3Instance.web3.eth.Contract(StakingPoolAbi, poolAddress);
-	return await stakingPoolContract.methods.getPoolInfo().call() as RawPoolInfo;
-}
-
-export const getTotalClaimAmount = async (network: NetworkKey, poolAddresses: string[], userAddress: string): Promise<number> => {
-	const web3Instance = getWeb3Instance(network);
-
-	let totalClaim = 0;
-
-	for (let i = 0; i < poolAddresses.length; i++) {
-		const stakingPoolContract = new web3Instance.web3.eth.Contract(StakingPoolAbi, poolAddresses[i]);
-		const userInfo = await stakingPoolContract.methods.getUserPoolData(userAddress).call() as RawUserInfo;
-		totalClaim += Number(web3Instance.web3.utils.fromWei(userInfo.userClaimAmount.toString(), 'ether'));
-	}
-
-	return totalClaim;
-}
-
-
-/**
- * @param network The blockchain network to connect to
- * @param userAddress address of user
- * @returns addresses of pools the user has interacted with
- */
-export const getPoolAddressesOfUser = async (network: NetworkKey, userAddress?: string): Promise<string[]> => {
-	const web3Instance = getWeb3Instance(network);
-	const factoryContract = new web3Instance.web3.eth.Contract(PoolFactoryAbi, web3Instance.poolFactoryAddress);
-	const result = await factoryContract.methods.getPoolIndicesOfUser(userAddress).call() as string[];
-	return result;
-}
-
-/**
- * @param network The blockchain network to connect to
- * @param userAddress The account for which to query owned pools
- * @param index The index of the pool to retrieve
- * @returns (Meta-)data about the pool
- */
-export const getPoolAddressOfUserAtIndex = async (network: NetworkKey, userAddress: string, index: number): Promise<string> => {
-	const web3Instance = getWeb3Instance(network);
-	const factoryContract = new web3Instance.web3.eth.Contract(PoolFactoryAbi, web3Instance.poolFactoryAddress);
-	return await factoryContract.methods.getPoolAddressOfUser(userAddress, index).call() as string;
-}
-
-/**
- * @returns The contract address of the pool contract at index
- * @param network The blockchain network to connect to
- * @param index The index of the pool within the array of pools
- */
-export const getPoolAddressAtIndex = async (network: NetworkKey, index: number): Promise<string> => {
-	const web3Instance = getWeb3Instance(network);
-	const factoryContract = new web3Instance.web3.eth.Contract(PoolFactoryAbi, web3Instance.poolFactoryAddress);
-	return await factoryContract.methods.getPoolAddress(index).call() as string;
-}
-
-let MAX_KEY_COUNT_PER_POOL = 0;
-export const getMaxKeyCount = async (network: NetworkKey): Promise<number> => {
-	if (MAX_KEY_COUNT_PER_POOL === 0 || IS_BACKEND) {
-		const web3Instance = getWeb3Instance(network);
-		const refereeContract = new web3Instance.web3.eth.Contract(RefereeAbi, web3Instance.refereeAddress);
-		MAX_KEY_COUNT_PER_POOL = Number(await refereeContract.methods.maxKeysPerPool().call() as BigInt);
-	}
-	return MAX_KEY_COUNT_PER_POOL;
-}
-
-
-export const getUnstakedKeysOfUser = async (network: NetworkKey, walletAddress: string, requestedCount: number): Promise<BigInt[]> => {
-	const web3Instance = getWeb3Instance(network);
-	const factoryContract = new web3Instance.web3.eth.Contract(PoolFactoryAbi, web3Instance.poolFactoryAddress);
-	const numNodeLicenses = await getNodeLicenses(network, walletAddress);
-	const availableKeys: BigInt[] = [];
-	try {
-		let offset = 0;
-		while (availableKeys.length < requestedCount) {
-			const keys = await factoryContract.methods.getUnstakedKeyIdsFromUser(walletAddress, BigInt(offset), BigInt(10)).call() as BigInt[];
-			keys.forEach(k => {
-				if (Number(k) != 0) {
-					availableKeys.push(k);
-				}
-			})
-			offset += 10;
-
-			if (offset >= numNodeLicenses) {
-				break;
-			}
-		}
-	} catch (error) {
-		console.error("Failed to load unstaked keys", error);
-	}
-	return availableKeys.slice(0, requestedCount);
-}
-
-export const getAvailableKeysForStaking = async (network: NetworkKey, walletAddress: string): Promise<number> => {
-	const web3Instance = getWeb3Instance(network);
-	const refereeContract = new web3Instance.web3.eth.Contract(RefereeAbi, web3Instance.refereeAddress);
-	const count = await refereeContract.methods.assignedKeysOfUserCount(walletAddress).call() as BigInt;
-	const numNodeLicenses = await getNodeLicenses(network, walletAddress);
-	return numNodeLicenses - Number(count);
-}
-
-export const getStakedKeysCount = async (network: NetworkKey, walletAddress: string): Promise<number> => {
-	const web3Instance = getWeb3Instance(network);
-	const refereeContract = new web3Instance.web3.eth.Contract(RefereeAbi, web3Instance.refereeAddress);
-	const count = await refereeContract.methods.assignedKeysOfUserCount(walletAddress).call() as BigInt;
-	return Number(count);
-}
-
-export const getStakedKeysOfUserInPool = async (network: NetworkKey, poolAddress: string, walletAddress: string): Promise<BigInt[]> => {
-	const web3Instance = getWeb3Instance(network);
-	const stakingPool = new web3Instance.web3.eth.Contract(StakingPoolAbi, poolAddress);
-	const userPoolData = await stakingPool.methods.getUserPoolData(walletAddress).call() as any[];
-	return userPoolData[2] as BigInt[];
-}
-
-export const getUserRequestedUnstakeAmounts = async (network: NetworkKey, poolAddress: string, walletAddress: string): Promise<BigInt[]> => {
-	const web3Instance = getWeb3Instance(network);
-	const factoryContract = new web3Instance.web3.eth.Contract(StakingPoolAbi, poolAddress);
-	const requestedUnstakeAmounts = await factoryContract.methods.getUserRequestedUnstakeAmounts(walletAddress).call();
-	return requestedUnstakeAmounts;
-};
-
-let BUCKET_MAX_SHARES: [ownerShare: number, keyShare: number, esXaiStakeShare: number];
-export const getMaxBucketShares = async (network: NetworkKey): Promise<[ownerShare: number, keyShare: number, esXaiStakeShare: number]> => {
-	if (!BUCKET_MAX_SHARES) {
-		const web3Instance = getWeb3Instance(network);
-		const factoryContract = new web3Instance.web3.eth.Contract(PoolFactoryAbi, web3Instance.poolFactoryAddress);
-		const ownerShare = await factoryContract.methods.bucketshareMaxValues(0).call() as BigInt;
-		const keyShare = await factoryContract.methods.bucketshareMaxValues(1).call() as BigInt;
-		const esXaiStakeShare = await factoryContract.methods.bucketshareMaxValues(2).call() as BigInt;
-		BUCKET_MAX_SHARES = [Number(ownerShare) / POOL_SHARES_BASE, Number(keyShare) / POOL_SHARES_BASE, Number(esXaiStakeShare) / POOL_SHARES_BASE]
-	}
-	return BUCKET_MAX_SHARES;
-}
-
-export const isKYCApproved = async (network: NetworkKey, walletAddress: string): Promise<boolean> => {
-	const web3Instance = getWeb3Instance(network);
-	const refereeContract = new web3Instance.web3.eth.Contract(RefereeAbi, web3Instance.refereeAddress);
-	try {
-		const isApproved = await refereeContract.methods.isKycApproved(walletAddress).call() as boolean;
-		return isApproved;
-	} catch (error) {
-		console.log("Error checking isKYCApproved", error);
-		return false;
-	}
-}
-
-export const POOL_SHARES_BASE = 10_000;
-
-/**
- * @param rawPoolInfo A raw PoolInfo data struct, as returned from the contract.
- * @returns A PoolInfo key-value map object.
- */
-export const toPoolInfo = (
-	web3Instance: Web3Instance,
-	rawPoolInfo: RawPoolInfo,
-	rawUserInfo?: RawUserInfo,
-	maxKeyCount: number = MAX_KEY_COUNT_PER_POOL,
-	maxStakePerLicense: number = MAX_STAKE_PER_LICENSE
-): PoolInfo => {
-	const baseInfo: BaseInfo = rawPoolInfo.baseInfo;
-	const userStakedKeyIds: number[] = rawUserInfo ? rawUserInfo.userStakedKeyIds.map((i: BigInt) => Number(i)) : [];
-
-	const pendingShares: number[] = rawPoolInfo._pendingShares.map(p => Number(p) / POOL_SHARES_BASE);
-
-	let updateSharesTimestamp = Number(baseInfo.updateSharesTimestamp) * 1000;
-	let ownerShare = Number(baseInfo.ownerShare) / POOL_SHARES_BASE;
-	let keyBucketShare = Number(baseInfo.keyBucketShare) / POOL_SHARES_BASE;
-	let stakedBucketShare = Number(baseInfo.stakedBucketShare) / POOL_SHARES_BASE;
-	let ownerLatestUnstakeRequestCompletionTime = Number(rawPoolInfo._ownerLatestUnstakeRequestLockTime) * 1000;
-
-	if (updateSharesTimestamp != 0 && updateSharesTimestamp <= Date.now()) {
-		ownerShare = pendingShares[0]
-		keyBucketShare = pendingShares[1]
-		stakedBucketShare = pendingShares[2]
-		updateSharesTimestamp = 0;
-	}
-
-	if (ownerLatestUnstakeRequestCompletionTime != 0 && ownerLatestUnstakeRequestCompletionTime <= Date.now()) {
-		ownerLatestUnstakeRequestCompletionTime = 0;
-	}
-
-	const amountForTier = Math.min(Number(web3Instance.web3.utils.fromWei(baseInfo.totalStakedAmount.toString(), 'ether')), Number(baseInfo.keyCount) * maxStakePerLicense);
-
-	return {
-		address: baseInfo.poolAddress,
-		owner: baseInfo.owner,
-		keyBucketTracker: baseInfo.keyBucketTracker,
-		esXaiBucketTracker: baseInfo.esXaiBucketTracker,
-		keyCount: Number(baseInfo.keyCount),
-		totalStakedAmount: Number(web3Instance.web3.utils.fromWei(baseInfo.totalStakedAmount.toString(), 'ether')),
-		updateSharesTimestamp,
-		ownerStakedKeys: Number(rawPoolInfo._ownerStakedKeys),
-		ownerRequestedUnstakeKeyAmount: Number(rawPoolInfo._ownerRequestedUnstakeKeyAmount),
-		ownerLatestUnstakeRequestCompletionTime,
-		ownerShare,
-		keyBucketShare,
-		stakedBucketShare,
-		maxStakedAmount: Number(baseInfo.keyCount) * maxStakePerLicense,
-		maxKeyCount,
-		userStakedEsXaiAmount: rawUserInfo ? Number(web3Instance.web3.utils.fromWei(rawUserInfo.userStakedEsXaiAmount.toString(), 'ether')) : 0,
-		userClaimAmount: rawUserInfo ? Number(web3Instance.web3.utils.fromWei(rawUserInfo.userClaimAmount.toString(), 'ether')) : 0,
-		unstakeRequestkeyAmount: rawUserInfo ? Number(rawUserInfo.unstakeRequestkeyAmount) : 0,
-		unstakeRequestesXaiAmount: rawUserInfo ? Number(web3Instance.web3.utils.fromWei(rawUserInfo.unstakeRequestesXaiAmount.toString(), 'ether')) : 0,
-		userStakedKeyIds,
-		pendingShares,
-		tier: getCurrentTierByStaking(amountForTier),
-		meta: {
-			name: rawPoolInfo._name,
-			description: rawPoolInfo._description,
-			logo: rawPoolInfo._logo,
-			website: rawPoolInfo._socials[0],
-			discord: rawPoolInfo._socials[1],
-			telegram: rawPoolInfo._socials[2],
-			twitter: rawPoolInfo._socials[3],
-			instagram: rawPoolInfo._socials[4],
-			youtube: rawPoolInfo._socials[5],
-			tiktok: rawPoolInfo._socials[6],
-		},
-	};
-};
-
-export type UnstakeRequest = {
-	open: boolean;
-	isKeyRequest: boolean;
-	amount: number;
-	createdTime: number;
-	lockTime: number;
-	completeTime: number;
-	index: number;	// index of redemption by user wallet address
-};
-
-export type OrderedUnstakeRequests = {
-	claimable: UnstakeRequest[];
-	open: UnstakeRequest[];
-	closed: UnstakeRequest[];
-};
-
-
-export const updateRequestClaimed = (network: NetworkKey, walletAddress: `0x${string}`, poolAddress: string, requestIndex: number) => {
-	const storageKey = "unstakeRequests" + network + walletAddress + poolAddress;
-	const storage = localStorage.getItem(storageKey);
-	const cachedUnstakes: UnstakeRequest[] = JSON.parse(storage || "[]");
-
-	if (requestIndex >= cachedUnstakes.length) {
-		throw new Error('Invalid requestIndex');
-	}
-
-	cachedUnstakes[requestIndex].open = false;
-	cachedUnstakes[requestIndex].completeTime = Date.now();
-	localStorage.setItem(storageKey, JSON.stringify(cachedUnstakes));
-}
-
-export const addUnstakeRequest = async (network: NetworkKey, walletAddress: string, poolAddress: string): Promise<void> => {
-	const storageKey = "unstakeRequests" + network + walletAddress + poolAddress;
-	const storage = localStorage.getItem(storageKey);
-	const cachedUnstakes: UnstakeRequest[] = JSON.parse(storage || "[]");
-
-	const web3Instance = getWeb3Instance(network);
-	const poolContract = new web3Instance.web3.eth.Contract(StakingPoolAbi, poolAddress);
-
-	let res;
-	while (!res || res.lockTime == 0) {
-		try {
-			res = await poolContract.methods.getUnstakeRequest(walletAddress, cachedUnstakes.length).call() as any; // TODO fix when ABI is updated
-		} catch {
-			await new Promise(resolve => setTimeout(resolve, 500));
-		}
-	}
-
-	let amount = Boolean(res.isKeyRequest) ? Number(res.amount) : Number(web3Instance.web3.utils.fromWei(res.amount, "ether"));
-
-	const createdTime = res.createdTime ? Number(res.createdTime) * 1000 : Number(res.lockTime) * 1000;
-
-	const unstakeRequest: UnstakeRequest = {
-		open: Boolean(res.open),
-		isKeyRequest: Boolean(res.isKeyRequest),
-		amount: amount,
-		createdTime, // block.timestamp of creating the request
-		lockTime: Number(res.lockTime) * 1000,		// contract works with seconds
-		completeTime: Number(res.completeTime) * 1000,	// convert to milliseconds for convenient use with js APIs
-		index: cachedUnstakes.length
-	};
-
-	cachedUnstakes.push(unstakeRequest);
-	localStorage.setItem(storageKey, JSON.stringify(cachedUnstakes));
-}
-
-export const getUnstakeRequest = async (network: NetworkKey, walletAddress: string, poolAddress: string): Promise<OrderedUnstakeRequests> => {
-	const storageKey = "unstakeRequests" + network + walletAddress + poolAddress;
-	const storage = localStorage.getItem(storageKey);
-	const cachedUnstakes: UnstakeRequest[] = JSON.parse(storage || "[]");
-
-	const web3Instance = getWeb3Instance(network);
-	const poolContract = new web3Instance.web3.eth.Contract(StakingPoolAbi, poolAddress);
-	const numRequests = Number(await poolContract.methods.getUnstakeRequestCount(walletAddress).call());
-
-	const numCachedUnstakes = cachedUnstakes.length;
-
-	if (numRequests != numCachedUnstakes) {
-		for (let i = numCachedUnstakes; i < numRequests; i++) {
-			const res = await poolContract.methods.getUnstakeRequest(walletAddress, i).call() as any; // TODO fix when ABI is updated
-
-			let amount = Boolean(res.isKeyRequest) ? Number(res.amount) : Number(web3Instance.web3.utils.fromWei(res.amount, "ether"));
-			const createdTime = res.createdTime ? Number(res.createdTime) * 1000 : Number(res.lockTime) * 1000;
-
-			const unstakeRequest: UnstakeRequest = {
-				open: Boolean(res.open),
-				isKeyRequest: Boolean(res.isKeyRequest),
-				amount: amount,
-				createdTime, // block.timestamp of creating te request
-				lockTime: Number(res.lockTime) * 1000,		// contract works with seconds
-				completeTime: Number(res.completeTime) * 1000,	// convert to milliseconds for convenient use with js APIs
-				index: i
-			};
-			cachedUnstakes.push(unstakeRequest);
-		}
-	}
-
-	let open = [], closed = [], claimable = [];
-	for (let i = 0; i < cachedUnstakes.length; i++) {
-		const unstake = cachedUnstakes[i];
-
-		if (unstake.open) {
-
-			if (i < numRequests) {
-				//Check if claimed
-				const res = await poolContract.methods.getUnstakeRequest(walletAddress, i).call();
-
-				if (!res.open) {
-					cachedUnstakes[i].open = res.open;
-					cachedUnstakes[i].completeTime = Number(res.completeTime) * 1000;
-				}
-			}
-
-			if (Date.now() >= unstake.lockTime) {
-				claimable.push(unstake);
-			} else {
-				open.push(unstake);
-			}
-
-		} else {
-			closed.push(unstake);
-		}
-	}
-
-	localStorage.setItem(storageKey, JSON.stringify(cachedUnstakes));
-
-	return {
-		claimable,
-
-		open: open.sort((a: UnstakeRequest, b: UnstakeRequest) => {
-			return a.completeTime - b.completeTime;
-		}),
-
-		closed: closed.sort((a: UnstakeRequest, b: UnstakeRequest) => {
-			return a.completeTime - b.completeTime;
-		}),
-	};
 }

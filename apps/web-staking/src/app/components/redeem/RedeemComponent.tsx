@@ -13,7 +13,6 @@ import RedemptionPeriod from "./RedemptionPeriod";
 import { ErrorCircle, SwitchArrows } from "../icons/IconsComponent";
 import { CURRENCY } from "./Constants";
 import { useGetBalanceHooks } from "@/app/hooks/hooks";
-import AgreeModalComponent from "../modal/AgreeModalComponents";
 
 
 export default function RedeemComponent() {
@@ -90,6 +89,7 @@ export default function RedeemComponent() {
 			getRedemptions(getNetwork(chainId), address!)
 			.then(orderedRedemptions => {
 				setRedemptionHistory(orderedRedemptions);
+				console.log('redemption reloaded and records are for', orderedRedemptions, count);
 				reloadRedemptions(++count);
 			});
 		}, 4000);
@@ -129,7 +129,6 @@ export default function RedeemComponent() {
 			</>
 			:
 			<main className="flex w-full flex-col items-center">
-				<AgreeModalComponent address={address} />
 				<div className="flex flex-col items-start">
 					<MainTitle title={"Redeem"} classNames="pl-2 ml-1" />
 					<div className="flex flex-col p-3 w-xl">
