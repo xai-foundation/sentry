@@ -940,10 +940,24 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
     /**
      * @dev Looks up payout boostFactor based on the staking tier for a staker wallet.
      * @param staker The address of the staker or pool.
-     * @return The payout chance boostFactor.
+     * @return The payout chance boostFactor based on max stake capacity or staked amount.
      */
     function getBoostFactorForStaker(address staker) external view returns (uint256) {
-        return _getBoostFactor(stakedAmounts[staker]);
+
+        uint256 stakedAmount = stakedAmounts[staker];
+
+        if(PoolFactory(poolFactoryAddress).poolsCreatedViaFactory(staker)){
+			if (assignedKeysToPoolCount[staker] * maxStakeAmountPerLicense < stakedAmount) {
+				stakedAmount = assignedKeysToPoolCount[staker] * maxStakeAmountPerLicense;
+			}
+        }else{			
+			uint256 ownerUnstakedAmount = NodeLicense(nodeLicenseAddress).balanceOf(staker) - assignedKeysOfUserCount[staker];
+			if (ownerUnstakedAmount * maxStakeAmountPerLicense < stakedAmount) {
+				stakedAmount = ownerUnstakedAmount * maxStakeAmountPerLicense;
+			}
+        }
+
+        return _getBoostFactor(stakedAmount);
     }
 
     /**
