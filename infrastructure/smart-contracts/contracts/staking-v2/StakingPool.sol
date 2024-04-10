@@ -188,12 +188,13 @@ contract StakingPool is AccessControlUpgradeable {
     function updateShares(
 		uint32 _ownerShare,
 		uint32 _keyBucketShare,
-		uint32 _stakedBucketShare
+		uint32 _stakedBucketShare,
+        uint256 period 
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         pendingShares[0] = _ownerShare;
         pendingShares[1] = _keyBucketShare;
         pendingShares[2] = _stakedBucketShare;
-        updateSharesTimestamp = block.timestamp + 45 days;
+        updateSharesTimestamp = block.timestamp + period;
     }
 
     function updateMetadata(
