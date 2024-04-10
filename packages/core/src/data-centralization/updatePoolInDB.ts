@@ -58,12 +58,10 @@ export async function updatePoolInDB(
         updateSharesTimestamp,
         pendingShares,
         socials: poolInfo._socials,
-        visibility: 'active',
         network: config.defaultNetworkName,
         ownerStakedKeys: Number(poolInfo._ownerStakedKeys),
         ownerRequestedUnstakeKeyAmount: Number(poolInfo._ownerRequestedUnstakeKeyAmount),
         ownerLatestUnstakeRequestCompletionTime,
-
     }
 
     //Write poolInfo to database
