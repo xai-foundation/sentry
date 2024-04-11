@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p 8080",
-    "clean": "rimraf out && rimraf .next",
+    "start": "next start",
     "lint": "next lint"
   },
   "dependencies": {

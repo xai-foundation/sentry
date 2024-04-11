@@ -75,6 +75,13 @@ const config: Config = {
       darkTheme: prismThemes.dracula,
     },
   } satisfies Preset.ThemeConfig,
+
+  themes: ['@docusaurus/theme-mermaid'],
+
+  markdown: {
+    mermaid: true,
+  },
 };
 
 export default config;
+
