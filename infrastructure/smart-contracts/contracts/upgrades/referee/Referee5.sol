@@ -214,19 +214,6 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         address _poolFactoryAddress
     ) public reinitializer(4) {
         poolFactoryAddress = _poolFactoryAddress;
-        
-        maxStakeAmountPerLicense = 12500 * 10 ** 18;
-        maxKeysPerPool = 600;
-
-        stakeAmountTierThresholds[0] = 10_000 * 10 ** 18;
-        stakeAmountTierThresholds[1] = 100_000 * 10 ** 18;
-        stakeAmountTierThresholds[2] = 500_000 * 10 ** 18;
-        stakeAmountTierThresholds[3] = 5_000_000 * 10 ** 18;
-
-        stakeAmountBoostFactors[0] = 150;
-        stakeAmountBoostFactors[1] = 200;
-        stakeAmountBoostFactors[2] = 300;
-        stakeAmountBoostFactors[3] = 600;
     }
 
     /**
