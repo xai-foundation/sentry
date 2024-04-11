@@ -23,8 +23,8 @@ export let config = {
   "xaiGaslessClaimAddress": "0x149107dEB70b9514930d8e454Fc32E77C5ABafE0",
   "xaiRedEnvelope2024Address": "0x080C2e59e963959Bbe9Ea064d1bcBc881F380Ff2",
   "xaiRedEnvelope2024ImplementationAddress": "0xf26Af8313cB039A58b86c2Ab7aA5c540EcEEB70f",
-  "poolFactoryAddress": "0x0",
-  "poolFactoryAddressImplementationAddress": "0x0",
+  "poolFactoryAddress": "0xF9E08660223E2dbb1c0b28c82942aB6B5E38b8E5",
+  "poolFactoryAddressImplementationAddress": "0x21EEC6626f15d02A8896ebB7EDD68ff3CB61e89E",
   "defaultNetworkName": "arbitrum"
 };
 
