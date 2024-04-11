@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-interface IPool {
+export interface IPool {
     _id: mongoose.ObjectId
     poolAddress: string;
     owner: string;
@@ -29,7 +29,7 @@ interface IPool {
     createdAt: Date
 };
 
-const PoolSchema = new mongoose.Schema<IPool>({
+export const PoolSchema = new mongoose.Schema<IPool>({
     poolAddress: {
         type: String,
         required: true,
@@ -140,8 +140,6 @@ const PoolSchema = new mongoose.Schema<IPool>({
         type: Date
     }
 });
-
-export const PoolModel = mongoose.models.Pool || mongoose.model<IPool>('Pool', PoolSchema);
 
 export type BaseInfo = {
     poolAddress: string;
