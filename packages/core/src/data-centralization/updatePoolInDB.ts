@@ -1,8 +1,9 @@
+import mongoose from 'mongoose';
 import { formatEther } from 'ethers';
 import { getPoolInfo } from "./getPoolInfo.js";
-import { PoolModel } from "./types.js";
 import { getMaxStakeAmountPerLicense } from "./getMaxStakeAmountPerLicense.js";
 import { getTierIndexByStakedAmount } from "./getTierIndexByStakedAmount.js";
+import { IPool, PoolSchema } from './types.js';
 import { config } from "../config.js";
 
 const POOL_SHARES_BASE = 10_000;
@@ -14,6 +15,8 @@ const POOL_SHARES_BASE = 10_000;
 export async function updatePoolInDB(
     poolAddress: string
 ): Promise<void> {
+
+    const PoolModel = mongoose.models.Pool || mongoose.model<IPool>('Pool', PoolSchema);
 
     //Load poolInfo from blockchain
     const poolInfo = await getPoolInfo(poolAddress);
