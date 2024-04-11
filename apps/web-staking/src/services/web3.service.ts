@@ -13,7 +13,8 @@ export type Web3Instance = {
 	xaiAddress: string,
 	esXaiAddress: string,
 	nodeLicenseAddress: string,
-	explorer: string
+	explorer: string,
+	poolFactoryAddress: string
 }
 
 export const networkKeys = ["arbitrum", "arbitrumSepolia"] as const;
@@ -34,6 +35,7 @@ const web3Instances: { [key in NetworkKey]: Web3Instance } = {
 		xaiAddress: "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66",
 		esXaiAddress: "0x4C749d097832DE2FEcc989ce18fDc5f1BD76700c",
 		nodeLicenseAddress: "0xbc14d8563b248B79689ECbc43bBa53290e0b6b66",
+		poolFactoryAddress: "0xc4C684EC2e55b7dff50a328F65423A4641537EEE", //TODO !!!
 		explorer: 'https://arbiscan.io/'
 	},
 	'arbitrumSepolia': {
@@ -43,10 +45,11 @@ const web3Instances: { [key in NetworkKey]: Web3Instance } = {
 		web3: new Web3('https://arb-sepolia.g.alchemy.com/v2/8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B'),
 		rpcUrl: 'https://arb-sepolia.g.alchemy.com/v2/8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B',
 		chainId: 421614,
-		refereeAddress: "0x41Bdf5c462e79Cef056B12B801Fd854c13e2BEE6",
+		refereeAddress: "0xF84D76755a68bE9DFdab9a0b6d934896Ceab957b",
 		xaiAddress: "0x724E98F16aC707130664bb00F4397406F74732D0",
 		esXaiAddress: "0x5776784C2012887D1f2FA17281E406643CBa5330",
 		nodeLicenseAddress: "0x07C05C6459B0F86A6aBB3DB71C259595d22af3C2",
+		poolFactoryAddress: "0x87Ae2373007C01FBCED0dCCe4a23CA3f17D1fA9A",
 		explorer: 'https://sepolia.arbiscan.io/'
 	}
 } as const;
@@ -185,11 +188,13 @@ export const getStakedAmount = async (network: NetworkKey, walletAddress: string
 export const getMaxStakedAmount = async (network: NetworkKey, walletAddress: string): Promise<number> => {
 	const web3Instance = getWeb3Instance(network);
 	const refereeContract = new web3Instance.web3.eth.Contract(RefereeAbi, web3Instance.refereeAddress);
-	const numNodeLicenses = await getNodeLicenses(network, walletAddress);
 	try {
-		const maxStake = await refereeContract.methods.getMaxStakeAmount(numNodeLicenses).call();
-		const stakedAmount = await refereeContract.methods.stakedAmounts(walletAddress).call();
-		return Number(web3Instance.web3.utils.fromWei((maxStake as bigint) - (stakedAmount as bigint), 'ether'));
+		const numNodeLicenses = await getNodeLicenses(network, walletAddress);
+		const maxStakePerLicense = Number(web3Instance.web3.utils.fromWei((await refereeContract.methods.maxStakeAmountPerLicense().call() as bigint), 'ether'))
+		const maxStake = numNodeLicenses * maxStakePerLicense;
+		const stakedAmount = Number(web3Instance.web3.utils.fromWei((await refereeContract.methods.stakedAmounts(walletAddress).call() as bigint), 'ether'));
+		console.log("getMaxStakedAmount", maxStake, stakedAmount, maxStake - stakedAmount)
+		return maxStake - stakedAmount;
 	} catch (error) {
 		console.log("Error getting getMaxStakedAmount", error);
 		return 0;

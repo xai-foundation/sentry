@@ -78,6 +78,7 @@ const TotalStakedComponent = ({
               onClick={() => router.push("/staking/stake")}
               btnText={btnText}
               className="sm:w-[100px] h-[50px] font-medium"
+              isDisabled={true}
             />
           </>
         ) : (
