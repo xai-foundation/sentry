@@ -214,6 +214,7 @@ contract Referee5 is Initializable, AccessControlEnumerableUpgradeable {
         address _poolFactoryAddress
     ) public reinitializer(4) {
         poolFactoryAddress = _poolFactoryAddress;
+        maxKeysPerPool = 600;
     }
 
     /**
