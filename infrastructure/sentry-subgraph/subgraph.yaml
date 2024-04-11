@@ -159,6 +159,7 @@ dataSources:
         - RefereeStakingEnabledEvent
         - RefereeUnstakeV1Event
         - RefereeUpdateMaxStakeAmountEvent
+        - Challenge
       abis:
         - name: Referee
           file: ./abis/Referee.json

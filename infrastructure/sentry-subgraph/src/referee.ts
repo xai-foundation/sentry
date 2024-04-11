@@ -1,4 +1,5 @@
 import {
+  Referee,
   Approval as ApprovalEvent,
   AssertionCheckingToggled as AssertionCheckingToggledEvent,
   AssertionSubmitted as AssertionSubmittedEvent,
@@ -41,7 +42,10 @@ import {
   RefereeStakingEnabledEvent,
   RefereeUnstakeV1Event,
   RefereeUpdateMaxStakeAmountEvent,
+  Challenge
 } from "../generated/schema"
+import { Bytes } from "@graphprotocol/graph-ts";
+import { updateChallenge } from "./utils/updateChallenge";
 
 export function handleApproval(event: ApprovalEvent): void {
   let entity = new RefereeApprovalEvent(
@@ -85,6 +89,13 @@ export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
   entity.transactionHash = event.transaction.hash
 
   entity.save()
+
+  // query for the challenge and update it
+  let challenge = Challenge.load(event.params.challengeId.toString());
+  if (challenge) {
+    challenge = updateChallenge(Referee.bind(event.address), challenge)
+    challenge.save()
+  }
 }
 
 export function handleChallengeClosed(event: ChallengeClosedEvent): void {
@@ -98,6 +109,13 @@ export function handleChallengeClosed(event: ChallengeClosedEvent): void {
   entity.transactionHash = event.transaction.hash
 
   entity.save()
+
+  // query for the challenge and update it
+  let challenge = Challenge.load(event.params.challengeNumber.toString());
+  if (challenge) {
+    challenge = updateChallenge(Referee.bind(event.address), challenge)
+    challenge.save()
+  }
 }
 
 export function handleChallengeExpired(event: ChallengeExpiredEvent): void {
@@ -111,9 +129,19 @@ export function handleChallengeExpired(event: ChallengeExpiredEvent): void {
   entity.transactionHash = event.transaction.hash
 
   entity.save()
-}
+
+  // query for the challenge and update it
+  let challenge = Challenge.load(event.params.challengeId.toString());
+  if (challenge) {
+    challenge = updateChallenge(Referee.bind(event.address), challenge)
+    challenge.save()
+  }
+
+ }
 
 export function handleChallengeSubmitted(event: ChallengeSubmittedEvent): void {
+
+  // process the event entity
   let entity = new RefereeChallengeSubmittedEvent(
     event.transaction.hash.concatI32(event.logIndex.toI32()),
   )
@@ -124,6 +152,19 @@ export function handleChallengeSubmitted(event: ChallengeSubmittedEvent): void {
   entity.transactionHash = event.transaction.hash
 
   entity.save()
+
+  // create an entity for the challenge
+  let challenge = new Challenge(event.params.challengeNumber.toString())
+
+  // query the challenge struct from the contract
+  let contract = Referee.bind(event.address)
+
+  challenge.challengeNumber = event.params.challengeNumber
+  challenge.status = "OpenForSubmissions"
+
+  challenge = updateChallenge(contract, challenge)
+
+  challenge.save()
 }
 
 export function handleChallengerPublicKeyChanged(
@@ -207,6 +248,13 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
   entity.blockNumber = event.block.number
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
+
+  // query for the challenge and update it
+  let challenge = Challenge.load(event.params.challengeId.toString());
+  if (challenge) {
+    challenge = updateChallenge(Referee.bind(event.address), challenge)
+    challenge.save()
+  }
 
   entity.save()
 }
