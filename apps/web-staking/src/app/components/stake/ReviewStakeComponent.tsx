@@ -25,7 +25,7 @@ import { esXaiAbi } from "@/assets/abi/esXaiAbi";
 interface ReviewStakeProps {
   onBack: () => void;
   title: string;
-  inputValue?: number;
+  inputValue?: string;
   totalStaked?: number;
   unstake?: boolean;
   approved: boolean;
@@ -49,9 +49,9 @@ const ReviewStakeComponent = ({
   const network = getNetwork(chainId);
 
   const { writeContractAsync } = useWriteContract();
-	const { switchChain } = useSwitchChain();
+  const { switchChain } = useSwitchChain();
 
-  const onStake = async (amount: number) => {
+  const onStake = async (amount: string) => {
     const weiAmount = getWeb3Instance(network).web3.utils.toWei(
       amount,
       "ether"
@@ -64,7 +64,7 @@ const ReviewStakeComponent = ({
     });
   };
 
-  const onUnstake = async (amount: number) => {
+  const onUnstake = async (amount: string) => {
     const weiAmount = getWeb3Instance(network).web3.utils.toWei(
       amount,
       "ether"
@@ -105,9 +105,9 @@ const ReviewStakeComponent = ({
     try {
       // TODO: check eth balance enough for gas
       if (unstake) {
-        receipt = await onUnstake(inputValue || 0);
+        receipt = await onUnstake(inputValue || "0");
       } else {
-        receipt = await onStake(inputValue || 0);
+        receipt = await onStake(inputValue || "0");
       }
       onSuccess(receipt, loading);
     } catch (ex: any) {
@@ -174,28 +174,28 @@ const ReviewStakeComponent = ({
         />
         <HeroStat
           label={`Your staking balance after this ${unstake ? "unstake" : "stake"
-            }`}
+          }`}
           value={
             unstake
-              ? `${totalStaked! - inputValue!} esXai`
-              : `${inputValue! + totalStaked!} esXai`
+              ? `${totalStaked! - Number(inputValue!)} esXai`
+              : `${Number(inputValue!) + totalStaked!} esXai`
           }
         />
         {tokensApproved ?
           <PrimaryButton
             onClick={onConfirm}
             btnText={`${transactionLoading ? "Waiting for confirmation..." : "Confirm"
-              }`}
+            }`}
             className={`w-full mt-6 font-bold ${transactionLoading && "bg-[#B1B1B1] disabled"
-              }`}
+            }`}
           />
-          :
+        :
           <PrimaryButton
             onClick={onApprove}
             btnText={`${transactionLoading ? "Waiting for approved tokens..." : "Approve"}`}
             className={`w-full mt-6 font-bold ${transactionLoading && "bg-[#B1B1B1] disabled"}`}
           />
-
+        
         }
 
       </div>
