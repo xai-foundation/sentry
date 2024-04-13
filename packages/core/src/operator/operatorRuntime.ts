@@ -466,6 +466,7 @@ async function processClosedChallenges(challengeId: bigint) {
             continue;
 
         } else {
+            isKYCMap[nodeLicenseId.toString().toString()] = true;
             cachedLogger(`Requesting esXAI reward for challenge '${challengeId}'.`);
             updateNodeLicenseStatus(nodeLicenseId, `Requesting esXAI reward for challenge '${challengeId}'.`);
             safeStatusCallback();
