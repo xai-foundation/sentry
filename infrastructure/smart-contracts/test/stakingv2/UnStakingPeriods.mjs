@@ -310,8 +310,9 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 
 			// Calculate the minimum time that the lock period will be on the upcoming request
 			const lastKeyDelayPeriod = await poolFactory.connect(addr1).unstakeGenesisKeyDelayPeriod();
-			const nowInSeconds = Math.floor(Date.now() / 1000);
-			const minimumLockTime = lastKeyDelayPeriod + BigInt(nowInSeconds);
+            const startTime = await ethers.provider.getBlock('latest').then(block => block.timestamp);
+			// const nowInSeconds = Math.floor(Date.now() / 1000);
+			const minimumLockTime = lastKeyDelayPeriod + BigInt(startTime);
 
 			// Create the un-stake request and check the updated pool info
 			await poolFactory.connect(addr1).createUnstakeOwnerLastKeyRequest(stakingPoolAddress);

@@ -1,8 +1,6 @@
-import { TierInfo } from "@/types/Pool";
-import { POOL_DATA_ROWS, iconType } from "@/app/components/dashboard/constants/constants";
+import { POOL_DATA_ROWS, TierInfo } from "../overview/constants/constants";
 
-// TODO move to utils in server?
-export const getCurrentTierByStaking = (staking: number): TierInfo & { icon?: iconType } | undefined => {
+export const getCurrentTierByStaking = (staking: number): TierInfo | undefined => {
 
 	let currentTier: TierInfo | undefined;
 
@@ -11,12 +9,12 @@ export const getCurrentTierByStaking = (staking: number): TierInfo & { icon?: ic
 	} else {
 		for (let i = 1; i < POOL_DATA_ROWS.length; i++) {
 			if (staking < POOL_DATA_ROWS[i].minValue) {
-				currentTier = POOL_DATA_ROWS[i - 1];
-				break;
-			} else {
-				currentTier = POOL_DATA_ROWS[i];
-			}
-		}
+              currentTier = POOL_DATA_ROWS[i - 1];
+              break;
+          } else {
+            currentTier = POOL_DATA_ROWS[i];
+          }
+     }
 	}
 
 	if (!currentTier) return undefined;
@@ -36,19 +34,4 @@ export const getAmountRequiredForUpgrade = (staking: number, currentTier?: TierI
 
 	const nextTierValue = POOL_DATA_ROWS[currentTier.index + 1].minValue;
 	return nextTierValue - staking;
-};
-
-export const getTierByName = (name: string): TierInfo | undefined => {
-	return POOL_DATA_ROWS.find(p => p.tierName.toLowerCase() == name.toLowerCase());
-};
-
-export const getTierByIndex = (index: number): TierInfo | undefined => {
-	const tier = POOL_DATA_ROWS[index];
-	delete tier.icon;
-	return tier;
-};
-
-
-export const getIcon = (index: number = 0): iconType => {
-	return POOL_DATA_ROWS[index].icon as iconType;
 };

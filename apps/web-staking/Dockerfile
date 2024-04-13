@@ -21,5 +21,5 @@ COPY --from=build /app/.next ./.next
 COPY --from=build /app/public ./public
 COPY --from=base /app/node_modules ./node_modules
 COPY package.json .
-
+EXPOSE 3000
 CMD ["./node_modules/next/dist/bin/next", "start"]

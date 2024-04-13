@@ -164,17 +164,17 @@ contract PoolFactory is Initializable, AccessControlEnumerableUpgradeable {
         __AccessControlEnumerable_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         bucketshareMaxValues[0] = 100_000; // => 10%
-        bucketshareMaxValues[1] = 900_000; // => 90%
-        bucketshareMaxValues[2] = 300_000; // => 30%
+        bucketshareMaxValues[1] = 950_000; // => 95%
+        bucketshareMaxValues[2] = 850_000; // => 85%
 
         refereeAddress = _refereeAddress;
         nodeLicenseAddress = _nodeLicenseAddress;
         esXaiAddress = _esXaiAddress;
 
-		unstakeKeysDelayPeriod = 30 days;
+		unstakeKeysDelayPeriod = 7 days;
 		unstakeGenesisKeyDelayPeriod = 60 days;
-		unstakeEsXaiDelayPeriod = 30 days;
-        updateRewardBreakdownDelayPeriod = 45 days;
+		unstakeEsXaiDelayPeriod = 7 days;
+        updateRewardBreakdownDelayPeriod = 14 days;
     }
 
     /**

@@ -2,23 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
-  .dashboard-text-gradient {
-    position: relative;
-  }
-
-  .dashboard-text-gradient:after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    background: transparent linear-gradient(90deg, #F9F9F9 0%, #F1F1F100 100%) 0% 0% no-repeat padding-box;
-    width: 50%;
-    height: 100%;
-    z-index: -1;
-  }
-}
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;

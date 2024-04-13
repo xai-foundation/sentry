@@ -9,7 +9,6 @@ import ReportComponent from "./ReportComponent";
 import { getAmountRequiredForUpgrade, getCurrentTierByStaking, getProgressValue } from "./utils";
 import { useGetMaxTotalStakedHooks } from "@/app/hooks/hooks";
 import { formatCurrency } from "@/app/utils/formatCurrency";
-import { useAccount } from "wagmi";
 
 interface StakingCardProps {
   onOpen?: () => void;
@@ -35,7 +34,6 @@ const TotalStakedComponent = ({
   unstake,
 }: StakingCardProps) => {
   const router = useRouter();
-  const { chainId } = useAccount();
 
   const currentTier = showTier
     ? getCurrentTierByStaking(totalStaked ?? 0)
@@ -71,15 +69,16 @@ const TotalStakedComponent = ({
           <>
             {unstake && (
               <SecondaryButton
-                onClick={() => router.push(`/staking?chainId=${chainId}`)}
+                onClick={() => router.push("/staking/unstake")}
                 btnText={"Unstake"}
                 className="sm:w-[100px] h-[50px] font-medium"
               />
             )}
             <PrimaryButton
-              onClick={() => router.push(`/staking?chainId=${chainId}`)}
+              onClick={() => router.push("/staking/stake")}
               btnText={btnText}
               className="sm:w-[100px] h-[50px] font-medium"
+              isDisabled={true}
             />
           </>
         ) : (

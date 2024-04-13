@@ -1,12 +1,16 @@
 "use client";
 
-import { DashboardComponent } from "@/app/components/dashboard/DashboardComponent";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAccount } from "wagmi";
+import { OverviewComponent } from "./overview/OverviewComponent";
 
 export default function Home() {
+  const { open } = useWeb3Modal();
+  const { address } = useAccount();
 
   return (
-    <main>
-      <DashboardComponent />
+    <main className="flex w-full flex-col items-center lg:px-[150px]">
+      <OverviewComponent onOpen={open} address={address} />
     </main>
   );
 }

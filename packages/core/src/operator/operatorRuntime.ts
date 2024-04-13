@@ -16,7 +16,8 @@ import {
     submitMultipleAssertions,
     claimRewardsBulk,
     getUserInteractedPools,
-    getUserStakedKeysOfPool
+    getUserStakedKeysOfPool,
+    checkKycStatus
 } from "../index.js";
 import { retry } from "../index.js";
 import axios from "axios";
@@ -64,7 +65,7 @@ let cachedSigner: ethers.Signer;
 let cachedLogger: (log: string) => void;
 let safeStatusCallback: () => void;
 let onAssertionMissMatchCb: (publicNodeData: PublicNodeBucketInformation | undefined, challenge: Challenge, message: string) => void;
-let nodeLicenseIds: bigint[] = [];
+const nodeLicenseIds: bigint[] = [];
 const mintTimestamps: { [nodeLicenseId: string]: bigint } = {};
 const nodeLicenseStatusMap: NodeLicenseStatusMap = new Map();
 const challengeNumberMap: { [challengeNumber: string]: boolean } = {};
@@ -436,11 +437,42 @@ async function processClosedChallenges(challengeId: bigint) {
         challengeCache[challengeId.toString()] = {};
     }
 
+    const beforeStatus: { [key: string]: string | undefined } = {}
+
     for (const nodeLicenseId of nodeLicenseIds) {
-        const beforeStatus = nodeLicenseStatusMap.get(nodeLicenseId)?.status;
+        beforeStatus[nodeLicenseId.toString()] = nodeLicenseStatusMap.get(nodeLicenseId)?.status;
         updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.QUERYING_FOR_UNCLAIMED_SUBMISSIONS);
+        safeStatusCallback();
+
+        cachedLogger(`Checking KYC status of '${nodeLicenseStatusMap.get(nodeLicenseId)?.ownerPublicKey}' for Sentry Key '${nodeLicenseId}'.`);
+        updateNodeLicenseStatus(nodeLicenseId, `Checking KYC Status`);
+        safeStatusCallback();
+        let isKycApproved: boolean = isKYCMap[nodeLicenseId.toString()];
+        if (!isKYCMap[nodeLicenseId.toString()]) {
+            try {
+                [{ isKycApproved }] = await retry(async () => await checkKycStatus([nodeLicenseStatusMap.get(nodeLicenseId)!.ownerPublicKey]));
+            } catch (error: any) {
+                cachedLogger(`Error checking KYC for Sentry Key ${nodeLicenseId} - ${error && error.message ? error.message : error}`);
+                updateNodeLicenseStatus(nodeLicenseId, `Failed to check KYC status`);
+                safeStatusCallback();
+                continue;
+            }
+        }
+
+        if (!isKycApproved) {
+            cachedLogger(`Checked KYC status of '${nodeLicenseStatusMap.get(nodeLicenseId)?.ownerPublicKey}' for Sentry Key '${nodeLicenseId}'. It was not KYC'd and not able to claim the reward.`);
+            updateNodeLicenseStatus(nodeLicenseId, `Cannot Claim, Failed KYC`);
+            safeStatusCallback();
+            continue;
+
+        } else {
+            cachedLogger(`Requesting esXAI reward for challenge '${challengeId}'.`);
+            updateNodeLicenseStatus(nodeLicenseId, `Requesting esXAI reward for challenge '${challengeId}'.`);
+            safeStatusCallback();
+        }
 
         try {
+
             if (!challengeCache[challengeId.toString()][nodeLicenseId.toString()]) {
                 cachedLogger(`Checking for unclaimed rewards on Sentry Key '${nodeLicenseId}'.`);
                 const submissions = await getSubmissionsForChallenges([challengeId], nodeLicenseId);
@@ -472,11 +504,6 @@ async function processClosedChallenges(challengeId: bigint) {
         } catch (error: any) {
             cachedLogger(`Error processing submissions for Sentry Key ${nodeLicenseId} - ${error && error.message ? error.message : error}`);
         }
-
-        if (beforeStatus) {
-            updateNodeLicenseStatus(nodeLicenseId, beforeStatus);
-            safeStatusCallback();
-        }
     }
 
     // Iterate over the map and call processClaimForChallenge for each challenge with its unique list of eligible nodeLicenseIds
@@ -490,16 +517,19 @@ async function processClosedChallenges(challengeId: bigint) {
                     claimed: true,
                     eligibleForPayout: true,
                 });
-            })
 
+                if (beforeStatus[key.toString()]) {
+                    updateNodeLicenseStatus(key, beforeStatus[key.toString()]!);
+                }
+            });
+            
+            safeStatusCallback();
         }
     }
 }
 
 // start a listener for new challenges
 async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: any) {
-
-    //TODO on every submit and on every claim we need to check if the key is still in the pool
 
     if (event && challenge.rollupUsed === config.rollupAddress) {
 
@@ -668,7 +698,12 @@ export async function operatorRuntime(
             });
         });
 
-        nodeLicenseIds = [...nodeLicenseIds, ...licensesOfOwner];
+        for (const licenseId of licensesOfOwner) {
+            if (!nodeLicenseIds.includes(licenseId)) {
+                nodeLicenseIds.push(licenseId);
+            }
+        }
+
         logFunction(`Fetched ${licensesOfOwner.length} node licenses for owner ${owner}.`);
     }
 

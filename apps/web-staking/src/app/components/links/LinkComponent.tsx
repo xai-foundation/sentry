@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { ElementType } from "react";
 
 interface LinkComponentProps {
@@ -9,7 +8,6 @@ interface LinkComponentProps {
   content: string;
   onClick?: () => void;
   customClass?: string;
-  externalTab?: boolean;
 }
 
 export function LinkComponent({
@@ -18,15 +16,10 @@ export function LinkComponent({
   onClick,
   customClass,
 }: LinkComponentProps) {
-  const url = usePathname();
-  const selectedStyles =
-    url === link.split("?")[0]
-      ? "bg-crystalWhite border-palePearl border-1 rounded-md"
-      : "";
   return (
     <Link href={link} onClick={onClick}>
       <div
-        className={`border-1 border-transparent py-2 pl-4 text-base hover:rounded-md hover:border-palePearl hover:bg-crystalWhite ${customClass} ${selectedStyles}`}
+        className={`text-base hover:bg-crystalWhite hover:border-palePearl border-1 border-transparent hover:rounded-md py-2 pl-4 ${customClass}`}
       >
         {content}
       </div>
@@ -36,28 +29,20 @@ export function LinkComponent({
 
 interface LinkLogoComponentProps {
   link: string;
-  content?: string;
+  content: string;
   Icon: ElementType<any, keyof JSX.IntrinsicElements>;
-  customClass?: string;
-  externalTab?: boolean;
-  color?: string;
 }
 
 export function LinkLogoComponent({
   link,
   content,
   Icon,
-  customClass,
-  externalTab,
-  color,
 }: LinkLogoComponentProps) {
   return (
-    <Link target={externalTab ? "_blank" : "_top"} href={link}>
-      <div
-        className={`flex items-center gap-2 border-1 border-transparent py-1 pl-4 hover:rounded-md hover:border-palePearl hover:bg-crystalWhite ${customClass}`}
-      >
-        <Icon fill={color} />
-        {content && <div className="text-sm">{content}</div>}
+    <Link href={link}>
+      <div className="flex items-center hover:bg-crystalWhite hover:border-palePearl border-1 border-transparent hover:rounded-md gap-2 py-1 pl-4">
+        <Icon />
+        <div className="text-sm">{content}</div>
       </div>
     </Link>
   );
@@ -67,14 +52,12 @@ export function ExternalLinkComponent({
   link,
   content,
   customClass,
-  externalTab,
 }: LinkComponentProps) {
   return (
     <a
       href={link}
-      target={externalTab ? "_blank" : "_top"}
-      className={`text-sm font-medium text-red ${customClass}`}
-      rel="noreferrer"
+      target="_blank"
+      className={`text-red text-sm font-medium ${customClass}`}
     >
       {content}
     </a>
