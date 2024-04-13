@@ -455,7 +455,7 @@ async function processClosedChallenges(challengeId: bigint) {
                 cachedLogger(`Error checking KYC for Sentry Key ${nodeLicenseId} - ${error && error.message ? error.message : error}`);
                 updateNodeLicenseStatus(nodeLicenseId, `Failed to check KYC status`);
                 safeStatusCallback();
-                return;
+                continue;
             }
         }
 
