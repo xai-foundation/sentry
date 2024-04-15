@@ -257,6 +257,10 @@ export function bootChallenger(cli: Vorpal) {
                 await initCli(commandInstance);
             }
 
+            commandInstance.log("Challenger RPC:");
+            commandInstance.log(config.arbitrumOneJsonRpcUrl);
+            commandInstance.log(config.arbitrumOneWebSocketUrl);
+
             // Listen for process termination and call the handler
             process.on('SIGINT', async () => {
                 commandInstance.log(`[${new Date().toISOString()}] The challenger has been terminated manually.`);

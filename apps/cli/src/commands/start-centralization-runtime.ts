@@ -1,5 +1,6 @@
 import Vorpal from "vorpal";
 import { dataCentralizationRuntime } from "@sentry/core";
+import { config } from "@sentry/core";
 
 export function startCentralizationRuntime(cli: Vorpal) {
     cli
@@ -15,6 +16,10 @@ export function startCentralizationRuntime(cli: Vorpal) {
             const { mongoUri } = await this.prompt(mongoUriPrompt);
 
             const commandInstance = this;
+            
+            commandInstance.log("Runtime RPC:");
+            commandInstance.log(config.arbitrumOneJsonRpcUrl);
+            commandInstance.log(config.arbitrumOneWebSocketUrl);
 
             const stopRuntime = await dataCentralizationRuntime({ mongoUri, logFunction: (log: string) => commandInstance.log(log) });
 
