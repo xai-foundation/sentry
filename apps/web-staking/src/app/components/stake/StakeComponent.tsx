@@ -47,11 +47,11 @@ const StakeComponent = ({ title, address, unstake }: StakeProps) => {
         <ReviewStakeComponent
           onBack={() => setReviewVisible(false)}
           title={title}
-          inputValue={Number(inputValue)}
+          inputValue={inputValue}
           totalStaked={totalStaked}
           maxStake={Math.min(totalMaxStaked, esXaiBalance)}
           unstake={unstake}
-          approved={allowance >= Number(inputValue)}
+          approved={unstake ? true : allowance >= Number(inputValue)}
         />
       ) : (
         <div className="flex flex-col items-start">

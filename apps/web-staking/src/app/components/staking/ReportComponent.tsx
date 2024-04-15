@@ -41,7 +41,7 @@ const ReportComponent = ({
       </span>
       <span className="lg:flex lg:justify-between">
         <span className="text-lightBlackDarkWhite text-4xl lg:flex">
-          {address ? `${totalStaked ? formatCurrency.format(totalStaked) : ""} esXAI` : "— esXAI"}
+          {address ? `${totalStaked ? formatCurrency.format(totalStaked) : "0"} esXAI` : "— esXAI"}
           {currentTier && showTier && (
             <div className="flex items-center ml-1">
               <span className="relative lg:text-sm sm:text-xs font-semibold text-graphiteGray pr-2 pl-6 py-1 rounded-2xl border">
