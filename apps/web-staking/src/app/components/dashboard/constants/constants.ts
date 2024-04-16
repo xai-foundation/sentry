@@ -27,7 +27,7 @@ export enum TIER_VALUES {
   SILVER = 10000,
   GOLD = 100000,
   PLATINUM = 500000,
-  DIAMOND = 55000000
+  DIAMOND = 5500000
 }
 
 // TODO rename and move to actual constants
