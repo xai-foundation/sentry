@@ -73,7 +73,7 @@ const CreatePoolComponent = () => {
     try {
 
       const keyIds = await getUnstakedKeysOfUser(getNetwork(chainId), address as string, numKeys);
-      setCurrentPoolCount(await getPoolsOfUserCount(getNetwork(chainId), address as string));
+      // setCurrentPoolCount(await getPoolsOfUserCount(getNetwork(chainId), address as string));
       setReceipt(await executeContractWrite(
         WriteFunctions.createPool,
         [
@@ -118,13 +118,13 @@ const CreatePoolComponent = () => {
 
   const updateOnSuccess = useCallback(async () => {
     try {
-      const newPoolAddress = await getPoolAddressOfUserAtIndex(getNetwork(chainId), address as string, currentPoolCount as number);
+      // const newPoolAddress = await getPoolAddressOfUserAtIndex(getNetwork(chainId), address as string, currentPoolCount as number);
       updateNotification("Pool created", toastId.current as Id, false, receipt, chainId);
-      router.push(`/pool/${newPoolAddress}/summary`);
+      router.push(`/pool`);
     } catch (ex: any) {
       console.error('Error getting new Pool Address', ex);
     }
-  }, [address, chainId, currentPoolCount, receipt, router])
+  }, [address, chainId, receipt, router])
 
 
   const updateOnError = useCallback(() => {
