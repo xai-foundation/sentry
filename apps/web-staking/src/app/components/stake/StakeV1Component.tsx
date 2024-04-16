@@ -66,7 +66,7 @@ const StakeV1Component = ({ title, unstake }: StakeProps) => {
           inputValueWei={inputValueWei}
           totalStaked={totalStaked}
           unstake={unstake}
-          approved={allowance >= Number(inputValue)}
+          approved={unstake ? true : allowance >= Number(inputValue)}
         />
       ) : (
         <div className="flex flex-col items-start">

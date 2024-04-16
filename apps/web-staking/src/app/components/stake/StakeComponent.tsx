@@ -113,7 +113,7 @@ const StakeComponent = ({ poolAddress, isBannedPool }: StakeProps) => {
           inputValueWei={inputValueWei}
           totalStaked={userPool?.userStakedEsXaiAmount}
           unstake={unstake}
-          approved={allowance >= Number(displayedInput)}
+          approved={unstake ? true : allowance >= Number(displayedInput)}
           pool={userPool}
         />
       ) : (
