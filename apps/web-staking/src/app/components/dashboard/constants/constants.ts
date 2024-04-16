@@ -24,10 +24,10 @@ export type iconType = ({
 
 export enum TIER_VALUES {
   BRONZE = 0,
-  SILVER = 1000,
-  GOLD = 10000,
-  PLATINUM = 100000,
-  DIAMOND = 1000000
+  SILVER = 10000,
+  GOLD = 100000,
+  PLATINUM = 500000,
+  DIAMOND = 5500000
 }
 
 // TODO rename and move to actual constants
