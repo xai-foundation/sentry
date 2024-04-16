@@ -22,6 +22,7 @@ export type iconType = ({
   fill?: string | undefined;
 }) => React.JSX.Element;
 
+//TODO don't initialize with hardcoded values, don't show the tier if the values don't load or show the database
 export enum TIER_VALUES {
   BRONZE = 0,
   SILVER = 10000,

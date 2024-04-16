@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ElementType } from "react";
 
 import {
   Discord,
@@ -9,8 +9,39 @@ import {
 import { LinkLogoComponent } from "@/app/components/links/LinkComponent";
 import { PoolInfo } from "@/types/Pool";
 
+const PoolSocialIconLink = ({ link, icon }: { link?: string, icon: ElementType<any, keyof JSX.IntrinsicElements> }) => {
+
+  const isValidHttpUrl = (_link: string) => {
+    let url;
+    try {
+      url = new URL(_link);
+    } catch (_) {
+      return false;
+    }
+
+    return url.protocol === "http:" || url.protocol === "https:";
+  }
+
+  return (
+    <>
+      {(link && isValidHttpUrl(link)) &&
+        <LinkLogoComponent
+          externalTab
+          link={link}
+          Icon={icon}
+          customClass="!p-1 mr-4"
+          color="#4A4A4A"
+        />
+      }
+    </>
+  )
+}
+
 const PoolSocials = ({ poolInfo }: { poolInfo: PoolInfo }) => {
-  const toWebLink = (link: string): string => {
+  const toWebLink = (link?: string): string => {
+    if (!link) {
+      return ""
+    }
     if (!link.startsWith("http://") && !link.startsWith("https://")) {
       return "http://" + link;
     }
@@ -18,63 +49,10 @@ const PoolSocials = ({ poolInfo }: { poolInfo: PoolInfo }) => {
   };
   return (
     <div className="mt-2 flex flex-wrap">
-      {poolInfo?.meta?.website && (
-        <LinkLogoComponent
-          externalTab
-          link={toWebLink(poolInfo.meta.website)}
-          Icon={Website}
-          customClass="!p-1 mr-4"
-          color="#4A4A4A"
-        />
-      )}
-      {poolInfo?.meta?.discord && (
-        <LinkLogoComponent
-          externalTab
-          link={toWebLink(poolInfo.meta.discord)}
-          Icon={Discord}
-          customClass="!p-1 mr-4"
-          color="#4A4A4A"
-        />
-      )}
-      {/* {poolInfo?.meta?.instagram &&
-                <LinkLogoComponent
-                  link={poolInfo.meta.instagram}
-                  Icon={Discord}
-                  customClass="!p-1 mr-4"
-                />
-              } */}
-      {/* {poolInfo?.meta?.youtube &&
-                <LinkLogoComponent
-                  link={poolInfo.meta.youtube}
-                  Icon={Discord}
-                  customClass="!p-1 mr-4"
-                />
-              } */}
-      {poolInfo?.meta?.twitter && (
-        <LinkLogoComponent
-          externalTab
-          link={toWebLink(poolInfo.meta.twitter)}
-          Icon={X}
-          customClass="!p-1 mr-4"
-          color="#4A4A4A"
-        />
-      )}
-      {poolInfo?.meta?.telegram && (
-        <LinkLogoComponent
-          externalTab
-          link={toWebLink(poolInfo?.meta?.telegram)}
-          Icon={Telegram}
-          customClass="!p-1 mr-4"
-          color="#4A4A4A"
-        />
-      )}
-      {/* {poolInfo?.meta?.tiktok &&
-                <LinkLogoComponent
-                  link={poolInfo.meta.tiktok}
-                  Icon={Discord}
-                  customClass="!p-1 mr-4"
-                />
-              } */}
+      <PoolSocialIconLink link={toWebLink(poolInfo.meta.website)} icon={Website}/>
+      <PoolSocialIconLink link={toWebLink(poolInfo.meta.discord)} icon={Discord}/>
+      <PoolSocialIconLink link={toWebLink(poolInfo.meta.twitter)} icon={X}/>
+      <PoolSocialIconLink link={toWebLink(poolInfo.meta.twitter)} icon={Telegram}/>
     </div>
   );
 };

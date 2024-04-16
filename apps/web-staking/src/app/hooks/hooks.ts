@@ -498,7 +498,7 @@ export const useGetAvailableKeysForStaking = () => {
 };
 
 export const useGetMaxKeyPerPool = () => {
-  const [maxKeyPerPool, setMaxKeyPerPool] = useState(600);
+  const [maxKeyPerPool, setMaxKeyPerPool] = useState(750);
   const { chainId } = useAccount();
 
   useEffect(() => {
