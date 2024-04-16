@@ -1,7 +1,7 @@
 import { formatCurrency } from "@/app/utils/formatCurrency";
 import ProgressComponent from "../progress/Progress";
 import PopoverWindow from "./PopoverWindow";
-import { iconType } from "../overview/constants/constants";
+import { iconType } from "@/app/components/dashboard/constants/constants";
 
 interface InfoComponentProps {
   address: string | undefined;
@@ -41,7 +41,7 @@ const ReportComponent = ({
       </span>
       <span className="lg:flex lg:justify-between">
         <span className="text-lightBlackDarkWhite text-4xl lg:flex">
-          {address ? `${totalStaked ? formatCurrency.format(totalStaked) : "0"} esXAI` : "— esXAI"}
+          {address ? `${totalStaked ? formatCurrency.format(totalStaked) : ""} esXAI` : "— esXAI"}
           {currentTier && showTier && (
             <div className="flex items-center ml-1">
               <span className="relative lg:text-sm sm:text-xs font-semibold text-graphiteGray pr-2 pl-6 py-1 rounded-2xl border">
@@ -64,7 +64,7 @@ const ReportComponent = ({
       <span className="text-graphiteGray mr-2 justify-end flex mt-2">
         {address &&
           subTitle &&
-          `${subTitle} ${availableForStaking ? formatCurrency.format(availableForStaking) : ""} esXai`}
+          `${subTitle} ${availableForStaking ? formatCurrency.format(availableForStaking) : ""} esXAI`}
         {address && subTitle && <PopoverWindow />}
       </span>
     </div>
