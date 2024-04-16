@@ -93,7 +93,7 @@ const StakingCards = ({
           {keysProgressValue >= 100 && (
             <Warning
               warning={
-                "Pool has reached maximum key staking capacity. You may not stake any more esXAI, but you may unstake."
+                "Pool has reached maximum key staking capacity. You may not stake any more keys, but you may unstake."
               }
             />
           )}
