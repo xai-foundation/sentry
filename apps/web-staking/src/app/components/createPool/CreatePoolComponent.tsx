@@ -124,7 +124,7 @@ const CreatePoolComponent = () => {
     } catch (ex: any) {
       console.error('Error getting new Pool Address', ex);
     }
-  }, [address, chainId, receipt, router])
+  }, [chainId, receipt, router])
 
 
   const updateOnError = useCallback(() => {

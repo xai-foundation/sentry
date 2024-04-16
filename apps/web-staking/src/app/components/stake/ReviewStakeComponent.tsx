@@ -54,6 +54,7 @@ const ReviewStakeComponent = ({
   const { address, chainId } = useAccount();
   const [tokensApproved, setTokensApproved] = useState(approved);
   const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
+  const [receiptApprove, setReceiptApprove] = useState<`0x${string}` | undefined>();
   const unstakePeriods = useGetUnstakePeriods();
 
   const network = getNetwork(chainId);
@@ -64,6 +65,10 @@ const ReviewStakeComponent = ({
   // Substitute Timeouts with useWaitForTransaction
   const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
     hash: receipt,
+  });
+
+  const { isError: isErrorApprove, isLoading: isLoadingApprove, isSuccess: isSuccessApprove, status: statusApprove } = useWaitForTransactionReceipt({
+    hash: receiptApprove,
   });
 
 
@@ -151,29 +156,44 @@ const ReviewStakeComponent = ({
     toastId.current = loadingNotification("Approval is pending...");
 
     try {
-      setReceipt(await approveTokens());
+      setReceiptApprove(await approveTokens());
+    } catch (ex: any) {
+      const error = mapWeb3Error(ex);
+      updateNotification(error, toastId.current as Id, true);
+      router.refresh();
+      // router.push(`/pool/${pool?.address}/summary`);
+    }
+  }
+
+  useEffect(() => {
+    if (isSuccessApprove) {
       updateNotification(
         `Successfully approved tokens`,
         toastId.current as Id,
         false
       );
       setTokensApproved(true);
-    } catch (ex: any) {
-      const error = mapWeb3Error(ex);
-      updateNotification(error, toastId.current as Id, true);
-      router.push(`/pool/${pool?.address}/summary`);
+      return;
     }
-  }
+    if (isErrorApprove) {
+      updateNotification(
+        `Failed to approved tokens`,
+        toastId.current as Id,
+        true
+      );
+      return;
+    }
+  }, [isSuccessApprove, isErrorApprove]);
 
   const updateOnSuccess = useCallback(() => {
-    updateNotification(
-			unstake ? `You have successfully created an unstake request for ${displayValue} esXAI`  : `You have successfully staked ${displayValue} esXAI`,
-      toastId.current as Id,
-      false,
-      receipt,
-      chainId
-    );
     if (pool) {
+      updateNotification(
+        unstake ? `You have successfully created an unstake request for ${displayValue} esXAI` : `You have successfully staked ${displayValue} esXAI`,
+        toastId.current as Id,
+        false,
+        receipt,
+        chainId
+      );
       if (unstake) {
         addUnstakeRequest(getNetwork(chainId), address!, pool.address)
           .then(() => {
@@ -183,6 +203,13 @@ const ReviewStakeComponent = ({
         router.push(`/pool/${pool.address}/summary`);
       }
     } else {
+      updateNotification(
+        unstake ? `You have successfully unstaked ${displayValue} esXAI` : "",
+        toastId.current as Id,
+        false,
+        receipt,
+        chainId
+      );
       router.push(`/staking`);
     }
   }, [unstake, displayValue, receipt, chainId, pool, router, address])
@@ -191,10 +218,10 @@ const ReviewStakeComponent = ({
     router.push(`/pool/${pool?.address}/summary`);
     const error = mapWeb3Error(status);
     updateNotification(error, toastId.current as Id, true);
-  },[router, pool, status])
+  }, [router, pool, status])
 
   useEffect(() => {
-    
+
     if (isSuccess) {
       updateOnSuccess();
     }
@@ -255,8 +282,8 @@ const ReviewStakeComponent = ({
           :
           <PrimaryButton
             onClick={onApprove}
-            btnText={`${isLoading ? "Waiting for approved tokens..." : "Approve"}`}
-            className={`w-full mt-6 font-bold ${isLoading && "bg-[#B1B1B1] disabled"}`}
+            btnText={`${isLoadingApprove ? "Waiting for approved tokens..." : "Approve"}`}
+            className={`w-full mt-6 font-bold ${isLoadingApprove && "bg-[#B1B1B1] disabled"}`}
           />
         }
 

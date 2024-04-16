@@ -65,10 +65,10 @@ export const findPools = async ({
 	if (hideFullKeys) {
 		if (filter.$expr) {
 			//TODO what if maxKeyPerPool is updated ?
-			filter.$and = [{ $expr: filter.$expr }, { $expr: { $gt: [600, "$keyCount"] } }];
+			filter.$and = [{ $expr: filter.$expr }, { $expr: { $gt: [750, "$keyCount"] } }];
 			delete filter.$expr;
 		} else {
-			filter.$expr = { $gt: [600, "$keyCount"] }
+			filter.$expr = { $gt: [750, "$keyCount"] }
 		}
 	}
 
@@ -139,7 +139,7 @@ export function mapPool(pool: IPool): PoolInfo {
 		ownerShare: pool.ownerShare,
 		keyBucketShare: pool.keyBucketShare,
 		stakedBucketShare: pool.stakedBucketShare,
-		maxKeyCount: 600,
+		maxKeyCount: 750,
 		userStakedEsXaiAmount: 0,
 		userClaimAmount: 0,
 		userStakedKeyIds: pool.userStakedKeyIds,
