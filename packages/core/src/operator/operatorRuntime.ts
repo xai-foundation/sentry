@@ -77,6 +77,7 @@ const isKYCMap: { [keyId: string]: boolean } = {};
 const keyToOwner: { [keyId: string]: string } = {}; //Used to remember the owner of the key should it have been put into the pool list
 let ownerStakedKey: { [keyId: string]: string } = {}; //Used to remember if a key came from an owner and was staked into a pool we don't operate
 const KEYS_PER_BATCH = 100;
+let whitelistedPoolAddresses: string[];
 
 async function getPublicNodeFromBucket(confirmHash: string) {
     const url = `https://sentry-public-node.xai.games/assertions/${confirmHash.toLowerCase()}.json`;
@@ -157,7 +158,7 @@ const checkV2Enabled = async (): Promise<boolean> => {
 const reloadPoolKeys = async () => {
     operatorPoolAddresses = await getOwnerOrDelegatePools(operatorAddress);
 
-    operatorPoolAddresses = operatorPoolAddresses.filter(pooladdress => owners.includes(pooladdress));
+    operatorPoolAddresses = operatorPoolAddresses.filter(pooladdress => whitelistedPoolAddresses.includes(pooladdress));
 
     if (operatorPoolAddresses.length) {
 
@@ -674,8 +675,19 @@ export async function operatorRuntime(
     // get a list of all the owners that are added to this operator
     logFunction(`Getting all wallets assigned to the operator.`);
     if (operatorOwners) {
+
+        operatorPoolAddresses = await getOwnerOrDelegatePools(operatorAddress);
+        whitelistedPoolAddresses = operatorPoolAddresses.filter(pooladdress => operatorOwners!.includes(pooladdress));
+
+        let  sortedOperatorOwners: string[] = [];
+        operatorOwners.forEach(owner => {
+            if (!operatorPoolAddresses.includes(owner)) {
+                sortedOperatorOwners.push(owner);
+            }
+        })
+
         logFunction(`Operator owners were passed in.`);
-        owners = Array.from(new Set(operatorOwners));
+        owners = Array.from(new Set(sortedOperatorOwners));
     } else {
         logFunction(`No operator owners were passed in.`);
         owners = [operatorAddress, ...await retry(async () => await listOwnersForOperator(operatorAddress))];
@@ -714,7 +726,7 @@ export async function operatorRuntime(
         // Get all user pool addresses as owner and delegated
         operatorPoolAddresses = await getOwnerOrDelegatePools(operatorAddress);
 
-        operatorPoolAddresses = operatorPoolAddresses.filter(pooladdress => owners.includes(pooladdress));
+        operatorPoolAddresses = operatorPoolAddresses.filter(pooladdress => whitelistedPoolAddresses.includes(pooladdress));
 
         if (operatorPoolAddresses.length) {
 
