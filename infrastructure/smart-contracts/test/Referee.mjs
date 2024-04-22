@@ -199,12 +199,12 @@ export function RefereeTests(deployInfrastructure) {
 			const maxSupply = await xai.MAX_SUPPLY();
 
 			let tokensToMint = [ethers.parseEther('1250000000')];
-			for (let i = 0; i < 23; i++) {
+			for (let i = 0; i < 22; i++) {
 				tokensToMint.push(tokensToMint[i] / BigInt(2));
 			}
 
 			let challengeAllocations = [BigInt('71347031963470319634703')];
-			for (let i = 0; i < 23; i++) {
+			for (let i = 0; i < 22; i++) {
 				challengeAllocations.push(challengeAllocations[i] / BigInt(2));
 			}
 
@@ -241,12 +241,12 @@ export function RefereeTests(deployInfrastructure) {
 			const maxSupply = await xai.MAX_SUPPLY();
 
 			let tokensToMint = [ethers.parseEther('1250000000')];
-			for (let i = 0; i < 23; i++) {
+			for (let i = 0; i < 22; i++) {
 				tokensToMint.push(tokensToMint[i] / BigInt(2));
 			}
 
 			let challengeAllocations = [BigInt('71347031963470319634703')];
-			for (let i = 0; i < 23; i++) {
+			for (let i = 0; i < 22; i++) {
 				challengeAllocations.push(challengeAllocations[i] / BigInt(2));
 			}
 
