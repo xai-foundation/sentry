@@ -157,6 +157,8 @@ const checkV2Enabled = async (): Promise<boolean> => {
 const reloadPoolKeys = async () => {
     operatorPoolAddresses = await getOwnerOrDelegatePools(operatorAddress);
 
+    operatorPoolAddresses = operatorPoolAddresses.filter(pooladdress => owners.includes(pooladdress));
+
     if (operatorPoolAddresses.length) {
 
 
@@ -712,7 +714,10 @@ export async function operatorRuntime(
         // Get all user pool addresses as owner and delegated
         operatorPoolAddresses = await getOwnerOrDelegatePools(operatorAddress);
 
+        operatorPoolAddresses = operatorPoolAddresses.filter(pooladdress => owners.includes(pooladdress));
+
         if (operatorPoolAddresses.length) {
+
             logFunction(`Found ${operatorPoolAddresses.length} pools for operator.`);
             //For each pool we need to fetch all keys
 
