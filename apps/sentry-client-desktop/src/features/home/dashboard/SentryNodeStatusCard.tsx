@@ -43,8 +43,7 @@ export function SentryNodeStatusCard() {
 
 
 	function formatTimeAgo(createdTimestamp: number): string {
-		const timeMilliseconds = new Date(createdTimestamp).getTime();
-		const formatDate = new Intl.DateTimeFormat("en-US", { year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric" }).format(timeMilliseconds);
+		const formatDate = new Intl.DateTimeFormat("en-US", { year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric" }).format(createdTimestamp);
 		
 		return `Last challenge ${formatDate}`;
 	}
