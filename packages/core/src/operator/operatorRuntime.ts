@@ -22,6 +22,8 @@ import { retry } from "../index.js";
 import axios from "axios";
 import { PoolFactoryAbi } from "../abis/PoolFactoryAbi.js";
 
+// import { execute, getBuiltGraphSDK } from "@sentry/sentry-subgraph-client";
+
 export enum NodeLicenseStatus {
     WAITING_IN_QUEUE = "Booting Operator For Key", // waiting to do an action, but in a queue
     FETCHING_MINT_TIMESTAMP = "Eligibility Lookup",
@@ -761,3 +763,27 @@ export async function operatorRuntime(
 
     return stop;
 }
+
+
+// ): Promise<any> {
+
+//     const sdk = getBuiltGraphSDK();
+
+//    sdk.
+
+//    const query: QueryResolvers<RefereeStakingEnabledEventResolvers> = {
+       
+//    }
+//    `
+//            query MyQuery {
+//                refereeStakingEnabledEvents {
+//                  blockNumber
+//                  blockTimestamp
+//                  transactionHash
+//                }
+//              }
+//            `
+
+//    const a = await execute(query, {});
+
+//    console.log(JSON.stringify(a));
