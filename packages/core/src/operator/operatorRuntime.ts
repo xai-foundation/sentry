@@ -22,7 +22,6 @@ import { retry } from "../index.js";
 import axios from "axios";
 import { PoolFactoryAbi } from "../abis/PoolFactoryAbi.js";
 
-// import { execute } from "@sentry/sentry-subgraph-client";
 
 export enum NodeLicenseStatus {
     WAITING_IN_QUEUE = "Booting Operator For Key", // waiting to do an action, but in a queue
@@ -763,67 +762,3 @@ export async function operatorRuntime(
 
     return stop;
 }
-
-
-// ): Promise<any> {
-
-//     const sdk = getBuiltGraphSDK();
-
-//    sdk.
-
-//    const query: QueryResolvers<RefereeStakingEnabledEventResolvers> = {
-       
-//    }
-//    `
-//            query MyQuery {
-//                refereeStakingEnabledEvents {
-//                  blockNumber
-//                  blockTimestamp
-//                  transactionHash
-//                }
-//              }
-//            `
-
-//    const a = await execute(query, {});
-
-//    console.log(JSON.stringify(a));
-
-// const query = gql`
-        //        query MyQuery {
-        //            refereeStakingEnabledEvents {
-        //              blockNumber
-        //              blockTimestamp
-        //              name
-        //            }
-        //          }
-        //        `
-
-        // const challengeQuery = `
-        //     query GetChallenges {
-        //         challenges(
-        //             skip: ${10},
-        //             first: ${10},
-        //             orderBy: assertionId,
-        //             orderDirection: asc,
-        //             where: {createdTimestamp_gte: 1711357273}
-        //     ) {
-        //         id
-        //         challengeNumber
-        //         assertionId
-        //     }
-        //   }
-        // `
-        // try {
-
-        //     const challenges = await execute(challengeQuery, {});
-
-        //     console.log(JSON.stringify(challenges));
-        //     // const a = await execute(query, {});
-        //     // console.log(JSON.stringify(a), "query a");
-        //     // const b = await client.request<RefereeStakingEnabledEvent>(query);
-
-        //     // console.log(JSON.stringify(b), "query b");
-
-        // } catch (ex) {
-        //     console.log("errors:" ,ex);
-        // }

@@ -159,6 +159,7 @@ dataSources:
         - RefereeStakingEnabledEvent
         - RefereeUnstakeV1Event
         - RefereeUpdateMaxStakeAmountEvent
+        - Submission
         - Challenge
       abis:
         - name: Referee
@@ -236,6 +237,7 @@ dataSources:
         - NodeLicenseTransferEvent
         - NodeLicenseWhitelistAmountRedeemedEvent
         - NodeLicenseWhitelistAmountUpdatedByAdminEvent
+        - SentryKey
       abis:
         - name: NodeLicense
           file: ./abis/NodeLicense.json
@@ -301,4 +303,7 @@ dataSources:
           handler: handleStakeKeys
         - event: UnstakeKeys(indexed address,indexed address,uint256,uint256,uint256)
           handler: handleUnstakeKeys
+      callHandlers:
+        - function: stakeKeys(address,uint256[])
+          handler: handleStakeKeysCall
       file: ./src/pool-factory.ts

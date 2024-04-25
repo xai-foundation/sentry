@@ -179,6 +179,6 @@ type SentryKey implements Submission @entity(immutable: false) {
   owner: Bytes! # address
   keyId: BigInt!
   mintTimeStamp: BigInt!
-  assignedPool: Bytes # address not required
+  assignedPool: Bytes!
   submissions: [Submission!]
 }
