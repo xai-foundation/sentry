@@ -3,3 +3,7 @@ sources:
     handler:
       graphql:
         endpoint: https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry/version/0.0.8/api
+    transforms:
+      - autoPagination:
+          # You might want to disable schema validation for faster startup
+          validateSchema: true
