@@ -5,7 +5,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 WORKDIR /app
 COPY package.json .
 COPY package-lock.json .
-RUN npm install
+RUN npm install --loglevel verbose -dd
 
 # ---- Build ----
 FROM base AS build
