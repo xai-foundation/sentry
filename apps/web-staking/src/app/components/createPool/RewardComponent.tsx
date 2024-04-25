@@ -24,7 +24,7 @@ const RewardComponent = ({
   rewardsValues,
   setRewardsValues,
   hideTitle,
-  showErrors
+  showErrors,
 }: RewardProps) => {
   const [errorInput, setErrorInput] = useState(false);
   const { owner, keyholder, staker } = rewardsValues;
@@ -74,7 +74,9 @@ const RewardComponent = ({
           name="owner"
           label="Pool owner*"
           placeholder="0"
-          isInvalid={showErrors && (Number(owner) > maxBucketSharest[0] || sum !== 100)}
+          isInvalid={
+            showErrors && (Number(owner) > maxBucketSharest[0] || sum !== 100)
+          }
           endContent={
             <div className="text-default-400 text-sm">
               % (Max {maxBucketSharest[0]}%)
@@ -96,7 +98,8 @@ const RewardComponent = ({
           label="Keyholder*"
           placeholder="0"
           isInvalid={
-            showErrors && (Number(keyholder) > maxBucketSharest[1] || sum !== 100)
+            showErrors &&
+            (Number(keyholder) > maxBucketSharest[1] || sum !== 100)
           }
           endContent={
             <div className="text-default-400 text-sm">
@@ -118,7 +121,9 @@ const RewardComponent = ({
           name="staker"
           label="esXAI staker*"
           placeholder="0"
-          isInvalid={showErrors && (Number(staker) > maxBucketSharest[2] || sum !== 100)}
+          isInvalid={
+            showErrors && (Number(staker) > maxBucketSharest[2] || sum !== 100)
+          }
           endContent={
             <div className="text-default-400 text-sm">
               % (Max {maxBucketSharest[2]}%)

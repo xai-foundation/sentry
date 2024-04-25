@@ -33,11 +33,6 @@ export default function StakeForPoolComponent() {
     hash: receipt,
   });
 
-  const poolDetails: PoolDetails = {
-    logoUrl: poolInfo?.meta.logo,
-    name: poolInfo?.meta.name,
-    description: poolInfo?.meta.description,
-  };
   const { writeContractAsync } = useWriteContract();
   const { switchChain } = useSwitchChain();
 
@@ -130,7 +125,8 @@ export default function StakeForPoolComponent() {
       {poolInfo &&
         <StakePoolKeyComponent
           onConfirm={Boolean(isStake) ? onStakeKeys : onUnstakeKeys}
-          poolDetailsValues={poolDetails}
+          poolName={poolInfo.meta.name}
+          poolLogoUrl={poolInfo.meta.logo}
           onBack={() => router.back()}
           address={address}
           transactionLoading={isLoading}

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { ButtonBack, PrimaryButton } from "../buttons/ButtonsComponent";
 import { StakingInput } from "../input/InputComponent";
-import { PoolDetails } from "./PoolDetailsComponent";
 import { useGetUnstakedNodeLicenseCount } from "@/app/hooks/hooks";
 import MainTitle from "../titles/MainTitle";
 import AvailableBalanceComponent from "../stake/AvailableBalanceComponent";
@@ -10,8 +9,9 @@ import KeyReviewComponent from "./KeyReviewComponent";
 import { BorderWrapperComponent } from "../borderWrapper/BorderWrapperComponent";
 import CurrencyStakeComponent from "../stake/CurrencyStakeComponent";
 
-interface StakePoolKeytProps {
-  poolDetailsValues: PoolDetails;
+interface StakePoolKeyProps {
+  poolName: string;
+  poolLogoUrl: string;
   address: string | undefined;
   onBack: () => void;
   onConfirm: (numKeys: number) => void;
@@ -20,18 +20,18 @@ interface StakePoolKeytProps {
 }
 
 const StakePoolKeyComponent = ({
-  poolDetailsValues,
+  poolName,
+  poolLogoUrl,
   address,
   onBack,
   onConfirm,
   transactionLoading,
   stakeKey
-}: StakePoolKeytProps) => {
+}: StakePoolKeyProps) => {
   const [inputValue, setInputValue] = useState("");
   const [reviewVisible, setReviewVisible] = useState(false);
   const [acceptedTerms, setAcceptTerms] = useState(false);
   const { unstakedKeyCount } = useGetUnstakedNodeLicenseCount();
-  const { name, logoUrl } = poolDetailsValues;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const roundNum = Math.round(Number(e.target.value));
@@ -51,8 +51,8 @@ const StakePoolKeyComponent = ({
             if (!acceptedTerms) return;
             onConfirm(Number(inputValue))
           }}
-          name={name}
-          logoUrl={logoUrl}
+          name={poolName}
+          logoUrl={poolLogoUrl}
           onBack={() => setReviewVisible(false)}
           inputValue={inputValue}
           onAcceptTerms={() => setAcceptTerms(!acceptedTerms)}
@@ -62,7 +62,7 @@ const StakePoolKeyComponent = ({
         <div className="flex flex-col items-start">
           <ButtonBack onClick={onBack} btnText="Back" />
           <MainTitle title="Create new pool" />
-          <KeyInfoComponent name={name} logoUrl={logoUrl} />
+          <KeyInfoComponent name={poolName} logoUrl={poolLogoUrl} />
           <BorderWrapperComponent>
             <StakingInput
               unstake={stakeKey}

@@ -4,6 +4,7 @@ import React from "react";
 
 import { ConnectButton } from "@/app/components/buttons/ButtonsComponent";
 import cardBackground from "@/assets/images/white_mesh_thing_.png";
+import { formatCurrencyWithDecimals } from "@/app/utils/formatCurrency";
 
 interface DashboardCardProps {
   esXaiBalance: number;
@@ -26,11 +27,11 @@ const DashboardCard = ({
           className="relative w-full max-w-[928px] overflow-hidden rounded-2xl border-1 border-silverMist pt-[21px] shadow-md sm:min-h-[262px] lg:h-[353px]">
           <span className="block pl-[24px]">Tokens</span>
           <span className="dashboard-text-gradient block w-full pl-[24px] sm:text-[24px] lg:text-[40px] xl:text-[54px]">
-            {esXaiBalance}
+            {formatCurrencyWithDecimals.format(esXaiBalance)}
             <span className="ml-1">esXAI</span>
           </span>
           <span className="dashboard-text-gradient mt-2 block pl-[24px] sm:text-[24px] lg:text-[32px] leading-none">
-            {xaiBalance} XAI
+            {formatCurrencyWithDecimals.format(xaiBalance)} XAI
           </span>
           <span className="mt-2 block pl-[24px] xl:mt-8">Sentry keys</span>
           <span className="dashboard-text-gradient block pl-[24px] sm:text-[24px] lg:text-[32px]">
@@ -39,9 +40,9 @@ const DashboardCard = ({
           <Image
             className="absolute right-[-80px] top-0 z-0"
             width="628"
-            height="1100"
             src={cardBackground}
             alt="cardBackground"
+            priority={true}
           />
         </section>
       ) : (
@@ -55,9 +56,9 @@ const DashboardCard = ({
           <Image
             className="absolute right-[-80px] top-[40px] z-[-1]"
             width="628"
-            height="1100"
             src={cardBackground}
             alt="cardBackground"
+            priority={true}
           />
         </section>
       )}

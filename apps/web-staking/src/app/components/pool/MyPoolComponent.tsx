@@ -22,7 +22,7 @@ const PoolComponent = () => {
   const { address } = useAccount();
   const { isApproved } = useGetKYCApproved();
   const { open } = useWeb3Modal();
-  const tiers = useGetTiers();
+  const { tiers } = useGetTiers();
 
   const { userPools, isLoading } = useGetUserInteractedPools();
 

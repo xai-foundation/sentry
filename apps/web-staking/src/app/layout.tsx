@@ -28,7 +28,7 @@ export default function xRootLayout({
 }>) {
   // const initialState = cookieToInitialState(config, headers().get("cookie"));
   return (
-    <html lang="en" suppressHydrationWarning={true}>
+    <html lang="en">
       <body>
         <ContextProvider>
           <IpLocationChecker>
@@ -39,10 +39,10 @@ export default function xRootLayout({
               </WrapperComponent>
               <ReactCookieConsent />
             </Providers>
-            <GoogleAnalytics gaId={gaId} />
           </IpLocationChecker>
         </ContextProvider>
       </body>
+      <GoogleAnalytics gaId={gaId} />
     </html>
   );
 }

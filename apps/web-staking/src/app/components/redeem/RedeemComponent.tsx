@@ -10,12 +10,13 @@ import MainTitle from "../titles/MainTitle";
 import History from "./History";
 import ReviewRedemptionComponent from "./ReviewRedemptionComponent";
 import RedemptionPeriod from "./RedemptionPeriod";
-import { ErrorCircle, SwitchArrows } from "../icons/IconsComponent";
+import { SwitchArrows } from "../icons/IconsComponent";
 import { CURRENCY } from "./Constants";
 import { useGetBalanceHooks } from "@/app/hooks/hooks";
 import AgreeModalComponent from "../modal/AgreeModalComponents";
 import { BorderWrapperComponent } from "@/app/components/borderWrapper/BorderWrapperComponent";
 import AvailableBalanceRedeemComponent from "@/app/components/redeem/AvailableBalanceRedeemComponent";
+import RedeemWarning from "@/app/components/redeem/RedeemWarning";
 
 export default function RedeemComponent() {
 	const { open, close } = useWeb3Modal();
@@ -42,7 +43,7 @@ export default function RedeemComponent() {
 	const onRedeemValueChange = (event: ChangeEvent) => {
 		event.preventDefault();
 		const { value } = event.target as HTMLInputElement
-		if (value.length > 17) {
+		if (value.length > 16) {
 			return;
 		}
 		setRedeemValue(value);
@@ -151,6 +152,7 @@ export default function RedeemComponent() {
 				<AgreeModalComponent address={address} />
 				<div className="flex flex-col items-start">
 					<MainTitle title={"Redeem"} classNames="pl-2 ml-1" />
+					{currency === CURRENCY.XAI && <RedeemWarning />}
 					<div className="flex flex-col p-3 w-xl">
 						<div className="w-xl min-w-md">
 							<BorderWrapperComponent customStyle="!mb-1">

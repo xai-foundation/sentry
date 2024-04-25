@@ -30,7 +30,7 @@ const SummaryComponent = ({ isBannedPool }: { isBannedPool: boolean }) => {
   const [refreshPoolInfo, setRefreshPoolInfo] = useState(false);
   const [refreshUnstakeRequests, setRefreshUnstakeRequests] = useState(false);
   // const [poolInfo, setData] = useState<PoolInfo>();
-  const tiers = useGetTiers();
+  const { tiers } = useGetTiers();
 
   const { address, chainId } = useAccount();
   const { poolAddress } = useParams<{ poolAddress: string }>();
