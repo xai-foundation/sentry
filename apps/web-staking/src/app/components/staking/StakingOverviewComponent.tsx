@@ -23,7 +23,7 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   const searchParams = useSearchParams();
   const { userPools, isLoading, totalClaimableAmount } = useGetUserInteractedPools();
   const { totalStaked, maxStakedCapacity } = useGetTotalStakedHooks();
-  const tiers = useGetTiers();
+  const { tiers } = useGetTiers();
 
   const [searchValue, setSearchValue] = useState(searchParams.get("search") || "");
   const [currentPage, setCurrentPage] = useState(searchParams.get("page") ? Number(searchParams.get("page")) : 1);

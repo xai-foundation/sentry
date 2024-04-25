@@ -6,6 +6,7 @@ export function ReactCookieConsent({ }) {
 		<CookieConsent
 			location="bottom"
 			cookieName="userConsent"
+			buttonText="I agree"
 			style={{ background: "black", textAlign: "center", fontFamily: "urw-din, sans-serif" }}
 			buttonStyle={{ color: "white", fontSize: "15px", background: "#F30919", fontFamily: "urw-din, sans-serif" }}
 			expires={150} // Cookie expiry in days

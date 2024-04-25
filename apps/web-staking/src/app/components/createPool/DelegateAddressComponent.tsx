@@ -18,7 +18,7 @@ const DelegateAddressComponent = ({
   setDelegateAddress,
   error,
   setError,
-  showErrors,
+  showErrors
 }: DelegateAddressProps) => {
 
   const [errorMessage, setErrorMessage] = useState("");

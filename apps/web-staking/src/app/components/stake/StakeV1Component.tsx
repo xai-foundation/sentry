@@ -47,7 +47,7 @@ const StakeV1Component = ({ title, unstake }: StakeProps) => {
     e.preventDefault();
 
     const value = e.target.value;
-    if (value.length > 17) {
+    if (value.length > 16) {
       return;
     }
 

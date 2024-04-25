@@ -11,6 +11,7 @@ import {
 import { PoolInfo } from "@/types/Pool";
 
 import Warning from "./Warning";
+import { formatCurrencyNoDecimals, formatCurrencyWithDecimals, hideDecimals } from "@/app/utils/formatCurrency";
 
 interface StakingCardsProps {
   poolInfo: PoolInfo;
@@ -38,6 +39,10 @@ const StakingCards = ({
         100
       );
 
+  const formattedUserStakedEsXaiAmount = poolInfo?.userStakedEsXaiAmount
+    ? formatCurrencyWithDecimals.format(poolInfo.userStakedEsXaiAmount)
+    : 0;
+
   return (
     <div className="mt-4 flex w-full flex-col gap-7 md:gap-14">
       <SummaryUnstakingSection
@@ -49,7 +54,7 @@ const StakingCards = ({
         progressValue={esXAIProgressValue}
         poolAddress={poolInfo?.address}
         cardTitle={"Your staked esXAI"}
-        cardContent={`${(poolInfo?.userStakedEsXaiAmount || 0)} esXAI`}
+        cardContent={`${formattedUserStakedEsXaiAmount} esXAI`}
         variant={PoolStakingButtonVariant.esXAI}
         canStake={!isBannedPool && ((poolInfo.maxAvailableStake || 0) > 0)}
         canUnstake={(poolInfo.maxAvailableUnstake || 0) > 0}
@@ -65,11 +70,11 @@ const StakingCards = ({
           <div className="flex w-full gap-14">
             <PoolStakingInfoChild
               title={"Pool balance"}
-              content={`${poolInfo.totalStakedAmount} esXAI`}
+              content={`${hideDecimals(formatCurrencyWithDecimals.format(poolInfo.totalStakedAmount))} esXAI`}
             />
             <PoolStakingInfoChild
               title={"Pool capacity"}
-              content={`${poolInfo.maxStakedAmount} esXAI`}
+              content={`${formatCurrencyNoDecimals.format(poolInfo.maxStakedAmount)} esXAI`}
             />
           </div>
         </div>

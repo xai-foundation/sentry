@@ -29,7 +29,6 @@ import { PoolDetails } from "../components/createPool/PoolDetailsComponent";
 import { PoolInfo } from "@/types/Pool";
 import { useParams } from "next/navigation";
 import { Rewards } from "../components/createPool/RewardComponent";
-import { getAllBanWords } from "../components/createPool/server/serverActions";
 import moment from "moment";
 
 export const useGetBalanceHooks = (refresh: boolean = false) => {
@@ -281,70 +280,6 @@ export const useGetUserPoolInfo = (poolAddress: string | null, refresh: boolean 
   return { userPool };
 };
 
-
-export const useFindBanListWordsHooks = ({
-  name,
-  description,
-  logoUrl,
-}: PoolDetails) => {
-  const [isBadInputName, setIsBadInputName] = useState({
-    isError: false,
-    banWord: "",
-  });
-  const [isBadInputDescription, setIsBadInputDescription] = useState({
-    isError: false,
-    banWord: "",
-  });
-  const [debouncedInputValue, setDebouncedInputValue] = useState({
-    name: "",
-    description: "",
-    logoUrl: "",
-  });
-  const [banList, setBanList] = useState([] as string[]);
-
-  const requestBanList = async () => {
-    const result = await getAllBanWords();
-    setBanList(result);
-  };
-
-  useEffect(() => {
-    requestBanList();
-  }, []);
-
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      setDebouncedInputValue({ name, description, logoUrl });
-    }, 500);
-    return () => clearTimeout(timeoutId);
-  }, [description, logoUrl, name]);
-
-  useEffect(() => {
-    const checkBanListWords = ({ name, description }: PoolDetails) => {
-      setIsBadInputName({ isError: false, banWord: "" });
-      setIsBadInputDescription({ isError: false, banWord: "" });
-
-      const poolNameInput = name.toLowerCase().split(" ");
-      const poolDescriptionInput = description.toLowerCase().split(" ");
-      let nameBadWords = "";
-      let descriptionBadWords = "";
-
-      banList && banList.forEach((word) => {
-        if (poolNameInput.includes(word.toLowerCase())) {
-          nameBadWords += ", " + word;
-          setIsBadInputName({ isError: true, banWord: nameBadWords.replace(/^(,+)/, '').trim() });
-        }
-        if (poolDescriptionInput.includes(word.toLowerCase())) {
-          descriptionBadWords += ", " + word;
-          setIsBadInputDescription({ isError: true, banWord: descriptionBadWords.replace(/^(,+)/, "").trim() });
-        }
-      });
-    };
-    checkBanListWords(debouncedInputValue);
-  }, [banList, debouncedInputValue]);
-
-  return { isBadInputName, isBadInputDescription };
-};
-
 export const useGetMaxBucketShares = () => {
   const [maxBucketSharest, setMaxBucketSharest] = useState<
     [ownerShare: number, keyShare: number, esXaiStakeShare: number]
@@ -378,6 +313,8 @@ export const useGetPoolInfoHooks = () => {
     name: "",
     description: "",
     logoUrl: "",
+    trackerName: "",
+    trackerTicker: "",
   });
   const [rewardsValues, setRewardsValues] = useState<Rewards>({
     owner: "",
@@ -392,10 +329,6 @@ export const useGetPoolInfoHooks = () => {
     instagram: "",
     youTube: "",
     tiktok: "",
-  });
-  const [tokenTracker, setTokenTracker] = useState({
-    trackerName: "",
-    trackerTicker: "",
   });
   const [delegateAddress, setDelegateAddress] = useState("");
   const [isLoading, setisLoading] = useState(false);
@@ -419,6 +352,8 @@ export const useGetPoolInfoHooks = () => {
           name: poolInfo.meta.name,
           description: poolInfo.meta.description,
           logoUrl: poolInfo.meta.logo,
+          trackerName: "",
+          trackerTicker: "",
         });
         setRewardsValues({
           owner: poolInfo.ownerShare,
@@ -433,10 +368,6 @@ export const useGetPoolInfoHooks = () => {
           instagram: poolInfo.meta.instagram,
           youTube: poolInfo.meta.youtube,
           tiktok: poolInfo.meta.tiktok,
-        });
-        setTokenTracker({
-          trackerName: "",
-          trackerTicker: "",
         });
 
         const delegate = await getDelegateOwner(getNetwork(chainId), poolAddress)
@@ -455,8 +386,6 @@ export const useGetPoolInfoHooks = () => {
     setPoolDetailsValues,
     socialLinks,
     setSocialLinks,
-    tokenTracker,
-    setTokenTracker,
     rewardsValues,
     isLoading,
     setRewardsValues,

@@ -1,10 +1,9 @@
 import MainTitle from "../titles/MainTitle";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { PoolInput } from "../input/InputComponent";
 import { PoolTextarea } from "../textareas/TextareasComponent";
 import { Tooltip, divider } from "@nextui-org/react";
 import { ERROR_MESSAGE, LABELS, PLACEHOLDERS } from "./enums/enums";
-import { useFindBanListWordsHooks } from "@/app/hooks/hooks";
 import PopoverWindow from "../staking/PopoverWindow";
 
 const POOL_TOOLTIP_TEXT =
@@ -14,94 +13,169 @@ export type PoolDetails = {
   name: string;
   description: string;
   logoUrl: string;
-};
-
-export type TrackerInfo = {
   trackerName: string;
   trackerTicker: string;
 };
 
+export type PoolDetailsError = {
+  name: boolean;
+  description: boolean;
+  logoUrl: boolean;
+  trackerName: boolean;
+  trackerTicker: boolean;
+};
+
 interface PoolDetailsProps {
   poolDetailsValues: PoolDetails;
-  tokenTracker: TrackerInfo;
   setPoolDetailsValues: Dispatch<SetStateAction<PoolDetails>>;
-  setError: Dispatch<SetStateAction<boolean>>;
-  setTokenTracker: Dispatch<SetStateAction<TrackerInfo>>;
+  setError: Dispatch<SetStateAction<PoolDetailsError>>;
   hideTokenTrackers?: boolean;
+  bannedWords: string[];
   showErrors?: boolean;
 }
 
 const PoolDetailsComponent = ({
   poolDetailsValues,
-  tokenTracker,
   setPoolDetailsValues,
   setError,
-  setTokenTracker,
   hideTokenTrackers,
-  showErrors
+  bannedWords,
+  showErrors,
 }: PoolDetailsProps) => {
-  const { name, description, logoUrl } = poolDetailsValues;
-  const { trackerName, trackerTicker } = tokenTracker;
-  const { isBadInputName, isBadInputDescription } = useFindBanListWordsHooks(poolDetailsValues);
-  const inputNameRequirements = name.length < 5 || name.length > 24;
-  const inputDescriptionRequirements = description.length < 10 || description.length > 400;
-  const inputTrackerNameRequirements = tokenTracker.trackerName.length > 24;
-  const inputTickerRequirements = tokenTracker.trackerTicker.length > 6;
+  const { name, description, logoUrl, trackerName, trackerTicker } = poolDetailsValues;
+  const [errorMessage, setErrorMessage] = useState({
+    name: "",
+    description: "",
+    logoUrl: "",
+    trackerName: "",
+    trackerTicker: "",
+  });
 
-  useEffect(() => {
-    inputNameRequirements ||
-    inputDescriptionRequirements ||
-    inputTrackerNameRequirements ||
-    inputTickerRequirements ||
-    isBadInputName.isError ||
-    isBadInputDescription.isError
-      ? setError(true)
-      : setError(false);
-  }, [
-    isBadInputDescription,
-    isBadInputName,
-    inputDescriptionRequirements,
-    inputNameRequirements,
-    inputTickerRequirements,
-    inputTrackerNameRequirements,
-    setError,
-  ]);
-
-  const handleChangeDetails = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPoolDetailsValues({
-      ...poolDetailsValues,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleChangeTracker = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTokenTracker({
-      ...tokenTracker,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const showErrorMessageName = () => {
-    if (name.length > 24) {
-      return ERROR_MESSAGE.NAME_LENGTH;
+  const hasBannedWords = (input: string, bannedWords: string[]): string[] => {
+    if (!bannedWords) return [];
+    
+    const bannedList = [];
+    for (let i = 0; i < bannedWords.length; i++) {
+      if (input.toLowerCase().split(" ").includes(bannedWords[i])) {
+        bannedList.push(bannedWords[i]);
+      }
     }
-    if (name.length < 5) {
+
+    return bannedList;
+  };
+
+  const validateInputName = (value: string) => {
+    if (value.length < 5) {
       return ERROR_MESSAGE.ENTER_TEXT;
     }
-    if (isBadInputName.isError) {
-      return `${ERROR_MESSAGE.BAD_WORD_MESSAGE}"${isBadInputName.banWord}"`;
+
+    if (value.length > 24) {
+      return ERROR_MESSAGE.NAME_LENGTH;
     }
+
+    const bannedWordsInInput = hasBannedWords(value, bannedWords);
+    if (bannedWordsInInput.length > 0) {
+      return `${ERROR_MESSAGE.BAD_WORD_MESSAGE}"${bannedWordsInInput.join(", ")}"`;
+    }
+
+    return "";
   };
 
-  const showErrorMessageDescription = () => {
-    if (description.length > 400) {
-      return ERROR_MESSAGE.DESCRIPTION_LENGTH;
-    }
-    if (description.length < 10) {
+  const validateInputDescription = (value: string) => {
+    if (value.length < 10) {
       return ERROR_MESSAGE.DESCRIPTION;
     }
-    if (isBadInputDescription.isError) {
-      return `${ERROR_MESSAGE.BAD_WORD_MESSAGE}"${isBadInputDescription.banWord}"`;
+
+    if (value.length > 400) {
+      return ERROR_MESSAGE.DESCRIPTION_LENGTH;
+    }
+
+    const bannedWordsInInput = hasBannedWords(value, bannedWords);
+    if (bannedWordsInInput.length > 0) {
+      return `${ERROR_MESSAGE.BAD_WORD_MESSAGE}"${bannedWordsInInput.join(", ")}"`;
+    }
+
+    return "";
+  };
+
+  const validationTrackerName = (value: string) => {
+    if (value.length > 24) {
+      return ERROR_MESSAGE.TRACKER_NAME;
+    }
+    return "";
+  };
+
+  const validationTicker = (value: string) => {
+    if (value.length > 6) {
+      return ERROR_MESSAGE.TICKER;
+    }
+    return "";
+  };
+
+  type PoolDetailKeys =
+    | "name"
+    | "description"
+    | "logoUrl"
+    | "trackerName"
+    | "trackerTicker";
+
+  const validationMap: { [key in PoolDetailKeys]: (value: string) => string } =
+    {
+      name: (value: string) => {
+        return validateInputName(value);
+      },
+      description: (value: string) => {
+        return validateInputDescription(value);
+      },
+      logoUrl: (value: string) => {
+        return "";
+      },
+      trackerName: (value: string) => {
+        return validationTrackerName(value);
+      },
+      trackerTicker: (value: string) => {
+        return validationTicker(value);
+      },
+    };
+
+  const handleChangeDetails = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    key: PoolDetailKeys
+  ) => {
+    const value = e.target.value;
+
+    setPoolDetailsValues((state) => {
+      const newState = { ...state };
+      newState[e.target.name as keyof PoolDetails] = value;
+      return newState;
+    });
+
+    const error = validationMap[key](value);
+
+    if (error === "") {
+      setError((state) => {
+        const newState = { ...state };
+        newState[key] = false;
+        return newState;
+      });
+
+      setErrorMessage((state) => {
+        const newState = { ...state };
+        newState[key] = "";
+        return newState;
+      });
+    } else {
+      setError((state) => {
+        const newState = { ...state };
+        newState[key] = true;
+        return newState;
+      });
+
+      setErrorMessage((state) => {
+        const newState = { ...state };
+        newState[key] = error;
+        return newState;
+      });
     }
   };
 
@@ -115,34 +189,34 @@ const PoolDetailsComponent = ({
           <div className="mb-[20px] w-full">
             <PoolInput
               name="name"
+              value={name}
               label={LABELS.NAME}
               placeholder={PLACEHOLDERS.NAME}
-              isInvalid={showErrors && (inputNameRequirements || isBadInputName.isError)}
-              errorMessage={showErrorMessageName()}
+              isInvalid={showErrors && (errorMessage.name.length > 0 || name.length < 5)}
               type="text"
-              onChange={handleChangeDetails}
-              value={name}
+              onChange={(e) => handleChangeDetails(e, "name")}
+              errorMessage={name.length < 5 ? ERROR_MESSAGE.ENTER_TEXT : errorMessage.name}
             />
           </div>
         </Tooltip>
         <div className="w-full mb-[80px]">
           <PoolTextarea
             name="description"
+            value={description}
             label={LABELS.DESCRIPTION}
             placeholder={PLACEHOLDERS.DESCRIPTION}
-            isInvalid={showErrors && (inputDescriptionRequirements || isBadInputDescription.isError)}
-            errorMessage={showErrorMessageDescription()}
-            onChange={handleChangeDetails}
-            value={description}
+            isInvalid={showErrors && (errorMessage.description.length > 0 || description.length < 10)}
+            onChange={(e) => handleChangeDetails(e, "description")}
+            errorMessage={description.length < 10 ? ERROR_MESSAGE.DESCRIPTION : errorMessage.description}
           />
         </div>
         <div className="w-full mb-[50px]">
           <PoolInput
             name="logoUrl"
             value={logoUrl}
-            onChange={handleChangeDetails}
             label="Pool logo"
             placeholder="Enter image URL here"
+            onChange={(e) => handleChangeDetails(e, "logoUrl")}
           />
         </div>
         {!hideTokenTrackers && (
@@ -151,27 +225,27 @@ const PoolDetailsComponent = ({
               <PoolInput
                 name="trackerName"
                 value={trackerName}
-                onChange={handleChangeTracker}
+                placeholder="Enter name here"
+                onChange={(e) => handleChangeDetails(e, "trackerName")}
                 label={
                   <div className="flex items-center">
-                     Token tracker name
+                    Token tracker name
                     <PopoverWindow tokenText />
                   </div>
                 }
-                placeholder="Enter name here"
-                isInvalid={showErrors && inputTrackerNameRequirements}
-                errorMessage={ERROR_MESSAGE.TRACKER_NAME}
+                isInvalid={showErrors && errorMessage.trackerName.length > 0}
+                errorMessage={errorMessage.trackerName}
               />
             </div>
             <div className="lg:w-[30%] sm:w-full">
               <PoolInput
                 name="trackerTicker"
                 value={trackerTicker}
-                onChange={handleChangeTracker}
                 label="Token tracker ticker"
                 placeholder="Enter ticker here"
-                isInvalid={showErrors && inputTickerRequirements}
-                errorMessage={ERROR_MESSAGE.TICKER}
+                onChange={(e) => handleChangeDetails(e, "trackerTicker")}
+                isInvalid={showErrors && errorMessage.trackerTicker.length > 0}
+                errorMessage={errorMessage.trackerTicker}
               />
             </div>
           </div>

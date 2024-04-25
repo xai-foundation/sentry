@@ -21,13 +21,10 @@ import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import DelegateAddressComponent from "../createPool/DelegateAddressComponent";
 import { Id } from "react-toastify";
 
-const EditDetailsComponent = () => {
+const EditDetailsComponent = ( { bannedWords }: { bannedWords: string[] }) => {
   const {
     poolDetailsValues,
-    rewardsValues,
     setPoolDetailsValues,
-    tokenTracker,
-    setTokenTracker,
     socialLinks,
     setSocialLinks,
     isLoading,
@@ -41,12 +38,17 @@ const EditDetailsComponent = () => {
 
   const { switchChain } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
-  const [errorValidationDetails, setErrorValidationDetails] = useState(false);
+  const [errorValidationDetails, setErrorValidationDetails] = useState({
+    name: false,
+    description: false,
+    logoUrl: false,
+    trackerName: false,
+    trackerTicker: false,
+  });
   const [errorValidationAddress, setErrorValidationAddress] = useState(false);
-  const [showErrors, setShowErrors] = useState(true);
 
   // Substitute Timeouts with useWaitForTransaction
-  const { data, isError, isLoading: transactionLoading, isSuccess, status } = useWaitForTransactionReceipt({
+  const { isError, isLoading: transactionLoading, isSuccess, status } = useWaitForTransactionReceipt({
     hash: receipt,
   });
 
@@ -84,30 +86,30 @@ const EditDetailsComponent = () => {
     setIsUpdateAddress(false);
     toastId.current = loadingNotification("Transaction pending...");
     try {
-
+      
       setReceipt(await executeContractWrite(
-        WriteFunctions.updatePoolMetadata,
-        [
-          poolAddress,
+          WriteFunctions.updatePoolMetadata,
           [
-            poolDetailsValues.name,
-            poolDetailsValues.description,
-            poolDetailsValues.logoUrl
+            poolAddress,
+            [
+              poolDetailsValues.name,
+              poolDetailsValues.description,
+              poolDetailsValues.logoUrl
+            ],
+            [
+              socialLinks.website,
+              socialLinks.discord,
+              socialLinks.telegram,
+              socialLinks.twitter,
+              socialLinks.instagram,
+              socialLinks.youTube,
+              socialLinks.tiktok,
+            ],
           ],
-          [
-            socialLinks.website,
-            socialLinks.discord,
-            socialLinks.telegram,
-            socialLinks.twitter,
-            socialLinks.instagram,
-            socialLinks.youTube,
-            socialLinks.tiktok,
-          ],
-        ],
-        chainId,
-        writeContractAsync,
-        switchChain
-      ) as `0x${string}`);
+          chainId,
+          writeContractAsync,
+          switchChain
+        ) as `0x${string}`);
 
     } catch (ex: any) {
       const error = mapWeb3Error(ex);
@@ -120,17 +122,21 @@ const EditDetailsComponent = () => {
     toastId.current = loadingNotification("Transaction pending...");
     try {
       setReceipt(await executeContractWrite(
-        WriteFunctions.updateDelegateOwner,
-        [poolAddress, delegateAddress || ZERO_ADDRESS],
-        chainId,
-        writeContractAsync,
-        switchChain
-      ) as `0x${string}`);
+          WriteFunctions.updateDelegateOwner,
+          [poolAddress, delegateAddress || ZERO_ADDRESS],
+          chainId,
+          writeContractAsync,
+          switchChain
+        ) as `0x${string}`);
 
     } catch (ex: any) {
       const error = mapWeb3Error(ex);
       updateNotification(error, toastId.current as Id, true);
     }
+  };
+
+  const searchDetailsErrors = () => {
+    return Object.values(errorValidationDetails).some((item) => item === true);
   };
 
   return (
@@ -146,10 +152,9 @@ const EditDetailsComponent = () => {
               poolDetailsValues={poolDetailsValues}
               setPoolDetailsValues={setPoolDetailsValues}
               setError={setErrorValidationDetails}
-              tokenTracker={tokenTracker}
-              setTokenTracker={setTokenTracker}
-              showErrors
-              hideTokenTrackers
+              bannedWords={bannedWords}
+              hideTokenTrackers={true}
+              showErrors={true}
             />
             <SocialLinksComponent
               socialLinks={socialLinks}
@@ -162,10 +167,7 @@ const EditDetailsComponent = () => {
               btnText="Save and confirm"
               onClick={onConfirm}
               className="font-semibold disabled:opacity-50"
-              isDisabled={
-                errorValidationDetails ||
-                transactionLoading
-              }
+              isDisabled={searchDetailsErrors() || transactionLoading}
             />
           </div>
           <div className="sm:py-5 sm:px-0 lg:flex sm:grid sm:flex-col sm:items-center lg:items-start min-w-full">
@@ -175,7 +177,7 @@ const EditDetailsComponent = () => {
               setDelegateAddress={setDelegateAddress}
               error={errorValidationAddress}
               setError={setErrorValidationAddress}
-              showErrors
+              showErrors={true}
             />
             <div className="flex flex-row justify-between w-full border-t-1 py-6">
               <SecondaryButton btnText="Cancel" onClick={() => router.back()} />

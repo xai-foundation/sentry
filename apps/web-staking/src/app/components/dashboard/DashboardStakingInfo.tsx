@@ -20,6 +20,7 @@ import {
 } from "@/services/web3.service";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import ClaimableRewardsComponent from "@/app/components/staking/ClaimableRewardsComponent";
+import { formatCurrencyWithDecimals } from "@/app/utils/formatCurrency";
 
 interface DashboardStakingInfoProps {
   totalStaked: number;
@@ -155,11 +156,12 @@ const DashboardStakingInfo = ({
         </div>
       </div>
       <div className="flex w-full max-w-[928px] flex-col justify-between xl:flex-row">
-        <div className="mr-3 mt-[12px] flex sm:flex-col lg:flex-row sm:items-start w-full max-w-full lg:items-center gap-x-20 rounded-2xl bg-crystalWhite px-[21px] sm:py-1 lg:py-0 lg:mr-0 xl:mr-3 xl:max-w-[515px]">
+        <div
+          className="mr-3 mt-[12px] flex sm:flex-col lg:flex-row sm:items-start w-full max-w-full lg:items-center gap-x-14 rounded-2xl bg-crystalWhite px-[21px] sm:py-1 lg:py-0 lg:mr-0 xl:mr-3 xl:max-w-[515px]">
           <div className="">
             <span className="block text-graphiteGray">Staked esXAI</span>
             <span className="mt-1 block text-2xl font-medium">
-              {totalStaked}
+              {formatCurrencyWithDecimals.format(totalStaked)}
               <span className="ml-1">esXAI </span>  
             </span>
           </div>

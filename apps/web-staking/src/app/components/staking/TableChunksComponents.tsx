@@ -3,7 +3,7 @@ import { ExternalLinkComponent } from "../links/LinkComponent";
 import { PoolInfo, TierInfo } from "@/types/Pool";
 import { iconType } from "../dashboard/constants/constants";
 import { Key, PieChart } from "../icons/IconsComponent";
-import { formatCurrencyNoDecimals, formatCurrencyWithDecimals } from "@/app/utils/formatCurrency";
+import { formatCurrencyNoDecimals, formatCurrencyWithDecimals, hideDecimals } from "@/app/utils/formatCurrency";
 import Link from "next/link";
 import moment from "moment";
 
@@ -131,12 +131,6 @@ export function TableRowCapacity({
   pool: PoolInfo;
   showTableKeys: boolean;
   }) {
-  const formatCapacity = (value: string) => {
-    if (value && value.includes(".")) { 
-     return value.slice(0, value.indexOf("."));
-    }
-    return value;
-  }
   
   return (
     <>
@@ -146,7 +140,7 @@ export function TableRowCapacity({
             <div className="flex sm:flex-wrap lg:flex-nowrap justify-start sm:mb-1">
               {showTableKeys
                 ? <><span>{formatCurrencyNoDecimals.format(pool.keyCount)}</span>/<span>{formatCurrencyNoDecimals.format(pool.maxKeyCount)} keys</span></>
-                : <><span>{formatCapacity(formatCurrencyWithDecimals.format(pool.totalStakedAmount))}</span>/<span>{formatCurrencyNoDecimals.format(pool.maxStakedAmount)} esXAI</span></>}
+                : <><span>{hideDecimals(formatCurrencyWithDecimals.format(pool.totalStakedAmount))}</span>/<span>{formatCurrencyNoDecimals.format(pool.maxStakedAmount)} esXAI</span></>}
             </div>
             <div className="w-full max-w-[50%]">
               <Progress
