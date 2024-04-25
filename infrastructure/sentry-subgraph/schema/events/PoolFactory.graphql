@@ -1,0 +1,23 @@
+type StakeKeysEvent @entity(immutable: true) {
+  id: Bytes!
+  user: Bytes! # address
+  pool: Bytes! # address
+  amount: BigInt! # uint256
+  totalUserKeysStaked: BigInt! # uint256
+  totalKeysStaked: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type UnstakeKeysEvent @entity(immutable: true) {
+  id: Bytes!
+  user: Bytes! # address
+  pool: Bytes! # address
+  amount: BigInt! # uint256
+  totalUserKeysStaked: BigInt! # uint256
+  totalKeysStaked: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}

@@ -173,3 +173,12 @@ type NodeLicenseWhitelistAmountUpdatedByAdminEvent @entity(immutable: true) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
+
+type SentryKey implements Submission @entity(immutable: false) {
+  id: ID!
+  owner: Bytes! # address
+  keyId: BigInt!
+  mintTimeStamp: BigInt!
+  assignedPool: Bytes # address not required
+  submissions: [Submission!]
+}

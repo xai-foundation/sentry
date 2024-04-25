@@ -198,3 +198,11 @@ type Challenge @entity(immutable: false) {
   amountClaimedByClaimers: BigInt! # uint256
 }
 
+type Submission @entity(immutable: false) {
+  id: ID!
+  submitted: Boolean!
+  claimed: Boolean!
+  eligibleForPayout: Boolean!
+  nodeLicenseId: BigInt! # address
+  assertionsStateRootOrConfirmData: String!
+}

@@ -279,3 +279,26 @@ dataSources:
         - event: WhitelistAmountUpdatedByAdmin(indexed address,uint16)
           handler: handleWhitelistAmountUpdatedByAdmin
       file: ./src/node-license.ts
+  - kind: ethereum
+    name: PoolFactory
+    network: arbitrum-one
+    source:
+      address: "0xF9E08660223E2dbb1c0b28c82942aB6B5E38b8E5"
+      abi: PoolFactory
+      startBlock: 200013500
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - UnstakeKeysEvent
+        - StakeKeysEvent
+      abis:
+        - name: PoolFactory
+          file: ./abis/PoolFactory.json
+      eventHandlers:
+        - event: StakeKeys(indexed address,indexed address,uint256,uint256,uint256)
+          handler: handleStakeKeys
+        - event: UnstakeKeys(indexed address,indexed address,uint256,uint256,uint256)
+          handler: handleUnstakeKeys
+      file: ./src/pool-factory.ts
