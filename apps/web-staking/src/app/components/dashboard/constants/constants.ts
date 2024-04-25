@@ -39,9 +39,9 @@ export const POOL_DATA_ROWS: Array<TierInfo & { icon?: iconType }> = [
     tierBackgroundColor: "text-[#C36522]",
     icon: BronzeTriangle,
     iconText: "Bronze",
-    requirement: "0 staked esXAI",
+    requirement: "- staked esXAI",
+    reward: "-",
     minValue: TIER_VALUES.BRONZE,
-    reward: "1x",
     index: 0,
   },
   {

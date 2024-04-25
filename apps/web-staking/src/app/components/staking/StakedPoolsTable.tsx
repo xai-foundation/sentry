@@ -12,7 +12,7 @@ import MessageComponent from "./MessageComponent";
 import { PoolInfo, TierInfo } from "@/types/Pool";
 import { iconType } from "../dashboard/constants/constants";
 import { getCurrentTierByStaking } from "./utils";
-import { formatCurrencyNoDecimals } from "@/app/utils/formatCurrency";
+import { formatCurrencyNoDecimals, formatCurrencyWithDecimals, hideDecimals } from "@/app/utils/formatCurrency";
 
 const POOL_DATA_COLUMNS_STAKED = [
   "Pool",
@@ -85,7 +85,7 @@ const StakedPoolsTable = (
                     tier={getCurrentTierByStaking(Math.min(pool.totalStakedAmount, pool.maxStakedAmount), tiers) as TierInfo & {
                       icon: iconType
                     }} poolAddress={pool.address} fullWidth />
-                  <TableRowStaked value={`${pool.userStakedEsXaiAmount ? formatCurrencyNoDecimals.format(pool.userStakedEsXaiAmount) : 0} esXAI`} poolAddress={pool.address} />
+                  <TableRowStaked value={`${pool.userStakedEsXaiAmount ? pool.userStakedEsXaiAmount < 0.0001 ? "<0.0001" : hideDecimals(formatCurrencyWithDecimals.format(pool.userStakedEsXaiAmount)) : 0} esXAI`} poolAddress={pool.address} />
                   <TableRowStaked value={`${formatCurrencyNoDecimals.format(pool.userStakedKeyIds.length)} keys`} poolAddress={pool.address} />
                   <TableRowKeysRewards pool={pool} totalStaked={0} />
                 </tr>

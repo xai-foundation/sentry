@@ -10,6 +10,7 @@ import {
 import { PoolInfo, TierInfo } from "@/types/Pool";
 import { iconType } from "../dashboard/constants/constants";
 import Warning from "@/app/components/summary/Warning";
+import { formatCurrencyWithDecimals } from "@/app/utils/formatCurrency";
 
 interface PoolTierCardProps {
   poolInfo: PoolInfo;
@@ -52,7 +53,7 @@ const PoolTierCard = ({ poolInfo, tiers }: PoolTierCardProps) => {
     }
 
     if (amountToUpgrade > 0) {
-      return `Stake ${amountToUpgrade} more esXAI to reach the next tier.`;
+      return `Stake ${amountToUpgrade < 0.0001 ? "<0.0001" : formatCurrencyWithDecimals.format(amountToUpgrade)} more esXAI to reach the next tier.`;
     }
 
     return "Maximum esXAI capacity reached, stake more keys.";

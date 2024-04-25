@@ -49,11 +49,11 @@ export const CustomInput = ({
         helperWrapper: "p-0",
       }}
       errorMessage={isInvalid && <>
-        <span className="flex gap-1 items-center">
-          <ErrorCircle width={16} height={16} />
-          {errorMessage}
-        </span>
-      </>}
+            <span className="flex gap-1 items-center">
+              <ErrorCircle width={16} height={16} />
+              {errorMessage}
+            </span>
+          </>}
       onChange={onChange}
       label={label}
       placeholder={placeholder}
@@ -110,12 +110,15 @@ export const StakingInput = ({
         helperWrapper: "p-0",
       }}
       onChange={onChange}
-      errorMessage={isInvalid && <>
-        <span className="flex gap-1 items-center sm:text-sm lg:text-base">
-          <ErrorCircle width={16} height={16} />
-          {getErrorMessage()}
-        </span>
-      </>
+      errorMessage={
+        isInvalid && (
+          <>
+            <span className="flex gap-1 items-center sm:text-sm lg:text-base">
+              <ErrorCircle width={16} height={16} />
+              {getErrorMessage()}
+            </span>
+          </>
+        )
       }
       label={label}
       placeholder={placeholder}
@@ -146,7 +149,7 @@ export const PoolInput = ({
       name={name}
       classNames={{
         inputWrapper: `relative border ${isInvalid ? "border-red" : ""
-          } h-[50px] pl-2 pr-4 bg-white data-[hover=true]:bg-white group-data-[focus=true]:bg-white w-full`,
+        } h-[50px] pl-2 pr-4 bg-white data-[hover=true]:bg-white group-data-[focus=true]:bg-white w-full`,
         label: `text-graphiteGray text-base font-bold pb-3`,
         input: `text-[16px] px-2 rounded-xl ${classInput}`,
         mainWrapper: `w-xl`,

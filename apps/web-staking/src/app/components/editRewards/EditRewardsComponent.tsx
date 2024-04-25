@@ -25,7 +25,6 @@ const EditRewardsComponent = () => {
   const { rewardsValues, setRewardsValues, isLoading, poolAddress } = useGetPoolInfoHooks();
   const { rewardBreakdownDelay } = useGetRewardBreakdownUpdateDelay()
   const [errorValidationRewards, setErrorValidationRewards] = useState(false);
-  const [showErrors, setShowErrors] = useState(true);
   const router = useRouter();
   const { chainId } = useAccount();
   moment.relativeTimeThreshold("d", 1000);
@@ -36,7 +35,7 @@ const EditRewardsComponent = () => {
   const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
 
   // Substitute Timeouts with useWaitForTransaction
-  const { data, isError, isLoading: transactionLoading, isSuccess, status } = useWaitForTransactionReceipt({
+  const { isError, isLoading: transactionLoading, isSuccess, status } = useWaitForTransactionReceipt({
     hash: receipt,
   });
 
@@ -114,8 +113,8 @@ const EditRewardsComponent = () => {
               rewardsValues={rewardsValues}
               setRewardsValues={setRewardsValues}
               setError={setErrorValidationRewards}
-              showErrors
-              hideTitle
+              hideTitle={true}
+              showErrors={true}
             />
           </div>
           <div className="flex flex-row justify-between w-full border-t-1 py-6">

@@ -40,7 +40,7 @@ export const SecondaryButton = ({
   return (
     <PrimaryButton
       size={size}
-      onClick={() => { onClick(), GAevent('buttonClicked', 'user_interaction', btnText) }}
+      onClick={onClick}
       btnText={btnText}
       className={`rounded-[8px] bg-[#EEEEEE] px-[20px] py-[18px] font-medium text-[#F30919] duration-250 ease-in ${className} ${hoverClassName}`}
     />

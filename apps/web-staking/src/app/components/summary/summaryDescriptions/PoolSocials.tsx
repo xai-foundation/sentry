@@ -52,7 +52,7 @@ const PoolSocials = ({ poolInfo }: { poolInfo: PoolInfo }) => {
       <PoolSocialIconLink link={toWebLink(poolInfo.meta.website)} icon={Website}/>
       <PoolSocialIconLink link={toWebLink(poolInfo.meta.discord)} icon={Discord}/>
       <PoolSocialIconLink link={toWebLink(poolInfo.meta.twitter)} icon={X}/>
-      <PoolSocialIconLink link={toWebLink(poolInfo.meta.twitter)} icon={Telegram}/>
+      <PoolSocialIconLink link={toWebLink(poolInfo.meta.telegram)} icon={Telegram}/>
     </div>
   );
 };

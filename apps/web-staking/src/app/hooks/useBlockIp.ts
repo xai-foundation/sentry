@@ -3,8 +3,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { useAccount } from "wagmi";
-import { MAINNET_ID } from "@/services/web3.service";
 
 enum IpBanType {
 	INVALID_IP = "INVALID_IP",
@@ -25,12 +23,11 @@ interface checkIpProps {
 export function useBlockIp() {
 	const [blocked, setBlocked] = useState(true);
 	const [loading, setLoading] = useState(true);
-	const { chainId } = useAccount();
 
 	const pathname = usePathname();
 
 	useEffect(() => {
-		const blockUsa = chainId === MAINNET_ID;
+
 		async function checkIp() {
 			try {
 				const { data } = await axios.post(`https://centralized-services.expopulus.com/check-ip`);
@@ -42,7 +39,7 @@ export function useBlockIp() {
 					setLoading(false);
 				}
 
-				if (!!invalidIp || !!ofacSanction || (blockUsa && data.country === "US")) {
+				if (!!invalidIp || !!ofacSanction || (process.env.NEXT_PUBLIC_APP_ENV !== "development" && data.country === "US")) {
 					setBlocked(true);
 					setLoading(false);
 				}
@@ -52,7 +49,7 @@ export function useBlockIp() {
 		}
 
 		void checkIp();
-	}, [pathname, chainId]);
+	}, [pathname]);
 
 	return {
 		blocked,
