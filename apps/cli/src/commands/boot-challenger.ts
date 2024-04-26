@@ -193,6 +193,12 @@ const startListener = async (commandInstance: Vorpal.CommandInstance) => {
         const listener = listenForAssertions(
             async (nodeNum: any, blockHash: any, sendRoot: any, event: any, error?: EventListenerError) => {
                 if (error) {
+
+                    if (isStopping) {
+                        // If we stopped manually we don't want to process the error from the closing event.
+                        return;
+                    }
+
                     errorCount++;
                     // We should allow a defined number of consecutive WS errors before restarting the websocket at all
                     if (errorCount > NUM_CON_WS_ALLOWED_ERRORS) {
@@ -248,7 +254,7 @@ async function processMissedAssertions(commandInstance: Vorpal.CommandInstance) 
             commandInstance.log(`[${new Date().toISOString()}] Found missed assertion with nodeNum: ${missedAssertionNodeNum}. Looking up the assertion information...`);
             const assertionNode = await getAssertion(missedAssertionNodeNum);
             commandInstance.log(`[${new Date().toISOString()}] Missed assertion data retrieved. Starting the submission process...`);
-            
+
             await submitAssertionToReferee(
                 cachedSecretKey,
                 missedAssertionNodeNum,
@@ -285,6 +291,7 @@ export function bootChallenger(cli: Vorpal) {
         .action(async function (this: Vorpal.CommandInstance) {
 
             const commandInstance = this;
+            currentNumberOfRetries = 0;
 
             if (!cachedSigner || !cachedSecretKey) {
                 await initCli(commandInstance);
