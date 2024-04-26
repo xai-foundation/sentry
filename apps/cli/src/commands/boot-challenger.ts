@@ -124,6 +124,11 @@ const onAssertionConfirmedCb = async (nodeNum: any, commandInstance: Vorpal.Comm
         commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${nodeNum}`);
         lastAssertionTime = Date.now();
     } catch (error) {
+        if(error && (error as Error).message && (error as Error).message.includes('execution reverted: "9"')){
+            commandInstance.log(`[${new Date().toISOString()}] Could not submit challenge because it was already submitted`);
+            lastAssertionTime = Date.now();
+            return;
+        }
         commandInstance.log(`[${new Date().toISOString()}] Submit Assertion Error: ${(error as Error).message}`);
         sendNotification(`Submit Assertion Error: ${(error as Error).message}`, commandInstance);
         throw error;
@@ -233,6 +238,10 @@ async function processMissedAssertions(commandInstance: Vorpal.CommandInstance) 
             );
             commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${missedAssertionNodeNum}`);
         } catch (error) {
+            if(error && (error as Error).message && (error as Error).message.includes('execution reverted: "9"')){
+                commandInstance.log(`[${new Date().toISOString()}] Could not submit challenge because it was already submitted`);
+                return;
+            }
             sendNotification(`Submit missed assertion Error: ${(error as Error).message}`, commandInstance);
             throw error;
         }
