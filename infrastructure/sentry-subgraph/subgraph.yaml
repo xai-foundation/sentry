@@ -5,38 +5,12 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum
-    name: GasSubsidy
-    network: arbitrum-one
-    source:
-      address: "0x94F4aBC83eae00b693286B6eDCa09e1D76183C97"
-      abi: GasSubsidy
-      startBlock: 157193649
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.7
-      language: wasm/assemblyscript
-      entities:
-        - GasSubsidyRoleAdminChangedEvent
-        - GasSubsidyRoleGrantedEvent
-        - GasSubsidyRoleRevokedEvent
-      abis:
-        - name: GasSubsidy
-          file: ./abis/GasSubsidy.json
-      eventHandlers:
-        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
-          handler: handleRoleAdminChanged
-        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleGranted
-        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
-          handler: handleRoleRevoked
-      file: ./src/gas-subsidy.ts
-  - kind: ethereum
     name: Referee
     network: arbitrum-one
     source:
       address: "0xfD41041180571C5D371BEA3D9550E55653671198"
       abi: Referee
-      startBlock: 157193676
+      startBlock: 206019166
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -70,7 +44,7 @@ dataSources:
     source:
       address: "0xbc14d8563b248B79689ECbc43bBa53290e0b6b66"
       abi: NodeLicense
-      startBlock: 206001780
+      startBlock: 205164176
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -91,7 +65,7 @@ dataSources:
     source:
       address: "0xF9E08660223E2dbb1c0b28c82942aB6B5E38b8E5"
       abi: PoolFactory
-      startBlock: 200013500
+      startBlock: 206019364
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7

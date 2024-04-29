@@ -2,7 +2,7 @@ sources:
   - name: sentry
     handler:
       graphql:
-        endpoint: https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry/version/0.0.8/api
+        endpoint: https://subgraph.satsuma-prod.com/d346413f9bc1/cryptits-team--300223/xai-sentry/version/0.0.2/api
     transforms:
       - autoPagination:
           # You might want to disable schema validation for faster startup
