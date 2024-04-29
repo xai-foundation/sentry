@@ -23,9 +23,9 @@ export function handleTransfer(event: TransferEvent): void {
 
   entity.save()
 
-  log.info(`${entity.from.toString()}, ${entity.from.toHexString()}, ${(new Address(0x0000000000000000000000000000000000000000)).toString()}`, [])
+  log.info(`${new Address(0).toString()}, ${entity.from.toHexString()}, ${"0x0000000000000000000000000000000000000000"}`, [])
 
-  if (entity.from.toHexString() == (new Address(0).toHexString())) {
+  if (entity.from.toHexString() == "0x0000000000000000000000000000000000000000") {
     //Minted new key
     let sentryKey = new SentryKey(entity.tokenId.toString())
     sentryKey.owner = entity.to
