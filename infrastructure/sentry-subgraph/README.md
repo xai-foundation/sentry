@@ -24,3 +24,5 @@ Update the `tsconfig.json` module and target to `"module": "commonjs"` `"target"
 - Make sure to use the correct project name und version for the deployment within the cli command
 - `sentry-subgraph-client` Test locally by updating the current api of the deployment in `.graphclientrc.yaml`
 - `sentry-subgraph-client` `pnpm run clean`, `pnpm run build`, and `pnpm run dev`
+
+### [Documentation for data mapping / entity creation](https://thegraph.com/docs/en/developing/creating-a-subgraph/#writing-mappings)
