@@ -1,7 +1,5 @@
 # Sentry Subgraph 
 
-[Docs](https://thegraph.com/docs/en/developing/creating-a-subgraph/#writing-mappings)
-
 ## Requirements
 
 Run to initialize current version with `pnpm run codegen` and `pnpm run build`
@@ -16,6 +14,8 @@ Update the `tsconfig.json` module and target to `"module": "commonjs"` `"target"
 
 - Create the `.graphql` file with the name `[contract].graphql` and create Event types
 
+### [Be aware callHandlers are not implemented with the arbitrum network](https://thegraph.com/docs/en/developing/creating-a-subgraph/#call-handlers)
+
 - Add the new contract, updated events, entities, handlers and starting blocknumber into the `subgraph.yaml` file. Make sure to get the correct address of the deployed contract
 
 - Run `pnpm run codegen` and `pnpm run build` for `sentry-subgraph`. The new `.graphql` file should now be included in the `schema.graphql` file
@@ -28,3 +28,8 @@ Update the `tsconfig.json` module and target to `"module": "commonjs"` `"target"
 - `sentry-subgraph-client` `pnpm run clean`, `pnpm run build`, and `pnpm run dev`
 
 ### [Documentation for data mapping / entity creation](https://thegraph.com/docs/en/developing/creating-a-subgraph/#writing-mappings)
+
+## Debug
+
+For debuging `log` needs to be imported from `@graphprotocol/graph-ts` 
+Use `log.warning()` to debug as the alchemy UI for logs is very slow to show debug logs
