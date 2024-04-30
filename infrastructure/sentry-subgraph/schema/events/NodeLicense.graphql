@@ -13,6 +13,5 @@ type SentryKey @entity(immutable: false) {
   owner: Bytes! # address
   keyId: BigInt!
   mintTimeStamp: BigInt!
-  assignedPool: Bytes!
   submissions: [Submission!]
 }

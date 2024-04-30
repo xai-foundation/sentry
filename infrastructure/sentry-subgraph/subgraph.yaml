@@ -37,6 +37,8 @@ dataSources:
           handler: handleChallengeSubmitted
         - event: RewardsClaimed(indexed uint256,uint256)
           handler: handleRewardsClaimed
+        - event: Approval(indexed address,indexed address,bool)
+          handler: handleApproval
       file: ./src/referee.ts
   - kind: ethereum
     name: NodeLicense
@@ -65,7 +67,7 @@ dataSources:
     source:
       address: "0xF9E08660223E2dbb1c0b28c82942aB6B5E38b8E5"
       abi: PoolFactory
-      startBlock: 206019364
+      startBlock: 205164176
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -81,9 +83,8 @@ dataSources:
           handler: handleStakeKeys
         - event: UnstakeKeys(indexed address,indexed address,uint256,uint256,uint256)
           handler: handleUnstakeKeys
-      callHandlers:
-        - function: stakeKeys(address,uint256[])
-          handler: handleStakeKeysCall
-        - function: unstakeKeys(address,uint256,uint256[])
-          handler: handleUnstakeKeysCall
+        - event: PoolCreated(indexed uint256,indexed address,indexed address,uint256)
+          handler: handlePoolCreated
+        - event: UpdatePoolDelegate(indexed address,indexed address)
+          handler: handleUpdatePoolDelegate
       file: ./src/pool-factory.ts
