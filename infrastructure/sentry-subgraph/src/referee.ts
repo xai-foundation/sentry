@@ -1,3 +1,4 @@
+import { PoolFactory } from "../generated/PoolFactory/PoolFactory";
 import {
   Referee,
   AssertionSubmitted as AssertionSubmittedEvent,
@@ -169,8 +170,11 @@ export function handleApproval(event: ApprovalEvent): void {
 
   entity.save()
 
-  // let sentryWallet = SentryWallet.load(event.params.owner.toString());
-  // if (sentryWallet) {
-  //   sentryWallet = updateSentryWallet(Referee.bind(event.address), sentryWallet)
-  // }
+  // TODO need to update updateSentryWallet
+  
+  // let sentryWallet = new SentryWallet(event.params.owner.toString());
+  // sentryWallet.address = event.params.owner
+
+  // sentryWallet = updateSentryWallet(Referee.bind(event.address), PoolFactory.bind(event.address), sentryWallet)
+  // sentryWallet.save()
 }
