@@ -45,7 +45,7 @@ export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
     challenge.save()
   }
 
-  //TODO update submission
+  // create new submission and update it
   let submission = new Submission(event.params.nodeLicenseId.toString());
   submission.nodeLicenseId = event.params.nodeLicenseId;
 
@@ -61,7 +61,6 @@ export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
     }
     currentSubmissions.push(submission.id);
     sentryKey.submissions = currentSubmissions;
-
     sentryKey.save();
   }
 }

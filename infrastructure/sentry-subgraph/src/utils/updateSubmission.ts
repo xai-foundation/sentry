@@ -20,7 +20,7 @@ export function updateSubmission(referee: Referee, challengeId: BigInt, submissi
         submission.submitted = submissionStruct[0].submitted;
         submission.claimed = submissionStruct[0].claimed;
         submission.eligibleForPayout = submissionStruct[0].eligibleForPayout;
-        submission.assertionsStateRootOrConfirmData = submissionStruct[0].assertionStateRootOrConfirmData.toString();
+        submission.assertionsStateRootOrConfirmData = submissionStruct[0].assertionStateRootOrConfirmData.toHexString();
     }
 
     return submission;
