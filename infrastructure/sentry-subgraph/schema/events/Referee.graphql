@@ -40,6 +40,16 @@ type RefereeRewardsClaimedEvent @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
+type RefereeApprovalEvent @entity(immutable: true) {
+  id: Bytes!
+  owner: Bytes! # address
+  operator: Bytes! # address
+  approved: Boolean!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
 enum ChallengeStatus {
   OpenForSubmissions
   OpenForClaims
@@ -69,6 +79,14 @@ type Submission @entity(immutable: false) {
   submitted: Boolean!
   claimed: Boolean!
   eligibleForPayout: Boolean!
-  nodeLicenseId: BigInt! # address
+  nodeLicenseId: BigInt! 
   assertionsStateRootOrConfirmData: String!
+}
+
+type SentryWallet @entity(immutable: false) {
+  id: ID!
+  address: Bytes!
+  ownedPools: [Bytes!]
+  delegatedPools: [Bytes!]
+  approvedOwners: [Bytes!]
 }

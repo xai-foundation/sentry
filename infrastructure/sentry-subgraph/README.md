@@ -1,5 +1,7 @@
 # Sentry Subgraph 
 
+[Docs](https://thegraph.com/docs/en/developing/creating-a-subgraph/#writing-mappings)
+
 ## Requirements
 
 Run to initialize current version with `pnpm run codegen` and `pnpm run build`

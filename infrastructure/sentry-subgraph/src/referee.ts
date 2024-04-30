@@ -5,6 +5,7 @@ import {
   ChallengeExpired as ChallengeExpiredEvent,
   ChallengeSubmitted as ChallengeSubmittedEvent,
   RewardsClaimed as RewardsClaimedEvent,
+  Approval as ApprovalEvent
 } from "../generated/Referee/Referee"
 import {
   RefereeAssertionSubmittedEvent,
@@ -12,9 +13,17 @@ import {
   RefereeChallengeExpiredEvent,
   RefereeChallengeSubmittedEvent,
   RefereeRewardsClaimedEvent,
-  Challenge
+  Challenge,
+  RefereeApprovalEvent,
+  SentryWallet,
+  Submission,
+  SentryKey
 } from "../generated/schema"
 import { updateChallenge } from "./utils/updateChallenge";
+import { updateSentryWallet } from "./utils/updateSentryWallet";
+import { updateSubmission } from "./utils/updateSubmission";
+
+import { log } from "@graphprotocol/graph-ts";
 
 export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
   let entity = new RefereeAssertionSubmittedEvent(
@@ -34,6 +43,26 @@ export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
   if (challenge) {
     challenge = updateChallenge(Referee.bind(event.address), challenge)
     challenge.save()
+  }
+
+  //TODO update submission
+  let submission = new Submission(event.params.nodeLicenseId.toString());
+  submission.nodeLicenseId = event.params.nodeLicenseId;
+
+  submission = updateSubmission(Referee.bind(event.address), event.params.challengeId, submission)
+  
+  submission.save()
+
+  let sentryKey = SentryKey.load(event.params.nodeLicenseId.toString());
+  if (sentryKey) {
+    let currentSubmissions = sentryKey.submissions;
+    if (!currentSubmissions) {
+      currentSubmissions = [];
+    }
+    currentSubmissions.push(submission.id);
+    sentryKey.submissions = currentSubmissions;
+
+    sentryKey.save();
   }
 }
 
@@ -76,7 +105,7 @@ export function handleChallengeExpired(event: ChallengeExpiredEvent): void {
     challenge.save()
   }
 
- }
+}
 
 export function handleChallengeSubmitted(event: ChallengeSubmittedEvent): void {
 
@@ -117,12 +146,32 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
   entity.blockTimestamp = event.block.timestamp
   entity.transactionHash = event.transaction.hash
 
+  entity.save()
   // query for the challenge and update it
   let challenge = Challenge.load(event.params.challengeId.toString());
   if (challenge) {
     challenge = updateChallenge(Referee.bind(event.address), challenge)
     challenge.save()
   }
+}
+
+export function handleApproval(event: ApprovalEvent): void {
+  let entity = new RefereeApprovalEvent(
+    event.transaction.hash.concatI32(event.logIndex.toI32()),
+  )
+
+  entity.owner = event.params.owner
+  entity.operator = event.params.operator
+  entity.approved = event.params.approved
+
+  entity.blockNumber = event.block.number
+  entity.blockTimestamp = event.block.timestamp
+  entity.transactionHash = event.transaction.hash
 
   entity.save()
+
+  // let sentryWallet = SentryWallet.load(event.params.owner.toString());
+  // if (sentryWallet) {
+  //   sentryWallet = updateSentryWallet(Referee.bind(event.address), sentryWallet)
+  // }
 }

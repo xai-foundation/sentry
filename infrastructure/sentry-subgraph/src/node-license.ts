@@ -7,7 +7,6 @@ import {
   SentryKey,
 } from "../generated/schema"
 
-import { log } from "@graphprotocol/graph-ts";
 
 export function handleTransfer(event: TransferEvent): void {
   let entity = new NodeLicenseTransferEvent(
@@ -23,15 +22,12 @@ export function handleTransfer(event: TransferEvent): void {
 
   entity.save()
 
-  log.info(`${new Address(0).toString()}, ${entity.from.toHexString()}, ${"0x0000000000000000000000000000000000000000"}`, [])
-
   if (entity.from.toHexString() == "0x0000000000000000000000000000000000000000") {
     //Minted new key
     let sentryKey = new SentryKey(entity.tokenId.toString())
     sentryKey.owner = entity.to
     sentryKey.keyId = entity.tokenId
     sentryKey.mintTimeStamp = entity.blockTimestamp
-    sentryKey.assignedPool = new Address(0x0000000000000000000000000000000000000000)
     sentryKey.submissions = [];
     sentryKey.save()
   }
