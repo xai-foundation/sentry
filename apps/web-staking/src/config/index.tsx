@@ -1,10 +1,10 @@
 import { defaultWagmiConfig } from '@web3modal/wagmi/react/config'
 
-import { cookieStorage, createStorage } from 'wagmi'
+// import { cookieStorage, createStorage } from 'wagmi'
 import { arbitrum, arbitrumSepolia } from 'wagmi/chains'
 
 // Get projectId at https://cloud.walletconnect.com
-export const projectId = "04863bd18ce33c9fc97f0e295b149123";
+export const projectId = process.env.NEXT_PUBLIC_APP_ENV === "development" ? "7b8edd4521f6f7e5ab27d84d931ddf9b" : "8f5121741edc292ac7e4203b648d61e2";
 
 if (!projectId) throw new Error('Project ID is not defined');
 
@@ -22,9 +22,9 @@ export const config = defaultWagmiConfig({
     projectId, // required
     metadata, // required
     ssr: true,
-    storage: createStorage({
-        storage: cookieStorage
-    }),
+    // storage: createStorage({
+    //     storage: cookieStorage
+    // }),
     enableWalletConnect: true, // Optional - true by default
     enableInjected: true, // Optional - true by default
     enableEIP6963: true, // Optional - true by default

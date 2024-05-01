@@ -15,3 +15,7 @@ export * from "./addPromoCode.js";
 export * from "./removePromoCode.js";
 export * from "./getPromoCode.js";
 export * from "./generateRevenueReport.js";
+export * from "./getOwnerOrDelegatePools.js";
+export * from "./getKeysOfPool.js";
+export * from "./getUserInteractedPools.js";
+export * from "./getUserStakedKeysOfPool.js";
