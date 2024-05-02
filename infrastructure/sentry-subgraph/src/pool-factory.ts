@@ -1,12 +1,18 @@
-import { Address } from "@graphprotocol/graph-ts";
-import { StakeKeys, UnstakeKeys, StakeKeysCall, UnstakeKeysCall, PoolCreated, UpdatePoolDelegate } from "../generated/PoolFactory/PoolFactory"
+import { Address, Bytes } from "@graphprotocol/graph-ts";
+import {
+  StakeKeys,
+  UnstakeKeys,
+  PoolCreated,
+  PoolFactory
+} from "../generated/PoolFactory/PoolFactory"
 import {
   SentryKey,
   PoolFactoryStakeKeysEvent,
   PoolFactoryUnstakeKeysEvent,
   PoolFactoryPoolCreatedEvent,
-  PoolFactoryUpdatePoolDelegateEvent
+  SentryWallet,
 } from "../generated/schema"
+import { updateSentryWallet } from "./utils/updateSentryWallet";
 
 export function handleStakeKeys(event: StakeKeys): void {
   let entity = new PoolFactoryStakeKeysEvent(
@@ -59,19 +65,12 @@ export function handlePoolCreated(event: PoolCreated): void {
   entity.transactionHash = event.transaction.hash
 
   entity.save()
-}
 
-export function handleUpdatePoolDelegate(event: UpdatePoolDelegate): void {
-  let entity = new PoolFactoryUpdatePoolDelegateEvent(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  )
+  let sentryWallet = SentryWallet.load(event.params.poolOwner.toHexString());
 
-  entity.delegate = event.params.delegate
-  entity.pool = event.params.pool
+  if (sentryWallet) {
+    sentryWallet = updateSentryWallet(PoolFactory.bind(event.address), sentryWallet);
+    sentryWallet.save();
+  }
 
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
 }

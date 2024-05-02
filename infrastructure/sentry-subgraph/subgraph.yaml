@@ -73,8 +73,9 @@ dataSources:
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - StakeKeysEvent
-        - UnstakeKeysEvent
+        - PoolFactoryStakeKeysEvent
+        - PoolFactoryUnstakeKeysEvent
+        - PoolFactoryPoolCreatedEvent
       abis:
         - name: PoolFactory
           file: ./abis/PoolFactory.json
@@ -85,6 +86,4 @@ dataSources:
           handler: handleUnstakeKeys
         - event: PoolCreated(indexed uint256,indexed address,indexed address,uint256)
           handler: handlePoolCreated
-        - event: UpdatePoolDelegate(indexed address,indexed address)
-          handler: handleUpdatePoolDelegate
       file: ./src/pool-factory.ts

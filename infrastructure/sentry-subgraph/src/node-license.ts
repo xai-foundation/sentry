@@ -1,12 +1,11 @@
-import { Address } from "@graphprotocol/graph-ts"
 import {
   Transfer as TransferEvent,
 } from "../generated/NodeLicense/NodeLicense"
 import {
   NodeLicenseTransferEvent,
   SentryKey,
+  SentryWallet,
 } from "../generated/schema"
-
 
 export function handleTransfer(event: TransferEvent): void {
   let entity = new NodeLicenseTransferEvent(
@@ -30,6 +29,17 @@ export function handleTransfer(event: TransferEvent): void {
     sentryKey.mintTimeStamp = entity.blockTimestamp
     sentryKey.submissions = [];
     sentryKey.save()
+  }
+
+  let sentryWallet = SentryWallet.load(event.params.to.toHexString());
+
+
+  if (!sentryWallet) {
+    sentryWallet = new SentryWallet(event.params.to.toHexString())
+    sentryWallet.address = event.params.to
+    sentryWallet.approvedOwners = []
+    sentryWallet.ownedPools = []
+    sentryWallet.save();
   }
 
 }

@@ -1,7 +1,6 @@
 import { SentryWallet } from "../../generated/schema";
-import { Referee } from "../../generated/Referee/Referee"
 import { PoolFactory } from "../../generated/PoolFactory/PoolFactory";
-
+import { Address, Bytes, log } from "@graphprotocol/graph-ts";
 
 /**
  * Bind a referee contract and pass in the sentryWallet entity, this function will lookup all necessary data from the contract
@@ -10,23 +9,27 @@ import { PoolFactory } from "../../generated/PoolFactory/PoolFactory";
  * 
  * This function also assumes the sentryWallet number is already set on the entity.
  */
-export function updateSentryWallet(referee: Referee, poolFactory: PoolFactory, sentryWallet: SentryWallet): SentryWallet {
+export function updateSentryWallet(poolFactory: PoolFactory, sentryWallet: SentryWallet): SentryWallet {
 
+    let sentryAddress = Address.fromBytes(sentryWallet.address);
     // query for the sentryWallet struct
-    let delegatePoolsStruct = poolFactory.getDelegatePools(sentryWallet.address);
-    let ownedPoolsStruct = poolFactory.getPoolIndicesOfUser(sentryWallet.address);
 
-    //TODO need to get approved opterator
-    let operatorCountStruct = referee.getOperatorCount(sentryWallet.address);
+   log.warning(`SentryAddress: ${sentryAddress.toHexString()}`, []); 
 
-    
+    let ownedPoolsStruct: Address[] = []; // your Address array
+    ownedPoolsStruct = poolFactory.getPoolIndicesOfUser(sentryAddress);
+   log.warning(`Hello there`, []); 
 
-    // update any static fields
-   sentryWallet.delegatedPools = delegatePoolsStruct
-   sentryWallet.ownedPools = ownedPoolsStruct
-//    sentryWallet.approvedOwners 
+    let ownedPoolsBytes: Bytes[] = []; // Initialize an empty array for Bytes
 
+    for (let i = 0; i < ownedPoolsStruct.length; i++) {
+        let bytes = Bytes.fromHexString(ownedPoolsStruct[i].toHexString());
+        log.warning(`BYTES: ${bytes.toHexString}`, [])
+        ownedPoolsBytes.push(bytes);
+    }
 
+    // Now ownedPoolsBytes contains the Bytes representation of the Address array
+    sentryWallet.ownedPools = ownedPoolsBytes;
 
     return sentryWallet;
 }

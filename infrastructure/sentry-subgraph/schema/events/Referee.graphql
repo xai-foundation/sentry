@@ -87,6 +87,5 @@ type SentryWallet @entity(immutable: false) {
   id: ID!
   address: Bytes!
   ownedPools: [Bytes!]
-  delegatedPools: [Bytes!]
   approvedOwners: [Bytes!]
 }

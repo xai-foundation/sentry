@@ -32,12 +32,3 @@ type PoolFactoryPoolCreatedEvent @entity(immutable: true) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
-
-type PoolFactoryUpdatePoolDelegateEvent @entity(immutable: true) {
-  id: Bytes!
-  delegate: Bytes! # address
-  pool: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
