@@ -52,7 +52,7 @@ export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
   submission.nodeLicenseId = event.params.nodeLicenseId;
 
   submission = updateSubmission(Referee.bind(event.address), event.params.challengeId, submission)
-  
+
   submission.save()
 
   let sentryKey = SentryKey.load(event.params.nodeLicenseId.toString());
@@ -176,7 +176,7 @@ export function handleApproval(event: ApprovalEvent): void {
   // TODO need to update updateSentryWallet
   let sentryWallet = SentryWallet.load(event.params.operator.toHexString());
 
-  
+
   if (!sentryWallet) {
     sentryWallet = new SentryWallet(event.params.operator.toHexString())
     sentryWallet.address = event.params.operator
@@ -186,33 +186,32 @@ export function handleApproval(event: ApprovalEvent): void {
 
   log.warning(`SentryWallet Address: ${sentryWallet.address.toHexString()}`, []);
 
-  let addApprovedOwners: Bytes[] = [];
-  if (sentryWallet.approvedOwners != null) {
-    if (sentryWallet.approvedOwners.length > 0) {
-      addApprovedOwners = sentryWallet.approvedOwners;
+  let addApprovedOwners: Bytes[] | null = [];
+  if (sentryWallet) {
+    if (sentryWallet.approvedOwners) {
+      addApprovedOwners = sentryWallet.approvedOwners
     }
-  } else {
-    addApprovedOwners = [];
   }
 
-  if (addApprovedOwners.length > 0) {
+
+  if (addApprovedOwners != null && addApprovedOwners.length > 0) {
     log.warning(`Add ApprovedOwners: ${addApprovedOwners[0].toHexString()}`, []);
   }
 
   if (event.params.approved) {
-    if (addApprovedOwners.length && addApprovedOwners.indexOf(event.params.owner) == -1) {  // Check if the owner is not already in the array
+    if (addApprovedOwners != null && addApprovedOwners.length && addApprovedOwners.indexOf(event.params.owner) == -1) {  // Check if the owner is not already in the array
       addApprovedOwners.push(event.params.owner as Bytes);
-      
+
       log.warning(`Add ApprovedOwners after push: ${addApprovedOwners[0].toHexString()}`, []);
     }
 
 
-  } else if (addApprovedOwners.length > 0) {
+  } else if (addApprovedOwners != null && addApprovedOwners.length > 0) {
     addApprovedOwners = filterItems(Bytes.fromHexString(event.params.owner.toHexString()), addApprovedOwners);
+    log.warning(`Start updating sentryWallet: ${addApprovedOwners[0].toHexString()}`, []);
   }
   sentryWallet.approvedOwners = addApprovedOwners
 
-  log.warning(`Start updating sentryWallet: ${addApprovedOwners[0].toHexString()}`, []);
   sentryWallet = updateSentryWallet(PoolFactory.bind(event.address), sentryWallet)
   sentryWallet.save()
 }    
