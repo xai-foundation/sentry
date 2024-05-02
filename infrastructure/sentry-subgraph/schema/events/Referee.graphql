@@ -86,6 +86,6 @@ type Submission @entity(immutable: false) {
 type SentryWallet @entity(immutable: false) {
   id: ID!
   address: Bytes!
-  ownedPools: [Bytes!]
-  approvedOwners: [Bytes!]
+  ownedPools: [Bytes!]!
+  approvedOwners: [Bytes!]!
 }

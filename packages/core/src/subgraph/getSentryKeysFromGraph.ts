@@ -3,23 +3,19 @@
 /**
  * 
  * @param owners - The filter for the owner field
- * @param assignedPools - The Filter for assigned pools
  * @returns List of sentry key objects with metadata.
  */
 export async function getSentryKeysFromGraph(
     owners: string[],
-    assignedPools: string[]
 ): Promise<any[]> {
 
+        // TODO owners[] needs to be foramtted to string[]
         const sentryKeysQuery = `
-            query GetSentryKeys {
-                sentryKeys(
-            ) {
-                id
-                owner
-                keyId
-                mintTimeStamp
-                assignedPool
+        query SentryKeysQuery {
+            sentryKeys(where: {owner_in: [${owners.join(',')}]}) {
+              mintTimeStamp
+              keyId
+              owner
             }
           }
         `

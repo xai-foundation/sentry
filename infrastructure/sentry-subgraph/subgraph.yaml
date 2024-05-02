@@ -16,13 +16,9 @@ dataSources:
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - RefereeAssertionSubmittedEvent
-        - RefereeChallengeClosedEvent
-        - RefereeChallengeExpiredEvent
-        - RefereeChallengeSubmittedEvent
-        - RefereeRewardsClaimedEvent
         - Challenge
         - Submission
+        - SentryWallet
       abis:
         - name: Referee
           file: ./abis/Referee.json
@@ -52,7 +48,6 @@ dataSources:
       apiVersion: 0.0.7
       language: wasm/assemblyscript
       entities:
-        - NodeLicenseTransferEvent
         - SentryKey
       abis:
         - name: NodeLicense
@@ -61,29 +56,26 @@ dataSources:
         - event: Transfer(indexed address,indexed address,indexed uint256)
           handler: handleTransfer
       file: ./src/node-license.ts
-  - kind: ethereum
-    name: PoolFactory
-    network: arbitrum-one
-    source:
-      address: "0xF9E08660223E2dbb1c0b28c82942aB6B5E38b8E5"
-      abi: PoolFactory
-      startBlock: 205164176
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.7
-      language: wasm/assemblyscript
-      entities:
-        - PoolFactoryStakeKeysEvent
-        - PoolFactoryUnstakeKeysEvent
-        - PoolFactoryPoolCreatedEvent
-      abis:
-        - name: PoolFactory
-          file: ./abis/PoolFactory.json
-      eventHandlers:
-        - event: StakeKeys(indexed address,indexed address,uint256,uint256,uint256)
-          handler: handleStakeKeys
-        - event: UnstakeKeys(indexed address,indexed address,uint256,uint256,uint256)
-          handler: handleUnstakeKeys
-        - event: PoolCreated(indexed uint256,indexed address,indexed address,uint256)
-          handler: handlePoolCreated
-      file: ./src/pool-factory.ts
+  # - kind: ethereum
+  #   name: PoolFactory
+  #   network: arbitrum-one
+  #   source:
+  #     address: "0xF9E08660223E2dbb1c0b28c82942aB6B5E38b8E5"
+  #     abi: PoolFactory
+  #     startBlock: 205164176
+  #   mapping:
+  #     kind: ethereum/events
+  #     apiVersion: 0.0.7
+  #     language: wasm/assemblyscript
+  #     entities:
+  #     abis:
+  #       - name: PoolFactory
+  #         file: ./abis/PoolFactory.json
+  #     eventHandlers:
+  #       - event: StakeKeys(indexed address,indexed address,uint256,uint256,uint256)
+  #         handler: handleStakeKeys
+  #       - event: UnstakeKeys(indexed address,indexed address,uint256,uint256,uint256)
+  #         handler: handleUnstakeKeys
+  #       - event: PoolCreated(indexed uint256,indexed address,indexed address,uint256)
+  #         handler: handlePoolCreated
+  #     file: ./src/pool-factory.ts

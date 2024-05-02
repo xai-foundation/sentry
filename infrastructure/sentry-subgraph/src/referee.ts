@@ -1,4 +1,3 @@
-import { PoolFactory } from "../generated/PoolFactory/PoolFactory";
 import {
   Referee,
   AssertionSubmitted as AssertionSubmittedEvent,
@@ -22,7 +21,6 @@ import {
 } from "../generated/schema"
 import { filterItems } from "./utils/filterItems";
 import { updateChallenge } from "./utils/updateChallenge";
-import { updateSentryWallet } from "./utils/updateSentryWallet";
 import { updateSubmission } from "./utils/updateSubmission";
 
 import { Bytes, log } from "@graphprotocol/graph-ts";
@@ -186,32 +184,22 @@ export function handleApproval(event: ApprovalEvent): void {
 
   log.warning(`SentryWallet Address: ${sentryWallet.address.toHexString()}`, []);
 
-  let addApprovedOwners: Bytes[] | null = [];
+  let addApprovedOwners: Bytes[] = [];
   if (sentryWallet) {
     if (sentryWallet.approvedOwners) {
       addApprovedOwners = sentryWallet.approvedOwners
     }
   }
 
-
-  if (addApprovedOwners != null && addApprovedOwners.length > 0) {
-    log.warning(`Add ApprovedOwners: ${addApprovedOwners[0].toHexString()}`, []);
-  }
-
   if (event.params.approved) {
-    if (addApprovedOwners != null && addApprovedOwners.length && addApprovedOwners.indexOf(event.params.owner) == -1) {  // Check if the owner is not already in the array
+    if (addApprovedOwners.indexOf(event.params.owner) == -1) {  // Check if the owner is not already in the array
       addApprovedOwners.push(event.params.owner as Bytes);
-
-      log.warning(`Add ApprovedOwners after push: ${addApprovedOwners[0].toHexString()}`, []);
     }
 
-
-  } else if (addApprovedOwners != null && addApprovedOwners.length > 0) {
+  } else {
     addApprovedOwners = filterItems(Bytes.fromHexString(event.params.owner.toHexString()), addApprovedOwners);
-    log.warning(`Start updating sentryWallet: ${addApprovedOwners[0].toHexString()}`, []);
   }
   sentryWallet.approvedOwners = addApprovedOwners
 
-  sentryWallet = updateSentryWallet(PoolFactory.bind(event.address), sentryWallet)
   sentryWallet.save()
 }    
