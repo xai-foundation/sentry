@@ -1,0 +1,88 @@
+specVersion: 1.0.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: Referee
+    network: arbitrum-one
+    source:
+      address: "0xfD41041180571C5D371BEA3D9550E55653671198"
+      abi: Referee
+      startBlock: 157193676
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Challenge
+        - Submission
+        - SentryWallet
+      abis:
+        - name: Referee
+          file: ./abis/Referee.json
+      eventHandlers:
+        - event: AssertionSubmitted(indexed uint256,indexed uint256)
+          handler: handleAssertionSubmitted
+        - event: ChallengeClosed(indexed uint256)
+          handler: handleChallengeClosed
+        - event: ChallengeExpired(indexed uint256)
+          handler: handleChallengeExpired
+        - event: ChallengeSubmitted(indexed uint256)
+          handler: handleChallengeSubmitted
+        - event: RewardsClaimed(indexed uint256,uint256)
+          handler: handleRewardsClaimed
+        - event: BatchRewardsClaimed(indexed uint256,uint256,uint256)
+          handler: handleBatchRewardsClaimed
+        - event: Approval(indexed address,indexed address,bool)
+          handler: handleApproval
+        - event: KycStatusChanged(indexed address,bool)
+          handler: handleKycStatusChanged
+      file: ./src/referee.ts
+  - kind: ethereum
+    name: NodeLicense
+    network: arbitrum-one
+    source:
+      address: "0xbc14d8563b248B79689ECbc43bBa53290e0b6b66"
+      abi: NodeLicense
+      startBlock: 157193743
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - SentryKey
+      abis:
+        - name: NodeLicense
+          file: ./abis/NodeLicense.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,indexed uint256)
+          handler: handleTransfer
+      file: ./src/node-license.ts
+  - kind: ethereum
+    name: PoolFactory
+    network: arbitrum-one
+    source:
+      address: "0xF9E08660223E2dbb1c0b28c82942aB6B5E38b8E5"
+      abi: PoolFactory
+      startBlock: 200013500
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - PoolInfo
+      abis:
+        - name: PoolFactory
+          file: ./abis/PoolFactory.json
+      eventHandlers:
+        - event: StakeKeys(indexed address,indexed address,uint256,uint256,uint256)
+          handler: handleStakeKeys
+        - event: UnstakeKeys(indexed address,indexed address,uint256,uint256,uint256)
+          handler: handleUnstakeKeys
+        - event: PoolCreated(indexed uint256,indexed address,indexed address,uint256)
+          handler: handlePoolCreated
+        - event: UpdatePoolDelegate(indexed address,indexed address)
+          handler: handleUpdatePoolDelegate
+      file: ./src/pool-factory.ts

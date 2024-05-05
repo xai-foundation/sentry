@@ -34,7 +34,7 @@ jobs:
         run: pnpm install
 
       - name: Build monorepo
-        run: pnpm run build
+        run: npx nx run-many --target=build --all
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
