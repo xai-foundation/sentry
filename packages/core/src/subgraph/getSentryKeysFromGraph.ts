@@ -1,102 +1,58 @@
-// import { execute } from "@sentry/sentry-subgraph-client";
+import { SentryKey, execute } from "@sentry/sentry-subgraph-client";
 
 /**
  * 
  * @param owners - The filter for the owner field
+ * @param stakingPools - The filter for the assigned pool field
+ * @param includeSubmissions - If the submissions should be included
+ * @param submissionsFilter - The filter for the submissions if submissions should be included
  * @returns List of sentry key objects with metadata.
  */
 export async function getSentryKeysFromGraph(
-    owners: string[],
-): Promise<any[]> {
+  owners: string[],
+  stakingPools: string[],
+  includeSubmissions: boolean,
+  submissionsFilter?: { eligibleForPayout: boolean, claimed: boolean }
+): Promise<SentryKey[]> {
 
-        // TODO owners[] needs to be foramtted to string[]
-        const sentryKeysQuery = `
-        query SentryKeysQuery {
-            sentryKeys(where: {owner_in: [${owners.join(',')}]}) {
-              mintTimeStamp
-              keyId
-              owner
-            }
-          }
-        `
-        // try {
+  let submissionQuery = ``;
+  if (includeSubmissions) {
+    submissionQuery = `
+        submissions(
+          ${submissionsFilter ? `where: {eligibleForPayout: ${submissionsFilter.eligibleForPayout}, claimed: ${submissionsFilter.claimed}}` : ``}
+        ) { 
+          claimAmount 
+          claimed 
+          eligibleForPayout
+        }
+      `
+  }
 
-        //     const sentryKeys = await execute(challengeQuery, {});
+  let filter = ``
+  if (owners.length) {
+    filter = `owner_in: [${owners.map(o => `"${o.toLowerCase()}"`).join(",")}]`;
+  }
+  if (stakingPools.length) {
+    if (filter.length) {
+      filter += ", "
+    }
+    filter += `assignedPool_in: [${stakingPools.map(o => `"${o.toLowerCase()}"`).join(",")}]`;
+  }
 
-        //     console.log(JSON.stringify(challenges));
-        //     // const a = await execute(query, {});
-        //     // console.log(JSON.stringify(a), "query a");
-        //     // const b = await client.request<RefereeStakingEnabledEvent>(query);
-
-        //     // console.log(JSON.stringify(b), "query b");
-
-        // } catch (ex) {
-        //     console.log("errors:" ,ex);
-        // }
-
-        //TODO map sentryKeys
-        return [];
+  const query = `
+      query SentryKeysQuery {
+        sentryKeys(
+          where: {${filter}}
+        ) {
+          assignedPool
+          id
+          keyId
+          mintTimeStamp
+          owner
+          ${submissionQuery}
+        }
+      }
+    `
+  const result = await execute(query, {});
+  return result.data.sentryKeys;
 }
-
-// ): Promise<any> {
-
-//     const sdk = getBuiltGraphSDK();
-
-//    sdk.
-
-//    const query: QueryResolvers<RefereeStakingEnabledEventResolvers> = {
-       
-//    }
-//    `
-//            query MyQuery {
-//                refereeStakingEnabledEvents {
-//                  blockNumber
-//                  blockTimestamp
-//                  transactionHash
-//                }
-//              }
-//            `
-
-//    const a = await execute(query, {});
-
-//    console.log(JSON.stringify(a));
-
-// const query = gql`
-        //        query MyQuery {
-        //            refereeStakingEnabledEvents {
-        //              blockNumber
-        //              blockTimestamp
-        //              name
-        //            }
-        //          }
-        //        `
-
-        // const challengeQuery = `
-        //     query GetChallenges {
-        //         challenges(
-        //             skip: ${10},
-        //             first: ${10},
-        //             orderBy: assertionId,
-        //             orderDirection: asc,
-        //             where: {createdTimestamp_gte: 1711357273}
-        //     ) {
-        //         id
-        //         challengeNumber
-        //         assertionId
-        //     }
-        //   }
-        // `
-        // try {
-
-        //     const challenges = await execute(challengeQuery, {});
-
-        //     console.log(JSON.stringify(challenges));
-        //     // const a = await execute(query, {});
-        //     // console.log(JSON.stringify(a), "query a");
-        //     // const b = await client.request<RefereeStakingEnabledEvent>(query);
-
-        //     // console.log(JSON.stringify(b), "query b");
-
-        // } catch (ex) {
-        //     console.log("errors:" ,ex);
-        // }
