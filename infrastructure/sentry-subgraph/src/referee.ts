@@ -81,8 +81,7 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
   // query for the challenge and update it
   let challenge = Challenge.load(event.params.challengeId.toString())
   if (challenge) {
-    let reward = challenge.rewardAmountForClaimers.div(challenge.numberOfEligibleClaimers)
-    challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(reward)
+    challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(event.params.amount)
     challenge.save()
 
     const dataToDecode = getInputFromEvent(event)
@@ -92,7 +91,7 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
       const submission = Submission.load(event.params.challengeId.toString() + nodeLicenseId.toString())
       if (submission) {
         submission.claimed = true
-        submission.claimAmount = reward
+        submission.claimAmount = event.params.amount
         submission.save()
       }
     }
