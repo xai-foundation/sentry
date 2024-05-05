@@ -32,3 +32,11 @@ type PoolFactoryPoolCreatedEvent @entity(immutable: true) {
   blockTimestamp: BigInt!
   transactionHash: Bytes!
 }
+
+type PoolInfo @entity(immutable: false) {
+  id: String!
+  address: Bytes!
+  owner: Bytes!
+  # delegateAddress: Bytes!
+  # stakedKeys: [BigInt!]!
+}

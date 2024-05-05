@@ -1,4 +1,4 @@
-import { Address, Bytes } from "@graphprotocol/graph-ts";
+import { Address, ethereum } from "@graphprotocol/graph-ts";
 import {
   StakeKeys,
   UnstakeKeys,
@@ -11,65 +11,56 @@ import {
   PoolFactoryUnstakeKeysEvent,
   PoolFactoryPoolCreatedEvent,
   SentryWallet,
+  PoolInfo,
 } from "../generated/schema"
 import { updateSentryWallet } from "./utils/updateSentryWallet";
+import { getInputFromEvent } from "./utils/getInputFromEvent";
 
 export function handleStakeKeys(event: StakeKeys): void {
-  let entity = new PoolFactoryStakeKeysEvent(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  )
+  //TODO update PoolInfo
 
-  entity.user = event.params.user
-  entity.pool = event.params.pool
-  entity.amount = event.params.amount
-  entity.totalUserKeysStaked = event.params.totalUserKeysStaked
-  entity.totalKeysStaked = event.params.totalKeysStaked
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
+  const dataToDecode = getInputFromEvent(event)
+  const decoded = ethereum.decode('(address,uint256[])', dataToDecode);
+  if (decoded) {
+    let nodeLicenseIds = decoded.toTuple()[1].toBigIntArray();
+    for (let i = 0; i < nodeLicenseIds.length; i++) {
+      let sentryKey = SentryKey.load(nodeLicenseIds[i].toString())
+      if (sentryKey) {
+        sentryKey.assignedPool = event.params.pool
+        sentryKey.save()
+      }
+    }
+  }
 }
 
 export function handleUnstakeKeys(event: UnstakeKeys): void {
-  let entity = new PoolFactoryUnstakeKeysEvent(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  )
-
-  entity.user = event.params.user
-  entity.pool = event.params.pool
-  entity.amount = event.params.amount
-  entity.totalUserKeysStaked = event.params.totalUserKeysStaked
-  entity.totalKeysStaked = event.params.totalKeysStaked
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
+  const dataToDecode = getInputFromEvent(event)
+  const decoded = ethereum.decode('(address,uint256,uint256[])', dataToDecode);
+  if (decoded) {
+    let nodeLicenseIds = decoded.toTuple()[2].toBigIntArray();
+    for (let i = 0; i < nodeLicenseIds.length; i++) {
+      let sentryKey = SentryKey.load(nodeLicenseIds[i].toString())
+      if (sentryKey) {
+        sentryKey.assignedPool = new Address(0)
+        sentryKey.save()
+      }
+    }
+  }
 }
 
 export function handlePoolCreated(event: PoolCreated): void {
-  let entity = new PoolFactoryPoolCreatedEvent(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  )
 
-  entity.poolIndex = event.params.poolIndex
-  entity.poolAddress = event.params.poolAddress
-  entity.poolOwner = event.params.poolOwner
-  entity.stakedKeyCount = event.params.stakedKeyCount
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
+  const pool = new PoolInfo(event.params.poolAddress.toHexString())
+  pool.address = event.params.poolAddress
+  pool.owner = event.params.poolOwner
+  pool.save()
 
   let sentryWallet = SentryWallet.load(event.params.poolOwner.toHexString());
 
   if (sentryWallet) {
-    sentryWallet = updateSentryWallet(PoolFactory.bind(event.address), sentryWallet);
+    let pools = sentryWallet.ownedPools;
+    pools.push(event.params.poolAddress);
+    sentryWallet.ownedPools = pools;
     sentryWallet.save();
   }
 

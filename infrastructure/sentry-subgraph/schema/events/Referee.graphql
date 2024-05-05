@@ -31,7 +31,7 @@ type RefereeChallengeSubmittedEvent @entity(immutable: true) {
   transactionHash: Bytes!
 }
 
-type RefereeRewardsClaimedEvent @entity(immutable: true) {
+type BatchRewardsClaimed @entity(immutable: true) {
   id: Bytes!
   challengeId: BigInt! # uint256
   amount: BigInt! # uint256
@@ -57,7 +57,7 @@ enum ChallengeStatus {
 }
 
 type Challenge @entity(immutable: false) {
-  id: ID!
+  id: String!
   challengeNumber: BigInt! # uint256
   status: ChallengeStatus!
   assertionId: BigInt! # uint256
@@ -75,17 +75,21 @@ type Challenge @entity(immutable: false) {
 }
 
 type Submission @entity(immutable: false) {
-  id: ID!
+  id: String!
   submitted: Boolean!
   claimed: Boolean!
   eligibleForPayout: Boolean!
   nodeLicenseId: BigInt! 
   assertionsStateRootOrConfirmData: String!
+  sentryKey: SentryKey!
+  claimAmount: BigInt!
 }
 
 type SentryWallet @entity(immutable: false) {
-  id: ID!
+  id: String!
+  isKYCApproved: Boolean!
   address: Bytes!
   ownedPools: [Bytes!]!
   approvedOwners: [Bytes!]!
-}
+  sentryKeys: [SentryKey!]! @derivedFrom(field: "sentryWallet")
+} 

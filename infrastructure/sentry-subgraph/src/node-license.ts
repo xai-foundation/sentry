@@ -1,45 +1,35 @@
+import { Address } from "@graphprotocol/graph-ts"
 import {
   Transfer as TransferEvent,
 } from "../generated/NodeLicense/NodeLicense"
 import {
-  NodeLicenseTransferEvent,
   SentryKey,
   SentryWallet,
 } from "../generated/schema"
 
 export function handleTransfer(event: TransferEvent): void {
-  let entity = new NodeLicenseTransferEvent(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  )
-  entity.from = event.params.from
-  entity.to = event.params.to
-  entity.tokenId = event.params.tokenId
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-
-  if (entity.from.toHexString() == "0x0000000000000000000000000000000000000000") {
-    //Minted new key
-    let sentryKey = new SentryKey(entity.tokenId.toString())
-    sentryKey.owner = entity.to
-    sentryKey.keyId = entity.tokenId
-    sentryKey.mintTimeStamp = entity.blockTimestamp
-    sentryKey.submissions = [];
-    sentryKey.save()
-  }
-
-  let sentryWallet = SentryWallet.load(event.params.to.toHexString());
-
-
+  let sentryWallet = SentryWallet.load(event.params.to.toHexString())
   if (!sentryWallet) {
     sentryWallet = new SentryWallet(event.params.to.toHexString())
     sentryWallet.address = event.params.to
     sentryWallet.approvedOwners = []
     sentryWallet.ownedPools = []
+    sentryWallet.isKYCApproved = false
     sentryWallet.save();
   }
 
+  let sentryKey = SentryKey.load(event.params.tokenId.toString())
+  if (!sentryKey) {
+    sentryKey = new SentryKey(event.params.tokenId.toString())
+    sentryKey.owner = event.params.to
+    sentryKey.keyId = event.params.tokenId
+    sentryKey.mintTimeStamp = event.block.timestamp
+    sentryKey.sentryWallet = event.params.to.toHexString()
+    sentryKey.assignedPool = new Address(0)
+    sentryKey.save()
+  } else {
+    sentryKey.owner = event.params.to
+    sentryKey.sentryWallet = event.params.to.toHexString()
+    sentryKey.save()
+  }
 }

@@ -5,126 +5,69 @@ import {
   ChallengeExpired as ChallengeExpiredEvent,
   ChallengeSubmitted as ChallengeSubmittedEvent,
   RewardsClaimed as RewardsClaimedEvent,
-  Approval as ApprovalEvent
+  BatchRewardsClaimed as BatchRewardsClaimedEvent,
+  Approval as ApprovalEvent,
+  KycStatusChanged as KycStatusChangedEvent
 } from "../generated/Referee/Referee"
 import {
-  RefereeAssertionSubmittedEvent,
-  RefereeChallengeClosedEvent,
-  RefereeChallengeExpiredEvent,
-  RefereeChallengeSubmittedEvent,
-  RefereeRewardsClaimedEvent,
   Challenge,
-  RefereeApprovalEvent,
   SentryWallet,
   Submission,
   SentryKey
 } from "../generated/schema"
-import { filterItems } from "./utils/filterItems";
-import { updateChallenge } from "./utils/updateChallenge";
-import { updateSubmission } from "./utils/updateSubmission";
+import { getInputFromEvent } from "./utils/getInputFromEvent"
+import { updateChallenge } from "./utils/updateChallenge"
+import { updateSubmission } from "./utils/updateSubmission"
 
-import { Bytes, log } from "@graphprotocol/graph-ts";
+import { log, ethereum, BigInt } from "@graphprotocol/graph-ts"
 
 export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
-  let entity = new RefereeAssertionSubmittedEvent(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  )
-  entity.challengeId = event.params.challengeId
-  entity.nodeLicenseId = event.params.nodeLicenseId
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-
-  // query for the challenge and update it
-  let challenge = Challenge.load(event.params.challengeId.toString());
-  if (challenge) {
-    challenge = updateChallenge(Referee.bind(event.address), challenge)
-    challenge.save()
-  }
-
   // create new submission and update it
-  let submission = new Submission(event.params.nodeLicenseId.toString());
-  submission.nodeLicenseId = event.params.nodeLicenseId;
+  let submission = new Submission(event.params.challengeId.toString() + event.params.nodeLicenseId.toString())
+  submission.nodeLicenseId = event.params.nodeLicenseId
 
   submission = updateSubmission(Referee.bind(event.address), event.params.challengeId, submission)
+  submission.claimAmount = BigInt.fromI32(0)
 
-  submission.save()
-
-  let sentryKey = SentryKey.load(event.params.nodeLicenseId.toString());
+  const sentryKey = SentryKey.load(event.params.nodeLicenseId.toString())
   if (sentryKey) {
-    let currentSubmissions = sentryKey.submissions;
-    if (!currentSubmissions) {
-      currentSubmissions = [];
+    submission.sentryKey = event.params.nodeLicenseId.toString()
+    submission.save()
+  }
+
+  if (submission.eligibleForPayout) {
+    const challenge = Challenge.load(event.params.challengeId.toString())
+    if (challenge) {
+      challenge.numberOfEligibleClaimers = challenge.numberOfEligibleClaimers.plus(BigInt.fromI32(1))
+      challenge.save()
     }
-    currentSubmissions.push(submission.id);
-    sentryKey.submissions = currentSubmissions;
-    sentryKey.save();
   }
 }
 
 export function handleChallengeClosed(event: ChallengeClosedEvent): void {
-  let entity = new RefereeChallengeClosedEvent(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  )
-  entity.challengeNumber = event.params.challengeNumber
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-
   // query for the challenge and update it
-  let challenge = Challenge.load(event.params.challengeNumber.toString());
+  const challenge = Challenge.load(event.params.challengeNumber.toString())
   if (challenge) {
-    challenge = updateChallenge(Referee.bind(event.address), challenge)
+    challenge.status = "OpenForClaims"
     challenge.save()
   }
 }
 
 export function handleChallengeExpired(event: ChallengeExpiredEvent): void {
-  let entity = new RefereeChallengeExpiredEvent(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  )
-  entity.challengeId = event.params.challengeId
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-
   // query for the challenge and update it
-  let challenge = Challenge.load(event.params.challengeId.toString());
+  const challenge = Challenge.load(event.params.challengeId.toString())
   if (challenge) {
-    challenge = updateChallenge(Referee.bind(event.address), challenge)
+    challenge.status = "Expired"
     challenge.save()
   }
-
 }
 
 export function handleChallengeSubmitted(event: ChallengeSubmittedEvent): void {
-
-  // process the event entity
-  let entity = new RefereeChallengeSubmittedEvent(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  )
-  entity.challengeNumber = event.params.challengeNumber
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-
   // create an entity for the challenge
   let challenge = new Challenge(event.params.challengeNumber.toString())
 
   // query the challenge struct from the contract
-  let contract = Referee.bind(event.address)
+  const contract = Referee.bind(event.address)
 
   challenge.challengeNumber = event.params.challengeNumber
   challenge.status = "OpenForSubmissions"
@@ -135,71 +78,100 @@ export function handleChallengeSubmitted(event: ChallengeSubmittedEvent): void {
 }
 
 export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
-  let entity = new RefereeRewardsClaimedEvent(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  )
-  entity.challengeId = event.params.challengeId
-  entity.amount = event.params.amount
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
   // query for the challenge and update it
-  let challenge = Challenge.load(event.params.challengeId.toString());
+  let challenge = Challenge.load(event.params.challengeId.toString())
   if (challenge) {
-    challenge = updateChallenge(Referee.bind(event.address), challenge)
+    let reward = challenge.rewardAmountForClaimers.div(challenge.numberOfEligibleClaimers)
+    challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(reward)
     challenge.save()
+
+    const dataToDecode = getInputFromEvent(event)
+    const decoded = ethereum.decode('(uint256,uint256)', dataToDecode)
+    if (decoded) {
+      const nodeLicenseId = decoded.toTuple()[0].toBigInt()
+      const submission = Submission.load(event.params.challengeId.toString() + nodeLicenseId.toString())
+      if (submission) {
+        submission.claimed = true
+        submission.claimAmount = reward
+        submission.save()
+      }
+    }
   }
 
-  //TODO update submissions 
+}
+
+export function handleBatchRewardsClaimed(event: BatchRewardsClaimedEvent): void {
+  // query for the challenge and update it
+  const challenge = Challenge.load(event.params.challengeId.toString())
+  if (challenge) {
+    const dataToDecode = getInputFromEvent(event)
+    const decoded = ethereum.decode('(uint256[],uint256,address)', dataToDecode)
+    if (decoded) {
+      const nodeLicenseIds = decoded.toTuple()[0].toBigIntArray()
+      const reward = challenge.rewardAmountForClaimers.div(challenge.numberOfEligibleClaimers)
+
+      for (let i = 0; i < nodeLicenseIds.length; i++) {
+        const submission = Submission.load(event.params.challengeId.toString() + nodeLicenseIds[i].toString())
+        const sentryKey = SentryKey.load(nodeLicenseIds[i].toString())
+
+        if (sentryKey && submission) {
+          const ownerWallet = SentryWallet.load(sentryKey.sentryWallet)
+          if (ownerWallet) {
+            if (
+              ownerWallet.isKYCApproved &&
+              sentryKey.mintTimeStamp < challenge.createdTimestamp &&
+              !submission.claimed &&
+              submission.eligibleForPayout
+            ) {
+
+              challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(reward)
+              challenge.save()
+
+              submission.claimed = true
+              submission.claimAmount = reward
+              submission.save()
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+export function handleKycStatusChanged(event: KycStatusChangedEvent): void {
+  let sentryWallet = SentryWallet.load(event.params.wallet.toHexString())
+  if (!sentryWallet) {
+    sentryWallet = new SentryWallet(event.params.wallet.toHexString())
+    sentryWallet.address = event.params.wallet
+    sentryWallet.approvedOwners = []
+    sentryWallet.ownedPools = []
+  }
+  sentryWallet.isKYCApproved = event.params.isKycApproved
+  sentryWallet.save()
 }
 
 export function handleApproval(event: ApprovalEvent): void {
-  let entity = new RefereeApprovalEvent(
-    event.transaction.hash.concatI32(event.logIndex.toI32()),
-  )
 
-  entity.owner = event.params.owner
-  entity.operator = event.params.operator
-  entity.approved = event.params.approved
-
-  entity.blockNumber = event.block.number
-  entity.blockTimestamp = event.block.timestamp
-  entity.transactionHash = event.transaction.hash
-
-  entity.save()
-
-  // TODO need to update updateSentryWallet
-  let sentryWallet = SentryWallet.load(event.params.operator.toHexString());
-
+  let sentryWallet = SentryWallet.load(event.params.operator.toHexString())
 
   if (!sentryWallet) {
     sentryWallet = new SentryWallet(event.params.operator.toHexString())
     sentryWallet.address = event.params.operator
+    sentryWallet.isKYCApproved = false
     sentryWallet.approvedOwners = []
     sentryWallet.ownedPools = []
   }
 
-  log.warning(`SentryWallet Address: ${sentryWallet.address.toHexString()}`, []);
-
-  let addApprovedOwners: Bytes[] = [];
-  if (sentryWallet) {
-    if (sentryWallet.approvedOwners) {
-      addApprovedOwners = sentryWallet.approvedOwners
-    }
-  }
-
+  const addApprovedOwners = sentryWallet.approvedOwners
   if (event.params.approved) {
     if (addApprovedOwners.indexOf(event.params.owner) == -1) {  // Check if the owner is not already in the array
-      addApprovedOwners.push(event.params.owner as Bytes);
+      addApprovedOwners.push(event.params.owner)
+      sentryWallet.approvedOwners = addApprovedOwners
+      sentryWallet.save()
     }
-
   } else {
-    addApprovedOwners = filterItems(Bytes.fromHexString(event.params.owner.toHexString()), addApprovedOwners);
+    addApprovedOwners.splice(addApprovedOwners.indexOf(event.params.owner), 1)
+    sentryWallet.approvedOwners = addApprovedOwners
+    sentryWallet.save()
   }
-  sentryWallet.approvedOwners = addApprovedOwners
-
-  sentryWallet.save()
-}    
+}

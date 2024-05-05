@@ -9,9 +9,11 @@ type NodeLicenseTransferEvent @entity(immutable: true) {
 }
 
 type SentryKey @entity(immutable: false) {
-  id: ID!
+  id: String!
   owner: Bytes! # address
+  sentryWallet: SentryWallet!
   keyId: BigInt!
   mintTimeStamp: BigInt!
-  submissions: [Submission!]
+  assignedPool: Bytes! # address
+  submissions: [Submission!]! @derivedFrom(field: "sentryKey")
 }
