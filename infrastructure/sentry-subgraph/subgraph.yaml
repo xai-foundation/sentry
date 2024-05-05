@@ -83,4 +83,6 @@ dataSources:
           handler: handleUnstakeKeys
         - event: PoolCreated(indexed uint256,indexed address,indexed address,uint256)
           handler: handlePoolCreated
+        - event: UpdatePoolDelegate(indexed address,indexed address)
+          handler: handleUpdatePoolDelegate
       file: ./src/pool-factory.ts

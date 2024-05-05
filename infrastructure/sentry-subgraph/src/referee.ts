@@ -17,17 +17,19 @@ import {
 } from "../generated/schema"
 import { getInputFromEvent } from "./utils/getInputFromEvent"
 import { updateChallenge } from "./utils/updateChallenge"
-import { updateSubmission } from "./utils/updateSubmission"
 
 import { log, ethereum, BigInt } from "@graphprotocol/graph-ts"
 
 export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
-  // create new submission and update it
   let submission = new Submission(event.params.challengeId.toString() + event.params.nodeLicenseId.toString())
   submission.nodeLicenseId = event.params.nodeLicenseId
-
-  submission = updateSubmission(Referee.bind(event.address), event.params.challengeId, submission)
+  submission.challengeNumber = event.params.challengeId
+  submission.claimed = false
   submission.claimAmount = BigInt.fromI32(0)
+
+  let submissionStruct = Referee.bind(event.address).getSubmissionsForChallenges([event.params.challengeId], event.params.nodeLicenseId);
+  submission.eligibleForPayout = submissionStruct[0].eligibleForPayout
+  submission.assertionsStateRootOrConfirmData = submissionStruct[0].assertionStateRootOrConfirmData.toHexString()
 
   const sentryKey = SentryKey.load(event.params.nodeLicenseId.toString())
   if (sentryKey) {
@@ -142,8 +144,7 @@ export function handleKycStatusChanged(event: KycStatusChangedEvent): void {
   if (!sentryWallet) {
     sentryWallet = new SentryWallet(event.params.wallet.toHexString())
     sentryWallet.address = event.params.wallet
-    sentryWallet.approvedOwners = []
-    sentryWallet.ownedPools = []
+    sentryWallet.approvedOperators = []
   }
   sentryWallet.isKYCApproved = event.params.isKycApproved
   sentryWallet.save()
@@ -151,26 +152,28 @@ export function handleKycStatusChanged(event: KycStatusChangedEvent): void {
 
 export function handleApproval(event: ApprovalEvent): void {
 
-  let sentryWallet = SentryWallet.load(event.params.operator.toHexString())
+  let sentryWallet = SentryWallet.load(event.params.owner.toHexString())
 
   if (!sentryWallet) {
-    sentryWallet = new SentryWallet(event.params.operator.toHexString())
-    sentryWallet.address = event.params.operator
+    sentryWallet = new SentryWallet(event.params.owner.toHexString())
+    sentryWallet.address = event.params.owner
     sentryWallet.isKYCApproved = false
-    sentryWallet.approvedOwners = []
-    sentryWallet.ownedPools = []
+    sentryWallet.approvedOperators = []
   }
 
-  const addApprovedOwners = sentryWallet.approvedOwners
+  const addApprovedOperators = sentryWallet.approvedOperators
   if (event.params.approved) {
-    if (addApprovedOwners.indexOf(event.params.owner) == -1) {  // Check if the owner is not already in the array
-      addApprovedOwners.push(event.params.owner)
-      sentryWallet.approvedOwners = addApprovedOwners
+    if (addApprovedOperators.indexOf(event.params.operator) == -1) {  // Check if the owner is not already in the array
+      addApprovedOperators.push(event.params.operator)
+      sentryWallet.approvedOperators = addApprovedOperators
       sentryWallet.save()
     }
   } else {
-    addApprovedOwners.splice(addApprovedOwners.indexOf(event.params.owner), 1)
-    sentryWallet.approvedOwners = addApprovedOwners
-    sentryWallet.save()
+    const indexOfOperator = addApprovedOperators.indexOf(event.params.operator);
+    if (indexOfOperator != -1) {
+      addApprovedOperators.splice(indexOfOperator, 1)
+      sentryWallet.approvedOperators = addApprovedOperators
+      sentryWallet.save()
+    }
   }
 }

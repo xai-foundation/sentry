@@ -12,8 +12,7 @@ export function handleTransfer(event: TransferEvent): void {
   if (!sentryWallet) {
     sentryWallet = new SentryWallet(event.params.to.toHexString())
     sentryWallet.address = event.params.to
-    sentryWallet.approvedOwners = []
-    sentryWallet.ownedPools = []
+    sentryWallet.approvedOperators = []
     sentryWallet.isKYCApproved = false
     sentryWallet.save();
   }

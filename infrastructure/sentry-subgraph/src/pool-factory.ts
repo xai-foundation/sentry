@@ -3,17 +3,13 @@ import {
   StakeKeys,
   UnstakeKeys,
   PoolCreated,
-  PoolFactory
+  UpdatePoolDelegate
 } from "../generated/PoolFactory/PoolFactory"
 import {
   SentryKey,
-  PoolFactoryStakeKeysEvent,
-  PoolFactoryUnstakeKeysEvent,
-  PoolFactoryPoolCreatedEvent,
   SentryWallet,
   PoolInfo,
 } from "../generated/schema"
-import { updateSentryWallet } from "./utils/updateSentryWallet";
 import { getInputFromEvent } from "./utils/getInputFromEvent";
 
 export function handleStakeKeys(event: StakeKeys): void {
@@ -53,15 +49,19 @@ export function handlePoolCreated(event: PoolCreated): void {
   const pool = new PoolInfo(event.params.poolAddress.toHexString())
   pool.address = event.params.poolAddress
   pool.owner = event.params.poolOwner
-  pool.save()
 
-  let sentryWallet = SentryWallet.load(event.params.poolOwner.toHexString());
-
-  if (sentryWallet) {
-    let pools = sentryWallet.ownedPools;
-    pools.push(event.params.poolAddress);
-    sentryWallet.ownedPools = pools;
-    sentryWallet.save();
+  const dataToDecode = getInputFromEvent(event)
+  const decoded = ethereum.decode('(address,uint256[],uint32[],string[],string[][])', dataToDecode);
+  if (decoded) {
+    pool.delegateAddress = decoded.toTuple()[0].toAddress();
   }
+  pool.save()
+}
 
+export function handleUpdatePoolDelegate(event: UpdatePoolDelegate): void {
+  const pool = PoolInfo.load(event.params.pool.toHexString())
+  if(pool){
+    pool.delegateAddress = event.params.delegate;
+    pool.save()
+  }
 }

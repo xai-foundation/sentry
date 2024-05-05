@@ -76,7 +76,7 @@ type Challenge @entity(immutable: false) {
 
 type Submission @entity(immutable: false) {
   id: String!
-  submitted: Boolean!
+  challengeNumber: BigInt!
   claimed: Boolean!
   eligibleForPayout: Boolean!
   nodeLicenseId: BigInt! 
@@ -89,7 +89,6 @@ type SentryWallet @entity(immutable: false) {
   id: String!
   isKYCApproved: Boolean!
   address: Bytes!
-  ownedPools: [Bytes!]!
-  approvedOwners: [Bytes!]!
+  approvedOperators: [Bytes!]!
   sentryKeys: [SentryKey!]! @derivedFrom(field: "sentryWallet")
 } 

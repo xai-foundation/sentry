@@ -761,6 +761,19 @@ export class PoolInfo extends Entity {
   set owner(value: Bytes) {
     this.set("owner", Value.fromBytes(value));
   }
+
+  get delegateAddress(): Bytes {
+    let value = this.get("delegateAddress");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set delegateAddress(value: Bytes) {
+    this.set("delegateAddress", Value.fromBytes(value));
+  }
 }
 
 export class RefereeAssertionSubmittedEvent extends Entity {
@@ -1680,17 +1693,17 @@ export class Submission extends Entity {
     this.set("id", Value.fromString(value));
   }
 
-  get submitted(): boolean {
-    let value = this.get("submitted");
+  get challengeNumber(): BigInt {
+    let value = this.get("challengeNumber");
     if (!value || value.kind == ValueKind.NULL) {
-      return false;
+      throw new Error("Cannot return null for a required field.");
     } else {
-      return value.toBoolean();
+      return value.toBigInt();
     }
   }
 
-  set submitted(value: boolean) {
-    this.set("submitted", Value.fromBoolean(value));
+  set challengeNumber(value: BigInt) {
+    this.set("challengeNumber", Value.fromBigInt(value));
   }
 
   get claimed(): boolean {
@@ -1839,8 +1852,8 @@ export class SentryWallet extends Entity {
     this.set("address", Value.fromBytes(value));
   }
 
-  get ownedPools(): Array<Bytes> {
-    let value = this.get("ownedPools");
+  get approvedOperators(): Array<Bytes> {
+    let value = this.get("approvedOperators");
     if (!value || value.kind == ValueKind.NULL) {
       throw new Error("Cannot return null for a required field.");
     } else {
@@ -1848,21 +1861,8 @@ export class SentryWallet extends Entity {
     }
   }
 
-  set ownedPools(value: Array<Bytes>) {
-    this.set("ownedPools", Value.fromBytesArray(value));
-  }
-
-  get approvedOwners(): Array<Bytes> {
-    let value = this.get("approvedOwners");
-    if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
-    } else {
-      return value.toBytesArray();
-    }
-  }
-
-  set approvedOwners(value: Array<Bytes>) {
-    this.set("approvedOwners", Value.fromBytesArray(value));
+  set approvedOperators(value: Array<Bytes>) {
+    this.set("approvedOperators", Value.fromBytesArray(value));
   }
 
   get sentryKeys(): SentryKeyLoader {

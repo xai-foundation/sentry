@@ -37,6 +37,12 @@ type PoolInfo @entity(immutable: false) {
   id: String!
   address: Bytes!
   owner: Bytes!
-  # delegateAddress: Bytes!
-  # stakedKeys: [BigInt!]!
+  delegateAddress: Bytes!
 }
+
+# type UnstakeRequest @entity(immutable: false) {
+#   id: String!
+#   pool: Bytes!
+#   owner: Bytes!
+#   index: BigInt!
+# }
