@@ -51,7 +51,7 @@ export function handlePoolCreated(event: PoolCreated): void {
   pool.owner = event.params.poolOwner
 
   const dataToDecode = getInputFromEvent(event)
-  const decoded = ethereum.decode('(address,uint256[],uint32[],string[],string[][])', dataToDecode);
+  const decoded = ethereum.decode('(address,uint256[],uint32[3],string[3],string[],string[2][2])', dataToDecode);
   if (decoded) {
     pool.delegateAddress = decoded.toTuple()[0].toAddress();
   }
