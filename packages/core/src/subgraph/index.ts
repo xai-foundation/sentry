@@ -1,2 +1,2 @@
-export * from "./getSentryKeysFromGraph.js";
-export * from "./getSentryWalletFromGraph.js";
+export * from "./getSentryWalletsForOperator.js";
+export * from "./getSentryWalletsForOperator.js";
