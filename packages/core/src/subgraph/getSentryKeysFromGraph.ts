@@ -12,26 +12,26 @@ export async function getSentryKeysFromGraph(
   owners: string[],
   stakingPools: string[],
   includeSubmissions: boolean,
-  submissionsFilter: { eligibleForPayout?: boolean, claimed?: boolean, challengeNumbers?: bigint[] }
+  submissionsFilter: { eligibleForPayout?: boolean, claimed?: boolean, latestChallengeNumber?: bigint }
 ): Promise<SentryKey[]> {
 
   let submissionQuery = ``;
   if (includeSubmissions) {
 
     let submissionQueryFilter: string[] = [];
-    const { eligibleForPayout, claimed, challengeNumbers } = submissionsFilter;
+    const { eligibleForPayout, claimed, latestChallengeNumber } = submissionsFilter;
     if (eligibleForPayout != undefined) {
       submissionQueryFilter.push(`eligibleForPayout: ${eligibleForPayout}`)
     }
     if (claimed != undefined) {
       submissionQueryFilter.push(`claimed: ${claimed}`)
     }
-    if (challengeNumbers != undefined) {
-      submissionQueryFilter.push(`challengeNumber_in: [${challengeNumbers.map(c => `"${c.toString()}"`).join(",")}]`)
+    if (latestChallengeNumber != undefined) {
+      submissionQueryFilter.push(`challengeNumber_gte: ${latestChallengeNumber.toString()}`)
     }
 
     submissionQuery = `
-        submissions(first: 4000, orderBy: challengeNumber, orderDirection: desc, where: {${submissionQueryFilter.join(",")}}) { 
+        submissions(first: 4320, orderBy: challengeNumber, orderDirection: desc, where: {${submissionQueryFilter.join(",")}}) { 
           challengeNumber
           nodeLicenseId
           claimAmount 
@@ -42,15 +42,23 @@ export async function getSentryKeysFromGraph(
   }
 
   let filter = ``
-  if (owners.length) {
-    filter = `owner_in: [${owners.map(o => `"${o.toLowerCase()}"`).join(",")}]`;
-  }
-  if (stakingPools.length) {
-    if (filter.length) {
-      filter += ", "
+  if (owners.length && stakingPools.length) {
+
+    filter = `
+      or: [
+        {owner_in: [${owners.map(o => `"${o.toLowerCase()}"`).join(",")}]}, 
+        {assignedPool_in: [${stakingPools.map(o => `"${o.toLowerCase()}"`).join(",")}]}
+      ]
+    `
+  } else {
+    if (owners.length) {
+      filter = `owner_in: [${owners.map(o => `"${o.toLowerCase()}"`).join(",")}]`;
     }
-    filter += `assignedPool_in: [${stakingPools.map(o => `"${o.toLowerCase()}"`).join(",")}]`;
+    if (stakingPools.length) {
+      filter = `assignedPool_in: [${stakingPools.map(o => `"${o.toLowerCase()}"`).join(",")}]`;
+    }
   }
+
 
   const query = `
       query SentryKeysQuery {
@@ -60,6 +68,9 @@ export async function getSentryKeysFromGraph(
           keyId
           mintTimeStamp
           owner
+          sentryWallet {
+            isKYCApproved
+          }
           ${submissionQuery}
         }
       }

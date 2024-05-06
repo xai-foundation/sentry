@@ -84,6 +84,16 @@ export function bootOperator(cli: Vorpal) {
                     this.log(errorMessage)
                 }
             );
+            
+            
+            // Listen for process termination and call the handler
+            process.on('SIGINT', async () => {
+                if (stopFunction) {
+                    stopFunction();
+                }
+                Logger.log(`The operator has been terminated manually.`);
+                process.exit();
+            });
 
             return new Promise((resolve, reject) => { }); // Keep the command alive
         })

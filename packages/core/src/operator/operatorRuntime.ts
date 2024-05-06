@@ -8,12 +8,15 @@ import {
     version,
     getBoostFactor,
     submitMultipleAssertions,
-    claimRewardsBulk
+    claimRewardsBulk,
+    retry,
+    getLatestChallenge
 } from "../index.js";
 import axios from "axios";
 import { getSentryWalletsForOperator } from "../subgraph/getSentryWalletsForOperator.js";
 import { getSentryKeysFromGraph } from "../subgraph/getSentryKeysFromGraph.js";
 import { SentryKey, SentryWallet } from "@sentry/sentry-subgraph-client";
+import { getLatestChallengeFromGraph } from "../subgraph/getLatestChallengeFromGraph.js";
 
 
 export enum NodeLicenseStatus {
@@ -40,6 +43,12 @@ export type PublicNodeBucketInformation = {
     confirmHash: string
 }
 
+type ProcessChallenge = {
+    createdTimestamp: bigint,
+    challengerSignedHash: string;
+    assertionStateRootOrConfirmData: string;
+}
+
 let cachedSigner: ethers.Signer;
 let cachedLogger: (log: string) => void;
 let safeStatusCallback: () => void;
@@ -50,9 +59,6 @@ const KEYS_PER_BATCH = 100;
 
 // SUBGRAPH EDIT
 let nodeLicenseStatusMap: NodeLicenseStatusMap = new Map();
-let sentryWalletMap: { [owner: string]: SentryWallet } = {}
-let sentryKeysMap: { [keyId: string]: SentryKey } = {}
-let nodeLicenseIds: bigint[] = [];
 let cachedOperatorOwners: string[] | undefined;
 
 async function getPublicNodeFromBucket(confirmHash: string) {
@@ -121,19 +127,19 @@ const createAssertionHashAndCheckPayout = (nodeLicenseId: bigint, challengeId: b
  * @param {bigint} challengeNumber - The challenge number.
  * @param {Challenge} challenge - The challenge.
  */
-async function processNewChallenge(challengeNumber: bigint, challenge: Challenge) {
+async function processNewChallenge(challengeNumber: bigint, challenge: ProcessChallenge, nodeLicenseIds: bigint[], sentryKeysMap: { [keyId: string]: SentryKey }) {
     cachedLogger(`Processing new challenge with number: ${challengeNumber}.`);
     cachedBoostFactor = {};
 
     const batchedWinnerKeys: bigint[] = []
 
-    await loadOperatingKeys(operatorAddress, cachedOperatorOwners, [challengeNumber, challengeNumber - 1n])
+    cachedLogger(`Checking eligibility for ${nodeLicenseIds.length} Keys.`);
+
+    let nonWinnerKeysCount = 0;
 
     for (const nodeLicenseId of nodeLicenseIds) {
 
         const sentryKey = sentryKeysMap[nodeLicenseId.toString()];
-
-        cachedLogger(`Checking eligibility for nodeLicenseId ${nodeLicenseId}.`);
 
         // Check the nodeLicense eligibility for this challenge
         updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.CHECKING_MINT_TIMESTAMP_ELIGIBILITY);
@@ -170,7 +176,8 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
             const [payoutEligible] = createAssertionHashAndCheckPayout(nodeLicenseId, challengeNumber, cachedBoostFactor[keyOwner], challenge.assertionStateRootOrConfirmData, challenge.challengerSignedHash);
 
             if (!payoutEligible) {
-                cachedLogger(`Sentry Key ${nodeLicenseId} did not accrue esXAI for the challenge ${challengeNumber}. A Sentry Key receives esXAI every few days.`);
+                nonWinnerKeysCount++;
+                // cachedLogger(`Sentry Key ${nodeLicenseId} did not accrue esXAI for the challenge ${challengeNumber}. A Sentry Key receives esXAI every few days.`);
                 updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
                 continue;
             }
@@ -180,8 +187,8 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
         }
 
         try {
-            const submitted = sentryKey.submissions.find(s => s.challengeNumber.toString() == challengeNumber.toString()) != undefined;
-            if (submitted) {
+            const foundSubmission = sentryKey.submissions.find(s => s.challengeNumber.toString() == challengeNumber.toString());
+            if (foundSubmission) {
                 cachedLogger(`Sentry Key ${nodeLicenseId} has submitted for challenge ${challengeNumber} by another node. If multiple nodes are running, this message can be ignored.`);
                 updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
                 continue;
@@ -197,6 +204,8 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
         }
 
     }
+    
+    cachedLogger(`${nonWinnerKeysCount} / ${nodeLicenseIds.length} keys did not accrue esXAI for the challenge ${challengeNumber}. A Sentry Key receives esXAI every few days.`);
 
     if (batchedWinnerKeys.length) {
         await submitMultipleAssertions(batchedWinnerKeys, challengeNumber, challenge.assertionStateRootOrConfirmData, KEYS_PER_BATCH, cachedSigner, cachedLogger);
@@ -204,7 +213,7 @@ async function processNewChallenge(challengeNumber: bigint, challenge: Challenge
     }
 }
 
-async function processClaimForChallenge(challengeNumber: bigint, eligibleNodeLicenseIds: bigint[]) {
+async function processClaimForChallenge(challengeNumber: bigint, eligibleNodeLicenseIds: bigint[], sentryKeysMap: { [keyId: string]: SentryKey }) {
     const claimGroups: Map<string, bigint[]> = new Map();
 
     // Group eligible nodeLicenseIds by their claimForAddressInBatch
@@ -240,7 +249,7 @@ async function processClaimForChallenge(challengeNumber: bigint, eligibleNodeLic
     }
 }
 
-async function processClosedChallenges(challengeId: bigint) {
+async function processClosedChallenges(challengeId: bigint, nodeLicenseIds: bigint[], sentryKeysMap: { [keyId: string]: SentryKey }, sentryWalletMap: { [owner: string]: SentryWallet }) {
     const challengeToEligibleNodeLicensesMap: Map<bigint, bigint[]> = new Map();
 
     const beforeStatus: { [key: string]: string | undefined } = {}
@@ -248,23 +257,19 @@ async function processClosedChallenges(challengeId: bigint) {
     for (const nodeLicenseId of nodeLicenseIds) {
 
         const sentryKey = sentryKeysMap[nodeLicenseId.toString()];
-
         beforeStatus[nodeLicenseId.toString()] = nodeLicenseStatusMap.get(nodeLicenseId)?.status;
         updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.QUERYING_FOR_UNCLAIMED_SUBMISSIONS);
         safeStatusCallback();
 
-        cachedLogger(`Checking KYC status of '${sentryKey.owner}' for Sentry Key '${nodeLicenseId}'.`);
         updateNodeLicenseStatus(nodeLicenseId, `Checking KYC Status`);
         safeStatusCallback();
 
-        let isKycApproved: boolean = sentryWalletMap[sentryKey.owner].isKYCApproved;
-        if (!isKycApproved) {
-            cachedLogger(`Checked KYC status of '${nodeLicenseStatusMap.get(nodeLicenseId)?.ownerPublicKey}' for Sentry Key '${nodeLicenseId}'. It was not KYC'd and not able to claim the reward.`);
+        if (!sentryWalletMap[sentryKey.owner].isKYCApproved) {
+            cachedLogger(`Checked KYC status of '${sentryKey.owner}' for Sentry Key '${nodeLicenseId}'. It was not KYC'd and not able to claim the reward.`);
             updateNodeLicenseStatus(nodeLicenseId, `Cannot Claim, Failed KYC`);
             safeStatusCallback();
             continue;
         } else {
-            cachedLogger(`Checking for unclaimed rewards for challenge '${challengeId}'.`);
             updateNodeLicenseStatus(nodeLicenseId, `Checking for unclaimed rewards for challenge '${challengeId}'.`);
             safeStatusCallback();
         }
@@ -279,7 +284,7 @@ async function processClosedChallenges(challengeId: bigint) {
                 }
                 challengeToEligibleNodeLicensesMap.get(challengeId)?.push(BigInt(nodeLicenseId));
             }
-            
+
         } catch (error: any) {
             cachedLogger(`Error processing submissions for Sentry Key ${nodeLicenseId} - ${error && error.message ? error.message : error}`);
         }
@@ -289,7 +294,7 @@ async function processClosedChallenges(challengeId: bigint) {
     for (const [challengeId, nodeLicenseIds] of challengeToEligibleNodeLicensesMap) {
         const uniqueNodeLicenseIds = [...new Set(nodeLicenseIds)]; // Remove duplicates
         if (uniqueNodeLicenseIds.length > 0) {
-            await processClaimForChallenge(challengeId, uniqueNodeLicenseIds);
+            await processClaimForChallenge(challengeId, uniqueNodeLicenseIds, sentryKeysMap);
             uniqueNodeLicenseIds.forEach(key => {
                 if (beforeStatus[key.toString()]) {
                     updateNodeLicenseStatus(key, beforeStatus[key.toString()]!);
@@ -318,21 +323,20 @@ async function listenForChallengesCallback(challengeNumber: bigint, challenge: C
             });
     }
 
-    if (challenge.openForSubmissions) {
-        cachedLogger(`Received new challenge with number: ${challengeNumber}.`);
-        await processNewChallenge(challengeNumber, challenge);
-    } else {
-        cachedLogger(`Looking for previously accrued rewards on Challenge '${challengeNumber}'.`);
-    }
+    cachedLogger(`Received new challenge with number: ${challengeNumber}.`);
+
+    const { sentryWalletMap, sentryKeysMap, nodeLicenseIds } =
+        await loadOperatingKeys(operatorAddress, cachedOperatorOwners, challengeNumber - 1n);
+
+    await processNewChallenge(challengeNumber, challenge, nodeLicenseIds, sentryKeysMap);
 
     // check the previous challenge, that should be closed now
     if (challengeNumber > BigInt(1)) {
-        await processClosedChallenges(challengeNumber - BigInt(1));
+        await processClosedChallenges(challengeNumber - BigInt(1), nodeLicenseIds, sentryKeysMap, sentryWalletMap);
     }
 }
 
-
-const loadOperatingKeys = async (operator: string, operatorOwners?: string[], includeSubmissionFromChallenges?: bigint[]) => {
+const loadOperatingKeys = async (operator: string, operatorOwners?: string[], latestChallengeNumber?: bigint) => {
 
     cachedLogger(`Getting all wallets assigned to the operator.`);
     if (operatorOwners && operatorOwners.length) {
@@ -340,42 +344,55 @@ const loadOperatingKeys = async (operator: string, operatorOwners?: string[], in
     } else {
         cachedLogger(`No operator owners were passed in.`);
     }
-    const { wallets, pools } = await getSentryWalletsForOperator(operator, operatorOwners);
+    const { wallets, pools } = await retry(() => getSentryWalletsForOperator(operator, operatorOwners));
 
     cachedLogger(`Found ${wallets.length} operatorWallets. The addresses are: ${wallets.map(w => w.address).join(', ')}`);
-    cachedLogger(`Found ${pools.length} pools. The addresses are: ${pools.map(p => p.address).join(', ')}`);
+    if (pools.length) {
+        cachedLogger(`Found ${pools.length} pools. The addresses are: ${pools.map(p => p.address).join(', ')}`);
+    }
 
-    sentryWalletMap = {};
+    const sentryKeys = await retry(() => getSentryKeysFromGraph(
+        wallets.map(w => w.address),
+        pools.map(p => p.address),
+        true,
+        { latestChallengeNumber, eligibleForPayout: true, claimed: false }
+    ));
+
+    const sentryWalletMap: { [owner: string]: SentryWallet } = {}
+    const sentryKeysMap: { [keyId: string]: SentryKey } = {}
+    const nodeLicenseIds: bigint[] = [];
+
     wallets.forEach(w => {
         sentryWalletMap[w.address] = w;
     })
 
-    const sentryKeys = await getSentryKeysFromGraph(
-        wallets.map(w => w.address),
-        pools.map(p => p.address),
-        true,
-        { challengeNumbers: includeSubmissionFromChallenges, eligibleForPayout: true, claimed: false }
-    );
+    let keyOfOwnerCount = 0;
+    let keyOfPoolsCount = 0;
 
-    sentryKeysMap = {};
-    nodeLicenseIds = [];
-    nodeLicenseStatusMap = new Map();
     sentryKeys.forEach(s => {
+        if (!sentryWalletMap[s.owner]) {
+            sentryWalletMap[s.owner] = s.sentryWallet
+        }
         sentryKeysMap[s.keyId.toString()] = s;
-        cachedLogger(`Fetched Sentry Key ${s.keyId.toString()} for ${s.assignedPool == "0x" ? `owner ${s.owner}` : `pool ${s.assignedPool}`}.`);
+        if (!nodeLicenseIds.includes(BigInt(s.keyId))) {
+            nodeLicenseIds.push(BigInt(s.keyId));
+        }
+        if (s.assignedPool == "0x") {
+            keyOfOwnerCount++;
+        } else {
+            keyOfPoolsCount++;
+        }
         nodeLicenseStatusMap.set(BigInt(s.keyId), {
             ownerPublicKey: s.owner,
             status: NodeLicenseStatus.WAITING_IN_QUEUE,
         });
-        if (!nodeLicenseIds.includes(BigInt(s.keyId))) {
-            nodeLicenseIds.push(BigInt(s.keyId));
-        }
     });
 
     safeStatusCallback();
-
     cachedLogger(`Total Sentry Keys fetched: ${nodeLicenseIds.length}.`);
+    cachedLogger(`Fetched ${keyOfOwnerCount} keys of owners and ${keyOfPoolsCount} keys staked in pools.`);
 
+    return { wallets, sentryKeys, sentryWalletMap, sentryKeysMap, nodeLicenseIds };
 }
 
 /**
@@ -417,18 +434,23 @@ export async function operatorRuntime(
     operatorAddress = await signer.getAddress();
     logFunction(`Fetched address of operator ${operatorAddress}.`);
 
-    await loadOperatingKeys(operatorAddress, operatorOwners)
-
     const closeChallengeListener = listenForChallenges(listenForChallengesCallback);
     logFunction(`Started listener for new challenges.`);
 
     //TODO process open challenge
+    const openChallenge = await retry(() => getLatestChallengeFromGraph());
+
+    const latestClaimableChallenge = Number(openChallenge.challengeNumber) <= 4320 ? 1 : Number(openChallenge.challengeNumber) - 4320;
+    const { wallets, sentryKeys, sentryWalletMap, sentryKeysMap, nodeLicenseIds } = await loadOperatingKeys(operatorAddress, operatorOwners, BigInt(latestClaimableChallenge));
 
     //TODO process all past challenges check for unclaimed
-
-
     logFunction(`Processing open challenges.`);
-    await listChallenges(false, listenForChallengesCallback);
+    await processNewChallenge(BigInt(openChallenge.challengeNumber), openChallenge, nodeLicenseIds, sentryKeysMap);
+
+    cachedLogger(`Processing closed challenges ${Number(openChallenge.challengeNumber)} - ${latestClaimableChallenge} for ${nodeLicenseIds.length} keys.`);
+    for (let i = Number(openChallenge.challengeNumber) - 1; i >= latestClaimableChallenge; i--) {
+        await processClosedChallenges(BigInt(i), nodeLicenseIds, sentryKeysMap, sentryWalletMap);
+    }
 
     logFunction(`The operator has finished booting. The operator is running successfully. esXAI will accrue every few days.`);
 
