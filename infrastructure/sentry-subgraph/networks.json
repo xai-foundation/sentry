@@ -1,0 +1,24 @@
+{
+  "arbitrum-one": {
+    "Referee": {
+      "address": "0xfD41041180571C5D371BEA3D9550E55653671198",
+      "startBlock": 157193676
+    },
+    "Xai": {
+      "address": "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66",
+      "startBlock": 157193610
+    },
+    "NodeLicense": {
+      "address": "0xbc14d8563b248B79689ECbc43bBa53290e0b6b66",
+      "startBlock": 157193743
+    },
+    "GasSubsidy": {
+      "address": "0x94F4aBC83eae00b693286B6eDCa09e1D76183C97",
+      "startBlock": 157193649
+    },
+    "EsXai": {
+      "address": "0x4C749d097832DE2FEcc989ce18fDc5f1BD76700c",
+      "startBlock": 157193630
+    }
+  }
+}

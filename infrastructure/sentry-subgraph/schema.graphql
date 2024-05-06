@@ -1,0 +1,195 @@
+
+################################################################################
+# AUTO-GENERATED FILE NOTICE                                                   #
+################################################################################
+# File: This is an auto-generated file combining GraphQL schema files from the #
+# 'schema' directory.                                                          #
+#                                                                              #
+# Purpose: Attempts to use conventional methods for combining GraphQL schemas, #
+# such as commented import statements or tools designed for non-web3 GraphQL   #
+# libraries, were unsuccessful due to compatibility issues with The Graph's    #
+# specific GraphQL types and lack of clear documentation.                      #
+#                                                                              #
+# Method: This workaround involves using a JavaScript file to programmatically #
+# merge all schema files. Suggestions for more efficient methods to organize   #
+# and combine large GraphQL schemas are welcome.                               #
+################################################################################
+
+
+
+######################################################################
+# NodeLicense.graphql                                                #
+# schema\events\NodeLicense.graphql                                  #
+######################################################################
+type NodeLicenseTransferEvent @entity(immutable: true) {
+  id: Bytes!
+  from: Bytes! # address
+  to: Bytes! # address
+  tokenId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type SentryKey @entity(immutable: false) {
+  id: String!
+  owner: Bytes! # address
+  sentryWallet: SentryWallet!
+  keyId: BigInt!
+  mintTimeStamp: BigInt!
+  assignedPool: Bytes! # address
+  submissions: [Submission!]! @derivedFrom(field: "sentryKey")
+}
+
+######################################################################
+# PoolFactory.graphql                                                #
+# schema\events\PoolFactory.graphql                                  #
+######################################################################
+type PoolFactoryStakeKeysEvent @entity(immutable: true) {
+  id: Bytes!
+  user: Bytes! # address
+  pool: Bytes! # address
+  amount: BigInt! # uint256
+  totalUserKeysStaked: BigInt! # uint256
+  totalKeysStaked: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type PoolFactoryUnstakeKeysEvent @entity(immutable: true) {
+  id: Bytes!
+  user: Bytes! # address
+  pool: Bytes! # address
+  amount: BigInt! # uint256
+  totalUserKeysStaked: BigInt! # uint256
+  totalKeysStaked: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type PoolFactoryPoolCreatedEvent @entity(immutable: true) {
+  id: Bytes!
+  poolIndex: BigInt! # uint256
+  poolAddress: Bytes! # address
+  poolOwner: Bytes! # address
+  stakedKeyCount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type PoolInfo @entity(immutable: false) {
+  id: String!
+  address: Bytes!
+  owner: Bytes!
+  delegateAddress: Bytes!
+}
+
+# type UnstakeRequest @entity(immutable: false) {
+#   id: String!
+#   pool: Bytes!
+#   owner: Bytes!
+#   index: BigInt!
+# }
+
+##############################################################
+# Referee.graphql                                            #
+# schema\events\Referee.graphql                              #
+##############################################################
+type RefereeAssertionSubmittedEvent @entity(immutable: true) {
+  id: Bytes!
+  challengeId: BigInt! # uint256
+  nodeLicenseId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RefereeChallengeClosedEvent @entity(immutable: true) {
+  id: Bytes!
+  challengeNumber: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RefereeChallengeExpiredEvent @entity(immutable: true) {
+  id: Bytes!
+  challengeId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RefereeChallengeSubmittedEvent @entity(immutable: true) {
+  id: Bytes!
+  challengeNumber: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type BatchRewardsClaimed @entity(immutable: true) {
+  id: Bytes!
+  challengeId: BigInt! # uint256
+  amount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RefereeApprovalEvent @entity(immutable: true) {
+  id: Bytes!
+  owner: Bytes! # address
+  operator: Bytes! # address
+  approved: Boolean!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+enum ChallengeStatus {
+  OpenForSubmissions
+  OpenForClaims
+  Expired
+}
+
+type Challenge @entity(immutable: false) {
+  id: String!
+  challengeNumber: BigInt! # uint256
+  status: ChallengeStatus!
+  assertionId: BigInt! # uint256
+  assertionStateRootOrConfirmData: Bytes! # bytes
+  assertionTimestamp: BigInt! # uint64
+  challengerSignedHash: Bytes! # bytes
+  activeChallengerPublicKey: Bytes! # bytes
+  rollupUsed: Bytes! # address
+  createdTimestamp: BigInt! # uint256
+  totalSupplyOfNodesAtChallengeStart: BigInt! # uint256
+  rewardAmountForClaimers: BigInt! # uint256
+  amountForGasSubsidy: BigInt! # uint256
+  numberOfEligibleClaimers: BigInt! # uint256
+  amountClaimedByClaimers: BigInt! # uint256
+}
+
+type Submission @entity(immutable: false) {
+  id: String!
+  challengeNumber: BigInt!
+  claimed: Boolean!
+  eligibleForPayout: Boolean!
+  nodeLicenseId: BigInt! 
+  assertionsStateRootOrConfirmData: String!
+  sentryKey: SentryKey!
+  claimAmount: BigInt!
+}
+
+type SentryWallet @entity(immutable: false) {
+  id: String!
+  isKYCApproved: Boolean!
+  address: Bytes!
+  approvedOperators: [Bytes!]!
+  sentryKeys: [SentryKey!]! @derivedFrom(field: "sentryWallet")
+} 
+
