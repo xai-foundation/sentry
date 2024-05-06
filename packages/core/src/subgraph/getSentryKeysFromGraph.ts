@@ -12,22 +12,22 @@ export async function getSentryKeysFromGraph(
   owners: string[],
   stakingPools: string[],
   includeSubmissions: boolean,
-  submissionsFilter: { eligibleForPayout?: boolean, claimed?: boolean, challengeNumber?: bigint }
+  submissionsFilter: { eligibleForPayout?: boolean, claimed?: boolean, challengeNumbers?: bigint[] }
 ): Promise<SentryKey[]> {
 
   let submissionQuery = ``;
   if (includeSubmissions) {
 
     let submissionQueryFilter: string[] = [];
-    const { eligibleForPayout, claimed, challengeNumber } = submissionsFilter;
+    const { eligibleForPayout, claimed, challengeNumbers } = submissionsFilter;
     if (eligibleForPayout != undefined) {
       submissionQueryFilter.push(`eligibleForPayout: ${eligibleForPayout}`)
     }
     if (claimed != undefined) {
       submissionQueryFilter.push(`claimed: ${claimed}`)
     }
-    if (challengeNumber != undefined) {
-      submissionQueryFilter.push(`challengeNumber: ${challengeNumber.toString()}`)
+    if (challengeNumbers != undefined) {
+      submissionQueryFilter.push(`challengeNumber_in: [${challengeNumbers.map(c => `"${c.toString()}"`).join(",")}]`)
     }
 
     submissionQuery = `
