@@ -12,6 +12,7 @@ import { ClaimToken } from '../wallet/routes/ClaimToken';
 import { TermsAndConditions } from '../wallet/routes/TermsAndConditions';
 import {RedEnvelope2024} from "@/features/wallet/routes/RedEnvelope2024";
 import {ClaimRedEnvelope2024} from "@/features/wallet/routes/ClaimRedEnvelope2024";
+import { ReactCookieConsent } from '../footer/ReactCookieConsent';
 
 export function AppRoutes() {
 	const {blocked, loading} = useBlockIp({blockUsa: false});
@@ -47,6 +48,7 @@ export function AppRoutes() {
 					<Route path="*" element={<Navigate to="/" replace={true}/>}/>
 				</Routes>
 				<Footer/>
+				<ReactCookieConsent/>
 			</QueryClientProvider>
 		</Router>
 	);

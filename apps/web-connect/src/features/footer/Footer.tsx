@@ -76,6 +76,33 @@ export function Footer() {
 								Sentry Node Agreement
 							</a>
 						</div>
+						<div className="flex items-center gap-2">
+							<p className="hidden md:inline">|</p>
+							<a
+								className="text-blue-500 cursor-pointer hover:underline"
+								onClick={() => window.open("https://xai.games/privacypolicy/", "_blank", "noopener noreferrer")}
+							>
+								Privacy Policy Agreement
+							</a>
+						</div>
+						<div className="flex items-center gap-2">
+							<p className="hidden md:inline">|</p>
+							<a
+								className="text-blue-500 cursor-pointer hover:underline"
+								onClick={() => window.open("https://xai.games/generalterms/", "_blank", "noopener noreferrer")}
+							>
+								General Terms
+							</a>
+						</div>
+						<div className="flex items-center gap-2">
+							<p className="hidden md:inline">|</p>
+							<a
+								className="text-blue-500 cursor-pointer hover:underline"
+								onClick={() => window.open("https://xai.games/stakingterms/", "_blank", "noopener noreferrer")}
+							>
+								Staking Terms
+							</a>
+						</div>
 					</div>
 
 					<div className="flex gap-4 cursor-pointer">

@@ -1,20 +1,18 @@
 import hardhat from "hardhat";
+import { config } from "@sentry/core";
 const { ethers, upgrades } = hardhat;
-
-const address = "0xfD41041180571C5D371BEA3D9550E55653671198";
-
 
 async function main() {
     const [deployer] = (await ethers.getSigners());
     const deployerAddress = await deployer.getAddress();
     console.log("Deployer address", deployerAddress);
-    const referee = await ethers.getContractFactory("Referee4");
+    const referee = await ethers.getContractFactory("Referee6");
     console.log("Got factory");
-    await upgrades.upgradeProxy(address, referee);
+    await upgrades.upgradeProxy(config.refereeAddress, referee, { call: { fn: "initialize", args: [] } });
     console.log("Upgraded");
 
     await run("verify:verify", {
-        address: address,
+        address: config.refereeAddress,
         constructorArguments: [],
     });
     console.log("verified")
@@ -25,4 +23,4 @@ async function main() {
 main().catch((error) => {
     console.error(error);
     process.exitCode = 1;
-  });
+});

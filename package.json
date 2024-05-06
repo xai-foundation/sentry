@@ -9,13 +9,13 @@
   "scripts": {
     "build": "pnpm -r --filter !xai-staking-internal run build",
     "clean": "pnpm recursive run clean",
-    "cli": "pnpm -filter @sentry/core run build && pnpm -r -filter @sentry/sentry-node-cli run compile && pnpm -r -filter @sentry/sentry-node-cli run start",
+    "cli": "pnpm -filter @sentry/sentry-subgraph-client run build && pnpm -filter @sentry/core run build && pnpm -r -filter @sentry/sentry-node-cli run compile && pnpm -r -filter @sentry/sentry-node-cli run start",
     "deploy-smart-contracts": "pnpm -r -filter @sentry/core run build && pnpm -r -filter @sentry/smart-contracts run deploy",
     "desktop": "pnpm -filter @sentry/web-connect run build && pnpm -r -filter @sentry/sentry-client-desktop run dev",
     "docs": "pnpm -filter @sentry/docs run start",
     "lint": "pnpm recursive run lint",
     "web": "pnpm -filter @sentry/web-connect run dev",
-    "postinstall": "node ./postinstall"
+    "postinstall": "node ./postinstall && cd apps/web-staking && npm install"
   },
   "dependencies": {
     "ethers": "6.8.1"
@@ -29,6 +29,7 @@
     "eslint-plugin-only-warn": "^1.1.0",
     "rimraf": "5.0.1",
     "typescript": "^5.2.2",
-    "unzipper": "0.10.14"
+    "unzipper": "0.10.14",
+    "nx": "18.1.2"
   }
 }
