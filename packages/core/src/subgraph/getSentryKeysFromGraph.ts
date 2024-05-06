@@ -31,9 +31,7 @@ export async function getSentryKeysFromGraph(
     }
 
     submissionQuery = `
-        submissions(
-          where: {${submissionQueryFilter.join(",")}}
-        ) { 
+        submissions(first: 4000, orderBy: challengeNumber, orderDirection: desc, where: {${submissionQueryFilter.join(",")}}) { 
           challengeNumber
           nodeLicenseId
           claimAmount 
@@ -56,9 +54,7 @@ export async function getSentryKeysFromGraph(
 
   const query = `
       query SentryKeysQuery {
-        sentryKeys(
-          where: {${filter}}
-        ) {
+        sentryKeys(first: 10000, orderBy: keyId, orderDirection: asc, where: {${filter}} ) {
           assignedPool
           id
           keyId

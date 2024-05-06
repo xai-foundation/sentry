@@ -7,6 +7,7 @@ import { PoolInfo, SentryWallet, execute } from "@sentry/sentry-subgraph-client"
  */
 export async function getSentryWalletsForOperator(
   operator: string,
+  whitelist?: string[]
 ): Promise<{ wallets: SentryWallet[], pools: PoolInfo[] }> {
   const query = `
     query OperatorAddresses {
@@ -28,8 +29,13 @@ export async function getSentryWalletsForOperator(
   `
   const result = await execute(query, {});
 
-  const wallets: SentryWallet[] = result.data.sentryWallets;
-  const pools: PoolInfo[] = result.data.poolInfos;
+  let wallets: SentryWallet[] = result.data.sentryWallets;
+  let pools: PoolInfo[] = result.data.poolInfos;
+
+  if(whitelist && whitelist.length){
+    wallets = wallets.filter(w => whitelist.includes(w.address));
+    pools = pools.filter(p => whitelist.includes(p.address));
+  }
 
   return { wallets, pools };
 }
