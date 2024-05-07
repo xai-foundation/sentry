@@ -48,7 +48,7 @@ export const PrimaryButton = ({
     };
 
     return (
-        <div className={`${colorStyle === "outline" && !isDisabled && `p-[1px] bg-hornetSting global-clip-btn`}`}>
+        <div className={`w-full ${colorStyle === "outline" && !isDisabled && "p-[1px] bg-hornetSting global-clip-btn"}`}>
             <button
                 className={`rounded-none font-bold ${getSizeStyles()} ${getColorStyles()} duration-200 ease-in global-clip-path ${className} ${disabledStyles}`}
                 type="submit"

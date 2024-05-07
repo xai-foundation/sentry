@@ -6,9 +6,17 @@ module.exports = {
   ],
   theme: {
     colors: {
-      "hornetSting": "#FF0030"
+      "white": "#fff",
+      "hornetSting": "#FF0030",
+      "potBlack": "#181415",
+      "elementalGrey": "#A19F9F",
+      "americanSilver": "#D0CFCF",
     },
-    extend: {},
+    extend: {
+      opacity: {
+        "75": "0.75"
+      }
+    },
   },
   plugins: [],
 }
