@@ -79,7 +79,7 @@ export function AssignWallet() {
 									isDisabled={isLoading || isSuccess || chain?.id !== 42_161}
 									btnText={chain?.id === 42_161 ? `Assign wallet to Sentry (${getShortenedWallet(address)})` : "Please Switch to Arbitrum One"}
 									colorStyle={"primary"}
-									className={"w-full bg-[#F30919] max-w-[700px] text-white mt-3 text-xl uppercase font-bold disabled:bg-slate-400 h-full"}
+									className={"w-full bg-[#F30919] max-w-[700px] text-white mt-3 text-xl uppercase font-bold disabled:bg-slate-400 h-full global-clip-primary-btn"}
 								/>
 							) : (
 								<div className="m-8">
