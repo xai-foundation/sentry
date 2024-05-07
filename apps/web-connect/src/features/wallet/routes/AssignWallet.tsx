@@ -58,7 +58,7 @@ export function AssignWallet() {
 						</div>
 				) : (
 					<div
-						className="flex flex-col justify-center items-center w-full max-w-[800px] bg-potBlack/75 m-4 p-12 wrapper-drop-shadow">
+						className="flex flex-col justify-center items-center w-full max-w-[800px] bg-potBlack/75 m-4 lg:p-12 p-8 wrapper-drop-shadow">
 						<div
 							className="flex flex-col justify-center items-center gap-2 w-full overflow-hidden">
 							<p className="text-3xl font-bold text-white uppercase">
@@ -87,11 +87,11 @@ export function AssignWallet() {
 								</div>
 							)}
 
-							<p className="text-americanSilver text-lg font-medium">
+							<p className="text-americanSilver lg:text-lg text-base font-medium">
 								Don't own any keys?
 								<a
 									onClick={() => navigate("/")}
-									className="font-bold text-hornetSting text-lg ml-1 cursor-pointer"
+									className="font-bold text-hornetSting lg:text-lg text-base ml-[5px] cursor-pointer"
 								>
 									Purchase keys here
 								</a>
