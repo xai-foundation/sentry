@@ -2,7 +2,6 @@ import { ethers } from "ethers";
 import {
     Challenge,
     config,
-    listChallenges,
     listenForChallenges,
     getProvider,
     version,
@@ -10,14 +9,12 @@ import {
     submitMultipleAssertions,
     claimRewardsBulk,
     retry,
-    getLatestChallenge
+    getLatestChallengeFromGraph,
+    getSentryWalletsForOperator,
+    getSentryKeysFromGraph
 } from "../index.js";
 import axios from "axios";
-import { getSentryWalletsForOperator } from "../subgraph/getSentryWalletsForOperator.js";
-import { getSentryKeysFromGraph } from "../subgraph/getSentryKeysFromGraph.js";
 import { SentryKey, SentryWallet } from "@sentry/sentry-subgraph-client";
-import { getLatestChallengeFromGraph } from "../subgraph/getLatestChallengeFromGraph.js";
-
 
 export enum NodeLicenseStatus {
     WAITING_IN_QUEUE = "Booting Operator For Key", // waiting to do an action, but in a queue
