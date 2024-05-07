@@ -87,7 +87,7 @@ export function AssignWallet() {
 								</div>
 							)}
 
-							<p className="text-americanSilver lg:text-lg text-base font-medium">
+							<p className="text-americanSilver lg:text-lg text-base font-medium mt-5">
 								Don't own any keys?
 								<a
 									onClick={() => navigate("/")}
