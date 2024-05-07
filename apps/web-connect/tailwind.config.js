@@ -5,6 +5,9 @@ module.exports = {
     "../../packages/ui/src/**/*.tsx",
   ],
   theme: {
+    colors: {
+      "hornetSting": "#FF0030"
+    },
     extend: {},
   },
   plugins: [],
