@@ -3,54 +3,55 @@
 @import 'tailwindcss/utilities';
 
 .din-alternate_light {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 200;
+  font-family: "Rajdhani", sans-serif;
+  font-style: normal;
+  font-weight: 200;
 }
 
 .din-alternate_regular {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 300;
+  font-family: "Rajdhani", sans-serif;
+  font-style: normal;
+  font-weight: 300;
 }
 
 .din-alternate_medium {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 400;
+  font-family: "Rajdhani", sans-serif;
+  font-style: normal;
+  font-weight: 400;
 }
 
 .din-alternate_demi {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 500;
+  font-family: "Rajdhani", sans-serif;
+  font-style: normal;
+  font-weight: 500;
 }
 
 .din-alternate_semi-bold {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 600;
+  font-family: "Rajdhani", sans-serif;
+  font-style: normal;
+  font-weight: 600;
 }
 
 .din-alternate_bold {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 700;
+  font-family: "Rajdhani", sans-serif;
+  font-style: normal;
+  font-weight: 700;
 }
 
 body {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 300; /* Specify the desired font weight */
+  font-family: "Rajdhani", sans-serif;
+  font-style: normal;
+  font-weight: 300; /* Specify the desired font weight */
+  background-image: linear-gradient(180deg, #221d1d 0%, #221d1d 100%);
 }
 
 .cookie-consent a {
-    color: #ee081a;
-    text-decoration: none;
+  color: #ee081a;
+  text-decoration: none;
 }
 
 .cookie-consent a:hover {
-    opacity: 0.8;  
+  opacity: 0.8;
 }
 
 .global-clip-btn {
@@ -80,7 +81,7 @@ body {
         transform: scale(0.95);
         box-shadow: 0 0 0 0 rgba(51, 217, 178, 0);
     }
-}
+  }
 
 
 @keyframes pulse-yellow {
