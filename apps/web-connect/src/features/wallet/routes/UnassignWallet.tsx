@@ -2,9 +2,11 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useAccount, useContractWrite, useNetwork} from "wagmi";
 import {config, RefereeAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
-import {PrimaryButton} from "@sentry/ui";
+import {ConnectButton, PrimaryButton} from "@sentry/ui";
+import {useWeb3Modal} from "@web3modal/wagmi/react";
 
 export function UnassignWallet() {
+	const {open} = useWeb3Modal()
 	const navigate = useNavigate();
 	const params = useParams<{ operatorAddress: string }>();
 	const {isConnected, address} = useAccount();
@@ -81,8 +83,8 @@ export function UnassignWallet() {
 									className={"w-full bg-[#F30919] max-w-[700px] text-white mt-3 text-xl uppercase font-bold disabled:bg-slate-400 h-full global-clip-primary-btn"}
 								/>
 							) : (
-								<div className="m-8">
-									<w3m-button/>
+								<div className="m-8 w-full">
+									<ConnectButton address={address} onOpen={open} isFullWidth/>
 								</div>
 							)}
 
