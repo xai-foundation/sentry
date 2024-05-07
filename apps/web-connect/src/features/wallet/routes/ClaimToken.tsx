@@ -1,14 +1,17 @@
 import {useAccount, useNetwork, useContractWrite} from "wagmi";
-import {XaiBanner} from "@/features/checkout/XaiBanner";
+// import {XaiBanner} from "@/features/checkout/XaiBanner";
 import {useState, useEffect} from "react";
-import {XaiCheckbox} from "@sentry/ui";
+import {ConnectButton, XaiCheckbox} from "@sentry/ui";
 import {useNavigate} from "react-router-dom";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import {BiLoaderAlt} from "react-icons/bi";
 import {XaiGaslessClaimAbi, config} from "@sentry/core";
 import {ethers} from "ethers";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
 
 export function ClaimToken() {
+	const {open} = useWeb3Modal()
 	const {blocked, loading} = useBlockIp({blockUsa: true});
 	const {address: _address} = useAccount();
 	const address = _address?.toLowerCase();
@@ -73,17 +76,17 @@ export function ClaimToken() {
 	return (
 		<div>
 			<div className="h-full min-h-[90vh] flex flex-col justify-center items-center">
-				<XaiBanner/>
+				{/* <XaiBanner/> */}
 				<div
-					className="flex flex-col justify-center items-center w-[744px] border border-gray-200 bg-white m-4 p-12">
+					className="flex flex-col justify-center items-center lg:w-[744px] bg-darkLicorice shadow-main m-4 lg:p-12 sm:p-8">
 					<div
 						className="flex flex-col justify-center items-center gap-2 w-full overflow-hidden">
-						<p className="text-3xl font-semibold">
-							Claim Xai Tokens
+						<p className="text-2xl font-bold text-white mb-4">
+							CLAIM XAI TOKENS
 						</p>
 
 						{!address && (
-							<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
+							<p className="text-lg text-medium text-elementalGrey max-w-[590px] text-center mt-2">
 								Connect your wallet to check your eligibility.
 							</p>
 						)}
@@ -130,19 +133,15 @@ export function ClaimToken() {
 										</div>
 									</>
 								) : (
-									<>
-										<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
-											This wallet ({address}) is ineligible to claim any Xai Tokens.
-										</p>
-										<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
-											You can connect a different wallet to determine if it is eligible.
-										</p>
+										<>
+										<WarningNotification title="Wallet is ineligible" showIcon text={`This wallet (${address}) is not eligible to claim any Xai Tokens. You can connect a different wallet to determine if it is
+											eligible.`} />
 									</>
 								)}
 							</>
 						) : (
-							<div className="m-8">
-								<w3m-button/>
+							<div className="m-8 w-full">
+								<ConnectButton onOpen={open} address={address} isFullWidth/>
 							</div>
 						)}
 					</div>
