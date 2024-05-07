@@ -69,7 +69,7 @@ export function AssignWallet() {
 								your wallet, you will be redirected back to the client.
 							</p>
 							{error && (
-								<p className="text-center break-words w-full mt-4 text-red-500">
+								<p className="text-center break-words w-full mt-4 text-red-500 text-white">
 									{error.message}
 								</p>
 							)}
