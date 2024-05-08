@@ -1,4 +1,4 @@
-import { Address } from "@graphprotocol/graph-ts"
+import { Address, BigInt } from "@graphprotocol/graph-ts"
 import {
   Transfer as TransferEvent,
 } from "../generated/NodeLicense/NodeLicense"
@@ -14,8 +14,16 @@ export function handleTransfer(event: TransferEvent): void {
     sentryWallet.address = event.params.to
     sentryWallet.approvedOperators = []
     sentryWallet.isKYCApproved = false
-    sentryWallet.save();
+    sentryWallet.v1EsXaiStakeAmount = BigInt.fromI32(0)
+    sentryWallet.esXaiStakeAmount = BigInt.fromI32(0)
+    sentryWallet.keyCount = BigInt.fromI32(0)
+    sentryWallet.stakedKeyCount = BigInt.fromI32(0)
   }
+  
+  sentryWallet.keyCount = sentryWallet.keyCount.plus(BigInt.fromI32(1))
+  sentryWallet.save();
+
+  //TODO should keys ever be transferable we need to decrease the keyCount of the from address
 
   let sentryKey = SentryKey.load(event.params.tokenId.toString())
   if (!sentryKey) {

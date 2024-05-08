@@ -23,6 +23,8 @@ dataSources:
         - name: Referee
           file: ./abis/Referee.json
       eventHandlers:
+        - event: Initialized(uint8)
+          handler: handleInitialized
         - event: AssertionSubmitted(indexed uint256,indexed uint256)
           handler: handleAssertionSubmitted
         - event: ChallengeClosed(indexed uint256)
@@ -39,6 +41,10 @@ dataSources:
           handler: handleApproval
         - event: KycStatusChanged(indexed address,bool)
           handler: handleKycStatusChanged
+        - event: StakedV1(indexed address,uint256,uint256)
+          handler: handleStakedV1
+        - event: UnstakeV1(indexed address,uint256,uint256)
+          handler: handleUnstakeV1
       file: ./src/referee.ts
   - kind: ethereum
     name: NodeLicense
@@ -77,6 +83,8 @@ dataSources:
         - name: PoolFactory
           file: ./abis/PoolFactory.json
       eventHandlers:
+        - event: Initialized(uint8)
+          handler: handleInitialized
         - event: StakeKeys(indexed address,indexed address,uint256,uint256,uint256)
           handler: handleStakeKeys
         - event: UnstakeKeys(indexed address,indexed address,uint256,uint256,uint256)
@@ -95,6 +103,8 @@ dataSources:
           handler: handleUnstakeRequest
         - event: UpdateShares(indexed address)
           handler: handleUpdatePendingShares
+        - event: ClaimFromPool(indexed address,indexed address)
+          handler: handleClaimFromPool
       file: ./src/pool-factory.ts
   - kind: ethereum
     name: Xai

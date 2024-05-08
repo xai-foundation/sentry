@@ -10,15 +10,36 @@ import {
   UpdateMetadata,
   UnstakeRequestStarted,
   PoolFactory,
+  Initialized,
+  UpdateDelayPeriods,
+  ClaimFromPool
 } from "../generated/PoolFactory/PoolFactory"
 import {
   SentryKey,
   PoolInfo,
   UnstakeRequest,
-  PoolConfig,
+  PoolFactoryConfig,
+  SentryWallet,
 } from "../generated/schema"
 import { getInputFromEvent } from "./utils/getInputFromEvent";
 import { getTxSignatureFromEvent } from "./utils/getTxSignatureFromEvent";
+
+export function handleInitialized(event: Initialized): void {
+
+  let poolConfig = PoolFactoryConfig.load("PoolFactoryConfig");
+
+  if (!poolConfig) {
+    poolConfig = new PoolFactoryConfig("PoolFactoryConfig");
+  }
+
+  const poolfactory = PoolFactory.bind(event.address)
+  poolConfig.version = BigInt.fromI32(event.params.version)
+  poolConfig.unstakeKeysDelayPeriod = poolfactory.unstakeKeysDelayPeriod()
+  poolConfig.unstakeGenesisKeyDelayPeriod = poolfactory.unstakeGenesisKeyDelayPeriod()
+  poolConfig.unstakeEsXaiDelayPeriod = poolfactory.unstakeEsXaiDelayPeriod()
+  poolConfig.updateRewardBreakdownDelayPeriod = poolfactory.updateRewardBreakdownDelayPeriod()
+  poolConfig.save();
+}
 
 export function handleStakeKeys(event: StakeKeys): void {
 
@@ -29,7 +50,7 @@ export function handleStakeKeys(event: StakeKeys): void {
     }
     pool.totalStakedKeyAmount = event.params.totalKeysStaked
 
-    if (pool.updateSharesTimestamp && pool.pendingShares && pool.updateSharesTimestamp.ge(event.block.timestamp)) {
+    if (pool.updateSharesTimestamp.ge(event.block.timestamp)) {
       pool.ownerShare = pool.pendingShares[0];
       pool.keyBucketShare = pool.pendingShares[1];
       pool.stakedBucketShare = pool.pendingShares[2];
@@ -39,6 +60,12 @@ export function handleStakeKeys(event: StakeKeys): void {
     }
 
     pool.save()
+  }
+
+  let sentryWallet = SentryWallet.load(event.params.user.toHexString())
+  if (sentryWallet) {
+    sentryWallet.stakedKeyCount = sentryWallet.stakedKeyCount.plus(event.params.amount)
+    sentryWallet.save();
   }
 
   const dataToDecode = getInputFromEvent(event)
@@ -64,7 +91,7 @@ export function handleUnstakeKeys(event: UnstakeKeys): void {
     }
     pool.totalStakedKeyAmount = event.params.totalKeysStaked
 
-    if (pool.updateSharesTimestamp && pool.pendingShares && pool.updateSharesTimestamp.ge(event.block.timestamp)) {
+    if (pool.updateSharesTimestamp.ge(event.block.timestamp)) {
       pool.ownerShare = pool.pendingShares[0];
       pool.keyBucketShare = pool.pendingShares[1];
       pool.stakedBucketShare = pool.pendingShares[2];
@@ -74,6 +101,12 @@ export function handleUnstakeKeys(event: UnstakeKeys): void {
     }
 
     pool.save()
+  }
+
+  let sentryWallet = SentryWallet.load(event.params.user.toHexString())
+  if (sentryWallet) {
+    sentryWallet.stakedKeyCount = sentryWallet.stakedKeyCount.minus(event.params.amount)
+    sentryWallet.save();
   }
 
   const dataToDecode = getInputFromEvent(event)
@@ -91,31 +124,32 @@ export function handleUnstakeKeys(event: UnstakeKeys): void {
 }
 
 export function handlePoolCreated(event: PoolCreated): void {
-
   const pool = new PoolInfo(event.params.poolAddress.toHexString())
-  pool.address = event.params.poolAddress
-  pool.owner = event.params.poolOwner
-
   const dataToDecode = getInputFromEvent(event)
   const decoded = ethereum.decode('(address,uint256[],uint32[3],string[3],string[],string[2][2])', dataToDecode);
   if (decoded) {
-    let delegateAddress = decoded.toTuple()[0].toAddress();
-    if (delegateAddress) {
-      pool.delegateAddress = delegateAddress;
-    }
+    pool.address = event.params.poolAddress
+    pool.owner = event.params.poolOwner
+    pool.delegateAddress = decoded.toTuple()[0].toAddress();
     pool.metadata = decoded.toTuple()[3].toStringArray();
     pool.socials = decoded.toTuple()[4].toStringArray();
     pool.ownerShare = decoded.toTuple()[2].toBigIntArray()[0];
     pool.keyBucketShare = decoded.toTuple()[2].toBigIntArray()[1];
     pool.stakedBucketShare = decoded.toTuple()[2].toBigIntArray()[2];
     pool.totalStakedKeyAmount = BigInt.fromI32(decoded.toTuple()[1].toBigIntArray().length);
-    pool.ownerStakedKeys = BigInt.fromI32(decoded.toTuple()[1].toBigIntArray().length);
+    pool.ownerStakedKeys = pool.totalStakedKeyAmount;
     pool.ownerRequestedUnstakeKeyAmount = BigInt.fromI32(0);
     pool.updateSharesTimestamp = BigInt.fromI32(0);
     pool.pendingShares = [BigInt.fromI32(0), BigInt.fromI32(0), BigInt.fromI32(0)];
     pool.save()
-    pool.delegateAddress = decoded.toTuple()[0].toAddress();
-  }else{
+
+    let sentryWallet = SentryWallet.load(pool.owner.toHexString())
+    if (sentryWallet) {
+      sentryWallet.stakedKeyCount = sentryWallet.stakedKeyCount.plus(pool.totalStakedKeyAmount)
+      sentryWallet.save();
+    }
+
+  } else {
     //This is just a debug solution, we should be able to decode the transaction inputs.
     log.warning("Failed to decode pool create input", []);
     pool.delegateAddress = new Address(0);
@@ -135,7 +169,7 @@ export function handleStakeEsXai(event: StakeEsXai): void {
   if (pool) {
     pool.totalStakedEsXaiAmount = event.params.totalEsXaiStaked
 
-    if (pool.updateSharesTimestamp && pool.pendingShares && pool.updateSharesTimestamp.ge(event.block.timestamp)) {
+    if (pool.updateSharesTimestamp.ge(event.block.timestamp)) {
       pool.ownerShare = pool.pendingShares[0];
       pool.keyBucketShare = pool.pendingShares[1];
       pool.stakedBucketShare = pool.pendingShares[2];
@@ -146,6 +180,24 @@ export function handleStakeEsXai(event: StakeEsXai): void {
 
     pool.save()
   }
+
+
+  let sentryWallet = SentryWallet.load(event.params.user.toHexString())
+
+  if (!sentryWallet) {
+    sentryWallet = new SentryWallet(event.params.user.toHexString())
+    sentryWallet.address = event.params.user
+    sentryWallet.isKYCApproved = false
+    sentryWallet.approvedOperators = []
+    sentryWallet.v1EsXaiStakeAmount = BigInt.fromI32(0)
+    sentryWallet.esXaiStakeAmount = BigInt.fromI32(0)
+    sentryWallet.keyCount = BigInt.fromI32(0)
+    sentryWallet.stakedKeyCount = BigInt.fromI32(0)
+    sentryWallet.keyCount = BigInt.fromI32(0)
+  }
+
+  sentryWallet.esXaiStakeAmount = sentryWallet.esXaiStakeAmount.plus(event.params.amount)
+  sentryWallet.save();
 }
 
 export function handleUnstakeEsXai(event: UnstakeEsXai): void {
@@ -153,7 +205,7 @@ export function handleUnstakeEsXai(event: UnstakeEsXai): void {
   if (pool) {
     pool.totalStakedEsXaiAmount = event.params.totalEsXaiStaked
 
-    if (pool.updateSharesTimestamp && pool.pendingShares && pool.updateSharesTimestamp.ge(event.block.timestamp)) {
+    if (pool.updateSharesTimestamp.ge(event.block.timestamp)) {
       pool.ownerShare = pool.pendingShares[0];
       pool.keyBucketShare = pool.pendingShares[1];
       pool.stakedBucketShare = pool.pendingShares[2];
@@ -163,6 +215,12 @@ export function handleUnstakeEsXai(event: UnstakeEsXai): void {
     }
 
     pool.save()
+  }
+
+  let sentryWallet = SentryWallet.load(event.params.user.toHexString())
+  if (sentryWallet) {
+    sentryWallet.esXaiStakeAmount = sentryWallet.esXaiStakeAmount.minus(event.params.amount)
+    sentryWallet.save();
   }
 }
 
@@ -184,17 +242,7 @@ export function handleUpdateMetadata(event: UpdateMetadata): void {
 export function handleUpdatePendingShares(event: UpdateShares): void {
   const pool = PoolInfo.load(event.params.pool.toHexString());
 
-  let poolConfig = PoolConfig.load("poolConfig");
-
-  if (!poolConfig) {
-    poolConfig = new PoolConfig("poolConfig");
-    const poolfactory = PoolFactory.bind(event.address);
-    poolConfig.unstakeKeysDelayPeriod = poolfactory.unstakeKeysDelayPeriod()
-    poolConfig.unstakeGenesisKeyDelayPeriod = poolfactory.unstakeGenesisKeyDelayPeriod()
-    poolConfig.unstakeEsXaiDelayPeriod = poolfactory.unstakeEsXaiDelayPeriod()
-    poolConfig.updateRewardBreakdownDelayPeriod = poolfactory.updateRewardBreakdownDelayPeriod()
-    poolConfig.save();
-  }
+  let poolConfig = PoolFactoryConfig.load("PoolFactoryConfig");
 
   log.warning("Start UpdateShares", []);
   if (pool) {
@@ -202,7 +250,7 @@ export function handleUpdatePendingShares(event: UpdateShares): void {
     const decoded = ethereum.decode('(address,uint32[3])', dataToDecode);
     if (decoded) {
       pool.pendingShares = decoded.toTuple()[0].toBigIntArray();
-      pool.updateSharesTimestamp = event.block.timestamp.plus(poolConfig.updateRewardBreakdownDelayPeriod);
+      pool.updateSharesTimestamp = event.block.timestamp.plus(poolConfig!.updateRewardBreakdownDelayPeriod);
       pool.save()
     }
   }
@@ -211,6 +259,17 @@ export function handleUpdatePendingShares(event: UpdateShares): void {
 
 export function handleUnstakeRequest(event: UnstakeRequestStarted): void {
   const pool = PoolInfo.load(event.params.pool.toHexString())
+  if (!pool) {
+    log.warning("pool is undefined", []);
+    return;
+  }
+
+  let poolConfig = PoolFactoryConfig.load("PoolFactoryConfig");
+
+  if (!poolConfig) {
+    log.warning("PoolFactoryConfig is undefined", []);
+    return;
+  }
 
   const unstakeRequest = new UnstakeRequest(event.params.pool.toHexString() + event.params.user.toHexString() + event.params.index.toHexString())
 
@@ -219,44 +278,23 @@ export function handleUnstakeRequest(event: UnstakeRequestStarted): void {
   unstakeRequest.index = event.params.index
   unstakeRequest.amount = event.params.amount
   unstakeRequest.isKey = event.params.isKey
-  unstakeRequest.open = false
+  unstakeRequest.open = true
   unstakeRequest.completeTime = BigInt.fromI32(0)
 
-  let poolConfig = PoolConfig.load("poolConfig");
-
-  if (!poolConfig) {
-    poolConfig = new PoolConfig("poolConfig");
-    const poolfactory = PoolFactory.bind(event.address);
-    poolConfig.unstakeKeysDelayPeriod = poolfactory.unstakeKeysDelayPeriod()
-    poolConfig.unstakeGenesisKeyDelayPeriod = poolfactory.unstakeGenesisKeyDelayPeriod()
-    poolConfig.unstakeEsXaiDelayPeriod = poolfactory.unstakeEsXaiDelayPeriod()
-    poolConfig.updateRewardBreakdownDelayPeriod = poolfactory.updateRewardBreakdownDelayPeriod()
-    poolConfig.save();
-  }
-
   if (event.params.isKey) {
+    unstakeRequest.lockTime = event.block.timestamp.plus(poolConfig.unstakeKeysDelayPeriod)
 
     //IF owner
-    if (pool && pool.owner == event.params.user && pool.ownerRequestedUnstakeKeyAmount) {
+    if (pool.owner == event.params.user) {
 
+      pool.ownerRequestedUnstakeKeyAmount = pool.ownerRequestedUnstakeKeyAmount.plus(event.params.amount)
+      //If this event was emitted from unstakeGenesisKeyRequest
       if (getTxSignatureFromEvent(event) == "0xfe407a92") {
-        //It is genesis key unstake request
-        unstakeRequest.lockTime = event.block.timestamp.plus(poolConfig.unstakeGenesisKeyDelayPeriod)
-        pool.ownerRequestedUnstakeKeyAmount = event.params.amount
         pool.ownerLatestUnstakeRequestCompletionTime = event.block.timestamp.plus(poolConfig.unstakeGenesisKeyDelayPeriod)
-      } else {
-        if (pool.ownerRequestedUnstakeKeyAmount) {
-          pool.ownerRequestedUnstakeKeyAmount = pool.ownerRequestedUnstakeKeyAmount.plus(event.params.amount)
-          pool.ownerLatestUnstakeRequestCompletionTime = event.block.timestamp.plus(poolConfig.unstakeKeysDelayPeriod)
-        } else {
-          pool.ownerRequestedUnstakeKeyAmount = event.params.amount
-          pool.ownerLatestUnstakeRequestCompletionTime = event.block.timestamp.plus(poolConfig.unstakeKeysDelayPeriod)
-        }
-        unstakeRequest.lockTime = event.block.timestamp.plus(poolConfig.unstakeKeysDelayPeriod)
+        unstakeRequest.lockTime = event.block.timestamp.plus(poolConfig.unstakeGenesisKeyDelayPeriod)
       }
       pool.save()
     }
-
 
   } else {
     unstakeRequest.lockTime = event.block.timestamp.plus(poolConfig.unstakeEsXaiDelayPeriod)
@@ -265,18 +303,39 @@ export function handleUnstakeRequest(event: UnstakeRequestStarted): void {
   unstakeRequest.save()
 }
 
-// export function handleUpdateDelayPeriods(event: UpdateDelayPeriods) {
+export function handleClaimFromPool(event: ClaimFromPool): void {
 
-//   const config = new PoolConfig(event.transaction.hash.concatI32(event.logIndex.toI32()));
+  const pool = PoolInfo.load(event.params.pool.toHexString())
+  if (pool) {
 
-//   const dataToDecode = getInputFromEvent(event)
-//   const decoded = ethereum.decode('(uint256,uint256,uint256,uint256)', dataToDecode);
+    if (pool.updateSharesTimestamp.ge(event.block.timestamp)) {
+      pool.ownerShare = pool.pendingShares[0];
+      pool.keyBucketShare = pool.pendingShares[1];
+      pool.stakedBucketShare = pool.pendingShares[2];
 
-//   if(decoded) {
-//     config.unstakeKeysDelayPeriod = decoded.toTuple()[0].toBigInt();
-//     config.unstakeGenesisKeyDelayPeriod = decoded.toTuple()[1].toBigInt();
-//     config.unstakeEsXaiDelayPeriod = decoded.toTuple()[2].toBigInt();
-//     config.updateRewardBreakdownDelayPeriod = decoded.toTuple()[3].toBigInt();
-//     config.save();
-//   }
-// }
+      pool.updateSharesTimestamp = BigInt.fromI32(0);
+      pool.pendingShares = [BigInt.fromI32(0), BigInt.fromI32(0), BigInt.fromI32(0)];
+    }
+
+    pool.save()
+  }
+}
+
+export function handleUpdateDelayPeriods(event: UpdateDelayPeriods): void {
+
+  let config = PoolFactoryConfig.load("PoolFactoryConfig");
+  if (!config) {
+    config = new PoolFactoryConfig("PoolFactoryConfig")
+  }
+
+  const dataToDecode = getInputFromEvent(event)
+  const decoded = ethereum.decode('(uint256,uint256,uint256,uint256)', dataToDecode);
+
+  if (decoded) {
+    config.unstakeKeysDelayPeriod = decoded.toTuple()[0].toBigInt();
+    config.unstakeGenesisKeyDelayPeriod = decoded.toTuple()[1].toBigInt();
+    config.unstakeEsXaiDelayPeriod = decoded.toTuple()[2].toBigInt();
+    config.updateRewardBreakdownDelayPeriod = decoded.toTuple()[3].toBigInt();
+    config.save();
+  }
+}
