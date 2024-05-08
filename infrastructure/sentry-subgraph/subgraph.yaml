@@ -85,6 +85,12 @@ dataSources:
           handler: handlePoolCreated
         - event: UpdatePoolDelegate(indexed address,indexed address)
           handler: handleUpdatePoolDelegate
+        - event: StakeEsXai(indexed address,indexed address,uint256,uint256,uint256)
+          handler: handleStakeEsXai
+        - event: UnstakeEsXai(indexed address,indexed address,uint256,uint256,uint256)
+          handler: handleUnstakeEsXai
+        - event: UpdateMetadata(indexed address)
+          handler: handleUpdateMetadata
       file: ./src/pool-factory.ts
   - kind: ethereum
     name: Xai

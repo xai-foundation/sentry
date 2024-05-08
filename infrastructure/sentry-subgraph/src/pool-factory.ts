@@ -1,9 +1,13 @@
-import { Address, ethereum } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import {
   StakeKeys,
   UnstakeKeys,
   PoolCreated,
-  UpdatePoolDelegate
+  UpdatePoolDelegate,
+  StakeEsXai,
+  UnstakeEsXai,
+  UpdateShares,
+  UpdateMetadata
 } from "../generated/PoolFactory/PoolFactory"
 import {
   SentryKey,
@@ -13,7 +17,13 @@ import {
 import { getInputFromEvent } from "./utils/getInputFromEvent";
 
 export function handleStakeKeys(event: StakeKeys): void {
-  //TODO update PoolInfo
+  // log.warning("Start StakeKeys", []);
+  // let pool = PoolInfo.load(event.params.pool.toHexString());
+  // if (pool) {
+  //   pool.totalStakedKeyAmount = event.params.totalKeysStaked
+  //   pool.save()
+  // }
+  // log.warning("End StakeKeys", []);
 
   const dataToDecode = getInputFromEvent(event)
   const decoded = ethereum.decode('(address,uint256[])', dataToDecode);
@@ -30,6 +40,16 @@ export function handleStakeKeys(event: StakeKeys): void {
 }
 
 export function handleUnstakeKeys(event: UnstakeKeys): void {
+
+  // log.warning("Start unStakeKeys", []);
+
+  // let pool = PoolInfo.load(event.params.pool.toHexString());
+  // if (pool) {
+  //   pool.totalStakedKeyAmount = event.params.totalKeysStaked
+  //   pool.save()
+  // }
+  // log.warning("End unStakeKeys", []);
+
   const dataToDecode = getInputFromEvent(event)
   const decoded = ethereum.decode('(address,uint256,uint256[])', dataToDecode);
   if (decoded) {
@@ -52,16 +72,80 @@ export function handlePoolCreated(event: PoolCreated): void {
 
   const dataToDecode = getInputFromEvent(event)
   const decoded = ethereum.decode('(address,uint256[],uint32[3],string[3],string[],string[2][2])', dataToDecode);
+  log.warning("Start Poolinfo", []);
   if (decoded) {
-    pool.delegateAddress = decoded.toTuple()[0].toAddress();
+    let delegateAddress = decoded.toTuple()[0].toAddress();
+    if (delegateAddress) {
+      pool.delegateAddress = delegateAddress;
+    }
+    pool.metadata = decoded.toTuple()[3].toStringArray();
+    pool.socials = decoded.toTuple()[4].toStringArray();
+    pool.ownerShare = decoded.toTuple()[2].toBigIntArray()[0];
+    pool.keyBucketShare = decoded.toTuple()[2].toBigIntArray()[1];
+    pool.stakedBucketShare = decoded.toTuple()[2].toBigIntArray()[2];
+    pool.totalStakedKeyAmount = new BigInt(decoded.toTuple()[1].toBigIntArray().length);
+    pool.ownerStakedKeys = new BigInt(decoded.toTuple()[1].toBigIntArray().length);
+    pool.save()
   }
-  pool.save()
+  log.warning("End Poolinfo", []);
+
 }
 
 export function handleUpdatePoolDelegate(event: UpdatePoolDelegate): void {
   const pool = PoolInfo.load(event.params.pool.toHexString())
-  if(pool){
+  if (pool) {
     pool.delegateAddress = event.params.delegate;
     pool.save()
   }
 }
+
+export function handleStakeEsXai(event: StakeEsXai): void {
+  const pool = PoolInfo.load(event.params.pool.toHexString())
+  log.warning("Start StakeEsXai", []);
+  if (pool) {
+    pool.totalStakedEsXaiAmount = event.params.totalEsXaiStaked
+    pool.save()
+  }
+  log.warning("End StakeEsXai", []);
+}
+
+export function handleUnstakeEsXai(event: UnstakeEsXai): void {
+  const pool = PoolInfo.load(event.params.pool.toHexString())
+  log.warning("Start unStakeEsXai", []);
+  if (pool) {
+    pool.totalStakedEsXaiAmount = event.params.totalEsXaiStaked
+    pool.save()
+  }
+  log.warning("End unStakeEsXai", []);
+}
+
+export function handleUpdateMetadata(event: UpdateMetadata): void {
+  const pool = PoolInfo.load(event.params.pool.toHexString())
+  log.warning("Start UpdateMetadata", []);
+
+  const dataToDecode = getInputFromEvent(event)
+  const decoded = ethereum.decode('(address,string[3],string[])', dataToDecode);
+
+  if (decoded) {
+    if (pool) {
+      pool.metadata = decoded.toTuple()[1].toStringArray();
+      pool.socials = decoded.toTuple()[2].toStringArray();
+      pool.save()
+    }
+    log.warning("End UpdateMetadata", []);
+  }
+}
+
+// export function handleUpdateShares(event: UpdateShares): void {
+//   const pool = PoolInfo.load(event.params.pool.toHexString())
+//   log.warning("Start unStakeEsXai", []);
+//   if(pool){
+//     const dataToDecode = getInputFromEvent(event)
+//     const decoded = ethereum.decode('(address,uint32[3])', dataToDecode);
+//     if(decoded){
+//       pool. = event.params.totalEsXaiStaked
+//       pool.save()
+//     }
+//   }
+//   log.warning("End unStakeEsXai", []);
+// }
