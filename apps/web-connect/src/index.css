@@ -42,7 +42,9 @@ body {
   font-family: "Rajdhani", sans-serif;
   font-style: normal;
   font-weight: 300; /* Specify the desired font weight */
-  background-image: linear-gradient(180deg, #221d1d 0%, #221d1d 100%);
+  background-image: url("./assets/images/sentry-background.png"), linear-gradient(180deg, #221D1D 0%, #221D1D 100%);
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 .cookie-consent a {
@@ -90,6 +92,12 @@ body {
 @media screen and (max-width: 425px) {
     .terms-and-conditions h3 {
         font-size: 20px;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    body {
+        background-size: cover;
     }
 }
 

@@ -7,6 +7,43 @@ export const WarningIcon = ({ width = 24, height = 24, className }: { width?: nu
   )
 };
 
+export const XaiLogoFooter = ({ width = 122, height = 97, svgClassName, wrapperClassName = "fill-white", logoClassName }: { width?: number, height?: number, fill?: string, wrapperClassName?: string, logoClassName?: string, svgClassName?: string }) => {
+
+  return (
+
+      <svg
+          style={{ width: width, height: height }}
+          className={svgClassName}
+          width="85.000389"
+          height="73.612"
+          viewBox="0 0 85.000391 73.611999"
+          version="1.1"
+          id="svg1"
+          xmlns="http://www.w3.org/2000/svg">
+          <defs
+              id="defs1"/>
+          <g
+              id="layer1">
+              <path
+                  className={wrapperClassName}
+                  d="M 0.86735408,72.109708 42.501698,0 84.133035,72.109708 Z"
+                  id="path1"/>
+          </g>
+          <path
+              className={logoClassName}
+              id="Path_3825"
+              data-name="Path 3825"
+              d="M 42.501372,9.5706484 36.057404,20.735173 55.787202,54.925643 H 29.201416 L 38.680195,38.508472 32.24329,27.353367 9.876572,66.076039 h 65.247246 z"
+              fill="#f30919"
+              />
+      </svg>
+
+  )
+};
+
+
+
+
 export function InfoPointRed({
   width = 16,
   height = 16,

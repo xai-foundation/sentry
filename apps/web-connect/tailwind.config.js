@@ -16,8 +16,13 @@ module.exports = {
       bananaBoatText: "#FFC53D",
       nulnOil: "#140F0F",
       velvetBlack: "#272123",
+      vividRed: "#F30919",
     },
     extend: {
+      backgroundImage: {
+        "background-image":
+          "url('../../../assets/images/sentry-background.png')",
+      },
       boxShadow: {
         main: "0px 10px 15px #000000BF",
       },
