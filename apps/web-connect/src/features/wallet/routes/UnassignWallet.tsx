@@ -83,12 +83,12 @@ export function UnassignWallet() {
 									className={"w-full bg-[#F30919] max-w-[700px] text-white mt-3 text-xl uppercase font-bold disabled:bg-slate-400 h-full global-clip-primary-btn"}
 								/>
 							) : (
-								<div className="m-8 w-full">
+								<div className="mt-6 w-full">
 									<ConnectButton address={address} onOpen={open} isFullWidth/>
 								</div>
 							)}
 
-							<p className="text-americanSilver lg:text-lg text-base font-medium mt-5">
+							<p className="text-americanSilver lg:text-lg text-base font-medium mt-6">
 								Don't own any keys?
 								<a
 									onClick={() => navigate("/")}
