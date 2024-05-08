@@ -1,4 +1,5 @@
-import { SentryKey, execute } from "@sentry/sentry-subgraph-client";
+import { SentryKey } from "@sentry/sentry-subgraph-client";
+import { GraphQLClient, gql } from 'graphql-request'
 
 /**
  * 
@@ -9,6 +10,7 @@ import { SentryKey, execute } from "@sentry/sentry-subgraph-client";
  * @returns List of sentry key objects with metadata.
  */
 export async function getSentryKeysFromGraph(
+  client: GraphQLClient,
   owners: string[],
   stakingPools: string[],
   includeSubmissions: boolean,
@@ -60,7 +62,7 @@ export async function getSentryKeysFromGraph(
   }
 
 
-  const query = `
+  const query = gql`
       query SentryKeysQuery {
         sentryKeys(first: 10000, orderBy: keyId, orderDirection: asc, where: {${filter}} ) {
           assignedPool
@@ -75,6 +77,6 @@ export async function getSentryKeysFromGraph(
         }
       }
     `
-  const result = await execute(query, {});
-  return result.data.sentryKeys;
+  const result = await client.request(query) as any;
+  return result.sentryKeys;
 }

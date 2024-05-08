@@ -1,12 +1,14 @@
-import { Challenge, execute } from "@sentry/sentry-subgraph-client";
+import { Challenge } from "@sentry/sentry-subgraph-client";
+import { GraphQLClient, gql } from 'graphql-request'
 
 /**
  * @returns The challenge entity from the graph.
  */
 export async function getLatestChallengeFromGraph(
+  client: GraphQLClient
 ): Promise<Challenge> {
 
-  const query = `
+  const query = gql`
       query ChallengeQuery {
         challenges(
           where: {status: OpenForSubmissions}
@@ -22,6 +24,6 @@ export async function getLatestChallengeFromGraph(
         }
       }
     `
-  const result = await execute(query, {});
-  return result.data.challenges[0];
+  const result = await client.request(query) as any;
+  return result.challenges[0];
 }

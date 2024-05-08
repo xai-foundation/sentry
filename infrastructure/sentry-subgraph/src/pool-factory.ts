@@ -1,4 +1,4 @@
-import { Address, ethereum } from "@graphprotocol/graph-ts";
+import { Address, ethereum, log } from "@graphprotocol/graph-ts";
 import {
   StakeKeys,
   UnstakeKeys,
@@ -54,6 +54,10 @@ export function handlePoolCreated(event: PoolCreated): void {
   const decoded = ethereum.decode('(address,uint256[],uint32[3],string[3],string[],string[2][2])', dataToDecode);
   if (decoded) {
     pool.delegateAddress = decoded.toTuple()[0].toAddress();
+  }else{
+    //This is just a debug solution, we should be able to decode the transaction inputs.
+    log.warning("Failed to decode pool create input", []);
+    pool.delegateAddress = new Address(0);
   }
   pool.save()
 }

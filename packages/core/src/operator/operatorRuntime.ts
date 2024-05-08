@@ -14,7 +14,8 @@ import {
     getSentryKeysFromGraph
 } from "../index.js";
 import axios from "axios";
-import { SentryKey, SentryWallet } from "@sentry/sentry-subgraph-client";
+import { SentryKey, SentryWallet, Submission } from "@sentry/sentry-subgraph-client";
+import { GraphQLClient } from 'graphql-request'
 
 export enum NodeLicenseStatus {
     WAITING_IN_QUEUE = "Booting Operator For Key", // waiting to do an action, but in a queue
@@ -53,6 +54,8 @@ let onAssertionMissMatchCb: (publicNodeData: PublicNodeBucketInformation | undef
 let cachedBoostFactor: { [ownerAddress: string]: bigint } = {};
 let operatorAddress: string;
 const KEYS_PER_BATCH = 100;
+
+const graphClient = new GraphQLClient(config.subgraphEndpoint);
 
 // SUBGRAPH EDIT
 let nodeLicenseStatusMap: NodeLicenseStatusMap = new Map();
@@ -201,7 +204,7 @@ async function processNewChallenge(challengeNumber: bigint, challenge: ProcessCh
         }
 
     }
-    
+
     cachedLogger(`${nonWinnerKeysCount} / ${nodeLicenseIds.length} keys did not accrue esXAI for the challenge ${challengeNumber}. A Sentry Key receives esXAI every few days.`);
 
     if (batchedWinnerKeys.length) {
@@ -246,7 +249,22 @@ async function processClaimForChallenge(challengeNumber: bigint, eligibleNodeLic
     }
 }
 
-async function processClosedChallenges(challengeId: bigint, nodeLicenseIds: bigint[], sentryKeysMap: { [keyId: string]: SentryKey }, sentryWalletMap: { [owner: string]: SentryWallet }) {
+const findSubmissionOnSentryKey = (sentryKey: SentryKey, challengeNumber: bigint): { submission: Submission, index: number } | null => {
+    for (let i = 0; i < sentryKey.submissions.length; i++) {
+        if (sentryKey.submissions[i].challengeNumber.toString() == challengeNumber.toString()) {
+            return { submission: sentryKey.submissions[i], index: i }
+        }
+    }
+    return null;
+}
+
+async function processClosedChallenges(
+    challengeId: bigint,
+    nodeLicenseIds: bigint[],
+    sentryKeysMap: { [keyId: string]: SentryKey },
+    sentryWalletMap: { [owner: string]: SentryWallet },
+    removeSubmissionAfterProcess: boolean = false
+) {
     const challengeToEligibleNodeLicensesMap: Map<bigint, bigint[]> = new Map();
 
     const beforeStatus: { [key: string]: string | undefined } = {}
@@ -273,13 +291,17 @@ async function processClosedChallenges(challengeId: bigint, nodeLicenseIds: bigi
 
         try {
 
-            const submission = sentryKey.submissions.find(s => s.challengeNumber.toString() == challengeId.toString());
+            const found = findSubmissionOnSentryKey(sentryKey, challengeId);
 
-            if (submission) {
+            if (found) {
                 if (!challengeToEligibleNodeLicensesMap.has(challengeId)) {
                     challengeToEligibleNodeLicensesMap.set(challengeId, []);
                 }
                 challengeToEligibleNodeLicensesMap.get(challengeId)?.push(BigInt(nodeLicenseId));
+
+                if (removeSubmissionAfterProcess) {
+                    sentryKey.submissions.splice(found.index, 1);
+                }
             }
 
         } catch (error: any) {
@@ -341,7 +363,7 @@ const loadOperatingKeys = async (operator: string, operatorOwners?: string[], la
     } else {
         cachedLogger(`No operator owners were passed in.`);
     }
-    const { wallets, pools } = await retry(() => getSentryWalletsForOperator(operator, operatorOwners));
+    const { wallets, pools } = await retry(() => getSentryWalletsForOperator(graphClient, operator, operatorOwners));
 
     cachedLogger(`Found ${wallets.length} operatorWallets. The addresses are: ${wallets.map(w => w.address).join(', ')}`);
     if (pools.length) {
@@ -349,6 +371,7 @@ const loadOperatingKeys = async (operator: string, operatorOwners?: string[], la
     }
 
     const sentryKeys = await retry(() => getSentryKeysFromGraph(
+        graphClient,
         wallets.map(w => w.address),
         pools.map(p => p.address),
         true,
@@ -390,6 +413,39 @@ const loadOperatingKeys = async (operator: string, operatorOwners?: string[], la
     cachedLogger(`Fetched ${keyOfOwnerCount} keys of owners and ${keyOfPoolsCount} keys staked in pools.`);
 
     return { wallets, sentryKeys, sentryWalletMap, sentryKeysMap, nodeLicenseIds };
+}
+
+const processPastChallenges = async (
+    nodeLicenseIds: bigint[],
+    sentryKeysMap: { [keyId: string]: SentryKey },
+    sentryWalletMap: { [owner: string]: SentryWallet },
+    openChallengeNumber: number,
+    latestClaimableChallenge: number
+) => {
+
+    cachedLogger(`Processing closed challenges ${openChallengeNumber} - ${latestClaimableChallenge} for ${nodeLicenseIds.length} keys.`);
+
+    let filteredLicenseIds = nodeLicenseIds.filter(n => {
+        return sentryKeysMap[n.toString()].submissions.length > 0
+    });;
+
+    for (let i = openChallengeNumber - 1; i >= latestClaimableChallenge; i--) {
+        if (filteredLicenseIds.length == 0) {
+            break;
+        }
+
+        cachedLogger(`Processing closed challenge ${i} for ${filteredLicenseIds.length} keys ...`);
+        await processClosedChallenges(BigInt(i), filteredLicenseIds, sentryKeysMap, sentryWalletMap, true);
+
+        await new Promise((resolve) => {
+            filteredLicenseIds = filteredLicenseIds.filter(n => {
+                return sentryKeysMap[n.toString()].submissions.length > 0
+            });
+            //Add sleep so we don't block the challenge listener.
+            //This should be refactored using web workers
+            setTimeout(resolve, 100);
+        });
+    }
 }
 
 /**
@@ -434,22 +490,33 @@ export async function operatorRuntime(
     const closeChallengeListener = listenForChallenges(listenForChallengesCallback);
     logFunction(`Started listener for new challenges.`);
 
-    //TODO process open challenge
-    const openChallenge = await retry(() => getLatestChallengeFromGraph());
+    // Process open challenge
+    const openChallenge = await retry(() => getLatestChallengeFromGraph(graphClient));
 
     const latestClaimableChallenge = Number(openChallenge.challengeNumber) <= 4320 ? 1 : Number(openChallenge.challengeNumber) - 4320;
     const { wallets, sentryKeys, sentryWalletMap, sentryKeysMap, nodeLicenseIds } = await loadOperatingKeys(operatorAddress, operatorOwners, BigInt(latestClaimableChallenge));
 
-    //TODO process all past challenges check for unclaimed
     logFunction(`Processing open challenges.`);
     await processNewChallenge(BigInt(openChallenge.challengeNumber), openChallenge, nodeLicenseIds, sentryKeysMap);
 
-    cachedLogger(`Processing closed challenges ${Number(openChallenge.challengeNumber)} - ${latestClaimableChallenge} for ${nodeLicenseIds.length} keys.`);
-    for (let i = Number(openChallenge.challengeNumber) - 1; i >= latestClaimableChallenge; i--) {
-        await processClosedChallenges(BigInt(i), nodeLicenseIds, sentryKeysMap, sentryWalletMap);
-    }
-
-    logFunction(`The operator has finished booting. The operator is running successfully. esXAI will accrue every few days.`);
+    //Remove submissions for current challenge so we don't process it again
+    nodeLicenseIds.forEach(n => {
+        const found = findSubmissionOnSentryKey(sentryKeysMap[n.toString()], BigInt(openChallenge.challengeNumber));
+        if (found) {
+            sentryKeysMap[n.toString()].submissions.splice(found.index, 1);
+        }
+    });
+    
+    //Process all past challenges check for unclaimed
+    processPastChallenges(
+        nodeLicenseIds,
+        sentryKeysMap,
+        sentryWalletMap,
+        openChallenge.challengeNumber,
+        latestClaimableChallenge
+    ).then(() => {
+        logFunction(`The operator has finished booting. The operator is running successfully. esXAI will accrue every few days.`);
+    })
 
     const fetchBlockNumber = async () => {
         try {
