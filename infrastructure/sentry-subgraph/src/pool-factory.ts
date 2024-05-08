@@ -98,7 +98,6 @@ export function handlePoolCreated(event: PoolCreated): void {
   const dataToDecode = getInputFromEvent(event)
   const decoded = ethereum.decode('(address,uint256[],uint32[3],string[3],string[],string[2][2])', dataToDecode);
   if (decoded) {
-<<<<<<< HEAD
     let delegateAddress = decoded.toTuple()[0].toAddress();
     if (delegateAddress) {
       pool.delegateAddress = delegateAddress;
@@ -114,13 +113,11 @@ export function handlePoolCreated(event: PoolCreated): void {
     pool.updateSharesTimestamp = BigInt.fromI32(0);
     pool.pendingShares = [BigInt.fromI32(0), BigInt.fromI32(0), BigInt.fromI32(0)];
     pool.save()
-=======
     pool.delegateAddress = decoded.toTuple()[0].toAddress();
   }else{
     //This is just a debug solution, we should be able to decode the transaction inputs.
     log.warning("Failed to decode pool create input", []);
     pool.delegateAddress = new Address(0);
->>>>>>> merge-subgraph-develop
   }
 }
 
