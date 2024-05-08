@@ -65,10 +65,10 @@ type UnstakeRequest @entity(immutable: false) {
 }
 
 # global delayperiods in entity might be problematic as event is not on initialize and therefore might not be created at all
-# type PoolConfig @entity(immutable: false) {
-#   id: Bytes!
-#   unstakeKeysDelayPeriod: BigInt!
-#   unstakeGenesisKeyDelayPeriod: BigInt!
-#   unstakeEsXaiDelayPeriod: BigInt!
-#   updateRewardBreakdownDelayPeriod: BigInt!
-# }
+type PoolConfig @entity(immutable: false) {
+  id: String!
+  unstakeKeysDelayPeriod: BigInt!
+  unstakeGenesisKeyDelayPeriod: BigInt!
+  unstakeEsXaiDelayPeriod: BigInt!
+  updateRewardBreakdownDelayPeriod: BigInt!
+}

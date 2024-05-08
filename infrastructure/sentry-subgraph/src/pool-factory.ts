@@ -15,6 +15,7 @@ import {
   SentryKey,
   PoolInfo,
   UnstakeRequest,
+  PoolConfig,
 } from "../generated/schema"
 import { getInputFromEvent } from "./utils/getInputFromEvent";
 import { getTxSignatureFromEvent } from "./utils/getTxSignatureFromEvent";
@@ -182,14 +183,26 @@ export function handleUpdateMetadata(event: UpdateMetadata): void {
 
 export function handleUpdatePendingShares(event: UpdateShares): void {
   const pool = PoolInfo.load(event.params.pool.toHexString());
-  const poolfactory = PoolFactory.bind(event.address);
+
+  let poolConfig = PoolConfig.load("poolConfig");
+
+  if (!poolConfig) {
+    poolConfig = new PoolConfig("poolConfig");
+    const poolfactory = PoolFactory.bind(event.address);
+    poolConfig.unstakeKeysDelayPeriod = poolfactory.unstakeKeysDelayPeriod()
+    poolConfig.unstakeGenesisKeyDelayPeriod = poolfactory.unstakeGenesisKeyDelayPeriod()
+    poolConfig.unstakeEsXaiDelayPeriod = poolfactory.unstakeEsXaiDelayPeriod()
+    poolConfig.updateRewardBreakdownDelayPeriod = poolfactory.updateRewardBreakdownDelayPeriod()
+    poolConfig.save();
+  }
+
   log.warning("Start UpdateShares", []);
   if (pool) {
     const dataToDecode = getInputFromEvent(event)
     const decoded = ethereum.decode('(address,uint32[3])', dataToDecode);
     if (decoded) {
       pool.pendingShares = decoded.toTuple()[0].toBigIntArray();
-      pool.updateSharesTimestamp = event.block.timestamp.plus(poolfactory.updateRewardBreakdownDelayPeriod());
+      pool.updateSharesTimestamp = event.block.timestamp.plus(poolConfig.updateRewardBreakdownDelayPeriod);
       pool.save()
     }
   }
@@ -200,7 +213,6 @@ export function handleUnstakeRequest(event: UnstakeRequestStarted): void {
   const pool = PoolInfo.load(event.params.pool.toHexString())
 
   const unstakeRequest = new UnstakeRequest(event.params.pool.toHexString() + event.params.user.toHexString() + event.params.index.toHexString())
-  const poolfactory = PoolFactory.bind(event.address);
 
   unstakeRequest.user = event.params.user
   unstakeRequest.pool = event.params.pool
@@ -210,6 +222,18 @@ export function handleUnstakeRequest(event: UnstakeRequestStarted): void {
   unstakeRequest.open = false
   unstakeRequest.completeTime = BigInt.fromI32(0)
 
+  let poolConfig = PoolConfig.load("poolConfig");
+
+  if (!poolConfig) {
+    poolConfig = new PoolConfig("poolConfig");
+    const poolfactory = PoolFactory.bind(event.address);
+    poolConfig.unstakeKeysDelayPeriod = poolfactory.unstakeKeysDelayPeriod()
+    poolConfig.unstakeGenesisKeyDelayPeriod = poolfactory.unstakeGenesisKeyDelayPeriod()
+    poolConfig.unstakeEsXaiDelayPeriod = poolfactory.unstakeEsXaiDelayPeriod()
+    poolConfig.updateRewardBreakdownDelayPeriod = poolfactory.updateRewardBreakdownDelayPeriod()
+    poolConfig.save();
+  }
+
   if (event.params.isKey) {
 
     //IF owner
@@ -217,25 +241,25 @@ export function handleUnstakeRequest(event: UnstakeRequestStarted): void {
 
       if (getTxSignatureFromEvent(event) == "0xfe407a92") {
         //It is genesis key unstake request
-        unstakeRequest.lockTime = event.block.timestamp.plus(poolfactory.unstakeGenesisKeyDelayPeriod())
+        unstakeRequest.lockTime = event.block.timestamp.plus(poolConfig.unstakeGenesisKeyDelayPeriod)
         pool.ownerRequestedUnstakeKeyAmount = event.params.amount
-        pool.ownerLatestUnstakeRequestCompletionTime = event.block.timestamp.plus(poolfactory.unstakeGenesisKeyDelayPeriod())
+        pool.ownerLatestUnstakeRequestCompletionTime = event.block.timestamp.plus(poolConfig.unstakeGenesisKeyDelayPeriod)
       } else {
         if (pool.ownerRequestedUnstakeKeyAmount) {
           pool.ownerRequestedUnstakeKeyAmount = pool.ownerRequestedUnstakeKeyAmount.plus(event.params.amount)
-          pool.ownerLatestUnstakeRequestCompletionTime = event.block.timestamp.plus(poolfactory.unstakeKeysDelayPeriod())
+          pool.ownerLatestUnstakeRequestCompletionTime = event.block.timestamp.plus(poolConfig.unstakeKeysDelayPeriod)
         } else {
           pool.ownerRequestedUnstakeKeyAmount = event.params.amount
-          pool.ownerLatestUnstakeRequestCompletionTime = event.block.timestamp.plus(poolfactory.unstakeKeysDelayPeriod())
+          pool.ownerLatestUnstakeRequestCompletionTime = event.block.timestamp.plus(poolConfig.unstakeKeysDelayPeriod)
         }
-        unstakeRequest.lockTime = event.block.timestamp.plus(poolfactory.unstakeKeysDelayPeriod())
+        unstakeRequest.lockTime = event.block.timestamp.plus(poolConfig.unstakeKeysDelayPeriod)
       }
       pool.save()
     }
 
 
   } else {
-    unstakeRequest.lockTime = event.block.timestamp.plus(poolfactory.unstakeEsXaiDelayPeriod())
+    unstakeRequest.lockTime = event.block.timestamp.plus(poolConfig.unstakeEsXaiDelayPeriod)
 
   }
   unstakeRequest.save()
