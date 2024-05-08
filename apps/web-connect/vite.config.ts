@@ -4,6 +4,9 @@ import svgr from "vite-plugin-svgr";
 import path from "node:path";
 
 export default defineConfig({
+	define: {
+	  'process.env': process.env
+	},
 	resolve: {
 		alias: [
 			{
