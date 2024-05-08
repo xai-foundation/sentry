@@ -17,13 +17,16 @@ import {
 import { getInputFromEvent } from "./utils/getInputFromEvent";
 
 export function handleStakeKeys(event: StakeKeys): void {
-  // log.warning("Start StakeKeys", []);
-  // let pool = PoolInfo.load(event.params.pool.toHexString());
-  // if (pool) {
-  //   pool.totalStakedKeyAmount = event.params.totalKeysStaked
-  //   pool.save()
-  // }
-  // log.warning("End StakeKeys", []);
+  log.warning("Start StakeKeys", []);
+  let pool = PoolInfo.load(event.params.pool.toHexString());
+  if (pool) {
+    if (pool.owner == event.params.user) {
+      pool.ownerStakedKeys = pool.ownerStakedKeys.plus(event.params.amount)
+    }
+    pool.totalStakedKeyAmount = event.params.totalKeysStaked
+    pool.save()
+  }
+  log.warning("End StakeKeys", []);
 
   const dataToDecode = getInputFromEvent(event)
   const decoded = ethereum.decode('(address,uint256[])', dataToDecode);
@@ -41,14 +44,17 @@ export function handleStakeKeys(event: StakeKeys): void {
 
 export function handleUnstakeKeys(event: UnstakeKeys): void {
 
-  // log.warning("Start unStakeKeys", []);
+  log.warning("Start unStakeKeys", []);
 
-  // let pool = PoolInfo.load(event.params.pool.toHexString());
-  // if (pool) {
-  //   pool.totalStakedKeyAmount = event.params.totalKeysStaked
-  //   pool.save()
-  // }
-  // log.warning("End unStakeKeys", []);
+  let pool = PoolInfo.load(event.params.pool.toHexString());
+  if (pool) {
+    if (pool.owner == event.params.user) {
+      pool.ownerStakedKeys = pool.ownerStakedKeys.minus(event.params.amount)
+    }
+    pool.totalStakedKeyAmount = event.params.totalKeysStaked
+    pool.save()
+  }
+  log.warning("End unStakeKeys", []);
 
   const dataToDecode = getInputFromEvent(event)
   const decoded = ethereum.decode('(address,uint256,uint256[])', dataToDecode);
@@ -83,8 +89,8 @@ export function handlePoolCreated(event: PoolCreated): void {
     pool.ownerShare = decoded.toTuple()[2].toBigIntArray()[0];
     pool.keyBucketShare = decoded.toTuple()[2].toBigIntArray()[1];
     pool.stakedBucketShare = decoded.toTuple()[2].toBigIntArray()[2];
-    pool.totalStakedKeyAmount = new BigInt(decoded.toTuple()[1].toBigIntArray().length);
-    pool.ownerStakedKeys = new BigInt(decoded.toTuple()[1].toBigIntArray().length);
+    pool.totalStakedKeyAmount = BigInt.fromI32(decoded.toTuple()[1].toBigIntArray().length);
+    pool.ownerStakedKeys = BigInt.fromI32(decoded.toTuple()[1].toBigIntArray().length);
     pool.save()
   }
   log.warning("End Poolinfo", []);
