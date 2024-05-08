@@ -95,6 +95,12 @@ body {
     }
 }
 
+@media screen and (max-width: 1024px) {
+    body {
+        background-size: cover;
+    }
+}
+
 @keyframes pulse-green {
     0% {
         transform: scale(0.95);
