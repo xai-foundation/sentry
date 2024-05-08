@@ -7,10 +7,9 @@ import {config, NodeLicenseAbi} from "@sentry/core";
 import {BiLoaderAlt} from "react-icons/bi";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useProvider} from "@/features/checkout/hooks/useProvider";
-import {AiOutlineInfoCircle} from "react-icons/ai";
 import {Tooltip} from "@sentry/ui";
-import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
-import {XaiBanner} from "@/features/checkout/XaiBanner";
+import { InfoPointRed, RedSentryIcon, WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import logo from '../../../public/images/sentry-main.png'
 
 export function Checkout() {
 	const queryString = window.location.search;
@@ -54,7 +53,6 @@ export function Checkout() {
 	return (
 		<div>
 			<div className="h-full min-h-[90vh] flex flex-col justify-center items-center">
-				<XaiBanner/>
 
 				{isLoading && (
 					<div className="w-[744px] h-[208px] flex flex-col justify-center border border-[#E5E5E5] m-4">
@@ -101,27 +99,37 @@ export function Checkout() {
 				)}
 
 				{!isLoading && !isSuccess && (
-					<div className="w-[744px] h-auto flex flex-col justify-center border border-[#E5E5E5] m-4">
-						<div className="w-full flex justify-center items-center border-b border-[#E5E5E5] px-6 py-4">
-							<span className="text-3xl py-2 px-6 font-semibold">Your purchase is ready</span>
-						</div>
-						<div className="w-full flex justify-between items-center border-b border-[#E5E5E5] px-6 py-4">
+					<div className="w-[1300px] h-auto flex justify-center bg-darkLicorice shadow-main">
+						<div className="flex flex-col justify-start items-center w-[600px] h-auto py-12 pt-1">
+							<div className="w-full flex justify-center">
+								<img className="max-w-[280px]" src={logo} />
+							</div>
+							<div className="w-full flex justify-center max-w-[200px]">
+								<span className="text-5xl text-center font-bold text-white">YOUR PURCHASE IS READY</span>
+							</div>
+							<div className="flex items-center mt-2">
+								<WarningIcon width={20} height={20} />
+								<span className="text-[#66d058] font-semibold ml-2">You are on the official Xai.games website</span>
+							</div>
+					</div>
+						<div className="w-[750px] h-auto py-12 pr-[100px]">
+						<div className="flex justify-between items-start">
 							<div className="flex flex-col gap-2">
 								<div className="flex flex-row items-center gap-1">
-									<XaiLogo className="w-[16px] text-[#F30919]"/>
-									<p className="text-lg font-semibold">
-										Xai Sentry Node Key
+									<RedSentryIcon width={32} height={32} />
+									<p className="text-2xl text-white font-semibold">
+										XAI SENTRY NODE KEY
 									</p>
 									<Tooltip
 										header={"Xai keys are required for nodes to receive $esXAI network rewards."}
 										body={"All purchases must be made in Arbitrum ETH."}
 										width={452}
 									>
-										<AiOutlineInfoCircle size={16} className="text-[#A3A3A3]"/>
+										<InfoPointRed/>
 									</Tooltip>
 								</div>
-								<p className="w-[294px] text-[15px] text-[#525252]">
-									Key for submitting one claim to each Xai network challenge
+								<p className="w-[400px] text-base text-[#525252]">
+									Each Sentry Node Key enables you to submit up to 1 reward claim for each network challenge.
 								</p>
 							</div>
 
@@ -140,7 +148,8 @@ export function Checkout() {
 							promoCode={promoCode}
 							setPromoCode={setPromoCode}
 							error={error}
-						/>
+							/>
+						</div>
 					</div>
 				)}
 			</div>

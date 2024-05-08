@@ -14,6 +14,8 @@ module.exports = {
       darkLicorice: "#181415BF",
       bananaBoat: "#FFC53D1A",
       bananaBoatText: "#FFC53D",
+      nulnOil: "#140F0F",
+      velvetBlack: "#272123",
     },
     extend: {
       boxShadow: {
