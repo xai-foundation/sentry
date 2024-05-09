@@ -123,8 +123,14 @@ export function handleUnstakeKeys(event: UnstakeKeys): void {
 
     let index = decoded.toTuple()[1].toBigInt()
     let unstakeRequest = UnstakeRequest.load(event.params.pool.toHexString() + event.params.user.toHexString() + index.toString())
-    unstakeRequest!.open = false
-    unstakeRequest!.completeTime = event.block.timestamp
+    if (unstakeRequest) {
+      unstakeRequest.open = false
+      unstakeRequest.completeTime = event.block.timestamp
+      unstakeRequest.save();
+    } else {
+      log.warning("Could not find unstake request!", [])
+      log.warning("params: " + event.params.pool.toHexString() + ", " + event.params.user.toHexString() + " " + index.toString(), [])
+    }
   }
 }
 
@@ -236,8 +242,14 @@ export function handleUnstakeEsXai(event: UnstakeEsXai): void {
   if (decoded) {
     let index = decoded.toTuple()[1].toBigInt()
     let unstakeRequest = UnstakeRequest.load(event.params.pool.toHexString() + event.params.user.toHexString() + index.toString())
-    unstakeRequest!.open = false
-    unstakeRequest!.completeTime = event.block.timestamp
+    if (unstakeRequest) {
+      unstakeRequest.open = false
+      unstakeRequest.completeTime = event.block.timestamp
+      unstakeRequest.save();
+    } else {
+      log.warning("Could not find unstake request!", [])
+      log.warning("params: " + event.params.pool.toHexString() + ", " + event.params.user.toHexString() + " " + index.toString(), [])
+    }
   }
 }
 
@@ -265,7 +277,7 @@ export function handleUpdatePendingShares(event: UpdateShares): void {
     const dataToDecode = getInputFromEvent(event)
     const decoded = ethereum.decode('(address,uint32[3])', dataToDecode);
     if (decoded) {
-      pool.pendingShares = decoded.toTuple()[0].toBigIntArray();
+      pool.pendingShares = decoded.toTuple()[1].toBigIntArray();
       pool.updateSharesTimestamp = event.block.timestamp.plus(poolConfig!.updateRewardBreakdownDelayPeriod);
       pool.save()
     }
@@ -279,7 +291,7 @@ export function handleUnstakeRequest(event: UnstakeRequestStarted): void {
     return;
   }
 
-  let poolConfig = PoolFactoryConfig.load("PoolFactoryConfig");
+  const poolConfig = PoolFactoryConfig.load("PoolFactoryConfig");
 
   if (!poolConfig) {
     log.warning("PoolFactoryConfig is undefined", []);
