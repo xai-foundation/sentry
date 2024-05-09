@@ -1,12 +1,13 @@
 import {BiLoaderAlt} from "react-icons/bi";
-import {AiFillInfoCircle, AiOutlineClose} from "react-icons/ai";
+import {AiFillInfoCircle} from "react-icons/ai";
 import {useGetTotalSupplyAndCap} from "@/features/checkout/hooks/useGetTotalSupplyAndCap";
 import {Dispatch, SetStateAction, useState} from "react";
 import {ethers} from "ethers";
 import {CheckoutTierSummary, getPromoCode} from "@sentry/core";
-import {XaiCheckbox} from "@sentry/ui";
+import {PrimaryButton, XaiCheckbox} from "@sentry/ui";
 import {KYCTooltip} from "@/features/checkout/KYCTooltip";
 import { useNetwork } from 'wagmi';
+import MainCheckbox from "@sentry/ui/src/rebrand/checkboxes/MainCheckbox";
 
 interface PriceDataInterface {
 	price: bigint;
@@ -70,20 +71,23 @@ export function WebBuyKeysOrderTotal(
 		return getPriceData.nodesAtEachPrice
 			.filter(item => Number(item.quantity) !== 0)
 			.map((item, i) => {
-				return (
+								return (
 					<div key={`get-keys-${i}`}>
-						<div className="flex flex-row items-center justify-between text-[15px]">
-							<div className="flex flex-row items-center gap-2">
+						<div className="flex sm:flex-col lg:flex-row items-center justify-between text-xl">
+							<div className="flex flex-row items-center gap-2 text-white font-semibold">
 								<span className="">{item.quantity.toString()} x Xai Sentry Node Key</span>
 							</div>
+						<p className="text-sm text-[#525252] mb-4 sm:block lg:hidden">
+							{ethers.formatEther(item.pricePer)} AETH per key
+						</p>
 							<div className="flex flex-row items-center gap-1">
 								<span
-									className="font-semibold">
+									className="font-bold text-white">
 									{ethers.formatEther(item.totalPriceForTier)} AETH
 								</span>
 							</div>
 						</div>
-						<p className="text-[13px] text-[#A3A3A3] mb-4">
+						<p className="text-sm text-[#525252] mb-4 sm:hidden lg:block">
 							{ethers.formatEther(item.pricePer)} AETH per key
 						</p>
 					</div>
@@ -97,14 +101,14 @@ export function WebBuyKeysOrderTotal(
 		<div>
 			{isPriceLoading || isTotalLoading || !getPriceData
 				? (
-					<div className="w-full h-[390px] flex flex-col justify-center items-center gap-2">
-						<BiLoaderAlt className="animate-spin" color={"#A3A3A3"} size={32}/>
-						<p>Updating total...</p>
+					<div className="w-full h-[365px] flex flex-col justify-center items-center gap-2">
+						<BiLoaderAlt className="animate-spin" color={"#FF0030"} size={32}/>
+						<p className="text-base text-white font-semibold">Updating total...</p>
 					</div>
 				) : (
 					<>
 						<div className="w-full flex flex-col gap-4">
-							<div className="px-6 mt-4">
+							<div className="mt-4">
 								{getKeys()}
 
 								{discount.applied && (
@@ -155,12 +159,12 @@ export function WebBuyKeysOrderTotal(
 								{/*		Promo section		*/}
 								{!discount.applied && (
 									<>
-										<hr className="my-2"/>
+										<hr className="my-2 border-[#525252]"/>
 										{promo ? (
-											<div>
+											<div className="w-full flex sm:flex-col lg:flex-row items-center py-2">
 												<div
-													className="w-full h-auto flex flex-row justify-between items-center text-[15px] text-[#525252] mt-2 py-2">
-													<span>Add promo code</span>
+													className="w-[300px] h-auto flex flex-row sm:justify-center lg:justify-start items-center text-[15px] text-[#525252] mt-2 sm:mb-2 lg:mb-0">
+													<span className="text-[#F30919] text-base">+ Add promo code</span>
 													<div
 														className="cursor-pointer z-10"
 														onClick={() => {
@@ -168,11 +172,11 @@ export function WebBuyKeysOrderTotal(
 															setPromo(false);
 														}}
 													>
-														<AiOutlineClose/>
+														{/* <AiOutlineClose/> */}
 													</div>
 												</div>
 
-												<div className="flex gap-2 items-center">
+												<div className="flex w-full items-center sm:justify-center">
 
 													<input
 														type="text"
@@ -184,16 +188,22 @@ export function WebBuyKeysOrderTotal(
 																error: false,
 															});
 														}}
-														className={`w-full my-2 p-2 border ${discount.error ? "border-[#AB0914]" : "border-[#A3A3A3]"}`}
-														placeholder="Enter promo code"
+														className={`text-white lg:w-full border-r-0 p-2 bg-darkLicorice border ${discount.error ? "border-[#AB0914]" : "border-[#525252]"}`}
 													/>
-
-													<button
+													<div className="lg:hidden sm:block">
+													<PrimaryButton
 														onClick={() => handleSubmit()}
-														className="flex flex-row justify-center items-center w-[92px] p-2 bg-[#F30919] text-[15px] text-white font-semibold"
-													>
-														Apply
-													</button>
+														btnText="APPLY"
+														className="text-white text-sm !py-2 max-h-[42.5px] max-w-[90px]"
+														/>
+													</div>
+												</div>
+												<div className="lg:block sm:hidden">
+													<PrimaryButton
+														onClick={() => handleSubmit()}
+														btnText="APPLY"
+														className="text-white text-sm !py-2 max-h-[42.5px] max-w-[90px]"
+													/>
 												</div>
 
 												{discount.error && (
@@ -202,10 +212,10 @@ export function WebBuyKeysOrderTotal(
 												)}
 											</div>
 										) : (
-											<p className="text-[15px] py-2">
+											<p className="flex sm:justify-center lg:justify-start text-[15px] py-2">
 												<a
 													onClick={() => setPromo(true)}
-													className="text-[#F30919] ml-1 cursor-pointer"
+													className="text-[#F30919] text-base ml-1 cursor-pointer"
 												>
 													+ Add promo code
 												</a>
@@ -214,66 +224,75 @@ export function WebBuyKeysOrderTotal(
 									</>
 								)}
 
-								<hr className="my-2"/>
-								<div className="flex flex-row items-center justify-between">
-									<div className="flex flex-row items-center gap-2 text-lg">
-										<span className="">You pay</span>
+								<hr className="my-2 border-[#525252]"/>
+								<div className="flex sm:flex-col lg:flex-row items-center justify-between py-2">
+									<div className="flex flex-row items-center gap-2 sm:text-xl lg:text-2xl">
+										<span className="text-white font-bold">You pay</span>
 									</div>
-									<div className="flex flex-row items-center gap-1 font-semibold">
-										<span>
+									<div className="flex flex-row items-center gap-1">
+										<span className="text-white font-bold sm:text-xl lg:text-2xl">
 											{discount.applied
 												? ethers.formatEther(getPriceData.price * BigInt(95) / BigInt(100))
 												: ethers.formatEther(getPriceData.price)
 											}
 										</span>
-										<span>AETH</span>
+										<span className="text-white font-bold sm:text-xl lg:text-2xl">AETH</span>
 									</div>
 								</div>
 							</div>
 						</div>
-
-						<div className="flex flex-col justify-center gap-8 p-6 mt-8">
-							<div className="flex flex-col justify-center gap-2">
-								<XaiCheckbox
-									onClick={() => setCheckboxOne(!checkboxOne)}
-									condition={checkboxOne}
+                        <hr className="my-2 border-[#525252]"/>
+						<div className="flex flex-col justify-center gap-8 mt-8">
+							<div className="flex w-full flex-col justify-center gap-2">
+								<MainCheckbox
+									onChange={() => setCheckboxOne(!checkboxOne)}
+									isChecked={checkboxOne}
+									labelStyle="!items-start"
 								>
-									I agree with the
+									<div className="sm:w-[200px] md:w-[300px] lg:w-auto">
+									<span className="sm:text-sm md:text-base text-[#525252] sm:mr-2">I agree with the</span>
 									<a
-										className="cursor-pointer text-[#F30919]"
+										className="cursor-pointer text-[#F30919] sm:text-sm lg:text-base"
 										onClick={() => window.open("https://xai.games/sentrynodeagreement/")}>
 										Sentry Node Agreement
-									</a>
-								</XaiCheckbox>
+										</a>
+									</div>
+								</MainCheckbox>
 
 
-								<XaiCheckbox
-									onClick={() => setCheckboxTwo(!checkboxTwo)}
-									condition={checkboxTwo}
+								<MainCheckbox
+									onChange={() => setCheckboxTwo(!checkboxTwo)}
+									isChecked={checkboxTwo}
+									labelStyle="!items-start"
 								>
-									I understand Sentry Node Keys are not transferable
-								</XaiCheckbox>
+									<div className="sm:w-[300px] md:w-auto">
+										<span className="sm:text-sm md:text-base text-[#525252]">I understand Sentry Node Keys are not transferable</span>
+									</div>
+								</MainCheckbox>
 
-								<XaiCheckbox
-									onClick={() => setCheckboxThree(!checkboxThree)}
-									condition={checkboxThree}
+								<MainCheckbox
+									onChange={() => setCheckboxThree(!checkboxThree)}
+									isChecked={checkboxThree}
+									labelStyle="!items-start"
 								>
-									I understand that I cannot claim rewards until I pass KYC
+									<div className="flex w-full sm:w-[300px] justify-between md:w-auto sm:flex-col lg:flex-row items-start">
+									<span className="sm:text-sm md:text-base text-[#525252] lg:mr-2">I understand that I cannot claim rewards until I pass KYC</span>
 									<KYCTooltip
 										width={850}
 									>
-										<p className="text-[#F30919]">(SEE BLOCKED COUNTRIES)</p>
+										<p className="text-[#F30919] sm:text-sm md:text-base">(See blocked countries)</p>
 									</KYCTooltip>
-								</XaiCheckbox>
+									</div>
+								</MainCheckbox>
 							</div>
 
 							<div>
 								<button
 									onClick={() => onClick()}
-									className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
+									className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 									disabled={!ready || chain?.id !== 42_161}
 								>
-									{chain?.id === 42_161 ? "Confirm purchase" : "Please Switch to Arbitrum One"}
+									{chain?.id === 42_161 ? "BUY NOW" : "Please Switch to Arbitrum One"}
 								</button>
 
 								{error && (
