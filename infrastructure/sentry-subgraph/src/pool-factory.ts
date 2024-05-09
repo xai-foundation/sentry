@@ -120,6 +120,11 @@ export function handleUnstakeKeys(event: UnstakeKeys): void {
         sentryKey.save()
       }
     }
+
+    let index = decoded.toTuple()[1].toBigInt()
+    let unstakeRequest = UnstakeRequest.load(event.params.pool.toHexString() + event.params.user.toHexString() + index.toString())
+    unstakeRequest!.open = false
+    unstakeRequest!.completeTime = event.block.timestamp
   }
 }
 
@@ -217,10 +222,21 @@ export function handleUnstakeEsXai(event: UnstakeEsXai): void {
     pool.save()
   }
 
+
   let sentryWallet = SentryWallet.load(event.params.user.toHexString())
   if (sentryWallet) {
     sentryWallet.esXaiStakeAmount = sentryWallet.esXaiStakeAmount.minus(event.params.amount)
     sentryWallet.save();
+  }
+
+  const dataToDecode = getInputFromEvent(event)
+  const decoded = ethereum.decode('(address,uint256,uint256)', dataToDecode);
+
+  if (decoded) {
+    let index = decoded.toTuple()[1].toBigInt()
+    let unstakeRequest = UnstakeRequest.load(event.params.pool.toHexString() + event.params.user.toHexString() + index.toString())
+    unstakeRequest!.open = false
+    unstakeRequest!.completeTime = event.block.timestamp
   }
 }
 
@@ -244,7 +260,6 @@ export function handleUpdatePendingShares(event: UpdateShares): void {
 
   let poolConfig = PoolFactoryConfig.load("PoolFactoryConfig");
 
-  log.warning("Start UpdateShares", []);
   if (pool) {
     const dataToDecode = getInputFromEvent(event)
     const decoded = ethereum.decode('(address,uint32[3])', dataToDecode);
@@ -254,7 +269,6 @@ export function handleUpdatePendingShares(event: UpdateShares): void {
       pool.save()
     }
   }
-  log.warning("End UpdateShares", []);
 }
 
 export function handleUnstakeRequest(event: UnstakeRequestStarted): void {
@@ -271,7 +285,7 @@ export function handleUnstakeRequest(event: UnstakeRequestStarted): void {
     return;
   }
 
-  const unstakeRequest = new UnstakeRequest(event.params.pool.toHexString() + event.params.user.toHexString() + event.params.index.toHexString())
+  const unstakeRequest = new UnstakeRequest(event.params.pool.toHexString() + event.params.user.toHexString() + event.params.index.toString())
 
   unstakeRequest.user = event.params.user
   unstakeRequest.pool = event.params.pool

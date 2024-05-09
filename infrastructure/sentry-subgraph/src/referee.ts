@@ -129,14 +129,8 @@ export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
     refereeConfig!.version
   )
 
-  let submissionStruct = Referee.bind(event.address).getSubmissionsForChallenges([event.params.challengeId], event.params.nodeLicenseId);
-  log.warning("THIS IS MY COMPARE", [submissionStruct[0].eligibleForPayout.toString(), eligibleForPayout.toString()])
-  log.warning(submissionStruct[0].eligibleForPayout.toString(), [])
-  log.warning(eligibleForPayout.toString(), [])
-
   submission.eligibleForPayout = eligibleForPayout
-  submission.assertionsStateRootOrConfirmData = assertionStateRootOrConfirmData.toString()
-  
+  submission.assertionsStateRootOrConfirmData = assertionStateRootOrConfirmData.toHexString()
   submission.save()
 
   if (submission.eligibleForPayout) {

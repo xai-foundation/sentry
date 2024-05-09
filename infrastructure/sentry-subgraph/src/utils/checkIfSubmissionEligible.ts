@@ -1,12 +1,15 @@
 import { crypto, Bytes, BigInt, ByteArray } from "@graphprotocol/graph-ts";
 
-function padToBytes32(bytes: ByteArray): ByteArray {
-    let length = bytes.length;
-    if (length == 32) return bytes; // Return original if already 32 bytes
+function padToBytes32(value: BigInt): Bytes {
+    let bytes = Bytes.fromBigInt(value);
+    let result = new Uint8Array(32);
+    let start = 32 - bytes.length;
 
-    let result = new Uint8Array(32); // Create a new 32 byte array, filled with 0s
-    result.set(bytes, 32 - length); // Set original bytes at the end, right aligned
-    return Bytes.fromUint8Array(result); // Convert back to Bytes type
+    for (let i = 0; i < bytes.length; i++) {
+        result[start + bytes.length - 1 - i] = bytes[i]; // Reverse the bytes into the result
+    }
+
+    return Bytes.fromUint8Array(result); // Convert Uint8Array back to Bytes
 }
 
 function concatBytes(arrays: ByteArray[]): Bytes {
@@ -26,6 +29,14 @@ function concatBytes(arrays: ByteArray[]): Bytes {
     return Bytes.fromUint8Array(result);
 }
 
+function reverseBytes(bytes: ByteArray): Bytes {
+    let result = new Uint8Array(bytes.length);
+    for (let i = 0; i < bytes.length; i++) {
+        result[i] = bytes[bytes.length - 1 - i];
+    }
+    return Bytes.fromUint8Array(result);
+}
+
 export function checkIfSubmissionEligible(
     nodeLicenseId: BigInt,
     challengeId: BigInt,
@@ -34,22 +45,15 @@ export function checkIfSubmissionEligible(
     boostFactor: BigInt,
     refereeVersion: BigInt
 ): boolean {
-    // Convert BigInt to a byte array (32 bytes each)
-    let nodeLicenseIdBytes = padToBytes32(Bytes.fromBigInt(nodeLicenseId));
-    let challengeIdBytes = padToBytes32(Bytes.fromBigInt(challengeId));
 
-    // Concatenate all byte arrays
-    let packedData = concatBytes([
-        nodeLicenseIdBytes,
-        challengeIdBytes,
-        confirmData,
-        challengerSignedHash
-    ]);
+    let nodeLicenseIdBytes = padToBytes32(nodeLicenseId);
+    let challengeIdBytes = padToBytes32(challengeId);
+    let encoded = concatBytes([nodeLicenseIdBytes, challengeIdBytes, confirmData, challengerSignedHash]);
 
-    // Compute keccak256 hash of the packed data
-    const assertionHash = crypto.keccak256(packedData);
-    const assertionHashNumber = BigInt.fromByteArray(assertionHash)
-
+    const assertionHash = crypto.keccak256(encoded);
+    let reversedBytes = reverseBytes(assertionHash);
+    const assertionHashNumber = BigInt.fromUnsignedBytes(reversedBytes)
+    
     if (refereeVersion.equals(BigInt.fromI32(1))) {
         return assertionHashNumber.mod(BigInt.fromI32(100)).equals(BigInt.fromI32(0));
     }
