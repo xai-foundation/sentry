@@ -40,20 +40,32 @@ export function handleInitialized(event: Initialized): void {
   refereeConfig.version = BigInt.fromI32(event.params.version)
 
   const referee = Referee.bind(event.address);
-  if (event.params.version > 1) {
+  if (event.params.version == 1) {
+    refereeConfig.maxStakeAmountPerLicense = BigInt.fromI32(0)
+    refereeConfig.stakeAmountTierThresholds = [BigInt.fromI32(0), BigInt.fromI32(0), BigInt.fromI32(0), BigInt.fromI32(0)]
+    refereeConfig.stakeAmountBoostFactors = [BigInt.fromI32(0), BigInt.fromI32(0), BigInt.fromI32(0), BigInt.fromI32(0)]
+  } else {
     refereeConfig.maxStakeAmountPerLicense = referee.maxStakeAmountPerLicense()
-    refereeConfig.stakeAmountTierThresholds[0] = referee.stakeAmountTierThresholds(BigInt.fromI32(0))
-    refereeConfig.stakeAmountTierThresholds[1] = referee.stakeAmountTierThresholds(BigInt.fromI32(1))
-    refereeConfig.stakeAmountTierThresholds[2] = referee.stakeAmountTierThresholds(BigInt.fromI32(2))
-    refereeConfig.stakeAmountTierThresholds[3] = referee.stakeAmountTierThresholds(BigInt.fromI32(3))
-    refereeConfig.stakeAmountBoostFactors[0] = referee.stakeAmountBoostFactors(BigInt.fromI32(0))
-    refereeConfig.stakeAmountBoostFactors[1] = referee.stakeAmountBoostFactors(BigInt.fromI32(1))
-    refereeConfig.stakeAmountBoostFactors[2] = referee.stakeAmountBoostFactors(BigInt.fromI32(2))
-    refereeConfig.stakeAmountBoostFactors[3] = referee.stakeAmountBoostFactors(BigInt.fromI32(3))
+
+    refereeConfig.stakeAmountTierThresholds = [
+      referee.stakeAmountTierThresholds(BigInt.fromI32(0)),
+      referee.stakeAmountTierThresholds(BigInt.fromI32(1)),
+      referee.stakeAmountTierThresholds(BigInt.fromI32(2)),
+      referee.stakeAmountTierThresholds(BigInt.fromI32(3))
+    ]
+
+    refereeConfig.stakeAmountBoostFactors = [
+      referee.stakeAmountBoostFactors(BigInt.fromI32(0)),
+      referee.stakeAmountBoostFactors(BigInt.fromI32(1)),
+      referee.stakeAmountBoostFactors(BigInt.fromI32(2)),
+      referee.stakeAmountBoostFactors(BigInt.fromI32(3))
+    ]
   }
 
   if (event.params.version > 3) {
     refereeConfig.maxKeysPerPool = referee.maxKeysPerPool()
+  }else{
+    refereeConfig.maxKeysPerPool = BigInt.fromI32(0)
   }
 
   refereeConfig.save();
@@ -102,7 +114,12 @@ export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
 
   let refereeConfig = RefereeConfig.load("RefereeConfig")
   const maxStakeAmount = getMaxStakeAmount(stakeAmount, keyCount, refereeConfig!.maxStakeAmountPerLicense)
-  const boostFactor = getBoostFactor(maxStakeAmount, refereeConfig!.stakeAmountTierThresholds, refereeConfig!.stakeAmountBoostFactors)
+  const boostFactor = getBoostFactor(
+    maxStakeAmount,
+    refereeConfig!.stakeAmountTierThresholds,
+    refereeConfig!.stakeAmountBoostFactors,
+    refereeConfig!.version
+  )
 
   const eligibleForPayout = checkIfSubmissionEligible(
     event.params.nodeLicenseId,
