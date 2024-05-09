@@ -129,23 +129,25 @@ export function handleUnstakeKeys(event: UnstakeKeys): void {
 }
 
 export function handlePoolCreated(event: PoolCreated): void {
-  const pool = new PoolInfo(event.params.poolAddress.toHexString())
   const dataToDecode = getInputFromEvent(event)
   const decoded = ethereum.decode('(address,uint256[],uint32[3],string[3],string[],string[2][2])', dataToDecode);
   if (decoded) {
+    const pool = new PoolInfo(event.params.poolAddress.toHexString())
     pool.address = event.params.poolAddress
     pool.owner = event.params.poolOwner
     pool.delegateAddress = decoded.toTuple()[0].toAddress();
-    pool.metadata = decoded.toTuple()[3].toStringArray();
-    pool.socials = decoded.toTuple()[4].toStringArray();
+    pool.totalStakedEsXaiAmount = BigInt.fromI32(0);
+    pool.totalStakedKeyAmount = BigInt.fromI32(decoded.toTuple()[1].toBigIntArray().length);
     pool.ownerShare = decoded.toTuple()[2].toBigIntArray()[0];
     pool.keyBucketShare = decoded.toTuple()[2].toBigIntArray()[1];
     pool.stakedBucketShare = decoded.toTuple()[2].toBigIntArray()[2];
-    pool.totalStakedKeyAmount = BigInt.fromI32(decoded.toTuple()[1].toBigIntArray().length);
-    pool.ownerStakedKeys = pool.totalStakedKeyAmount;
-    pool.ownerRequestedUnstakeKeyAmount = BigInt.fromI32(0);
     pool.updateSharesTimestamp = BigInt.fromI32(0);
     pool.pendingShares = [BigInt.fromI32(0), BigInt.fromI32(0), BigInt.fromI32(0)];
+    pool.metadata = decoded.toTuple()[3].toStringArray();
+    pool.socials = decoded.toTuple()[4].toStringArray();
+    pool.ownerStakedKeys = pool.totalStakedKeyAmount;
+    pool.ownerRequestedUnstakeKeyAmount = BigInt.fromI32(0);
+    pool.ownerLatestUnstakeRequestCompletionTime = BigInt.fromI32(0);
     pool.save()
 
     let sentryWallet = SentryWallet.load(pool.owner.toHexString())
@@ -157,7 +159,6 @@ export function handlePoolCreated(event: PoolCreated): void {
   } else {
     //This is just a debug solution, we should be able to decode the transaction inputs.
     log.warning("Failed to decode pool create input", []);
-    pool.delegateAddress = new Address(0);
   }
 }
 
@@ -294,26 +295,24 @@ export function handleUnstakeRequest(event: UnstakeRequestStarted): void {
   unstakeRequest.isKey = event.params.isKey
   unstakeRequest.open = true
   unstakeRequest.completeTime = BigInt.fromI32(0)
+  unstakeRequest.lockTime = event.block.timestamp.plus(poolConfig.unstakeEsXaiDelayPeriod)
 
   if (event.params.isKey) {
     unstakeRequest.lockTime = event.block.timestamp.plus(poolConfig.unstakeKeysDelayPeriod)
 
-    //IF owner
     if (pool.owner == event.params.user) {
 
       pool.ownerRequestedUnstakeKeyAmount = pool.ownerRequestedUnstakeKeyAmount.plus(event.params.amount)
       //If this event was emitted from unstakeGenesisKeyRequest
       if (getTxSignatureFromEvent(event) == "0xfe407a92") {
-        pool.ownerLatestUnstakeRequestCompletionTime = event.block.timestamp.plus(poolConfig.unstakeGenesisKeyDelayPeriod)
         unstakeRequest.lockTime = event.block.timestamp.plus(poolConfig.unstakeGenesisKeyDelayPeriod)
+        pool.ownerLatestUnstakeRequestCompletionTime = unstakeRequest.lockTime
       }
       pool.save()
     }
 
-  } else {
-    unstakeRequest.lockTime = event.block.timestamp.plus(poolConfig.unstakeEsXaiDelayPeriod)
-
   }
+
   unstakeRequest.save()
 }
 
