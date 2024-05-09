@@ -2,12 +2,14 @@ interface ConnectionButtonProps {
   onOpen: () => void;
   address: string | undefined;
   isFullWidth?: boolean;
+  className?: string
 }
 
 export const ConnectButton = ({
   onOpen,
   address,
   isFullWidth,
+  className
 }: ConnectionButtonProps) => {
   return (
     <button
@@ -17,7 +19,7 @@ export const ConnectButton = ({
       ${
         address &&
         "border-1 border-[#E4E4E4] bg-white text-lightBlackDarkWhite hover:bg-[#E4E4E4]"
-      } global-clip-primary-btn`}
+      } global-clip-primary-btn ${className}`}
       type="submit"
       onClick={onOpen}
     >
