@@ -4,9 +4,9 @@ import {useGetTotalSupplyAndCap} from "@/features/checkout/hooks/useGetTotalSupp
 import {Dispatch, SetStateAction, useState} from "react";
 import {ethers} from "ethers";
 import {CheckoutTierSummary, getPromoCode} from "@sentry/core";
-import {PrimaryButton, XaiCheckbox} from "@sentry/ui";
+import {PrimaryButton} from "@sentry/ui";
 import {KYCTooltip} from "@/features/checkout/KYCTooltip";
-import { useNetwork } from 'wagmi';
+import {useNetwork} from 'wagmi';
 import MainCheckbox from "@sentry/ui/src/rebrand/checkboxes/MainCheckbox";
 
 interface PriceDataInterface {
