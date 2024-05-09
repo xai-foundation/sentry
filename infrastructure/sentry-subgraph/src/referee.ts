@@ -27,7 +27,7 @@ import { getMaxStakeAmount } from "./utils/getMaxStakeAmount"
 import { getTxSignatureFromEvent } from "./utils/getTxSignatureFromEvent"
 import { updateChallenge } from "./utils/updateChallenge"
 
-import { log, ethereum, BigInt, Bytes, Address } from "@graphprotocol/graph-ts"
+import { ethereum, BigInt, Bytes, Address } from "@graphprotocol/graph-ts"
 
 export function handleInitialized(event: Initialized): void {
 

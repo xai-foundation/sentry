@@ -32,12 +32,12 @@ export function handleInitialized(event: Initialized): void {
     poolConfig = new PoolFactoryConfig("PoolFactoryConfig");
   }
 
-  const poolfactory = PoolFactory.bind(event.address)
+  const poolFactory = PoolFactory.bind(event.address)
   poolConfig.version = BigInt.fromI32(event.params.version)
-  poolConfig.unstakeKeysDelayPeriod = poolfactory.unstakeKeysDelayPeriod()
-  poolConfig.unstakeGenesisKeyDelayPeriod = poolfactory.unstakeGenesisKeyDelayPeriod()
-  poolConfig.unstakeEsXaiDelayPeriod = poolfactory.unstakeEsXaiDelayPeriod()
-  poolConfig.updateRewardBreakdownDelayPeriod = poolfactory.updateRewardBreakdownDelayPeriod()
+  poolConfig.unstakeKeysDelayPeriod = poolFactory.unstakeKeysDelayPeriod()
+  poolConfig.unstakeGenesisKeyDelayPeriod = poolFactory.unstakeGenesisKeyDelayPeriod()
+  poolConfig.unstakeEsXaiDelayPeriod = poolFactory.unstakeEsXaiDelayPeriod()
+  poolConfig.updateRewardBreakdownDelayPeriod = poolFactory.updateRewardBreakdownDelayPeriod()
   poolConfig.save();
 }
 
