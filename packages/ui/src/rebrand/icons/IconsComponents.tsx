@@ -152,9 +152,24 @@ export const XaiLogo = ({width = 44, height = 38}) => {
 }
 
 export const DiscordIcon = ({width = 26, height = 20, className = ""}) => {
-    return <svg xmlns="http://www.w3.org/2000/svg" className={className} width={width} height={height} viewBox="0 0 19.435 15">
+    return <svg xmlns="http://www.w3.org/2000/svg" className={className} style={{ width, height }} viewBox="0 0 19.435 15">
         <path id="discord-svgrepo-com_2_" data-name="discord-svgrepo-com (2)"
               d="M18.952,5.918A16.059,16.059,0,0,0,14.944,4.66a9.262,9.262,0,0,0-.511,1.063,14.674,14.674,0,0,0-4.438,0A11.4,11.4,0,0,0,9.473,4.66,16.059,16.059,0,0,0,5.465,5.918,16.784,16.784,0,0,0,2.582,17.145,16.052,16.052,0,0,0,7.5,19.66a12.373,12.373,0,0,0,1.053-1.728A9.552,9.552,0,0,1,6.9,17.124c.143-.1.276-.215.409-.317a11.339,11.339,0,0,0,9.826,0c.133.112.266.215.409.317a10.789,10.789,0,0,1-1.656.808,12.373,12.373,0,0,0,1.053,1.728,15.939,15.939,0,0,0,4.918-2.515A16.726,16.726,0,0,0,18.972,5.918ZM8.983,14.9a1.881,1.881,0,0,1-1.748-1.984,1.868,1.868,0,0,1,1.748-1.984,1.861,1.861,0,0,1,1.748,1.984A1.874,1.874,0,0,1,8.983,14.9Zm6.452,0a1.881,1.881,0,0,1-1.748-1.984,1.868,1.868,0,0,1,1.748-1.984,1.861,1.861,0,0,1,1.748,1.984A1.874,1.874,0,0,1,15.434,14.9Z"
               transform="translate(-2.502 -4.66)" />
+    </svg>
+}
+export const TelegramIcon = ({width = 26, height = 20, className = ""}) => {
+    return <svg xmlns="http://www.w3.org/2000/svg" className={className} style={{ width, height }} viewBox="0 0 17.886 15">
+        <path id="telegram-plane"
+              d="M19.837,5.391l-2.7,12.729c-.2.9-.735,1.122-1.489.7l-4.113-3.031L9.551,17.7a1.032,1.032,0,0,1-.827.4l.3-4.188,7.622-6.888c.332-.3-.072-.459-.515-.164L6.7,12.8l-4.057-1.27c-.882-.275-.9-.882.184-1.306L18.7,4.106c.735-.275,1.377.164,1.138,1.286Z"
+              transform="translate(-2.002 -4.026)" />
+    </svg>
+}
+
+export const XIcon = ({width = 26, height = 20, className = ""}) => {
+    return <svg xmlns="http://www.w3.org/2000/svg" className={className} style={{ width, height }} viewBox="0 0 16.5 15">
+        <path id="Path_3803" data-name="Path 3803"
+              d="M6.25,2H1l6.2,8.261L1.337,17H3.325l4.791-5.512L12.25,17H17.5L11.044,8.392,16.6,2H14.613L10.123,7.164ZM13,15.5,4,3.5H5.5l9,12Z"
+              transform="translate(-1 -2)" />
     </svg>
 }

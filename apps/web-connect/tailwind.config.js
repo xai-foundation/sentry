@@ -31,13 +31,15 @@ module.exports = {
           "100%": { width: "100vw" }
         },
         navbarDisappear: {
-          "0%": { width: "100vw", display: "block" },
-          "100%": { width: "0", display: "hidden" }
+          "0%": { width: "100vw", display: "block", paddingLeft: "15px", paddingRight: "15px" },
+          "50%": {  paddingLeft: "15px", paddingRight: "15px" },
+          "90%": {  paddingLeft: "15px", paddingRight: "15px" },
+          "100%": { width: "0", display: "hidden", paddingLeft: "0", paddingRight: "0" }
         }
       },
       animation: {
-        "navbar-appear": "navbarAppear .2s linear",
-        "navbar-disappear": "navbarDisappear .2s linear"
+        "navbar-appear": "navbarAppear .3s linear",
+        "navbar-disappear": "navbarDisappear .3s linear"
       },
       boxShadow: {
         main: "0px 10px 15px #000000BF",

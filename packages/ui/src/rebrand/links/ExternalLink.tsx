@@ -20,7 +20,7 @@ export function ExternalLink({
         <a
             href={link}
             target={externalTab ? "_blank" : "_top"}
-            className={`text-base font-medium ${colorRed ? "text-hornetSting" : "text-white"} ${customClass} underline hover:no-underline duration-200 ease-in`}
+            className={`text-base font-medium ${colorRed ? "text-hornetSting" : "text-white"} underline hover:no-underline duration-200 ease-in ${customClass}`}
             rel="noreferrer"
         >
             {content}
