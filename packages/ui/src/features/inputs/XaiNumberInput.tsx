@@ -24,7 +24,7 @@ export function XaiNumberInput({quantity, setQuantity, maxSupply = 50000}: XaiNu
   };
 
   return (
-    <div className="relative">
+    <div className="relative sm:w-full lg:w-auto">
       <MainStepper onChange={handleInputChange} quantity={quantity} setQuantity={setQuantity} maxSupply={maxSupply} />
     </div>
   );

@@ -53,7 +53,7 @@ export function Checkout() {
 	return (
 		<div>
 			<div className="h-full min-h-[90vh] flex flex-col justify-center items-center">
-
+            <div className="sm:w-[250px] lg:hidden lg:w-auto text-center sm:text-sm lg:text-base text-[#66d058] font-semibold pt-[70px] pb-[20px] lg:ml-2">You are on the official Xai.games website</div>
 				{isLoading && (
 					<div className="w-[744px] h-[208px] flex flex-col justify-center border border-[#E5E5E5] m-4">
 						<div className="w-full h-[390px] flex flex-col justify-center items-center gap-2">
@@ -99,25 +99,25 @@ export function Checkout() {
 				)}
 
 				{!isLoading && !isSuccess && (
-					<div className="w-[1300px] h-auto flex justify-center bg-darkLicorice shadow-main">
-						<div className="flex flex-col justify-start items-center w-[600px] h-auto py-12 pt-1">
+					<div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-darkLicorice shadow-main">
+						<div className="flex flex-col justify-start items-center h-auto sm:px-4 sm:py-4 lg:p-12 lg:pt-1 ">
 							<div className="w-full flex justify-center">
 								<img className="max-w-[280px]" src={logo} />
 							</div>
-							<div className="w-full flex justify-center max-w-[200px]">
-								<span className="text-5xl text-center font-bold text-white">YOUR PURCHASE IS READY</span>
+							<div className="w-full flex justify-center lg:max-w-[200px]">
+								<span className="sm:text-3xl lg:text-5xl text-center font-bold text-white">YOUR PURCHASE IS READY</span>
 							</div>
-							<div className="flex items-center mt-2">
-								<WarningIcon width={20} height={20} />
-								<span className="text-[#66d058] font-semibold ml-2">You are on the official Xai.games website</span>
+							<div className="flex items-center relarive z-0 mt-2">
+								<WarningIcon width={20} height={20} className="sm:hidden lg:block" />
+								<div className="sm:w-[250px] lg:w-auto text-center sm:hidden lg:block sm:text-sm lg:text-base text-[#66d058] font-semibold lg:ml-2">You are on the official Xai.games website</div>
 							</div>
 					</div>
-						<div className="w-[750px] h-auto py-12 pr-[100px]">
-						<div className="flex justify-between items-start">
-							<div className="flex flex-col gap-2">
-								<div className="flex flex-row items-center gap-1">
+						<div className="h-auto lg:p-12 sm:px-2 sm:py-10">
+						<div className="flex sm:flex-col lg:flex-row justify-between lg:items-start sm:items-center">
+							<div className="flex flex-col sm:items-center lg:items-start gap-2">
+								<div className="flex flex-row sm:w-full sm:justify-center lg:justify-start items-center gap-1">
 									<RedSentryIcon width={32} height={32} />
-									<p className="text-2xl text-white font-semibold">
+									<p className="sm:text-xl lg:text-2xl text-white font-semibold">
 										XAI SENTRY NODE KEY
 									</p>
 									<Tooltip
@@ -128,7 +128,7 @@ export function Checkout() {
 										<InfoPointRed/>
 									</Tooltip>
 								</div>
-								<p className="w-[400px] text-base text-[#525252]">
+								<p className="sm:w-full lg:w-[400px] sm:text-center sm:px-8 lg:px-0 lg:text-left text-base text-[#525252]">
 									Each Sentry Node Key enables you to submit up to 1 reward claim for each network challenge.
 								</p>
 							</div>

@@ -3,6 +3,7 @@ interface CheckboxProps {
   children: React.ReactNode;
   disabled?: boolean;
   isChecked?: boolean;
+  labelStyle?: string;
 }
 
 const MainCheckbox = ({
@@ -10,9 +11,10 @@ const MainCheckbox = ({
   onChange,
   isChecked,
   children,
+  labelStyle,
 }: CheckboxProps) => {
   return (
-    <label className="flex items-center gap-[10px] cursor-pointer select-none text-americanSilver">
+    <label className={`flex items-center gap-[10px] cursor-pointer select-none text-americanSilver ${labelStyle}`}>
       <input
         type="checkbox"
         onChange={onChange}

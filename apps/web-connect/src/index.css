@@ -44,7 +44,7 @@ body {
   font-weight: 300; /* Specify the desired font weight */
   background-image: url("./assets/images/sentry-background.png"), linear-gradient(180deg, #221D1D 0%, #221D1D 100%);
   background-repeat: no-repeat;
-  background-size: contain;
+  background-size: cover;
 }
 
 .cookie-consent a {

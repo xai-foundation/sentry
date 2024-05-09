@@ -73,10 +73,13 @@ export function WebBuyKeysOrderTotal(
 			.map((item, i) => {
 								return (
 					<div key={`get-keys-${i}`}>
-						<div className="flex flex-row items-center justify-between text-[15px]">
-							<div className="flex flex-row items-center gap-2 text-white">
+						<div className="flex sm:flex-col lg:flex-row items-center justify-between text-xl">
+							<div className="flex flex-row items-center gap-2 text-white font-semibold">
 								<span className="">{item.quantity.toString()} x Xai Sentry Node Key</span>
 							</div>
+						<p className="text-sm text-[#525252] mb-4 sm:block lg:hidden">
+							{ethers.formatEther(item.pricePer)} AETH per key
+						</p>
 							<div className="flex flex-row items-center gap-1">
 								<span
 									className="font-bold text-white">
@@ -84,7 +87,7 @@ export function WebBuyKeysOrderTotal(
 								</span>
 							</div>
 						</div>
-						<p className="text-[13px] text-[#525252] mb-4">
+						<p className="text-sm text-[#525252] mb-4 sm:hidden lg:block">
 							{ethers.formatEther(item.pricePer)} AETH per key
 						</p>
 					</div>
@@ -158,9 +161,9 @@ export function WebBuyKeysOrderTotal(
 									<>
 										<hr className="my-2 border-[#525252]"/>
 										{promo ? (
-											<div className="w-full flex items-center py-2">
+											<div className="w-full flex sm:flex-col lg:flex-row items-center py-2">
 												<div
-													className="w-[300px] h-auto flex flex-row justify-between items-center text-[15px] text-[#525252] mt-2">
+													className="w-[300px] h-auto flex flex-row sm:justify-center lg:justify-start items-center text-[15px] text-[#525252] mt-2 sm:mb-2 lg:mb-0">
 													<span className="text-[#F30919] text-base">+ Add promo code</span>
 													<div
 														className="cursor-pointer z-10"
@@ -173,7 +176,7 @@ export function WebBuyKeysOrderTotal(
 													</div>
 												</div>
 
-												<div className="flex w-full items-center">
+												<div className="flex w-full items-center sm:justify-center">
 
 													<input
 														type="text"
@@ -185,11 +188,17 @@ export function WebBuyKeysOrderTotal(
 																error: false,
 															});
 														}}
-														className={`w-full border-r-0 p-2 bg-darkLicorice border ${discount.error ? "border-[#AB0914]" : "border-[#525252]"}`}
+														className={`text-white lg:w-full border-r-0 p-2 bg-darkLicorice border ${discount.error ? "border-[#AB0914]" : "border-[#525252]"}`}
 													/>
-
+													<div className="lg:hidden sm:block">
+													<PrimaryButton
+														onClick={() => handleSubmit()}
+														btnText="APPLY"
+														className="text-white text-sm !py-2 max-h-[42.5px] max-w-[90px]"
+														/>
+													</div>
 												</div>
-												<div>
+												<div className="lg:block sm:hidden">
 													<PrimaryButton
 														onClick={() => handleSubmit()}
 														btnText="APPLY"
@@ -203,7 +212,7 @@ export function WebBuyKeysOrderTotal(
 												)}
 											</div>
 										) : (
-											<p className="text-[15px] py-2">
+											<p className="flex sm:justify-center lg:justify-start text-[15px] py-2">
 												<a
 													onClick={() => setPromo(true)}
 													className="text-[#F30919] text-base ml-1 cursor-pointer"
@@ -216,18 +225,18 @@ export function WebBuyKeysOrderTotal(
 								)}
 
 								<hr className="my-2 border-[#525252]"/>
-								<div className="flex flex-row items-center justify-between py-2">
-									<div className="flex flex-row items-center gap-2 text-lg">
+								<div className="flex sm:flex-col lg:flex-row items-center justify-between py-2">
+									<div className="flex flex-row items-center gap-2 sm:text-xl lg:text-2xl">
 										<span className="text-white font-bold">You pay</span>
 									</div>
 									<div className="flex flex-row items-center gap-1">
-										<span className="text-white font-bold text-2xl">
+										<span className="text-white font-bold sm:text-xl lg:text-2xl">
 											{discount.applied
 												? ethers.formatEther(getPriceData.price * BigInt(95) / BigInt(100))
 												: ethers.formatEther(getPriceData.price)
 											}
 										</span>
-										<span className="text-white font-bold text-2xl">AETH</span>
+										<span className="text-white font-bold sm:text-xl lg:text-2xl">AETH</span>
 									</div>
 								</div>
 							</div>
@@ -238,33 +247,42 @@ export function WebBuyKeysOrderTotal(
 								<MainCheckbox
 									onChange={() => setCheckboxOne(!checkboxOne)}
 									isChecked={checkboxOne}
+									labelStyle="!items-start"
 								>
-									<span className="text-base text-[#525252]">I agree with the</span>
+									<div className="sm:w-[200px] md:w-[300px] lg:w-auto">
+									<span className="sm:text-sm md:text-base text-[#525252] sm:mr-2">I agree with the</span>
 									<a
-										className="cursor-pointer text-[#F30919]"
+										className="cursor-pointer text-[#F30919] sm:text-sm lg:text-base"
 										onClick={() => window.open("https://xai.games/sentrynodeagreement/")}>
 										Sentry Node Agreement
-									</a>
+										</a>
+									</div>
 								</MainCheckbox>
 
 
 								<MainCheckbox
 									onChange={() => setCheckboxTwo(!checkboxTwo)}
 									isChecked={checkboxTwo}
+									labelStyle="!items-start"
 								>
-									<span className="text-base text-[#525252]">I understand Sentry Node Keys are not transferable</span>
+									<div className="sm:w-[300px] md:w-auto">
+										<span className="sm:text-sm md:text-base text-[#525252]">I understand Sentry Node Keys are not transferable</span>
+									</div>
 								</MainCheckbox>
 
 								<MainCheckbox
 									onChange={() => setCheckboxThree(!checkboxThree)}
 									isChecked={checkboxThree}
+									labelStyle="!items-start"
 								>
-									<span className="text-base text-[#525252]">I understand that I cannot claim rewards until I pass KYC</span>
+									<div className="flex w-full sm:w-[300px] justify-between md:w-auto sm:flex-col lg:flex-row items-start">
+									<span className="sm:text-sm md:text-base text-[#525252] lg:mr-2">I understand that I cannot claim rewards until I pass KYC</span>
 									<KYCTooltip
 										width={850}
 									>
-										<p className="text-[#F30919]">(See blocked countries)</p>
+										<p className="text-[#F30919] sm:text-sm md:text-base">(See blocked countries)</p>
 									</KYCTooltip>
+									</div>
 								</MainCheckbox>
 							</div>
 
