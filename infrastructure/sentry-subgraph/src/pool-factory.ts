@@ -129,42 +129,37 @@ export function handleUnstakeKeys(event: UnstakeKeys): void {
       unstakeRequest.save();
     } else {
       log.warning("Could not find unstake request!", [])
-      log.warning("params: " + event.params.pool.toHexString() + ", " + event.params.user.toHexString() + " " + index.toString(), [])
+      log.warning("pool: " + event.params.pool.toHexString() + ", user: " + event.params.user.toHexString() + ", index: " + index.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
     }
   }
-}
+} 
 
 export function handlePoolCreated(event: PoolCreated): void {
   const dataToDecode = getInputFromEvent(event)
   const decoded = ethereum.decode('(address,uint256[],uint32[3],string[3],string[],string[2][2])', dataToDecode);
   if (decoded) {
     const pool = new PoolInfo(event.params.poolAddress.toHexString())
+    const tuple = decoded.toTuple();
     pool.address = event.params.poolAddress
     pool.owner = event.params.poolOwner
-    pool.delegateAddress = decoded.toTuple()[0].toAddress();
+    pool.delegateAddress = tuple[0].toAddress();
     pool.totalStakedEsXaiAmount = BigInt.fromI32(0);
-    pool.totalStakedKeyAmount = BigInt.fromI32(decoded.toTuple()[1].toBigIntArray().length);
-    pool.ownerShare = decoded.toTuple()[2].toBigIntArray()[0];
-    pool.keyBucketShare = decoded.toTuple()[2].toBigIntArray()[1];
-    pool.stakedBucketShare = decoded.toTuple()[2].toBigIntArray()[2];
+    pool.totalStakedKeyAmount = event.params.stakedKeyCount;
+    pool.ownerShare = tuple[2].toBigIntArray()[0];
+    pool.keyBucketShare = tuple[2].toBigIntArray()[1];
+    pool.stakedBucketShare = tuple[2].toBigIntArray()[2];
     pool.updateSharesTimestamp = BigInt.fromI32(0);
     pool.pendingShares = [BigInt.fromI32(0), BigInt.fromI32(0), BigInt.fromI32(0)];
-    pool.metadata = decoded.toTuple()[3].toStringArray();
-    pool.socials = decoded.toTuple()[4].toStringArray();
+    pool.metadata = tuple[3].toStringArray();
+    pool.socials = tuple[4].toStringArray();
     pool.ownerStakedKeys = pool.totalStakedKeyAmount;
     pool.ownerRequestedUnstakeKeyAmount = BigInt.fromI32(0);
     pool.ownerLatestUnstakeRequestCompletionTime = BigInt.fromI32(0);
     pool.save()
 
-    let sentryWallet = SentryWallet.load(pool.owner.toHexString())
-    if (sentryWallet) {
-      sentryWallet.stakedKeyCount = sentryWallet.stakedKeyCount.plus(pool.totalStakedKeyAmount)
-      sentryWallet.save();
-    }
-
   } else {
     //This is just a debug solution, we should be able to decode the transaction inputs.
-    log.warning("Failed to decode pool create input", []);
+    log.warning("Failed to decode pool create input: PoolAddress: " + event.params.poolAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), []);
   }
 }
 
