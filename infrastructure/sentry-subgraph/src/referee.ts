@@ -27,7 +27,7 @@ import { getMaxStakeAmount } from "./utils/getMaxStakeAmount"
 import { getTxSignatureFromEvent } from "./utils/getTxSignatureFromEvent"
 import { updateChallenge } from "./utils/updateChallenge"
 
-import { ethereum, BigInt, Bytes, Address } from "@graphprotocol/graph-ts"
+import { ethereum, BigInt, Bytes, Address, log } from "@graphprotocol/graph-ts"
 
 export function handleInitialized(event: Initialized): void {
 
@@ -64,7 +64,7 @@ export function handleInitialized(event: Initialized): void {
 
   if (event.params.version > 3) {
     refereeConfig.maxKeysPerPool = referee.maxKeysPerPool()
-  }else{
+  } else {
     refereeConfig.maxKeysPerPool = BigInt.fromI32(0)
   }
 
@@ -86,7 +86,7 @@ export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
   }
 
   let assertionStateRootOrConfirmData: Bytes = Bytes.fromI32(0);
-  const dataToDecode = getInputFromEvent(event)
+  const dataToDecode = getInputFromEvent(event, true)
   //submitAssertionToChallenge = 0xb48985e4
   //submitMultipleAssertions = 0xec6564bf
   const isSubmitMultiple = getTxSignatureFromEvent(event) == "0xec6564bf"
@@ -94,11 +94,15 @@ export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
     const decoded = ethereum.decode('(uint256[],uint256,bytes)', dataToDecode)
     if (decoded) {
       assertionStateRootOrConfirmData = decoded.toTuple()[2].toBytes()
+    } else {
+      log.warning("Failed to decode handleAssertionSubmitted (multiple) TX: " + event.transaction.hash.toHexString(), [])
     }
   } else {
     const decoded = ethereum.decode('(uint256,uint256,bytes)', dataToDecode)
     if (decoded) {
       assertionStateRootOrConfirmData = decoded.toTuple()[2].toBytes()
+    } else {
+      log.warning("Failed to decode handleAssertionSubmitted (single) TX: " + event.transaction.hash.toHexString(), [])
     }
   }
 
@@ -137,6 +141,8 @@ export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
     if (challenge) {
       challenge.numberOfEligibleClaimers = challenge.numberOfEligibleClaimers.plus(BigInt.fromI32(1))
       challenge.save()
+    } else {
+      log.warning("Failed to find challenge handleAssertionSubmitted challengeId: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
     }
   }
 }
@@ -147,6 +153,8 @@ export function handleChallengeClosed(event: ChallengeClosedEvent): void {
   if (challenge) {
     challenge.status = "OpenForClaims"
     challenge.save()
+  } else {
+    log.warning("Failed to find challenge handleChallengeClosed challengeId: " + event.params.challengeNumber.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
   }
 }
 
@@ -156,6 +164,8 @@ export function handleChallengeExpired(event: ChallengeExpiredEvent): void {
   if (challenge) {
     challenge.status = "Expired"
     challenge.save()
+  } else {
+    log.warning("Failed to find challenge handleChallengeExpired challengeId: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
   }
 }
 
@@ -177,59 +187,77 @@ export function handleChallengeSubmitted(event: ChallengeSubmittedEvent): void {
 export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
   // query for the challenge and update it
   let challenge = Challenge.load(event.params.challengeId.toString())
-  if (challenge) {
-    challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(event.params.amount)
-    challenge.save()
 
-    const dataToDecode = getInputFromEvent(event)
-    const decoded = ethereum.decode('(uint256,uint256)', dataToDecode)
-    if (decoded) {
-      const nodeLicenseId = decoded.toTuple()[0].toBigInt()
-      const submission = Submission.load(event.params.challengeId.toString() + nodeLicenseId.toString())
-      if (submission) {
-        submission.claimed = true
-        submission.claimAmount = event.params.amount
-        submission.save()
-      }
-    }
+  if (!challenge) {
+    log.warning("Failed to find challenge handleRewardsClaimed challengeId: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
+    return;
   }
+
+  challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(event.params.amount)
+  challenge.save()
+
+  const dataToDecode = getInputFromEvent(event, false)
+  const decoded = ethereum.decode('(uint256,uint256)', dataToDecode)
+  if (!decoded) {
+    log.warning("Failed to decode handleRewardsClaimed TX: " + event.transaction.hash.toHexString(), [])
+    return;
+  }
+
+  const nodeLicenseId = decoded.toTuple()[0].toBigInt()
+  const submission = Submission.load(event.params.challengeId.toString() + nodeLicenseId.toString())
+  if (!submission) {
+    log.warning("Failed to find submission handleRewardsClaimed TX: " + event.transaction.hash.toHexString(), [])
+    return;
+  }
+
+  submission.claimed = true
+  submission.claimAmount = event.params.amount
+  submission.save()
 
 }
 
 export function handleBatchRewardsClaimed(event: BatchRewardsClaimedEvent): void {
   // query for the challenge and update it
   const challenge = Challenge.load(event.params.challengeId.toString())
-  if (challenge) {
-    const dataToDecode = getInputFromEvent(event)
-    const decoded = ethereum.decode('(uint256[],uint256,address)', dataToDecode)
-    if (decoded) {
-      const nodeLicenseIds = decoded.toTuple()[0].toBigIntArray()
-      const reward = challenge.rewardAmountForClaimers.div(challenge.numberOfEligibleClaimers)
+  if (!challenge) {
+    log.warning("Failed to find challenge handleBatchRewardsClaimed challengeId: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
+    return;
+  }
 
-      for (let i = 0; i < nodeLicenseIds.length; i++) {
-        const submission = Submission.load(event.params.challengeId.toString() + nodeLicenseIds[i].toString())
-        const sentryKey = SentryKey.load(nodeLicenseIds[i].toString())
+  const dataToDecode = getInputFromEvent(event, true)
+  const decoded = ethereum.decode('(uint256[],uint256,address)', dataToDecode)
+  if (!decoded) {
+    log.warning("Failed to decode handleBatchRewardsClaimed TX: " + event.transaction.hash.toHexString(), [])
+    return;
+  }
 
-        if (sentryKey && submission) {
-          const ownerWallet = SentryWallet.load(sentryKey.sentryWallet)
-          if (ownerWallet) {
-            if (
-              ownerWallet.isKYCApproved &&
-              sentryKey.mintTimeStamp < challenge.createdTimestamp &&
-              !submission.claimed &&
-              submission.eligibleForPayout
-            ) {
+  const nodeLicenseIds = decoded.toTuple()[0].toBigIntArray()
+  const reward = challenge.rewardAmountForClaimers.div(challenge.numberOfEligibleClaimers)
 
-              challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(reward)
-              challenge.save()
+  for (let i = 0; i < nodeLicenseIds.length; i++) {
+    const submission = Submission.load(event.params.challengeId.toString() + nodeLicenseIds[i].toString())
+    const sentryKey = SentryKey.load(nodeLicenseIds[i].toString())
 
-              submission.claimed = true
-              submission.claimAmount = reward
-              submission.save()
-            }
-          }
+    if (sentryKey && submission) {
+      const ownerWallet = SentryWallet.load(sentryKey.sentryWallet)
+      if (ownerWallet) {
+        if (
+          ownerWallet.isKYCApproved &&
+          sentryKey.mintTimeStamp < challenge.createdTimestamp &&
+          !submission.claimed &&
+          submission.eligibleForPayout
+        ) {
+
+          challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(reward)
+          challenge.save()
+
+          submission.claimed = true
+          submission.claimAmount = reward
+          submission.save()
         }
       }
+    } else {
+      log.warning("Failed to find sentryKey && submission handleBatchRewardsClaimed TX: " + event.transaction.hash.toHexString() + ", challenge: " + event.params.challengeId.toString() + ", nodeLicenseId: " + nodeLicenseIds[i].toString(), [])
     }
   }
 }
