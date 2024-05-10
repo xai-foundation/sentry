@@ -89,20 +89,20 @@ export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
   const dataToDecode = getInputFromEvent(event, true)
   //submitAssertionToChallenge = 0xb48985e4
   //submitMultipleAssertions = 0xec6564bf
-  const isSubmitMultiple = getTxSignatureFromEvent(event) == "0xec6564bf"
-  if (isSubmitMultiple) {
-    const decoded = ethereum.decode('(uint256[],uint256,bytes)', dataToDecode)
-    if (decoded) {
-      assertionStateRootOrConfirmData = decoded.toTuple()[2].toBytes()
-    } else {
-      log.warning("Failed to decode handleAssertionSubmitted (multiple) TX: " + event.transaction.hash.toHexString(), [])
-    }
-  } else {
+  const isSubmitSingle = getTxSignatureFromEvent(event) == "0xb48985e4"
+  if (isSubmitSingle) {
     const decoded = ethereum.decode('(uint256,uint256,bytes)', dataToDecode)
     if (decoded) {
       assertionStateRootOrConfirmData = decoded.toTuple()[2].toBytes()
     } else {
       log.warning("Failed to decode handleAssertionSubmitted (single) TX: " + event.transaction.hash.toHexString(), [])
+    }
+  } else {
+    const decoded = ethereum.decode('(uint256[],uint256,bytes)', dataToDecode)
+    if (decoded) {
+      assertionStateRootOrConfirmData = decoded.toTuple()[2].toBytes()
+    } else {
+      log.warning("Failed to decode handleAssertionSubmitted (multiple) TX: " + event.transaction.hash.toHexString(), [])
     }
   }
 
@@ -196,17 +196,38 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
   challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(event.params.amount)
   challenge.save()
 
-  const dataToDecode = getInputFromEvent(event, false)
-  const decoded = ethereum.decode('(uint256,uint256)', dataToDecode)
-  if (!decoded) {
-    log.warning("Failed to decode handleRewardsClaimed TX: " + event.transaction.hash.toHexString(), [])
-    return;
+  let nodeLicenseId: BigInt;
+
+  if (getTxSignatureFromEvent(event) != "0x86bb8f37") {
+    //custom claim call
+    //try extracting from array
+    const dataToDecode = getInputFromEvent(event, true)
+    const decoded = ethereum.decode('(uint256[],uint256[])', dataToDecode)
+    if (!decoded) {
+      log.warning("Failed to decode (custom call) handleRewardsClaimed TX: " + event.transaction.hash.toHexString(), [])
+      return;
+    }
+
+    const nodeLicenseIds = decoded.toTuple()[0].toBigIntArray()
+    const challengeIds = decoded.toTuple()[1].toBigIntArray()
+    const challengeIndex = challengeIds.indexOf(event.params.challengeId);
+    nodeLicenseId = nodeLicenseIds[challengeIndex]
+
+  } else {
+
+    const dataToDecode = getInputFromEvent(event, false)
+    const decoded = ethereum.decode('(uint256,uint256)', dataToDecode)
+    if (!decoded) {
+      log.warning("Failed to decode handleRewardsClaimed TX: " + event.transaction.hash.toHexString(), [])
+      return;
+    }
+
+    nodeLicenseId = decoded.toTuple()[0].toBigInt()
   }
 
-  const nodeLicenseId = decoded.toTuple()[0].toBigInt()
   const submission = Submission.load(event.params.challengeId.toString() + nodeLicenseId.toString())
   if (!submission) {
-    log.warning("Failed to find submission handleRewardsClaimed TX: " + event.transaction.hash.toHexString(), [])
+    log.warning("Failed to find submission handleRewardsClaimed: nodeLicenseId: " + nodeLicenseId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
     return;
   }
 
