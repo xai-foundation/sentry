@@ -74,16 +74,35 @@ export function handleInitialized(event: Initialized): void {
 
 export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
   const challenge = Challenge.load(event.params.challengeId.toString())
+  if (!challenge) {
+    log.warning("Failed to find challenge handleAssertionSubmitted: keyID: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
+    return;
+  }
+
+  const sentryKey = SentryKey.load(event.params.nodeLicenseId.toString())
+  if (!sentryKey) {
+    log.warning("Failed to find sentryKey handleAssertionSubmitted: keyID: " + event.params.nodeLicenseId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
+    return;
+  }
+
+  let sentryWallet = SentryWallet.load(sentryKey.sentryWallet)
+  if (!sentryWallet) {
+    log.warning("Failed to find sentryWallet handleAssertionSubmitted: keyID: " + event.params.nodeLicenseId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
+    return;
+  }
+
+  let refereeConfig = RefereeConfig.load("RefereeConfig")
+  if (!refereeConfig) {
+    log.warning("Failed to find refereeConfig handleAssertionSubmitted TX: " + event.transaction.hash.toHexString(), [])
+    return;
+  }
+
   let submission = new Submission(event.params.challengeId.toString() + event.params.nodeLicenseId.toString())
   submission.nodeLicenseId = event.params.nodeLicenseId
   submission.challengeNumber = event.params.challengeId
   submission.claimed = false
   submission.claimAmount = BigInt.fromI32(0)
-
-  const sentryKey = SentryKey.load(event.params.nodeLicenseId.toString())
-  if (sentryKey) {
-    submission.sentryKey = event.params.nodeLicenseId.toString()
-  }
+  submission.sentryKey = event.params.nodeLicenseId.toString()
 
   let assertionStateRootOrConfirmData: Bytes = Bytes.fromI32(0);
   const dataToDecode = getInputFromEvent(event, true)
@@ -106,31 +125,29 @@ export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
     }
   }
 
-  let sentryWallet = SentryWallet.load(sentryKey!.sentryWallet)
-  let stakeAmount = sentryWallet!.esXaiStakeAmount
-  let keyCount = sentryWallet!.keyCount.minus(sentryWallet!.stakedKeyCount)
-  if (sentryKey!.assignedPool.toHexString() != (new Address(0).toHexString())) {
-    const pool = PoolInfo.load(sentryKey!.assignedPool.toHexString())
+  let stakeAmount = sentryWallet.v1EsXaiStakeAmount
+  let keyCount = sentryWallet.keyCount.minus(sentryWallet.stakedKeyCount)
+  if (sentryKey.assignedPool.toHexString() != (new Address(0).toHexString())) {
+    const pool = PoolInfo.load(sentryKey.assignedPool.toHexString())
     stakeAmount = pool!.totalStakedEsXaiAmount
     keyCount = pool!.totalStakedKeyAmount
   }
 
-  let refereeConfig = RefereeConfig.load("RefereeConfig")
-  const maxStakeAmount = getMaxStakeAmount(stakeAmount, keyCount, refereeConfig!.maxStakeAmountPerLicense)
+  const maxStakeAmount = getMaxStakeAmount(stakeAmount, keyCount, refereeConfig.maxStakeAmountPerLicense)
   const boostFactor = getBoostFactor(
     maxStakeAmount,
-    refereeConfig!.stakeAmountTierThresholds,
-    refereeConfig!.stakeAmountBoostFactors,
-    refereeConfig!.version
+    refereeConfig.stakeAmountTierThresholds,
+    refereeConfig.stakeAmountBoostFactors,
+    refereeConfig.version
   )
 
   const eligibleForPayout = checkIfSubmissionEligible(
     event.params.nodeLicenseId,
     event.params.challengeId,
     assertionStateRootOrConfirmData,
-    challenge!.challengerSignedHash,
+    challenge.challengerSignedHash,
     boostFactor,
-    refereeConfig!.version
+    refereeConfig.version
   )
 
   submission.eligibleForPayout = eligibleForPayout
@@ -138,12 +155,8 @@ export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
   submission.save()
 
   if (submission.eligibleForPayout) {
-    if (challenge) {
-      challenge.numberOfEligibleClaimers = challenge.numberOfEligibleClaimers.plus(BigInt.fromI32(1))
-      challenge.save()
-    } else {
-      log.warning("Failed to find challenge handleAssertionSubmitted challengeId: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
-    }
+    challenge.numberOfEligibleClaimers = challenge.numberOfEligibleClaimers.plus(BigInt.fromI32(1))
+    challenge.save()
   }
 }
 
@@ -238,11 +251,21 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
 }
 
 export function handleBatchRewardsClaimed(event: BatchRewardsClaimedEvent): void {
+
+  if (event.params.keysLength.equals(BigInt.fromI32(0))) {
+    //Empty claim did not actually claim any esXai
+    return;
+  }
+
   // query for the challenge and update it
   const challenge = Challenge.load(event.params.challengeId.toString())
   if (!challenge) {
     log.warning("Failed to find challenge handleBatchRewardsClaimed challengeId: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
     return;
+  }
+
+  if (getTxSignatureFromEvent(event) != "0xb4d6b7df") {
+    log.warning("Custom function call for handleBatchRewardsClaimed, TX: " + event.transaction.hash.toHexString(), [])
   }
 
   const dataToDecode = getInputFromEvent(event, true)
@@ -256,29 +279,49 @@ export function handleBatchRewardsClaimed(event: BatchRewardsClaimedEvent): void
   const reward = challenge.rewardAmountForClaimers.div(challenge.numberOfEligibleClaimers)
 
   for (let i = 0; i < nodeLicenseIds.length; i++) {
-    const submission = Submission.load(event.params.challengeId.toString() + nodeLicenseIds[i].toString())
     const sentryKey = SentryKey.load(nodeLicenseIds[i].toString())
 
-    if (sentryKey && submission) {
-      const ownerWallet = SentryWallet.load(sentryKey.sentryWallet)
-      if (ownerWallet) {
-        if (
-          ownerWallet.isKYCApproved &&
-          sentryKey.mintTimeStamp < challenge.createdTimestamp &&
-          !submission.claimed &&
-          submission.eligibleForPayout
-        ) {
+    if (!sentryKey) {
+      log.warning("Failed to find sentryKey handleBatchRewardsClaimed TX: " + event.transaction.hash.toHexString() + ", challenge: " + event.params.challengeId.toString() + ", nodeLicenseId: " + nodeLicenseIds[i].toString(), [])
+      continue;
+    }
 
-          challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(reward)
-          challenge.save()
-
-          submission.claimed = true
-          submission.claimAmount = reward
-          submission.save()
-        }
+    const submission = Submission.load(event.params.challengeId.toString() + nodeLicenseIds[i].toString())
+    if (!submission) {
+      if (event.params.keysLength.lt(BigInt.fromI32(nodeLicenseIds.length))) {
+        // If this batch claim claimed for more keys than the event counted, we can expect to not find the submission because the user probably claimed for keys that did not submit
+        // We will only log to info to not spam the warning logs
+        log.debug(
+          "INFO: Failed to find submission handleBatchRewardsClaimed TX: " + event.transaction.hash.toHexString() + ", challenge: " + event.params.challengeId.toString() + ", nodeLicenseId: " + nodeLicenseIds[i].toString(),
+          [
+            event.transaction.hash.toHexString(),
+            event.params.challengeId.toString(),
+            nodeLicenseIds[i].toString()
+          ]
+        )
+      } else {
+        //If the event actually counted all keys submitted in the transaction we should find the submission and need to check this log manually
+        log.warning("Failed to find submission handleBatchRewardsClaimed TX: " + event.transaction.hash.toHexString() + ", challenge: " + event.params.challengeId.toString() + ", nodeLicenseId: " + nodeLicenseIds[i].toString(), [])
       }
-    } else {
-      log.warning("Failed to find sentryKey && submission handleBatchRewardsClaimed TX: " + event.transaction.hash.toHexString() + ", challenge: " + event.params.challengeId.toString() + ", nodeLicenseId: " + nodeLicenseIds[i].toString(), [])
+      continue;
+    }
+
+    const ownerWallet = SentryWallet.load(sentryKey.sentryWallet)
+    if (ownerWallet) {
+      if (
+        ownerWallet.isKYCApproved &&
+        sentryKey.mintTimeStamp.lt(challenge.createdTimestamp) &&
+        !submission.claimed &&
+        submission.eligibleForPayout
+      ) {
+
+        challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(reward)
+        challenge.save()
+
+        submission.claimed = true
+        submission.claimAmount = reward
+        submission.save()
+      }
     }
   }
 }
@@ -321,28 +364,33 @@ export function handleApproval(event: ApprovalEvent): void {
     if (addApprovedOperators.indexOf(event.params.operator) == -1) {  // Check if the owner is not already in the array
       addApprovedOperators.push(event.params.operator)
       sentryWallet.approvedOperators = addApprovedOperators
-      sentryWallet.save()
     }
   } else {
     const indexOfOperator = addApprovedOperators.indexOf(event.params.operator);
     if (indexOfOperator != -1) {
       addApprovedOperators.splice(indexOfOperator, 1)
       sentryWallet.approvedOperators = addApprovedOperators
-      sentryWallet.save()
     }
   }
+  sentryWallet.save()
 }
 
 export function handleStakedV1(event: StakedV1): void {
   let sentryWallet = SentryWallet.load(event.params.user.toHexString())
-  if (sentryWallet) {
-    sentryWallet.v1EsXaiStakeAmount = event.params.totalStaked
+  if (!sentryWallet) {
+    log.warning("Failed to find sentryWallet handleStakedV1 TX: " + event.transaction.hash.toHexString(), [])
+    return
   }
+  sentryWallet.v1EsXaiStakeAmount = event.params.totalStaked
+  sentryWallet.save()
 }
 
 export function handleUnstakeV1(event: UnstakeV1): void {
   let sentryWallet = SentryWallet.load(event.params.user.toHexString())
-  if (sentryWallet) {
-    sentryWallet.v1EsXaiStakeAmount = event.params.totalStaked
+  if (!sentryWallet) {
+    log.warning("Failed to find sentryWallet handleUnstakeV1 TX: " + event.transaction.hash.toHexString(), [])
+    return
   }
+  sentryWallet.v1EsXaiStakeAmount = event.params.totalStaked
+  sentryWallet.save()
 }
