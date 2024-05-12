@@ -26,7 +26,7 @@ export let config = {
   "poolFactoryAddress": "0x87Ae2373007C01FBCED0dCCe4a23CA3f17D1fA9A",
   "poolFactoryAddressImplementationAddress": "0x87Ae2373007C01FBCED0dCCe4a23CA3f17D1fA9A",
   "defaultNetworkName": "arbitrumSepolia",
-  "subgraphEndpoint": "https://subgraph.satsuma-prod.com/d346413f9bc1/cryptits-team--300223/sepolia-version/version/v0.0.6-sepolia/api"
+  "subgraphEndpoint": "https://subgraph.satsuma-prod.com/d346413f9bc1/cryptits-team--300223/sepolia-version/version/v0.0.11-sepolia/api"
 };
 
 export function setConfig(_config: any) { config = _config; }

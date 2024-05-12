@@ -1,4 +1,4 @@
-import { PoolInfo, SentryWallet } from "@sentry/sentry-subgraph-client";
+import { PoolInfo, SentryWallet, RefereeConfig } from "@sentry/sentry-subgraph-client";
 import { GraphQLClient, gql } from 'graphql-request'
 
 /**
@@ -10,7 +10,7 @@ export async function getSentryWalletsForOperator(
   client: GraphQLClient,
   operator: string,
   whitelist?: string[]
-): Promise<{ wallets: SentryWallet[], pools: PoolInfo[] }> {
+): Promise<{ wallets: SentryWallet[], pools: PoolInfo[], refereeConfig: RefereeConfig }> {
   const query = gql`
     query OperatorAddresses {
       sentryWallets(where: {
@@ -21,24 +21,36 @@ export async function getSentryWalletsForOperator(
       }) {
         isKYCApproved
         address
+        v1EsXaiStakeAmount
+        stakedKeyCount
+        keyCount
       }
       poolInfos(where: {or: [{owner: "${operator.toLowerCase()}"}, {delegateAddress: "${operator.toLowerCase()}"}]}) {
         address
         owner
         delegateAddress
+        totalStakedEsXaiAmount
+        totalStakedKeyAmount
+      }
+      refereeConfig(id: "RefereeConfig") {
+        maxKeysPerPool
+        maxStakeAmountPerLicense
+        stakeAmountBoostFactors
+        stakeAmountTierThresholds
+        version
       }
     }
   `
-  
+
   const result = await client.request(query) as any;
 
   let wallets: SentryWallet[] = result.sentryWallets;
   let pools: PoolInfo[] = result.poolInfos;
 
-  if(whitelist && whitelist.length){
+  if (whitelist && whitelist.length) {
     wallets = wallets.filter(w => whitelist.includes(w.address));
     pools = pools.filter(p => whitelist.includes(p.address));
   }
 
-  return { wallets, pools };
+  return { wallets, pools, refereeConfig: result.refereeConfig };
 }

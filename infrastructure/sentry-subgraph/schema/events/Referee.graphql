@@ -90,5 +90,18 @@ type SentryWallet @entity(immutable: false) {
   isKYCApproved: Boolean!
   address: Bytes!
   approvedOperators: [Bytes!]!
+  v1EsXaiStakeAmount: BigInt!
+  esXaiStakeAmount: BigInt!
+  keyCount: BigInt!
+  stakedKeyCount: BigInt!
   sentryKeys: [SentryKey!]! @derivedFrom(field: "sentryWallet")
-} 
+}
+
+type RefereeConfig @entity(immutable: false) {
+  id: String!
+  version: BigInt!
+  maxStakeAmountPerLicense: BigInt!
+  maxKeysPerPool: BigInt!
+  stakeAmountTierThresholds: [BigInt!]!
+  stakeAmountBoostFactors: [BigInt!]!
+}
