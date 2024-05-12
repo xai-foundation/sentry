@@ -2,20 +2,41 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .dashboard-text-gradient {
+    position: relative;
+  }
+
+  .dashboard-text-gradient:after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: transparent linear-gradient(90deg, #F9F9F9 0%, #F1F1F100 100%) 0% 0% no-repeat padding-box;
+    width: 50%;
+    height: 100%;
+    z-index: -1;
+  }
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+
   .mt-custom-17 {
     margin-top: -17px;
     margin-bottom: -17px;
   }
+
   .mr-custom-17 {
     margin-right: -17px;
   }
+
   .bg-red.bg-red {
     background: [red];
   }
+
   .unselectable {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -27,6 +48,7 @@
 }
 
 @layer base {
+
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
@@ -53,4 +75,14 @@ body {
   .toast-container {
     width: 500px !important;
   }
+}
+
+.cookie-consent a {
+  color: #ee081a;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.cookie-consent a:hover {
+  opacity: 0.8;
 }
