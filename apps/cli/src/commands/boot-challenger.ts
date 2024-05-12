@@ -51,6 +51,8 @@ let currentNumberOfRetries = 0;
 let CHALLENGER_INSTANCE = 1;
 const BACKUP_SUBMISSION_DELAY = 300_000; // For every instance we wait 5 minutes + instance number;
 
+let isProcessingMissedAssertions = false;
+
 const initCli = async (commandInstance: Vorpal.CommandInstance) => {
 
     const { secretKey } = await commandInstance.prompt(INIT_PROMPTS["secretKeyPrompt"]);
@@ -124,6 +126,11 @@ const onAssertionConfirmedCb = async (nodeNum: any, commandInstance: Vorpal.Comm
         commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${nodeNum}`);
         lastAssertionTime = Date.now();
     } catch (error) {
+        if (error && (error as Error).message && (error as Error).message.includes('execution reverted: "9"')) {
+            commandInstance.log(`[${new Date().toISOString()}] Could not submit challenge because it was already submitted`);
+            lastAssertionTime = Date.now();
+            return;
+        }
         commandInstance.log(`[${new Date().toISOString()}] Submit Assertion Error: ${(error as Error).message}`);
         sendNotification(`Submit Assertion Error: ${(error as Error).message}`, commandInstance);
         throw error;
@@ -162,7 +169,7 @@ const checkTimeSinceLastAssertion = async (lastAssertionTime: number, commandIns
 const sendNotification = async (message: string, commandInstance: Vorpal.CommandInstance) => {
     if (cachedWebhookUrl) {
         try {
-            await axios.post(cachedWebhookUrl, { text: `@channel [Instance ${CHALLENGER_INSTANCE}]: ${message}` });
+            await axios.post(cachedWebhookUrl, { text: `<!channel> [Instance ${CHALLENGER_INSTANCE}]: ${message}` });
         } catch (error) {
             commandInstance.log(`[${new Date().toISOString()}] Failed to send notification request ${error && (error as Error).message ? (error as Error).message : error}`);
         }
@@ -186,18 +193,29 @@ const startListener = async (commandInstance: Vorpal.CommandInstance) => {
         const listener = listenForAssertions(
             async (nodeNum: any, blockHash: any, sendRoot: any, event: any, error?: EventListenerError) => {
                 if (error) {
+
+                    if (isStopping) {
+                        // If we stopped manually we don't want to process the error from the closing event.
+                        return;
+                    }
+
                     errorCount++;
                     // We should allow a defined number of consecutive WS errors before restarting the websocket at all
                     if (errorCount > NUM_CON_WS_ALLOWED_ERRORS) {
                         stopListener(listener);
                         resolve(error);
+                        return;
                     }
-                    return;
-                }
 
-                if (errorCount != 0) {
-                    //If the websocket just reconnected automatically we only want to try to re-post the last possibly missed challenge
+                    // If the error is an automatic reconnect after close it takes 1 second for the listener to restart, 
+                    // it can happen, that we miss an assertion in that second,
+                    // for that we wait 1 second before checking if we missed an assertion in between, after that the websocket should be back running
+                    await new Promise((resolve) => {
+                        setTimeout(resolve, 1000);
+                    });
                     await processMissedAssertions(commandInstance).catch(() => { });
+
+                    return;
                 }
 
                 errorCount = 0;
@@ -216,15 +234,27 @@ const startListener = async (commandInstance: Vorpal.CommandInstance) => {
 }
 
 async function processMissedAssertions(commandInstance: Vorpal.CommandInstance) {
-    commandInstance.log(`[${new Date().toISOString()}] Looking for missed assertions...`);
+    if (isProcessingMissedAssertions) {
+        return Promise.resolve();
+    }
 
-    const missedAssertionNodeNum = await findMissedAssertion();
+    commandInstance.log(`[${new Date().toISOString()}] Looking for missed assertions...`);
+    isProcessingMissedAssertions = true;
+
+    let missedAssertionNodeNum;
+    try {
+        missedAssertionNodeNum = await findMissedAssertion();
+    } catch (error: any) {
+        commandInstance.log(`[${new Date().toISOString()}] Error looking for missed assertion: ${error}`);
+        sendNotification(`Error looking for missed assertion ${error && error.message ? error.message : error}`, commandInstance);
+    }
 
     if (missedAssertionNodeNum) {
-        commandInstance.log(`[${new Date().toISOString()}] Found missed assertion with nodeNum: ${missedAssertionNodeNum}. Looking up the assertion information...`);
-        const assertionNode = await getAssertion(missedAssertionNodeNum);
-        commandInstance.log(`[${new Date().toISOString()}] Missed assertion data retrieved. Starting the submission process...`);
         try {
+            commandInstance.log(`[${new Date().toISOString()}] Found missed assertion with nodeNum: ${missedAssertionNodeNum}. Looking up the assertion information...`);
+            const assertionNode = await getAssertion(missedAssertionNodeNum);
+            commandInstance.log(`[${new Date().toISOString()}] Missed assertion data retrieved. Starting the submission process...`);
+
             await submitAssertionToReferee(
                 cachedSecretKey,
                 missedAssertionNodeNum,
@@ -232,13 +262,22 @@ async function processMissedAssertions(commandInstance: Vorpal.CommandInstance) 
                 cachedSigner!.signer,
             );
             commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${missedAssertionNodeNum}`);
+
         } catch (error) {
+            isProcessingMissedAssertions = false;
+
+            if (error && (error as Error).message && (error as Error).message.includes('execution reverted: "9"')) {
+                commandInstance.log(`[${new Date().toISOString()}] Could not submit challenge because it was already submitted`);
+                return;
+            }
             sendNotification(`Submit missed assertion Error: ${(error as Error).message}`, commandInstance);
             throw error;
         }
     } else {
         commandInstance.log(`[${new Date().toISOString()}] Did not find any missing assertions`);
     }
+
+    isProcessingMissedAssertions = false;
 }
 
 /**
@@ -252,6 +291,7 @@ export function bootChallenger(cli: Vorpal) {
         .action(async function (this: Vorpal.CommandInstance) {
 
             const commandInstance = this;
+            currentNumberOfRetries = 0;
 
             if (!cachedSigner || !cachedSecretKey) {
                 await initCli(commandInstance);
@@ -271,6 +311,7 @@ export function bootChallenger(cli: Vorpal) {
 
             for (; currentNumberOfRetries <= NUM_ASSERTION_LISTENER_RETRIES; currentNumberOfRetries++) {
                 try {
+                    isProcessingMissedAssertions = false;
                     await processMissedAssertions(commandInstance);
                 } catch (error) {
                     //TODO what should we do if this fails, restarting the cmd won't help, it will most probably fail again

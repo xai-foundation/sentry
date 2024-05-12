@@ -7,10 +7,9 @@ import {config, NodeLicenseAbi} from "@sentry/core";
 import {BiLoaderAlt} from "react-icons/bi";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useProvider} from "@/features/checkout/hooks/useProvider";
-import {AiOutlineInfoCircle} from "react-icons/ai";
 import {Tooltip} from "@sentry/ui";
-import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
-import {XaiBanner} from "@/features/checkout/XaiBanner";
+import { InfoPointRed, RedSentryIcon, WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import logo from '../../../public/images/sentry-main.png'
 
 export function Checkout() {
 	const queryString = window.location.search;
@@ -54,8 +53,7 @@ export function Checkout() {
 	return (
 		<div>
 			<div className="h-full min-h-[90vh] flex flex-col justify-center items-center">
-				<XaiBanner/>
-
+            <div className="sm:w-[250px] lg:hidden lg:w-auto text-center sm:text-sm lg:text-base text-[#66d058] font-semibold pt-[70px] pb-[20px] lg:ml-2">You are on the official Xai.games website</div>
 				{isLoading && (
 					<div className="w-[744px] h-[208px] flex flex-col justify-center border border-[#E5E5E5] m-4">
 						<div className="w-full h-[390px] flex flex-col justify-center items-center gap-2">
@@ -101,27 +99,37 @@ export function Checkout() {
 				)}
 
 				{!isLoading && !isSuccess && (
-					<div className="w-[744px] h-auto flex flex-col justify-center border border-[#E5E5E5] m-4">
-						<div className="w-full flex justify-center items-center border-b border-[#E5E5E5] px-6 py-4">
-							<span className="text-3xl py-2 px-6 font-semibold">Your purchase is ready</span>
-						</div>
-						<div className="w-full flex justify-between items-center border-b border-[#E5E5E5] px-6 py-4">
-							<div className="flex flex-col gap-2">
-								<div className="flex flex-row items-center gap-1">
-									<XaiLogo className="w-[16px] text-[#F30919]"/>
-									<p className="text-lg font-semibold">
-										Xai Sentry Node Key
+					<div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-darkLicorice shadow-main">
+						<div className="flex flex-col justify-start items-center h-auto sm:px-4 sm:py-4 lg:p-12 lg:pt-1 ">
+							<div className="w-full flex justify-center">
+								<img className="max-w-[280px]" src={logo} />
+							</div>
+							<div className="w-full flex justify-center lg:max-w-[200px]">
+								<span className="sm:text-3xl lg:text-5xl text-center font-bold text-white">YOUR PURCHASE IS READY</span>
+							</div>
+							<div className="flex items-center relarive z-0 mt-2">
+								<WarningIcon width={20} height={20} className="sm:hidden lg:block" />
+								<div className="sm:w-[250px] lg:w-auto text-center sm:hidden lg:block sm:text-sm lg:text-base text-[#66d058] font-semibold lg:ml-2">You are on the official Xai.games website</div>
+							</div>
+					</div>
+						<div className="h-auto lg:p-12 sm:px-2 sm:py-10">
+						<div className="flex sm:flex-col lg:flex-row justify-between lg:items-start sm:items-center">
+							<div className="flex flex-col sm:items-center lg:items-start gap-2">
+								<div className="flex flex-row sm:w-full sm:justify-center lg:justify-start items-center gap-1">
+									<RedSentryIcon width={32} height={32} />
+									<p className="sm:text-xl lg:text-2xl text-white font-semibold">
+										XAI SENTRY NODE KEY
 									</p>
 									<Tooltip
 										header={"Xai keys are required for nodes to receive $esXAI network rewards."}
 										body={"All purchases must be made in Arbitrum ETH."}
 										width={452}
 									>
-										<AiOutlineInfoCircle size={16} className="text-[#A3A3A3]"/>
+										<InfoPointRed/>
 									</Tooltip>
 								</div>
-								<p className="w-[294px] text-[15px] text-[#525252]">
-									Key for submitting one claim to each Xai network challenge
+								<p className="sm:w-full lg:w-[400px] sm:text-center sm:px-8 lg:px-0 lg:text-left text-base text-[#525252]">
+									Each Sentry Node Key enables you to submit up to 1 reward claim for each network challenge.
 								</p>
 							</div>
 
@@ -140,7 +148,8 @@ export function Checkout() {
 							promoCode={promoCode}
 							setPromoCode={setPromoCode}
 							error={error}
-						/>
+							/>
+						</div>
 					</div>
 				)}
 			</div>
