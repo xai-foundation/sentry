@@ -32,7 +32,7 @@ export async function getSentryKeysFromGraph(
       submissionQueryFilter.push(`challengeNumber_gte: ${latestChallengeNumber.toString()}`)
     }
 
-    submissionQuery = `
+    submissionQuery = gql`
         submissions(first: 4320, orderBy: challengeNumber, orderDirection: desc, where: {${submissionQueryFilter.join(",")}}) { 
           challengeNumber
           nodeLicenseId
@@ -72,11 +72,15 @@ export async function getSentryKeysFromGraph(
           owner
           sentryWallet {
             isKYCApproved
+            v1EsXaiStakeAmount
+            keyCount
+            stakedKeyCount
           }
           ${submissionQuery}
         }
       }
     `
+
   const result = await client.request(query) as any;
   return result.sentryKeys;
 }

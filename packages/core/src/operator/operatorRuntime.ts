@@ -5,16 +5,16 @@ import {
     listenForChallenges,
     getProvider,
     version,
-    getBoostFactor,
     submitMultipleAssertions,
     claimRewardsBulk,
     retry,
     getLatestChallengeFromGraph,
     getSentryWalletsForOperator,
-    getSentryKeysFromGraph
+    getSentryKeysFromGraph,
+    getPoolInfosFromGraph
 } from "../index.js";
 import axios from "axios";
-import { SentryKey, SentryWallet, Submission } from "@sentry/sentry-subgraph-client";
+import { PoolInfo, RefereeConfig, SentryKey, SentryWallet, Submission } from "@sentry/sentry-subgraph-client";
 import { GraphQLClient } from 'graphql-request'
 
 export enum NodeLicenseStatus {
@@ -117,6 +117,49 @@ function updateNodeLicenseStatus(nodeLicenseId: bigint, newStatus: NodeLicenseSt
     }
 }
 
+const getBoostFactor = (
+    stakedAmount: bigint,
+    stakeAmountTierThresholds: bigint[],
+    stakeAmountBoostFactors: bigint[]
+): bigint => {
+
+    if (stakedAmount < stakeAmountTierThresholds[0]) {
+        return BigInt(100)
+    }
+
+    for (let tier = 1; tier < stakeAmountTierThresholds.length; tier++) {
+        if (stakedAmount < stakeAmountTierThresholds[tier]) {
+            return stakeAmountBoostFactors[tier - 1];
+        }
+    }
+
+    return stakeAmountBoostFactors[stakeAmountTierThresholds.length - 1];
+}
+
+
+const calculateBoostFactor = (sentryKey: SentryKey, sentryWallet: SentryWallet, mappedPools: { [poolAddress: string]: PoolInfo }, refereeConfig: RefereeConfig): bigint => {
+
+    let stakeAmount = BigInt(sentryWallet.v1EsXaiStakeAmount);
+    let keyCount = BigInt(sentryWallet.keyCount) - BigInt(sentryWallet.stakedKeyCount);
+
+    if (sentryKey.assignedPool != "0x") {
+        const pool = mappedPools[sentryKey.assignedPool]
+        stakeAmount = BigInt(pool.totalStakedEsXaiAmount)
+        keyCount = BigInt(pool.totalStakedKeyAmount)
+    }
+
+    const maxStakeAmount = keyCount * BigInt(refereeConfig.maxStakeAmountPerLicense);
+    if (stakeAmount > maxStakeAmount) {
+        stakeAmount = maxStakeAmount;
+    }
+
+    return getBoostFactor(
+        stakeAmount,
+        refereeConfig.stakeAmountTierThresholds.map(s => BigInt(s)),
+        refereeConfig.stakeAmountBoostFactors.map(s => BigInt(s))
+    )
+}
+
 const createAssertionHashAndCheckPayout = (nodeLicenseId: bigint, challengeId: bigint, boostFactor: bigint, confirmData: string, challengerSignedHash: string): [boolean, string] => {
     const assertionHash = ethers.keccak256(ethers.solidityPacked(["uint256", "uint256", "bytes", "bytes"], [nodeLicenseId, challengeId, confirmData, challengerSignedHash]));
     return [Number((BigInt(assertionHash) % BigInt(10_000))) < Number(boostFactor), assertionHash];
@@ -127,7 +170,15 @@ const createAssertionHashAndCheckPayout = (nodeLicenseId: bigint, challengeId: b
  * @param {bigint} challengeNumber - The challenge number.
  * @param {Challenge} challenge - The challenge.
  */
-async function processNewChallenge(challengeNumber: bigint, challenge: ProcessChallenge, nodeLicenseIds: bigint[], sentryKeysMap: { [keyId: string]: SentryKey }) {
+async function processNewChallenge(
+    challengeNumber: bigint,
+    challenge: ProcessChallenge,
+    nodeLicenseIds: bigint[],
+    sentryKeysMap: { [keyId: string]: SentryKey },
+    sentryWalletMap: { [address: string]: SentryWallet },
+    mappedPools: { [poolAddress: string]: PoolInfo },
+    refereeConfig: RefereeConfig
+) {
     cachedLogger(`Processing new challenge with number: ${challengeNumber}.`);
     cachedBoostFactor = {};
 
@@ -157,20 +208,8 @@ async function processNewChallenge(challengeNumber: bigint, challenge: ProcessCh
             let isPool = sentryKey.assignedPool != "0x";
             const keyOwner = isPool ? sentryKey.assignedPool : sentryKey.owner;
             if (!cachedBoostFactor[keyOwner]) {
-                try {
-                    cachedBoostFactor[keyOwner] = await getBoostFactor(keyOwner);
-                    cachedLogger(`Found chance boost of ${Number(cachedBoostFactor[keyOwner]) / 100}% for ${isPool ? "pool" : "owner"} ${keyOwner}`);
-
-                } catch (error: any) {
-                    const errorMessage: string = error && error.message ? error.message : error;
-                    if (errorMessage.includes("missing revert data")) {
-                        cachedLogger(`INFO: boostFactor will be enabled on staking release`);
-                        cachedBoostFactor[keyOwner] = 100n;
-                    } else {
-                        cachedLogger(`Error loading boostFactor: ${errorMessage}`);
-                        throw new Error(`Error loading boostFactor: ${errorMessage}`);
-                    }
-                }
+                cachedBoostFactor[keyOwner] = calculateBoostFactor(sentryKey, sentryWalletMap[sentryKey.owner], mappedPools, refereeConfig);
+                cachedLogger(`Found chance boost of ${Number(cachedBoostFactor[keyOwner]) / 100}% for ${isPool ? "pool" : "owner"} ${keyOwner}`);
             }
 
             const [payoutEligible] = createAssertionHashAndCheckPayout(nodeLicenseId, challengeNumber, cachedBoostFactor[keyOwner], challenge.assertionStateRootOrConfirmData, challenge.challengerSignedHash);
@@ -251,7 +290,7 @@ async function processClaimForChallenge(challengeNumber: bigint, eligibleNodeLic
 
 const findSubmissionOnSentryKey = (sentryKey: SentryKey, challengeNumber: bigint): { submission: Submission, index: number } | null => {
     for (let i = 0; i < sentryKey.submissions.length; i++) {
-        if (sentryKey.submissions[i].challengeNumber.toString() == challengeNumber.toString()) {
+        if (sentryKey.submissions[i].challengeNumber.toString() === challengeNumber.toString()) {
             return { submission: sentryKey.submissions[i], index: i }
         }
     }
@@ -344,10 +383,10 @@ async function listenForChallengesCallback(challengeNumber: bigint, challenge: C
 
     cachedLogger(`Received new challenge with number: ${challengeNumber}.`);
 
-    const { sentryWalletMap, sentryKeysMap, nodeLicenseIds } =
+    const { sentryWalletMap, sentryKeysMap, nodeLicenseIds, mappedPools, refereeConfig } =
         await loadOperatingKeys(operatorAddress, cachedOperatorOwners, challengeNumber - 1n);
 
-    await processNewChallenge(challengeNumber, challenge, nodeLicenseIds, sentryKeysMap);
+    await processNewChallenge(challengeNumber, challenge, nodeLicenseIds, sentryKeysMap, sentryWalletMap, mappedPools, refereeConfig);
 
     // check the previous challenge, that should be closed now
     if (challengeNumber > BigInt(1)) {
@@ -363,11 +402,14 @@ const loadOperatingKeys = async (operator: string, operatorOwners?: string[], la
     } else {
         cachedLogger(`No operator owners were passed in.`);
     }
-    const { wallets, pools } = await retry(() => getSentryWalletsForOperator(graphClient, operator, operatorOwners));
+    const { wallets, pools, refereeConfig } = await retry(() => getSentryWalletsForOperator(graphClient, operator, operatorOwners));
+
+    const mappedPools: { [poolAddress: string]: PoolInfo } = {};
 
     cachedLogger(`Found ${wallets.length} operatorWallets. The addresses are: ${wallets.map(w => w.address).join(', ')}`);
     if (pools.length) {
-        cachedLogger(`Found ${pools.length} pools. The addresses are: ${pools.map(p => p.address).join(', ')}`);
+        pools.forEach(p => { mappedPools[p.address] = p });
+        cachedLogger(`Found ${pools.length} pools. The addresses are: ${Object.keys(mappedPools).join(', ')}`);
     }
 
     const sentryKeys = await retry(() => getSentryKeysFromGraph(
@@ -389,6 +431,8 @@ const loadOperatingKeys = async (operator: string, operatorOwners?: string[], la
     let keyOfOwnerCount = 0;
     let keyOfPoolsCount = 0;
 
+    const keyPools: Set<string> = new Set();
+
     sentryKeys.forEach(s => {
         if (!sentryWalletMap[s.owner]) {
             sentryWalletMap[s.owner] = s.sentryWallet
@@ -400,6 +444,7 @@ const loadOperatingKeys = async (operator: string, operatorOwners?: string[], la
         if (s.assignedPool == "0x") {
             keyOfOwnerCount++;
         } else {
+            keyPools.add(s.assignedPool);
             keyOfPoolsCount++;
         }
         nodeLicenseStatusMap.set(BigInt(s.keyId), {
@@ -408,11 +453,18 @@ const loadOperatingKeys = async (operator: string, operatorOwners?: string[], la
         });
     });
 
+    if (keyPools.size) {
+        const keyPoolInfos = await getPoolInfosFromGraph(graphClient, [...keyPools]);
+        keyPoolInfos.forEach(p => {
+            mappedPools[p.address] = p;
+        })
+    }
+
     safeStatusCallback();
     cachedLogger(`Total Sentry Keys fetched: ${nodeLicenseIds.length}.`);
     cachedLogger(`Fetched ${keyOfOwnerCount} keys of owners and ${keyOfPoolsCount} keys staked in pools.`);
 
-    return { wallets, sentryKeys, sentryWalletMap, sentryKeysMap, nodeLicenseIds };
+    return { wallets, sentryKeys, sentryWalletMap, sentryKeysMap, nodeLicenseIds, mappedPools, refereeConfig };
 }
 
 const processPastChallenges = async (
@@ -494,10 +546,11 @@ export async function operatorRuntime(
     const openChallenge = await retry(() => getLatestChallengeFromGraph(graphClient));
 
     const latestClaimableChallenge = Number(openChallenge.challengeNumber) <= 4320 ? 1 : Number(openChallenge.challengeNumber) - 4320;
-    const { wallets, sentryKeys, sentryWalletMap, sentryKeysMap, nodeLicenseIds } = await loadOperatingKeys(operatorAddress, operatorOwners, BigInt(latestClaimableChallenge));
+    const { sentryWalletMap, sentryKeysMap, nodeLicenseIds, mappedPools, refereeConfig } = await loadOperatingKeys(operatorAddress, operatorOwners, BigInt(latestClaimableChallenge));
 
     logFunction(`Processing open challenges.`);
-    await processNewChallenge(BigInt(openChallenge.challengeNumber), openChallenge, nodeLicenseIds, sentryKeysMap);
+
+    await processNewChallenge(BigInt(openChallenge.challengeNumber), openChallenge, nodeLicenseIds, sentryKeysMap, sentryWalletMap, mappedPools, refereeConfig);
 
     //Remove submissions for current challenge so we don't process it again
     nodeLicenseIds.forEach(n => {
@@ -506,7 +559,7 @@ export async function operatorRuntime(
             sentryKeysMap[n.toString()].submissions.splice(found.index, 1);
         }
     });
-    
+
     //Process all past challenges check for unclaimed
     processPastChallenges(
         nodeLicenseIds,
