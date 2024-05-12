@@ -1,0 +1,23 @@
+{
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "CommonJS",
+		"sourceMap": true,
+		"declaration": true,
+		"declarationMap": true,
+		"noEmitOnError": true,
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+		"noEmit": false,
+		"strict": true,
+		"composite": true,
+    	"sourceRoot": ".graphclient",
+		"outDir": "dist"
+	},
+	"include": [
+		".graphclient/**/*"
+	],
+	"exclude": [
+		"node_modules"
+	]
+}

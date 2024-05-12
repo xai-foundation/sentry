@@ -1,0 +1,75 @@
+type PoolFactoryStakeKeysEvent @entity(immutable: true) {
+  id: Bytes!
+  user: Bytes! # address
+  pool: Bytes! # address
+  amount: BigInt! # uint256
+  totalUserKeysStaked: BigInt! # uint256
+  totalKeysStaked: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type PoolFactoryUnstakeKeysEvent @entity(immutable: true) {
+  id: Bytes!
+  user: Bytes! # address
+  pool: Bytes! # address
+  amount: BigInt! # uint256
+  totalUserKeysStaked: BigInt! # uint256
+  totalKeysStaked: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type PoolFactoryPoolCreatedEvent @entity(immutable: true) {
+  id: Bytes!
+  poolIndex: BigInt! # uint256
+  poolAddress: Bytes! # address
+  poolOwner: Bytes! # address
+  stakedKeyCount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type PoolInfo @entity(immutable: false) {
+  id: String!
+  address: Bytes!
+  owner: Bytes!
+  delegateAddress: Bytes!
+  totalStakedEsXaiAmount: BigInt!
+  totalStakedKeyAmount: BigInt!
+  ownerShare: BigInt!
+  keyBucketShare: BigInt!
+  stakedBucketShare: BigInt!
+  updateSharesTimestamp: BigInt!
+  pendingShares: [BigInt!]!
+  metadata: [String!]!
+  socials: [String!]!
+  ownerStakedKeys: BigInt!
+  ownerRequestedUnstakeKeyAmount: BigInt!
+  ownerLatestUnstakeRequestCompletionTime: BigInt!
+}
+
+type UnstakeRequest @entity(immutable: false) {
+  id: String!
+  user: Bytes!
+  pool: Bytes!
+  index: BigInt!
+  amount: BigInt!
+  isKey: Boolean!
+  open: Boolean!
+  lockTime: BigInt!
+  completeTime: BigInt!
+}
+
+# global delayperiods in entity might be problematic as event is not on initialize and therefore might not be created at all
+type PoolFactoryConfig @entity(immutable: false) {
+  id: String!
+  version: BigInt!
+  unstakeKeysDelayPeriod: BigInt!
+  unstakeGenesisKeyDelayPeriod: BigInt!
+  unstakeEsXaiDelayPeriod: BigInt!
+  updateRewardBreakdownDelayPeriod: BigInt!
+}

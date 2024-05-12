@@ -374,7 +374,7 @@ export function SentryWallet() {
 						<div>
 							<div className="w-full h-auto flex flex-col py-3 pl-10">
 								<p className="text-sm uppercase text-[#A3A3A3] mb-2">
-									View Wallet
+									View Wallet/Pools
 								</p>
 								<div className="flex flex-row gap-2">
 									<div>
@@ -382,7 +382,7 @@ export function SentryWallet() {
 											onClick={() => setIsOpen(!isOpen)}
 											className={`flex items-center justify-between w-[538px] border-[#A3A3A3] border-r border-l border-t ${!isOpen ? "border-b" : "pb-[9px]"} border-[#A3A3A3] p-2`}
 										>
-											<p>{selectedWallet || `All assigned wallets (${data?.whitelistedWallets ? data.whitelistedWallets.length : owners.length})`}</p>
+											<p>{selectedWallet || `All assigned wallets/pools (${data?.whitelistedWallets ? data.whitelistedWallets.length : owners.length})`}</p>
 											<IoIosArrowDown
 												className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
 											/>
@@ -434,7 +434,7 @@ export function SentryWallet() {
 										className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2`}
 									>
 										<LuListChecks className="h-[15px]"/>
-										Allowed wallets
+										Allowed wallets/pools
 									</button>
 
 									<button

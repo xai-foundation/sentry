@@ -15,8 +15,11 @@
   "license": "UNLICENSED",
   "dependencies": {
     "@noble/curves": "^1.2.0",
+    "@sentry/sentry-subgraph-client": "workspace:*",
     "alchemy-sdk": "^3.1.0",
     "axios": "^1.6.2",
+    "graphql": "16.8.1",
+    "graphql-request": "^6.1.0",
     "isomorphic-ws": "^5.0.0",
     "mongoose": "^8.2.1"
   },

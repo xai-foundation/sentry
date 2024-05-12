@@ -1,0 +1,16 @@
+{
+    "name": "@sentry/sentry-subgraph-client",
+	"targets": {
+		"build": {
+			"inputs": [
+				"{projectRoot}/.graphclientrc.yml",
+                "{projectRoot}/package.json",
+                "{projectRoot}/tsconfig.json"
+			],
+			"outputs": [
+				"{projectRoot}/dist",
+				"{projectRoot}/.graphclient"
+			]
+		}
+	}
+}

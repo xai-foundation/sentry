@@ -9,7 +9,7 @@
   "main": "dist/index.js",
   "bin": "build/sentry-node-cli.js",
   "scripts": {
-    "build": "npm run compile && npm run transpile && pkg ./build/sentry-node-cli.js --targets=node18-linux-x64,node18-macos-x64,node18-win-x64 --out-path=release",
+    "build": "pnpm run clean && pnpm run compile && pnpm run transpile && pkg ./build/sentry-node-cli.js --targets=node18-linux-x64,node18-macos-x64,node18-win-x64 --out-path=release",
     "clean": "rimraf dist && rimraf release && rimraf build && rimraf tsconfig.tsbuildinfo",
     "compile": "tsc",
     "lint": "eslint . --ext .ts,.tsx",

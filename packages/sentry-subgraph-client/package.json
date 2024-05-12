@@ -1,0 +1,32 @@
+{
+  "name": "@sentry/sentry-subgraph-client",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/.graphclient/index.js",
+  "types": "dist/.graphclient/index.d.ts",
+  "scripts": {
+    "clean": "rimraf .graphclient dist",
+    "build": "graphclient build && tsc",
+    "dev": "graphclient serve-dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@graphprotocol/client-auto-pagination": "2.0.3",
+    "@graphql-mesh/cache-localforage": "0.97.5",
+    "@graphql-mesh/cross-helpers": "0.4.1",
+    "@graphql-mesh/graphql": "0.97.5",
+    "@graphql-mesh/http": "0.98.6",
+    "@graphql-mesh/merger-bare": "0.97.6",
+    "@graphql-mesh/runtime": "0.98.6",
+    "@graphql-mesh/store": "0.97.5",
+    "@graphql-mesh/types": "0.97.5",
+    "@graphql-mesh/utils": "0.97.5",
+    "@whatwg-node/fetch": "0.9.17",
+    "graphql": "16.8.1"
+  },
+  "devDependencies": {
+    "@graphprotocol/client-cli": "3.0.0"
+  }
+}

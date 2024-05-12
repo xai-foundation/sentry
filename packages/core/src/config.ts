@@ -25,7 +25,8 @@ export let config = {
   "xaiRedEnvelope2024ImplementationAddress": "0xf26Af8313cB039A58b86c2Ab7aA5c540EcEEB70f",
   "poolFactoryAddress": "0xF9E08660223E2dbb1c0b28c82942aB6B5E38b8E5",
   "poolFactoryAddressImplementationAddress": "0x21EEC6626f15d02A8896ebB7EDD68ff3CB61e89E",
-  "defaultNetworkName": "arbitrum"
+  "defaultNetworkName": "arbitrum",
+  "subgraphEndpoint": "https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry/version/0.1.3/api"
 };
 
 export function setConfig(_config: any) { config = _config; }
