@@ -2,7 +2,7 @@ import { Bytes, ethereum, log } from "@graphprotocol/graph-ts";
 import { getTxSignatureFromEvent } from "./getTxSignatureFromEvent";
 
 
-function prepareTransactionInput(transactionInput: Bytes, hasDynamicTypes: boolean): string {
+export function prepareTransactionInput(transactionInput: Bytes, hasDynamicTypes: boolean): string {
     if (hasDynamicTypes) {
         //take away function signature and prepend tuple offset
         return '0x0000000000000000000000000000000000000000000000000000000000000020' + transactionInput.toHexString().slice(10); // prepend tuple offset
@@ -18,7 +18,7 @@ export function getInputFromEvent(event: ethereum.Event, hasDynamicTypes: boolea
 
     let transactionInput = event.transaction.input;
 
-    const signature = getTxSignatureFromEvent(event);
+    const signature = event.transaction.input.toHexString().slice(0, 10);
     if (signature == "0x6a761202") {
         //This is "execTransaction" from on of the most common multisig standards, we will have to extend this if we notice different standards
         const dataString = prepareTransactionInput(event.transaction.input, true)

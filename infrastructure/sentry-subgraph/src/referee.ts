@@ -206,11 +206,6 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
     return;
   }
 
-  challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(event.params.amount)
-  challenge.save()
-
-  let nodeLicenseId: BigInt;
-
   if (getTxSignatureFromEvent(event) != "0x86bb8f37") {
     //custom claim call
     //try extracting from array
@@ -223,8 +218,32 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
 
     const nodeLicenseIds = decoded.toTuple()[0].toBigIntArray()
     const challengeIds = decoded.toTuple()[1].toBigIntArray()
-    const challengeIndex = challengeIds.indexOf(event.params.challengeId);
-    nodeLicenseId = nodeLicenseIds[challengeIndex]
+
+    let amountClaimedByClaimers = challenge.amountClaimedByClaimers;
+
+    for (let i = 0; i < challengeIds.length; i++) {
+
+      if (challengeIds[i].equals(event.params.challengeId)) {
+        const nodeLicenseId = nodeLicenseIds[i]
+
+        const submission = Submission.load(event.params.challengeId.toString() + nodeLicenseId.toString())
+        if (!submission) {
+          log.warning("Failed to find submission handleRewardsClaimed (custom): nodeLicenseId: " + nodeLicenseId.toString() + ", challengeId: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
+          continue;
+        }
+
+        if (!submission.claimed) {
+          submission.claimed = true
+          submission.claimAmount = event.params.amount
+          submission.save()
+          amountClaimedByClaimers = amountClaimedByClaimers.plus(event.params.amount)
+        }
+
+      }
+    }
+
+    challenge.amountClaimedByClaimers = amountClaimedByClaimers
+    challenge.save()
 
   } else {
 
@@ -235,19 +254,22 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
       return;
     }
 
-    nodeLicenseId = decoded.toTuple()[0].toBigInt()
+    const nodeLicenseId = decoded.toTuple()[0].toBigInt()
+    const submission = Submission.load(event.params.challengeId.toString() + nodeLicenseId.toString())
+    if (!submission) {
+      log.warning("Failed to find submission handleRewardsClaimed: nodeLicenseId: " + nodeLicenseId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
+      return;
+    }
+
+    if (!submission.claimed) {
+      submission.claimed = true
+      submission.claimAmount = event.params.amount
+      submission.save()
+
+      challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(event.params.amount)
+      challenge.save()
+    }
   }
-
-  const submission = Submission.load(event.params.challengeId.toString() + nodeLicenseId.toString())
-  if (!submission) {
-    log.warning("Failed to find submission handleRewardsClaimed: nodeLicenseId: " + nodeLicenseId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
-    return;
-  }
-
-  submission.claimed = true
-  submission.claimAmount = event.params.amount
-  submission.save()
-
 }
 
 export function handleBatchRewardsClaimed(event: BatchRewardsClaimedEvent): void {

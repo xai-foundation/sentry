@@ -25,7 +25,7 @@ import { getInputFromEvent } from "./utils/getInputFromEvent";
 import { getTxSignatureFromEvent } from "./utils/getTxSignatureFromEvent";
 
 function handlePoolBreakdown(pool: PoolInfo, currentTime: BigInt): void {
-  if (currentTime.gt(pool.updateSharesTimestamp)) {
+  if (pool.updateSharesTimestamp.gt(BigInt.fromI32(0)) && currentTime.gt(pool.updateSharesTimestamp)) {
     pool.ownerShare = pool.pendingShares[0];
     pool.keyBucketShare = pool.pendingShares[1];
     pool.stakedBucketShare = pool.pendingShares[2];
@@ -59,7 +59,9 @@ export function handleStakeKeys(event: StakeKeys): void {
 
   if (!pool) {
     //StakeKeys will be emitted before pool creation, so we expect on the pool creation to not find the pool yet, however it will still be initialized correctly in the createPool event
-    // log.warning("handleStakeKeys - pool is undefined " + event.params.pool.toHexString() + ", TX: " + event.transaction.hash.toHexString(), []);
+    if (getTxSignatureFromEvent(event) != "0x098e8ae7") {
+      log.warning("handleStakeKeys - pool is undefined " + event.params.pool.toHexString() + ", TX: " + event.transaction.hash.toHexString(), []);
+    }
     return;
   }
 
@@ -107,6 +109,7 @@ export function handleUnstakeKeys(event: UnstakeKeys): void {
 
   if (pool.owner == event.params.user) {
     pool.ownerStakedKeys = pool.ownerStakedKeys.minus(event.params.amount)
+    pool.ownerRequestedUnstakeKeyAmount = pool.ownerRequestedUnstakeKeyAmount.minus(event.params.amount)
   }
 
   pool.totalStakedKeyAmount = event.params.totalKeysStaked
