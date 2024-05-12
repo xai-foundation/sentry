@@ -74,6 +74,8 @@ export function handleStakeKeys(event: StakeKeys): void {
   if (sentryWallet) {
     sentryWallet.stakedKeyCount = sentryWallet.stakedKeyCount.plus(event.params.amount)
     sentryWallet.save();
+  } else {
+    log.warning("Failed to find sentryWallet on handleStakeKeys: TX: " + event.transaction.hash.toHexString(), []);
   }
 
   const dataToDecode = getInputFromEvent(event, true)
@@ -85,6 +87,8 @@ export function handleStakeKeys(event: StakeKeys): void {
       if (sentryKey) {
         sentryKey.assignedPool = event.params.pool
         sentryKey.save()
+      } else {
+        log.warning("Failed to find sentryKey on handleStakeKeys: TX: " + event.transaction.hash.toHexString() + ", keyId: " + nodeLicenseIds[i].toString(), []);
       }
     }
   } else {
@@ -112,6 +116,8 @@ export function handleUnstakeKeys(event: UnstakeKeys): void {
   if (sentryWallet) {
     sentryWallet.stakedKeyCount = sentryWallet.stakedKeyCount.minus(event.params.amount)
     sentryWallet.save();
+  } else {
+    log.warning("Failed to find sentryWallet on handleUnstakeKeys: TX: " + event.transaction.hash.toHexString(), []);
   }
 
   const dataToDecode = getInputFromEvent(event, true)
@@ -123,6 +129,8 @@ export function handleUnstakeKeys(event: UnstakeKeys): void {
       if (sentryKey) {
         sentryKey.assignedPool = new Address(0)
         sentryKey.save()
+      } else {
+        log.warning("Failed to find sentryKey on handleUnstakeKeys: TX: " + event.transaction.hash.toHexString() + ", keyId: " + nodeLicenseIds[i].toString(), []);
       }
     }
 
@@ -144,27 +152,48 @@ export function handleUnstakeKeys(event: UnstakeKeys): void {
 export function handlePoolCreated(event: PoolCreated): void {
   const dataToDecode = getInputFromEvent(event, true)
   const decoded = ethereum.decode('(address,uint256[],uint32[3],string[3],string[],string[2][2])', dataToDecode);
-  if (decoded) {
-    const pool = new PoolInfo(event.params.poolAddress.toHexString())
-    const tuple = decoded.toTuple();
-    pool.address = event.params.poolAddress
-    pool.owner = event.params.poolOwner
-    pool.delegateAddress = tuple[0].toAddress();
-    pool.totalStakedEsXaiAmount = BigInt.fromI32(0);
-    pool.totalStakedKeyAmount = event.params.stakedKeyCount;
-    pool.ownerShare = tuple[2].toBigIntArray()[0];
-    pool.keyBucketShare = tuple[2].toBigIntArray()[1];
-    pool.stakedBucketShare = tuple[2].toBigIntArray()[2];
-    pool.updateSharesTimestamp = BigInt.fromI32(0);
-    pool.pendingShares = [BigInt.fromI32(0), BigInt.fromI32(0), BigInt.fromI32(0)];
-    pool.metadata = tuple[3].toStringArray();
-    pool.socials = tuple[4].toStringArray();
-    pool.ownerStakedKeys = pool.totalStakedKeyAmount;
-    pool.ownerRequestedUnstakeKeyAmount = BigInt.fromI32(0);
-    pool.ownerLatestUnstakeRequestCompletionTime = BigInt.fromI32(0);
-    pool.save()
-  } else {
+  if (!decoded) {
     log.warning("Failed to decode pool create input: PoolAddress: " + event.params.poolAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), []);
+    return;
+  }
+
+  const pool = new PoolInfo(event.params.poolAddress.toHexString())
+  const tuple = decoded.toTuple();
+  pool.address = event.params.poolAddress
+  pool.owner = event.params.poolOwner
+  pool.delegateAddress = tuple[0].toAddress();
+  pool.totalStakedEsXaiAmount = BigInt.fromI32(0);
+  pool.totalStakedKeyAmount = event.params.stakedKeyCount;
+  pool.ownerShare = tuple[2].toBigIntArray()[0];
+  pool.keyBucketShare = tuple[2].toBigIntArray()[1];
+  pool.stakedBucketShare = tuple[2].toBigIntArray()[2];
+  pool.updateSharesTimestamp = BigInt.fromI32(0);
+  pool.pendingShares = [BigInt.fromI32(0), BigInt.fromI32(0), BigInt.fromI32(0)];
+  pool.metadata = tuple[3].toStringArray();
+  pool.socials = tuple[4].toStringArray();
+  pool.ownerStakedKeys = pool.totalStakedKeyAmount;
+  pool.ownerRequestedUnstakeKeyAmount = BigInt.fromI32(0);
+  pool.ownerLatestUnstakeRequestCompletionTime = BigInt.fromI32(0);
+  pool.save()
+
+
+  let sentryWallet = SentryWallet.load(event.params.poolOwner.toHexString())
+  if (sentryWallet) {
+    sentryWallet.stakedKeyCount = sentryWallet.stakedKeyCount.plus(event.params.stakedKeyCount)
+    sentryWallet.save();
+  } else {
+    log.warning("Failed to find sentryWallet on poolCreate: PoolAddress: " + event.params.poolAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), []);
+  }
+
+  let nodeLicenseIds = tuple[1].toBigIntArray();
+  for (let i = 0; i < nodeLicenseIds.length; i++) {
+    let sentryKey = SentryKey.load(nodeLicenseIds[i].toString())
+    if (sentryKey) {
+      sentryKey.assignedPool = event.params.poolAddress
+      sentryKey.save()
+    } else {
+      log.warning("Failed to find sentryKey on poolCreate: PoolAddress: " + event.params.poolAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString() + ", keyId: " + nodeLicenseIds[i].toString(), []);
+    }
   }
 }
 
@@ -219,6 +248,8 @@ export function handleUnstakeEsXai(event: UnstakeEsXai): void {
   if (sentryWallet) {
     sentryWallet.esXaiStakeAmount = sentryWallet.esXaiStakeAmount.minus(event.params.amount)
     sentryWallet.save();
+  } else {
+    log.warning("Failed to find sentryWallet on handleUnstakeEsXai: TX: " + event.transaction.hash.toHexString(), []);
   }
 
   const dataToDecode = getInputFromEvent(event, false)
