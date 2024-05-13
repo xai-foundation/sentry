@@ -63,7 +63,7 @@ export async function dataCentralizationRuntime({
 		abi: PoolFactoryAbi,
 		eventName: Object.keys(eventToPoolAddressInLog),
 		log: logFunction,
-		callback: async (log: LogDescription | null, err?: EventListenerError) => {
+		callback: (log: LogDescription | null, err?: EventListenerError) => {
 			if (err) {
 				logFunction(`Error listening to event: ${err.message}`);
 			} else if (log) {
