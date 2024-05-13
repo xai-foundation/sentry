@@ -74,7 +74,7 @@ export async function dataCentralizationRuntime({
 					return;
 				}
 
-				updatePoolInDB(poolAddress)
+				updatePoolInDB(poolAddress, log.name === "PoolCreated")
 					.then(() => {
 						logFunction("Updated pool:" + poolAddress)
 					})

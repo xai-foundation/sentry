@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
 import { formatEther } from 'ethers';
-import { getPoolInfo } from "./getPoolInfo.js";
 import { getMaxStakeAmountPerLicense } from "./getMaxStakeAmountPerLicense.js";
 import { getTierIndexByStakedAmount } from "./getTierIndexByStakedAmount.js";
 import { IPool, PoolSchema } from './types.js';
 import { config } from "../config.js";
 import { getPoolInfosFromGraph } from '../subgraph/getPoolInfosFromGraph.js';
 import { GraphQLClient } from 'graphql-request'
+import { getPoolInfo } from './getPoolInfo.js';
 
 const POOL_SHARES_BASE = 10_000;
 
@@ -17,14 +17,17 @@ const graphClient = new GraphQLClient(config.subgraphEndpoint);
  * @param poolAddress - The pool address to sync.
  */
 export async function updatePoolInDB(
-    poolAddress: string
+    poolAddress: string, 
+    createPool: boolean
 ): Promise<void> {
 
     const PoolModel = mongoose.models.Pool || mongoose.model<IPool>('Pool', PoolSchema);
 
-    //Load poolInfo from blockchain
-
-    // const poolInfo = await getPoolInfo(poolAddress);
+    let blockPoolInfo;
+    if (createPool) {
+        blockPoolInfo = await getPoolInfo(poolAddress);
+    }
+    //Load poolInfo from subgraph
     const poolInfo = (await getPoolInfosFromGraph(graphClient, [poolAddress]))[0];
     const baseInfo = {
         poolAddress: poolInfo.address,
@@ -58,7 +61,7 @@ export async function updatePoolInDB(
         updateSharesTimestamp = 0;
     }
 
-    const updatePool = {
+    let updatePool: any = {
         poolAddress: poolAddress,
         owner: baseInfo.owner,
         name: poolInfo.metadata ? poolInfo.metadata[0].trim() : "",
@@ -78,6 +81,11 @@ export async function updatePoolInDB(
         ownerStakedKeys: Number(poolInfo.ownerStakedKeys),
         ownerRequestedUnstakeKeyAmount: Number(poolInfo.ownerRequestedUnstakeKeyAmount),
         ownerLatestUnstakeRequestCompletionTime,
+    }
+
+    if (createPool) {
+        updatePool.keyBucketTracker = blockPoolInfo?.baseInfo.keyBucketTracker,
+        updatePool.esXaiBucketTracker = blockPoolInfo?.baseInfo.esXaiBucketTracker
     }
 
     //Write poolInfo to database
