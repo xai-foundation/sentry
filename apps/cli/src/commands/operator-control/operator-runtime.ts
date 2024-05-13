@@ -1,6 +1,7 @@
 import Vorpal from "vorpal";
 import Logger from "../../utils/Logger.js"
 import { getSignerFromPrivateKey, operatorRuntime, listOwnersForOperator, Challenge, PublicNodeBucketInformation } from "@sentry/core";
+import { getOwnerOrDelegatePools } from "@sentry/core";
 
 /**
  * Starts a runtime of the operator.
@@ -42,12 +43,13 @@ export function bootOperator(cli: Vorpal) {
                 
                 const operatorAddress = await signer.getAddress();
                 const owners = await listOwnersForOperator(operatorAddress);
+                const pools = await getOwnerOrDelegatePools(operatorAddress);
 
                 const ownerPrompt: Vorpal.PromptObject = {
                     type: 'checkbox',
                     name: 'selectedOwners',
-                    message: 'Select the owners for the operator to run for:',
-                    choices: [operatorAddress, ...owners]
+                    message: 'Select the owners/pools for the operator to run for:',
+                    choices: [operatorAddress, ...owners, ...pools]
                 };
 
                 const result = await this.prompt(ownerPrompt);
@@ -82,6 +84,16 @@ export function bootOperator(cli: Vorpal) {
                     this.log(errorMessage)
                 }
             );
+            
+            
+            // Listen for process termination and call the handler
+            process.on('SIGINT', async () => {
+                if (stopFunction) {
+                    stopFunction();
+                }
+                Logger.log(`The operator has been terminated manually.`);
+                process.exit();
+            });
 
             return new Promise((resolve, reject) => { }); // Keep the command alive
         })

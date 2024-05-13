@@ -1,0 +1,107 @@
+type RefereeAssertionSubmittedEvent @entity(immutable: true) {
+  id: Bytes!
+  challengeId: BigInt! # uint256
+  nodeLicenseId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RefereeChallengeClosedEvent @entity(immutable: true) {
+  id: Bytes!
+  challengeNumber: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RefereeChallengeExpiredEvent @entity(immutable: true) {
+  id: Bytes!
+  challengeId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RefereeChallengeSubmittedEvent @entity(immutable: true) {
+  id: Bytes!
+  challengeNumber: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type BatchRewardsClaimed @entity(immutable: true) {
+  id: Bytes!
+  challengeId: BigInt! # uint256
+  amount: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RefereeApprovalEvent @entity(immutable: true) {
+  id: Bytes!
+  owner: Bytes! # address
+  operator: Bytes! # address
+  approved: Boolean!
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+enum ChallengeStatus {
+  OpenForSubmissions
+  OpenForClaims
+  Expired
+}
+
+type Challenge @entity(immutable: false) {
+  id: String!
+  challengeNumber: BigInt! # uint256
+  status: ChallengeStatus!
+  assertionId: BigInt! # uint256
+  assertionStateRootOrConfirmData: Bytes! # bytes
+  assertionTimestamp: BigInt! # uint64
+  challengerSignedHash: Bytes! # bytes
+  activeChallengerPublicKey: Bytes! # bytes
+  rollupUsed: Bytes! # address
+  createdTimestamp: BigInt! # uint256
+  totalSupplyOfNodesAtChallengeStart: BigInt! # uint256
+  rewardAmountForClaimers: BigInt! # uint256
+  amountForGasSubsidy: BigInt! # uint256
+  numberOfEligibleClaimers: BigInt! # uint256
+  amountClaimedByClaimers: BigInt! # uint256
+}
+
+type Submission @entity(immutable: false) {
+  id: String!
+  challengeNumber: BigInt!
+  claimed: Boolean!
+  eligibleForPayout: Boolean!
+  nodeLicenseId: BigInt! 
+  assertionsStateRootOrConfirmData: String!
+  sentryKey: SentryKey!
+  claimAmount: BigInt!
+}
+
+type SentryWallet @entity(immutable: false) {
+  id: String!
+  isKYCApproved: Boolean!
+  address: Bytes!
+  approvedOperators: [Bytes!]!
+  v1EsXaiStakeAmount: BigInt!
+  esXaiStakeAmount: BigInt!
+  keyCount: BigInt!
+  stakedKeyCount: BigInt!
+  sentryKeys: [SentryKey!]! @derivedFrom(field: "sentryWallet")
+}
+
+type RefereeConfig @entity(immutable: false) {
+  id: String!
+  version: BigInt!
+  maxStakeAmountPerLicense: BigInt!
+  maxKeysPerPool: BigInt!
+  stakeAmountTierThresholds: [BigInt!]!
+  stakeAmountBoostFactors: [BigInt!]!
+}

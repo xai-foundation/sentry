@@ -19,3 +19,6 @@ build
 infrastructure/CodeSignTool-*
 
 infrastructure/CodeSignTool-*
+
+
+.nx/cache
