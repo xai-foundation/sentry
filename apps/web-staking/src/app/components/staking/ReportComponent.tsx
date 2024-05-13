@@ -1,7 +1,7 @@
 import { formatCurrency } from "@/app/utils/formatCurrency";
 import ProgressComponent from "../progress/Progress";
 import PopoverWindow from "./PopoverWindow";
-import { iconType } from "../overview/constants/constants";
+import { iconType } from "@/app/components/dashboard/constants/constants";
 
 interface InfoComponentProps {
   address: string | undefined;
@@ -64,7 +64,7 @@ const ReportComponent = ({
       <span className="text-graphiteGray mr-2 justify-end flex mt-2">
         {address &&
           subTitle &&
-          `${subTitle} ${availableForStaking ? formatCurrency.format(availableForStaking) : ""} esXai`}
+          `${subTitle} ${availableForStaking ? formatCurrency.format(availableForStaking) : ""} esXAI`}
         {address && subTitle && <PopoverWindow />}
       </span>
     </div>

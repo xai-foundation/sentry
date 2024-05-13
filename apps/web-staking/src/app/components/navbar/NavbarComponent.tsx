@@ -29,7 +29,7 @@ export default function NavbarComponent() {
 				<NavbarMenuToggle />
 				<div className='flex items-center ml-1'>
 					<span className='pb-[6px]'><Xai /></span>
-					<Link href="/"><div className='text-lg text-lightBlackDarkWhite font-bold py-2 pl-2'>Xai</div></Link>
+					<Link href={chainId ? `/?chainId=${chainId}` : "/"}><div className='text-lg text-lightBlackDarkWhite font-bold py-2 pl-2'>Xai</div></Link>
 				</div>
 			</NavbarContent>
 			<NavbarContent justify="start" className="hidden lg:block">
@@ -41,18 +41,27 @@ export default function NavbarComponent() {
 				<NavbarMenuItem>
 					<div className="">
 						<div className='flex flex-col'>
-							<Link href="/" onClick={() => setIsMenuOpen(false)}><div className='text-base text-lightBlackDarkWhite py-2 pl-4'>Overview</div></Link>
-							<Link href="/staking" onClick={() => setIsMenuOpen(false)}><div className='text-base text-lightBlackDarkWhite py-2 pl-4'>Staking</div></Link>
+							<Link href={chainId ? `/?chainId=${chainId}` : "/"} onClick={() => setIsMenuOpen(false)}>
+								<div className="text-base text-lightBlackDarkWhite py-2 pl-4">Dashboard</div>
+							</Link>
+							<Link href={`/staking?chainId=${chainId}`} onClick={() => setIsMenuOpen(false)}><div className='text-base text-lightBlackDarkWhite py-2 pl-4'>Staking</div></Link>
 							<Link href="/redeem" onClick={() => setIsMenuOpen(false)}><div className='text-base text-lightBlackDarkWhite py-2 pl-4'>Redeem</div></Link>
+							<Link href="/pool" onClick={() => setIsMenuOpen(false)}><div className='text-base text-lightBlackDarkWhite py-2 pl-4'>My Pools</div></Link>
 						</div>
 					</div>
 				</NavbarMenuItem>
 				<NavbarMenuItem>
-					<div className='mb-20'>
-						<LinkLogoComponent link="https://xai-foundation.gitbook.io/xai-network/xai-blockchain/welcome-to-xai" content='GitBook' Icon={GitBook} />
-						<LinkLogoComponent link="https://discord.com/invite/xaigames" content='Discord' Icon={Discord} />
-						<LinkLogoComponent link="https://twitter.com/xai_games" content='X' Icon={X} />
-						<LinkLogoComponent link="https://t.me/XaiSentryNodes" content='Telegram' Icon={Telegram} />
+					<div className="flex flex-col mb-5">
+						<LinkLogoComponent link="https://xai-foundation.gitbook.io/xai-network/xai-blockchain/welcome-to-xai"
+							content="GitBook" Icon={GitBook} customClass="mb-[10px]" />
+						<LinkLogoComponent link="https://discord.com/invite/xaigames" content="Discord" Icon={Discord}
+							customClass="mb-[10px]" />
+						<LinkLogoComponent link="https://twitter.com/xai_games" content="X" Icon={X} customClass="mb-[10px]" />
+						<LinkLogoComponent link="https://t.me/XaiSentryNodes" content="Telegram" Icon={Telegram}
+							customClass="mb-[10px]" />
+						<Link href="https://xai.games/generalterms" target="_blank" onClick={() => setIsMenuOpen(false)}><div className='text-sm text-lightBlackDarkWhite py-2 pl-4'>General Terms</div></Link>
+						<Link href="https://xai.games/stakingterms" target="_blank" onClick={() => setIsMenuOpen(false)}><div className='text-sm text-lightBlackDarkWhite py-2 pl-4'>Staking Terms</div></Link>
+						<Link href="https://xai.games/privacypolicy" target="_blank" onClick={() => setIsMenuOpen(false)}><div className='text-sm text-lightBlackDarkWhite py-2 pl-4'>Privacy Policy</div></Link>
 					</div>
 				</NavbarMenuItem>
 			</NavbarMenu>

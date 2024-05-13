@@ -1,10 +1,11 @@
 # Dockerfile
 # ---- Base Node ----
-FROM node:lts AS base
+FROM node:20.11.0 AS base
 ENV NEXT_TELEMETRY_DISABLED 1
 WORKDIR /app
 COPY package.json .
-RUN npm install
+COPY package-lock.json .
+RUN npm install --loglevel verbose -dd
 
 # ---- Build ----
 FROM base AS build
@@ -21,5 +22,6 @@ COPY --from=build /app/.next ./.next
 COPY --from=build /app/public ./public
 COPY --from=base /app/node_modules ./node_modules
 COPY package.json .
-
+COPY package-lock.json .
+EXPOSE 3000
 CMD ["./node_modules/next/dist/bin/next", "start"]

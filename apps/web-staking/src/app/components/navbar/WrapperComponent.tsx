@@ -6,12 +6,12 @@ import SidebarComponent from "./SidebarComponent";
 import { useEffect } from "react";
 
 export default function WrapperComponent({ children }: { children: React.ReactNode }) {
-	
-	const { setTheme } = useTheme()
+
+	const { setTheme } = useTheme();
 
 	useEffect(() => {
-	  setTheme("light")
-	}, [])
+		setTheme("light");
+	}, [setTheme]);
 
 	return (
 		<>
