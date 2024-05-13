@@ -53,7 +53,6 @@ export function Checkout() {
 	return (
 		<div>
 			<div className="h-full min-h-screen flex-1 flex flex-col justify-center items-center">
-            <div className="sm:w-[250px] lg:hidden lg:w-auto text-center text-base text-[#66d058] font-semibold pt-[70px] pb-[20px] lg:ml-2">You are on the official Xai.games website</div>
 				{isLoading && (
 					<div className="w-[744px] h-[208px] flex flex-col justify-center border border-[#E5E5E5] m-4">
 						<div className="w-full h-[390px] flex flex-col justify-center items-center gap-2">
@@ -106,9 +105,6 @@ export function Checkout() {
 							</div>
 							<div className="w-full flex justify-center lg:max-w-[280px]">
 								<span className="sm:text-4xl lg:text-6xl text-center font-bold text-white">YOUR PURCHASE IS READY</span>
-							</div>
-							<div className="flex items-center relarive z-0 mt-2">
-								<div className="sm:w-[250px] lg:w-auto text-center sm:hidden lg:block sm:text-sm lg:text-base text-[#66d058] font-semibold lg:ml-2">You are on the official Xai.games website</div>
 							</div>
 					</div>
 						<div className="h-auto lg:p-12 sm:px-2 sm:py-10">
