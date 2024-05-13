@@ -4,6 +4,7 @@ import { LogDescription } from 'ethers';
 import { config } from '../config.js';
 import { PoolFactoryAbi } from '../abis/PoolFactoryAbi.js';
 import { updatePoolInDB } from './updatePoolInDB.js';
+import { retry } from '../utils/retry.js';
 
 /**
  * Arguments required to initialize the data centralization runtime.
@@ -62,7 +63,7 @@ export async function dataCentralizationRuntime({
 		abi: PoolFactoryAbi,
 		eventName: Object.keys(eventToPoolAddressInLog),
 		log: logFunction,
-		callback: (log: LogDescription | null, err?: EventListenerError) => {
+		callback: async (log: LogDescription | null, err?: EventListenerError) => {
 			if (err) {
 				logFunction(`Error listening to event: ${err.message}`);
 			} else if (log) {
@@ -74,7 +75,7 @@ export async function dataCentralizationRuntime({
 					return;
 				}
 
-				updatePoolInDB(poolAddress, log.name === "PoolCreated")
+				retry(() => updatePoolInDB(poolAddress, log.name === "PoolCreated"), 3)
 					.then(() => {
 						logFunction("Updated pool:" + poolAddress)
 					})

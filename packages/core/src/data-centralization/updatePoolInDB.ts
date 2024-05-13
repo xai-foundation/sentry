@@ -29,6 +29,9 @@ export async function updatePoolInDB(
     }
     //Load poolInfo from subgraph
     const poolInfo = (await getPoolInfosFromGraph(graphClient, [poolAddress], true))[0];
+    if (!poolInfo) {
+        throw new Error("Pool could not be found on subgraph.");
+    }
     const baseInfo = {
         poolAddress: poolInfo.address,
         owner: poolInfo.owner,
@@ -82,7 +85,7 @@ export async function updatePoolInDB(
         ownerRequestedUnstakeKeyAmount: Number(poolInfo.ownerRequestedUnstakeKeyAmount),
         ownerLatestUnstakeRequestCompletionTime,
     }
-
+    
     if (createPool && blockPoolInfo) {
         updatePool.keyBucketTracker = blockPoolInfo.baseInfo.keyBucketTracker,
         updatePool.esXaiBucketTracker = blockPoolInfo.baseInfo.esXaiBucketTracker
