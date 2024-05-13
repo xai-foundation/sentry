@@ -64,7 +64,7 @@ export function Header() {
 
 					</div>
 
-					<ConnectButton onOpen={open} address={address} className="!bg-hornetSting"/>
+					<ConnectButton onOpen={open} address={address}/>
 				</div>
 				{/* Burger menu for mobile */}
 				<Burger openNavbar={() => setIsNavbarOpened(true)} />
