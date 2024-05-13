@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
 import { formatEther } from 'ethers';
-import { getPoolInfo } from "./getPoolInfo.js";
 import { getMaxStakeAmountPerLicense } from "./getMaxStakeAmountPerLicense.js";
 import { getTierIndexByStakedAmount } from "./getTierIndexByStakedAmount.js";
 import { IPool, PoolSchema } from './types.js';
 import { config } from "../config.js";
+import { getPoolInfo } from './index.js';
 
 const POOL_SHARES_BASE = 10_000;
 
