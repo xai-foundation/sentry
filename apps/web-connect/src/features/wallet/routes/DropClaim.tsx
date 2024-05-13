@@ -1,5 +1,4 @@
 import {useAccount, useContractWrite, useNetwork} from "wagmi";
-// import {XaiBanner} from "@/features/checkout/XaiBanner";
 import {ConnectButton, XaiCheckbox} from "@sentry/ui";
 import {KYCTooltip} from "@/features/checkout/KYCTooltip";
 import {useState} from "react";
@@ -49,8 +48,7 @@ export function DropClaim() {
 
 	return (
 		<div>
-			<div className="h-full min-h-[90vh] flex flex-col justify-center items-center">
-				{/* <XaiBanner/> */}
+			<div className="h-full min-h-screen flex-1 flex flex-col justify-center items-center">
 				{isSuccess ? (
 					<div
 						className="flex flex-col justify-center items-center w-[744px] border border-gray-200 bg-white m-4 p-12">

@@ -1,5 +1,4 @@
 import {useAccount, useNetwork, useContractWrite} from "wagmi";
-// import {XaiBanner} from "@/features/checkout/XaiBanner";
 import {useState, useEffect} from "react";
 import {ConnectButton, XaiCheckbox} from "@sentry/ui";
 import {useNavigate} from "react-router-dom";
@@ -75,8 +74,7 @@ export function ClaimToken() {
 
 	return (
 		<div>
-			<div className="h-full min-h-[90vh] flex flex-col justify-center items-center">
-				{/* <XaiBanner/> */}
+			<div className="h-full min-h-screen flex-1 flex flex-col justify-center items-center">
 				<div
 					className="flex flex-col justify-center items-center lg:w-[744px] bg-darkLicorice shadow-main m-4 lg:p-12 sm:p-8">
 					<div

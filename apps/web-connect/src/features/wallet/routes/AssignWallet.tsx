@@ -37,7 +37,7 @@ export function AssignWallet() {
 
 	return (
 		<div className={"bg-background-image"}>
-			<div className="h-full min-h-[90vh] flex flex-col justify-center items-center px-[33px] ">
+			<div className="h-full min-h-screen flex-1 flex flex-col justify-center items-center px-[33px] ">
 				{isSuccess ? (
 						<div
 							className="flex flex-col justify-center items-center w-[744px] border border-gray-200 bg-white m-4 p-12">

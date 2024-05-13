@@ -8,12 +8,12 @@ export function Footer() {
 				<div className="flex flex-col-reverse md:flex-row justify-between items-center gap-8">
 					<div className="w-full flex flex-col gap-2 items-center justify-center text-vividRed font-medium">
 						<XaiLogoFooter svgClassName={"absolute top-[-25px]"} />
-						<div className="w-full flex lg:flex-row flex-col items-center justify-center mt-[70px]  uppercase">
-							<div>
+						<ul className="w-full flex lg:flex-row flex-col items-center justify-center mt-[70px] uppercase">
+							<li>
 								<p>©2024 XAI. All Rights Reserved</p>
-							</div>
+							</li>
 
-							<div className="flex items-center gap-2">
+							<li className="flex items-center gap-2">
 								<p className="hidden lg:inline ml-2">|</p>
 								<a
 									className="text-blue-500 cursor-pointer hover:underline"
@@ -21,8 +21,8 @@ export function Footer() {
 								>
 									Sentry Node Agreement
 								</a>
-							</div>
-							<div className="flex items-center gap-2">
+							</li>
+							<li className="flex items-center gap-2">
 								<p className="hidden lg:inline ml-2">|</p>
 								<a
 									className="text-blue-500 cursor-pointer hover:underline"
@@ -30,8 +30,8 @@ export function Footer() {
 								>
 									Privacy Policy Agreement
 								</a>
-							</div>
-							<div className="flex items-center gap-2">
+							</li>
+							<li className="flex items-center gap-2">
 								<p className="hidden lg:inline ml-2">|</p>
 								<a
 									className="text-blue-500 cursor-pointer hover:underline"
@@ -39,8 +39,8 @@ export function Footer() {
 								>
 									General Terms
 								</a>
-							</div>
-							<div className="flex items-center gap-2">
+							</li>
+							<li className="flex items-center gap-2">
 								<p className="hidden lg:inline ml-2">|</p>
 								<a
 									className="text-blue-500 cursor-pointer hover:underline"
@@ -48,8 +48,8 @@ export function Footer() {
 								>
 									Staking Terms
 								</a>
-							</div>
-							<div className="flex items-center gap-2">
+							</li>
+							<li className="flex items-center gap-2">
 								<p className="hidden lg:inline ml-2">|</p>
 								<a
 									className="text-blue-500 cursor-pointer hover:underline"
@@ -57,8 +57,8 @@ export function Footer() {
 								>
 									Site design by fully illustrated
 								</a>
-							</div>
-						</div>
+							</li>
+						</ul>
 					</div>
 				</div>
 			</div>

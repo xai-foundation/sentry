@@ -52,7 +52,7 @@ export function Checkout() {
 
 	return (
 		<div>
-			<div className="h-full min-h-[90vh] flex flex-col justify-center items-center">
+			<div className="h-full min-h-screen flex-1 flex flex-col justify-center items-center">
             <div className="sm:w-[250px] lg:hidden lg:w-auto text-center text-base text-[#66d058] font-semibold pt-[70px] pb-[20px] lg:ml-2">You are on the official Xai.games website</div>
 				{isLoading && (
 					<div className="w-[744px] h-[208px] flex flex-col justify-center border border-[#E5E5E5] m-4">
@@ -100,7 +100,7 @@ export function Checkout() {
 
 				{!isLoading && !isSuccess && (
 					<div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-darkLicorice shadow-main">
-						<div className="flex flex-col justify-start items-center h-auto sm:px-4 sm:py-4 lg:p-12 lg:pl-[100px] lg:pt-1 ">
+						<div className="flex flex-col justify-start items-center h-auto sm:px-4 sm:py-4 lg:p-12 lg:pl-[80px] lg:pt-1 ">
 							<div className="w-full flex justify-center">
 								<img className="max-w-[280px]" src={logo} />
 							</div>
