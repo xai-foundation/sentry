@@ -75,7 +75,7 @@ export function DropClaim() {
 						className="flex flex-col justify-center items-center md:w-[500px] lg:w-[744px] bg-darkLicorice shadow-main m-4 lg:p-12 sm:p-8">
 						<div
 							className="flex flex-col justify-center items-center gap-2 w-full overflow-hidden">
-							<p className="text-2xl font-bold text-white">
+							<p className="text-3xl font-bold text-white">
 								REDEEM SENTRY KEYS
 							</p>
 
