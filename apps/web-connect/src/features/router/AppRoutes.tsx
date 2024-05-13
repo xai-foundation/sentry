@@ -15,7 +15,7 @@ import {ClaimRedEnvelope2024} from "@/features/wallet/routes/ClaimRedEnvelope202
 import { ReactCookieConsent } from '../footer/ReactCookieConsent';
 
 export function AppRoutes() {
-	const {blocked, loading} = useBlockIp({blockUsa: false});
+	const {blocked, loading} = useBlockIp({blockUsa: true});
 	const queryClient = new QueryClient();
 
 	if (loading) {
@@ -28,7 +28,9 @@ export function AppRoutes() {
 
 	if (blocked) {
 		return (
-			<pre className="p-2 text-sm">Not Found</pre>
+			<div className='w-full h-screen flex justify-center items-center'>
+				<p className="p-2 text-md text-white">You are in a country restricted from using this application.</p>
+			</div>
 		)
 	}
 

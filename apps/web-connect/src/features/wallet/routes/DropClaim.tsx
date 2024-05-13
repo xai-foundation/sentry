@@ -42,7 +42,9 @@ export function DropClaim() {
 
 	if (blocked) {
 		return (
-			<pre className="p-2 text-[14px]">Not Found</pre>
+			<div className='w-full h-screen flex justify-center items-center'>
+				<p className="p-2 text-md text-white">You are in a country restricted from using this application.</p>
+			</div>
 		);
 	}
 
