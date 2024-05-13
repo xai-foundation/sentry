@@ -9,21 +9,13 @@ interface InputRightComponentProps {
 }
 export default function RightRedeemComponent({ currency, availableXaiBalance, onMaxBtnClick }: InputRightComponentProps) {
 	return (
-		<main className="flex w-full flex-col">
-			<div className="flex flex-col items-end">
-				<span className="flex text-2xl font-semibold">
-					<span className="mt-1 mr-1"><RedXai /></span>
-					{currency}
-				</span>
+		<div className="flex flex-col min-w-fit">
+			<div className="flex items-center justify-end lg:pb-3 sm:pb-4">
+				<span className="mt-1 mr-1"><RedXai /></span>
+				<span
+					className={`ml-2 flex flex-col items-end lg:text-4xl sm:text-2xl font-semibold`}
+				>{currency}</span>
 			</div>
-			
-			<div className="flex flex-col items-end">
-			{(availableXaiBalance || availableXaiBalance === 0) && (
-					<span className="text-[12px] text-lightGrey unselectable">Available: {availableXaiBalance} {currency}
-						<span className="text-[12px] text-red cursor-pointer" onClick={onMaxBtnClick}> Max</span>
-				</span>
-			) }
-			</div>
-		</main>
-  	);
+		</div>
+	);
 }

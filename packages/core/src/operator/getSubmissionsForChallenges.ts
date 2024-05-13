@@ -13,7 +13,8 @@ export interface Submission {
     eligibleForPayout: boolean;
     nodeLicenseId: number;
     assertionStateRootOrConfirmData: string;
- }
+    challengeId: bigint;
+}
 
 /**
  * Fetches the submissions of a given array of challenge Ids.
@@ -50,6 +51,7 @@ export async function getSubmissionsForChallenges(
                 eligibleForPayout,
                 nodeLicenseId,
                 assertionStateRootOrConfirmData,
+                challengeId: chunk[j], // Assigning the challengeId from the chunk to the submission
             };
             submissions.push(submission);
             if (callback) {

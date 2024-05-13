@@ -6,9 +6,11 @@ import {
 } from "../buttons/ButtonsComponent";
 import { useRouter } from "next/navigation";
 import ReportComponent from "./ReportComponent";
-import { getAmountRequiredForUpgrade, getCurrentTierByStaking, getProgressValue } from "./utils";
+import { getAmountRequiredForUpgrade, getCurrentTierByStaking, getProgressValue, iconType } from "./utils";
 import { useGetMaxTotalStakedHooks } from "@/app/hooks/hooks";
 import { formatCurrency } from "@/app/utils/formatCurrency";
+import { useAccount } from "wagmi";
+import { TierInfo } from "@/types/Pool";
 
 interface StakingCardProps {
   onOpen?: () => void;
@@ -20,6 +22,7 @@ interface StakingCardProps {
   showProgressBar?: boolean;
   showTier?: boolean;
   unstake?: boolean;
+  tiers: Array<TierInfo & { icon?: iconType }>
 }
 
 const TotalStakedComponent = ({
@@ -32,13 +35,15 @@ const TotalStakedComponent = ({
   showProgressBar,
   showTier,
   unstake,
+  tiers
 }: StakingCardProps) => {
   const router = useRouter();
+  const { chainId } = useAccount();
 
   const currentTier = showTier
-    ? getCurrentTierByStaking(totalStaked ?? 0)
+    ? getCurrentTierByStaking(totalStaked ?? 0, tiers)
     : undefined;
-  const remaining = getAmountRequiredForUpgrade(totalStaked, currentTier);
+  const remaining = getAmountRequiredForUpgrade(totalStaked, tiers, currentTier);
   let remainingToTierText = ""
   if (currentTier?.nextTierName !== "" && currentTier && address) {
     if (remaining > 0.001) {
@@ -47,7 +52,7 @@ const TotalStakedComponent = ({
       remainingToTierText = `< 0.001 esXAI to ${currentTier?.nextTierName}`;
     }
   }
-  const progressValue = getProgressValue(totalStaked ?? 0, currentTier);
+  const progressValue = getProgressValue(totalStaked ?? 0, tiers, currentTier);
   const { totalMaxStaked } = useGetMaxTotalStakedHooks();
 
   return (
@@ -69,13 +74,13 @@ const TotalStakedComponent = ({
           <>
             {unstake && (
               <SecondaryButton
-                onClick={() => router.push("/staking/unstake")}
+                onClick={() => router.push(`/staking?chainId=${chainId}`)}
                 btnText={"Unstake"}
                 className="sm:w-[100px] h-[50px] font-medium"
               />
             )}
             <PrimaryButton
-              onClick={() => router.push("/staking/stake")}
+              onClick={() => router.push(`/staking?chainId=${chainId}`)}
               btnText={btnText}
               className="sm:w-[100px] h-[50px] font-medium"
             />
