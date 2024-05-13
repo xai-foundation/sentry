@@ -29,8 +29,6 @@ export async function updatePoolInDB(
     const baseInfo = {
         poolAddress: poolInfo.address,
         owner: poolInfo.owner,
-        keyBucketTracker: poolInfo.keyBucketTracker,
-        esXaiBucketTracker: poolInfo.esXaiBucketTracker,
         keyCount: poolInfo.totalStakedKeyAmount,
         totalStakedAmount: poolInfo.totalStakedEsXaiAmount,
         updateSharesTimestamp: poolInfo.updateSharesTimestamp,
@@ -66,8 +64,6 @@ export async function updatePoolInDB(
         name: poolInfo.metadata ? poolInfo.metadata[0].trim() : "",
         description: poolInfo.metadata ? poolInfo.metadata[1].trim() : "",
         logo: poolInfo.metadata ? poolInfo.metadata[2].trim() : "",
-        keyBucketTracker: baseInfo.keyBucketTracker,
-        esXaiBucketTracker: baseInfo.esXaiBucketTracker,
         keyCount: Number(baseInfo.keyCount),
         totalStakedAmount: Number(formatEther(baseInfo.totalStakedAmount.toString())),
         maxStakedAmount: Number(baseInfo.keyCount) * maxStakePerLicense,
