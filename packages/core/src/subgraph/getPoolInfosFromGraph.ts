@@ -9,7 +9,24 @@ import { GraphQLClient, gql } from 'graphql-request'
 export async function getPoolInfosFromGraph(
   client: GraphQLClient,
   poolAddresses: string[],
+  getExtendedInfo?: boolean
 ): Promise<PoolInfo[]> {
+
+  let extendedInfo = ""
+  if (getExtendedInfo) {
+    extendedInfo = `
+      pendingShares
+      ownerLatestUnstakeRequestCompletionTime
+      ownerRequestedUnstakeKeyAmount
+      ownerShare
+      ownerStakedKeys
+      socials
+      stakedBucketShare
+      updateSharesTimestamp
+      metadata
+      keyBucketShare
+    `
+  }
 
   const query = gql`
     query PoolInfos {
@@ -19,6 +36,7 @@ export async function getPoolInfosFromGraph(
         delegateAddress
         totalStakedEsXaiAmount
         totalStakedKeyAmount
+        ${extendedInfo}
       }
     }
   `

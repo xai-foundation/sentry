@@ -28,7 +28,7 @@ export async function updatePoolInDB(
         blockPoolInfo = await getPoolInfo(poolAddress);
     }
     //Load poolInfo from subgraph
-    const poolInfo = (await getPoolInfosFromGraph(graphClient, [poolAddress]))[0];
+    const poolInfo = (await getPoolInfosFromGraph(graphClient, [poolAddress], true))[0];
     const baseInfo = {
         poolAddress: poolInfo.address,
         owner: poolInfo.owner,
@@ -46,7 +46,7 @@ export async function updatePoolInDB(
     const amountForTier = Math.min(Number(formatEther(baseInfo.totalStakedAmount.toString())), maxStakedAmount);
     const tierIndex = await getTierIndexByStakedAmount(amountForTier);
 
-    const pendingShares: number[] = poolInfo.pendingShares!.map(p => Number(p) / POOL_SHARES_BASE);
+    const pendingShares: number[] = poolInfo.pendingShares.map(p => Number(p) / POOL_SHARES_BASE);
 
     let updateSharesTimestamp = Number(baseInfo.updateSharesTimestamp) * 1000;
     let ownerShare = Number(baseInfo.ownerShare) / POOL_SHARES_BASE;
@@ -83,9 +83,9 @@ export async function updatePoolInDB(
         ownerLatestUnstakeRequestCompletionTime,
     }
 
-    if (createPool) {
-        updatePool.keyBucketTracker = blockPoolInfo?.baseInfo.keyBucketTracker,
-        updatePool.esXaiBucketTracker = blockPoolInfo?.baseInfo.esXaiBucketTracker
+    if (createPool && blockPoolInfo) {
+        updatePool.keyBucketTracker = blockPoolInfo.baseInfo.keyBucketTracker,
+        updatePool.esXaiBucketTracker = blockPoolInfo.baseInfo.esXaiBucketTracker
     }
 
     //Write poolInfo to database
