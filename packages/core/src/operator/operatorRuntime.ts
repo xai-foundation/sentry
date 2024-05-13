@@ -454,8 +454,8 @@ const loadOperatingKeys = async (operator: string, operatorOwners?: string[], la
     });
 
     if (keyPools.size) {
-        const keyPoolInfos = await getPoolInfosFromGraph(graphClient, [...keyPools]);
-        keyPoolInfos.forEach(p => {
+        const keyPoolsData = await getPoolInfosFromGraph(graphClient, [...keyPools]);
+        keyPoolsData.pools.forEach(p => {
             mappedPools[p.address] = p;
         })
     }

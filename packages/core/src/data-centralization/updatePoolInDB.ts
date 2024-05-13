@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import { formatEther } from 'ethers';
-import { getMaxStakeAmountPerLicense } from "./getMaxStakeAmountPerLicense.js";
 import { getTierIndexByStakedAmount } from "./getTierIndexByStakedAmount.js";
 import { IPool, PoolSchema } from './types.js';
 import { config } from "../config.js";
@@ -15,23 +14,26 @@ const graphClient = new GraphQLClient(config.subgraphEndpoint);
 /**
  * Loads the current Pool Data from the blockchain and syncs the database
  * @param poolAddress - The pool address to sync.
+ * @param eventName - The poolFactory event that triggered the update.
  */
 export async function updatePoolInDB(
-    poolAddress: string, 
-    createPool: boolean
+    poolAddress: string,
+    eventName: string
 ): Promise<void> {
 
     const PoolModel = mongoose.models.Pool || mongoose.model<IPool>('Pool', PoolSchema);
 
-    let blockPoolInfo;
-    if (createPool) {
-        blockPoolInfo = await getPoolInfo(poolAddress);
-    }
     //Load poolInfo from subgraph
-    const poolInfo = (await getPoolInfosFromGraph(graphClient, [poolAddress], true))[0];
-    if (!poolInfo) {
-        throw new Error("Pool could not be found on subgraph.");
+    const { pools, refereeConfig } = await getPoolInfosFromGraph(graphClient, [poolAddress], true, true);
+    if (!pools.length || !pools[0]) {
+        throw new Error(`Pool ${poolAddress} could not be found on subgraph - event: ${eventName}`);
     }
+    if (!refereeConfig) {
+        throw new Error(`RefereeConfig not found. Pool: ${poolAddress}, event: ${eventName}`);
+    }
+
+    const poolInfo = pools[0];
+
     const baseInfo = {
         poolAddress: poolInfo.address,
         owner: poolInfo.owner,
@@ -43,11 +45,12 @@ export async function updatePoolInDB(
         stakedBucketShare: poolInfo.stakedBucketShare
     };
 
-    const maxStakePerLicense = await getMaxStakeAmountPerLicense();
-    const maxStakedAmount = Number(baseInfo.keyCount) * maxStakePerLicense;
-
+    const maxStakedAmount = Number(formatEther((BigInt(baseInfo.keyCount) * BigInt(refereeConfig.maxStakeAmountPerLicense)).toString()))
     const amountForTier = Math.min(Number(formatEther(baseInfo.totalStakedAmount.toString())), maxStakedAmount);
-    const tierIndex = await getTierIndexByStakedAmount(amountForTier);
+    const tierIndex = getTierIndexByStakedAmount(
+        amountForTier,
+        refereeConfig.stakeAmountTierThresholds.map(s => Number(formatEther(s.toString())))
+    );
 
     const pendingShares: number[] = poolInfo.pendingShares.map(p => Number(p) / POOL_SHARES_BASE);
 
@@ -72,7 +75,7 @@ export async function updatePoolInDB(
         logo: poolInfo.metadata ? poolInfo.metadata[2].trim() : "",
         keyCount: Number(baseInfo.keyCount),
         totalStakedAmount: Number(formatEther(baseInfo.totalStakedAmount.toString())),
-        maxStakedAmount: Number(baseInfo.keyCount) * maxStakePerLicense,
+        maxStakedAmount,
         tierIndex,
         ownerShare,
         keyBucketShare,
@@ -85,10 +88,11 @@ export async function updatePoolInDB(
         ownerRequestedUnstakeKeyAmount: Number(poolInfo.ownerRequestedUnstakeKeyAmount),
         ownerLatestUnstakeRequestCompletionTime,
     }
-    
-    if (createPool && blockPoolInfo) {
-        updatePool.keyBucketTracker = blockPoolInfo.baseInfo.keyBucketTracker,
-        updatePool.esXaiBucketTracker = blockPoolInfo.baseInfo.esXaiBucketTracker
+
+    if (eventName === "PoolCreated") {
+        const blockPoolInfo = await getPoolInfo(poolAddress);
+        updatePool.keyBucketTracker = blockPoolInfo.baseInfo.keyBucketTracker;
+        updatePool.esXaiBucketTracker = blockPoolInfo.baseInfo.esXaiBucketTracker;
     }
 
     //Write poolInfo to database
