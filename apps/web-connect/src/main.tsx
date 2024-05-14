@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import {AppRoutes} from './features/router'
 import {createWeb3Modal, defaultWagmiConfig} from '@web3modal/wagmi/react'
 import {WagmiConfig} from 'wagmi'
-import {arbitrum, arbitrumNova} from 'wagmi/chains'
+import {arbitrum, arbitrumNova, arbitrumSepolia} from 'wagmi/chains'
 import './index.css'
 
 const projectId = '8f5121741edc292ac7e4203b648d61e2'
@@ -11,7 +11,7 @@ const projectId = '8f5121741edc292ac7e4203b648d61e2'
 const chains = [
 	arbitrum,
 	arbitrumNova,
-	// arbitrumSepolia
+	arbitrumSepolia
 ]
 
 const metadata = {
