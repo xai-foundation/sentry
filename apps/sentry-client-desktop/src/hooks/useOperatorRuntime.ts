@@ -1,9 +1,10 @@
 import {Challenge, NodeLicenseInformation, NodeLicenseStatusMap, operatorRuntime, PublicNodeBucketInformation} from "@sentry/core";
 import {useOperator} from "@/features/operator";
 import {atom, useAtom} from "jotai";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {useStorage} from "@/features/storage";
 import log from "electron-log";
+import { ethers } from "ethers";
 
 function onAssertionMissMatch(publicNodeData: PublicNodeBucketInformation, challenge: Challenge, message: string) {
 	const errorMessage = `The comparison between public node and challenge failed:\n` +
@@ -29,12 +30,18 @@ export function useOperatorRuntime() {
 	const [, setRerender] = useState(0);
 	const {data, setData} = useStorage();
 	const whitelistedWallets = data?.whitelistedWallets;
+	const signerRef = useRef<ethers.Signer | undefined>();
 
 	// start sentry on launch / restart sentry
 	useEffect(() => {
-		if (signer) {
+		if (signerRef.current) {
 			void startRuntime();
 		}
+	}, [signerRef.current]);
+
+	useEffect(() => {
+		// Update the ref with the latest signer value
+		signerRef.current = signer; 
 	}, [signer]);
 
     function writeLog(message: string) {
@@ -58,7 +65,7 @@ export function useOperatorRuntime() {
 			await setData({...data, sentryRunning: true});
 
 			// @ts-ignore
-			stop = await operatorRuntime(signer, setNodeLicenseStatusMap, writeLog, whitelistedWallets, onAssertionMissMatch);
+			stop = await operatorRuntime(signerRef.current, setNodeLicenseStatusMap, writeLog, whitelistedWallets, onAssertionMissMatch);
 			setRerender((_number) => _number + 1);
 		}
 	}
