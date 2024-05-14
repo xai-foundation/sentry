@@ -41,6 +41,8 @@ export type PublicNodeBucketInformation = {
     confirmHash: string
 }
 
+const MAX_CHALLENGE_CLAIM_AMOUNT = 6480;
+
 type ProcessChallenge = {
     createdTimestamp: bigint,
     challengerSignedHash: string;
@@ -233,7 +235,6 @@ async function processNewChallenge(
                 continue;
             }
 
-            cachedLogger(`Adding Sentry Key ${nodeLicenseId} to batch for bulk submission for challenge ${challengeNumber}.`);
             batchedWinnerKeys.push(nodeLicenseId);
             updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
 
@@ -244,7 +245,7 @@ async function processNewChallenge(
 
     }
 
-    cachedLogger(`${nonWinnerKeysCount} / ${nodeLicenseIds.length} keys did not accrue esXAI for the challenge ${challengeNumber}. A Sentry Key receives esXAI every few days.`);
+    cachedLogger(`${nodeLicenseIds.length - nonWinnerKeysCount} / ${nodeLicenseIds.length} keys did accrue esXAI for the challenge ${challengeNumber}. A Sentry Key receives esXAI every few days.`);
 
     if (batchedWinnerKeys.length) {
         await submitMultipleAssertions(batchedWinnerKeys, challengeNumber, challenge.assertionStateRootOrConfirmData, KEYS_PER_BATCH, cachedSigner, cachedLogger);
@@ -308,6 +309,8 @@ async function processClosedChallenges(
 
     const beforeStatus: { [key: string]: string | undefined } = {}
 
+    const nonKYCWallets: { [wallet: string]: number } = {}
+
     for (const nodeLicenseId of nodeLicenseIds) {
 
         const sentryKey = sentryKeysMap[nodeLicenseId.toString()];
@@ -319,7 +322,10 @@ async function processClosedChallenges(
         safeStatusCallback();
 
         if (!sentryWalletMap[sentryKey.owner].isKYCApproved) {
-            cachedLogger(`Checked KYC status of '${sentryKey.owner}' for Sentry Key '${nodeLicenseId}'. It was not KYC'd and not able to claim the reward.`);
+            if (!nonKYCWallets[sentryKey.owner]) {
+                nonKYCWallets[sentryKey.owner] = 0;
+            }
+            nonKYCWallets[sentryKey.owner]++;
             updateNodeLicenseStatus(nodeLicenseId, `Cannot Claim, Failed KYC`);
             safeStatusCallback();
             continue;
@@ -346,6 +352,14 @@ async function processClosedChallenges(
         } catch (error: any) {
             cachedLogger(`Error processing submissions for Sentry Key ${nodeLicenseId} - ${error && error.message ? error.message : error}`);
         }
+    }
+
+    const nonKYC = Object.keys(nonKYCWallets);
+    if (nonKYC.length) {
+        cachedLogger(`Failed KYC check for ${nonKYC.length} owners: `);
+        nonKYC.forEach(w => {
+            cachedLogger(`${w} (${nonKYCWallets[w]} keys)`);
+        })
     }
 
     // Iterate over the map and call processClaimForChallenge for each challenge with its unique list of eligible nodeLicenseIds
@@ -545,7 +559,7 @@ export async function operatorRuntime(
     // Process open challenge
     const openChallenge = await retry(() => getLatestChallengeFromGraph(graphClient));
 
-    const latestClaimableChallenge = Number(openChallenge.challengeNumber) <= 4320 ? 1 : Number(openChallenge.challengeNumber) - 4320;
+    const latestClaimableChallenge = Number(openChallenge.challengeNumber) <= MAX_CHALLENGE_CLAIM_AMOUNT ? 1 : Number(openChallenge.challengeNumber) - MAX_CHALLENGE_CLAIM_AMOUNT;
     const { sentryWalletMap, sentryKeysMap, nodeLicenseIds, mappedPools, refereeConfig } = await loadOperatingKeys(operatorAddress, operatorOwners, BigInt(latestClaimableChallenge));
 
     logFunction(`Processing open challenges.`);
