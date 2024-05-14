@@ -211,7 +211,7 @@ async function processNewChallenge(
             const keyOwner = isPool ? sentryKey.assignedPool : sentryKey.owner;
             if (!cachedBoostFactor[keyOwner]) {
                 cachedBoostFactor[keyOwner] = calculateBoostFactor(sentryKey, sentryWalletMap[sentryKey.owner], mappedPools, refereeConfig);
-                cachedLogger(`Found chance boost of ${Number(cachedBoostFactor[keyOwner]) / 100}% for ${isPool ? "pool" : "owner"} ${keyOwner}`);
+                cachedLogger(`Found chance boost of ${Number(cachedBoostFactor[keyOwner]) / 100}% for ${isPool ? `pool: ${mappedPools[keyOwner].metadata[0]} (${keyOwner})` : `owner: ${keyOwner}`}`);
             }
 
             const [payoutEligible] = createAssertionHashAndCheckPayout(nodeLicenseId, challengeNumber, cachedBoostFactor[keyOwner], challenge.assertionStateRootOrConfirmData, challenge.challengerSignedHash);
@@ -330,7 +330,7 @@ async function processClosedChallenges(
             safeStatusCallback();
             if (removeSubmissionAfterProcess) {
                 const found = findSubmissionOnSentryKey(sentryKey, challengeId);
-                if(found){
+                if (found) {
                     sentryKey.submissions.splice(found.index, 1);
                 }
             }
@@ -497,24 +497,35 @@ const processPastChallenges = async (
 
     cachedLogger(`Processing closed challenges ${openChallengeNumber} - ${latestClaimableChallenge} for ${nodeLicenseIds.length} keys.`);
 
-    let filteredLicenseIds = nodeLicenseIds.filter(n => {
-        return sentryKeysMap[n.toString()].submissions.length > 0
-    });;
 
-    for (let i = openChallengeNumber - 1; i >= latestClaimableChallenge; i--) {
-        if (filteredLicenseIds.length == 0) {
-            break;
+    const challengeToKeys: { [challenge: string]: bigint[] } = {}
+
+    for (let i = 0; i < nodeLicenseIds.length; i++) {
+        const keyId = nodeLicenseIds[i].toString();
+
+        if (sentryKeysMap[keyId].submissions.length) {
+            sentryKeysMap[keyId].submissions.forEach(s => {
+                if (!challengeToKeys[s.challengeNumber.toString()]) {
+                    challengeToKeys[s.challengeNumber.toString()] = []
+                }
+                challengeToKeys[s.challengeNumber.toString()].push(nodeLicenseIds[i])
+            })
         }
 
-        cachedLogger(`Processing closed challenge ${i} for ${filteredLicenseIds.length} keys ...`);
-        await processClosedChallenges(BigInt(i), filteredLicenseIds, sentryKeysMap, sentryWalletMap, true);
+        await new Promise((resolve) => {
+            setTimeout(resolve, 100);
+        });
+    }
+
+    const openChallenges = Object.keys(challengeToKeys);
+    cachedLogger(`Found ${openChallenges.length} challenges to process...`);
+    openChallenges.sort(function (a, b) { return Number(b) - Number(a) });
+
+    for (let i = 0; i < openChallenges.length; i++) {
+        cachedLogger(`Processing closed challenge ${openChallenges[i]} for ${challengeToKeys[openChallenges[i]].length} keys ...`);
+        await processClosedChallenges(BigInt(openChallenges[i]), challengeToKeys[openChallenges[i]], sentryKeysMap, sentryWalletMap, true);
 
         await new Promise((resolve) => {
-            filteredLicenseIds = filteredLicenseIds.filter(n => {
-                return sentryKeysMap[n.toString()].submissions.length > 0
-            });
-            //Add sleep so we don't block the challenge listener.
-            //This should be refactored using web workers
             setTimeout(resolve, 100);
         });
     }

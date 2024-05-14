@@ -33,7 +33,7 @@ export async function getSentryKeysFromGraph(
     }
 
     submissionQuery = gql`
-        submissions(first: 4320, orderBy: challengeNumber, orderDirection: desc, where: {${submissionQueryFilter.join(",")}}) { 
+        submissions(first: 10000, orderBy: challengeNumber, orderDirection: desc, where: {${submissionQueryFilter.join(",")}}) { 
           challengeNumber
           nodeLicenseId
           claimAmount 
@@ -80,7 +80,6 @@ export async function getSentryKeysFromGraph(
         }
       }
     `
-
   const result = await client.request(query) as any;
   return result.sentryKeys;
 }

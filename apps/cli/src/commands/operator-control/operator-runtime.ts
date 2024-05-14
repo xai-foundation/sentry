@@ -1,7 +1,6 @@
 import Vorpal from "vorpal";
 import Logger from "../../utils/Logger.js"
-import { getSignerFromPrivateKey, operatorRuntime, listOwnersForOperator, Challenge, PublicNodeBucketInformation } from "@sentry/core";
-import { getOwnerOrDelegatePools } from "@sentry/core";
+import { getSignerFromPrivateKey, operatorRuntime, Challenge, PublicNodeBucketInformation, getSentryWalletsForOperator } from "@sentry/core";
 
 /**
  * Starts a runtime of the operator.
@@ -40,22 +39,37 @@ export function bootOperator(cli: Vorpal) {
             // If useWhitelist is false, selectedOwners will be undefined
             let selectedOwners;
             if (useWhitelist) {
-                
+
                 const operatorAddress = await signer.getAddress();
-                const owners = await listOwnersForOperator(operatorAddress);
-                const pools = await getOwnerOrDelegatePools(operatorAddress);
+                const { wallets, pools } = await getSentryWalletsForOperator(null, operatorAddress);
+
+                const choices: Array<{ name: string, value: string }> = [];
+
+                wallets.forEach(w => {
+                    choices.push({
+                        name: `Owner: ${w.address}${operatorAddress.toLowerCase() == w.address.toLowerCase() ? " (your wallet)" : ""}`,
+                        value: w.address
+                    })
+                })
+
+                pools.forEach(p => {
+                    choices.push({
+                        name: `Pool: ${p.metadata[0]} (${p.address})`,
+                        value: p.address
+                    })
+                })
 
                 const ownerPrompt: Vorpal.PromptObject = {
                     type: 'checkbox',
                     name: 'selectedOwners',
                     message: 'Select the owners/pools for the operator to run for:',
-                    choices: [operatorAddress, ...owners, ...pools]
+                    choices,
                 };
 
                 const result = await this.prompt(ownerPrompt);
                 selectedOwners = result.selectedOwners;
 
-                console.log("selectedOwners", selectedOwners);
+                Logger.log("selectedOwners", selectedOwners);
 
                 if (!selectedOwners || selectedOwners.length < 1) {
                     throw new Error("No owners selected. Please select at least one owner.")
@@ -84,8 +98,8 @@ export function bootOperator(cli: Vorpal) {
                     this.log(errorMessage)
                 }
             );
-            
-            
+
+
             // Listen for process termination and call the handler
             process.on('SIGINT', async () => {
                 if (stopFunction) {

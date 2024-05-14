@@ -26,7 +26,6 @@ export async function getPoolInfosFromGraph(
       socials
       stakedBucketShare
       updateSharesTimestamp
-      metadata
       keyBucketShare
     `
   }
@@ -46,12 +45,13 @@ export async function getPoolInfosFromGraph(
 
   const query = gql`
     query PoolInfos {
-      poolInfos(where: {address_in: [${poolAddresses.map(o => `"${o.toLowerCase()}"`).join(",")}]}) {
+      poolInfos(first: 1000, where: {address_in: [${poolAddresses.map(o => `"${o.toLowerCase()}"`).join(",")}]}) {
         address
         owner
         delegateAddress
         totalStakedEsXaiAmount
         totalStakedKeyAmount
+        metadata
         ${extendedInfo}
       }
       ${refereeConfigQuery}

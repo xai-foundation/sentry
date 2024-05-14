@@ -1,5 +1,6 @@
 import { PoolInfo, SentryWallet, RefereeConfig } from "@sentry/sentry-subgraph-client";
 import { GraphQLClient, gql } from 'graphql-request'
+import { config } from "../config.js";
 
 /**
  * 
@@ -7,13 +8,18 @@ import { GraphQLClient, gql } from 'graphql-request'
  * @returns The SentryWallet entity from the graph
  */
 export async function getSentryWalletsForOperator(
-  client: GraphQLClient,
+  client: GraphQLClient | null,
   operator: string,
   whitelist?: string[]
 ): Promise<{ wallets: SentryWallet[], pools: PoolInfo[], refereeConfig: RefereeConfig }> {
+
+  if (client == null) {
+    client = new GraphQLClient(config.subgraphEndpoint);
+  }
+
   const query = gql`
     query OperatorAddresses {
-      sentryWallets(where: {
+      sentryWallets(first: 1000, where: {
         or: [
           {address: "${operator.toLowerCase()}"}, 
           {approvedOperators_contains: ["${operator.toLowerCase()}"]}
@@ -25,12 +31,13 @@ export async function getSentryWalletsForOperator(
         stakedKeyCount
         keyCount
       }
-      poolInfos(where: {or: [{owner: "${operator.toLowerCase()}"}, {delegateAddress: "${operator.toLowerCase()}"}]}) {
+      poolInfos(first: 1000, where: {or: [{owner: "${operator.toLowerCase()}"}, {delegateAddress: "${operator.toLowerCase()}"}]}) {
         address
         owner
         delegateAddress
         totalStakedEsXaiAmount
         totalStakedKeyAmount
+        metadata
       }
       refereeConfig(id: "RefereeConfig") {
         maxKeysPerPool
