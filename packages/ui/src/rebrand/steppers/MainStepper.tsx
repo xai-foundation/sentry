@@ -32,7 +32,6 @@ const MainStepper = ({
           max={99}
           onChange={onChange}
           className="font-bold text-3xl text-center indent-3 max-w-[60px] text-white bg-nulnOil py-[7px] focus:outline-none"
-          readOnly
         />
         <button
           className="bg-nulnOil p-[20px] global-cta-clip-path hover:bg-velvetBlack duration-200 ease-in"
