@@ -58,8 +58,8 @@ export const KYCTooltip = ({width = 443, position = "center", side = "top", chil
 				{columns.map((column, columnIndex) => (
 					<ul key={columnIndex} className="flex flex-col flex-grow">
 						{column.map(({country, translation}) => (
-							<li key={country} className="mx-2">
-								{country} - {translation}
+							<li key={country} className="mx-2 text-[#A19F9F]">
+							<span className="text-[#FF0030]">*</span>	{country} - {translation}
 							</li>
 						))}
 					</ul>
@@ -81,7 +81,7 @@ export const KYCTooltip = ({width = 443, position = "center", side = "top", chil
 					className={`relative -bottom-1 items-center flex-col flex text-black z-50`}
 					style={{width: `${width}px`}}
 				>
-					<div className={`relative w-full py-3 px-4 bg-white border border-[#D4D4D4] shadow-lg`}>
+					<div className={`relative w-full py-3 px-4 bg-[#000000] shadow-lg`}>
 						<p className="text-base font-semibold pb-2">
 							The following countries will not be allowed to pass KYC in accordance with local
 							regulations:
@@ -89,7 +89,7 @@ export const KYCTooltip = ({width = 443, position = "center", side = "top", chil
 						{getCountries()}
 					</div>
 					<div
-						className="w-3 h-3 -mt-[0.4rem] mx-[0.5rem] rotate-45 bg-white border-b border-r border-[#D4D4D4] z-30"/>
+						className="w-3 h-3 -mt-[0.4rem] mx-[0.5rem] rotate-45 bg-[#000000] border-b border-r border-[#D4D4D4] z-30"/>
 				</TooltipPrimitive.Content>
 			</TooltipPrimitive.Root>
 		</TooltipPrimitive.Provider>

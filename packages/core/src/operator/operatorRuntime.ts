@@ -386,20 +386,20 @@ async function processClosedChallenges(
 // start a listener for new challenges
 async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: any) {
 
-    if (event && challenge.rollupUsed === config.rollupAddress) {
-        compareWithCDN(challenge)
-            .then(({ publicNodeBucket, error }) => {
-                if (error) {
-                    onAssertionMissMatchCb(publicNodeBucket, challenge, error);
-                    return;
-                }
-                cachedLogger(`Comparison between PublicNode and Challenger was successful.`);
-            })
-            .catch(error => {
-                cachedLogger(`Error on CND check for challenge ${Number(challenge.assertionId)}.`);
-                cachedLogger(`${error.message}.`);
-            });
-    }
+    // if (event && challenge.rollupUsed === config.rollupAddress) {
+    //     compareWithCDN(challenge)
+    //         .then(({ publicNodeBucket, error }) => {
+    //             if (error) {
+    //                 onAssertionMissMatchCb(publicNodeBucket, challenge, error);
+    //                 return;
+    //             }
+    //             cachedLogger(`Comparison between PublicNode and Challenger was successful.`);
+    //         })
+    //         .catch(error => {
+    //             cachedLogger(`Error on CND check for challenge ${Number(challenge.assertionId)}.`);
+    //             cachedLogger(`${error.message}.`);
+    //         });
+    // }
 
     cachedLogger(`Received new challenge with number: ${challengeNumber}.`);
 
