@@ -105,6 +105,8 @@ dataSources:
           handler: handleUpdatePendingShares
         - event: ClaimFromPool(indexed address,indexed address)
           handler: handleClaimFromPool
+        - event: UpdateDelayPeriods()
+          handler: handleUpdateDelayPeriods
       file: ./src/pool-factory.ts
   - kind: ethereum
     name: Xai
