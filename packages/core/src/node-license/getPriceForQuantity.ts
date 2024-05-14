@@ -25,7 +25,7 @@ export async function getPriceForQuantity(quantity: number): Promise<{ price: bi
         "https://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
         "https://arb1.arbitrum.io/rpc",
     ];
-    const provider = getProvider(providerUrls[Math.floor(Math.random() * providerUrls.length)]);
+    const provider = getProvider(config.arbitrumOneJsonRpcUrl);
 
     // Create an instance of the NodeLicense contract
     const nodeLicenseContract = new ethers.Contract(config.nodeLicenseAddress, NodeLicenseAbi, provider);

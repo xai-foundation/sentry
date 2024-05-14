@@ -288,9 +288,14 @@ export function WebBuyKeysOrderTotal(
 
 							<div>
 								<button
-									onClick={() => onClick()}
-									className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
-									disabled={!ready || chain?.id !== 42_161}
+									onClick={() => {
+										console.log("Button clicked")
+										onClick()}}
+									// className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 && chain?.id === 42_1614? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
+									className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
+									// disabled={!ready || chain?.id !== 42_161}
+									disabled={!ready}
+
 								>
 									{chain?.id === 42_161 || chain?.id === 42_1614 ? "BUY NOW" : "Please Switch to Arbitrum One"}
 								</button>
