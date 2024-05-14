@@ -1,5 +1,4 @@
 import {useAccount, useContractWrite, useNetwork} from "wagmi";
-// import {XaiBanner} from "@/features/checkout/XaiBanner";
 import {ConnectButton, XaiCheckbox} from "@sentry/ui";
 import {KYCTooltip} from "@/features/checkout/KYCTooltip";
 import {useState} from "react";
@@ -43,14 +42,15 @@ export function DropClaim() {
 
 	if (blocked) {
 		return (
-			<pre className="p-2 text-[14px]">Not Found</pre>
+			<div className='w-full h-screen flex justify-center items-center'>
+				<p className="p-2 text-md text-white">You are in a country restricted from using this application.</p>
+			</div>
 		);
 	}
 
 	return (
 		<div>
-			<div className="h-full min-h-[90vh] flex flex-col justify-center items-center">
-				{/* <XaiBanner/> */}
+			<div className="h-full min-h-screen flex-1 flex flex-col justify-center items-center">
 				{isSuccess ? (
 					<div
 						className="flex flex-col justify-center items-center w-[744px] border border-gray-200 bg-white m-4 p-12">
@@ -75,7 +75,7 @@ export function DropClaim() {
 						className="flex flex-col justify-center items-center md:w-[500px] lg:w-[744px] bg-darkLicorice shadow-main m-4 lg:p-12 sm:p-8">
 						<div
 							className="flex flex-col justify-center items-center gap-2 w-full overflow-hidden">
-							<p className="text-2xl font-bold text-white">
+							<p className="text-3xl font-bold text-white">
 								REDEEM SENTRY KEYS
 							</p>
 
@@ -152,9 +152,9 @@ export function DropClaim() {
 														</div>
 
 														{error && (
-															<p className="text-center break-words w-full mt-4 text-red-500">
+															<div className="text-center sm:w-[400px] md:w-[600px] h-[200px] p-4 overflow-y-auto break-words mt-4 text-[#F30919]">
 																{error.message}
-															</p>
+															</div>
 														)}
 													</div>
 												</>

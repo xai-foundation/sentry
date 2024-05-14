@@ -37,7 +37,7 @@ export function UnassignWallet() {
 
 	return (
 		<div>
-			<div className="h-full min-h-[90vh] flex flex-col justify-center items-center px-[33px]">
+			<div className="h-full min-h-screen flex-1 flex flex-col justify-center items-center px-[33px]">
 				{isSuccess ? (
 					<div
 						className="flex flex-col justify-center items-center w-[744px] border border-gray-200 bg-white m-4 p-12">
@@ -70,9 +70,9 @@ export function UnassignWallet() {
 								un-assigning your wallet, you will be redirected back to the client.
 							</p>
 							{error && (
-								<p className="text-center break-words w-full mt-4 text-red-500">
-								{error.message}
-								</p>
+								<div className="text-center sm:w-[400px] md:w-[600px] h-[200px] p-4 overflow-y-auto break-words mt-4 text-[#F30919]">
+									{error.message}
+								</div>
 							)}
 							{isConnected && address ? (
 								<PrimaryButton

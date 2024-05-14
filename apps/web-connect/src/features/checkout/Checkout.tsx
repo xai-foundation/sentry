@@ -8,7 +8,7 @@ import {BiLoaderAlt} from "react-icons/bi";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useProvider} from "@/features/checkout/hooks/useProvider";
 import {Tooltip} from "@sentry/ui";
-import { InfoPointRed, RedSentryIcon, WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { InfoPointRed, RedSentryIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import logo from '../../../public/images/sentry-main.png'
 
 export function Checkout() {
@@ -52,8 +52,7 @@ export function Checkout() {
 
 	return (
 		<div>
-			<div className="h-full min-h-[90vh] flex flex-col justify-center items-center">
-            <div className="sm:w-[250px] lg:hidden lg:w-auto text-center sm:text-sm lg:text-base text-[#66d058] font-semibold pt-[70px] pb-[20px] lg:ml-2">You are on the official Xai.games website</div>
+			<div className="h-full min-h-screen flex-1 flex flex-col justify-center items-center">
 				{isLoading && (
 					<div className="w-[744px] h-[208px] flex flex-col justify-center border border-[#E5E5E5] m-4">
 						<div className="w-full h-[390px] flex flex-col justify-center items-center gap-2">
@@ -100,16 +99,12 @@ export function Checkout() {
 
 				{!isLoading && !isSuccess && (
 					<div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-darkLicorice shadow-main">
-						<div className="flex flex-col justify-start items-center h-auto sm:px-4 sm:py-4 lg:p-12 lg:pt-1 ">
+						<div className="flex flex-col justify-start items-center h-auto sm:px-4 sm:py-4 lg:p-12 lg:pl-[80px] lg:pt-1 ">
 							<div className="w-full flex justify-center">
 								<img className="max-w-[280px]" src={logo} />
 							</div>
-							<div className="w-full flex justify-center lg:max-w-[200px]">
-								<span className="sm:text-3xl lg:text-5xl text-center font-bold text-white">YOUR PURCHASE IS READY</span>
-							</div>
-							<div className="flex items-center relarive z-0 mt-2">
-								<WarningIcon width={20} height={20} className="sm:hidden lg:block" />
-								<div className="sm:w-[250px] lg:w-auto text-center sm:hidden lg:block sm:text-sm lg:text-base text-[#66d058] font-semibold lg:ml-2">You are on the official Xai.games website</div>
+							<div className="w-full flex justify-center lg:max-w-[280px]">
+								<span className="sm:text-4xl lg:text-6xl text-center font-bold text-white">YOUR PURCHASE IS READY</span>
 							</div>
 					</div>
 						<div className="h-auto lg:p-12 sm:px-2 sm:py-10">
@@ -117,7 +112,7 @@ export function Checkout() {
 							<div className="flex flex-col sm:items-center lg:items-start gap-2">
 								<div className="flex flex-row sm:w-full sm:justify-center lg:justify-start items-center gap-1">
 									<RedSentryIcon width={32} height={32} />
-									<p className="sm:text-xl lg:text-2xl text-white font-semibold">
+									<p className="sm:text-2xl lg:text-3xl text-white font-bold">
 										XAI SENTRY NODE KEY
 									</p>
 									<Tooltip
@@ -128,7 +123,7 @@ export function Checkout() {
 										<InfoPointRed/>
 									</Tooltip>
 								</div>
-								<p className="sm:w-full lg:w-[400px] sm:text-center sm:px-8 lg:px-0 lg:text-left text-base text-[#525252]">
+								<p className="sm:w-full lg:w-[400px] sm:text-center sm:px-8 lg:px-0 lg:text-left text-[18px] text-[#525252]">
 									Each Sentry Node Key enables you to submit up to 1 reward claim for each network challenge.
 								</p>
 							</div>

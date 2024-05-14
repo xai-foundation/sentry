@@ -1,5 +1,4 @@
 import {useAccount, useNetwork, useContractWrite} from "wagmi";
-// import {XaiBanner} from "@/features/checkout/XaiBanner";
 import {useState, useEffect} from "react";
 import {ConnectButton, XaiCheckbox} from "@sentry/ui";
 import {useNavigate} from "react-router-dom";
@@ -53,7 +52,9 @@ export function ClaimToken() {
 
 	if (blocked) {
 		return (
-			<pre className="p-2 text-[14px]">Not Found</pre>
+			<div className='w-full h-screen flex justify-center items-center'>
+				<p className="p-2 text-md text-white">You are in a country restricted from using this application.</p>
+			</div>
 		)
 	}
 
@@ -75,13 +76,12 @@ export function ClaimToken() {
 
 	return (
 		<div>
-			<div className="h-full min-h-[90vh] flex flex-col justify-center items-center">
-				{/* <XaiBanner/> */}
+			<div className="h-full min-h-screen flex-1 flex flex-col justify-center items-center">
 				<div
 					className="flex flex-col justify-center items-center lg:w-[744px] bg-darkLicorice shadow-main m-4 lg:p-12 sm:p-8">
 					<div
 						className="flex flex-col justify-center items-center gap-2 w-full overflow-hidden">
-						<p className="text-2xl font-bold text-white mb-4">
+						<p className="text-3xl font-bold text-white mb-4">
 							CLAIM XAI TOKENS
 						</p>
 
@@ -124,11 +124,11 @@ export function ClaimToken() {
 												</button>
 											</div>
 											{error && (
-												<p className="text-center break-words w-full mt-4 text-red-500">
+												<div className="text-center sm:w-[400px] md:w-[600px] h-[200px] p-4 overflow-y-auto break-words mt-4 text-[#F30919]">
 													You will see an error if you have already claimed!
 													<br/><br/>
 													{error.message}
-												</p>
+												</div>
 											)}
 										</div>
 									</>
