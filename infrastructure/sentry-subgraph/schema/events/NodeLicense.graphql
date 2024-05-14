@@ -1,13 +1,3 @@
-type NodeLicenseTransferEvent @entity(immutable: true) {
-  id: Bytes!
-  from: Bytes! # address
-  to: Bytes! # address
-  tokenId: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
 type SentryKey @entity(immutable: false) {
   id: String!
   owner: Bytes! # address

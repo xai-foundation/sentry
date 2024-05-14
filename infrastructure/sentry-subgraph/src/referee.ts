@@ -97,12 +97,18 @@ export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
     return;
   }
 
-  let submission = new Submission(event.params.challengeId.toString() + event.params.nodeLicenseId.toString())
+  let submission = new Submission(event.params.challengeId.toString() + "_" + event.params.nodeLicenseId.toString())
   submission.nodeLicenseId = event.params.nodeLicenseId
   submission.challengeNumber = event.params.challengeId
   submission.claimed = false
   submission.claimAmount = BigInt.fromI32(0)
   submission.sentryKey = event.params.nodeLicenseId.toString()
+  submission.challenge = challenge.id
+
+  submission.createdTimestamp = event.block.timestamp
+  submission.createdTxHash = event.transaction.hash
+  submission.claimTimestamp = BigInt.fromI32(0)
+  submission.claimTxHash = Bytes.fromI32(0)
 
   let assertionStateRootOrConfirmData: Bytes = Bytes.fromI32(0);
   const dataToDecode = getInputFromEvent(event, true)
@@ -226,7 +232,7 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
       if (challengeIds[i].equals(event.params.challengeId)) {
         const nodeLicenseId = nodeLicenseIds[i]
 
-        const submission = Submission.load(event.params.challengeId.toString() + nodeLicenseId.toString())
+        const submission = Submission.load(event.params.challengeId.toString() + "_" + nodeLicenseId.toString())
         if (!submission) {
           log.warning("Failed to find submission handleRewardsClaimed (custom): nodeLicenseId: " + nodeLicenseId.toString() + ", challengeId: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
           continue;
@@ -235,6 +241,10 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
         if (!submission.claimed) {
           submission.claimed = true
           submission.claimAmount = event.params.amount
+
+          submission.claimTimestamp = event.block.timestamp
+          submission.claimTxHash = event.transaction.hash
+
           submission.save()
           amountClaimedByClaimers = amountClaimedByClaimers.plus(event.params.amount)
         }
@@ -255,7 +265,7 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
     }
 
     const nodeLicenseId = decoded.toTuple()[0].toBigInt()
-    const submission = Submission.load(event.params.challengeId.toString() + nodeLicenseId.toString())
+    const submission = Submission.load(event.params.challengeId.toString() + "_" + nodeLicenseId.toString())
     if (!submission) {
       log.warning("Failed to find submission handleRewardsClaimed: nodeLicenseId: " + nodeLicenseId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
       return;
@@ -264,6 +274,8 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
     if (!submission.claimed) {
       submission.claimed = true
       submission.claimAmount = event.params.amount
+      submission.claimTimestamp = event.block.timestamp
+      submission.claimTxHash = event.transaction.hash
       submission.save()
 
       challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(event.params.amount)
@@ -308,7 +320,7 @@ export function handleBatchRewardsClaimed(event: BatchRewardsClaimedEvent): void
       continue;
     }
 
-    const submission = Submission.load(event.params.challengeId.toString() + nodeLicenseIds[i].toString())
+    const submission = Submission.load(event.params.challengeId.toString() + "_" + nodeLicenseIds[i].toString())
     if (!submission) {
       if (event.params.keysLength.lt(BigInt.fromI32(nodeLicenseIds.length))) {
         // If this batch claim claimed for more keys than the event counted, we can expect to not find the submission because the user probably claimed for keys that did not submit
@@ -342,6 +354,9 @@ export function handleBatchRewardsClaimed(event: BatchRewardsClaimedEvent): void
 
         submission.claimed = true
         submission.claimAmount = reward
+        
+        submission.claimTimestamp = event.block.timestamp
+        submission.claimTxHash = event.transaction.hash
         submission.save()
       }
     }

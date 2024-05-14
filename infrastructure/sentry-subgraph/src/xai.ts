@@ -7,6 +7,7 @@ export function handleConvertedToEsXai(event: ConvertedToEsXai): void {
     );
     redemption.amount = event.params.amount
     redemption.user = event.params.user
+    redemption.timestamp = event.block.timestamp
 
     redemption.save()
 }

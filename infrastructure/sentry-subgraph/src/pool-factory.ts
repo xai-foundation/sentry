@@ -161,22 +161,23 @@ export function handlePoolCreated(event: PoolCreated): void {
   }
 
   const pool = new PoolInfo(event.params.poolAddress.toHexString())
-  const tuple = decoded.toTuple();
+  const tuple = decoded.toTuple()
   pool.address = event.params.poolAddress
   pool.owner = event.params.poolOwner
-  pool.delegateAddress = tuple[0].toAddress();
-  pool.totalStakedEsXaiAmount = BigInt.fromI32(0);
-  pool.totalStakedKeyAmount = event.params.stakedKeyCount;
-  pool.ownerShare = tuple[2].toBigIntArray()[0];
-  pool.keyBucketShare = tuple[2].toBigIntArray()[1];
-  pool.stakedBucketShare = tuple[2].toBigIntArray()[2];
-  pool.updateSharesTimestamp = BigInt.fromI32(0);
-  pool.pendingShares = [BigInt.fromI32(0), BigInt.fromI32(0), BigInt.fromI32(0)];
-  pool.metadata = tuple[3].toStringArray();
-  pool.socials = tuple[4].toStringArray();
-  pool.ownerStakedKeys = pool.totalStakedKeyAmount;
-  pool.ownerRequestedUnstakeKeyAmount = BigInt.fromI32(0);
-  pool.ownerLatestUnstakeRequestCompletionTime = BigInt.fromI32(0);
+  pool.delegateAddress = tuple[0].toAddress()
+  pool.totalStakedEsXaiAmount = BigInt.fromI32(0)
+  pool.totalStakedKeyAmount = event.params.stakedKeyCount
+  pool.ownerShare = tuple[2].toBigIntArray()[0]
+  pool.keyBucketShare = tuple[2].toBigIntArray()[1]
+  pool.stakedBucketShare = tuple[2].toBigIntArray()[2]
+  pool.updateSharesTimestamp = BigInt.fromI32(0)
+  pool.pendingShares = [BigInt.fromI32(0), BigInt.fromI32(0), BigInt.fromI32(0)]
+  pool.metadata = tuple[3].toStringArray()
+  pool.socials = tuple[4].toStringArray()
+  pool.ownerStakedKeys = pool.totalStakedKeyAmount
+  pool.ownerRequestedUnstakeKeyAmount = BigInt.fromI32(0)
+  pool.ownerLatestUnstakeRequestCompletionTime = BigInt.fromI32(0)
+  pool.createdTimestamp = event.block.timestamp
   pool.save()
 
 

@@ -1,55 +1,3 @@
-type RefereeAssertionSubmittedEvent @entity(immutable: true) {
-  id: Bytes!
-  challengeId: BigInt! # uint256
-  nodeLicenseId: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RefereeChallengeClosedEvent @entity(immutable: true) {
-  id: Bytes!
-  challengeNumber: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RefereeChallengeExpiredEvent @entity(immutable: true) {
-  id: Bytes!
-  challengeId: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RefereeChallengeSubmittedEvent @entity(immutable: true) {
-  id: Bytes!
-  challengeNumber: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type BatchRewardsClaimed @entity(immutable: true) {
-  id: Bytes!
-  challengeId: BigInt! # uint256
-  amount: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RefereeApprovalEvent @entity(immutable: true) {
-  id: Bytes!
-  owner: Bytes! # address
-  operator: Bytes! # address
-  approved: Boolean!
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
 enum ChallengeStatus {
   OpenForSubmissions
   OpenForClaims
@@ -72,6 +20,7 @@ type Challenge @entity(immutable: false) {
   amountForGasSubsidy: BigInt! # uint256
   numberOfEligibleClaimers: BigInt! # uint256
   amountClaimedByClaimers: BigInt! # uint256
+  submissions: [Submission!]! @derivedFrom(field: "challenge")
 }
 
 type Submission @entity(immutable: false) {
@@ -81,8 +30,13 @@ type Submission @entity(immutable: false) {
   eligibleForPayout: Boolean!
   nodeLicenseId: BigInt! 
   assertionsStateRootOrConfirmData: String!
-  sentryKey: SentryKey!
   claimAmount: BigInt!
+  createdTimestamp: BigInt!
+  claimTimestamp: BigInt!
+  createdTxHash: Bytes!
+  claimTxHash: Bytes!
+  sentryKey: SentryKey!
+  challenge: Challenge!
 }
 
 type SentryWallet @entity(immutable: false) {

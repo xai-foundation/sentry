@@ -1,38 +1,3 @@
-type PoolFactoryStakeKeysEvent @entity(immutable: true) {
-  id: Bytes!
-  user: Bytes! # address
-  pool: Bytes! # address
-  amount: BigInt! # uint256
-  totalUserKeysStaked: BigInt! # uint256
-  totalKeysStaked: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type PoolFactoryUnstakeKeysEvent @entity(immutable: true) {
-  id: Bytes!
-  user: Bytes! # address
-  pool: Bytes! # address
-  amount: BigInt! # uint256
-  totalUserKeysStaked: BigInt! # uint256
-  totalKeysStaked: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type PoolFactoryPoolCreatedEvent @entity(immutable: true) {
-  id: Bytes!
-  poolIndex: BigInt! # uint256
-  poolAddress: Bytes! # address
-  poolOwner: Bytes! # address
-  stakedKeyCount: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
 type PoolInfo @entity(immutable: false) {
   id: String!
   address: Bytes!
@@ -50,6 +15,7 @@ type PoolInfo @entity(immutable: false) {
   ownerStakedKeys: BigInt!
   ownerRequestedUnstakeKeyAmount: BigInt!
   ownerLatestUnstakeRequestCompletionTime: BigInt!
+  createdTimestamp: BigInt!
 }
 
 type UnstakeRequest @entity(immutable: false) {
