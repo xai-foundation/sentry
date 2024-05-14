@@ -48,8 +48,9 @@ export async function getSentryWalletsForOperator(
   let pools: PoolInfo[] = result.poolInfos;
 
   if (whitelist && whitelist.length) {
-    wallets = wallets.filter(w => whitelist.includes(w.address));
-    pools = pools.filter(p => whitelist.includes(p.address));
+    const _whitelist = whitelist.map(w => w.toLowerCase())
+    wallets = wallets.filter(w => _whitelist.includes(w.address.toLowerCase()));
+    pools = pools.filter(p => _whitelist.includes(p.address.toLowerCase()));
   }
 
   return { wallets, pools, refereeConfig: result.refereeConfig };
