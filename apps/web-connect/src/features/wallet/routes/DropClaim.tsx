@@ -152,9 +152,9 @@ export function DropClaim() {
 														</div>
 
 														{error && (
-															<p className="text-center break-words w-full mt-4 text-red-500">
+															<div className="text-center sm:w-[400px] md:w-[600px] h-[200px] p-4 overflow-y-auto break-words mt-4 text-[#F30919]">
 																{error.message}
-															</p>
+															</div>
 														)}
 													</div>
 												</>
