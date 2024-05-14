@@ -23,6 +23,8 @@ export async function updatePoolInDB(
 
     const PoolModel = mongoose.models.Pool || mongoose.model<IPool>('Pool', PoolSchema);
 
+    //Timeout to wait for subgraph sync to updates for pools
+    await new Promise(resolve => setTimeout(resolve, 2000));
     //Load poolInfo from subgraph
     const { pools, refereeConfig } = await getPoolInfosFromGraph(graphClient, [poolAddress], true, true);
     if (!pools.length || !pools[0]) {
