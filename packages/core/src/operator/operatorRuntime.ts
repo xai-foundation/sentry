@@ -328,6 +328,12 @@ async function processClosedChallenges(
             nonKYCWallets[sentryKey.owner]++;
             updateNodeLicenseStatus(nodeLicenseId, `Cannot Claim, Failed KYC`);
             safeStatusCallback();
+            if (removeSubmissionAfterProcess) {
+                const found = findSubmissionOnSentryKey(sentryKey, challengeId);
+                if(found){
+                    sentryKey.submissions.splice(found.index, 1);
+                }
+            }
             continue;
         } else {
             updateNodeLicenseStatus(nodeLicenseId, `Checking for unclaimed rewards for challenge '${challengeId}'.`);
