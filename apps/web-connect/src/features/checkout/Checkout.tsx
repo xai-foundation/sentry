@@ -7,7 +7,7 @@ import {config, NodeLicenseAbi} from "@sentry/core";
 import {BiLoaderAlt} from "react-icons/bi";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useProvider} from "@/features/checkout/hooks/useProvider";
-import {Tooltip} from "@sentry/ui";
+import {PrimaryButton, Tooltip} from "@sentry/ui";
 import { InfoPointRed, RedSentryIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import logo from '../../../public/images/sentry-main.png'
 
@@ -64,7 +64,7 @@ export function Checkout() {
 
 				{isSuccess && (
 					<div
-						className="flex flex-col justify-center items-center sm:max-w-[90%] lg:max-w-auto lg:px-[60px] lg:py-[40px] sm:px-[20px] sm:py-[35px] bg-darkLicorice m-4">
+						className="flex flex-col justify-center items-center sm:max-w-[90%] lg:w-[744px] lg:px-[60px] lg:py-[40px] sm:px-[20px] sm:py-[35px] bg-darkLicorice m-4">
 						<div
 							className="flex flex-col justify-center items-center gap-2">
 							<FaCircleCheck color={"#16A34A"} size={64}/>
@@ -77,13 +77,8 @@ export function Checkout() {
 								>
 								{data?.hash}
 							</a>
-                            </div>
-							<button
-								onClick={returnToClient}
-								className="lg:w-[600px] bg-[#F30919] text-white text-xl p-4 font-bold my-8 global-clip-primary-btn uppercase"
-							>
-								Return to Xai Client
-							</button>
+							</div>
+							<PrimaryButton onClick={returnToClient} btnText={"Return to Xai Client"} colorStyle="primary" className="w-full text-white text-xl font-bold my-8 uppercase"/>
 							<div className="flex lg:flex-row sm:flex-col items-center text-[18px] text-americanSilver mt-1">
 								<span>Haven't installed Xai Client yet?</span>
 								<a
