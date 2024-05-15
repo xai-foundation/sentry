@@ -473,6 +473,13 @@ const loadOperatingKeys = async (operator: string, operatorOwners?: string[], la
         });
     });
 
+    //Cleanup removed keys from nodeLicenseStatusMap
+    for (const [key] of nodeLicenseStatusMap.entries()) {
+        if (!sentryKeysMap[key.toString()]) {
+            nodeLicenseStatusMap.delete(key);
+        }
+    }
+
     if (keyPools.size) {
         const keyPoolsData = await getPoolInfosFromGraph(graphClient, [...keyPools]);
         keyPoolsData.pools.forEach(p => {
