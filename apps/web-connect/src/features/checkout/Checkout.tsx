@@ -115,13 +115,13 @@ export function Checkout() {
 									<p className="sm:text-2xl lg:text-3xl text-white font-bold">
 										XAI SENTRY NODE KEY
 									</p>
-									<Tooltip
+									<span className="h-full flex items-center ml-2"><Tooltip
 										header={"Xai keys are required for nodes to receive $esXAI network rewards."}
 										body={"All purchases must be made in Arbitrum ETH."}
 										width={452}
 									>
 										<InfoPointRed/>
-									</Tooltip>
+									</Tooltip></span>
 								</div>
 								<p className="sm:w-full lg:w-[400px] sm:text-center sm:px-8 lg:px-0 lg:text-left text-[18px] text-[#525252]">
 									Each Sentry Node Key enables you to submit up to 1 reward claim for each network challenge.

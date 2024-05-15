@@ -22,11 +22,6 @@ const MobileNavbar = ({isOpened = false, closeNavbar}: MobileNavbarProps) => {
                         externalTab
                         link={"https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup"}
                     />
-
-                    <ExternalLink
-                        customClass="h-[44px] flex items-center global-clip-path mb-2 no-underline !text-[24px] !font-bold whitespace-nowrap"
-                        content={"BUILD WITH US"} link={""}
-                    />
                 </div>
                 <NavbarLinks />
                 <NavbarTerms/>

@@ -19,18 +19,13 @@ export function Header() {
 					className="w-full md:max-w-[108px] md:min-h-[108px] min-h-[64px] max-w-[64px] flex items-center bg-hornetSting justify-center"
 					onClick={() => navigate("/")}
 				>
-					<XaiLogo width={26} height={23}/>
+					<XaiLogo className="md:w-[43px] md:h-[38px] w-[26px] h-[23px]" />
 				</div>
 				<div className="font-bold text-xl items-center gap-[20px] uppercase text-white hidden md:flex">
 					<ExternalLink
 						content={"DOCS"}
 						externalTab
 						link={"https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup"}
-						customClass={"no-underline !font-bold text-xl hover:text-elementalGrey"}/>
-					<span className="block uppercase text-foggyLondon">|</span>
-					<ExternalLink
-						content={"BUILD WITH US"}
-						link={""}
 						customClass={"no-underline !font-bold text-xl hover:text-elementalGrey"}/>
 					<span className="block uppercase text-foggyLondon">|</span>
 
