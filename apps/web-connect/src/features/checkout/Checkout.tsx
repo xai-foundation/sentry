@@ -98,7 +98,7 @@ export function Checkout() {
 				)}
 
 				{!isLoading && !isSuccess && (
-					<div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-darkLicorice shadow-main">
+					<div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-darkLicorice shadow-main md:my-0 my-[73px]">
 						<div className="flex flex-col justify-start items-center h-auto sm:px-4 sm:py-4 lg:p-12 lg:pl-[80px] lg:pt-1 ">
 							<div className="w-full flex justify-center">
 								<img className="max-w-[280px]" src={logo} />
