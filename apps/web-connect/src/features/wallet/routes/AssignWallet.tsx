@@ -49,7 +49,7 @@ export function AssignWallet() {
 								Wallet successfully assigned
 						</p>
 						
-						<PrimaryButton onClick={returnToClient} btnText={"Return to Xai Client"} colorStyle="primary" className="mt-8 w-full uppercase font-bold text-xl text-white"  isDisabled={false} />
+						<PrimaryButton onClick={returnToClient} btnText={"Return to Xai Client"} colorStyle="primary" className="mt-8 w-full uppercase font-bold text-xl text-white" isDisabled={false} />
 						</div>
 				) : (
 					<div

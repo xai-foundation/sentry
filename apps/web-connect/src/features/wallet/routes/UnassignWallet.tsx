@@ -40,22 +40,16 @@ export function UnassignWallet() {
 			<div className="h-full min-h-screen flex-1 flex flex-col justify-center items-center px-[33px]">
 				{isSuccess ? (
 					<div
-						className="flex flex-col justify-center items-center w-[744px] border border-gray-200 bg-white m-4 p-12">
+						className="flex flex-col justify-center items-center lg:w-[744px] bg-darkLicorice lg:p-12 sm:p-4 shadow-main">
 						<div className="w-full flex justify-center">
-							<FaCircleCheck color={"#16A34A"} size={32}/>
+							<FaCircleCheck color={"#16A34A"} size={64}/>
 						</div>
 
-						<p className="text-3xl font-semibold mt-4">
+						<p className="sm:max-w-[190px] lg:max-w-full text-3xl font-bold mt-4 uppercase text-white sm:text-center">
 							Wallet successfully un-assigned
 						</p>
 
-						<button
-							onClick={returnToClient}
-							disabled={false}
-							className="w-[436px] max-w-full bg-[#F30919] text-white p-4 font-semibold m-8 disabled:bg-slate-400"
-						>
-							Return to Xai Client
-						</button>
+						<PrimaryButton onClick={returnToClient} btnText={"Return to Xai Client"} colorStyle="primary" className="mt-8 w-full uppercase font-bold text-xl text-white" isDisabled={false} />
 					</div>
 				) : (
 					<div
