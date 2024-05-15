@@ -54,10 +54,10 @@ export function Checkout() {
 		<div>
 			<div className="h-full min-h-screen flex-1 flex flex-col justify-center items-center">
 				{isLoading && (
-					<div className="w-[744px] h-[208px] flex flex-col justify-center border border-[#E5E5E5] m-4">
+					<div className="lg:w-[744px] h-[208px] sm:w-[90%] flex flex-col justify-center bg-darkLicorice m-4">
 						<div className="w-full h-[390px] flex flex-col justify-center items-center gap-2">
-							<BiLoaderAlt className="animate-spin" color={"#A3A3A3"} size={32}/>
-							<p>Processing transaction...</p>
+							<BiLoaderAlt className="animate-spin" color={"#F30919"} size={32}/>
+							<p className="text-elementalGrey text-[18px]">Transaction in progress…</p>
 						</div>
 					</div>
 				)}
