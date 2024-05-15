@@ -64,33 +64,33 @@ export function Checkout() {
 
 				{isSuccess && (
 					<div
-						className="flex flex-col justify-center items-center w-[744px] h-[320px] border border-gray-200 bg-white m-4">
+						className="flex flex-col justify-center items-center sm:max-w-[90%] lg:max-w-auto lg:px-[60px] lg:py-[40px] sm:px-[20px] sm:py-[35px] bg-darkLicorice m-4">
 						<div
 							className="flex flex-col justify-center items-center gap-2">
 							<FaCircleCheck color={"#16A34A"} size={64}/>
-							<span className="text-2xl font-semibold mt-2">Purchase successful</span>
-							<p className="text-[15px]">Transaction ID:
-								<a
-									onClick={() => window.open(`${providerData?.blockExplorer}/tx/${data?.hash}`)}
-									className="text-[#F30919] ml-1 cursor-pointer"
+							<span className="text-3xl text-white uppercase font-bold mt-2">Purchase successful</span>
+							<div className="flex lg:flex-row sm:flex-col break-words"> 
+							<span className="text-[18px] sm:text-center text-elementalGrey">Transaction ID:</span>
+							<a
+								onClick={() => window.open(`${providerData?.blockExplorer}/tx/${data?.hash}`)}
+									className="text-white text-center underline ml-1 cursor-pointer text-[18px] sm:max-w-[260px] lg:max-w-full"
 								>
-									{data?.hash}
-								</a>
-							</p>
-
+								{data?.hash}
+							</a>
+                            </div>
 							<button
 								onClick={returnToClient}
-								className="w-[436px] bg-[#F30919] text-white p-4 font-semibold mt-8"
+								className="lg:w-[600px] bg-[#F30919] text-white text-xl p-4 font-bold my-8 global-clip-primary-btn uppercase"
 							>
 								Return to Xai Client
 							</button>
-							<div className="text-[15px] mt-1">
-								Haven't installed Xai Client yet?
+							<div className="flex lg:flex-row sm:flex-col items-center text-[18px] text-americanSilver mt-1">
+								<span>Haven't installed Xai Client yet?</span>
 								<a
 									onClick={() => window.open("https://xai.games/sentrynodes/", "_blank", "noopener noreferrer")}
-									className="text-[#F30919] ml-1 cursor-pointer"
+									className="text-[#F30919] ml-1 cursor-pointer font-bold"
 								>
-									Click here to download and run a node.
+									Download it here.
 								</a>
 							</div>
 						</div>
