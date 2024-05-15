@@ -31,14 +31,20 @@ export function useBlockIp({blockUsa}: {blockUsa: boolean}) {
 			const invalidIp = data.reasons?.find(({type}: checkIpProps) => type === "INVALID_IP");
 			const ofacSanction = data.reasons?.find(({type, geoBanType}: checkIpProps) => type === "GEO" && geoBanType === "OFAC_SANCTIONS");
 
+			console.log("GEOBLOCK DEBUG")
+			console.log("invalidIp: ", invalidIp)
+			console.log("ofacSanction: ", ofacSanction)
+			console.log("blockUsa: ", blockUsa)
+			console.log("data.country: ", data.country)
+			setBlocked(false);
+			setLoading(false);
+
 			if (!invalidIp || !ofacSanction) {
-				setBlocked(false);
-				setLoading(false);
+				console.log("--------------- WOULD NOT BLOCK --------------------")
 			}
 
 			if (!!invalidIp || !!ofacSanction || (blockUsa && data.country === "US")) {
-				setBlocked(true);
-				setLoading(false);
+				console.log("--------------- WOULD BLOCK!!! --------------------")
 			}
 		} catch (e: any) {
 			console.error(e.response.data);
