@@ -7,7 +7,7 @@ import {config, NodeLicenseAbi} from "@sentry/core";
 import {BiLoaderAlt} from "react-icons/bi";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useProvider} from "@/features/checkout/hooks/useProvider";
-import {Tooltip} from "@sentry/ui";
+import {PrimaryButton, Tooltip} from "@sentry/ui";
 import { InfoPointRed, RedSentryIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import logo from '../../../public/images/sentry-main.png'
 
@@ -54,43 +54,38 @@ export function Checkout() {
 		<div>
 			<div className="h-full min-h-screen flex-1 flex flex-col justify-center items-center">
 				{isLoading && (
-					<div className="w-[744px] h-[208px] flex flex-col justify-center border border-[#E5E5E5] m-4">
+					<div className="lg:w-[744px] h-[208px] sm:w-[90%] flex flex-col justify-center bg-darkLicorice m-4">
 						<div className="w-full h-[390px] flex flex-col justify-center items-center gap-2">
-							<BiLoaderAlt className="animate-spin" color={"#A3A3A3"} size={32}/>
-							<p>Processing transaction...</p>
+							<BiLoaderAlt className="animate-spin" color={"#F30919"} size={32}/>
+							<p className="text-elementalGrey text-[18px]">Transaction in progress…</p>
 						</div>
 					</div>
 				)}
 
 				{isSuccess && (
 					<div
-						className="flex flex-col justify-center items-center w-[744px] h-[320px] border border-gray-200 bg-white m-4">
+						className="flex flex-col justify-center items-center sm:max-w-[90%] lg:w-[744px] lg:px-[60px] lg:py-[40px] sm:px-[20px] sm:py-[35px] bg-darkLicorice m-4 shadow-main">
 						<div
 							className="flex flex-col justify-center items-center gap-2">
 							<FaCircleCheck color={"#16A34A"} size={64}/>
-							<span className="text-2xl font-semibold mt-2">Purchase successful</span>
-							<p className="text-[15px]">Transaction ID:
-								<a
-									onClick={() => window.open(`${providerData?.blockExplorer}/tx/${data?.hash}`)}
-									className="text-[#F30919] ml-1 cursor-pointer"
+							<span className="text-3xl text-white uppercase font-bold mt-2">Purchase successful</span>
+							<div className="flex lg:flex-row sm:flex-col break-words"> 
+							<span className="text-[18px] sm:text-center text-elementalGrey">Transaction ID:</span>
+							<a
+								onClick={() => window.open(`${providerData?.blockExplorer}/tx/${data?.hash}`)}
+									className="text-white text-center underline ml-1 cursor-pointer text-[18px] sm:max-w-[260px] lg:max-w-full"
 								>
-									{data?.hash}
-								</a>
-							</p>
-
-							<button
-								onClick={returnToClient}
-								className="w-[436px] bg-[#F30919] text-white p-4 font-semibold mt-8"
-							>
-								Return to Xai Client
-							</button>
-							<div className="text-[15px] mt-1">
-								Haven't installed Xai Client yet?
+								{data?.hash}
+							</a>
+							</div>
+							<PrimaryButton onClick={returnToClient} btnText={"Return to Xai Client"} colorStyle="primary" className="w-full text-white text-xl font-bold my-8 uppercase"/>
+							<div className="flex lg:flex-row sm:flex-col items-center text-[18px] text-americanSilver mt-1">
+								<span>Haven't installed Xai Client yet?</span>
 								<a
 									onClick={() => window.open("https://xai.games/sentrynodes/", "_blank", "noopener noreferrer")}
-									className="text-[#F30919] ml-1 cursor-pointer"
+									className="text-[#F30919] ml-1 cursor-pointer font-bold"
 								>
-									Click here to download and run a node.
+									Download it here.
 								</a>
 							</div>
 						</div>

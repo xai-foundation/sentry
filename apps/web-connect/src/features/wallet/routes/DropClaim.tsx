@@ -1,5 +1,5 @@
 import {useAccount, useContractWrite, useNetwork} from "wagmi";
-import {ConnectButton, XaiCheckbox} from "@sentry/ui";
+import {ConnectButton, PrimaryButton, XaiCheckbox} from "@sentry/ui";
 import {KYCTooltip} from "@/features/checkout/KYCTooltip";
 import {useState} from "react";
 import {useListClaimableAmount} from "@/features/checkout/hooks/useListClaimableAmount";
@@ -35,7 +35,7 @@ export function DropClaim() {
 	if (loading) {
 		return (
 			<div className="w-full h-screen flex justify-center items-center">
-				<BiLoaderAlt className="animate-spin" size={32} color={"#000000"}/>
+				<BiLoaderAlt className="animate-spin" size={32} color={"#F30919"}/>
 			</div>
 		);
 	}
@@ -53,22 +53,16 @@ export function DropClaim() {
 			<div className="h-full min-h-screen flex-1 flex flex-col justify-center items-center">
 				{isSuccess ? (
 					<div
-						className="flex flex-col justify-center items-center w-[744px] border border-gray-200 bg-white m-4 p-12">
+						className="flex flex-col justify-center items-center lg:w-[744px] bg-darkLicorice shadow-main lg:p-12 sm:p-4">
 						<div className="w-full flex justify-center">
-							<FaCircleCheck color={"#16A34A"} size={32}/>
+							<FaCircleCheck color={"#16A34A"} size={64}/>
 						</div>
 
-						<p className="text-3xl font-semibold mt-4">
+						<p className="text-3xl font-bold mt-4 uppercase text-white sm:text-center">
 							Sentry Keys Redeemed
 						</p>
 
-						<button
-							onClick={() => window.location.reload()}
-							disabled={false}
-							className="w-[436px] max-w-full bg-[#F30919] text-white p-4 font-semibold m-8 disabled:bg-slate-400"
-						>
-							Redeem More Keys
-						</button>
+						<PrimaryButton onClick={() => window.location.reload()} btnText={"Redeem More Keys"} colorStyle="primary" className="mt-8 w-full uppercase font-bold text-xl text-white"  isDisabled={false} />
 					</div>
 				) : (
 					<div

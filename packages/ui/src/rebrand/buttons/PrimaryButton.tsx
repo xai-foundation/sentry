@@ -50,7 +50,7 @@ export const PrimaryButton = ({
     return (
         <div className={`w-full ${colorStyle === "outline" && !isDisabled && "p-[1px] bg-hornetSting global-clip-btn"}`}>
             <button
-                className={`rounded-none font-bold ${getSizeStyles()} ${getColorStyles()} duration-200 ease-in global-clip-path ${className} ${disabledStyles}`}
+                className={`rounded-none font-bold ${getSizeStyles()} ${getColorStyles()} duration-200 ease-in global-clip-primary-btn ${className} ${disabledStyles}`}
                 type="submit"
                 onClick={onClick}
                 disabled={isDisabled}
