@@ -64,7 +64,7 @@ export function Checkout() {
 
 				{isSuccess && (
 					<div
-						className="flex flex-col justify-center items-center sm:max-w-[90%] lg:w-[744px] lg:px-[60px] lg:py-[40px] sm:px-[20px] sm:py-[35px] bg-darkLicorice m-4">
+						className="flex flex-col justify-center items-center sm:max-w-[90%] lg:w-[744px] lg:px-[60px] lg:py-[40px] sm:px-[20px] sm:py-[35px] bg-darkLicorice m-4 shadow-main">
 						<div
 							className="flex flex-col justify-center items-center gap-2">
 							<FaCircleCheck color={"#16A34A"} size={64}/>

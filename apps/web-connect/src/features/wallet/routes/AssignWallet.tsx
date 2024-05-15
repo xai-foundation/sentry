@@ -40,9 +40,9 @@ export function AssignWallet() {
 			<div className="h-full min-h-screen flex-1 flex flex-col justify-center items-center px-[33px] ">
 				{isSuccess ? (
 						<div
-							className="flex flex-col justify-center items-center lg:w-[744px] bg-darkLicorice lg:p-12 sm:p-4">
+							className="flex flex-col justify-center items-center lg:w-[744px] bg-darkLicorice lg:p-12 sm:p-4 shadow-main">
 							<div className="w-full flex justify-center">
-								<FaCircleCheck color={"#16A34A"} size={32}/>
+								<FaCircleCheck color={"#16A34A"} size={64}/>
 							</div>
 
 							<p className="text-3xl font-bold mt-4 uppercase text-white sm:text-center">
