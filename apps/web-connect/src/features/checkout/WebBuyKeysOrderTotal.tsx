@@ -8,6 +8,9 @@ import {PrimaryButton} from "@sentry/ui";
 import {KYCTooltip} from "@/features/checkout/KYCTooltip";
 import {useNetwork} from 'wagmi';
 import MainCheckbox from "@sentry/ui/src/rebrand/checkboxes/MainCheckbox";
+import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
+import {WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
+import {mapWeb3Error} from "@/utils/errors";
 
 interface PriceDataInterface {
 	price: bigint;
@@ -301,8 +304,38 @@ export function WebBuyKeysOrderTotal(
 								</button>
 
 								{error && (
-									<div className="text-center sm:w-[400px] md:w-[600px] h-[200px] p-4 overflow-y-auto break-words mt-4 text-[#F30919]">
-										{error.message}
+									<div>
+										{error && mapWeb3Error(error) === "Insufficient funds"
+											&&
+											<div className="flex md:gap-[21px] gap-[10px]">
+												<BaseCallout extraClasses={{calloutWrapper: "md:h-[100px] h-[159px] mt-[12px]" , calloutFront: "!justify-start"}} isWarning>
+													<div className="flex md:gap-[21px] gap-[10px]">
+														<span className="block mt-2"><WarningIcon /></span>
+														<div>
+															<span className="block font-bold text-lg">
+																Insufficient funds to complete transaction
+															</span>
+															<span className="block font-medium text-lg">
+																Make sure your wallet has enough AETH and gas to complete the transaction.
+															</span>
+														</div>
+													</div>
+												</BaseCallout>
+											</div>
+										}
+										{error && mapWeb3Error(error) === "User rejected the request" && <BaseCallout extraClasses={{calloutWrapper: "md:h-[85px] h-[109px] mt-[12px]" , calloutFront: "!justify-start"}} isWarning>
+											<div className="flex md:gap-[21px] gap-[10px]">
+												<span className="block mt-2"><WarningIcon /></span>
+												<div>
+													<span className="block font-bold text-lg">
+														Transaction was cancelled
+													</span>
+													<span className="block font-medium text-lg">
+														You have cancelled the transaction in your wallet.
+													</span>
+												</div>
+											</div>
+										</BaseCallout>}
 									</div>
 								)}
 							</div>
