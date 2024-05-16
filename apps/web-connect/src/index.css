@@ -44,6 +44,14 @@ body {
     font-weight: 300; /* Specify the desired font weight */
 }
 
+.cookie-consent a {
+    color: #ee081a;
+    text-decoration: none;
+}
+
+.cookie-consent a:hover {
+    opacity: 0.8;  
+}
 
 @keyframes pulse-green {
     0% {

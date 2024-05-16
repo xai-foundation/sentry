@@ -1,14 +1,14 @@
-"use client";
+import StakeV1Component from "@/app/components/stake/StakeV1Component";
+import { Metadata } from "next";
 
-import StakeComponent from "@/app/components/stake/StakeComponent";
-import { useAccount } from "wagmi";
+export const metadata: Metadata = {
+  title: "Unstake esXAI",
+  description: "Xai App Unstake esXAI"
+};
 
 const Unstake = () => {
-  const { address } = useAccount();
   return (
-    <div className="flex w-full flex-col items-center sm:p-3 lg:p-0">
-      <StakeComponent title="Unstake" address={address} unstake />
-    </div>
+    <StakeV1Component title="Unstake esXAI" unstake={true} />
   );
 };
 
