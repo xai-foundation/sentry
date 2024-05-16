@@ -402,14 +402,18 @@ async function listenForChallengesCallback(challengeNumber: bigint, challenge: C
 
     cachedLogger(`Received new challenge with number: ${challengeNumber}.`);
 
-    const { sentryWalletMap, sentryKeysMap, nodeLicenseIds, mappedPools, refereeConfig } =
-        await loadOperatingKeys(operatorAddress, cachedOperatorOwners, challengeNumber - 1n);
+    try {
+        const { sentryWalletMap, sentryKeysMap, nodeLicenseIds, mappedPools, refereeConfig } =
+            await loadOperatingKeys(operatorAddress, cachedOperatorOwners, challengeNumber - 1n);
 
-    await processNewChallenge(challengeNumber, challenge, nodeLicenseIds, sentryKeysMap, sentryWalletMap, mappedPools, refereeConfig);
+        await processNewChallenge(challengeNumber, challenge, nodeLicenseIds, sentryKeysMap, sentryWalletMap, mappedPools, refereeConfig);
 
-    // check the previous challenge, that should be closed now
-    if (challengeNumber > BigInt(1)) {
-        await processClosedChallenges(challengeNumber - BigInt(1), nodeLicenseIds, sentryKeysMap, sentryWalletMap);
+        // check the previous challenge, that should be closed now
+        if (challengeNumber > BigInt(1)) {
+            await processClosedChallenges(challengeNumber - BigInt(1), nodeLicenseIds, sentryKeysMap, sentryWalletMap);
+        }
+    } catch (error) {
+        cachedLogger(`Failed to query graph: ${error}`);
     }
 }
 
@@ -480,7 +484,7 @@ const loadOperatingKeys = async (operator: string, operatorOwners?: string[], la
     }
 
     if (keyPools.size) {
-        const keyPoolsData = await getPoolInfosFromGraph(graphClient, [...keyPools]);
+        const keyPoolsData = await retry(() =>  getPoolInfosFromGraph(graphClient, [...keyPools]));
         keyPoolsData.pools.forEach(p => {
             mappedPools[p.address] = p;
         })
