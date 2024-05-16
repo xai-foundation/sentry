@@ -55,7 +55,7 @@ export function WhitelistDrawer() {
 			{owners.map((wallet, i) => (
 				<div
 					className="p-2 cursor-pointer hover:bg-gray-100"
-					key={`whitelist-item-${i}`}
+					key={`whitelist-item-${wallet}`}
 				>
 					<XaiCheckbox
 						onClick={() => toggleSelected(wallet)}
@@ -68,7 +68,7 @@ export function WhitelistDrawer() {
 			{pools.map((pool, i) => (
 				<div
 				className="p-2 cursor-pointer hover:bg-gray-100"
-				key={`whitelist-item-${i}`}
+				key={`whitelist-item-${pool}`}
 			>
 				<XaiCheckbox
 					onClick={() => toggleSelected(pool)}

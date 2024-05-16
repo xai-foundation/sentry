@@ -1,7 +1,17 @@
 import { Bytes, ethereum, log } from "@graphprotocol/graph-ts";
-import { getTxSignatureFromEvent } from "./getTxSignatureFromEvent";
 
-
+/**
+ * Will remove the transaction signature from the transaction data so it can be decoded
+ * If the contract function's input has dynamic data types like dynamic sized arrays, structs or memory variables 
+ * we need to add the EVM space for dynamic pointers to the transaction data
+ * See https://github.com/rust-ethereum/ethabi/issues/222#issuecomment-997139741
+ * and https://medium.com/@r2d2_68242/indexing-transaction-input-data-in-a-subgraph-6ff5c55abf20
+ * for more information about decoding dynamic input data
+ * 
+ * @param transactionInput - The bytes of the data bytes of the event's transaction
+ * @param hasDynamicTypes - Weather the contract function has dynamic variable typed input parameters 
+ * @returns The prepared data string that can be decoded
+ */
 export function prepareTransactionInput(transactionInput: Bytes, hasDynamicTypes: boolean): string {
     if (hasDynamicTypes) {
         //take away function signature and prepend tuple offset
