@@ -52,7 +52,7 @@ export function Checkout() {
 
 	return (
 		<div>
-			<div className="h-full min-h-screen flex-1 flex flex-col justify-center items-center">
+			<div className="h-full xl:min-h-screen mt-[10px] mb-[30px] flex-1 flex flex-col justify-center items-center">
 				{isLoading && (
 					<div className="lg:w-[744px] h-[208px] sm:w-[90%] flex flex-col justify-center bg-darkLicorice m-4">
 						<div className="w-full h-[390px] flex flex-col justify-center items-center gap-2">
@@ -93,7 +93,7 @@ export function Checkout() {
 				)}
 
 				{!isLoading && !isSuccess && (
-					<div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-darkLicorice shadow-main md:my-0 my-[73px]">
+					<div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-darkLicorice shadow-main md:my-0 my-[24px]">
 						<div className="flex flex-col justify-start items-center h-auto sm:px-4 sm:py-4 lg:p-12 lg:pl-[80px] lg:pt-1 ">
 							<div className="w-full flex justify-center">
 								<img className="max-w-[280px]" src={logo} />
