@@ -157,6 +157,16 @@ describe("Fixture Tests", function () {
 		const referee5 = await upgrades.upgradeProxy((await referee.getAddress()), Referee5, { call: { fn: "initialize", args: [poolFactoryAddress] } });
 		await referee5.waitForDeployment();
 		await referee5.enableStaking();
+        
+		// Referee6
+		const Referee6 = await ethers.getContractFactory("Referee6");
+		const referee6 = await upgrades.upgradeProxy((await referee.getAddress()), Referee6, { call: { fn: "initialize", args: [] } });
+		await referee6.waitForDeployment();
+
+		// Referee7
+		const Referee7 = await ethers.getContractFactory("Referee7");
+		const referee7 = await upgrades.upgradeProxy((await referee.getAddress()), Referee7);
+		await referee7.waitForDeployment();
 
         // Set Rollup Address
         const rollupAddress = config.rollupAddress;
@@ -287,7 +297,7 @@ describe("Fixture Tests", function () {
             secretKeyHex,
             publicKeyHex: "0x" + publicKeyHex,
 
-            referee: referee5,
+            referee: referee7,
             nodeLicense,
 			poolFactory,
             gasSubsidy,
@@ -302,8 +312,8 @@ describe("Fixture Tests", function () {
     // describe("Xai", XaiTests(deployInfrastructure).bind(this));
     // describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
     // describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
-    // describe("Referee", RefereeTests(deployInfrastructure).bind(this));
-    describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
+    describe("Referee", RefereeTests(deployInfrastructure).bind(this));
+    // describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
     // describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
     // describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
     // describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
