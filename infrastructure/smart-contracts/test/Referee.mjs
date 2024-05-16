@@ -199,12 +199,12 @@ export function RefereeTests(deployInfrastructure) {
 			const maxSupply = await xai.MAX_SUPPLY();
 
 			let tokensToMint = [ethers.parseEther('1250000000')];
-			for (let i = 0; i < 23; i++) {
+			for (let i = 0; i < 22; i++) {
 				tokensToMint.push(tokensToMint[i] / BigInt(2));
 			}
 
 			let challengeAllocations = [BigInt('71347031963470319634703')];
-			for (let i = 0; i < 23; i++) {
+			for (let i = 0; i < 22; i++) {
 				challengeAllocations.push(challengeAllocations[i] / BigInt(2));
 			}
 
@@ -241,12 +241,12 @@ export function RefereeTests(deployInfrastructure) {
 			const maxSupply = await xai.MAX_SUPPLY();
 
 			let tokensToMint = [ethers.parseEther('1250000000')];
-			for (let i = 0; i < 23; i++) {
+			for (let i = 0; i < 22; i++) {
 				tokensToMint.push(tokensToMint[i] / BigInt(2));
 			}
 
 			let challengeAllocations = [BigInt('71347031963470319634703')];
-			for (let i = 0; i < 23; i++) {
+			for (let i = 0; i < 22; i++) {
 				challengeAllocations.push(challengeAllocations[i] / BigInt(2));
 			}
 
@@ -477,8 +477,8 @@ export function RefereeTests(deployInfrastructure) {
 				referee.connect(operator).expireChallengeRewards(0)
 			).to.be.revertedWith("29");
 
-			// Fast forward time by 180 days
-			await ethers.provider.send("evm_increaseTime", [15552000]);
+			// Fast forward time by 270 days
+			await ethers.provider.send("evm_increaseTime", [23328000]);
 			await ethers.provider.send("evm_mine");
 
 			// Attempt to expire the challenge rewards
@@ -510,8 +510,8 @@ export function RefereeTests(deployInfrastructure) {
 				"0x0000000000000000000000000000000000000000000000000000000000000000"
 			);
 
-			// Fast forward time by 180 days
-			await ethers.provider.send("evm_increaseTime", [15552000]);
+			// Fast forward time by 270 days
+			await ethers.provider.send("evm_increaseTime", [23328000]);
 			await ethers.provider.send("evm_mine");
 
 			// Attempt to claim reward, which should expire the challenge rewards

@@ -9,21 +9,6 @@ import moment from "moment";
 
 
 function OnwerUnstakeInfo({ pool }: { pool: PoolInfo }) {
-  if (pool.ownerLatestUnstakeRequestCompletionTime >= Date.now()) {
-    return <Tooltip
-      className="bg-[#FFF9ED] border-[#C36522] border"
-      content={
-        <div className="px-1 py-2">
-          <div className="text-small font-bold text-[#C36522]">The pool owner has initiated an unstake request for their genesis key.</div>
-          <div className="text-tiny text-[#C36522]">{moment.duration(pool.ownerLatestUnstakeRequestCompletionTime - Date.now()).humanize()} remaining until genesis key is claimable.</div>
-        </div>
-      }
-    >
-      <span className="mx-2 cursor-pointer sm:mt-2 lg:mt-0">
-        <Key />
-      </span>
-    </Tooltip>
-  }
 
   if (pool.ownerStakedKeys == 0) {
     return <Tooltip
@@ -40,12 +25,13 @@ function OnwerUnstakeInfo({ pool }: { pool: PoolInfo }) {
     </Tooltip>
   }
 
-  if (pool.ownerStakedKeys == pool.ownerRequestedUnstakeKeyAmount) {
+  if (pool.ownerLatestUnstakeRequestCompletionTime && pool.ownerLatestUnstakeRequestCompletionTime >= Date.now()) {
     return <Tooltip
       className="bg-[#FFF9ED] border-[#C36522] border"
       content={
         <div className="px-1 py-2">
-          <div className="text-small font-bold text-[#C36522]">This pool owner can unstake all of their keys from the pool at any time. They may no longer be operating the keys in this pool and the pool may no longer be generating rewards.</div>
+          <div className="text-small font-bold text-[#C36522]">The pool owner has initiated an unstake request for their genesis key.</div>
+          <div className="text-tiny text-[#C36522]">{moment.duration(pool.ownerLatestUnstakeRequestCompletionTime - Date.now()).humanize()} remaining until genesis key is claimable.</div>
         </div>
       }
     >
@@ -53,6 +39,36 @@ function OnwerUnstakeInfo({ pool }: { pool: PoolInfo }) {
         <Key />
       </span>
     </Tooltip>
+  }
+
+  if (pool.ownerStakedKeys == pool.ownerRequestedUnstakeKeyAmount) {
+    if (pool.ownerLatestUnstakeRequestCompletionTime) {
+      return <Tooltip
+        className="bg-[#FFF9ED] border-[#C36522] border"
+        content={
+          <div className="px-1 py-2">
+            <div className="text-small font-bold text-[#C36522]">This pool owner can unstake all of their keys from the pool at any time. They may no longer be operating the keys in this pool and the pool may no longer be generating rewards.</div>
+          </div>
+        }
+      >
+        <span className="mx-2 cursor-pointer sm:mt-2 lg:mt-0">
+          <Key />
+        </span>
+      </Tooltip>
+    } else {
+      return <Tooltip
+        className="bg-[#FFF9ED] border-[#C36522] border"
+        content={
+          <div className="px-1 py-2">
+            <div className="text-small font-bold text-[#C36522]">The Pool Owner has initiated an unstake request for all their keys in this pool. Please view the details page for unlock information.</div>
+          </div>
+        }
+      >
+        <span className="mx-2 cursor-pointer sm:mt-2 lg:mt-0">
+          <Key />
+        </span>
+      </Tooltip>
+    }
   }
 
   return "";
@@ -127,11 +143,13 @@ export function TableRowLabel({ tier, poolAddress, fullWidth }: TableRowLabelPro
 export function TableRowCapacity({
   pool,
   showTableKeys,
+  maxKeyPerPool,
 }: {
   pool: PoolInfo;
   showTableKeys: boolean;
-  }) {
-  
+  maxKeyPerPool: number;
+}) {
+
   return (
     <>
       <td className="lg:whitespace-nowrap text-graphiteGray lg:py-4 sm:py-2 text-left">
@@ -139,7 +157,7 @@ export function TableRowCapacity({
           <div className="lg:w-3/4 sm:w-full sm:text-xs md:text-base">
             <div className="flex sm:flex-wrap lg:flex-nowrap justify-start sm:mb-1">
               {showTableKeys
-                ? <><span>{formatCurrencyNoDecimals.format(pool.keyCount)}</span>/<span>{formatCurrencyNoDecimals.format(pool.maxKeyCount)} keys</span></>
+                ? <><span>{formatCurrencyNoDecimals.format(pool.keyCount)}</span>/<span>{formatCurrencyNoDecimals.format(maxKeyPerPool)} keys</span></>
                 : <><span>{hideDecimals(formatCurrencyWithDecimals.format(pool.totalStakedAmount))}</span>/<span>{formatCurrencyNoDecimals.format(pool.maxStakedAmount)} esXAI</span></>}
             </div>
             <div className="w-full max-w-[50%]">
@@ -149,7 +167,7 @@ export function TableRowCapacity({
                 aria-labelledby="progress"
                 value={
                   showTableKeys
-                    ? (pool.keyCount / pool.maxKeyCount) * 100 ?? 0
+                    ? (pool.keyCount / maxKeyPerPool) * 100 ?? 0
                     : (pool.totalStakedAmount / pool.maxStakedAmount) * 100 ?? 0
                 }
                 classNames={{

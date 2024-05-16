@@ -1,5 +1,6 @@
 import SummaryComponent from "@/app/components/summary/SummaryComponent";
-import { isPoolBanned } from "@/server/services/Pool.service";
+import { findPool } from "@/server/services/Pool.service";
+import { PoolInfo } from "@/types/Pool";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -10,16 +11,18 @@ export const metadata: Metadata = {
 const Summary = async ({ params }: { params: { poolAddress: string } }) => {
 
   let isBannedPool: boolean = false;
-  try {
+  let pool: PoolInfo | undefined = undefined;
 
-    isBannedPool = await isPoolBanned(params.poolAddress);
+  try {
+    pool = await findPool({ poolAddress: params.poolAddress });
+    isBannedPool = pool.visibility == "banned";
   } catch (error) {
     console.error("Failed to load pool", error);
   }
 
   return (
     <>
-      <SummaryComponent isBannedPool={isBannedPool} />
+      <SummaryComponent isBannedPool={isBannedPool} poolFromDb={pool} />
     </>
   );
 };

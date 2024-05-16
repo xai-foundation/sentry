@@ -28,6 +28,7 @@ interface AvailableTableProps {
   setPage: (page: number) => void;
   address: string | undefined;
   tiers: Array<TierInfo & { icon?: iconType }>;
+  maxKeyPerPool: number;
 }
 
 const AvailablePoolsTableComponent = ({
@@ -38,6 +39,7 @@ const AvailablePoolsTableComponent = ({
   setPage,
   address,
   tiers,
+  maxKeyPerPool,
 }: AvailableTableProps) => {
   const { open } = useWeb3Modal();
   const { isDisconnected } = useAccount();
@@ -72,7 +74,7 @@ const AvailablePoolsTableComponent = ({
                     tier={getCurrentTierByStaking(Math.min(pool.totalStakedAmount, pool.maxStakedAmount), tiers) as TierInfo & {
                       icon: iconType
                     }} poolAddress={pool.address} />
-                  <TableRowCapacity pool={pool} showTableKeys={showTableKeys} />
+                  <TableRowCapacity pool={pool} showTableKeys={showTableKeys} maxKeyPerPool={maxKeyPerPool} />
                   <TableRowRewards pool={pool} showTableKeys={showTableKeys} />
                 </tr>
               );

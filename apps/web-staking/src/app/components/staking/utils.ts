@@ -53,3 +53,20 @@ export const getTierByIndex = (index: number, tiers: Array<TierInfo & { icon?: i
 export const getIcon = (index: number = 0, tiers: Array<TierInfo & { icon?: iconType }>): iconType => {
 	return tiers[index].icon as iconType;
 };
+
+const KEY_STEP = 10000;
+
+type ExtendedTierInfo = TierInfo & {
+	icon?: iconType
+}
+
+export const calculateKeysToNextTier = (totalStakedAmount: number, keyCount: number, tier: ExtendedTierInfo, tiers: ExtendedTierInfo[]) => {
+	const tierByStaking = getCurrentTierByStaking(totalStakedAmount, tiers)!;
+	const nextTierInfo = tiers[tier.index + 1];
+
+	if (tierByStaking.index !== tier.index) {
+		return Math.ceil(tierByStaking.minValue / KEY_STEP - keyCount);
+	}
+
+	return Math.ceil(nextTierInfo.minValue / KEY_STEP - keyCount);
+};
