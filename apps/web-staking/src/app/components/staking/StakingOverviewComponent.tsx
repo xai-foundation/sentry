@@ -11,7 +11,7 @@ import { PagedPools } from "@/server/services/Pool.service";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import AgreeModalComponent from "../modal/AgreeModalComponents";
-import { useGetTotalStakedHooks, useGetUserInteractedPools } from "@/app/hooks/hooks";
+import { useGetMaxKeyPerPool, useGetTotalStakedHooks, useGetUserInteractedPools } from "@/app/hooks/hooks";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import { loadingNotification, updateNotification } from "../notifications/NotificationsComponent";
 import { getNetwork, getTotalClaimAmount, mapWeb3Error } from "@/services/web3.service";
@@ -24,6 +24,7 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   const { userPools, isLoading, totalClaimableAmount } = useGetUserInteractedPools();
   const { totalStaked, maxStakedCapacity } = useGetTotalStakedHooks();
   const { tiers } = useGetTiers();
+  const { maxKeyPerPool } = useGetMaxKeyPerPool();
 
   const [searchValue, setSearchValue] = useState(searchParams.get("search") || "");
   const [currentPage, setCurrentPage] = useState(searchParams.get("page") ? Number(searchParams.get("page")) : 1);
@@ -172,6 +173,7 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
         setPage={setPage}
         address={address}
         tiers={tiers}
+        maxKeyPerPool={maxKeyPerPool}
       />
     </div>
   );

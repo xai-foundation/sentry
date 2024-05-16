@@ -24,12 +24,12 @@ import {
 } from "../notifications/NotificationsComponent";
 import { Id } from "react-toastify";
 import { useGetTiers } from "@/app/hooks/useGetTiers";
+import { PoolInfo } from "@/types/Pool";
 
-const SummaryComponent = ({ isBannedPool }: { isBannedPool: boolean }) => {
+const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean, poolFromDb?: PoolInfo }) => {
   const router = useRouter();
   const [refreshPoolInfo, setRefreshPoolInfo] = useState(false);
   const [refreshUnstakeRequests, setRefreshUnstakeRequests] = useState(false);
-  // const [poolInfo, setData] = useState<PoolInfo>();
   const { tiers } = useGetTiers();
 
   const { address, chainId } = useAccount();
@@ -167,7 +167,12 @@ const SummaryComponent = ({ isBannedPool }: { isBannedPool: boolean }) => {
       {poolInfo && (
         <div className="flex w-full flex-col items-center px-4 lg:px-[75px] xl:px-[150px]">
           <>
-            <HeadlineComponent poolInfo={poolInfo} walletAddress={address} isBannedPool={isBannedPool} />
+            <HeadlineComponent
+              poolInfo={poolInfo}
+              walletAddress={address}
+              isBannedPool={isBannedPool}
+              ownerLatestUnstakeRequestCompletionTime={(poolFromDb ? (poolFromDb.ownerLatestUnstakeRequestCompletionTime || 0) : 0)}
+            />
             <div className="mt-2 flex w-full justify-start xl:hidden">
               <ButtonBack btnText={"Back"} onClick={window && window.history.length > 2 ? () => router.back() : () => router.push(`/staking?chainId=${chainId}`)} />
             </div>

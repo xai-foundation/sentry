@@ -592,7 +592,8 @@ export const toPoolInfo = async (
 	let ownerShare = Number(baseInfo.ownerShare) / POOL_SHARES_BASE;
 	let keyBucketShare = Number(baseInfo.keyBucketShare) / POOL_SHARES_BASE;
 	let stakedBucketShare = Number(baseInfo.stakedBucketShare) / POOL_SHARES_BASE;
-	let ownerLatestUnstakeRequestCompletionTime = Number(rawPoolInfo._ownerLatestUnstakeRequestLockTime) * 1000;
+	//Remove becasue of bug in the StakingPool contract, it will not return the correct _ownerLatestUnstakeRequestLockTime, we need to get it from the synced db or subgraph
+	// let ownerLatestUnstakeRequestCompletionTime = Number(rawPoolInfo._ownerLatestUnstakeRequestLockTime) * 1000;
 
 	if (updateSharesTimestamp != 0 && updateSharesTimestamp <= Date.now()) {
 		ownerShare = pendingShares[0]
@@ -601,9 +602,9 @@ export const toPoolInfo = async (
 		updateSharesTimestamp = 0;
 	}
 
-	if (ownerLatestUnstakeRequestCompletionTime != 0 && ownerLatestUnstakeRequestCompletionTime <= Date.now()) {
-		ownerLatestUnstakeRequestCompletionTime = 0;
-	}
+	// if (ownerLatestUnstakeRequestCompletionTime != 0 && ownerLatestUnstakeRequestCompletionTime <= Date.now()) {
+	// 	ownerLatestUnstakeRequestCompletionTime = 0;
+	// }
 
 	let userStakedKeyIds: number[] = [];
 	let userStakedEsXaiAmount = 0;
@@ -646,7 +647,7 @@ export const toPoolInfo = async (
 		updateSharesTimestamp,
 		ownerStakedKeys: Number(rawPoolInfo._ownerStakedKeys),
 		ownerRequestedUnstakeKeyAmount: Number(rawPoolInfo._ownerRequestedUnstakeKeyAmount),
-		ownerLatestUnstakeRequestCompletionTime,
+		// ownerLatestUnstakeRequestCompletionTime,
 		ownerShare,
 		keyBucketShare,
 		stakedBucketShare,

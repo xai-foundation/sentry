@@ -35,12 +35,10 @@ const PoolStakingInfo = ({
 }: PoolStakingInfoProps) => {
   const router = useRouter();
   const formatPercentage = (value: number) => {
-    if (String(value).includes(".") && value < 100 && value > 10) {
-      return String(value).slice(0, 4);
+    if (value && String(value).includes(".")) {
+      return String(value).slice(0, String(value).indexOf(".") + 2);
     }
-    if (String(value).includes(".") && value < 10 && value) {
-      return String(value).slice(0, 3);
-    }
+
     return value;
   };
 

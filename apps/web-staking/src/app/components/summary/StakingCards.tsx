@@ -11,7 +11,7 @@ import {
 import { PoolInfo } from "@/types/Pool";
 
 import Warning from "./Warning";
-import { formatCurrencyNoDecimals, formatCurrencyWithDecimals, hideDecimals } from "@/app/utils/formatCurrency";
+import { formatCurrencyNoDecimals, formatCurrencyWithDecimals, hideDecimals, showUpToFourDecimals } from "@/app/utils/formatCurrency";
 
 interface StakingCardsProps {
   poolInfo: PoolInfo;
@@ -27,7 +27,7 @@ const StakingCards = ({
   isBannedPool
 }: StakingCardsProps) => {
   const keysProgressValue = +(
-    (poolInfo.keyCount / poolInfo.maxKeyCount) *
+    (poolInfo.keyCount / poolInfo.maxKeyCount!) *
     100
   ).toFixed(1);
 
@@ -40,7 +40,7 @@ const StakingCards = ({
       );
 
   const formattedUserStakedEsXaiAmount = poolInfo?.userStakedEsXaiAmount
-    ? formatCurrencyWithDecimals.format(poolInfo.userStakedEsXaiAmount)
+    ? showUpToFourDecimals(formatCurrencyWithDecimals.format(poolInfo.userStakedEsXaiAmount))
     : 0;
 
   return (
@@ -87,7 +87,7 @@ const StakingCards = ({
         cardTitle={"Your staked keys"}
         cardContent={`${(poolInfo.userStakedKeyIds.length)} keys`}
         variant={PoolStakingButtonVariant.keys}
-        canStake={!isBannedPool && (poolInfo.keyCount < poolInfo.maxKeyCount)}
+        canStake={!isBannedPool && (poolInfo.keyCount < poolInfo.maxKeyCount!)}
         canUnstake={
           poolInfo.userStakedKeyIds.length -
           (poolInfo.unstakeRequestkeyAmount || 0) >

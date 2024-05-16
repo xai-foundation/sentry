@@ -5,8 +5,8 @@ import { InfoMark, Key, PieChart } from "../icons/IconsComponent";
 import moment from "moment";
 
 
-function OnwerUnstakeInfo({ pool }: { pool: PoolInfo }) {
-  if (pool.ownerLatestUnstakeRequestCompletionTime >= Date.now()) {
+function OnwerUnstakeInfo({ pool, ownerLatestUnstakeRequestCompletionTime }: { pool: PoolInfo, ownerLatestUnstakeRequestCompletionTime: number }) {
+  if (ownerLatestUnstakeRequestCompletionTime > Date.now()) {
     return <div className="w-full h-fit">
       <div className="bg-[#ED5F00]/10 p-3 my-5 rounded-md flex items-center justify-start gap-3">
         <span className="mx-2">
@@ -15,7 +15,7 @@ function OnwerUnstakeInfo({ pool }: { pool: PoolInfo }) {
         <div className="text-[#ED5F00]">
           <div className="text-small font-bold">The pool owner has initiated an unstake request for their genesis key.</div>
           <div
-            className="text-sm">{moment.duration(pool.ownerLatestUnstakeRequestCompletionTime - Date.now()).humanize()} remaining
+            className="text-sm">{moment.duration(ownerLatestUnstakeRequestCompletionTime - Date.now()).humanize()} remaining
             until genesis key is claimable.
           </div>
         </div>
@@ -54,7 +54,9 @@ function OnwerUnstakeInfo({ pool }: { pool: PoolInfo }) {
 }
 
 
-const HeadlineComponent = ({ poolInfo, walletAddress, isBannedPool }: { poolInfo: PoolInfo, walletAddress: `0x${string}` | undefined, isBannedPool: boolean }) => {
+const HeadlineComponent = (
+  { poolInfo, walletAddress, isBannedPool, ownerLatestUnstakeRequestCompletionTime }:
+    { poolInfo: PoolInfo, walletAddress: `0x${string}` | undefined, isBannedPool: boolean, ownerLatestUnstakeRequestCompletionTime: number }) => {
   const router = useRouter();
   moment.relativeTimeThreshold('d', 61);
   return (
@@ -82,7 +84,7 @@ const HeadlineComponent = ({ poolInfo, walletAddress, isBannedPool }: { poolInfo
         </div>
       )}
 
-      <OnwerUnstakeInfo pool={poolInfo} />
+      <OnwerUnstakeInfo pool={poolInfo} ownerLatestUnstakeRequestCompletionTime={ownerLatestUnstakeRequestCompletionTime} />
 
       <div className="w-full h-fit">
         {(poolInfo.updateSharesTimestamp >= Date.now()) &&

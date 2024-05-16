@@ -23,13 +23,13 @@ const PoolCapacity = ({ pool }: { pool: PoolInfo }) => {
         </div>
         <div className="w-full max-w-[50%]">
           <span className="justify-self-start">
-            {formatCurrencyNoDecimals.format(pool.keyCount)}/{formatCurrencyNoDecimals.format(pool.maxKeyCount)} keys
+            {formatCurrencyNoDecimals.format(pool.keyCount)}/{formatCurrencyNoDecimals.format(pool.maxKeyCount!)} keys
           </span>
           <Progress
             size="sm"
             radius="none"
             aria-labelledby="progress"
-            value={(pool.keyCount / pool.maxKeyCount) * 100 ?? 0}
+            value={(pool.keyCount / pool.maxKeyCount!) * 100 ?? 0}
             classNames={{
               indicator: "bg-red"
             }}

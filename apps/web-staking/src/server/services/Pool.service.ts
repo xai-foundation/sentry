@@ -8,12 +8,12 @@ import { IDocument } from "@/server/types/IModel";
 
 export type PoolFilter = IPool | { _id: ObjectId | string } | { poolAddress: string };
 
-export async function findPool(filter: FilterQuery<IPool>): Promise<PoolInfo | null> {
+export async function findPool(filter: FilterQuery<IPool>): Promise<PoolInfo> {
 
 	try {
 		const pool = await executeQuery(PoolModel.findOne(filter).lean()) as IPool;
 		if (!pool) {
-			return null;
+			throw new Error(`ERROR @findPool: No pool found`);
 		};
 		return mapPool(pool);
 	} catch (error) {
@@ -139,7 +139,6 @@ export function mapPool(pool: IPool): PoolInfo {
 		ownerShare: pool.ownerShare,
 		keyBucketShare: pool.keyBucketShare,
 		stakedBucketShare: pool.stakedBucketShare,
-		maxKeyCount: 750,
 		userStakedEsXaiAmount: 0,
 		userClaimAmount: 0,
 		userStakedKeyIds: pool.userStakedKeyIds,
@@ -160,6 +159,7 @@ export function mapPool(pool: IPool): PoolInfo {
 		ownerRequestedUnstakeKeyAmount: pool.ownerRequestedUnstakeKeyAmount,
 		ownerLatestUnstakeRequestCompletionTime: pool.ownerLatestUnstakeRequestCompletionTime,
 		pendingShares: pool.pendingShares || [0, 0, 0],
+		visibility: pool.visibility
 	}
 };
 
