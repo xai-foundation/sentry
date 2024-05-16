@@ -49,15 +49,6 @@ export function Footer() {
 									Staking Terms
 								</a>
 							</li>
-							<li className="flex items-center gap-2">
-								<p className="hidden lg:inline ml-2">|</p>
-								<a
-									className="text-blue-500 cursor-pointer hover:underline"
-									onClick={() => window.open("https://fullyillustrated.com/", "_blank", "noopener noreferrer")}
-								>
-									Site design by fully illustrated
-								</a>
-							</li>
 						</ul>
 					</div>
 				</div>
