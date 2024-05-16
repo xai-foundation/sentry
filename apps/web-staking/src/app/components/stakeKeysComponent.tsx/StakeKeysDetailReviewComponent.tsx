@@ -27,7 +27,7 @@ export default function StakeKeysDetailReviewComponent({ pool, inputValue, onBac
 	const router = useRouter();
 
 	const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
-
+	const [txLoading, setTxLoading] = useState<boolean>(false);
 	const { address, chainId } = useAccount();
 	const { switchChain } = useSwitchChain();
 	const { writeContractAsync } = useWriteContract();
@@ -35,7 +35,7 @@ export default function StakeKeysDetailReviewComponent({ pool, inputValue, onBac
 
 
 	// Substitute Timeouts with useWaitForTransaction
-	const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
+	const { isError, isSuccess, status } = useWaitForTransactionReceipt({
 		hash: receipt,
 	});
 
@@ -47,7 +47,7 @@ export default function StakeKeysDetailReviewComponent({ pool, inputValue, onBac
 		if (!chainId || !address) {
 			return;
 		}
-
+		setTxLoading(true);
 		toastId.current = loadingNotification("Transaction is pending...");
 		try {
 			// TODO: check eth balance enough for gas
@@ -89,33 +89,44 @@ export default function StakeKeysDetailReviewComponent({ pool, inputValue, onBac
 		} catch (ex: any) {
 			const error = mapWeb3Error(ex);
 			updateNotification(error, toastId.current as Id, true);
+			setTxLoading(false);
 			router.back();
 		}
 	}
 
 
 	const updateOnSuccess = useCallback(() => {
-		updateNotification(
-			unstake ? `You have successfully created an unstake request for ${inputValue} keys`  : `You have successfully staked ${inputValue} keys`,
-			toastId.current as Id,
-			false,
-			receipt,
-			chainId
-		);
-
 		if (unstake) {
-			addUnstakeRequest(getNetwork(chainId), address!, pool.address)
-				.then(() => {
-					router.push(`/pool/${pool.address}/summary`);
-				})
-
+			setTimeout(() => {
+				updateNotification(
+					`You have successfully created an unstake request for ${inputValue} keys`,
+					toastId.current as Id,
+					false,
+					receipt,
+					chainId
+				);
+				setTxLoading(false);
+				addUnstakeRequest(getNetwork(chainId), address!, pool.address)
+					.then(() => {
+						window.location.href = `/pool/${pool.address}/summary`;
+					})
+			}, 3500);
 		} else {
+			updateNotification(
+				`You have successfully staked ${inputValue} keys`,
+				toastId.current as Id,
+				false,
+				receipt,
+				chainId
+			);
+			setTxLoading(false);
 			router.push(`/pool/${pool.address}/summary`);
 		}
 	}, [unstake, inputValue, receipt, chainId, address, pool, router])
 
 	const updateOnError = useCallback(() => {
 		const error = mapWeb3Error(status);
+		setTxLoading(false);
 		updateNotification(error, toastId.current as Id, true);
 	}, [status])
 
@@ -150,9 +161,9 @@ export default function StakeKeysDetailReviewComponent({ pool, inputValue, onBac
 				)}
 				<PrimaryButton
 					onClick={onConfirm}
-					btnText={`${isLoading ? "Waiting for confirmation..." : "Confirm"
+					btnText={`${txLoading ? "Waiting for confirmation..." : "Confirm"
 						}`}
-					className={`w-full mt-6 font-bold ${isLoading && "bg-[#B1B1B1] disabled"
+					className={`w-full mt-6 font-bold ${txLoading && "bg-[#B1B1B1] disabled"
 						} disabled:opacity-50`}
 				/>
 			</div>

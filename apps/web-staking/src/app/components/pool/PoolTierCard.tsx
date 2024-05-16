@@ -3,14 +3,15 @@ import React from "react";
 import { ExternalLinkComponent } from "@/app/components/links/LinkComponent";
 import ProgressComponent from "@/app/components/progress/Progress";
 import {
+  calculateKeysToNextTier,
   getAmountRequiredForUpgrade,
   getCurrentTierByStaking,
-  getProgressValue,
+  getProgressValue
 } from "@/app/components/staking/utils";
 import { PoolInfo, TierInfo } from "@/types/Pool";
-import { iconType } from "../dashboard/constants/constants";
+import { iconType, POOL_DATA_ROWS } from "../dashboard/constants/constants";
 import Warning from "@/app/components/summary/Warning";
-import { formatCurrencyWithDecimals } from "@/app/utils/formatCurrency";
+import { formatCurrencyWithDecimals, showUpToFourDecimals } from "@/app/utils/formatCurrency";
 
 interface PoolTierCardProps {
   poolInfo: PoolInfo;
@@ -45,15 +46,15 @@ const PoolTierCard = ({ poolInfo, tiers }: PoolTierCardProps) => {
     }
 
     if (poolInfo.totalStakedAmount >= poolInfo.maxStakedAmount) {
-      //TODO this would not always be 1 key, it could be more, we should calculate how many keys for the next tier
-      // if (tierByStaked.index != tier.index) {
-      //   return `Stake 1 more key to reach the next tier.`;
-      // }
+      const keysLeft = calculateKeysToNextTier(poolInfo.totalStakedAmount, poolInfo.keyCount, tier, tiers);
+      if (tierByStaked.index !== tier.index) {
+        return `Stake ${keysLeft} more ${keysLeft > 1 ? `keys` : `key`} to reach ${POOL_DATA_ROWS[tierByStaked.index - 1].nextTierName}`;
+      }
       return `Stake more keys for higher esXAI staking capacity.`;
     }
 
     if (amountToUpgrade > 0) {
-      return `Stake ${amountToUpgrade < 0.0001 ? "<0.0001" : formatCurrencyWithDecimals.format(amountToUpgrade)} more esXAI to reach the next tier.`;
+      return `Stake ${showUpToFourDecimals(formatCurrencyWithDecimals.format(amountToUpgrade))} more esXAI to reach the next tier.`;
     }
 
     return "Maximum esXAI capacity reached, stake more keys.";

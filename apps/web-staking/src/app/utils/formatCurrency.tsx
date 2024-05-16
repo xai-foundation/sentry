@@ -24,3 +24,14 @@ export const hideDecimals = (value: string) => {
   }
   return value;
 };
+
+export const showUpToFourDecimals = (value: string) => {
+  if (value && Number(value) < 0.0001) { 
+     return "<0.0001";
+  }
+
+  if (value && value.includes(".")) {
+    return value.slice(0, value.indexOf(".")+5);
+  }
+  return value;
+};

@@ -17,8 +17,8 @@ const ClaimableRewardsComponent = ({
   wrapperClasses,
   rewardsText
 }: ClaimableRewardsProps) => {
-  const cuttedRewards = Number(totalClaimAmount.toString().match(/^-?\d+(?:\.\d{0,2})?/));
-  // cuttedRewards trims totalClaimAmount to 2 digits after point without rounding. example: 1234.56789 -> 1234.56
+  const cuttedRewards = Number(totalClaimAmount.toString().match(/^-?\d+(?:\.\d{0,4})?/));
+  // cuttedRewards trims totalClaimAmount to 4 digits after point without rounding. example: 1234.56789 -> 1234.5678
 
   return (
     <div

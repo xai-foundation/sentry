@@ -53,15 +53,19 @@ const PoolDetailsComponent = ({
 
   const hasBannedWords = (input: string, bannedWords: string[]): string[] => {
     if (!bannedWords) return [];
-    
+    const restrictedCharacters = /[-,.?!()[\]/]/g;
+
+    const inputArr = input.toLowerCase().replace(/\n/g, " ").split(" ");
     const bannedList = [];
-    for (let i = 0; i < bannedWords.length; i++) {
-      if (input.toLowerCase().split(" ").includes(bannedWords[i])) {
-        bannedList.push(bannedWords[i]);
+
+    for (let i = 0; i < inputArr.length; i++) {
+      const wordWithoutCharacters = inputArr[i].replace(restrictedCharacters, "");
+      if (bannedWords.includes(wordWithoutCharacters)) {
+        bannedList.push(wordWithoutCharacters);
       }
     }
 
-    return bannedList;
+    return bannedList.length > 0 ? bannedList.filter((word, index, array) => array.indexOf(word) === index) : [];
   };
 
   const validateInputName = (value: string) => {
