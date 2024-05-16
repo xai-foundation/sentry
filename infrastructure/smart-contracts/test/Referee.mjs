@@ -477,8 +477,8 @@ export function RefereeTests(deployInfrastructure) {
 				referee.connect(operator).expireChallengeRewards(0)
 			).to.be.revertedWith("29");
 
-			// Fast forward time by 180 days
-			await ethers.provider.send("evm_increaseTime", [15552000]);
+			// Fast forward time by 270 days
+			await ethers.provider.send("evm_increaseTime", [23328000]);
 			await ethers.provider.send("evm_mine");
 
 			// Attempt to expire the challenge rewards
@@ -510,8 +510,8 @@ export function RefereeTests(deployInfrastructure) {
 				"0x0000000000000000000000000000000000000000000000000000000000000000"
 			);
 
-			// Fast forward time by 180 days
-			await ethers.provider.send("evm_increaseTime", [15552000]);
+			// Fast forward time by 270 days
+			await ethers.provider.send("evm_increaseTime", [23328000]);
 			await ethers.provider.send("evm_mine");
 
 			// Attempt to claim reward, which should expire the challenge rewards
