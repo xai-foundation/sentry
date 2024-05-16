@@ -52,7 +52,7 @@ export function WhitelistDrawer() {
 
 	const getDropdownItems = () => (
 		<div>
-			{owners.map((wallet, i) => (
+			{owners.map((wallet) => (
 				<div
 					className="p-2 cursor-pointer hover:bg-gray-100"
 					key={`whitelist-item-${wallet}`}
@@ -65,7 +65,7 @@ export function WhitelistDrawer() {
 					</XaiCheckbox>
 				</div>
 			))}
-			{pools.map((pool, i) => (
+			{pools.map((pool) => (
 				<div
 				className="p-2 cursor-pointer hover:bg-gray-100"
 				key={`whitelist-item-${pool}`}
