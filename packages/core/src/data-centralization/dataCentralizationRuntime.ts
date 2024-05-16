@@ -4,6 +4,7 @@ import { LogDescription } from 'ethers';
 import { config } from '../config.js';
 import { PoolFactoryAbi } from '../abis/PoolFactoryAbi.js';
 import { updatePoolInDB } from './updatePoolInDB.js';
+import { retry } from '../utils/retry.js';
 
 /**
  * Arguments required to initialize the data centralization runtime.
@@ -74,7 +75,7 @@ export async function dataCentralizationRuntime({
 					return;
 				}
 
-				updatePoolInDB(poolAddress)
+				retry(() => updatePoolInDB(poolAddress, log.name), 3)
 					.then(() => {
 						logFunction("Updated pool:" + poolAddress)
 					})
