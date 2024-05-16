@@ -210,21 +210,6 @@ contract Referee7 is Initializable, AccessControlEnumerableUpgradeable {
         _;
     }
 
-    function initialize() public reinitializer(5) {
-        maxStakeAmountPerLicense = 10000 * 10 ** 18;
-        maxKeysPerPool = 750;
-
-        stakeAmountTierThresholds[0] = 10_000 * 10 ** 18;
-        stakeAmountTierThresholds[1] = 100_000 * 10 ** 18;
-        stakeAmountTierThresholds[2] = 500_000 * 10 ** 18;
-        stakeAmountTierThresholds[3] = 5_500_000 * 10 ** 18;
-
-        stakeAmountBoostFactors[0] = 150;
-        stakeAmountBoostFactors[1] = 200;
-        stakeAmountBoostFactors[2] = 300;
-        stakeAmountBoostFactors[3] = 600;
-    }
-
     /**
      * @notice Returns the combined total supply of esXai Xai, and the unminted allocated tokens.
      * @dev This function fetches the total supply of esXai, Xai, and unminted allocated tokens and returns their sum.
