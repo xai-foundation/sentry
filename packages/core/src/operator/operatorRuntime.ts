@@ -249,7 +249,6 @@ async function processNewChallenge(
 
     if (batchedWinnerKeys.length) {
         await submitMultipleAssertions(batchedWinnerKeys, challengeNumber, challenge.assertionStateRootOrConfirmData, KEYS_PER_BATCH, cachedSigner, cachedLogger);
-        cachedLogger(`Submitted assertion for ${batchedWinnerKeys.length} Sentry Keys `);
     }
 }
 
