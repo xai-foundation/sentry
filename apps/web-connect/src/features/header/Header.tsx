@@ -14,7 +14,7 @@ export function Header() {
 	const [isNavbarOpened, setIsNavbarOpened] = useState(false)
 	return (
 		<div className="w-full">
-			<div className="fixed flex w-full justify-between items-center bg-transparent z-[10]">
+			<div className="fixed top-0 flex w-full justify-between items-center bg-transparent z-[10]">
 				<div
 					className="w-full md:max-w-[108px] md:min-h-[108px] min-h-[64px] max-w-[64px] flex items-center bg-hornetSting justify-center"
 					onClick={() => navigate("/")}

@@ -13,6 +13,7 @@ import { TermsAndConditions } from '../wallet/routes/TermsAndConditions';
 import {RedEnvelope2024} from "@/features/wallet/routes/RedEnvelope2024";
 import {ClaimRedEnvelope2024} from "@/features/wallet/routes/ClaimRedEnvelope2024";
 import { ReactCookieConsent } from '../footer/ReactCookieConsent';
+import UrlVerification from "@/features/UrlVerification";
 
 export function AppRoutes() {
 	const {blocked, loading} = useBlockIp({blockUsa: true});
@@ -38,6 +39,7 @@ export function AppRoutes() {
 		<Router basename={"/"}>
 			<QueryClientProvider client={queryClient}>
 				<Header/>
+				<UrlVerification />
 				<Routes>
 					<Route path="/drop-claim" element={<DropClaim/>}/>
 					<Route path="/claim-token" element={<ClaimToken/>}/>

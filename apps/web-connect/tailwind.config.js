@@ -20,7 +20,8 @@ module.exports = {
       foggyLondon: "#5B5757",
       chromaphobicBlack: "#2A2828",
       dynamicBlack: "#201C1C",
-      bloodThirstyWarlock: "#F1183D"
+      bloodThirstyWarlock: "#F1183D",
+      drunkenDragonfly: "#3DD68C"
     },
     extend: {
       backgroundImage: {
