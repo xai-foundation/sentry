@@ -94,7 +94,7 @@ export function Checkout() {
 
 				{!isLoading && !isSuccess && (
 					<div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-darkLicorice shadow-main md:my-0 my-[24px]">
-						<div className="flex flex-col justify-start items-center h-auto sm:px-4 sm:py-4 lg:p-12 lg:pl-[80px] lg:pt-1 ">
+						<div className="flex flex-col justify-start items-center h-auto sm:px-4 sm:py-4 lg:p-12 xg:pl-[80px] lg:pt-1 ">
 							<div className="w-full flex justify-center">
 								<img className="max-w-[280px]" src={logo} />
 							</div>
@@ -102,7 +102,7 @@ export function Checkout() {
 								<span className="sm:text-4xl lg:text-6xl text-center font-bold text-white">YOUR PURCHASE IS READY</span>
 							</div>
 					</div>
-						<div className="h-auto lg:p-12 sm:px-2 sm:py-10">
+						<div className="h-auto xl:p-12 sm:px-2 sm:py-10">
 						<div className="flex sm:flex-col lg:flex-row justify-between lg:items-start sm:items-center">
 							<div className="flex flex-col sm:items-center lg:items-start gap-2">
 								<div className="flex flex-row sm:w-full sm:justify-center lg:justify-start items-center gap-1">
