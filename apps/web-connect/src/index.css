@@ -162,10 +162,17 @@ input[type=number] {
 .cookie-consent-container {
   position: fixed !important;
   bottom: 40px !important;
-  left: 40px !important;
-  width: 95% !important;
+  left: 38px !important;
+  width: 96% !important;
 }
 
+
+@media screen and (max-width: 1600px) {
+  .cookie-consent-container {
+  left: 30px !important;
+  padding: 10px !important;
+ }
+}
 
 @media screen and (max-width: 1200px) {
   .cookie-consent-container {
