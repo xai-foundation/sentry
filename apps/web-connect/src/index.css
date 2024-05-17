@@ -152,3 +152,31 @@ input[type="number"]::-webkit-inner-spin-button,
 input[type=number] {
   -moz-appearance: textfield;
 }
+
+.hover-button:hover {
+  background-color: #fff !important;
+  color: #ff0030 !important;
+  transition-duration: 0.2s;
+}
+
+.cookie-consent-container {
+  position: fixed !important;
+  bottom: 40px !important;
+  left: 40px !important;
+  width: 95% !important;
+}
+
+
+@media screen and (max-width: 1200px) {
+  .cookie-consent-container {
+  left: 20px !important;
+  padding: 10px !important;
+ }
+}
+
+@media screen and (max-width: 768px) {
+  .cookie-consent-container {
+  left: 10px !important;
+  padding: 10px !important;
+ }
+}
