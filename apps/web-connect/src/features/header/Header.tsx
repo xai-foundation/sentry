@@ -26,13 +26,13 @@ export function Header() {
 						content={"DOCS"}
 						externalTab
 						link={"https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup"}
-						customClass={"no-underline !font-bold text-xl hover:text-elementalGrey"}/>
+						customClass={"no-underline !font-bold text-xl hover:text-hornetSting"}/>
 					<span className="block uppercase text-foggyLondon">|</span>
 
 					<div className="flex gap-[16px]">
 						<ExternalLink
 							content={
-								<TelegramIcon className={"hover:fill-elementalGrey fill-white duration-200 ease-in"} />
+								<TelegramIcon className={"hover:fill-hornetSting fill-white duration-200 ease-in"} />
 							}
 							link={"https://t.me/XaiSentryNodes"}
 							externalTab
@@ -41,7 +41,7 @@ export function Header() {
 
 						<ExternalLink
 							content={
-								<DiscordIcon className={"hover:fill-elementalGrey fill-white duration-200 ease-in"} />
+								<DiscordIcon className={"hover:fill-hornetSting fill-white duration-200 ease-in"} />
 							}
 							externalTab
 							link={"https://discord.com/invite/xaigames"}
@@ -50,7 +50,7 @@ export function Header() {
 
 						<ExternalLink
 							content={
-								<XIcon className={"hover:fill-elementalGrey fill-white duration-200 ease-in"} />
+								<XIcon className={"hover:fill-hornetSting fill-white duration-200 ease-in"} />
 							}
 							link={"https://twitter.com/xai_games"}
 							externalTab
