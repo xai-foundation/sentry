@@ -26,7 +26,7 @@ export async function updatePoolInDB(
     //Timeout to wait for subgraph sync to updates for pools
     await new Promise(resolve => setTimeout(resolve, 2000));
     //Load poolInfo from subgraph
-    const { pools, refereeConfig } = await getPoolInfosFromGraph(graphClient, [poolAddress], true, true);
+    const { pools, refereeConfig } = await getPoolInfosFromGraph([poolAddress], true, true);
     if (!pools.length || !pools[0]) {
         throw new Error(`Pool ${poolAddress} could not be found on subgraph - event: ${eventName}`);
     }
