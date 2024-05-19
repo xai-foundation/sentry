@@ -26,7 +26,6 @@ import {
 } from "../index.js";
 import axios from "axios";
 import { PoolInfo, RefereeConfig, SentryKey, SentryWallet, Submission } from "@sentry/sentry-subgraph-client";
-import { GraphQLClient } from 'graphql-request'
 import { getSubgraphHealthStatus } from "../subgraph/getSubgraphHealthStatus.js";
 
 export enum NodeLicenseStatus {
@@ -74,8 +73,6 @@ const KEYS_PER_BATCH = 100;
 let cachedOperatorWallets: string[];
 const mintTimestamps: { [nodeLicenseId: string]: bigint } = {};
 let cachedKeysOfOwner: { [keyId: string]: SentryKey };
-
-const graphClient = new GraphQLClient(config.subgraphEndpoint);
 
 // SUBGRAPH EDIT
 let nodeLicenseStatusMap: NodeLicenseStatusMap = new Map();
@@ -619,7 +616,7 @@ const loadOperatorKeysFromGraph = async (
 
     // Load all operator addresses and pool addresses, pass in the whitelist to get them filtered
     // refereeConfig will be used to locally calculate the boos factor (hold tier thresholds and boostFactors as well as max staking capacity per key)
-    const { wallets, pools, refereeConfig } = await retry(() => getSentryWalletsForOperator(graphClient, operator, passedInOwnersAndPools));
+    const { wallets, pools, refereeConfig } = await retry(() => getSentryWalletsForOperator(operator, passedInOwnersAndPools));
 
     const mappedPools: { [poolAddress: string]: PoolInfo } = {};
 
@@ -631,7 +628,6 @@ const loadOperatorKeysFromGraph = async (
 
     // Load SentryKey objects from the subgraph
     const sentryKeys = await retry(() => getSentryKeysFromGraph(
-        graphClient,
         wallets.map(w => w.address),
         pools.map(p => p.address),
         true,
@@ -696,7 +692,7 @@ const loadOperatorKeysFromGraph = async (
 
     // If we have keys from pools we would not operate from the owners map the pool metadata for 
     if (keyPools.size) {
-        const keyPoolsData = await retry(() => getPoolInfosFromGraph(graphClient, [...keyPools]));
+        const keyPoolsData = await retry(() => getPoolInfosFromGraph([...keyPools]));
         keyPoolsData.pools.forEach(p => {
             mappedPools[p.address] = p;
         })
@@ -917,7 +913,7 @@ export async function operatorRuntime(
     if (graphStatus.healthy && bootFromGraph) {
         closeChallengeListener = listenForChallenges(listenForChallengesCallback)
 
-        const openChallenge = await retry(() => getLatestChallengeFromGraph(graphClient));
+        const openChallenge = await retry(() => getLatestChallengeFromGraph());
         // Calculate the latest challenge we should load from the graph
         const latestClaimableChallenge = Number(openChallenge.challengeNumber) <= MAX_CHALLENGE_CLAIM_AMOUNT ? 1 : Number(openChallenge.challengeNumber) - MAX_CHALLENGE_CLAIM_AMOUNT;
 
