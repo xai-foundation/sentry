@@ -71,7 +71,7 @@ const KEYS_PER_BATCH = 100;
 
 // Cache for rpc fallback
 // const keyToOwner: { [keyId: string]: string } = {};
-let cachedOperatorWallets: string[] = [];
+let cachedOperatorWallets: string[];
 const mintTimestamps: { [nodeLicenseId: string]: bigint } = {};
 let cachedKeysOfOwner: { [keyId: string]: SentryKey } = {};
 
