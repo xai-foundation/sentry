@@ -8,14 +8,11 @@ import { config } from "../config.js";
  * @returns The SentryWallet entity from the graph
  */
 export async function getSentryWalletsForOperator(
-  client: GraphQLClient | null,
   operator: string,
   whitelist?: string[]
 ): Promise<{ wallets: SentryWallet[], pools: PoolInfo[], refereeConfig: RefereeConfig }> {
 
-  if (client == null) {
-    client = new GraphQLClient(config.subgraphEndpoint);
-  }
+  const client = new GraphQLClient(config.subgraphEndpoint);
 
   const query = gql`
     query OperatorAddresses {
