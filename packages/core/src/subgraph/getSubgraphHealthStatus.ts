@@ -1,10 +1,30 @@
 import axios from "axios"
 
+let counter = 0;
+let isOnError = false;
+
 /**
  * 
  * @returns Status and possible error from the graph version
  */
-export async function getSubgraphHealthStatus(): Promise<{ healthy: boolean, error?: string }> {
+export async function getSubgraphHealthStatus(setIsOnError: boolean = false): Promise<{ healthy: boolean, error?: string }> {
+    if (setIsOnError) {
+        isOnError = setIsOnError;
+    }
+
+    counter++;
+
+    if (counter == 3) {
+        counter = 0;
+        isOnError = !isOnError;
+    }
+
+    if (isOnError) {
+        return {
+            healthy: false,
+            error: `DEV ERROR FOR COUNTER = ${counter}`
+        }
+    }
 
     try {
         const url = `https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry/status`;

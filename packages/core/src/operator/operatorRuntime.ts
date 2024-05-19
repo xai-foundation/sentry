@@ -446,20 +446,20 @@ async function processClosedChallenges(
 // start a listener for new challenges
 async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: any) {
 
-    if (event && challenge.rollupUsed === config.rollupAddress) {
-        compareWithCDN(challenge)
-            .then(({ publicNodeBucket, error }) => {
-                if (error) {
-                    onAssertionMissMatchCb(publicNodeBucket, challenge, error);
-                    return;
-                }
-                cachedLogger(`Comparison between PublicNode and Challenger was successful.`);
-            })
-            .catch(error => {
-                cachedLogger(`Error on CND check for challenge ${Number(challenge.assertionId)}.`);
-                cachedLogger(`${error.message}.`);
-            });
-    }
+    // if (event && challenge.rollupUsed === config.rollupAddress) {
+    //     compareWithCDN(challenge)
+    //         .then(({ publicNodeBucket, error }) => {
+    //             if (error) {
+    //                 onAssertionMissMatchCb(publicNodeBucket, challenge, error);
+    //                 return;
+    //             }
+    //             cachedLogger(`Comparison between PublicNode and Challenger was successful.`);
+    //         })
+    //         .catch(error => {
+    //             cachedLogger(`Error on CND check for challenge ${Number(challenge.assertionId)}.`);
+    //             cachedLogger(`${error.message}.`);
+    //         });
+    // }
 
     cachedLogger(`Received new challenge with number: ${challengeNumber}.`);
 
@@ -860,8 +860,8 @@ export async function operatorRuntime(
     statusCallback: (status: NodeLicenseStatusMap) => void = (_) => { },
     logFunction: (log: string) => void = (_) => { },
     operatorOwners?: string[],
-    onAssertionMissMatch: (publicNodeData: PublicNodeBucketInformation | undefined, challenge: Challenge, message: string) => void = (_) => { }
-
+    onAssertionMissMatch: (publicNodeData: PublicNodeBucketInformation | undefined, challenge: Challenge, message: string) => void = (_) => { },
+    bootFromGraph: boolean = true
 ): Promise<() => Promise<void>> {
 
     cachedLogger = logFunction;
@@ -889,8 +889,8 @@ export async function operatorRuntime(
     const closeChallengeListener = listenForChallenges(listenForChallengesCallback);
     logFunction(`Started listener for new challenges.`);
 
-    const graphStatus = await getSubgraphHealthStatus();
-    if (graphStatus.healthy) {
+    const graphStatus = await getSubgraphHealthStatus(!bootFromGraph);
+    if (graphStatus.healthy && bootFromGraph) {
 
         const openChallenge = await retry(() => getLatestChallengeFromGraph(graphClient));
         // Calculate the latest challenge we should load from the graph

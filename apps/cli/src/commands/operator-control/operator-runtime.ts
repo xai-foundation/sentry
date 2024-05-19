@@ -76,6 +76,15 @@ export function bootOperator(cli: Vorpal) {
                 }
             }
 
+            const devBootFromGraphPrompt: Vorpal.PromptObject = {
+                type: 'confirm',
+                name: 'bootFromGraph',
+                message: 'DEV: Boot from graph ?',
+                default: true
+            };
+
+            const { bootFromGraph } = await this.prompt(devBootFromGraphPrompt);
+
             stopFunction = await operatorRuntime(
                 signer,
                 undefined,
@@ -96,7 +105,8 @@ export function bootOperator(cli: Vorpal) {
                         `${JSON.stringify(challenge, null, 2)}\n`;
 
                     this.log(errorMessage)
-                }
+                },
+                bootFromGraph
             );
 
 
