@@ -462,7 +462,7 @@ async function listenForChallengesCallback(challengeNumber: bigint, challenge: C
     cachedLogger(`Processing challenge...`);
 
     // Add a delay of 1 -300 seconds to the new challenge process so not all operators request the subgraph at the same time
-    const delay = Math.floor(Math.random() * 301);
+    const delay = Math.floor(Math.random() * 15);
     await new Promise((resolve) => {
         setTimeout(resolve, delay * 1000);
     })
