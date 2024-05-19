@@ -462,6 +462,13 @@ async function listenForChallengesCallback(challengeNumber: bigint, challenge: C
     }
 
     cachedLogger(`Received new challenge with number: ${challengeNumber}.`);
+    cachedLogger(`Processing challenge...`);
+
+    // Add a delay of 1 -300 seconds to the new challenge process so not all operators request the subgraph at the same time
+    const delay = Math.floor(Math.random() * 301);
+    await new Promise((resolve) => {
+        setTimeout(resolve, delay * 1000);
+    })
 
     try {
         const graphStatus = await getSubgraphHealthStatus();
@@ -663,9 +670,9 @@ const loadOperatorKeysFromGraph = async (
             keyOfOwnerCount++;
         } else {
             keyPools.add(s.assignedPool);
-            if(cachedOperatorWallets.includes(s.owner.toLowerCase())){
+            if (cachedOperatorWallets.includes(s.owner.toLowerCase())) {
                 keyOfOwnerCount++;
-            }else{
+            } else {
                 keyOfPoolsCount++;
             }
         }
@@ -805,7 +812,7 @@ const loadOperatorKeysFromRPC = async (
     }
 
     safeStatusCallback();
-    
+
     cachedLogger(`Total Sentry Keys fetched: ${nodeLicenseIds.length}.`);
     cachedLogger(`Fetched ${keysOfOwnersCount} keys of owners.`);
     cachedLogger(`Fetched ${Object.keys(sentryKeysMap).length - keysOfOwnersCount} keys of pools.`);
@@ -947,9 +954,9 @@ export async function operatorRuntime(
 
         const [latestChallengeNumber, latestChallenge] = await getLatestChallenge();
         await processNewChallenge(latestChallengeNumber, latestChallenge, nodeLicenseIds, sentryKeysMap);
-        
+
         closeChallengeListener = listenForChallenges(listenForChallengesCallback)
-        
+
         logFunction(`The operator has finished booting. The operator is running successfully. esXAI will accrue every few days.`);
     }
 
