@@ -73,7 +73,7 @@ const KEYS_PER_BATCH = 100;
 // const keyToOwner: { [keyId: string]: string } = {};
 let cachedOperatorWallets: string[];
 const mintTimestamps: { [nodeLicenseId: string]: bigint } = {};
-let cachedKeysOfOwner: { [keyId: string]: SentryKey } = {};
+let cachedKeysOfOwner: { [keyId: string]: SentryKey };
 
 const graphClient = new GraphQLClient(config.subgraphEndpoint);
 
@@ -603,7 +603,7 @@ const loadOperatorKeysFromGraph = async (
     mappedPools: { [poolAddress: string]: PoolInfo },
     refereeConfig: RefereeConfig
 }> => {
-    cachedLogger(`Getting all wallets assigned to the operator.`);
+    cachedLogger(`Loading all wallets assigned to the operator.`);
     if (passedInOwnersAndPools && passedInOwnersAndPools.length) {
         cachedLogger(`Operator owners were passed in.`);
     } else {
@@ -646,6 +646,7 @@ const loadOperatorKeysFromGraph = async (
     let keyOfPoolsCount = 0;
 
     const keyPools: Set<string> = new Set();
+    cachedKeysOfOwner = {}
 
     //Map the sentryKeys for use in operator
     //Create the updated nodeLicenseIds array
@@ -662,7 +663,11 @@ const loadOperatorKeysFromGraph = async (
             keyOfOwnerCount++;
         } else {
             keyPools.add(s.assignedPool);
-            keyOfPoolsCount++;
+            if(cachedOperatorWallets.includes(s.owner.toLowerCase())){
+                keyOfOwnerCount++;
+            }else{
+                keyOfPoolsCount++;
+            }
         }
         nodeLicenseStatusMap.set(BigInt(s.keyId), {
             ownerPublicKey: s.owner,
@@ -691,8 +696,10 @@ const loadOperatorKeysFromGraph = async (
     }
 
     safeStatusCallback();
+
     cachedLogger(`Total Sentry Keys fetched: ${nodeLicenseIds.length}.`);
-    cachedLogger(`Fetched ${keyOfOwnerCount} keys of owners and ${keyOfPoolsCount} keys staked in pools.`);
+    cachedLogger(`Fetched ${keyOfOwnerCount} keys of owners.`);
+    cachedLogger(`Fetched ${keyOfPoolsCount} keys of pools.`);
 
     return { wallets, sentryKeys, sentryWalletMap, sentryKeysMap, nodeLicenseIds, mappedPools, refereeConfig };
 }
@@ -716,20 +723,23 @@ const loadOperatorKeysFromRPC = async (
 
     //If we don't have the owners we fetch them from the RPC
     if (!cachedOperatorWallets) {
-        cachedLogger(`Getting all wallets assigned to the operator.`);
+        cachedLogger(`Loading all wallets assigned to the operator.`);
         //We need to get all approved owners so we can filter against pools
         const ownersForOperator = (await retry(async () => await listOwnersForOperator(operator))).map(o => o.toLowerCase());
+        cachedLogger(`Found associated owners: ${ownersForOperator.join(', ')}`);
+        cachedOperatorWallets = [operator.toLowerCase(), ...ownersForOperator];
         // get a list of all the owners that are added to this operator
         if (passedInOwnersAndPools && passedInOwnersAndPools.length) {
-            cachedLogger(`Operator owners were passed in.`);
-            cachedOperatorWallets = ownersForOperator.filter(o => passedInOwnersAndPools?.includes(o));
+            cachedLogger(`Operator owners were passed in. ${passedInOwnersAndPools.join(', ')}`);
+            cachedOperatorWallets = cachedOperatorWallets.filter(o => passedInOwnersAndPools?.includes(o));
         } else {
             cachedLogger(`No operator owners were passed in.`);
-            cachedOperatorWallets = [operator.toLowerCase(), ...ownersForOperator];
         }
     }
 
     owners = [...cachedOperatorWallets]
+    cachedLogger(`Found ${owners.length} operatorWallets. The addresses are: ${owners.join(', ')}`);
+
 
     const nodeLicenseIds: bigint[] = [];
     let sentryKeysMap: { [keyId: string]: SentryKey } = {}
@@ -740,7 +750,9 @@ const loadOperatorKeysFromRPC = async (
 
         for (const owner of owners) {
             cachedLogger(`Fetching node licenses for owner ${owner}.`);
-            const licensesOfOwner = await listNodeLicenses(owner);
+            const licensesOfOwner = await listNodeLicenses(owner, (keyId) => {
+                cachedLogger(`Fetched node licenses key ${keyId.toString()}.`);
+            });
 
             for (const licenseId of licensesOfOwner) {
 
@@ -769,6 +781,7 @@ const loadOperatorKeysFromRPC = async (
         sentryKeysMap = { ...cachedKeysOfOwner }
     }
 
+    const keysOfOwnersCount = Object.keys(sentryKeysMap).length;
     // Map the keys from pools our operator should operate, filter pools if passedInOwnersAndPools whitelist is enabled
     sentryKeysMap = await reloadPoolKeysForRPC(operator, sentryKeysMap, passedInOwnersAndPools);
 
@@ -792,6 +805,10 @@ const loadOperatorKeysFromRPC = async (
     }
 
     safeStatusCallback();
+    
+    cachedLogger(`Total Sentry Keys fetched: ${nodeLicenseIds.length}.`);
+    cachedLogger(`Fetched ${keysOfOwnersCount} keys of owners.`);
+    cachedLogger(`Fetched ${Object.keys(sentryKeysMap).length - keysOfOwnersCount} keys of pools.`);
 
     return { sentryKeysMap, nodeLicenseIds }
 }
@@ -886,11 +903,12 @@ export async function operatorRuntime(
     operatorAddress = await signer.getAddress();
     logFunction(`Fetched address of operator ${operatorAddress}.`);
 
-    const closeChallengeListener = listenForChallenges(listenForChallengesCallback);
+    let closeChallengeListener: () => void;
     logFunction(`Started listener for new challenges.`);
 
     const graphStatus = await getSubgraphHealthStatus(!bootFromGraph);
     if (graphStatus.healthy && bootFromGraph) {
+        closeChallengeListener = listenForChallenges(listenForChallengesCallback)
 
         const openChallenge = await retry(() => getLatestChallengeFromGraph(graphClient));
         // Calculate the latest challenge we should load from the graph
@@ -924,11 +942,15 @@ export async function operatorRuntime(
 
     } else {
         cachedLogger(`Revert to RPC call instead of using subgraph. Subgraph status error: ${graphStatus.error}`)
-        const [latestChallengeNumber, latestChallenge] = await getLatestChallenge();
 
         const { sentryKeysMap, nodeLicenseIds } = await loadOperatorKeysFromRPC(operatorAddress);
 
+        const [latestChallengeNumber, latestChallenge] = await getLatestChallenge();
         await processNewChallenge(latestChallengeNumber, latestChallenge, nodeLicenseIds, sentryKeysMap);
+        
+        closeChallengeListener = listenForChallenges(listenForChallengesCallback)
+        
+        logFunction(`The operator has finished booting. The operator is running successfully. esXAI will accrue every few days.`);
     }
 
     const fetchBlockNumber = async () => {
