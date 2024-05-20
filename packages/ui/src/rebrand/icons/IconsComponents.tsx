@@ -147,7 +147,7 @@ export const XaiLogo = ({className = ""}) => {
     return <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 43.861 37.985">
         <path id="Path_3682" data-name="Path 3682"
               d="M21.931,0,17.6,7.5,30.87,30.488H12.991l6.372-11.036-4.331-7.5L0,37.988H43.861Z"
-              transform="translate(0 -0.003)" fill="#fff"/>
+              transform="translate(0 -0.003)"/>
     </svg>
 }
 
