@@ -299,14 +299,13 @@ export function WebBuyKeysOrderTotal(
 							</div>
 
 							<div>
-								<button
+								<PrimaryButton
 									onClick={() => onClick()}
-									className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
-									disabled={!ready || chain?.id !== 42_161}
-								>
-									{chain?.id === 42_161 ? "BUY NOW" : "Please Switch to Arbitrum One"}
-								</button>
-
+									className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-[20px] text-white p-2 uppercase font-bold`}
+									isDisabled={!ready || chain?.id !== 42_161}
+									btnText={chain?.id === 42_161 ? "BUY NOW" : "Please Switch to Arbitrum One"}
+								/>
+									
 								{error && (
 									<div>
 										{error && mapWeb3Error(error) === "Insufficient funds"
