@@ -16,10 +16,10 @@ export function Header() {
 		<div className="w-full">
 			<div className="fixed top-0 flex w-full justify-between items-center bg-transparent z-[10]">
 				<div
-					className="w-full md:max-w-[108px] md:min-h-[108px] min-h-[64px] max-w-[64px] flex items-center bg-hornetSting justify-center"
+					className="w-full group md:max-w-[108px] md:min-h-[108px] min-h-[64px] max-w-[64px] flex items-center bg-hornetSting justify-center hover:bg-white duration-200 ease-in cursor-pointer"
 					onClick={() => navigate("/")}
 				>
-					<XaiLogo className="md:w-[43px] md:h-[38px] w-[26px] h-[23px]" />
+					<XaiLogo className="md:w-[43px] md:h-[38px] w-[26px] h-[23px] fill-white group-hover:fill-hornetSting duration-200 ease-in" />
 				</div>
 				<div className="font-bold text-xl items-center gap-[20px] uppercase text-white hidden md:flex">
 					<ExternalLink
