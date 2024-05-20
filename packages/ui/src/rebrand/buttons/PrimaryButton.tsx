@@ -18,7 +18,7 @@ export const PrimaryButton = ({
                                   colorStyle,
                               }: PrimaryButtonProps) => {
     const disabledStyles = isDisabled
-        ? "!bg-[#2A2828] !text-[#433F3F] text-bold"
+        ? "!bg-[#2A2828] !text-[#726F6F] text-bold"
         : "";
 
     const getSizeStyles = () => {
