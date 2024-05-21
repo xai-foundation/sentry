@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "private": true,
   "main": "dist-electron/main.js",
-  "repository": "https://github.com/xai-foundation/sentry",
+  "repository": "https://github.com/CryptITAustria/sentry",
   "scripts": {
     "build": "tsc --build && vite build && electron-builder -p never",
     "clean": "rimraf dist && rimraf dist-electron && rimraf release && rimraf public/web && rimraf tsconfig.tsbuildinfo && rimraf vite.config.js && rimraf vite.config.d.ts",

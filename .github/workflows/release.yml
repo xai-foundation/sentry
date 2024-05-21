@@ -75,39 +75,39 @@ jobs:
           user_email: 41898282+github-actions[bot]@users.noreply.github.com
         if: matrix.os == 'ubuntu-latest'
 
-  sign:
-    needs: build
-    runs-on: ubuntu-latest
+  # sign:
+  #   needs: build
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: release-desktop-windows-latest
-          path: release-desktop-windows-latest
+  #   steps:
+  #     - name: Download artifacts
+  #       uses: actions/download-artifact@v2
+  #       with:
+  #         name: release-desktop-windows-latest
+  #         path: release-desktop-windows-latest
 
-      - name: Create directory for signed builds
-        shell: bash
-        run: mkdir release-desktop-windows-latest/signed-builds
+  #     - name: Create directory for signed builds
+  #       shell: bash
+  #       run: mkdir release-desktop-windows-latest/signed-builds
 
-      - name: Sign build Windows exe
-        uses: sslcom/actions-codesigner@develop
-        with:
-          command: sign
-          username: ${{ secrets.SSL_USERNAME }}
-          password: ${{ secrets.SSL_PASSWORD }}
-          totp_secret: ${{ secrets.SSL_TOTP_SECRET }}
-          file_path: release-desktop-windows-latest/sentry-client-windows.exe
-          output_path: release-desktop-windows-latest/signed-builds
+  #     - name: Sign build Windows exe
+  #       uses: sslcom/actions-codesigner@develop
+  #       with:
+  #         command: sign
+  #         username: ${{ secrets.SSL_USERNAME }}
+  #         password: ${{ secrets.SSL_PASSWORD }}
+  #         totp_secret: ${{ secrets.SSL_TOTP_SECRET }}
+  #         file_path: release-desktop-windows-latest/sentry-client-windows.exe
+  #         output_path: release-desktop-windows-latest/signed-builds
       
-      - name: Upload signed artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: release-signed-desktop-windows-latest
-          path: release-desktop-windows-latest
+  #     - name: Upload signed artifacts
+  #       uses: actions/upload-artifact@v2
+  #       with:
+  #         name: release-signed-desktop-windows-latest
+  #         path: release-desktop-windows-latest
 
   checksum-and-release:
-    needs: sign
+    needs: build
     runs-on: macos-latest
 
     steps:
@@ -116,12 +116,12 @@ jobs:
 
       - name: Generate checksum
         run: |
-          CHECKSUM=$(shasum -a 512 release-signed-desktop-windows-latest/signed-builds/sentry-client-windows.exe | cut -f1 -d\ | xxd -r -p | base64)
+          CHECKSUM=$(shasum -a 512 release-desktop-windows-latest/sentry-client-windows.exe | cut -f1 -d\ | xxd -r -p | base64)
           CHECKSUM=$(echo "$CHECKSUM" | tr -d '\r\n')
           echo "SHA512 Checksum: $CHECKSUM"
-          cat release-signed-desktop-windows-latest/latest.yml
-          sed -i '' -e "s#^sha512:.*#sha512: $CHECKSUM#" "release-signed-desktop-windows-latest/latest.yml"
-          sed -i '' -e "s#^    sha512:.*#    sha512: $CHECKSUM#" "release-signed-desktop-windows-latest/latest.yml"
+          cat release-desktop-windows-latest/latest.yml
+          sed -i '' -e "s#^sha512:.*#sha512: $CHECKSUM#" "release-desktop-windows-latest/latest.yml"
+          sed -i '' -e "s#^    sha512:.*#    sha512: $CHECKSUM#" "release-desktop-windows-latest/latest.yml"
 
       - name: Release
         uses: softprops/action-gh-release@v1
@@ -132,9 +132,9 @@ jobs:
             release-desktop-macos-latest/sentry-client-macos.dmg
             release-desktop-ubuntu-latest/latest-linux.yml
             release-desktop-ubuntu-latest/sentry-client-linux.AppImage
-            release-signed-desktop-windows-latest/latest.yml
-            release-signed-desktop-windows-latest/sentry-client-windows.exe.blockmap
-            release-signed-desktop-windows-latest/signed-builds/sentry-client-windows.exe
+            release-desktop-windows-latest/latest.yml
+            release-desktop-windows-latest/sentry-client-windows.exe.blockmap
+            release-desktop-windows-latest/sentry-client-windows.exe
             release-cli-ubuntu-latest/sentry-node-cli-macos.zip
             release-cli-ubuntu-latest/sentry-node-cli-linux.zip
             release-cli-ubuntu-latest/sentry-node-cli-windows.zip
