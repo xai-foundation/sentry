@@ -3,7 +3,7 @@ import {DiscordIcon, TelegramIcon, XIcon} from "@sentry/ui/src/rebrand/icons/Ico
 
 const NavbarLinks = () => {
     return (
-        <div className="flex flex-col gap-[16px]">
+        <div className="flex flex-col gap-[16px] mb-[40px]">
             <ExternalLink
                 content={
                     <span className="flex gap-3 items-center uppercase !font-bold text-lg whitespace-nowrap">
