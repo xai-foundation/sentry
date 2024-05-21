@@ -118,7 +118,7 @@ export function Checkout() {
 										<InfoPointRed/>
 									</Tooltip></span>
 								</div>
-								<p className="sm:w-full lg:w-[400px] sm:text-center sm:px-8 lg:px-0 lg:text-left text-[18px] text-text-elementalGrey">
+								<p className="sm:w-full lg:w-[400px] sm:text-center sm:px-8 lg:px-0 lg:text-left text-[18px] text-elementalGrey font-medium">
 									Each Sentry Node Key enables you to submit up to 1 reward claim for each network challenge.
 								</p>
 							</div>
