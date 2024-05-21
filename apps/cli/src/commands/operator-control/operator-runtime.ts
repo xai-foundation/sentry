@@ -41,7 +41,7 @@ export function bootOperator(cli: Vorpal) {
             if (useWhitelist) {
 
                 const operatorAddress = await signer.getAddress();
-                const { wallets, pools } = await getSentryWalletsForOperator(null, operatorAddress);
+                const { wallets, pools } = await getSentryWalletsForOperator(operatorAddress);
 
                 const choices: Array<{ name: string, value: string }> = [];
 
