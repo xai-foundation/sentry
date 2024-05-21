@@ -80,7 +80,7 @@ export function WebBuyKeysOrderTotal(
 							<div className="flex flex-row items-center gap-2 text-white font-semibold">
 								<span className="">{item.quantity.toString()} x Xai Sentry Node Key</span>
 							</div>
-						<p className="text-sm text-[#525252] mb-4 sm:block lg:hidden">
+						<p className="text-base text-elementalGrey mb-4 sm:block lg:hidden">
 							{ethers.formatEther(item.pricePer)} AETH per key
 						</p>
 							<div className="flex flex-row items-center gap-1">
@@ -90,7 +90,7 @@ export function WebBuyKeysOrderTotal(
 								</span>
 							</div>
 						</div>
-						<p className="text-sm text-[#525252] mb-4 sm:hidden lg:block">
+						<p className="text-base text-elementalGrey mb-4 sm:hidden lg:block">
 							{ethers.formatEther(item.pricePer)} AETH per key
 						</p>
 					</div>
@@ -165,9 +165,9 @@ export function WebBuyKeysOrderTotal(
 										<hr className="my-2 border-[#525252]"/>
 										{promo ? (
 											<div className="w-full flex flex-col items-center py-2 ">
-												<div className="w-full h-auto flex sm:flex-col lg:flex-row sm:justify-center lg:justify-start items-center text-[15px] text-[#525252] mt-2 sm:mb-2 lg:mb-0">
+												<div className="w-full h-auto flex sm:flex-col lg:flex-row sm:justify-center lg:justify-start items-center text-[15px] text-elementalGrey mt-2 sm:mb-2 lg:mb-0">
 													<div
-														className="w-[300px] h-auto flex flex-row sm:justify-center lg:justify-start items-center text-[15px] text-[#525252] mt-2 sm:mb-2 lg:mb-0">
+														className="w-[300px] h-auto flex flex-row sm:justify-center lg:justify-start items-center text-[15px] text-elementalGrey mt-2 sm:mb-2 lg:mb-0">
 														<span
 															className="text-[#F30919] text-base">+ Add promo code</span>
 														<div
@@ -262,7 +262,7 @@ export function WebBuyKeysOrderTotal(
 									labelStyle="!items-start"
 								>
 									<div className="sm:w-[200px] md:w-[300px] lg:w-auto">
-									<span className="sm:text-base text-[#525252] sm:mr-2">I agree with the</span>
+									<span className="sm:text-base text-elementalGrey sm:mr-2">I agree with the</span>
 									<a
 										className="cursor-pointer text-[#F30919] text-base"
 										onClick={() => window.open("https://xai.games/sentrynodeagreement/")}>
@@ -278,7 +278,7 @@ export function WebBuyKeysOrderTotal(
 									labelStyle="!items-start"
 								>
 									<div className="sm:w-[300px] md:w-auto">
-										<span className="sm:text-base text-[#525252]">I understand Sentry Node Keys are not transferable</span>
+										<span className="sm:text-base text-elementalGrey">I understand Sentry Node Keys are not transferable</span>
 									</div>
 								</MainCheckbox>
 
@@ -288,7 +288,7 @@ export function WebBuyKeysOrderTotal(
 									labelStyle="!items-start"
 								>
 									<div className="flex w-full sm:w-[300px] justify-between md:w-auto sm:flex-col lg:flex-row items-start">
-									<span className="sm:text-base text-[#525252] lg:mr-2">I understand that I cannot claim rewards until I pass KYC</span>
+									<span className="sm:text-base text-elementalGrey lg:mr-2">I understand that I cannot claim rewards until I pass KYC</span>
 									<KYCTooltip
 										width={850}
 									>
@@ -301,7 +301,7 @@ export function WebBuyKeysOrderTotal(
 							<div>
 								<PrimaryButton
 									onClick={() => onClick()}
-									className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-[20px] text-white p-2 uppercase font-bold`}
+									className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
 									isDisabled={!ready || chain?.id !== 42_161}
 									btnText={chain?.id === 42_161 ? "BUY NOW" : "Please Switch to Arbitrum One"}
 								/>
