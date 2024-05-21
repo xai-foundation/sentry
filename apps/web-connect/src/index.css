@@ -95,6 +95,14 @@ body {
     font-weight: 700;
 }
 
+.checkboxLabel {
+    -webkit-border-radius: 0 !important;
+}
+
+.checkboxLabel input {
+    -webkit-border-radius: 0 !important;
+}
+
 @media screen and (max-width: 425px) {
     .terms-and-conditions h3 {
         font-size: 20px;

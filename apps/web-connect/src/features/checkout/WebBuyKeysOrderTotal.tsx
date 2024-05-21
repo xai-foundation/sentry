@@ -85,7 +85,7 @@ export function WebBuyKeysOrderTotal(
 						</p>
 							<div className="flex flex-row items-center gap-1">
 								<span
-									className="font-bold text-white">
+									className="font-bold text-white text-2xl">
 									{ethers.formatEther(item.totalPriceForTier)} AETH
 								</span>
 							</div>
@@ -239,16 +239,16 @@ export function WebBuyKeysOrderTotal(
 								<hr className="my-2 border-[#525252]"/>
 								<div className="flex sm:flex-col lg:flex-row items-center justify-between py-2">
 									<div className="flex flex-row items-center gap-2 sm:text-xl lg:text-2xl">
-										<span className="text-white font-bold">You pay</span>
+										<span className="text-white font-bold text-2xl">You pay</span>
 									</div>
 									<div className="flex flex-row items-center gap-1">
-										<span className="text-white font-bold sm:text-xl lg:text-2xl">
+										<span className="text-white font-bold text-3xl">
 											{discount.applied
 												? ethers.formatEther(getPriceData.price * BigInt(95) / BigInt(100))
 												: ethers.formatEther(getPriceData.price)
 											}
 										</span>
-										<span className="text-white font-bold sm:text-xl lg:text-2xl">AETH</span>
+										<span className="text-white font-bold text-3xl">AETH</span>
 									</div>
 								</div>
 							</div>
