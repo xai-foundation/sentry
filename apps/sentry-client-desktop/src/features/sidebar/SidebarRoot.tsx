@@ -112,7 +112,7 @@ export function Sidebar() {
 				<p>v{import.meta.env.APP_VERSION}</p>
 				<a
 					className="text-[#F30919] cursor-pointer hover:underline"
-					onClick={() => window.electron.openExternal("https://xai.games/sentrynodeagreement")}
+					onClick={() => window.electron.openExternal("https://xai.games/sentry-node-agreement")}
 				>
 					Sentry Node Agreement
 				</a>

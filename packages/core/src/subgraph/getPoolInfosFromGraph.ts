@@ -1,5 +1,6 @@
 import { PoolInfo, RefereeConfig } from "@sentry/sentry-subgraph-client";
 import { GraphQLClient, gql } from 'graphql-request'
+import { config } from "../config.js";
 
 /**
  * 
@@ -9,11 +10,12 @@ import { GraphQLClient, gql } from 'graphql-request'
  * @returns List of sentry key objects with metadata.
  */
 export async function getPoolInfosFromGraph(
-  client: GraphQLClient,
   poolAddresses: string[],
   extendPoolInfo?: boolean,
   fetchRefereeConfig?: boolean
 ): Promise<{ pools: PoolInfo[], refereeConfig?: RefereeConfig }> {
+
+  const client = new GraphQLClient(config.subgraphEndpoint);
 
   let extendedInfo = ""
   if (extendPoolInfo) {

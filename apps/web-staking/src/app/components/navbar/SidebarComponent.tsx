@@ -73,7 +73,7 @@ export default function SidebarComponent() {
           />
           <LinkComponent
             externalTab
-            link="https://xai.games/privacypolicy"
+            link="https://xai.games/privacy-policy"
             content="Privacy Policy"
             customClass="text-sm"
           />

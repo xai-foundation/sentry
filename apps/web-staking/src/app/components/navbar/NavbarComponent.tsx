@@ -61,7 +61,7 @@ export default function NavbarComponent() {
 							customClass="mb-[10px]" />
 						<Link href="https://xai.games/generalterms" target="_blank" onClick={() => setIsMenuOpen(false)}><div className='text-sm text-lightBlackDarkWhite py-2 pl-4'>General Terms</div></Link>
 						<Link href="https://xai.games/stakingterms" target="_blank" onClick={() => setIsMenuOpen(false)}><div className='text-sm text-lightBlackDarkWhite py-2 pl-4'>Staking Terms</div></Link>
-						<Link href="https://xai.games/privacypolicy" target="_blank" onClick={() => setIsMenuOpen(false)}><div className='text-sm text-lightBlackDarkWhite py-2 pl-4'>Privacy Policy</div></Link>
+						<Link href="https://xai.games/privacy-policy" target="_blank" onClick={() => setIsMenuOpen(false)}><div className='text-sm text-lightBlackDarkWhite py-2 pl-4'>Privacy Policy</div></Link>
 					</div>
 				</NavbarMenuItem>
 			</NavbarMenu>
