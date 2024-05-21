@@ -8,6 +8,6 @@ export function displayNodeAgreement(cli: Vorpal) {
     cli
         .command('display-node-agreement', 'Display the Sentry Node Agreement')
         .action(async function (this: Vorpal.CommandInstance) {
-            this.log(`View the Sentry Node Agreement here https://xai.games/sentrynodeagreement/`);
+            this.log(`View the Sentry Node Agreement here https://xai.games/sentry-node-agreement/`);
         });
 }

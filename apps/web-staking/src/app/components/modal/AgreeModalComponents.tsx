@@ -51,7 +51,7 @@ const AgreeModalComponent = ({ address }: { address: string | undefined }) => {
             />
             {" and "}
             <ExternalLinkComponent
-              link={"https://xai.games/privacypolicy"}
+              link={"https://xai.games/privacy-policy"}
               content={"Privacy Policy"}
               customClass="!text-base"
             />
@@ -83,7 +83,7 @@ const AgreeModalComponent = ({ address }: { address: string | undefined }) => {
                 {" and "}
                 <ExternalLinkComponent
                   externalTab
-                  link={"https://xai.games/privacypolicy"}
+                  link={"https://xai.games/privacy-policy"}
                   content={"Privacy Policy"}
                   customClass="!text-base"
                 />
