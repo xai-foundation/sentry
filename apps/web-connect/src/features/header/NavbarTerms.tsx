@@ -1,7 +1,7 @@
 
 const NavbarTerms = () => {
     return (
-        <div className="h-full text-white font-bold text-lg uppercase mt-[55px]">
+        <div className="text-white font-bold text-lg uppercase mb-[40px]">
             <div className="flex flex-col gap-3">
                 <a
                     className="text-blue-500 cursor-pointer hover:underline whitespace-nowrap"
