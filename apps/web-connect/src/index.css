@@ -2,55 +2,118 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-.din-alternate_light {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 200;
+
+@font-face {
+  font-family: "Rajdhani", sans-serif;
+  src: url("./assets/fonts/Rajdhani-Regular.ttf");
+  font-weight: normal;
+  font-style: normal;
 }
 
-.din-alternate_regular {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 300;
+@font-face {
+  font-family: "Rajdhani";
+  src: url("./assets//fonts//Rajdhani-Bold.ttf");
+  font-weight: 600;
+  font-style: normal;
 }
 
-.din-alternate_medium {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 400;
+@font-face {
+  font-family: "Rajdhani";
+  src: url("./assets//fonts/Rajdhani-Medium.ttf");
+  font-weight: 500;
+  font-style: normal;
 }
 
-.din-alternate_demi {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 500;
+@font-face {
+  font-family: "Rajdhani";
+  src: url("./assets/fonts/Rajdhani-SemiBold.ttf");
+  font-weight: 600;
+  font-style: normal;
 }
 
-.din-alternate_semi-bold {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 600;
-}
-
-.din-alternate_bold {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 700;
+@font-face {
+  font-family: "Rajdhani";
+  src: url("./assets/fonts/Rajdhani-Light.ttf");
+  font-weight: 300;
+  font-style: normal;
 }
 
 body {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 300; /* Specify the desired font weight */
+  font-family: "Rajdhani", sans-serif;
+  font-style: normal;
+  background-image: url("./assets/images/sentry-background.png"), linear-gradient(180deg, #221d1d 0%, #221d1d 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
 }
 
 .cookie-consent a {
-    color: #ee081a;
-    text-decoration: none;
+  color: #ee081a;
+  text-decoration: none;
 }
 
 .cookie-consent a:hover {
-    opacity: 0.8;  
+  opacity: 0.8;
+}
+
+.global-clip-btn {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 10px);
+}
+
+.global-clip-path {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+}
+
+.global-clip-primary-btn {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+} 
+
+.global-cta-clip-path {
+    clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+}
+
+
+.clip-path-30px {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 2px), calc(100% - 2px) 100%, 0 100%, 0 2px);
+} 
+
+.wrapper-drop-shadow {
+    filter: drop-shadow(0px 10px 15px #000000BF);
+}
+
+
+.terms-and-conditions p {
+    font-weight: 500;
+    font-size: 18px;
+    color: #D0CFCF;
+}
+
+.terms-and-conditions h3 {
+    color: white;
+    text-transform: uppercase;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.checkboxLabel {
+    -webkit-border-radius: 0 !important;
+}
+
+.checkboxLabel input {
+    -webkit-border-radius: 0 !important;
+}
+
+@media screen and (max-width: 425px) {
+    .terms-and-conditions h3 {
+        font-size: 20px;
+    }
+}
+
+
+@media screen and (max-width: 1024px) {
+    body {
+        background-size: cover;
+    }
 }
 
 @keyframes pulse-green {
@@ -86,4 +149,49 @@ body {
         transform: scale(0.95);
         box-shadow: 0 0 0 0 rgba(255, 177, 66, 0);
     }
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.hover-button:hover {
+  background-color: #fff !important;
+  color: #ff0030 !important;
+  transition-duration: 0.2s;
+}
+
+.cookie-consent-container {
+  position: fixed !important;
+  bottom: 40px !important;
+  left: 38px !important;
+  width: 96% !important;
+}
+
+
+@media screen and (max-width: 1600px) {
+  .cookie-consent-container {
+  left: 30px !important;
+  padding: 10px !important;
+ }
+}
+
+@media screen and (max-width: 1200px) {
+  .cookie-consent-container {
+  left: 20px !important;
+  padding: 10px !important;
+ }
+}
+
+@media screen and (max-width: 768px) {
+  .cookie-consent-container {
+  left: 10px !important;
+  padding: 10px !important;
+ }
 }
