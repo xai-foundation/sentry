@@ -17,7 +17,7 @@ export function Footer() {
 								<p className="hidden lg:inline ml-2">|</p>
 								<a
 									className="text-blue-500 cursor-pointer hover:underline"
-									onClick={() => window.open("https://xai.games/sentrynodeagreement/", "_blank", "noopener noreferrer")}
+									onClick={() => window.open("https://xai.games/sentry-node-agreement/", "_blank", "noopener noreferrer")}
 								>
 									Sentry Node Agreement
 								</a>
@@ -26,7 +26,7 @@ export function Footer() {
 								<p className="hidden lg:inline ml-2">|</p>
 								<a
 									className="text-blue-500 cursor-pointer hover:underline"
-									onClick={() => window.open("https://xai.games/privacypolicy/", "_blank", "noopener noreferrer")}
+									onClick={() => window.open("https://xai.games/privacy-policy/", "_blank", "noopener noreferrer")}
 								>
 									Privacy Policy Agreement
 								</a>
