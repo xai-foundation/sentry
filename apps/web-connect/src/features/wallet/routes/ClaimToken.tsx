@@ -45,7 +45,7 @@ export function ClaimToken() {
 	if (loading) {
 		return (
 			<div className="w-full h-screen flex justify-center items-center">
-				<BiLoaderAlt className="animate-spin" size={32} color={"#000000"}/>
+				<BiLoaderAlt className="animate-spin" size={32} color={"#F30919"}/>
 			</div>
 		)
 	}
@@ -61,7 +61,7 @@ export function ClaimToken() {
 	if (isLoading) {
 		return (
 			<div className="w-full h-screen flex justify-center items-center">
-				<BiLoaderAlt className="animate-spin" size={32} color={"#000000"}/>
+				<BiLoaderAlt className="animate-spin" size={32} color={"#F30919"}/>
 			</div>
 		)
 	}
@@ -69,7 +69,7 @@ export function ClaimToken() {
 	if (isSuccess) {
 		return (
 			<div className="w-full h-screen flex justify-center items-center">
-				<p>Claim successful!</p>
+				<p className="text-3xl font-bold text-white">Claim successful!</p>
 			</div>
 		)
 	}

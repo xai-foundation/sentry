@@ -1,8 +1,8 @@
-export const WarningIcon = ({ width = 24, height = 24, className }: { width?: number, height?: number, fill?: string, className?: string }) => {
+export const WarningIcon = ({ width = 24, height = 24, className, fill = "#ffc53d" }: { width?: number, height?: number, fill?: string, className?: string }) => {
 
   return (
     <svg style={{ width: width, height: height }} className={className} xmlns="http://www.w3.org/2000/svg" width="27.789" height="24" viewBox="0 0 27.789 24">
-      <path id="warning_FILL1_wght400_GRAD0_opsz24_4_" data-name="warning_FILL1_wght400_GRAD0_opsz24 (4)" d="M40-856l13.895-24,13.895,24Zm13.895-3.789a1.222,1.222,0,0,0,.9-.363,1.222,1.222,0,0,0,.363-.9,1.222,1.222,0,0,0-.363-.9,1.222,1.222,0,0,0-.9-.363,1.222,1.222,0,0,0-.9.363,1.222,1.222,0,0,0-.363.9,1.222,1.222,0,0,0,.363.9A1.222,1.222,0,0,0,53.895-859.789Zm-1.263-3.789h2.526v-6.316H52.632Z" transform="translate(-40 880)" fill="#ffc53d"/>
+      <path id="warning_FILL1_wght400_GRAD0_opsz24_4_" data-name="warning_FILL1_wght400_GRAD0_opsz24 (4)" d="M40-856l13.895-24,13.895,24Zm13.895-3.789a1.222,1.222,0,0,0,.9-.363,1.222,1.222,0,0,0,.363-.9,1.222,1.222,0,0,0-.363-.9,1.222,1.222,0,0,0-.9-.363,1.222,1.222,0,0,0-.9.363,1.222,1.222,0,0,0-.363.9,1.222,1.222,0,0,0,.363.9A1.222,1.222,0,0,0,53.895-859.789Zm-1.263-3.789h2.526v-6.316H52.632Z" transform="translate(-40 880)" fill={fill}/>
     </svg>
   )
 };
@@ -143,11 +143,11 @@ export const MinusIcon = ({ width = 16, height = 3 }) => {
 </svg>)
 }
 
-export const XaiLogo = ({width = 44, height = 38}) => {
-    return <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 43.861 37.985">
+export const XaiLogo = ({className = ""}) => {
+    return <svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 43.861 37.985">
         <path id="Path_3682" data-name="Path 3682"
               d="M21.931,0,17.6,7.5,30.87,30.488H12.991l6.372-11.036-4.331-7.5L0,37.988H43.861Z"
-              transform="translate(0 -0.003)" fill="#fff"/>
+              transform="translate(0 -0.003)"/>
     </svg>
 }
 
@@ -178,4 +178,11 @@ export const WalletIcon = ({width = 17.5, height = 14}) => {
     return <svg className="fill-white group-hover:fill-hornetSting duration-200 ease-in" xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 17.5 14">
   <path id="wallet_FILL1_wght400_GRAD0_opsz24" d="M83.5-786a3.37,3.37,0,0,1-2.472-1.028A3.37,3.37,0,0,1,80-789.5v-7a3.37,3.37,0,0,1,1.028-2.472A3.37,3.37,0,0,1,83.5-800H94a3.37,3.37,0,0,1,2.472,1.028A3.37,3.37,0,0,1,97.5-796.5v7a3.37,3.37,0,0,1-1.028,2.472A3.37,3.37,0,0,1,94-786Zm0-10.5H94a3.774,3.774,0,0,1,.919.109,2.963,2.963,0,0,1,.831.35v-.459a1.685,1.685,0,0,0-.514-1.236A1.685,1.685,0,0,0,94-798.25H83.5a1.685,1.685,0,0,0-1.236.514,1.685,1.685,0,0,0-.514,1.236v.459a2.963,2.963,0,0,1,.831-.35A3.774,3.774,0,0,1,83.5-796.5Zm-1.619,2.844,9.734,2.362a.9.9,0,0,0,.394,0,.965.965,0,0,0,.372-.175l3.041-2.538a1.892,1.892,0,0,0-.612-.536A1.631,1.631,0,0,0,94-794.75H83.5a1.706,1.706,0,0,0-1,.3A1.7,1.7,0,0,0,81.881-793.656Z" transform="translate(-80 800)"/>
 </svg>
+}
+export const Lock = ({width = 22, height = 23, className = ""}) => {
+    return <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height={height} width={width} className={className}
+                xmlns="http://www.w3.org/2000/svg" color="#3DD68C" >
+        <path
+            d="M376 192h-24v-46.7c0-52.7-42-96.5-94.7-97.3-53.4-.7-97.3 42.8-97.3 96v48h-24c-22 0-40 18-40 40v192c0 22 18 40 40 40h240c22 0 40-18 40-40V232c0-22-18-40-40-40zM270 316.8v68.8c0 7.5-5.8 14-13.3 14.4-8 .4-14.7-6-14.7-14v-69.2c-11.5-5.6-19.1-17.8-17.9-31.7 1.4-15.5 14.1-27.9 29.6-29 18.7-1.3 34.3 13.5 34.3 31.9 0 12.7-7.3 23.6-18 28.8zM324 192H188v-48c0-18.1 7.1-35.1 20-48s29.9-20 48-20 35.1 7.1 48 20 20 29.9 20 48v48z"></path>
+    </svg>
 }

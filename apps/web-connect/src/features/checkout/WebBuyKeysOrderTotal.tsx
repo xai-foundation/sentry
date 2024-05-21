@@ -8,6 +8,9 @@ import {PrimaryButton} from "@sentry/ui";
 import {KYCTooltip} from "@/features/checkout/KYCTooltip";
 import {useNetwork} from 'wagmi';
 import MainCheckbox from "@sentry/ui/src/rebrand/checkboxes/MainCheckbox";
+import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
+import {WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
+import {mapWeb3Error} from "@/utils/errors";
 
 interface PriceDataInterface {
 	price: bigint;
@@ -77,17 +80,17 @@ export function WebBuyKeysOrderTotal(
 							<div className="flex flex-row items-center gap-2 text-white font-semibold">
 								<span className="">{item.quantity.toString()} x Xai Sentry Node Key</span>
 							</div>
-						<p className="text-sm text-[#525252] mb-4 sm:block lg:hidden">
+						<p className="text-base text-elementalGrey mb-4 sm:block lg:hidden">
 							{ethers.formatEther(item.pricePer)} AETH per key
 						</p>
 							<div className="flex flex-row items-center gap-1">
 								<span
-									className="font-bold text-white">
+									className="font-bold text-white text-2xl">
 									{ethers.formatEther(item.totalPriceForTier)} AETH
 								</span>
 							</div>
 						</div>
-						<p className="text-sm text-[#525252] mb-4 sm:hidden lg:block">
+						<p className="text-base text-elementalGrey mb-4 sm:hidden lg:block">
 							{ethers.formatEther(item.pricePer)} AETH per key
 						</p>
 					</div>
@@ -113,9 +116,9 @@ export function WebBuyKeysOrderTotal(
 
 								{discount.applied && (
 									<>
-										<div className="flex flex-row items-center justify-between text-[15px]">
+										<div className="flex flex-row items-center justify-between text-lg">
 											<div className="flex flex-row items-center gap-2">
-												<span>Discount (5%)</span>
+												<span className="text-white">Discount (5%)</span>
 
 												<a
 													onClick={() => setDiscount({applied: false, error: false})}
@@ -126,26 +129,26 @@ export function WebBuyKeysOrderTotal(
 
 											</div>
 											<div className="flex flex-row items-center gap-1">
-												<span className="text-[#2A803D] font-semibold">
+												<span className="text-white font-semibold">
 													{ethers.formatEther(getPriceData.price * BigInt(5) / BigInt(100))} AETH
 												</span>
 											</div>
 										</div>
-										<p className="text-[13px] text-[#A3A3A3] ">
+										<p className="text-[13px] text-elementalGrey ">
 											{promoCode}
 										</p>
 									</>
 								)}
 
 								{displayPricesMayVary && (
-									<div className="w-full flex flex-col bg-[#F5F5F5] px-5 py-4 gap-2 mb-4">
+									<div className="w-full flex flex-col bg-bananaBoat px-5 py-4 gap-2 mb-4">
 										<div className="flex items-center gap-2 font-semibold">
-											<AiFillInfoCircle className="w-[20px] h-[20px] text-[#3B82F6]"/>
-											<p className="text-[15px]">
+											<AiFillInfoCircle className="w-[20px] h-[20px] text-bananaBoatText"/>
+											<p className="text-lg text-bananaBoatText">
 												Your transaction may be reverted
 											</p>
 										</div>
-										<p className="text-sm">
+										<p className="text-sm text-bananaBoatText">
 											Xai Sentry Node Key prices vary depending on the quantity of remaining
 											supply. In general, as the quantity of available keys decreases, the price
 											of a key will increase. If you purchase more Keys than are available in the
@@ -161,54 +164,63 @@ export function WebBuyKeysOrderTotal(
 									<>
 										<hr className="my-2 border-[#525252]"/>
 										{promo ? (
-											<div className="w-full flex sm:flex-col lg:flex-row items-center py-2">
-												<div
-													className="w-[300px] h-auto flex flex-row sm:justify-center lg:justify-start items-center text-[15px] text-[#525252] mt-2 sm:mb-2 lg:mb-0">
-													<span className="text-[#F30919] text-base">+ Add promo code</span>
+											<div className="w-full flex flex-col items-center py-2 ">
+												<div className="w-full h-auto flex sm:flex-col lg:flex-row sm:justify-center lg:justify-start items-center text-[15px] text-elementalGrey mt-2 sm:mb-2 lg:mb-0">
 													<div
-														className="cursor-pointer z-10"
-														onClick={() => {
-															setPromoCode("");
-															setPromo(false);
-														}}
-													>
-														{/* <AiOutlineClose/> */}
+														className="w-[300px] h-auto flex flex-row sm:justify-center lg:justify-start items-center text-[15px] text-elementalGrey mt-2 sm:mb-2 lg:mb-0">
+														<span
+															className="text-[#F30919] text-base">+ Add promo code</span>
+														<div
+															className="cursor-pointer z-10"
+															onClick={() => {
+																setPromoCode("");
+																setPromo(false);
+															}}
+														>
+															{/* <AiOutlineClose/> */}
+														</div>
 													</div>
-												</div>
 
-												<div className="flex w-full items-center sm:justify-center">
+													<div className="flex w-full items-center sm:justify-center">
 
-													<input
-														type="text"
-														value={promoCode}
-														onChange={(e) => {
-															setPromoCode(e.target.value)
-															setDiscount({
-																applied: false,
-																error: false,
-															});
-														}}
-														className={`text-white lg:w-full border-r-0 p-2 bg-darkLicorice border ${discount.error ? "border-[#AB0914]" : "border-[#525252]"}`}
-													/>
-													<div className="lg:hidden sm:block">
-													<PrimaryButton
-														onClick={() => handleSubmit()}
-														btnText="APPLY"
-														className="text-white text-sm !py-2 max-h-[42.5px] max-w-[90px]"
+														<input
+															type="text"
+															value={promoCode}
+															onChange={(e) => {
+																setPromoCode(e.target.value)
+																setDiscount({
+																	applied: false,
+																	error: false,
+																});
+															}}
+															className={`text-white lg:w-full border-r-0 p-2 bg-darkLicorice border ${discount.error ? "border-[#AB0914]" : "border-[#525252]"}`}
+														/>
+														<div className="lg:hidden sm:block">
+															<PrimaryButton
+																onClick={() => handleSubmit()}
+																btnText="APPLY"
+																className="text-white text-sm !py-2 max-h-[42.5px] max-w-[90px]"
+															/>
+														</div>
+													</div>
+													<div className="lg:block sm:hidden">
+														<PrimaryButton
+															onClick={() => handleSubmit()}
+															btnText="APPLY"
+															className="text-white text-sm !py-2 max-h-[42.5px] max-w-[90px]"
 														/>
 													</div>
 												</div>
-												<div className="lg:block sm:hidden">
-													<PrimaryButton
-														onClick={() => handleSubmit()}
-														btnText="APPLY"
-														className="text-white text-sm !py-2 max-h-[42.5px] max-w-[90px]"
-													/>
-												</div>
 
 												{discount.error && (
-													<p className="text-sm text-[#AB0914]">Invalid referral
-														address</p>
+													<BaseCallout extraClasses={{calloutWrapper: "h-[50px] w-full mt-2"}} isWarning>
+														<div className="flex gap-[10px]">
+															<span className="block"><WarningIcon /></span>
+															<span className="block">
+																Invalid referral address
+															</span>
+														</div>
+													</BaseCallout>
 												)}
 											</div>
 										) : (
@@ -227,21 +239,21 @@ export function WebBuyKeysOrderTotal(
 								<hr className="my-2 border-[#525252]"/>
 								<div className="flex sm:flex-col lg:flex-row items-center justify-between py-2">
 									<div className="flex flex-row items-center gap-2 sm:text-xl lg:text-2xl">
-										<span className="text-white font-bold">You pay</span>
+										<span className="text-white font-bold text-2xl">You pay</span>
 									</div>
 									<div className="flex flex-row items-center gap-1">
-										<span className="text-white font-bold sm:text-xl lg:text-2xl">
+										<span className="text-white font-bold text-3xl">
 											{discount.applied
 												? ethers.formatEther(getPriceData.price * BigInt(95) / BigInt(100))
 												: ethers.formatEther(getPriceData.price)
 											}
 										</span>
-										<span className="text-white font-bold sm:text-xl lg:text-2xl">AETH</span>
+										<span className="text-white font-bold text-3xl">AETH</span>
 									</div>
 								</div>
 							</div>
 						</div>
-                        <hr className="my-2 border-[#525252]"/>
+						<hr className="my-2 border-[#525252]"/>
 						<div className="flex flex-col justify-center gap-8 mt-8">
 							<div className="flex w-full flex-col justify-center gap-2">
 								<MainCheckbox
@@ -250,7 +262,7 @@ export function WebBuyKeysOrderTotal(
 									labelStyle="!items-start"
 								>
 									<div className="sm:w-[200px] md:w-[300px] lg:w-auto">
-									<span className="sm:text-base text-[#525252] sm:mr-2">I agree with the</span>
+									<span className="sm:text-base text-elementalGrey sm:mr-2">I agree with the</span>
 									<a
 										className="cursor-pointer text-[#F30919] text-base"
 										onClick={() => window.open("https://xai.games/sentrynodeagreement/")}>
@@ -266,7 +278,7 @@ export function WebBuyKeysOrderTotal(
 									labelStyle="!items-start"
 								>
 									<div className="sm:w-[300px] md:w-auto">
-										<span className="sm:text-base text-[#525252]">I understand Sentry Node Keys are not transferable</span>
+										<span className="sm:text-base text-elementalGrey">I understand Sentry Node Keys are not transferable</span>
 									</div>
 								</MainCheckbox>
 
@@ -276,7 +288,7 @@ export function WebBuyKeysOrderTotal(
 									labelStyle="!items-start"
 								>
 									<div className="flex w-full sm:w-[300px] justify-between md:w-auto sm:flex-col lg:flex-row items-start">
-									<span className="sm:text-base text-[#525252] lg:mr-2">I understand that I cannot claim rewards until I pass KYC</span>
+									<span className="sm:text-base text-elementalGrey lg:mr-2">I understand that I cannot claim rewards until I pass KYC</span>
 									<KYCTooltip
 										width={850}
 									>
@@ -287,17 +299,46 @@ export function WebBuyKeysOrderTotal(
 							</div>
 
 							<div>
-								<button
+								<PrimaryButton
 									onClick={() => onClick()}
-									className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
-									disabled={!ready || chain?.id !== 42_161}
-								>
-									{chain?.id === 42_161 ? "BUY NOW" : "Please Switch to Arbitrum One"}
-								</button>
-
+									className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
+									isDisabled={!ready || chain?.id !== 42_161}
+									btnText={chain?.id === 42_161 ? "BUY NOW" : "Please Switch to Arbitrum One"}
+								/>
+									
 								{error && (
-									<div className="text-center sm:w-[400px] md:w-[600px] h-[200px] p-4 overflow-y-auto break-words mt-4 text-[#F30919]">
-										{error.message}
+									<div>
+										{error && mapWeb3Error(error) === "Insufficient funds"
+											&&
+											<div className="flex md:gap-[21px] gap-[10px]">
+												<BaseCallout extraClasses={{calloutWrapper: "md:h-[100px] h-[159px] mt-[12px]" , calloutFront: "!justify-start"}} isWarning>
+													<div className="flex md:gap-[21px] gap-[10px]">
+														<span className="block mt-2"><WarningIcon /></span>
+														<div>
+															<span className="block font-bold text-lg">
+																Insufficient funds to complete transaction
+															</span>
+															<span className="block font-medium text-lg">
+																Make sure your wallet has enough AETH and gas to complete the transaction.
+															</span>
+														</div>
+													</div>
+												</BaseCallout>
+											</div>
+										}
+										{error && mapWeb3Error(error) === "User rejected the request" && <BaseCallout extraClasses={{calloutWrapper: "md:h-[85px] h-[109px] mt-[12px]" , calloutFront: "!justify-start"}} isWarning>
+											<div className="flex md:gap-[21px] gap-[10px]">
+												<span className="block mt-2"><WarningIcon /></span>
+												<div>
+													<span className="block font-bold text-lg">
+														Transaction was cancelled
+													</span>
+													<span className="block font-medium text-lg">
+														You have cancelled the transaction in your wallet.
+													</span>
+												</div>
+											</div>
+										</BaseCallout>}
 									</div>
 								)}
 							</div>

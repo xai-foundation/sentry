@@ -13,7 +13,7 @@
 @font-face {
   font-family: "Rajdhani";
   src: url("./assets//fonts//Rajdhani-Bold.ttf");
-  font-weight: bold;
+  font-weight: 600;
   font-style: normal;
 }
 
@@ -95,6 +95,14 @@ body {
     font-weight: 700;
 }
 
+.checkboxLabel {
+    -webkit-border-radius: 0 !important;
+}
+
+.checkboxLabel input {
+    -webkit-border-radius: 0 !important;
+}
+
 @media screen and (max-width: 425px) {
     .terms-and-conditions h3 {
         font-size: 20px;
@@ -141,4 +149,49 @@ body {
         transform: scale(0.95);
         box-shadow: 0 0 0 0 rgba(255, 177, 66, 0);
     }
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.hover-button:hover {
+  background-color: #fff !important;
+  color: #ff0030 !important;
+  transition-duration: 0.2s;
+}
+
+.cookie-consent-container {
+  position: fixed !important;
+  bottom: 40px !important;
+  left: 38px !important;
+  width: 96% !important;
+}
+
+
+@media screen and (max-width: 1600px) {
+  .cookie-consent-container {
+  left: 30px !important;
+  padding: 10px !important;
+ }
+}
+
+@media screen and (max-width: 1200px) {
+  .cookie-consent-container {
+  left: 20px !important;
+  padding: 10px !important;
+ }
+}
+
+@media screen and (max-width: 768px) {
+  .cookie-consent-container {
+  left: 10px !important;
+  padding: 10px !important;
+ }
 }

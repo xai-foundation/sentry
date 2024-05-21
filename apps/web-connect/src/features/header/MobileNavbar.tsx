@@ -14,8 +14,8 @@ const MobileNavbar = ({isOpened = false, closeNavbar}: MobileNavbarProps) => {
             <div className="flex justify-end mb-4">
                 <IoMdClose onClick={closeNavbar} color="white" size={34} />
             </div>
-            <div className="flex flex-col pl-[21px] justify-between h-full">
-                <div className="font-bold text-[24px] uppercase h-full mb-[240px] !text-nowrap">
+            <div className="flex flex-col pl-[21px] justify-between h-[calc(100vh-100px)]">
+                <div className="font-bold text-[24px] uppercase !text-nowrap">
                     <ExternalLink
                         customClass="h-[44px] flex items-center global-clip-path mb-2 no-underline !text-[24px] !font-bold "
                         content={"DOCS"}
@@ -23,14 +23,11 @@ const MobileNavbar = ({isOpened = false, closeNavbar}: MobileNavbarProps) => {
                         link={"https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup"}
                     />
 
-                    <ExternalLink
-                        customClass="h-[44px] flex items-center global-clip-path mb-2 no-underline !text-[24px] !font-bold whitespace-nowrap"
-                        content={"BUILD WITH US"} link={""}
-                    />
                 </div>
-                <NavbarLinks />
-                <NavbarTerms/>
-                <div className="mt-[55px] text-white font-bold text-lg uppercase whitespace-nowrap">
+
+                <div className="text-white font-bold text-lg uppercase whitespace-nowrap">
+                    <NavbarLinks />
+                    <NavbarTerms/>
                     <p>©2024 XAI. All Rights Reserved</p>
                 </div>
             </div>

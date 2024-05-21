@@ -14,30 +14,25 @@ export function Header() {
 	const [isNavbarOpened, setIsNavbarOpened] = useState(false)
 	return (
 		<div className="w-full">
-			<div className="fixed flex w-full justify-between items-center bg-transparent z-[10]">
+			<div className="fixed top-0 flex w-full justify-between items-center bg-transparent z-[10]">
 				<div
-					className="w-full md:max-w-[108px] md:min-h-[108px] min-h-[64px] max-w-[64px] flex items-center bg-hornetSting justify-center"
+					className="w-full group md:max-w-[108px] md:min-h-[108px] min-h-[64px] max-w-[64px] flex items-center bg-hornetSting justify-center hover:bg-white duration-200 ease-in cursor-pointer"
 					onClick={() => navigate("/")}
 				>
-					<XaiLogo width={26} height={23}/>
+					<XaiLogo className="md:w-[43px] md:h-[38px] w-[26px] h-[23px] fill-white group-hover:fill-hornetSting duration-200 ease-in" />
 				</div>
 				<div className="font-bold text-xl items-center gap-[20px] uppercase text-white hidden md:flex">
 					<ExternalLink
 						content={"DOCS"}
 						externalTab
 						link={"https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup"}
-						customClass={"no-underline !font-bold text-xl hover:text-elementalGrey"}/>
-					<span className="block uppercase text-foggyLondon">|</span>
-					<ExternalLink
-						content={"BUILD WITH US"}
-						link={""}
-						customClass={"no-underline !font-bold text-xl hover:text-elementalGrey"}/>
+						customClass={"no-underline !font-bold text-xl hover:text-hornetSting"}/>
 					<span className="block uppercase text-foggyLondon">|</span>
 
 					<div className="flex gap-[16px]">
 						<ExternalLink
 							content={
-								<TelegramIcon className={"hover:fill-elementalGrey fill-white duration-200 ease-in"} />
+								<TelegramIcon className={"hover:fill-hornetSting fill-white duration-200 ease-in"} />
 							}
 							link={"https://t.me/XaiSentryNodes"}
 							externalTab
@@ -46,7 +41,7 @@ export function Header() {
 
 						<ExternalLink
 							content={
-								<DiscordIcon className={"hover:fill-elementalGrey fill-white duration-200 ease-in"} />
+								<DiscordIcon className={"hover:fill-hornetSting fill-white duration-200 ease-in"} />
 							}
 							externalTab
 							link={"https://discord.com/invite/xaigames"}
@@ -55,7 +50,7 @@ export function Header() {
 
 						<ExternalLink
 							content={
-								<XIcon className={"hover:fill-elementalGrey fill-white duration-200 ease-in"} />
+								<XIcon className={"hover:fill-hornetSting fill-white duration-200 ease-in"} />
 							}
 							link={"https://twitter.com/xai_games"}
 							externalTab

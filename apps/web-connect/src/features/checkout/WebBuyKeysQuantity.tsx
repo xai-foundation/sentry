@@ -12,7 +12,7 @@ export function WebBuyKeysQuantity({quantity, setQuantity}: WebBuyKeysQuantityPr
 	const maxSupply = getTotalData ? Number(getTotalData.maxSupply) - Number(getTotalData.totalSupply) : 0;
 
 	return (
-		<div className="flex w-full sm:justify-center flex-row items-start gap-4 sm:mt-4 lg:mt-0">
+		<div className="flex w-full justify-end flex-row items-start gap-4 sm:mt-4 lg:mt-0">
 
 			<div className="flex sm:w-full lg:w-[175px] sm:px-2 lg:px-0">
 				<XaiNumberInput
