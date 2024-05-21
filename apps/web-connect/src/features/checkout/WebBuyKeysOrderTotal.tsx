@@ -116,9 +116,9 @@ export function WebBuyKeysOrderTotal(
 
 								{discount.applied && (
 									<>
-										<div className="flex flex-row items-center justify-between text-[15px]">
+										<div className="flex flex-row items-center justify-between text-lg">
 											<div className="flex flex-row items-center gap-2">
-												<span>Discount (5%)</span>
+												<span className="text-white">Discount (5%)</span>
 
 												<a
 													onClick={() => setDiscount({applied: false, error: false})}
@@ -129,26 +129,26 @@ export function WebBuyKeysOrderTotal(
 
 											</div>
 											<div className="flex flex-row items-center gap-1">
-												<span className="text-[#2A803D] font-semibold">
+												<span className="text-white font-semibold">
 													{ethers.formatEther(getPriceData.price * BigInt(5) / BigInt(100))} AETH
 												</span>
 											</div>
 										</div>
-										<p className="text-[13px] text-[#A3A3A3] ">
+										<p className="text-[13px] text-elementalGrey ">
 											{promoCode}
 										</p>
 									</>
 								)}
 
 								{displayPricesMayVary && (
-									<div className="w-full flex flex-col bg-[#F5F5F5] px-5 py-4 gap-2 mb-4">
+									<div className="w-full flex flex-col bg-bananaBoat px-5 py-4 gap-2 mb-4">
 										<div className="flex items-center gap-2 font-semibold">
-											<AiFillInfoCircle className="w-[20px] h-[20px] text-[#3B82F6]"/>
-											<p className="text-[15px]">
+											<AiFillInfoCircle className="w-[20px] h-[20px] text-bananaBoatText"/>
+											<p className="text-lg text-bananaBoatText">
 												Your transaction may be reverted
 											</p>
 										</div>
-										<p className="text-sm">
+										<p className="text-sm text-bananaBoatText">
 											Xai Sentry Node Key prices vary depending on the quantity of remaining
 											supply. In general, as the quantity of available keys decreases, the price
 											of a key will increase. If you purchase more Keys than are available in the
