@@ -43,11 +43,9 @@ export function SentryNodeStatusCard() {
 
 
 	function formatTimeAgo(createdTimestamp: number): string {
-		const minutesDifference = Math.floor((new Date().getTime() - new Date(createdTimestamp).getTime()) / (1000 * 60));
-		const unit = minutesDifference < 60 ? 'm' : 'h';
-		const value = minutesDifference < 60 ? minutesDifference : Math.floor(minutesDifference / 60);
-
-		return `Last challenge ${value}${unit} ago`;
+		const formatDate = new Intl.DateTimeFormat("en-US", { year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric" }).format(createdTimestamp);
+		
+		return `Last challenge ${formatDate}`;
 	}
 
 

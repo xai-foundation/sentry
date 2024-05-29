@@ -15,6 +15,9 @@
         },
         {
             "path": "./packages/ui/tsconfig.json"
+        },
+        {
+            "path": "./packages/sentry-subgraph-client/tsconfig.json"
         }
     ]
 }

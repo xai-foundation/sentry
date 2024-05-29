@@ -1,6 +1,5 @@
 import {useAccount, useContractWrite, useNetwork} from "wagmi";
-import {XaiBanner} from "@/features/checkout/XaiBanner";
-import {XaiCheckbox} from "@sentry/ui";
+import {ConnectButton, PrimaryButton, XaiCheckbox} from "@sentry/ui";
 import {KYCTooltip} from "@/features/checkout/KYCTooltip";
 import {useState} from "react";
 import {useListClaimableAmount} from "@/features/checkout/hooks/useListClaimableAmount";
@@ -8,11 +7,14 @@ import {BiLoaderAlt} from "react-icons/bi";
 import {config, NodeLicenseAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useBlockIp} from "@/hooks/useBlockIp";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
 
 export function DropClaim() {
 	const {blocked, loading} = useBlockIp({blockUsa: true});
 
 	const {address} = useAccount();
+	const {open} = useWeb3Modal()
 	const {chain} = useNetwork();
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
 	const [checkboxTwo, setCheckboxTwo] = useState<boolean>(false);
@@ -33,58 +35,53 @@ export function DropClaim() {
 	if (loading) {
 		return (
 			<div className="w-full h-screen flex justify-center items-center">
-				<BiLoaderAlt className="animate-spin" size={32} color={"#000000"}/>
+				<BiLoaderAlt className="animate-spin" size={32} color={"#F30919"}/>
 			</div>
 		);
 	}
 
 	if (blocked) {
 		return (
-			<pre className="p-2 text-[14px]">Not Found</pre>
+			<div className='w-full h-screen flex justify-center items-center'>
+				<p className="p-2 text-md text-white">You are in a country restricted from using this application.</p>
+			</div>
 		);
 	}
 
 	return (
 		<div>
-			<div className="h-full min-h-[90vh] flex flex-col justify-center items-center">
-				<XaiBanner/>
+			<div className="h-full min-h-screen flex-1 flex flex-col justify-center items-center">
 				{isSuccess ? (
 					<div
-						className="flex flex-col justify-center items-center w-[744px] border border-gray-200 bg-white m-4 p-12">
+						className="flex flex-col justify-center items-center lg:w-[744px] bg-darkLicorice shadow-main lg:p-12 sm:p-4">
 						<div className="w-full flex justify-center">
-							<FaCircleCheck color={"#16A34A"} size={32}/>
+							<FaCircleCheck color={"#16A34A"} size={64}/>
 						</div>
 
-						<p className="text-3xl font-semibold mt-4">
+						<p className="text-3xl font-bold mt-4 uppercase text-white sm:text-center">
 							Sentry Keys Redeemed
 						</p>
 
-						<button
-							onClick={() => window.location.reload()}
-							disabled={false}
-							className="w-[436px] max-w-full bg-[#F30919] text-white p-4 font-semibold m-8 disabled:bg-slate-400"
-						>
-							Redeem More Keys
-						</button>
+						<PrimaryButton onClick={() => window.location.reload()} btnText={"Redeem More Keys"} colorStyle="primary" className="mt-8 w-full uppercase font-bold text-xl text-white"  isDisabled={false} />
 					</div>
 				) : (
 					<div
-						className="flex flex-col justify-center items-center w-[744px] border border-gray-200 bg-white m-4 p-12">
+						className="flex flex-col justify-center items-center md:w-[500px] lg:w-[744px] bg-darkLicorice shadow-main m-4 lg:p-12 sm:p-8">
 						<div
 							className="flex flex-col justify-center items-center gap-2 w-full overflow-hidden">
-							<p className="text-3xl font-semibold">
-								Redeem Sentry Keys
+							<p className="text-3xl font-bold text-white">
+								REDEEM SENTRY KEYS
 							</p>
 
 							{isClaimableAmountLoading ? (
-								<div className="w-full h-[390px] flex flex-col justify-center items-center gap-2">
-									<BiLoaderAlt className="animate-spin" color={"#A3A3A3"} size={32}/>
-									<p>Loading...</p>
+								<div className="w-full h-[150px] flex flex-col justify-center items-center gap-2 text-elementalGrey">
+									<BiLoaderAlt className="animate-spin" color={"#F30919"} size={32}/>
+									<p>Redemption in progress...</p>
 								</div>
 							) : (
 								<>
 									{!address && (
-										<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
+										<p className="text-lg text-medium text-elementalGrey max-w-[590px] text-center mt-2">
 											Connect your wallet to check your eligibility.
 										</p>
 									)}
@@ -149,28 +146,22 @@ export function DropClaim() {
 														</div>
 
 														{error && (
-															<p className="text-center break-words w-full mt-4 text-red-500">
+															<div className="text-center sm:w-[400px] md:w-[600px] h-[200px] p-4 overflow-y-auto break-words mt-4 text-[#F30919]">
 																{error.message}
-															</p>
+															</div>
 														)}
 													</div>
 												</>
 											) : (
 												<>
-													<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
-														This wallet ({address}) is ineligible to claim any Xai Sentry
-														Keys.
-													</p>
-													<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
-														You can connect a different wallet to determine if it is
-														eligible.
-													</p>
+													<WarningNotification title="Wallet is ineligible" showIcon text={`This wallet (${address}) is not eligible to claim any Xai Sentry Keys. You can connect a different wallet to determine if it is
+														eligible.`} />
 												</>
 											)}
 										</>
 									) : (
-										<div className="m-8">
-											<w3m-button/>
+										<div className="m-8 w-full">
+											<ConnectButton onOpen={open} address={address} isFullWidth/>
 										</div>
 									)}
 								</>
