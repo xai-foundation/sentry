@@ -11,12 +11,12 @@ provider "google" {
   zone    = var.gcp_zone
 }
 
-locals {
-  startup_script = file("${path.module}/scripts/startup_script.tpl")
-}
-
 resource "google_compute_address" "default" {
   name = "node-static-ip"
+}
+
+resource "google_compute_address" "static_ip" {
+  name = "my-static-ip"
 }
 
 resource "google_service_account" "bucket_updater" {
@@ -29,15 +29,43 @@ resource "google_service_account_key" "bucket_updater_key" {
   service_account_id = google_service_account.bucket_updater.name
 }
 
+locals {
+  startup_script = templatefile("${path.module}/scripts/startup_script.tpl", {
+    gcp_project_id          = var.gcp_project_id,
+    bucket_name             = var.bucket_name,
+    service_account_email   = google_service_account.bucket_updater.email,
+    service_account_api_key = google_service_account_key.bucket_updater_key.private_key,
+    eth_rpc_url             = var.eth_rpc_url
+  })
+}
+
+
 resource "google_storage_bucket_iam_member" "bucket_updater" {
   bucket = google_storage_bucket.public_bucket.name
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${google_service_account.bucket_updater.email}"
 }
 
+resource "google_compute_firewall" "outbound_access" {
+  name    = "allow-outbound"
+  network = "default"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80", "443"]
+  }
+
+  direction = "EGRESS"
+  destination_ranges = ["0.0.0.0/0"]
+}
+
+// n1-standard-4 =  4 vCPUs and 15 GB RAM
+// size=2000 =  2000 GB
 resource "google_compute_instance" "default" {
-  name         = "arbitrum-full-node"
-  machine_type = "n1-standard-4"
+  name                = "arbitrum-full-node"
+  machine_type        = "n1-standard-4"
+  deletion_protection = true
+
   boot_disk {
     initialize_params {
       image = "ubuntu-os-cloud/ubuntu-2204-lts"
@@ -47,11 +75,14 @@ resource "google_compute_instance" "default" {
   }
   network_interface {
     network = "default"
+    access_config {
+      nat_ip = google_compute_address.default.address
+    }
   }
 
   metadata_startup_script = local.startup_script
 
-  metadata = {  
+  metadata = {
     service_account_key = google_service_account_key.bucket_updater_key.private_key
   }
 
@@ -67,16 +98,16 @@ resource "google_storage_bucket" "public_bucket" {
 
 # allow public access to the sitemap bucket
 data "google_iam_policy" "viewer" {
-	binding {
-		role    = "roles/storage.objectViewer"
-		members = [
-			"allUsers",
-		]
-	}
+  binding {
+    role = "roles/storage.objectViewer"
+    members = [
+      "allUsers",
+    ]
+  }
 }
 
 locals {
-  
+
   markdown = <<-EOF
 # OUTPUT
 Service Account Key: `${google_service_account_key.bucket_updater_key.private_key}`

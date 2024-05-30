@@ -1,10 +1,10 @@
 "use client";
 
-import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
-import { useState } from "react";
+import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { useCallback, useEffect, useRef, useState } from "react";
 // import { useRouter } from "next/navigation";
 
-import { ACTIVE_NETWORK_IDS, RedemptionFactor, getNetwork, getRedemptionPeriod, getWeb3Instance, mapWeb3Error } from "@/services/web3.service";
+import { ACTIVE_NETWORK_IDS, RedemptionFactor, getNetwork, getRedemptionPeriod, getWeb3Instance, getWeiAmountFromTextInput, mapWeb3Error } from "@/services/web3.service";
 import { CURRENCY } from "./Constants";
 
 import { ButtonBack, PrimaryButton } from "../buttons/ButtonsComponent";
@@ -16,23 +16,51 @@ import { loadingNotification, updateNotification } from "../notifications/Notifi
 import { Id } from "react-toastify";
 
 
-export default function ReviewRedemptionComponent({ onReturn, receiveValue, amount, factor, fromCurrency }: {
+export default function ReviewRedemptionComponent({ onReturn, onRefresh, receiveValue, amount, amountWei, factor, fromCurrency }: {
 	onReturn: () => void,
+	onRefresh: () => void,
 	receiveValue: string,
 	amount: string,
+	amountWei: string,
 	factor: RedemptionFactor,
 	fromCurrency: CURRENCY
 }) {
 
-	// const router = useRouter();
 	const { address, chainId } = useAccount();
 
 	const [insufficientGas, setInsufficientGas] = useState(false);
-	const [transactionLoading, setTransactionLoading] = useState(false);
 
 	const network = getNetwork(chainId);
 	const redemptionPeriodInfo = getRedemptionPeriod(network, factor);
 	const { switchChain } = useSwitchChain();
+	const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
+
+	// Substitute Timeouts with useWaitForTransaction
+	const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
+		hash: receipt,
+	});
+
+	const toastId = useRef<Id>();
+
+	const updateOnSuccess = useCallback(() => {
+		updateNotification("Successful redemption", toastId.current as Id, false, receipt, chainId);
+		onRefresh();
+	}, [receipt, chainId, onRefresh])
+
+	const updateOnError = useCallback(() => {
+		const error = mapWeb3Error(status);
+		updateNotification(error, toastId.current as Id, true);
+	}, [status])
+
+	useEffect(() => {
+
+		if (isSuccess) {
+			updateOnSuccess()
+		}
+		if (isError) {
+			updateOnError();
+		}
+	}, [isSuccess, isError, updateOnSuccess, updateOnError]);
 
 	const onConfirm = async () => {
 		if (!chainId) {
@@ -42,38 +70,25 @@ export default function ReviewRedemptionComponent({ onReturn, receiveValue, amou
 			switchChain({ chainId: ACTIVE_NETWORK_IDS[0] });
 			return;
 		}
-		let receipt;
-		setTransactionLoading(true);
-		const loading = loadingNotification("Transaction is pending...");
+		toastId.current = loadingNotification("Transaction is pending...");
 
 		try {
 			// TODO: check eth balance enough for gas
 			if (fromCurrency === CURRENCY.XAI) {
-				receipt = await convertXaiToEsXai(Number(amount));
+				setReceipt(await convertXaiToEsXai(amountWei));
 			} else {
-				receipt = await startEsXaiRedemption(Number(amount), redemptionPeriodInfo.seconds);
+				setReceipt(await startEsXaiRedemption(amountWei, redemptionPeriodInfo.seconds));
 			}
-			onSuccess(receipt, loading);
 		} catch (ex) {
 			const error = mapWeb3Error(ex);
-			updateNotification(error, loading, true);
-			setTransactionLoading(false);
+			updateNotification(error, toastId.current as Id, true);
 		}
-	}
-
-	const onSuccess = async (receipt: string, loadingToast: Id) => {
-		updateNotification("Successful redemption", loadingToast, false, receipt, chainId);
-		setTimeout(() => {
-			setTransactionLoading(false);
-			onReturn()
-		}, 3000);
 	}
 
 	const { writeContractAsync } = useWriteContract();
 
 	// EsXai -> Xai
-	const startEsXaiRedemption = async (amount: number, redemptionPeriodSeconds: number) => {
-		const weiAmount = getWeb3Instance(network).web3.utils.toWei(amount, 'ether');
+	const startEsXaiRedemption = async (weiAmount: string, redemptionPeriodSeconds: number) => {
 		return writeContractAsync({
 			address: getWeb3Instance(network).esXaiAddress as `0x${string}`,
 			abi: esXaiAbi,
@@ -83,8 +98,7 @@ export default function ReviewRedemptionComponent({ onReturn, receiveValue, amou
 	}
 
 	// Xai -> EsXai
-	const convertXaiToEsXai = async (amount: number) => {
-		const weiAmount = getWeb3Instance(network).web3.utils.toWei(amount, 'ether');
+	const convertXaiToEsXai = async (weiAmount: string) => {
 		return writeContractAsync({
 			address: getWeb3Instance(network).xaiAddress as `0x${string}`,
 			abi: XaiAbi,
@@ -96,14 +110,14 @@ export default function ReviewRedemptionComponent({ onReturn, receiveValue, amou
 	//TODO assign input values
 	return <>
 		<main className="flex w-full flex-col items-center">
-			<div className="group flex flex-col items-start w-xl p-3">
+			<div className="group flex flex-col items-start w-xl p-3 w-full max-w-[575px]">
 
 				<ButtonBack onClick={onReturn} btnText="Back" />
 
-				<MainTitle title="Review Redemption" />
+				<MainTitle title="Review redemption" />
 
-				<HeroStat label="You redeem" value={`${amount} ${fromCurrency === CURRENCY.XAI ? "Xai" : "esXai"}`} />
-				<HeroStat label="You receive" value={`${receiveValue} ${fromCurrency === CURRENCY.XAI ? "esXai" : "Xai"}`} />
+				<HeroStat label="You redeem" value={`${amount} ${fromCurrency === CURRENCY.XAI ? "XAI" : "esXAI"}`} />
+				<HeroStat label="You receive" value={`${receiveValue} ${fromCurrency === CURRENCY.XAI ? "esXAI" : "XAI"}`} />
 
 				<Divider />
 
@@ -113,13 +127,13 @@ export default function ReviewRedemptionComponent({ onReturn, receiveValue, amou
 						<Stat label="Redemption rate" value={`${factor}%`} />
 						<Stat label="Redemption period" value={redemptionPeriodInfo.label} />
 						<Stat label="Burn rate" value={`${100 - factor}%`} />
-						<Stat label="Burn amount" value={`${Number(amount) - Number(receiveValue)} EsXai`} />
+						<Stat label="Burn amount" value={`${Number(amount) - Number(receiveValue)} esXAI`} />
 					</>
 				}
 
 				{/* This would need to make an gasestimate call to the blockchain, maybe add this in V2 <Stat label="Gas" value="0.001 ETH" /> */}
 
-				{!transactionLoading ?
+				{!isLoading ?
 					<PrimaryButton onClick={onConfirm} btnText="Confirm" className="w-full mt-6" />
 					:
 					<PrimaryButton onClick={onConfirm} btnText="Waiting for confirmation ..." isDisabled className="w-full mt-6 bg-steelGray hover:bg-steelGray" />
