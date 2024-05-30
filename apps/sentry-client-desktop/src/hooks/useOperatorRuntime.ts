@@ -2,7 +2,7 @@ import {Challenge, NodeLicenseInformation, NodeLicenseStatusMap, operatorRuntime
 import {useOperator} from "@/features/operator";
 import {atom, useAtom} from "jotai";
 import {useEffect, useRef, useState} from "react";
-import {useStorage} from "@/features/storage";
+import {IData, useStorage} from "@/features/storage";
 import log from "electron-log";
 import { ethers } from "ethers";
 
@@ -70,7 +70,7 @@ export function useOperatorRuntime() {
 		}
 	}
 
-	async function stopRuntime() {
+	async function stopRuntime(passedData?: IData) {
 		if (sentryRunning && stop !== undefined) {
 			// prevent race conditions from pressing "stop" too fast
 			const _stop = stop;
@@ -79,7 +79,11 @@ export function useOperatorRuntime() {
 			await _stop();
 			setNodeLicenseStatusMap(new Map<bigint, NodeLicenseInformation>());
 			setSentryRunning(false);
-			await setData({...data, sentryRunning: false});
+			if (passedData) {
+				await setData(passedData);
+			} else {
+				await setData({...data, sentryRunning: false});
+			}
 		}
 	}
 

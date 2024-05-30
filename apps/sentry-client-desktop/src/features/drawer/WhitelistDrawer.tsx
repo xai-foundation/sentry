@@ -11,7 +11,7 @@ import {AiOutlineInfoCircle} from "react-icons/ai";
 export function WhitelistDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {owners, pools} = useAtomValue(chainStateAtom);
-	const {data, setData} = useStorage();
+	const {data} = useStorage();
 	const [selected, setSelected] = useState<string[]>([]);
 	const {sentryRunning, stopRuntime} = useOperatorRuntime();
 	const {publicKey: operatorAddress} = useOperator();
@@ -82,14 +82,14 @@ export function WhitelistDrawer() {
 	);
 
 	async function handleSubmit() {
-		await setData({
-			...data,
-			whitelistedWallets: selected,
-		});
-
 		setDrawerState(null);
+
 		if (stopRuntime) {
-			void stopRuntime();
+			void stopRuntime({
+				...data,
+				sentryRunning: false,
+				whitelistedWallets: selected,
+			});
 		}
 	}
 
