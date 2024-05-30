@@ -1,51 +1,73 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-import { PrimaryButton } from "@/app/components/buttons/ButtonsComponent";
-import { ExternalLinkComponent } from "@/app/components/links/LinkComponent";
-import additionalInfoBackground from "@/assets/images/sai_pane.png";
+import additionalInfoBackground from "@/assets/images/dashboard-promo.png";
+import { PrimaryButton } from "@/app/components/ui";
+import { ExternalLinkComponent } from "@/app/components/ui/links/ExternalLink";
+import { CloseIcon } from "@/app/components/icons/IconsComponent";
 
 interface DashboardPromoProps {
   chainId: number | undefined;
 }
 const DashboardPromo = ({ chainId }: DashboardPromoProps) => {
+
+  const [isShowBanner, setIsShowBanner] = useState<any>();
+
+  useEffect(() => {
+    let value;
+    value = localStorage.getItem("dashboardPromo") || "1";
+    setIsShowBanner(+value);
+  }, []);
+
+  const closeBanner = (e: any) => {
+    e.preventDefault();
+    setIsShowBanner(0);
+    localStorage.setItem("dashboardPromo", "0");
+  };
+
   const router = useRouter();
   return (
-    <section
-      className="relative flex w-full flex-col items-center overflow-hidden bg-crystalWhite py-0 md:py-[50px] xl:px-0 mt-5">
-      <div className="relative z-10 order-2 mt-8 md:mt-0 w-full max-w-[928px] px-5 xl:px-0">
-        <span className="block text-xl font-bold text-lightBlackDarkWhite">
+    <>
+      {!!isShowBanner && <section
+        className="relative flex w-full flex-col bg-white py-0 md:py-[50px] mt-10 md:px-[35px] px-[17px]">
+        <div className="relative z-10 order-2 mt-[109px] md:mt-0 w-full">
+        <span className="block md:text-3xl text-2xl font-bold text-white w-full md:max-w-full max-w-[279px]">
           Stake esXAI or Sentry Keys to earn rewards
         </span>
-        <span className="block text-lightBlackDarkWhite">
+          <span className="block text-white font-semibold text-lg mt-[11px] w-full md:max-w-full max-w-[323px]">
           Bought XAI? You can redeem it for esXAI and stake it for even more
           rewards
         </span>
-        <div className="mb-7 mt-[26px] md:mb-0">
-          <PrimaryButton
-            onClick={() => router.push(`/staking?chainId=${chainId}`)}
-            btnText={"Stake now"}
-            className="mr-4"
-          />
-          <ExternalLinkComponent
-            link={"/redeem"}
-            content={"Redeem"}
-            customClass="!text-base"
-          />
+          <div className="flex items-center mb-7 md:mt-[26px] mt-[11px] md:mb-0 md:gap-[25px] gap-[10px]">
+            <PrimaryButton
+              onClick={() => router.push(`/staking?chainId=${chainId}`)}
+              colorStyle="secondary"
+              btnText={"Stake now"}
+              className="mr-4 !global-double-clip-path-15px uppercase !text-xl"
+            />
+            <ExternalLinkComponent
+              link={"/redeem"}
+              content={"Redeem"}
+              customClass="!text-xl text-white !font-bold uppercase no-underline"
+            />
+          </div>
         </div>
-      </div>
-      <div className="relative top-0 order-1 h-[165px] w-full overflow-hidden md:absolute md:h-full">
+        <span className="absolute z-30 right-[20px] top-[20px] cursor-pointer" onClick={closeBanner}>
+        <CloseIcon width={12} height={12} fill="#ffffff" />
+      </span>
+
         <Image
-          className={`absolute right-1/2 top-[-75px] z-0
-            h-[373px] w-auto translate-x-1/2
-            md:right-[200px] md:top-[-210px] md:h-[710px] lg:right-[250px] lg:top-[-225px] 2xl:right-[450px]`}
+          className="absolute !left-0"
+          layout="fill"
+          objectFit="cover"
           src={additionalInfoBackground}
           alt="additionalInfoBackground"
         />
-      </div>
-    </section>
-  );
+      </section>
+      }</>
+  )
+    ;
 };
 
 export default DashboardPromo;

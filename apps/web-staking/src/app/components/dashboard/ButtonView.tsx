@@ -14,7 +14,7 @@ const ButtonView = ({ onOpen, address }: ButtonViewProps) => {
   return (
     <div className="flex lg:flex-row sm:flex-col justify-end lg:px-6 lg:py-3 sm:mb-10 lg:mb-0">
       {!address ? (
-        <ConnectButton onOpen={onOpen} address={address} variant={"overview"} />
+        <ConnectButton onOpen={onOpen} address={address}/>
       ) : (
         <div className="flex lg:flex-row sm:flex-col-reverse items-center lg:h-[50px] sm:w-full">
           <ExternalLinkComponent link={binanceLink} content={"Buy XAI"} />

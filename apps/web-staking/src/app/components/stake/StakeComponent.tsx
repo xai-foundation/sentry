@@ -1,18 +1,17 @@
 "use client";
 
-import { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ButtonBack, PrimaryButton } from "../buttons/ButtonsComponent";
-import { StakingInput } from "../input/InputComponent";
 import MainTitle from "../titles/MainTitle";
-import AvailableBalanceComponent from "./AvailableBalanceComponent";
 import ReviewStakeComponent from "./ReviewStakeComponent";
-import { useGetBalanceHooks, useGetEsXaiAllowance, useGetUserPoolInfo } from "@/app/hooks/hooks";
+import { useGetEsXaiAllowance, useGetMaxStakePerLicense, useGetUserPoolInfo } from "@/app/hooks/hooks";
 import { useAccount } from "wagmi";
 import { Avatar } from "@nextui-org/react";
-import { BorderWrapperComponent } from "../borderWrapper/BorderWrapperComponent";
-import CurrencyStakeComponent from "./CurrencyStakeComponent";
 import { getWeiAmountFromTextInput } from "@/services/web3.service";
+import { ButtonBack, PrimaryButton } from "@/app/components/ui/buttons";
+import { StakingInput, Tooltip } from "@/app/components/ui";
+import { CURRENCY } from "@/app/components/redeem/Constants";
+import { HelpIcon } from "@/app/components/icons/IconsComponent";
 
 interface StakeProps {
   poolAddress: string;
@@ -27,6 +26,7 @@ const StakeComponent = ({ poolAddress, isBannedPool }: StakeProps) => {
   const [displayedInput, setDisplayedInput] = useState("");
   const [inputValueWei, setInputValueWei] = useState("");
   const { allowance } = useGetEsXaiAllowance();
+  const { maxStakePerKey } = useGetMaxStakePerLicense();
   const unstake = searchParams.get("unstake") === "true";
 
   const { userPool } = useGetUserPoolInfo(poolAddress);
@@ -103,7 +103,7 @@ const StakeComponent = ({ poolAddress, isBannedPool }: StakeProps) => {
   }
 
   return (
-    <div className="flex w-full flex-col items-center sm:p-2 lg:p-0">
+    <div className="flex w-full flex-col items-center lg:p-0 xl:ml-[-122px] lg:ml-[-61px]">
 
       {reviewVisible ? (
         <ReviewStakeComponent
@@ -118,42 +118,63 @@ const StakeComponent = ({ poolAddress, isBannedPool }: StakeProps) => {
         />
       ) : (
         <div className="flex flex-col items-start">
-          <ButtonBack onClick={() => router.back()} btnText="Back" />
-          <MainTitle title={unstake ? "Unstake esXAI" : "Stake esXAI"} />
-
-          {userPool && <div className="flex items-center mb-4">
-            <span className="mr-2">{unstake ? 'Unstake from:' : 'Stake to:'}</span>
-            <Avatar src={userPool.meta.logo} className="w-[32px] h-[32px] mr-2" />
-            <span className="text-graphiteGray">{userPool.meta.name}</span>
-          </div>}
-
-          <BorderWrapperComponent>
-            <StakingInput
-              value={displayedInput}
-              label={`${unstake ? "You unstake" : "You stake"}`}
-              placeholder="0"
-              onChange={onChangeInput}
-              isInvalid={isInvalidInput()}
-              unstake={unstake}
-              endContent={<CurrencyStakeComponent currency="esXAI" />}
-            />
-            <AvailableBalanceComponent
-              availableXaiBalance={
-                unstake
-                  ? avoidScientificNotation(getMaxEsXaiForUnstake(), true)
-                  : avoidScientificNotation(getMaxEsXaiForStake(), true)
-              }
-              onMaxBtnClick={onButtonMax}
-            />
-          </BorderWrapperComponent>
-          <PrimaryButton
-            onClick={() => {
-              setReviewVisible(true);
-            }}
-            btnText="Continue"
-            className="w-full disabled:opacity-50"
-            isDisabled={confirmButtonDisabled()}
+          <ButtonBack
+            onClick={() => router.back()}
+            btnText={`Back to pool`}
+            extraClasses="md:ml-0 ml-[15px]"
           />
+          <MainTitle title={unstake ? "UNSTAKE esXAI" : "STAKE esXAI"}
+                     classNames="md:ml-0 ml-[17px] mt-[18px] normal-case	" />
+
+          <div className="shadow-default">
+            <div className="bg-nulnOil/75 py-[40px] md:px-[25px] px-[17px] ">
+              {userPool && <div className="flex items-center mb-4">
+              <span
+                className="mr-5 text-lg font-medium text-americanSilver">{unstake ? "Unstaking from:" : "Staking to:"}</span>
+                <Avatar src={userPool.meta.logo} className="w-[32px] h-[32px] mr-2" />
+                <span className="text-white text-lg font-bold">{userPool.meta.name}</span>
+              </div>}
+
+
+              <div className="relative">
+                <StakingInput
+                  value={displayedInput}
+                  label={`${unstake ? "You unstake" : "You stake"}`}
+                  onChange={onChangeInput}
+                  extraClasses={{ calloutWrapper: "h-[160px]", input: "placeholder:!text-foggyLondon" }}
+                  error={isInvalidInput() ? { message: "Not enough XAI" } : {}}
+                  currencyLabel={CURRENCY.ES_XAI}
+                  withIcon
+                  withTooltip
+                  handleMaxValue={onButtonMax}
+                  availableBalance={unstake
+                    ? avoidScientificNotation(getMaxEsXaiForUnstake(), true).toString().match(/^-?\d+(?:\.\d{0,4})?/)
+                    : avoidScientificNotation(getMaxEsXaiForStake(), true).toString().match(/^-?\d+(?:\.\d{0,4})?/)}
+                />
+                <span
+                  className="mt-1 absolute md:right-[58px] md:bottom-[27px] right-[62px] bottom-[35px]">
+                <Tooltip
+                  extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-38px] xl:left-[-38px] left-[-38px]" }}
+                  content={"Your staking capacity is dependent on how many keys you own. Each key will increase your staking capacity by ##MAXSTAKE## esXAI".replace("##MAXSTAKE##", maxStakePerKey.toString())}>
+                <HelpIcon
+                  height={14}
+                  width={14}
+                />
+              </Tooltip>
+              </span>
+
+              </div>
+            </div>
+            <PrimaryButton
+              onClick={() => {
+                setReviewVisible(true);
+              }}
+              btnText="Continue"
+              className="w-full disabled:opacity-50 uppercase !font-bold !text-xl "
+              wrapperClassName="w-full"
+              isDisabled={confirmButtonDisabled()}
+            />
+          </div>
         </div>
       )}
     </div>

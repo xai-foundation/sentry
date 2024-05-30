@@ -1,51 +1,67 @@
 import { PoolInfo } from "@/types/Pool";
-import { SecondaryButton } from "../buttons/ButtonsComponent";
 import { useRouter } from "next/navigation";
 import { InfoMark, Key, PieChart } from "../icons/IconsComponent";
 import moment from "moment";
+import { BaseCallout } from "@/app/components/ui";
+import { TextButton } from "@/app/components/ui/buttons";
 
 
-function OnwerUnstakeInfo({ pool, ownerLatestUnstakeRequestCompletionTime }: { pool: PoolInfo, ownerLatestUnstakeRequestCompletionTime: number }) {
-  if (ownerLatestUnstakeRequestCompletionTime > Date.now()) {
-    return <div className="w-full h-fit">
-      <div className="bg-[#ED5F00]/10 p-3 my-5 rounded-md flex items-center justify-start gap-3">
-        <span className="mx-2">
-          <Key fill="#C36522" />
+function OwnerUnstakeInfo({ pool, ownerLatestUnstakeRequestCompletionTime }: { pool: PoolInfo, ownerLatestUnstakeRequestCompletionTime: number }) {
+  if (ownerLatestUnstakeRequestCompletionTime >= Date.now()) {
+    return <div className="ml-2 mr-2 lg:mr-[23px]">
+      <BaseCallout extraClasses={{ calloutWrapper: "w-full min-h-[84px] my-2", calloutFront: "!py-0 min-h-[84px]" }}
+                   isWarning>
+        <div className="w-full flex justify-start gap-3">
+        <span className="mx-2 mt-2">
+          <Key fill="#FFC53D" width={25} height={24} />
         </span>
-        <div className="text-[#ED5F00]">
-          <div className="text-small font-bold">The pool owner has initiated an unstake request for their genesis key.</div>
-          <div
-            className="text-sm">{moment.duration(ownerLatestUnstakeRequestCompletionTime - Date.now()).humanize()} remaining
-            until genesis key is claimable.
+          <div className="text-[#FFC53D] text-lg">
+            <div className="font-bold">The pool owner has initiated an unstake request for their genesis key.</div>
+            <div
+              className="">{moment.duration(ownerLatestUnstakeRequestCompletionTime - Date.now()).humanize()} remaining
+              until genesis key is claimable.
+            </div>
           </div>
         </div>
-      </div>
+      </BaseCallout>
     </div>
   }
 
   if (pool.ownerStakedKeys == 0) {
-    return <div className="w-full h-fit">
-      <div className="bg-[#ED5F00]/10 p-3 my-5 rounded-md flex items-center justify-start gap-3">
-        <span className="mx-2">
-          <Key fill="#C36522" />
+    return <div className="ml-2 mr-2 lg:mr-[23px]">
+    <BaseCallout
+      extraClasses={{ calloutWrapper: "w-full min-h-[84px] my-2", calloutFront: "!py-0" }}
+      isWarning
+    >
+      <div className="my-5 rounded-md flex items-center justify-start gap-3 w-full text-[#FFC53D]">
+        <Key fill="#FFC53D" width={25} height={24} />
+        <div>
+        <span className="block text-lg font-bold">The genesis key has been claimed by the pool owner.
         </span>
-        <div className="text-[#ED5F00]">
-          <div className="text-small font-bold">This pool owner has unstaked all of their keys from the pool. They may no longer be operating the keys in this pool and the pool may no longer be generating rewards.</div>
+          <span className="block text-lg font-medium">The pool owner no longer has any keys staked in the pool.
+        </span>
         </div>
       </div>
-    </div>
+    </BaseCallout>
+  </div>;
   }
 
   if (pool.ownerStakedKeys == pool.ownerRequestedUnstakeKeyAmount) {
-    return <div className="w-full h-fit">
-      <div className="bg-[#ED5F00]/10 p-3 my-5 rounded-md flex items-center justify-start gap-3">
-        <span className="mx-2">
-          <Key fill="#C36522" />
+    return <div className="ml-2 mr-2 lg:mr-[23px]">
+      <BaseCallout
+        extraClasses={{ calloutWrapper: "w-full min-h-[84px] my-2", calloutFront: "!py-0, min-h-[84px]" }}
+        isWarning>
+        <div className="w-full flex items-center justify-start gap-3">
+        <span>
+          <Key fill="#FFC53D" width={25} height={24} />
         </span>
-        <div className="text-[#ED5F00]">
-          <div className="text-small font-bold">This pool owner can unstake all of their keys from the pool at any time. They may no longer be operating the keys in this pool and the pool may no longer be generating rewards.</div>
+          <div className="text-bananaBoat">
+            <div className="text-lg font-bold">This pool owner can unstake all of their keys from the pool at any time. They may no
+              longer be operating the keys in this pool and the pool may no longer be generating rewards.
+            </div>
+          </div>
         </div>
-      </div>
+      </BaseCallout>
     </div>
   }
 
@@ -62,43 +78,58 @@ const HeadlineComponent = (
   return (
     <div className="w-full">
       {poolInfo.owner === walletAddress && (
-        <div className="flex sm:flex-col lg:flex-row w-full lg:items-center sm:items-start justify-between bg-crystalWhite py-2 lg:pl-6 sm:pl-2 pr-4 rounded-lg">
-          <span className="flex justify-between items-center text-graphiteGray sm:mb-2 lg:mb-0">
+        <div
+          className="flex sm:flex-col lg:flex-row w-full lg:items-center sm:items-start justify-between bg-nulnOil/75 md:py-[5px] pb-0 pt-[18px] shadow-default mb-4">
+          <span
+            className="flex w-full max-w-fit justify-between items-center text-graphiteGray sm:mb-[14px] lg:mb-0 mx-[17px] md:mx-[24px]">
             <InfoMark width={20} height={20} />
-            <span className="ml-2">You are the owner of this pool</span>
+            <span
+              className="ml-2 text-elementalGrey text-lg font-medium ">You are the owner of this pool.</span>
           </span>
-          <div className="w-fit flex sm:flex-row-reverse lg:flex-row items-center gap-2">
-            <SecondaryButton
-              btnText="Edit reward breakdown"
+          <div className="w-full flex lg:flex-row flex-col justify-end md:gap-2 gap-0">
+            <TextButton
               onClick={() => router.push(`/pool/${poolInfo.address}/editRewards`)}
-              className="border-1 bg-white lg:mr-4 sm:mr-1"
+              buttonText={"Edit reward breakdown"}
+              className="text-lg font-bold uppercase border-t-1 lg:border-t-0 border-chromaphobicBlack lg:max-w-fit max-w-full w-full text-center"
+              textClassName="mr-0"
               isDisabled={poolInfo.owner !== walletAddress}
             />
-            <SecondaryButton
-              btnText="Edit pool details"
+            <TextButton
+              buttonText="Edit pools details"
               onClick={() => router.push(`/pool/${poolInfo.address}/editDetails`)}
-              className="border-1 bg-white"
+              className="text-lg font-bold uppercase border-t-1 lg:border-t-0 border-chromaphobicBlack lg:max-w-fit max-w-full w-full text-center lg:pr-4"
+              textClassName="mr-0"
               isDisabled={poolInfo.owner !== walletAddress}
             />
           </div>
         </div>
       )}
 
-      <OnwerUnstakeInfo pool={poolInfo} ownerLatestUnstakeRequestCompletionTime={ownerLatestUnstakeRequestCompletionTime} />
+      <OwnerUnstakeInfo pool={poolInfo} ownerLatestUnstakeRequestCompletionTime={ownerLatestUnstakeRequestCompletionTime} />
 
       <div className="w-full h-fit">
         {(poolInfo.updateSharesTimestamp >= Date.now()) &&
-          <div className="bg-[#ED5F00]/10 p-3 my-5 rounded-md flex items-center justify-start gap-3">
-            <span className="mx-2">
-              <PieChart fill="#C36522" />
-            </span>
-            <div className="text-[#ED5F00]">
-              <div className="text-small font-bold">The pool owner has changed the rewards to allocate {poolInfo.pendingShares[0]}%/{poolInfo.pendingShares[1]}%/{poolInfo.pendingShares[2]}% to Owner/Keys/esXAI</div>
-              <div
-                className="text-sm">{moment.duration(poolInfo.updateSharesTimestamp - Date.now()).humanize()} remaining
-                until changes take effect.
+          <div className="ml-2 mr-2 lg:mr-[23px]">
+            <BaseCallout
+              extraClasses={{ calloutWrapper: "w-full min-h-[84px]", calloutFront: "!py-0 min-h-[84px]" }}
+              isWarning
+            >
+              <div className="w-full gap-3 flex">
+                <div className="mt-2">
+                  <PieChart fill="#FFC53D" width={24} height={24} />
+                </div>
+                <div className="text-[#FFC53D] text-lg ml-3">
+                  <div className="font-bold">The pool owner has changed the rewards to
+                    allocate {poolInfo.pendingShares[0]}%/{poolInfo.pendingShares[1]}%/{poolInfo.pendingShares[2]}% to
+                    Owner/Keys/esXAI
+                  </div>
+                  <div
+                    className="">{moment.duration(poolInfo.updateSharesTimestamp - Date.now()).humanize()} remaining
+                    until changes take effect.
+                  </div>
+                </div>
               </div>
-            </div>
+            </BaseCallout>
           </div>
         }
         {isBannedPool &&
@@ -107,7 +138,9 @@ const HeadlineComponent = (
               <InfoMark fill="#C36522" width={20} height={20} />
             </span>
             <div className="text-[#ED5F00]">
-              <div className="text-small font-bold">This pool has been restricted due to a violation of the terms of agreement. Users can unstake from this pool but cannot add more stake.</div>
+              <div className="text-small font-bold">This pool has been restricted due to a violation of the terms of
+                agreement. Users can unstake from this pool but cannot add more stake.
+              </div>
             </div>
           </div>
         }

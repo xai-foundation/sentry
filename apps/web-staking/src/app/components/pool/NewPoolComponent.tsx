@@ -1,8 +1,6 @@
-import PoolButtonComponent from "./PoolButtonComponent";
 import PoolTextComponent from "./PoolTextComponent";
-import { BorderWrapperComponent } from "../borderWrapper/BorderWrapperComponent";
-import { ExternalLinkComponent } from "../links/LinkComponent";
-import MainTitle from "../titles/MainTitle";
+import { ExternalLinkComponent } from "@/app/components/ui/links/ExternalLink";
+import { ConnectButton, PrimaryButton } from "@/app/components/ui/buttons";
 
 interface NewPoolProps {
   onOpen: () => void;
@@ -12,39 +10,37 @@ interface NewPoolProps {
 
 const NewPoolComponent = ({ onOpen, address, isApproved }: NewPoolProps) => {
   return (
-    <BorderWrapperComponent customStyle="!border-0 !shadow-none flex flex-col items-center py-[40px] lg:py-[150px] justify-center w-full sm:mb-[20px] lg:mb-[50px]">
-      <div className="flex flex-col items-center">
-        <MainTitle
-          title="Create a new pool"
-          classNames="text-xl font-bold !mb-0"
-        />
+    <div
+      className="h-[438px] w-full flex flex-col items-center justify-center gap-[15px] shadow-default bg-nulnOil/75">
+      <h3
+        className="font-bold !mb-0 md:text-3xl text-2xl text-white"
+      > Create a new pool
+      </h3>
         <PoolTextComponent address={address} isApproved={isApproved} />
-        <PoolButtonComponent
-          onOpen={onOpen}
-          address={address}
-          isApproved={isApproved}
+      {!address &&
+        <ConnectButton onOpen={onOpen} address={address} size="md" extraClasses="!global-double-clip-path-15px" />
+      }
+      {address && !isApproved && (
+        <PrimaryButton
+          onClick={() => window.open("https://xai.games/sentrynodes", "_blank", "noopener noreferrer")}
+          btnText={"Download Operator"}
+          className="uppercase global-double-clip-path-15px my-2 w-[242px]"
         />
+      )}
         {(!isApproved || !address) && (
           <>
-            <span className="mb-2">
+            <span className="mb-2 text-americanSilver text-lg font-medium">
               Don’t own a key?{" "}
               <ExternalLinkComponent
                 link="https://sentry.xai.games/"
                 content="Purchase a key"
+                customClass="no-underline !text-hornetSting !text-lg !font-bold hover:!text-white"
               />
             </span>
           </>
         )}
-        {address && !isApproved && (
-          <span className="whitespace-nowrap">
-            Need to get KYC’d? <ExternalLinkComponent
-              link="https://xai.games/sentrynodes/"
-              content="Download operator"
-            />
-          </span>
-        )}
-      </div>
-    </BorderWrapperComponent>
+
+    </div>
   );
 };
 

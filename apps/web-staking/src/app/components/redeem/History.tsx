@@ -11,11 +11,11 @@ import { OrderedRedemptions, RedemptionRequest, mapWeb3Error } from "@/services/
 import MainTitle from "../titles/MainTitle";
 import { loadingNotification, updateNotification } from "../notifications/NotificationsComponent";
 
-import { PrimaryButton, SecondaryButton } from "../buttons/ButtonsComponent";
 import { useCallback } from "react";
-import { ModalComponent } from "../modal/ModalComponent";
 import { MODAL_BODY_TEXT } from "./Constants";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
+import { BaseModal, PrimaryButton } from "@/app/components/ui";
+import { TextButton } from "@/app/components/ui/buttons";
 
 interface HistoryCardProps {
 	receivedAmount: number,
@@ -27,6 +27,12 @@ interface HistoryCardProps {
 	claimDisabled?: boolean,
 	onClaim: () => Promise<void>,
 	onCancel?: (onClose: () => void) => Promise<void>
+	lastIndex?: boolean;
+	isLoading: boolean;
+	loadingIndex: number;
+	redemptionIndex: number;
+	isCancelled?: boolean;
+	isPending?: boolean;
 }
 
 function formatTimespan(durationMillis: number) {
@@ -37,8 +43,24 @@ function formatTimespan(durationMillis: number) {
 		return durationStr + ` ago`;
 }
 
-function HistoryCard({ receivedAmount, redeemedAmount, receivedCurrency, redeemedCurrency, durationMillis, claimable, claimDisabled, onClaim, onCancel }: HistoryCardProps) {
-	const { isOpen, onOpen, onOpenChange } = useDisclosure();
+function HistoryCard({
+	receivedAmount,
+	redeemedAmount,
+	receivedCurrency,
+	redeemedCurrency,
+	durationMillis,
+	claimable,
+	claimDisabled,
+	onClaim,
+	onCancel,
+	lastIndex,
+	isLoading,
+	loadingIndex,
+	redemptionIndex,
+	isCancelled = false,
+	isPending = false
+}: HistoryCardProps) {
+	const { isOpen, onOpen, onClose } = useDisclosure();
 	moment.relativeTimeThreshold("d", 1000000);
 
 	const onLocalCancelClick = useCallback(() => {
@@ -51,56 +73,77 @@ function HistoryCard({ receivedAmount, redeemedAmount, receivedCurrency, redeeme
 
 	return (
 		<>
-			<ModalComponent
-				isOpen={isOpen}
-				onOpenChange={onOpenChange}
-				onSuccess={onModalSuccessClick}
-				cancelBtnText="No, I changed my mind"
-				confirmBtnText="Yes, cancel"
+
+			{/*<ModalComponent*/}
+			{/*	isOpen={isOpen}*/}
+			{/*	onOpenChange={onOpenChange}*/}
+			{/*	onSuccess={onModalSuccessClick}*/}
+			{/*	cancelBtnText="No, I changed my mind"*/}
+			{/*	confirmBtnText="Yes, cancel"*/}
+			{/*	modalHeader="Cancel redemption"*/}
+			{/*	modalBody={(*/}
+			{/*		<span className="text-sm">*/}
+			{/*			{MODAL_BODY_TEXT}*/}
+			{/*		</span>*/}
+			{/*	)}*/}
+			{/*/>*/}
+
+
+			<BaseModal
+				isOpened={isOpen}
+				modalBody={MODAL_BODY_TEXT}
+				closeModal={onClose}
+				onSubmit={() => onModalSuccessClick(onClose)}
 				modalHeader="Cancel redemption"
-				modalBody={(
-					<span className="text-sm">
-						{MODAL_BODY_TEXT}
-					</span>
-				)}
+				submitText="Yes, cancel"
+				cancelText="No, I changed my mind"
 			/>
-			<div className="flex justify-between mb-[16px]">
+			<div
+				className={`flex justify-between py-4 md:px-8 px-[17px]  ${!lastIndex && "border-b-1 border-chromaphobicBlack"} items-center`}>
 				<span>
 					<span
-						className="flex flex-col font-medium items-start text-xl text-graphiteGray">{receivedAmount} {receivedCurrency}</span>
+						className="flex flex-col font-semibold items-start text-xl text-white">{receivedAmount} {receivedCurrency}</span>
 					<span
-						className="flex flex-col items-start text-[14px] text-graphiteGray">Redeemed from {redeemedAmount} {redeemedCurrency}</span>
+						className="flex flex-col items-start text-lg font-medium text-elementalGrey">{isPending ? "Redeeming" : "Redeemed"} from {redeemedAmount} {redeemedCurrency}</span>
 				</span>
 				{claimable
 					? (
 						<>
-							<div>
-								<PrimaryButton onClick={onClaim} btnText="Claim" isDisabled={claimDisabled === true}
-									className={`max-h-8 ${claimDisabled === true ? "bg-steelGray hover:bg-steelGray" : ""}`} />
-								<SecondaryButton
-									size="sm"
-									btnText="Cancel"
-									isDisabled={claimDisabled === true}
-									hoverClassName="data-[hover=true]:text-red data-[hover=true]:bg-white hover:bg-white"
-									className="bg-white w-[50px] mr-custom-17 ml-2"
-									onClick={onLocalCancelClick}
-								/>
-							</div>
+							<PrimaryButton
+								spinner={isLoading && loadingIndex === redemptionIndex}
+								onClick={onClaim} btnText={`${isLoading && loadingIndex === redemptionIndex ? "Claiming" : "Claim"}`}
+								isDisabled={claimDisabled === true}
+								wrapperClassName="h-full flex items-center"
+								className={`${claimDisabled === true ? "bg-steelGray hover:bg-steelGray" : ""} uppercase w-full ${isLoading && loadingIndex === redemptionIndex ? "max-w-[124px]" : "max-w-[77px]"} !py-[0] !h-[40px]`}
+							/>
+								{/*<SecondaryButton*/}
+								{/*	size="sm"*/}
+								{/*	btnText="Cancel"*/}
+								{/*	isDisabled={claimDisabled === true}*/}
+								{/*	hoverClassName="data-[hover=true]:text-red data-[hover=true]:bg-white hover:bg-white"*/}
+								{/*	className="bg-white w-[50px] mr-custom-17 ml-2"*/}
+								{/*	onClick={onLocalCancelClick}*/}
+								{/*/>*/}
 						</>
 					)
-					: <>
+					:
+					<div className={`flex ${!isPending ? "flex-col gap-0 items-end" : "flex-row md:gap-2 gap-1 items-center"} `}>
 						<span
-							className="flex flex-col flex-1 mt-2 pt-2 items-end text-base text-graphiteGray">{formatTimespan(durationMillis)}</span>
+							className="block text-elementalGrey text-lg font-medium">
+							{!isPending && !isCancelled ? "Claimed" : !isPending && isCancelled && "Cancelled"}
+						</span>
+						<span
+							className="flex flex-col flex-1 items-end text-base text-elementalGrey w-max">{formatTimespan(durationMillis)}</span>
 
-						{onCancel ? <SecondaryButton
-							size="xs"
-							btnText="Cancel"
+						{onCancel ? <TextButton
+							buttonText={isLoading && loadingIndex === redemptionIndex ? "Canceling..." : "Cancel"}
 							isDisabled={claimDisabled === true}
-							hoverClassName="data-[hover=true]:text-red data-[hover=true]:bg-white hover:bg-white"
-							className="bg-white w-[50px] mr-custom-17 ml-2"
+							className={`${isLoading && loadingIndex === redemptionIndex && "!text-darkRoom"} !pr-0 !mr-0 w-max`}
+							textClassName={`!mr-0`}
 							onClick={onLocalCancelClick}
+
 						/> : ""}
-					</>
+					</div>
 				}
 			</div>
 		</>
@@ -110,7 +153,7 @@ function HistoryCard({ receivedAmount, redeemedAmount, receivedCurrency, redeeme
 
 export default function History({ redemptions, reloadRedemptions }: {
 	redemptions: OrderedRedemptions,
-	reloadRedemptions: () => void
+	reloadRedemptions: () => void,
 }) {
 	const { chainId } = useAccount();
 	const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
@@ -123,6 +166,8 @@ export default function History({ redemptions, reloadRedemptions }: {
 	const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
 		hash: receipt,
 	});
+
+	const [loadingIndex, setLoadingIndex] = useState(-1);
 
 	const toastId = useRef<Id>();
 
@@ -148,6 +193,7 @@ export default function History({ redemptions, reloadRedemptions }: {
 
 	const onClaim = async (redemption: RedemptionRequest) => {
 		setIsCancel(false);
+		setLoadingIndex(redemption.index);
 		toastId.current = loadingNotification("Transaction is pending...");
 		try {
 			setReceipt(await executeContractWrite(
@@ -166,6 +212,7 @@ export default function History({ redemptions, reloadRedemptions }: {
 
 	const onCancel = async (redemption: RedemptionRequest, onClose: () => void) => {
 		setIsCancel(true);
+		setLoadingIndex(redemption.index);
 		toastId.current = loadingNotification("Transaction is canceling...");
 		try {
 			setReceipt(await executeContractWrite(
@@ -184,12 +231,15 @@ export default function History({ redemptions, reloadRedemptions }: {
 
 	return (
 		<>
-			<div className="group flex flex-col w-xl p-3 pr-0">
-
+			<div className="group flex flex-col w-xl">
 				{(redemptions.claimable.length > 0 || redemptions.open.length > 0) &&
-					<>
-						<MainTitle isSubHeader classNames="text-2xl" title="Pending" />
-						{redemptions.claimable.map(r => {
+					<div className="bg-nulnOil/85 box-shadow-default mb-[53px]">
+						<MainTitle
+							isSubHeader
+							classNames="!text-3xl capitalize border-b-1 border-chromaphobicBlack py-6 md:px-8 px-[17px] !mb-0"
+							title="Pending"
+						/>
+						{redemptions.claimable.map((r, index) => {
 							return (
 								<HistoryCard
 									key={r.index}
@@ -202,11 +252,16 @@ export default function History({ redemptions, reloadRedemptions }: {
 									receivedCurrency="XAI"
 									redeemedCurrency="esXAI"
 									durationMillis={0}
+									isLoading={isLoading}
+									redemptionIndex={r.index}
+									loadingIndex={loadingIndex}
+									lastIndex={(redemptions.claimable.length - 1 === index) && !redemptions.open.length}
+									isPending={true}
 								/>
 							)
 						})}
 
-						{redemptions.open.map(r => {
+						{redemptions.open.map((r, index) => {
 							return (
 								<HistoryCard
 									key={r.index}
@@ -217,18 +272,26 @@ export default function History({ redemptions, reloadRedemptions }: {
 									redeemedAmount={r.redeemAmount}
 									receivedCurrency="XAI"
 									redeemedCurrency="esXAI"
+									isLoading={isLoading}
+									loadingIndex={loadingIndex}
+									redemptionIndex={r.index}
 									durationMillis={r.startTime + r.duration - Date.now()}
+									lastIndex={redemptions.open.length - 1 === index}
+									isPending={true}
 								/>
 							)
 						})}
-					</>
+					</div>
 				}
 
 				{(redemptions.closed.length > 0) &&
-					<>
-						<MainTitle isSubHeader classNames="text-2xl" title="History" />
+					<div className="bg-nulnOil/75 shadow-default mb-[53px]">
+						<MainTitle
+							isSubHeader
+							classNames="!text-3xl capitalize border-b-1 border-chromaphobicBlack py-6 md:px-8 px-[17px] !mb-0"
+							title="History" />
 
-						{redemptions.closed.map(r => {
+						{redemptions.closed.map((r, index) => {
 							return (
 								<HistoryCard
 									key={r.index}
@@ -238,11 +301,17 @@ export default function History({ redemptions, reloadRedemptions }: {
 									redeemedAmount={r.redeemAmount}
 									receivedCurrency="XAI"
 									redeemedCurrency="esXAI"
+									isLoading={isLoading}
+									loadingIndex={loadingIndex}
+									redemptionIndex={r.index}
 									durationMillis={r.endTime - Date.now()}
+									lastIndex={redemptions.closed.length - 1 === index}
+									isCancelled={r.cancelled}
+									isPending={false}
 								/>
 							)
 						})}
-					</>
+					</div>
 				}
 			</div>
 		</>

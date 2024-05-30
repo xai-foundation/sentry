@@ -1,13 +1,11 @@
 import { useState } from "react";
-import { ButtonBack, PrimaryButton } from "../buttons/ButtonsComponent";
-import { StakingInput } from "../input/InputComponent";
+import { ButtonBack } from "../buttons/ButtonsComponent";
 import { useGetUnstakedNodeLicenseCount } from "@/app/hooks/hooks";
 import MainTitle from "../titles/MainTitle";
-import AvailableBalanceComponent from "../stake/AvailableBalanceComponent";
 import KeyInfoComponent from "./KeyInfoComponent";
 import KeyReviewComponent from "./KeyReviewComponent";
-import { BorderWrapperComponent } from "../borderWrapper/BorderWrapperComponent";
-import CurrencyStakeComponent from "../stake/CurrencyStakeComponent";
+import { PrimaryButton, StakingInput } from "../ui";
+import { StakingInputCurrency } from "../ui/inputs/StakingInput";
 
 interface StakePoolKeyProps {
   poolName: string;
@@ -26,7 +24,6 @@ const StakePoolKeyComponent = ({
   onBack,
   onConfirm,
   transactionLoading,
-  stakeKey
 }: StakePoolKeyProps) => {
   const [inputValue, setInputValue] = useState("");
   const [reviewVisible, setReviewVisible] = useState(false);
@@ -59,33 +56,45 @@ const StakePoolKeyComponent = ({
           transactionLoading={transactionLoading}
         />
       ) : (
-        <div className="flex flex-col items-start">
-          <ButtonBack onClick={onBack} btnText="Back" />
-          <MainTitle title="Create new pool" />
+        <div className="flex flex-col items-start pb-5">
+          <ButtonBack
+            onClick={onBack}
+            btnText="Back to previous step"
+            extraClasses="text-white text-lg font-bold uppercase mb-4 sm:px-4 lg:px-0"
+          />
+          <MainTitle title="Create new pool" classNames="sm:px-4 lg:px-0" />
           <KeyInfoComponent name={poolName} logoUrl={poolLogoUrl} />
-          <BorderWrapperComponent>
+          <div className="bg-nulnOil pb-6 sm:px-4 lg:px-6 max-w-[500px]">
             <StakingInput
-              unstake={stakeKey}
               value={inputValue}
               label="You stake"
-              placeholder="0"
               onChange={handleChange}
-              isInvalid={validationInput()}
-              keys
-              endContent={<CurrencyStakeComponent currency="Sentry Key" keyBalance />} />
-            <AvailableBalanceComponent
-              keyBalance={Math.min(100, unstakedKeyCount)}
-              onMaxBtnClick={() => setInputValue(String(Math.min(100, unstakedKeyCount)))}
+              currencyLabel={Number(inputValue) === 1 ? StakingInputCurrency.SENTRY_KEY : StakingInputCurrency.SENTRY_KEYS}
+              error={validationInput() ? {message: Number(inputValue) > 100 ? 'Invalid amount' : 'Not enough keys'} : {}}
+              extraClasses={{
+                input: "sm:!max-w-[37%] !lg:max-w-[50%] placeholder:!text-foggyLondon",
+                calloutWrapper: "h-[160px]",
+                currency: "sm:text-3xl lg:text-4xl",
+                currencyWrapper: "justify-between"
+              }}
+              availableBalance={Math.min(100, unstakedKeyCount)}
+              availableCurrency="key/s"
+              withPopover
+              handleMaxValue={() =>
+                setInputValue(String(Math.min(100, unstakedKeyCount)))
+              }
             />
-          </BorderWrapperComponent>
+            </div>
+          <div className="w-full">
           <PrimaryButton
             onClick={() => {
               setReviewVisible(true);
             }}
             btnText="Continue"
-            className="w-full disabled:opacity-50"
+            className="w-full uppercase"
             isDisabled={checkDisabledButton}
-          />
+              />
+          </div>
         </div>
       )}
     </>
