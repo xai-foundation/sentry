@@ -4,11 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useGetPoolInfoHooks } from "@/app/hooks/hooks";
 import { useRouter } from "next/navigation";
 import PoolDetailsComponent from "../createPool/PoolDetailsComponent";
-import {
-  ButtonBack,
-  PrimaryButton,
-  SecondaryButton,
-} from "../buttons/ButtonsComponent";
+import { ButtonBack } from "../buttons/ButtonsComponent";
 import MainTitle from "../titles/MainTitle";
 import SocialLinksComponent from "../createPool/SocialLinksComponent";
 import {
@@ -20,6 +16,7 @@ import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContr
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import DelegateAddressComponent from "../createPool/DelegateAddressComponent";
 import { Id } from "react-toastify";
+import { PrimaryButton } from "../ui";
 
 const EditDetailsComponent = ( { bannedWords }: { bannedWords: string[] }) => {
   const {
@@ -142,12 +139,12 @@ const EditDetailsComponent = ( { bannedWords }: { bannedWords: string[] }) => {
   return (
     <>
       {!isLoading && (
-        <div className="flex w-full flex-col items-center md:w-2/3 sm:px-3">
-          <div className="sm:py-5 sm:px-0 lg:flex sm:grid sm:flex-col sm:items-center lg:items-start min-w-full mb-2">
-            <ButtonBack onClick={() => router.back()} btnText="Back" />
-            <MainTitle title={"Edit pool"} classNames="!mb-0" />
-          </div>
+        <div className="flex w-full flex-col items-center md:w-2/3">
           <div className="sm:py-5 sm:px-0 lg:flex sm:grid sm:flex-col sm:items-center lg:items-start min-w-full">
+            <ButtonBack onClick={() => router.push('/pool')} btnText="BACK TO MY POOLS" extraClasses="text-lg mb-4 text-white font-bold sm:px-4 lg:px-0" />
+            <MainTitle title={"Edit pool"} classNames="!mb-0 sm:px-4 lg:px-0" />
+          </div>
+          <div className="sm:pb-5 lg:py-0 sm:px-0 lg:flex sm:grid sm:flex-col sm:items-center lg:items-start min-w-full">
             <PoolDetailsComponent
               poolDetailsValues={poolDetailsValues}
               setPoolDetailsValues={setPoolDetailsValues}
@@ -159,14 +156,15 @@ const EditDetailsComponent = ( { bannedWords }: { bannedWords: string[] }) => {
             <SocialLinksComponent
               socialLinks={socialLinks}
               setSocialLinks={setSocialLinks}
+              editStyles={true}
             />
           </div>
-          <div className="flex flex-row justify-between w-full border-t-1 py-6">
-            <SecondaryButton btnText="Cancel" onClick={() => router.back()} />
+          <div className="flex sm:flex-col-reverse lg:flex-row justify-between w-full py-5 px-6 mb-[10px] bg-nulnOilBackground shadow-default">
+            <PrimaryButton btnText="Cancel" onClick={() => router.back()} colorStyle="outline" className="sm:w-full lg:w-[205px] uppercase" />
             <PrimaryButton
               btnText="Save and confirm"
               onClick={onConfirm}
-              className="font-semibold disabled:opacity-50"
+              className="font-semibold uppercase sm:w-full lg:w-[305px] sm:mb-5 lg:mb-0"
               isDisabled={searchDetailsErrors() || transactionLoading}
             />
           </div>
@@ -178,13 +176,14 @@ const EditDetailsComponent = ( { bannedWords }: { bannedWords: string[] }) => {
               error={errorValidationAddress}
               setError={setErrorValidationAddress}
               showErrors={true}
+              editStyles={true}
             />
-            <div className="flex flex-row justify-between w-full border-t-1 py-6">
-              <SecondaryButton btnText="Cancel" onClick={() => router.back()} />
+            <div className="flex sm:flex-col-reverse lg:flex-row justify-between w-full py-5 px-6 lg:mb-[30px] bg-nulnOilBackground shadow-default">
+              <PrimaryButton btnText="Cancel" onClick={() => router.back()} colorStyle="outline" className="sm:w-full lg:w-[205px] uppercase" />
               <PrimaryButton
                 btnText="Save and confirm"
                 onClick={onConfirmEditAddress}
-                className="font-semibold disabled:opacity-50"
+                className="font-semibold uppercase sm:w-full lg:w-[305px] sm:mb-5 lg:mb-0"
                 isDisabled={
                   errorValidationAddress ||
                   transactionLoading

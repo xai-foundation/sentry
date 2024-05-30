@@ -1,8 +1,8 @@
 import moment from "moment/moment";
 import { useState } from "react";
-import { PrimaryButton } from "@/app/components/buttons/ButtonsComponent";
 import { UnstakeRequest } from "@/services/web3.service";
 import { formatCurrencyWithDecimals } from "@/app/utils/formatCurrency";
+import { BaseCallout, PrimaryButton } from "@/app/components/ui";
 
 export enum REQUEST_TYPES {
   CLAIMABLE = "claimable",
@@ -31,26 +31,36 @@ const SummaryUnstakingItem = ({
   };
 
   return (
-    <div className="flex w-full max-w-full items-center justify-between rounded-xl bg-crystalWhite px-[25px] py-[15px] lg:max-w-[49%]">
-      <div>
-        <span className="block text-xl font-medium text-lightBlackDarkWhite">
+    <BaseCallout
+      withOutSpecificStyles
+      extraClasses={{
+        calloutWrapper: "w-full lg:max-w-[49.5%] max-w-full h-[88px]",
+        calloutFront: "px-[18px] py-[10px] !bg-dynamicBlack !px-[24px]"
+      }}>
+      <div
+        className="flex w-full justify-between items-center rounded-xlpx-[25px] text-white">
+        <div>
+        <span className="block text-xl font-semibold">
           {amount < 0.0001 ? "<0.0001" : formattedAmount} {isKeyRequest ? (amount > 1 ? "keys" : "key") : "esXAI"}
         </span>
-        {/* <span className="block">Submitted {calculateLockTime(createdTime)}</span> */}
-      </div>
-      <div className="flex items-center ">
-        <span className="mr-2 block">
+          {/* <span className="block">Submitted {calculateLockTime(createdTime)}</span> */}
+        </div>
+        <div className="flex items-center ">
+        <span className="mr-2 block text-elementalGrey">
           {(Date.now() - lockTime) <= 0
             ? `${moment.duration((lockTime - Date.now())).humanize()} left`
             : ""}
         </span>
-        <PrimaryButton
-          onClick={sendClaimRequest}
-          btnText={"Claim"}
-          isDisabled={requestType === REQUEST_TYPES.OPEN || transactionPending}
-        />
+          <PrimaryButton
+            onClick={sendClaimRequest}
+            btnText={"Claim"}
+            isDisabled={requestType === REQUEST_TYPES.OPEN || transactionPending}
+            className="clip-path-8px uppercase pt-[7px]"
+            size="sm"
+          />
+        </div>
       </div>
-    </div>
+    </BaseCallout>
   );
 };
 

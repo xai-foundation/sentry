@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 const MyPool = () => {
   return (
-    <div className="flex w-full flex-col items-center lg:px-[150px]">
+    <div className="flex w-full flex-col items-center lg:px-[100px]">
       <MyPoolComponent />
     </div>
   );

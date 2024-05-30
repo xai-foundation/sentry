@@ -49,10 +49,10 @@ const PoolSocials = ({ poolInfo }: { poolInfo: PoolInfo }) => {
   };
   return (
     <div className="mt-2 flex flex-wrap">
-      <PoolSocialIconLink link={toWebLink(poolInfo.meta.website)} icon={Website}/>
       <PoolSocialIconLink link={toWebLink(poolInfo.meta.discord)} icon={Discord}/>
       <PoolSocialIconLink link={toWebLink(poolInfo.meta.twitter)} icon={X}/>
       <PoolSocialIconLink link={toWebLink(poolInfo.meta.telegram)} icon={Telegram}/>
+      <PoolSocialIconLink link={toWebLink(poolInfo.meta.website)} icon={Website}/>
     </div>
   );
 };

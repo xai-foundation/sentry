@@ -1,7 +1,7 @@
 enum PoolText {
   GET_STARTED = "Let's get started setting up your pool",
   UNSTAKED_KEYS = "You do not own any unstaked keys that have passed KYC.",
-  NOT_OWN = "You do not own any unstaked keys that have passed KYC.",
+  NOT_OWN = "You do not own any unstaked keys that have passed KYC. Download the operator to pass KYC before creating a pool.",
   OWN_KEYS = "Own at least one unstaked key that has passed KYC?",
   CONNECT_WALLET = "Connect your wallet to create a pool.",
 }
@@ -13,17 +13,17 @@ interface PoolTextProps {
 
 const PoolTextComponent = ({ address, isApproved }: PoolTextProps) => {
   return (
-    <div className="mb-7 flex flex-col items-center">
+    <div className="flex flex-col items-center text-americanSilver text-lg">
       {address ? (
         <>
           {isApproved ? (
-            <span className="text-lightBlackDarkWhite">
+            <span>
               {PoolText.GET_STARTED}
             </span>
           ) : (
             <>
               {" "}
-              <span className="text-lightBlackDarkWhite">
+              <span className="w-full max-w-[456px] text-center">
                 {PoolText.NOT_OWN}
               </span>
             </>
@@ -32,13 +32,13 @@ const PoolTextComponent = ({ address, isApproved }: PoolTextProps) => {
       ) : (
         <>
           {" "}
-          <span className="text-lightBlackDarkWhite sm:text-center">
+          <span className="sm:text-center">
             {PoolText.OWN_KEYS}{" "}
-            <span className="text-lightBlackDarkWhite sm:inline lg:hidden">
+            <span className="sm:inline lg:hidden">
               {PoolText.CONNECT_WALLET}
             </span>
           </span>
-          <span className="text-lightBlackDarkWhite sm:hidden lg:block">
+          <span className="sm:hidden lg:block">
             {PoolText.CONNECT_WALLET}
           </span>
         </>

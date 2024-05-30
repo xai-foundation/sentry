@@ -8,9 +8,12 @@ export enum Sizes {
 interface ProgressComponentProps {
   progressValue?: number;
   size?: Sizes;
+  extraClasses?: {
+    track?: string;
+  };
 }
 
-const ProgressComponent = ({ progressValue, size }: ProgressComponentProps) => {
+const ProgressComponent = ({ progressValue, size, extraClasses }: ProgressComponentProps) => {
   return (
     <Progress
       size={size ?? Sizes.MD}
@@ -18,7 +21,8 @@ const ProgressComponent = ({ progressValue, size }: ProgressComponentProps) => {
       aria-labelledby="progress"
       value={progressValue ?? 0}
       classNames={{
-        indicator: "bg-red",
+        indicator: "bg-white",
+        track: `${extraClasses?.track}`
       }}
     />
   );

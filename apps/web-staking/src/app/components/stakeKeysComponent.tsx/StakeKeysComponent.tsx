@@ -21,7 +21,7 @@ export default function StakeKeysComponent({ poolAddress, isBannedPool }: StakeP
   const unstake = searchParams.get("unstake") === "true";
 
   return (
-    <div className="flex w-full flex-col items-center justify-center sm:px-3 lg:px-[350px]">
+    <div>
       {userPool &&
         <StakingKeysDetailComponent
           userPool={userPool}

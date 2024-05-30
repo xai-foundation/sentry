@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
-import { ExternalLinkComponent } from "@/app/components/links/LinkComponent";
 import {
   loadingNotification,
   updateNotification,
@@ -111,43 +110,16 @@ export const DashboardComponent = ({
 
 
   return (
-    <div className="flex w-full flex-col items-center">
+    <div className="lg:mx-[50px]">
       <AgreeModalComponent address={address} />
-      <div className="flex w-full max-w-[928px] flex-col items-start px-5 xl:px-0">
+      <div className="flex w-full flex-col items-start px-[17px] lg:px-0 mt-[10px]">
         <MainTitle title={"Dashboard"} />
       </div>
       <NetworkStats
         networkData={networkData}
       />
       {address && !isLoading && (!totalStaked || !stakedKeysAmount) && <DashboardPromo chainId={chainId} />}
-      <div className="mt-10 flex w-full max-w-[928px] flex-col items-start px-5 xl:px-0">
-        {address && (
-          <div className="flex w-full flex-col md:flex-row md:justify-between">
-            <h3 className="text-lg font-bold md:mb-4">Available balance</h3>
-            <div className="self-end md:self-start mb-[10px] md:mb-0">
-              <ExternalLinkComponent
-                link={"https://sentry.xai.games/"}
-                content={"Buy keys"}
-                customClass="mr-4 !text-base"
-                externalTab
-              />
-              <ExternalLinkComponent
-                link={
-                  "https://www.binance.com/en/trade/XAI_USDT?_from=markets&type=spot"
-                }
-                content={"Buy XAI"}
-                customClass="mr-4 !text-base"
-                externalTab
-              />
-              <ExternalLinkComponent
-                link={"/redeem"}
-                content={"Redeem"}
-                customClass="!text-base"
-              />
-            </div>
-          </div>
-        )}
-
+      <div className="mt-10 flex w-full flex-col items-start px-0">
         <DashboardCard
           esXaiBalance={esXaiBalance}
           xaiBalance={xaiBalance}

@@ -32,24 +32,14 @@ export const PoolTextarea = ({
       minRows={5}
       onChange={onChange}
       classNames={{
-        inputWrapper: `relative border ${
+        inputWrapper: `relative ${isInvalid ? "bg-bananaBoat" : "bg-greyBorders"} rounded-none global-input-clip-path ${
           isInvalid ? "border-red" : ""
-        } px-4 bg-white data-[hover=true]:bg-white group-data-[focus=true]:bg-white`,
-        label: `text-graphiteGray text-base font-bold pb-3`,
-        input: "text-[16px]",
+        } p-[1px] ${isInvalid ? "data-[hover=true]:bg-bananaBoat group-data-[focus=true]:bg-bananaBoat" : "data-[hover=true]:bg-hornetSting group-data-[focus=true]:bg-hornetSting"}`,
+        label: `text-lg !text-americanSilver font-bold pb-3 `,
+        input: "text-lg !text-americanSilver !placeholder-dugong pl-[10px] !bg-nulnOil global-input-clip-path py-2",
         errorMessage: "absolute text-[#ED5F00] text-base font-normal",
         helperWrapper: "p-0",
       }}
-      errorMessage={
-        isInvalid && (
-          <>
-            <span className="flex gap-1 items-center">
-              <ErrorCircle width={16} height={16} />
-              {errorMessage}
-            </span>
-          </>
-        )
-      }
     />
   );
 };

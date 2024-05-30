@@ -7,13 +7,13 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ACTIVE_NETWORK_IDS, RedemptionFactor, getNetwork, getRedemptionPeriod, getWeb3Instance, getWeiAmountFromTextInput, mapWeb3Error } from "@/services/web3.service";
 import { CURRENCY } from "./Constants";
 
-import { ButtonBack, PrimaryButton } from "../buttons/ButtonsComponent";
 import MainTitle from "../titles/MainTitle";
 
 import { XaiAbi } from "@/assets/abi/XaiAbi";
 import { esXaiAbi } from "@/assets/abi/esXaiAbi";
 import { loadingNotification, updateNotification } from "../notifications/NotificationsComponent";
 import { Id } from "react-toastify";
+import { ButtonBack, PrimaryButton } from "@/app/components/ui/buttons";
 
 
 export default function ReviewRedemptionComponent({ onReturn, onRefresh, receiveValue, amount, amountWei, factor, fromCurrency }: {
@@ -109,34 +109,45 @@ export default function ReviewRedemptionComponent({ onReturn, onRefresh, receive
 
 	//TODO assign input values
 	return <>
-		<main className="flex w-full flex-col items-center">
-			<div className="group flex flex-col items-start w-xl p-3 w-full max-w-[575px]">
+		<main className="flex w-full flex-col items-center xl:ml-[-122px] lg:ml-[-61px] mb-[30px]">
+			<div className="group flex flex-col items-start w-xl md:px-3 py-3 w-full max-w-[506px]">
 
-				<ButtonBack onClick={onReturn} btnText="Back" />
+				<ButtonBack onClick={onReturn} btnText="Back to redeem" extraClasses="mb-4 md:pl-0 pl-3" />
 
-				<MainTitle title="Review redemption" />
+				<MainTitle title="Review redemption" classNames="pl-3 md:pl-0" />
 
-				<HeroStat label="You redeem" value={`${amount} ${fromCurrency === CURRENCY.XAI ? "XAI" : "esXAI"}`} />
-				<HeroStat label="You receive" value={`${receiveValue} ${fromCurrency === CURRENCY.XAI ? "esXAI" : "XAI"}`} />
+				<div className="shadow-default bg-nulnOil/75 w-full">
+					<HeroStat label="You redeem" value={`${amount} ${fromCurrency === CURRENCY.XAI ? "XAI" : "esXAI"}`} />
+					<HeroStat label="You receive" value={`${receiveValue} ${fromCurrency === CURRENCY.XAI ? "esXAI" : "XAI"}`} />
 
-				<Divider />
+					{
+						(fromCurrency === CURRENCY.ES_XAI) &&
+						<div className="my-6">
+							<Stat label="Redemption rate" value={`${factor}%`} />
+							<Stat label="Redemption period" value={redemptionPeriodInfo.label} />
+							<Stat label="Burn rate" value={`${100 - factor}%`} />
+							<Stat label="Burn amount" value={`${Number(amount) - Number(receiveValue)} esXAI`} />
+						</div>
+					}
 
-				{
-					(fromCurrency === CURRENCY.ES_XAI) &&
-					<>
-						<Stat label="Redemption rate" value={`${factor}%`} />
-						<Stat label="Redemption period" value={redemptionPeriodInfo.label} />
-						<Stat label="Burn rate" value={`${100 - factor}%`} />
-						<Stat label="Burn amount" value={`${Number(amount) - Number(receiveValue)} esXAI`} />
-					</>
-				}
+					{
+						(fromCurrency === CURRENCY.XAI) &&
+						<div className="my-6">
+							<Stat label="Redemption rate" value="100%" />
+							<Stat label="Redemption period" value="Instant" />
+						</div>
+					}
 
-				{/* This would need to make an gasestimate call to the blockchain, maybe add this in V2 <Stat label="Gas" value="0.001 ETH" /> */}
+					{/* This would need to make an gasestimate call to the blockchain, maybe add this in V2 <Stat label="Gas" value="0.001 ETH" /> */}
+
+
+				</div>
 
 				{!isLoading ?
-					<PrimaryButton onClick={onConfirm} btnText="Confirm" className="w-full mt-6" />
+					<PrimaryButton onClick={onConfirm} btnText="Confirm" className="w-full uppercase" wrapperClassName="w-full" />
 					:
-					<PrimaryButton onClick={onConfirm} btnText="Waiting for confirmation ..." isDisabled className="w-full mt-6 bg-steelGray hover:bg-steelGray" />
+					<PrimaryButton onClick={onConfirm} btnText="Waiting for confirmation..." isDisabled spinner={true}
+												 className="w-full bg-steelGray hover:bg-steelGray uppercase" wrapperClassName="w-full" />
 				}
 
 				{insufficientGas && <Warning text="Error: not enough gas" />}
@@ -146,20 +157,17 @@ export default function ReviewRedemptionComponent({ onReturn, onRefresh, receive
 	</>
 
 	function HeroStat({ label, value }: { label: string, value: string }) {
-		return <div className="flex flex-col mb-4">
-			<label className="text-[#4A4A4A] text-sm mb-1">{label}</label>
-			<span className="text-lightBlackDarkWhite text-4xl mb-1">{value}</span>
+		return <div className="flex flex-col border-b-1 border-chromaphobicBlack py-[24px] md:px-[25px] px-[17px]">
+			<label className="text-americanSilver text-lg font-medium">{label}</label>
+			<span className="text-4xl text-white font-medium">{value}</span>
 		</div>
 	}
 
-	function Divider({ }: {}) {
-		return <div className="w-full h-[2px] border-b-1 border-b-light-grey mb-4"></div>
-	}
-
 	function Stat({ label, value }: { label: string, value: string }) {
-		return <div className="flex flex-row justify-between w-full mb-1">
-			<label className="text-[#4A4A4A] text-sm">{label}</label>
-			<span className="text-[#4A4A4A] text-sm">{value}</span>
+		return <div
+			className="flex flex-row justify-between w-full mb-1 text-lg font-medium text-americanSilver md:px-[25px] px-[17px]">
+			<label>{label}</label>
+			<span className="font-semibold text-white">{value}</span>
 		</div>
 	}
 
