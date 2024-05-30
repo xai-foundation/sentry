@@ -11,7 +11,6 @@ import {
   mapWeb3Error,
 } from "@/services/web3.service";
 
-import { ButtonBack, PrimaryButton } from "../buttons/ButtonsComponent";
 import MainTitle from "../titles/MainTitle";
 
 import { RefereeAbi } from "@/assets/abi/RefereeAbi";
@@ -28,6 +27,7 @@ import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import { Avatar } from "@nextui-org/react";
 import UnstakeTimeReview from "../stakeKeysComponent.tsx/UnstakeTimeReview";
 import { useGetUnstakePeriods } from "@/app/hooks/hooks";
+import { ButtonBack, PrimaryButton } from "@/app/components/ui/buttons";
 
 interface ReviewStakeProps {
   onBack: () => void;
@@ -242,48 +242,61 @@ const ReviewStakeComponent = ({
 
   return (
     <main className="flex w-full flex-col items-center">
-      <div className="group flex flex-col items-start max-w-xl w-full p-3">
-        <ButtonBack onClick={onBack} btnText="Back" />
+      <div className="group flex flex-col items-start max-w-xl w-full">
+        <ButtonBack onClick={onBack} btnText={unstake ? "Back to unstake" : "Back to stake"}
+                    extraClasses="md:ml-0 ml-[15px]" />
 
-        <MainTitle title={`Review ${title.toLocaleLowerCase()}`} />
+        <MainTitle title={`Review ${title.toLocaleLowerCase()}`}
+                   classNames="mt-[18px] sm:mb-[25px] md:ml-0 ml-[17px]" />
 
-        <HeroStat
-          label={unstake ? "You unstake" : "You stake"}
-          value={`${displayValue} esXAI`}
-        />
+        <div className="w-full bg-nulnOil/75 shadow-default ">
 
-        {pool && <div className="flex items-center mb-4">
-          <span className="mr-2">Staking to:</span>
-          <Avatar src={pool.meta.logo} className="w-[32px] h-[32px] mr-2" />
-          <span className="text-graphiteGray">{pool.meta.name}</span>
-        </div>}
-        {(pool && unstake) && (
-          <UnstakeTimeReview period={unstakePeriods.unstakeEsXaiDelayPeriod} />
-        )}
-        {(!pool || !unstake) && (
-          <HeroStat
-            label={`Your staking balance after this ${unstake ? "unstake" : "stake"}`}
-            value={
-              unstake
-                ? `${getUnstakeLabel()}`
-                : `${Number(displayValue!) + totalStaked!} esXAI`
-            }
-          />
-        )}
 
+          {pool && <div className="flex items-center md:px-[25px] px-[17px] py-[40px]">
+            <span
+              className="mr-5 text-americanSilver font-medium text-lg">{unstake ? "Unstaking from:" : "Staking to: "}</span>
+            <Avatar src={pool.meta.logo} className="w-[32px] h-[32px] mr-2" />
+            <span className="text-white font-bold text-lg">{pool.meta.name}</span>
+          </div>}
+
+          {unstake && <HeroStat
+            label={unstake ? "You unstake" : "You stake"}
+            value={`${displayValue} esXAI`}
+          />}
+
+          {(pool && unstake) && (
+            <UnstakeTimeReview period={unstakePeriods.unstakeEsXaiDelayPeriod} />
+          )}
+
+          {(!pool || !unstake) && (
+            <HeroStat
+              label={`Your staking balance after this ${unstake ? "unstake" : "stake"}`}
+              value={
+                unstake
+                  ? `${getUnstakeLabel()}`
+                  : `${Number(displayValue!) + totalStaked!} esXAI`
+              }
+            />
+          )}
+
+
+        </div>
         {tokensApproved ?
           <PrimaryButton
             onClick={onConfirm}
-            btnText={`${isLoading ? "Waiting for confirmation..." : "Confirm"
-              }`}
-            className={`w-full mt-6 font-bold ${isLoading && "bg-[#B1B1B1] disabled"
-              }`}
+            spinner={isLoading}
+            isDisabled={isLoading}
+            btnText={`${isLoading ? "Waiting for confirmation" : "Confirm"
+            }`}
+            wrapperClassName="w-full"
+            className={`w-full font-bold uppercase`}
           />
           :
           <PrimaryButton
             onClick={onApprove}
             btnText={`${isLoadingApprove ? "Waiting for approved tokens..." : "Approve"}`}
-            className={`w-full mt-6 font-bold ${isLoadingApprove && "bg-[#B1B1B1] disabled"}`}
+            wrapperClassName="w-full"
+            className={`w-full font-bold ${isLoadingApprove && "bg-[#B1B1B1] disabled"}`}
           />
         }
 
@@ -294,9 +307,9 @@ const ReviewStakeComponent = ({
 
 function HeroStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col mb-4">
-      <label className="text-[#4A4A4A] text-sm mb-1">{label}</label>
-      <span className="text-lightBlackDarkWhite text-4xl mb-1">{value}</span>
+    <div className="flex flex-col border-t-1 border-chromaphobicBlack px-[25px] py-[20px]">
+      <label className="text-americanSilver text-lg font-medium mb-1">{label}</label>
+      <span className="text-white font-medium text-4xl mb-1">{value}</span>
     </div>
   );
 }

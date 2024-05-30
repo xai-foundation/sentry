@@ -1,4 +1,4 @@
-import { iconType } from "@/app/components/dashboard/constants/constants";
+import { StaticImageData } from "next/image";
 
 /* export type Pool = {
 	poolAddress: string;
@@ -40,6 +40,7 @@ export type TierInfo = {
 	minValue: number;
 	reward: string;
 	index: number;
+	label?: StaticImageData;
 };
 
 export type UserPoolDataType = {

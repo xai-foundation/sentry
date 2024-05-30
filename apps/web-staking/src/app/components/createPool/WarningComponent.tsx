@@ -1,73 +1,72 @@
-import { ErrorCircle } from "../icons/IconsComponent";
+import { ErrorCircle, WarningIcon } from "../icons/IconsComponent";
+import { BaseCallout, Checkbox } from "../ui";
 
 interface WarningProps {
-	title: string;
-	description: string;
-	checkboxText?: string;
-	onAcceptTerms: () => void;
-	includeYouMustAgreeMessage?: boolean;
-	checkbox: boolean;
-	setCheckbox: React.Dispatch<React.SetStateAction<boolean>>;
-	includeCheckbox?: boolean;
+  title: string;
+  description: string;
+  checkboxText?: string;
+  onAcceptTerms: () => void;
+  includeYouMustAgreeMessage?: boolean;
+  checkbox: boolean;
+  setCheckbox: React.Dispatch<React.SetStateAction<boolean>>;
+  includeCheckbox?: boolean;
 }
 
 //The final key you unstake from this pool will take 60 days to unstake.
 //All other keys you unstake will take 30 days to unstake.
 //I understand the unstake periods for my keys
 const WarningComponent = ({
-	title,
-	description,
-	checkboxText,
-	onAcceptTerms,
-	includeYouMustAgreeMessage,
-	checkbox,
-	setCheckbox: setCh,
-	includeCheckbox = true
+  title,
+  description,
+  checkboxText,
+  onAcceptTerms,
+  includeYouMustAgreeMessage,
+  checkbox,
+  setCheckbox: setCh,
+  includeCheckbox = true,
 }: WarningProps) => {
-	return (
-		<>
-			<div className="flex relative flex-col mb-4 bg-[#FFF9ED] text-left px-[40px] py-[25px] w-full p-3 rounded-xl">
-				<div className="absolute top-7 left-3">
-					<ErrorCircle width={20} height={20} />
-				</div>
-				<span className="text-[#C36522] font-bold">
-					{title}
-				</span>
-				<span className="text-[#C36522]">
-					{description}
-				</span>
-			</div>
+  return (
+    <>
+      <BaseCallout
+        extraClasses={{
+          calloutWrapper: "!items-start mb-7",
+          calloutFront: "!justify-start !items-start",
+        }}
+        isWarning
+      >
+        <div className="pt-2 sm:mr-2 lg:mr-5">
+          <WarningIcon className="mr-2 min-w-[27px]" />
+        </div>
+        <div className="flex flex-col">
+          <span className="text-bananaBoatText font-bold mb-2">{title}</span>
+          <span className="text-bananaBoatText">{description}</span>
+        </div>
+      </BaseCallout>
 
-			{includeYouMustAgreeMessage && (
-				<div className="mb-3">
-					<span className="text-graphiteGray">
-						You must agree to the following before continuing
-					</span>
-				</div>
-			)}
+      {includeYouMustAgreeMessage && (
+        <div className="mb-3">
+          <span className="text-graphiteGray">
+            You must agree to the following before continuing
+          </span>
+        </div>
+      )}
 
-			{includeCheckbox && (
-				<div className="flex pl-[10px] pr-[50px] mb-[50px]">
-					<div className="py-[2px] mr-[10px]">
-						<input
-							checked={checkbox}
-							onClick={onAcceptTerms}
-							className="accent-red w-4 h-3.5 border-0 rounded-md focus:ring-0"
-							type="checkbox"
-							onChange={() => setCh(!checkbox)}
-						/>
-					</div>
-
-					<div>
-						<span className="text-graphiteGray">
-							{checkboxText}
-						</span>
-					</div>
-
-				</div>
-			)}
-		</>
-	);
+      {includeCheckbox && (
+        <div className="flex">
+          <div className="min-w-[25px]">
+            <Checkbox
+              isChecked={checkbox}
+              onClick={onAcceptTerms}
+              onChange={() => setCh(!checkbox)}
+              extraClasses={{ wrapper: "!items-start"  }}
+            >
+              <span className="text-americanSiver text-lg">{checkboxText}</span>
+            </Checkbox>
+          </div>
+        </div>
+      )}
+    </>
+  );
 };
 
 export default WarningComponent;

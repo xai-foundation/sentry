@@ -1,22 +1,25 @@
 "use client";
-import { OrderedRedemptions, getNetwork, RedemptionFactor, getRedemptions, getWeiAmountFromTextInput } from "@/services/web3.service";
+import {
+	getNetwork,
+	getRedemptions,
+	getWeiAmountFromTextInput,
+	OrderedRedemptions,
+	RedemptionFactor
+} from "@/services/web3.service";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useAccount } from "wagmi";
-import { ConnectButton, PrimaryButton } from "../buttons/ButtonsComponent";
-import { CustomInput } from "../input/InputComponent";
-import RightRedeemComponent from "./RightComponent";
 import MainTitle from "../titles/MainTitle";
 import History from "./History";
 import ReviewRedemptionComponent from "./ReviewRedemptionComponent";
 import RedemptionPeriod from "./RedemptionPeriod";
-import { SwitchArrows } from "../icons/IconsComponent";
+import { ExchangeIcon } from "../icons/IconsComponent";
 import { CURRENCY } from "./Constants";
 import { useGetBalanceHooks } from "@/app/hooks/hooks";
 import AgreeModalComponent from "../modal/AgreeModalComponents";
-import { BorderWrapperComponent } from "@/app/components/borderWrapper/BorderWrapperComponent";
-import AvailableBalanceRedeemComponent from "@/app/components/redeem/AvailableBalanceRedeemComponent";
 import RedeemWarning from "@/app/components/redeem/RedeemWarning";
+import { PrimaryButton, StakingInput } from "@/app/components/ui";
+import { ConnectButton } from "@/app/components/ui/buttons";
 
 export default function RedeemComponent() {
 	const { open, close } = useWeb3Modal();
@@ -132,6 +135,13 @@ export default function RedeemComponent() {
 	const errorMessage =
 		redeemValue.split(".")[1] &&
 			redeemValue.split(".")[1].length > 18 ? "Only 18 decimals are allowed" : `Not enough ${currency} in wallet `;
+	// not sure if we need this because 17 digits it's a limit for now.
+
+	const checkForError = () => {
+		if (balance) {
+			return balance < +redeemValue;
+		}
+	};
 
 
 	return (<>
@@ -148,71 +158,87 @@ export default function RedeemComponent() {
 				/>
 			</>
 			:
-			<main className="flex w-full flex-col items-center">
+			<main className="flex w-full flex-col items-center lg:p-0 xl:ml-[-122px] lg:ml-[-61px] ">
 				<AgreeModalComponent address={address} />
 				<div className="flex flex-col items-start">
-					<MainTitle title={"Redeem"} classNames="pl-2 ml-1" />
-					{currency === CURRENCY.XAI && <RedeemWarning />}
-					<div className="flex flex-col p-3 w-xl">
-						<div className="w-xl min-w-md">
-							<BorderWrapperComponent customStyle="!mb-1">
-								<CustomInput
-									label="You redeem"
-									placeholder="0"
-									value={redeemValue}
-									type="number"
-									onChange={onRedeemValueChange}
-									isInvalid={isInvalid()}
-									errorMessage={errorMessage}
-									endContent={
-										<RightRedeemComponent
-											currency={currency}
-											availableXaiBalance={balance}
-											onMaxBtnClick={onSelectMaxAmount}
-										/>
-									}
-								/>
-								<AvailableBalanceRedeemComponent
-									balance={balance}
-									currency={currency}
-									onSelectMaxAmount={onSelectMaxAmount}
-								/>
-							</BorderWrapperComponent>
-							<div className="relative z-10 mt-custom-17 flex justify-center">
-								<span onClick={onToggleClick}>
-									<SwitchArrows width={36} height={36} fill="#171717"
-										className="cursor-pointer p-2 border rounded-full bg-white" />
-								</span>
-							</div>
-							<BorderWrapperComponent>
-								<CustomInput
-									label="You receive"
-									placeholder="0"
-									value={isNaN(Number(receiveValue)) ? "0" : receiveValue}
-									endContent={<RightRedeemComponent
-										currency={currency === CURRENCY.XAI ? CURRENCY.ES_XAI : CURRENCY.XAI} />}
-								/>
-								<span className="block h-[24px]" />
-							</BorderWrapperComponent>
+					<MainTitle title={"Redeem"} classNames="!mb-10 pl-4 md:pl-0" />
+
+					<div className="w-full max-w-[506px] bg-nulnOil/75 py-[15px] md:px-[25px] px-[15px] relative shadow-default">
+						{currency === CURRENCY.XAI && <RedeemWarning />}
+						<StakingInput
+							value={redeemValue}
+							label={"You redeem"}
+							currencyLabel={currency}
+							onChange={onRedeemValueChange}
+							withIcon
+							error={checkForError() ? { message: `Not enough ${currency}`, flag: true } : {}}
+							availableBalance={balance?.toString().match(/^-?\d+(?:\.\d{0,4})?/) || ""}
+							handleMaxValue={onSelectMaxAmount}
+							extraClasses={{
+								calloutWrapper: `${currency === CURRENCY.XAI ? "mt-4" : "mt-1"} md:h-[160px] h-[170px] bg-foggyLondon`,
+								calloutFront: "bg-[#1A1616]",
+								input: "placeholder:text-foggyLondon",
+								label: "text-white"
+							}}
+						/>
+						<div
+							className="flex w-full justify-center my-3 relative">
+							<span
+								onClick={onToggleClick}
+								className={` cursor-pointer
+								before:content[''] before:w-full md:before:max-w-[225px] before:max-w-[160px] before:h-[1px] before:bg-chromaphobicBlack before:absolute md:before:left-[-25px] before:left-[-15px] before:top-2/4
+								after:content[''] after:w-full md:after:max-w-[225px] after:max-w-[160px] after:h-[1px] after:bg-chromaphobicBlack after:absolute md:after:right-[-25px] after:right-[-15px] after:top-2/4
+								`}>
+								{ExchangeIcon()}
+							</span>
 						</div>
+						<StakingInput
+							value={receiveValue ? receiveValue : "0"}
+							label={"You receive"}
+							disabled
+							withIcon
+							error={checkForError() ? { flag: true } : {}}
+							currencyLabel={currency === CURRENCY.XAI ? CURRENCY.ES_XAI : CURRENCY.XAI}
+							extraClasses={{
+								calloutWrapper: "!h-[110px] !py-0 bg-foggyLondon",
+								calloutFront: "bg-[#1A1616] !pb-0 !pt-[5px]",
+								inputWrapper: "!pb-0",
+								label: "text-white"
+							}}
+						/>
+
 						{currency === CURRENCY.ES_XAI && <RedemptionPeriod
 							value={redeemFactor.toString()}
 							onChange={onRedemptionPeriodChange}
 						/>}
-						<div className="mt-2">
+					</div>
+
+					<div className="flex flex-col w-xl w-full">
+
+						<div className="w-full shadow-default">
 							{!address && (
-								<ConnectButton onOpen={open} address={address} isFullWidth />
+								<ConnectButton
+									onOpen={open}
+									address={address}
+									size="md"
+									isFullWidth
+									extraClasses="w-full disabled:opacity-50 mb-[50px] uppercase !clip-path-12px"
+								/>
 							)}
 							{address && (
 								<PrimaryButton
 									onClick={() => setReview(true)}
 									btnText="Continue"
-									className="w-full disabled:opacity-50 mb-[50px]"
+									className="w-full disabled:!text-dugong mb-[50px] uppercase"
+									wrapperClassName="w-full"
 									isDisabled={checkDisabledButton}
 								/>
 							)}
 						</div>
-						{<History redemptions={redemptionHistory} reloadRedemptions={reloadRedemptions} />}
+						{<History
+							redemptions={redemptionHistory}
+							reloadRedemptions={reloadRedemptions}
+						/>}
 					</div>
 				</div>
 			</main>

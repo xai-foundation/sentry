@@ -1,6 +1,6 @@
 import MainTitle from "../titles/MainTitle";
 import { Avatar } from "@nextui-org/react";
-import { ButtonBack, PrimaryButton } from "../buttons/ButtonsComponent";
+import { ButtonBack } from "../buttons/ButtonsComponent";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { addUnstakeRequest, getNetwork, getUnstakedKeysOfUser, mapWeb3Error } from "@/services/web3.service";
@@ -12,6 +12,7 @@ import { Id } from "react-toastify";
 import { useRouter } from "next/navigation";
 import UnstakeTimeReview from "./UnstakeTimeReview";
 import { useGetUnstakePeriods } from "@/app/hooks/hooks";
+import { PrimaryButton } from "../ui";
 
 
 interface KeyReviewProps {
@@ -142,30 +143,28 @@ export default function StakeKeysDetailReviewComponent({ pool, inputValue, onBac
 
 	return (
 		<main className="flex w-full flex-col items-center">
-			<div className="group flex flex-col items-start max-w-xl w-full p-3">
-				<ButtonBack onClick={onBack} btnText="Back" />
-				<MainTitle title={unstake ? "Review unstake" : `Review stake`} />
-				<div className="flex items-center mb-4">
-					<span className="mr-2">{unstake ? "You unstake from: " : "You stake to: "}</span>
+			<div className="group flex flex-col items-start max-w-[500px] w-full">
+				<ButtonBack onClick={onBack} btnText="Back to previous step" extraClasses="text-white text-lg font-bold uppercase mb-4" />
+				<MainTitle title={unstake ? "Review unstake" : `Review stake`} classNames="sm:px-4 lg:px-0" />
+				<div className="flex items-center w-full bg-nulnOilBackground sm:px-4 lg:px-6 py-8 border-b border-chromaphobicBlack shadow-default">
+					<span className="mr-4 text-americanSilver text-lg">{unstake ? "Unstaking from: " : "Staking to: "}</span>
 					<Avatar src={pool.meta.logo} className="w-[32px] h-[32px] mr-2" />
-					<span className="text-graphiteGray">{pool.meta.name}</span>
+					<span className="text-white text-lg font-bold">{pool.meta.name}</span>
 				</div>
-				<HeroStat label={unstake ? "You unstake" : "You stake"} value={`${inputValue} Sentry ${Number(inputValue) > 1 ? "Keys" : "Key"}`} />
-				{unstake ? (
-					<UnstakeTimeReview period={lastKeyOfOwner ? unstakePeriods.unstakeGenesisKeyDelayPeriod : unstakePeriods.unstakeKeysDelayPeriod} />
-				) : (
-					<HeroStat
-						label={unstake ? "Pool staking balances after this request" : "Pool staking balance after this stake"}
-						value={unstake ? `Staked: ${(pool.userStakedKeyIds.length) - (Number(inputValue) || 0)}` : `${pool.userStakedKeyIds.length + Number(inputValue)}`}
-					/>
+				<HeroStat label={unstake ? "You unstake" : "You stake"} value={`${inputValue} ${inputValue == "1" ? "Sentry Key" : "Sentry Keys" }`} />
+				{unstake && (
+					<div className="w-full bg-nulnOilBackground shadow-default"><UnstakeTimeReview period={lastKeyOfOwner ? unstakePeriods.unstakeGenesisKeyDelayPeriod : unstakePeriods.unstakeKeysDelayPeriod} /></div>
 				)}
-				<PrimaryButton
+				<div className="w-full">
+				 <PrimaryButton
 					onClick={onConfirm}
+					spinner={txLoading}
 					btnText={`${txLoading ? "Waiting for confirmation..." : "Confirm"
 						}`}
-					className={`w-full mt-6 font-bold ${txLoading && "bg-[#B1B1B1] disabled"
-						} disabled:opacity-50`}
-				/>
+					isDisabled={txLoading}
+					className={`w-full font-bold uppercase`}
+					/>
+				</div>
 			</div>
 		</main>
 	);
@@ -173,17 +172,12 @@ export default function StakeKeysDetailReviewComponent({ pool, inputValue, onBac
 
 function HeroStat({ label, value }: { label: string; value: string }) {
 	return (
-		<div className="flex flex-col mb-4 bg-crystalWhite w-full p-3 rounded-xl">
-			<label className="text-[#4A4A4A] text-sm mb-1">{label}</label>
-			<span className="text-lightBlackDarkWhite font-medium text-2xl mb-1">
+		<div className="flex flex-col bg-nulnOilBackground w-full sm:px-4 lg:px-6 py-4 shadow-default">
+			<label className="text-americanSilver text-lg mb-1">{label}</label>
+			<span className="text-white font-bold text-4xl mb-1">
 				{value}
 			</span>
 		</div>
 	);
 }
-
-// export default KeyReviewComponent;
-// function writeContractAsync<const abi extends Abi | readonly unknown[], functionName extends ContractFunctionName<abi, "nonpayable" | "payable">, args extends ContractFunctionArgs<abi, "nonpayable" | "payable", functionName>, chainId extends number>(variables: UnionEvaluate<UnionOmit<{ address: `0x${string}`; abi: abi; functionName: ContractFunctionName<abi, "nonpayable" | "payable"> | (functionName extends ContractFunctionName<abi, "nonpayable" | "payable"> ? functionName : never); args?: ContractFunctionArgs<abi, "nonpayable" | "payable", functionName> | (abi extends Abi ? UnionWiden<args> : never) | undefined; } & (readonly [] extends ContractFunctionArgs<abi, "nonpayable" | "payable", functionName> ? {} : { args: Widen<args>; }) & { chain?: Chain | null | undefined; } & { [K in keyof ({ account?: `0x${string}` | Account | undefined; } & GetValue<abi, functionName, bigint | undefined, abi extends Abi ? Extract<Extract<abi[number], { type: "function"; stateMutability: AbiStateMutability; }>, { name: functionName; }> : AbiFunction, IsNarrowable<abi, Abi>> & { dataSuffix?: `0x${string}` | undefined; })]: ({ account?: `0x${string}` | Account | undefined; } & GetValue<abi, functionName, bigint | undefined, abi extends Abi ? Extract<Extract<abi[number], { type: "function"; stateMutability: AbiStateMutability; }>, { name: functionName; }> : AbiFunction, IsNarrowable<abi, Abi>> & { dataSuffix?: `0x${string}` | undefined; })[K]; } & { type?: "legacy" | undefined; nonce?: number | undefined; gas?: bigint | undefined; gasPrice?: bigint | undefined; maxFeePerBlobGas?: undefined; maxFeePerGas?: undefined; maxPriorityFeePerGas?: undefined; accessList?: undefined; }, "chain"> & { chainId?: number | (chainId extends number ? chainId : undefined) | undefined; } & ConnectorParameter & { __mode?: "prepared" | undefined; }> | UnionEvaluate<UnionOmit<{ address: `0x${string}`; abi: abi; functionName: ContractFunctionName<abi, "nonpayable" | "payable"> | (functionName extends ContractFunctionName<abi, "nonpayable" | "payable"> ? functionName : never); args?: ContractFunctionArgs<abi, "nonpayable" | "payable", functionName> | (abi extends Abi ? UnionWiden<args> : never) | undefined; } & (readonly [] extends ContractFunctionArgs<abi, "nonpayable" | "payable", functionName> ? {} : { args: Widen<args>; }) & { chain?: Chain | null | undefined; } & { [K in keyof ({ account?: `0x${string}` | Account | undefined; } & GetValue<abi, functionName, bigint | undefined, abi extends Abi ? Extract<Extract<abi[number], { type: "function"; stateMutability: AbiStateMutability; }>, { name: functionName; }> : AbiFunction, IsNarrowable<abi, Abi>> & { dataSuffix?: `0x${string}` | undefined; })]: ({ account?: `0x${string}` | Account | undefined; } & GetValue<abi, functionName, bigint | undefined, abi extends Abi ? Extract<Extract<abi[number], { type: "function"; stateMutability: AbiStateMutability; }>, { name: functionName; }> : AbiFunction, IsNarrowable<abi, Abi>> & { dataSuffix?: `0x${string}` | undefined; })[K]; } & { type?: "eip2930" | undefined; nonce?: number | undefined; gas?: bigint | undefined; gasPrice?: bigint | undefined; maxFeePerBlobGas?: undefined; maxFeePerGas?: undefined; maxPriorityFeePerGas?: undefined; accessList?: AccessList | undefined; }, "chain"> & { chainId?: number | (chainId extends number ? chainId : undefined) | undefined; } & ConnectorParameter & { __mode?: "prepared" | undefined; }> | UnionEvaluate<UnionOmit<{ address: `0x${string}`; abi: abi; functionName: ContractFunctionName<abi, "nonpayable" | "payable"> | (functionName extends ContractFunctionName<abi, "nonpayable" | "payable"> ? functionName : never); args?: ContractFunctionArgs<abi, "nonpayable" | "payable", functionName> | (abi extends Abi ? UnionWiden<args> : never) | undefined; } & (readonly [] extends ContractFunctionArgs<abi, "nonpayable" | "payable", functionName> ? {} : { args: Widen<args>; }) & { chain?: Chain | null | undefined; } & { [K in keyof ({ account?: `0x${string}` | Account | undefined; } & GetValue<abi, functionName, bigint | undefined, abi extends Abi ? Extract<Extract<abi[number], { type: "function"; stateMutability: AbiStateMutability; }>, { name: functionName; }> : AbiFunction, IsNarrowable<abi, Abi>> & { dataSuffix?: `0x${string}` | undefined; })]: ({ account?: `0x${string}` | Account | undefined; } & GetValue<abi, functionName, bigint | undefined, abi extends Abi ? Extract<Extract<abi[number], { type: "function"; stateMutability: AbiStateMutability; }>, { name: functionName; }> : AbiFunction, IsNarrowable<abi, Abi>> & { dataSuffix?: `0x${string}` | undefined; })[K]; } & { type?: "eip1559" | undefined; nonce?: number | undefined; gas?: bigint | undefined; gasPrice?: undefined; maxFeePerBlobGas?: undefined; maxFeePerGas?: bigint | undefined; maxPriorityFeePerGas?: bigint | undefined; accessList?: AccessList | undefined; }, "chain"> & { chainId?: number | (chainId extends number ? chainId : undefined) | undefined; } & ConnectorParameter & { __mode?: "prepared" | undefined; }>, options?: MutateOptions<`0x${string}`, WriteContractErrorType, UnionEvaluate<UnionOmit<{ address: `0x${string}`; abi: abi; functionName: functionName | (functionName extends functionName ? functionName : never); args?: ContractFunctionArgs<abi, "nonpayable" | "payable", functionName> | (abi extends Abi ? UnionWiden<args> : never) | undefined; } & (readonly [] extends ContractFunctionArgs<abi, "nonpayable" | "payable", functionName> ? {} : { args: Widen<args>; }) & { chain?: Chain | null | undefined; } & { [K in keyof ({ account?: `0x${string}` | Account | undefined; } & GetValue<abi, functionName, bigint | undefined, abi extends Abi ? Extract<Extract<abi[number], { type: "function"; stateMutability: AbiStateMutability; }>, { name: functionName; }> : AbiFunction, IsNarrowable<abi, Abi>> & { dataSuffix?: `0x${string}` | undefined; })]: ({ account?: `0x${string}` | Account | undefined; } & GetValue<abi, functionName, bigint | undefined, abi extends Abi ? Extract<Extract<abi[number], { type: "function"; stateMutability: AbiStateMutability; }>, { name: functionName; }> : AbiFunction, IsNarrowable<abi, Abi>> & { dataSuffix?: `0x${string}` | undefined; })[K]; } & { type?: "legacy" | undefined; nonce?: number | undefined; gas?: bigint | undefined; gasPrice?: bigint | undefined; maxFeePerBlobGas?: undefined; maxFeePerGas?: undefined; maxPriorityFeePerGas?: undefined; accessList?: undefined; }, "chain"> & { chainId?: number | (chainId extends number ? chainId : undefined) | undefined; } & ConnectorParameter & { __mode?: "prepared" | undefined; }> | UnionEvaluate<UnionOmit<{ address: `0x${string}`; abi: abi; functionName: functionName | (functionName extends functionName ? functionName : never); args?: ContractFunctionArgs<abi, "nonpayable" | "payable", functionName> | (abi extends Abi ? UnionWiden<args> : never) | undefined; } & (readonly [] extends ContractFunctionArgs<abi, "nonpayable" | "payable", functionName> ? {} : { args: Widen<args>; }) & { chain?: Chain | null | undefined; } & { [K in keyof ({ account?: `0x${string}` | Account | undefined; } & GetValue<abi, functionName, bigint | undefined, abi extends Abi ? Extract<Extract<abi[number], { type: "function"; stateMutability: AbiStateMutability; }>, { name: functionName; }> : AbiFunction, IsNarrowable<abi, Abi>> & { dataSuffix?: `0x${string}` | undefined; })]: ({ account?: `0x${string}` | Account | undefined; } & GetValue<abi, functionName, bigint | undefined, abi extends Abi ? Extract<Extract<abi[number], { type: "function"; stateMutability: AbiStateMutability; }>, { name: functionName; }> : AbiFunction, IsNarrowable<abi, Abi>> & { dataSuffix?: `0x${string}` | undefined; })[K]; } & { type?: "eip2930" | undefined; nonce?: number | undefined; gas?: bigint | undefined; gasPrice?: bigint | undefined; maxFeePerBlobGas?: undefined; maxFeePerGas?: undefined; maxPriorityFeePerGas?: undefined; accessList?: AccessList | undefined; }, "chain"> & { chainId?: number | (chainId extends number ? chainId : undefined) | undefined; } & ConnectorParameter & { __mode?: "prepared" | undefined; }> | UnionEvaluate<UnionOmit<{ address: `0x${string}`; abi: abi; functionName: functionName | (functionName extends functionName ? functionName : never); args?: ContractFunctionArgs<abi, "nonpayable" | "payable", functionName> | (abi extends Abi ? UnionWiden<args> : never) | undefined; } & (readonly [] extends ContractFunctionArgs<abi, "nonpayable" | "payable", functionName> ? {} : { args: Widen<args>; }) & { chain?: Chain | null | undefined; } & { [K in keyof ({ account?: `0x${string}` | Account | undefined; } & GetValue<abi, functionName, bigint | undefined, abi extends Abi ? Extract<Extract<abi[number], { type: "function"; stateMutability: AbiStateMutability; }>, { name: functionName; }> : AbiFunction, IsNarrowable<abi, Abi>> & { dataSuffix?: `0x${string}` | undefined; })]: ({ account?: `0x${string}` | Account | undefined; } & GetValue<abi, functionName, bigint | undefined, abi extends Abi ? Extract<Extract<abi[number], { type: "function"; stateMutability: AbiStateMutability; }>, { name: functionName; }> : AbiFunction, IsNarrowable<abi, Abi>> & { dataSuffix?: `0x${string}` | undefined; })[K]; } & { type?: "eip1559" | undefined; nonce?: number | undefined; gas?: bigint | undefined; gasPrice?: undefined; maxFeePerBlobGas?: undefined; maxFeePerGas?: bigint | undefined; maxPriorityFeePerGas?: bigint | undefined; accessList?: AccessList | undefined; }, "chain"> & { chainId?: number | (chainId extends number ? chainId : undefined) | undefined; } & ConnectorParameter & { __mode?: "prepared" | undefined; }>, unknown> | undefined): Promise<`0x${string}`> {
-//   throw new Error("Function not implemented.");
-// }
 

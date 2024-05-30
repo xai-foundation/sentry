@@ -4,7 +4,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
-import { PoolDetails } from "@/app/components/createPool/PoolDetailsComponent";
 import StakePoolKeyComponent from "@/app/components/createPool/StakePoolKeyComponent";
 import {
   loadingNotification,

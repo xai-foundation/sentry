@@ -7,8 +7,6 @@ import RewardComponent, { Rewards } from "@/app/components/createPool/RewardComp
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ButtonBack,
-  PrimaryButton,
-  SecondaryButton,
 } from "@/app/components/buttons/ButtonsComponent";
 import { useRouter } from "next/navigation";
 import { useAccount, useSwitchChain, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
@@ -18,6 +16,7 @@ import { POOL_SHARES_BASE, getNetwork, getUnstakedKeysOfUser, mapWeb3Error, ZERO
 import StakePoolKeyComponent from "./StakePoolKeyComponent";
 import DelegateAddressComponent from "./DelegateAddressComponent";
 import { Id } from "react-toastify";
+import { PrimaryButton } from "../ui";
 
 const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
   const router = useRouter();
@@ -154,7 +153,7 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
   return (
     <>
       {showStakePoolKey ? (
-        <div className="flex w-full flex-col items-center lg:px-[350px] sm:px-3">
+        <div className="flex w-full flex-col items-center lg:px-[350px]">
           <StakePoolKeyComponent
             onConfirm={onConfirm}
             poolName={poolDetailsValues.name}
@@ -166,10 +165,10 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
           />
         </div>
       ) : (
-        <div className="flex w-full flex-col items-center md:w-2/3 sm:px-3">
-          <div className="sm:py-5 sm:px-0 lg:flex sm:grid sm:flex-col sm:items-center lg:items-start min-w-full border-b-1 mb-2">
-            <ButtonBack onClick={() => router.back()} btnText="Back" extraClasses="max-w-[70px]" />
-            <MainTitle title={"Create new pool"} />
+        <div className="flex w-full flex-col items-center md:w-2/3">
+          <div className="sm:py-5 sm:pb-0 sm:px-0 lg:flex sm:grid sm:flex-col sm:items-center lg:items-start min-w-full">
+            <ButtonBack onClick={() => router.push('/pool')} btnText="BACK TO MY POOLS" extraClasses="text-lg text-white font-bold mb-4 sm:pl-5 lg:px-0" />
+            <MainTitle title={"Create new pool"} classNames="!mb-0 sm:pl-5 lg:px-0" />
           </div>
           <div ref={ref} className="sm:py-5 sm:px-0 lg:flex sm:grid sm:flex-col sm:items-center lg:items-start min-w-full">
             <PoolDetailsComponent
@@ -201,12 +200,12 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
               setSocialLinks={setSocialLinks}
             />
 
-            <div className="flex flex-row justify-between w-full border-t-1 py-6">
-              <SecondaryButton btnText="Cancel" onClick={() => router.back()} />
+            <div className="flex sm:flex-col-reverse lg:flex-row justify-between w-full py-5 px-6 bg-nulnOilBackground shadow-default">
+              <PrimaryButton btnText="Cancel" onClick={() => router.back()} colorStyle="outline" className="sm:w-full lg:w-[205px] uppercase" wrapperClassName=""  />
               <PrimaryButton
-                btnText="Save and confirm"
+                btnText="Save and continue"
                 onClick={handleClick}
-                className="font-semibold disabled:opacity-50"
+                className="font-semibold uppercase sm:w-full lg:w-[305px] sm:mb-5 lg:mb-0"
                 isDisabled={
                   showErrors &&
                   (searchDetailsErrors() ||

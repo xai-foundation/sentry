@@ -29,17 +29,17 @@ export default function xRootLayout({
   // const initialState = cookieToInitialState(config, headers().get("cookie"));
   return (
     <html lang="en">
-      <body>
+      <body className="bg-background-image overflow-y-scroll bg-cover bg-fixed bg-center bg-no-repeat">
         <ContextProvider>
-          <IpLocationChecker>
-            <Providers>
-              {/* <ThemeSwitcher /> */}
-              <WrapperComponent>
-                {children}
-              </WrapperComponent>
-              <ReactCookieConsent />
-            </Providers>
-          </IpLocationChecker>
+            <IpLocationChecker>
+              <Providers>
+                {/* <ThemeSwitcher /> */}
+                <WrapperComponent>
+                  {children}
+                </WrapperComponent>
+                <ReactCookieConsent />
+              </Providers>
+            </IpLocationChecker>
         </ContextProvider>
       </body>
       <GoogleAnalytics gaId={gaId} />

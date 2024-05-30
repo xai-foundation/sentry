@@ -89,7 +89,6 @@ const TotalStakedComponent = ({
           <ConnectButton
             onOpen={onOpen!}
             address={address}
-            variant={"overview"}
           />
         )}
       </div>

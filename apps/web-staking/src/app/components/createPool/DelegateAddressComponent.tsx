@@ -1,7 +1,9 @@
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { PoolInput } from "../input/InputComponent";
+import { Dispatch, SetStateAction, useState } from "react";
 import MainTitle from "../titles/MainTitle";
 import { ExternalLinkComponent } from "../links/LinkComponent";
+import BaseInput, { InputSizes } from "../ui/inputs/BaseInput";
+import { BaseCallout } from "../ui";
+import { WarningIcon } from "../icons/IconsComponent";
 
 interface DelegateAddressProps {
   ownerAddress: string | undefined;
@@ -10,6 +12,7 @@ interface DelegateAddressProps {
   error: boolean;
   setError: Dispatch<SetStateAction<boolean>>;
   showErrors?: boolean;
+  editStyles?: boolean;
 }
 
 const DelegateAddressComponent = ({
@@ -18,7 +21,8 @@ const DelegateAddressComponent = ({
   setDelegateAddress,
   error,
   setError,
-  showErrors
+  showErrors,
+  editStyles
 }: DelegateAddressProps) => {
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -41,15 +45,16 @@ const DelegateAddressComponent = ({
   };
 
   return (
-    <div className="border-t-1 w-full py-5 mt-[55px] lg:mb-[50px]">
-      <div className="w-full py-3">
-        <MainTitle
-          title="Delegate address"
-          classNames="text-xl font-bold !mb-0"
-        />
-      </div>
-      <div className="flex justify-between pt-4">
-        <span className="block mb-4 max-w-[70%] text-graphiteGray">
+    <>
+    <div className="w-full py-5 px-6 border-b border-chromaphobicBlack bg-nulnOilBackground pb-5 shadow-default">
+      <MainTitle
+        title="Delegate address"
+        classNames="text-[30px] font-bold normal-case !mb-0"
+      />
+    </div>
+      <div className={`w-full pt-5 pb-6 ${editStyles ? "mb-0" : "mb-[30px]"} bg-nulnOilBackground px-6 shadow-default`}>
+      <div className="flex sm:flex-col lg:flex-row justify-between">
+        <span className="block mb-4 lg:max-w-[70%] text-americanSilver text-lg">
           This field is optional and is used if you want to delegate operator
           control of the keys in your pool to another address you own.
         </span>
@@ -57,20 +62,28 @@ const DelegateAddressComponent = ({
           externalTab
           link="https://xai-foundation.gitbook.io/xai-network"
           content="Learn more"
-          customClass="!text-base"
+          customClass="!text-lg !font-bold sm:mb-4 lg:mb-0"
         />
       </div>
-      <PoolInput
+
+      <BaseInput
         name="delegateAddress"
         type="text"
         label=""
         placeholder="Enter delegate address here"
-        onChange={handleChange}
+        placeholderColor="placeholder-dugong text-lg"
         value={delegateAddress}
         isInvalid={showErrors && error}
-        errorMessage={errorMessage}
+        size={InputSizes.lg}
+        onChange={handleChange}
       />
-    </div>
+
+      {showErrors && error && <BaseCallout isWarning extraClasses={{ calloutWrapper: "w-full mt-2 sm:text-base lg:text-lg", calloutFront: "!justify-start" }}>
+            <WarningIcon className="mr-2"/>
+            {errorMessage}
+          </BaseCallout>}
+      </div>
+    </>
   );
 };
 
