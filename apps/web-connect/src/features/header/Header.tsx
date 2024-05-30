@@ -1,4 +1,3 @@
-import {useNavigate} from "react-router-dom";
 import {ConnectButton, ExternalLink} from "@sentry/ui";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
 import {useAccount} from "wagmi";
@@ -8,19 +7,18 @@ import MobileNavbar from "@/features/header/MobileNavbar";
 import {useState} from "react";
 
 export function Header() {
-	const navigate = useNavigate();
 	const {open} = useWeb3Modal();
 	const {address} = useAccount()
 	const [isNavbarOpened, setIsNavbarOpened] = useState(false)
 	return (
 		<div className="w-full">
 			<div className="fixed top-0 flex w-full justify-between items-center bg-transparent z-[10]">
-				<div
+				<a
 					className="w-full group md:max-w-[108px] md:min-h-[108px] min-h-[64px] max-w-[64px] flex items-center bg-hornetSting justify-center hover:bg-white duration-200 ease-in cursor-pointer"
-					onClick={() => navigate("/")}
+					href="https://xai.games/"
 				>
 					<XaiLogo className="md:w-[43px] md:h-[38px] w-[26px] h-[23px] fill-white group-hover:fill-hornetSting duration-200 ease-in" />
-				</div>
+				</a>
 				<div className="font-bold text-xl items-center gap-[20px] uppercase text-white hidden md:flex">
 					<ExternalLink
 						content={"DOCS"}
