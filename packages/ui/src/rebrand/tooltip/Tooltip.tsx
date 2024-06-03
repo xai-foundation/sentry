@@ -105,7 +105,7 @@ const CustomTooltip = ({
       <div
         onMouseOver={openOnHover}
         className={`${isOpened ? "block" : "hidden"} ease-in duration-300 z-40`}>
-        <div className={`absolute w-[50px] top-[18px] left-[-6px] ${extraClasses?.arrowStyles}`}><BlackPyramidIcon width={28} height={24}/></div>
+        <div className={`absolute px-3 top-[17px] left-[-18px] ${extraClasses?.arrowStyles}`}><BlackPyramidIcon width={28} height={24}/></div>
         <div
           className={`absolute w-[456px] ${isWarning ? "bg-bananaBoat" : "bg-[#000000]"} py-[15px] px-[15px] top-[41px] left-[38px] ${extraClasses?.tooltipContainer}`}>
           {header && <span
