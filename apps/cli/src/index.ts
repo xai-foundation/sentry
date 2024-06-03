@@ -46,7 +46,7 @@ import { startKycProcess } from './commands/kyc/start-kyc-process.js';
 import { generateRevenueReport } from './commands/licenses/generate-revenue-report.js';
 import { displayNodeAgreement } from './commands/display-node-agreement.js';
 import { startCentralizationRuntime } from './commands/start-centralization-runtime.js';
-
+import { exportChallengeInfo } from './commands/export-challenge-info.js';
 
 import {version} from "@sentry/core";
 
@@ -100,6 +100,7 @@ startKycProcess(cli);
 generateRevenueReport(cli);
 displayNodeAgreement(cli);
 startCentralizationRuntime(cli);
+exportChallengeInfo(cli);
 
 console.log(`Starting Sentry cli version ${version}`);
 console.log(`Stake and redeem esXAI at https://app.xai.games`);
