@@ -10,9 +10,9 @@ const PoolStakingInfoChild = ({
   content,
 }: PoolStakingInfoChildProps) => {
   return (
-    <div>
-      <span className="block">{title}</span>
-      <span className="block text-lg font-bold">{content}</span>
+    <div className="pb-[15px] mt-[15px]">
+      <span className="block text-elementalGrey text-lg font-medium">{title}</span>
+      <span className="block text-xl font-semibold">{content}</span>
     </div>
   );
 };

@@ -7,6 +7,7 @@ import {
   TableRowStaked,
   TableRowAvatarV1,
   TableHeadStaking,
+  TableRowCapacity,
 } from "./TableChunksComponents";
 import MessageComponent from "./MessageComponent";
 import { PoolInfo, TierInfo } from "@/types/Pool";
@@ -15,11 +16,23 @@ import { getCurrentTierByStaking } from "./utils";
 import { formatCurrencyNoDecimals, formatCurrencyWithDecimals, hideDecimals } from "@/app/utils/formatCurrency";
 
 const POOL_DATA_COLUMNS_STAKED = [
-  "Pool",
-  "Tier",
-  "esXAI staked",
-  "Keys staked",
-  ""
+  "POOL NAME",
+  "POOL TIER",
+  "",
+  // "POOL UPTIME",
+  "esXAI STAKED",
+  "KEYS STAKED",
+  "ACTIONS"
+] as const;
+
+const POOL_DATA_COLUMNS_STAKED_MOBILE = [
+  "",
+  "POOL TIER",
+  "",
+  // "POOL UPTIME",
+  "esXAI STAKED/ KEYS STAKED",
+  // "KEYS STAKED",
+  // "ACTIONS"
 ] as const;
 
 const StakedPoolsTable = (
@@ -27,12 +40,16 @@ const StakedPoolsTable = (
     userPools,
     v1Stake,
     v1MaxStake,
-    tiers
+    tiers,
+    showTableKeys,
+    maxKeyPerPool
   }: {
     userPools: PoolInfo[],
     v1Stake: number,
     v1MaxStake: number,
     tiers: Array<TierInfo & { icon?: iconType }>
+    showTableKeys: boolean;
+    maxKeyPerPool: number;
   }
 ) => {
   const [showMessage, setShowMessage] = useState(true);
@@ -48,8 +65,8 @@ const StakedPoolsTable = (
           onClick={() => setShowMessage(false)}
         />
       )}
-      <table className="min-w-full text-base font-light mb-[50px]">
-        <thead className="border-b">
+      <table className="min-w-full text-base font-light sm:mb-[25px] lg:mb-[50px] bg-nulnOilBackground shadow-default">
+        <thead className="sm:hidden lg:table-header-group">
           <tr>
             {POOL_DATA_COLUMNS_STAKED.map((column, index) => {
               return (
@@ -63,31 +80,48 @@ const StakedPoolsTable = (
             })}
           </tr>
         </thead>
+        <thead className="lg:hidden">
+          <tr>
+            {POOL_DATA_COLUMNS_STAKED_MOBILE.map((column, index) => {
+              return (
+                <TableHeadStaking
+                  key={index}
+                  column={column}
+                  index={index}
+                  showTableKeys
+                />
+              );
+            })}
+          </tr>
+        </thead>
         <tbody>
           {v1Stake > 0 &&
-            <tr key={"v1staking"} className={`border-b  text-right`}>
-              <TableRowAvatarV1 value="V1 Stake" index={0} tier={getCurrentTierByStaking(Math.min(v1MaxStake, v1Stake), tiers) as TierInfo & { icon: iconType }} />
+            <tr key={"v1staking"} className={`border-b border-dynamicBlack text-right group`}>
+              <TableRowAvatarV1 value="V1 Stake" index={0} tier={getCurrentTierByStaking(Math.min(v1MaxStake, v1Stake), tiers) as TierInfo & { icon: iconType }} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" />
               <TableRowLabel
                 tier={getCurrentTierByStaking(Math.min(v1MaxStake, v1Stake), tiers) as TierInfo & {
                   icon: iconType
-                }} poolAddress={""} fullWidth />
-              <TableRowStaked value={`${v1Stake < 0.0001 ? "<0.0001" : formatCurrencyNoDecimals.format(v1Stake)} esXAI`} />
-              <TableRowStaked value="—" customClass="lg:table-cell" />
-              <TableRowKeysRewards totalStaked={v1Stake} />
+                }} poolAddress={""} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in"/>
+              <TableRowStaked value="—" positionStyles="!items-start" customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in"/>
+              <TableRowStaked value={`${v1Stake < 0.0001 ? "<0.0001" : formatCurrencyNoDecimals.format(v1Stake)} esXAI`} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in lg:pr-8" />
+              <TableRowStaked value="—" customClass="lg:table-cell sm:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="items-center"/>
+              <TableRowKeysRewards totalStaked={v1Stake} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" />
             </tr>
           }
           {
             userPools.map((pool, index) => {
               return (
-                <tr key={index} className={`border-b text-right`}>
-                  <TableRowPool pool={pool} tier={getCurrentTierByStaking(Math.min(pool.totalStakedAmount, pool.maxStakedAmount), tiers) as TierInfo & { icon: iconType }} />
+                <tr key={index} className={`border-b border-dynamicBlack text-right group`}>
+                  <TableRowPool pool={pool} tier={getCurrentTierByStaking(Math.min(pool.totalStakedAmount, pool.maxStakedAmount), tiers) as TierInfo & { icon: iconType }} customClass="lg:pr-2 group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" />
                   <TableRowLabel
                     tier={getCurrentTierByStaking(Math.min(pool.totalStakedAmount, pool.maxStakedAmount), tiers) as TierInfo & {
                       icon: iconType
-                    }} poolAddress={pool.address} fullWidth />
-                  <TableRowStaked value={`${pool.userStakedEsXaiAmount ? pool.userStakedEsXaiAmount < 0.0001 ? "<0.0001" : hideDecimals(formatCurrencyWithDecimals.format(pool.userStakedEsXaiAmount)) : 0} esXAI`} poolAddress={pool.address} />
-                  <TableRowStaked value={`${formatCurrencyNoDecimals.format(pool.userStakedKeyIds.length)} keys`} poolAddress={pool.address} />
-                  <TableRowKeysRewards pool={pool} totalStaked={0} />
+                    }} poolAddress={pool.address} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in"/>
+                  <TableRowCapacity pool={pool} showTableKeys={showTableKeys} maxKeyPerPool={maxKeyPerPool} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" />
+                  {/* <TableRowStaked value={"__%"}/> POOL UPTIME */} 
+                  <TableRowStaked value={`${pool.userStakedEsXaiAmount ? pool.userStakedEsXaiAmount < 0.0001 ? "<0.0001" : hideDecimals(formatCurrencyWithDecimals.format(pool.userStakedEsXaiAmount)) : 0} esXAI`} poolAddress={pool.address} keys={`${pool.userStakedKeyIds.length} keys`} customClass="lg:pr-8 group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end" />
+                  <TableRowStaked value={`${formatCurrencyNoDecimals.format(pool.userStakedKeyIds.length)} keys`} poolAddress={pool.address} customClass="lg:table-cell sm:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="items-center"/>
+                  <TableRowKeysRewards pool={pool} totalStaked={0} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" />
                 </tr>
               )
             })
@@ -100,10 +134,10 @@ const StakedPoolsTable = (
 
 function TableDescription({ poolCount }: { poolCount: number }) {
   return (
-    <div className="flex items-baseline">
-      <MainTitle title={"Staked Pools"} classNames="text-xl font-bold !mb-8" />
-      <span className="ml-3 text-graphiteGray">
-        {poolCount} pools
+    <div className="flex flex-col items-baseline w-full sm:pt-[75px] sm:pb-4 sm:px-[17px] lg:px-7 lg:py-5 bg-nulnOilBackground">
+      <MainTitle title={"Staked pools"} classNames="lg:text-[30px] sm:text-[24px] font-bold text-white !lg:mb-0 !mb-2 normal-case" />
+      <span className="text-elementalGrey text-lg">
+        {poolCount} staked pools
       </span>
     </div>
   );

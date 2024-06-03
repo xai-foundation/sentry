@@ -19,7 +19,7 @@ export default function WrapperComponent({ children }: { children: React.ReactNo
 				<div className="hidden lg:block">
 					<SidebarComponent />
 				</div>
-				<div className="w-full">
+				<div className="w-full min-h-screen h-full">
 					<NavbarComponent />
 					{children}
 				</div>

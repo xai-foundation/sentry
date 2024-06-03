@@ -305,6 +305,8 @@ export const getRedemptions = async (network: NetworkKey, walletAddress: string)
 					cachedRedemptions[i].completed = res.completed;
 					cachedRedemptions[i].cancelled = res.cancelled;
 					cachedRedemptions[i].endTime = Number(res.endTime) * 1000;
+					closed.push(redemption);
+					continue;
 				}
 			}
 
@@ -330,7 +332,7 @@ export const getRedemptions = async (network: NetworkKey, walletAddress: string)
 		}),
 
 		closed: closed.sort((a: RedemptionRequest, b: RedemptionRequest) => {
-			return a.endTime - b.endTime;
+			return b.endTime - a.endTime;
 		}),
 	};
 }

@@ -28,7 +28,7 @@ type Pagination = {
 	// direction: 0 | 1,
 }
 
-export type PagedPools = { count: number, poolInfos: PoolInfo[] }
+export type PagedPools = { count: number, poolInfos: PoolInfo[], totalPoolsInDB: number }
 
 export const findPools = async ({
 	pagination = {
@@ -85,9 +85,14 @@ export const findPools = async ({
 			PoolModel.find(filter).countDocuments()
 		)) as number;
 
+		const totalPoolsInDB = (await executeQuery(
+            PoolModel.find().countDocuments()
+        )) as number;
+
 		return {
 			count: poolCount,
 			poolInfos: filteredPools.map((p) => mapPool(p)),
+			totalPoolsInDB
 		};
 	} catch (error) {
 		throw new Error(`ERROR @findPools: ${error}`);

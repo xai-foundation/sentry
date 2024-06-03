@@ -4,11 +4,9 @@ import moment from "moment";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ButtonBack,
-  PrimaryButton,
-  SecondaryButton,
 } from "../buttons/ButtonsComponent";
 import { useRouter } from "next/navigation";
-import { ErrorCircle } from "../icons/IconsComponent";
+import { WarningIcon } from "../icons/IconsComponent";
 import RewardComponent from "../createPool/RewardComponent";
 import MainTitle from "../titles/MainTitle";
 import { useGetPoolInfoHooks, useGetRewardBreakdownUpdateDelay } from "@/app/hooks/hooks";
@@ -20,6 +18,7 @@ import {
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import { POOL_SHARES_BASE, mapWeb3Error } from "@/services/web3.service";
 import { Id } from "react-toastify";
+import { BaseCallout, PrimaryButton } from "../ui";
 
 const EditRewardsComponent = () => {
   const { rewardsValues, setRewardsValues, isLoading, poolAddress } = useGetPoolInfoHooks();
@@ -94,21 +93,19 @@ const EditRewardsComponent = () => {
   return (
     <>
       {!isLoading && (
-        <div className="flex w-full flex-col items-center md:w-2/3 sm:px-3">
-          <div className="sm:py-5 sm:px-0 lg:flex sm:grid sm:flex-col sm:items-center lg:items-start min-w-full mb-2">
-            <ButtonBack onClick={() => router.back()} btnText="Back" />
-            <MainTitle title={"Edit reward breakdown"} classNames="!mb-0" />
+        <div className="flex w-full flex-col items-center md:w-2/3">
+          <div className="sm:p-5 sm:px-0 lg:flex sm:grid sm:flex-col sm:items-center lg:items-start min-w-full mb-2">
+            <ButtonBack onClick={() => router.push('/pool')} btnText="BACK TO MY POOLS" extraClasses="text-lg mb-3 text-white font-bold sm:px-4 lg:px-0" />
+            <MainTitle title={"Edit reward breakdown"} classNames="!mb-0 sm:px-4 lg:px-0" />
           </div>
-          <div className="flex relative flex-col mb-4 bg-[#FFF9ED] text-left px-[40px] py-[15px] w-full p-3 rounded-xl">
-            <div className="absolute top-4 left-3">
-              <ErrorCircle width={20} height={20} />
-            </div>
-            <span className="text-[#C36522]">
+          <div className="flex relative flex-col bg-nulnOilBackground text-left px-6 shadow-default py-5 w-full p-3">
+            <BaseCallout isWarning extraClasses={{ calloutWrapper: "w-full text-lg", calloutFront: "!justify-start !items-start" }}>
+              <WarningIcon className="mr-2 min-w-[27px]"/>
               {`Reward breakdown changes will have a waiting period of ${rewardBreakdownDelay}
-              before going into effect.`}
-            </span>
+               before going into effect.`}
+            </BaseCallout>
           </div>
-          <div className="sm:py-5 sm:px-0 lg:flex sm:grid sm:flex-col sm:items-center lg:items-start min-w-full">
+          <div className="sm:px-0 lg:flex sm:grid sm:flex-col sm:items-center lg:items-start min-w-full">
             <RewardComponent
               rewardsValues={rewardsValues}
               setRewardsValues={setRewardsValues}
@@ -117,12 +114,12 @@ const EditRewardsComponent = () => {
               showErrors={true}
             />
           </div>
-          <div className="flex flex-row justify-between w-full border-t-1 py-6">
-            <SecondaryButton btnText="Cancel" onClick={() => router.back()} />
+          <div className="flex sm:flex-col-reverse lg:flex-row justify-between w-full py-5 px-6 bg-nulnOilBackground shadow-default">
+            <PrimaryButton btnText="Cancel" onClick={() => router.back()} colorStyle="outline" className="sm:w-full lg:w-[205px] uppercase" />
             <PrimaryButton
               btnText="Save and continue"
               onClick={onConfirm}
-              className="font-semibold disabled:opacity-50"
+              className="font-semibold uppercase sm:w-full lg:w-[305px] sm:mb-5 lg:mb-0"
               isDisabled={errorValidationRewards || transactionLoading}
             />
           </div>

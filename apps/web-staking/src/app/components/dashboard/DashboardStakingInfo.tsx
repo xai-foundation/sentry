@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Id } from "react-toastify";
 import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
-import { PrimaryButton } from "@/app/components/buttons/ButtonsComponent";
 import { ExternalLinkComponent } from "@/app/components/links/LinkComponent";
 import {
   loadingNotification,
@@ -21,6 +20,7 @@ import {
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import ClaimableRewardsComponent from "@/app/components/staking/ClaimableRewardsComponent";
 import { formatCurrencyWithDecimals } from "@/app/utils/formatCurrency";
+import { PrimaryButton } from "@/app/components/ui";
 
 interface DashboardStakingInfoProps {
   totalStaked: number;
@@ -117,70 +117,79 @@ const DashboardStakingInfo = ({
 
 
   return (
-    <section className="mb-10 w-full">
+    <section className="mt-10 mb-14 w-full">
       <div
-        className="mt-10 flex h-[95px] w-full max-w-[928px] flex-col justify-center rounded-2xl bg-crystalWhite pl-[21px]">
-        <div className="flex justify-between">
-          <span className="text-graphiteGray">XAI redemptions</span>
-          <ExternalLinkComponent
-            link={"/redeem"}
-            content={"View redemptions"}
-            customClass="mr-1 lg:mr-4"
-          />
-        </div>
-        <div className="flex justify-between">
-          <span className="mt-1 text-2xl font-medium">
+        className="flex w-full items-center justify-between py-[17px] md:px-[25px] px-[17px] bg-nulnOil/75 border-b-1 border-chromaphobicBlack shadow-default">
+        <h3 className="md:text-3xl text-2xl text-white font-bold">
+          Redemptions
+        </h3>
+        <ExternalLinkComponent
+          link={`/redeem`}
+          content={"Manage redemptions"}
+          customClass="uppercase !font-bold !text-lg"
+        />
+      </div>
+      <div
+        className="flex w-full justify-between items-center md:gap-x-10 gap-x-[54px] md:px-[25px] px-[17px] flex-wrap h-full py-[17px] bg-dynamicBlack shadow-default">
+        <div className="flex flex-col justify-between ">
+          <span className="block text-elementalGrey text-lg font-medium">XAI redemptions</span>
+          <span className="text-2xl font-semibold text-white">
             {calculatedClaimableRedemptions} XAI
           </span>
-          {calculatedClaimableRedemptions > 0 && (
-            <PrimaryButton
-              btnText="Claim"
-              onClick={() => onClaimXaiRedemptions(claimable[0]!)}
-              className="w-full max-w-[120px] !py-[5px] font-semibold lg:mr-3"
-              isDisabled={isLoading}
-            />
-          )}
         </div>
+        {calculatedClaimableRedemptions > 0 && (
+          <PrimaryButton
+            btnText="Claim"
+            onClick={() => onClaimXaiRedemptions(claimable[0]!)}
+            className="w-full lg:min-w-[160px] min-w-[166px] !py-[5px] !font-bold !text-xl lg:mr-3 uppercase"
+            isDisabled={isLoading}
+          />
+        )}
       </div>
 
-      <div className="mt-10 w-full max-w-[928px]">
-        <div className="mb-1 flex justify-between">
-          <h3 className="text-xl font-bold text-lightBlackDarkWhite">
+      <div className="mt-10 w-full">
+        <div
+          className="flex w-full items-center justify-between py-[17px] md:px-[25px] px-[17px] bg-nulnOil/75 border-b-1 border-chromaphobicBlack shadow-default">
+          <h3 className="md:text-3xl text-2xl text-white font-bold">
             Staking
           </h3>
           <ExternalLinkComponent
             link={`/staking?chainId=${chainId}`}
             content={"Manage staking"}
-            customClass="mr-1 lg:mr-4"
+            customClass="uppercase !font-bold !text-lg"
           />
         </div>
       </div>
-      <div className="flex w-full max-w-[928px] flex-col justify-between xl:flex-row">
+      <div className="flex w-full flex-col justify-between xl:flex-row relative">
         <div
-          className="mr-3 mt-[12px] flex sm:flex-col lg:flex-row sm:items-start w-full max-w-full lg:items-center gap-x-14 rounded-2xl bg-crystalWhite px-[21px] sm:py-1 lg:py-0 lg:mr-0 xl:mr-3 xl:max-w-[515px]">
+          className="w-full md:px-[25px] px-[17px] flex-wrap h-full py-[17px] bg-dynamicBlack shadow-default">
+          <div className="xl:mb-0 flex md:gap-x-10 gap-x-[54px] mb-[94px] flex-wrap ">
           <div className="">
-            <span className="block text-graphiteGray">Staked esXAI</span>
-            <span className="mt-1 block text-2xl font-medium">
+            <span className="block text-elementalGrey text-lg leading-[20px]">Your staked esXAI</span>
+            <span className="block text-2xl font-semibold text-white">
               {formatCurrencyWithDecimals.format(totalStaked)}
-              <span className="ml-1">esXAI </span>  
+              <span className="ml-1">esXAI </span>
             </span>
           </div>
-          <div>
-            <span className="block text-graphiteGray">Staked keys</span>
-            <span className="mt-1 block text-2xl font-medium">
+          <div className="w-full max-w-max">
+            <span className="block text-elementalGrey text-lg leading-[20px]">Your staked keys</span>
+            <span className="block text-2xl font-semibold text-white">
               {stakedKeysAmount} keys
             </span>
           </div>
+          </div>
+          <ClaimableRewardsComponent
+            totalClaimAmount={currentTotalClaimableAmount}
+            onClaim={onClaimRewards}
+            disabled={isLoading || rewardsTransactionLoading || currentTotalClaimableAmount === 0}
+            wrapperClasses="absolute left-[17px] xl:left-auto xl:right-[25px] xl:top-[-10px] bottom-[-25px] shadow-default xl:max-w-[456px] max-w-[calc(100%-34px)] w-full"
+          />
         </div>
-        <ClaimableRewardsComponent
-          totalClaimAmount={currentTotalClaimableAmount}
-          onClaim={onClaimRewards}
-          disabled={isLoading || rewardsTransactionLoading || currentTotalClaimableAmount === 0}
-          wrapperClasses="mt-[12px]"
-        />
+
       </div>
     </section>
-  );
+  )
+    ;
 };
 
 export default DashboardStakingInfo;

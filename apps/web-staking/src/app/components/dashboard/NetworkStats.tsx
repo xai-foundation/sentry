@@ -16,30 +16,32 @@ const NetworkStats = ({
   const totalStakedWithV1 = networkData?.networkTotalStakedEsXAI ? totalV1StakeAmount + networkData.networkTotalStakedEsXAI : totalV1StakeAmount;
 
   return (
-    <section className="w-full max-w-[928px] px-5 xl:px-0">
-      <h3 className="text-lg font-bold mb-4">Network stats</h3>
-      <div className="flex w-full gap-x-14 gap-y-5 rounded-2xl bg-crystalWhite items-center px-[21px] flex-wrap h-full py-[20px]">
-        <div className="flex">
-          <div>
-            <span className="block font-bold text-lightBlackDarkWhite sm:text-base lg:text-2xl">
+    <section className="w-full ">
+      <div
+        className="flex w-full flex-col items-start md:flex-row md:justify-between py-[17px] md:px-[25px] px-[17px] bg-nulnOil/75 border-b-1 border-chromaphobicBlack shadow-default">
+        <h3 className="md:text-3xl text-2xl text-white font-bold">Network stats</h3>
+      </div>
+      <div
+        className="flex w-full md:gap-x-20 gap-x-10 gap-y-5 items-center md:px-[25px] px-[17px] flex-wrap h-full py-[17px] bg-dynamicBlack shadow-default">
+        <div>
+          <span className="block text-lg font-medium text-elementalGrey">Total keys staked</span>
+          <span className="block text-white text-2xl font-semibold">
               {networkData?.networkTotalStakedKeys || 0} keys
             </span>
-            <span className="block">Total keys staked</span>
-          </div>
-          <div className="lg:ml-10 sm:ml-5">
-            <span className="block font-bold text-lightBlackDarkWhite sm:text-base lg:text-2xl">
-              {formatCurrencyNoDecimals.format(totalStakedWithV1)}
-              <span className="ml-1">esXAI</span>
-            </span>
-            <span className="block">Total esXAI staked</span>
-          </div>
         </div>
         <div>
-          <span className="block font-bold text-lightBlackDarkWhite sm:text-base lg:text-2xl">
-            {networkData?.networkPoolsCount || 0} pools
-          </span>
-          <span className="block">
+          <span className="block text-lg font-medium text-elementalGrey">Total esXAI staked</span>
+          <span className="block text-white text-2xl font-semibold">
+              {formatCurrencyNoDecimals.format(totalStakedWithV1)}
+            <span className="ml-1">esXAI</span>
+            </span>
+        </div>
+        <div>
+          <span className="block text-lg font-medium text-elementalGrey">
             Number of pools
+          </span>
+          <span className="block text-white text-2xl font-semibold">
+            {networkData?.networkPoolsCount || 0} pools
           </span>
         </div>
       </div>

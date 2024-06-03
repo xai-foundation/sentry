@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
-import { InfoMark } from "../icons/IconsComponent";
+import { HelpIcon } from "../icons/IconsComponent";
 import { useGetMaxStakePerLicense } from "@/app/hooks/hooks";
 
 const TOKEN_TRACKER_TEXT =
@@ -26,13 +26,18 @@ const PopoverWindow = ({
 }: PopoverWindowProps) => {
   const [openPopover, setOpenPopover] = useState(false);
   const { maxStakePerKey } = useGetMaxStakePerLicense();
-
+  
   return (
     <Popover
       placement={`${start ? "bottom-start" : "bottom-end"}`}
       showArrow={true}
       shadow="md"
       isOpen={openPopover}
+      classNames={{
+        base: [
+          "before:bg-nulnOil",
+        ],
+      }}
     >
       <PopoverTrigger>
         {
@@ -45,11 +50,11 @@ const PopoverWindow = ({
             }}
             className={`ml-1 ${customClass}`}
           >
-            <InfoMark width={small ? 12 : width} height={small ? 12 : height} />
+            <HelpIcon width={small ? 12 : width} height={small ? 12 : height} />
           </span>
         }
       </PopoverTrigger>
-      <PopoverContent className="lg:w-[400px] sm:w-[340px] h-[120px] p-3 text-base text-graphiteGray">
+      <PopoverContent className="lg:w-[400px] sm:w-[340px] h-[120px] p-3 text-base bg-nulnOil text-americanSilver">
         {tokenText ? TOKEN_TRACKER_TEXT : STAKING_TEXT.replace("##MAXSTAKE##", maxStakePerKey.toString())}
       </PopoverContent>
     </Popover>

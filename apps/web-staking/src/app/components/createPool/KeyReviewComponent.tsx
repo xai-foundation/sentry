@@ -1,10 +1,11 @@
-import moment from "moment";
-import MainTitle from "../titles/MainTitle";
-import WarningComponent from "./WarningComponent";
-import { Avatar } from "@nextui-org/react";
-import { ButtonBack, PrimaryButton } from "../buttons/ButtonsComponent";
 import { useState } from "react";
 import { useGetUnstakePeriods } from "@/app/hooks/hooks";
+import moment from "moment";
+import MainTitle from "../titles/MainTitle";
+import { Avatar } from "@nextui-org/react";
+import { ButtonBack } from "../buttons/ButtonsComponent";
+import { PrimaryButton } from "../ui";
+import WarningComponent from "./WarningComponent";
 
 interface KeyReviewProps {
   name: string;
@@ -27,39 +28,48 @@ const KeyReviewComponent = ({
 }: KeyReviewProps) => {
   const [checkbox, setChecbox] = useState(false);
   const unstakePeriods = useGetUnstakePeriods();
+
   moment.relativeTimeThreshold("d", 1000);
 
   return (
-    <main className="flex w-full flex-col items-center">
-      <div className="group flex flex-col items-start max-w-xl w-full p-3">
-        <ButtonBack onClick={onBack} btnText="Back" />
-        <MainTitle title={`Review stake`} />
-        <WarningComponent
-          title={`The final key you unstake from this pool will take ${unstakePeriods.unstakeGenesisKeyDelayPeriod} to unstake.`}
-          description={`All other keys you unstake will take ${unstakePeriods.unstakeKeysDelayPeriod} to unstake.`}
-          checkboxText="I understand the unstake periods for my keys."
-          onAcceptTerms={onAcceptTerms}
-          checkbox={checkbox}
-          setCheckbox={setChecbox}
+    <main className="flex w-full flex-col items-center sm:pb-8 lg:pb-0">
+      <div className="flex flex-col items-start max-w-[500px] w-full p-0">
+        <ButtonBack
+          onClick={onBack}
+          btnText="Back to previous step"
+          extraClasses="text-white text-lg font-bold uppercase mb-4 sm:px-4 lg:px-0"
         />
-        <div className="flex items-center mb-4">
-          <span className="mr-2">Staking to:</span>
-          <Avatar src={logoUrl} className="w-[32px] h-[32px] mr-2" />
-          <span className="text-graphiteGray">{name}</span>
+        <MainTitle title={`CREATE NEW POOL`} classNames="sm:px-4 lg:px-0" />
+
+        <div className="bg-nulnOilBackground w-full shadow-default">
+          <div className="p-5 border-b border-chromaphobicBlack">
+            <WarningComponent
+              title={`The final key you unstake from this pool will take ${unstakePeriods.unstakeGenesisKeyDelayPeriod} to unstake.`}
+              description={`All other keys you unstake will take ${unstakePeriods.unstakeKeysDelayPeriod} to unstake.`}
+              checkboxText="I understand the unstake periods for my keys."
+              onAcceptTerms={onAcceptTerms}
+              checkbox={checkbox}
+              setCheckbox={setChecbox}
+            />
+          </div>
+          <div className="flex items-center text-lg border-b border-chromaphobicBlack sm:px-4 lg:px-6 py-7">
+            <span className="mr-4 text-americanSilver">Staking to:</span>
+            <Avatar src={logoUrl} className="w-[32px] h-[32px] mr-2" />
+            <span className="text-white font-bold">{name}</span>
+          </div>
+          <HeroStat label={"You stake"} value={`${inputValue} ${inputValue == "1" ? "Sentry Key" : "Sentry Keys" }`} />
         </div>
-        <HeroStat label={"You stake"} value={`${inputValue} Sentry Key`} />
-        <HeroStat
-          label={"Pool staking balance after this stake"}
-          value={`${inputValue} Sentry Key`} // TODO needs to be calculated with web3 function
-        />
-        <PrimaryButton
-          onClick={onConfirm}
-          btnText={`${transactionLoading ? "Waiting for confirmation..." : "Confirm"
+
+        <div className="w-full">
+          <PrimaryButton
+            onClick={onConfirm}
+            btnText={`${
+              transactionLoading ? "Waiting for confirmation..." : "Confirm"
             }`}
-          className={`w-full mt-6 font-bold ${transactionLoading && "bg-[#B1B1B1] disabled"
-            } disabled:opacity-50`}
-          isDisabled={!checkbox}
-        />
+            className={`w-full font-bold uppercase`}
+            isDisabled={transactionLoading || !checkbox}
+          />
+        </div>
       </div>
     </main>
   );
@@ -67,11 +77,9 @@ const KeyReviewComponent = ({
 
 function HeroStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col mb-4 bg-crystalWhite w-full p-3 rounded-xl">
-      <label className="text-[#4A4A4A] text-sm mb-1">{label}</label>
-      <span className="text-lightBlackDarkWhite font-medium text-2xl mb-1">
-        {value}
-      </span>
+    <div className="flex flex-col mb-4 bg-nu w-full sm:px-4 lg:px-6 py-5 rounded-xl">
+      <label className="text-americanSilver text-lg mb-1">{label}</label>
+      <span className="text-white font-bold text-4xl mb-1">{value}</span>
     </div>
   );
 }

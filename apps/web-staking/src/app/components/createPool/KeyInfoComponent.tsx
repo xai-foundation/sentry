@@ -9,20 +9,20 @@ const KeyInfoComponent = ({
   logoUrl: string;
 }) => {
   return (
-    <>
+    <div className="bg-nulnOil pt-5 w-full">
       <MainTitle
         title="Stake a key to finish creating your pool"
-        classNames="text-xl font-bold !mb-3"
+        classNames="text-lg font-bold !mb-[10px] normal-case sm:px-4 lg:px-6 !text-americanSilver"
       />
-      <span className="mb-10">
+      <div className="text-americanSilver text-lg pb-5 sm:px-4 lg:px-6 max-w-[400px]">
         Each pool requires at least one staked key from the pool creator
-      </span>
-      <div className="flex items-center mb-4">
-        <span className="mr-2">Staking to:</span>
-        <Avatar src={logoUrl} className="w-[32px] h-[32px] mr-2" />
-        <span className="text-graphiteGray">{name}</span>
       </div>
-    </>
+      <div className="flex items-center py-5 sm:px-4 lg:px-6 text-lg border-t border-chromaphobicBlack">
+        <span className="mr-4 text-americanSilver">Staking to:</span>
+        <Avatar src={logoUrl} className="w-[32px] h-[32px] mr-2" />
+        <span className="text-white font-bold">{name}</span>
+      </div>
+    </div>
   );
 };
 
