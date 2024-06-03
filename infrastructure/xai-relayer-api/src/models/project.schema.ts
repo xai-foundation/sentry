@@ -1,7 +1,21 @@
-import IGameStudio from "@/types/IGameStudio";
 import mongoose from "mongoose";
+import { IUserToProject } from "./userToProject.schema";
 
-const GameStudioSchema = new mongoose.Schema<IGameStudio>({
+interface IProject {
+  name: string;
+  forwarderAddress: string;
+  receiverAddress: string;
+  relayerId: string;
+  refillTimestamp: Date;
+  refillInterval: number;
+  studioLimit: number;
+  studioBalance: number;
+  userLimit: number;
+  userRefillInterval: number;
+  users: IUserToProject[];
+};
+
+const ProjectSchema = new mongoose.Schema<IProject>({
   name: {
     type: String,
     required: true
@@ -43,6 +57,11 @@ const GameStudioSchema = new mongoose.Schema<IGameStudio>({
     type: Number,
     required: true
   },
+  users: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'UserToProject',
+    required: true
+  }],
   createdAt: {
     type: Date,
     required: true,
@@ -50,5 +69,5 @@ const GameStudioSchema = new mongoose.Schema<IGameStudio>({
   }
 });
 
-const GameStudioModel = mongoose.models.GameStudio || mongoose.model<IGameStudio>("GameStudio", GameStudioSchema);
-export default GameStudioModel;
+const ProjectModel = mongoose.models.ProjectSchema || mongoose.model<IProject>("Project", ProjectSchema);
+export default ProjectModel;

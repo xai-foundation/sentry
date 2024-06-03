@@ -1,7 +1,13 @@
-import IUserToGameStudio from "@/types/IUserToGameStudio";
 import mongoose from "mongoose";
 
-const UserToGameStudioSchema = new mongoose.Schema<IUserToGameStudio>({
+export interface IUserToProject {
+    walletAddress: string;
+    lastRefill: Date;
+    lastInteraction: Date;
+    balance: number;
+};
+
+const UserToProject = new mongoose.Schema<IUserToProject>({
     walletAddress: {
         type: String,
         required: true
@@ -27,5 +33,5 @@ const UserToGameStudioSchema = new mongoose.Schema<IUserToGameStudio>({
     }
 });
 
-const UserToGameStudioModel = mongoose.models.UserToGameStudio || mongoose.model<IUserToGameStudio>("UserToGameStudio", UserToGameStudioSchema);
-export default UserToGameStudioModel;
+const UserToProjectModel = mongoose.models.UserToProject || mongoose.model<IUserToProject>("UserToProject", UserToProject);
+export default UserToProjectModel;
