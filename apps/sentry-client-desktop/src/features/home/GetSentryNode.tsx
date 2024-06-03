@@ -89,7 +89,7 @@ export function GetSentryNode() {
 				</div>
 			</div>
 
-			<video
+			{/* <video
 				className="fixed bottom-[-10rem] left-0 w-screen object-cover -z-10"
 				autoPlay
 				loop
@@ -97,7 +97,7 @@ export function GetSentryNode() {
 				playsInline
 			>
 				<source src="/videos/node-bg-4k.mp4" type="video/mp4"/>
-			</video>
+			</video> */}
 		</div>
 	);
 }
