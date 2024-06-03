@@ -4,18 +4,8 @@ const { Web3 } = require("web3");
 const XAI_FORWARDER_ADDRESS = "0x9D7f74d0C41E726EC95884E0e97Fa6129e3b5E99";
 const XAI_CHAIN_ID = 1;
 
-
 const RECEIVER_CONTRACT = "0xEc29164D68c4992cEdd1D386118A47143fdcF142"; //Test contract on ARB Sepolia
 //Is only relevant for localKeyProvider / HDWalletProvider initialization, for production, it won't matter what RPC URL is used here 
-
-const signPermits = async (signerWallet, localKeyProvider) => {
-
-    let output = [];
-    output.push({ wallet: FROM_ADDRESS, amount: 0, sig });
-
-    return output;
-};
-
 
 const testSignMetaTX = async (
     forwardRequest,
@@ -36,7 +26,6 @@ const testSignMetaTX = async (
         value: "0",
         gas: forwardRequest.gas,
         nonce: forwardRequest.nonce,
-        deadline: forwardRequest.deadline,
         data: new Web3().utils.sha3(forwardRequest.data), //Important to hash the data field
     };
 
@@ -54,7 +43,6 @@ const testSignMetaTX = async (
                 { name: "value", type: "uint256" },
                 { name: "gas", type: "uint256" },
                 { name: "nonce", type: "uint256" },
-                { name: "deadline", type: "uint48" },
                 { name: "data", type: "bytes" },
             ],
         },
@@ -124,7 +112,6 @@ const main = async () => {
             to: RECEIVER_CONTRACT,
             gas: "1000000",
             nonce: "0", //TODO get nonce from forwarder
-            deadline: Math.floor(Date.now() / 1000) + 300,
             data: data,
         };
 

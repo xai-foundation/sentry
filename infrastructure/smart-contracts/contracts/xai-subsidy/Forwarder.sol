@@ -9,7 +9,7 @@ contract Forwarder is Initializable {
     bytes32 public DOMAIN_SEPARATOR;
     bytes32 public constant FORWARD_REQUEST_TYPEHASH =
         keccak256(
-            "ForwardRequest(address from,address to,uint256 value,uint256 gas,uint256 nonce,uint48 deadline,bytes data)"
+            "ForwardRequest(address from,address to,uint256 value,uint256 gas,uint256 nonce,bytes data)"
         );
 
     // Mapping to store nonces for each sender
@@ -20,7 +20,7 @@ contract Forwarder is Initializable {
         address to; // destination address, in this case the Receiver Contract
         uint256 value; // ETH Amount to transfer to destination
         uint256 gas; // gas limit for execution
-        uint48 deadline; // signed request maximum valid until
+        uint256 nonce; // the users nonce for this request
         bytes data; // the data to be sent to the destination
     }
 
@@ -58,7 +58,6 @@ contract Forwarder is Initializable {
                         request.value,
                         request.gas,
                         nonces[request.from],
-                        request.deadline,
                         keccak256(request.data)
                     )
                 )
@@ -80,11 +79,10 @@ contract Forwarder is Initializable {
         ForwardRequest calldata request,
         bytes calldata signature
     ) public payable returns (bool, bytes memory) {
-        require(request.deadline >= block.timestamp, "Invalid msg.value");
         require(msg.value == request.value, "Invalid msg.value");
         require(
             verify(request, signature),
-            "TrustedForwarder: signature does not match request"
+            "Forwarder: signature does not match request"
         );
 
         nonces[request.from]++;
