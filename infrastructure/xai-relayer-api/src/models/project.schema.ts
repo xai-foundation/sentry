@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 export interface IProject {
   name: string;
   forwarderAddress: string;
-  receiverAddress: string;
   relayerId: string;
+  backendWallet: string;
   lastRefill: Date;
   refillInterval: number;
   projectLimit: number;
@@ -24,11 +24,12 @@ const ProjectSchema = new mongoose.Schema<IProject>({
     type: String,
     required: true
   },
-  receiverAddress: {
-    type: String,
-    required: true
-  },
   relayerId: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  backendWallet: {
     type: String,
     required: true
   },
