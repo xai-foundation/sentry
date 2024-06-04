@@ -13,6 +13,7 @@ import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
 import {useStorage} from "@/features/storage";
 import {AllowedWalletsCard} from "@/features/home/modals/actions-required/AllowedWalletsCard";
+import { WarningIcon } from "../../../../../../../packages/ui/src/rebrand/icons/IconsComponents";
 
 export function ActionsRequiredNotAccruingDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -24,10 +25,11 @@ export function ActionsRequiredNotAccruingDrawer() {
 	return (
 		<div className="h-full flex flex-col justify-start items-center">
 			<div
-				className="w-full h-[4rem] min-h-[4rem] flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
+				className="w-full h-[4rem] min-h-[4rem] flex flex-row justify-between items-center border-b border-primaryBorderColor text-lg font-semibold px-8">
 				{!accruing && (
 					<div className="flex flex-row gap-2 items-center">
-						<AiFillWarning className="w-7 h-7 text-[#F59E28]"/> <span>Actions required</span>
+						<WarningIcon width={28} height={24} />{" "}
+						<span className="text-white text-[24px] font-bold">Actions required</span>
 					</div>
 				)}
 
@@ -44,12 +46,12 @@ export function ActionsRequiredNotAccruingDrawer() {
 				)}
 
 				<div className="cursor-pointer z-10" onClick={() => setDrawerState(null)}>
-					<AiOutlineClose/>
+					<AiOutlineClose color={"white"} />
 				</div>
 			</div>
 
 			<div>
-				<div className="py-5 px-3">
+				<div className="py-5 px-3 pr-6">
 					{accruing ? (
 						<SquareCard className="bg-[#DCFCE7]">
 							<IconLabel
@@ -62,13 +64,14 @@ export function ActionsRequiredNotAccruingDrawer() {
 							</p>
 						</SquareCard>
 					) : (
-						<SquareCard>
+						<SquareCard className="bg-[#FFC53D1A] global-cta-clip-path">
 							<IconLabel
 								icon={IoMdCloseCircle}
-								color="#F59E28"
+								color="#FFC53D"
 								title="You are currently not accruing esXAI"
+								titleStyles="text-lg text-primaryTooltipColor"
 							/>
-							<p className="text-[15px] text-[#924012] mt-2">
+							<p className="text-lg mt-2 text-primaryTooltipColor font-medium pl-7 pr-8">
 								Complete the steps below to begin accruing esXAI token rewards.
 							</p>
 						</SquareCard>

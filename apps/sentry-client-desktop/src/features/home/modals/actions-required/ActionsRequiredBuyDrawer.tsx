@@ -35,12 +35,12 @@ export function ActionsRequiredBuyDrawer() {
           </p>
 
           <div className="pb-2 font-semibold pl-6 mb-[5px]">
-          <PrimaryButton
-            onClick={() => setDrawerState(DrawerView.BuyKeys)}
-            className={`w-[155px] bg-btnPrimaryBgColor text-white hover:text-btnPrimaryBgColor hover:bg-white`}
-            btnText="PURCHASE KEY"
-            colorStyle="primary"
-			size="sm"
+            <PrimaryButton
+              onClick={() => setDrawerState(DrawerView.BuyKeys)}
+              className={`w-[155px] bg-btnPrimaryBgColor text-white hover:text-btnPrimaryBgColor hover:bg-white`}
+              btnText="PURCHASE KEY"
+              colorStyle="primary"
+              size="sm"
             />
           </div>
 

@@ -204,3 +204,12 @@ l799 -1385 -1076 -3 c-592 -1 -1078 0 -1080 2 -3 2 167 301 376 664 210 363
 </svg>
   );
 };
+
+export const HelpIcon = ({ width = 20, height = 20, fill = "#D0CFCF" }) => {
+  return <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height}
+              viewBox="0 0 14 14">
+    <path id="Path_3878" data-name="Path 3878"
+          d="M9,16a7,7,0,1,1,7-7A7,7,0,0,1,9,16Zm-.7-4.9v1.4H9.7V11.1ZM9.7,9.949A2.45,2.45,0,1,0,6.6,7.119l1.373.275A1.05,1.05,0,1,1,9,8.65a.7.7,0,0,0-.7.7V10.4H9.7Z"
+          transform="translate(-2 -2)" fill={fill} />
+  </svg>;
+};
