@@ -1,19 +1,18 @@
 import mongoose from "mongoose";
-import { IUserProjectInfo } from "./userToProject.schema";
 
-interface IProject {
+export interface IProject {
   name: string;
   forwarderAddress: string;
   receiverAddress: string;
   relayerId: string;
-  refillTimestamp: Date;
+  lastRefill: Date;
   refillInterval: number;
-  studioLimit: number;
-  studioBalance: number;
+  projectLimit: number;
+  projectBalance: number;
   userLimit: number;
   userRefillInterval: number;
-  users: IUserProjectInfo[];
   createdAt: Date;
+  updatedAt: Date;
 };
 
 const ProjectSchema = new mongoose.Schema<IProject>({
@@ -33,7 +32,7 @@ const ProjectSchema = new mongoose.Schema<IProject>({
     type: String,
     required: true
   },
-  refillTimestamp: {
+  lastRefill: {
     type: Date,
     required: true,
     default: Date.now
@@ -42,11 +41,11 @@ const ProjectSchema = new mongoose.Schema<IProject>({
     type: Number,
     required: true
   },
-  studioLimit: {
+  projectLimit: {
     type: Number,
     required: true
   },
-  studioBalance: {
+  projectBalance: {
     type: Number,
     required: true
   },
@@ -58,12 +57,12 @@ const ProjectSchema = new mongoose.Schema<IProject>({
     type: Number,
     required: true
   },
-  users: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'UserProjectInfo',
-    required: true
-  }],
   createdAt: {
+    type: Date,
+    required: true,
+    default: Date.now
+  },
+  updatedAt: {
     type: Date,
     required: true,
     default: Date.now
