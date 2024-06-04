@@ -5,6 +5,7 @@ export interface IUserToProject {
     lastRefill: Date;
     lastInteraction: Date;
     balance: number;
+    createdAt: Date;
 };
 
 const UserToProject = new mongoose.Schema<IUserToProject>({

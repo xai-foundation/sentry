@@ -13,6 +13,7 @@ interface IProject {
   userLimit: number;
   userRefillInterval: number;
   users: IUserToProject[];
+  createdAt: Date;
 };
 
 const ProjectSchema = new mongoose.Schema<IProject>({
