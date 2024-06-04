@@ -68,3 +68,33 @@ export function YellowPulse({size="sm"}: PulseStyle) {
 	)
 }
 
+export function GreyPulse({size="sm"}: PulseStyle) {
+	let pulseW;
+	let pulseH;
+
+	switch (size) {
+		case "sm":
+			pulseW = "0.5rem";
+			pulseH = "0.5rem";
+			break;
+		case "md":
+			pulseW = "1.25rem";
+			pulseH = "1.25rem";
+			break;
+		default:
+			log.info("Invalid size"); // Handle the case where size is none of the specified values
+	}
+
+	const greyPulseStyle = {
+		background: 'rgba(67, 63, 63, 1)',
+		borderRadius: '50%',
+		height: pulseH,
+		width: pulseW,
+		boxShadow: '0 0 0 0 rgba(67, 63, 63, 1)',
+		transform: 'scale(1)',
+	};
+
+	return (
+		<div style={greyPulseStyle}/>
+	)
+}
