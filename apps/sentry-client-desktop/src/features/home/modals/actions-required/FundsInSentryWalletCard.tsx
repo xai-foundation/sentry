@@ -76,7 +76,7 @@ export function FundsInSentryWalletCard() {
 					</div>
 					</div>
 					</div>
-						<div className="mt-3 flex flex-col gap-1 justify-between pl-7">
+						<div className="mt-5 flex flex-col gap-1 justify-between pl-7">
 						<div className="flex flex-row items-center gap-2">
 						<p className="mb-0 text-lg leading-[14px] text-primaryText">
 							Recommended minimum balance
