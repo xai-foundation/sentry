@@ -97,3 +97,7 @@ body {
         box-shadow: 0 0 0 0 rgba(255, 177, 66, 0);
     }
 }
+
+select:focus > option:checked {
+  background: #140F0F !important;
+}

@@ -23,7 +23,7 @@ export function AssignedKeysCard() {
 			{hasAssignedKeys ? (
 				<IconLabel
 					icon={AiFillCheckCircle}
-					color="#16A34A"
+					color="#3DD68C"
 					title="Keys assigned"
 					titleStyles="text-lg text-white"
 					tooltip
@@ -42,7 +42,7 @@ export function AssignedKeysCard() {
 						titleStyles="text-lg text-white"
 					/>
 
-					<p className="text-lg text-primaryText mt-1 px-7">
+					<p className="text-lg text-primaryText mt-1 px-6">
 						At least one key must be assigned to accrue esXAI
 					</p>
                     <div className="pl-7 mt-2">

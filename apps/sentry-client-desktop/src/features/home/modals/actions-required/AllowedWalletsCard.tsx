@@ -16,7 +16,7 @@ export function AllowedWalletsCard() {
 			{data && data.whitelistedWallets ? (
 				<IconLabel
 					icon={AiFillCheckCircle}
-					color="#16A34A"
+					color="#3DD68C"
 					title="Allowed Wallets assigned"
 					titleStyles="text-lg text-white"
 					tooltip
@@ -34,7 +34,7 @@ export function AllowedWalletsCard() {
 						titleStyles="text-lg text-white"
 					/>
 
-					<p className="text-lg text-primaryText mt-1 px-7">
+					<p className="text-lg text-primaryText mt-1 px-6">
 						Select the wallets you'd like to enable to run on your Sentry.
 					</p>
                     <div className="pl-7 mt-2">

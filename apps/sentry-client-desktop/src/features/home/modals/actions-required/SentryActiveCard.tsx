@@ -14,7 +14,7 @@ export function SentryActiveCard() {
         {sentryRunning ? (
           <IconLabel
             icon={AiFillCheckCircle}
-            color="#16A34A"
+            color="#3DD68C"
             title="Sentry Wallet active"
             titleStyles="text-lg text-white"
             tooltip={true}

@@ -38,7 +38,7 @@ export function FundsInSentryWalletCard() {
 			{funded ? (
 				<IconLabel
 					icon={AiFillCheckCircle}
-					color="#16A34A"
+					color="#3DD68C"
 					title="Sentry Wallet funded"
 					titleStyles="text-lg text-white"
 					tooltip
