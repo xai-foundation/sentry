@@ -1,6 +1,5 @@
 import {IconLabel} from "@/components/IconLabel";
 import {SquareCard} from "@/components/SquareCard";
-import {BiPlay} from "react-icons/bi";
 import {IoMdCloseCircle} from "react-icons/io";
 import {AiFillCheckCircle} from "react-icons/ai";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";

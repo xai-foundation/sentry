@@ -2,14 +2,13 @@ import {IconLabel} from "@/components/IconLabel";
 import {clampAddress} from "@/utils/clampAddress";
 import {SquareCard} from "@/components/SquareCard";
 import {IoMdCloseCircle} from "react-icons/io";
-import {PiCopy} from "react-icons/pi";
-import {FaEthereum} from "react-icons/fa";
 import {AiFillCheckCircle, AiOutlineCheck} from "react-icons/ai";
 import {useOperator} from "@/features/operator";
 import {useState} from "react";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {useAtomValue} from "jotai";
 import log from "electron-log";
+import { CopyIcon, HelpIcon } from "../../../../../../../packages/ui/src/rebrand/icons/IconsComponents";
 
 export function FundsInSentryWalletCard() {
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
@@ -35,53 +34,57 @@ export function FundsInSentryWalletCard() {
 	}
 
 	return (
-		<SquareCard className="bg-[#F5F5F5]">
+		<SquareCard className="bg-secondaryBgColor global-cta-clip-path">
 			{funded ? (
 				<IconLabel
 					icon={AiFillCheckCircle}
 					color="#16A34A"
 					title="Sentry Wallet funded"
+					titleStyles="text-lg text-white"
+					tooltip
 				/>
 			) : (
 				<>
 					<IconLabel
 						icon={IoMdCloseCircle}
-						color="#F59E28"
+						color="#FFC53D"
 						title="Insufficient funds in Sentry Wallet"
+						titleStyles="text-lg text-white"
+						tooltip={true}
 					/>
 
-					<p className="text-[15px] text-[#525252] mt-3">
-						To fund the Sentry Wallet, send AETH to this address
+					<p className="text-lg text-primaryText mt-1 px-7">
+						To fund the Sentry Wallet, send ETH to this address
 					</p>
-
+					
+					<div className="pl-7 mt-3">
+                    <div className="global-clip-path w-full bg-primaryBorderColor p-[1px]">
 					<div
-						className="h-[48px] px-3 w-full border border-[#A3A3A3] flex flex-row items-center gap-2 justify-between bg-white mt-3">
-						<span className="text-sm leading-[14px] text-[#525252]">
+						className="h-[48px] px-3 w-full flex flex-row items-center gap-2 justify-between bg-secondaryBgColor global-clip-path">
+						<span className="text-lg leading-[14px] text-primaryText">
 							{isOperatorLoading || !operatorAddress ? "Loading..." : clampAddress(operatorAddress)}
 						</span>
 
 						<div
 							onClick={copyAddress}
-							className="text-[#525252] w-[20px] h-[20px] cursor-pointer"
+							className="text-primaryText w-[20px] h-[20px] cursor-pointer"
 						>
 							{copied
-								? (<AiOutlineCheck/>)
-								: (<PiCopy/>)}
+								? (<AiOutlineCheck color="#D0CFCF" size={20}/>)
+								: (<CopyIcon/>)}
 						</div>
-						{/*<PiCopy*/}
-						{/*	className="text-[#525252] w-[20px] h-[20px] cursor-pointer"*/}
-						{/*	onClick={copyAddress}*/}
-						{/*/>*/}
 					</div>
-
-					<div className="mt-3 flex flex-row gap-1 justify-between">
-						<p className="mb-0 text-sm leading-[14px] text-[#525252]">
+					</div>
+					</div>
+						<div className="mt-3 flex flex-col gap-1 justify-between pl-7">
+						<div className="flex flex-row items-center gap-2">
+						<p className="mb-0 text-lg leading-[14px] text-primaryText">
 							Recommended minimum balance
 						</p>
-
+							<HelpIcon width={14} height={14} />
+						</div>
 						<div className="flex flex-row items-center gap-1">
-							<FaEthereum className="w-4 h-4 mb-[-2px]"/>
-							<p className="text-[#525252] text-sm font-semibold">0.005 AETH</p>
+							<p className="text-white text-lg font-bold">0.005 AETH</p>
 						</div>
 					</div>
 				</>

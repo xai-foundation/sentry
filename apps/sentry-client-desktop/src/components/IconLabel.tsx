@@ -20,7 +20,7 @@ export function IconLabel({icon: Icon, color, title, tooltip, header, body, body
 		<span className="flex flex-row gap-2 items-center font-semibold text-sm">
 			<Icon
 				// @ts-ignore
-				size={20}
+				size={23}
 				color={color}
 			/>
 			<span className={titleStyles}>{title}</span>
