@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-export interface IUserToProject {
+export interface IUserProjectInfo {
     walletAddress: string;
     lastRefill: Date;
     lastInteraction: Date;
@@ -8,7 +8,7 @@ export interface IUserToProject {
     createdAt: Date;
 };
 
-const UserToProject = new mongoose.Schema<IUserToProject>({
+const UserProjectInfoSchema = new mongoose.Schema<IUserProjectInfo>({
     walletAddress: {
         type: String,
         required: true
@@ -34,5 +34,5 @@ const UserToProject = new mongoose.Schema<IUserToProject>({
     }
 });
 
-const UserToProjectModel = mongoose.models.UserToProject || mongoose.model<IUserToProject>("UserToProject", UserToProject);
-export default UserToProjectModel;
+const UserProjectInfoModel = mongoose.models.UserProjectInfo || mongoose.model<IUserProjectInfo>("UserProjectInfo", UserProjectInfoSchema);
+export default UserProjectInfoModel;

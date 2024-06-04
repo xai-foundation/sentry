@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { IUserToProject } from "./userToProject.schema";
+import { IUserProjectInfo } from "./userToProject.schema";
 
 interface IProject {
   name: string;
@@ -12,7 +12,7 @@ interface IProject {
   studioBalance: number;
   userLimit: number;
   userRefillInterval: number;
-  users: IUserToProject[];
+  users: IUserProjectInfo[];
   createdAt: Date;
 };
 
@@ -60,7 +60,7 @@ const ProjectSchema = new mongoose.Schema<IProject>({
   },
   users: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'UserToProject',
+    ref: 'UserProjectInfo',
     required: true
   }],
   createdAt: {
