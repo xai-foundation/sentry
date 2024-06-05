@@ -54,7 +54,7 @@ export function exportChallengeInfo(cli: Vorpal) {
                         numberOfEligibleClaimers: challenge.numberOfEligibleClaimers,
                         submissionsClaimed: challenge.submissions.filter(s => s.claimed).length,
                         submissionsTotal: challenge.submissions.length,
-                        numberOfUnclaimedSubmissions: challenge.submissions.filter(s => s.submittedFrom == "unclaimed").length,
+                        numberOfUnclaimedSubmissions: challenge.submissions.filter(s => s.claimedFrom == "unclaimed").length,
                         submissionsFromSingle: challenge.submissions.filter(s => s.submittedFrom == "submitAssertion").length,
                         submissionsFromMultiple: challenge.submissions.filter(s => s.submittedFrom == "submitMultipleAssertions").length,
                         claimFromSingle: challenge.submissions.filter(s => s.claimedFrom == "claimRewards").length,
