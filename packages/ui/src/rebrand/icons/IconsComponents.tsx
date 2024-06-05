@@ -205,10 +205,17 @@ l799 -1385 -1076 -3 c-592 -1 -1078 0 -1080 2 -3 2 167 301 376 664 210 363
   );
 };
 
-export const DropdownArrow = ({width = 12, height = 6, className = ""}) => {
-    return <svg xmlns="http://www.w3.org/2000/svg" version="1.1" className={className} width={width} height={height}>
-        <path
-            d="M0 0 C0.9075 0.37125 1.815 0.7425 2.75 1.125 C5.88097015 2.30359299 5.88097015 2.30359299 8.375 1.125 C8.91125 0.75375 9.4475 0.3825 10 0 C10 4 10 4 8 6.25 C7.01 7.11625 7.01 7.11625 6 8 C3.11562221 6.70700306 1.12780579 5.34058637 -1 3 C-0.67 2.01 -0.34 1.02 0 0 Z "
-            fill="#FFFFFF" transform="translate(1,0)"/>
-    </svg>
+export const DropdownArrow = ({width = 10, height = 3, className = ""}) => {
+    return <svg
+        width={width} height={height} className={className}
+        fill="#fff"
+        xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 4.8117635 3.2432653" version="1.1" id="svg1" >
+        <defs id="defs1"/>
+        <g  id="layer1"
+           transform="translate(-0.23995138,-1.0242006)"><path  d="M 2.6458332,2.6458333 V -2.3262066 8.1888758" id="path1"/>
+            <g id="g2" transform="translate(-4.1599448,-4.385214)"><rect id="rect2" width="1.2605684" height="3.478761" x="9.7083769" y="-2.1346393" ry="0.13058987" transform="rotate(45)"/>
+                <rect  id="rect2-2" width="1.2605684"
+                      height="3.478761" x="0.083553314" y="7.4901848" ry="0.13058987"
+                      transform="matrix(-0.70710678,0.70710678,0.70710678,0.70710678,0,0)"/></g></g></svg>
 }
