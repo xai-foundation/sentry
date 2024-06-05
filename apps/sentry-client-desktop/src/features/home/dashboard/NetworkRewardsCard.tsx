@@ -113,7 +113,7 @@ export function NetworkRewardsCard() {
 							</p>
 							<p className="flex items-center text-base !text-[#726F6F] font-medium">
 								{!isBalancesLoading && balancesFetchedLast && (
-									timeDifference !== null ? `Updated ${timeDifference} m ago` : 'Just now'
+									timeDifference !== null ? `Updated ${timeDifference}m ago` : 'Just now'
 								)}
 							</p>
 						</div>
