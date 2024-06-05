@@ -221,14 +221,29 @@ export const DropdownArrow = ({width = 10, height = 3, className = ""}) => {
 }
 
 export const HelpIcon = ({ width = 20, height = 20, fill = "#D0CFCF" }) => {
-  return <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height}
-              viewBox="0 0 14 14">
-    <path id="Path_3878" data-name="Path 3878"
-          d="M9,16a7,7,0,1,1,7-7A7,7,0,0,1,9,16Zm-.7-4.9v1.4H9.7V11.1ZM9.7,9.949A2.45,2.45,0,1,0,6.6,7.119l1.373.275A1.05,1.05,0,1,1,9,8.65a.7.7,0,0,0-.7.7V10.4H9.7Z"
-          transform="translate(-2 -2)" fill={fill} />
+    return <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height}
+                viewBox="0 0 14 14">
+        <path id="Path_3878" data-name="Path 3878"
+              d="M9,16a7,7,0,1,1,7-7A7,7,0,0,1,9,16Zm-.7-4.9v1.4H9.7V11.1ZM9.7,9.949A2.45,2.45,0,1,0,6.6,7.119l1.373.275A1.05,1.05,0,1,1,9,8.65a.7.7,0,0,0-.7.7V10.4H9.7Z"
+              transform="translate(-2 -2)" fill={fill}/>
+    </svg>
+}
+export const ArrowIcon = ({ width = 16, height = 16, fill = "fill-hornetSting" }) => {
+  return (
+    <svg className={`${fill} duration-200 ease-in arrow-icon`} xmlns="http://www.w3.org/2000/svg" width={width}
+         height={height} viewBox="0 0 16 15.556">
+  <path id="Path_3748" data-name="Path 3748" d="M16.172,11,10.808,5.636l1.414-1.414L20,12l-7.778,7.778-1.414-1.414L16.172,13H4V11Z" transform="translate(-4 -4.222)"/>
+</svg>
+  )
+}
+
+export const SuccessIcon = ({ width = 17, height = 17 }) => {
+  return <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 20 20">
+    <path id="Path_3847" data-name="Path 3847"
+          d="M12,22A10,10,0,1,1,22,12,10,10,0,0,1,12,22Zm-1-6,7.071-7.071L16.66,7.515,11,13.172,8.174,10.343,6.76,11.757Z"
+          transform="translate(-2 -2)" fill="#36b979" />
   </svg>;
 };
-
 
 export const CopyIcon = ({ fill = "#D0CFCF" }) => {
   return <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17.778" viewBox="0 0 16 17.778">
@@ -236,4 +251,31 @@ export const CopyIcon = ({ fill = "#D0CFCF" }) => {
           d="M6.555,5.556V2.889A.889.889,0,0,1,7.444,2H18.111A.889.889,0,0,1,19,2.889V15.333a.889.889,0,0,1-.889.889H15.444v2.666a.892.892,0,0,1-.895.89H3.895A.89.89,0,0,1,3,18.888L3,6.445a.892.892,0,0,1,.895-.89ZM4.78,7.333,4.778,18h8.889V7.333ZM8.333,5.556h7.111v8.889h1.778V3.778H8.333Z"
           transform="translate(-3 -2)" fill={fill} />
   </svg>;
+};
+export const BlackPyramidIcon = ({ width = 17, height = 17 }) => {
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 27.713 24"
+      version="1.1"
+      id="svg1"
+    >
+      <defs id="defs1" />
+      <path
+        style={{ fill: "#000000", fillOpacity: 1, stroke: "none" }}
+        id="path1-8"
+        d="m 13.854,9.9916573 4.013743,6.9520067 4.013743,6.952007 -8.027486,0 -8.027486,0 4.0137431,-6.952007 z"
+        inkscape:transform-center-y="-4.0000281"
+        transform="matrix(1.7261319,0,0,1.7261319,-10.057332,-17.247081)"
+      />
+      <path
+        style={{ fill: "#ff0030", fillOpacity: 1, stroke: "none" }}
+        id="path1"
+        d="m 13.854,9.9916573 4.013743,6.9520067 4.013743,6.952007 -8.027486,0 -8.027486,0 4.0137431,-6.952007 z"
+        inkscape:transform-center-y="-1.0378301"
+        transform="matrix(0.44785487,0,0,0.44785487,7.6496336,8.4001876)"
+      />
+    </svg>
+  );
 };
