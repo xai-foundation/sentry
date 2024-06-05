@@ -7,7 +7,7 @@ import axios from "axios"
 export async function getSubgraphHealthStatus(): Promise<{ healthy: boolean, error?: string }> {
 
     try {
-        const url = `https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry/status`;
+        const url = `https://subgraph.satsuma-prod.com/d346413f9bc1/cryptits-team--300223/sepolia-version/status`;
         const response = await axios.get(url);
         if (response.status === 200) {
             const status = response.data.data.indexingStatusForCurrentVersion.health;
