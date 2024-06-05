@@ -46,12 +46,12 @@ export function ActionsRequiredPromptHandler() {
 	} else {
 		return (
 			<div
-				className="flex gap-4 bg-[#DCFCE7] p-3 mr-2 z-10"
+				className="flex gap-4 bg-successBgColor global-cta-clip-path p-3 mr-2 z-10"
 				onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}
 			>
 				<div className="flex flex-row gap-2 items-center cursor-pointer">
-					<AiFillCheckCircle className="w-5 h-5 text-[#16A34A] mt-1"/>
-					<p className="text-[15px] font-semibold">esXAI is being claimed</p>
+					<AiFillCheckCircle className="w-6 h-6 text-successText mt-1"/>
+					<p className="text-lg text-successText font-semibold">esXAI is being claimed</p>
 				</div>
 			</div>
 		)

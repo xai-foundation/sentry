@@ -1,5 +1,4 @@
 import {AiOutlineCheck, AiOutlineInfoCircle, AiOutlineMinus, AiOutlinePlus} from "react-icons/ai";
-import {IoIosArrowDown} from "react-icons/io";
 import {PiCopy} from "react-icons/pi";
 import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
 import {useState} from "react";
@@ -8,7 +7,7 @@ import {BlockPassKYC} from "@/components/blockpass/Blockpass";
 import {getLicensesList, LicenseList, LicenseMap} from "@/hooks/useListNodeLicensesWithCallback";
 import {config} from "@sentry/core";
 import {StatusMap} from "@/hooks/useKycStatusesWithCallback";
-import {Tooltip} from "@sentry/ui";
+import {Dropdown, DropdownItem, Tooltip} from "@sentry/ui";
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
 import {useAtomValue, useSetAtom} from "jotai";
 import {RemoveWalletModal} from "@/features/home/modals/RemoveWalletModal";
@@ -191,16 +190,15 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 
 	function getDropdownItems() {
 		return Object.values(combinedOwners).map((wallet, i) => (
-			<p
+			<DropdownItem
 				onClick={() => {
 					setSelectedWallet(wallet);
 					setIsOpen(false);
 				}}
-				className="p-2 cursor-pointer hover:bg-gray-100"
 				key={`sentry-item-${i}`}
 			>
 				{wallet}
-			</p>
+			</DropdownItem>
 		));
 	}
 
@@ -236,33 +234,17 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						View Wallet
 					</p>
 					<div className="relative flex flex-row gap-2">
-						<div>
-							<div
-								onClick={() => setIsOpen(!isOpen)}
-								className={`flex items-center justify-between w-[538px] border-[#A3A3A3] border-r border-l border-t ${!isOpen ? "border-b" : "pb-[9px]"} border-[#A3A3A3] p-2`}
-							>
-								<p>{selectedWallet || `All wallets (${Object.keys(combinedOwners).length})`}</p>
-								<IoIosArrowDown
-									className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
-								/>
-							</div>
-
-							{isOpen && (
-								<div
-									className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3] bg-white z-30">
-									<p
-										onClick={() => {
-											setSelectedWallet(null);
-											setIsOpen(false);
-										}}
-										className="p-2 cursor-pointer hover:bg-gray-100"
-									>
-										All
-									</p>
-									{getDropdownItems()}
-								</div>
-							)}
-						</div>
+						<Dropdown
+						isOpen={isOpen}
+						setIsOpen={setIsOpen}
+						selectedValue={selectedWallet}
+						defaultValue={"All"}
+						selectedValueRender={
+							<p>{selectedWallet || `All wallets (${Object.keys(combinedOwners).length})`}</p>
+						}
+						setSelectedValue={setSelectedWallet}
+						getDropdownItems={getDropdownItems}
+						/>
 
 						<button
 							disabled={selectedWallet === null}
