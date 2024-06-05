@@ -8,7 +8,7 @@ import {useState} from "react";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {useAtomValue} from "jotai";
 import log from "electron-log";
-import { CopyIcon, HelpIcon } from "../../../../../../../packages/ui/src/rebrand/icons/IconsComponents";
+import { CopyIcon, HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 
 export function FundsInSentryWalletCard() {
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
