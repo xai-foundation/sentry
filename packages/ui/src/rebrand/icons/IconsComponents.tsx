@@ -219,3 +219,21 @@ export const DropdownArrow = ({width = 10, height = 3, className = ""}) => {
                       height="3.478761" x="0.083553314" y="7.4901848" ry="0.13058987"
                       transform="matrix(-0.70710678,0.70710678,0.70710678,0.70710678,0,0)"/></g></g></svg>
 }
+
+export const HelpIcon = ({ width = 20, height = 20, fill = "#D0CFCF" }) => {
+  return <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height}
+              viewBox="0 0 14 14">
+    <path id="Path_3878" data-name="Path 3878"
+          d="M9,16a7,7,0,1,1,7-7A7,7,0,0,1,9,16Zm-.7-4.9v1.4H9.7V11.1ZM9.7,9.949A2.45,2.45,0,1,0,6.6,7.119l1.373.275A1.05,1.05,0,1,1,9,8.65a.7.7,0,0,0-.7.7V10.4H9.7Z"
+          transform="translate(-2 -2)" fill={fill} />
+  </svg>;
+};
+
+
+export const CopyIcon = ({ fill = "#D0CFCF" }) => {
+  return <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17.778" viewBox="0 0 16 17.778">
+    <path id="Path_3606" data-name="Path 3606"
+          d="M6.555,5.556V2.889A.889.889,0,0,1,7.444,2H18.111A.889.889,0,0,1,19,2.889V15.333a.889.889,0,0,1-.889.889H15.444v2.666a.892.892,0,0,1-.895.89H3.895A.89.89,0,0,1,3,18.888L3,6.445a.892.892,0,0,1,.895-.89ZM4.78,7.333,4.778,18h8.889V7.333ZM8.333,5.556h7.111v8.889h1.778V3.778H8.333Z"
+          transform="translate(-3 -2)" fill={fill} />
+  </svg>;
+};

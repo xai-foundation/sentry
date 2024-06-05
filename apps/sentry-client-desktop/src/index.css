@@ -47,7 +47,6 @@ body {
 }
 
 @layer components {
-
     .global-clip-path {
         clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
       }
@@ -59,7 +58,6 @@ body {
     .dropdown:hover + .dropdown-border {
         background-color: #FF2C3A !important;
     }
-
 }
 
 
@@ -96,4 +94,8 @@ body {
         transform: scale(0.95);
         box-shadow: 0 0 0 0 rgba(255, 177, 66, 0);
     }
+}
+
+select:focus > option:checked {
+  background: #140F0F !important;
 }
