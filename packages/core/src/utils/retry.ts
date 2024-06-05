@@ -10,7 +10,7 @@ export async function retry<T>(process: () => Promise<T>, retries: number = 10):
         return await process();
     } catch (error) {
         if (retries === 0) {
-            console.error(`There was an error retrying a mechanism 10 times. Please save this error for troubleshooting.`);
+            console.error(`There was an error retrying a mechanism ${retries} times. Please save this error for troubleshooting.`);
             throw error;
         }
         const delay = retries === 1 ? 300000 : Math.random() * (30000 - 5000) + 5000; // Delay for 5 to 30 seconds, but 5 minutes for the last retry
