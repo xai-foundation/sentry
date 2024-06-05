@@ -1,6 +1,6 @@
 import * as React from "react";
 import {Tooltip} from "../../../../packages/ui/src/features/tooltip/Tooltip";
-import { HelpIcon } from "../../../../packages/ui/src/rebrand/icons/IconsComponents";
+import { HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 
 interface IconLabelProps {
 	icon: React.FC;

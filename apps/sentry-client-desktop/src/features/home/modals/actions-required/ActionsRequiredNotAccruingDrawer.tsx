@@ -13,7 +13,7 @@ import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
 import {useStorage} from "@/features/storage";
 import {AllowedWalletsCard} from "@/features/home/modals/actions-required/AllowedWalletsCard";
-import { WarningIcon } from "../../../../../../../packages/ui/src/rebrand/icons/IconsComponents";
+import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 
 export function ActionsRequiredNotAccruingDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);

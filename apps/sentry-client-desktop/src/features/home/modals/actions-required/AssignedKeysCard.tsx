@@ -51,7 +51,7 @@ export function AssignedKeysCard() {
 						btnText="Assign keys from new wallet"
 						colorStyle="primary"
 						size="sm"
-						className="w-[280px] uppercase bg-btnPrimaryBgColor text-white hover:text-btnPrimaryBgColor font-bold"
+						className="w-[280px] text-lg uppercase bg-btnPrimaryBgColor text-white hover:text-btnPrimaryBgColor !py-1 !px-1 font-bold"
 					/>
 					</div>
 				</>
