@@ -1,10 +1,10 @@
-import React, { MutableRefObject, useEffect, useRef, useState } from "react";
+import React, {MutableRefObject, ReactNode, useEffect, useRef, useState} from "react";
 import { TextButton } from "../buttons/TextButton";
 import { BlackPyramidIcon, SuccessIcon } from "../icons/IconsComponents";
 
 interface TooltipProps {
   children: React.ReactNode;
-  content: string;
+  content: string | ReactNode;
   header?: string;
   isWarning?: boolean;
   withCTA?: boolean;
@@ -14,6 +14,7 @@ interface TooltipProps {
     // you can modify width of tooltip container to avoid adaptive issues, also set tooltipText classes to "!text-wrap"
     // by default tooltip width is 456px as in design, for some cases we can modify it with tooltipContainer classes
     tooltipText?: string;
+    tooltipHeader?: string;
     tooltipWrapper?: string;
     group?: string;
     arrowStyles?: string;
@@ -109,7 +110,7 @@ const CustomTooltip = ({
         <div
           className={`absolute w-[456px] ${isWarning ? "bg-bananaBoat" : "bg-[#000000]"} py-[15px] px-[15px] top-[41px] left-[38px] ${extraClasses?.tooltipContainer}`}>
           {header && <span
-            className={`${isWarning ? "text-nulnOil" : "text-white"} font-bold ${isWarning ? "text-[17px]" : "text-lg"}`}>{header}</span>}
+            className={`${isWarning ? "text-nulnOil" : "text-white"} font-bold ${isWarning ? "text-[17px]" : "text-lg"} ${extraClasses?.tooltipHeader}`}>{header}</span>}
           <span className={`${isWarning ? "text-nulnOil" : "text-americanSilver"} text-[17px] flex gap-2 items-center h-full font-medium ${extraClasses?.tooltipText}`}>
               {content}
               {showOnClick && <SuccessIcon />}

@@ -5,6 +5,9 @@ module.exports = {
     "../../packages/ui/src/**/*.tsx",
   ],
   theme: {
+    opacity: {
+      "75": ".75"
+    },
     colors: {
       white: "#fff",
       btnPrimaryBgColor: "#FF0030",
@@ -22,6 +25,7 @@ module.exports = {
       dropdownPrimaryHoverBg: "#FF2C3A",
       dropdownSecondaryBg: "#272123",
       dropdownItemPrimaryHoverBg: "#231D1F",
+      tertiaryText: "#FF2C3A",
     },
     extend: {},
   },
