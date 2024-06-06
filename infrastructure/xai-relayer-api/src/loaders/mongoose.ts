@@ -1,11 +1,16 @@
-import mongoose, {ConnectOptions, Connection} from "mongoose";
+import mongoose, { ConnectOptions, Connection } from "mongoose";
 
 export async function disconnectMongoose(): Promise<void> {
 	await mongoose.disconnect();
 	console.log("Mongoose disconnected");
 }
 
+let cachedConnection: typeof mongoose;
+
 export async function loadMongoose(): Promise<void> {
+	if (cachedConnection) {
+		return Promise.resolve();
+	}
 	mongoose.set("strictQuery", false);
 	mongoose.set("applyPluginsToDiscriminators", true);
 
@@ -27,7 +32,7 @@ export async function loadMongoose(): Promise<void> {
 	let retries = 0;
 	while (!connected && retries < 1) {
 		try {
-			await mongoose.connect(process.env.MONGO_DB_URL, connectOptions);
+			cachedConnection = await mongoose.connect(process.env.MONGO_DB_URL, connectOptions);
 			connected = true;
 		} catch (error) {
 			console.error("Error connecting to the Util MongoDB.", error);

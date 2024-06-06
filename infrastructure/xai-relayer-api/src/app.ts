@@ -8,7 +8,6 @@ dotenv.config({ path: resolve(__dirname, "../.env") });
 export const app = express();
 
 (async () => {
-	await loadMongoose();
 	await loadExpress();
 
 	console.log("Starting at port", process.env.PORT);
