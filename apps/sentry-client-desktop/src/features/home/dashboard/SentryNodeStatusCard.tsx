@@ -91,7 +91,7 @@ export function SentryNodeStatusCard() {
 				{sentryRunning ? (
 					<>
 						<div className="relative text-[54px] text-white flex items-center gap-5 font-bold">
-							{nodeStatus ? (<GreenPulse size={"md"}/>) : (<YellowPulse size={"md"}/>)} Your node is
+							{nodeStatus ? (<GreenPulse size={"lg"}/>) : (<YellowPulse size={"lg"}/>)} Your node is
 							running
 						</div>
 						{getNodeFunds()}
@@ -99,7 +99,7 @@ export function SentryNodeStatusCard() {
 				) : (
 					<>
 						<div className="relative text-[54px] text-white flex items-center gap-5 font-semibold">
-							<GreyPulse size={"md"}/> Your node is not running
+							<GreyPulse size={"lg"}/> Your node is not running
 						</div>
 
 						<div

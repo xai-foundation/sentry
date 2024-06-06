@@ -58,9 +58,9 @@ export function Sidebar() {
 						className={`flex items-center w-[14.625rem] mb-[11px] text-xl text-white font-bold cursor-pointer gap-2 py-[11px] pl-[17px] hover:global-clip-path hover:bg-linkBgHover ${getActiveLink('/sentry-wallet')}`}
 					>
 						<div className="w-auto h-auto flex justify-center items-center">
-							{sentryRunning && hasAssignedKeys && funded && <GreenPulse size='md' />}
-							{sentryRunning && !hasAssignedKeys && !funded && <YellowPulse size='md' />}
-							{!sentryRunning && <GreyPulse size='md' />}
+							{sentryRunning && hasAssignedKeys && funded && <GreenPulse size='lg' />}
+							{sentryRunning && !hasAssignedKeys && !funded && <YellowPulse size='lg' />}
+							{!sentryRunning && <GreyPulse size='lg' />}
 						</div>
 						SENTRY WALLET
 					</Link>
