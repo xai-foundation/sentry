@@ -37,7 +37,7 @@ export function SentryWalletHeader() {
 							claiming accrued esXAI.</p>
 							<p className="text-primaryText bg-linkBgHover p-2 mt-2 flex justify-between">
 								<span>Recommended minimum balance</span>
-								<span className="flex items-center gap-1 font-bold"> <FaEthereum/> 0.005 ETH</span>
+								<span className="flex items-center gap-1 font-bold"> <FaEthereum/> 0.005 AETH</span>
 							</p>
 						</div>
 					}
@@ -52,7 +52,7 @@ export function SentryWalletHeader() {
 				) : (
 					<a
 						onClick={onRefreshEthBalance}
-						className="flex items-center text-lg font-bold text-tertiaryText gap-1 cursor-pointer select-none ml-[18px]"
+						className="flex items-center text-lg font-bold text-tertiaryText gap-1 cursor-pointer select-none ml-[14px]"
 					>
 						<MdRefresh/> Refresh
 					</a>
@@ -61,7 +61,7 @@ export function SentryWalletHeader() {
 
 			<div className="flex justify-center items-center gap-4">
 				<div className="flex justify-center items-center gap-1">
-					<p className={classNames(getEthFundsTextColor(), "text-4xl font-semibold")}>{(balance == undefined) ? "" : (balance.ethString === "0.0" ? "0" : balance.ethString)} ETH</p>
+					<p className={classNames(getEthFundsTextColor(), "text-4xl font-semibold")}>{(balance == undefined) ? "" : (balance.ethString === "0.0" ? "0" : balance.ethString)} AETH</p>
 				</div>
 
 			</div>
