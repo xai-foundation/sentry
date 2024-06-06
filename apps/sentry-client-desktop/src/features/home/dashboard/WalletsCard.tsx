@@ -20,7 +20,7 @@ export function WalletsCard() {
 	const { sentryRunning } = useOperatorRuntime();
 
 	return (
-		<Card width={"341px"} height={"279px"} customClasses="bg-primaryBgColor">
+		<Card width={"341px"} height={"279px"} customClasses="bg-primaryBgColor shadow-default">
 
 			<div className="flex flex-row justify-between items-center py-5 px-6 border-b border-primaryBorderColor">
 				<div className="flex flex-row items-center gap-1 text-white text-2xl">
