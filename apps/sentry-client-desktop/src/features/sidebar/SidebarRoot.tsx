@@ -99,7 +99,7 @@ export function Sidebar() {
 						<RiTwitterXFill size={16}/> X
 					</a>
 					<a
-						onClick={() => window.electron.openExternal('https://twitter.com/xai_games')}
+						onClick={() => window.electron.openExternal('https://t.me/XaiSentryNodes')}
 						className="flex group items-center mb-[20px] text-base font-medium text-white cursor-pointer gap-2 hover:text-btnPrimaryBgColor duration-200 ease-in"
 					>
 						<TelegramIcon width={16} height={16} className="fill-white group-hover:fill-btnPrimaryBgColor duration-200 ease-in"/> TELEGRAM
