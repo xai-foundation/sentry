@@ -41,7 +41,6 @@ export function FundsInSentryWalletCard() {
 					color="#3DD68C"
 					title="Sentry Wallet funded"
 					titleStyles="text-lg text-white"
-					tooltip
 				/>
 			) : (
 				<>

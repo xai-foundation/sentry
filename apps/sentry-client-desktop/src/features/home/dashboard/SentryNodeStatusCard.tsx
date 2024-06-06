@@ -57,7 +57,7 @@ export function SentryNodeStatusCard() {
 			<div
 				className={`absolute bottom-4 left-4 max-w-[338px] h-[54px] flex justify-center items-center gap-1 rounded-lg ${nodeStatus ? "text-lg text-[#3DD68C] bg-successBgColor" : "text-lg text-primaryTooltipColor bg-[#FFC53D1A]"} p-4 global-cta-clip-path`}>
 				<div className="flex justify-center items-center gap-2">
-					<div className="flex justify-center items-center gap-3">
+					<div className="flex justify-center items-center gap-2">
 						{nodeStatus
 							? (
 								<><FaCircleCheck color={"#3DD68C"} size={23}/>Your node is sufficiently funded <HelpIcon width={14} height={14} fill='#3DD68C'/></>
@@ -71,7 +71,7 @@ export function SentryNodeStatusCard() {
 	}
 
 	return (
-		<Card width={"695px"} height={"367px"} customClasses="bg-primaryBgColor">
+		<Card width={"695px"} height={"367px"} customClasses="bg-primaryBgColor shadow-default">
 			{sentryRunning && (
 				<div className="absolute left-0 right-0 w-[695px] h-[367px] scale-[1.4] translate-x-[-90px] translate-y-[-15px]">
 					<img src={img} alt="logo" />
