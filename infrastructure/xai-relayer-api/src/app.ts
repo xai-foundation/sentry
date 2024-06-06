@@ -1,5 +1,6 @@
+import "express-async-errors";
 import express from "express";
-import { disconnectMongoose, loadMongoose } from "@/loaders/mongoose";
+import { disconnectMongoose } from "@/loaders/mongoose";
 import { loadExpress } from "@/loaders/express";
 import { resolve } from "path";
 import dotenv from "dotenv";

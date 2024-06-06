@@ -1,21 +1,21 @@
-import { app } from "@/app";
-import { ForwardRequest } from "@/models/types/ForwardRequest";
-import { forwardMetaTransaction } from "@/services/forwardMetatransaction";
-import { getMinimumRequiredBalance } from "@/services/getMinimumRequiredBalance";
-import { getUserQuota } from "@/services/quota/getUserQuota";
-import { updateUserQuota } from "@/services/quota/updateUserQuota";
-import { validateForwardRequest } from "@/services/validateForwardRequest";
-import { NextFunction, Request, Response } from "express";
+import {app} from "@/app";
+import {ForwardRequest} from "@/models/types/ForwardRequest";
+import {forwardMetaTransaction} from "@/services/forwardMetatransaction";
+import {getMinimumRequiredBalance} from "@/services/getMinimumRequiredBalance";
+import {getUserQuota} from "@/services/quota/getUserQuota";
+import {updateUserQuota} from "@/services/quota/updateUserQuota";
+import {validateForwardRequest} from "@/services/validateForwardRequest";
+import {NextFunction, Request, Response} from "express";
 
 //TODO make the type work as the request interface
 export interface MetaTransactionRequest {
-    params: {
-        projectId: string
-    }
+	params: {
+		projectId: string;
+	};
 
-    body: {
-        request: ForwardRequest
-    }
+	body: {
+		request: ForwardRequest;
+	};
 }
 
 /**
@@ -43,49 +43,38 @@ export interface MetaTransactionRequest {
  *         $ref: '#/components/responses/Error'
  */
 
-app.post('/forward/:projectId', async (req: Request, res: Response<{ txHash: string }>, next: NextFunction) => {
-    try {
-        
-        const projectId = req.params.projectId;
-        if (!projectId || !projectId.length) {
-            throw new Error("Invalid projectId")
-        }
+app.post("/forward/:projectId", async (req: Request, res: Response<{txHash: string}>) => {
+	const projectId = req.params.projectId;
+	if (!projectId || !projectId.length) {
+		throw new Error("Invalid projectId");
+	}
 
-        const forwardRequest: ForwardRequest = req.body;
+	const forwardRequest: ForwardRequest = req.body;
 
-        if (!forwardRequest) {
-            throw new Error("Invalid forward request")
-        }
+	if (!forwardRequest) {
+		throw new Error("Invalid forward request");
+	}
 
-        const validationError = validateForwardRequest(forwardRequest);
-        if (validationError !== "") {
-            throw new Error(`Invalid request: ${validationError}`)
-        }
+	const validationError = validateForwardRequest(forwardRequest);
+	if (validationError !== "") {
+		throw new Error(`Invalid request: ${validationError}`);
+	}
 
-        const { quota, projectInfo } = await getUserQuota(projectId, forwardRequest.from);
+	const {quota, projectInfo} = await getUserQuota(projectId, forwardRequest.from);
 
-        if (BigInt(quota.balanceWei) < getMinimumRequiredBalance()) {
-            throw new Error(`Insufficient balance`)
-        }
+	if (BigInt(quota.balanceWei) < getMinimumRequiredBalance()) {
+		throw new Error(`Insufficient balance`);
+	}
 
-        const { txHash, txFee } = await forwardMetaTransaction(
-            forwardRequest,
-            projectInfo.relayerId,
-            projectInfo.forwarderAddress
-        );
+	const {txHash, txFee} = await forwardMetaTransaction(
+		forwardRequest,
+		projectInfo.relayerId,
+		projectInfo.forwarderAddress,
+	);
 
-        quota.balanceWei = (BigInt(quota.balanceWei) - BigInt(txFee)).toString();
+	quota.balanceWei = (BigInt(quota.balanceWei) - BigInt(txFee)).toString();
 
-        await updateUserQuota(
-            projectInfo.userProjectId,
-            projectId,
-            forwardRequest.from,
-            quota
-        );
+	await updateUserQuota(projectInfo.userProjectId, projectId, forwardRequest.from, quota);
 
-        return res.status(200).send({ txHash });
-
-    } catch (error) {
-        next(error);
-    }
+	return res.status(200).send({txHash});
 });

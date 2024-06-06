@@ -1,7 +1,7 @@
-import { app } from "@/app";
-import { Quota } from "@/models/types/Quota";
-import { getUserQuota } from "@/services/quota/getUserQuota";
-import { NextFunction, Request, Response } from "express";
+import {app} from "@/app";
+import {Quota} from "@/models/types/Quota";
+import {getUserQuota} from "@/services/quota/getUserQuota";
+import {NextFunction, Request, Response} from "express";
 // import { getUserQuota } from "@/services/quota/getUserQuota";
 
 /**
@@ -34,24 +34,17 @@ import { NextFunction, Request, Response } from "express";
  *         $ref: '#/components/responses/APIError'
  */
 
-app.get('/quota/:projectId/:userWallet', async (req: Request, res: Response<Quota>, next: NextFunction) => {
+app.get("/quota/:projectId/:userWallet", async (req: Request, res: Response<Quota>) => {
+	const projectId = req.params.projectId;
+	const userWallet = req.params.userWallet;
 
-    try {
+	if (!projectId || !projectId.length) {
+		throw new Error("Invalid projectId");
+	}
+	if (!userWallet || !userWallet.length) {
+		throw new Error("Invalid userWallet");
+	}
 
-        const projectId = req.params.projectId;
-        const userWallet = req.params.userWallet;
-
-        if (!projectId || !projectId.length) {
-            throw new Error("Invalid projectId")
-        }
-        if (!userWallet || !userWallet.length) {
-            throw new Error("Invalid userWallet")
-        }
-
-        const { quota } = await getUserQuota(projectId, userWallet);
-        return res.status(200).send(quota);
-        
-    } catch (error) {
-        next(error);
-    }
+	const {quota} = await getUserQuota(projectId, userWallet);
+	return res.status(200).send(quota);
 });

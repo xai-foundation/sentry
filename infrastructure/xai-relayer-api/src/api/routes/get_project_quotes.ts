@@ -1,7 +1,7 @@
-import { app } from "@/app";
-import { Quota } from "@/models/types/Quota";
-import { getProjectQuota } from "@/services/quota/getProjectQuota";
-import { NextFunction, Request, Response } from "express";
+import {app} from "@/app";
+import {Quota} from "@/models/types/Quota";
+import {getProjectQuota} from "@/services/quota/getProjectQuota";
+import {NextFunction, Request, Response} from "express";
 
 /**
  * @swagger
@@ -30,19 +30,13 @@ import { NextFunction, Request, Response } from "express";
 
 //TODO swagger docs return types !
 
-app.get('/quota/:projectId', async (req: Request, res: Response<Quota>, next: NextFunction) => {
-    try {
+app.get("/quota/:projectId", async (req: Request, res: Response<Quota>) => {
+	const projectId = req.params.projectId;
 
-        const projectId = req.params.projectId;
+	if (!projectId || !projectId.length) {
+		throw new Error("Invalid projectId");
+	}
 
-        if (!projectId || !projectId.length) {
-            throw new Error("Invalid projectId")
-        }
-
-        const quota = await getProjectQuota(projectId);
-        return res.status(200).send(quota);
-        
-    } catch (error) {
-        next(error);
-    }
+	const quota = await getProjectQuota(projectId);
+	return res.status(200).send(quota);
 });
