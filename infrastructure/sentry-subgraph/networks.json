@@ -19,6 +19,10 @@
     "EsXai": {
       "address": "0x4C749d097832DE2FEcc989ce18fDc5f1BD76700c",
       "startBlock": 157193630
+    },
+    "PoolFactory": {
+      "address": "0xF9E08660223E2dbb1c0b28c82942aB6B5E38b8E5",
+      "startBlock": 200013500
     }
   }
 }

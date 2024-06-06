@@ -1,22 +1,21 @@
 "use client";
 
 import moment from "moment";
-import { useAccount, useSwitchChain, useWriteContract } from "wagmi";
-import { useState } from "react";
+import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { useEffect, useRef, useState } from "react";
 import { Id } from "react-toastify";
 import { useDisclosure } from "@nextui-org/react"
 
-import { ACTIVE_NETWORK_IDS, OrderedRedemptions, RedemptionRequest, getNetwork, getWeb3Instance, mapWeb3Error } from "@/services/web3.service";
+import { OrderedRedemptions, RedemptionRequest, mapWeb3Error } from "@/services/web3.service";
 
 import MainTitle from "../titles/MainTitle";
 import { loadingNotification, updateNotification } from "../notifications/NotificationsComponent";
 
-import { PrimaryButton, SecondaryButton } from "../buttons/ButtonsComponent";
-import { esXaiAbi } from "@/assets/abi/esXaiAbi";
 import { useCallback } from "react";
-import { ModalComponent } from "../modal/ModalComponent";
 import { MODAL_BODY_TEXT } from "./Constants";
-import { useRouter } from "next/navigation";
+import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
+import { BaseModal, PrimaryButton } from "@/app/components/ui";
+import { TextButton } from "@/app/components/ui/buttons";
 
 interface HistoryCardProps {
 	receivedAmount: number,
@@ -28,6 +27,12 @@ interface HistoryCardProps {
 	claimDisabled?: boolean,
 	onClaim: () => Promise<void>,
 	onCancel?: (onClose: () => void) => Promise<void>
+	lastIndex?: boolean;
+	isLoading: boolean;
+	loadingIndex: number;
+	redemptionIndex: number;
+	isCancelled?: boolean;
+	isPending?: boolean;
 }
 
 function formatTimespan(durationMillis: number) {
@@ -38,8 +43,25 @@ function formatTimespan(durationMillis: number) {
 		return durationStr + ` ago`;
 }
 
-function HistoryCard({ receivedAmount, redeemedAmount, receivedCurrency, redeemedCurrency, durationMillis, claimable, claimDisabled, onClaim, onCancel }: HistoryCardProps) {
-	const { isOpen, onOpen, onOpenChange } = useDisclosure();
+function HistoryCard({
+	receivedAmount,
+	redeemedAmount,
+	receivedCurrency,
+	redeemedCurrency,
+	durationMillis,
+	claimable,
+	claimDisabled,
+	onClaim,
+	onCancel,
+	lastIndex,
+	isLoading,
+	loadingIndex,
+	redemptionIndex,
+	isCancelled = false,
+	isPending = false
+}: HistoryCardProps) {
+	const { isOpen, onOpen, onClose } = useDisclosure();
+	moment.relativeTimeThreshold("d", 1000000);
 
 	const onLocalCancelClick = useCallback(() => {
 		if (!claimDisabled) onOpen();
@@ -51,53 +73,77 @@ function HistoryCard({ receivedAmount, redeemedAmount, receivedCurrency, redeeme
 
 	return (
 		<>
-			<ModalComponent
-				isOpen={isOpen}
-				onOpenChange={onOpenChange}
-				onSuccess={onModalSuccessClick}
-				cancelBtnText="No, I changed my mind"
-				confirmBtnText="Yes, cancel"
+
+			{/*<ModalComponent*/}
+			{/*	isOpen={isOpen}*/}
+			{/*	onOpenChange={onOpenChange}*/}
+			{/*	onSuccess={onModalSuccessClick}*/}
+			{/*	cancelBtnText="No, I changed my mind"*/}
+			{/*	confirmBtnText="Yes, cancel"*/}
+			{/*	modalHeader="Cancel redemption"*/}
+			{/*	modalBody={(*/}
+			{/*		<span className="text-sm">*/}
+			{/*			{MODAL_BODY_TEXT}*/}
+			{/*		</span>*/}
+			{/*	)}*/}
+			{/*/>*/}
+
+
+			<BaseModal
+				isOpened={isOpen}
+				modalBody={MODAL_BODY_TEXT}
+				closeModal={onClose}
+				onSubmit={() => onModalSuccessClick(onClose)}
 				modalHeader="Cancel redemption"
-				modalBody={(
-					<span className="text-sm">
-						{MODAL_BODY_TEXT}
-					</span>
-				)}
+				submitText="Yes, cancel"
+				cancelText="No, I changed my mind"
 			/>
-			<div className="flex justify-between mb-[16px]">
+			<div
+				className={`flex justify-between py-4 md:px-8 px-[17px]  ${!lastIndex && "border-b-1 border-chromaphobicBlack"} items-center`}>
 				<span>
-					<span className="flex flex-col font-medium items-start text-[12px] text-slateGray">{receivedAmount} {receivedCurrency}</span>
-					<span className="flex flex-col items-start text-[10px] text-steelGray">Redeemed from {redeemedAmount} {redeemedCurrency}</span>
+					<span
+						className="flex flex-col font-semibold items-start text-xl text-white">{receivedAmount} {receivedCurrency}</span>
+					<span
+						className="flex flex-col items-start text-lg font-medium text-elementalGrey">{isPending ? "Redeeming" : "Redeemed"} from {redeemedAmount} {redeemedCurrency}</span>
 				</span>
 				{claimable
 					? (
 						<>
-							<div>
-								<PrimaryButton onClick={onClaim} btnText="Claim" isDisabled={claimDisabled === true}
-									className={`max-h-8 ${claimDisabled === true ? "bg-steelGray hover:bg-steelGray" : ""}`} />
-								<SecondaryButton
-									size="sm"
-									btnText="Cancel"
-									isDisabled={claimDisabled === true}
-									hoverClassName="data-[hover=true]:text-red data-[hover=true]:bg-white hover:bg-white"
-									className="bg-white w-[50px] mr-custom-17 ml-2"
-									onClick={onLocalCancelClick}
-								/>
-							</div>
+							<PrimaryButton
+								spinner={isLoading && loadingIndex === redemptionIndex}
+								onClick={onClaim} btnText={`${isLoading && loadingIndex === redemptionIndex ? "Claiming" : "Claim"}`}
+								isDisabled={claimDisabled === true}
+								wrapperClassName="h-full flex items-center"
+								className={`${claimDisabled === true ? "bg-steelGray hover:bg-steelGray" : ""} uppercase w-full ${isLoading && loadingIndex === redemptionIndex ? "max-w-[124px]" : "max-w-[77px]"} !py-[0] !h-[40px]`}
+							/>
+								{/*<SecondaryButton*/}
+								{/*	size="sm"*/}
+								{/*	btnText="Cancel"*/}
+								{/*	isDisabled={claimDisabled === true}*/}
+								{/*	hoverClassName="data-[hover=true]:text-red data-[hover=true]:bg-white hover:bg-white"*/}
+								{/*	className="bg-white w-[50px] mr-custom-17 ml-2"*/}
+								{/*	onClick={onLocalCancelClick}*/}
+								{/*/>*/}
 						</>
 					)
-					: <>
-						<span className="flex flex-col flex-1 mt-2 pt-2 items-end text-[10px] text-steelGray">{formatTimespan(durationMillis)}</span>
+					:
+					<div className={`flex ${!isPending ? "flex-col gap-0 items-end" : "flex-row md:gap-2 gap-1 items-center"} `}>
+						<span
+							className="block text-elementalGrey text-lg font-medium">
+							{!isPending && !isCancelled ? "Claimed" : !isPending && isCancelled && "Cancelled"}
+						</span>
+						<span
+							className="flex flex-col flex-1 items-end text-base text-elementalGrey w-max">{formatTimespan(durationMillis)}</span>
 
-						{onCancel ? <SecondaryButton
-							size="xs"
-							btnText="Cancel"
+						{onCancel ? <TextButton
+							buttonText={isLoading && loadingIndex === redemptionIndex ? "Canceling..." : "Cancel"}
 							isDisabled={claimDisabled === true}
-							hoverClassName="data-[hover=true]:text-red data-[hover=true]:bg-white hover:bg-white"
-							className="bg-white w-[50px] mr-custom-17 ml-2"
+							className={`${isLoading && loadingIndex === redemptionIndex && "!text-darkRoom"} !pr-0 !mr-0 w-max`}
+							textClassName={`!mr-0`}
 							onClick={onLocalCancelClick}
+
 						/> : ""}
-					</>
+					</div>
 				}
 			</div>
 		</>
@@ -107,116 +153,115 @@ function HistoryCard({ receivedAmount, redeemedAmount, receivedCurrency, redeeme
 
 export default function History({ redemptions, reloadRedemptions }: {
 	redemptions: OrderedRedemptions,
-	reloadRedemptions: () => void
+	reloadRedemptions: () => void,
 }) {
-	const { address, chainId } = useAccount();
-	const [transactionLoading, setTransactionLoading] = useState(false);
+	const { chainId } = useAccount();
+	const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
+	const [isCancel, setIsCancel] = useState(false);
 
-	const network = getNetwork(chainId);
 	const { switchChain } = useSwitchChain();
-
 	const { writeContractAsync } = useWriteContract();
-	const router = useRouter();
 
-	const completeEsXaiRedemption = async (index: number) => {
-		return writeContractAsync({
-			address: getWeb3Instance(network).esXaiAddress as `0x${string}`,
-			abi: esXaiAbi,
-			functionName: "completeRedemption",
-			args: [BigInt(index)]
-		});
-	};
+	// Substitute Timeouts with useWaitForTransaction
+	const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
+		hash: receipt,
+	});
 
-	const cancelEsXiRedemption = async (index: number) => {
-		return writeContractAsync({
-			address: getWeb3Instance(network).esXaiAddress as `0x${string}`,
-			abi: esXaiAbi,
-			functionName: "cancelRedemption",
-			args: [BigInt(index)]
-		});
-	};
+	const [loadingIndex, setLoadingIndex] = useState(-1);
+
+	const toastId = useRef<Id>();
+
+	const updateOnSuccess = useCallback(() => {
+		updateNotification(isCancel ? 'Cancel successful' : `Claim successful`, toastId.current as Id, false, receipt, chainId);
+		reloadRedemptions();
+	}, [isCancel, receipt, chainId, reloadRedemptions])
+
+	const updateOnError = useCallback(() => {
+		const error = mapWeb3Error(status);
+		updateNotification(error, toastId.current as Id, true);
+	}, [status])
+
+	useEffect(() => {
+
+		if (isSuccess) {
+			updateOnSuccess();
+		}
+		if (isError) {
+			updateOnError()
+		}
+	}, [isSuccess, isError, updateOnSuccess, updateOnError]);
 
 	const onClaim = async (redemption: RedemptionRequest) => {
-
-		if (!chainId) {
-			return;
-		}
-		if (!ACTIVE_NETWORK_IDS.includes(chainId)) {
-			switchChain({ chainId: ACTIVE_NETWORK_IDS[0] });
-			return;
-		}
-		let receipt;
-		setTransactionLoading(true);
-		const loading = loadingNotification("Transaction is pending...");
+		setIsCancel(false);
+		setLoadingIndex(redemption.index);
+		toastId.current = loadingNotification("Transaction is pending...");
 		try {
-			receipt = await completeEsXaiRedemption(redemption.index);
-			onSuccess(receipt, loading);
-			setTimeout(() => {
-				reloadRedemptions();
-			}, 3000)
+			setReceipt(await executeContractWrite(
+				WriteFunctions.completeRedemption,
+				[BigInt(redemption.index)],
+				chainId,
+				writeContractAsync,
+				switchChain
+			) as `0x${string}`);
+
 		} catch (ex: any) {
 			const error = mapWeb3Error(ex);
-			updateNotification(error, loading, true);
-			setTransactionLoading(false);
+			updateNotification(error, toastId.current, true);
 		}
 	}
 
 	const onCancel = async (redemption: RedemptionRequest, onClose: () => void) => {
-
-		if (!chainId) {
-			return;
-		}
-		if (!ACTIVE_NETWORK_IDS.includes(chainId)) {
-			switchChain({ chainId: ACTIVE_NETWORK_IDS[0] });
-			return;
-		}
-		let receipt;
-		setTransactionLoading(true);
-		const loading = loadingNotification("Transaction is canceling...");
+		setIsCancel(true);
+		setLoadingIndex(redemption.index);
+		toastId.current = loadingNotification("Transaction is canceling...");
 		try {
-			receipt = await cancelEsXiRedemption(redemption.index);
-			onSuccess(receipt, loading, 'Cancel successful');
-			setTimeout(() => {
-				onClose();
-				reloadRedemptions();
-			}, 3000);
+			setReceipt(await executeContractWrite(
+				WriteFunctions.cancelRedemption,
+				[BigInt(redemption.index)],
+				chainId,
+				writeContractAsync,
+				switchChain
+			) as `0x${string}`);
+			onClose();
 		} catch (ex: any) {
 			const error = mapWeb3Error(ex);
-			updateNotification(error, loading, true);
-			setTransactionLoading(false);
+			updateNotification(error, toastId.current as Id, true);
 		}
-	}
-
-	const onSuccess = async (receipt: string, loadingToast: Id, toastMsg?: string) => {
-		updateNotification(toastMsg ?? `Claim successful`, loadingToast, false, receipt, chainId);
-		setTransactionLoading(false);
 	}
 
 	return (
 		<>
-			<div className="group flex flex-col w-xl p-3 pr-0">
-
+			<div className="group flex flex-col w-xl">
 				{(redemptions.claimable.length > 0 || redemptions.open.length > 0) &&
-					<>
-						<MainTitle isSubHeader classNames="text-lg" title="Pending" />
-						{redemptions.claimable.map(r => {
+					<div className="bg-nulnOil/85 box-shadow-default mb-[53px]">
+						<MainTitle
+							isSubHeader
+							classNames="!text-3xl capitalize border-b-1 border-chromaphobicBlack py-6 md:px-8 px-[17px] !mb-0"
+							title="Pending"
+						/>
+						{redemptions.claimable.map((r, index) => {
 							return (
 								<HistoryCard
 									key={r.index}
 									onClaim={() => onClaim(r)}
 									onCancel={(onClose) => onCancel(r, onClose)}
 									claimable={true}
-									claimDisabled={transactionLoading}
+									claimDisabled={isLoading}
 									receivedAmount={r.receiveAmount}
 									redeemedAmount={r.redeemAmount}
 									receivedCurrency="XAI"
 									redeemedCurrency="esXAI"
 									durationMillis={0}
+									isLoading={isLoading}
+									redemptionIndex={r.index}
+									loadingIndex={loadingIndex}
+									lastIndex={(redemptions.claimable.length - 1 === index) && !redemptions.open.length}
+									isPending={true}
 								/>
 							)
 						})}
 
-						{redemptions.open.map(r => {
+						{redemptions.open.map((r, index) => {
 							return (
 								<HistoryCard
 									key={r.index}
@@ -227,18 +272,26 @@ export default function History({ redemptions, reloadRedemptions }: {
 									redeemedAmount={r.redeemAmount}
 									receivedCurrency="XAI"
 									redeemedCurrency="esXAI"
+									isLoading={isLoading}
+									loadingIndex={loadingIndex}
+									redemptionIndex={r.index}
 									durationMillis={r.startTime + r.duration - Date.now()}
+									lastIndex={redemptions.open.length - 1 === index}
+									isPending={true}
 								/>
 							)
 						})}
-					</>
+					</div>
 				}
 
 				{(redemptions.closed.length > 0) &&
-					<>
-						<MainTitle isSubHeader classNames="text-lg" title="History" />
+					<div className="bg-nulnOil/75 shadow-default mb-[53px]">
+						<MainTitle
+							isSubHeader
+							classNames="!text-3xl capitalize border-b-1 border-chromaphobicBlack py-6 md:px-8 px-[17px] !mb-0"
+							title="History" />
 
-						{redemptions.closed.map(r => {
+						{redemptions.closed.map((r, index) => {
 							return (
 								<HistoryCard
 									key={r.index}
@@ -248,11 +301,17 @@ export default function History({ redemptions, reloadRedemptions }: {
 									redeemedAmount={r.redeemAmount}
 									receivedCurrency="XAI"
 									redeemedCurrency="esXAI"
+									isLoading={isLoading}
+									loadingIndex={loadingIndex}
+									redemptionIndex={r.index}
 									durationMillis={r.endTime - Date.now()}
+									lastIndex={redemptions.closed.length - 1 === index}
+									isCancelled={r.cancelled}
+									isPending={false}
 								/>
 							)
 						})}
-					</>
+					</div>
 				}
 			</div>
 		</>

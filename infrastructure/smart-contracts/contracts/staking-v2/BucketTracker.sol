@@ -4,7 +4,6 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
-import "./Utils.sol";
 
 /**
  * @title SafeMathUint
@@ -106,7 +105,7 @@ library SafeMathInt {
     }
 }
 
-contract BucketTracker is IBucketTracker {
+contract BucketTracker {
     using SafeMathUint for uint256;
     using SafeMathInt for int256;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;

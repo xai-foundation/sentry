@@ -18,597 +18,154 @@
 
 
 ######################################################################
-# EsXaiEvents.graphql                                                #
-# schema/events/EsXaiEvents.graphql                                  #
-######################################################################
-type EsXaiApprovalEvent @entity(immutable: true) {
-  id: Bytes!
-  owner: Bytes! # address
-  spender: Bytes! # address
-  value: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type EsXaiFoundationBasepointsUpdatedEvent @entity(immutable: true) {
-  id: Bytes!
-  newBasepoints: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type EsXaiInitializedEvent @entity(immutable: true) {
-  id: Bytes!
-  version: Int! # uint8
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type EsXaiRedemptionCancelledEvent @entity(immutable: true) {
-  id: Bytes!
-  user: Bytes! # address
-  index: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type EsXaiRedemptionCompletedEvent @entity(immutable: true) {
-  id: Bytes!
-  user: Bytes! # address
-  index: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type EsXaiRedemptionStartedEvent @entity(immutable: true) {
-  id: Bytes!
-  user: Bytes! # address
-  index: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type EsXaiRedemptionStatusChangedEvent @entity(immutable: true) {
-  id: Bytes!
-  isActive: Boolean! # bool
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type EsXaiRoleAdminChangedEvent @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  previousAdminRole: Bytes! # bytes32
-  newAdminRole: Bytes! # bytes32
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type EsXaiRoleGrantedEvent @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  account: Bytes! # address
-  sender: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type EsXaiRoleRevokedEvent @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  account: Bytes! # address
-  sender: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type EsXaiTransferEvent @entity(immutable: true) {
-  id: Bytes!
-  from: Bytes! # address
-  to: Bytes! # address
-  value: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type EsXaiWhitelistUpdatedEvent @entity(immutable: true) {
-  id: Bytes!
-  account: Bytes! # address
-  isAdded: Boolean! # bool
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type EsXaiXaiAddressChangedEvent @entity(immutable: true) {
-  id: Bytes!
-  newXaiAddress: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-####################################################################
-# GasSubsidy.graphql                                               #
-# schema/events/GasSubsidy.graphql                                 #
-####################################################################
-type GasSubsidyRoleAdminChangedEvent @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  previousAdminRole: Bytes! # bytes32
-  newAdminRole: Bytes! # bytes32
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type GasSubsidyRoleGrantedEvent @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  account: Bytes! # address
-  sender: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type GasSubsidyRoleRevokedEvent @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  account: Bytes! # address
-  sender: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-######################################################################
 # NodeLicense.graphql                                                #
-# schema/events/NodeLicense.graphql                                  #
+# schema\events\NodeLicense.graphql                                  #
 ######################################################################
-type NodeLicenseApprovalEvent @entity(immutable: true) {
-  id: Bytes!
+type SentryKey @entity(immutable: false) {
+  id: String!
   owner: Bytes! # address
-  approved: Bytes! # address
-  tokenId: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+  sentryWallet: SentryWallet!
+  keyId: BigInt!
+  mintTimeStamp: BigInt!
+  assignedPool: Bytes! # address
+  submissions: [Submission!]! @derivedFrom(field: "sentryKey")
 }
 
-type NodeLicenseApprovalForAllEvent @entity(immutable: true) {
-  id: Bytes!
-  owner: Bytes! # address
-  operator: Bytes! # address
-  approved: Boolean! # bool
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+######################################################################
+# PoolFactory.graphql                                                #
+# schema\events\PoolFactory.graphql                                  #
+######################################################################
+type PoolInfo @entity(immutable: false) {
+  id: String!
+  address: Bytes!
+  owner: Bytes!
+  delegateAddress: Bytes!
+  totalStakedEsXaiAmount: BigInt!
+  totalStakedKeyAmount: BigInt!
+  ownerShare: BigInt!
+  keyBucketShare: BigInt!
+  stakedBucketShare: BigInt!
+  updateSharesTimestamp: BigInt!
+  pendingShares: [BigInt!]!
+  metadata: [String!]!
+  socials: [String!]!
+  ownerStakedKeys: BigInt!
+  ownerRequestedUnstakeKeyAmount: BigInt!
+  ownerLatestUnstakeRequestCompletionTime: BigInt!
+  createdTimestamp: BigInt!
 }
 
-type NodeLicenseClaimableChangedEvent @entity(immutable: true) {
-  id: Bytes!
-  admin: Bytes! # address
-  newClaimableState: Boolean! # bool
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+type UnstakeRequest @entity(immutable: false) {
+  id: String!
+  user: Bytes!
+  pool: Bytes!
+  index: BigInt!
+  amount: BigInt!
+  isKey: Boolean!
+  open: Boolean!
+  lockTime: BigInt!
+  completeTime: BigInt!
 }
 
-type NodeLicenseFundsReceiverChangedEvent @entity(immutable: true) {
-  id: Bytes!
-  admin: Bytes! # address
-  newFundsReceiver: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+# global delayperiods in entity might be problematic as event is not on initialize and therefore might not be created at all
+type PoolFactoryConfig @entity(immutable: false) {
+  id: String!
+  version: BigInt!
+  unstakeKeysDelayPeriod: BigInt!
+  unstakeGenesisKeyDelayPeriod: BigInt!
+  unstakeEsXaiDelayPeriod: BigInt!
+  updateRewardBreakdownDelayPeriod: BigInt!
 }
 
-type NodeLicenseFundsWithdrawnEvent @entity(immutable: true) {
-  id: Bytes!
-  admin: Bytes! # address
-  amount: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type NodeLicenseInitializedEvent @entity(immutable: true) {
-  id: Bytes!
-  version: Int! # uint8
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type NodeLicensePricingTierSetOrAddedEvent @entity(immutable: true) {
-  id: Bytes!
-  index: BigInt! # uint256
-  price: BigInt! # uint256
-  quantity: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type NodeLicensePromoCodeCreatedEvent @entity(immutable: true) {
-  id: Bytes!
-  promoCode: String! # string
-  recipient: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type NodeLicensePromoCodeRemovedEvent @entity(immutable: true) {
-  id: Bytes!
-  promoCode: String! # string
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type NodeLicenseReferralRewardEvent @entity(immutable: true) {
-  id: Bytes!
-  buyer: Bytes! # address
-  referralAddress: Bytes! # address
-  amount: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type NodeLicenseReferralRewardPercentagesChangedEvent @entity(immutable: true) {
-  id: Bytes!
-  referralDiscountPercentage: BigInt! # uint256
-  referralRewardPercentage: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type NodeLicenseRefundOccurredEvent @entity(immutable: true) {
-  id: Bytes!
-  refundee: Bytes! # address
-  amount: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type NodeLicenseRewardClaimedEvent @entity(immutable: true) {
-  id: Bytes!
-  claimer: Bytes! # address
-  amount: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-type NodeLicenseRoleAdminChangedEvent @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  previousAdminRole: Bytes! # bytes32
-  newAdminRole: Bytes! # bytes32
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type NodeLicenseRoleGrantedEvent @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  account: Bytes! # address
-  sender: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type NodeLicenseRoleRevokedEvent @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  account: Bytes! # address
-  sender: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type NodeLicenseTransferEvent @entity(immutable: true) {
-  id: Bytes!
-  from: Bytes! # address
-  to: Bytes! # address
-  tokenId: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type NodeLicenseWhitelistAmountRedeemedEvent @entity(immutable: true) {
-  id: Bytes!
-  redeemer: Bytes! # address
-  newAmount: Int! # uint16
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type NodeLicenseWhitelistAmountUpdatedByAdminEvent @entity(immutable: true) {
-  id: Bytes!
-  redeemer: Bytes! # address
-  newAmount: Int! # uint16
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
 
 ##############################################################
 # Referee.graphql                                            #
-# schema/events/Referee.graphql                              #
+# schema\events\Referee.graphql                              #
 ##############################################################
-type RefereeApprovalEvent @entity(immutable: true) {
-  id: Bytes!
-  owner: Bytes! # address
-  operator: Bytes! # address
-  approved: Boolean! # bool
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+enum ChallengeStatus {
+  OpenForSubmissions
+  OpenForClaims
+  Expired
 }
 
-type RefereeAssertionCheckingToggledEvent @entity(immutable: true) {
-  id: Bytes!
-  newState: Boolean! # bool
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RefereeAssertionSubmittedEvent @entity(immutable: true) {
-  id: Bytes!
-  challengeId: BigInt! # uint256
-  nodeLicenseId: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RefereeChallengeClosedEvent @entity(immutable: true) {
-  id: Bytes!
+type Challenge @entity(immutable: false) {
+  id: String!
   challengeNumber: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+  status: ChallengeStatus!
+  assertionId: BigInt! # uint256
+  assertionStateRootOrConfirmData: Bytes! # bytes
+  assertionTimestamp: BigInt! # uint64
+  challengerSignedHash: Bytes! # bytes
+  activeChallengerPublicKey: Bytes! # bytes
+  rollupUsed: Bytes! # address
+  createdTimestamp: BigInt! # uint256
+  totalSupplyOfNodesAtChallengeStart: BigInt! # uint256
+  rewardAmountForClaimers: BigInt! # uint256
+  amountForGasSubsidy: BigInt! # uint256
+  numberOfEligibleClaimers: BigInt! # uint256
+  amountClaimedByClaimers: BigInt! # uint256
+  submissions: [Submission!]! @derivedFrom(field: "challenge")
 }
 
-type RefereeChallengeExpiredEvent @entity(immutable: true) {
-  id: Bytes!
-  challengeId: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+enum SubmittedFrom {
+  submitAssertion
+  submitMultipleAssertions
+  unknown
 }
 
-type RefereeChallengeSubmittedEvent @entity(immutable: true) {
-  id: Bytes!
-  challengeNumber: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+enum ClaimedFrom {
+  claimRewards
+  claimMultipleRewards
+  unclaimed
 }
 
-type RefereeChallengerPublicKeyChangedEvent @entity(immutable: true) {
-  id: Bytes!
-  newChallengerPublicKey: Bytes! # bytes
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+type Submission @entity(immutable: false) {
+  id: String!
+  challengeNumber: BigInt!
+  claimed: Boolean!
+  eligibleForPayout: Boolean!
+  nodeLicenseId: BigInt! 
+  assertionsStateRootOrConfirmData: String!
+  claimAmount: BigInt!
+  createdTimestamp: BigInt!
+  claimTimestamp: BigInt!
+  createdTxHash: Bytes!
+  claimTxHash: Bytes!
+  sentryKey: SentryKey!
+  challenge: Challenge!
+  submittedFrom: SubmittedFrom!
+  claimedFrom: ClaimedFrom!
 }
 
-type RefereeInitializedEvent @entity(immutable: true) {
-  id: Bytes!
-  version: Int! # uint8
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+type SentryWallet @entity(immutable: false) {
+  id: String!
+  isKYCApproved: Boolean!
+  address: Bytes!
+  approvedOperators: [Bytes!]!
+  v1EsXaiStakeAmount: BigInt!
+  esXaiStakeAmount: BigInt!
+  keyCount: BigInt!
+  stakedKeyCount: BigInt!
+  sentryKeys: [SentryKey!]! @derivedFrom(field: "sentryWallet")
 }
 
-type RefereeInvalidSubmissionEvent @entity(immutable: true) {
-  id: Bytes!
-  challengeId: BigInt! # uint256
-  nodeLicenseId: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+type RefereeConfig @entity(immutable: false) {
+  id: String!
+  version: BigInt!
+  maxStakeAmountPerLicense: BigInt!
+  maxKeysPerPool: BigInt!
+  stakeAmountTierThresholds: [BigInt!]!
+  stakeAmountBoostFactors: [BigInt!]!
 }
 
-type RefereeKycStatusChangedEvent @entity(immutable: true) {
-  id: Bytes!
-  wallet: Bytes! # address
-  isKycApproved: Boolean! # bool
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RefereeNodeLicenseAddressChangedEvent @entity(immutable: true) {
-  id: Bytes!
-  newNodeLicenseAddress: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RefereeRewardsClaimedEvent @entity(immutable: true) {
-  id: Bytes!
-  challengeId: BigInt! # uint256
-  amount: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RefereeRoleAdminChangedEvent @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  previousAdminRole: Bytes! # bytes32
-  newAdminRole: Bytes! # bytes32
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RefereeRoleGrantedEvent @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  account: Bytes! # address
-  sender: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RefereeRoleRevokedEvent @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  account: Bytes! # address
-  sender: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RefereeRollupAddressChangedEvent @entity(immutable: true) {
-  id: Bytes!
-  newRollupAddress: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RefereeStakedV1Event @entity(immutable: true) {
-  id: Bytes!
-  user: Bytes! # address
-  amount: BigInt! # uint256
-  totalStaked: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RefereeStakingEnabledEvent @entity(immutable: true) {
-  id: Bytes!
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RefereeUnstakeV1Event @entity(immutable: true) {
-  id: Bytes!
-  user: Bytes! # address
-  amount: BigInt! # uint256
-  totalStaked: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RefereeUpdateMaxStakeAmountEvent @entity(immutable: true) {
-  id: Bytes!
-  prevAmount: BigInt! # uint256
-  newAmount: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-##################################################################
-# XaiEvents.graphql                                              #
-# schema/events/XaiEvents.graphql                                #
-##################################################################
-type XaiApprovalEvent @entity(immutable: true) {
-  id: Bytes!
-  owner: Bytes! # address
-  spender: Bytes! # address
-  value: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type XaiConvertedToEsXaiEvent @entity(immutable: true) {
-  id: Bytes!
-  user: Bytes! # address
-  amount: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type XaiEsXaiAddressSetEvent @entity(immutable: true) {
-  id: Bytes!
-  newEsXaiAddress: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type XaiInitializedEvent @entity(immutable: true) {
-  id: Bytes!
-  version: Int! # uint8
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type XaiRoleAdminChangedEvent @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  previousAdminRole: Bytes! # bytes32
-  newAdminRole: Bytes! # bytes32
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type XaiRoleGrantedEvent @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  account: Bytes! # address
-  sender: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type XaiRoleRevokedEvent @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  account: Bytes! # address
-  sender: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type XaiTransferEvent @entity(immutable: true) {
-  id: Bytes!
-  from: Bytes! # address
-  to: Bytes! # address
-  value: BigInt! # uint256
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
+######################################################
+# Xai.graphql                                        #
+# schema\events\Xai.graphql                          #
+######################################################
+type ConvertedToEsXaiEvent @entity(immutable: true) {
+    id: Bytes!
+    user: Bytes! # address
+    amount: BigInt!
+    timestamp: BigInt!
 }
 

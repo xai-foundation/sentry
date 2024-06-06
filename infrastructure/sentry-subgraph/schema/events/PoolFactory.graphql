@@ -1,0 +1,41 @@
+type PoolInfo @entity(immutable: false) {
+  id: String!
+  address: Bytes!
+  owner: Bytes!
+  delegateAddress: Bytes!
+  totalStakedEsXaiAmount: BigInt!
+  totalStakedKeyAmount: BigInt!
+  ownerShare: BigInt!
+  keyBucketShare: BigInt!
+  stakedBucketShare: BigInt!
+  updateSharesTimestamp: BigInt!
+  pendingShares: [BigInt!]!
+  metadata: [String!]!
+  socials: [String!]!
+  ownerStakedKeys: BigInt!
+  ownerRequestedUnstakeKeyAmount: BigInt!
+  ownerLatestUnstakeRequestCompletionTime: BigInt!
+  createdTimestamp: BigInt!
+}
+
+type UnstakeRequest @entity(immutable: false) {
+  id: String!
+  user: Bytes!
+  pool: Bytes!
+  index: BigInt!
+  amount: BigInt!
+  isKey: Boolean!
+  open: Boolean!
+  lockTime: BigInt!
+  completeTime: BigInt!
+}
+
+# global delayperiods in entity might be problematic as event is not on initialize and therefore might not be created at all
+type PoolFactoryConfig @entity(immutable: false) {
+  id: String!
+  version: BigInt!
+  unstakeKeysDelayPeriod: BigInt!
+  unstakeGenesisKeyDelayPeriod: BigInt!
+  unstakeEsXaiDelayPeriod: BigInt!
+  updateRewardBreakdownDelayPeriod: BigInt!
+}

@@ -6,12 +6,12 @@ import SidebarComponent from "./SidebarComponent";
 import { useEffect } from "react";
 
 export default function WrapperComponent({ children }: { children: React.ReactNode }) {
-	
-	const { setTheme } = useTheme()
+
+	const { setTheme } = useTheme();
 
 	useEffect(() => {
-	  setTheme("light")
-	}, [])
+		setTheme("light");
+	}, [setTheme]);
 
 	return (
 		<>
@@ -19,7 +19,7 @@ export default function WrapperComponent({ children }: { children: React.ReactNo
 				<div className="hidden lg:block">
 					<SidebarComponent />
 				</div>
-				<div className="w-full">
+				<div className="w-full min-h-screen h-full">
 					<NavbarComponent />
 					{children}
 				</div>
