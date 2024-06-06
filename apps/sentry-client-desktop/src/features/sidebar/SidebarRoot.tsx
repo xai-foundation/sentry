@@ -7,8 +7,8 @@ import {GreenPulse, GreyPulse, YellowPulse} from "@/features/keys/StatusPulse.js
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {useAtomValue} from "jotai";
-import {MdOutlineSpaceDashboard} from "react-icons/md";
-import { TelegramIcon, XaiHeaderIcon } from "../../../../../packages/ui/src/rebrand/icons/IconsComponents";
+import { TelegramIcon, XaiHeaderIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import DashboardIcon from "@/assets/images/dashboard-icon-white.png";
 
 /**
  * Sidebar component
@@ -43,7 +43,7 @@ export function Sidebar() {
 						to="/dashboard"
 						className={`flex items-center text-xl text-white font-bold  cursor-pointer gap-2 py-[11px] pl-[17px] hover:global-clip-path hover:bg-linkBgHover ${getActiveLink('/dashboard')}`}
 					>
-						<MdOutlineSpaceDashboard size={20}/> DASHBOARD
+						<img src={DashboardIcon} width={14} height={14}/> DASHBOARD
 					</Link>
 
 					<Link
