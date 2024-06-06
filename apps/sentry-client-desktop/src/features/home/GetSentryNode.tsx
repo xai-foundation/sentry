@@ -74,7 +74,7 @@ export function GetSentryNode() {
 					{getBody()}
 				</div>
 			</div>
-            <img src={img} alt="logo" className="fixed w-full scale-[1.2] translate-x-[7%] translate-y-[-30%] h-full left-0 object-cover" />
+            <img src={img} alt="logo" className="fixed w-full scale-[1.2] translate-x-[7%] translate-y-[-10%] h-full left-0 object-cover" />
 		</div>
 	);
 }
