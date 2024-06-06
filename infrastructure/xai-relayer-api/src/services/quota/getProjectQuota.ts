@@ -20,6 +20,7 @@ export async function getProjectQuota(projectId: ObjectId | string): Promise<Quo
     try {
         project = await ProjectModel.findById(projectId)
             .select('lastRefillTimestamp refillInterval projectLimitWei projectBalanceWei')
+            .lean()
             .exec() as IProject | null;
     } catch (error) {
         throw new Error(`Internal error - failed to load project`);
