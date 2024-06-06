@@ -6,10 +6,10 @@ import {NetworkRewardsCard} from "@/features/home/dashboard/NetworkRewardsCard";
 export function Dashboard() {
 	return (
 		<div className="w-full h-screen flex flex-row gap-4 p-4 bg-transparent">
-			<div className="flex flex-col gap-4">
+			<div className="flex flex-col gap-6">
 				<SentryNodeStatusCard/>
 
-				<div className="flex gap-4">
+				<div className="flex gap-3">
 					<KeysCard/>
 					<WalletsCard/>
 				</div>
