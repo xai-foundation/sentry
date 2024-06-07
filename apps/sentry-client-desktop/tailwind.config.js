@@ -28,6 +28,7 @@ module.exports = {
       tertiaryText: "#FF2C3A",
       primaryWarningText: "#FFC53D",
       primaryCalloutWarning: "#FFC53D1A",
+      btnSecondaryText: "#1A1819",
     },
     extend: {},
   },

@@ -352,36 +352,43 @@ export function SentryWallet() {
 
 					<SentryWalletHeader/>
 
-					<div className="flex flex-row items-center w-full py-3 pl-10 gap-1">
-						<h2 className="font-semibold">Assigned Keys</h2>
-						<p className="text-sm bg-gray-100 px-2 rounded-2xl text-gray-500">
-							{getWalletCounter()}
+					<div
+						className="flex flex-row items-center w-full py-[22px] pl-[24px] gap-[20px] bg-primaryBgColor/75">
+						<h2 className="font-bold text-white text-2xl uppercase">Assigned Keys</h2>
+						<div className="flex gap-[5px] items-center">
+							<p className="text-secondaryText text-lg font-medium">
+								{getWalletCounter()}
 
-							{/*{owners.length > 0 ? (*/}
-							{/*	loading ? "Loading..." : `${keyCount} key${keyCount === 1 ? "" : "s"} in ${owners.length} wallet${owners.length === 1 ? "" : "s"}`*/}
-							{/*) : (*/}
-							{/*	"Keys not assigned"*/}
-							{/*)}*/}
-						</p>
+								{/*{owners.length > 0 ? (*/}
+								{/*	loading ? "Loading..." : `${keyCount} key${keyCount === 1 ? "" : "s"} in ${owners.length} wallet${owners.length === 1 ? "" : "s"}`*/}
+								{/*) : (*/}
+								{/*	"Keys not assigned"*/}
+								{/*)}*/}
+							</p>
+							<CustomTooltip
+								header={"Purchased keys must be assigned to Sentry Wallet"}
+								extraClasses={{tooltipContainer: "!left-[-38px]", tooltipHeader: "!text-secondaryText"}}
+								content={<div className="text-secondaryText">
+									<span className="block my-[10px]">To assign keys, connect all wallets containing Sentry Keys.</span>
+									<span className="block">The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry.</span>
+								</div>}
+							>
+								<HelpIcon width={14} height={14}/>
+							</CustomTooltip>
+						</div>
 						{loading ? (
-							<span className="flex items-center text-[15px] text-[#A3A3A3] select-none">
+							<span className="flex items-center text-lg font-bold text-tertiaryText select-none">
 								Refreshing
 							</span>
 						) : (
 							<a
 								onClick={onRefreshTable}
-								className="flex items-center text-[15px] text-[#F30919] gap-1 cursor-pointer select-none"
+								className="flex items-center text-lg text-tertiaryText gap-1 cursor-pointer select-none"
 							>
 								<MdRefresh/> Refresh
 							</a>
 						)}
-						<Tooltip
-							header={"Purchased keys must be assigned to Sentry Wallet"}
-							body={"To assign keys, connect all wallets containing Sentry Keys."}
-							body2={"The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry."}
-						>
-							<AiOutlineInfoCircle className="text-[#A3A3A3]"/>
-						</Tooltip>
+
 					</div>
 				</div>
 
@@ -500,7 +507,8 @@ export function SentryWallet() {
 							</div>
 						) : (
 							sentryRunning ? (
-								<div className="w-full flex-1 flex flex-col justify-center items-center">
+								<div
+									className="w-full flex-1 flex flex-col justify-center items-center bg-primaryBgColor/75 shadow-default">
 									<AssignKeysFromNewWallet/>
 								</div>
 							) : (
@@ -513,7 +521,8 @@ export function SentryWallet() {
 				)}
 
 				{!sentryRunning && (
-					<div className="w-full flex-1 flex flex-col justify-center items-center">
+					<div
+						className="w-full flex-1 flex flex-col justify-center items-center">
 						<AssignKeysSentryNotRunning/>
 					</div>
 				)}
