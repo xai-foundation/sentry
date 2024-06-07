@@ -1,15 +1,14 @@
 import {HasKeys} from "./HasKeys.js";
 import {NoKeys} from "./NoKeys.js";
-import {AiOutlineInfoCircle} from "react-icons/ai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useAtom, useAtomValue} from "jotai";
-import {Tooltip} from "@sentry/ui";
-import {RiKey2Line} from "react-icons/ri";
+import {PrimaryButton, Tooltip} from "@sentry/ui";
 import {BiLoaderAlt} from "react-icons/bi";
 import {chainStateAtom, useChainDataRefresh} from "@/hooks/useChainDataWithCallback";
 import {useCombinedOwners} from "@/hooks/useCombinedOwners";
 import {MdRefresh} from "react-icons/md";
 import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
+import { HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents.js";
 
 export type WalletAssignedMap = Record<string, boolean>;
 
@@ -29,21 +28,21 @@ export function Keys() {
 	const {refresh} = useChainDataRefresh();
 
 	return (
-		<div className="w-full h-screen">
-			<div className="sticky top-0 bg-white flex flex-row justify-between items-center border-b border-gray-200 pl-10 pr-2 z-10">
-				<div className="top-0 flex flex-row items-center h-16 gap-2 bg-white">
-					<h2 className="text-lg font-semibold">Keys</h2>
+		<div className="w-full h-screen bg-primaryBgColor">
+			<div className="sticky top-0 bg-primaryBgColor flex flex-row justify-between items-center border-b border-primaryBorderColor pl-6 pr-2 z-10">
+				<div className="top-0 flex flex-row items-center py-5 gap-2">
+					<h2 className="text-3xl text-white font-bold">Keys</h2>
 
 					{licensesLoading ? (
 						<div
-							className="flex min-w-[128px] justify-center items-center text-sm bg-gray-100 pl-2 pr-2 rounded-2xl text-gray-500 gap-1">
-							<BiLoaderAlt className="animate-spin" color={"#A3A3A3"}/>
+							className="flex min-w-[128px] justify-center items-center text-lg text-secondaryText gap-1">
+							<BiLoaderAlt className="animate-spin" color={"#FF0030"}/>
 							<p>
 								Loading...
 							</p>
 						</div>
 					) : (
-						<p className="flex min-w-[128px] justify-center items-center text-sm bg-gray-100 pl-2 pr-2 rounded-2xl text-gray-500">
+						<p className="flex min-w-[128px] justify-center items-center text-lg text-secondaryText pl-2">
 							{keyCount} key{keyCount === 1 ? "" : "s"} in {combinedOwners.length} wallet{combinedOwners.length === 1 ? "" : "s"}
 						</p>
 					)}
@@ -53,23 +52,25 @@ export function Keys() {
 						body={"If you own keys in additional wallets, add them to the client."}
 						width={452}
 					>
-						<AiOutlineInfoCircle size={16} className="text-[#A3A3A3]"/>
+						<HelpIcon width={14} height={14}/>
 					</Tooltip>
 
 					<a
 						onClick={refresh}
-						className="flex items-center text-[15px] text-[#F30919] gap-1 cursor-pointer font-light select-none"
+						className="flex items-center text-lg text-btnPrimaryBgColor gap-1 cursor-pointer font-bold select-none"
 					>
 						<MdRefresh/> Refresh
 					</a>
-
-					<button
-						className="flex justify-center items-center text-[15px] border border-[#E5E5E5] ml-2 py-2 px-3 gap-1"
+                    <div className="ml-3">
+					<PrimaryButton
+						className={`bg-primaryBgColor text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-xl uppercase font-bold !py-1 !px-[14px]`}
 						onClick={() => setDrawerState(DrawerView.BuyKeys)}
-					>
-						<RiKey2Line size={18}/>
-						<p>Purchase keys</p>
-					</button>
+						btnText="Purchase keys"
+						colorStyle="outline"
+						size="sm"
+						wrapperClassName="global-clip-primary-btn"
+					/>
+					</div>
 				</div>
 
 				{drawerState === null && (
