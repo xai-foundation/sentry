@@ -85,13 +85,13 @@ contract ForwarderTestNFT is Context {
 	}
 
 	function setApprovalForAll(address operator, bool approved) external {
-		isApprovedForAll[msg.sender][operator] = approved;
-		emit ApprovalForAll(msg.sender, operator, approved);
+		isApprovedForAll[_msgSender()][operator] = approved;
+		emit ApprovalForAll(_msgSender(), operator, approved);
 	}
 
 	function approve(address spender, uint256 id) external {
 		address owner = _ownerOf[id];
-		require(msg.sender == owner || isApprovedForAll[owner][msg.sender], "not authorized");
+		require(_msgSender() == owner || isApprovedForAll[owner][_msgSender()], "not authorized");
 
 		_approvals[id] = spender;
 
@@ -111,7 +111,7 @@ contract ForwarderTestNFT is Context {
 		require(from == _ownerOf[id], "from != owner");
 		require(to != address(0), "transfer to zero address");
 
-		require(_isApprovedOrOwner(from, msg.sender, id), "not authorized");
+		require(_isApprovedOrOwner(from, _msgSender(), id), "not authorized");
 
 		_balanceOf[from]--;
 		_balanceOf[to]++;
@@ -127,7 +127,7 @@ contract ForwarderTestNFT is Context {
 
 		require(
 			to.code.length == 0 ||
-				IERC721Receiver(to).onERC721Received(msg.sender, from, id, "") ==
+				IERC721Receiver(to).onERC721Received(_msgSender(), from, id, "") ==
 				IERC721Receiver.onERC721Received.selector,
 			"unsafe recipient"
 		);
@@ -138,7 +138,7 @@ contract ForwarderTestNFT is Context {
 
 		require(
 			to.code.length == 0 ||
-				IERC721Receiver(to).onERC721Received(msg.sender, from, id, data) ==
+				IERC721Receiver(to).onERC721Received(_msgSender(), from, id, data) ==
 				IERC721Receiver.onERC721Received.selector,
 			"unsafe recipient"
 		);
@@ -201,12 +201,12 @@ contract ForwarderTestNFT is Context {
 	 * a call is not performed by the trusted forwarder or the calldata length is less than
 	 * 20 bytes (an address length).
 	 */
-	function _msgSender() internal view virtual override returns (address) {
-		uint256 calldataLength = msg.data.length;
-		if (isTrustedForwarder(msg.sender) && calldataLength >= 20) {
-			return address(bytes20(msg.data[calldataLength - 20:]));
-		} else {
-			return super._msgSender();
+	function _msgSender() internal view override returns (address signer) {
+		signer = msg.sender;
+		if (msg.data.length >= 20 && isTrustedForwarder(signer)) {
+			assembly {
+				signer := shr(96, calldataload(sub(calldatasize(), 20)))
+			}
 		}
 	}
 

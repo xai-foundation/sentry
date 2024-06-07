@@ -103,12 +103,12 @@ contract ForwarderTestToken is IERC20, Context {
 	 * a call is not performed by the trusted forwarder or the calldata length is less than
 	 * 20 bytes (an address length).
 	 */
-	function _msgSender() internal view virtual override returns (address) {
-		uint256 calldataLength = msg.data.length;
-		if (isTrustedForwarder(msg.sender) && calldataLength >= 20) {
-			return address(bytes20(msg.data[calldataLength - 20:]));
-		} else {
-			return super._msgSender();
+	function _msgSender() internal view override returns (address signer) {
+		signer = msg.sender;
+		if (msg.data.length >= 20 && isTrustedForwarder(signer)) {
+			assembly {
+				signer := shr(96, calldataload(sub(calldatasize(), 20)))
+			}
 		}
 	}
 
