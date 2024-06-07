@@ -3,6 +3,7 @@ interface PrimaryButtonProps {
     onClick: () => void;
     btnText: string;
     className?: string;
+    wrapperClassName?: string;
     isDisabled?: boolean;
     size?: "sm" | "md" | "lg";
     colorStyle?: "primary" | "secondary" | "outline";
@@ -14,6 +15,7 @@ export const PrimaryButton = ({
                                   btnText,
                                   size = "md",
                                   className,
+                                  wrapperClassName,
                                   isDisabled,
                                   colorStyle,
                               }: PrimaryButtonProps) => {
@@ -48,7 +50,7 @@ export const PrimaryButton = ({
     };
 
     return (
-        <div className={`w-full ${colorStyle === "outline" && !isDisabled && "p-[1px] bg-hornetSting global-clip-btn"}`}>
+        <div className={`w-full ${colorStyle === "outline" && !isDisabled && "p-[1px] bg-hornetSting global-clip-btn"} ${wrapperClassName}`}>
             <button
                 className={`rounded-none font-bold ${getSizeStyles()} ${getColorStyles()} duration-200 ease-in global-clip-primary-btn ${className} ${disabledStyles}`}
                 type="submit"

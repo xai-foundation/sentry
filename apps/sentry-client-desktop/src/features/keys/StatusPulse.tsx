@@ -1,7 +1,7 @@
 import log from "electron-log";
 
 interface PulseStyle {
-	size?: "sm" | "md"
+	size?: "sm" | "md" | "lg"
 }
 
 export function GreenPulse({size="sm"}: PulseStyle) {
@@ -14,6 +14,10 @@ export function GreenPulse({size="sm"}: PulseStyle) {
 			pulseH = "0.5rem";
 			break;
 		case "md":
+			pulseW = "1rem";
+			pulseH = "1rem";
+			break;
+		case "lg":
 			pulseW = "1.25rem";
 			pulseH = "1.25rem";
 			break;
@@ -46,6 +50,10 @@ export function YellowPulse({size="sm"}: PulseStyle) {
 			pulseH = "0.5rem";
 			break;
 		case "md":
+			pulseW = "1rem";
+			pulseH = "1rem";
+			break;
+		case "lg":
 			pulseW = "1.25rem";
 			pulseH = "1.25rem";
 			break;
@@ -78,6 +86,10 @@ export function GreyPulse({size="sm"}: PulseStyle) {
 			pulseH = "0.5rem";
 			break;
 		case "md":
+			pulseW = "1rem";
+			pulseH = "1rem";
+			break;
+		case "lg":
 			pulseW = "1.25rem";
 			pulseH = "1.25rem";
 			break;

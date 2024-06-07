@@ -17,7 +17,6 @@ export function SentryActiveCard() {
 					color="#3DD68C"
 					title="Sentry Wallet active"
 					titleStyles="text-lg text-white"
-					tooltip={true}
 				/>
 			) : (
 				<>

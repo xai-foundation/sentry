@@ -1,78 +1,84 @@
 import {useAtomValue} from "jotai";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
-import {Tooltip} from "@sentry/ui";
-import {AiFillWarning, AiOutlineInfoCircle} from "react-icons/ai";
+import {PrimaryButton, Tooltip} from "@sentry/ui";
+import {AiFillWarning} from "react-icons/ai";
 import {Card} from "@/features/home/cards/Card";
-import {MdWallet} from "react-icons/md";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {useOperator} from "@/features/operator";
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
 import {useSetAtom} from "jotai";
+import { HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { useOperatorRuntime } from "@/hooks/useOperatorRuntime";
+import { RiKey2Line } from "react-icons/ri";
 
 export function WalletsCard() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {kycRequired} = useAtomValue(accruingStateAtom);
 	const {owners, ownersKycMap} = useAtomValue(chainStateAtom);
 	const kycRequiredLength = Object.values(ownersKycMap).filter(value => !value).length
-	const {publicKey: operatorAddress} = useOperator();
+	const { publicKey: operatorAddress } = useOperator();
+	const { sentryRunning } = useOperatorRuntime();
 
 	return (
-		<Card width={"355px"} height={"188px"}>
+		<Card width={"341px"} height={"279px"} customClasses="bg-primaryBgColor shadow-default">
 
-			<div className="flex flex-row justify-between items-center py-2 px-4 border-b border-[#F5F5F5]">
-				<div className="flex flex-row items-center gap-1 text-[#A3A3A3] text-[15px]">
-					<h2 className="font-medium">Wallets</h2>
+			<div className="flex flex-row justify-between items-center py-5 px-6 border-b border-primaryBorderColor">
+				<div className="flex flex-row items-center gap-1 text-white text-2xl">
+					<h2 className="font-bold">Wallets</h2>
 					<Tooltip
 						header={"Xai Client can track keys only from added wallets"}
 						body={"If you own keys in additional wallets, add them to the client."}
 						position={"start"}
 					>
-						<AiOutlineInfoCircle size={15} color={"#A3A3A3"}/>
+						<HelpIcon width={14} height={14} fill="#A19F9F"/>
 					</Tooltip>
 				</div>
 				<div className="flex flex-row justify-between items-center gap-1">
-					{kycRequired && (
-						<button
-							className="flex flex-row justify-center items-center gap-2 text-[#737373] text-sm font-medium bg-[#F5F5F5] rounded-md px-4 py-1"
-							onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}
-						>
-							Complete KYC
-						</button>
-					)}
-					<button
-						className="flex flex-row justify-center items-center gap-2 text-[#737373] text-sm font-medium bg-[#F5F5F5] rounded-md px-4 py-1"
+					<PrimaryButton
+						className="text-btnPrimaryBgColor text-lg uppercase font-bold bg-trasparent rounded-md !px-0 !py-0 max-h-[28px] hover:bg-primaryBgColor hover:text-white"
 						onClick={() => window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`)}
-					>
-						Assign wallet
-					</button>
+						btnText="Assign Wallet"
+						colorStyle="primary"
+						size='sm'
+					/>
 				</div>
 			</div>
 
-			<div className="py-2 px-4">
+			<div className="py-4 px-6 flex">
+				{sentryRunning && !kycRequired && <div className="mr-3">
+					<RiKey2Line size={30} color={"#ffffff"} />
+				</div>}
+				<div className="w-full">
 				<div className="flex gap-2 items-center">
-
-					<div className="flex items-center gap-2">
-						<div
-							className="w-[24px] h-[24px] flex justify-center items-center bg-[#F5F5F5] rounded-full">
-							<MdWallet color={"#A3A3A3"} size={15}/>
-						</div>
-					</div>
-					<h3 className="text-[32px] font-semibold">
-						{owners.length}
+					<h3 className="text-4xl font-bold text-white">
+						{owners.length} {(kycRequired || !sentryRunning) && (owners.length === 1 ? "wallet" : "wallets")}
 					</h3>
-				</div>
-				<p className="text-sm text-[#737373] ml-[2rem]">
+				</div> 
+				<div className="flex items-center w-full">
+				{sentryRunning && <p className="text-lg text-secondaryText w-full">
 					KYC complete: {owners.length - kycRequiredLength}/{owners.length}
-				</p>
+				</p>}
+                {sentryRunning && kycRequired && (
+					<PrimaryButton
+						className="text-btnPrimaryBgColor text-lg font-bold bg-trasparent rounded-md !px-0 !py-0 max-h-[28px] hover:bg-primaryBgColor hover:text-white"
+						onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}
+						btnText="Complete KYC"
+						colorStyle="primary"
+						size='sm'
+					/>
+				)}
+					</div>
+				</div>
 			</div>
 
 
-			{kycRequired && (
+			{sentryRunning && kycRequired && (
 				<div
-					className="absolute bottom-3 left-3 m-auto max-w-[327px] h-[40px] flex justify-center items-center gap-1 rounded-lg text-sm text-[#F59E28] bg-[#FFFBEB] p-2">
+					className="absolute bottom-5 left-6 m-auto w-[288px] flex justify-center items-center gap-1 text-lg font-bold text-primaryTooltipColor bg-[#FFC53D1A] px-4 py-3 global-cta-clip-path">
 					<div className="flex justify-center items-center gap-2">
-						<AiFillWarning color={"#F59E28"} size={20}/>
-						KYC must be completed for {kycRequiredLength} wallet{kycRequiredLength === 1 ? "" : "s"}
+						<AiFillWarning color={"#FFC53D"} size={25}/>
+						KYC required for {kycRequiredLength} wallet{kycRequiredLength === 1 ? "" : "s"}
+						<HelpIcon width={14} height={14} fill="#FFC53D"/>
 					</div>
 				</div>
 			)}
