@@ -47,6 +47,7 @@ import { generateRevenueReport } from './commands/licenses/generate-revenue-repo
 import { displayNodeAgreement } from './commands/display-node-agreement.js';
 import { startCentralizationRuntime } from './commands/start-centralization-runtime.js';
 import { exportChallengeInfo } from './commands/export-challenge-info.js';
+import { syncStakingPools } from './commands/sync-staking-pools.js';
 
 import {version} from "@sentry/core";
 
@@ -101,6 +102,7 @@ generateRevenueReport(cli);
 displayNodeAgreement(cli);
 startCentralizationRuntime(cli);
 exportChallengeInfo(cli);
+syncStakingPools(cli);
 
 console.log(`Starting Sentry cli version ${version}`);
 console.log(`Stake and redeem esXAI at https://app.xai.games`);
