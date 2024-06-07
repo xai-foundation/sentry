@@ -38,7 +38,7 @@ export function Sidebar() {
 					<XaiHeaderIcon width={39} height={34} />
 				</div>
 
-				<div className="w-[253px] mb-[184px]">
+				<div className="w-[253px] mb-[145px]">
 					<Link
 						to="/dashboard"
 						className={`flex items-center text-xl text-white font-bold  cursor-pointer gap-2 py-[11px] pl-[17px] hover:global-clip-path hover:bg-linkBgHover ${getActiveLink('/dashboard')}`}
