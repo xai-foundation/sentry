@@ -5,5 +5,6 @@ export type ForwardRequest = {
     gas: string;
     nonce: string;
     data: string;
+    forwarderAddress: string;
     signature: string;
 };

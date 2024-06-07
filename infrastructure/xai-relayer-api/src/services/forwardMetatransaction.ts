@@ -18,7 +18,7 @@ const config = {
  * @returns {string} the txHash
  * @returns {string} the tx costs in wei
  */
-export async function forwardMetaTransaction(txRequest: ForwardRequest, relayerId: string, forwarderAddress: string): Promise<{ txHash: string, txFee: string }> {
+export async function forwardMetaTransaction(txRequest: ForwardRequest, relayerId: string): Promise<{ txHash: string, txFee: string }> {
 
     //TODO check request.to with project forwarder address
     //This will still be caught from thridweb however, we will want to return a structured error
@@ -34,7 +34,7 @@ export async function forwardMetaTransaction(txRequest: ForwardRequest, relayerI
             data: txRequest.data
         },
         signature: txRequest.signature,
-        forwarderAddress: forwarderAddress
+        forwarderAddress: txRequest.forwarderAddress
     };
 
     let queueId: string;
@@ -49,11 +49,11 @@ export async function forwardMetaTransaction(txRequest: ForwardRequest, relayerI
 
     //Wait for transaction to be sent to blockchain
     const { txHash, gasPrice } = await waitForTransactionQueue(queueId);
-    const txFee = await getTransactionFee(txHash, gasPrice);
+    // const txFee = await getTransactionFee(txHash, gasPrice);
 
     return {
         txHash,
-        txFee
+        txFee: "10000000000000"
     }
 }
 
@@ -63,7 +63,7 @@ const getTransactionInfoFromQueueId = async (queueId: string): Promise<{ txHash:
     try {
         const response = await axios.get(`${process.env.THIRDWEB_ENGINE_URL}/transaction/status/${queueId}`, config)
 
-        if (response && response.data && response.data.result && response.data.result.status == 'mined') {
+        if (response && response.data && response.data.result && response.data.result.status == 'sent') {
             return {
                 txHash: response.data.result.transactionHash,
                 gasPrice: response.data.result.gasPrice,

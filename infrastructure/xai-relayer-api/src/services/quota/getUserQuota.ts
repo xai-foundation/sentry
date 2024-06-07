@@ -4,7 +4,7 @@ import ProjectModel from "@/models/Project.schema";
 import { Types, ObjectId } from "mongoose";
 import { Quota } from "@/models/types/Quota";
 import { IProject } from "@/models/types/IProject";
-import { IUserProjectInfo } from "@/models/types/UserProjectInfo";
+import { IUserProjectInfo } from "@/models/types/IUserProjectInfo";
 
 
 /**
@@ -20,7 +20,7 @@ import { IUserProjectInfo } from "@/models/types/UserProjectInfo";
 export async function getUserQuota(
     projectId: ObjectId | string,
     walletAddress: string
-): Promise<{ quota: Quota, projectInfo: { relayerId: string, forwarderAddress: string, userProjectId: Types.ObjectId | null } }> {
+): Promise<{ quota: Quota, projectInfo: { relayerId: string, userProjectId: Types.ObjectId | null } }> {
 
     await loadMongoose();
 
@@ -59,7 +59,6 @@ export async function getUserQuota(
             },
             projectInfo: {
                 relayerId: project.relayerId,
-                forwarderAddress: project.forwarderAddress,
                 userProjectId: null
             }
         }
@@ -89,7 +88,6 @@ export async function getUserQuota(
         quota: userQuota,
         projectInfo: {
             relayerId: project.relayerId,
-            forwarderAddress: project.forwarderAddress,
             userProjectId: userProjectInfo._id
         }
     };
