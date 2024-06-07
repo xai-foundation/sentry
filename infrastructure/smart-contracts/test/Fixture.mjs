@@ -167,6 +167,11 @@ describe("Fixture Tests", function () {
 		const Referee7 = await ethers.getContractFactory("Referee7");
 		const referee7 = await upgrades.upgradeProxy((await referee.getAddress()), Referee7);
 		await referee7.waitForDeployment();
+        
+		// Referee8
+		const Referee8 = await ethers.getContractFactory("Referee8");
+		const referee8 = await upgrades.upgradeProxy((await referee.getAddress()), Referee8, { call: { fn: "initialize", args: [] } });
+		await referee8.waitForDeployment();
 
         // Set Rollup Address
         const rollupAddress = config.rollupAddress;
@@ -297,7 +302,7 @@ describe("Fixture Tests", function () {
             secretKeyHex,
             publicKeyHex: "0x" + publicKeyHex,
 
-            referee: referee7,
+            referee: referee8,
             nodeLicense,
 			poolFactory,
             gasSubsidy,
