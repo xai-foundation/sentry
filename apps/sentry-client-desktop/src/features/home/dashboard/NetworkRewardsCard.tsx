@@ -11,6 +11,7 @@ import {useEffect, useState} from 'react';
 import {FaCircleCheck} from "react-icons/fa6";
 import {MdRefresh} from "react-icons/md";
 import { HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { BiLoaderAlt } from "react-icons/bi";
 
 export function NetworkRewardsCard() {
 	const {owners, licensesList} = useAtomValue(chainStateAtom);
@@ -70,7 +71,7 @@ export function NetworkRewardsCard() {
 		: null;
 
 	return (
-		<Card width={"315px"} height={"670px"} customClasses={"bg-primaryBgColor"}>
+		<Card width={"300px"} height={"670px"} customClasses={"bg-primaryBgColor shadow-default"}>
 
 			<div className="flex flex-row justify-between items-center py-4 px-6 border-b border-primaryBorderColor">
 				<div className="flex flex-row items-center gap-1 text-white text-xl font-bold">
@@ -82,6 +83,18 @@ export function NetworkRewardsCard() {
 					>
 						<HelpIcon width={14} height={14}/>
 					</Tooltip>
+				</div>
+
+				<div className="flex flex-row justify-between items-center gap-1 text-[#A3A3A3]">
+					{!isBalancesLoading && balancesFetchedLast ? (
+						<div className="flex flex-row justify-center items-center gap-1">
+							<a onClick={refresh} className="cursor-pointer">
+								<MdRefresh size={20} color={"#FF0030"}/>
+							</a>
+						</div>
+					) : (
+						<BiLoaderAlt className="animate-spin w-[18px]" size={20} color={"#FF0030"}/>
+					)}
 				</div>
 			</div>
 
@@ -98,11 +111,6 @@ export function NetworkRewardsCard() {
 							>
 								<HelpIcon width={14} height={14}/>
 							</Tooltip>
-						</div>
-						<div>
-							{!isBalancesLoading && balancesFetchedLast && (<a onClick={refresh} className="cursor-pointer">
-								<MdRefresh size={20} color={"#FF0030"} />
-							</a>)}
 						</div>
 					</div>
 
@@ -131,11 +139,6 @@ export function NetworkRewardsCard() {
 							>
 								<HelpIcon width={14} height={14}/>
 							</Tooltip>
-						</div>
-                        <div>
-							{!isBalancesLoading && balancesFetchedLast && (<a onClick={refresh} className="cursor-pointer">
-								<MdRefresh size={20} color={"#FF0030"} />
-							</a>)}
 						</div>					
 					</div>
 					<div className="flex items-center font-semibold">

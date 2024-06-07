@@ -19,7 +19,6 @@ export function AllowedWalletsCard() {
 					color="#3DD68C"
 					title="Allowed Wallets assigned"
 					titleStyles="text-lg text-white"
-					tooltip
 				/>
 			) : (
 				<>
