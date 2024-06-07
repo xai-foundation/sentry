@@ -252,7 +252,7 @@ export function TableRowRewards({
       </td>
       {/**/}
       <td className={`whitespace-nowrap text-graphiteGray lg:py-4 sm:py-2 text-right sm:text-sm lg:text-base lg:pr-7 ${customClass}`}>
-        {isDisconnected ? <div className="flex justify-center"><button onClick={onClick} className="font-bold lg:text-[18px] sm:text-sm text-red sm:hidden lg:block">Connect wallet</button></div> : showTableKeys ?
+        {isDisconnected ? <div className="flex justify-end"><button onClick={onClick} className="font-bold lg:text-[18px] sm:text-sm text-red sm:hidden lg:block">Connect wallet</button></div> : showTableKeys ?
           <Link
             href={"staking/stake/[poolAddress]/keys"} as={`staking/stake/${pool.address}/keys`}
             className="font-bold lg:text-[18px] sm:text-sm text-red sm:hidden lg:block hover:text-white duration-200 ease-in">

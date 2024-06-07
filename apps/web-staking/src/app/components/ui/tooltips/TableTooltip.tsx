@@ -104,7 +104,7 @@ useEffect(() => {
       <div
         onMouseOver={openOnHover}
         onMouseLeave={closeOnMouseLeave}
-        className={`${isOpened && "lg:block"} ${showOnClick && isOpened && "sm:block"} hidden ease-in duration-300 z-40 before:content[''] before:absolute before:bottom-[-20px] before:left-2/4 before:block before:h-[0px] before:w-[0px] before:border-solid ${isWarning ? "before:border-b-black" : "before:border-b-red"} before:border-b-[7px] before:border-x-transparent before:border-x-[4px] before:border-t-0  before:-translate-y-2/4 before:-translate-x-2/4 before:opacity-100  w-0 h-0 border-l-[13px] border-l-transparent border-r-[13px] border-r-transparent border-b-[20px] ${isWarning ? "border-b-bananaBoat" : "border-b-black"} absolute bottom-[-20px] left-2/4 -translate-x-2/4`}>
+        className={`${isOpened ? "block" : "hidden"} ${showOnClick && isOpened && "sm:block"} ease-in duration-300 z-40 before:content[''] before:absolute before:bottom-[-20px] before:left-2/4 before:block before:h-[0px] before:w-[0px] before:border-solid ${isWarning ? "before:border-b-black" : "before:border-b-red"} before:border-b-[7px] before:border-x-transparent before:border-x-[4px] before:border-t-0  before:-translate-y-2/4 before:-translate-x-2/4 before:opacity-100  w-0 h-0 border-l-[13px] border-l-transparent border-r-[13px] border-r-transparent border-b-[20px] ${isWarning ? "border-b-bananaBoat" : "border-b-black"} absolute bottom-[-20px] left-2/4 -translate-x-2/4`}>
         <div
           className={`absolute w-[456px] ${isWarning ? "bg-bananaBoat" : "bg-black"} py-[15px] px-[15px] top-[20px] left-[-38px] ${extraClasses?.tooltipContainer}`}>
           {header && <span

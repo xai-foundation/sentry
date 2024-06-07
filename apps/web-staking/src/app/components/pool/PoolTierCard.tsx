@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { ExternalLinkComponent } from "@/app/components/links/LinkComponent";
 import ProgressComponent from "@/app/components/progress/Progress";
@@ -14,6 +14,7 @@ import { formatCurrencyWithDecimals, showUpToFourDecimals } from "@/app/utils/fo
 import { useRouter } from "next/navigation";
 import { BaseCallout } from "@/app/components/ui";
 import { WarningIcon } from "@/app/components/icons/IconsComponent";
+import { useAccount } from "wagmi";
 
 interface PoolTierCardProps {
   poolInfo: PoolInfo;
@@ -42,13 +43,17 @@ const PoolTierCard = ({ poolInfo, tiers }: PoolTierCardProps) => {
     tier
   );
 
-  const createTierMessage = () => {
+  const { chainId } = useAccount();
+
+  const [tierMessage, setTierMessage] = useState("");
+
+  const createTierMessage = async () => {
     if (tier.iconText == "Diamond") {
       return "Pool has reached the final tier!";
     }
 
     if (poolInfo.totalStakedAmount >= poolInfo.maxStakedAmount) {
-      const keysLeft = calculateKeysToNextTier(poolInfo.totalStakedAmount, poolInfo.keyCount, tier, tiers);
+      const keysLeft = await calculateKeysToNextTier(poolInfo.totalStakedAmount, poolInfo.keyCount, tier, tiers, chainId);
       if (tierByStaked.index !== tier.index) {
         return `Stake ${keysLeft} more ${keysLeft > 1 ? `keys` : `key`} to reach ${POOL_DATA_ROWS[tierByStaked.index - 1].nextTierName}`;
       }
@@ -61,6 +66,10 @@ const PoolTierCard = ({ poolInfo, tiers }: PoolTierCardProps) => {
 
     return "Maximum esXAI capacity reached, stake more keys.";
   };
+
+  useEffect(() => {
+    createTierMessage().then((message) => setTierMessage(message));
+  }, [tierByStaked]);
 
   return (
     <div className="h-full w-full bg-nulnOil/75 md:px-[24px] px-[18px] py-[21px] md:my-8 my-5 shadow-default">
@@ -102,7 +111,7 @@ const PoolTierCard = ({ poolInfo, tiers }: PoolTierCardProps) => {
       <div className="mt-4 md:mt-6">
         <ProgressComponent progressValue={progressValue} extraClasses={{ track: "h-[8px]" }} />
         <span className="mt-1 block text-lg font-medium text-elementalGrey">
-          {createTierMessage()}
+          {tierMessage}
         </span>
       </div>
     </div>

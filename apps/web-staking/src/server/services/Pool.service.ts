@@ -3,7 +3,7 @@ import IPool from "../types/IPool";
 import { PoolInfo } from "@/types/Pool";
 import PoolModel from "../models/pool.schema";
 import { executeQuery } from "./Database.service";
-import { NetworkKey } from "@/services/web3.service";
+import { getMaxKeyCount, NetworkKey } from "@/services/web3.service";
 import { IDocument } from "@/server/types/IModel";
 
 export type PoolFilter = IPool | { _id: ObjectId | string } | { poolAddress: string };
@@ -49,6 +49,9 @@ export const findPools = async ({
 	hideFullKeys?: boolean,
 	network: NetworkKey
 }): Promise<PagedPools> => {
+
+	const maxKeyCount = await getMaxKeyCount(network);
+
 	const filter: FilterQuery<IPool> = {
 		network
 	};
@@ -65,10 +68,10 @@ export const findPools = async ({
 	if (hideFullKeys) {
 		if (filter.$expr) {
 			//TODO what if maxKeyPerPool is updated ?
-			filter.$and = [{ $expr: filter.$expr }, { $expr: { $gt: [750, "$keyCount"] } }];
+			filter.$and = [{ $expr: filter.$expr }, { $expr: { $gt: [maxKeyCount, "$keyCount"] } }];
 			delete filter.$expr;
 		} else {
-			filter.$expr = { $gt: [750, "$keyCount"] }
+			filter.$expr = { $gt: [maxKeyCount, "$keyCount"] };
 		}
 	}
 
