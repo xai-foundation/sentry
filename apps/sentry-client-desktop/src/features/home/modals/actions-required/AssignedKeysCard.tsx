@@ -26,7 +26,6 @@ export function AssignedKeysCard() {
 					color="#3DD68C"
 					title="Keys assigned"
 					titleStyles="text-lg text-white"
-					tooltip
 				/>
 			) : (
 				<>
