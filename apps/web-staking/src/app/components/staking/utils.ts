@@ -1,4 +1,5 @@
 import { TierInfo } from "@/types/Pool";
+import { getMaxStakedAmountPerLicense, getNetwork, MAINNET_ID } from "@/services/web3.service";
 
 export type iconType = ({
 	width,
@@ -54,19 +55,18 @@ export const getIcon = (index: number = 0, tiers: Array<TierInfo & { icon?: icon
 	return tiers[index].icon as iconType;
 };
 
-const KEY_STEP = 10000;
-
 type ExtendedTierInfo = TierInfo & {
 	icon?: iconType
 }
 
-export const calculateKeysToNextTier = (totalStakedAmount: number, keyCount: number, tier: ExtendedTierInfo, tiers: ExtendedTierInfo[]) => {
+export const calculateKeysToNextTier = async (totalStakedAmount: number, keyCount: number, tier: ExtendedTierInfo, tiers: ExtendedTierInfo[], chainId: number | undefined) => {
 	const tierByStaking = getCurrentTierByStaking(totalStakedAmount, tiers)!;
 	const nextTierInfo = tiers[tier.index + 1];
+	const maxStakePerKey = await getMaxStakedAmountPerLicense(getNetwork(chainId || MAINNET_ID));
 
 	if (tierByStaking.index !== tier.index) {
-		return Math.ceil(tierByStaking.minValue / KEY_STEP - keyCount);
+		return Math.ceil(tierByStaking.minValue / maxStakePerKey - keyCount);
 	}
 
-	return Math.ceil(nextTierInfo.minValue / KEY_STEP - keyCount);
+	return Math.ceil(nextTierInfo.minValue / maxStakePerKey - keyCount);
 };

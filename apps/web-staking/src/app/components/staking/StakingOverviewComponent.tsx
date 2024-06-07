@@ -105,7 +105,8 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   }
 
   const submitSearch = () => {
-    router.push(buildURI(searchValue, currentPage, showTableKeys, hideFullKeys, hideFullEsXai),
+    setCurrentPage(1);
+    router.push(buildURI(searchValue, 1, showTableKeys, hideFullKeys, hideFullEsXai),
       { scroll: false }
     );
   };

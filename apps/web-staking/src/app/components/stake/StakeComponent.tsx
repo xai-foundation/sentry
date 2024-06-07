@@ -102,6 +102,15 @@ const StakeComponent = ({ poolAddress, isBannedPool }: StakeProps) => {
     return baseValue
   }
 
+  const displayAvailableBalance = (value: string | number) => {
+    if (typeof value === "string") {
+      // string we got when we returned <0.0001 or 0 because we always have isStatic flag as true
+      return value;
+    }
+    // cutting (not rounding) to 4 digits after point (just for displaying, not for functionality)
+    return value.toString().match(/^-?\d+(?:\.\d{0,4})?/);
+  };
+
   return (
     <div className="flex w-full flex-col items-center lg:p-0 xl:ml-[-122px] lg:ml-[-61px]">
 
@@ -130,7 +139,7 @@ const StakeComponent = ({ poolAddress, isBannedPool }: StakeProps) => {
             <div className="bg-nulnOil/75 py-[40px] md:px-[25px] px-[17px] ">
               {userPool && <div className="flex items-center mb-4">
               <span
-                className="mr-5 text-lg font-medium text-americanSilver">{unstake ? "Unstaking from:" : "Staking to:"}</span>
+                className="mr-5 text-lg font-medium text-americanSilver text-nowrap">{unstake ? "Unstaking from:" : "Staking to:"}</span>
                 <Avatar src={userPool.meta.logo} className="w-[32px] h-[32px] mr-2" />
                 <span className="text-white text-lg font-bold">{userPool.meta.name}</span>
               </div>}
@@ -148,8 +157,8 @@ const StakeComponent = ({ poolAddress, isBannedPool }: StakeProps) => {
                   withTooltip
                   handleMaxValue={onButtonMax}
                   availableBalance={unstake
-                    ? avoidScientificNotation(getMaxEsXaiForUnstake(), true).toString().match(/^-?\d+(?:\.\d{0,4})?/)
-                    : avoidScientificNotation(getMaxEsXaiForStake(), true).toString().match(/^-?\d+(?:\.\d{0,4})?/)}
+                    ? displayAvailableBalance(avoidScientificNotation(getMaxEsXaiForUnstake(), true))
+                    : displayAvailableBalance(avoidScientificNotation(getMaxEsXaiForStake(), true))}
                 />
                 <span
                   className="mt-1 absolute md:right-[58px] md:bottom-[27px] right-[62px] bottom-[35px]">
