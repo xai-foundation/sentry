@@ -26,6 +26,8 @@ module.exports = {
       dropdownSecondaryBg: "#272123",
       dropdownItemPrimaryHoverBg: "#231D1F",
       tertiaryText: "#FF2C3A",
+      primaryWarningText: "#FFC53D",
+      primaryCalloutWarning: "#FFC53D1A",
     },
     extend: {},
   },
