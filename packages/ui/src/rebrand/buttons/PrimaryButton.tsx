@@ -8,7 +8,6 @@ interface PrimaryButtonProps {
     size?: "sm" | "md" | "lg";
     colorStyle?: "primary" | "secondary" | "outline";
     hoverClassName?: string;
-    outlineBtnStyles?: string;
     icon?: ReactNode;
 }
 
@@ -19,7 +18,6 @@ export const PrimaryButton = ({
                                   className,
                                   isDisabled,
                                   colorStyle,
-                                  outlineBtnStyles,
                                   icon,
                               }: PrimaryButtonProps) => {
     const disabledStyles = isDisabled
@@ -53,7 +51,7 @@ export const PrimaryButton = ({
     };
 
     return (
-        <div className={`w-full ${colorStyle === "outline" && !isDisabled && "p-[1px] bg-hornetSting bg-btnPrimaryBgColor global-clip-btn"} ${outlineBtnStyles}`}>
+        <div className={`w-full ${colorStyle === "outline" && !isDisabled && "p-[1px] bg-hornetSting bg-btnPrimaryBgColor global-clip-btn"}`}>
             <button
                 className={`rounded-none font-bold ${getSizeStyles()} ${getColorStyles()} duration-200 ease-in global-clip-primary-btn ${className} ${disabledStyles}`}
                 type="submit"
