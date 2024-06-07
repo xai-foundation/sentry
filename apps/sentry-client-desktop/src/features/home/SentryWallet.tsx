@@ -1,4 +1,4 @@
-import {AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
+import {AiOutlineCheck} from "react-icons/ai";
 import {ReactNode, useState} from "react";
 import {BiDownload, BiLinkExternal, BiLoaderAlt, BiUpload} from "react-icons/bi";
 import {useOperator} from "../operator";
@@ -15,7 +15,7 @@ import {WalletDisconnectedModal} from "@/features/home/modals/WalletDisconnected
 import {useQueryClient} from "react-query";
 import {ethers} from "ethers";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
-import {CustomTooltip, Tooltip} from "@sentry/ui";
+import {CustomTooltip} from "@sentry/ui";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
 import {SentryWalletHeader} from "@/features/home/SentryWalletHeader";
