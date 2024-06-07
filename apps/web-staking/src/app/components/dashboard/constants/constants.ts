@@ -27,14 +27,6 @@ export type iconType = ({
   fill?: string | undefined;
 }) => React.JSX.Element;
 
-//TODO don't initialize with hardcoded values, don't show the tier if the values don't load or show the database
-export enum TIER_VALUES {
-  BRONZE = 0,
-  SILVER = 10000,
-  GOLD = 100000,
-  PLATINUM = 500000,
-  DIAMOND = 5500000,
-}
 
 // TODO rename and move to actual constants
 export const POOL_DATA_ROWS: Array<TierInfo & { icon?: iconType }> = [
@@ -46,7 +38,7 @@ export const POOL_DATA_ROWS: Array<TierInfo & { icon?: iconType }> = [
     iconText: "Bronze",
     requirement: "- staked esXAI",
     reward: "-",
-    minValue: TIER_VALUES.BRONZE,
+    minValue: 9999999999,
     index: 0,
     label: BronzeTierFull,
   },
@@ -58,7 +50,7 @@ export const POOL_DATA_ROWS: Array<TierInfo & { icon?: iconType }> = [
     iconText: "Silver",
     requirement: "- staked esXAI",
     reward: "-",
-    minValue: TIER_VALUES.SILVER,
+    minValue: 9999999999,
     index: 1,
     label: SilverTierFull,
   },
@@ -70,7 +62,7 @@ export const POOL_DATA_ROWS: Array<TierInfo & { icon?: iconType }> = [
     iconText: "Gold",
     requirement: "- staked esXAI",
     reward: "-",
-    minValue: TIER_VALUES.GOLD,
+    minValue: 9999999999,
     index: 2,
     label: GoldTierFull,
   },
@@ -82,7 +74,7 @@ export const POOL_DATA_ROWS: Array<TierInfo & { icon?: iconType }> = [
     iconText: "Platinum",
     requirement: "- staked esXAI",
     reward: "-",
-    minValue: TIER_VALUES.PLATINUM,
+    minValue: 9999999999,
     index: 3,
     label: PlatinumTierFull,
   },
@@ -94,7 +86,7 @@ export const POOL_DATA_ROWS: Array<TierInfo & { icon?: iconType }> = [
     iconText: "Diamond",
     requirement: "- staked esXAI",
     reward: "-",
-    minValue: TIER_VALUES.DIAMOND,
+    minValue: 9999999999,
     index: 4,
     label: DiamondTierFull,
   },

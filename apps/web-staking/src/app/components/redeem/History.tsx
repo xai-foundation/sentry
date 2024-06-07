@@ -33,6 +33,7 @@ interface HistoryCardProps {
 	redemptionIndex: number;
 	isCancelled?: boolean;
 	isPending?: boolean;
+	isCancelling?: boolean;
 }
 
 function formatTimespan(durationMillis: number) {
@@ -58,6 +59,7 @@ function HistoryCard({
 	loadingIndex,
 	redemptionIndex,
 	isCancelled = false,
+											 isCancelling,
 	isPending = false
 }: HistoryCardProps) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -108,23 +110,22 @@ function HistoryCard({
 				</span>
 				{claimable
 					? (
-						<>
+						<div className="flex gap-[5px]">
+							<TextButton
+								buttonText={isCancelling && loadingIndex === redemptionIndex ? "Cancelling..." : "Cancel"}
+								isDisabled={isCancelling}
+								className="text-lg text-bold disabled:text-dugong"
+								onClick={onLocalCancelClick}
+							/>
 							<PrimaryButton
-								spinner={isLoading && loadingIndex === redemptionIndex}
-								onClick={onClaim} btnText={`${isLoading && loadingIndex === redemptionIndex ? "Claiming" : "Claim"}`}
+								spinner={isLoading && !isCancelling && loadingIndex === redemptionIndex}
+								onClick={onClaim}
+								btnText={`${isLoading && !isCancelling && loadingIndex === redemptionIndex ? "Claiming" : "Claim"}`}
 								isDisabled={claimDisabled === true}
 								wrapperClassName="h-full flex items-center"
 								className={`${claimDisabled === true ? "bg-steelGray hover:bg-steelGray" : ""} uppercase w-full ${isLoading && loadingIndex === redemptionIndex ? "max-w-[124px]" : "max-w-[77px]"} !py-[0] !h-[40px]`}
 							/>
-								{/*<SecondaryButton*/}
-								{/*	size="sm"*/}
-								{/*	btnText="Cancel"*/}
-								{/*	isDisabled={claimDisabled === true}*/}
-								{/*	hoverClassName="data-[hover=true]:text-red data-[hover=true]:bg-white hover:bg-white"*/}
-								{/*	className="bg-white w-[50px] mr-custom-17 ml-2"*/}
-								{/*	onClick={onLocalCancelClick}*/}
-								{/*/>*/}
-						</>
+						</div>
 					)
 					:
 					<div className={`flex ${!isPending ? "flex-col gap-0 items-end" : "flex-row md:gap-2 gap-1 items-center"} `}>
@@ -139,7 +140,7 @@ function HistoryCard({
 							buttonText={isLoading && loadingIndex === redemptionIndex ? "Canceling..." : "Cancel"}
 							isDisabled={claimDisabled === true}
 							className={`${isLoading && loadingIndex === redemptionIndex && "!text-darkRoom"} !pr-0 !mr-0 w-max`}
-							textClassName={`!mr-0`}
+							textClassName={`!mr-0 text-lg`}
 							onClick={onLocalCancelClick}
 
 						/> : ""}
@@ -225,6 +226,7 @@ export default function History({ redemptions, reloadRedemptions }: {
 			onClose();
 		} catch (ex: any) {
 			const error = mapWeb3Error(ex);
+			setIsCancel(false);
 			updateNotification(error, toastId.current as Id, true);
 		}
 	}
@@ -252,6 +254,7 @@ export default function History({ redemptions, reloadRedemptions }: {
 									receivedCurrency="XAI"
 									redeemedCurrency="esXAI"
 									durationMillis={0}
+									isCancelling={isCancel}
 									isLoading={isLoading}
 									redemptionIndex={r.index}
 									loadingIndex={loadingIndex}

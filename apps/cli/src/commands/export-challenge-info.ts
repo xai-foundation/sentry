@@ -54,11 +54,11 @@ export function exportChallengeInfo(cli: Vorpal) {
                         numberOfEligibleClaimers: challenge.numberOfEligibleClaimers,
                         submissionsClaimed: challenge.submissions.filter(s => s.claimed).length,
                         submissionsTotal: challenge.submissions.length,
-                        numberOfUnclaimedSubmissions: challenge.submissions.filter(s => s.submittedFrom == "unclaimed").length,
                         submissionsFromSingle: challenge.submissions.filter(s => s.submittedFrom == "submitAssertion").length,
                         submissionsFromMultiple: challenge.submissions.filter(s => s.submittedFrom == "submitMultipleAssertions").length,
                         claimFromSingle: challenge.submissions.filter(s => s.claimedFrom == "claimRewards").length,
-                        claimFromMultiple: challenge.submissions.filter(s => s.claimedFrom == "claimMultipleRewards").length
+                        claimFromMultiple: challenge.submissions.filter(s => s.claimedFrom == "claimMultipleRewards").length,
+                        numberOfUnclaimedSubmissions: challenge.submissions.filter(s => s.eligibleForPayout && s.claimedFrom == "unclaimed").length
                     }
 
                     totalAmountForChallenges += BigInt(challenge.amountClaimedByClaimers) + BigInt(challenge.amountForGasSubsidy)

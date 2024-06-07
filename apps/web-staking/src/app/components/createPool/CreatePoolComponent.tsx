@@ -153,7 +153,7 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
   return (
     <>
       {showStakePoolKey ? (
-        <div className="flex w-full flex-col items-center lg:px-[350px]">
+        <div className="flex w-full flex-col items-center xl:px-[350px]">
           <StakePoolKeyComponent
             onConfirm={onConfirm}
             poolName={poolDetailsValues.name}
@@ -200,7 +200,8 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
               setSocialLinks={setSocialLinks}
             />
 
-            <div className="flex sm:flex-col-reverse lg:flex-row justify-between w-full py-5 px-6 bg-nulnOilBackground shadow-default">
+            <div
+              className="flex sm:flex-col-reverse lg:flex-row justify-between xl:gap-0 lg:gap-[5px] gal-0 w-full py-5 px-6 bg-nulnOilBackground shadow-default">
               <PrimaryButton btnText="Cancel" onClick={() => router.back()} colorStyle="outline" className="sm:w-full lg:w-[205px] uppercase" wrapperClassName=""  />
               <PrimaryButton
                 btnText="Save and continue"
