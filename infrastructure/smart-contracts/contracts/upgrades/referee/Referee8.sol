@@ -210,7 +210,7 @@ contract Referee8 is Initializable, AccessControlEnumerableUpgradeable {
         maxKeysPerPool = 1000;
 
         stakeAmountTierThresholds[0] = 30_000 * 10 ** 18;
-        stakeAmountTierThresholds[1] = 200_000 * 10 ** 18;
+        stakeAmountTierThresholds[1] = 2_000_000 * 10 ** 18;
         stakeAmountTierThresholds[2] = 4_000_000 * 10 ** 18;
         stakeAmountTierThresholds[3] = 8_000_000 * 10 ** 18;
 
