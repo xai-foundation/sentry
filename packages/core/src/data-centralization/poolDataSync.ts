@@ -39,7 +39,7 @@ export async function poolDataSync({
 		const poolAddress = poolsAddresses[i];
 		try {
 			logFunction("Trying to update " + poolAddress);
-			await updatePoolInDB(getAddress(poolAddress), "PoolCreated");
+			await updatePoolInDB(getAddress(poolAddress), "UpdateMetadata");
 			logFunction("Updated " + poolAddress)
 		} catch (error) {
 			logFunction("Errored " + poolAddress + "\n" + error)
