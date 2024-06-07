@@ -55,7 +55,7 @@ export function SentryNodeStatusCard() {
 	function getNodeFunds() {
 		return (
 			<div
-				className={`absolute bottom-4 left-4 max-w-[338px] h-[54px] flex justify-center items-center gap-1 rounded-lg ${nodeStatus ? "text-lg text-[#3DD68C] bg-successBgColor" : "text-lg text-primaryTooltipColor bg-[#FFC53D1A]"} p-4 global-cta-clip-path`}>
+				className={`absolute bottom-4 left-4 max-w-[338px] h-[54px] flex justify-center items-center gap-1 ${nodeStatus ? "text-lg text-[#3DD68C] bg-successBgColor" : "text-lg text-primaryTooltipColor bg-[#FFC53D1A]"} p-4 global-cta-clip-path`}>
 				<div className="flex justify-center items-center gap-2">
 					<div className="flex justify-center items-center gap-2">
 						{nodeStatus
