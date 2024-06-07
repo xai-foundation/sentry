@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 
 interface PrimaryButtonProps {
     onClick: () => void;
@@ -7,6 +8,8 @@ interface PrimaryButtonProps {
     size?: "sm" | "md" | "lg";
     colorStyle?: "primary" | "secondary" | "outline";
     hoverClassName?: string;
+    outlineBtnStyles?: string;
+    icon?: ReactNode;
 }
 
 export const PrimaryButton = ({
@@ -16,6 +19,8 @@ export const PrimaryButton = ({
                                   className,
                                   isDisabled,
                                   colorStyle,
+                                  outlineBtnStyles,
+                                  icon,
                               }: PrimaryButtonProps) => {
     const disabledStyles = isDisabled
         ? "!bg-[#2A2828] !text-[#726F6F] text-bold"
@@ -48,14 +53,14 @@ export const PrimaryButton = ({
     };
 
     return (
-        <div className={`w-full ${colorStyle === "outline" && !isDisabled && "p-[1px] bg-hornetSting global-clip-btn"}`}>
+        <div className={`w-full ${colorStyle === "outline" && !isDisabled && "p-[1px] bg-hornetSting bg-btnPrimaryBgColor global-clip-btn"} ${outlineBtnStyles}`}>
             <button
                 className={`rounded-none font-bold ${getSizeStyles()} ${getColorStyles()} duration-200 ease-in global-clip-primary-btn ${className} ${disabledStyles}`}
                 type="submit"
                 onClick={onClick}
                 disabled={isDisabled}
             >
-                {btnText}
+                {btnText} {icon && icon}
             </button>
         </div>
     );
