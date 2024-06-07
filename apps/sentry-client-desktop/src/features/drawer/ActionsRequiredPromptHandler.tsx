@@ -4,8 +4,9 @@ import {useSetAtom, useAtomValue} from "jotai";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
 import {useStorage} from "@/features/storage";
-import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
-import { PrimaryButton } from "@sentry/ui";
+import BaseCallout from "@sentry/ui/dist/src/rebrand/callout/BaseCallout";
+import {PrimaryButton} from "@sentry/ui";
+import {WarningIcon} from "@sentry/ui/src/rebrand/icons/IconsComponents";
 
 export function ActionsRequiredPromptHandler() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -34,20 +35,17 @@ export function ActionsRequiredPromptHandler() {
 		)
 	} else if (!accruing || data && data.whitelistedWallets && kycRequired) {
 		return (
-			<div className="flex gap-4 bg-[#FFC53D1A] py-2 px-4 z-10 global-cta-clip-path">
-				<div className="flex flex-row gap-2 items-center">
-					<WarningIcon width={23} height={20}/>
-					<span className="text-primaryTooltipColor text-lg font-bold">Actions required</span>
+			<BaseCallout extraClasses={{calloutWrapper: "h-[60px] w-[308px]", calloutFront: "bg-primaryCalloutWarning "}}>
+				<div className="flex flex-row gap-2 items-center mr-3">
+					<AiFillWarning className="w-7 h-7 text-[#F59E28]"/>
+					<span className="text-primaryWarningText text-lg font-bold ">Actions required</span>
 				</div>
-				<div>
 				<PrimaryButton
 					onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}
-					className={`bg-btnPrimaryBgColor w-[104px] text-lg text-white font-bold uppercase !py-1 !px-[14px] hover:text-btnPrimaryBgColor`}
-					btnText="Resolve"
-					size="sm"
-				/>
-				</div>
-			</div>
+					wrapperClassName="w-max"
+					className={`flex flex-row max-w-[104px] justify-center items-center gap-1 bg-[#F30919] !text-lg !font-bold text-white !h-[40px] uppercase`}
+					btnText={"Resolve"} />
+			</BaseCallout>
 		);
 	} else {
 		return (
