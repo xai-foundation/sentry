@@ -41,9 +41,9 @@ export function Sidebar() {
 				<div className="w-[253px] mb-[145px]">
 					<Link
 						to="/dashboard"
-						className={`flex items-center text-xl text-white font-bold  cursor-pointer gap-2 py-[11px] pl-[17px] hover:global-clip-path hover:bg-linkBgHover ${getActiveLink('/dashboard')}`}
+						className={`flex items-center w-[253px] text-xl text-white font-bold  cursor-pointer gap-2 py-[11px] pl-[17px] hover:global-clip-path hover:bg-linkBgHover ${getActiveLink('/dashboard')}`}
 					>
-						<img src={DashboardIcon} width={14} height={14}/> DASHBOARD
+						<img src={DashboardIcon} width={14} height={14} className="ml-1"/> DASHBOARD
 					</Link>
 
 					<Link

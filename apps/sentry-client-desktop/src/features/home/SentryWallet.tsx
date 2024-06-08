@@ -1,4 +1,4 @@
-import {AiOutlineCheck, AiOutlineInfoCircle} from "react-icons/ai";
+import {AiOutlineCheck} from "react-icons/ai";
 import {ReactNode, useState} from "react";
 import {BiDownload, BiLinkExternal, BiLoaderAlt, BiUpload} from "react-icons/bi";
 import {useOperator} from "../operator";
@@ -15,7 +15,7 @@ import {WalletDisconnectedModal} from "@/features/home/modals/WalletDisconnected
 import {useQueryClient} from "react-query";
 import {ethers} from "ethers";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
-import {CustomTooltip, Tooltip} from "@sentry/ui";
+import {CustomTooltip} from "@sentry/ui";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
 import {SentryWalletHeader} from "@/features/home/SentryWalletHeader";
@@ -224,7 +224,7 @@ export function SentryWallet() {
 				<div
 					className="sticky top-0 flex flex-col items-center w-full h-auto z-10">
 					<div
-						className="flex flex-row justify-between items-center w-full py-[22px] bg-primaryBgColor/75 shadow-default gap-2 border-b border-primaryBorderColor pl-10 pr-2">
+						className="flex flex-row justify-between items-center w-full py-[22px] bg-primaryBgColor/75 shadow-default gap-2 border-b border-primaryBorderColor pl-[24px] pr-2 z-50">
 						<div className="flex flex-row items-center gap-2 w-full max-w-[50%]">
 							<span>
 								{sentryRunning && hasAssignedKeys && funded && <GreenPulse size='md'/>}
@@ -353,7 +353,7 @@ export function SentryWallet() {
 					<SentryWalletHeader/>
 
 					<div
-						className="flex flex-row items-center w-full py-[22px] pl-[24px] gap-[20px] bg-primaryBgColor/75">
+						className="flex flex-row items-center w-full py-[22px] pl-[24px] gap-[20px] bg-primaryBgColor/75 shadow-default">
 						<h2 className="font-bold text-white text-2xl uppercase">Assigned Keys</h2>
 						<div className="flex gap-[5px] items-center">
 							<p className="text-secondaryText text-lg font-medium">
