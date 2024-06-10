@@ -4,7 +4,7 @@ import {BlockPassKYC} from "@/components/blockpass/Blockpass";
 import {getLicensesList, LicenseList, LicenseMap} from "@/hooks/useListNodeLicensesWithCallback";
 import {config} from "@sentry/core";
 import {StatusMap} from "@/hooks/useKycStatusesWithCallback";
-import {Dropdown, DropdownItem, PrimaryButton, Tooltip} from "@sentry/ui";
+import {CustomTooltip, Dropdown, DropdownItem, PrimaryButton} from "@sentry/ui";
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
 import {useAtomValue, useSetAtom} from "jotai";
 import {RemoveWalletModal} from "@/features/home/modals/RemoveWalletModal";
@@ -281,12 +281,13 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						<div className="flex flex-col px-6">
 							<div className="flex items-center gap-1 text-lg text-secondaryText">
 								<p>Accrued network rewards</p>
-								<Tooltip
+								<CustomTooltip
 									header={"Claimed esXAI will appear in your wallet balance.\n"}
-									body={"Once you pass KYC for a wallet, any accrued esXAI for that wallet will be claimed and reflected in your esXAI balance."}
+									content={"Once you pass KYC for a wallet, any accrued esXAI for that wallet will be claimed and reflected in your esXAI balance."}
+									position="end"
 								>
 									<HelpIcon width={14} height={14}/>
-								</Tooltip>
+								</CustomTooltip>
 							</div>
 							<div className="flex items-center gap-2 font-semibold">
 								<div>
@@ -320,12 +321,13 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						<div className="flex flex-col pl-10">
 							<div className="flex items-center gap-1 text-lg text-secondaryText">
 							<p className="">Accrued esXAI (unclaimed)</p>
-							<Tooltip
+							<CustomTooltip
 								header={"Each key will accrue esXAI. Pass KYC to claim."}
-								body={"This value is the sum of all esXAI accrued for the selected wallet. If esXAI has already been claimed, it will appear in esXAI balance."}
+								content={"This value is the sum of all esXAI accrued for the selected wallet. If esXAI has already been claimed, it will appear in esXAI balance."}
+								position="end"
 							>
 								<HelpIcon width={14} height={14}/>
-							</Tooltip>
+							</CustomTooltip>
 							<p className="flex items-center text-[#726F6F] text-base ml-2">
 								Last
 								updated: {!isBalancesLoading && balancesFetchedLast ? balancesFetchedLast.toLocaleString() :

@@ -2,7 +2,7 @@ import {HasKeys} from "./HasKeys.js";
 import {NoKeys} from "./NoKeys.js";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useAtom, useAtomValue} from "jotai";
-import {PrimaryButton, Tooltip} from "@sentry/ui";
+import {CustomTooltip, PrimaryButton} from "@sentry/ui";
 import {BiLoaderAlt} from "react-icons/bi";
 import {chainStateAtom, useChainDataRefresh} from "@/hooks/useChainDataWithCallback";
 import {useCombinedOwners} from "@/hooks/useCombinedOwners";
@@ -47,13 +47,13 @@ export function Keys() {
 						</p>
 					)}
 
-					<Tooltip
+					<CustomTooltip
 						header={"Xai Client can track keys only from added wallets"}
-						body={"If you own keys in additional wallets, add them to the client."}
-						width={452}
+						content={"If you own keys in additional wallets, add them to the client."}
+						position="end"
 					>
 						<HelpIcon width={14} height={14}/>
-					</Tooltip>
+					</CustomTooltip>
 
 					<a
 						onClick={refresh}
