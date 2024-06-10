@@ -59,7 +59,7 @@ export const Dropdown = ({setIsOpen, isOpen, setSelectedValue, getDropdownItems,
 
             {isOpen && (
                 <div
-                    className="absolute top-[55px] left-[-1px] flex flex-col w-[538px] bg-dropdownPrimaryBg text-primaryText z-30">
+                    className="absolute top-[55px] left-[-1px] flex flex-col w-[538px] bg-dropdownPrimaryBg text-primaryText z-30 text-lg">
                     <p
                         onClick={() => {
                             setSelectedValue(null);

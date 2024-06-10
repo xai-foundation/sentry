@@ -1,10 +1,9 @@
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
-import {BiLinkExternal} from "react-icons/bi";
 import {useSetAtom} from "jotai";
-import {AiFillWarning} from "react-icons/ai";
 import {useOperator} from "@/features/operator";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
-import {XaiButton} from "@sentry/ui";
+import {PrimaryButton} from "@sentry/ui";
+import {WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
 
 export function AssignKeysFromNewWallet() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -17,30 +16,30 @@ export function AssignKeysFromNewWallet() {
 	}
 
 	return (
-		<div className="flex flex-col justify-center items-center gap-4">
-			<AiFillWarning className="w-16 h-16 text-[#F59E28]"/>
-			<p className="text-2xl font-semibold">
+		<div className="flex flex-col justify-center items-center ">
+			<WarningIcon width={64} height={55} />
+			<p className="text-3xl font-bold uppercase text-white mt-[26px] mb-[13px]">
 				Keys not assigned
 			</p>
-			<p className="text-lg text-[#525252]">
+			<p className="text-lg font-medium text-secondaryText mb-[13px]">
 				Add wallets to assign keys to the Sentry
 			</p>
 
-			<XaiButton
+			<PrimaryButton
 				onClick={startAssignment}
-				disabled={isOperatorLoading}
-				fontSize={"15px"}
-			>
-				Assign keys from new wallet
-				<BiLinkExternal className="w-5 h-5"/>
-			</XaiButton>
+				isDisabled={isOperatorLoading}
+				wrapperClassName="w-max global-cta-clip-path"
+				btnText={"Assign keys from new wallet"}
+				className="bg-btnPrimaryBgColor h-[56px] w-[307px] !text-btnSecondaryText uppercase !text-xl !font-bold !px-0"
+			/>
 
-			<p className="text-[15px] text-[#525252] mt-2">
+
+			<p className="text-lg font-medium text-secondaryText mt-[27px]">
 				Don't own any keys?
 
 				<a
 					onClick={() => setDrawerState(DrawerView.BuyKeys)}
-					className="text-[#F30919] ml-1 cursor-pointer"
+					className="text-tertiaryText font-bold text-lg ml-1 cursor-pointer"
 				>
 					Purchase keys
 				</a>

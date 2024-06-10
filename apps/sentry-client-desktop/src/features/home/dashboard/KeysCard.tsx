@@ -1,64 +1,68 @@
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
 import {useAtomValue, useSetAtom} from "jotai";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
-import {Tooltip} from "@sentry/ui";
-import {AiFillWarning, AiOutlineInfoCircle} from "react-icons/ai";
+import {PrimaryButton, Tooltip} from "@sentry/ui";
+import {AiFillWarning} from "react-icons/ai";
 import {Card} from "@/features/home/cards/Card";
-import {RiKey2Line} from "react-icons/ri";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
+import { HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { useOperatorRuntime } from "@/hooks/useOperatorRuntime";
+import { RiKey2Line } from "react-icons/ri";
 
 export function KeysCard() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {owners, licensesList} = useAtomValue(chainStateAtom);
 	const {accruing} = useAtomValue(accruingStateAtom);
 	const keyCount = licensesList.length;
+	const { sentryRunning } = useOperatorRuntime();
 
 	return (
-		<Card width={"355px"} height={"188px"}>
-			<div className="flex flex-row justify-between items-center py-2 px-4 border-b border-[#F5F5F5]">
-				<div className="flex flex-row items-center gap-1 text-[#A3A3A3] text-[15px]">
-					<h2 className="font-medium">Keys</h2>
+		<Card width={"341px"} height={"279px"} customClasses="bg-primaryBgColor shadow-default">
+			<div className="flex flex-row justify-between items-center py-5 px-6 border-b border-primaryBorderColor">
+				<div className="flex flex-row items-center gap-1 text-white text-2xl">
+					<h2 className="font-bold">Keys</h2>
 						<Tooltip
 							header={"Purchased keys must be assigned to Sentry Wallet"}
 							body={"To assign keys, connect all wallets containing Sentry Keys."}
 							body2={"The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry."}
 							position={"start"}
 						>
-						<AiOutlineInfoCircle size={15} color={"#A3A3A3"}/>
+						<HelpIcon width={14} height={14} fill="#A19F9F"/>
 					</Tooltip>
 				</div>
 				<div className="flex flex-row justify-between items-center gap-1">
-					<button
-						className="flex flex-row justify-center items-center gap-2 text-[#737373] text-sm font-medium bg-[#F5F5F5] rounded-md px-4 py-1"
+					<PrimaryButton
+						className="text-btnPrimaryBgColor text-lg uppercase font-bold bg-trasparent rounded-md !px-0 !py-0 max-h-[28px] hover:bg-primaryBgColor hover:text-white"
 						onClick={() => setDrawerState(DrawerView.BuyKeys)}
-					>
-						Buy keys
-					</button>
+						btnText="Buy Keys"
+						colorStyle="primary"
+						size='sm'
+					/>
 				</div>
 			</div>
-			<div className="py-2 px-4">
+			<div className="py-4 px-6 flex">
+				{sentryRunning && accruing && <div className="mr-3">
+					<RiKey2Line size={30} color={"#ffffff"} />
+				</div>}
+				<div>
 				<div className="flex gap-2 items-center">
-					<div className="flex items-center gap-2">
-						<div
-							className="w-[24px] h-[24px] flex justify-center items-center bg-[#F5F5F5] rounded-full">
-							<RiKey2Line color={"#A3A3A3"} size={15}/>
-						</div>
-					</div>
-					<p className="text-[32px] font-semibold">
-						{keyCount}
+					<p className="text-4xl font-bold text-white">
+						{keyCount} {!accruing && (keyCount === 1 ? "key" : "keys")}
 					</p>
 				</div>
-				<p className="text-sm text-[#737373] ml-[2rem]">
+				{sentryRunning && <p className="text-lg text-secondaryText">
 					In {owners.length} wallet{owners.length === 1 ? "" : "s"}
-				</p>
+					</p>}
+				</div>
 			</div>
 
-			{!accruing && (
+			{sentryRunning && !accruing && (
 				<div
-					className="absolute bottom-3 left-3 m-auto max-w-[327px] h-[40px] flex justify-center items-center gap-1 rounded-lg text-sm text-[#F59E28] bg-[#FFFBEB] p-2">
+					className="absolute bottom-5 left-6 m-auto w-[288px] flex justify-center items-center gap-1 rounded-lg text-lg font-bold text-primaryTooltipColor bg-[#FFC53D1A] px-4 py-3 global-cta-clip-path">
 					<div className="flex justify-center items-center gap-2">
-						<AiFillWarning color={"#F59E28"} size={20}/>
+						<AiFillWarning color={"#FFC53D"} size={25}/>
 						You have unassigned keys
+						<HelpIcon width={14} height={14} fill="#FFC53D"/>
 					</div>
 				</div>
 			)}

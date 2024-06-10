@@ -7,6 +7,7 @@ import {useStorage} from "@/features/storage";
 import {useNavigate} from "react-router-dom";
 import {drawerStateAtom} from "@/features/drawer/DrawerManager";
 import {useOperator} from "@/features/operator";
+import { PrimaryButton } from "@sentry/ui";
 
 export function ViewKeysFlow() {
 	const [ownerAddress, setOwnerAddress] = useState('');
@@ -108,41 +109,46 @@ export function ViewKeysFlow() {
 		return (
 			<div>
 				<div className="w-full flex flex-col gap-8">
-					<div className="flex flex-col gap-2 px-6 pt-6">
-						<p className="text-[15px] text-[#525252]">
+					<div className="flex flex-col gap-2">
+						<div className="border-b border-primaryBorderColor px-6 pt-5 pb-7">
+						<p className="text-lg text-primaryText">
 							Enter the the public key of the wallet you want to view keys for
 						</p>
-
+                       <div className="w-full bg-[#5B5757] global-clip-primary-btn p-[1px] mb-3 mt-4 focus-within:bg-btnPrimaryBgColor">
 						<input
 							type="text"
 							value={ownerAddress}
 							onChange={handleInputChange}
-							className="w-full mt-2 p-3 border rounded"
+							className="w-full p-3 global-clip-primary-btn focus:outline-0 placeholder:text-primaryText placeholder:text-lg bg-primaryBgColor text-primaryText"
 							placeholder="Enter public key"
 						/>
+						</div>
 
 						{ownerAddressError.error && (
 							<p className="text-sm text-[#AB0914]">{ownerAddressError.errorResult}</p>
 						)}
 
-						<button
+						<PrimaryButton
 							onClick={async () => onAddWallet()}
-							className={`w-full h-12 flex flex-row justify-center items-center gap-1 ${ownerAddress ? "bg-[#F30919]" : "bg-gray-400"} text-[15px] text-white font-semibold mt-2 transition-all`}
-							disabled={ownerAddress === ""}
-						>
-							Add wallet
-						</button>
-
-						<p className="text-[15px] text-[#525252] mt-8">
-							Or assign wallet to view all keys in the wallet
+							className={`bg-primaryBgColor w-full text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-xl uppercase font-semibold transition-all`}
+							isDisabled={ownerAddress === ""}
+							btnText="Add wallet"
+							colorStyle="outline"
+							wrapperClassName="global-clip-primary-btn"
+						/>
+						</div>
+                        <div className="px-6 pt-4">
+						<p className="text-lg text-primaryText mb-5">
+							Or connect wallet to view all keys in the wallet
 						</p>
 
-						<button
+						<PrimaryButton
 							onClick={startAssignment}
-							className="w-full h-12 flex flex-row justify-center items-center gap-1 bg-[#F30919] text-[15px] text-white font-semibold"
-						>
-							Assign wallet <BiLinkExternal/>
-						</button>
+							className="w-full flex flex-row justify-center items-center gap-1 bg-btnPrimaryBgColor text-xl text-white font-bold uppercase hover:text-btnPrimaryBgColor"
+							btnText="Connect wallet"
+							icon={<BiLinkExternal size={20}/>}
+						/>
+						</div>
 					</div>
 				</div>
 			</div>
