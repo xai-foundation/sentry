@@ -29,6 +29,10 @@ export function validateForwardRequest(txRequest: ForwardRequest): string {
     if (!txRequest.data || !txRequest.data.length) {
         return "Invalid request data";
     }
+    if (!txRequest.forwarderAddress || !txRequest.forwarderAddress.length) {
+        //TODO validate EVM address
+        return "Invalid signature";
+    }
     if (!txRequest.signature || !txRequest.signature.length) {
         //TODO validate signature length
         return "Invalid signature";

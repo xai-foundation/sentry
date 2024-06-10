@@ -4,7 +4,6 @@ import { IProject } from "./types/IProject";
 // Define the Project schema
 const ProjectSchema = new mongoose.Schema<IProject>({
   name: { type: String, required: true },
-  forwarderAddress: { type: String, required: true },
   relayerId: { type: String, required: true },
   backendWallet: { type: String, required: true },
   lastRefillTimestamp: { type: Number, required: true },

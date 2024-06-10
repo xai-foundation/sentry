@@ -68,8 +68,7 @@ app.post("/forward/:projectId", async (req: Request, res: Response<{txHash: stri
 
 	const {txHash, txFee} = await forwardMetaTransaction(
 		forwardRequest,
-		projectInfo.relayerId,
-		projectInfo.forwarderAddress,
+		projectInfo.relayerId
 	);
 
 	quota.balanceWei = (BigInt(quota.balanceWei) - BigInt(txFee)).toString();

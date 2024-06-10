@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { IUserProjectInfo } from "./types/UserProjectInfo";
+import { IUserProjectInfo } from "./types/IUserProjectInfo";
 
 const UserProjectInfoSchema = new mongoose.Schema<IUserProjectInfo>({
     walletAddress: {
