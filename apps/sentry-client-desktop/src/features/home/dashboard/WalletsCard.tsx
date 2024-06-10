@@ -10,6 +10,7 @@ import {useSetAtom} from "jotai";
 import { HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import { useOperatorRuntime } from "@/hooks/useOperatorRuntime";
 import { RiKey2Line } from "react-icons/ri";
+import { useState } from "react";
 
 export function WalletsCard() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -18,9 +19,10 @@ export function WalletsCard() {
 	const kycRequiredLength = Object.values(ownersKycMap).filter(value => !value).length
 	const { publicKey: operatorAddress } = useOperator();
 	const { sentryRunning } = useOperatorRuntime();
+	const [mouseOverTooltip, setMouseOverTooltip] = useState(false);
 
 	return (
-		<Card width={"341px"} height={"279px"} customClasses="bg-primaryBgColor shadow-default overflow-visible z-10">
+		<Card width={"341px"} height={"279px"} customClasses={`bg-primaryBgColor shadow-default overflow-visible ${mouseOverTooltip ? "z-20" : "z-0"}`}>
 
 			<div className="flex flex-row justify-between items-center py-5 px-6 border-b border-primaryBorderColor">
 				<div className="flex flex-row items-center gap-1 text-white text-2xl">
@@ -30,7 +32,9 @@ export function WalletsCard() {
 						content={"If you own keys in additional wallets, add them to the client."}
 						position={"end"}
 					>
-						<HelpIcon width={14} height={14} fill="#A19F9F"/>
+					<div onMouseLeave={() => setMouseOverTooltip(false)} onMouseOver={() => setMouseOverTooltip(true)}>
+						<HelpIcon width={14} height={14} fill="#A19F9F" />
+					</div>
 					</CustomTooltip>
 				</div>
 				<div className="flex flex-row justify-between items-center gap-1">
