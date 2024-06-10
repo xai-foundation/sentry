@@ -72,7 +72,7 @@ export function NetworkRewardsCard() {
 		: null;
 
 	return (
-		<Card width={"300px"} height={"670px"} customClasses={"bg-primaryBgColor shadow-default overflow-visible"}>
+		<Card width={"300px"} height={"670px"} customClasses={"bg-primaryBgColor shadow-default overflow-visible z-auto"}>
 
 			<div className="flex flex-row justify-between items-center py-4 px-6 border-b border-primaryBorderColor">
 				<div className="flex flex-row items-center gap-1 text-white text-xl font-bold">
@@ -80,7 +80,7 @@ export function NetworkRewardsCard() {
 					<CustomTooltip
 						header={"Generate Network Rewards esXAI"}
 						content={"The more Keys running on a node, the more esXAI rewards are accrued. To claims rewards, the node must be running, the Sentry Wallet must be funded, and the wallets containing the Keys must have passed KYC."}
-						position={"start"}
+						position={"end"}
 					>
 						<HelpIcon width={14} height={14}/>
 					</CustomTooltip>
@@ -108,7 +108,7 @@ export function NetworkRewardsCard() {
 							<CustomTooltip
 								header={"Claimed esXAI will appear in your wallet balance.\n"}
 								content={"Once you pass KYC for a wallet, any accrued esXAI for that wallet will be claimed and reflected in your esXAI balance."}
-								position={"start"}
+								position={"end"}
 							>
 								<HelpIcon width={14} height={14}/>
 							</CustomTooltip>
@@ -136,7 +136,7 @@ export function NetworkRewardsCard() {
 							<CustomTooltip
 								header={"Each key will accrue esXAI. Pass KYC to claim."}
 								content={"This value is the sum of all esXAI accrued for the selected wallet. If esXAI has already been claimed, it will appear in esXAI balance."}
-								position={"start"}
+								position={"end"}
 							>
 								<HelpIcon width={14} height={14}/>
 							</CustomTooltip>
@@ -157,7 +157,7 @@ export function NetworkRewardsCard() {
 						<CustomTooltip
 							header={"To be accruing esXAI, the following must be true:"}
 							content={<>{"1) Your node must be running"} <br/> {"2) Your Sentry Wallet must be funded with at least 0.005 AETH" } <br/> {"3) At least one wallet containing a Key must be assigned to your Sentry"}</>}
-							position={"start"}
+							position={"end"}
 							extraClasses={{ tooltipContainer: '!w-[500px]' }}
 							
 						>
@@ -179,7 +179,7 @@ export function NetworkRewardsCard() {
 						<CustomTooltip
 							header={"esXAI accrued is probabilistic"}
 							content={"The more Keys you own, the more frequently you will accrue esXAI. The formula to calculate the average number of wins per month is [number of Keys] x 7."}
-							position={"start"}
+							position={"end"}
 						>
 							<HelpIcon width={14} height={14}/>
 						</CustomTooltip>

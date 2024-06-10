@@ -1,6 +1,6 @@
 import {useAtomValue} from "jotai";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
-import {PrimaryButton, Tooltip} from "@sentry/ui";
+import {CustomTooltip, PrimaryButton} from "@sentry/ui";
 import {AiFillWarning} from "react-icons/ai";
 import {Card} from "@/features/home/cards/Card";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
@@ -20,18 +20,18 @@ export function WalletsCard() {
 	const { sentryRunning } = useOperatorRuntime();
 
 	return (
-		<Card width={"341px"} height={"279px"} customClasses="bg-primaryBgColor shadow-default">
+		<Card width={"341px"} height={"279px"} customClasses="bg-primaryBgColor shadow-default overflow-visible z-10">
 
 			<div className="flex flex-row justify-between items-center py-5 px-6 border-b border-primaryBorderColor">
 				<div className="flex flex-row items-center gap-1 text-white text-2xl">
 					<h2 className="font-bold">Wallets</h2>
-					<Tooltip
+					<CustomTooltip
 						header={"Xai Client can track keys only from added wallets"}
-						body={"If you own keys in additional wallets, add them to the client."}
-						position={"start"}
+						content={"If you own keys in additional wallets, add them to the client."}
+						position={"end"}
 					>
 						<HelpIcon width={14} height={14} fill="#A19F9F"/>
-					</Tooltip>
+					</CustomTooltip>
 				</div>
 				<div className="flex flex-row justify-between items-center gap-1">
 					<PrimaryButton

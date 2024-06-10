@@ -1,7 +1,7 @@
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
 import {useAtomValue, useSetAtom} from "jotai";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
-import {PrimaryButton, Tooltip} from "@sentry/ui";
+import {CustomTooltip, PrimaryButton} from "@sentry/ui";
 import {AiFillWarning} from "react-icons/ai";
 import {Card} from "@/features/home/cards/Card";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
@@ -17,18 +17,17 @@ export function KeysCard() {
 	const { sentryRunning } = useOperatorRuntime();
 
 	return (
-		<Card width={"341px"} height={"279px"} customClasses="bg-primaryBgColor shadow-default">
+		<Card width={"341px"} height={"279px"} customClasses="bg-primaryBgColor shadow-default overflow-visible z-20">
 			<div className="flex flex-row justify-between items-center py-5 px-6 border-b border-primaryBorderColor">
 				<div className="flex flex-row items-center gap-1 text-white text-2xl">
 					<h2 className="font-bold">Keys</h2>
-						<Tooltip
-							header={"Purchased keys must be assigned to Sentry Wallet"}
-							body={"To assign keys, connect all wallets containing Sentry Keys."}
-							body2={"The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry."}
-							position={"start"}
+					<CustomTooltip
+						header={"Purchased keys must be assigned to Sentry Wallet"}
+						content={<>{"To assign keys, connect all wallets containing Sentry Keys."} <br/> {"The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry."} </>}
+						position={"end"}
 						>
 						<HelpIcon width={14} height={14} fill="#A19F9F"/>
-					</Tooltip>
+					</CustomTooltip>
 				</div>
 				<div className="flex flex-row justify-between items-center gap-1">
 					<PrimaryButton
