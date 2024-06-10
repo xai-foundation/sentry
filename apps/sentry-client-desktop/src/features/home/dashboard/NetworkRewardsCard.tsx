@@ -200,7 +200,7 @@ export function NetworkRewardsCard() {
 
 			</div>
 			{accruing && !kycRequired && (
-				<BaseCallout extraClasses={{ calloutWrapper: "absolute bottom-4 left-0 right-0 m-auto max-w-[268px] flex justify-center items-center gap-1 !font-bold text-lg !text-successText !bg-successBgColor global-cta-clip-path" }} >
+				<BaseCallout extraClasses={{ calloutWrapper: "absolute bottom-4 left-0 right-0 m-auto max-w-[258px] flex justify-center items-center gap-1 !font-bold text-lg !text-successText !bg-successBgColor p global-cta-clip-path", calloutFront: "!h-[78px]" }} >
 					<div className="flex justify-center items-start gap-3">
 						<FaCircleCheck color={"#3DD68C"} size={25} style={{minWidth: "20px"}}/>
 						You are accruing and claiming esXAI
@@ -210,7 +210,7 @@ export function NetworkRewardsCard() {
 
 			{accruing && kycRequired && (
 				<BaseCallout
-					extraClasses={{ calloutWrapper: "absolute bottom-3 left-6 m-auto max-w-[268px] flex justify-center items-center gap-1 text-lg !font-bold !text-primaryTooltipColor !bg-[#FFC53D1A] global-cta-clip-path" }}>
+					extraClasses={{ calloutWrapper: "absolute bottom-3 left-5 m-auto max-w-[258px] flex justify-center items-center gap-1 text-lg !font-bold !text-primaryTooltipColor !bg-[#FFC53D1A] global-cta-clip-path", calloutFront: "!h-[78px]" }}>
 					<div className="flex justify-center items-start gap-2">
 						<AiFillWarning color={"#FFC53D"} size={25} style={{minWidth: "20px"}}/>
 						You are accruing but not claiming esXAI
@@ -219,7 +219,7 @@ export function NetworkRewardsCard() {
 			)}
 
 			{!accruing && kycRequired && (
-				<BaseCallout extraClasses={{ calloutWrapper: "absolute bottom-3 left-6 m-auto max-w-[268px] flex justify-center items-center gap-1 text-lg !font-bold !text-primaryTooltipColor !bg-[#FFC53D1A] global-cta-clip-path" }}>
+				<BaseCallout extraClasses={{ calloutWrapper: "absolute bottom-3 left-5 m-auto max-w-[258px] flex justify-center items-center gap-1 text-lg !font-bold !text-primaryTooltipColor !bg-[#FFC53D1A] global-cta-clip-path", calloutFront: "!h-[78px]" }}>
 					<div className="flex justify-center items-start gap-2">
 						<AiFillWarning color={"#FFC53D"} size={25} style={{minWidth: "20px"}}/>
 						You are not accruing or claiming esXAI
