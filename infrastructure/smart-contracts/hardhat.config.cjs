@@ -11,9 +11,24 @@ const accounts = {
 };
 
 const config = {
-  defaultNetwork: "xai",
+  defaultNetwork: "hardhat",
   solidity: {
     compilers: [
+      {
+        version: "0.8.24",
+        settings: {
+          viaIR: true,
+          optimizer: {
+            enabled: true,
+            runs: 100,
+            details: {
+              yulDetails: {
+                optimizerSteps: "u",
+              },
+            },
+          },
+        },
+      },
       {
         version: "0.8.9",
         settings: {
@@ -50,8 +65,8 @@ const config = {
       url: "https://xai-chain.net/rpc",
       chainId: 660279,
       accounts,
-    }, 
-    xaiTestnet2: {
+    },
+    xaisepolia: {
       url: " https://testnet-v2.xai-chain.net/rpc",
       chainId: 37714555429,
       accounts,
@@ -88,13 +103,18 @@ const config = {
       chainId: 1
     }
   },
+  sourcify: {
+    enabled: true,
+  },
   etherscan: {
     apiKey: {
       arbitrumGoerli: process.env.ARBISCAN_API_KEY,
       arbitrumOne: process.env.ARBISCAN_API_KEY,
       arbitrumNova: process.env.ARBISCAN_NOVA_API_KEY,
       arbitrumSepolia: process.env.ARBISCAN_API_KEY,
-      sepolia: process.env.ETHERSCAN_API_KEY
+      sepolia: process.env.ETHERSCAN_API_KEY,
+      xaisepolia: "arbitrarystring (no API key needed)",
+      xai: "arbitrarystring (no API key needed)",
     },
     customChains: [
       {
@@ -111,6 +131,22 @@ const config = {
         urls: {
           apiURL: "https://api-nova.arbiscan.io/api",
           browserURL: "https://nova.arbiscan.io",
+        }
+      },
+      {
+        network: "xaisepolia",
+        chainId: 37714555429,
+        urls: {
+          apiURL: "https://testnet-explorer-v2.xai-chain.net/api",
+          browserURL: "https://testnet-explorer-v2.xai-chain.net",
+        },
+      },
+      {
+        network: "xai",
+        chainId: 660279,
+        urls: {
+          apiURL: "https://explorer.xai-chain.net/api",
+          browserURL: "https://explorer.xai-chain.net",
         }
       }
     ]
