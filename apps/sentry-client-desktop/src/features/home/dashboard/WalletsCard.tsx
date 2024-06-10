@@ -35,7 +35,7 @@ export function WalletsCard() {
 				</div>
 				<div className="flex flex-row justify-between items-center gap-1">
 					<PrimaryButton
-						className="text-btnPrimaryBgColor text-lg uppercase font-bold bg-trasparent rounded-md !px-0 !py-0 max-h-[28px] hover:bg-primaryBgColor hover:text-white"
+						className="text-btnPrimaryBgColor text-lg uppercase font-bold bg-trasparent rounded-md !px-0 !py-0 max-h-[28px] hover:!bg-primaryBgColor hover:text-white"
 						onClick={() => window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`)}
 						btnText="Assign Wallet"
 						colorStyle="primary"
