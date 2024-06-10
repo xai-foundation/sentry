@@ -181,7 +181,7 @@ export default function StakingKeysDetailComponent({
                     currencyLabel={Number(inputValue) === 1 ? StakingInputCurrency.SENTRY_KEY : StakingInputCurrency.SENTRY_KEYS}
                     onChange={handleChange}
                     error={isInvalidInput() ? { message: Number(inputValue) > 100 ? "Invalid amount" : "Not enough keys" } : {}}
-                    availableCurrency="key/s"
+                    availableCurrency={(unstakeKey ? getMaxKeysForUnstake() : getMaxKeysForStake()) === 1 ? "key" : "keys"}
                     availableBalance={unstakeKey ? getMaxKeysForUnstake() : getMaxKeysForStake()}
                     handleMaxValue={() =>
                       setInputValue(

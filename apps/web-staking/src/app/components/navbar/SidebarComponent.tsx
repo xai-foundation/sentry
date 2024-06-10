@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
 import { Discord, GitBook, Telegram, X, XaiIcon } from "../icons/IconsComponent";
@@ -15,6 +15,11 @@ export default function SidebarComponent() {
     setActivePage(page);
     sessionStorage.setItem("activePage", page);
   }
+
+  useEffect(() => {
+    sessionStorage.setItem("activePage", activePage);
+  }, []);
+
   return (
     <div className="sticky bg-transparent top-0 flex h-screen w-[245px] flex-col justify-between">
       {/* Add your sidebar content here */}
