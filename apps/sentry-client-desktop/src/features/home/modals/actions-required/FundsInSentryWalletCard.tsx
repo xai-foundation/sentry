@@ -8,7 +8,7 @@ import {useState} from "react";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {useAtomValue} from "jotai";
 import log from "electron-log";
-import { CopyIcon, HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { CopyIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 
 export function FundsInSentryWalletCard() {
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
@@ -49,7 +49,6 @@ export function FundsInSentryWalletCard() {
 						color="#FFC53D"
 						title="Insufficient funds in Sentry Wallet"
 						titleStyles="text-lg text-white"
-						tooltip={true}
 					/>
 
 					<p className="text-lg text-primaryText mt-1 px-7">
@@ -80,7 +79,7 @@ export function FundsInSentryWalletCard() {
 						<p className="mb-0 text-lg leading-[14px] text-primaryText">
 							Recommended minimum balance
 						</p>
-							<HelpIcon width={14} height={14} />
+							{/* <HelpIcon width={14} height={14} /> */}
 						</div>
 						<div className="flex flex-row items-center gap-1">
 							<p className="text-white text-lg font-bold">0.005 AETH</p>

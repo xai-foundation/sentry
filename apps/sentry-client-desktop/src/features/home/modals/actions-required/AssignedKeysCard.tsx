@@ -39,6 +39,11 @@ export function AssignedKeysCard() {
 						body2={"The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry."}
 						position={"end"}
 						titleStyles="text-lg text-white"
+						extraClasses={{
+							tooltipContainer: "!left-[-180px] !w-[350px]",
+							tooltipHeader: "",
+							tooltipText: "",
+						}}
 					/>
 
 					<p className="text-lg text-primaryText mt-1 px-6">

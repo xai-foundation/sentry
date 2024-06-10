@@ -20,7 +20,7 @@ export function WalletsCard() {
 	const { publicKey: operatorAddress } = useOperator();
 	const { sentryRunning } = useOperatorRuntime();
 	const [mouseOverTooltip, setMouseOverTooltip] = useState(false);
-
+  
 	return (
 		<Card width={"341px"} height={"279px"} customClasses={`bg-primaryBgColor shadow-default overflow-visible ${mouseOverTooltip ? "z-20" : "z-0"}`}>
 
@@ -31,10 +31,9 @@ export function WalletsCard() {
 						header={"Xai Client can track keys only from added wallets"}
 						content={"If you own keys in additional wallets, add them to the client."}
 						position={"end"}
+						mouseOver={setMouseOverTooltip}
 					>
-					<div onMouseLeave={() => setMouseOverTooltip(false)} onMouseOver={() => setMouseOverTooltip(true)}>
 						<HelpIcon width={14} height={14} fill="#A19F9F" />
-					</div>
 					</CustomTooltip>
 				</div>
 				<div className="flex flex-row justify-between items-center gap-1">

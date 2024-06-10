@@ -26,7 +26,7 @@ export function SentryWalletHeader() {
 	}
 
 	return (
-		<div className="flex flex-col items-start w-full border-b border-primaryBorderColor gap-2 py-[22px] pl-[24px] bg-primaryBgColor/75 shadow-default">
+		<div className="flex flex-col items-start w-full border-b border-primaryBorderColor gap-2 py-[22px] pl-[24px] bg-primaryBgColor/75 shadow-default z-10">
 			<div className="flex items-center gap-1">
 				<h2 className="font-medium text-lg text-secondaryText">Sentry Wallet Balance</h2>
 				<CustomTooltip

@@ -1,4 +1,4 @@
-import React, {MutableRefObject, ReactNode, useEffect, useRef, useState} from "react";
+import React, {Dispatch, MutableRefObject, ReactNode, SetStateAction, useEffect, useRef, useState} from "react";
 import { TextButton } from "../buttons/TextButton";
 import { BlackPyramidIcon, SuccessIcon } from "../icons/IconsComponents";
 
@@ -23,6 +23,7 @@ interface TooltipProps {
   delay?: number;
   onClickEvent?: () => void;
   position?: "start" | "end";
+  mouseOver?: Dispatch<SetStateAction<boolean>>;
 }
 
 //todo add transition
@@ -38,7 +39,8 @@ const CustomTooltip = ({
                    showOnClick,
                    onClickEvent,
                    delay,
-                   position
+                   position,
+                   mouseOver,
                  }: TooltipProps) => {
 
   const [isOpened, setIsOpened] = useState(false);
@@ -48,11 +50,13 @@ const CustomTooltip = ({
     if (showOnClick) return;
     
     setIsOpened(true);
+    mouseOver && mouseOver(true)
   };
 
   const closeOnMouseLeave = () => {
     if (showOnClick) return;
     setIsOpened(false);
+    mouseOver && mouseOver(false);
   };
 
   const openOnClick = () => {

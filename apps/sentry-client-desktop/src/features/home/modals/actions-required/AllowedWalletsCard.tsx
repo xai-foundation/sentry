@@ -31,6 +31,11 @@ export function AllowedWalletsCard() {
 						body={"By allowing a wallet, you are accepting the responsibility of paying the gas fee associated with submitting an assertion and claiming rewards."}
 						position={"end"}
 						titleStyles="text-lg text-white"
+						extraClasses={{
+							tooltipContainer: "!left-[-263px] !w-[350px]",
+							tooltipHeader: "",
+							tooltipText: "",
+						}}
 					/>
 
 					<p className="text-lg text-primaryText mt-1 px-6">

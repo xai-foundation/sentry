@@ -29,6 +29,9 @@ export function SentryActiveCard() {
 						body={"esXAI cannot be accrued while your Sentry Wallet is inactive."}
 						position={"end"}
 						titleStyles="text-lg text-white"
+						extraClasses={{
+							tooltipContainer: "!left-[-215px] !w-[350px]",
+						}}
 					/>
 
 					<p className="text-lg text-primaryText mt-3 px-7">
