@@ -97,6 +97,17 @@ export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
     return;
   }
 
+  //submitAssertionToChallenge = 0xb48985e4
+  //submitMultipleAssertions = 0xec6564bf
+  const transactionSignature = getTxSignatureFromEvent(event)
+
+  let submittedFrom = "unknown"
+  if (transactionSignature == "0xb48985e4") {
+    submittedFrom = "submitAssertion"
+  } else if (transactionSignature == "0xec6564bf") {
+    submittedFrom = "submitMultipleAssertions"
+  }
+
   let submission = new Submission(event.params.challengeId.toString() + "_" + event.params.nodeLicenseId.toString())
   submission.nodeLicenseId = event.params.nodeLicenseId
   submission.challengeNumber = event.params.challengeId
@@ -109,26 +120,23 @@ export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
   submission.createdTxHash = event.transaction.hash
   submission.claimTimestamp = BigInt.fromI32(0)
   submission.claimTxHash = Bytes.fromI32(0)
+  submission.claimedFrom = "unclaimed"
+  submission.submittedFrom = submittedFrom
 
   let assertionStateRootOrConfirmData: Bytes = Bytes.fromI32(0);
   const dataToDecode = getInputFromEvent(event, true)
-  //submitAssertionToChallenge = 0xb48985e4
-  //submitMultipleAssertions = 0xec6564bf
-  const isSubmitSingle = getTxSignatureFromEvent(event) == "0xb48985e4"
-  if (isSubmitSingle) {
-    const decoded = ethereum.decode('(uint256,uint256,bytes)', dataToDecode)
-    if (decoded) {
-      assertionStateRootOrConfirmData = decoded.toTuple()[2].toBytes()
-    } else {
-      log.warning("Failed to decode handleAssertionSubmitted (single) TX: " + event.transaction.hash.toHexString(), [])
-    }
+  let decoded: ethereum.Value | null;
+
+  if (submittedFrom == "submitAssertion") {
+    decoded = ethereum.decode('(uint256,uint256,bytes)', dataToDecode)
   } else {
-    const decoded = ethereum.decode('(uint256[],uint256,bytes)', dataToDecode)
-    if (decoded) {
-      assertionStateRootOrConfirmData = decoded.toTuple()[2].toBytes()
-    } else {
-      log.warning("Failed to decode handleAssertionSubmitted (multiple) TX: " + event.transaction.hash.toHexString(), [])
-    }
+    decoded = ethereum.decode('(uint256[],uint256,bytes)', dataToDecode)
+  }
+
+  if (decoded) {
+    assertionStateRootOrConfirmData = decoded.toTuple()[2].toBytes()
+  } else {
+    log.warning(`Failed to decode handleAssertionSubmitted (${submittedFrom}) TX: ` + event.transaction.hash.toHexString(), [])
   }
 
   let stakeAmount = sentryWallet.v1EsXaiStakeAmount
@@ -244,6 +252,7 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
 
           submission.claimTimestamp = event.block.timestamp
           submission.claimTxHash = event.transaction.hash
+          submission.claimedFrom = "claimRewards"
 
           submission.save()
           amountClaimedByClaimers = amountClaimedByClaimers.plus(event.params.amount)
@@ -276,6 +285,7 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
       submission.claimAmount = event.params.amount
       submission.claimTimestamp = event.block.timestamp
       submission.claimTxHash = event.transaction.hash
+      submission.claimedFrom = "claimRewards"
       submission.save()
 
       challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(event.params.amount)
@@ -354,9 +364,10 @@ export function handleBatchRewardsClaimed(event: BatchRewardsClaimedEvent): void
 
         submission.claimed = true
         submission.claimAmount = reward
-        
+
         submission.claimTimestamp = event.block.timestamp
         submission.claimTxHash = event.transaction.hash
+        submission.claimedFrom = "claimMultipleRewards"
         submission.save()
       }
     }

@@ -1054,6 +1054,32 @@ export class Submission extends Entity {
   set challenge(value: string) {
     this.set("challenge", Value.fromString(value));
   }
+
+  get submittedFrom(): string {
+    let value = this.get("submittedFrom");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set submittedFrom(value: string) {
+    this.set("submittedFrom", Value.fromString(value));
+  }
+
+  get claimedFrom(): string {
+    let value = this.get("claimedFrom");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set claimedFrom(value: string) {
+    this.set("claimedFrom", Value.fromString(value));
+  }
 }
 
 export class SentryWallet extends Entity {

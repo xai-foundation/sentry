@@ -155,6 +155,11 @@ export async function deployInfrastructureArbOne() {
     const referee7 = await upgrades.upgradeProxy((await referee.getAddress()), Referee7);
     await referee7.waitForDeployment();
 
+    // Referee8
+    const Referee8 = await ethers.getContractFactory("Referee8");
+    const referee8 = await upgrades.upgradeProxy((await referee.getAddress()), Referee8, { call: { fn: "initialize", args: [] } });
+    await referee8.waitForDeployment();
+
     // Set Rollup Address
     const rollupAddress = config.rollupAddress;
     await referee.setRollupAddress(rollupAddress);
@@ -284,7 +289,7 @@ export async function deployInfrastructureArbOne() {
         secretKeyHex,
         publicKeyHex: "0x" + publicKeyHex,
 
-        referee: referee7,
+        referee: referee8,
         nodeLicense,
         poolFactory,
         gasSubsidy,

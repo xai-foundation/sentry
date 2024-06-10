@@ -33,7 +33,6 @@ describe("Fixture Tests", function () {
     // This doesn't work when running coverage
     // describe("Runtime", RuntimeTests(deployInfrastructureArbOne).bind(this));
 
-
     // XAI deploys
 
     // XAI Subsidy
