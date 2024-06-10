@@ -18,8 +18,8 @@ export function ActionsRequiredPromptHandler() {
 
 	if (!ownersLoading && !ownersKycLoading && !licensesLoading && keyCount === 0) {
 		return (
-			<div className="flex gap-4 bg-[#FFC53D1A] py-2 px-4 z-10 global-cta-clip-path">
-				<div className="flex flex-row gap-2 items-center">
+			<BaseCallout extraClasses={{calloutWrapper: "h-[60px] w-[308px]", calloutFront: "bg-primaryCalloutWarning "}}>
+				<div className="flex flex-row gap-2 items-center mr-3">
 					<WarningIcon width={23} height={20}/>
 					<span className="text-primaryTooltipColor text-lg font-bold">Actions required</span>
 				</div>
@@ -31,13 +31,13 @@ export function ActionsRequiredPromptHandler() {
 					size="sm"
 					/>
 				</div>
-			</div>
+			</BaseCallout>
 		)
 	} else if (!accruing || data && data.whitelistedWallets && kycRequired) {
 		return (
 			<BaseCallout extraClasses={{calloutWrapper: "h-[60px] w-[308px]", calloutFront: "bg-primaryCalloutWarning "}}>
 				<div className="flex flex-row gap-2 items-center mr-3">
-					<AiFillWarning className="w-7 h-7 text-[#F59E28]"/>
+					<AiFillWarning className="w-7 h-7 text-[#FFC53D]"/>
 					<span className="text-primaryWarningText text-lg font-bold ">Actions required</span>
 				</div>
 				<PrimaryButton

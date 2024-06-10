@@ -35,7 +35,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 	const {balances, isBalancesLoading, balancesFetchedLast} = useAtomValue(accruingStateAtom);
 
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
-	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
+	const [, setCopiedSelectedWallet] = useState<boolean>(false);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [isRemoveWalletOpen, setIsRemoveWalletOpen] = useState<boolean>(false);
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
@@ -106,9 +106,9 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 
 			return (
 				<tr className={`${isEven ? "bg-primaryBgColor" : "bg-primaryBgColor"} flex px-6 text-lg border-b border-primaryBorderColor`} key={`license-${i}`}>
-					<td className="min-w-[70px] px-2 py-2 text-secondaryText">{keyString}</td>
-					<td className="min-w-[400px] px-4 py-2 text-secondaryText">{owner}</td>
-					<td className="min-w-[310px] px-4 py-2 text-secondaryText">
+					<td className="min-w-[7%] px-2 py-2 text-secondaryText">{keyString}</td>
+					<td className="min-w-[37%] px-2 py-2 text-secondaryText">{owner}</td>
+					<td className="min-w-[27%] px-4 py-2 text-secondaryText">
 
 						{_status === "sentryNotRunning" && (
 							<div className="relative flex items-center gap-[10px] font-bold text-primaryTooltipColor">
@@ -168,12 +168,12 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						)}
 
 					</td>
-					<td className="w-full max-w-[200px] px-4 py-2 text-right text-secondaryText">
+					<td className="min-w-[17%] px-4 py-2 text-right text-secondaryText">
 						{balances && balances[keyString]
 							? ethers.formatEther(balances[keyString].totalAccruedEsXai)
 							: "Loading..."}
 					</td>
-					<td className="w-full max-w-[125px] px-4 py-2 text-btnPrimaryBgColor font-bold text-right">
+					<td className="min-w-[12%] px-4 py-2 text-btnPrimaryBgColor font-bold text-right">
 						<span
 							className="cursor-pointer pr-[3px]"
 							onClick={() => window.electron.openExternal(`https://opensea.io/assets/arbitrum/${config.nodeLicenseAddress}/${keyString}`)}
@@ -354,15 +354,15 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						<table className="w-full bg-primaryBgColor">
 							<thead className="text-secondaryText text-base sticky top-0 bg-primaryBgColor z-10">
 							<tr className="flex items-center text-left text-base px-6 border-b border-t border-primaryBorderColor">
-								<th className="min-w-[80px] max-w-[80px] px-2 py-2">KEY ID</th>
-								<th className="min-w-[400px] px-2 py-2">OWNER ADDRESS</th>
-								<th className="min-w-[270px] px-2 py-2">STATUS</th>
-								<th className="min-w-[170px] px-4 py-2 flex items-center justify-end gap-1">
+								<th className="min-w-[7%] px-2 py-2">KEY ID</th>
+								<th className="min-w-[37%] px-2 py-2">OWNER ADDRESS</th>
+								<th className="min-w-[27%] px-4 py-2">STATUS</th>
+								<th className="min-w-[17%] px-4 py-2 flex items-center justify-end gap-1">
 									{isBalancesLoading &&
                                         <BiLoaderAlt className="animate-spin w-[18px]" color={"#FF0030"}/>}
 									ACCRUED esXAI
 								</th>
-								<th className="min-w-[125px] px-4 py-2">OPENSEA URL</th>
+								<th className="min-w-[12%] px-4 py-2 text-right">OPENSEA URL</th>
 							</tr>
 							</thead>
 							<tbody className="relative">{renderKeys()}</tbody>
