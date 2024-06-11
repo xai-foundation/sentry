@@ -10,7 +10,9 @@
     "clean": "rimraf dist && rimraf dist-electron && rimraf release && rimraf public/web && rimraf tsconfig.tsbuildinfo && rimraf vite.config.js && rimraf vite.config.d.ts",
     "dev": "vite",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "TS_NODE_PROJECT=tsconfig.spec.json mocha -r ts-node/register -r tsconfig-paths/register 'src/**/*.spec.ts' --reporter mochawesome --reporter-options overwrite=true,html=false",
+    "coverage": "nyc pnpm run test"
   },
   "dependencies": {
     "@radix-ui/react-tooltip": "^1.0.7",

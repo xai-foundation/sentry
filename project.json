@@ -1,0 +1,53 @@
+{
+	"targets": {
+		"test-report": {
+			"executor": "nx:run-commands",
+			"options": {
+				"commands": [
+					{
+						"command": "mkdir -p mochawesome-report && find mochawesome-report -mindepth 1 -delete"
+					},
+					{
+						"command": "npx nx run-many --target=test --exclude @sentry/smart-contracts @sentry/sentry-subgraph || true"
+					},
+					{
+						"command": "npx mochawesome-merge '**/mochawesome-report/*.json' -o ./mochawesome-report/mochawesome-merge.json"
+					},
+					{
+						"command": "npx marge ./mochawesome-report/mochawesome-merge.json --reportDir ./mochawesome-report --inline --autoOpen"
+					}
+				],
+				"parallel": false
+			}
+		},
+		"coverage-report": {
+			"executor": "nx:run-commands",
+			"options": {
+				"commands": [
+					{
+						"command": "mkdir -p coverage && find coverage -mindepth 1 -delete"
+					},
+					{
+						"command": "npx nx run-many --target=coverage --all --exclude=@sentry/smart-contracts,@sentry/sentry-subgraph || true"
+					},
+					{
+						"command": "npx mochawesome-merge '**/mochawesome-report/*.json' -o ./mochawesome-report/mochawesome-merge.json"
+					},
+					{
+						"command": "npx marge ./mochawesome-report/mochawesome-merge.json --reportDir ./mochawesome-report --inline"
+					},
+					{
+						"command": "find ./ ! -path \"*/node_modules/*\" -name 'coverage-final.json' -exec bash -c 'mkdir -p coverage/temp && cp \"$1\" \"coverage/temp/$(echo \"$1\" | sed \"s/\\//_/g\" | sed \"s/^\\._//\").json\"' -- {} \\;"
+					},
+					{
+						"command": "nyc merge coverage/temp coverage/monorepo-coverage.json"
+					},
+					{
+						"command": "nyc report --reporter html --exclude-after-remap=false -t coverage --report-dir coverage"
+					}
+				],
+				"parallel": false
+			}
+		}
+	}
+}
