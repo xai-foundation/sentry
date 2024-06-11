@@ -8,6 +8,8 @@ import {useNavigate} from "react-router-dom";
 import {drawerStateAtom} from "@/features/drawer/DrawerManager";
 import {useOperator} from "@/features/operator";
 import { PrimaryButton } from "@sentry/ui";
+import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
+import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 
 export function ViewKeysFlow() {
 	const [ownerAddress, setOwnerAddress] = useState('');
@@ -125,7 +127,7 @@ export function ViewKeysFlow() {
 						</div>
 
 						{ownerAddressError.error && (
-							<p className="text-sm text-[#AB0914]">{ownerAddressError.errorResult}</p>
+							<BaseCallout isWarning extraClasses={{calloutWrapper: "w-full bg-primaryCalloutWarning text-primaryWarningText my-2"}}> <WarningIcon width={20} height={20}/> <span className="ml-2">{ownerAddressError.errorResult}</span></BaseCallout>
 						)}
 
 						<PrimaryButton
