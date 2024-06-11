@@ -81,7 +81,7 @@ describe("updateUserQuota", () => {
             { walletAddress: TEST_WALLET, project: TEST_PROJECT_ID }
         )
 
-        expect(updatedUser.balanceWei).equal(balanceReduceAmount);
+        expect(updatedUser.balanceWei).equal(balanceReduceAmount.toString());
         expect(updatedUser.lastInteractionTimestamp).to.be.closeTo(Date.now(), 100);
         expect(updatedUser.lastRefillTimestamp).to.be.closeTo(newUserToProject.lastRefillTimestamp, 100);
 
