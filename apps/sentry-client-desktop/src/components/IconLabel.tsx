@@ -1,6 +1,6 @@
 import * as React from "react";
 import { HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
-import { CustomTooltip } from "@sentry/ui";
+import { SideBarTooltip } from "@sentry/ui";
 
 interface IconLabelProps {
 	icon: React.FC;
@@ -24,7 +24,7 @@ interface IconLabelProps {
   };
 }
 
-export function IconLabel({icon: Icon, color, title, tooltip, header, body, body2, position, titleStyles, extraClasses}: IconLabelProps) {
+export function IconLabel({icon: Icon, color, title, tooltip, header, body, body2, position, titleStyles}: IconLabelProps) {
 
 	return (
 		<span className="flex flex-row gap-2 items-center text-primaryText font-semibold text-sm">
@@ -35,14 +35,14 @@ export function IconLabel({icon: Icon, color, title, tooltip, header, body, body
 			/>
 			<span className={titleStyles}>{title}</span>
 			{tooltip &&
-                <CustomTooltip
+                <SideBarTooltip
                     header={header}
-                    content={<>{body}<br />{body2 && body2}</>}
+					body={body}
+					body2={body2}
 					position={position}
-					extraClasses={extraClasses}
                 >
                     <HelpIcon width={14} height={14}/>
-                </CustomTooltip>
+                </SideBarTooltip>
 			}
 		</span>
 	);

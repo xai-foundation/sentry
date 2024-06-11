@@ -3,12 +3,14 @@ import {SquareCard} from "@/components/SquareCard";
 import {IoMdCloseCircle} from "react-icons/io";
 import {AiFillCheckCircle} from "react-icons/ai";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
-import { PrimaryButton } from "@sentry/ui";
+import { PrimaryButton, SideBarTooltip } from "@sentry/ui";
+import { HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 
 export function SentryActiveCard() {
 	const {startRuntime, sentryRunning} = useOperatorRuntime();
 
 	return (
+		<div className="relative">
 		<div className="bg-primaryBorderColor global-cta-clip-path p-[1px]">
 		<SquareCard className="bg-secondaryBgColor global-cta-clip-path">
 			{sentryRunning ? (
@@ -24,14 +26,10 @@ export function SentryActiveCard() {
 						icon={IoMdCloseCircle}
 						color="#FFC53D"
 						title="Sentry Wallet inactive"
-						tooltip={true}
 						header={"Your Sentry Wallet is inactive"}
 						body={"esXAI cannot be accrued while your Sentry Wallet is inactive."}
 						position={"end"}
 						titleStyles="text-lg text-white"
-						extraClasses={{
-							tooltipContainer: "!left-[-215px] !w-[350px]",
-						}}
 					/>
 
 					<p className="text-lg text-primaryText mt-3 px-7">
@@ -50,6 +48,16 @@ export function SentryActiveCard() {
 				</>
 			)}
 			</SquareCard>
+		</div>
+		<div className="absolute top-[18px] left-[215px]">
+		<SideBarTooltip
+           header={"Your Sentry Wallet is inactive"}
+           body={"esXAI cannot be accrued while your Sentry Wallet is inactive."}
+           position={"end"}
+        >
+          <HelpIcon width={14} height={14} />
+        </SideBarTooltip>		
+		</div>
 		</div>
 	);
 }
