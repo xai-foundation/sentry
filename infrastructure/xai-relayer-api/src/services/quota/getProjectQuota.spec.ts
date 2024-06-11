@@ -74,13 +74,13 @@ describe("getProjectQuota", () => {
         await ProjectModel.updateOne(
             { _id: TEST_PROJECT_ID },
             {
-                balanceWei: (BigInt(projectQuota.balanceWei) - BigInt((balanceReduceAmount))).toString(),
+                projectBalanceWei: (BigInt(projectQuota.balanceWei) - BigInt((balanceReduceAmount))).toString(),
             }
         );
 
         const projectQuotaReducedBalance = await getProjectQuota(TEST_PROJECT_ID);
-        expect(projectQuotaReducedBalance.balanceWei).equal((BigInt(projectQuota.balanceWei) - BigInt((balanceReduceAmount))).toString());
-        expect(projectQuotaReducedBalance.nextRefillAmountWei).equal((BigInt(PROJECT_REFILL_LIMIT) - BigInt((projectQuotaReducedBalance.balanceWei))).toString());
+        expect(projectQuotaReducedBalance.balanceWei).equal((BigInt(projectQuota.balanceWei) - BigInt(balanceReduceAmount)).toString());
+        expect(projectQuotaReducedBalance.nextRefillAmountWei).equal((BigInt(PROJECT_REFILL_LIMIT) - BigInt(projectQuotaReducedBalance.balanceWei)).toString());
         expect(projectQuotaReducedBalance.nextRefillTimestamp).to.be.closeTo(projectQuotaReducedBalance.lastRefillTimestamp + PROJECT_REFILL_INTERVAL, 100); //100 ms diff
         expect(projectQuotaReducedBalance.lastRefillTimestamp).equal(projectQuota.lastRefillTimestamp);
 
