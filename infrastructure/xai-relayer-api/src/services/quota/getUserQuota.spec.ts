@@ -56,8 +56,8 @@ describe("getUserQuota", () => {
         expect(userQuota).to.exist;
         expect(userQuota.quota.balanceWei).equal(PROJECT_USER_REFILL_LIMIT);
         expect(userQuota.quota.nextRefillAmountWei).equal("0");
-        expect(userQuota.quota.nextRefillTimestamp).equal(Date.now() + PROJECT_USER_REFILL_INTERVAL);
-        expect(userQuota.quota.lastRefillTimestamp).equal(Date.now());
+        expect(userQuota.quota.nextRefillTimestamp).to.be.closeTo(Date.now() + PROJECT_USER_REFILL_INTERVAL, 100);
+        expect(userQuota.quota.lastRefillTimestamp).to.be.closeTo(Date.now(), 100);
     });
 
     it("should get the correct quota after refill", async () => {
@@ -111,6 +111,6 @@ describe("getUserQuota", () => {
         const diffFromRecentRefill = updatedLastRefill % PROJECT_USER_REFILL_INTERVAL;
         expect(userQuotaExpectedRefill.quota.nextRefillTimestamp).to.be.closeTo(Date.now() + (PROJECT_USER_REFILL_INTERVAL - diffFromRecentRefill), 100); //100 ms diff
         expect(userQuotaExpectedRefill.quota.lastRefillTimestamp).to.be.closeTo(Date.now() - diffFromRecentRefill, 100); //100 ms diff
-        expect(userQuota.quota.lastRefillTimestamp).equal(Date.now());
+        expect(userQuota.quota.lastRefillTimestamp).to.be.closeTo(Date.now(), 100);
     });
 });
