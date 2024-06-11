@@ -1,4 +1,4 @@
-import {AiFillCheckCircle, AiOutlineMinus, AiOutlinePlus} from "react-icons/ai";
+import {AiFillCheckCircle, AiOutlineCheck, AiOutlineMinus, AiOutlinePlus} from "react-icons/ai";
 import {useState} from "react";
 import {BlockPassKYC} from "@/components/blockpass/Blockpass";
 import {getLicensesList, LicenseList, LicenseMap} from "@/hooks/useListNodeLicensesWithCallback";
@@ -20,6 +20,7 @@ import {useGetWalletBalance} from "@/hooks/useGetWalletBalance";
 import {useGetSingleWalletBalance} from "@/hooks/useGetSingleWalletBalance";
 import log from "electron-log";
 import { HelpIcon, WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { PiCopy } from "react-icons/pi";
 
 interface HasKeysProps {
 	combinedOwners: string[],
@@ -35,7 +36,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 	const {balances, isBalancesLoading, balancesFetchedLast} = useAtomValue(accruingStateAtom);
 
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
-	const [, setCopiedSelectedWallet] = useState<boolean>(false);
+	const [copiedSelectedWallet, setCopiedSelectedWallet] = useState<boolean>(false);
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const [isRemoveWalletOpen, setIsRemoveWalletOpen] = useState<boolean>(false);
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
@@ -247,10 +248,11 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						<PrimaryButton
 							isDisabled={selectedWallet === null}
 							onClick={copySelectedWallet}
-							className={`bg-primaryBgColor !h-[46px] !w-[145px] text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-lg uppercase font-bold !py-1 !px-[10px]`}
+							className={`bg-primaryBgColor flex !h-[46px] items-center !w-[155px] text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-lg uppercase font-bold !py-1 !px-[10px]`}
 							btnText="Copy address"
 							colorStyle="outline"
 							wrapperClassName={`global-clip-primary-btn ${selectedWallet !== null && 'bg-btnPrimaryBgColor'}`}
+							icon={copiedSelectedWallet ? (<AiOutlineCheck className="h-[18px]"/>) : (<PiCopy className="h-[18px]"/>)}
 						/>
 						</div>
                         <div>
