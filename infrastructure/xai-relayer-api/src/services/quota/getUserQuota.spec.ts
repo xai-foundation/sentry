@@ -70,19 +70,20 @@ describe("getUserQuota", () => {
         expect(userQuota).to.exist;
         expect(userQuota.quota.balanceWei).equal(PROJECT_USER_REFILL_LIMIT);
         expect(userQuota.quota.nextRefillAmountWei).equal("0");
-        expect(userQuota.quota.nextRefillTimestamp).to.be.closeTo(Date.now() + PROJECT_USER_REFILL_INTERVAL);
-        expect(userQuota.quota.lastRefillTimestamp).to.be.closeTo(Date.now());
+        expect(userQuota.quota.nextRefillTimestamp).to.be.closeTo(Date.now() + PROJECT_USER_REFILL_INTERVAL, 100);
+        expect(userQuota.quota.lastRefillTimestamp).to.be.closeTo(Date.now(), 100);
 
         //Update userProject, reduce balance
-        await UserProjectInfoModel.updateOne(
+        const updatedUser = await UserProjectInfoModel.updateOne(
             { walletAddress: TEST_WALLET, project: TEST_PROJECT_ID },
             {
                 balanceWei: (BigInt(userQuota.quota.balanceWei) - BigInt((balanceReduceAmount).toString())),
             }
         );
+        expect(updatedUser).to.exist;
 
         const userQuotaReducedBalance = await getUserQuota(TEST_PROJECT_ID, TEST_WALLET);
-        expect(userQuotaReducedBalance.quota.balanceWei).equal((BigInt(userQuotaReducedBalance.quota.balanceWei) - BigInt((balanceReduceAmount).toString())));
+        expect(userQuotaReducedBalance.quota.balanceWei).equal((BigInt(userQuotaReducedBalance.quota.balanceWei) - BigInt((balanceReduceAmount).toString())).toString());
         expect(userQuotaReducedBalance.quota.nextRefillAmountWei).equal((BigInt(PROJECT_USER_REFILL_LIMIT) - BigInt((userQuotaReducedBalance.quota.balanceWei).toString())));
         expect(userQuotaReducedBalance.quota.nextRefillTimestamp).to.be.closeTo(userQuotaReducedBalance.quota.lastRefillTimestamp + PROJECT_USER_REFILL_INTERVAL, 100); //100 ms diff
         expect(userQuotaReducedBalance.quota.lastRefillTimestamp).equal(userQuota.quota.lastRefillTimestamp);
