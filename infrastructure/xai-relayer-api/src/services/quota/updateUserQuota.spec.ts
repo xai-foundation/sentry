@@ -76,15 +76,14 @@ describe("updateUserQuota", () => {
         }
 
         await updateUserQuota(newUserToProject._id, TEST_PROJECT_ID, TEST_WALLET, quotaToUpdate);
-        
+
         const updatedUser = await UserProjectInfoModel.findOne(
             { walletAddress: TEST_WALLET, project: TEST_PROJECT_ID }
         )
 
-        expect(updatedUser.quota.balanceWei).equal(balanceReduceAmount);
-        expect(updatedUser.quota.nextRefillTimestamp).to.be.closeTo(Date.now() + PROJECT_USER_REFILL_INTERVAL, 100);
-        expect(updatedUser.quota.nextRefillAmountWei).equal((BigInt(newUserToProject.balanceWei) - BigInt(balanceReduceAmount)).toString());
-        expect(updatedUser.quota.lastRefillTimestamp).to.be.closeTo(newUserToProject.lastRefillTimestamp, 100);
+        expect(updatedUser.balanceWei).equal(balanceReduceAmount);
+        expect(updatedUser.lastInteractionTimestamp).to.be.closeTo(Date.now(), 100);
+        expect(updatedUser.lastRefillTimestamp).to.be.closeTo(newUserToProject.lastRefillTimestamp, 100);
 
     });
 });
