@@ -6,6 +6,7 @@ import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
 import {useStorage} from "@/features/storage";
 import BaseCallout from "@sentry/ui/dist/src/rebrand/callout/BaseCallout";
 import {PrimaryButton} from "@sentry/ui";
+import {WarningIcon} from "@sentry/ui/src/rebrand/icons/IconsComponents";
 
 export function ActionsRequiredPromptHandler() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -17,24 +18,26 @@ export function ActionsRequiredPromptHandler() {
 
 	if (!ownersLoading && !ownersKycLoading && !licensesLoading && keyCount === 0) {
 		return (
-			<div className="flex gap-4 bg-[#FFFBEB] p-2 z-10">
-				<div className="flex flex-row gap-2 items-center">
-					<AiFillWarning className="w-7 h-7 text-[#F59E28]"/>
-					<span className="text-[#B45317] text-[15px] font-semibold">Actions required</span>
+			<BaseCallout extraClasses={{calloutWrapper: "h-[60px] w-[308px]", calloutFront: "bg-primaryCalloutWarning "}}>
+				<div className="flex flex-row gap-2 items-center mr-3">
+					<WarningIcon width={23} height={20}/>
+					<span className="text-primaryTooltipColor text-lg font-bold">Actions required</span>
 				</div>
-				<button
+				<div>
+				<PrimaryButton
 					onClick={() => setDrawerState(DrawerView.ActionsRequiredBuy)}
-					className={`flex flex-row justify-center items-center py-1 px-4 gap-1 bg-[#F30919] text-[15px] text-white font-semibold`}
-				>
-					Resolve
-				</button>
-			</div>
+					className={`bg-btnPrimaryBgColor w-[104px] text-lg text-white font-bold uppercase !py-1 !px-[14px] hover:text-btnPrimaryBgColor`}
+					btnText="Resolve"
+					size="sm"
+					/>
+				</div>
+			</BaseCallout>
 		)
 	} else if (!accruing || data && data.whitelistedWallets && kycRequired) {
 		return (
 			<BaseCallout extraClasses={{calloutWrapper: "h-[60px] w-[308px]", calloutFront: "bg-primaryCalloutWarning "}}>
 				<div className="flex flex-row gap-2 items-center mr-3">
-					<AiFillWarning className="w-7 h-7 text-[#F59E28]"/>
+					<AiFillWarning className="w-7 h-7 text-[#FFC53D]"/>
 					<span className="text-primaryWarningText text-lg font-bold ">Actions required</span>
 				</div>
 				<PrimaryButton
