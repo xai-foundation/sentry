@@ -1,28 +1,25 @@
 import {AiOutlineCheck} from "react-icons/ai";
 import {ReactNode, useState} from "react";
-import {BiDownload, BiLinkExternal, BiLoaderAlt, BiUpload} from "react-icons/bi";
+import {BiDownload, BiLoaderAlt, BiUpload} from "react-icons/bi";
 import {useOperator} from "../operator";
-import {PiCopy} from "react-icons/pi";
 import {HiOutlineDotsVertical} from "react-icons/hi";
 import {MdRefresh} from "react-icons/md";
 import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager.js";
 import {FaPlay} from "react-icons/fa6";
-import {IoIosArrowDown} from "react-icons/io";
 import {AssignKeysFromNewWallet} from "@/components/AssignKeysFromNewWallet";
 import {WalletConnectedModal} from "@/features/home/modals/WalletConnectedModal";
 import {WalletDisconnectedModal} from "@/features/home/modals/WalletDisconnectedModal";
 import {useQueryClient} from "react-query";
 import {ethers} from "ethers";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
-import {CustomTooltip} from "@sentry/ui";
+import {CustomTooltip, Dropdown, DropdownItem, PrimaryButton} from "@sentry/ui";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {ActionsRequiredPromptHandler} from "@/features/drawer/ActionsRequiredPromptHandler";
 import {SentryWalletHeader} from "@/features/home/SentryWalletHeader";
 import {chainStateAtom, useChainDataRefresh} from "@/hooks/useChainDataWithCallback";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {AssignKeysSentryNotRunning} from "@/components/AssignKeysSentryNotRunning";
-import {LuListChecks} from "react-icons/lu";
 import {useStorage} from "@/features/storage";
 import log from "electron-log";
 import {GreenPulse, GreyPulse, YellowPulse} from "@/features/keys/StatusPulse";
@@ -114,16 +111,15 @@ export function SentryWallet() {
 		// If the user has whitelisted wallets, update the dropdown to populate with their whitelistedWallets.
 		if (data?.whitelistedWallets) {
 			return data?.whitelistedWallets.map((wallet, i) => (
-				<p
+				<DropdownItem
 					onClick={() => {
 						setSelectedWallet(wallet);
 						setIsOpen(false);
 					}}
-					className="p-2 cursor-pointer hover:bg-gray-100"
 					key={`sentry-item-${i}`}
 				>
 					{wallet}
-				</p>
+				</DropdownItem>
 			));
 		} else {
 			return owners.map((wallet, i) => (
@@ -144,8 +140,8 @@ export function SentryWallet() {
 	function getKeys() {
 		if (nodeLicenseStatusMap.size === 0) {
 			return (
-				<tr className="bg-white flex px-8 text-sm">
-					<td colSpan={3} className="w-full text-center">No keys found.</td>
+				<tr className="flex pr-8 py-[15px] bg-primaryBgColor text-sm">
+					<td colSpan={3} className="w-full text-center text-lg text-medium text-primaryText">No keys found.</td>
 				</tr>
 			);
 		}
@@ -160,13 +156,13 @@ export function SentryWallet() {
 			return status.ownerPublicKey === selectedWallet;
 		}))
 			.forEach((status, key) => {
-				const isEven = i++ % 2 === 0;
+				//const isEven = i++ % 2 === 0;
 
 				element.push(
-					<tr className={`${isEven ? "bg-[#FAFAFA]" : "bg-white"} flex px-8 text-sm`} key={`license-${i}`}>
-						<td className="w-full max-w-[70px] px-4 py-2">{key.toString()}</td>
-						<td className="w-full max-w-[400px] px-4 py-2">{status.ownerPublicKey}</td>
-						<td className="w-full max-w-[400px] px-4 py-2 text-[#A3A3A3]">
+					<tr className={`bg-primaryBgColor flex pl-[25px] pr-8 text-sm border-b border-primaryBorderColor`} key={`license-${i}`}>
+						<td className="w-full max-w-[65px] pr-4 py-4 text-lg font-medium text-secondaryText">{key.toString()}</td>
+						<td className="w-full max-w-[400px] pr-4 py-4 text-lg font-medium text-secondaryText">{status.ownerPublicKey}</td>
+						<td className="w-full max-w-[400px] px-4 py-4 text-lg font-medium text-secondaryText">
 							{status.status}
 						</td>
 					</tr>
@@ -220,11 +216,11 @@ export function SentryWallet() {
 				/>
 			)}
 
-			<div className="w-full h-full flex flex-col">
+			<div className="w-full h-full flex flex-col shadow-default pl-4">
 				<div
 					className="sticky top-0 flex flex-col items-center w-full h-auto z-10">
 					<div
-						className="flex flex-row justify-between items-center w-full py-[22px] bg-primaryBgColor/75 shadow-default gap-2 border-b border-primaryBorderColor pl-[24px] pr-2 z-50">
+						className="flex flex-row justify-between items-center w-full py-[22px] bg-primaryBgColor gap-2 border-b border-primaryBorderColor pl-[24px] pr-2">
 						<div className="flex flex-row items-center gap-2 w-full max-w-[50%]">
 							<span>
 								{sentryRunning && hasAssignedKeys && funded && <GreenPulse size='md'/>}
@@ -275,7 +271,7 @@ export function SentryWallet() {
 									>
 										{copied
 											? (<AiOutlineCheck className="h-[15px]"/>)
-											: (<CopyIcon />)
+											: (<CopyIcon/>)
 										}
 									</div>
 								</BaseCallout>
@@ -283,9 +279,13 @@ export function SentryWallet() {
 									<CustomTooltip
 										header={"Sentry Wallet is encrypted on your device"}
 										content={"This wallet is exportable and EVM compatible."}
-										extraClasses={{tooltipContainer: "!left-[-38px] !text-primaryText !top-[49px]", tooltipHeader: "!text-primaryText", arrowStyles: "!left-[-16px] !top-[25px]"}}
+										extraClasses={{
+											tooltipContainer: "!left-[-38px] !text-primaryText !top-[49px]",
+											tooltipHeader: "!text-primaryText",
+											arrowStyles: "!left-[-16px] !top-[25px]"
+										}}
 									>
-										<HelpIcon />
+										<HelpIcon/>
 									</CustomTooltip>
 								</div>
 								<div
@@ -353,151 +353,137 @@ export function SentryWallet() {
 					<SentryWalletHeader/>
 
 					<div
-						className="flex flex-row items-center w-full py-[22px] pl-[24px] gap-[20px] bg-primaryBgColor/75 shadow-default">
-						<h2 className="font-bold text-white text-2xl uppercase">Assigned Keys</h2>
-						<div className="flex gap-[5px] items-center">
-							<p className="text-secondaryText text-lg font-medium">
-								{getWalletCounter()}
+						className=" w-full py-[22px] pl-[24px]  bg-primaryBgColor">
+						<div className="flex flex-row items-center gap-[20px]">
+							<h2 className="font-bold text-white text-2xl uppercase">Assigned Keys</h2>
+							<div className="flex gap-[5px] items-center">
+								<p className="text-secondaryText text-lg font-medium">
+									{getWalletCounter()}
 
-								{/*{owners.length > 0 ? (*/}
-								{/*	loading ? "Loading..." : `${keyCount} key${keyCount === 1 ? "" : "s"} in ${owners.length} wallet${owners.length === 1 ? "" : "s"}`*/}
-								{/*) : (*/}
-								{/*	"Keys not assigned"*/}
-								{/*)}*/}
-							</p>
-							<CustomTooltip
-								header={"Purchased keys must be assigned to Sentry Wallet"}
-								extraClasses={{tooltipContainer: "!left-[-38px]", tooltipHeader: "!text-secondaryText"}}
-								content={<div className="text-secondaryText">
-									<span className="block my-[10px]">To assign keys, connect all wallets containing Sentry Keys.</span>
-									<span className="block">The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry.</span>
-								</div>}
-							>
-								<HelpIcon width={14} height={14}/>
-							</CustomTooltip>
-						</div>
-						{loading ? (
-							<span className="flex items-center text-lg font-bold text-tertiaryText select-none">
+									{/*{owners.length > 0 ? (*/}
+									{/*	loading ? "Loading..." : `${keyCount} key${keyCount === 1 ? "" : "s"} in ${owners.length} wallet${owners.length === 1 ? "" : "s"}`*/}
+									{/*) : (*/}
+									{/*	"Keys not assigned"*/}
+									{/*)}*/}
+								</p>
+								<CustomTooltip
+									header={"Purchased keys must be assigned to Sentry Wallet"}
+									extraClasses={{
+										tooltipContainer: "!left-[-38px]",
+										tooltipHeader: "!text-secondaryText"
+									}}
+									content={<div className="text-secondaryText">
+										<span className="block my-[10px]">To assign keys, connect all wallets containing Sentry Keys.</span>
+										<span className="block">The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry.</span>
+									</div>}
+								>
+									<HelpIcon width={14} height={14}/>
+								</CustomTooltip>
+							</div>
+							{loading ? (
+								<span className="flex items-center text-lg font-bold text-tertiaryText select-none">
 								Refreshing
 							</span>
-						) : (
-							<a
-								onClick={onRefreshTable}
-								className="flex items-center text-lg text-tertiaryText gap-1 cursor-pointer select-none"
-							>
-								<MdRefresh/> Refresh
-							</a>
+							) : (
+								<a
+									onClick={onRefreshTable}
+									className="flex items-center text-lg text-tertiaryText gap-1 cursor-pointer select-none"
+								>
+									<MdRefresh/> Refresh
+								</a>
+							)}
+						</div>
+
+						{/*		Keys	*/}
+						{sentryRunning && owners && owners.length > 0 && (
+							<>
+								<div className="w-full">
+									<div className="w-full h-auto flex flex-col pb-3 mt-[15px]">
+										<div className="flex flex-row gap-2 h-[44px]">
+											<Dropdown
+												setIsOpen={setIsOpen}
+												isOpen={isOpen}
+												defaultValue={"All"}
+												selectedValue={
+													selectedWallet
+												}
+												selectedValueRender={
+													<p>{selectedWallet ? `${selectedWallet!.slice(0, 6)}...${selectedWallet!.slice(-6)}` : `All assigned wallets/pools (${data?.whitelistedWallets ? data.whitelistedWallets.length : owners.length})`}</p>
+												}
+												setSelectedValue={setSelectedWallet}
+												getDropdownItems={getDropdownItems}
+												extraClasses={{dropdown: "!w-[351px] !h-[44px]"}}
+											/>
+
+											<PrimaryButton
+												isDisabled={selectedWallet === null}
+												onClick={() => copySelectedWallet()}
+												btnText={"Copy address"}
+												wrapperClassName={`mt-[-2px] !h-[48px] max-w-[146px] flex items-center justify-center ${selectedWallet !== null && "bg-btnPrimaryBgColor"} global-clip-primary-btn`}
+												className={`w-[144px] ${selectedWallet === null ? "!h-[48px]" : "!h-[46px]"} text-lg font-bold uppercase !p-0 bg-primaryBgColor text-tertiaryText ${selectedWallet !== null && "hover:!bg-btnPrimaryBgColor"} hover:text-[#EEEEEE]`}
+
+											/>
+
+											<PrimaryButton
+												onClick={() => {
+													setModalState(ModalView.TransactionInProgress)
+													window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`)
+												}}
+												wrapperClassName={`mt-[-2px] !h-[48px] max-w-[161px] flex items-center justify-center bg-btnPrimaryBgColor global-clip-primary-btn`}
+												className={`w-[159px] !h-[46px] text-lg font-bold uppercase !p-0 bg-primaryBgColor text-tertiaryText hover:!bg-btnPrimaryBgColor hover:text-[#EEEEEE]`}
+												btnText={"Assign wallet"}
+											/>
+
+											<PrimaryButton
+												onClick={() => setDrawerState(DrawerView.Whitelist)}
+												wrapperClassName={`mt-[-2px] !h-[48px] max-w-[225px] flex items-center justify-center bg-btnPrimaryBgColor global-clip-primary-btn`}
+												className={`w-[223px] !h-[46px] text-lg font-bold uppercase !p-0 bg-primaryBgColor text-tertiaryText hover:!bg-btnPrimaryBgColor hover:text-[#EEEEEE]`}
+												btnText={"Allowed wallets/pools"}
+											/>
+
+											<PrimaryButton
+												isDisabled={selectedWallet === null}
+												onClick={() => {
+													setModalState(ModalView.TransactionInProgress)
+													window.electron.openExternal(`https://sentry.xai.games/#/unassign-wallet/${operatorAddress}`)
+												}}
+												wrapperClassName={`mt-[-2px] !h-[48px] max-w-[175px] flex items-center justify-center ${selectedWallet !== null && "bg-btnPrimaryBgColor"} global-clip-primary-btn`}
+												className={`w-[173px] ${selectedWallet === null ? "!h-[48px]" : "!h-[46px]"} text-lg font-bold uppercase !p-0 bg-primaryBgColor text-tertiaryText ${selectedWallet !== null && "hover:!bg-btnPrimaryBgColor"} hover:text-[#EEEEEE]`}
+												btnText={"Un-assign wallet"}
+											/>
+
+										</div>
+									</div>
+
+
+								</div>
+							</>
 						)}
 
+
+					</div>
+					<div className="flex flex-col max-h-[70vh] w-full">
+						<div className="w-full overflow-y-auto ">
+							<table className="w-full">
+								<thead className="text-[#A3A3A3] sticky top-0 bg-white">
+								<tr className="flex text-left text-base font-semibold text-secondaryText uppercase px-[25px] py-[15px] bg-secondaryBgColor">
+									<th className="w-full max-w-[50px] !text-nowrap">Key Id</th>
+									<th className="w-full max-w-[400px] px-4">Owner Address</th>
+									<th className="w-full max-w-[400px] px-[31px]">Claim Status</th>
+								</tr>
+								</thead>
+								<tbody>
+								{loading ? (
+									<tr className="text-[#A3A3A3] text-sm flex px-8 bg-primaryBgColor py-4">
+										<td colSpan={3} className="w-full text-center text-lg font-medium text-secondaryText">Loading...</td>
+									</tr>
+								) : getKeys()}
+								</tbody>
+							</table>
+						</div>
 					</div>
 				</div>
 
-				{/*		Keys	*/}
-				{sentryRunning && owners && owners.length > 0 && (
-					<>
-						<div>
-							<div className="w-full h-auto flex flex-col py-3 pl-10">
-								<p className="text-sm uppercase text-[#A3A3A3] mb-2">
-									View Wallet/Pools
-								</p>
-								<div className="flex flex-row gap-2">
-									<div>
-										<div
-											onClick={() => setIsOpen(!isOpen)}
-											className={`flex items-center justify-between w-[538px] border-[#A3A3A3] border-r border-l border-t ${!isOpen ? "border-b" : "pb-[9px]"} border-[#A3A3A3] p-2`}
-										>
-											<p>{selectedWallet || `All assigned wallets/pools (${data?.whitelistedWallets ? data.whitelistedWallets.length : owners.length})`}</p>
-											<IoIosArrowDown
-												className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
-											/>
-										</div>
-
-										{isOpen && (
-											<div
-												className="absolute flex flex-col w-[538px] border-r border-l border-b border-[#A3A3A3] bg-white z-10">
-												<p
-													onClick={() => {
-														setSelectedWallet(null);
-														setIsOpen(false);
-													}}
-													className="p-2 cursor-pointer hover:bg-gray-100"
-												>
-													All
-												</p>
-												{getDropdownItems()}
-											</div>
-										)}
-									</div>
-
-									<button
-										disabled={selectedWallet === null}
-										onClick={() => copySelectedWallet()}
-										className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] ${selectedWallet === null ? 'text-[#D4D4D4] cursor-not-allowed' : ""} px-4 py-2`}
-									>
-
-										{copied
-											? (<AiOutlineCheck className="h-[15px]"/>)
-											: (<PiCopy className="h-[15px]"/>)
-										}
-										Copy address
-									</button>
-
-									<button
-										onClick={() => {
-											setModalState(ModalView.TransactionInProgress)
-											window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`)
-										}}
-										className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2`}
-									>
-										Assign wallet
-										<BiLinkExternal className="h-[15px]"/>
-									</button>
-
-									<button
-										onClick={() => setDrawerState(DrawerView.Whitelist)}
-										className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] px-4 py-2`}
-									>
-										<LuListChecks className="h-[15px]"/>
-										Allowed wallets/pools
-									</button>
-
-									<button
-										disabled={selectedWallet === null}
-										onClick={() => {
-											setModalState(ModalView.TransactionInProgress)
-											window.electron.openExternal(`https://sentry.xai.games/#/unassign-wallet/${operatorAddress}`)
-										}}
-										className={`flex flex-row justify-center items-center gap-2 text-[15px] border border-[#E5E5E5] ${selectedWallet === null ? 'text-[#D4D4D4] cursor-not-allowed' : ""} px-4 py-2`}
-									>
-										Un-assign wallet
-										<BiLinkExternal className="h-[15px]"/>
-									</button>
-								</div>
-							</div>
-
-							<div className="flex flex-col max-h-[70vh]">
-								<div className="w-full overflow-y-auto">
-									<table className="w-full bg-white">
-										<thead className="text-[#A3A3A3] sticky top-0 bg-white">
-										<tr className="flex text-left text-[12px] uppercase px-8">
-											<th className="w-full max-w-[70px] px-4 py-2">Key Id</th>
-											<th className="w-full max-w-[400px] px-4 py-2">Owner Address</th>
-											<th className="w-full max-w-[400px] px-4 py-2">Claim Status</th>
-										</tr>
-										</thead>
-										<tbody>
-										{loading ? (
-											<tr className="text-[#A3A3A3] text-sm flex px-8">
-												<td colSpan={3} className="w-full text-center">Loading...</td>
-											</tr>
-										) : getKeys()}
-										</tbody>
-									</table>
-								</div>
-							</div>
-						</div>
-					</>
-				)}
 
 				{sentryRunning && owners && owners.length <= 0 && (
 					<>
@@ -508,7 +494,7 @@ export function SentryWallet() {
 						) : (
 							sentryRunning ? (
 								<div
-									className="w-full flex-1 flex flex-col justify-center items-center bg-primaryBgColor/75 shadow-default">
+									className="w-full flex-1 flex flex-col justify-center items-center bg-primaryBgColor shadow-default">
 									<AssignKeysFromNewWallet/>
 								</div>
 							) : (
