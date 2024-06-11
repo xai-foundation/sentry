@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc && tsc-alias",
     "dev": "nodemon",
-    "start": "node dist/app.js"
+    "start": "node dist/app.js",
+    "test": "TS_NODE_PROJECT=tsconfig.spec.json mocha -r ts-node/register -r tsconfig-paths/register 'src/**/*.spec.ts' --reporter mochawesome --reporter-options overwrite=true,html=false"
   },
   "keywords": [],
   "author": "",
