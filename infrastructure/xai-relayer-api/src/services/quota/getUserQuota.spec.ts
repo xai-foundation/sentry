@@ -79,11 +79,11 @@ describe("getUserQuota", () => {
             {
                 balanceWei: (BigInt(userQuota.quota.balanceWei) - BigInt((balanceReduceAmount).toString())),
             }
-        );
+        ).exec();
         expect(updatedUser).to.exist;
 
-        const userQuotaReducedBalance = await getUserQuota(TEST_PROJECT_ID, TEST_WALLET);
-        expect(userQuotaReducedBalance.quota.balanceWei).equal((BigInt(userQuotaReducedBalance.quota.balanceWei) - BigInt((balanceReduceAmount).toString())).toString());
+        const userQuotaReducedBalance = await getUserQuota(TEST_PROJECT_ID, TEST_WALLET); 
+        expect(userQuotaReducedBalance.quota.balanceWei).equal((BigInt(userQuota.quota.balanceWei) - BigInt((balanceReduceAmount).toString())).toString());
         expect(userQuotaReducedBalance.quota.nextRefillAmountWei).equal((BigInt(PROJECT_USER_REFILL_LIMIT) - BigInt((userQuotaReducedBalance.quota.balanceWei).toString())));
         expect(userQuotaReducedBalance.quota.nextRefillTimestamp).to.be.closeTo(userQuotaReducedBalance.quota.lastRefillTimestamp + PROJECT_USER_REFILL_INTERVAL, 100); //100 ms diff
         expect(userQuotaReducedBalance.quota.lastRefillTimestamp).equal(userQuota.quota.lastRefillTimestamp);
