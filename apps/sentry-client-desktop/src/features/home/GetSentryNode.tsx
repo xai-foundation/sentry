@@ -59,11 +59,11 @@ export function GetSentryNode() {
 					<PrimaryButton
 						onClick={() => setDrawerState(DrawerView.BuyKeys)}
 						btnText="Purchase Key"
-						className="w-[202px] text-[20px] bg-btnPrimaryBgColor !global-cta-clip-path text-[#000000] uppercase !py-1  hover:text-btnPrimaryBgColor hover:bg-white"
+						className="w-[202px] text-[20px] bg-btnPrimaryBgColor !global-cta-clip-path text-[#000000] uppercase !py-1 hover:text-btnPrimaryBgColor hover:bg-white"
 					/>
                     </div>
 					<p
-						className="text-xl text-[#F30919] cursor-pointer font-semibold"
+						className="text-xl text-[#F30919] cursor-pointer font-semibold hover:text-white duration-200 easy-in"
 						onClick={() => setDrawerState(DrawerView.ViewKeys)}
 					>
 						I already own a key

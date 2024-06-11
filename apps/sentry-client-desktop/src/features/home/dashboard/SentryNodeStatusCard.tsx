@@ -10,8 +10,8 @@ import {getLatestChallenge} from "@sentry/core";
 import {ReactNode, useEffect, useState} from "react";
 import log from "electron-log";
 import { PrimaryButton } from "@sentry/ui";
-import { HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import img from '@/assets/images/dashboard-card.png';
+import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 
 export function SentryNodeStatusCard() {
 	const {publicKey} = useOperator();
@@ -54,19 +54,17 @@ export function SentryNodeStatusCard() {
 
 	function getNodeFunds() {
 		return (
-			<div
-				className={`absolute bottom-4 left-4 max-w-[338px] h-[54px] flex justify-center items-center gap-1 ${nodeStatus ? "text-lg text-[#3DD68C] bg-successBgColor" : "text-lg text-primaryTooltipColor bg-[#FFC53D1A]"} p-4 global-cta-clip-path`}>
-				<div className="flex justify-center items-center gap-2">
+			<BaseCallout
+				extraClasses={{ calloutWrapper: `absolute bottom-4 left-6 w-[328px] !p-0 flex justify-center items-center gap-1 ${nodeStatus ? "text-lg !text-[#3DD68C] !bg-successBgColor" : "text-lg text-primaryTooltipColor bg-[#FFC53D1A]"}`, calloutFront: "!justify-start" }}>
 					<div className="flex justify-center items-center gap-2">
 						{nodeStatus
 							? (
-								<><FaCircleCheck color={"#3DD68C"} size={23}/>Your node is sufficiently funded <HelpIcon width={14} height={14} fill='#3DD68C'/></>
+								<><FaCircleCheck color={"#3DD68C"} size={23}/>Your node is sufficiently funded</>
 							) : (
-								<><AiFillWarning color={"#FFC53D"} size={23}/>Your node is insufficiently funded <HelpIcon width={14} height={14} fill='#FFC53D'/></>
+								<><AiFillWarning color={"#FFC53D"} size={23}/>Your node is insufficiently funded</>
 							)}
 					</div>
-				</div>
-			</div>
+			</BaseCallout>
 		);
 	}
 
