@@ -6,7 +6,8 @@ import {useOperator} from "@/features/operator";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {useAtomValue, useSetAtom} from "jotai";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
-import {PrimaryButton} from "@sentry/ui";
+import {PrimaryButton, SideBarTooltip} from "@sentry/ui";
+import { HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 
 export function AssignedKeysCard() {
 	const setModalState = useSetAtom(modalStateAtom);
@@ -19,6 +20,8 @@ export function AssignedKeysCard() {
 	}
 
 	return (
+		<div className="relative">
+		<div className="bg-primaryBorderColor global-cta-clip-path p-[1px]">
 		<SquareCard className="bg-secondaryBgColor global-cta-clip-path">
 			{hasAssignedKeys ? (
 				<IconLabel
@@ -33,7 +36,6 @@ export function AssignedKeysCard() {
 						icon={IoMdCloseCircle}
 						color="#FFC53D"
 						title="No assigned Keys"
-						tooltip={true}
 						header={"Purchased keys must be assigned to Sentry Wallet"}
 						body={"To assign keys, connect all wallets containing Sentry Keys"}
 						body2={"The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry."}
@@ -56,5 +58,17 @@ export function AssignedKeysCard() {
 				</>
 			)}
 		</SquareCard>
+		</div>
+		<div className="absolute top-[18px] left-[182px]">
+		<SideBarTooltip
+            header={"Purchased keys must be assigned to Sentry Wallet"}
+            body={"To assign keys, connect all wallets containing Sentry Keys"}
+			body2={"The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry."}
+            position={"end"}
+        >
+           <HelpIcon width={14} height={14} />
+        </SideBarTooltip>		
+		</div>
+		</div>
 	);
 }

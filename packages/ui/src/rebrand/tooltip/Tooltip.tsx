@@ -1,4 +1,4 @@
-import React, {MutableRefObject, ReactNode, useEffect, useRef, useState} from "react";
+import React, {Dispatch, MutableRefObject, ReactNode, SetStateAction, useEffect, useRef, useState} from "react";
 import { TextButton } from "../buttons/TextButton";
 import { BlackPyramidIcon, SuccessIcon } from "../icons/IconsComponents";
 
@@ -23,6 +23,7 @@ interface TooltipProps {
   delay?: number;
   onClickEvent?: () => void;
   position?: "start" | "end";
+  mouseOver?: Dispatch<SetStateAction<boolean>>;
 }
 
 //todo add transition
@@ -38,7 +39,8 @@ const CustomTooltip = ({
                    showOnClick,
                    onClickEvent,
                    delay,
-                   position
+                   position,
+                   mouseOver,
                  }: TooltipProps) => {
 
   const [isOpened, setIsOpened] = useState(false);
@@ -48,11 +50,13 @@ const CustomTooltip = ({
     if (showOnClick) return;
     
     setIsOpened(true);
+    mouseOver && mouseOver(true)
   };
 
   const closeOnMouseLeave = () => {
     if (showOnClick) return;
     setIsOpened(false);
+    mouseOver && mouseOver(false);
   };
 
   const openOnClick = () => {
@@ -107,9 +111,9 @@ const CustomTooltip = ({
       <div
         onMouseOver={openOnHover}
         className={`${isOpened ? "block" : "hidden"} ease-in duration-300 z-40`}>
-        <div className={`absolute px-3 top-[17px] left-[-18px] ${position === "end" && "left-[-19px] top-[13px]"} ${position === "start" && "left-[-19px] top-[13px]"} ${extraClasses?.arrowStyles}`}><BlackPyramidIcon width={28} height={24}/></div>
+        <div className={`absolute px-3 top-[17px] left-[-18px] ${position === "end" && "!left-[-19px] !top-[13px]"} ${position === "start" && "!left-[-19px] !top-[13px]"} ${extraClasses?.arrowStyles}`}><BlackPyramidIcon width={28} height={24}/></div>
         <div
-          className={`absolute w-[456px] ${isWarning ? "bg-bananaBoat" : "bg-[#000000]"} py-[15px] px-[15px] top-[41px] left-[38px] ${position === "end" && "left-[-20px] top-[36px]"} ${position === "start" && "left-[-420px] top-[36px]"} ${extraClasses?.tooltipContainer}`}>
+          className={`absolute w-[456px] ${isWarning ? "bg-bananaBoat" : "bg-[#000000]"} py-[15px] px-[15px] top-[41px] z-40 left-[38px] ${position === "end" && "!left-[-20px] !top-[36px]"} ${position === "start" && "!left-[-420px] !top-[36px]"} ${extraClasses?.tooltipContainer}`}>
           {header && <span
             className={`${isWarning ? "text-nulnOil" : "text-white"} font-bold ${isWarning ? "text-[17px]" : "text-lg"} ${extraClasses?.tooltipHeader}`}>{header}</span>}
           <span className={`${isWarning ? "text-nulnOil" : "text-americanSilver"} text-[17px] flex gap-2 items-center h-full font-medium ${extraClasses?.tooltipText}`}>

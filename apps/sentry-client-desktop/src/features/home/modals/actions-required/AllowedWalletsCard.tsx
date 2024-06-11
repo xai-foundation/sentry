@@ -3,15 +3,18 @@ import {SquareCard} from "@/components/SquareCard";
 import {IoMdCloseCircle} from "react-icons/io";
 import {AiFillCheckCircle} from "react-icons/ai";
 import {useSetAtom} from "jotai";
-import {PrimaryButton} from "@sentry/ui";
+import {PrimaryButton, SideBarTooltip} from "@sentry/ui";
 import {useStorage} from "@/features/storage";
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
+import { HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 
 export function AllowedWalletsCard() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {data} = useStorage();
 
 	return (
+		<div className="relative">
+		<div className="bg-primaryBorderColor global-cta-clip-path p-[1px]">
 		<SquareCard className="bg-secondaryBgColor global-cta-clip-path">
 			{data && data.whitelistedWallets ? (
 				<IconLabel
@@ -26,7 +29,6 @@ export function AllowedWalletsCard() {
 						icon={IoMdCloseCircle}
 						color="#FFC53D"
 						title="Allowed Wallets not selected"
-						tooltip={true}
 						header={"Wallets must be allowed to KYC"}
 						body={"By allowing a wallet, you are accepting the responsibility of paying the gas fee associated with submitting an assertion and claiming rewards."}
 						position={"end"}
@@ -48,5 +50,18 @@ export function AllowedWalletsCard() {
 				</>
 			)}
 		</SquareCard>
+		</div>
+		<div className="absolute top-[18px] left-[265px]">
+		<SideBarTooltip
+            header={"Wallets must be allowed to KYC"}
+            body={"By allowing a wallet, you are accepting the responsibility of paying the gas fee associated with submitting an assertion and claiming rewards."}
+            position={"end"}
+			sideOffset={20}
+			height={50}
+        >
+           <HelpIcon width={14} height={14} />
+        </SideBarTooltip>		
+		</div>
+		</div>
 	);
 }

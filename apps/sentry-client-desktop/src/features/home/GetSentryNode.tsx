@@ -9,17 +9,17 @@ import img from '@/assets/images/dashboard-card.png';
 const body = [
 	{
 		icon: <RiKey2Line className="w-8 h-8 text-[#FF012F] mb-2"/>,
-		header: "Purchase keys",
+		header: "PURCHASE KEYS",
 		body: "The more keys you own, the more esXAI you will earn",
 	},
 	{
 		icon: <FiGitCommit className="w-8 h-8 text-[#FF012F] mb-2"/>,
-		header: "Keep your node running",
+		header: "KEEP YOUR NODE RUNNING",
 		body: "Your node will connect you to Xai network challenges",
 	},
 	{
 		icon: <FiGift className="w-8 h-8 text-[#FF012F] mb-2"/>,
-		header: "Earn esXAI",
+		header: "EARN esXAI",
 		body: "Over time you will earn esXAI from network challenges",
 	},
 ];
@@ -32,7 +32,7 @@ export function GetSentryNode() {
 			return (
 				<div
 					key={`connect-wallet-content-${i}`}
-					className="w-[272px] flex flex-col mr-[75px]"
+					className="flex flex-col mr-[75px] max-w-[235px]"
 				>
 					{item.icon}
 					<p className="text-xl text-white font-bold mt-2">{item.header}</p>
@@ -54,16 +54,16 @@ export function GetSentryNode() {
 				<span className="text-lg text-primaryText mt-4">
 					Purchase a key to begin earning esXAI
 				</span>
-				<div className="flex items-center justify-start mt-5 gap-7 mb-[171px]">
+				<div className="flex items-center justify-start mt-5 gap-7 mb-[140px]">
 					<div className="max-w-[202px]">
 					<PrimaryButton
 						onClick={() => setDrawerState(DrawerView.BuyKeys)}
 						btnText="Purchase Key"
-						className="w-[202px] text-[20px] bg-btnPrimaryBgColor !global-cta-clip-path text-[#000000] uppercase !py-1  hover:text-btnPrimaryBgColor hover:bg-white"
+						className="w-[202px] text-[20px] bg-btnPrimaryBgColor !global-cta-clip-path text-[#000000] uppercase !py-1 hover:text-btnPrimaryBgColor hover:bg-white"
 					/>
                     </div>
 					<p
-						className="text-xl text-[#F30919] cursor-pointer font-semibold"
+						className="text-xl text-[#F30919] cursor-pointer font-semibold hover:text-white duration-200 easy-in"
 						onClick={() => setDrawerState(DrawerView.ViewKeys)}
 					>
 						I already own a key
@@ -74,7 +74,7 @@ export function GetSentryNode() {
 					{getBody()}
 				</div>
 			</div>
-            <img src={img} alt="logo" className="fixed w-full scale-[1.2] translate-x-[7%] translate-y-[-10%] h-full left-0 object-cover" />
+            <img src={img} alt="logo" className="fixed w-full scale-[1.2] translate-x-[7%] translate-y-[-40%] max-h-full left-0 object-cover" />
 		</div>
 	);
 }

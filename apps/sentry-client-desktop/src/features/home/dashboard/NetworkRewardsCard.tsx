@@ -3,7 +3,7 @@ import {chainStateAtom, useChainDataRefresh} from "@/hooks/useChainDataWithCallb
 import {useCombinedOwners} from "@/hooks/useCombinedOwners";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {useGetWalletBalance} from "@/hooks/useGetWalletBalance";
-import {Tooltip} from "@sentry/ui";
+import {CustomTooltip} from "@sentry/ui";
 import {AiFillWarning} from "react-icons/ai";
 import {ethers} from "ethers";
 import {Card} from "@/features/home/cards/Card";
@@ -12,6 +12,7 @@ import {FaCircleCheck} from "react-icons/fa6";
 import {MdRefresh} from "react-icons/md";
 import { HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import { BiLoaderAlt } from "react-icons/bi";
+import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 
 export function NetworkRewardsCard() {
 	const {owners, licensesList} = useAtomValue(chainStateAtom);
@@ -71,18 +72,19 @@ export function NetworkRewardsCard() {
 		: null;
 
 	return (
-		<Card width={"300px"} height={"670px"} customClasses={"bg-primaryBgColor shadow-default"}>
+		<Card width={"300px"} height={"670px"} customClasses={"bg-primaryBgColor shadow-default overflow-visible z-10"}>
 
 			<div className="flex flex-row justify-between items-center py-4 px-6 border-b border-primaryBorderColor">
 				<div className="flex flex-row items-center gap-1 text-white text-xl font-bold">
 					<h2 className="font-medium">Network Rewards</h2>
-					<Tooltip
+					<CustomTooltip
 						header={"Generate Network Rewards esXAI"}
-						body={"The more Keys running on a node, the more esXAI rewards are accrued. To claims rewards, the node must be running, the Sentry Wallet must be funded, and the wallets containing the Keys must have passed KYC."}
-						position={"end"}
+						content={"The more Keys running on a node, the more esXAI rewards are accrued. To claims rewards, the node must be running, the Sentry Wallet must be funded, and the wallets containing the Keys must have passed KYC."}
+						position={"start"}
+						extraClasses={{tooltipText: "!text-secondaryText"}}
 					>
 						<HelpIcon width={14} height={14}/>
-					</Tooltip>
+					</CustomTooltip>
 				</div>
 
 				<div className="flex flex-row justify-between items-center gap-1 text-[#A3A3A3]">
@@ -104,13 +106,16 @@ export function NetworkRewardsCard() {
 
 						<div className="flex items-center gap-1 text-lg text-secondaryText mb-[6px]">
 							<h3 className="font-medium">esXAI balance</h3>
-							<Tooltip
+							<CustomTooltip
 								header={"Claimed esXAI will appear in your wallet balance.\n"}
-								body={"Once you pass KYC for a wallet, any accrued esXAI for that wallet will be claimed and reflected in your esXAI balance."}
-								position={"end"}
+								content={"Once you pass KYC for a wallet, any accrued esXAI for that wallet will be claimed and reflected in your esXAI balance."}
+								position={"start"}
+								extraClasses={{
+									group: "z-auto",
+								}}
 							>
 								<HelpIcon width={14} height={14}/>
-							</Tooltip>
+							</CustomTooltip>
 						</div>
 					</div>
 
@@ -132,13 +137,16 @@ export function NetworkRewardsCard() {
 					<div className="flex justify-between items-center text-[#A3A3A3]">
 						<div className="flex items-center gap-1 text-lg text-secondaryText">
 							<h3 className="font-medium">Accrued esXAI</h3>
-							<Tooltip
+							<CustomTooltip
 								header={"Each key will accrue esXAI. Pass KYC to claim."}
-								body={"This value is the sum of all esXAI accrued for the selected wallet. If esXAI has already been claimed, it will appear in esXAI balance."}
-								position={"end"}
+								content={"This value is the sum of all esXAI accrued for the selected wallet. If esXAI has already been claimed, it will appear in esXAI balance."}
+								position={"start"}
+								extraClasses={{
+									group: "z-auto",
+								}}
 							>
 								<HelpIcon width={14} height={14}/>
-							</Tooltip>
+							</CustomTooltip>
 						</div>					
 					</div>
 					<div className="flex items-center font-semibold">
@@ -153,16 +161,15 @@ export function NetworkRewardsCard() {
 				<div className="px-6 py-3 border-b border-primaryBorderColor">
 					<div className="flex items-center gap-1 text-lg text-secondaryText">
 						<h3 className="font-medium">Am I accruing esXAI?</h3>
-						<Tooltip
+						<CustomTooltip
 							header={"To be accruing esXAI, the following must be true:"}
-							body={"1) Your node must be running"}
-							body2={"2) Your Sentry Wallet must be funded with at least 0.005 AETH"}
-							body3={"3) At least one wallet containing a Key must be assigned to your Sentry"}
-							width={500}
-							position={"end"}
+							content={<>{"1) Your node must be running"} <br/> {"2) Your Sentry Wallet must be funded with at least 0.005 AETH" } <br/> {"3) At least one wallet containing a Key must be assigned to your Sentry"}</>}
+							position={"start"}
+							extraClasses={{ tooltipContainer: '!w-[500px]', group: 'z-auto' }}
+							
 						>
 							<HelpIcon width={14} height={14}/>
-						</Tooltip>
+						</CustomTooltip>
 					</div>
 					<div className="flex items-center font-semibold">
 						<p className="text-2xl font-bold text-white">
@@ -173,15 +180,19 @@ export function NetworkRewardsCard() {
 
 				<div className="px-6 py-3 border-b border-primaryBorderColor">
 					<div className="flex items-center gap-1 text-lg text-secondaryText">
-						<h3 className="font-medium max-w-[230px]"><span className="mr-1">How frequently will I accrue rewards?</span>
-						<Tooltip
+					<h3 className="relative font-medium max-w-[230px]">
+					<span className="mr-1">How frequently will I accrue rewards?</span>
+					<div className="absolute top-[35px] left-[72px]">
+						<CustomTooltip
 							header={"esXAI accrued is probabilistic"}
-							body={"The more Keys you own, the more frequently you will accrue esXAI. The formula to calculate the average number of wins per month is [number of Keys] x 7."}
-							position={"end"}
+							content={"The more Keys you own, the more frequently you will accrue esXAI. The formula to calculate the average number of wins per month is [number of Keys] x 7."}
+							position={"start"}
+							extraClasses={{ group: 'z-auto' }}
 						>
 							<HelpIcon width={14} height={14}/>
-						</Tooltip>
-						</h3>
+						</CustomTooltip>
+					</div>
+					</h3>
 					</div>
 					<div className="flex items-center">
 						<div>
@@ -197,33 +208,31 @@ export function NetworkRewardsCard() {
 
 			</div>
 			{accruing && !kycRequired && (
-				<div
-					className="absolute bottom-4 left-0 right-0 m-auto max-w-[268px] flex justify-center items-center gap-1 font-bold text-lg text-successText bg-successBgColor px-4 py-3 global-cta-clip-path">
+				<BaseCallout extraClasses={{ calloutWrapper: "absolute bottom-4 left-0 right-0 m-auto max-w-[258px] flex justify-center items-center gap-1 !font-bold text-lg !text-successText !bg-successBgColor p global-cta-clip-path", calloutFront: "!h-[78px]" }} >
 					<div className="flex justify-center items-start gap-3">
 						<FaCircleCheck color={"#3DD68C"} size={25} style={{minWidth: "20px"}}/>
 						You are accruing and claiming esXAI
 					</div>
-				</div>
+				</BaseCallout>
 			)}
 
 			{accruing && kycRequired && (
-				<div
-					className="absolute bottom-3 left-6 m-auto max-w-[268px] flex justify-center items-center gap-1 text-lg font-bold text-primaryTooltipColor bg-[#FFC53D1A] px-4 py-3 global-cta-clip-path">
+				<BaseCallout
+					extraClasses={{ calloutWrapper: "absolute bottom-3 left-5 m-auto max-w-[258px] flex justify-center items-center gap-1 text-lg !font-bold !text-primaryTooltipColor !bg-[#FFC53D1A] global-cta-clip-path", calloutFront: "!h-[78px]" }}>
 					<div className="flex justify-center items-start gap-2">
 						<AiFillWarning color={"#FFC53D"} size={25} style={{minWidth: "20px"}}/>
 						You are accruing but not claiming esXAI
 					</div>
-				</div>
+				</BaseCallout>
 			)}
 
 			{!accruing && kycRequired && (
-				<div
-					className="absolute bottom-3 left-6 m-auto max-w-[268px] flex justify-center items-center gap-1 text-lg font-bold text-primaryTooltipColor bg-[#FFC53D1A] px-4 py-3 global-cta-clip-path">
+				<BaseCallout extraClasses={{ calloutWrapper: "absolute bottom-3 left-5 m-auto max-w-[258px] flex justify-center items-center gap-1 text-lg !font-bold !text-primaryTooltipColor !bg-[#FFC53D1A] global-cta-clip-path", calloutFront: "!h-[78px]" }}>
 					<div className="flex justify-center items-start gap-2">
 						<AiFillWarning color={"#FFC53D"} size={25} style={{minWidth: "20px"}}/>
 						You are not accruing or claiming esXAI
 					</div>
-				</div>
+				</BaseCallout>
 			)}
 		</Card>
 	);
