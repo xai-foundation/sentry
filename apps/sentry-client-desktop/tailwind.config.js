@@ -29,6 +29,11 @@ module.exports = {
       primaryWarningText: "#FFC53D",
       primaryCalloutWarning: "#FFC53D1A",
       btnSecondaryText: "#1A1819",
+      checkBoxCheckedPrimaryColor: "#FF0030",
+      checkboxPrimaryBg: "#525252",
+      tertiaryBorderColor: "#524D4F",
+      inputPrimaryHoverBg: "#FF2C3A",
+      primaryWarningBg: "#FFC53D"
     },
     extend: {},
   },

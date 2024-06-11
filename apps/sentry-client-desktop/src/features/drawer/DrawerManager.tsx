@@ -25,7 +25,7 @@ export function DrawerManager() {
 
 	return (
 		<div
-			className={classNames("fixed right-0 w-[28rem] min-w-[28rem] h-screen z-40 bg-primaryBgColor border border-gray-200 overflow-y-scroll", {
+			className={classNames("fixed right-0 w-[28rem] min-w-[28rem] h-screen z-40 bg-primaryBgColor overflow-y-scroll shadow-default", {
 				"hidden": drawerState === null,
 			})}
 		>

@@ -279,3 +279,4 @@ export const BlackPyramidIcon = ({ width = 17, height = 17 }) => {
     </svg>
   );
 };
+
