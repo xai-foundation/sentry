@@ -18,7 +18,7 @@ export const CTAButton = ({
   showIcon,
 }: CTAButtonProps) => {
   const disabledStyles = isDisabled
-    ? "!bg-[#2A2828] !text-[#433F3F] text-bold"
+    ? "!bg-[#2A2828] !text-americanSilver text-bold"
     : "";
 
   return (

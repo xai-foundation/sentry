@@ -53,6 +53,7 @@ export default function NavbarComponent() {
 					onOpen={open}
 					address={address}
 					size="md"
+					iconExtraClasses="fill-nulnOil"
 					extraClasses="lg:max-h-[54px] max-h-[40px] h-full lg:px-[20px] px-[14px] lg:py-[16px] py-[9px]"
 				/>
 				{isTestnet && <>

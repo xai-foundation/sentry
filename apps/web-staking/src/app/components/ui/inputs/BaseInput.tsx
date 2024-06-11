@@ -35,7 +35,7 @@ interface InputProps {
 const Input = ({
                  name,
                  placeholder,
-                 placeholderColor = "placeholder-americanSilver",
+                 placeholderColor = "placeholder-elementalGrey",
                  onChange,
                  value,
                  label,

@@ -202,7 +202,7 @@ const PoolDetailsComponent = ({
             value={name}
             label="Pool name*"
             placeholder={PLACEHOLDERS.NAME}
-            placeholderColor="placeholder-dugong text-lg"
+            placeholderColor="text-lg"
             size={InputSizes.lg}
             isInvalid={showErrors && (errorMessage.name.length > 0 || name.length < 5)}
             onChange={(e) => handleChangeDetails(e, "name")}
@@ -234,7 +234,7 @@ const PoolDetailsComponent = ({
             label="Pool logo"
             labelText={POOL_LOGO_TEXT}
             placeholder="Enter image URL here"
-            placeholderColor="placeholder-dugong text-lg"
+            placeholderColor="text-lg"
             value={logoUrl}
             size={InputSizes.lg}
             onChange={(e) => handleChangeDetails(e, "logoUrl")} />
@@ -254,7 +254,7 @@ const PoolDetailsComponent = ({
                 value={trackerName}
                 label=""
                 placeholder="Enter tracker name here"
-                placeholderColor="placeholder-dugong text-lg"
+                placeholderColor="text-lg"
                 size={InputSizes.lg}
                 isInvalid={showErrors && errorMessage.trackerName.length > 0}
                 onChange={(e) => handleChangeDetails(e, "trackerName")}
@@ -272,7 +272,7 @@ const PoolDetailsComponent = ({
                 value={trackerTicker}
                 label=""
                 placeholder="Enter ticker here"
-                placeholderColor="placeholder-dugong text-lg"
+                placeholderColor="text-lg"
                 size={InputSizes.lg}
                 isInvalid={showErrors && errorMessage.trackerTicker.length > 0}
                 onChange={(e) => handleChangeDetails(e, "trackerTicker")}

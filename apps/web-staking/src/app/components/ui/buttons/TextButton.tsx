@@ -12,7 +12,7 @@ interface TextButtonProps {
 export const TextButton = ({ onClick, className, buttonText, isArrow, isDisabled, textClassName }: TextButtonProps) => {
   return (
     <button
-      className={`flex items-center rounded-none font-bold text-base p-2 text-hornetSting duration-200 ease-in global-clip-path hover:text-white ${className} text-button`}
+      className={`flex items-center rounded-none font-bold text-base p-2 text-hornetSting duration-200 ease-in global-clip-path hover:text-white disabled:text-elementalGrey disabled:bg-chromaphobicBlack ${className} text-button`}
       type="submit"
       onClick={onClick}
       disabled={isDisabled}

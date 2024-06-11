@@ -826,7 +826,7 @@ export const getUnstakeRequest = async (network: NetworkKey, walletAddress: stri
 }
 
 let TIER_THRESHOLDS: { nextTierRequirement: number, minValue: number, reward: string }[] = [];
-export const getTierTresholds = async (network: NetworkKey) => {
+export const getTierThresholds = async (network: NetworkKey) => {
 
 	if (TIER_THRESHOLDS.length === 0) {
 		const web3Instance = getWeb3Instance(network);

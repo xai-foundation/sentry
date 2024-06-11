@@ -25,9 +25,6 @@ export const PrimaryButton = ({
                                 spinner,
                                 icon
 }: PrimaryButtonProps) => {
-  const disabledStyles = isDisabled
-    ? "!bg-[#2A2828] !text-[#433F3F] text-bold"
-    : "";
 
   const getSizeStyles = () => {
     switch (size) {
@@ -45,21 +42,21 @@ export const PrimaryButton = ({
   const getColorStyles = () => {
     switch (colorStyle) {
       case "primary":
-        return "bg-hornetSting text-whisperWhite hover:bg-white hover:text-hornetSting";
+        return "bg-hornetSting text-nulnOil hover:bg-white hover:text-crispChristmasCranberries disabled:text-elementalGrey disabled:bg-chromaphobicBlack";
       case "secondary":
-        return "bg-white text-hornetSting hover:bg-hornetSting hover:text-whisperWhite";
+        return "bg-white text-hornetSting hover:bg-hornetSting hover:text-whisperWhite disabled:text-elementalGrey disabled:bg-chromaphobicBlack";
       case "outline":
-        return "bg-nulnOil text-hornetSting hover:bg-hornetSting hover:text-whisperWhite";
+        return "bg-nulnOil text-hornetSting hover:bg-hornetSting hover:text-whisperWhite disabled:text-elementalGrey hover:disabled:bg-nulnOil";
       default:
-        return "bg-hornetSting text-whisperWhite hover:bg-white hover:text-hornetSting";
+        return "bg-hornetSting text-nulnOil hover:bg-white hover:text-crispChristmasCranberries disabled:text-elementalGrey disabled:bg-chromaphobicBlack";
     }
   };
 
   return (
     <div
-      className={`${colorStyle === "outline" && !isDisabled && `p-[1px] bg-hornetSting global-input-clip-path`} ${wrapperClassName}`}>
+      className={`${colorStyle === "outline" && !isDisabled ? `p-[1px] bg-hornetSting global-input-clip-path` : isDisabled ? "p-[1px] global-input-clip-path bg-chromaphobicBlack" : ""} ${wrapperClassName}`}>
       <button
-        className={`flex items-center justify-center rounded-none text-[18px] font-bold ${getSizeStyles()} ${getColorStyles()} duration-200 ease-in global-input-clip-path ${className} ${disabledStyles}`}
+        className={`flex items-center justify-center rounded-none text-[18px] font-bold ${getSizeStyles()} ${getColorStyles()} duration-200 ease-in global-input-clip-path ${className}`}
         type="submit"
         onClick={() => {onClick(), GAevent("buttonClicked", "user_interaction", btnText);}}
         disabled={isDisabled}

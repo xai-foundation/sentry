@@ -79,7 +79,7 @@ const RewardComponent = ({
           name="owner"
           label="Pool owner*"
           placeholder="0"
-          placeholderColor="placeholder-dugong text-lg"
+          placeholderColor="text-lg"
           size={InputSizes.lg}
           isInvalid={showErrors && (Number(owner) > maxBucketSharest[0] || sum !== 100)}
           onChange={handleChange}
@@ -115,7 +115,7 @@ const RewardComponent = ({
           name="staker"
           label="esXAI staker*"
           placeholder="0"
-          placeholderColor="placeholder-dugong text-lg"
+          placeholderColor="text-lg"
           size={InputSizes.lg}
           isInvalid={showErrors && (Number(staker) > maxBucketSharest[2] || sum !== 100)}
           onChange={handleChange}

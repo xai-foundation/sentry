@@ -202,7 +202,8 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
 
             <div
               className="flex sm:flex-col-reverse lg:flex-row justify-between xl:gap-0 lg:gap-[5px] gal-0 w-full py-5 px-6 bg-nulnOilBackground shadow-default">
-              <PrimaryButton btnText="Cancel" onClick={() => router.back()} colorStyle="outline" className="sm:w-full lg:w-[205px] uppercase" wrapperClassName=""  />
+              <PrimaryButton btnText="Cancel" onClick={() => router.back()} colorStyle="outline"
+                             className="sm:w-full lg:w-[205px] uppercase" wrapperClassName="" />
               <PrimaryButton
                 btnText="Save and continue"
                 onClick={handleClick}

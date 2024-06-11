@@ -11,7 +11,6 @@ import {
 import { PoolInfo, TierInfo } from "@/types/Pool";
 import { iconType, POOL_DATA_ROWS } from "../dashboard/constants/constants";
 import { formatCurrencyWithDecimals, showUpToFourDecimals } from "@/app/utils/formatCurrency";
-import { useRouter } from "next/navigation";
 import { BaseCallout } from "@/app/components/ui";
 import { WarningIcon } from "@/app/components/icons/IconsComponent";
 import { useAccount } from "wagmi";
@@ -47,27 +46,26 @@ const PoolTierCard = ({ poolInfo, tiers }: PoolTierCardProps) => {
 
   const [tierMessage, setTierMessage] = useState("");
 
-  const createTierMessage = async () => {
-    if (tier.iconText == "Diamond") {
-      return "Pool has reached the final tier!";
-    }
-
-    if (poolInfo.totalStakedAmount >= poolInfo.maxStakedAmount) {
-      const keysLeft = await calculateKeysToNextTier(poolInfo.totalStakedAmount, poolInfo.keyCount, tier, tiers, chainId);
-      if (tierByStaked.index !== tier.index) {
-        return `Stake ${keysLeft} more ${keysLeft > 1 ? `keys` : `key`} to reach ${POOL_DATA_ROWS[tierByStaked.index - 1].nextTierName}`;
-      }
-      return `Stake more keys for higher esXAI staking capacity.`;
-    }
-
-    if (amountToUpgrade > 0) {
-      return `Stake ${showUpToFourDecimals(formatCurrencyWithDecimals.format(amountToUpgrade))} more esXAI to reach the next tier.`;
-    }
-
-    return "Maximum esXAI capacity reached, stake more keys.";
-  };
-
   useEffect(() => {
+    const createTierMessage = async () => {
+      if (tier.iconText == "Diamond") {
+        return "Pool has reached the final tier!";
+      }
+
+      if (poolInfo.totalStakedAmount >= poolInfo.maxStakedAmount) {
+        const keysLeft = await calculateKeysToNextTier(poolInfo.totalStakedAmount, poolInfo.keyCount, tier, tiers, chainId);
+        if (tierByStaked.index !== tier.index) {
+          return `Stake ${keysLeft} more ${keysLeft > 1 ? `keys` : `key`} to reach ${POOL_DATA_ROWS[tierByStaked.index - 1].nextTierName}`;
+        }
+        return `Stake more keys for higher esXAI staking capacity.`;
+      }
+
+      if (amountToUpgrade > 0) {
+        return `Stake ${showUpToFourDecimals(formatCurrencyWithDecimals.format(amountToUpgrade))} more esXAI to reach the next tier.`;
+      }
+
+      return "Maximum esXAI capacity reached, stake more keys.";
+    };
     createTierMessage().then((message) => setTierMessage(message));
   }, [tierByStaked]);
 
@@ -89,8 +87,8 @@ const PoolTierCard = ({ poolInfo, tiers }: PoolTierCardProps) => {
         </span>
         <div>
           <span className="text-[40px] text-white leading-none font-bold uppercase">
-          {tier.iconText}
-        </span>
+            {tier.iconText}
+          </span>
           <span className="block text-lg font-medium text-elementalGrey">
             {tier.reward} Reward Probability
           </span>
@@ -104,7 +102,7 @@ const PoolTierCard = ({ poolInfo, tiers }: PoolTierCardProps) => {
             </span>
             <span className="block">
               {tierByStaked.index != tier.index ? "Staked esXAI balance exceeds tier requirements." : "Staked esXAI balance exceeds pool capacity."} Stake
-            more keys to increase the pool capacity.
+              more keys to increase the pool capacity.
             </span>
           </div>
         </BaseCallout>}

@@ -24,7 +24,7 @@ export function LinkComponent({
 }: LinkComponentProps) {
 
   const selectedStyles = link.split("?")[0] == activePage ?
-    "bg-hornetSting border-palePearl border-1 global-clip-path" : "";
+    "bg-hornetSting border-palePearl border-1 global-clip-path !text-nulnOil" : "";
 
 
   // url === link.split("?")[0] || url.includes(urlActivePath!)

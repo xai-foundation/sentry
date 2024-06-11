@@ -1,6 +1,5 @@
 import { ChangeEventHandler } from "react";
 import { Textarea } from "@nextui-org/react";
-import { ErrorCircle } from "../icons/IconsComponent";
 
 interface TextareaProps {
   label?: string;
@@ -36,7 +35,7 @@ export const PoolTextarea = ({
           isInvalid ? "border-red" : ""
         } p-[1px] ${isInvalid ? "data-[hover=true]:bg-bananaBoat group-data-[focus=true]:bg-bananaBoat" : "data-[hover=true]:bg-hornetSting group-data-[focus=true]:bg-hornetSting"}`,
         label: `text-lg !text-americanSilver font-bold pb-3 `,
-        input: "text-lg !text-americanSilver !placeholder-dugong pl-[10px] !bg-nulnOil global-input-clip-path py-2",
+        input: "text-lg !text-americanSilver !placeholder-elementalGrey pl-[10px] !bg-nulnOil global-input-clip-path py-2",
         errorMessage: "absolute text-[#ED5F00] text-base font-normal",
         helperWrapper: "p-0",
       }}

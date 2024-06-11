@@ -55,9 +55,9 @@ const PoolComponent = () => {
                     btnText={"Create new pool"}
                     className="!uppercase w-full group md:mt-0 mt-[12px]"
                     icon={PlusIcon({
-                      fill: "#fff",
-                      stroke: "#fff",
-                      pathClassName: "group-hover:fill-hornetSting group-hover:stroke-hornetSting ease-in duration-200"
+                      fill: "#140F0F",
+                      stroke: "#140F0F",
+                      pathClassName: "group-hover:fill-crispChristmasCranberries group-hover:stroke-crispChristmasCranberries ease-in duration-200"
                     })}
                   />
                 </div>
@@ -89,9 +89,9 @@ const PoolComponent = () => {
                   btnText={"Create pool"}
                   className="!uppercase global-double-clip-path-15px group w-[182px]"
                   icon={PlusIcon({
-                    fill: "#fff",
-                    stroke: "#fff",
-                    pathClassName: "group-hover:fill-hornetSting group-hover:stroke-hornetSting ease-in duration-200"
+                    fill: "#140F0F",
+                    stroke: "#140F0F",
+                    pathClassName: "group-hover:fill-crispChristmasCranberries group-hover:stroke-crispChristmasCranberries ease-in duration-200"
                   })}
                 />
               </div>

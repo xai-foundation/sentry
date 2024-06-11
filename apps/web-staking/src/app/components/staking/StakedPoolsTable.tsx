@@ -47,7 +47,7 @@ const StakedPoolsTable = (
     userPools: PoolInfo[],
     v1Stake: number,
     v1MaxStake: number,
-    tiers: Array<TierInfo & { icon?: iconType }>
+    tiers?: Array<TierInfo & { icon?: iconType }>
     showTableKeys: boolean;
     maxKeyPerPool: number;
   }

@@ -17,16 +17,16 @@ const MainToggle = ({firstBtnText, secondBtnText, showTableKeys, onToogleShowKey
         onClick={() => onToogleShowKeys(false)}
         btnText={firstBtnText}
         className={`${
-          showTableKeys && "!bg-[#272123] !hover:bg-[#272123] !text-americanSilver"
-        } !font-semibold ${customClass}`}
+          showTableKeys && "!bg-[#272123] !hover:bg-[#272123] !text-elementalGrey"
+        } !font-semibold text-nulnOil ${customClass}`}
         size="sm"
       />
       <PrimaryButton
         onClick={() => onToogleShowKeys(true)}
         btnText={secondBtnText}
         className={`${
-          !showTableKeys && "!bg-[#272123] !hover:bg-[#272123] !text-americanSilver"
-        } !font-semibold ${customClass}`}
+          !showTableKeys && "!bg-[#272123] !hover:bg-[#272123] !text-elementalGrey"
+        } !font-semibold text-nulnOil ${customClass}`}
         size="sm"
       />
     </div>

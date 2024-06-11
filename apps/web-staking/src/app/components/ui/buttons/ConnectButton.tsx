@@ -7,6 +7,7 @@ interface ConnectionButtonProps {
   size: "sm" | "md" | "lg";
   isFullWidth?: boolean;
   extraClasses?: string;
+  iconExtraClasses?: string;
 }
 
 export const ConnectButton = ({
@@ -14,7 +15,8 @@ export const ConnectButton = ({
   address,
   isFullWidth,
   size = "md",
-                                extraClasses
+                                extraClasses,
+                                iconExtraClasses
 }: ConnectionButtonProps) => {
   const getSizeStyles = () => {
     switch (size) {
@@ -31,13 +33,13 @@ export const ConnectButton = ({
 
   return (
     <button
-      className={`flex group items-center rounded-none ${getSizeStyles()} global-clip-btn font-bold  bg-hornetSting text-whisperWhite text-[18px] duration-200 ease-in hover:bg-white hover:text-hornetSting ${
+      className={`flex group items-center rounded-none ${getSizeStyles()} global-clip-btn font-bold  bg-hornetSting text-nulnOil text-[18px] duration-200 ease-in hover:bg-white hover:text-crispChristmasCranberries ${
         isFullWidth ? "!w-full" : ""
       } 
       ${
         address &&
         "bg-hornetSting text-lightBlackDarkWhite hover:bg-caparolGrey font-normal"
-      } ${extraClasses}`}
+      } disabled:text-elementalGrey ${extraClasses}`}
       type="submit"
       onClick={() => {
         onOpen(),
@@ -45,7 +47,7 @@ export const ConnectButton = ({
       }}
     >
       <div className={`w-full flex items-center gap-[12px] `}>
-        {address && <WalletIcon />}
+        {address && <WalletIcon className={iconExtraClasses} />}
         <span className={`w-full ${address ? "font-semibold" : "font-bold"}`}>
           {address
             ? `${address.slice(0, 6)}...${address.slice(-4)}`

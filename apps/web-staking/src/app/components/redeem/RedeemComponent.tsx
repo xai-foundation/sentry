@@ -229,7 +229,7 @@ export default function RedeemComponent() {
 								<PrimaryButton
 									onClick={() => setReview(true)}
 									btnText="Continue"
-									className="w-full disabled:!text-dugong mb-[50px] uppercase"
+									className="w-full mb-[50px] uppercase"
 									wrapperClassName="w-full"
 									isDisabled={checkDisabledButton}
 								/>
