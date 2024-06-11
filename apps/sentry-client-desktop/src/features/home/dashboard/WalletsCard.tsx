@@ -11,6 +11,7 @@ import { HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import { useOperatorRuntime } from "@/hooks/useOperatorRuntime";
 import { RiKey2Line } from "react-icons/ri";
 import { useState } from "react";
+import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 
 export function WalletsCard() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -32,6 +33,7 @@ export function WalletsCard() {
 						content={"If you own keys in additional wallets, add them to the client."}
 						position={"end"}
 						mouseOver={setMouseOverTooltip}
+						extraClasses={{tooltipText: "!text-secondaryText"}}
 					>
 						<HelpIcon width={14} height={14} fill="#A19F9F" />
 					</CustomTooltip>
@@ -76,14 +78,13 @@ export function WalletsCard() {
 
 
 			{sentryRunning && kycRequired && (
-				<div
-					className="absolute bottom-5 left-6 m-auto w-[288px] flex justify-center items-center gap-1 text-lg font-bold text-primaryTooltipColor bg-[#FFC53D1A] px-4 py-3 global-cta-clip-path">
+				<BaseCallout
+					extraClasses={{ calloutWrapper: "absolute bottom-5 left-6 m-auto w-[288px] !p-0 flex justify-center items-center gap-1 text-lg font-bold text-primaryTooltipColor bg-[#FFC53D1A] px-4 py-3 global-cta-clip-path", calloutFront: "!justify-start" }}>
 					<div className="flex justify-center items-center gap-2">
-						<AiFillWarning color={"#FFC53D"} size={25}/>
+						<AiFillWarning color={"#FFC53D"} size={23}/>
 						KYC required for {kycRequiredLength} wallet{kycRequiredLength === 1 ? "" : "s"}
-						<HelpIcon width={14} height={14} fill="#FFC53D"/>
 					</div>
-				</div>
+				</BaseCallout>
 			)}
 		</Card>
 	)

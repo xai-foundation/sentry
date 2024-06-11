@@ -97,7 +97,7 @@ const CustomTooltip = ({
 
   return (
     <div
-      className={`relative ease-in duration-300 w-max ${showOnClick && "cursor-pointer"} ${extraClasses?.group}`}
+      className={`relative z-40 ease-in duration-300 w-max ${showOnClick && "cursor-pointer"} ${extraClasses?.group}`}
       onClick={openOnClick}
       onMouseLeave={closeOnMouseLeave}
       ref={menuRef}
