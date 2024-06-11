@@ -6,9 +6,10 @@ import {useEffect, useState} from "react";
 import {useStorage} from "@/features/storage";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {useOperator} from "@/features/operator";
-import {CloseIcon, HelpIcon, WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
+import {HelpIcon, WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
 import MainCheckbox from "@sentry/ui/dist/src/rebrand/checkboxes/MainCheckbox";
 import BaseCallout from "@sentry/ui/dist/src/rebrand/callout/BaseCallout";
+import {CloseIcon} from "../../../../../packages/ui/src/rebrand/icons/CloseIcon";
 
 export function WhitelistDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
