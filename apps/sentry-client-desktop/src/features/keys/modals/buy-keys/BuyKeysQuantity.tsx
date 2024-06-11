@@ -14,7 +14,7 @@ export function BuyKeysQuantity({quantity, setQuantity}: BuyKeysQuantityProps) {
 		<div>
 			<div className="w-full flex flex-col gap-4 px-6">
 				<div className="w-full flex flex-row items-center gap-2">
-					<span className="w-20 text-sm uppercase text-[#A3A3A3]">
+					<span className="w-20 text-lg uppercase text-white">
 						Quantity
 					</span>
 				</div>
@@ -24,6 +24,10 @@ export function BuyKeysQuantity({quantity, setQuantity}: BuyKeysQuantityProps) {
 						quantity={quantity}
 						setQuantity={setQuantity}
 						maxSupply={maxSupply}
+						wrapperClassName="!bg-secondaryBorderColor hover:!bg-btnPrimaryBgColor"
+						containerClassName="!bg-primaryBgColor"
+						btnClassName="hover:!bg-dropdownSecondaryBg"
+						inputClassName="!bg-primaryBgColor"
 					/>
 				</div>
 			</div>
