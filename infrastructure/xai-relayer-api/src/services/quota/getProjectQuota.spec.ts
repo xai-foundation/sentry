@@ -6,8 +6,6 @@ import { getProjectQuota } from "./getProjectQuota";
 
 const expect = chai.expect;
 
-const PROJECT_USER_REFILL_LIMIT = (1 * 10 ** 16).toString() //0.01 XAI
-const PROJECT_USER_REFILL_INTERVAL = 30 * 60 * 1000 //30 min
 const PROJECT_REFILL_LIMIT = (1 * 10 ** 17).toString()
 const PROJECT_REFILL_INTERVAL = 30 * 60 * 1000
 
@@ -34,9 +32,9 @@ describe("getProjectQuota", () => {
             lastRefillTimestamp: Date.now(),
             refillInterval: PROJECT_REFILL_INTERVAL,
             projectLimitWei: PROJECT_REFILL_LIMIT,
-            projectBalanceWei: (1 * 10 ** 17).toString(),
-            userLimitWei: PROJECT_USER_REFILL_LIMIT,
-            userRefillInterval: PROJECT_USER_REFILL_INTERVAL,
+            projectBalanceWei: PROJECT_REFILL_LIMIT,
+            userLimitWei: (1 * 10 ** 16).toString(),
+            userRefillInterval: 30 * 60 * 1000,
         });
 
         await newProject.save();
@@ -67,23 +65,22 @@ describe("getProjectQuota", () => {
         //Get current quota
         const projectQuota = await getProjectQuota(TEST_PROJECT_ID);
         expect(projectQuota).to.exist;
-        expect(projectQuota.balanceWei).equal(PROJECT_USER_REFILL_LIMIT);
+        expect(projectQuota.balanceWei).equal(PROJECT_REFILL_LIMIT);
         expect(projectQuota.nextRefillAmountWei).equal("0");
         expect(projectQuota.nextRefillTimestamp).to.be.closeTo(Date.now() + PROJECT_REFILL_INTERVAL, 100);
         expect(projectQuota.lastRefillTimestamp).to.be.closeTo(Date.now(), 100);
 
         //Update userProject, reduce balance
-        const updateProject = await ProjectModel.updateOne(
+        await ProjectModel.updateOne(
             { _id: TEST_PROJECT_ID },
             {
-                balanceWei: (BigInt(projectQuota.balanceWei) - BigInt((balanceReduceAmount).toString())),
+                balanceWei: (BigInt(projectQuota.balanceWei) - BigInt((balanceReduceAmount))).toString(),
             }
-        ).exec();
-        expect(updateProject).to.exist;
+        );
 
         const projectQuotaReducedBalance = await getProjectQuota(TEST_PROJECT_ID);
-        expect(projectQuotaReducedBalance.balanceWei).equal((BigInt(projectQuota.balanceWei) - BigInt((balanceReduceAmount).toString())).toString());
-        expect(projectQuotaReducedBalance.nextRefillAmountWei).equal((BigInt(PROJECT_REFILL_LIMIT) - BigInt((projectQuotaReducedBalance.balanceWei).toString())));
+        expect(projectQuotaReducedBalance.balanceWei).equal((BigInt(projectQuota.balanceWei) - BigInt((balanceReduceAmount))).toString());
+        expect(projectQuotaReducedBalance.nextRefillAmountWei).equal((BigInt(PROJECT_REFILL_LIMIT) - BigInt((projectQuotaReducedBalance.balanceWei))).toString());
         expect(projectQuotaReducedBalance.nextRefillTimestamp).to.be.closeTo(projectQuotaReducedBalance.lastRefillTimestamp + PROJECT_REFILL_INTERVAL, 100); //100 ms diff
         expect(projectQuotaReducedBalance.lastRefillTimestamp).equal(projectQuota.lastRefillTimestamp);
 
@@ -98,14 +95,13 @@ describe("getProjectQuota", () => {
         );
 
         const projectQuotaExpectedRefill = await getProjectQuota(TEST_PROJECT_ID);
-        expect(projectQuotaExpectedRefill.balanceWei).equal((BigInt(projectQuotaReducedBalance.balanceWei) + BigInt((balanceReduceAmount).toString())).toString());
-        expect(projectQuotaExpectedRefill.nextRefillAmountWei).equal((BigInt(PROJECT_REFILL_LIMIT) - BigInt((projectQuotaExpectedRefill.balanceWei).toString())));
+        expect(projectQuotaExpectedRefill.balanceWei).equal((BigInt(projectQuotaReducedBalance.balanceWei) + BigInt((balanceReduceAmount))).toString());
+        expect(projectQuotaExpectedRefill.nextRefillAmountWei).equal((BigInt(PROJECT_REFILL_LIMIT) - BigInt((projectQuotaExpectedRefill.balanceWei))).toString());
         expect(projectQuotaExpectedRefill.nextRefillTimestamp).to.be.closeTo(projectQuotaExpectedRefill.lastRefillTimestamp + PROJECT_REFILL_INTERVAL, 100); //100 ms diff
         expect(projectQuotaExpectedRefill.lastRefillTimestamp).equal(projectQuota.lastRefillTimestamp);
 
         expect(projectQuotaExpectedRefill.balanceWei).equal(PROJECT_REFILL_LIMIT);
         expect(projectQuotaExpectedRefill.nextRefillAmountWei).equal("0");
-
 
         const diffFromRecentRefill = updatedLastRefill % PROJECT_REFILL_INTERVAL;
         expect(projectQuotaExpectedRefill.nextRefillTimestamp).to.be.closeTo(Date.now() + (PROJECT_REFILL_INTERVAL - diffFromRecentRefill), 100); //100 ms diff
