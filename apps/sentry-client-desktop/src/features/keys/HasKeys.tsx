@@ -250,7 +250,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 							className={`bg-primaryBgColor !h-[46px] !w-[145px] text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-lg uppercase font-bold !py-1 !px-[10px]`}
 							btnText="Copy address"
 							colorStyle="outline"
-							wrapperClassName="global-clip-primary-btn"
+							wrapperClassName={`global-clip-primary-btn ${selectedWallet !== null && 'bg-btnPrimaryBgColor'}`}
 						/>
 						</div>
                         <div>
@@ -268,7 +268,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 							className={`flex flex-row-reverse justify-center items-center gap-2 bg-primaryBgColor !h-[46px] !w-[173px] text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-lg uppercase font-bold !py-1 !px-[14px]`}
 							btnText="Remove wallet"
 							colorStyle="outline"
-							wrapperClassName="global-clip-primary-btn"
+							wrapperClassName={`global-clip-primary-btn ${selectedWallet !== null && 'bg-btnPrimaryBgColor'}`}
 							icon={<AiOutlineMinus className="h-[15px] w-[15px]"/>}
 						/>
 						</div>

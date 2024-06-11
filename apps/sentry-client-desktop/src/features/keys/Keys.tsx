@@ -29,7 +29,7 @@ export function Keys() {
 
 	return (
 		<div className="w-full h-screen bg-primaryBgColor">
-			<div className="sticky top-0 bg-primaryBgColor flex flex-row justify-between items-center border-b border-primaryBorderColor pl-6 pr-2 z-10">
+			<div className="sticky top-0 bg-primaryBgColor flex flex-row justify-between items-center border-b border-primaryBorderColor pl-6 pr-2 z-40">
 				<div className="top-0 flex flex-row items-center py-5 gap-2">
 					<h2 className="text-3xl text-white font-bold">Keys</h2>
 
@@ -51,6 +51,7 @@ export function Keys() {
 						header={"Xai Client can track keys only from added wallets"}
 						content={"If you own keys in additional wallets, add them to the client."}
 						position="end"
+						extraClasses={{tooltipText: "text-secondaryText"}}
 					>
 						<HelpIcon width={14} height={14}/>
 					</CustomTooltip>
@@ -68,7 +69,7 @@ export function Keys() {
 						btnText="Purchase keys"
 						colorStyle="outline"
 						size="sm"
-						wrapperClassName="global-clip-primary-btn"
+						wrapperClassName="global-clip-primary-btn bg-btnPrimaryBgColor"
 					/>
 					</div>
 				</div>
@@ -84,7 +85,7 @@ export function Keys() {
 				<>
 					{Object.keys(combinedLicensesMap).length === 0 || keyCount === 0 ? (
 						<div className="w-full h-full flex-1 flex flex-col justify-center items-center">
-							<h3 className="text-center">Loading...</h3>
+							<h3 className="text-center text-lg text-white">Loading...</h3>
 						</div>
 					) : (
 						<HasKeys
