@@ -1,6 +1,6 @@
 import {useAtomValue} from "jotai";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
-import {PrimaryButton, Tooltip} from "@sentry/ui";
+import {CustomTooltip, PrimaryButton} from "@sentry/ui";
 import {AiFillWarning} from "react-icons/ai";
 import {Card} from "@/features/home/cards/Card";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
@@ -10,6 +10,8 @@ import {useSetAtom} from "jotai";
 import { HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import { useOperatorRuntime } from "@/hooks/useOperatorRuntime";
 import { RiKey2Line } from "react-icons/ri";
+import { useState } from "react";
+import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 
 export function WalletsCard() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -18,24 +20,27 @@ export function WalletsCard() {
 	const kycRequiredLength = Object.values(ownersKycMap).filter(value => !value).length
 	const { publicKey: operatorAddress } = useOperator();
 	const { sentryRunning } = useOperatorRuntime();
-
+	const [mouseOverTooltip, setMouseOverTooltip] = useState(false);
+  
 	return (
-		<Card width={"341px"} height={"279px"} customClasses="bg-primaryBgColor shadow-default">
+		<Card width={"341px"} height={"279px"} customClasses={`bg-primaryBgColor shadow-default overflow-visible ${mouseOverTooltip ? "z-20" : "z-0"}`}>
 
 			<div className="flex flex-row justify-between items-center py-5 px-6 border-b border-primaryBorderColor">
 				<div className="flex flex-row items-center gap-1 text-white text-2xl">
 					<h2 className="font-bold">Wallets</h2>
-					<Tooltip
+					<CustomTooltip
 						header={"Xai Client can track keys only from added wallets"}
-						body={"If you own keys in additional wallets, add them to the client."}
-						position={"start"}
+						content={"If you own keys in additional wallets, add them to the client."}
+						position={"end"}
+						mouseOver={setMouseOverTooltip}
+						extraClasses={{tooltipText: "!text-secondaryText"}}
 					>
-						<HelpIcon width={14} height={14} fill="#A19F9F"/>
-					</Tooltip>
+						<HelpIcon width={14} height={14} fill="#A19F9F" />
+					</CustomTooltip>
 				</div>
 				<div className="flex flex-row justify-between items-center gap-1">
 					<PrimaryButton
-						className="text-btnPrimaryBgColor text-lg uppercase font-bold bg-trasparent rounded-md !px-0 !py-0 max-h-[28px] hover:bg-primaryBgColor hover:text-white"
+						className="text-btnPrimaryBgColor text-lg uppercase font-bold bg-trasparent rounded-md !px-0 !py-0 max-h-[28px] hover:!bg-primaryBgColor hover:text-white"
 						onClick={() => window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`)}
 						btnText="Assign Wallet"
 						colorStyle="primary"
@@ -73,14 +78,13 @@ export function WalletsCard() {
 
 
 			{sentryRunning && kycRequired && (
-				<div
-					className="absolute bottom-5 left-6 m-auto w-[288px] flex justify-center items-center gap-1 text-lg font-bold text-primaryTooltipColor bg-[#FFC53D1A] px-4 py-3 global-cta-clip-path">
+				<BaseCallout
+					extraClasses={{ calloutWrapper: "absolute bottom-5 left-6 m-auto w-[288px] !p-0 flex justify-center items-center gap-1 text-lg font-bold text-primaryTooltipColor bg-[#FFC53D1A] px-4 py-3 global-cta-clip-path", calloutFront: "!justify-start" }}>
 					<div className="flex justify-center items-center gap-2">
-						<AiFillWarning color={"#FFC53D"} size={25}/>
+						<AiFillWarning color={"#FFC53D"} size={23}/>
 						KYC required for {kycRequiredLength} wallet{kycRequiredLength === 1 ? "" : "s"}
-						<HelpIcon width={14} height={14} fill="#FFC53D"/>
 					</div>
-				</div>
+				</BaseCallout>
 			)}
 		</Card>
 	)
