@@ -1,8 +1,8 @@
 import {app} from "@/app";
+import {loadMongoose} from "@/loaders/mongoose";
 import {Quota} from "@/models/types/Quota";
 import {getUserQuota} from "@/services/quota/getUserQuota";
-import {NextFunction, Request, Response} from "express";
-// import { getUserQuota } from "@/services/quota/getUserQuota";
+import {Request, Response} from "express";
 
 /**
  * @swagger
@@ -44,6 +44,8 @@ app.get("/quota/:projectId/:userWallet", async (req: Request, res: Response<Quot
 	if (!userWallet || !userWallet.length) {
 		throw new Error("Invalid userWallet");
 	}
+	
+    await loadMongoose();
 
 	const {quota} = await getUserQuota(projectId, userWallet);
 	return res.status(200).send(quota);

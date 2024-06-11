@@ -1,4 +1,3 @@
-import { loadMongoose } from "@/loaders/mongoose";
 import UserProjectInfoModel from "@/models/UserProjectInfo.schema";
 import { Types } from "mongoose";
 import { Quota } from "@/models/types/Quota";
@@ -17,8 +16,6 @@ export async function updateUserQuota(
     walletAddress: string,
     updatedQuota: Quota
 ): Promise<void> {
-
-    await loadMongoose();
 
     if (userProjectId === null) {
         const newUserToProject = new UserProjectInfoModel({

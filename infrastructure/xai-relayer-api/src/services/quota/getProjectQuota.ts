@@ -1,4 +1,3 @@
-import { loadMongoose } from "@/loaders/mongoose";
 import ProjectModel from "@/models/Project.schema";
 import { IProject } from "@/models/types/IProject";
 import { Quota } from "@/models/types/Quota";
@@ -13,7 +12,6 @@ import { ObjectId } from "mongoose";
  * @returns {Quota} The quota info for the project
  */
 export async function getProjectQuota(projectId: ObjectId | string): Promise<Quota> {
-    await loadMongoose();
 
     let project: IProject | null
 

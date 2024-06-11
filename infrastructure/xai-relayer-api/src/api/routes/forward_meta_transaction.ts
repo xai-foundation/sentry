@@ -1,11 +1,12 @@
 import {app} from "@/app";
+import {loadMongoose} from "@/loaders/mongoose";
 import {ForwardRequest} from "@/models/types/ForwardRequest";
 import {forwardMetaTransaction} from "@/services/forwardMetatransaction";
 import {getMinimumRequiredBalance} from "@/services/getMinimumRequiredBalance";
 import {getUserQuota} from "@/services/quota/getUserQuota";
 import {updateUserQuota} from "@/services/quota/updateUserQuota";
 import {validateForwardRequest} from "@/services/validateForwardRequest";
-import {NextFunction, Request, Response} from "express";
+import {Request, Response} from "express";
 
 //TODO make the type work as the request interface
 export interface MetaTransactionRequest {
@@ -60,6 +61,8 @@ app.post("/forward/:projectId", async (req: Request, res: Response<{txHash: stri
 		throw new Error(`Invalid request: ${validationError}`);
 	}
 
+    await loadMongoose();
+	
 	const {quota, projectInfo} = await getUserQuota(projectId, forwardRequest.from);
 
 	if (BigInt(quota.balanceWei) < getMinimumRequiredBalance()) {

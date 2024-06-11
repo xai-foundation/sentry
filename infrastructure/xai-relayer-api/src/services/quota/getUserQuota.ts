@@ -1,4 +1,3 @@
-import { loadMongoose } from "@/loaders/mongoose";
 import UserProjectInfoModel from "@/models/UserProjectInfo.schema";
 import ProjectModel from "@/models/Project.schema";
 import { Types, ObjectId } from "mongoose";
@@ -21,8 +20,6 @@ export async function getUserQuota(
     projectId: ObjectId | string,
     walletAddress: string
 ): Promise<{ quota: Quota, projectInfo: { relayerId: string, userProjectId: Types.ObjectId | null } }> {
-
-    await loadMongoose();
 
     let project: IProject | null
     let userProjectInfo: IUserProjectInfo | null

@@ -1,7 +1,8 @@
 import {app} from "@/app";
+import {loadMongoose} from "@/loaders/mongoose";
 import {Quota} from "@/models/types/Quota";
 import {getProjectQuota} from "@/services/quota/getProjectQuota";
-import {NextFunction, Request, Response} from "express";
+import {Request, Response} from "express";
 
 /**
  * @swagger
@@ -37,6 +38,8 @@ app.get("/quota/:projectId", async (req: Request, res: Response<Quota>) => {
 		throw new Error("Invalid projectId");
 	}
 
+    await loadMongoose();
+	
 	const quota = await getProjectQuota(projectId);
 	return res.status(200).send(quota);
 });
