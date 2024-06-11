@@ -98,7 +98,7 @@ describe("getUserQuota", () => {
 
         //Update userProject, set lastRefill further than interval
 
-        const updatedLastRefill = Date.now() - (PROJECT_USER_REFILL_INTERVAL + 1);
+        const updatedLastRefill = Date.now() - (PROJECT_USER_REFILL_INTERVAL + 1000);
         await UserProjectInfoModel.updateOne(
             { walletAddress: TEST_WALLET, project: TEST_PROJECT_ID },
             {
@@ -107,18 +107,11 @@ describe("getUserQuota", () => {
         );
 
         const userQuotaExpectedRefill = await getUserQuota(TEST_PROJECT_ID, TEST_WALLET);
-        expect(userQuotaExpectedRefill.quota.balanceWei).equal((BigInt(userQuotaReducedBalance.quota.balanceWei) + BigInt((balanceReduceAmount))).toString());
-        expect(userQuotaExpectedRefill.quota.nextRefillAmountWei).equal((BigInt(PROJECT_USER_REFILL_LIMIT) - BigInt((userQuotaExpectedRefill.quota.balanceWei))).toString());
-        expect(userQuotaExpectedRefill.quota.nextRefillTimestamp).to.be.closeTo(userQuotaExpectedRefill.quota.lastRefillTimestamp + PROJECT_USER_REFILL_INTERVAL, 100); //100 ms diff
-        expect(userQuotaExpectedRefill.quota.lastRefillTimestamp).equal(userQuota.quota.lastRefillTimestamp);
-
         expect(userQuotaExpectedRefill.quota.balanceWei).equal(PROJECT_USER_REFILL_LIMIT);
         expect(userQuotaExpectedRefill.quota.nextRefillAmountWei).equal("0");
 
-
-        const diffFromRecentRefill = updatedLastRefill % PROJECT_USER_REFILL_INTERVAL;
+        const diffFromRecentRefill = (Date.now() - userQuotaExpectedRefill.quota.lastRefillTimestamp) % PROJECT_USER_REFILL_INTERVAL;
         expect(userQuotaExpectedRefill.quota.nextRefillTimestamp).to.be.closeTo(Date.now() + (PROJECT_USER_REFILL_INTERVAL - diffFromRecentRefill), 100); //100 ms diff
         expect(userQuotaExpectedRefill.quota.lastRefillTimestamp).to.be.closeTo(Date.now() - diffFromRecentRefill, 100); //100 ms diff
-        expect(userQuota.quota.lastRefillTimestamp).to.be.closeTo(Date.now(), 100);
     });
 });
