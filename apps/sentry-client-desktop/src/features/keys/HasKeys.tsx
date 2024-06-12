@@ -176,7 +176,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					</td>
 					<td className="min-w-[12%] px-4 py-2 text-btnPrimaryBgColor font-bold text-right">
 						<span
-							className="cursor-pointer pr-[3px]"
+							className="cursor-pointer pr-[3px] uppercase hover:text-white duration-300 ease-in-out"
 							onClick={() => window.electron.openExternal(`https://opensea.io/assets/arbitrum/${config.nodeLicenseAddress}/${keyString}`)}
 						>
 							View
@@ -357,16 +357,16 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					<div className="w-full overflow-y-auto">
 						<table className="w-full bg-primaryBgColor">
 							<thead className="text-secondaryText text-base sticky top-0 bg-primaryBgColor z-10">
-							<tr className="flex items-center text-left text-base px-6 border-b border-t border-primaryBorderColor">
-								<th className="min-w-[7%] px-2 py-2">KEY ID</th>
-								<th className="min-w-[37%] px-2 py-2">OWNER ADDRESS</th>
-								<th className="min-w-[27%] px-4 py-2">STATUS</th>
-								<th className="min-w-[17%] px-4 py-2 flex items-center justify-end gap-1">
+							<tr className="flex items-center text-left text-base border-b border-t border-primaryBorderColor px-[25px] py-[15px] bg-secondaryBgColor">
+								<th className="min-w-[7%] px-2 py-0">KEY ID</th>
+								<th className="min-w-[37%] px-2 py-0">OWNER ADDRESS</th>
+								<th className="min-w-[27%] px-4 py-0">STATUS</th>
+								<th className="min-w-[17%] px-4 py-0 flex items-center justify-end gap-1">
 									{isBalancesLoading &&
                                         <BiLoaderAlt className="animate-spin w-[18px]" color={"#FF0030"}/>}
 									ACCRUED esXAI
 								</th>
-								<th className="min-w-[12%] px-4 py-2 text-right">OPENSEA URL</th>
+								<th className="min-w-[12%] px-4 py-0 text-right">OPENSEA URL</th>
 							</tr>
 							</thead>
 							<tbody className="relative">{renderKeys()}</tbody>
