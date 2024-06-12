@@ -364,7 +364,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					<div className="w-full overflow-y-auto">
 						<table className="w-full bg-primaryBgColor">
 							<thead className="text-secondaryText text-base sticky top-0 bg-primaryBgColor z-10">
-							<tr className="flex items-center text-left text-base px-[25px] py-[15px] border-b border-t border-primaryBorderColor bg-secondaryBgColor">
+							<tr className="flex items-center text-left text-base border-b border-t border-primaryBorderColor px-[25px] py-[15px] bg-secondaryBgColor">
 								<th className="min-w-[7%] px-2 py-0">KEY ID</th>
 								<th className="min-w-[37%] px-2 py-0">OWNER ADDRESS</th>
 								<th className="min-w-[27%] px-4 py-0">STATUS</th>
