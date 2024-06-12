@@ -10,6 +10,7 @@ module.exports = {
     },
     colors: {
       white: "#fff",
+      black: "#000000",
       btnPrimaryBgColor: "#FF0030",
       linkBgHover: "#433F3F",
       secondaryText: "#A19F9F",
@@ -33,7 +34,8 @@ module.exports = {
       checkboxPrimaryBg: "#525252",
       tertiaryBorderColor: "#524D4F",
       inputPrimaryHoverBg: "#FF2C3A",
-      primaryWarningBg: "#FFC53D"
+      primaryWarningBg: "#FFC53D",
+      primaryModalWrapperBg: "#2A2828",
     },
     extend: {},
   },
