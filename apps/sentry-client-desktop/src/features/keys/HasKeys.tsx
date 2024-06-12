@@ -362,18 +362,18 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 
 				<div className="flex flex-col max-h-[70vh]">
 					<div className="w-full overflow-y-auto">
-						<table className="w-full bg-secondaryBgColor">
-							<thead className="text-secondaryText text-base sticky top-0 bg-secondaryBgColor z-10">
-							<tr className="flex items-center text-left text-base px-6 py-[15px] border-b border-t border-primaryBorderColor">
-								<th className="min-w-[7%] px-2">KEY ID</th>
-								<th className="min-w-[37%] px-2">OWNER ADDRESS</th>
-								<th className="min-w-[27%] px-4">STATUS</th>
-								<th className="min-w-[17%] px-4 flex items-center justify-end gap-1">
+						<table className="w-full bg-primaryBgColor">
+							<thead className="text-secondaryText text-base sticky top-0 bg-primaryBgColor z-10">
+							<tr className="flex items-center text-left text-base px-[25px] py-[15px] border-b border-t border-primaryBorderColor bg-secondaryBgColor">
+								<th className="min-w-[7%] px-2 py-0">KEY ID</th>
+								<th className="min-w-[37%] px-2 py-0">OWNER ADDRESS</th>
+								<th className="min-w-[27%] px-4 py-0">STATUS</th>
+								<th className="min-w-[17%] px-4 py-0 flex items-center justify-end gap-1">
 									{isBalancesLoading &&
                                         <BiLoaderAlt className="animate-spin w-[18px]" color={"#FF0030"}/>}
 									ACCRUED esXAI
 								</th>
-								<th className="min-w-[12%] px-4 text-right">OPENSEA URL</th>
+								<th className="min-w-[12%] px-4 py-0 text-right">OPENSEA URL</th>
 							</tr>
 							</thead>
 							<tbody className="relative">{renderKeys()}</tbody>
