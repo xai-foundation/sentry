@@ -337,7 +337,7 @@ export function SentryWallet() {
 							) : (
 								<button
 									onClick={startRuntime}
-									className="ml-4 flex flex-row justify-center items-center gap-2 text-lg font-bold text-tertiaryText"
+									className="ml-4 flex flex-row justify-center items-center gap-2 text-lg font-bold text-tertiaryText hover:text-white duration-300 ease-in-out"
 								>
 									<FaPlay className="h-[15px]"/>
 									Start Sentry
