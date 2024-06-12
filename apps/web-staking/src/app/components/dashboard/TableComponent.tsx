@@ -56,11 +56,11 @@ const TableComponent = () => {
       </tr>
       </thead>
       <tbody>
-      {tiers.map((data, index) => {
+      {tiers && tiers.map((data) => {
         const formattedRequirements = formatCurrencyNoDecimals.format(data.minValue);
         return <tr
           key={data.index}
-          className={`${index !== tiers.length - 1 ? "border-b-1" : "border-b-0"} border-chromaphobicBlack text-right bg-nulnOil/75`}
+          className={"border-b-1 last:border-b-0 border-chromaphobicBlack text-right bg-nulnOil/75"}
         >
           <td
             className="whitespace-nowrap lg:pr-6 lg:py-4 lg:text-base text-graphiteGray text-left font-medium
