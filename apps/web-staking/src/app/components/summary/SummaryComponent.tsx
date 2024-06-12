@@ -190,7 +190,7 @@ const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean,
               address={address}
             />
 
-            {poolInfo && <PoolTierCard poolInfo={poolInfo} tiers={tiers} />}
+            {poolInfo && tiers && <PoolTierCard poolInfo={poolInfo} tiers={tiers} />}
 
             <StakingCards
               unstakeRequests={unstakeRequests}

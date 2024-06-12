@@ -42,7 +42,7 @@ interface AvailableTableProps {
   totalPages: number;
   setPage: (page: number) => void;
   address: string | undefined;
-  tiers: Array<TierInfo & { icon?: iconType }>;
+  tiers?: Array<TierInfo & { icon?: iconType }>;
   maxKeyPerPool: number;
 }
 
