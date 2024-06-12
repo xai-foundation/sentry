@@ -82,10 +82,6 @@ body {
     .base-input {
         background-color: transparent;
     }
-    
-    .shadow-box-main {
-        box-shadow: 0px 10px 15px #00000080;;
-    }
 }
 
 
@@ -136,3 +132,7 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;
 }
+
+.shadow-box-main {
+    box-shadow: 0px 10px 15px #00000080;;
+ }
