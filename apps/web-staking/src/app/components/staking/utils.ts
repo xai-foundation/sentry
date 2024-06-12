@@ -10,8 +10,10 @@ export type iconType = ({
 	fill?: string | undefined;
 }) => React.JSX.Element;
 
-export const getCurrentTierByStaking = (staking: number, tiers: Array<TierInfo & { icon?: iconType }>): TierInfo & { icon?: iconType } | undefined => {
+export const getCurrentTierByStaking = (staking: number, tiers?: Array<TierInfo & { icon?: iconType }>): TierInfo & { icon?: iconType } | undefined => {
 	let currentTier: TierInfo | undefined;
+
+	if (!tiers) return undefined;
 
 	if (staking < tiers[1].minValue) {
 		currentTier = tiers[0];
@@ -42,7 +44,7 @@ export const getAmountRequiredForUpgrade = (staking: number, tiers: Array<TierIn
 	if (currentTier.index == tiers.length - 1) return 0;
 
 	const nextTierValue = tiers[currentTier.index + 1].minValue;
-	return nextTierValue - staking;
+	return nextTierValue! - staking;
 };
 
 export const getTierByIndex = (index: number, tiers: Array<TierInfo & { icon?: iconType }>): TierInfo | undefined => {

@@ -150,7 +150,7 @@ export function TableRowLabel({ tier, poolAddress, fullWidth, customClass }: Tab
       className={`lg:whitespace-nowrap text-graphiteGray lg:pr-0 lg:py-3 lg:table-cell sm:hidden ${customClass} ${fullWidth ? "w-full" : ""}`}>
       <Link href={poolAddress ? `/pool/${poolAddress}/summary` : "/staking/unstake"} className="w-fit">
         <div className="flex items-center font-medium">
-          <Image src={tier.label!} alt="" />
+          {tier && <Image src={tier.label!} alt="" />}
         </div>
       </Link>
     </td>
