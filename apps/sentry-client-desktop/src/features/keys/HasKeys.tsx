@@ -117,7 +117,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 								Sentry not running
 								<a
 									onClick={startRuntime}
-									className="text-[#F30919] cursor-pointer"
+									className="text-[#F30919] cursor-pointer hover:text-white duration-200 ease-in"
 								>
 									Start
 								</a>
@@ -130,7 +130,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 								Wallet not assigned
 								<a
 									onClick={() => startAssignment()}
-									className="text-[#F30919] cursor-pointer"
+									className="text-[#F30919] cursor-pointer hover:text-white duration-200 ease-in"
 								>
 									Assign
 								</a>
