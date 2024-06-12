@@ -82,6 +82,12 @@ body {
     .base-input {
         background-color: transparent;
     }
+
+    .remove-wallet-modal-close:hover .close-stick,
+    .remove-assign-wallet-modal:hover .close-stick {
+        fill: #FF0030 !important;
+        transition: .25s ease-in-out;
+    }
 }
 
 
