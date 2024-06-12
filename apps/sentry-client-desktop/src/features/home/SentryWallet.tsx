@@ -220,7 +220,7 @@ export function SentryWallet() {
 				<div
 					className="sticky top-0 flex flex-col items-center w-full h-auto z-10">
 					<div
-						className="flex flex-row justify-between items-center w-full py-[15px] bg-primaryBgColor gap-2 border-b border-primaryBorderColor pl-[24px] pr-2">
+						className={`flex flex-row justify-between items-center w-full ${drawerState === null ? "py-[11px]" : "py-[15px]"} bg-primaryBgColor gap-2 border-b border-primaryBorderColor pl-[24px] pr-2`}>
 						<div className="flex flex-row items-center gap-2 w-full max-w-[50%] z-[15]">
 							<span>
 								{sentryRunning && hasAssignedKeys && funded && <GreenPulse size='md'/>}
