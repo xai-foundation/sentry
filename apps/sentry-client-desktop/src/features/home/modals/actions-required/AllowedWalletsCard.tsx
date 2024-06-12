@@ -56,7 +56,7 @@ export function AllowedWalletsCard() {
             header={"Wallets must be allowed to KYC"}
             body={"By allowing a wallet, you are accepting the responsibility of paying the gas fee associated with submitting an assertion and claiming rewards."}
             position={"end"}
-			sideOffset={20}
+			sideOffset={32}
 			height={50}
         >
            <HelpIcon width={14} height={14} />

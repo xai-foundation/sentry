@@ -65,6 +65,7 @@ export function AssignedKeysCard() {
             body={"To assign keys, connect all wallets containing Sentry Keys"}
 			body2={"The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry."}
             position={"end"}
+			sideOffset={25}
         >
            <HelpIcon width={14} height={14} />
         </SideBarTooltip>		

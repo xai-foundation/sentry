@@ -332,6 +332,8 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 								header={"Each key will accrue esXAI. Pass KYC to claim."}
 								content={"This value is the sum of all esXAI accrued for the selected wallet. If esXAI has already been claimed, it will appear in esXAI balance."}
 								position="end"
+								mouseOver={setMouseOverTooltip}
+								extraClasses={{group: mouseOverTooltip ? "z-40" : "z-auto"}}
 							>
 								<HelpIcon width={14} height={14}/>
 							</CustomTooltip>
