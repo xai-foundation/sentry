@@ -12,7 +12,6 @@ module.exports = {
       white: "#fff",
       black: "#000000",
 
-      primaryTooltipColor: "#FFC53D",
       successText: "#3DD68C",
       successBgColor: "#3DD68C1A",
       dropdownPrimaryBg: "#151010",

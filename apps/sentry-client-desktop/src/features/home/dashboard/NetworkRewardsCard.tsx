@@ -218,7 +218,7 @@ export function NetworkRewardsCard() {
 
 			{accruing && kycRequired && (
 				<BaseCallout
-					extraClasses={{ calloutWrapper: "absolute bottom-3 left-5 m-auto max-w-[258px] flex justify-center items-center gap-1 text-lg !font-bold !text-primaryTooltipColor !bg-[#FFC53D1A] global-cta-clip-path", calloutFront: "!h-[78px]" }}>
+					extraClasses={{ calloutWrapper: "absolute bottom-3 left-5 m-auto max-w-[258px] flex justify-center items-center gap-1 text-lg !font-bold !text-bananaBoat !bg-[#FFC53D1A] global-cta-clip-path", calloutFront: "!h-[78px]" }}>
 					<div className="flex justify-center items-start gap-2">
 						<AiFillWarning color={"#FFC53D"} size={25} style={{minWidth: "20px"}}/>
 						You are accruing but not claiming esXAI
@@ -227,7 +227,7 @@ export function NetworkRewardsCard() {
 			)}
 
 			{!accruing && kycRequired && (
-				<BaseCallout extraClasses={{ calloutWrapper: "absolute bottom-3 left-5 m-auto max-w-[258px] flex justify-center items-center gap-1 text-lg !font-bold !text-primaryTooltipColor !bg-[#FFC53D1A] global-cta-clip-path", calloutFront: "!h-[78px]" }}>
+				<BaseCallout extraClasses={{ calloutWrapper: "absolute bottom-3 left-5 m-auto max-w-[258px] flex justify-center items-center gap-1 text-lg !font-bold !text-bananaBoat !bg-[#FFC53D1A] global-cta-clip-path", calloutFront: "!h-[78px]" }}>
 					<div className="flex justify-center items-start gap-2">
 						<AiFillWarning color={"#FFC53D"} size={25} style={{minWidth: "20px"}}/>
 						You are not accruing or claiming esXAI

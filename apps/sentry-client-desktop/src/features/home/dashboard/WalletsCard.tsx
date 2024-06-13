@@ -76,7 +76,7 @@ export function WalletsCard() {
 
 			{sentryRunning && kycRequired && (
 				<BaseCallout
-					extraClasses={{ calloutWrapper: "absolute bottom-5 left-6 m-auto w-[288px] !p-0 flex justify-center items-center gap-1 text-lg font-bold text-primaryTooltipColor bg-[#FFC53D1A] px-4 py-3 global-cta-clip-path", calloutFront: "!justify-start" }}>
+					extraClasses={{ calloutWrapper: "absolute bottom-5 left-6 m-auto w-[288px] !p-0 flex justify-center items-center gap-1 text-lg font-bold text-bananaBoat bg-[#FFC53D1A] px-4 py-3 global-cta-clip-path", calloutFront: "!justify-start" }}>
 					<div className="flex justify-center items-center gap-2">
 						<AiFillWarning color={"#FFC53D"} size={23}/>
 						KYC required for {kycRequiredLength} wallet{kycRequiredLength === 1 ? "" : "s"}

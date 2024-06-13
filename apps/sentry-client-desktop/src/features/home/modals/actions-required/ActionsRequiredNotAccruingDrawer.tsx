@@ -72,9 +72,9 @@ export function ActionsRequiredNotAccruingDrawer() {
 								icon={IoMdCloseCircle}
 								color="#FFC53D"
 								title="You are currently not accruing esXAI"
-								titleStyles="text-lg text-primaryTooltipColor"
+								titleStyles="text-lg text-bananaBoat"
 							/>
-							<p className="text-lg mt-2 text-primaryTooltipColor font-medium pl-7 pr-8">
+							<p className="text-lg mt-2 text-bananaBoat font-medium pl-7 pr-8">
 								Complete the steps below to begin accruing esXAI token rewards.
 							</p>
 						</SquareCard>
@@ -106,9 +106,9 @@ export function ActionsRequiredNotAccruingDrawer() {
 											icon={IoMdCloseCircle}
 											color="#FFC53D"
 											title="At least one wallet has unclaimable esXAI"
-											titleStyles="text-lg text-primaryTooltipColor"
+											titleStyles="text-lg text-bananaBoat"
 										/>
-										<p className="text-lg text-primaryTooltipColor mt-3 px-7">
+										<p className="text-lg text-bananaBoat mt-3 px-7">
 											You must pass KYC within 180 days of accruing esXAI to claim accrued node
 											rewards. Check back in 48 hours if all docs submitted. Check your inbox
 											(including spam) for updates. For KYC issues, contact<a

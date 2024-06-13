@@ -112,7 +112,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					<td className="min-w-[27%] px-4 py-2 text-elementalGrey">
 
 						{_status === "sentryNotRunning" && (
-							<div className="relative flex items-center gap-[10px] font-bold text-primaryTooltipColor">
+							<div className="relative flex items-center gap-[10px] font-bold text-bananaBoat">
 								<WarningIcon width={18} height={16}/>
 								Sentry not running
 								<a
@@ -125,7 +125,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						)}
 
 						{_status === "walletNotAssigned" && (
-							<div className="relative flex items-center gap-[10px] font-bold text-primaryTooltipColor">
+							<div className="relative flex items-center gap-[10px] font-bold text-bananaBoat">
 								<WarningIcon width={18} height={16}/>
 								Wallet not assigned
 								<a
@@ -138,7 +138,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						)}
 
 						{_status === "kycStart" && (
-							<div className="relative flex items-center gap-[10px] font-bold text-primaryTooltipColor">
+							<div className="relative flex items-center gap-[10px] font-bold text-bananaBoat">
 								<WarningIcon width={18} height={16}/>
 								KYC required
 								<BlockPassKYC
@@ -151,7 +151,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						)}
 
 						{_status === "kycContinue" && (
-							<div className="relative flex items-center gap-[10px] font-bold text-primaryTooltipColor">
+							<div className="relative flex items-center gap-[10px] font-bold text-bananaBoat">
 								<WarningIcon width={18} height={16}/>
 								KYC required
 								<BlockPassKYC

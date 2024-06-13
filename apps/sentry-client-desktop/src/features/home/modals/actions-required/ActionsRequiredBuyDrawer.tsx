@@ -23,10 +23,10 @@ export function ActionsRequiredBuyDrawer() {
 
 			<div className="w-full flex flex-col gap-4 px-6 pt-[1rem]">
 				<div className="flex flex-col gap-2 bg-[#FFC53D1A] p-6 global-cta-clip-path">
-					<span className="flex flex-row gap-1 items-center text-lg font-bold text-primaryTooltipColor">
+					<span className="flex flex-row gap-1 items-center text-lg font-bold text-bananaBoat">
 						<IoMdCloseCircle size={22} color={"#FFC53D"}/> You do not own a key
 					</span>
-					<p className="text-lg text-primaryTooltipColor pl-6 mb-[16px] font-medium">
+					<p className="text-lg text-bananaBoat pl-6 mb-[16px] font-medium">
 						No Xai Sentry Node Keys found in all added wallets
 					</p>
 
@@ -40,7 +40,7 @@ export function ActionsRequiredBuyDrawer() {
 						/>
 					</div>
 
-					<p className="text-lg text-primaryTooltipColor pl-6 font-medium">
+					<p className="text-lg text-bananaBoat pl-6 font-medium">
 						Already own a key?
 						<a
 							onClick={() => setDrawerState(DrawerView.ViewKeys)}

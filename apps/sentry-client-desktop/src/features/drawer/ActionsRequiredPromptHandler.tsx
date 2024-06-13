@@ -21,7 +21,7 @@ export function ActionsRequiredPromptHandler() {
 			<BaseCallout extraClasses={{calloutWrapper: "h-[60px] w-[308px]", calloutFront: "bg-primaryCalloutWarning "}}>
 				<div className="flex flex-row gap-2 items-center mr-3">
 					<WarningIcon width={23} height={20}/>
-					<span className="text-primaryTooltipColor text-lg font-bold">Actions required</span>
+					<span className="text-bananaBoat text-lg font-bold">Actions required</span>
 				</div>
 				<div>
 				<PrimaryButton
