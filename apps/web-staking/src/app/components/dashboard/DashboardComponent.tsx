@@ -16,7 +16,7 @@ import {
   useGetUnstakedNodeLicenseCount,
   useGetUserInteractedPools,
   useGetUserTotalStakedKeysCount
-} from "@/app/hooks/hooks";
+} from "@/app/hooks";
 import { getNetwork, getTotalClaimAmount, mapWeb3Error } from "@/services/web3.service";
 import { executeContractWrite, WriteFunctions } from "@/services/web3.writes";
 

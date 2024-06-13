@@ -14,6 +14,7 @@ import { PoolInfo, TierInfo } from "@/types/Pool";
 import { iconType } from "../dashboard/constants/constants";
 import { getCurrentTierByStaking } from "./utils";
 import { formatCurrencyNoDecimals, formatCurrencyWithDecimals, hideDecimals } from "@/app/utils/formatCurrency";
+import { formatDailyRewardRate, formatDailyRewardRatePercentage } from "@/app/utils/formatDailyRewardRate";
 
 const POOL_DATA_COLUMNS_STAKED = [
   "POOL NAME",
@@ -22,6 +23,8 @@ const POOL_DATA_COLUMNS_STAKED = [
   // "POOL UPTIME",
   "esXAI STAKED",
   "KEYS STAKED",
+  "esXAI RATE",
+  "KEY RATE",
   "ACTIONS"
 ] as const;
 
@@ -105,6 +108,8 @@ const StakedPoolsTable = (
               <TableRowStaked value="—" positionStyles="!items-start" customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in"/>
               <TableRowStaked value={`${v1Stake < 0.0001 ? "<0.0001" : formatCurrencyNoDecimals.format(v1Stake)} esXAI`} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in lg:pr-8" />
               <TableRowStaked value="—" customClass="lg:table-cell sm:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="items-center"/>
+             <TableRowStaked value="—" customClass="lg:table-cell sm:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="items-center"/>
+             <TableRowStaked value="—" customClass="lg:table-cell sm:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="items-center"/>
               <TableRowKeysRewards totalStaked={v1Stake} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" />
             </tr>
           }
@@ -121,6 +126,8 @@ const StakedPoolsTable = (
                   {/* <TableRowStaked value={"__%"}/> POOL UPTIME */} 
                   <TableRowStaked value={`${pool.userStakedEsXaiAmount ? pool.userStakedEsXaiAmount < 0.0001 ? "<0.0001" : hideDecimals(formatCurrencyWithDecimals.format(pool.userStakedEsXaiAmount)) : 0} esXAI`} poolAddress={pool.address} keys={`${pool.userStakedKeyIds.length} keys`} customClass="lg:pr-8 group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end" />
                   <TableRowStaked value={`${formatCurrencyNoDecimals.format(pool.userStakedKeyIds.length)} keys`} poolAddress={pool.address} customClass="lg:table-cell sm:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="items-center"/>
+                  <TableRowStaked value={`${formatDailyRewardRatePercentage(pool.esXaiRewardRate, 1)}%`}  poolAddress={pool.address} customClass="lg:table-cell sm:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in"/>
+                  <TableRowStaked value={`${formatDailyRewardRate(pool.keyRewardRate, 1)} esXAI`}  poolAddress={pool.address} customClass="lg:table-cell sm:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="lg:pr-1"/>
                   <TableRowKeysRewards pool={pool} totalStaked={0} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" />
                 </tr>
               )

@@ -26,7 +26,9 @@ export interface IPool {
     visibility: 'active' | 'inactive' | 'banned',
     network: string,
     updatedAt?: Date
-    createdAt: Date
+    createdAt: Date,
+    keyRewardRate: number,
+    esXaiRewardRate: number
 };
 
 export const PoolSchema = new mongoose.Schema<IPool>({

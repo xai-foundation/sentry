@@ -25,5 +25,12 @@ export default interface IPool extends IDocument {
 	socials: [website: string, twitter: string, discord: string, telegram: string, instagram: string, tiktok: string, youtube: string],
 	visibility: 'active' | 'inactive' | 'banned',
 	network: string,
-	updatedAt?: Date
-};
+	updatedAt?: Date,
+	keyRewardRate: number,
+	esXaiRewardRate: number
+}
+
+export type PoolRewardRates = {	
+	keyRewardRate: number;								
+	esXaiRewardRate: number;
+}
