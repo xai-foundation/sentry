@@ -35,7 +35,7 @@ export function FundsInSentryWalletCard() {
 
 	return (
 		<div className="bg-primaryBorderColor global-cta-clip-path p-[1px]">
-		<SquareCard className="bg-secondaryBgColor global-cta-clip-path">
+		<SquareCard className="bg-dynamicBlack global-cta-clip-path">
 			{funded ? (
 				<IconLabel
 					icon={AiFillCheckCircle}
@@ -59,7 +59,7 @@ export function FundsInSentryWalletCard() {
 					<div className="pl-7 mt-3">
                     <div className="global-clip-path w-full bg-primaryBorderColor p-[1px]">
 					<div
-						className="h-[48px] px-3 w-full flex flex-row items-center gap-2 justify-between bg-secondaryBgColor global-clip-path">
+						className="h-[48px] px-3 w-full flex flex-row items-center gap-2 justify-between bg-dynamicBlack global-clip-path">
 						<span className="text-lg leading-[14px] text-americanSilver">
 							{isOperatorLoading || !operatorAddress ? "Loading..." : clampAddress(operatorAddress)}
 						</span>

@@ -259,7 +259,7 @@ export function SentryWallet() {
 							<div className="relative w-full max-w-[185px]">
 								<BaseCallout extraClasses={{
 									calloutWrapper: "h-[50px] !bg-primaryBorderColor text-white",
-									calloutFront: " !bg-secondaryBgColor !px-[15px] !justify-start"
+									calloutFront: " !bg-dynamicBlack !px-[15px] !justify-start"
 								}}>
 									<p className="mr-[10px]">
 										{operatorLoading ? "Loading..." : `${operatorAddress!.slice(0, 5)}...${operatorAddress!.slice(-3)}`}
@@ -298,13 +298,13 @@ export function SentryWallet() {
 											className="absolute flex flex-col items-center top-8 right-0 w-[210px] bg-nulnOil border border-primaryBorderColor">
 											<div
 												onClick={() => setDrawerState(DrawerView.ExportSentry)}
-												className="w-full flex justify-center items-center gap-1 py-2 cursor-pointer hover:bg-secondaryBgColor duration-300 ease-in-out"
+												className="w-full flex justify-center items-center gap-1 py-2 cursor-pointer hover:bg-dynamicBlack duration-300 ease-in-out"
 											>
 												<BiUpload className="h-[16px]"/> Export Sentry Wallet
 											</div>
 											<div
 												onClick={() => setDrawerState(DrawerView.ImportSentry)}
-												className="w-full flex justify-center items-center gap-1 py-2 cursor-pointer hover:bg-secondaryBgColor duration-300 ease-in-out"
+												className="w-full flex justify-center items-center gap-1 py-2 cursor-pointer hover:bg-dynamicBlack duration-300 ease-in-out"
 											>
 												<BiDownload className="h-[16px]"/> Import Sentry Wallet
 											</div>
@@ -469,7 +469,7 @@ export function SentryWallet() {
 						<div className="w-full overflow-y-auto ">
 							<table className="w-full">
 								<thead className="text-[#A3A3A3] sticky top-0 bg-white">
-								<tr className="flex text-left text-base font-semibold text-elementalGrey uppercase px-[25px] py-[15px] bg-secondaryBgColor">
+								<tr className="flex text-left text-base font-semibold text-elementalGrey uppercase px-[25px] py-[15px] bg-dynamicBlack">
 									<th className="w-full max-w-[50px] !text-nowrap">Key Id</th>
 									<th className="w-full max-w-[400px] px-4">Owner Address</th>
 									<th className="w-full max-w-[400px] px-[31px]">Claim Status</th>

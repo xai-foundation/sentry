@@ -12,7 +12,7 @@ module.exports = {
       white: "#fff",
       black: "#000000",
 
-      secondaryBgColor: "#201C1C",
+
       primaryBorderColor: "#2A2828",
       secondaryBorderColor: "#5B5757",
       primaryTooltipColor: "#FFC53D",

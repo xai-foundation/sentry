@@ -83,7 +83,7 @@ export function ExportSentryDrawer() {
 							<div className="p-[1px] w-full h-full bg-primaryBorderColor global-clip-8px">
 								<div
 									onClick={() => copyPrivateKey()}
-									className="relative bg-secondaryBgColor w-full h-fit flex justify-between text-americanSilver p-2 cursor-pointer overflow-hidden text-lg font-medium global-clip-8px"
+									className="relative bg-dynamicBlack w-full h-fit flex justify-between text-americanSilver p-2 cursor-pointer overflow-hidden text-lg font-medium global-clip-8px"
 								>
 									<p className="w-full">{wrappedPrivateKey}</p>
 									<div

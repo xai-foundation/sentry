@@ -277,7 +277,7 @@ export function CountryDropdown({selectedCountry, setSelectedCountry}: CountryDr
 				id="country"
 				onChange={handleCountryChange}
 				value={selectedCountry}
-				className="bg-secondaryBgColor px-[14px] py-[11px] w-full text-white text-lg global-clip-primary-btn focus:outline-none pr-8 appearance-none"
+				className="bg-dynamicBlack px-[14px] py-[11px] w-full text-white text-lg global-clip-primary-btn focus:outline-none pr-8 appearance-none"
 			>  
 				<option value="">Select your country</option>
 				{countries.map(({value, label}) => (

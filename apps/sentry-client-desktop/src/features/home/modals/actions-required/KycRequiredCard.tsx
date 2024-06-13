@@ -29,7 +29,7 @@ export function KycRequiredCard({wallet, status}: KycRequiredCardProps) {
 	}
 
 	return (
-		<SquareCard className="bg-secondaryBgColor global-cta-clip-path">
+		<SquareCard className="bg-dynamicBlack global-cta-clip-path">
 			{!status && !kycStarted && (
 				<>
 					<IconLabel

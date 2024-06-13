@@ -15,7 +15,7 @@ export function AllowedWalletsCard() {
 	return (
 		<div className="relative">
 		<div className="bg-primaryBorderColor global-cta-clip-path p-[1px]">
-		<SquareCard className="bg-secondaryBgColor global-cta-clip-path">
+		<SquareCard className="bg-dynamicBlack global-cta-clip-path">
 			{data && data.whitelistedWallets ? (
 				<IconLabel
 					icon={AiFillCheckCircle}
