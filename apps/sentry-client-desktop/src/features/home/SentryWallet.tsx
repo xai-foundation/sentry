@@ -489,7 +489,7 @@ export function SentryWallet() {
 					<>
 						{loading ? (
 							<div className="w-full flex-1 flex flex-col justify-center items-center">
-								<h3 className="text-center">Loading...</h3>
+								{/* <h3 className="text-center">Loading...</h3> */}
 							</div>
 						) : (
 							sentryRunning ? (

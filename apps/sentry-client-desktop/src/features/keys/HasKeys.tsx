@@ -43,6 +43,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 	const {startRuntime, sentryRunning} = useOperatorRuntime();
 	const {data: earnedEsxaiBalance} = useGetWalletBalance(combinedOwners);
 	const {data: singleWalletBalance} = useGetSingleWalletBalance(selectedWallet);
+	const [mouseOverTooltip, setMouseOverTooltip] = useState(false);
 
 	function startAssignment() {
 		if (!isOperatorLoading) {
@@ -117,7 +118,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 								Sentry not running
 								<a
 									onClick={startRuntime}
-									className="text-[#F30919] cursor-pointer"
+									className="text-[#F30919] cursor-pointer hover:text-white duration-200 ease-in"
 								>
 									Start
 								</a>
@@ -130,7 +131,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 								Wallet not assigned
 								<a
 									onClick={() => startAssignment()}
-									className="text-[#F30919] cursor-pointer"
+									className="text-[#F30919] cursor-pointer hover:text-white duration-200 ease-in"
 								>
 									Assign
 								</a>
@@ -233,6 +234,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						View Wallet
 					</p>
 					<div className="relative flex flex-row gap-3">
+						<div className="max-h-[48px]">
 						<Dropdown
 						isOpen={isOpen}
 						setIsOpen={setIsOpen}
@@ -244,11 +246,12 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						setSelectedValue={setSelectedWallet}
 						getDropdownItems={getDropdownItems}
 						/>
+						</div>
                         <div>
 						<PrimaryButton
 							isDisabled={selectedWallet === null}
 							onClick={copySelectedWallet}
-							className={`bg-primaryBgColor flex !h-[46px] items-center !w-[155px] text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-lg uppercase font-bold !py-1 !px-[10px]`}
+							className={`bg-primaryBgColor flex !h-[48px] items-center !w-[155px] text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-lg uppercase font-bold !py-1 !px-[10px]`}
 							btnText="Copy address"
 							colorStyle="outline"
 							wrapperClassName={`global-clip-primary-btn ${selectedWallet !== null && 'bg-btnPrimaryBgColor'}`}
@@ -258,7 +261,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
                         <div>
 						<PrimaryButton
 							onClick={() => setDrawerState(DrawerView.ViewKeys)}
-							className="flex flex-row-reverse group !h-[46px] !w-[147px] justify-center items-center gap-2 text-lg bg-btnPrimaryBgColor text-white font-bold uppercase !py-1 !px-[14px] hover:text-btnPrimaryBgColor"
+							className={`flex flex-row-reverse group !w-[147px] !h-[50px] justify-center items-center gap-2 text-lg bg-btnPrimaryBgColor text-white font-bold uppercase !py-1 !px-[14px] hover:text-btnPrimaryBgColor`}
 							btnText="Add wallet"
 							icon={<AiOutlinePlus className="h-[15px] w-[15px] group-hover:fill-btnPrimaryBgColor duration-200 easy in" color={"#ffffff"}/>}
 						/>
@@ -267,7 +270,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						<PrimaryButton
 							isDisabled={selectedWallet === null}
 							onClick={() => setIsRemoveWalletOpen(true)}
-							className={`flex flex-row-reverse justify-center items-center gap-2 bg-primaryBgColor !h-[46px] !w-[173px] text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-lg uppercase font-bold !py-1 !px-[14px]`}
+							className={`flex flex-row-reverse justify-center items-center gap-2 bg-primaryBgColor !h-[48px] !w-[173px] text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-lg uppercase font-bold !py-1 !px-[14px]`}
 							btnText="Remove wallet"
 							colorStyle="outline"
 							wrapperClassName={`global-clip-primary-btn ${selectedWallet !== null && 'bg-btnPrimaryBgColor'}`}
@@ -287,6 +290,8 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 									header={"Claimed esXAI will appear in your wallet balance.\n"}
 									content={"Once you pass KYC for a wallet, any accrued esXAI for that wallet will be claimed and reflected in your esXAI balance."}
 									position="end"
+									mouseOver={setMouseOverTooltip}
+									extraClasses={{group: mouseOverTooltip ? "z-40" : "z-auto"}}
 								>
 									<HelpIcon width={14} height={14}/>
 								</CustomTooltip>
@@ -327,6 +332,8 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 								header={"Each key will accrue esXAI. Pass KYC to claim."}
 								content={"This value is the sum of all esXAI accrued for the selected wallet. If esXAI has already been claimed, it will appear in esXAI balance."}
 								position="end"
+								mouseOver={setMouseOverTooltip}
+								extraClasses={{group: mouseOverTooltip ? "z-40" : "z-auto"}}
 							>
 								<HelpIcon width={14} height={14}/>
 							</CustomTooltip>

@@ -28,10 +28,13 @@ export function Keys() {
 	const {refresh} = useChainDataRefresh();
 
 	return (
+		<div className="px-4">
 		<div className="w-full h-screen bg-primaryBgColor">
 			<div className="sticky top-0 bg-primaryBgColor flex flex-row justify-between items-center border-b border-primaryBorderColor pl-6 pr-2 z-40">
-				<div className="top-0 flex flex-row items-center py-5 gap-2">
+				<div className="top-0 flex flex-row items-center pt-[20px] pb-[18px] gap-2">
+					<div className="flex items-start min-h-[43px]">
 					<h2 className="text-3xl text-white font-bold">Keys</h2>
+					</div>
 
 					{licensesLoading ? (
 						<div
@@ -58,7 +61,7 @@ export function Keys() {
 
 					<a
 						onClick={refresh}
-						className="flex items-center text-lg text-btnPrimaryBgColor gap-1 cursor-pointer font-bold select-none"
+						className="flex items-center text-lg text-btnPrimaryBgColor gap-1 cursor-pointer font-bold select-none hover:text-white duration-200 easy-in"
 					>
 						<MdRefresh/> Refresh
 					</a>
@@ -98,5 +101,6 @@ export function Keys() {
 				</>
 			)}
 		</div>
+	</div>
 	)
 }

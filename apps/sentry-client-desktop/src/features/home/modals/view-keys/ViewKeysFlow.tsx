@@ -136,7 +136,7 @@ export function ViewKeysFlow() {
 							isDisabled={ownerAddress === ""}
 							btnText="Add wallet"
 							colorStyle="outline"
-							wrapperClassName="global-clip-primary-btn"
+							wrapperClassName="global-clip-primary-btn bg-btnPrimaryBgColor"
 						/>
 						</div>
                         <div className="px-6 pt-4">
