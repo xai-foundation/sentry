@@ -72,7 +72,7 @@ export function NetworkRewardsCard() {
 		: null;
 
 	return (
-		<Card width={"300px"} height={"670px"} customClasses={"bg-primaryBgColor shadow-default overflow-visible z-10"}>
+		<Card width={"300px"} height={"670px"} customClasses={"bg-nulnOil shadow-default overflow-visible z-10"}>
 
 			<div className="flex flex-row justify-between items-center py-4 px-6 border-b border-primaryBorderColor">
 				<div className="flex flex-row items-center gap-1 text-white text-xl font-bold">

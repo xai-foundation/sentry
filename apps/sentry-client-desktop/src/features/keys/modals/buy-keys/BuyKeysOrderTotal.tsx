@@ -177,7 +177,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 															setPromoCode(e.target.value)
 															setDiscount({applied: false, error: false})
 														}}
-														className={`w-full p-2 global-clip-primary-btn focus:outline-0 placeholder:text-americanSilver placeholder:text-lg bg-primaryBgColor text-americanSilver text-lg`}
+														className={`w-full p-2 global-clip-primary-btn focus:outline-0 placeholder:text-americanSilver placeholder:text-lg bg-nulnOil text-americanSilver text-lg`}
 														placeholder="Enter promo code"
 													/>
 													</div>

@@ -69,14 +69,14 @@ export function SentryNodeStatusCard() {
 	}
 
 	return (
-		<Card width={"695px"} height={"367px"} customClasses="bg-primaryBgColor shadow-default">
+		<Card width={"695px"} height={"367px"} customClasses="bg-nulnOil shadow-default">
 			{sentryRunning && (
 				<div className="absolute left-0 right-0 w-[695px] h-[367px] scale-[1.4] translate-x-[-90px] translate-y-[-15px]">
 					<img src={img} alt="logo" />
 				</div>
 			)}
 
-			<div className="sticky flex flex-row justify-between items-center py-5 px-6 border-b border-primaryBorderColor bg-primaryBgColor z-10">
+			<div className="sticky flex flex-row justify-between items-center py-5 px-6 border-b border-primaryBorderColor bg-nulnOil z-10">
 				<div className="flex flex-row items-center gap-1 text-white text-2xl">
 					<h2 className="font-bold">Sentry Node Status</h2>
 					<p className="flex items-center ml-2 text-lg text-elementalGrey">

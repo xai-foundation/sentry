@@ -72,7 +72,7 @@ const TemporaryInput = ({
 			<div
 				className={`flex w-full group ${inputHeight} px-[12px] justify-center items-center relative cursor-text max-w-[${widthProperties?.inputWrapper}px]`}>
 				<span
-					className={`global-input-clip-path w-full max-w-[calc(100%-2px)] bg-primaryBgColor ${borderHeight} absolute z-10 ${isFocused && "bg-primaryBgColor"}`}></span>
+					className={`global-input-clip-path w-full max-w-[calc(100%-2px)] bg-nulnOil ${borderHeight} absolute z-10 ${isFocused && "bg-nulnOil"}`}></span>
 				<span
 					className={`global-input-clip-path max-w-[${widthProperties?.inputWrapper}px] bg-secondaryBorderColor ${isInvalid && "!bg-primaryWarningText"} ${isFocused && !isInvalid && "bg-inputPrimaryHoverBg"} ${!disabled && "group-hover:bg-inputPrimaryHoverBg"} ${disabled && "!bg-primaryBorderColor"} w-full ${inputHeight} absolute z-[5]`}>
       </span>

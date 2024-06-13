@@ -140,7 +140,7 @@ export function SentryWallet() {
 	function getKeys() {
 		if (nodeLicenseStatusMap.size === 0) {
 			return (
-				<tr className="flex pr-8 py-[15px] bg-primaryBgColor text-sm">
+				<tr className="flex pr-8 py-[15px] bg-nulnOil text-sm">
 					<td colSpan={3} className="w-full text-center text-lg text-medium text-americanSilver">No keys found.</td>
 				</tr>
 			);
@@ -159,7 +159,7 @@ export function SentryWallet() {
 				//const isEven = i++ % 2 === 0;
 
 				element.push(
-					<tr className={`bg-primaryBgColor flex pl-[25px] pr-8 text-sm border-b border-primaryBorderColor`} key={`license-${i}`}>
+					<tr className={`bg-nulnOil flex pl-[25px] pr-8 text-sm border-b border-primaryBorderColor`} key={`license-${i}`}>
 						<td className="w-full max-w-[65px] pr-4 py-4 text-lg font-medium text-elementalGrey">{key.toString()}</td>
 						<td className="w-full max-w-[400px] pr-4 py-4 text-lg font-medium text-elementalGrey">{status.ownerPublicKey}</td>
 						<td className="w-full max-w-[400px] px-4 py-4 text-lg font-medium text-elementalGrey">
@@ -220,7 +220,7 @@ export function SentryWallet() {
 				<div
 					className="sticky top-0 flex flex-col items-center w-full h-auto z-10">
 					<div
-						className={`flex flex-row justify-between items-center w-full ${drawerState === null ? "py-[11px]" : "py-[15px]"} bg-primaryBgColor gap-2 border-b border-primaryBorderColor pl-[24px] pr-2`}>
+						className={`flex flex-row justify-between items-center w-full ${drawerState === null ? "py-[11px]" : "py-[15px]"} bg-nulnOil gap-2 border-b border-primaryBorderColor pl-[24px] pr-2`}>
 						<div className="flex flex-row items-center gap-2 w-full max-w-[50%] z-[15]">
 							<span>
 								{sentryRunning && hasAssignedKeys && funded && <GreenPulse size='md'/>}
@@ -295,7 +295,7 @@ export function SentryWallet() {
 									<HiOutlineDotsVertical/>
 									{isMoreOptionsOpen && (
 										<div
-											className="absolute flex flex-col items-center top-8 right-0 w-[210px] bg-primaryBgColor border border-primaryBorderColor">
+											className="absolute flex flex-col items-center top-8 right-0 w-[210px] bg-nulnOil border border-primaryBorderColor">
 											<div
 												onClick={() => setDrawerState(DrawerView.ExportSentry)}
 												className="w-full flex justify-center items-center gap-1 py-2 cursor-pointer hover:bg-secondaryBgColor duration-300 ease-in-out"
@@ -353,7 +353,7 @@ export function SentryWallet() {
 					<SentryWalletHeader/>
 
 					<div
-						className=" w-full py-[22px] pl-[24px]  bg-primaryBgColor">
+						className=" w-full py-[22px] pl-[24px]  bg-nulnOil">
 						<div className="flex flex-row items-center gap-[20px]">
 							<h2 className="font-bold text-white text-2xl uppercase">Assigned Keys</h2>
 							<div className="flex gap-[5px] items-center">
@@ -477,7 +477,7 @@ export function SentryWallet() {
 								</thead>
 								<tbody>
 								{loading ? (
-									<tr className="text-[#A3A3A3] text-sm flex px-8 bg-primaryBgColor py-4">
+									<tr className="text-[#A3A3A3] text-sm flex px-8 bg-nulnOil py-4">
 										<td colSpan={3}
 											className="w-full text-center text-lg font-medium text-elementalGrey">Loading...
 										</td>
@@ -499,7 +499,7 @@ export function SentryWallet() {
 						) : (
 							sentryRunning ? (
 								<div
-									className="w-full flex-1 flex flex-col justify-center items-center bg-primaryBgColor shadow-default">
+									className="w-full flex-1 flex flex-col justify-center items-center bg-nulnOil shadow-default">
 									<AssignKeysFromNewWallet/>
 								</div>
 							) : (

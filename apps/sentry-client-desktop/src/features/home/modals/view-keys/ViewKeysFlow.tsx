@@ -121,7 +121,7 @@ export function ViewKeysFlow() {
 							type="text"
 							value={ownerAddress}
 							onChange={handleInputChange}
-							className="w-full p-3 global-clip-primary-btn focus:outline-0 placeholder:text-americanSilver placeholder:text-lg bg-primaryBgColor text-americanSilver"
+							className="w-full p-3 global-clip-primary-btn focus:outline-0 placeholder:text-americanSilver placeholder:text-lg bg-nulnOil text-americanSilver"
 							placeholder="Enter public key"
 						/>
 						</div>

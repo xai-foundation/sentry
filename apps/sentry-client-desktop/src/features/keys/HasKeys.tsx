@@ -77,7 +77,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 
 		if (licenses.length === 0) {
 			return (
-				<tr className="bg-primaryBgColor flex px-8 text-lg text-elementalGrey">
+				<tr className="bg-nulnOil flex px-8 text-lg text-elementalGrey">
 					<td colSpan={5} className="w-full text-center">
 						No keys found.
 					</td>
@@ -106,7 +106,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 			}
 
 			return (
-				<tr className={`${isEven ? "bg-primaryBgColor" : "bg-primaryBgColor"} flex px-6 text-lg border-b border-primaryBorderColor`} key={`license-${i}`}>
+				<tr className={`bg-nulnOil flex px-6 text-lg border-b border-primaryBorderColor`} key={`license-${i}`}>
 					<td className="min-w-[7%] px-2 py-2 text-elementalGrey">{keyString}</td>
 					<td className="min-w-[37%] px-2 py-2 text-elementalGrey">{owner}</td>
 					<td className="min-w-[27%] px-4 py-2 text-elementalGrey">
@@ -358,8 +358,8 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 
 				<div className="flex flex-col max-h-[70vh]">
 					<div className="w-full overflow-y-auto">
-						<table className="w-full bg-primaryBgColor">
-							<thead className="text-elementalGrey text-base sticky top-0 bg-primaryBgColor z-10">
+						<table className="w-full bg-nulnOil">
+							<thead className="text-elementalGrey text-base sticky top-0 bg-nulnOil z-10">
 							<tr className="flex items-center text-left text-base border-b border-t border-primaryBorderColor px-[25px] py-[15px] bg-secondaryBgColor">
 								<th className="min-w-[7%] px-2 py-0">KEY ID</th>
 								<th className="min-w-[37%] px-2 py-0">OWNER ADDRESS</th>
