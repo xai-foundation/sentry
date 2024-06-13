@@ -174,7 +174,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 							? ethers.formatEther(balances[keyString].totalAccruedEsXai)
 							: "Loading..."}
 					</td>
-					<td className="min-w-[12%] px-4 py-2 text-btnPrimaryBgColor font-bold text-right">
+					<td className="min-w-[12%] px-4 py-2 text-hornetSting font-bold text-right">
 						<span
 							className="cursor-pointer pr-[3px] uppercase hover:text-white duration-300 ease-in-out"
 							onClick={() => window.electron.openExternal(`https://opensea.io/assets/arbitrum/${config.nodeLicenseAddress}/${keyString}`)}
@@ -260,7 +260,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 							onClick={() => setDrawerState(DrawerView.ViewKeys)}
 							className={`flex flex-row-reverse group !w-[147px] !h-[50px] justify-center items-center gap-2 text-lg font-bold uppercase !py-1 !px-[14px]`}
 							btnText="Add wallet"
-							icon={<AiOutlinePlus className="h-[15px] w-[15px] group-hover:fill-btnPrimaryBgColor duration-200 easy in" color={"#ffffff"}/>}
+							icon={<AiOutlinePlus className="h-[15px] w-[15px] group-hover:fill-hornetSting duration-200 easy in" color={"#ffffff"}/>}
 						/>
 						</div>
 						<div>

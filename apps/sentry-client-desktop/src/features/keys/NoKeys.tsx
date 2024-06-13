@@ -28,7 +28,7 @@ export function NoKeys() {
 
 					<a
 						onClick={() => setDrawerState(DrawerView.ViewKeys)}
-						className="text-btnPrimaryBgColor font-bold hover:text-white ml-1 cursor-pointer"
+						className="text-hornetSting font-bold hover:text-white ml-1 cursor-pointer"
 					>
 						Add wallet
 					</a>

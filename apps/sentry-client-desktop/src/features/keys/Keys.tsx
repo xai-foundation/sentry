@@ -61,7 +61,7 @@ export function Keys() {
 
 					<a
 						onClick={refresh}
-						className="flex items-center text-lg text-btnPrimaryBgColor gap-1 cursor-pointer font-bold select-none hover:text-white duration-200 easy-in"
+						className="flex items-center text-lg text-hornetSting gap-1 cursor-pointer font-bold select-none hover:text-white duration-200 easy-in"
 					>
 						<MdRefresh/> Refresh
 					</a>

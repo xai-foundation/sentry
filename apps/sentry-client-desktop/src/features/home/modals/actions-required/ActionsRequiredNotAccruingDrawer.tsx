@@ -112,7 +112,7 @@ export function ActionsRequiredNotAccruingDrawer() {
 											You must pass KYC within 180 days of accruing esXAI to claim accrued node
 											rewards. Check back in 48 hours if all docs submitted. Check your inbox
 											(including spam) for updates. For KYC issues, contact<a
-											className="text-btnPrimaryBgColor font-bold cursor-pointer"
+											className="text-hornetSting font-bold cursor-pointer"
 											onClick={() => window.electron.openExternal(`https://help.blockpass.org/hc/en-us/requests/new`)}
 										> Blockpass.</a> If not completed, continue submission here.
 										</p>

@@ -21,7 +21,7 @@ export function Sidebar() {
 	const { funded, hasAssignedKeys } = useAtomValue(accruingStateAtom);
 	const getActiveLink = (url: string) => {
 		if(location.pathname.includes(url)) {
-			return "bg-btnPrimaryBgColor global-clip-path text-white";
+			return "bg-hornetSting global-clip-path text-white";
 		}
 		return "";
 	}
@@ -32,7 +32,7 @@ export function Sidebar() {
 		>
 			<div className="fixed flex flex-col">
 				<div
-					className="flex group items-centertext-base w-[5rem] h-[5rem] mb-[37px] font-semibold cursor-pointer bg-btnPrimaryBgColor hover:bg-white duration-200 ease-in px-[20px] py-[23px]"
+					className="flex group items-centertext-base w-[5rem] h-[5rem] mb-[37px] font-semibold cursor-pointer bg-hornetSting hover:bg-white duration-200 ease-in px-[20px] py-[23px]"
 					onClick={() => navigate("/")}
 				>
 					<XaiHeaderIcon width={39} height={34} />
@@ -75,34 +75,34 @@ export function Sidebar() {
 				<div className="px-[17px]">
 					<a
 						onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup/step-2-download-and-run-the-xai-sentry-node")}
-						className="flex items-center mb-[5px] text-base font-medium text-white cursor-pointer gap-2 hover:text-btnPrimaryBgColor duration-200 ease-in"
+						className="flex items-center mb-[5px] text-base font-medium text-white cursor-pointer gap-2 hover:text-hornetSting duration-200 ease-in"
 					>
 						<AiOutlineCloudUpload size={16}/> SET UP ON CLOUD
 					</a>
 					<a
 						onClick={() => window.electron.openExternal(" https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup/step-3-complete-requirements-to-accrue-esxai")}
-						className="flex items-center mb-[5px] text-base font-medium text-white cursor-pointer gap-2 hover:text-btnPrimaryBgColor duration-200 ease-in"
+						className="flex items-center mb-[5px] text-base font-medium text-white cursor-pointer gap-2 hover:text-hornetSting duration-200 ease-in"
 					>
 						<SiGitbook size={16}/> GITBOOK
 					</a>
 
 					<a
 						onClick={() => window.electron.openExternal('https://discord.com/invite/xaigames')}
-						className="flex items-center mb-[5px] text-base font-medium text-white cursor-pointer gap-2 hover:text-btnPrimaryBgColor duration-200 ease-in"
+						className="flex items-center mb-[5px] text-base font-medium text-white cursor-pointer gap-2 hover:text-hornetSting duration-200 ease-in"
 					>
 						<FaDiscord size={16}/> DISCORD
 					</a>
 					<a
 						onClick={() => window.electron.openExternal('https://twitter.com/xai_games')}
-						className="flex items-center mb-[5px] text-base font-medium text-white cursor-pointer gap-2 hover:text-btnPrimaryBgColor duration-200 ease-in"
+						className="flex items-center mb-[5px] text-base font-medium text-white cursor-pointer gap-2 hover:text-hornetSting duration-200 ease-in"
 					>
 						<RiTwitterXFill size={16}/> X
 					</a>
 					<a
 						onClick={() => window.electron.openExternal('https://t.me/XaiSentryNodes')}
-						className="flex group items-center mb-[20px] text-base font-medium text-white cursor-pointer gap-2 hover:text-btnPrimaryBgColor duration-200 ease-in"
+						className="flex group items-center mb-[20px] text-base font-medium text-white cursor-pointer gap-2 hover:text-hornetSting duration-200 ease-in"
 					>
-						<TelegramIcon width={16} height={16} className="fill-white group-hover:fill-btnPrimaryBgColor duration-200 ease-in"/> TELEGRAM
+						<TelegramIcon width={16} height={16} className="fill-white group-hover:fill-hornetSting duration-200 ease-in"/> TELEGRAM
 					</a>
 				<a
 					className="text-secondaryText text-[15px] cursor-pointer hover:underline duration-200 ease-in"
