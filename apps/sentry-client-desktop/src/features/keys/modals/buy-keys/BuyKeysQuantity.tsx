@@ -26,7 +26,7 @@ export function BuyKeysQuantity({quantity, setQuantity}: BuyKeysQuantityProps) {
 						maxSupply={maxSupply}
 						wrapperClassName="!bg-foggyLondon hover:!bg-hornetSting"
 						containerClassName="!bg-nulnOil"
-						btnClassName="hover:!bg-dropdownSecondaryBg"
+						btnClassName="hover:!bg-velvetBlack"
 						inputClassName="!bg-nulnOil"
 					/>
 				</div>

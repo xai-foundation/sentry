@@ -46,7 +46,7 @@ export const Dropdown = ({setIsOpen, isOpen, setSelectedValue, getDropdownItems,
         <div className="relative z-30" ref={dropdownRef}>
             <div
                 onClick={() => setIsOpen(!isOpen)}
-                className={`relative h-[48px] px-[15px] group z-[20] text-lg font-medium text-americanSilver transition-bg duration-300 ease-in-out ${isOpen ? "bg-dropdownSecondaryBg" : "bg-nulnOil"} flex items-center justify-between w-[538px] dropdown-clip-path dropdown ${extraClasses?.dropdown}`}
+                className={`relative h-[48px] px-[15px] group z-[20] text-lg font-medium text-americanSilver transition-bg duration-300 ease-in-out ${isOpen ? "bg-velvetBlack" : "bg-nulnOil"} flex items-center justify-between w-[538px] dropdown-clip-path dropdown ${extraClasses?.dropdown}`}
             >
                 {selectedValueRender}
                 <DropdownArrow
