@@ -6,7 +6,8 @@ module.exports = {
   ],
   theme: {
     opacity: {
-      "75": ".75"
+      "75": ".75",
+      "10": ".10"
     },
     colors: {
       white: "#fff",

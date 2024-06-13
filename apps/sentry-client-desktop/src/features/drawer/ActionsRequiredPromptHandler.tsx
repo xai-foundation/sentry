@@ -50,7 +50,7 @@ export function ActionsRequiredPromptHandler() {
 	} else {
 		return (
 			<div
-				className="flex gap-4 bg-successBgColor global-cta-clip-path p-3 mr-2 z-10"
+				className="flex gap-4 !bg-drunkenDragonFly/10 global-cta-clip-path p-3 mr-2 z-10"
 				onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}
 			>
 				<div className="flex flex-row gap-2 items-center cursor-pointer">

@@ -14,7 +14,7 @@ export function BuyFlowBanner({quantity, promoCode}: BuyFlowBanner) {
 
 	return (
 		<div className="w-full flex flex-col gap-4 px-6">
-			<BaseCallout extraClasses={{ calloutWrapper: "bg-successBgColor", calloutFront: "flex-col !items-start text-drunkenDragonFly !text-lg" }}>
+			<BaseCallout extraClasses={{ calloutWrapper: "!bg-drunkenDragonFly/10", calloutFront: "flex-col !items-start text-drunkenDragonFly !text-lg" }}>
 					<span className="flex flex-row gap-1 items-center font-semibold">
 						<AiFillCheckCircle className="w-6 h-6 text-drunkenDragonFly" /> Purchase will be completed on <p
 						className="text-drunkenDragonFly">Xai.games</p>

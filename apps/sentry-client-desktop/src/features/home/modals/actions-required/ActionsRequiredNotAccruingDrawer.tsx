@@ -55,7 +55,7 @@ export function ActionsRequiredNotAccruingDrawer() {
 			<div>
 				<div className="py-5 px-6">
 					{accruing ? (
-						<SquareCard className="bg-successBgColor global-cta-clip-path">
+						<SquareCard className="!bg-drunkenDragonFly/10 global-cta-clip-path">
 							<IconLabel
 								icon={AiFillCheckCircle}
 								color="#3DD68C"
@@ -118,7 +118,7 @@ export function ActionsRequiredNotAccruingDrawer() {
 										</p>
 									</SquareCard>
 								) : (
-									<SquareCard className="bg-successBgColor global-cta-clip-path">
+									<SquareCard className="!bg-drunkenDragonFly/10 global-cta-clip-path">
 										<IconLabel
 											icon={AiFillCheckCircle}
 											color="#16A34A"
