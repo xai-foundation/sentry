@@ -13,8 +13,6 @@ module.exports = {
       white: "#fff",
       black: "#000000",
 
-      successBgColor: "#3DD68C1A",
-      dropdownItemPrimaryHoverBg: "#231D1F",
       tertiaryText: "#FF2C3A",
       primaryWarningText: "#FFC53D",
       primaryCalloutWarning: "#FFC53D1A",
@@ -70,6 +68,7 @@ module.exports = {
       nulnOilBackground: "#140F0FBF",
       blazeOrange: "#F76808",
       greyBorders: "#524D4F",
+      abaddonBlack: "#231D1F",
       drunkenDragonFly: "#3DD68C"//rebranding colors end
     },
     extend: {},

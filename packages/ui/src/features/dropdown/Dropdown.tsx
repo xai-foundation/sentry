@@ -22,7 +22,7 @@ interface DropdownItemProps {
 }
 
 export const DropdownItem = ({onClick, extraClasses, key, children}: DropdownItemProps) => {
-    return <p onClick={onClick} className={`flex items-center px-[15px] hover:bg-dropdownItemPrimaryHoverBg cursor-pointer duration-300 ease-in-out text-lg h-[48px] font-medium ${extraClasses}`} key={key}>{children}</p>
+    return <p onClick={onClick} className={`flex items-center px-[15px] hover:bg-abaddonBlack cursor-pointer duration-300 ease-in-out text-lg h-[48px] font-medium ${extraClasses}`} key={key}>{children}</p>
 }
 
 export const Dropdown = ({setIsOpen, isOpen, setSelectedValue, getDropdownItems, selectedValueRender, extraClasses, defaultValue}: DropdownProps) => {
@@ -65,7 +65,7 @@ export const Dropdown = ({setIsOpen, isOpen, setSelectedValue, getDropdownItems,
                             setSelectedValue(null);
                             setIsOpen(false);
                         }}
-                        className="px-[15px] h-[48px] flex items-center cursor-pointer hover:bg-dropdownItemPrimaryHoverBg"
+                        className="px-[15px] h-[48px] flex items-center cursor-pointer hover:bg-abaddonBlack"
                     >
                         {defaultValue}
                     </p>
