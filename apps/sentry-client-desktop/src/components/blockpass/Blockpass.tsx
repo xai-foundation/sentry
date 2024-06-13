@@ -60,7 +60,7 @@ export function BlockPassKYC({onClick = () => {}, children = "Begin KYC"}: Props
 
 	return (
 		<a
-			className="text-[#F30919] cursor-pointer"
+			className="text-[#F30919] cursor-pointer hover:text-white duration-200 ease-in"
 			id="blockpass-kyc-connect"
 			onClick={onClickHelper}
 		>

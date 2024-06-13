@@ -1,6 +1,7 @@
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import {PropsWithChildren} from "react";
 import {FaEthereum} from "react-icons/fa";
+import { BlackPyramidIcon } from "../icons/IconsComponents";
 
 interface TooltipProps extends PropsWithChildren {
 	header?: string;
@@ -10,11 +11,11 @@ interface TooltipProps extends PropsWithChildren {
 	banner?: boolean;
 	bannerTitle?: string;
 	bannerValue?: string;
-  width?: number;
-  height?: number;
+    width?: number;
+    height?: number;
 	position?: "start" | "center" | "end";
-  side?: "top" | "right" | "bottom" | "left";
-  sideOffset?: number;
+    side?: "top" | "right" | "bottom" | "left";
+    sideOffset?: number;
 }
 
 export const SideBarTooltip = ({header, body, body2, body3, banner, bannerTitle, bannerValue, width = 443, height, position = "start", side = "bottom", sideOffset = 12, children}: TooltipProps) => {
@@ -45,7 +46,10 @@ export const SideBarTooltip = ({header, body, body2, body3, banner, bannerTitle,
                                 <p className="font-semibold flex flex-row gap-1 items-center">
                                     <FaEthereum/> {bannerValue}
                                 </p>
-                            </div>}
+							</div>}
+						<div className="absolute top-[-23px] right-0 z-50">
+						<BlackPyramidIcon width={28} height={24}/>
+						</div>
 					</div>
 				</TooltipPrimitive.Content>
 			</TooltipPrimitive.Root>

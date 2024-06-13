@@ -43,6 +43,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 	const {startRuntime, sentryRunning} = useOperatorRuntime();
 	const {data: earnedEsxaiBalance} = useGetWalletBalance(combinedOwners);
 	const {data: singleWalletBalance} = useGetSingleWalletBalance(selectedWallet);
+	const [mouseOverTooltip, setMouseOverTooltip] = useState(false);
 
 	function startAssignment() {
 		if (!isOperatorLoading) {
@@ -117,7 +118,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 								Sentry not running
 								<a
 									onClick={startRuntime}
-									className="text-[#F30919] cursor-pointer"
+									className="text-[#F30919] cursor-pointer hover:text-white duration-200 ease-in"
 								>
 									Start
 								</a>
@@ -130,7 +131,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 								Wallet not assigned
 								<a
 									onClick={() => startAssignment()}
-									className="text-[#F30919] cursor-pointer"
+									className="text-[#F30919] cursor-pointer hover:text-white duration-200 ease-in"
 								>
 									Assign
 								</a>
@@ -176,7 +177,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					</td>
 					<td className="min-w-[12%] px-4 py-2 text-btnPrimaryBgColor font-bold text-right">
 						<span
-							className="cursor-pointer pr-[3px]"
+							className="cursor-pointer pr-[3px] uppercase hover:text-white duration-300 ease-in-out"
 							onClick={() => window.electron.openExternal(`https://opensea.io/assets/arbitrum/${config.nodeLicenseAddress}/${keyString}`)}
 						>
 							View
@@ -233,6 +234,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						View Wallet
 					</p>
 					<div className="relative flex flex-row gap-3">
+						<div className="max-h-[48px]">
 						<Dropdown
 						isOpen={isOpen}
 						setIsOpen={setIsOpen}
@@ -244,11 +246,12 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						setSelectedValue={setSelectedWallet}
 						getDropdownItems={getDropdownItems}
 						/>
+						</div>
                         <div>
 						<PrimaryButton
 							isDisabled={selectedWallet === null}
 							onClick={copySelectedWallet}
-							className={`bg-primaryBgColor flex !h-[46px] items-center !w-[155px] text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-lg uppercase font-bold !py-1 !px-[10px]`}
+							className={`bg-primaryBgColor flex !h-[48px] items-center !w-[155px] text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-lg uppercase font-bold !py-1 !px-[10px]`}
 							btnText="Copy address"
 							colorStyle="outline"
 							wrapperClassName={`global-clip-primary-btn ${selectedWallet !== null && 'bg-btnPrimaryBgColor'}`}
@@ -258,7 +261,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
                         <div>
 						<PrimaryButton
 							onClick={() => setDrawerState(DrawerView.ViewKeys)}
-							className="flex flex-row-reverse group !h-[46px] !w-[147px] justify-center items-center gap-2 text-lg bg-btnPrimaryBgColor text-white font-bold uppercase !py-1 !px-[14px] hover:text-btnPrimaryBgColor"
+							className={`flex flex-row-reverse group !w-[147px] !h-[50px] justify-center items-center gap-2 text-lg bg-btnPrimaryBgColor text-white font-bold uppercase !py-1 !px-[14px] hover:text-btnPrimaryBgColor`}
 							btnText="Add wallet"
 							icon={<AiOutlinePlus className="h-[15px] w-[15px] group-hover:fill-btnPrimaryBgColor duration-200 easy in" color={"#ffffff"}/>}
 						/>
@@ -267,7 +270,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						<PrimaryButton
 							isDisabled={selectedWallet === null}
 							onClick={() => setIsRemoveWalletOpen(true)}
-							className={`flex flex-row-reverse justify-center items-center gap-2 bg-primaryBgColor !h-[46px] !w-[173px] text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-lg uppercase font-bold !py-1 !px-[14px]`}
+							className={`flex flex-row-reverse justify-center items-center gap-2 bg-primaryBgColor !h-[48px] !w-[173px] text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-lg uppercase font-bold !py-1 !px-[14px]`}
 							btnText="Remove wallet"
 							colorStyle="outline"
 							wrapperClassName={`global-clip-primary-btn ${selectedWallet !== null && 'bg-btnPrimaryBgColor'}`}
@@ -287,6 +290,8 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 									header={"Claimed esXAI will appear in your wallet balance.\n"}
 									content={"Once you pass KYC for a wallet, any accrued esXAI for that wallet will be claimed and reflected in your esXAI balance."}
 									position="end"
+									mouseOver={setMouseOverTooltip}
+									extraClasses={{group: mouseOverTooltip ? "z-40" : "z-auto"}}
 								>
 									<HelpIcon width={14} height={14}/>
 								</CustomTooltip>
@@ -327,6 +332,8 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 								header={"Each key will accrue esXAI. Pass KYC to claim."}
 								content={"This value is the sum of all esXAI accrued for the selected wallet. If esXAI has already been claimed, it will appear in esXAI balance."}
 								position="end"
+								mouseOver={setMouseOverTooltip}
+								extraClasses={{group: mouseOverTooltip ? "z-40" : "z-auto"}}
 							>
 								<HelpIcon width={14} height={14}/>
 							</CustomTooltip>
@@ -357,16 +364,16 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					<div className="w-full overflow-y-auto">
 						<table className="w-full bg-primaryBgColor">
 							<thead className="text-secondaryText text-base sticky top-0 bg-primaryBgColor z-10">
-							<tr className="flex items-center text-left text-base px-6 border-b border-t border-primaryBorderColor">
-								<th className="min-w-[7%] px-2 py-2">KEY ID</th>
-								<th className="min-w-[37%] px-2 py-2">OWNER ADDRESS</th>
-								<th className="min-w-[27%] px-4 py-2">STATUS</th>
-								<th className="min-w-[17%] px-4 py-2 flex items-center justify-end gap-1">
+							<tr className="flex items-center text-left text-base border-b border-t border-primaryBorderColor px-[25px] py-[15px] bg-secondaryBgColor">
+								<th className="min-w-[7%] px-2 py-0">KEY ID</th>
+								<th className="min-w-[37%] px-2 py-0">OWNER ADDRESS</th>
+								<th className="min-w-[27%] px-4 py-0">STATUS</th>
+								<th className="min-w-[17%] px-4 py-0 flex items-center justify-end gap-1">
 									{isBalancesLoading &&
                                         <BiLoaderAlt className="animate-spin w-[18px]" color={"#FF0030"}/>}
 									ACCRUED esXAI
 								</th>
-								<th className="min-w-[12%] px-4 py-2 text-right">OPENSEA URL</th>
+								<th className="min-w-[12%] px-4 py-0 text-right">OPENSEA URL</th>
 							</tr>
 							</thead>
 							<tbody className="relative">{renderKeys()}</tbody>

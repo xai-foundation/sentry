@@ -220,8 +220,8 @@ export function SentryWallet() {
 				<div
 					className="sticky top-0 flex flex-col items-center w-full h-auto z-10">
 					<div
-						className="flex flex-row justify-between items-center w-full py-[22px] bg-primaryBgColor gap-2 border-b border-primaryBorderColor pl-[24px] pr-2">
-						<div className="flex flex-row items-center gap-2 w-full max-w-[50%]">
+						className={`flex flex-row justify-between items-center w-full ${drawerState === null ? "py-[11px]" : "py-[15px]"} bg-primaryBgColor gap-2 border-b border-primaryBorderColor pl-[24px] pr-2`}>
+						<div className="flex flex-row items-center gap-2 w-full max-w-[50%] z-[15]">
 							<span>
 								{sentryRunning && hasAssignedKeys && funded && <GreenPulse size='md'/>}
 								{sentryRunning && !hasAssignedKeys && !funded && <YellowPulse size='md'/>}
@@ -318,7 +318,7 @@ export function SentryWallet() {
 									onClick={() => {
 										setDrawerState(DrawerView.Whitelist)
 									}}
-									className={`ml-[10px] flex flex-row justify-center items-center gap-2 text-tertiaryText text-lg font-bold ${!stopRuntime && 'cursor-not-allowed'}`}
+									className={`ml-[10px] flex flex-row justify-center items-center gap-2 text-tertiaryText text-lg font-bold ${!stopRuntime ? 'cursor-not-allowed' : "hover:text-white duration-300"}`}
 									disabled={!stopRuntime}
 								>
 									{stopRuntime ?
@@ -337,7 +337,7 @@ export function SentryWallet() {
 							) : (
 								<button
 									onClick={startRuntime}
-									className="ml-4 flex flex-row justify-center items-center gap-2 text-lg font-bold text-tertiaryText"
+									className="ml-4 flex flex-row justify-center items-center gap-2 text-lg font-bold text-tertiaryText hover:text-white duration-300 ease-in-out"
 								>
 									<FaPlay className="h-[15px]"/>
 									Start Sentry
@@ -387,7 +387,7 @@ export function SentryWallet() {
 							) : (
 								<a
 									onClick={onRefreshTable}
-									className="flex items-center text-lg text-tertiaryText gap-1 cursor-pointer select-none"
+									className="flex items-center text-lg text-tertiaryText gap-1 cursor-pointer select-none hover:text-white duration-300 ease-in-out"
 								>
 									<MdRefresh/> Refresh
 								</a>
@@ -489,7 +489,7 @@ export function SentryWallet() {
 					<>
 						{loading ? (
 							<div className="w-full flex-1 flex flex-col justify-center items-center">
-								<h3 className="text-center">Loading...</h3>
+								{/* <h3 className="text-center">Loading...</h3> */}
 							</div>
 						) : (
 							sentryRunning ? (

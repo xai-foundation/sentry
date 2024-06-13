@@ -101,7 +101,7 @@ export function ViewKeysFlow() {
 			<div
 				className="absolute top-0 bottom-0 left-0 right-0 m-auto flex flex-col justify-center items-center gap-4">
 				<FaCircleCheck color={"#16A34A"} size={32}/>
-				<span className="text-lg">Wallet added successfully</span>
+				<span className="text-lg text-bold text-white">Wallet added successfully</span>
 			</div>
 		)
 	}
@@ -136,7 +136,7 @@ export function ViewKeysFlow() {
 							isDisabled={ownerAddress === ""}
 							btnText="Add wallet"
 							colorStyle="outline"
-							wrapperClassName="global-clip-primary-btn"
+							wrapperClassName="global-clip-primary-btn bg-btnPrimaryBgColor"
 						/>
 						</div>
                         <div className="px-6 pt-4">

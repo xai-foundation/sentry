@@ -52,7 +52,7 @@ export function SentryWalletHeader() {
 				) : (
 					<a
 						onClick={onRefreshEthBalance}
-						className="flex items-center text-lg font-bold text-tertiaryText gap-1 cursor-pointer select-none ml-[14px]"
+						className="flex items-center text-lg font-bold text-tertiaryText gap-1 cursor-pointer select-none ml-[14px] hover:text-white duration-300 ease-in-out"
 					>
 						<MdRefresh/> Refresh
 					</a>
