@@ -318,7 +318,7 @@ export function SentryWallet() {
 									onClick={() => {
 										setDrawerState(DrawerView.Whitelist)
 									}}
-									className={`ml-[10px] flex flex-row justify-center items-center gap-2 text-tertiaryText text-lg font-bold ${!stopRuntime ? 'cursor-not-allowed' : "hover:text-white duration-300"}`}
+									className={`ml-[10px] flex flex-row justify-center items-center gap-2 text-pelati text-lg font-bold ${!stopRuntime ? 'cursor-not-allowed' : "hover:text-white duration-300"}`}
 									disabled={!stopRuntime}
 								>
 									{stopRuntime ?
@@ -337,7 +337,7 @@ export function SentryWallet() {
 							) : (
 								<button
 									onClick={startRuntime}
-									className="ml-4 flex flex-row justify-center items-center gap-2 text-lg font-bold text-tertiaryText hover:text-white duration-300 ease-in-out"
+									className="ml-4 flex flex-row justify-center items-center gap-2 text-lg font-bold text-pelati hover:text-white duration-300 ease-in-out"
 								>
 									<FaPlay className="h-[15px]"/>
 									Start Sentry
@@ -381,13 +381,13 @@ export function SentryWallet() {
 								</CustomTooltip>
 							</div>
 							{loading ? (
-								<span className="flex items-center text-lg font-bold text-tertiaryText select-none">
+								<span className="flex items-center text-lg font-bold text-pelati select-none">
 								Refreshing
 							</span>
 							) : (
 								<a
 									onClick={onRefreshTable}
-									className="flex items-center text-lg text-tertiaryText gap-1 cursor-pointer select-none hover:text-white duration-300 ease-in-out"
+									className="flex items-center text-lg text-pelati gap-1 cursor-pointer select-none hover:text-white duration-300 ease-in-out"
 								>
 									<MdRefresh/> Refresh
 								</a>

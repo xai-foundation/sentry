@@ -46,13 +46,13 @@ export function SentryWalletHeader() {
 					<HelpIcon width={14} height={14}/>
 				</CustomTooltip>
 				{isBalanceLoading ? (
-					<p className="flex items-center text-lg font-bold text-tertiaryText select-none ml-[18px]">
+					<p className="flex items-center text-lg font-bold text-pelati select-none ml-[18px]">
 						Refreshing
 					</p>
 				) : (
 					<a
 						onClick={onRefreshEthBalance}
-						className="flex items-center text-lg font-bold text-tertiaryText gap-1 cursor-pointer select-none ml-[14px] hover:text-white duration-300 ease-in-out"
+						className="flex items-center text-lg font-bold text-pelati gap-1 cursor-pointer select-none ml-[14px] hover:text-white duration-300 ease-in-out"
 					>
 						<MdRefresh/> Refresh
 					</a>

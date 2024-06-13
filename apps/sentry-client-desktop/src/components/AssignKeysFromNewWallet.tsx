@@ -40,7 +40,7 @@ export function AssignKeysFromNewWallet() {
 
 				<TextButton
 					onClick={() => setDrawerState(DrawerView.BuyKeys)}
-					className="text-tertiaryText font-bold text-lg ml-1 cursor-pointer !py-0"
+					className="text-pelati font-bold text-lg ml-1 cursor-pointer !py-0"
 					buttonText={"Purchase keys"}
 				/>
 			</p>

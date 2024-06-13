@@ -13,7 +13,6 @@ module.exports = {
       white: "#fff",
       black: "#000000",
 
-      tertiaryText: "#FF2C3A",
       primaryWarningText: "#FFC53D",
       primaryCalloutWarning: "#FFC53D1A",
       btnSecondaryText: "#1A1819",

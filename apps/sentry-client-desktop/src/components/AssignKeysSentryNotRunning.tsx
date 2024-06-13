@@ -19,7 +19,7 @@ export function AssignKeysSentryNotRunning() {
 			<PrimaryButton
 				onClick={() => startRuntime!()}
 				wrapperClassName="w-max"
-				className="flex justify-center items-center text-lg text-white bg-[#F30919] font-semibold mt-2 px-6 py-3 uppercase !h-[48px] hover:text-tertiaryText duration-300 ease-in-out"
+				className="flex justify-center items-center text-lg text-white bg-[#F30919] font-semibold mt-2 px-6 py-3 uppercase !h-[48px] hover:text-pelati duration-300 ease-in-out"
 				btnText={"Start Sentry"}
 			/>
 		</div>
