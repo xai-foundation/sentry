@@ -193,8 +193,7 @@ export function ImportSentryDrawer() {
 
 								<div className="mt-[12px] w-full">
 									{privateKeyError.error && (
-										<BaseCallout extraClasses={{calloutWrapper: "h-[50px] w-full text-bananaBoat",
-											calloutFront: "!bg-primaryCalloutWarning"}}>
+										<BaseCallout extraClasses={{calloutWrapper: "h-[50px] w-full text-bananaBoat"}} isWarning>
 											<WarningIcon /> <span className="text-lg text-medium ml-[10px]">{privateKeyError.message}</span>
 										</BaseCallout>
 									)}

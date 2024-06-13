@@ -13,7 +13,6 @@ module.exports = {
       white: "#fff",
       black: "#000000",
 
-      primaryCalloutWarning: "#FFC53D1A",
       btnSecondaryText: "#1A1819",
       checkBoxCheckedPrimaryColor: "#FF0030",
       checkboxPrimaryBg: "#525252",

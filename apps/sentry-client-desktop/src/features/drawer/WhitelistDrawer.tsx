@@ -148,7 +148,7 @@ export function WhitelistDrawer() {
 			</div>
 
 			<div className="w-full flex-shrink-0 h-18 flex flex-col items-center justify-center px-2 pt-[69px] border-t border-chromaphobicBlack">
-				<BaseCallout extraClasses={{calloutWrapper: "w-full max-w-[370px]", calloutFront: "bg-primaryCalloutWarning text-[#FFC53D]"}}>
+				<BaseCallout extraClasses={{calloutWrapper: "w-full max-w-[370px]", calloutFront: "text-[#FFC53D] !px-0"}} isWarning>
 					<WarningIcon /> <span className="ml-[10px] text-lg font-medium">Applying changes will restart your sentry</span>
 				</BaseCallout>
 

@@ -127,7 +127,7 @@ export function ViewKeysFlow() {
 						</div>
 
 						{ownerAddressError.error && (
-							<BaseCallout isWarning extraClasses={{calloutWrapper: "w-full bg-primaryCalloutWarning text-bananaBoat my-2"}}> <WarningIcon width={20} height={20}/> <span className="ml-2">{ownerAddressError.errorResult}</span></BaseCallout>
+							<BaseCallout isWarning extraClasses={{calloutWrapper: "w-full text-bananaBoat my-2"}}> <WarningIcon width={20} height={20}/> <span className="ml-2">{ownerAddressError.errorResult}</span></BaseCallout>
 						)}
 
 						<PrimaryButton
