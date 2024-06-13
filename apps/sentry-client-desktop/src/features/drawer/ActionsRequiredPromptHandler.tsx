@@ -38,7 +38,7 @@ export function ActionsRequiredPromptHandler() {
 			<BaseCallout extraClasses={{calloutWrapper: "h-[60px] w-[308px]", calloutFront: "bg-primaryCalloutWarning "}}>
 				<div className="flex flex-row gap-2 items-center mr-3">
 					<AiFillWarning className="w-7 h-7 text-[#FFC53D]"/>
-					<span className="text-primaryWarningText text-lg font-bold ">Actions required</span>
+					<span className="text-bananaBoat text-lg font-bold ">Actions required</span>
 				</div>
 				<PrimaryButton
 					onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}

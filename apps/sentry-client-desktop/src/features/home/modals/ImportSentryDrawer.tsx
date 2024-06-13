@@ -74,7 +74,7 @@ const TemporaryInput = ({
 				<span
 					className={`global-input-clip-path w-full max-w-[calc(100%-2px)] bg-nulnOil ${borderHeight} absolute z-10 ${isFocused && "bg-nulnOil"}`}></span>
 				<span
-					className={`global-input-clip-path max-w-[${widthProperties?.inputWrapper}px] bg-foggyLondon ${isInvalid && "!bg-primaryWarningText"} ${isFocused && !isInvalid && "bg-inputPrimaryHoverBg"} ${!disabled && "group-hover:bg-inputPrimaryHoverBg"} ${disabled && "!bg-chromaphobicBlack"} w-full ${inputHeight} absolute z-[5]`}>
+					className={`global-input-clip-path max-w-[${widthProperties?.inputWrapper}px] bg-foggyLondon ${isInvalid && "!bg-bananaBoat"} ${isFocused && !isInvalid && "bg-inputPrimaryHoverBg"} ${!disabled && "group-hover:bg-inputPrimaryHoverBg"} ${disabled && "!bg-chromaphobicBlack"} w-full ${inputHeight} absolute z-[5]`}>
       </span>
 				{withIcon &&
 					<button className="z-20" onClick={onClick}><CiSearch className="mr-2 text-dugong size-[20px]" /></button>}
@@ -193,7 +193,7 @@ export function ImportSentryDrawer() {
 
 								<div className="mt-[12px] w-full">
 									{privateKeyError.error && (
-										<BaseCallout extraClasses={{calloutWrapper: "h-[50px] w-full text-primaryWarningText",
+										<BaseCallout extraClasses={{calloutWrapper: "h-[50px] w-full text-bananaBoat",
 											calloutFront: "!bg-primaryCalloutWarning"}}>
 											<WarningIcon /> <span className="text-lg text-medium ml-[10px]">{privateKeyError.message}</span>
 										</BaseCallout>

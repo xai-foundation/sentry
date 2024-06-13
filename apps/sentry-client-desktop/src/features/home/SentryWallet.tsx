@@ -237,7 +237,7 @@ export function SentryWallet() {
 								<p className="text-drunkenDragonFly text-lg font-medium mt-1 mr-[5px]">
 									Active
 								</p>
-							) : <p className="text-primaryWarningText text-lg font-medium mt-1 mr-[5px]">
+							) : <p className="text-bananaBoat text-lg font-medium mt-1 mr-[5px]">
 								No Keys
 							</p>
 							}
