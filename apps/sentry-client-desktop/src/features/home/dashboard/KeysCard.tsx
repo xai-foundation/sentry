@@ -27,7 +27,7 @@ export function KeysCard() {
 						header={"Purchased keys must be assigned to Sentry Wallet"}
 						content={<>{"To assign keys, connect all wallets containing Sentry Keys."} <br/> {"The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry."} </>}
 						position={"end"}
-						extraClasses={{tooltipText: "!text-secondaryText"}}
+						extraClasses={{tooltipText: "!text-elementalGrey"}}
 						>
 						<HelpIcon width={14} height={14} fill="#A19F9F"/>
 					</CustomTooltip>
@@ -50,7 +50,7 @@ export function KeysCard() {
 						{keyCount} {!accruing && (keyCount === 1 ? "key" : "keys")}
 					</p>
 				</div>
-				{sentryRunning && <p className="text-lg text-secondaryText">
+				{sentryRunning && <p className="text-lg text-elementalGrey">
 					In {owners.length} wallet{owners.length === 1 ? "" : "s"}
 					</p>}
 				</div>

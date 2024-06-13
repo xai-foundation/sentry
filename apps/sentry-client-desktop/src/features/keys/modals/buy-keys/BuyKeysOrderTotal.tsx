@@ -62,7 +62,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 								</p>
 							</div>
 						</div>
-						<p className="text-base text-secondaryText mb-4">
+						<p className="text-base text-elementalGrey mb-4">
 							{ethers.formatEther(item.pricePer)} AETH per key
 						</p>
 					</div>

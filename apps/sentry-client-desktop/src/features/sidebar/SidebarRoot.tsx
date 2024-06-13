@@ -105,12 +105,12 @@ export function Sidebar() {
 						<TelegramIcon width={16} height={16} className="fill-white group-hover:fill-hornetSting duration-200 ease-in"/> TELEGRAM
 					</a>
 				<a
-					className="text-secondaryText text-[15px] cursor-pointer hover:underline duration-200 ease-in"
+					className="text-elementalGrey text-[15px] cursor-pointer hover:underline duration-200 ease-in"
 					onClick={() => window.electron.openExternal("https://xai.games/sentry-node-agreement")}
 				>
 					SENTRY NODE AGREEMENT
 					</a>
-					<div className="text-secondaryText text-[15px] mt-[20px]">
+					<div className="text-elementalGrey text-[15px] mt-[20px]">
 						<p>v1.1.13-sepolia </p>
 						<p>©2024 XAI. ALL RIGHTS RESERVED</p>
 					</div>

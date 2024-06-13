@@ -160,9 +160,9 @@ export function SentryWallet() {
 
 				element.push(
 					<tr className={`bg-primaryBgColor flex pl-[25px] pr-8 text-sm border-b border-primaryBorderColor`} key={`license-${i}`}>
-						<td className="w-full max-w-[65px] pr-4 py-4 text-lg font-medium text-secondaryText">{key.toString()}</td>
-						<td className="w-full max-w-[400px] pr-4 py-4 text-lg font-medium text-secondaryText">{status.ownerPublicKey}</td>
-						<td className="w-full max-w-[400px] px-4 py-4 text-lg font-medium text-secondaryText">
+						<td className="w-full max-w-[65px] pr-4 py-4 text-lg font-medium text-elementalGrey">{key.toString()}</td>
+						<td className="w-full max-w-[400px] pr-4 py-4 text-lg font-medium text-elementalGrey">{status.ownerPublicKey}</td>
+						<td className="w-full max-w-[400px] px-4 py-4 text-lg font-medium text-elementalGrey">
 							{status.status}
 						</td>
 					</tr>
@@ -230,7 +230,7 @@ export function SentryWallet() {
 							<h2 className="text-3xl font-bold text-white mr-[5px]">Sentry Wallet</h2>
 
 							{!sentryRunning ? (
-								<p className="text-secondaryText text-lg font-medium mt-1 mr-[5px]">
+								<p className="text-elementalGrey text-lg font-medium mt-1 mr-[5px]">
 									Stopped
 								</p>
 							) : hasAssignedKeys ? (
@@ -357,7 +357,7 @@ export function SentryWallet() {
 						<div className="flex flex-row items-center gap-[20px]">
 							<h2 className="font-bold text-white text-2xl uppercase">Assigned Keys</h2>
 							<div className="flex gap-[5px] items-center">
-								<p className="text-secondaryText text-lg font-medium">
+								<p className="text-elementalGrey text-lg font-medium">
 									{getWalletCounter()}
 
 									{/*{owners.length > 0 ? (*/}
@@ -370,9 +370,9 @@ export function SentryWallet() {
 									header={"Purchased keys must be assigned to Sentry Wallet"}
 									extraClasses={{
 										tooltipContainer: "!left-[-38px]",
-										tooltipHeader: "!text-secondaryText"
+										tooltipHeader: "!text-elementalGrey"
 									}}
-									content={<div className="text-secondaryText">
+									content={<div className="text-elementalGrey">
 										<span className="block my-[10px]">To assign keys, connect all wallets containing Sentry Keys.</span>
 										<span className="block">The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry.</span>
 									</div>}
@@ -469,7 +469,7 @@ export function SentryWallet() {
 						<div className="w-full overflow-y-auto ">
 							<table className="w-full">
 								<thead className="text-[#A3A3A3] sticky top-0 bg-white">
-								<tr className="flex text-left text-base font-semibold text-secondaryText uppercase px-[25px] py-[15px] bg-secondaryBgColor">
+								<tr className="flex text-left text-base font-semibold text-elementalGrey uppercase px-[25px] py-[15px] bg-secondaryBgColor">
 									<th className="w-full max-w-[50px] !text-nowrap">Key Id</th>
 									<th className="w-full max-w-[400px] px-4">Owner Address</th>
 									<th className="w-full max-w-[400px] px-[31px]">Claim Status</th>
@@ -479,7 +479,7 @@ export function SentryWallet() {
 								{loading ? (
 									<tr className="text-[#A3A3A3] text-sm flex px-8 bg-primaryBgColor py-4">
 										<td colSpan={3}
-											className="w-full text-center text-lg font-medium text-secondaryText">Loading...
+											className="w-full text-center text-lg font-medium text-elementalGrey">Loading...
 										</td>
 									</tr>
 								) : getKeys()}

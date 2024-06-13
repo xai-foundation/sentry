@@ -77,7 +77,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 
 		if (licenses.length === 0) {
 			return (
-				<tr className="bg-primaryBgColor flex px-8 text-lg text-secondaryText">
+				<tr className="bg-primaryBgColor flex px-8 text-lg text-elementalGrey">
 					<td colSpan={5} className="w-full text-center">
 						No keys found.
 					</td>
@@ -107,9 +107,9 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 
 			return (
 				<tr className={`${isEven ? "bg-primaryBgColor" : "bg-primaryBgColor"} flex px-6 text-lg border-b border-primaryBorderColor`} key={`license-${i}`}>
-					<td className="min-w-[7%] px-2 py-2 text-secondaryText">{keyString}</td>
-					<td className="min-w-[37%] px-2 py-2 text-secondaryText">{owner}</td>
-					<td className="min-w-[27%] px-4 py-2 text-secondaryText">
+					<td className="min-w-[7%] px-2 py-2 text-elementalGrey">{keyString}</td>
+					<td className="min-w-[37%] px-2 py-2 text-elementalGrey">{owner}</td>
+					<td className="min-w-[27%] px-4 py-2 text-elementalGrey">
 
 						{_status === "sentryNotRunning" && (
 							<div className="relative flex items-center gap-[10px] font-bold text-primaryTooltipColor">
@@ -169,7 +169,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						)}
 
 					</td>
-					<td className="min-w-[17%] px-4 py-2 text-right text-secondaryText">
+					<td className="min-w-[17%] px-4 py-2 text-right text-elementalGrey">
 						{balances && balances[keyString]
 							? ethers.formatEther(balances[keyString].totalAccruedEsXai)
 							: "Loading..."}
@@ -280,7 +280,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					<div className="flex">
 
 						<div className="flex flex-col px-6">
-							<div className="flex items-center gap-1 text-lg text-secondaryText">
+							<div className="flex items-center gap-1 text-lg text-elementalGrey">
 								<p>Accrued network rewards</p>
 								<CustomTooltip
 									header={"Claimed esXAI will appear in your wallet balance.\n"}
@@ -322,7 +322,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						</div>
 
 						<div className="flex flex-col pl-10">
-							<div className="flex items-center gap-1 text-lg text-secondaryText">
+							<div className="flex items-center gap-1 text-lg text-elementalGrey">
 							<p className="">Accrued esXAI (unclaimed)</p>
 							<CustomTooltip
 								header={"Each key will accrue esXAI. Pass KYC to claim."}
@@ -359,7 +359,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 				<div className="flex flex-col max-h-[70vh]">
 					<div className="w-full overflow-y-auto">
 						<table className="w-full bg-primaryBgColor">
-							<thead className="text-secondaryText text-base sticky top-0 bg-primaryBgColor z-10">
+							<thead className="text-elementalGrey text-base sticky top-0 bg-primaryBgColor z-10">
 							<tr className="flex items-center text-left text-base border-b border-t border-primaryBorderColor px-[25px] py-[15px] bg-secondaryBgColor">
 								<th className="min-w-[7%] px-2 py-0">KEY ID</th>
 								<th className="min-w-[37%] px-2 py-0">OWNER ADDRESS</th>

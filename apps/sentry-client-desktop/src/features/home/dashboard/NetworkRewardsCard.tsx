@@ -81,7 +81,7 @@ export function NetworkRewardsCard() {
 						header={"Generate Network Rewards esXAI"}
 						content={"The more Keys running on a node, the more esXAI rewards are accrued. To claims rewards, the node must be running, the Sentry Wallet must be funded, and the wallets containing the Keys must have passed KYC."}
 						position={"start"}
-						extraClasses={{tooltipText: "!text-secondaryText"}}
+						extraClasses={{tooltipText: "!text-elementalGrey"}}
 					>
 						<HelpIcon width={14} height={14}/>
 					</CustomTooltip>
@@ -104,7 +104,7 @@ export function NetworkRewardsCard() {
 				<div className="px-6 py-3 border-b border-primaryBorderColor">
 					<div className="flex justify-between items-center">
 
-						<div className="flex items-center gap-1 text-lg text-secondaryText mb-[6px]">
+						<div className="flex items-center gap-1 text-lg text-elementalGrey mb-[6px]">
 							<h3 className="font-medium">esXAI balance</h3>
 							<CustomTooltip
 								header={"Claimed esXAI will appear in your wallet balance.\n"}
@@ -135,7 +135,7 @@ export function NetworkRewardsCard() {
 
 				<div className="px-6 py-3 border-b border-primaryBorderColor">
 					<div className="flex justify-between items-center text-[#A3A3A3]">
-						<div className="flex items-center gap-1 text-lg text-secondaryText">
+						<div className="flex items-center gap-1 text-lg text-elementalGrey">
 							<h3 className="font-medium">Accrued esXAI</h3>
 							<CustomTooltip
 								header={"Each key will accrue esXAI. Pass KYC to claim."}
@@ -159,7 +159,7 @@ export function NetworkRewardsCard() {
 				</div>
 
 				<div className="px-6 py-3 border-b border-primaryBorderColor">
-					<div className="flex items-center gap-1 text-lg text-secondaryText">
+					<div className="flex items-center gap-1 text-lg text-elementalGrey">
 						<h3 className="font-medium">Am I accruing esXAI?</h3>
 						<CustomTooltip
 							header={"To be accruing esXAI, the following must be true:"}
@@ -179,7 +179,7 @@ export function NetworkRewardsCard() {
 				</div>
 
 				<div className="px-6 py-3 border-b border-primaryBorderColor">
-					<div className="flex items-center gap-1 text-lg text-secondaryText">
+					<div className="flex items-center gap-1 text-lg text-elementalGrey">
 					<h3 className="relative font-medium max-w-[230px]">
 					<span className="mr-1">How frequently will I accrue rewards?</span>
 					<div className="absolute top-[35px] left-[72px]">

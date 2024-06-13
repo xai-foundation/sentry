@@ -34,7 +34,7 @@ export function WalletsCard() {
 						content={"If you own keys in additional wallets, add them to the client."}
 						position={"end"}
 						mouseOver={setMouseOverTooltip}
-						extraClasses={{tooltipText: "!text-secondaryText"}}
+						extraClasses={{tooltipText: "!text-elementalGrey"}}
 					>
 						<HelpIcon width={14} height={14} fill="#A19F9F" />
 					</CustomTooltip>
@@ -59,7 +59,7 @@ export function WalletsCard() {
 					</h3>
 				</div> 
 				<div className="flex items-center w-full">
-				{sentryRunning && <p className="text-lg text-secondaryText w-full">
+				{sentryRunning && <p className="text-lg text-elementalGrey w-full">
 					KYC complete: {owners.length - kycRequiredLength}/{owners.length}
 				</p>}
                 {sentryRunning && kycRequired && (

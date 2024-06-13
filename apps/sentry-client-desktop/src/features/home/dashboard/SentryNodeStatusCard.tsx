@@ -79,7 +79,7 @@ export function SentryNodeStatusCard() {
 			<div className="sticky flex flex-row justify-between items-center py-5 px-6 border-b border-primaryBorderColor bg-primaryBgColor z-10">
 				<div className="flex flex-row items-center gap-1 text-white text-2xl">
 					<h2 className="font-bold">Sentry Node Status</h2>
-					<p className="flex items-center ml-2 text-lg text-secondaryText">
+					<p className="flex items-center ml-2 text-lg text-elementalGrey">
 						{timeAgoString}
 					</p>
 				</div>

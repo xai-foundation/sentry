@@ -22,7 +22,7 @@ export function AssignKeysFromNewWallet() {
 			<p className="text-3xl font-bold uppercase text-white mt-[26px] mb-[13px]">
 				Keys not assigned
 			</p>
-			<p className="text-lg font-medium text-secondaryText mb-[13px]">
+			<p className="text-lg font-medium text-elementalGrey mb-[13px]">
 				Add wallets to assign keys to the Sentry
 			</p>
 
@@ -35,7 +35,7 @@ export function AssignKeysFromNewWallet() {
 			/>
 
 
-			<p className="flex items-center text-lg font-medium text-secondaryText mt-[27px]">
+			<p className="flex items-center text-lg font-medium text-elementalGrey mt-[27px]">
 				Don't own any keys?
 
 				<TextButton
