@@ -172,12 +172,12 @@ export function ImportSentryDrawer() {
 				) : (
 					<div className="w-full flex flex-col gap-8">
 						<div className="flex flex-col gap-2 px-6 pt-6">
-							<p className="text-lg font-medium text-primaryText">
+							<p className="text-lg font-medium text-americanSilver">
 								By importing a Sentry Wallet, you can continue running your node without the need to
 								leave your local machine on.
 							</p>
 
-							<p className="text-lg font-medium text-primaryText mt-4">
+							<p className="text-lg font-medium text-americanSilver mt-4">
 								Enter the the private key of the Sentry Wallet you would like to import
 							</p>
 
@@ -207,7 +207,7 @@ export function ImportSentryDrawer() {
 
 							</div>
 
-							<p className="text-lg font-medium text-primaryText mt-[28px]">
+							<p className="text-lg font-medium text-americanSilver mt-[28px]">
 								Want to run a cloud instance?
 								<a
 									onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup/step-2-download-and-run-the-xai-sentry-node")}

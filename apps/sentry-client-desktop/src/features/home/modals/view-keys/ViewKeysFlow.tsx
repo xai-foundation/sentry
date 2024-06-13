@@ -113,7 +113,7 @@ export function ViewKeysFlow() {
 				<div className="w-full flex flex-col gap-8">
 					<div className="flex flex-col gap-2">
 						<div className="border-b border-primaryBorderColor px-6 pt-5 pb-7">
-						<p className="text-lg text-primaryText">
+						<p className="text-lg text-americanSilver">
 							Enter the the public key of the wallet you want to view keys for
 						</p>
                        <div className="w-full bg-[#5B5757] global-clip-primary-btn p-[1px] mb-3 mt-4 focus-within:bg-hornetSting">
@@ -121,7 +121,7 @@ export function ViewKeysFlow() {
 							type="text"
 							value={ownerAddress}
 							onChange={handleInputChange}
-							className="w-full p-3 global-clip-primary-btn focus:outline-0 placeholder:text-primaryText placeholder:text-lg bg-primaryBgColor text-primaryText"
+							className="w-full p-3 global-clip-primary-btn focus:outline-0 placeholder:text-americanSilver placeholder:text-lg bg-primaryBgColor text-americanSilver"
 							placeholder="Enter public key"
 						/>
 						</div>
@@ -139,7 +139,7 @@ export function ViewKeysFlow() {
 						/>
 						</div>
                         <div className="px-6 pt-4">
-						<p className="text-lg text-primaryText mb-5">
+						<p className="text-lg text-americanSilver mb-5">
 							Or connect wallet to view all keys in the wallet
 						</p>
 

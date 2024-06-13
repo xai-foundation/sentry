@@ -12,7 +12,7 @@ export function AssignKeysSentryNotRunning() {
 				Sentry is not running
 
 			</p>
-			<p className="text-lg text-primaryText font-medium">
+			<p className="text-lg text-americanSilver font-medium">
 				Start the sentry to see your assigned keys
 			</p>
 

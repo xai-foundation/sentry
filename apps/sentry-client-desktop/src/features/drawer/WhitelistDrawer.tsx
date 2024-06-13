@@ -113,7 +113,7 @@ export function WhitelistDrawer() {
 				</span>
 			</div>
 
-			<div className={`flex-grow ${owners.length + pools.length > 5 && "overflow-y-scroll"} max-h-[calc(100vh-4rem)] text-primaryText font-medium max-w-[429px]`}>
+			<div className={`flex-grow ${owners.length + pools.length > 5 && "overflow-y-scroll"} max-h-[calc(100vh-4rem)] text-americanSilver font-medium max-w-[429px]`}>
 				<div className="py-6 border-b border-primaryBorderColor max-w-[429px]">
 					<p className="mb-4 text-lg px-6">
 						Below are the wallets assigned to your Sentry Wallet ({operatorAddress}). Select the wallets
@@ -128,7 +128,7 @@ export function WhitelistDrawer() {
 				<div className="">
 					<div className="py-6 border-b border-primaryBorderColor">
 						<div className="flex gap-1 items-center px-6">
-							<p className="text-lg font-medium text-primaryText">Your Sentry Wallet</p>
+							<p className="text-lg font-medium text-americanSilver">Your Sentry Wallet</p>
 							<CustomTooltip
 								extraClasses={{tooltipContainer: "left-[-38px] max-w-[280px]"}}
 								content={"You should allow the Sentry Wallet only if it contains at least one Key. Otherwise, it is not necessary to select."}
@@ -140,7 +140,7 @@ export function WhitelistDrawer() {
 					</div>
 					<div className="py-6">
 						<div className="px-6">
-							<p className="text-lg font-medium text-primaryText">Assigned Wallets/Pools</p>
+							<p className="text-lg font-medium text-americanSilver">Assigned Wallets/Pools</p>
 							{getDropdownItems()}
 						</div>
 					</div>

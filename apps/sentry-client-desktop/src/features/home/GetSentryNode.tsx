@@ -37,7 +37,7 @@ export function GetSentryNode() {
 				>
 					{item.icon}
 					<p className="text-xl text-white font-bold mt-2">{item.header}</p>
-					<p className="text-lg text-primaryText">{item.body}</p>
+					<p className="text-lg text-americanSilver">{item.body}</p>
 				</div>
 			);
 		});
@@ -52,7 +52,7 @@ export function GetSentryNode() {
 					</h1>
 				</div>
 
-				<span className="text-lg text-primaryText mt-4">
+				<span className="text-lg text-americanSilver mt-4">
 					Purchase a key to begin earning esXAI
 				</span>
 				<div className="flex items-center justify-start mt-5 gap-7 mb-[140px]">

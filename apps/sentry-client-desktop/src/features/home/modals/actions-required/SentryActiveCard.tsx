@@ -32,7 +32,7 @@ export function SentryActiveCard() {
 						titleStyles="text-lg text-white"
 					/>
 
-					<p className="text-lg text-primaryText mt-3 px-7">
+					<p className="text-lg text-americanSilver mt-3 px-7">
 						Sentry must be active 24/7 to accrue esXAI
 					</p>
 

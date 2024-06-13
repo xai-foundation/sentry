@@ -35,7 +35,7 @@ export function AllowedWalletsCard() {
 						titleStyles="text-lg text-white"
 					/>
 
-					<p className="text-lg text-primaryText mt-1 px-6">
+					<p className="text-lg text-americanSilver mt-1 px-6">
 						Select the wallets you'd like to enable to run on your Sentry.
 					</p>
                     <div className="pl-7 mt-2">

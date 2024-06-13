@@ -71,7 +71,7 @@ export function RemoveWalletModal({onClose, selectedWallet, isWalletAssignedMap}
 								Attempting to remove an assigned wallet
 							</p>
 						</div>
-						<p className="text-primaryText text-[17px] font-medium ml-[55px]">
+						<p className="text-americanSilver text-[17px] font-medium ml-[55px]">
 							If you would like to remove this wallet from the Keys page, you will need to un-assign it
 							from the Sentry Wallet page first.
 						</p>
@@ -110,7 +110,7 @@ export function RemoveWalletModal({onClose, selectedWallet, isWalletAssignedMap}
 								Are you sure you want to remove this wallet?
 							</p>
 						</div>
-						<p className="text-primaryText text-[17px] font-medium ml-[55px]">
+						<p className="text-americanSilver text-[17px] font-medium ml-[55px]">
 							You will stop tracking all esXAI accrued on this wallet
 						</p>
 

@@ -41,7 +41,7 @@ export function AssignWalletTransactionInProgressModal() {
 					</div>
 
 					<span className="text-2xl font-bold text-center text-white">Transaction in progress</span>
-					<span className="text-[17px] text-center text-primaryText">
+					<span className="text-[17px] text-center text-americanSilver">
 						Complete transaction in web browser before returning to Xai Client
 					</span>
 				</div>

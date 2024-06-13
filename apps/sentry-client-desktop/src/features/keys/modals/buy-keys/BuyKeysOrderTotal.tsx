@@ -155,7 +155,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 											<div>
 												<div
 													className="w-full h-auto flex flex-row justify-between items-center text-[15px] text-[#525252] mt-2 py-2">
-													<p className="text-lg text-primaryText">Add promo code</p>
+													<p className="text-lg text-americanSilver">Add promo code</p>
 													<div
 														className="cursor-pointer z-10"
 														onClick={() => {
@@ -177,7 +177,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 															setPromoCode(e.target.value)
 															setDiscount({applied: false, error: false})
 														}}
-														className={`w-full p-2 global-clip-primary-btn focus:outline-0 placeholder:text-primaryText placeholder:text-lg bg-primaryBgColor text-primaryText text-lg`}
+														className={`w-full p-2 global-clip-primary-btn focus:outline-0 placeholder:text-americanSilver placeholder:text-lg bg-primaryBgColor text-americanSilver text-lg`}
 														placeholder="Enter promo code"
 													/>
 													</div>

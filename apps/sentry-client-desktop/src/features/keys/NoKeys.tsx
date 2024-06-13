@@ -13,7 +13,7 @@ export function NoKeys() {
 				<p className="text-3xl font-bold text-white uppercase">
 					You do not own any keys
 				</p>
-				<p className="text-lg text-primaryText">
+				<p className="text-lg text-americanSilver">
 					Purchase a key to be able to begin accruing esXAI
 				</p>
                 <div className="flex justify-center">
@@ -23,7 +23,7 @@ export function NoKeys() {
 					btnText="Purchase keys"
 				/>
                 </div>
-				<p className="text-lg text-primaryText mt-2">
+				<p className="text-lg text-americanSilver mt-2">
 					Already own a key?
 
 					<a

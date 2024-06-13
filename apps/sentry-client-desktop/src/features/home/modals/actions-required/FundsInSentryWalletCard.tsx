@@ -52,7 +52,7 @@ export function FundsInSentryWalletCard() {
 						titleStyles="text-lg text-white"
 					/>
 
-					<p className="text-lg text-primaryText mt-1 px-7">
+					<p className="text-lg text-americanSilver mt-1 px-7">
 						To fund the Sentry Wallet, send ETH to this address
 					</p>
 					
@@ -60,13 +60,13 @@ export function FundsInSentryWalletCard() {
                     <div className="global-clip-path w-full bg-primaryBorderColor p-[1px]">
 					<div
 						className="h-[48px] px-3 w-full flex flex-row items-center gap-2 justify-between bg-secondaryBgColor global-clip-path">
-						<span className="text-lg leading-[14px] text-primaryText">
+						<span className="text-lg leading-[14px] text-americanSilver">
 							{isOperatorLoading || !operatorAddress ? "Loading..." : clampAddress(operatorAddress)}
 						</span>
 
 						<div
 							onClick={copyAddress}
-							className="text-primaryText w-[20px] h-[20px] cursor-pointer"
+							className="text-americanSilver w-[20px] h-[20px] cursor-pointer"
 						>
 							{copied
 								? (<AiOutlineCheck color="#D0CFCF" size={20}/>)
@@ -77,7 +77,7 @@ export function FundsInSentryWalletCard() {
 					</div>
 						<div className="mt-5 flex flex-col gap-1 justify-between pl-7">
 						<div className="flex flex-row items-center gap-2">
-						<p className="mb-0 text-lg leading-[14px] text-primaryText">
+						<p className="mb-0 text-lg leading-[14px] text-americanSilver">
 							Recommended minimum balance
 						</p>
 							{/* <HelpIcon width={14} height={14} /> */}

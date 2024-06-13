@@ -70,20 +70,20 @@ export function ExportSentryDrawer() {
 				) : (
 					<div className="w-full flex flex-col gap-8">
 						<div className="flex flex-col gap-2 px-6 pt-6">
-							<p className="text-lg font-medium text-primaryText">
+							<p className="text-lg font-medium text-americanSilver">
 								By exporting a Sentry Wallet, you can continue running your node on another client
 								without the need
 								to leave your local machine on.
 							</p>
 
-							<p className="text-lg font-medium text-primaryText mt-4 mb-5">
+							<p className="text-lg font-medium text-americanSilver mt-4 mb-5">
 								Here is the private key of the Sentry Wallet
 							</p>
 
 							<div className="p-[1px] w-full h-full bg-primaryBorderColor global-clip-8px">
 								<div
 									onClick={() => copyPrivateKey()}
-									className="relative bg-secondaryBgColor w-full h-fit flex justify-between text-primaryText p-2 cursor-pointer overflow-hidden text-lg font-medium global-clip-8px"
+									className="relative bg-secondaryBgColor w-full h-fit flex justify-between text-americanSilver p-2 cursor-pointer overflow-hidden text-lg font-medium global-clip-8px"
 								>
 									<p className="w-full">{wrappedPrivateKey}</p>
 									<div
@@ -93,7 +93,7 @@ export function ExportSentryDrawer() {
 								</div>
 							</div>
 
-							<p className="text-lg font-medium text-primaryText mt-5">
+							<p className="text-lg font-medium text-americanSilver mt-5">
 								Want to run a cloud instance?
 								<a
 									onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup/step-2-download-and-run-the-xai-sentry-node")}

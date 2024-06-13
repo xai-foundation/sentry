@@ -141,7 +141,7 @@ export function SentryWallet() {
 		if (nodeLicenseStatusMap.size === 0) {
 			return (
 				<tr className="flex pr-8 py-[15px] bg-primaryBgColor text-sm">
-					<td colSpan={3} className="w-full text-center text-lg text-medium text-primaryText">No keys found.</td>
+					<td colSpan={3} className="w-full text-center text-lg text-medium text-americanSilver">No keys found.</td>
 				</tr>
 			);
 		}
@@ -280,8 +280,8 @@ export function SentryWallet() {
 										header={"Sentry Wallet is encrypted on your device"}
 										content={"This wallet is exportable and EVM compatible."}
 										extraClasses={{
-											tooltipContainer: "!left-[-38px] !text-primaryText !top-[49px]",
-											tooltipHeader: "!text-primaryText",
+											tooltipContainer: "!left-[-38px] !text-americanSilver !top-[49px]",
+											tooltipHeader: "!text-americanSilver",
 											arrowStyles: "!left-[-16px] !top-[25px]"
 										}}
 									>
@@ -289,7 +289,7 @@ export function SentryWallet() {
 									</CustomTooltip>
 								</div>
 								<div
-									className="absolute right-[10px] top-[16px] cursor-pointer mx-[5px] text-primaryText"
+									className="absolute right-[10px] top-[16px] cursor-pointer mx-[5px] text-americanSilver"
 									onClick={() => setIsMoreOptionsOpen(!isMoreOptionsOpen)}
 								>
 									<HiOutlineDotsVertical/>

@@ -281,7 +281,7 @@ export function CountryDropdown({selectedCountry, setSelectedCountry}: CountryDr
 			>  
 				<option value="">Select your country</option>
 				{countries.map(({value, label}) => (
-					<option key={value} value={value} className="bg-primaryBgColor text-primaryText">
+					<option key={value} value={value} className="bg-primaryBgColor text-americanSilver">
 						{label}
 					</option>
 				))}
