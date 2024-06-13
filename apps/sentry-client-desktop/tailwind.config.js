@@ -13,7 +13,6 @@ module.exports = {
       black: "#000000",
 
       successBgColor: "#3DD68C1A",
-      dropdownPrimaryBg: "#151010",
       dropdownPrimaryHoverBg: "#FF2C3A",
       dropdownSecondaryBg: "#272123",
       dropdownItemPrimaryHoverBg: "#231D1F",
