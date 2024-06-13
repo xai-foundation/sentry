@@ -11,7 +11,7 @@ module.exports = {
     colors: {
       white: "#fff",
       black: "#000000",
-      linkBgHover: "#433F3F",
+
       secondaryText: "#A19F9F",
       primaryText: "#D0CFCF",
       primaryBgColor: "#140F0F",

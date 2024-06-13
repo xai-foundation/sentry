@@ -41,21 +41,21 @@ export function Sidebar() {
 				<div className="w-[253px] mb-[145px]">
 					<Link
 						to="/dashboard"
-						className={`flex items-center w-[253px] text-xl text-white font-bold  cursor-pointer gap-2 py-[11px] pl-[17px] hover:global-clip-path hover:bg-linkBgHover ${getActiveLink('/dashboard')}`}
+						className={`flex items-center w-[253px] text-xl text-white font-bold  cursor-pointer gap-2 py-[11px] pl-[17px] hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/dashboard')}`}
 					>
 						<img src={DashboardIcon} width={14} height={14} className="ml-1"/> DASHBOARD
 					</Link>
 
 					<Link
 						to="/keys"
-						className={`flex items-center w-[253px] text-xl text-white font-bold cursor-pointer gap-2 py-[11px] pl-[17px] hover:global-clip-path hover:bg-linkBgHover ${getActiveLink('/keys')}`}
+						className={`flex items-center w-[253px] text-xl text-white font-bold cursor-pointer gap-2 py-[11px] pl-[17px] hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/keys')}`}
 					>
 						<RiKey2Line size={20}/> KEYS
 					</Link>
 
 					<Link
 						to="/sentry-wallet"
-						className={`flex items-center w-[253px] text-xl text-white font-bold cursor-pointer gap-2 py-[11px] pl-[17px] hover:global-clip-path hover:bg-linkBgHover ${getActiveLink('/sentry-wallet')}`}
+						className={`flex items-center w-[253px] text-xl text-white font-bold cursor-pointer gap-2 py-[11px] pl-[17px] hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/sentry-wallet')}`}
 					>
 						<div className="w-auto h-auto flex justify-center items-center">
 							{sentryRunning && hasAssignedKeys && funded && <GreenPulse size='lg' />}
@@ -66,7 +66,7 @@ export function Sidebar() {
 					</Link>
 					<a
 						onClick={() => window.electron.openExternal('https://app.xai.games')}
-						className="flex items-center w-[253px] mb-1 text-xl text-white font-bold cursor-pointer gap-2 py-[11px] pl-[17px] hover:global-clip-path hover:bg-linkBgHover"
+						className="flex items-center w-[253px] mb-1 text-xl text-white font-bold cursor-pointer gap-2 py-[11px] pl-[17px] hover:global-clip-path hover:bg-darkRoom"
 					>
 						<XaiHeaderIcon width={20} height={20}/> STAKING
 					</a>

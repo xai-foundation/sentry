@@ -35,7 +35,7 @@ export function SentryWalletHeader() {
 						<div>
 							<p className="text-primaryText block">Sentry Wallet balance is used to pay gas fees for automatically
 							claiming accrued esXAI.</p>
-							<p className="text-primaryText bg-linkBgHover p-2 mt-2 flex justify-between">
+							<p className="text-primaryText bg-darkRoom p-2 mt-2 flex justify-between">
 								<span>Recommended minimum balance</span>
 								<span className="flex items-center gap-1 font-bold"> <FaEthereum/> 0.005 AETH</span>
 							</p>
