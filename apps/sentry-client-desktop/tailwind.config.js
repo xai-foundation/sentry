@@ -13,7 +13,7 @@ module.exports = {
       black: "#000000",
 
 
-      primaryBorderColor: "#2A2828",
+
       secondaryBorderColor: "#5B5757",
       primaryTooltipColor: "#FFC53D",
       successText: "#3DD68C",

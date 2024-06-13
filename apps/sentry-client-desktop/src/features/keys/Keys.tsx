@@ -30,7 +30,7 @@ export function Keys() {
 	return (
 		<div className="px-4">
 		<div className="w-full h-screen bg-nulnOil">
-			<div className="sticky top-0 bg-nulnOil flex flex-row justify-between items-center border-b border-primaryBorderColor pl-6 pr-2 z-40">
+			<div className="sticky top-0 bg-nulnOil flex flex-row justify-between items-center border-b border-chromaphobicBlack pl-6 pr-2 z-40">
 				<div className="top-0 flex flex-row items-center pt-[20px] pb-[18px] gap-2">
 					<div className="flex items-start min-h-[43px]">
 					<h2 className="text-3xl text-white font-bold">Keys</h2>

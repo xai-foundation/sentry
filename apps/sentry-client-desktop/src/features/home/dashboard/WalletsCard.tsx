@@ -26,7 +26,7 @@ export function WalletsCard() {
 	return (
 		<Card width={"341px"} height={"279px"} customClasses={`bg-nulnOil shadow-default overflow-visible ${mouseOverTooltip ? "z-20" : "z-0"}`}>
 
-			<div className="flex flex-row justify-between items-center py-5 px-6 border-b border-primaryBorderColor">
+			<div className="flex flex-row justify-between items-center py-5 px-6 border-b border-chromaphobicBlack">
 				<div className="flex flex-row items-center gap-1 text-white text-2xl">
 					<h2 className="font-bold">Wallets</h2>
 					<CustomTooltip

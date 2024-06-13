@@ -74,7 +74,7 @@ const TemporaryInput = ({
 				<span
 					className={`global-input-clip-path w-full max-w-[calc(100%-2px)] bg-nulnOil ${borderHeight} absolute z-10 ${isFocused && "bg-nulnOil"}`}></span>
 				<span
-					className={`global-input-clip-path max-w-[${widthProperties?.inputWrapper}px] bg-secondaryBorderColor ${isInvalid && "!bg-primaryWarningText"} ${isFocused && !isInvalid && "bg-inputPrimaryHoverBg"} ${!disabled && "group-hover:bg-inputPrimaryHoverBg"} ${disabled && "!bg-primaryBorderColor"} w-full ${inputHeight} absolute z-[5]`}>
+					className={`global-input-clip-path max-w-[${widthProperties?.inputWrapper}px] bg-secondaryBorderColor ${isInvalid && "!bg-primaryWarningText"} ${isFocused && !isInvalid && "bg-inputPrimaryHoverBg"} ${!disabled && "group-hover:bg-inputPrimaryHoverBg"} ${disabled && "!bg-chromaphobicBlack"} w-full ${inputHeight} absolute z-[5]`}>
       </span>
 				{withIcon &&
 					<button className="z-20" onClick={onClick}><CiSearch className="mr-2 text-dugong size-[20px]" /></button>}
@@ -148,7 +148,7 @@ export function ImportSentryDrawer() {
 			)}
 			<div className="h-full flex flex-col justify-start items-center text-white">
 				<div
-					className="w-full flex flex-row justify-between items-center border-b border-primaryBorderColor text-2xl font-bold px-8 py-[31px]">
+					className="w-full flex flex-row justify-between items-center border-b border-chromaphobicBlack text-2xl font-bold px-8 py-[31px]">
 					<div className="flex flex-row gap-2 items-center">
 						<span>Import Sentry Wallet</span>
 					</div>

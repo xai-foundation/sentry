@@ -34,7 +34,7 @@ export function FundsInSentryWalletCard() {
 	}
 
 	return (
-		<div className="bg-primaryBorderColor global-cta-clip-path p-[1px]">
+		<div className="bg-chromaphobicBlack global-cta-clip-path p-[1px]">
 		<SquareCard className="bg-dynamicBlack global-cta-clip-path">
 			{funded ? (
 				<IconLabel
@@ -57,7 +57,7 @@ export function FundsInSentryWalletCard() {
 					</p>
 					
 					<div className="pl-7 mt-3">
-                    <div className="global-clip-path w-full bg-primaryBorderColor p-[1px]">
+                    <div className="global-clip-path w-full bg-chromaphobicBlack p-[1px]">
 					<div
 						className="h-[48px] px-3 w-full flex flex-row items-center gap-2 justify-between bg-dynamicBlack global-clip-path">
 						<span className="text-lg leading-[14px] text-americanSilver">

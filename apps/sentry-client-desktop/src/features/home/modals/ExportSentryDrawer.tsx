@@ -46,7 +46,7 @@ export function ExportSentryDrawer() {
 		<div>
 			<div className="h-full flex flex-col justify-start items-center">
 				<div
-					className="w-full flex flex-row text-white justify-between items-center border-b border-primaryBorderColor">
+					className="w-full flex flex-row text-white justify-between items-center border-b border-chromaphobicBlack">
 					<div className="flex flex-row gap-2 justify-between w-full items-center text-2xl font-bold px-8 py-[31px]">
 						<span>Export Sentry Wallet</span>
 						<span
@@ -80,7 +80,7 @@ export function ExportSentryDrawer() {
 								Here is the private key of the Sentry Wallet
 							</p>
 
-							<div className="p-[1px] w-full h-full bg-primaryBorderColor global-clip-8px">
+							<div className="p-[1px] w-full h-full bg-chromaphobicBlack global-clip-8px">
 								<div
 									onClick={() => copyPrivateKey()}
 									className="relative bg-dynamicBlack w-full h-fit flex justify-between text-americanSilver p-2 cursor-pointer overflow-hidden text-lg font-medium global-clip-8px"

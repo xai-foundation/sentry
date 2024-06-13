@@ -272,7 +272,7 @@ export function CountryDropdown({selectedCountry, setSelectedCountry}: CountryDr
 
 	return (
 		<div className="flex relativeflex-col pl-8 mt-[10px]">
-			<div className="bg-primaryBorderColor p-[1px] global-clip-primary-btn w-[280px]">
+			<div className="bg-chromaphobicBlack p-[1px] global-clip-primary-btn w-[280px]">
 			<select
 				id="country"
 				onChange={handleCountryChange}

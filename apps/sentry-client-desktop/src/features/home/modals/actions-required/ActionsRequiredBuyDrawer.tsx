@@ -11,7 +11,7 @@ export function ActionsRequiredBuyDrawer() {
 	return (
 		<div className="h-full flex flex-col justify-start items-center">
 			<div
-				className="w-full h-[4rem] flex flex-row justify-between items-center border-b border-primaryBorderColor text-lg font-semibold px-8">
+				className="w-full h-[4rem] flex flex-row justify-between items-center border-b border-chromaphobicBlack text-lg font-semibold px-8">
 				<div className="flex flex-row gap-2 items-center">
 					<WarningIcon width={28} height={24} />{" "}
 					<span className="text-white text-[24px] font-bold">Actions required</span>

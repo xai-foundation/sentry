@@ -103,7 +103,7 @@ export function WhitelistDrawer() {
 	return (
 		<div className="relative h-full flex flex-col justify-start items-center !text-white ">
 			<div
-				className="w-full flex flex-row justify-between items-center border-b border-primaryBorderColor text-2xl font-bold px-8 py-[31px]">
+				className="w-full flex flex-row justify-between items-center border-b border-chromaphobicBlack text-2xl font-bold px-8 py-[31px]">
 				<p>Allowed Wallet</p>
 				<span
 					onClick={() => {setDrawerState(null)}}
@@ -114,7 +114,7 @@ export function WhitelistDrawer() {
 			</div>
 
 			<div className={`flex-grow ${owners.length + pools.length > 5 && "overflow-y-scroll"} max-h-[calc(100vh-4rem)] text-americanSilver font-medium max-w-[429px]`}>
-				<div className="py-6 border-b border-primaryBorderColor max-w-[429px]">
+				<div className="py-6 border-b border-chromaphobicBlack max-w-[429px]">
 					<p className="mb-4 text-lg px-6">
 						Below are the wallets assigned to your Sentry Wallet ({operatorAddress}). Select the wallets
 						you'd like to enable.
@@ -126,7 +126,7 @@ export function WhitelistDrawer() {
 					</p>
 				</div>
 				<div className="">
-					<div className="py-6 border-b border-primaryBorderColor">
+					<div className="py-6 border-b border-chromaphobicBlack">
 						<div className="flex gap-1 items-center px-6">
 							<p className="text-lg font-medium text-americanSilver">Your Sentry Wallet</p>
 							<CustomTooltip
@@ -147,7 +147,7 @@ export function WhitelistDrawer() {
 				</div>
 			</div>
 
-			<div className="w-full flex-shrink-0 h-18 flex flex-col items-center justify-center px-2 pt-[69px] border-t border-primaryBorderColor">
+			<div className="w-full flex-shrink-0 h-18 flex flex-col items-center justify-center px-2 pt-[69px] border-t border-chromaphobicBlack">
 				<BaseCallout extraClasses={{calloutWrapper: "w-full max-w-[370px]", calloutFront: "bg-primaryCalloutWarning text-[#FFC53D]"}}>
 					<WarningIcon /> <span className="ml-[10px] text-lg font-medium">Applying changes will restart your sentry</span>
 				</BaseCallout>

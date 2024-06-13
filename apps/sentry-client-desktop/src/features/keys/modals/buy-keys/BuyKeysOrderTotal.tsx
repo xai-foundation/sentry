@@ -150,7 +150,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 								{/*		Promo section		*/}
 								{!discount.applied && (
 									<>
-										<hr className="my-2 border-t-primaryBorderColor"/>
+										<hr className="my-2 border-t-chromaphobicBlack"/>
 										{promo ? (
 											<div>
 												<div
@@ -207,7 +207,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 									</>
 								)}
 
-								<hr className="my-2 border-t-primaryBorderColor"/>
+								<hr className="my-2 border-t-chromaphobicBlack"/>
 								<div className="flex flex-row items-center justify-between">
 									<div className="flex flex-row items-center gap-2 text-2xl font-bold text-white">
 										<p className="">You pay</p>

@@ -21,7 +21,7 @@ export function AssignedKeysCard() {
 
 	return (
 		<div className="relative">
-		<div className="bg-primaryBorderColor global-cta-clip-path p-[1px]">
+		<div className="bg-chromaphobicBlack global-cta-clip-path p-[1px]">
 		<SquareCard className="bg-dynamicBlack global-cta-clip-path">
 			{hasAssignedKeys ? (
 				<IconLabel

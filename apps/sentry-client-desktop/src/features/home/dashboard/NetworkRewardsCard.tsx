@@ -74,7 +74,7 @@ export function NetworkRewardsCard() {
 	return (
 		<Card width={"300px"} height={"670px"} customClasses={"bg-nulnOil shadow-default overflow-visible z-10"}>
 
-			<div className="flex flex-row justify-between items-center py-4 px-6 border-b border-primaryBorderColor">
+			<div className="flex flex-row justify-between items-center py-4 px-6 border-b border-chromaphobicBlack">
 				<div className="flex flex-row items-center gap-1 text-white text-xl font-bold">
 					<h2 className="font-medium">Network Rewards</h2>
 					<CustomTooltip
@@ -101,7 +101,7 @@ export function NetworkRewardsCard() {
 			</div>
 
 			<div className="flex flex-col">
-				<div className="px-6 py-3 border-b border-primaryBorderColor">
+				<div className="px-6 py-3 border-b border-chromaphobicBlack">
 					<div className="flex justify-between items-center">
 
 						<div className="flex items-center gap-1 text-lg text-elementalGrey mb-[6px]">
@@ -133,7 +133,7 @@ export function NetworkRewardsCard() {
 					</div>
 				</div>
 
-				<div className="px-6 py-3 border-b border-primaryBorderColor">
+				<div className="px-6 py-3 border-b border-chromaphobicBlack">
 					<div className="flex justify-between items-center text-[#A3A3A3]">
 						<div className="flex items-center gap-1 text-lg text-elementalGrey">
 							<h3 className="font-medium">Accrued esXAI</h3>
@@ -158,7 +158,7 @@ export function NetworkRewardsCard() {
 					</div>
 				</div>
 
-				<div className="px-6 py-3 border-b border-primaryBorderColor">
+				<div className="px-6 py-3 border-b border-chromaphobicBlack">
 					<div className="flex items-center gap-1 text-lg text-elementalGrey">
 						<h3 className="font-medium">Am I accruing esXAI?</h3>
 						<CustomTooltip
@@ -178,7 +178,7 @@ export function NetworkRewardsCard() {
 					</div>
 				</div>
 
-				<div className="px-6 py-3 border-b border-primaryBorderColor">
+				<div className="px-6 py-3 border-b border-chromaphobicBlack">
 					<div className="flex items-center gap-1 text-lg text-elementalGrey">
 					<h3 className="relative font-medium max-w-[230px]">
 					<span className="mr-1">How frequently will I accrue rewards?</span>
