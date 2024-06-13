@@ -19,7 +19,7 @@ export function NoKeys() {
                 <div className="flex justify-center">
 				<PrimaryButton
 					onClick={() => setDrawerState(DrawerView.BuyKeys)}
-					className="w-[202px] text-[20px] font-bold uppercase !py-1"
+					className="w-[202px] text-[20px] font-bold uppercase !py-1 !global-cta-clip-path text-melanzaneBlack"
 					btnText="Purchase keys"
 				/>
                 </div>
@@ -28,7 +28,7 @@ export function NoKeys() {
 
 					<a
 						onClick={() => setDrawerState(DrawerView.ViewKeys)}
-						className="text-hornetSting font-bold hover:text-white ml-1 cursor-pointer"
+						className="text-hornetSting font-bold hover:text-white ml-1 cursor-pointer duration-200 ease-in"
 					>
 						Add wallet
 					</a>

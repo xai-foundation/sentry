@@ -387,7 +387,7 @@ export function SentryWallet() {
 							) : (
 								<a
 									onClick={onRefreshTable}
-									className="flex items-center text-lg text-pelati gap-1 cursor-pointer select-none hover:text-white duration-300 ease-in-out"
+									className="flex items-center text-lg text-pelati gap-1 cursor-pointer select-none hover:text-white duration-300 ease-in-out font-bold"
 								>
 									<MdRefresh/> Refresh
 								</a>
