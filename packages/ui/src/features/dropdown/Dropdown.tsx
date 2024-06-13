@@ -55,7 +55,7 @@ export const Dropdown = ({setIsOpen, isOpen, setSelectedValue, getDropdownItems,
 
             </div>
             <span
-                className="bg-secondaryBorderColor transition-bg ease-in-out duration-300 absolute left-[-2px] top-[-2px] z-10 w-[calc(100%+4px)] h-[calc(100%+4px)] dropdown-clip-path dropdown-border"></span>
+                className="bg-foggyLondon transition-bg ease-in-out duration-300 absolute left-[-2px] top-[-2px] z-10 w-[calc(100%+4px)] h-[calc(100%+4px)] dropdown-clip-path dropdown-border"></span>
 
             {isOpen && (
                 <div

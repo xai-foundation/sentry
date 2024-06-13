@@ -169,7 +169,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 
 												<div className="flex gap-2 items-center">
 
-													<div className={`w-full bg-secondaryBorderColor global-clip-primary-btn p-[1px] focus-within:bg-hornetSting`}>
+													<div className={`w-full bg-foggyLondon global-clip-primary-btn p-[1px] focus-within:bg-hornetSting`}>
 													<input
 														type="text"
 														value={promoCode}
