@@ -4,6 +4,7 @@ import {useOperator} from "@/features/operator";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {PrimaryButton} from "@sentry/ui";
 import {WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
+import {TextButton} from "@sentry/ui/dist/src/rebrand/buttons/TextButton";
 
 export function AssignKeysFromNewWallet() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -16,7 +17,7 @@ export function AssignKeysFromNewWallet() {
 	}
 
 	return (
-		<div className="flex flex-col justify-center items-center ">
+		<div className="flex flex-col justify-center items-center">
 			<WarningIcon width={64} height={55} />
 			<p className="text-3xl font-bold uppercase text-white mt-[26px] mb-[13px]">
 				Keys not assigned
@@ -34,15 +35,14 @@ export function AssignKeysFromNewWallet() {
 			/>
 
 
-			<p className="text-lg font-medium text-secondaryText mt-[27px]">
+			<p className="flex items-center text-lg font-medium text-secondaryText mt-[27px]">
 				Don't own any keys?
 
-				<a
+				<TextButton
 					onClick={() => setDrawerState(DrawerView.BuyKeys)}
-					className="text-tertiaryText font-bold text-lg ml-1 cursor-pointer"
-				>
-					Purchase keys
-				</a>
+					className="text-tertiaryText font-bold text-lg ml-1 cursor-pointer !py-0"
+					buttonText={"Purchase keys"}
+				/>
 			</p>
 		</div>
 	);

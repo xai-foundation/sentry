@@ -419,8 +419,9 @@ export function SentryWallet() {
 												isDisabled={selectedWallet === null}
 												onClick={() => copySelectedWallet()}
 												btnText={"Copy address"}
-												wrapperClassName={`max-w-[146px]`}
-												className={`w-[144px] !h-[46px] text-lg font-bold uppercase !p-0`}
+												wrapperClassName={`!h-[48px] max-w-[146px]`}
+												colorStyle={"outline"}
+												className={`w-[144px] ${selectedWallet === null ? "!h-[48px]" : "!h-[46px]"} text-lg font-bold uppercase !p-0`}
 
 											/>
 
@@ -429,15 +430,16 @@ export function SentryWallet() {
 													setModalState(ModalView.TransactionInProgress)
 													window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`)
 												}}
-												wrapperClassName={`!h-[48px] max-w-[161px]`}
-												className={`w-[159px] text-lg font-bold uppercase !p-0`}
+												wrapperClassName={`max-w-[161px]`}
+												className={`w-[159px] !h-[48px] text-lg font-bold uppercase !p-0`}
 												btnText={"Assign wallet"}
 											/>
 
 											<PrimaryButton
 												onClick={() => setDrawerState(DrawerView.Whitelist)}
 												wrapperClassName={`!h-[48px] max-w-[225px]`}
-												className={`w-[223px] text-lg font-bold uppercase !p-0`}
+												className={`w-[223px] !h-[46px]  text-lg font-bold uppercase !p-0`}
+												colorStyle={"outline"}
 												btnText={"Allowed wallets/pools"}
 											/>
 
@@ -447,8 +449,9 @@ export function SentryWallet() {
 													setModalState(ModalView.TransactionInProgress)
 													window.electron.openExternal(`https://sentry.xai.games/#/unassign-wallet/${operatorAddress}`)
 												}}
-												wrapperClassName={`!h-[48px] max-w-[175px] `}
-												className={`w-[173px] text-lg font-bold uppercase !p-0`}
+												wrapperClassName={`!h-[48px] max-w-[175px]`}
+												colorStyle={"outline"}
+												className={`w-[173px] ${selectedWallet === null ? "!h-[48px]" : "!h-[46px]"} text-lg font-bold uppercase !p-0`}
 												btnText={"Un-assign wallet"}
 											/>
 
@@ -475,7 +478,9 @@ export function SentryWallet() {
 								<tbody>
 								{loading ? (
 									<tr className="text-[#A3A3A3] text-sm flex px-8 bg-primaryBgColor py-4">
-										<td colSpan={3} className="w-full text-center text-lg font-medium text-secondaryText">Loading...</td>
+										<td colSpan={3}
+											className="w-full text-center text-lg font-medium text-secondaryText">Loading...
+										</td>
 									</tr>
 								) : getKeys()}
 								</tbody>

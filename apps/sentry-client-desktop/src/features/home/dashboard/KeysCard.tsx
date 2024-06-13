@@ -1,7 +1,7 @@
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
 import {useAtomValue, useSetAtom} from "jotai";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
-import {CustomTooltip, PrimaryButton} from "@sentry/ui";
+import {CustomTooltip} from "@sentry/ui";
 import {AiFillWarning} from "react-icons/ai";
 import {Card} from "@/features/home/cards/Card";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
@@ -9,6 +9,7 @@ import { HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import { useOperatorRuntime } from "@/hooks/useOperatorRuntime";
 import { RiKey2Line } from "react-icons/ri";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
+import {TextButton} from "@sentry/ui/dist/src/rebrand/buttons/TextButton";
 
 export function KeysCard() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -32,12 +33,10 @@ export function KeysCard() {
 					</CustomTooltip>
 				</div>
 				<div className="flex flex-row justify-between items-center gap-1">
-					<PrimaryButton
-						className="text-lg uppercase font-bold bg-trasparent rounded-md !px-0 !py-0 max-h-[28px]"
+					<TextButton
 						onClick={() => setDrawerState(DrawerView.BuyKeys)}
-						btnText="Buy Keys"
-						colorStyle="primary"
-						size='sm'
+						buttonText={"Buy Keys"}
+						className="text-lg uppercase !px-0 !py-0 max-h-[28px]"
 					/>
 				</div>
 			</div>

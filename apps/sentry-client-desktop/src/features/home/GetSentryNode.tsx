@@ -4,6 +4,7 @@ import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useSetAtom} from "jotai";
 import {PrimaryButton} from "@sentry/ui";
 import img from '@/assets/images/dashboard-card.png';
+import {TextButton} from "@sentry/ui/dist/src/rebrand/buttons/TextButton";
 
 
 const body = [
@@ -59,15 +60,15 @@ export function GetSentryNode() {
 					<PrimaryButton
 						onClick={() => setDrawerState(DrawerView.BuyKeys)}
 						btnText="Purchase Key"
-						className="w-[202px] text-[20px] uppercase !py-1"
+						className="w-[202px] text-[20px] uppercase !py-1 !global-cta-clip-path"
 					/>
                     </div>
-					<p
-						className="text-xl text-[#F30919] cursor-pointer font-semibold hover:text-white duration-200 easy-in"
+					<TextButton
+						className="text-xl text-pelati cursor-pointer font-bold"
 						onClick={() => setDrawerState(DrawerView.ViewKeys)}
-					>
-						I already own a key
-					</p>
+						buttonText={"I already own a key"}
+					/>
+
 				</div>
 
 				<div className="flex flex-row items-center w-full">

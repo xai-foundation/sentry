@@ -158,7 +158,8 @@ export function WhitelistDrawer() {
 							setDrawerState(null)
 						}}
 						wrapperClassName={`max-w-[178px]`}
-						className={`w-[176px] !h-[46px] text-lg font-bold uppercase !p-0`}
+						className={`w-[176px] !h-[48px] text-lg font-bold uppercase !p-0`}
+						colorStyle={"outline"}
 						btnText={"Cancel"}
 					/>
 					{sentryRunning && (

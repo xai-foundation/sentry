@@ -12,6 +12,7 @@ import { useOperatorRuntime } from "@/hooks/useOperatorRuntime";
 import { RiKey2Line } from "react-icons/ri";
 import { useState } from "react";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
+import {TextButton} from "@sentry/ui/dist/src/rebrand/buttons/TextButton";
 
 export function WalletsCard() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -39,12 +40,10 @@ export function WalletsCard() {
 					</CustomTooltip>
 				</div>
 				<div className="flex flex-row justify-between items-center gap-1">
-					<PrimaryButton
-						className="text-lg uppercase font-bold rounded-md !px-0 !py-0 max-h-[28px]"
+					<TextButton
 						onClick={() => window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`)}
-						btnText="Assign Wallet"
-						colorStyle="primary"
-						size='sm'
+						buttonText={"Assign Wallet"}
+						className="text-lg uppercase !px-0 !py-0 max-h-[28px]"
 					/>
 				</div>
 			</div>
