@@ -1,6 +1,6 @@
 import {useAtomValue} from "jotai";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
-import {CustomTooltip, PrimaryButton} from "@sentry/ui";
+import {CustomTooltip} from "@sentry/ui";
 import {AiFillWarning} from "react-icons/ai";
 import {Card} from "@/features/home/cards/Card";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
@@ -63,12 +63,10 @@ export function WalletsCard() {
 					KYC complete: {owners.length - kycRequiredLength}/{owners.length}
 				</p>}
                 {sentryRunning && kycRequired && (
-					<PrimaryButton
-						className="text-btnPrimaryBgColor text-lg font-bold bg-trasparent rounded-md !px-0 !py-0 max-h-[28px] hover:bg-primaryBgColor hover:text-white"
+					<TextButton
+						className="text-lg font-bold !px-0 !py-0 max-h-[28px]"
 						onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}
-						btnText="Complete KYC"
-						colorStyle="primary"
-						size='sm'
+						buttonText="Complete KYC"
 					/>
 				)}
 					</div>

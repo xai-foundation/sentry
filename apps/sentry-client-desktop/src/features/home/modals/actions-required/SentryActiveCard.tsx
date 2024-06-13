@@ -39,7 +39,7 @@ export function SentryActiveCard() {
 					<div className="pl-7">		
 					<PrimaryButton
 						onClick={() => startRuntime}
-						className="w-[280px] text-lg items-center text-white bg-btnPrimaryBgColor font-semibold mt-4 px-6 !py-1 global-clip-path hover:bg-white hover:text-btnPrimaryBgColor duration-200 easy-in"
+						className="w-[280px] text-lg items-center font-semibold mt-4 px-6 !py-1"
 						btnText="START SENTRY"
 						size="sm"
 						colorStyle="primary"
