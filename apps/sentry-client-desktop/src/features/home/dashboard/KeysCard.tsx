@@ -55,10 +55,10 @@ export function KeysCard() {
 					</p>}
 				</div>
 			</div>
-
 			{sentryRunning && !accruing && (
 				<BaseCallout
-					extraClasses={{ calloutWrapper: "absolute bottom-5 left-6 m-auto w-[288px] !p-0 flex justify-start items-center gap-1 text-lg font-bold text-bananaBoat bg-[#FFC53D1A] px-4 py-3 global-cta-clip-path", calloutFront: "!justify-start" }}>
+					isWarning
+					extraClasses={{ calloutWrapper: "absolute bottom-5 left-6 m-auto w-[288px] !p-0 flex justify-start items-center gap-1 text-lg font-bold text-bananaBoat px-4 py-3 global-cta-clip-path", calloutFront: "!justify-start" }}>
 					<div className="flex justify-center items-center gap-2">
 						<AiFillWarning color={"#FFC53D"} size={23}/>
 						You have unassigned keys

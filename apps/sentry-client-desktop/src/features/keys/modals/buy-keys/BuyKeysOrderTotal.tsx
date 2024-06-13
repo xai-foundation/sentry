@@ -129,7 +129,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 								)}
 
 								{displayPricesMayVary && (
-									<BaseCallout extraClasses={{ calloutWrapper: "bg-primaryCalloutWarning", calloutFront: "flex-col !items-start text-bananaBoat !text-lg" }}>
+									<BaseCallout extraClasses={{ calloutWrapper: "", calloutFront: "flex-col !items-start text-bananaBoat !text-lg" }} isWarning>
 										<div className="flex items-center gap-2 font-semibold">
 											<WarningIcon width={16} height={16}/>
 											<p className="text-lg">
@@ -191,7 +191,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 												</div>
 
 												{discount.error && (
-													<BaseCallout isWarning extraClasses={{calloutWrapper: "w-full bg-primaryCalloutWarning text-bananaBoat mt-2"}}> <WarningIcon width={20} height={20}/> <span className="ml-2">Error with Promo Code</span></BaseCallout>
+													<BaseCallout isWarning extraClasses={{calloutWrapper: "w-full text-bananaBoat mt-2"}}> <WarningIcon width={20} height={20}/> <span className="ml-2">Error with Promo Code</span></BaseCallout>
 												)}
 											</div>
 										) : (

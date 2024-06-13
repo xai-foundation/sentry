@@ -18,7 +18,7 @@ export function ActionsRequiredPromptHandler() {
 
 	if (!ownersLoading && !ownersKycLoading && !licensesLoading && keyCount === 0) {
 		return (
-			<BaseCallout extraClasses={{calloutWrapper: "h-[60px] w-[308px]", calloutFront: "bg-primaryCalloutWarning "}}>
+			<BaseCallout extraClasses={{calloutWrapper: "h-[60px] w-[308px]"}} isWarning>
 				<div className="flex flex-row gap-2 items-center mr-3">
 					<WarningIcon width={23} height={20}/>
 					<span className="text-bananaBoat text-lg font-bold">Actions required</span>
@@ -35,10 +35,10 @@ export function ActionsRequiredPromptHandler() {
 		)
 	} else if (!accruing || data && data.whitelistedWallets && kycRequired) {
 		return (
-			<BaseCallout extraClasses={{calloutWrapper: "h-[60px] w-[308px]", calloutFront: "bg-primaryCalloutWarning "}}>
+			<BaseCallout isWarning extraClasses={{calloutWrapper: "h-[60px] w-[308px] !py-0 !px-0", calloutFront: "!py-0 !px-0"}}>
 				<div className="flex flex-row gap-2 items-center mr-3">
 					<AiFillWarning className="w-7 h-7 text-[#FFC53D]"/>
-					<span className="text-bananaBoat text-lg font-bold ">Actions required</span>
+					<span className="text-bananaBoat text-lg font-bold !text-nowrap">Actions required</span>
 				</div>
 				<PrimaryButton
 					onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}
