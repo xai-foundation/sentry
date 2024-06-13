@@ -12,7 +12,6 @@ module.exports = {
       white: "#fff",
       black: "#000000",
 
-      successText: "#3DD68C",
       successBgColor: "#3DD68C1A",
       dropdownPrimaryBg: "#151010",
       dropdownPrimaryHoverBg: "#FF2C3A",

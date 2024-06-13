@@ -234,7 +234,7 @@ export function SentryWallet() {
 									Stopped
 								</p>
 							) : hasAssignedKeys ? (
-								<p className="text-successText text-lg font-medium mt-1 mr-[5px]">
+								<p className="text-drunkenDragonFly text-lg font-medium mt-1 mr-[5px]">
 									Active
 								</p>
 							) : <p className="text-primaryWarningText text-lg font-medium mt-1 mr-[5px]">

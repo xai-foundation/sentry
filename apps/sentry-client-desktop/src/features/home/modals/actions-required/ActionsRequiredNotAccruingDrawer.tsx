@@ -42,7 +42,7 @@ export function ActionsRequiredNotAccruingDrawer() {
 
 				{accruing && !kycRequired && (
 					<div className="flex flex-row gap-2 items-center">
-						<AiFillCheckCircle className="w-6 h-6 text-successText mt-1" />
+						<AiFillCheckCircle className="w-6 h-6 text-drunkenDragonFly mt-1" />
 						<span className="text-white text-[24px] font-bold">esXAI is being claimed</span>
 					</div>
 				)}
@@ -60,9 +60,9 @@ export function ActionsRequiredNotAccruingDrawer() {
 								icon={AiFillCheckCircle}
 								color="#3DD68C"
 								title="You are currently accruing esXAI"
-								titleStyles="text-lg text-successText"
+								titleStyles="text-lg text-drunkenDragonFly"
 							/>
-							<p className="text-lg text-successText mt-2 pl-8 font-medium">
+							<p className="text-lg text-drunkenDragonFly mt-2 pl-8 font-medium">
 								Keep your Sentry Wallet running 24/7 to continue accruing esXAI.
 							</p>
 						</SquareCard>
@@ -123,9 +123,9 @@ export function ActionsRequiredNotAccruingDrawer() {
 											icon={AiFillCheckCircle}
 											color="#16A34A"
 											title="You can claim esXAI"
-											titleStyles="text-lg text-successText"
+											titleStyles="text-lg text-drunkenDragonFly"
 										/>
-										<p className="text-lg text-successText mt-2 pl-8 pr-3 font-medium">
+										<p className="text-lg text-drunkenDragonFly mt-2 pl-8 pr-3 font-medium">
 											You have successfully completed your KYC on all wallets assigned to the
 											Sentry.
 										</p>

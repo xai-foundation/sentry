@@ -208,7 +208,7 @@ export function NetworkRewardsCard() {
 
 			</div>
 			{accruing && !kycRequired && (
-				<BaseCallout extraClasses={{ calloutWrapper: "absolute bottom-4 left-0 right-0 m-auto max-w-[258px] flex justify-center items-center gap-1 !font-bold text-lg !text-successText !bg-successBgColor p global-cta-clip-path", calloutFront: "!h-[78px]" }} >
+				<BaseCallout extraClasses={{ calloutWrapper: "absolute bottom-4 left-0 right-0 m-auto max-w-[258px] flex justify-center items-center gap-1 !font-bold text-lg !text-drunkenDragonFly !bg-successBgColor p global-cta-clip-path", calloutFront: "!h-[78px]" }} >
 					<div className="flex justify-center items-start gap-3">
 						<FaCircleCheck color={"#3DD68C"} size={25} style={{minWidth: "20px"}}/>
 						You are accruing and claiming esXAI

@@ -54,8 +54,8 @@ export function ActionsRequiredPromptHandler() {
 				onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}
 			>
 				<div className="flex flex-row gap-2 items-center cursor-pointer">
-					<AiFillCheckCircle className="w-6 h-6 text-successText mt-1"/>
-					<p className="text-lg text-successText font-semibold">esXAI is being claimed</p>
+					<AiFillCheckCircle className="w-6 h-6 text-drunkenDragonFly mt-1"/>
+					<p className="text-lg text-drunkenDragonFly font-semibold">esXAI is being claimed</p>
 				</div>
 			</div>
 		)

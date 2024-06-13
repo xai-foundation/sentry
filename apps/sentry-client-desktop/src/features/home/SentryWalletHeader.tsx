@@ -19,7 +19,7 @@ export function SentryWalletHeader() {
 
 	function getEthFundsTextColor(): string {
 		if (balance?.wei !== undefined && balance.wei >= recommendedFundingBalance) {
-			return "text-successText";
+			return "text-drunkenDragonFly";
 		}
 
 		return "text-[#F59E28]";

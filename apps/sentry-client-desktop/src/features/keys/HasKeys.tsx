@@ -163,8 +163,8 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						)}
 
 						{_status === "claiming" && (
-							<div className="relative flex items-center gap-[10px] font-bold text-successText">
-								<AiFillCheckCircle className="w-[18px] h-[16px] text-successText"/> Claiming rewards when available
+							<div className="relative flex items-center gap-[10px] font-bold text-drunkenDragonFly">
+								<AiFillCheckCircle className="w-[18px] h-[16px] text-drunkenDragonFly"/> Claiming rewards when available
 							</div>
 						)}
 
