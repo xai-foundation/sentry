@@ -59,7 +59,7 @@ export function GetSentryNode() {
 					<PrimaryButton
 						onClick={() => setDrawerState(DrawerView.BuyKeys)}
 						btnText="Purchase Key"
-						className="w-[202px] text-[20px] bg-btnPrimaryBgColor !global-cta-clip-path text-[#000000] uppercase !py-1 hover:text-btnPrimaryBgColor hover:bg-white"
+						className="w-[202px] text-[20px] uppercase !py-1"
 					/>
                     </div>
 					<p

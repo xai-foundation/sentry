@@ -33,7 +33,7 @@ export function KeysCard() {
 				</div>
 				<div className="flex flex-row justify-between items-center gap-1">
 					<PrimaryButton
-						className="text-btnPrimaryBgColor text-lg uppercase font-bold bg-trasparent rounded-md !px-0 !py-0 max-h-[28px] hover:!bg-primaryBgColor hover:text-white"
+						className="text-lg uppercase font-bold bg-trasparent rounded-md !px-0 !py-0 max-h-[28px]"
 						onClick={() => setDrawerState(DrawerView.BuyKeys)}
 						btnText="Buy Keys"
 						colorStyle="primary"

@@ -80,7 +80,7 @@ export function RemoveWalletModal({onClose, selectedWallet, isWalletAssignedMap}
 							<PrimaryButton
 								onClick={() => onClose()}
 								wrapperClassName="w-max"
-								className="w-fit bg-[#F30919] text-lg uppercase font-bold text-white px-4 !py-0 hover:text-tertiaryText !h-[40px]"
+								className="w-fit text-lg uppercase px-4 !py-0 !h-[40px]"
 								btnText={"Okay"}
 							/>
 						</div>
@@ -124,7 +124,7 @@ export function RemoveWalletModal({onClose, selectedWallet, isWalletAssignedMap}
 							<PrimaryButton
 								onClick={() => onClose()}
 								wrapperClassName="w-max"
-								className="w-fit bg-[#F30919] text-lg uppercase font-bold text-white px-4 !py-0 hover:text-tertiaryText !h-[40px]"
+								className="w-fit text-lg uppercase font-bold px-4 !py-0 !h-[40px]"
 								btnText={"No, take me back"}
 							/>
 						</div>

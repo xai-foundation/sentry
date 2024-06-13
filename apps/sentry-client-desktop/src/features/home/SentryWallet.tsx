@@ -419,8 +419,8 @@ export function SentryWallet() {
 												isDisabled={selectedWallet === null}
 												onClick={() => copySelectedWallet()}
 												btnText={"Copy address"}
-												wrapperClassName={`mt-[-2px] !h-[48px] max-w-[146px] flex items-center justify-center ${selectedWallet !== null && "bg-btnPrimaryBgColor"} global-clip-primary-btn`}
-												className={`w-[144px] ${selectedWallet === null ? "!h-[48px]" : "!h-[46px]"} text-lg font-bold uppercase !p-0 bg-primaryBgColor text-tertiaryText ${selectedWallet !== null && "hover:!bg-btnPrimaryBgColor"} hover:text-[#EEEEEE]`}
+												wrapperClassName={`max-w-[146px]`}
+												className={`w-[144px] !h-[46px] text-lg font-bold uppercase !p-0`}
 
 											/>
 
@@ -429,15 +429,15 @@ export function SentryWallet() {
 													setModalState(ModalView.TransactionInProgress)
 													window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`)
 												}}
-												wrapperClassName={`mt-[-2px] !h-[48px] max-w-[161px] flex items-center justify-center bg-btnPrimaryBgColor global-clip-primary-btn`}
-												className={`w-[159px] !h-[46px] text-lg font-bold uppercase !p-0 bg-primaryBgColor text-tertiaryText hover:!bg-btnPrimaryBgColor hover:text-[#EEEEEE]`}
+												wrapperClassName={`!h-[48px] max-w-[161px]`}
+												className={`w-[159px] text-lg font-bold uppercase !p-0`}
 												btnText={"Assign wallet"}
 											/>
 
 											<PrimaryButton
 												onClick={() => setDrawerState(DrawerView.Whitelist)}
-												wrapperClassName={`mt-[-2px] !h-[48px] max-w-[225px] flex items-center justify-center bg-btnPrimaryBgColor global-clip-primary-btn`}
-												className={`w-[223px] !h-[46px] text-lg font-bold uppercase !p-0 bg-primaryBgColor text-tertiaryText hover:!bg-btnPrimaryBgColor hover:text-[#EEEEEE]`}
+												wrapperClassName={`!h-[48px] max-w-[225px]`}
+												className={`w-[223px] text-lg font-bold uppercase !p-0`}
 												btnText={"Allowed wallets/pools"}
 											/>
 
@@ -447,8 +447,8 @@ export function SentryWallet() {
 													setModalState(ModalView.TransactionInProgress)
 													window.electron.openExternal(`https://sentry.xai.games/#/unassign-wallet/${operatorAddress}`)
 												}}
-												wrapperClassName={`mt-[-2px] !h-[48px] max-w-[175px] flex items-center justify-center ${selectedWallet !== null && "bg-btnPrimaryBgColor"} global-clip-primary-btn`}
-												className={`w-[173px] ${selectedWallet === null ? "!h-[48px]" : "!h-[46px]"} text-lg font-bold uppercase !p-0 bg-primaryBgColor text-tertiaryText ${selectedWallet !== null && "hover:!bg-btnPrimaryBgColor"} hover:text-[#EEEEEE]`}
+												wrapperClassName={`!h-[48px] max-w-[175px] `}
+												className={`w-[173px] text-lg font-bold uppercase !p-0`}
 												btnText={"Un-assign wallet"}
 											/>
 

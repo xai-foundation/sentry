@@ -132,11 +132,10 @@ export function ViewKeysFlow() {
 
 						<PrimaryButton
 							onClick={async () => onAddWallet()}
-							className={`bg-primaryBgColor w-full text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-xl uppercase font-semibold transition-all`}
+							className={`w-full text-xl uppercase font-semibold transition-all`}
 							isDisabled={ownerAddress === ""}
 							btnText="Add wallet"
 							colorStyle="outline"
-							wrapperClassName="global-clip-primary-btn bg-btnPrimaryBgColor"
 						/>
 						</div>
                         <div className="px-6 pt-4">
@@ -146,7 +145,7 @@ export function ViewKeysFlow() {
 
 						<PrimaryButton
 							onClick={startAssignment}
-							className="w-full flex flex-row justify-center items-center gap-1 bg-btnPrimaryBgColor text-xl text-white font-bold uppercase hover:text-btnPrimaryBgColor"
+							className="w-full flex flex-row justify-center items-center gap-1 text-xl font-bold uppercase"
 							btnText="Connect wallet"
 							icon={<BiLinkExternal size={20}/>}
 						/>

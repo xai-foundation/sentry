@@ -202,7 +202,7 @@ export function ImportSentryDrawer() {
 
 								<PrimaryButton
 									onClick={handleButton}
-									className="w-full flex justify-center items-center gap-1 !text-xl text-[#EEEEEE] hover:text-btnPrimaryBgColor bg-[#F30919] font-semibold mt-[13px] px-6 py-3 !uppercase"
+									className="w-full flex justify-center items-center gap-1 !text-xl font-semibold mt-[13px] px-6 py-3 !uppercase"
 									btnText={"Confirm import"}/>
 
 							</div>

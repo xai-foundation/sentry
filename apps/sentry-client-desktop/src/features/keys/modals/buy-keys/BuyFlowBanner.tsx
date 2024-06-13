@@ -33,7 +33,7 @@ export function BuyFlowBanner({quantity, promoCode}: BuyFlowBanner) {
 						setModalState(ModalView.TransactionInProgress)
 						window.electron.openExternal(promoCode ? `https://sentry.xai.games/?quantity=${quantity}&promoCode=${promoCode}` : `https://sentry.xai.games/?quantity=${quantity}`)
 					}}
-					className={"w-full h-16 !bg-btnPrimaryBgColor text-lg text-white hover:!text-btnPrimaryBgColor hover:!bg-white uppercase !font-bold"}
+					className={"w-full h-16 text-lg uppercase !font-bold"}
 					btnText="Continue"
 				/>
 			</div>

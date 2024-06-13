@@ -184,7 +184,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 													<div>
 													<PrimaryButton
 														onClick={() => handleSubmit()}
-														className="w-[92px] bg-btnPrimaryBgColor h-[44px] !p-1 text-lg text-white font-semibold uppercase hover:!text-btnPrimaryBgColor"
+														className="w-[92px] h-[44px] !p-1 text-lg font-semibold uppercase"
 														btnText="Apply"
 														/>
 													</div>

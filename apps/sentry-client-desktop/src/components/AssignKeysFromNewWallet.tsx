@@ -30,7 +30,7 @@ export function AssignKeysFromNewWallet() {
 				isDisabled={isOperatorLoading}
 				wrapperClassName="w-max global-cta-clip-path"
 				btnText={"Assign keys from new wallet"}
-				className="bg-btnPrimaryBgColor h-[56px] w-[307px] !text-btnSecondaryText uppercase !text-xl !font-bold !px-0"
+				className="h-[56px] w-[307px] uppercase !text-xl !font-bold !px-0"
 			/>
 
 

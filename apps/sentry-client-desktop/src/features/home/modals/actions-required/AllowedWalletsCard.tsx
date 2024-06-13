@@ -44,7 +44,7 @@ export function AllowedWalletsCard() {
 						btnText="ASSIGN ALLOWED WALLETS"
 						colorStyle="primary"
 						size="sm"
-						className="w-[280px] text-lg uppercase bg-btnPrimaryBgColor text-white hover:text-btnPrimaryBgColor !py-1 !px-1 font-bold"
+						className="w-[280px] text-lg uppercase !py-1 !px-1 font-bold"
 					/>
 					</div>
 				</>

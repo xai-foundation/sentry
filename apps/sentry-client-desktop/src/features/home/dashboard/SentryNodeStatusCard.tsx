@@ -103,7 +103,7 @@ export function SentryNodeStatusCard() {
 						<div
 							className="absolute left-0 right-0 bottom-7 w-full h-[40px] flex justify-center items-center gap-1 px-6 pt-4 pb-7">
 							<PrimaryButton
-								className={`w-[643px] bg-btnPrimaryBgColor text-[20px] uppercase font-semibold mt-2 global-cta-clip-path hover:text-btnPrimaryBgColor`}
+								className={`w-[643px] text-[20px] uppercase font-semibold mt-2`}
 								onClick={() => startRuntime}
 								btnText="Start Node"
 								colorStyle="primary"

@@ -19,7 +19,7 @@ export function NoKeys() {
                 <div className="flex justify-center">
 				<PrimaryButton
 					onClick={() => setDrawerState(DrawerView.BuyKeys)}
-					className="w-[202px] text-[20px] font-bold bg-btnPrimaryBgColor !global-cta-clip-path text-[#000000] uppercase !py-1  hover:text-btnPrimaryBgColor hover:bg-white"
+					className="w-[202px] text-[20px] font-bold uppercase !py-1"
 					btnText="Purchase keys"
 				/>
                 </div>

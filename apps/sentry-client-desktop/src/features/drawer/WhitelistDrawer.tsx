@@ -157,15 +157,15 @@ export function WhitelistDrawer() {
 						onClick={() => {
 							setDrawerState(null)
 						}}
-						wrapperClassName={`!h-[48px] max-w-[178px] flex items-center justify-center bg-btnPrimaryBgColor global-clip-primary-btn`}
-						className={`w-[176px] !h-[46px] text-lg font-bold uppercase !p-0 bg-primaryBgColor text-tertiaryText hover:!bg-btnPrimaryBgColor hover:text-[#EEEEEE]`}
+						wrapperClassName={`max-w-[178px]`}
+						className={`w-[176px] !h-[46px] text-lg font-bold uppercase !p-0`}
 						btnText={"Cancel"}
 					/>
 					{sentryRunning && (
 						<PrimaryButton
 							onClick={() => handleSubmit()}
 							isDisabled={disableButton}
-							className={`!h-[48px] w-full bg-btnPrimaryBgColor !font-bold !text-lg !uppercase !p-0 flex items-center justify-center `}
+							className={`!h-[48px] w-full !font-bold !text-lg !uppercase !p-0 flex items-center justify-center `}
 							btnText={stopRuntime ? "Apply" : "Loading..."}
 						/>
 					)}

@@ -26,7 +26,7 @@ export function ActionsRequiredPromptHandler() {
 				<div>
 				<PrimaryButton
 					onClick={() => setDrawerState(DrawerView.ActionsRequiredBuy)}
-					className={`bg-btnPrimaryBgColor w-[104px] text-lg text-white font-bold uppercase !py-1 !px-[14px] hover:!text-btnPrimaryBgColor`}
+					className={`w-[104px] text-lg font-bold uppercase !py-1 !px-[14px]`}
 					btnText="Resolve"
 					size="sm"
 					/>
@@ -43,7 +43,7 @@ export function ActionsRequiredPromptHandler() {
 				<PrimaryButton
 					onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}
 					wrapperClassName="w-max"
-					className={`flex flex-row max-w-[104px] justify-center items-center gap-1 bg-[#F30919] !text-lg !font-bold text-white !h-[40px] hover:!text-btnPrimaryBgColor uppercase`}
+					className={`flex flex-row max-w-[104px] justify-center items-center gap-1 !text-lg !font-bold !h-[40px] uppercase`}
 					btnText={"Resolve"} />
 			</BaseCallout>
 		);

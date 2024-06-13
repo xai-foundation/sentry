@@ -67,12 +67,11 @@ export function Keys() {
 					</a>
                     <div className="ml-3">
 					<PrimaryButton
-						className={`bg-primaryBgColor text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-xl uppercase font-bold !py-1 !px-[14px]`}
+						className={`text-xl uppercase font-bold !py-1 !px-[14px]`}
 						onClick={() => setDrawerState(DrawerView.BuyKeys)}
 						btnText="Purchase keys"
 						colorStyle="outline"
 						size="sm"
-						wrapperClassName="global-clip-primary-btn bg-btnPrimaryBgColor"
 					/>
 					</div>
 				</div>

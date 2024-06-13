@@ -251,17 +251,16 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						<PrimaryButton
 							isDisabled={selectedWallet === null}
 							onClick={copySelectedWallet}
-							className={`bg-primaryBgColor flex !h-[48px] items-center !w-[155px] text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-lg uppercase font-bold !py-1 !px-[10px]`}
+							className={`flex !h-[48px] items-center !w-[155px] text-lg uppercase font-bold !py-1 !px-[10px]`}
 							btnText="Copy address"
 							colorStyle="outline"
-							wrapperClassName={`global-clip-primary-btn ${selectedWallet !== null && 'bg-btnPrimaryBgColor'}`}
 							icon={copiedSelectedWallet ? (<AiOutlineCheck className="h-[18px]"/>) : (<PiCopy className="h-[18px]"/>)}
 						/>
 						</div>
                         <div>
 						<PrimaryButton
 							onClick={() => setDrawerState(DrawerView.ViewKeys)}
-							className={`flex flex-row-reverse group !w-[147px] !h-[50px] justify-center items-center gap-2 text-lg bg-btnPrimaryBgColor text-white font-bold uppercase !py-1 !px-[14px] hover:text-btnPrimaryBgColor`}
+							className={`flex flex-row-reverse group !w-[147px] !h-[50px] justify-center items-center gap-2 text-lg font-bold uppercase !py-1 !px-[14px]`}
 							btnText="Add wallet"
 							icon={<AiOutlinePlus className="h-[15px] w-[15px] group-hover:fill-btnPrimaryBgColor duration-200 easy in" color={"#ffffff"}/>}
 						/>
@@ -270,10 +269,9 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						<PrimaryButton
 							isDisabled={selectedWallet === null}
 							onClick={() => setIsRemoveWalletOpen(true)}
-							className={`flex flex-row-reverse justify-center items-center gap-2 bg-primaryBgColor !h-[48px] !w-[173px] text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-lg uppercase font-bold !py-1 !px-[14px]`}
+							className={`flex flex-row-reverse justify-center items-center gap-2 !h-[48px] !w-[173px] text-lg uppercase font-bold !py-1 !px-[14px]`}
 							btnText="Remove wallet"
 							colorStyle="outline"
-							wrapperClassName={`global-clip-primary-btn ${selectedWallet !== null && 'bg-btnPrimaryBgColor'}`}
 							icon={<AiOutlineMinus className="h-[15px] w-[15px]"/>}
 						/>
 						</div>
