@@ -25,7 +25,7 @@ export function ActionsRequiredNotAccruingDrawer() {
 	return (
 		<div className="h-full flex flex-col justify-start items-center">
 			<div
-				className="w-full h-[4rem] min-h-[4rem] flex flex-row justify-between items-center border-b border-chromaphobicBlack text-lg font-semibold px-6">
+				className="w-full flex flex-row justify-between items-center border-b border-chromaphobicBlack text-lg font-semibold px-6 py-[26px]">
 				{!accruing && (
 					<div className="flex flex-row gap-2 items-center">
 						<WarningIcon width={28} height={24} />{" "}
