@@ -24,8 +24,8 @@ export const useGetUserInteractedPools = (refresh: boolean = false) => {
           if(userPoolAddresses.length > 0) {
           //const result = await findPool({ poolAddress: userPoolAddresses[0] });
           //console.log("result", result);
-          const poolRewardRates = await getPoolRewardRatesByAddress(userPoolAddresses);
-          console.log("poolRewardRates", poolRewardRates);
+          //const poolRewardRates = await getPoolRewardRatesByAddress(userPoolAddresses);
+          //console.log("poolRewardRates", poolRewardRates);
           }
       if (!userPoolAddresses.length) {
         setIsLoading(false);
