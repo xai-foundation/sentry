@@ -12,15 +12,6 @@ module.exports = {
     colors: {
       white: "#fff",
       black: "#000000",
-
-      btnSecondaryText: "#1A1819",
-      checkBoxCheckedPrimaryColor: "#FF0030",
-      checkboxPrimaryBg: "#525252",
-      tertiaryBorderColor: "#524D4F",
-      inputPrimaryHoverBg: "#FF2C3A",
-      primaryWarningBg: "#FFC53D",
-      primaryModalWrapperBg: "#2A2828",
-
       red: "#f30919",
       lightBlackDarkWhite: "#181818",
       lightWhiteDarkBlack: "#ffffff",

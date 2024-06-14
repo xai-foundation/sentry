@@ -44,7 +44,7 @@ export function WhitelistDrawer() {
 						<MainCheckbox
 							isChecked={selected.includes(operatorAddress)}
 							disabled={false}
-							extraClasses={{input: "checked:before:bg-checkBoxCheckedPrimaryColor !bg-checkboxPrimaryBg", wrapper: "text-[18px]"}}
+							extraClasses={{wrapper: "text-[18px]"}}
 							onChange={() => toggleSelected(operatorAddress)}
 						>
 							{operatorAddress.slice(0, 9)}...{operatorAddress.slice(-9)}
@@ -65,7 +65,7 @@ export function WhitelistDrawer() {
 					<MainCheckbox
 						onChange={() => toggleSelected(wallet)}
 						isChecked={selected.includes(wallet)}
-						extraClasses={{input: "checked:before:bg-checkBoxCheckedPrimaryColor !bg-checkboxPrimaryBg", wrapper: "text-[18px]"}}
+						extraClasses={{wrapper: "text-[18px]"}}
 					>
 						{wallet.slice(0, 9)}...{wallet.slice(-9)}
 					</MainCheckbox>
@@ -79,7 +79,7 @@ export function WhitelistDrawer() {
 				<MainCheckbox
 					onChange={() => toggleSelected(pool)}
 					isChecked={selected.includes(pool)}
-					extraClasses={{input: "checked:before:bg-checkBoxCheckedPrimaryColor !bg-checkboxPrimaryBg", wrapper: "text-[18px]"}}
+					extraClasses={{wrapper: "text-[18px]"}}
 				>
 					{pool.slice(0, 9)}...{pool.slice(-9)}
 				</MainCheckbox>
