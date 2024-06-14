@@ -126,8 +126,8 @@ const StakedPoolsTable = (
                   {/* <TableRowStaked value={"__%"}/> POOL UPTIME */} 
                   <TableRowStaked value={`${pool.userStakedEsXaiAmount ? pool.userStakedEsXaiAmount < 0.0001 ? "<0.0001" : hideDecimals(formatCurrencyWithDecimals.format(pool.userStakedEsXaiAmount)) : 0} esXAI`} poolAddress={pool.address} keys={`${pool.userStakedKeyIds.length} keys`} customClass="lg:pr-8 group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end" />
                   <TableRowStaked value={`${formatCurrencyNoDecimals.format(pool.userStakedKeyIds.length)} keys`} poolAddress={pool.address} customClass="lg:table-cell sm:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="items-center"/>
-                  <TableRowStaked value={`${formatDailyRewardRatePercentage(pool.esXaiRewardRate, 1)}%`}  poolAddress={pool.address} customClass="lg:table-cell sm:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in"/>
-                  <TableRowStaked value={`${formatDailyRewardRate(pool.keyRewardRate, 1)} esXAI`}  poolAddress={pool.address} customClass="lg:table-cell sm:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="lg:pr-1"/>
+                  <TableRowStaked value={`${formatDailyRewardRatePercentage(pool.esXaiRewardRate, 2)}%`}  poolAddress={pool.address} customClass="lg:table-cell sm:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in"/>
+                  <TableRowStaked value={`${formatDailyRewardRate(pool.keyRewardRate, 2)} esXAI`}  poolAddress={pool.address} customClass="lg:table-cell sm:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="lg:pr-1"/>
                   <TableRowKeysRewards pool={pool} totalStaked={0} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" />
                 </tr>
               )
