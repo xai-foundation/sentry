@@ -104,7 +104,7 @@ export const findPools = async ({
 
 export const getPoolRewardRatesByAddress = async (poolAddresses: string[]): Promise<PoolRewardRates[]> => {
     try {
-        const pools = await PoolModel.find({ poolAddress: { $in: poolAddresses } }).select('poolAddress keyRewardRate esXaiRewardRate').lean() as any[];
+        const pools = (await executeQuery(PoolModel.find({ poolAddress: { $in: poolAddresses } }).select('poolAddress keyRewardRate esXaiRewardRate').lean())) as IPool[];
         return pools.map((p) => {
             return {
                 poolAddress: p.poolAddress,
