@@ -11,7 +11,7 @@ import React, { useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import BaseCallout from "@sentry/ui/dist/src/rebrand/callout/BaseCallout";
 import {PrimaryButton} from "@sentry/ui";
-import {CloseIcon} from "../../../../../../packages/ui/src/rebrand/icons/CloseIcon";
+import {AiOutlineClose} from "react-icons/ai";
 
 export enum InputSizes {
 	md = "md",
@@ -158,7 +158,7 @@ export function ImportSentryDrawer() {
 						}}
 						className="cursor-pointer"
 					>
-							<CloseIcon height={13} width={13} fill={"#fff"}/>
+							<AiOutlineClose size={20} color="white" className="hover:!text-[#FF0030] duration-300 ease-in" />
 						</span>
 				</div>
 

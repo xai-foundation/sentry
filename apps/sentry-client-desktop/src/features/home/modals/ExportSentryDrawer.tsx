@@ -1,4 +1,4 @@
-import {AiOutlineCheck} from "react-icons/ai";
+import {AiOutlineCheck, AiOutlineClose} from "react-icons/ai";
 import {useSetAtom} from "jotai";
 import {drawerStateAtom} from "../../drawer/DrawerManager.js";
 import {useOperator} from "../../operator";
@@ -6,7 +6,6 @@ import {useState} from "react";
 import {BiLoaderAlt} from "react-icons/bi";
 import log from "electron-log";
 import {CopyIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
-import {CloseIcon} from "../../../../../../packages/ui/src/rebrand/icons/CloseIcon";
 
 export function ExportSentryDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -55,7 +54,7 @@ export function ExportSentryDrawer() {
 							}}
 							className="cursor-pointer"
 						>
-							<CloseIcon height={13} width={13} fill={"#fff"}/>
+							<AiOutlineClose size={20} color="white" className="hover:!text-[#FF0030] duration-300 ease-in" />
 						</span>
 					</div>
 				</div>

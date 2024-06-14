@@ -12,7 +12,7 @@ export function BuyKeysDrawer() {
 				className="w-full flex flex-row justify-between items-center border-b border-primaryBorderColor text-2xl text-white font-bold px-6 py-6">
 				<span>Purchase key</span>
 				<div className="cursor-pointer z-10" onClick={() => setDrawerState(null)}>
-					<AiOutlineClose size={20}/>
+					<AiOutlineClose size={20} color="white" className="hover:!text-[#FF0030] duration-300 ease-in" />
 				</div>
 			</div>
 
