@@ -94,7 +94,7 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
         switchChain
       ) as `0x${string}`);
 
-    } catch (ex: any) {
+    } catch (ex: unknown) {
       const error = mapWeb3Error(ex);
       updateNotification(error, toastId.current as Id, true);
     }

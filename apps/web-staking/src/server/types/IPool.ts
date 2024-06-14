@@ -31,6 +31,7 @@ export default interface IPool extends IDocument {
 }
 
 export type PoolRewardRates = {	
+	poolAddress: string;
 	keyRewardRate: number;								
 	esXaiRewardRate: number;
 }

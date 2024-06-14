@@ -5,7 +5,7 @@ export *  from './useGetEsXaiAllowance';
 export *  from './useGetEsXaiBalance';
 export *  from './useGetKYCApproved';
 export *  from './useGetMaxBucketShares';
-export * from './useGetMaxKeyPerPool';
+export *  from './useGetMaxKeyPerPool';
 export *  from './useGetMaxStakePerLicense';
 export *  from './useGetMaxTotalStaked';
 export *  from './useGetNodeLicenses';
