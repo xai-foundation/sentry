@@ -29,7 +29,7 @@ export function ImportSentryAlertModal({setShowModal, onSuccess}: ImportSentryAl
 							Are you sure you want to import a new Sentry Wallet?
 						</p>
 					</div>
-					<p className="text-primaryText text-[17px] font-medium ml-[55px]">
+					<p className="text-elementalGrey text-[17px] font-medium ml-[55px]">
 						Your old Sentry Wallet will be overwritten
 					</p>
 
