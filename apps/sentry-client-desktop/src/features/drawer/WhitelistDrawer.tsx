@@ -130,7 +130,7 @@ export function WhitelistDrawer() {
 						<div className="flex gap-1 items-center px-6">
 							<p className="text-lg font-medium text-primaryText">Your Sentry Wallet</p>
 							<CustomTooltip
-								extraClasses={{tooltipContainer: "left-[-38px] max-w-[280px]"}}
+								extraClasses={{tooltipContainer: "!left-[-38px] max-w-[275px]"}}
 								content={"You should allow the Sentry Wallet only if it contains at least one Key. Otherwise, it is not necessary to select."}
 							>
 								<HelpIcon width={14} height={14}/>
