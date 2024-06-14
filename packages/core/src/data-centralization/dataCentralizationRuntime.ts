@@ -1,10 +1,14 @@
 import mongoose from 'mongoose';
 import { EventListenerError, resilientEventListener } from '../utils/resilientEventListener.js';
-import { LogDescription } from 'ethers';
+import { LogDescription, getAddress } from 'ethers';
 import { config } from '../config.js';
 import { PoolFactoryAbi } from '../abis/PoolFactoryAbi.js';
 import { updatePoolInDB } from './updatePoolInDB.js';
 import { retry } from '../utils/retry.js';
+import { listenForChallenges } from '../operator/listenForChallenges.js';
+import { Challenge } from '../challenger/getChallenge.js';
+import { IPool, PoolSchema } from './types.js';
+import { getRewardRatesFromGraph } from '../subgraph/getRewardRatesFromGraph.js';
 
 /**
  * Arguments required to initialize the data centralization runtime.
@@ -89,6 +93,26 @@ export async function dataCentralizationRuntime({
 		},
 	}).stop;
 
+	const closeChallengeListener = listenForChallenges(async (challengeNumber: bigint, challenge: Challenge, event?: any) => {
+		const PoolModel = mongoose.models.Pool || mongoose.model<IPool>('Pool', PoolSchema);
+
+		const updatedPools = await getRewardRatesFromGraph([]);
+
+		for (const updatedPool of updatedPools) {
+			const checksumAddress = getAddress(updatedPool.poolAddress);
+
+			await PoolModel.updateOne(
+				{ poolAddress: checksumAddress },
+				{
+					$set: {
+						esXaiRewardRate: updatedPool.averageDailyEsXaiReward,
+						keyRewardRate: updatedPool.averageDailyKeyReward
+					}
+				},
+			);
+		}
+	});
+
 	/**
 	 * Stops the data centralization runtime.
 	 * @returns {Promise<void>} A promise that resolves when the runtime is successfully stopped.
@@ -97,7 +121,7 @@ export async function dataCentralizationRuntime({
 		// Disconnect from MongoDB.
 		await mongoose.disconnect();
 		logFunction('Disconnected from MongoDB.');
-
+		closeChallengeListener();
 		// Remove event listener listener.
 		stopListener();
 		logFunction('Event listener removed.');
