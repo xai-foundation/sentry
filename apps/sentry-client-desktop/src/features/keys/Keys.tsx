@@ -28,7 +28,7 @@ export function Keys() {
 	const {refresh} = useChainDataRefresh();
 
 	return (
-		<div className="px-4">
+		<div className="pl-4">
 		<div className="w-full h-screen bg-nulnOil">
 			<div className="sticky top-0 bg-nulnOil flex flex-row justify-between items-center border-b border-chromaphobicBlack pl-6 pr-2 z-40">
 				<div className="top-0 flex flex-row items-center pt-[20px] pb-[18px] gap-2">
