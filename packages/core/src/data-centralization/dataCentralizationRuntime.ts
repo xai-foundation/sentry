@@ -9,6 +9,7 @@ import { listenForChallenges } from '../operator/listenForChallenges.js';
 import { Challenge } from '../challenger/getChallenge.js';
 import { IPool, PoolSchema } from './types.js';
 import { getRewardRatesFromGraph } from '../subgraph/getRewardRatesFromGraph.js';
+import { sendSlackNotification } from '../utils/sendSlackNotification.js';
 
 /**
  * Arguments required to initialize the data centralization runtime.
@@ -17,6 +18,7 @@ import { getRewardRatesFromGraph } from '../subgraph/getRewardRatesFromGraph.js'
  */
 interface DataCentralizationRuntimeArgs {
 	mongoUri: string;
+	slackWebHookUrl: string;
 	logFunction?: (log: string) => void;
 }
 
@@ -35,6 +37,7 @@ const toSaveString = (obj: any) => {
  */
 export async function dataCentralizationRuntime({
 	mongoUri,
+	slackWebHookUrl,
 	logFunction = (_) => { }
 }: DataCentralizationRuntimeArgs): Promise<() => Promise<void>> {
 
@@ -94,9 +97,19 @@ export async function dataCentralizationRuntime({
 	}).stop;
 
 	const closeChallengeListener = listenForChallenges(async (challengeNumber: bigint, challenge: Challenge, event?: any) => {
+		const startTime = new Date().getTime();
 		const PoolModel = mongoose.models.Pool || mongoose.model<IPool>('Pool', PoolSchema);
 
+		const slackStartMessage = `Starting pool sync update @ ${startTime}`;
+		sendSlackNotification(slackWebHookUrl, slackStartMessage, logFunction);
+
+		const graphUpdateStartTime = new Date().getTime();
+
 		const updatedPools = await getRewardRatesFromGraph([]);
+
+		const graphUpdateEndTime = new Date().getTime();
+
+		const mongoInsertStartTime = new Date().getTime();
 
 		for (const updatedPool of updatedPools) {
 			const checksumAddress = getAddress(updatedPool.poolAddress);
@@ -111,6 +124,13 @@ export async function dataCentralizationRuntime({
 				},
 			);
 		}
+		const mongoInsertEndTime = new Date().getTime();
+		const totalSeconds = mongoInsertEndTime - startTime;
+		const totalGraphSeconds = graphUpdateEndTime - graphUpdateStartTime;
+		const totalMongoSeconds = mongoInsertEndTime - mongoInsertStartTime;
+		const slackMessage = `Finished pool sync update for ${updatedPools.length} @ ${mongoInsertEndTime} in ${totalSeconds}ms. Graph update took ${totalGraphSeconds}ms. Mongo insert took ${totalMongoSeconds}ms.`;
+
+		sendSlackNotification(slackWebHookUrl, slackMessage, logFunction);
 	});
 
 	/**
