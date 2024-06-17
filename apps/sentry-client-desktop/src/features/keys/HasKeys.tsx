@@ -250,7 +250,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						<PrimaryButton
 							isDisabled={selectedWallet === null}
 							onClick={copySelectedWallet}
-							className={`flex justify-center ${selectedWallet === null ? "!h-[50px]" : "!h-[48px]"} items-center !w-[155px] text-lg uppercase font-bold !py-1 !px-[10px]`}
+							className={`flex justify-center !h-[48px] items-center !w-[155px] text-lg uppercase font-bold !py-1 !px-[10px] disabled:!h-[50px]`}
 							btnText="Copy address"
 							colorStyle="outline"
 						/>
@@ -267,7 +267,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						<PrimaryButton
 							isDisabled={selectedWallet === null}
 							onClick={() => setIsRemoveWalletOpen(true)}
-							className={`flex flex-row-reverse justify-center items-center gap-2  ${selectedWallet === null ? "!h-[50px]" : "!h-[48px]"} !w-[173px] text-lg uppercase font-bold !py-1 !px-[14px]`}
+							className={`flex flex-row-reverse justify-center items-center gap-2 !h-[48px] !w-[173px] text-lg uppercase font-bold !py-1 !px-[14px] disabled:!h-[50px]`}
 							btnText="Remove wallet"
 							colorStyle="outline"
 							icon={<AiOutlineMinus className="h-[15px] w-[15px]"/>}
