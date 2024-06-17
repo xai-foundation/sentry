@@ -80,10 +80,10 @@ export function ExportSentryDrawer() {
 								Here is the private key of the Sentry Wallet
 							</p>
 
-							<div className="p-[1px] w-full h-full bg-chromaphobicBlack global-clip-8px">
+							<div className="p-[1px] w-full h-full bg-chromaphobicBlack global-clip-btn">
 								<div
 									onClick={() => copyPrivateKey()}
-									className="relative bg-dynamicBlack w-full h-fit flex justify-between text-americanSilver p-2 cursor-pointer overflow-hidden text-lg font-medium global-clip-8px"
+									className="relative bg-dynamicBlack w-full h-fit flex justify-between text-americanSilver p-2 cursor-pointer overflow-hidden text-lg font-medium global-clip-btn"
 								>
 									<p className="w-full">{wrappedPrivateKey}</p>
 									<div
