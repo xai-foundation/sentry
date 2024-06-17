@@ -88,7 +88,12 @@ describe("Fixture Tests", function () {
         const referee = await upgrades.deployProxy(Referee, [await esXai.getAddress(), await xai.getAddress(), await gasSubsidy.getAddress(), gasSubsidyPercentage], { deployer: deployer });
         await referee.waitForDeployment();
 
-        //Upgrade Referee
+        // Upgrade esXai - moved here due to needing referee address as a parameter
+        const EsXai3 = await ethers.getContractFactory("esXai3");
+        const esXai3 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai3, { call: { fn: "initialize", args: [(await deployer.getAddress()), BigInt(500), referee.getAddress()] } });
+        await esXai3.waitForDeployment();
+
+        // Upgrade Referee
         const Referee2 = await ethers.getContractFactory("Referee2");
         const referee2 = await upgrades.upgradeProxy((await referee.getAddress()), Referee2, { call: { fn: "initialize", args: [] } });
         await referee2.waitForDeployment();
