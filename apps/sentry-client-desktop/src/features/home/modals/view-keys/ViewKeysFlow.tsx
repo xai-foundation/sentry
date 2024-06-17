@@ -116,7 +116,7 @@ export function ViewKeysFlow() {
 						<p className="text-lg text-americanSilver">
 							Enter the the public key of the wallet you want to view keys for
 						</p>
-                       <div className="w-full bg-[#5B5757] global-clip-primary-btn p-[1px] mb-3 mt-4 focus-within:bg-hornetSting">
+                       <div className="w-full bg-foggyLondon global-clip-primary-btn p-[1px] mb-3 mt-4 focus-within:bg-hornetSting">
 						<input
 							type="text"
 							value={ownerAddress}

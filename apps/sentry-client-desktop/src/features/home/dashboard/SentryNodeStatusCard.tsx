@@ -56,7 +56,7 @@ export function SentryNodeStatusCard() {
 		return (
 			<BaseCallout
 				isWarning={!nodeStatus}
-				extraClasses={{ calloutWrapper: `absolute bottom-4 left-6 w-[328px] !p-0 flex justify-center items-center gap-1 ${nodeStatus ? "text-lg !text-[#3DD68C] !bg-drunkenDragonFly/10" : "text-lg text-bananaBoat bg-[#FFC53D1A]"}`, calloutFront: `!justify-start ${nodeStatus ? "!bg-drunkenDragonFly/10" : "!bg-bananaBoat/10"}` }}>
+				extraClasses={{ calloutWrapper: `absolute bottom-4 left-6 w-[328px] !p-0 flex justify-center items-center gap-1 ${nodeStatus ? "text-lg !text-drunkenDragonFly !bg-drunkenDragonFly/10" : "text-lg text-bananaBoat bg-bananaBoat/10"}`, calloutFront: `!justify-start ${nodeStatus ? "!bg-drunkenDragonFly/10" : "!bg-bananaBoat/10"}` }}>
 					<div className="flex justify-center items-center gap-2">
 						{nodeStatus
 							? (
