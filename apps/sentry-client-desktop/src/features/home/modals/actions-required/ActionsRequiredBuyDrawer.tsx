@@ -17,7 +17,7 @@ export function ActionsRequiredBuyDrawer() {
 					<span className="text-white text-[24px] font-bold">Actions required</span>
 				</div>
 				<div className="cursor-pointer z-10" onClick={() => setDrawerState(null)}>
-					<AiOutlineClose color="white" className={"hover:!text-[#FF0030] duration-300 ease-in"} />
+					<AiOutlineClose color="white" className={"hover:!text-hornetSting duration-300 ease-in"} />
 				</div>
 			</div>
 

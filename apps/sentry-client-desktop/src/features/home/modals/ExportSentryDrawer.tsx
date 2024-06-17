@@ -54,7 +54,7 @@ export function ExportSentryDrawer() {
 							}}
 							className="cursor-pointer"
 						>
-							<AiOutlineClose size={20} color="white" className="hover:!text-[#FF0030] duration-300 ease-in" />
+							<AiOutlineClose size={20} color="white" className="hover:!text-hornetSting duration-300 ease-in" />
 						</span>
 					</div>
 				</div>
