@@ -3,6 +3,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
@@ -33,6 +34,7 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     uint256 public esXaiBurnFoundationBasePoints;
     mapping(address => RedemptionRequestExt[]) private _extRedemptionRequests;
     address public refereeAddress;
+    address public nodeLicenseAddress;
     uint256 private maxKeysNonKyc;
 
     /**
@@ -67,13 +69,15 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     event XaiAddressChanged(address indexed newXaiAddress);
     event FoundationBasepointsUpdated(uint256 newBasepoints);
 
-    function initialize (address _esXaiBurnFoundationRecipient, uint256 _esXaiBurnFoundationBasePoints, address _refereeAddress) public reinitializer(3) {
+    function initialize (address _esXaiBurnFoundationRecipient, uint256 _esXaiBurnFoundationBasePoints, address _refereeAddress, address _nodeLicenseAddress) public reinitializer(3) {
         require(_esXaiBurnFoundationRecipient != address(0) && _esXaiBurnFoundationBasePoints <= 1000, "Invalid initialize");
         require(_refereeAddress != address(0), "Invalid referee address");
+        require(_nodeLicenseAddress != address(0), "Invalid node license address");
         esXaiBurnFoundationRecipient = _esXaiBurnFoundationRecipient;
         esXaiBurnFoundationBasePoints = _esXaiBurnFoundationBasePoints;
         refereeAddress = _refereeAddress;
-        maxKeysNonKyc = 1000; //TODO Get the initial value from management
+        nodeLicenseAddress = _nodeLicenseAddress;
+        maxKeysNonKyc = 10; //TODO Get the initial value from management
     }
 
     /**
@@ -218,8 +222,15 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         require(request.amount > 0, "Invalid request");
         require(!request.completed, "Redemption already completed");
         require(block.timestamp >= request.startTime + request.duration, "Redemption period not yet over");
-        Referee referee = Referee(refereeAddress);
-        require(!referee.isKycApproved(_msgSender()) || request.amount > maxKeysNonKyc, "You own too many keys, must be KYC approved to claim.");
+
+        // Retrieve the number of licenses owned from the nodeLicense contract
+        uint256 licenseCountOwned = ERC721Upgradeable(nodeLicenseAddress).balanceOf(_msgSender());
+
+        // If the wallet owns more licenses than the maxKeysNonKyc, check if the wallet is KYC approved
+        if(licenseCountOwned > maxKeysNonKyc){
+            Referee referee = Referee(refereeAddress);
+            require(referee.isKycApproved(_msgSender()), "You own too many keys, must be KYC approved to claim.");
+        }
 
         // Calculate the conversion ratio based on the duration
         uint256 ratio;
