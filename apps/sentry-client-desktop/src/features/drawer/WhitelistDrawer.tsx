@@ -9,7 +9,7 @@ import {useOperator} from "@/features/operator";
 import {HelpIcon, WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
 import MainCheckbox from "@sentry/ui/dist/src/rebrand/checkboxes/MainCheckbox";
 import BaseCallout from "@sentry/ui/dist/src/rebrand/callout/BaseCallout";
-import {CloseIcon} from "../../../../../packages/ui/src/rebrand/icons/CloseIcon";
+import {AiOutlineClose} from "react-icons/ai";
 
 export function WhitelistDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -109,7 +109,7 @@ export function WhitelistDrawer() {
 					onClick={() => {setDrawerState(null)}}
 					className="cursor-pointer"
 				>
-					<CloseIcon height={13} width={13} fill={"#fff"} />
+					<AiOutlineClose size={20} color="white" className="hover:!text-hornetSting duration-300 ease-in" />
 				</span>
 			</div>
 

@@ -48,7 +48,7 @@ export function ActionsRequiredNotAccruingDrawer() {
 				)}
 
 				<div className="cursor-pointer z-10" onClick={() => setDrawerState(null)}>
-					<AiOutlineClose color={"white"} />
+					<AiOutlineClose color={"white"} className="hover:!text-hornetSting duration-300 ease-in" />
 				</div>
 			</div>
 
