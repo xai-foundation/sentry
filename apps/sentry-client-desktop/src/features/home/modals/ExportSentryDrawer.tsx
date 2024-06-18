@@ -46,7 +46,7 @@ export function ExportSentryDrawer() {
 		<div>
 			<div className="h-full flex flex-col justify-start items-center">
 				<div
-					className="w-full flex flex-row text-white justify-between items-center border-b border-border-chromaphobicBlack">
+					className="w-full flex flex-row text-white justify-between items-center border-b border-chromaphobicBlack">
 					<div className="flex flex-row gap-2 justify-between w-full items-center text-2xl font-bold px-8 py-[24px]">
 						<span>Export Sentry Wallet</span>
 						<span
