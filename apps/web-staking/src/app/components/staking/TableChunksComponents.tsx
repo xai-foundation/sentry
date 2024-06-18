@@ -339,7 +339,6 @@ export function TableHead({
       {index === 5 && (
          <span className="">{column}</span>
       )} 
-
       {index === 7 && (
          <span className="">{column}</span>
       )} 
@@ -376,7 +375,7 @@ export function TableHead({
       {/* Tooltip for column Key Rate */}
       {index === 6 ? (
         <div className="flex items-center">
-          <span className="text-elementalGrey mr-2">{column}</span>
+          <span className="text-elementalGrey mr-2">{showTableKeys ?  "KEYS RATE" : "esXAI RATE"}</span>
         <TableTooltip
           extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-400px] pb-[10px]", tooltipText: "mb-4" }}
           content={"Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards."}

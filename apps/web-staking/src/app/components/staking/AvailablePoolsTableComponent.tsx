@@ -12,7 +12,7 @@ import { iconType } from "@/app/components/dashboard/constants/constants";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount } from "wagmi";
 import { BasePagination } from "@/app/components/ui";
-import { formatDailyRewardRatePercentage } from "@/app/utils/formatDailyRewardRate";
+import { formatDailyRewardRate, formatDailyRewardRatePercentage } from "@/app/utils/formatDailyRewardRate";
 
 const POOL_DATA_COLUMS = [
   "POOL NAME",
@@ -110,8 +110,12 @@ const AvailablePoolsTableComponent = ({
                   <TableRowStaked value={`${pool.ownerShare}%`}  poolAddress={pool.address} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in"/>
                   <TableRowStaked value={`${pool.keyBucketShare}%`} poolAddress={pool.address} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="lg:pr-1"/>
                   <TableRowStaked value={`${pool.stakedBucketShare}%`} poolAddress={pool.address} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in"/>
-                  <TableRowStaked value={`${formatDailyRewardRatePercentage(pool.esXaiRewardRate, 2)}%`} poolAddress={pool.address} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in"/>
-                  <TableRowRewards pool={pool} showTableKeys={showTableKeys} isDisconnected={isDisconnected} onClick={open} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" />
+                  {showTableKeys ? (
+                    <TableRowStaked value={`${formatDailyRewardRate(pool.keyRewardRate, 2)} esXAI`} poolAddress={pool.address} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in"/>
+                  ) : (
+                    <TableRowStaked value={`${formatDailyRewardRatePercentage(pool.esXaiRewardRate, 2)}%`} poolAddress={pool.address} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in"/>
+                  )}
+                   <TableRowRewards pool={pool} showTableKeys={showTableKeys} isDisconnected={isDisconnected} onClick={open} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" />
                 </tr>
               );
             })}
