@@ -100,7 +100,7 @@ export async function dataCentralizationRuntime({
 		const startTime = new Date().getTime();
 		const PoolModel = mongoose.models.Pool || mongoose.model<IPool>('Pool', PoolSchema);
 
-		const slackStartMessage = `Starting pool sync update @ ${startTime}`;
+		const slackStartMessage = `Starting pool sync update for challenge ${challengeNumber}` ;
 		sendSlackNotification(slackWebHookUrl, slackStartMessage, logFunction);
 
 		const graphUpdateStartTime = new Date().getTime();
@@ -128,7 +128,7 @@ export async function dataCentralizationRuntime({
 		const totalSeconds = mongoInsertEndTime - startTime;
 		const totalGraphSeconds = graphUpdateEndTime - graphUpdateStartTime;
 		const totalMongoSeconds = mongoInsertEndTime - mongoInsertStartTime;
-		const slackMessage = `Finished pool sync update for ${updatedPools.length} @ ${mongoInsertEndTime} in ${totalSeconds}ms. Graph update took ${totalGraphSeconds}ms. Mongo insert took ${totalMongoSeconds}ms.`;
+		const slackMessage = `Finished pool sync update for ${updatedPools.length} pools in ${totalSeconds}ms. Graph update took ${totalGraphSeconds}ms. Mongo insert took ${totalMongoSeconds}ms.`;
 
 		sendSlackNotification(slackWebHookUrl, slackMessage, logFunction);
 	});

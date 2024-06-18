@@ -55,8 +55,8 @@ export async function getRewardRatesFromGraph(
 
     const poolInfo: PoolInfo = result.poolInfos[index];
 
-    const stakedBucketShare = BigInt(poolInfo.stakedBucketShare);
-    const keyBucketShare = BigInt(poolInfo.keyBucketShare);
+    const stakedBucketShare = BigInt(poolInfo.stakedBucketShare) / 100n;
+    const keyBucketShare = BigInt(poolInfo.keyBucketShare) / 100n;
 
     let totalEsXaiRewards = 0n;
     let totalKeyRewards = 0n;
