@@ -288,18 +288,16 @@ export function TableHead({
         ${index === 0 ? "lg:w-[23%] pl-[17px] lg:pl-7 pr-2 lg:pr-0 text-nowrap lg:text-wrap" : ""}
         ${index === 1 && "lg:table-cell lg:w-[10%] sm:hidden pr-2"} lg:py-4 sm:py-2 bg-crystalWhite font-medium lg:text-[18px] sm:text-sm
         ${index === 2 ? "sm:w-[15%] lg:w-[25%]" : ""}
-        ${index === 3 && "text-right sm:pr-[17px] lg:pr-4"} 
-        ${index === 4 && "lg:text-center lg:pr-8 sm:text-right sm:w-[25%] sm:pr-2 lg:w-[12%]"} 
-        ${index === 5 && "text-center"}
-        ${index === 6 && "text-center sm:pl-2 lg:pl-7"}
-        ${index === 7 && "text-center sm:pr-2 lg:pr-7"}
+        ${index === 3 && "text-right sm:pr-[17px] lg:pr-2"} 
+        ${index === 4 && "text-right lg:pr-4 sm:text-right sm:w-[25%] sm:pr-2 lg:w-[12%]"} 
+        ${index === 5 && "text-right"}
+        ${index === 6 && "text-right sm:pl-2 lg:pl-7"}
+        ${index === 7 && "text-right sm:pr-2 lg:pr-7"}
         `}
       key={index}
     >
-
-
       {index === 0 && (
-         <span className="">{column}</span>
+        <span className="">{column}</span>
       )} 
 
       {index === 1 && (
@@ -339,7 +337,6 @@ export function TableHead({
       {index === 5 && (
          <span className="">{column}</span>
       )} 
-
       {index === 7 && (
          <span className="">{column}</span>
       )} 
@@ -376,7 +373,7 @@ export function TableHead({
       {/* Tooltip for column Key Rate */}
       {index === 6 ? (
         <div className="flex items-center">
-          <span className="text-elementalGrey mr-2">{column}</span>
+          <span className="text-elementalGrey mr-2">{showTableKeys ?  "KEYS RATE" : "esXAI RATE"}</span>
         <TableTooltip
           extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-400px] pb-[10px]", tooltipText: "mb-4" }}
           content={"Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards."}
@@ -413,10 +410,10 @@ export function TableHeadStaking({
       ${index === 1 && "lg:w-[10%] lg:table-cell sm:hidden"}
       ${index === 2 ? "sm:w-[15%] lg:w-[30%]" : ""} 
       ${index === 3 && "text-right sm:pr-[17px] lg:pr-4"} 
-      ${index === 4 && "lg:text-center lg:pr-4 sm:text-right sm:w-[25%] sm:pr-2 lg:w-[12%]"} 
-      ${index === 5 && "text-center text-nowrap"}
-      ${index === 6 && "text-center sm:pl-2 lg:pl-3 text-nowrap "}
-      ${index === 7 && "text-center sm:pr-2 lg:px-6"}
+      ${index === 4 && "text-right lg:pr-4 sm:text-right sm:w-[25%] sm:pr-2 lg:w-[12%]"} 
+      ${index === 5 && "text-right text-nowrap"}
+      ${index === 6 && "text-right sm:pl-2 lg:pl-3 text-nowrap "}
+      ${index === 7 && "text-right sm:pr-2 lg:px-6"}
       `}
       key={index}
     >
@@ -431,8 +428,6 @@ export function TableHeadStaking({
       {index === 2 && showKeys && (
         <span className="text-elementalGrey mr-2">{"KEY STAKING CAPACITY"}</span>
       )}
-
-
 
       {index === 1 && (
         <div className="flex items-center">
@@ -466,11 +461,11 @@ export function TableHeadStaking({
       }
 
       {index === 3 && (
-         <span className="">{column}</span>
+         <span className="text-right">{column}</span>
       )} 
 
       {index === 4 && (
-         <span className="">{column}</span>
+         <span className="text-right">{column}</span>
       )} 
 
 
@@ -479,7 +474,7 @@ export function TableHeadStaking({
         <div className="flex items-center">
           <span className="text-elementalGrey mr-1">{column}</span>
         <TableTooltip
-          extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-400px] pb-[10px]", tooltipText: "mb-4" }}
+          extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-400px] pb-[10px] text-wrap", tooltipText: "mb-4" }}
           content={"Estimated annual rate for staking esXAI based off of stake and reward breakdown and past 7 days of pool rewards."}
           delay={30000}
         >
@@ -495,7 +490,7 @@ export function TableHeadStaking({
         <div className="flex items-center">
           <span className="text-elementalGrey mr-1">{column}</span>
         <TableTooltip
-          extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-400px] pb-[10px]", tooltipText: "mb-4" }}
+          extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-400px] pb-[10px] text-wrap", tooltipText: "mb-4" }}
           content={"Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards."}
           delay={30000}
         >
