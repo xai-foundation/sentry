@@ -148,7 +148,8 @@ export function ImportSentryDrawer() {
 			)}
 			<div className="h-full flex flex-col justify-start items-center text-white">
 				<div
-					className="w-full flex flex-row justify-between items-center border-b border-chromaphobicBlack text-2xl font-bold px-8 py-[31px]">
+					className="w-full flex flex-row justify-between items-center border-b border-chromaphobicBlack text-2xl font-bold px-8 py-[24px]">
+
 					<div className="flex flex-row gap-2 items-center">
 						<span>Import Sentry Wallet</span>
 					</div>
