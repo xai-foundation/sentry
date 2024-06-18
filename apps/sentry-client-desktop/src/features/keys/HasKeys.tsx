@@ -1,4 +1,4 @@
-import {AiFillCheckCircle, AiOutlineMinus, AiOutlinePlus} from "react-icons/ai";
+import {AiFillCheckCircle, AiOutlineCheck, AiOutlineMinus, AiOutlinePlus} from "react-icons/ai";
 import {useState} from "react";
 import {BlockPassKYC} from "@/components/blockpass/Blockpass";
 import {getLicensesList, LicenseList, LicenseMap} from "@/hooks/useListNodeLicensesWithCallback";
@@ -20,6 +20,7 @@ import {useGetWalletBalance} from "@/hooks/useGetWalletBalance";
 import {useGetSingleWalletBalance} from "@/hooks/useGetSingleWalletBalance";
 import log from "electron-log";
 import { HelpIcon, WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { PiCopy } from "react-icons/pi";
 
 interface HasKeysProps {
 	combinedOwners: string[],
@@ -86,7 +87,6 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 		}
 
 		return licenses.sort((a, b) => Number(a.key) - Number(b.key)).map((keyWithOwner, i) => {
-			const isEven = i % 2 === 0;
 			const keyString = keyWithOwner.key.toString();
 			const owner = keyWithOwner.owner.toString();
 			const status = statusMap[owner];
@@ -253,6 +253,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 							className={`flex justify-center !h-[48px] items-center !w-[155px] text-lg uppercase font-bold !py-1 !px-[10px] disabled:!h-[50px]`}
 							btnText="Copy address"
 							colorStyle="outline"
+							icon={copiedSelectedWallet ? (<AiOutlineCheck className="h-[18px]"/>) : (<PiCopy className="h-[18px]"/>)}
 						/>
 						</div>
                         <div>
