@@ -103,7 +103,7 @@ export function WhitelistDrawer() {
 	return (
 		<div className="relative h-full flex flex-col justify-start items-center !text-white ">
 			<div
-				className="w-full flex flex-row justify-between items-center border-b border-primaryBorderColor text-2xl font-bold px-8 py-[24px]">
+				className="w-full flex flex-row justify-between items-center border-b border-chromaphobicBlack text-2xl font-bold px-8 py-[24px]">
 				<p>Allowed Wallet</p>
 				<span
 					onClick={() => {setDrawerState(null)}}
