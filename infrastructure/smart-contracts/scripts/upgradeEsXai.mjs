@@ -12,9 +12,9 @@ async function main() {
     const [deployer] = (await ethers.getSigners());
     const deployerAddress = await deployer.getAddress();
     console.log("Deployer address", deployerAddress);
-    const esXai2 = await ethers.getContractFactory("esXai3");
+    const esXai3 = await ethers.getContractFactory("esXai3");
     console.log("Got factory");
-    await upgrades.upgradeProxy(address, esXai2, { call: { fn: "initialize", args: [foundationReceiver, foundationBasePoints, refereeAddress, nodeLicenseAddress] } });
+    await upgrades.upgradeProxy(address, esXai3, { call: { fn: "initialize", args: [foundationReceiver, foundationBasePoints, refereeAddress, nodeLicenseAddress] } });
     console.log("Upgraded");
 
     await run("verify:verify", {

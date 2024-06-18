@@ -111,7 +111,7 @@ describe("Fixture Tests", function () {
 		const nodeLicense = await upgrades.deployProxy(NodeLicense, [await fundsReceiver.getAddress(), referralDiscountPercentage, referralRewardPercentage], { deployer: deployer });
 		await nodeLicense.waitForDeployment();
 
-        // Upgrade esXai - moved here due to needing referee and node license addresses as a parameters
+        // Upgrade esXai3 upgrade - moved here due to needing referee and node license addresses as a parameters
         const EsXai3 = await ethers.getContractFactory("esXai3");
         const esXai3 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai3, { call: { fn: "initialize", args: [(await deployer.getAddress()), BigInt(500), referee.getAddress(), nodeLicense.getAddress()] } });
         await esXai3.waitForDeployment();

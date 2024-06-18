@@ -5,6 +5,8 @@ import { expect } from "chai";
  * @title esXai Tests
  * @dev Implementation of the esXai Tests
  */
+
+//TODO Convert Tests to esXai3
 export function esXaiTests(deployInfrastructure) {
     return function() {
         it("Check calling the initializer is not allowed afterwards", async function() {
