@@ -22,7 +22,7 @@ interface DropdownItemProps {
 }
 
 export const DropdownItem = ({onClick, extraClasses, key, children}: DropdownItemProps) => {
-    return <p onClick={onClick} className={`flex items-center px-[15px] hover:bg-dropdownItemPrimaryHoverBg cursor-pointer duration-300 ease-in-out text-lg h-[48px] font-medium ${extraClasses}`} key={key}>{children}</p>
+    return <p onClick={onClick} className={`flex items-center px-[15px] hover:bg-abaddonBlack cursor-pointer duration-300 ease-in-out text-lg h-[48px] font-medium ${extraClasses}`} key={key}>{children}</p>
 }
 
 export const Dropdown = ({setIsOpen, isOpen, setSelectedValue, getDropdownItems, selectedValueRender, extraClasses, defaultValue}: DropdownProps) => {
@@ -46,7 +46,7 @@ export const Dropdown = ({setIsOpen, isOpen, setSelectedValue, getDropdownItems,
         <div className="relative z-30" ref={dropdownRef}>
             <div
                 onClick={() => setIsOpen(!isOpen)}
-                className={`relative h-[48px] px-[15px] group z-[20] text-lg font-medium text-primaryText transition-bg duration-300 ease-in-out ${isOpen ? "bg-dropdownSecondaryBg" : "bg-dropdownPrimaryBg"} flex items-center justify-between w-[538px] dropdown-clip-path dropdown ${extraClasses?.dropdown}`}
+                className={`relative h-[48px] px-[15px] group z-[20] text-lg font-medium text-americanSilver transition-bg duration-300 ease-in-out ${isOpen ? "bg-velvetBlack" : "bg-nulnOil"} flex items-center justify-between w-[538px] dropdown-clip-path dropdown ${extraClasses?.dropdown}`}
             >
                 {selectedValueRender}
                 <DropdownArrow
@@ -55,17 +55,17 @@ export const Dropdown = ({setIsOpen, isOpen, setSelectedValue, getDropdownItems,
 
             </div>
             <span
-                className="bg-secondaryBorderColor transition-bg ease-in-out duration-300 absolute left-[-2px] top-[-2px] z-10 w-[calc(100%+4px)] h-[calc(100%+4px)] dropdown-clip-path dropdown-border"></span>
+                className="bg-foggyLondon transition-bg ease-in-out duration-300 absolute left-[-2px] top-[-2px] z-10 w-[calc(100%+4px)] h-[calc(100%+4px)] dropdown-clip-path dropdown-border"></span>
 
             {isOpen && (
                 <div
-                    className="absolute top-[55px] left-[-1px] flex flex-col w-[538px] bg-dropdownPrimaryBg text-primaryText z-30 text-lg">
+                    className="absolute top-[55px] left-[-1px] flex flex-col w-[538px] bg-nulnOil text-americanSilver z-30 text-lg">
                     <p
                         onClick={() => {
                             setSelectedValue(null);
                             setIsOpen(false);
                         }}
-                        className="px-[15px] h-[48px] flex items-center cursor-pointer hover:bg-dropdownItemPrimaryHoverBg"
+                        className="px-[15px] h-[48px] flex items-center cursor-pointer hover:bg-abaddonBlack"
                     >
                         {defaultValue}
                     </p>

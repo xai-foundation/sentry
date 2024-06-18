@@ -11,8 +11,8 @@ export function SentryActiveCard() {
 
 	return (
 		<div className="relative">
-		<div className="bg-primaryBorderColor global-cta-clip-path p-[1px]">
-		<SquareCard className="bg-secondaryBgColor global-cta-clip-path">
+		<div className="bg-chromaphobicBlack global-cta-clip-path p-[1px]">
+		<SquareCard className="bg-dynamicBlack global-cta-clip-path">
 			{sentryRunning ? (
 				<IconLabel
 					icon={AiFillCheckCircle}
@@ -32,14 +32,14 @@ export function SentryActiveCard() {
 						titleStyles="text-lg text-white"
 					/>
 
-					<p className="text-lg text-primaryText mt-3 px-7">
+					<p className="text-lg text-americanSilver mt-3 px-7">
 						Sentry must be active 24/7 to accrue esXAI
 					</p>
 
 					<div className="pl-7">		
 					<PrimaryButton
 						onClick={() => startRuntime}
-						className="w-[280px] text-lg items-center text-white bg-btnPrimaryBgColor font-semibold mt-4 px-6 !py-1 global-clip-path hover:bg-white hover:text-btnPrimaryBgColor duration-200 easy-in"
+						className="w-[280px] text-lg items-center font-semibold mt-4 px-6 !py-1"
 						btnText="START SENTRY"
 						size="sm"
 						colorStyle="primary"

@@ -31,7 +31,7 @@ export function BuyKeysFlow() {
 						Xai Sentry Node Key
 					</span>
 					</div>
-					<span className="text-lg text-secondaryText">
+					<span className="text-lg text-elementalGrey">
 					Each Sentry Node Key enables your to submit up to 1 reward claim for each network challenge
 				</span>
 				</div>

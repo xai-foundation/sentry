@@ -11,7 +11,7 @@ export function ActionsRequiredBuyDrawer() {
 	return (
 		<div className="h-full flex flex-col justify-start items-center">
 			<div
-				className="w-full h-[4rem] flex flex-row justify-between items-center border-b border-primaryBorderColor text-lg font-semibold px-8">
+				className="w-full h-[4rem] flex flex-row justify-between items-center border-b border-chromaphobicBlack text-lg font-semibold px-8">
 				<div className="flex flex-row gap-2 items-center">
 					<WarningIcon width={28} height={24} />{" "}
 					<span className="text-white text-[24px] font-bold">Actions required</span>
@@ -23,24 +23,24 @@ export function ActionsRequiredBuyDrawer() {
 
 			<div className="w-full flex flex-col gap-4 px-6 pt-[1rem]">
 				<div className="flex flex-col gap-2 bg-[#FFC53D1A] p-6 global-cta-clip-path">
-					<span className="flex flex-row gap-1 items-center text-lg font-bold text-primaryTooltipColor">
+					<span className="flex flex-row gap-1 items-center text-lg font-bold text-bananaBoat">
 						<IoMdCloseCircle size={22} color={"#FFC53D"}/> You do not own a key
 					</span>
-					<p className="text-lg text-primaryTooltipColor pl-6 mb-[16px] font-medium">
+					<p className="text-lg text-bananaBoat pl-6 mb-[16px] font-medium">
 						No Xai Sentry Node Keys found in all added wallets
 					</p>
 
 					<div className="pb-2 font-semibold pl-6 mb-[5px]">
 						<PrimaryButton
 							onClick={() => setDrawerState(DrawerView.BuyKeys)}
-							className={`w-[155px] text-lg bg-btnPrimaryBgColor !py-1 text-white hover:text-btnPrimaryBgColor hover:bg-white`}
+							className={`w-[155px] text-lg !py-1`}
 							btnText="PURCHASE KEY"
 							colorStyle="primary"
 							size="sm"
 						/>
 					</div>
 
-					<p className="text-lg text-primaryTooltipColor pl-6 font-medium">
+					<p className="text-lg text-bananaBoat pl-6 font-medium">
 						Already own a key?
 						<a
 							onClick={() => setDrawerState(DrawerView.ViewKeys)}

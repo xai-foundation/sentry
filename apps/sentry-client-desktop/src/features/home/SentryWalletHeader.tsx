@@ -19,40 +19,40 @@ export function SentryWalletHeader() {
 
 	function getEthFundsTextColor(): string {
 		if (balance?.wei !== undefined && balance.wei >= recommendedFundingBalance) {
-			return "text-successText";
+			return "text-drunkenDragonFly";
 		}
 
 		return "text-[#F59E28]";
 	}
 
 	return (
-		<div className="flex flex-col items-start w-full border-b border-primaryBorderColor gap-2 py-[22px] pl-[24px] bg-primaryBgColor z-10">
+		<div className="flex flex-col items-start w-full border-b border-chromaphobicBlack gap-2 py-[22px] pl-[24px] bg-nulnOil z-[50]">
 			<div className="flex items-center gap-1">
-				<h2 className="font-medium text-lg text-secondaryText">Sentry Wallet Balance</h2>
+				<h2 className="font-medium text-lg text-elementalGrey">Sentry Wallet Balance</h2>
 				<CustomTooltip
 					header={"Funds in AETH required"}
 					content={
 						<div>
-							<p className="text-primaryText block">Sentry Wallet balance is used to pay gas fees for automatically
+							<p className="text-americanSilver block">Sentry Wallet balance is used to pay gas fees for automatically
 							claiming accrued esXAI.</p>
-							<p className="text-primaryText bg-linkBgHover p-2 mt-2 flex justify-between">
+							<p className="text-americanSilver bg-darkRoom p-2 mt-2 flex justify-between">
 								<span>Recommended minimum balance</span>
 								<span className="flex items-center gap-1 font-bold"> <FaEthereum/> 0.005 AETH</span>
 							</p>
 						</div>
 					}
-					extraClasses={{tooltipContainer: "!left-[-38px]", tooltipHeader: "!text-primaryText"}}
+					extraClasses={{tooltipContainer: "!left-[-38px]", tooltipHeader: "!text-americanSilver"}}
 				>
 					<HelpIcon width={14} height={14}/>
 				</CustomTooltip>
 				{isBalanceLoading ? (
-					<p className="flex items-center text-lg font-bold text-tertiaryText select-none ml-[18px]">
+					<p className="flex items-center text-lg font-bold text-pelati select-none ml-[18px]">
 						Refreshing
 					</p>
 				) : (
 					<a
 						onClick={onRefreshEthBalance}
-						className="flex items-center text-lg font-bold text-tertiaryText gap-1 cursor-pointer select-none ml-[14px] hover:text-white duration-300 ease-in-out"
+						className="flex items-center text-lg font-bold text-pelati gap-1 cursor-pointer select-none ml-[14px] hover:text-white duration-300 ease-in-out"
 					>
 						<MdRefresh/> Refresh
 					</a>
