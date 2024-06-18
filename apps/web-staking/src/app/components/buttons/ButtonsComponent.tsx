@@ -1,5 +1,6 @@
 import { Button } from "@nextui-org/button";
 import { BackArrow } from "../icons/IconsComponent";
+import { GAevent } from "@/app/utils/analytics";
 
 interface CustomButtonProps {
   onClick: () => void;
@@ -16,11 +17,12 @@ export const PrimaryButton = ({
   className,
   isDisabled,
 }: CustomButtonProps) => {
+  const disabledStyles = isDisabled ? "!bg-[#2A2828] text-[#433F3F] text-bold" : "";
   return (
     <Button
-      className={`bg-[#F30919] text-[#EEEEEE] px-[17px] py-[10px] rounded-[8px] hover:bg-[#da1b28] ease-in duration-200 ${className}`}
+      className={`font-bold bg-[#F30919] px-[17px] py-[10px] text-[#EEEEEE] duration-200 ease-in hover:bg-[#FFFFFF] hover:text-[#F30919] ${className} ${disabledStyles}`}
       type="submit"
-      onClick={() => onClick()}
+      onClick={() => { onClick(), GAevent('buttonClicked', 'user_interaction', btnText) }}
       disabled={isDisabled}
     >
       {btnText}
@@ -33,14 +35,14 @@ export const SecondaryButton = ({
   btnText,
   className,
   size,
-  hoverClassName = 'hover:bg-[#da1b28] hover:text-[#EEEEEE] '
+  hoverClassName = "hover:bg-[#da1b28] hover:text-[#EEEEEE] ",
 }: CustomButtonProps) => {
   return (
     <PrimaryButton
       size={size}
       onClick={onClick}
       btnText={btnText}
-      className={`bg-[#EEEEEE] text-[#F30919] px-[20px] py-[18px] rounded-[8px] font-medium ease-in duration-250 ${className} ${hoverClassName}`}
+      className={`bg-[#EEEEEE] px-[20px] py-[18px] font-medium text-[#F30919] duration-250 ease-in ${className} ${hoverClassName}`}
     />
   );
 };
@@ -48,31 +50,26 @@ export const SecondaryButton = ({
 interface ConnectionButtonProps {
   onOpen: () => void;
   address: string | undefined;
-  variant?: string;
   isFullWidth?: boolean;
+  extraClasses?: string;
 }
 
 export const ConnectButton = ({
   onOpen,
   address,
-  variant,
   isFullWidth,
+                                extraClasses
 }: ConnectionButtonProps) => {
   return (
     <Button
-      className={
-        variant === "overview"
-          ? "bg-[#F30919] lg:w-[165px] sm:w-[308px] h-[50px] text-[#EEEEEE] px-[20px] py-[18px] rounded-[8px] hover:bg-[#da1b28] ease-in duration-200"
-          : `bg-[#F30919] w-[115px] md:w-[165px] text-[#EEEEEE] px-[17px] py-[10px] rounded-[8px] hover:bg-[#da1b28] ease-in duration-200 ${
-              isFullWidth ? "w-full" : ""
-            }`
-      }
+      className={`bg-[#F30919] px-[21px] py-[14px] font-bold text-[#EEEEEE] text-base duration-200 ease-in hover:bg-[#FFFFFF] hover:text-[#F30919] ${isFullWidth ? "!w-full" : ""} 
+      ${address && "border-1 border-[#E4E4E4] bg-white text-lightBlackDarkWhite hover:bg-[#E4E4E4]"} ${extraClasses}`}
       type="submit"
-      onClick={() => onOpen()}
+      onClick={() => { onOpen(), GAevent('connectWallet', 'user_interaction', 'Connect wallet') }}
     >
       {address
         ? `${address.slice(0, 6)}...${address.slice(-4)}`
-        : "Connect wallet"}
+        : "CONNECT WALLET"}
     </Button>
   );
 };
@@ -82,16 +79,18 @@ export function ButtonBack({
   btnText,
   height = 16,
   width = 16,
+  extraClasses,
 }: {
   onClick: () => void;
   btnText: string;
   height?: number;
   width?: number;
+  extraClasses?: string;
 }) {
   return (
     <div
       onClick={onClick}
-      className="flex items-center hover:bg-crystalWhite hover:border-palePearl border-1 border-transparent hover:rounded-md gap-2 py-1 px-1 cursor-pointer"
+      className={`flex cursor-pointer items-center gap-2 border-1 border-transparent p-1 hover:text-hornetSting duration-200 easy-in ${extraClasses}`}
     >
       <BackArrow height={height} width={width} />
       <span>{btnText}</span>
