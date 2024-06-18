@@ -28,9 +28,9 @@ export function Keys() {
 	const {refresh} = useChainDataRefresh();
 
 	return (
-		<div className="px-4">
-		<div className="w-full h-screen bg-primaryBgColor">
-			<div className="sticky top-0 bg-primaryBgColor flex flex-row justify-between items-center border-b border-primaryBorderColor pl-6 pr-2 z-40">
+		<div className="pl-4">
+		<div className="w-full h-screen bg-nulnOil">
+			<div className="sticky top-0 bg-nulnOil flex flex-row justify-between items-center border-b border-chromaphobicBlack pl-6 pr-2 z-40">
 				<div className="top-0 flex flex-row items-center pt-[20px] pb-[18px] gap-2">
 					<div className="flex items-start min-h-[43px]">
 					<h2 className="text-3xl text-white font-bold">Keys</h2>
@@ -38,14 +38,14 @@ export function Keys() {
 
 					{licensesLoading ? (
 						<div
-							className="flex min-w-[128px] justify-center items-center text-lg text-secondaryText gap-1">
+							className="flex min-w-[128px] justify-center items-center text-lg text-elementalGrey gap-1">
 							<BiLoaderAlt className="animate-spin" color={"#FF0030"}/>
 							<p>
 								Loading...
 							</p>
 						</div>
 					) : (
-						<p className="flex min-w-[128px] justify-center items-center text-lg text-secondaryText pl-2">
+						<p className="flex min-w-[128px] justify-center items-center text-lg text-elementalGrey pl-2">
 							{keyCount} key{keyCount === 1 ? "" : "s"} in {combinedOwners.length} wallet{combinedOwners.length === 1 ? "" : "s"}
 						</p>
 					)}
@@ -54,25 +54,24 @@ export function Keys() {
 						header={"Xai Client can track keys only from added wallets"}
 						content={"If you own keys in additional wallets, add them to the client."}
 						position="end"
-						extraClasses={{tooltipText: "text-secondaryText"}}
+						extraClasses={{tooltipText: "text-elementalGrey"}}
 					>
 						<HelpIcon width={14} height={14}/>
 					</CustomTooltip>
 
 					<a
 						onClick={refresh}
-						className="flex items-center text-lg text-btnPrimaryBgColor gap-1 cursor-pointer font-bold select-none hover:text-white duration-200 easy-in"
+						className="flex items-center text-lg text-hornetSting gap-1 cursor-pointer font-bold select-none hover:text-white duration-200 easy-in"
 					>
 						<MdRefresh/> Refresh
 					</a>
                     <div className="ml-3">
 					<PrimaryButton
-						className={`bg-primaryBgColor text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-xl uppercase font-bold !py-1 !px-[14px]`}
+						className={`text-xl uppercase font-bold !py-1 !px-[14px]`}
 						onClick={() => setDrawerState(DrawerView.BuyKeys)}
 						btnText="Purchase keys"
 						colorStyle="outline"
 						size="sm"
-						wrapperClassName="global-clip-primary-btn bg-btnPrimaryBgColor"
 					/>
 					</div>
 				</div>

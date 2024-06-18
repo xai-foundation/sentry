@@ -9,10 +9,10 @@ export function BuyKeysDrawer() {
 	return (
 		<div className="w-full h-full flex flex-col justify-start items-center">
 			<div
-				className="w-full flex flex-row justify-between items-center border-b border-primaryBorderColor text-2xl text-white font-bold px-6 py-6">
+				className="w-full flex flex-row justify-between items-center border-b border-chromaphobicBlack text-2xl text-white font-bold px-6 py-6">
 				<span>Purchase key</span>
 				<div className="cursor-pointer z-10" onClick={() => setDrawerState(null)}>
-					<AiOutlineClose size={20}/>
+					<AiOutlineClose size={20} color="white" className="hover:!text-hornetSting duration-300 ease-in" />
 				</div>
 			</div>
 

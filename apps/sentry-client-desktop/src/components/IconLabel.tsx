@@ -27,7 +27,7 @@ interface IconLabelProps {
 export function IconLabel({icon: Icon, color, title, tooltip, header, body, body2, position, titleStyles}: IconLabelProps) {
 
 	return (
-		<span className="flex flex-row gap-2 items-center text-primaryText font-semibold text-sm">
+		<span className="flex flex-row gap-2 items-center text-americanSilver font-semibold text-sm">
 			<Icon
 				// @ts-ignore
 				size={23}

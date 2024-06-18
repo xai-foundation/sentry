@@ -1,4 +1,4 @@
-import {AiOutlineCheck} from "react-icons/ai";
+import {AiOutlineCheck, AiOutlineClose} from "react-icons/ai";
 import {useSetAtom} from "jotai";
 import {drawerStateAtom} from "../../drawer/DrawerManager.js";
 import {useOperator} from "../../operator";
@@ -6,7 +6,6 @@ import {useState} from "react";
 import {BiLoaderAlt} from "react-icons/bi";
 import log from "electron-log";
 import {CopyIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
-import {CloseIcon} from "../../../../../../packages/ui/src/rebrand/icons/CloseIcon";
 
 export function ExportSentryDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -48,6 +47,7 @@ export function ExportSentryDrawer() {
 				<div
 					className="w-full flex flex-row text-white justify-between items-center border-b border-chromaphobicBlack">
 					<div className="flex flex-row gap-2 justify-between w-full items-center text-2xl font-bold px-8 py-[24px]">
+
 						<span>Export Sentry Wallet</span>
 						<span
 							onClick={() => {
@@ -55,7 +55,7 @@ export function ExportSentryDrawer() {
 							}}
 							className="cursor-pointer"
 						>
-							<CloseIcon height={13} width={13} fill={"#fff"}/>
+							<AiOutlineClose size={20} color="white" className="hover:!text-hornetSting duration-300 ease-in" />
 						</span>
 					</div>
 				</div>
@@ -70,20 +70,20 @@ export function ExportSentryDrawer() {
 				) : (
 					<div className="w-full flex flex-col gap-8">
 						<div className="flex flex-col gap-2 px-6 pt-6">
-							<p className="text-lg font-medium text-primaryText">
+							<p className="text-lg font-medium text-americanSilver">
 								By exporting a Sentry Wallet, you can continue running your node on another client
 								without the need
 								to leave your local machine on.
 							</p>
 
-							<p className="text-lg font-medium text-primaryText mt-4 mb-5">
+							<p className="text-lg font-medium text-americanSilver mt-4 mb-5">
 								Here is the private key of the Sentry Wallet
 							</p>
 
-							<div className="p-[1px] w-full h-full bg-primaryBorderColor global-clip-8px">
+							<div className="p-[1px] w-full h-full bg-chromaphobicBlack global-clip-btn">
 								<div
 									onClick={() => copyPrivateKey()}
-									className="relative bg-secondaryBgColor w-full h-fit flex justify-between text-primaryText p-2 cursor-pointer overflow-hidden text-lg font-medium global-clip-8px"
+									className="relative bg-dynamicBlack w-full h-fit flex justify-between text-americanSilver p-2 cursor-pointer overflow-hidden text-lg font-medium global-clip-btn"
 								>
 									<p className="w-full">{wrappedPrivateKey}</p>
 									<div
@@ -93,7 +93,7 @@ export function ExportSentryDrawer() {
 								</div>
 							</div>
 
-							<p className="text-lg font-medium text-primaryText mt-5">
+							<p className="text-lg font-medium text-americanSilver mt-5">
 								Want to run a cloud instance?
 								<a
 									onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup/step-2-download-and-run-the-xai-sentry-node")}

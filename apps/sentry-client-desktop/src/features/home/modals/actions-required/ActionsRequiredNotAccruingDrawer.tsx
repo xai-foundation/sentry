@@ -42,27 +42,27 @@ export function ActionsRequiredNotAccruingDrawer() {
 
 				{accruing && !kycRequired && (
 					<div className="flex flex-row gap-2 items-center">
-						<AiFillCheckCircle className="w-6 h-6 text-successText mt-1" />
+						<AiFillCheckCircle className="w-6 h-6 text-drunkenDragonFly mt-1" />
 						<span className="text-white text-[24px] font-bold">esXAI is being claimed</span>
 					</div>
 				)}
 
 				<div className="cursor-pointer z-10" onClick={() => setDrawerState(null)}>
-					<AiOutlineClose color={"white"} />
+					<AiOutlineClose color={"white"} className="hover:!text-hornetSting duration-300 ease-in" />
 				</div>
 			</div>
 
 			<div>
 				<div className="py-5 px-6">
 					{accruing ? (
-						<SquareCard className="bg-successBgColor global-cta-clip-path">
+						<SquareCard className="!bg-drunkenDragonFly/10 global-cta-clip-path">
 							<IconLabel
 								icon={AiFillCheckCircle}
 								color="#3DD68C"
 								title="You are currently accruing esXAI"
-								titleStyles="text-lg text-successText"
+								titleStyles="text-lg text-drunkenDragonFly"
 							/>
-							<p className="text-lg text-successText mt-2 pl-8 font-medium">
+							<p className="text-lg text-drunkenDragonFly mt-2 pl-8 font-medium">
 								Keep your Sentry Wallet running 24/7 to continue accruing esXAI.
 							</p>
 						</SquareCard>
@@ -72,9 +72,9 @@ export function ActionsRequiredNotAccruingDrawer() {
 								icon={IoMdCloseCircle}
 								color="#FFC53D"
 								title="You are currently not accruing esXAI"
-								titleStyles="text-lg text-primaryTooltipColor"
+								titleStyles="text-lg text-bananaBoat"
 							/>
-							<p className="text-lg mt-2 text-primaryTooltipColor font-medium pl-7 pr-8">
+							<p className="text-lg mt-2 text-bananaBoat font-medium pl-7 pr-8">
 								Complete the steps below to begin accruing esXAI token rewards.
 							</p>
 						</SquareCard>
@@ -106,26 +106,26 @@ export function ActionsRequiredNotAccruingDrawer() {
 											icon={IoMdCloseCircle}
 											color="#FFC53D"
 											title="At least one wallet has unclaimable esXAI"
-											titleStyles="text-lg text-primaryTooltipColor"
+											titleStyles="text-lg text-bananaBoat"
 										/>
-										<p className="text-lg text-primaryTooltipColor mt-3 px-7">
+										<p className="text-lg text-bananaBoat mt-3 px-7">
 											You must pass KYC within 180 days of accruing esXAI to claim accrued node
 											rewards. Check back in 48 hours if all docs submitted. Check your inbox
 											(including spam) for updates. For KYC issues, contact<a
-											className="text-btnPrimaryBgColor font-bold cursor-pointer"
+											className="text-hornetSting font-bold cursor-pointer"
 											onClick={() => window.electron.openExternal(`https://help.blockpass.org/hc/en-us/requests/new`)}
 										> Blockpass.</a> If not completed, continue submission here.
 										</p>
 									</SquareCard>
 								) : (
-									<SquareCard className="bg-successBgColor global-cta-clip-path">
+									<SquareCard className="!bg-drunkenDragonFly/10 global-cta-clip-path">
 										<IconLabel
 											icon={AiFillCheckCircle}
 											color="#16A34A"
 											title="You can claim esXAI"
-											titleStyles="text-lg text-successText"
+											titleStyles="text-lg text-drunkenDragonFly"
 										/>
-										<p className="text-lg text-successText mt-2 pl-8 pr-3 font-medium">
+										<p className="text-lg text-drunkenDragonFly mt-2 pl-8 pr-3 font-medium">
 											You have successfully completed your KYC on all wallets assigned to the
 											Sentry.
 										</p>

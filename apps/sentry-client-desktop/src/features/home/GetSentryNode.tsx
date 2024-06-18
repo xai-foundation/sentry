@@ -4,6 +4,7 @@ import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
 import {useSetAtom} from "jotai";
 import {PrimaryButton} from "@sentry/ui";
 import img from '@/assets/images/dashboard-card.png';
+import {TextButton} from "@sentry/ui/dist/src/rebrand/buttons/TextButton";
 
 
 const body = [
@@ -36,14 +37,14 @@ export function GetSentryNode() {
 				>
 					{item.icon}
 					<p className="text-xl text-white font-bold mt-2">{item.header}</p>
-					<p className="text-lg text-primaryText">{item.body}</p>
+					<p className="text-lg text-americanSilver">{item.body}</p>
 				</div>
 			);
 		});
 	}
 
 	return (
-		<div className="w-full flex flex-row bg-primaryBgColor h-full pt-[260px] pl-[97px]">
+		<div className="w-full flex flex-row bg-nulnOil h-full pt-[260px] pl-[97px]">
 			<div className="flex flex-col z-10 w-full">
 				<div className="flex gap-1 items-center">
 					<h1 className="text-[30px] font-bold text-white uppercase">
@@ -51,7 +52,7 @@ export function GetSentryNode() {
 					</h1>
 				</div>
 
-				<span className="text-lg text-primaryText mt-4">
+				<span className="text-lg text-americanSilver mt-4">
 					Purchase a key to begin earning esXAI
 				</span>
 				<div className="flex items-center justify-start mt-5 gap-7 mb-[140px]">
@@ -59,22 +60,22 @@ export function GetSentryNode() {
 					<PrimaryButton
 						onClick={() => setDrawerState(DrawerView.BuyKeys)}
 						btnText="Purchase Key"
-						className="w-[202px] text-[20px] bg-btnPrimaryBgColor !global-cta-clip-path text-[#000000] uppercase !py-1 hover:text-btnPrimaryBgColor hover:bg-white"
+						className="w-[202px] text-[20px] uppercase !py-1 !global-cta-clip-path text-melanzaneBlack"
 					/>
                     </div>
-					<p
-						className="text-xl text-[#F30919] cursor-pointer font-semibold hover:text-white duration-200 easy-in"
+					<TextButton
+						className="text-xl text-pelati cursor-pointer font-bold"
 						onClick={() => setDrawerState(DrawerView.ViewKeys)}
-					>
-						I already own a key
-					</p>
+						buttonText={"I already own a key"}
+					/>
+
 				</div>
 
 				<div className="flex flex-row items-center w-full">
 					{getBody()}
 				</div>
 			</div>
-            <img src={img} alt="logo" className="fixed w-full scale-[1.2] translate-x-[7%] translate-y-[-40%] max-h-full left-0 object-cover" />
+            <img src={img} alt="logo" className="fixed w-full scale-[1.2] translate-x-[7%] translate-y-[-20%] h-screen left-0 object-cover" />
 		</div>
 	);
 }
