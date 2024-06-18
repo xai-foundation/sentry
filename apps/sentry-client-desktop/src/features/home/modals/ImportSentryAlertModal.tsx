@@ -19,7 +19,7 @@ export function ImportSentryAlertModal({setShowModal, onSuccess}: ImportSentryAl
 				<div
 					className="absolute top-0 right-0 h-16 flex flex-row justify-between items-center text-lg px-6 mt-[18px]">
 					<div className="cursor-pointer z-10" onClick={() => setShowModal(false)}>
-						<AiOutlineClose size={24} color="white" className="hover:!text-[#FF0030] duration-300 ease-in" />
+						<AiOutlineClose size={24} color="white" className="hover:!text-hornetSting duration-300 ease-in" />
 					</div>
 				</div>
 				<div className="w-full h-full flex flex-col justify-center items-start gap-2 px-[40px]">
