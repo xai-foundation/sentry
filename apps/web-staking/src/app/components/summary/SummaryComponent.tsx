@@ -168,11 +168,11 @@ const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean,
       {poolInfo && (
         <div className="flex w-full flex-col items-center lg:px-[35px] xl:pr-[56px] px-0">
           <>
-            <div className="mt-2 flex w-full justify-start">
+            <div className="mt-2 flex w-full justify-start lg:z-40">
               <ButtonBack
-                btnText={`Back to ${activePage == "/pool" ? "my pools" : "staking"}`}
+                btnText={`Back to ${activePage === "/pool" ? "my pools" : "staking"}`}
                 fill="#FF2C3A"
-                onClick={window && window.history.length > 2 ? () => router.back() : () => router.push(`/staking?chainId=${chainId}`)}
+                onClick={activePage === "/pool" ? () => router.push(`/pool`) : () => router.push(`/staking?chainId=${chainId}`)}
                 extraClasses="uppercase text-white text-lg font-bold lg:mb-8 mb-4 lg:mx-0 mx-[17px]"
               />
             </div>
@@ -190,7 +190,7 @@ const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean,
               address={address}
             />
 
-            {poolInfo && <PoolTierCard poolInfo={poolInfo} tiers={tiers} />}
+            {poolInfo && tiers && <PoolTierCard poolInfo={poolInfo} tiers={tiers} />}
 
             <StakingCards
               unstakeRequests={unstakeRequests}

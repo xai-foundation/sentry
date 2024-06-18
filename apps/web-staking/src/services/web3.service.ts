@@ -485,10 +485,13 @@ export const getPoolAddressAtIndex = async (network: NetworkKey, index: number):
 }
 
 let MAX_KEY_COUNT_PER_POOL = 0;
+let MAX_KEY_COUNT_PER_POOL_CACHED_AT = Date.now();
+
 export const getMaxKeyCount = async (network: NetworkKey): Promise<number> => {
-	if (MAX_KEY_COUNT_PER_POOL === 0) {
+	if (MAX_KEY_COUNT_PER_POOL === 0 || (Date.now() - MAX_KEY_COUNT_PER_POOL_CACHED_AT) / 1000 > 60) {
 		const web3Instance = getWeb3Instance(network);
 		const refereeContract = new web3Instance.web3.eth.Contract(RefereeAbi, web3Instance.refereeAddress);
+		MAX_KEY_COUNT_PER_POOL_CACHED_AT = Date.now();
 		MAX_KEY_COUNT_PER_POOL = Number(await refereeContract.methods.maxKeysPerPool().call() as BigInt);
 	}
 	return MAX_KEY_COUNT_PER_POOL;

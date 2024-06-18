@@ -6,9 +6,9 @@ async function main() {
     const [deployer] = (await ethers.getSigners());
     const deployerAddress = await deployer.getAddress();
     console.log("Deployer address", deployerAddress);
-    const referee = await ethers.getContractFactory("Referee7");
+    const referee = await ethers.getContractFactory("Referee8");
     console.log("Got factory");
-    await upgrades.upgradeProxy(config.refereeAddress, referee);
+    await upgrades.upgradeProxy(config.refereeAddress, referee, { call: { fn: "initialize", args: [] } });
     console.log("Upgraded");
 
     await run("verify:verify", {

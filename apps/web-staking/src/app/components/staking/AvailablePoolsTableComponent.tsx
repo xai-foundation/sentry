@@ -19,8 +19,8 @@ const POOL_DATA_COLUMS = [
   "",
   // "POOL UPTIME",
   "OWNER SPLIT",
-  "esXAI SPLIT",
   "KEY SPLIT",
+  "esXAI SPLIT",
   "ACTIONS",
 ];
 
@@ -42,7 +42,7 @@ interface AvailableTableProps {
   totalPages: number;
   setPage: (page: number) => void;
   address: string | undefined;
-  tiers: Array<TierInfo & { icon?: iconType }>;
+  tiers?: Array<TierInfo & { icon?: iconType }>;
   maxKeyPerPool: number;
 }
 
@@ -106,8 +106,8 @@ const AvailablePoolsTableComponent = ({
                   <TableRowCapacity pool={pool} showTableKeys={showTableKeys} maxKeyPerPool={maxKeyPerPool} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" progressClass="lg:max-w-[65%]" />
                   {/* <TableRowStaked value={"__%"} positionStyles="sm:items-end"/> POOL UPTIME */}
                   <TableRowStaked value={`${pool.ownerShare}%`} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in"/>
-                  <TableRowStaked value={`${pool.stakedBucketShare}%`} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in"/>
                   <TableRowStaked value={`${pool.keyBucketShare}%`} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="lg:pr-1"/>
+                  <TableRowStaked value={`${pool.stakedBucketShare}%`} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in"/>
                   <TableRowRewards pool={pool} showTableKeys={showTableKeys} isDisconnected={isDisconnected} onClick={open} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" />
                 </tr>
               );

@@ -1,4 +1,5 @@
 import { TierInfo } from "@/types/Pool";
+import { getMaxStakedAmountPerLicense, getNetwork, MAINNET_ID } from "@/services/web3.service";
 
 export type iconType = ({
 	width,
@@ -9,8 +10,10 @@ export type iconType = ({
 	fill?: string | undefined;
 }) => React.JSX.Element;
 
-export const getCurrentTierByStaking = (staking: number, tiers: Array<TierInfo & { icon?: iconType }>): TierInfo & { icon?: iconType } | undefined => {
+export const getCurrentTierByStaking = (staking: number, tiers?: Array<TierInfo & { icon?: iconType }>): TierInfo & { icon?: iconType } | undefined => {
 	let currentTier: TierInfo | undefined;
+
+	if (!tiers) return undefined;
 
 	if (staking < tiers[1].minValue) {
 		currentTier = tiers[0];
@@ -41,7 +44,7 @@ export const getAmountRequiredForUpgrade = (staking: number, tiers: Array<TierIn
 	if (currentTier.index == tiers.length - 1) return 0;
 
 	const nextTierValue = tiers[currentTier.index + 1].minValue;
-	return nextTierValue - staking;
+	return nextTierValue! - staking;
 };
 
 export const getTierByIndex = (index: number, tiers: Array<TierInfo & { icon?: iconType }>): TierInfo | undefined => {
@@ -54,19 +57,18 @@ export const getIcon = (index: number = 0, tiers: Array<TierInfo & { icon?: icon
 	return tiers[index].icon as iconType;
 };
 
-const KEY_STEP = 10000;
-
 type ExtendedTierInfo = TierInfo & {
 	icon?: iconType
 }
 
-export const calculateKeysToNextTier = (totalStakedAmount: number, keyCount: number, tier: ExtendedTierInfo, tiers: ExtendedTierInfo[]) => {
+export const calculateKeysToNextTier = async (totalStakedAmount: number, keyCount: number, tier: ExtendedTierInfo, tiers: ExtendedTierInfo[], chainId: number | undefined) => {
 	const tierByStaking = getCurrentTierByStaking(totalStakedAmount, tiers)!;
 	const nextTierInfo = tiers[tier.index + 1];
+	const maxStakePerKey = await getMaxStakedAmountPerLicense(getNetwork(chainId || MAINNET_ID));
 
 	if (tierByStaking.index !== tier.index) {
-		return Math.ceil(tierByStaking.minValue / KEY_STEP - keyCount);
+		return Math.ceil(tierByStaking.minValue / maxStakePerKey - keyCount);
 	}
 
-	return Math.ceil(nextTierInfo.minValue / KEY_STEP - keyCount);
+	return Math.ceil(nextTierInfo.minValue / maxStakePerKey - keyCount);
 };
