@@ -17,7 +17,7 @@ export function AssignKeysFromNewWallet() {
 	}
 
 	return (
-		<div className="flex flex-col justify-center items-center">
+		<div className={`flex flex-col justify-center items-center my-[40px]`}>
 			<WarningIcon width={64} height={55} />
 			<p className="text-3xl font-bold uppercase text-white mt-[26px] mb-[13px]">
 				Keys not assigned
