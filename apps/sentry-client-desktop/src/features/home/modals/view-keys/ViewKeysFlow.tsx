@@ -112,41 +112,40 @@ export function ViewKeysFlow() {
 			<div>
 				<div className="w-full flex flex-col gap-8">
 					<div className="flex flex-col gap-2">
-						<div className="border-b border-primaryBorderColor px-6 pt-5 pb-7">
-						<p className="text-lg text-primaryText">
+						<div className="border-b border-chromaphobicBlack px-6 pt-5 pb-7">
+						<p className="text-lg text-americanSilver">
 							Enter the the public key of the wallet you want to view keys for
 						</p>
-                       <div className="w-full bg-[#5B5757] global-clip-primary-btn p-[1px] mb-3 mt-4 focus-within:bg-btnPrimaryBgColor">
+                       <div className="w-full bg-foggyLondon global-clip-primary-btn p-[1px] mb-3 mt-4 focus-within:bg-hornetSting">
 						<input
 							type="text"
 							value={ownerAddress}
 							onChange={handleInputChange}
-							className="w-full p-3 global-clip-primary-btn focus:outline-0 placeholder:text-primaryText placeholder:text-lg bg-primaryBgColor text-primaryText"
+							className="w-full p-3 global-clip-primary-btn focus:outline-0 placeholder:text-americanSilver placeholder:text-lg bg-nulnOil text-americanSilver"
 							placeholder="Enter public key"
 						/>
 						</div>
 
 						{ownerAddressError.error && (
-							<BaseCallout isWarning extraClasses={{calloutWrapper: "w-full bg-primaryCalloutWarning text-primaryWarningText my-2"}}> <WarningIcon width={20} height={20}/> <span className="ml-2">{ownerAddressError.errorResult}</span></BaseCallout>
+							<BaseCallout isWarning extraClasses={{calloutWrapper: "w-full text-bananaBoat my-2"}}> <WarningIcon width={20} height={20}/> <span className="ml-2">{ownerAddressError.errorResult}</span></BaseCallout>
 						)}
 
 						<PrimaryButton
 							onClick={async () => onAddWallet()}
-							className={`bg-primaryBgColor w-full text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-xl uppercase font-semibold transition-all`}
+							className={`w-full text-xl uppercase font-semibold transition-all`}
 							isDisabled={ownerAddress === ""}
 							btnText="Add wallet"
 							colorStyle="outline"
-							wrapperClassName="global-clip-primary-btn bg-btnPrimaryBgColor"
 						/>
 						</div>
                         <div className="px-6 pt-4">
-						<p className="text-lg text-primaryText mb-5">
+						<p className="text-lg text-americanSilver mb-5">
 							Or connect wallet to view all keys in the wallet
 						</p>
 
 						<PrimaryButton
 							onClick={startAssignment}
-							className="w-full flex flex-row justify-center items-center gap-1 bg-btnPrimaryBgColor text-xl text-white font-bold uppercase hover:text-btnPrimaryBgColor"
+							className="w-full flex flex-row justify-center items-center gap-1 text-xl font-bold uppercase"
 							btnText="Connect wallet"
 							icon={<BiLinkExternal size={20}/>}
 						/>

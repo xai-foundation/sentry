@@ -38,7 +38,7 @@ export function RemoveWalletModal({onClose, selectedWallet, isWalletAssignedMap}
 		return (
 			<div
 				className="absolute top-0 right-0 left-0 bottom-0 m-auto w-auto h-auto flex flex-col justify-start items-center z-[60]">
-				<div className="w-full h-full bg-primaryModalWrapperBg opacity-75"/>
+				<div className="w-full h-full bg-chromaphobicBlack opacity-75"/>
 				<div
 					className="absolute top-0 right-0 left-0 bottom-0 m-auto flex flex-col justify-start items-center w-[692px] h-[200px] bg-black">
 					<div
@@ -55,7 +55,7 @@ export function RemoveWalletModal({onClose, selectedWallet, isWalletAssignedMap}
 		return (
 			<div
 				className="absolute top-0 right-0 left-0 bottom-0 m-auto w-auto h-auto flex flex-col justify-start items-center z-[60]">
-				<div className="w-full h-full bg-primaryModalWrapperBg opacity-75"/>
+				<div className="w-full h-full bg-chromaphobicBlack opacity-75"/>
 				<div
 					className="absolute top-0 right-0 left-0 bottom-0 m-auto flex flex-col justify-start items-center w-[692px] h-[200px] bg-black px-6">
 					<div
@@ -71,7 +71,7 @@ export function RemoveWalletModal({onClose, selectedWallet, isWalletAssignedMap}
 								Attempting to remove an assigned wallet
 							</p>
 						</div>
-						<p className="text-primaryText text-[17px] font-medium ml-[55px]">
+						<p className="text-americanSilver text-[17px] font-medium ml-[55px]">
 							If you would like to remove this wallet from the Keys page, you will need to un-assign it
 							from the Sentry Wallet page first.
 						</p>
@@ -80,7 +80,7 @@ export function RemoveWalletModal({onClose, selectedWallet, isWalletAssignedMap}
 							<PrimaryButton
 								onClick={() => onClose()}
 								wrapperClassName="w-max"
-								className="w-fit bg-[#F30919] text-lg uppercase font-bold text-white px-4 !py-0 hover:text-tertiaryText !h-[40px]"
+								className="w-fit text-lg uppercase px-4 !py-0 !h-[40px]"
 								btnText={"Okay"}
 							/>
 						</div>
@@ -94,7 +94,7 @@ export function RemoveWalletModal({onClose, selectedWallet, isWalletAssignedMap}
 		return (
 			<div
 				className="absolute top-0 right-0 left-0 bottom-0 m-auto w-auto h-auto flex flex-col justify-start items-center z-[60]">
-				<div className="w-full h-full bg-primaryModalWrapperBg opacity-75"/>
+				<div className="w-full h-full bg-chromaphobicBlack opacity-75"/>
 				<div
 					className="absolute top-0 right-0 left-0 bottom-0 m-auto flex flex-col justify-start items-center w-[692px] h-[181px] bg-black">
 					<div
@@ -110,7 +110,7 @@ export function RemoveWalletModal({onClose, selectedWallet, isWalletAssignedMap}
 								Are you sure you want to remove this wallet?
 							</p>
 						</div>
-						<p className="text-primaryText text-[17px] font-medium ml-[55px]">
+						<p className="text-americanSilver text-[17px] font-medium ml-[55px]">
 							You will stop tracking all esXAI accrued on this wallet
 						</p>
 
@@ -124,7 +124,7 @@ export function RemoveWalletModal({onClose, selectedWallet, isWalletAssignedMap}
 							<PrimaryButton
 								onClick={() => onClose()}
 								wrapperClassName="w-max"
-								className="w-fit bg-[#F30919] text-lg uppercase font-bold text-white px-4 !py-0 hover:text-tertiaryText !h-[40px]"
+								className="w-fit text-lg uppercase font-bold px-4 !py-0 !h-[40px]"
 								btnText={"No, take me back"}
 							/>
 						</div>

@@ -12,7 +12,7 @@
 @font-face {
   font-family: "Rajdhani";
   src: url("./assets//fonts//Rajdhani-Bold.ttf");
-  font-weight: 600;
+  font-weight: 700;
   font-style: normal;
 }
 
@@ -67,7 +67,7 @@ body {
         clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
     }
 
-    .global-clip-8px {
+    .global-clip-btn {
         clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
     }
 

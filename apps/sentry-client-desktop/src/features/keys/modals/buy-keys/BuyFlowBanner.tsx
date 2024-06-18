@@ -14,12 +14,12 @@ export function BuyFlowBanner({quantity, promoCode}: BuyFlowBanner) {
 
 	return (
 		<div className="w-full flex flex-col gap-4 px-6">
-			<BaseCallout extraClasses={{ calloutWrapper: "bg-successBgColor", calloutFront: "flex-col !items-start text-successText !text-lg" }}>
+			<BaseCallout extraClasses={{ calloutWrapper: "!bg-drunkenDragonFly/10", calloutFront: "flex-col !items-start text-drunkenDragonFly !text-lg" }}>
 					<span className="flex flex-row gap-1 items-center font-semibold">
-						<AiFillCheckCircle className="w-6 h-6 text-successText" /> Purchase will be completed on <p
-						className="text-successText">Xai.games</p>
+						<AiFillCheckCircle className="w-6 h-6 text-drunkenDragonFly" /> Purchase will be completed on <p
+						className="text-drunkenDragonFly">Xai.games</p>
 					</span>
-				<p className="text-base text-successText">
+				<p className="text-base text-drunkenDragonFly">
 					Clicking the following button will open your browser and you will be redirected to the official
 					Xai website to connect your wallet and complete your purchase. This is the official website of
 					the Xai Foundation.
@@ -33,7 +33,7 @@ export function BuyFlowBanner({quantity, promoCode}: BuyFlowBanner) {
 						setModalState(ModalView.TransactionInProgress)
 						window.electron.openExternal(promoCode ? `https://sentry.xai.games/?quantity=${quantity}&promoCode=${promoCode}` : `https://sentry.xai.games/?quantity=${quantity}`)
 					}}
-					className={"w-full h-16 !bg-btnPrimaryBgColor text-lg text-white hover:!text-btnPrimaryBgColor hover:!bg-white uppercase !font-bold"}
+					className={"w-full h-16 text-lg uppercase !font-bold"}
 					btnText="Continue"
 				/>
 			</div>
