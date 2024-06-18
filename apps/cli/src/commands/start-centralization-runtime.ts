@@ -36,7 +36,7 @@ export function startCentralizationRuntime(cli: Vorpal) {
 
                     // Listen for process termination and call the handler
                     process.on('SIGINT', async () => {
-                        await sendSlackNotification(slackWebHookUrl, `The CentralizationRuntime has been terminated manually @ ${new Date().toISOString()}.`);
+                        await sendSlackNotification(slackWebHookUrl, `The CentralizationRuntime has been terminated manually @ ${new Date().toISOString()}.`, (log: string) => commandInstance.log(log) );
                         commandInstance.log(`[${new Date().toISOString()}] The CentralizationRuntime has been terminated manually.`);
                         stopRuntime();
                         process.exit();
@@ -50,11 +50,11 @@ export function startCentralizationRuntime(cli: Vorpal) {
                         errorMessage = error.message;
                     }
                     commandInstance.log(`[${new Date().toISOString()}] The CentralizationRuntime encountered an error: ${errorMessage}`);
-                    await sendSlackNotification(slackWebHookUrl, `The CentralizationRuntime encountered an error: ${errorMessage}`);
+                    await sendSlackNotification(slackWebHookUrl, `The CentralizationRuntime encountered an error: ${errorMessage}`, (log: string) => commandInstance.log(log));
 
                     if (restartOnCrash) {
                         commandInstance.log(`[${new Date().toISOString()}] Restarting the CentralizationRuntime due to crash.`);
-                        await sendSlackNotification(slackWebHookUrl, `Restarting the CentralizationRuntime due to crash.`);
+                        await sendSlackNotification(slackWebHookUrl, `Restarting the CentralizationRuntime due to crash.`, (log: string) => commandInstance.log(log));
                         setTimeout(startRuntime, 5000); // Delay before restarting
                     }
                 }
