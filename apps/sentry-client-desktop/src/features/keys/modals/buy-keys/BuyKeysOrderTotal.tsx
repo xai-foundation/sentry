@@ -62,7 +62,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 								</p>
 							</div>
 						</div>
-						<p className="text-base text-secondaryText mb-4">
+						<p className="text-base text-elementalGrey mb-4">
 							{ethers.formatEther(item.pricePer)} AETH per key
 						</p>
 					</div>
@@ -129,7 +129,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 								)}
 
 								{displayPricesMayVary && (
-									<BaseCallout extraClasses={{ calloutWrapper: "bg-primaryCalloutWarning", calloutFront: "flex-col !items-start text-primaryWarningText !text-lg" }}>
+									<BaseCallout extraClasses={{ calloutWrapper: "", calloutFront: "flex-col !items-start text-bananaBoat !text-lg" }} isWarning>
 										<div className="flex items-center gap-2 font-semibold">
 											<WarningIcon width={16} height={16}/>
 											<p className="text-lg">
@@ -150,12 +150,12 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 								{/*		Promo section		*/}
 								{!discount.applied && (
 									<>
-										<hr className="my-2 border-t-primaryBorderColor"/>
+										<hr className="my-2 border-t-chromaphobicBlack"/>
 										{promo ? (
 											<div>
 												<div
 													className="w-full h-auto flex flex-row justify-between items-center text-[15px] text-[#525252] mt-2 py-2">
-													<p className="text-lg text-primaryText">Add promo code</p>
+													<p className="text-lg text-americanSilver">Add promo code</p>
 													<div
 														className="cursor-pointer z-10"
 														onClick={() => {
@@ -169,7 +169,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 
 												<div className="flex gap-2 items-center">
 
-													<div className={`w-full bg-secondaryBorderColor global-clip-primary-btn p-[1px] focus-within:bg-btnPrimaryBgColor`}>
+													<div className={`w-full bg-foggyLondon global-clip-primary-btn p-[1px] focus-within:bg-hornetSting`}>
 													<input
 														type="text"
 														value={promoCode}
@@ -177,21 +177,21 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 															setPromoCode(e.target.value)
 															setDiscount({applied: false, error: false})
 														}}
-														className={`w-full p-2 global-clip-primary-btn focus:outline-0 placeholder:text-primaryText placeholder:text-lg bg-primaryBgColor text-primaryText text-lg`}
+														className={`w-full p-2 global-clip-primary-btn focus:outline-0 placeholder:text-americanSilver placeholder:text-lg bg-nulnOil text-americanSilver text-lg`}
 														placeholder="Enter promo code"
 													/>
 													</div>
 													<div>
 													<PrimaryButton
 														onClick={() => handleSubmit()}
-														className="w-[92px] bg-btnPrimaryBgColor h-[44px] !p-1 text-lg text-white font-semibold uppercase hover:!text-btnPrimaryBgColor"
+														className="w-[92px] h-[44px] !p-1 text-lg font-semibold uppercase"
 														btnText="Apply"
 														/>
 													</div>
 												</div>
 
 												{discount.error && (
-													<BaseCallout isWarning extraClasses={{calloutWrapper: "w-full bg-primaryCalloutWarning text-primaryWarningText mt-2"}}> <WarningIcon width={20} height={20}/> <span className="ml-2">Error with Promo Code</span></BaseCallout>
+													<BaseCallout isWarning extraClasses={{calloutWrapper: "w-full text-bananaBoat mt-2"}}> <WarningIcon width={20} height={20}/> <span className="ml-2">Error with Promo Code</span></BaseCallout>
 												)}
 											</div>
 										) : (
@@ -207,7 +207,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 									</>
 								)}
 
-								<hr className="my-2 border-t-primaryBorderColor"/>
+								<hr className="my-2 border-t-chromaphobicBlack"/>
 								<div className="flex flex-row items-center justify-between">
 									<div className="flex flex-row items-center gap-2 text-2xl font-bold text-white">
 										<p className="">You pay</p>

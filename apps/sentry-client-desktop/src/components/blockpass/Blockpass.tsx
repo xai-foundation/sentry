@@ -41,7 +41,7 @@ export function Blockpass({onClick = () => {}, children = "Begin KYC"}: PropsWit
 			</div>
 			<div className="pl-7">
 			<button
-				className={`w-[280px] flex justify-center items-center gap-1 text-lg uppercase font-bold mt-2 px-6 py-2 global-clip-primary-btn ${!selectedCountry ? 'bg-[#2A2828] text-[#726F6F] text-bold cursor-not-allowed' : 'text-white bg-[#F30919] hover:text-btnPrimaryBgColor hover:bg-white cursor-pointer duration-200 easy-in'}`}
+				className={`w-[280px] flex justify-center items-center gap-1 text-lg uppercase font-bold mt-2 px-6 py-2 global-clip-primary-btn ${!selectedCountry ? 'bg-[#2A2828] text-[#726F6F] text-bold cursor-not-allowed' : 'text-white bg-[#F30919] hover:text-hornetSting hover:bg-white cursor-pointer duration-200 easy-in'}`}
 				id="blockpass-kyc-connect"
 				onClick={onClickHelper}
 				disabled={!selectedCountry}

@@ -36,9 +36,9 @@ export const SideBarTooltip = ({header, body, body2, body3, banner, bannerTitle,
 						className="w-3 h-3 -mb-[0.4rem] mx-[0.5rem] rotate-45 bg-[#000000] z-30"/>
 					<div className={`relative w-full py-3 px-4 bg-[#000000] shadow-lg`}>
 						{header && <p className="text-lg font-bold pb-1 text-white">{header}</p>}
-						{body && <p className="text-[17px] text-secondaryText">{body}</p>}
-						{body2 && <p className="text-[17px] text-secondaryText mt-2">{body2}</p>}
-						{body3 && <p className="text-[17px] text-secondaryText mt-2">{body3}</p>}
+						{body && <p className="text-[17px] text-elementalGrey">{body}</p>}
+						{body2 && <p className="text-[17px] text-elementalGrey mt-2">{body2}</p>}
+						{body3 && <p className="text-[17px] text-elementalGrey mt-2">{body3}</p>}
 						{banner &&
                             <div
                                 className="w-full flex flex-row justify-between items-center text-[15px] bg-[#F5F5F5] font-light p-2 mt-2">

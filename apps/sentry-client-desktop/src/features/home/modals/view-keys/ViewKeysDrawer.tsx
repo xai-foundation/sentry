@@ -11,7 +11,7 @@ export function ViewKeysDrawer() {
 			<div
 				className="h-full flex flex-col justify-start items-center">
 				<div
-					className="w-full flex flex-row justify-between items-center border-b border-primaryBorderColor px-6 py-6">
+					className="w-full flex flex-row justify-between items-center border-b border-chromaphobicBlack px-6 py-6">
 					<span className="text-white text-2xl font-bold">View keys in wallet</span>
 					<div className="cursor-pointer z-10" onClick={() => setDrawerState(null)}>
 						<AiOutlineClose color={"white"} size={20}/>

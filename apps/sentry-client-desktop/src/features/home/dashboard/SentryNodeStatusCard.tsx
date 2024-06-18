@@ -55,7 +55,8 @@ export function SentryNodeStatusCard() {
 	function getNodeFunds() {
 		return (
 			<BaseCallout
-				extraClasses={{ calloutWrapper: `absolute bottom-4 left-6 w-[328px] !p-0 flex justify-center items-center gap-1 ${nodeStatus ? "text-lg !text-[#3DD68C] !bg-successBgColor" : "text-lg text-primaryTooltipColor bg-[#FFC53D1A]"}`, calloutFront: "!justify-start" }}>
+				isWarning={!nodeStatus}
+				extraClasses={{ calloutWrapper: `absolute bottom-4 left-6 w-[328px] !p-0 flex justify-center items-center gap-1 ${nodeStatus ? "text-lg !text-drunkenDragonFly !bg-drunkenDragonFly/10" : "text-lg text-bananaBoat bg-bananaBoat/10"}`, calloutFront: `!justify-start ${nodeStatus ? "!bg-drunkenDragonFly/10" : "!bg-bananaBoat/10"}` }}>
 					<div className="flex justify-center items-center gap-2">
 						{nodeStatus
 							? (
@@ -69,17 +70,17 @@ export function SentryNodeStatusCard() {
 	}
 
 	return (
-		<Card width={"695px"} height={"367px"} customClasses="bg-primaryBgColor shadow-default">
+		<Card width={"695px"} height={"367px"} customClasses="bg-nulnOil shadow-default">
 			{sentryRunning && (
 				<div className="absolute left-0 right-0 w-[695px] h-[367px] scale-[1.4] translate-x-[-90px] translate-y-[-15px]">
 					<img src={img} alt="logo" />
 				</div>
 			)}
 
-			<div className="sticky flex flex-row justify-between items-center py-5 px-6 border-b border-primaryBorderColor bg-primaryBgColor z-10">
+			<div className="sticky flex flex-row justify-between items-center py-5 px-6 border-b border-chromaphobicBlack bg-nulnOil z-10">
 				<div className="flex flex-row items-center gap-1 text-white text-2xl">
 					<h2 className="font-bold">Sentry Node Status</h2>
-					<p className="flex items-center ml-2 text-lg text-secondaryText">
+					<p className="flex items-center ml-2 text-lg text-elementalGrey">
 						{timeAgoString}
 					</p>
 				</div>
@@ -103,7 +104,7 @@ export function SentryNodeStatusCard() {
 						<div
 							className="absolute left-0 right-0 bottom-7 w-full h-[40px] flex justify-center items-center gap-1 px-6 pt-4 pb-7">
 							<PrimaryButton
-								className={`w-[643px] bg-btnPrimaryBgColor text-[20px] uppercase font-semibold mt-2 global-cta-clip-path hover:text-btnPrimaryBgColor`}
+								className={`w-[643px] text-[20px] uppercase font-bold mt-2 !global-cta-clip-path text-melanzaneBlack`}
 								onClick={() => startRuntime}
 								btnText="Start Node"
 								colorStyle="primary"

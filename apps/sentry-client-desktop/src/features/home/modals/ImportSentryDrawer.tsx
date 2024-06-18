@@ -11,7 +11,7 @@ import React, { useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import BaseCallout from "@sentry/ui/dist/src/rebrand/callout/BaseCallout";
 import {PrimaryButton} from "@sentry/ui";
-import {CloseIcon} from "../../../../../../packages/ui/src/rebrand/icons/CloseIcon";
+import {AiOutlineClose} from "react-icons/ai";
 
 export enum InputSizes {
 	md = "md",
@@ -72,9 +72,9 @@ const TemporaryInput = ({
 			<div
 				className={`flex w-full group ${inputHeight} px-[12px] justify-center items-center relative cursor-text max-w-[${widthProperties?.inputWrapper}px]`}>
 				<span
-					className={`global-input-clip-path w-full max-w-[calc(100%-2px)] bg-primaryBgColor ${borderHeight} absolute z-10 ${isFocused && "bg-primaryBgColor"}`}></span>
+					className={`global-input-clip-path w-full max-w-[calc(100%-2px)] bg-nulnOil ${borderHeight} absolute z-10 ${isFocused && "bg-nulnOil"}`}></span>
 				<span
-					className={`global-input-clip-path max-w-[${widthProperties?.inputWrapper}px] bg-secondaryBorderColor ${isInvalid && "!bg-primaryWarningText"} ${isFocused && !isInvalid && "bg-inputPrimaryHoverBg"} ${!disabled && "group-hover:bg-inputPrimaryHoverBg"} ${disabled && "!bg-primaryBorderColor"} w-full ${inputHeight} absolute z-[5]`}>
+					className={`global-input-clip-path max-w-[${widthProperties?.inputWrapper}px] bg-foggyLondon ${isInvalid && "!bg-bananaBoat"} ${isFocused && !isInvalid && "bg-pelati"} ${!disabled && "group-hover:bg-pelati"} ${disabled && "!bg-chromaphobicBlack"} w-full ${inputHeight} absolute z-[5]`}>
       </span>
 				{withIcon &&
 					<button className="z-20" onClick={onClick}><CiSearch className="mr-2 text-dugong size-[20px]" /></button>}
@@ -148,7 +148,8 @@ export function ImportSentryDrawer() {
 			)}
 			<div className="h-full flex flex-col justify-start items-center text-white">
 				<div
-					className="w-full flex flex-row justify-between items-center border-b border-primaryBorderColor text-2xl font-bold px-8 py-[31px]">
+					className="w-full flex flex-row justify-between items-center border-b border-chromaphobicBlack text-2xl font-bold px-8 py-[24px]">
+
 					<div className="flex flex-row gap-2 items-center">
 						<span>Import Sentry Wallet</span>
 					</div>
@@ -158,7 +159,7 @@ export function ImportSentryDrawer() {
 						}}
 						className="cursor-pointer"
 					>
-							<CloseIcon height={13} width={13} fill={"#fff"}/>
+							<AiOutlineClose size={20} color="white" className="hover:!text-hornetSting duration-300 ease-in" />
 						</span>
 				</div>
 
@@ -172,12 +173,12 @@ export function ImportSentryDrawer() {
 				) : (
 					<div className="w-full flex flex-col gap-8">
 						<div className="flex flex-col gap-2 px-6 pt-6">
-							<p className="text-lg font-medium text-primaryText">
+							<p className="text-lg font-medium text-americanSilver">
 								By importing a Sentry Wallet, you can continue running your node without the need to
 								leave your local machine on.
 							</p>
 
-							<p className="text-lg font-medium text-primaryText mt-4">
+							<p className="text-lg font-medium text-americanSilver mt-4">
 								Enter the the private key of the Sentry Wallet you would like to import
 							</p>
 
@@ -193,8 +194,7 @@ export function ImportSentryDrawer() {
 
 								<div className="mt-[12px] w-full">
 									{privateKeyError.error && (
-										<BaseCallout extraClasses={{calloutWrapper: "h-[50px] w-full text-primaryWarningText",
-											calloutFront: "!bg-primaryCalloutWarning"}}>
+										<BaseCallout extraClasses={{calloutWrapper: "h-[50px] w-full text-bananaBoat"}} isWarning>
 											<WarningIcon /> <span className="text-lg text-medium ml-[10px]">{privateKeyError.message}</span>
 										</BaseCallout>
 									)}
@@ -202,12 +202,12 @@ export function ImportSentryDrawer() {
 
 								<PrimaryButton
 									onClick={handleButton}
-									className="w-full flex justify-center items-center gap-1 !text-xl text-[#EEEEEE] hover:text-btnPrimaryBgColor bg-[#F30919] font-semibold mt-[13px] px-6 py-3 !uppercase"
+									className="w-full flex justify-center items-center gap-1 !text-xl font-semibold mt-[13px] px-6 py-3 !uppercase"
 									btnText={"Confirm import"}/>
 
 							</div>
 
-							<p className="text-lg font-medium text-primaryText mt-[28px]">
+							<p className="text-lg font-medium text-americanSilver mt-[28px]">
 								Want to run a cloud instance?
 								<a
 									onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup/step-2-download-and-run-the-xai-sentry-node")}

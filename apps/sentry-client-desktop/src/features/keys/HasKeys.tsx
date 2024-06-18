@@ -1,4 +1,4 @@
-import {AiFillCheckCircle, AiOutlineCheck, AiOutlineMinus, AiOutlinePlus} from "react-icons/ai";
+import {AiFillCheckCircle, AiOutlineMinus, AiOutlinePlus} from "react-icons/ai";
 import {useState} from "react";
 import {BlockPassKYC} from "@/components/blockpass/Blockpass";
 import {getLicensesList, LicenseList, LicenseMap} from "@/hooks/useListNodeLicensesWithCallback";
@@ -20,7 +20,6 @@ import {useGetWalletBalance} from "@/hooks/useGetWalletBalance";
 import {useGetSingleWalletBalance} from "@/hooks/useGetSingleWalletBalance";
 import log from "electron-log";
 import { HelpIcon, WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
-import { PiCopy } from "react-icons/pi";
 
 interface HasKeysProps {
 	combinedOwners: string[],
@@ -78,7 +77,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 
 		if (licenses.length === 0) {
 			return (
-				<tr className="bg-primaryBgColor flex px-8 text-lg text-secondaryText">
+				<tr className="bg-nulnOil flex px-8 text-lg text-elementalGrey">
 					<td colSpan={5} className="w-full text-center">
 						No keys found.
 					</td>
@@ -107,13 +106,13 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 			}
 
 			return (
-				<tr className={`${isEven ? "bg-primaryBgColor" : "bg-primaryBgColor"} flex px-6 text-lg border-b border-primaryBorderColor`} key={`license-${i}`}>
-					<td className="min-w-[7%] px-2 py-2 text-secondaryText">{keyString}</td>
-					<td className="min-w-[37%] px-2 py-2 text-secondaryText">{owner}</td>
-					<td className="min-w-[27%] px-4 py-2 text-secondaryText">
+				<tr className={`bg-nulnOil flex px-6 text-lg border-b border-chromaphobicBlack`} key={`license-${i}`}>
+					<td className="min-w-[7%] px-2 py-2 text-elementalGrey">{keyString}</td>
+					<td className="min-w-[37%] px-2 py-2 text-elementalGrey">{owner}</td>
+					<td className="min-w-[27%] px-4 py-2 text-elementalGrey">
 
 						{_status === "sentryNotRunning" && (
-							<div className="relative flex items-center gap-[10px] font-bold text-primaryTooltipColor">
+							<div className="relative flex items-center gap-[10px] font-bold text-bananaBoat">
 								<WarningIcon width={18} height={16}/>
 								Sentry not running
 								<a
@@ -126,7 +125,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						)}
 
 						{_status === "walletNotAssigned" && (
-							<div className="relative flex items-center gap-[10px] font-bold text-primaryTooltipColor">
+							<div className="relative flex items-center gap-[10px] font-bold text-bananaBoat">
 								<WarningIcon width={18} height={16}/>
 								Wallet not assigned
 								<a
@@ -139,7 +138,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						)}
 
 						{_status === "kycStart" && (
-							<div className="relative flex items-center gap-[10px] font-bold text-primaryTooltipColor">
+							<div className="relative flex items-center gap-[10px] font-bold text-bananaBoat">
 								<WarningIcon width={18} height={16}/>
 								KYC required
 								<BlockPassKYC
@@ -152,7 +151,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						)}
 
 						{_status === "kycContinue" && (
-							<div className="relative flex items-center gap-[10px] font-bold text-primaryTooltipColor">
+							<div className="relative flex items-center gap-[10px] font-bold text-bananaBoat">
 								<WarningIcon width={18} height={16}/>
 								KYC required
 								<BlockPassKYC
@@ -164,18 +163,18 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						)}
 
 						{_status === "claiming" && (
-							<div className="relative flex items-center gap-[10px] font-bold text-successText">
-								<AiFillCheckCircle className="w-[18px] h-[16px] text-successText"/> Claiming rewards when available
+							<div className="relative flex items-center gap-[10px] font-bold text-drunkenDragonFly">
+								<AiFillCheckCircle className="w-[18px] h-[16px] text-drunkenDragonFly"/> Claiming rewards when available
 							</div>
 						)}
 
 					</td>
-					<td className="min-w-[17%] px-4 py-2 text-right text-secondaryText">
+					<td className="min-w-[17%] px-4 py-2 text-right text-elementalGrey">
 						{balances && balances[keyString]
 							? ethers.formatEther(balances[keyString].totalAccruedEsXai)
 							: "Loading..."}
 					</td>
-					<td className="min-w-[12%] px-4 py-2 text-btnPrimaryBgColor font-bold text-right">
+					<td className="min-w-[12%] px-4 py-2 text-hornetSting font-bold text-right">
 						<span
 							className="cursor-pointer pr-[3px] uppercase hover:text-white duration-300 ease-in-out"
 							onClick={() => window.electron.openExternal(`https://opensea.io/assets/arbitrum/${config.nodeLicenseAddress}/${keyString}`)}
@@ -251,29 +250,26 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						<PrimaryButton
 							isDisabled={selectedWallet === null}
 							onClick={copySelectedWallet}
-							className={`bg-primaryBgColor flex !h-[48px] items-center !w-[155px] text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-lg uppercase font-bold !py-1 !px-[10px]`}
+							className={`flex justify-center !h-[48px] items-center !w-[155px] text-lg uppercase font-bold !py-1 !px-[10px] disabled:!h-[50px]`}
 							btnText="Copy address"
 							colorStyle="outline"
-							wrapperClassName={`global-clip-primary-btn ${selectedWallet !== null && 'bg-btnPrimaryBgColor'}`}
-							icon={copiedSelectedWallet ? (<AiOutlineCheck className="h-[18px]"/>) : (<PiCopy className="h-[18px]"/>)}
 						/>
 						</div>
                         <div>
 						<PrimaryButton
 							onClick={() => setDrawerState(DrawerView.ViewKeys)}
-							className={`flex flex-row-reverse group !w-[147px] !h-[50px] justify-center items-center gap-2 text-lg bg-btnPrimaryBgColor text-white font-bold uppercase !py-1 !px-[14px] hover:text-btnPrimaryBgColor`}
+							className={`flex flex-row-reverse group !w-[147px] !h-[50px] justify-center items-center gap-2 text-lg font-bold uppercase !py-1 !px-[14px]`}
 							btnText="Add wallet"
-							icon={<AiOutlinePlus className="h-[15px] w-[15px] group-hover:fill-btnPrimaryBgColor duration-200 easy in" color={"#ffffff"}/>}
+							icon={<AiOutlinePlus className="h-[15px] w-[15px] group-hover:fill-hornetSting duration-200 easy in" color={"#ffffff"}/>}
 						/>
 						</div>
 						<div>
 						<PrimaryButton
 							isDisabled={selectedWallet === null}
 							onClick={() => setIsRemoveWalletOpen(true)}
-							className={`flex flex-row-reverse justify-center items-center gap-2 bg-primaryBgColor !h-[48px] !w-[173px] text-btnPrimaryBgColor hover:bg-btnPrimaryBgColor hover:text-white text-lg uppercase font-bold !py-1 !px-[14px]`}
+							className={`flex flex-row-reverse justify-center items-center gap-2 !h-[48px] !w-[173px] text-lg uppercase font-bold !py-1 !px-[14px] disabled:!h-[50px]`}
 							btnText="Remove wallet"
 							colorStyle="outline"
-							wrapperClassName={`global-clip-primary-btn ${selectedWallet !== null && 'bg-btnPrimaryBgColor'}`}
 							icon={<AiOutlineMinus className="h-[15px] w-[15px]"/>}
 						/>
 						</div>
@@ -284,7 +280,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					<div className="flex">
 
 						<div className="flex flex-col px-6">
-							<div className="flex items-center gap-1 text-lg text-secondaryText">
+							<div className="flex items-center gap-1 text-lg text-elementalGrey">
 								<p>Accrued network rewards</p>
 								<CustomTooltip
 									header={"Claimed esXAI will appear in your wallet balance.\n"}
@@ -326,7 +322,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						</div>
 
 						<div className="flex flex-col pl-10">
-							<div className="flex items-center gap-1 text-lg text-secondaryText">
+							<div className="flex items-center gap-1 text-lg text-elementalGrey">
 							<p className="">Accrued esXAI (unclaimed)</p>
 							<CustomTooltip
 								header={"Each key will accrue esXAI. Pass KYC to claim."}
@@ -362,9 +358,9 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 
 				<div className="flex flex-col max-h-[70vh]">
 					<div className="w-full overflow-y-auto">
-						<table className="w-full bg-primaryBgColor">
-							<thead className="text-secondaryText text-base sticky top-0 bg-primaryBgColor z-10">
-							<tr className="flex items-center text-left text-base border-b border-t border-primaryBorderColor px-[25px] py-[15px] bg-secondaryBgColor">
+						<table className="w-full bg-nulnOil">
+							<thead className="text-elementalGrey text-base sticky top-0 bg-nulnOil z-10">
+							<tr className="flex items-center text-left text-base border-b border-t border-chromaphobicBlack px-[25px] py-[15px] bg-dynamicBlack">
 								<th className="min-w-[7%] px-2 py-0">KEY ID</th>
 								<th className="min-w-[37%] px-2 py-0">OWNER ADDRESS</th>
 								<th className="min-w-[27%] px-4 py-0">STATUS</th>

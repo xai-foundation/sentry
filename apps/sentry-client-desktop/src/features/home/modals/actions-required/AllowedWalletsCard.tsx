@@ -14,8 +14,8 @@ export function AllowedWalletsCard() {
 
 	return (
 		<div className="relative">
-		<div className="bg-primaryBorderColor global-cta-clip-path p-[1px]">
-		<SquareCard className="bg-secondaryBgColor global-cta-clip-path">
+		<div className="bg-chromaphobicBlack global-cta-clip-path p-[1px]">
+		<SquareCard className="bg-dynamicBlack global-cta-clip-path">
 			{data && data.whitelistedWallets ? (
 				<IconLabel
 					icon={AiFillCheckCircle}
@@ -35,7 +35,7 @@ export function AllowedWalletsCard() {
 						titleStyles="text-lg text-white"
 					/>
 
-					<p className="text-lg text-primaryText mt-1 px-6">
+					<p className="text-lg text-americanSilver mt-1 px-6">
 						Select the wallets you'd like to enable to run on your Sentry.
 					</p>
                     <div className="pl-7 mt-2">
@@ -44,7 +44,7 @@ export function AllowedWalletsCard() {
 						btnText="ASSIGN ALLOWED WALLETS"
 						colorStyle="primary"
 						size="sm"
-						className="w-[280px] text-lg uppercase bg-btnPrimaryBgColor text-white hover:text-btnPrimaryBgColor !py-1 !px-1 font-bold"
+						className="w-[280px] text-lg uppercase !py-1 !px-1 font-bold"
 					/>
 					</div>
 				</>
