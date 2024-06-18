@@ -35,7 +35,6 @@ export const useGetUserInteractedPools = (refresh: boolean = false) => {
       }
 
       let totalClaim = 0;
-      const tempPools = [];
 
       for (let index = 0; index < userPoolAddresses.length; index++) {
         const poolAddress = userPoolAddresses[index];
@@ -48,8 +47,9 @@ export const useGetUserInteractedPools = (refresh: boolean = false) => {
             poolInfo.keyRewardRate = poolRewardRate?.keyRewardRate || 0;
             poolInfo.esXaiRewardRate = poolRewardRate?.esXaiRewardRate || 0;
           }
-          tempPools.push(poolInfo);
+          setUserPools(userPools => [...userPools, poolInfo]);
           totalClaim += poolInfo.userClaimAmount || 0;
+          setTotalClaimableAmount(totalClaim);
           await new Promise((resolve) => setTimeout(resolve, 100));
 
         } catch (error) {
@@ -57,8 +57,6 @@ export const useGetUserInteractedPools = (refresh: boolean = false) => {
         }
       }
 
-      setUserPools(tempPools);
-      setTotalClaimableAmount(totalClaim);
       setIsLoading(false);
     }
 
