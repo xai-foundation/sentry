@@ -13,7 +13,7 @@ export function ImportSentryAlertModal({setShowModal, onSuccess}: ImportSentryAl
 	return (
 		<div
 			className="fixed top-0 right-0 left-0 bottom-0 m-auto w-auto h-auto flex flex-col justify-start items-center z-[60]">
-			<div className="w-full h-full bg-[#2A2828] opacity-75"/>
+			<div className="w-full h-full bg-chromaphobicBlack opacity-75"/>
 			<div
 				className="absolute top-0 right-0 left-0 bottom-0 m-auto flex flex-col justify-start items-center w-[692px] h-[200px] bg-black">
 				<div
