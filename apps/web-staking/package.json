@@ -1,5 +1,5 @@
 {
-  "name": "@sentry/xai-staking-internal",
+  "name": "@sentry/web-staking",
   "version": "0.1.0",
   "private": true,
   "scripts": {

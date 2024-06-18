@@ -7,4 +7,4 @@ WORKDIR /app
 COPY . .
 RUN pnpm install --loglevel debug
 EXPOSE 3000
-CMD [ "pnpm", "run", "web-staking" ]
+CMD [ "pnpm", "run", "web-staking-production" ]
