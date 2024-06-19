@@ -27,6 +27,7 @@ export interface IPool {
     network: string,
     esXaiRewardRate: number,
     keyRewardRate: number,
+    totalEsXaiClaimed: number,
     updatedAt?: Date
     createdAt: Date
 };
@@ -133,6 +134,10 @@ export const PoolSchema = new mongoose.Schema<IPool>({
         type: String,
         required: true
     },
+    totalEsXaiClaimed: {
+        type: Number,
+        required: true,
+    },   
     esXaiRewardRate: {
         type: Number,
         required: true,
