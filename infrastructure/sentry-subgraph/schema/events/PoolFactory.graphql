@@ -16,6 +16,7 @@ type PoolInfo @entity(immutable: false) {
   ownerRequestedUnstakeKeyAmount: BigInt!
   ownerLatestUnstakeRequestCompletionTime: BigInt!
   createdTimestamp: BigInt!
+  poolChallenges: [PoolChallenge!]! @derivedFrom(field: "pool")
 }
 
 type UnstakeRequest @entity(immutable: false) {
@@ -38,4 +39,16 @@ type PoolFactoryConfig @entity(immutable: false) {
   unstakeGenesisKeyDelayPeriod: BigInt!
   unstakeEsXaiDelayPeriod: BigInt!
   updateRewardBreakdownDelayPeriod: BigInt!
+}
+
+type PoolChallenge @entity(immutable: false) {
+  id: String!
+  pool: PoolInfo!
+  challenge: Challenge!
+  submittedKeyCount: BigInt!
+  claimKeyCount: BigInt!
+  totalStakedEsXaiAmount: BigInt!
+  totalStakedKeyAmount: BigInt!
+  totalClaimedEsXaiAmount: BigInt!
+  eligibleSubmissionsCount: BigInt!
 }
