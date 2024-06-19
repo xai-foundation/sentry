@@ -33,8 +33,8 @@ export async function getRewardRatesFromGraph(
 
   const query = gql`
     query PoolInfos {
-      poolInfos(first: 10000, orderBy: totalStakedEsXaiAmount, orderDirection: desc${queryWhere}) {
-        poolChallenges(where: {challenge_: {assertionTimestamp_gt: ${startTimestamp}}}) {
+      poolInfos(first: 1000, orderBy: totalStakedEsXaiAmount, orderDirection: desc${queryWhere}) {
+        poolChallenges(where: {challenge_: {createdTimestamp_gt: ${startTimestamp}}}) {
           totalClaimedEsXaiAmount
           totalStakedEsXaiAmount
           totalStakedKeyAmount
