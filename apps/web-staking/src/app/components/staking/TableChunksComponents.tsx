@@ -340,7 +340,7 @@ export function TableHead({
           <div className="flex w-full items-center lg:hidden">
             <div className="mr-1">{"RATE"}</div>
             <TableTooltip
-          extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-340px] pb-[10px] !text-left !py-[15px] w-[356px]" }}
+          extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] !left-[-340px] pb-[10px] !text-left !py-[15px] !w-[356px]" }}
           content={showTableKeys ? "Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards." : "Estimated annual rate for staking esXAI based off of stake and reward breakdown and past 7 days of pool rewards."}
           delay={30000}
         >
@@ -480,7 +480,7 @@ export function TableHeadStaking({
           <div className="flex w-full items-center lg:hidden">
             <div className="mr-1">{"RATE"}</div>
             <TableTooltip
-          extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-340px] pb-[10px] !text-left !py-[15px] w-[356px]" }}
+          extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] !left-[-340px] pb-[10px] !text-left !py-[15px] !w-[356px]" }}
           content={showKeys ? "Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards." : "Estimated annual rate for staking esXAI based off of stake and reward breakdown and past 7 days of pool rewards."}
           delay={30000}
         >
