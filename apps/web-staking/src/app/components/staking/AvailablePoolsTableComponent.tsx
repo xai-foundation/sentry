@@ -20,8 +20,8 @@ const POOL_DATA_COLUMS = [
   "",
   // "POOL UPTIME",
   "OWNER SPLIT",
-  "esXAI SPLIT",
   "KEY SPLIT",
+  "esXAI SPLIT",
   "esXAI RATE",
   "ACTIONS",
 ];
