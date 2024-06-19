@@ -10,6 +10,7 @@ type PoolRewardRates = {
 }
 
 const AVERAGE_WINDOW_DAYS = 7n;
+const QUERY_CHALLENGE_COUNT = 24 * Number(AVERAGE_WINDOW_DAYS);
 
 /**
  * Get the calculated average daily rewards per staked unit for staking pools
@@ -35,7 +36,7 @@ export async function getRewardRatesFromGraph(
   const query = gql`
     query PoolInfos {
       poolInfos(first: 1000, orderBy: totalStakedEsXaiAmount, orderDirection: desc${queryWhere}) {
-        poolChallenges(where: {challenge_: {createdTimestamp_gt: ${startTimestamp}}}) {
+        poolChallenges(first: ${QUERY_CHALLENGE_COUNT}, where: {challenge_: {createdTimestamp_gt: ${startTimestamp}}}) {
           totalClaimedEsXaiAmount
           totalStakedEsXaiAmount
           totalStakedKeyAmount
