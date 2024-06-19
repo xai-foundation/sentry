@@ -4,11 +4,13 @@ import { PoolInfo } from "@sentry/sentry-subgraph-client";
 
 type PoolRewardRates = {
   poolAddress: string;
+  totalEsXaiClaimed: number;
   averageDailyEsXaiReward: number;
   averageDailyKeyReward: number;
 }
 
 const AVERAGE_WINDOW_DAYS = 7n;
+const QUERY_CHALLENGE_COUNT = 24 * Number(AVERAGE_WINDOW_DAYS);
 
 /**
  * Get the calculated average daily rewards per staked unit for staking pools
@@ -34,7 +36,7 @@ export async function getRewardRatesFromGraph(
   const query = gql`
     query PoolInfos {
       poolInfos(first: 1000, orderBy: totalStakedEsXaiAmount, orderDirection: desc${queryWhere}) {
-        poolChallenges(where: {challenge_: {createdTimestamp_gt: ${startTimestamp}}}) {
+        poolChallenges(first: ${QUERY_CHALLENGE_COUNT}, where: {challenge_: {createdTimestamp_gt: ${startTimestamp}}}) {
           totalClaimedEsXaiAmount
           totalStakedEsXaiAmount
           totalStakedKeyAmount
@@ -60,10 +62,13 @@ export async function getRewardRatesFromGraph(
 
     let totalEsXaiRewardsWei = 0n;
     let totalKeyRewardsWei = 0n;
+    let totalRewards = 0;
 
     poolInfo.poolChallenges.forEach(challenge => {
       const stakedEsXaiAmountWei = BigInt(challenge.totalStakedEsXaiAmount);
       const stakedKeyAmount = BigInt(challenge.totalStakedKeyAmount);
+      const totalRewardsWei = BigInt(challenge.totalClaimedEsXaiAmount);
+      totalRewards = Number(totalRewardsWei / BigInt(10**18)) 
 
       // ### esXAI ###
       // divide by 1,000,000 to transform bucketShare to percent
@@ -91,7 +96,9 @@ export async function getRewardRatesFromGraph(
     const averageDailyEsXaiReward = Number(averageDailyEsXaiRewardWei) / 10**18;
     const averageDailyKeyReward = Number(averageDailyKeyRewardWei) / 10**18;
 
-    poolRewardRates.push({ poolAddress: poolInfo.address, averageDailyEsXaiReward, averageDailyKeyReward });
+    
+
+    poolRewardRates.push({ poolAddress: poolInfo.address, averageDailyEsXaiReward, averageDailyKeyReward, totalEsXaiClaimed: totalRewards});
 
     // every 10 pools wait 100 ms to unblock thread
     // TODO figure out if we can open multiple threads for this calculation - this function is not used in the operator, only in the CLI
