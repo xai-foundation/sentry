@@ -100,7 +100,7 @@ export async function dataCentralizationRuntime({
 		const startTime = new Date().getTime();
 		const PoolModel = mongoose.models.Pool || mongoose.model<IPool>('Pool', PoolSchema);
 
-		const slackStartMessage = `Starting pool sync update for challenge ${challengeNumber}` ;
+		const slackStartMessage = `Starting pool sync update for challenge ${challengeNumber}`;
 		sendSlackNotification(slackWebHookUrl, slackStartMessage, logFunction);
 
 		const graphUpdateStartTime = new Date().getTime();
@@ -119,7 +119,8 @@ export async function dataCentralizationRuntime({
 				{
 					$set: {
 						esXaiRewardRate: updatedPool.averageDailyEsXaiReward,
-						keyRewardRate: updatedPool.averageDailyKeyReward
+						keyRewardRate: updatedPool.averageDailyKeyReward,
+						totalEsXaiClaimed: updatedPool.totalEsXaiClaimed
 					}
 				},
 			);
