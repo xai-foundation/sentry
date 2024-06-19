@@ -15,7 +15,7 @@ const AVERAGE_WINDOW_DAYS = 7n;
  * 
  * @param poolAddresses - The filter for the pool address (leave empty to get for all pools)
  * @returns {PoolRewardRates[]} List of pool reward rate objects with the pool address and average daily reward rates for esXAI and keys per staked unit 
- * (averageDailyRewardPerEsXai = 0.1 means for 1 staked esXai you will get 0.1 esXai per day).
+ * (averageDailyRewardPerEsXai = 0.1 means for 1 staked esXAI you will get 0.1 esXAI per day).
  */
 export async function getRewardRatesFromGraph(
   poolAddresses: string[]
@@ -29,7 +29,7 @@ export async function getRewardRatesFromGraph(
   }
 
   const unixAverageWindowPlus5Mins = Number(AVERAGE_WINDOW_DAYS) * 24 * 60 * 60 * 1000 + 5 * 60 * 1000;
-  const startTimestamp = Math.floor((Date.now() - unixAverageWindowPlus5Mins)/1000);
+  const startTimestamp = Math.floor((Date.now() - unixAverageWindowPlus5Mins) / 1000);
 
   const query = gql`
     query PoolInfos {
@@ -55,34 +55,41 @@ export async function getRewardRatesFromGraph(
 
     const poolInfo: PoolInfo = result.poolInfos[index];
 
-    const stakedBucketShare = BigInt(poolInfo.stakedBucketShare) / 100n;
-    const keyBucketShare = BigInt(poolInfo.keyBucketShare) / 100n;
+    const stakedBucketShare = BigInt(poolInfo.stakedBucketShare);
+    const keyBucketShare = BigInt(poolInfo.keyBucketShare);
 
-    let totalEsXaiRewards = 0n;
-    let totalKeyRewards = 0n;
+    let totalEsXaiRewardsWei = 0n;
+    let totalKeyRewardsWei = 0n;
 
     poolInfo.poolChallenges.forEach(challenge => {
       const stakedEsXaiAmountWei = BigInt(challenge.totalStakedEsXaiAmount);
       const stakedKeyAmount = BigInt(challenge.totalStakedKeyAmount);
 
-      // esXAI
+      // ### esXAI ###
+      // divide by 1,000,000 to transform bucketShare to percent
       const esXaiBucketClaimWei = (BigInt(challenge.totalClaimedEsXaiAmount) * stakedBucketShare) / 1_000_000n;
-      const rewardPerStakedEsXaiWei = esXaiBucketClaimWei / (stakedEsXaiAmountWei || 1n);
+      // scale by 10**18 first and then divide to not lose information
+      // if no esXAI staked default to 1 wei because the first esXAI staked would accumulate all rewards
+      const rewardPerStakedEsXaiWei = (esXaiBucketClaimWei * BigInt(10**18)) / (stakedEsXaiAmountWei || BigInt(10**18));
 
-      totalEsXaiRewards += rewardPerStakedEsXaiWei;
+      totalEsXaiRewardsWei += rewardPerStakedEsXaiWei;
 
-      // keys
+      // ### keys ###
+      // divide by 1,000,000 to transform bucketShare to percent
       const keyBucketClaimWei = (BigInt(challenge.totalClaimedEsXaiAmount) * keyBucketShare) / 1_000_000n;
+      // if no keys staked default to 1 because the first key staked would accumulate all rewards
       const rewardPerStakedKeyWei = keyBucketClaimWei / (stakedKeyAmount || 1n);
 
-      totalKeyRewards += rewardPerStakedKeyWei;
+      totalKeyRewardsWei += rewardPerStakedKeyWei;
     });
 
-    const averageDailyRewardPerEsXai = totalEsXaiRewards / AVERAGE_WINDOW_DAYS;
-    const averageDailyRewardPerKey = totalKeyRewards / AVERAGE_WINDOW_DAYS
+    // average sum over the desired number of days
+    const averageDailyEsXaiRewardWei = totalEsXaiRewardsWei / AVERAGE_WINDOW_DAYS;
+    const averageDailyKeyRewardWei = totalKeyRewardsWei / AVERAGE_WINDOW_DAYS;
 
-    const averageDailyEsXaiReward = Number(averageDailyRewardPerEsXai);
-    const averageDailyKeyReward = Number(averageDailyRewardPerKey);
+    // convert reward rates to number and convert form wei to esXAI amount for storage in db
+    const averageDailyEsXaiReward = Number(averageDailyEsXaiRewardWei) / 10**18;
+    const averageDailyKeyReward = Number(averageDailyKeyRewardWei) / 10**18;
 
     poolRewardRates.push({ poolAddress: poolInfo.address, averageDailyEsXaiReward, averageDailyKeyReward });
 
