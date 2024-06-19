@@ -105,7 +105,7 @@ export async function dataCentralizationRuntime({
 
 		const graphUpdateStartTime = new Date().getTime();
 
-		const updatedPools = await getRewardRatesFromGraph([]);
+		const updatedPools = await retry(() => getRewardRatesFromGraph([]));
 
 		const graphUpdateEndTime = new Date().getTime();
 
