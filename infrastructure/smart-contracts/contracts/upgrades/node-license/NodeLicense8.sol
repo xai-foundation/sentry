@@ -54,6 +54,18 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     // Mapping for whitelist to claim NFTs without a price
     mapping (address => uint16) public whitelistAmounts;
 
+    // Mapping from promo code to PromoCode struct for esXai
+    mapping (string => PromoCode) private _promoCodesXai;
+
+    // Mapping from promo code to PromoCode struct for esXai
+    mapping (string => PromoCode) private _promoCodesEsXai;
+
+    // Mapping from referral address to referral reward
+    mapping (address => uint256) private _referralRewardsXai;
+
+    // Mapping from referral address to referral reward
+    mapping (address => uint256) private _referralRewardsEsXai;
+
     // Chainlink Eth/USD price feed
     IAggregatorV3Interface internal ethPriceFeed; //TODO: Implement Chainlink price feed
 
@@ -71,7 +83,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[494] private __gap;
+    uint256[490] private __gap;
 
     // Define the pricing tiers
     struct Tier {
@@ -105,7 +117,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      */
 
 
-    function initialize(address _wEthAddress, address _xaiAddress,  address _esXaiAddress, address ethPriceFeedAddress, address xaiPriceFeedAddress) public reinitializer(3) {
+    function initialize(address _wEthAddress, address _xaiAddress,  address _esXaiAddress, address ethPriceFeedAddress, address xaiPriceFeedAddress, PromoCode[] calldata promoCodeData, string[] calldata promoCodesToAdd) public reinitializer(3) {
         require(_wEthAddress != address(0), "Invalid wEth address");
         require(_xaiAddress != address(0), "Invalid xai address");
         require(_esXaiAddress != address(0), "Invalid esXai address");
@@ -116,6 +128,13 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         _wEthAddress = _wEthAddress;
         _xaiAddress = _xaiAddress;
         _esXaiAddress = _esXaiAddress;
+
+        require(promoCodeData.length == promoCodesToAdd.length, "Invalid input");
+        for(uint16 i = 0; i < promoCodeData.length; i++){
+            _promoCodes[promoCodesToAdd[i]] = promoCodeData[i]; // Todo: check to see if this will overwrite existing promo codes/lifetime rewards
+            _promoCodesXai[promoCodesToAdd[i]] = promoCodeData[i];
+            _promoCodesEsXai[promoCodesToAdd[i]] = promoCodeData[i];
+        }
     }
 
     /**
@@ -126,6 +145,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     function createPromoCode(string calldata _promoCode, address _recipient) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_recipient != address(0), "Recipient address cannot be zero");
         _promoCodes[_promoCode] = PromoCode(_recipient, true, 0);
+        _promoCodesXai[_promoCode] = PromoCode(_recipient, true, 0);
+        _promoCodesEsXai[_promoCode] = PromoCode(_recipient, true, 0);
         emit PromoCodeCreated(_promoCode, _recipient);
     }
 
@@ -136,6 +157,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     function removePromoCode(string calldata _promoCode) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_promoCodes[_promoCode].recipient != address(0), "Promo code does not exist");
         _promoCodes[_promoCode].active = false; // 'active' is set to false
+        _promoCodesXai[_promoCode].active = false; // 'active' is set to false
+        _promoCodesEsXai[_promoCode].active = false; // 'active' is set to false
         emit PromoCodeRemoved(_promoCode);
     }
 
@@ -145,7 +168,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @return The promo code details.
      */
     function getPromoCode(string calldata _promoCode) external view returns (PromoCode memory) {
-        return _promoCodes[_promoCode];
+        return _promoCodes[_promoCode]; //TODO Make sure initial values loaded into the new mappings align with existing promo codes
     }
 
     /**
@@ -177,6 +200,11 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
 
         // Calculate the referral reward
         uint256 referralReward = _calculateReferralReward(finalPrice, _promoCode);
+        if(referralReward > 0){
+            PromoCode memory promoCode = _promoCodes[_promoCode];
+            _promoCodes[_promoCode].receivedLifetime += referralReward;
+            _referralRewards[promoCode.recipient] += referralReward;
+        }
 
         // Send the funds to the fundsReceiver
         uint256 remainder = msg.value - finalPrice;
@@ -206,7 +234,17 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         uint256 referralReward = _calculateReferralReward(finalPrice, _promoCode);
         IERC20 token = IERC20(_useEsXai ? esXaiAddress : xaiAddress);
         token.transferFrom(msg.sender, fundsReceiver, finalPrice - referralReward);
-        
+        if(referralReward > 0){
+            PromoCode memory promoCode = _promoCodes[_promoCode];
+            token.transferFrom(msg.sender, address(this), referralReward);
+            if(_useEsXai){
+                _promoCodesEsXai[_promoCode].receivedLifetime += referralReward;
+                _referralRewardsEsXai[promoCode.recipient] += referralReward;
+            } else {
+                _promoCodesXai[_promoCode].receivedLifetime += referralReward;
+                _referralRewardsXai[promoCode.recipient] += referralReward;
+            }
+        }     
     }
 
     /**
@@ -253,11 +291,12 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      */
     function _calculateReferralReward(uint256 _finalPrice, string memory _promoCode) internal returns(uint256) {
         PromoCode memory promoCode = _promoCodes[_promoCode];
+        if(!promoCode.active){
+            return 0;
+        }
         uint256 referralReward = 0;
         if (promoCode.recipient != address(0)) {
             referralReward = _finalPrice * referralRewardPercentage / 100;
-            _referralRewards[promoCode.recipient] += referralReward;
-            _promoCodes[_promoCode].receivedLifetime += referralReward;
             emit ReferralReward(msg.sender, promoCode.recipient, referralReward);
         }
         return referralReward;
