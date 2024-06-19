@@ -137,14 +137,17 @@ export const PoolSchema = new mongoose.Schema<IPool>({
     totalEsXaiClaimed: {
         type: Number,
         required: true,
+        default: 0
     },   
     esXaiRewardRate: {
         type: Number,
         required: true,
+        default: 0
     },
     keyRewardRate: {
         type: Number,
         required: true,
+        default: 0
     },
     createdAt: {
         type: Date,
