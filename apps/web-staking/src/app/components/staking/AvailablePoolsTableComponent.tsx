@@ -30,11 +30,12 @@ const POOL_DATA_COLUMS_MOBILE = [
   "",
   "POOL TIER",
   "",
-  "POOL UPTIME",
-  "OWNER SPLIT",
-  "esXAI SPLIT",
+  // "POOL UPTIME",
+  // "OWNER SPLIT",
+  // "esXAI SPLIT",
   // "POOL UPTIME",
   "REWARDS BREAKDOWN",
+  "",
 ];
 
 interface AvailableTableProps {
@@ -115,7 +116,12 @@ const AvailablePoolsTableComponent = ({
                   ) : (
                     <TableRowStaked value={`${formatDailyRewardRatePercentage(pool.esXaiRewardRate, 2)}%`} poolAddress={pool.address} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
                   )}
-                   <TableRowRewards pool={pool} showTableKeys={showTableKeys} isDisconnected={isDisconnected} onClick={open} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" />
+                  <TableRowRewards pool={pool} showTableKeys={showTableKeys} isDisconnected={isDisconnected} onClick={open} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" />
+                  {showTableKeys ? (
+                    <TableRowStaked value={`${formatDailyRewardRate(pool.keyRewardRate, 2)} esXAI`} poolAddress={pool.address} customClass="sm:table-cell lg:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
+                  ) : (
+                    <TableRowStaked value={`${formatDailyRewardRatePercentage(pool.esXaiRewardRate, 2)}%`} poolAddress={pool.address} customClass="sm:table-cell lg:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
+                  )}
                 </tr>
               );
             })}

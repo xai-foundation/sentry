@@ -97,8 +97,8 @@ export function TableRowPool({ pool, tier, customClass }: { pool: PoolInfo, tier
       </td>
       {/*this TD we show when screen narrower than MD*/}
       <td className={`lg:whitespace-nowrap lg:hidden sm:block flex sm:h-auto lg:h-auto items-center lg:px-7 lg:py-5 sm:px-2 sm:py-2 sm:pr-1 sm:pl-[17px] lg:text-base text-white text-left font-bold sm:text-xs ${customClass}`}>
-        <Link href={`/pool/${pool.address}/summary`} className="w-full h-full flex items-center">
-          <div className="flex items-center">
+        <Link href={`/pool/${pool.address}/summary`} className="w-fit h-full flex items-center">
+          <div className="flex items-center max-w-[120px]">
             <Avatar src={pool.meta.logo} className="lg:w-[48px] lg:h-[48px] sm:min-w-[32px] sm:min-h-[32px] mr-2" />
             <div className="flex sm:flex-col lg:flex-row lg:items-center sm:items-start">
               <span className="sm:text-base lg:text-[18px]">{pool.meta.name}</span>
@@ -221,8 +221,8 @@ export function TableRowRewards({
     <>
       {/*this TD we show when screen narrower than MD*/}
       <td
-        className={`whitespace-nowrap text-white lg:py-4 sm:py-2 sm:pr-[17px] text-right sm:text-base lg:text-base table-cell md:hidden ${customClass}`}>
-        <div className="flex justify-end">
+        className={`whitespace-nowrap text-white lg:py-4 sm:py-2 sm:pl-2 text-right sm:text-base lg:text-base table-cell md:hidden ${customClass}`}>
+        <div className="flex justify-start">
           <span
             className="block text-white font-normal text-base md:font-medium md:text-lg mr-[5px] md:mr-0 ">
             {pool?.ownerShare}%
@@ -231,7 +231,7 @@ export function TableRowRewards({
             owner
           </span>
         </div>
-        <div className="flex justify-end">
+        <div className="flex justify-start">
           <span
             className="block text-white font-normal text-base md:font-medium md:text-lg mr-[5px] md:mr-0 ">
             {pool?.keyBucketShare}%
@@ -240,7 +240,7 @@ export function TableRowRewards({
             keys
           </span>
         </div>
-        <div className="flex justify-end">
+        <div className="flex justify-start">
           <span
             className="block text-white font-normal text-base md:font-medium md:text-lg mr-[5px] md:mr-0 ">
             {pool?.stakedBucketShare}%
@@ -251,7 +251,7 @@ export function TableRowRewards({
         </div>
       </td>
       {/**/}
-      <td className={`whitespace-nowrap text-graphiteGray lg:py-4 sm:py-2 text-right sm:text-sm lg:text-base lg:pr-7 ${customClass}`}>
+      <td className={`sm:hidden lg:table-cell whitespace-nowrap text-graphiteGray lg:py-4 sm:py-2 text-right sm:text-sm lg:text-base lg:pr-7 ${customClass}`}>
         {isDisconnected ? <div className="flex justify-end"><button onClick={onClick} className="font-bold lg:text-[18px] sm:text-sm text-red sm:hidden lg:block">Connect wallet</button></div> : showTableKeys ?
           <Link
             href={"staking/stake/[poolAddress]/keys"} as={`staking/stake/${pool.address}/keys`}
@@ -287,11 +287,11 @@ export function TableHead({
       className={`text-left bg-dynamicBlack font-medium text-elementalGrey border-b border-t border-chromaphobicBlack
         ${index === 0 ? "lg:w-[23%] pl-[17px] lg:pl-7 pr-2 lg:pr-0 text-nowrap lg:text-wrap" : ""}
         ${index === 1 && "lg:table-cell lg:w-[10%] sm:hidden pr-2"} lg:py-4 sm:py-2 bg-crystalWhite font-medium lg:text-[18px] sm:text-sm
-        ${index === 2 ? "sm:w-[15%] lg:w-[25%]" : ""}
-        ${index === 3 && "text-right sm:pr-[17px] lg:pr-2"} 
-        ${index === 4 && "text-right lg:pr-4 sm:text-right sm:w-[25%] sm:pr-2 lg:w-[12%]"} 
-        ${index === 5 && "text-right"}
-        ${index === 6 && "text-right sm:pl-2 lg:pl-7"}
+        ${index === 2 ?  "sm:w-[15%] lg:w-[20%]" : ""}
+        ${index === 3 && "sm:text-left lg:text-right sm:w-[15%] lg:w-[9%] sm:pl-2 lg:pr-4"} 
+        ${index === 4 && "text-right lg:pr-4 sm:text-right sm:pr-[14px] sm:pl-[5px] lg:w-[9%]"} 
+        ${index === 5 && "text-right lg:pr-4"}
+        ${index === 6 && "text-right sm:pl-2 lg:pl-5 lg:pr-4 lg:w-[10%]"}
         ${index === 7 && "text-right sm:pr-2 lg:pr-7"}
         `}
       key={index}
@@ -320,10 +320,10 @@ export function TableHead({
       )}
 
       {index === 2 && !showTableKeys && (
-        <span className="mr-2">{"esXAI STAKING CAPACITY"}</span>
+        <span className="lg:mr-2">{"esXAI STAKING CAPACITY"}</span>
       )}
       {index === 2 && showTableKeys && (
-        <span className="mr-2">{"KEY STAKING CAPACITY"}</span>
+        <span className="lg:mr-2">{"KEY STAKING CAPACITY"}</span>
       )}
 
       {index === 3 && (
@@ -331,7 +331,23 @@ export function TableHead({
       )} 
 
       {index === 4 && (
-         <span className="">{column}</span>
+         <span className="sm:hidden lg:block">{column}</span>
+      )} 
+
+      {index === 4 && (
+        <div className="flex items-center sm:block lg:hidden text-left">
+        <span className="text-left">{showTableKeys ? "KEYS " : "esXAI "}</span>
+          <div className="flex w-full items-center lg:hidden">
+            <div className="mr-1">{"RATE"}</div>
+            <TableTooltip
+          extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-340px] pb-[10px] !text-left !py-[15px] w-[356px]" }}
+          content={showTableKeys ? "Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards." : "Estimated annual rate for staking esXAI based off of stake and reward breakdown and past 7 days of pool rewards."}
+          delay={30000}
+        >
+          <HelpIcon width={14} height={14} />
+        </TableTooltip>
+          </div>
+        </div>
       )} 
 
       {index === 5 && (
@@ -348,7 +364,7 @@ export function TableHead({
           <div className="flex w-full items-center lg:hidden">
             <div className="mr-1">{"TIER"}</div>
             <TableTooltip
-              extraClasses={{ tooltipContainer: "whitespace-normal lg:left-auto lg:!right-[-38px] xl:left-[-38px] left-[-38px] sm:w-[356px]", tooltipText: "mb-2" }}
+              extraClasses={{ tooltipContainer: "whitespace-normal lg:left-auto lg:!right-[-38px] xl:left-[-38px] left-[-38px] sm:w-[356px] !text-left !py-[15px]" }}
               content={`Pool tier is determined by the amount of esXAI staked. The higher the pool tier, the higher the reward probability.`}
               withCTA={true}
               delay={15000}
@@ -372,11 +388,11 @@ export function TableHead({
 
       {/* Tooltip for column Key Rate */}
       {index === 6 ? (
-        <div className="flex items-center">
-          <span className="text-elementalGrey mr-2">{showTableKeys ?  "KEYS RATE" : "esXAI RATE"}</span>
+        <div className="flex items-center justify-end">
+        <span className="text-elementalGrey mr-2">{showTableKeys ?  "KEYS RATE" : "esXAI RATE"}</span>
         <TableTooltip
-          extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-400px] pb-[10px]", tooltipText: "mb-4" }}
-          content={"Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards."}
+          extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-400px] pb-[10px] !text-left !py-[15px]" }}
+          content={showTableKeys ? "Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards." : "Estimated annual rate for staking esXAI based off of stake and reward breakdown and past 7 days of pool rewards."}
           delay={30000}
         >
           <HelpIcon width={14} height={14} />
@@ -408,12 +424,12 @@ export function TableHeadStaking({
       className={`text-left text-elementalGrey lg:py-4 sm:py-2 bg-dynamicBlack border-b border-t border-chromaphobicBlack font-medium lg:text-[18px] sm:text-sm 
       ${index === 0 ? "lg:w-[23%] sm:pl-[17px] lg:pl-7 pr-2 lg:pr-0 text-nowrap lg:text-wrap" : ""} 
       ${index === 1 && "lg:w-[10%] lg:table-cell sm:hidden"}
-      ${index === 2 ? "sm:w-[15%] lg:w-[30%]" : ""} 
-      ${index === 3 && "text-right sm:pr-[17px] lg:pr-4"} 
-      ${index === 4 && "text-right lg:pr-4 sm:text-right sm:w-[25%] sm:pr-2 lg:w-[12%]"} 
-      ${index === 5 && "text-right text-nowrap"}
-      ${index === 6 && "text-right sm:pl-2 lg:pl-3 text-nowrap "}
-      ${index === 7 && "text-right sm:pr-2 lg:px-6"}
+      ${index === 2 ? "sm:w-[15%] lg:w-[20%]" : ""} 
+      ${index === 3 && "text-right sm:pr-[10px] lg:pr-4"} 
+      ${index === 4 && "lg:pr-4 sm:text-left lg:text-right sm:px-2 sm:pr-[17px] sm:pl-1 sm:w-[20%] lg:w-[9%]"} 
+      ${index === 5 && "text-right text-nowrap lg:pr-4 lg:w-[9%]"}
+      ${index === 6 && "text-right sm:pl-2 lg:px-4 text-nowrap lg:w-[9%]"}
+      ${index === 7 && "text-right sm:pr-2 lg:px-6 lg:w-[9%]"}
       `}
       key={index}
     >
@@ -448,16 +464,6 @@ export function TableHeadStaking({
           </TableTooltip>
         </div>
       ) 
-      // : (
-      //   <span className={`sm:block text-elementalGrey lg:inline 
-      // ${index === 5 && "pl-3 sm:hidden lg:block"} 
-      // ${index === 6 && "pl-3 sm:hidden lg:block"} 
-      // ${index === 7 && "pl-3 sm:hidden lg:block"} 
-      // ${index === 8 && "sm:hidden lg:block"} 
-      // ${index === 4 && "lg:pr-3"} 
-      // ${index === 3 && "lg:pr-3"}`}>{column}
-      // </span>
-      // )
       }
 
       {index === 3 && (
@@ -465,16 +471,32 @@ export function TableHeadStaking({
       )} 
 
       {index === 4 && (
-         <span className="text-right">{column}</span>
+         <span className="sm:hidden lg:block">{column}</span>
       )} 
+
+      {index === 4 && (
+        <div className="flex items-center sm:block lg:hidden text-left">
+        <span className="text-left">{column}</span>
+          <div className="flex w-full items-center lg:hidden">
+            <div className="mr-1">{"RATE"}</div>
+            <TableTooltip
+          extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-340px] pb-[10px] !text-left !py-[15px] w-[356px]" }}
+          content={showKeys ? "Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards." : "Estimated annual rate for staking esXAI based off of stake and reward breakdown and past 7 days of pool rewards."}
+          delay={30000}
+        >
+          <HelpIcon width={14} height={14} />
+        </TableTooltip>
+          </div>
+        </div>
+      )}  
 
 
       {/* Tooltip for column esXAI Rate */}
       {index === 5 && (
-        <div className="flex items-center">
-          <span className="text-elementalGrey mr-1">{column}</span>
+        <div className="flex items-center justify-end">
+        <span className="text-elementalGrey mr-1">{column}</span>
         <TableTooltip
-          extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-400px] pb-[10px] text-wrap", tooltipText: "mb-4" }}
+          extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-400px] pb-[10px] text-wrap !text-left !py-[15px]" }}
           content={"Estimated annual rate for staking esXAI based off of stake and reward breakdown and past 7 days of pool rewards."}
           delay={30000}
         >
@@ -487,10 +509,10 @@ export function TableHeadStaking({
       {/* Tooltip for column Key Rate */}
       {index === 6 && (
 
-        <div className="flex items-center">
-          <span className="text-elementalGrey mr-1">{column}</span>
+        <div className="flex items-center justify-end">
+        <span className="text-elementalGrey mr-1">{column}</span>
         <TableTooltip
-          extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-400px] pb-[10px] text-wrap", tooltipText: "mb-4" }}
+          extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-400px] pb-[10px] text-wrap !text-left !py-[15px]" }}
           content={"Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards."}
           delay={30000}
         >
@@ -531,13 +553,13 @@ export function TableHeadStaking({
   );
 }
 
-export function TableRowStaked({ value, keys, customClass, poolAddress, positionStyles }: { value: string, keys?: string, customClass?: string, poolAddress?: string, positionStyles?: string }) {
+export function TableRowStaked({ value, keys, customClass, poolAddress, positionStyles, rateClass }: { value: string, keys?: string, customClass?: string, poolAddress?: string, positionStyles?: string, rateClass?: string }) {
   return (
     <td
       className={`lg:whitespace-nowrap lg:py-4 lg:px-4 lg:text-[18px] sm:pr-[17px] sm:py-2 text-white text-left font-medium sm:text-base ${customClass}`}>
       <Link href={`/pool/${poolAddress}/summary`} className="w-full" >
         <div className={`flex items-end flex-col ${positionStyles}`}>
-          <div className="flex">{value}</div>
+          <div className={`flex ${rateClass}`}>{value}</div>
           {keys && <div className="w-full lg:hidden sm:table-cell text-base text-right">{keys}</div>}
         </div>
       </Link>
