@@ -289,7 +289,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @param _promoCode The promo code used for the minting
      */
     function _calculateReferralReward(uint256 _finalPrice, string memory _promoCode) internal returns(uint256) {
-        PromoCode memory promoCode = _promoCodes[_promoCode]; //TODO Consider chaning this to point to the new mappings
+        PromoCode memory promoCode = _promoCodes[_promoCode]; //TODO Consider changing this to point to the new mappings
         if(!promoCode.active){
             return 0;
         }
