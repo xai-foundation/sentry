@@ -45,6 +45,12 @@ export function Checkout() {
 			console.warn("Error", error);
 		},
 	});
+	
+	useEffect(() => {
+		if (isSuccess) {
+			window.open("https://app.xai.games/staking?mint=true", '_blank');
+		}
+	}, [isSuccess]);
 
 	function returnToClient() {
 		window.location = `xai-sentry://purchase-successful?txHash=${data?.hash}` as unknown as Location;
