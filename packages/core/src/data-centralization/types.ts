@@ -25,8 +25,6 @@ export interface IPool {
     socials: [website: string, twitter: string, discord: string, telegram: string, instagram: string, tiktok: string, youtube: string],
     visibility: 'active' | 'inactive' | 'banned',
     network: string,
-    esXaiRewardRate: number,
-    keyRewardRate: number,
     totalEsXaiClaimed: number,
     updatedAt?: Date
     createdAt: Date,
