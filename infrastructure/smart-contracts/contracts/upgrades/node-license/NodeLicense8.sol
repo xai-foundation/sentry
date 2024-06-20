@@ -414,13 +414,15 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             IERC20 token = IERC20(xaiAddress);
             token.transfer(msg.sender, rewardXai);
             _referralRewardsXai[msg.sender] = 0;
+            emit RewardClaimed(msg.sender, rewardXai); //TODO Talk to management about preferred way to emit events
         }
         if(rewardEsXai > 0){
             IERC20 token = IERC20(esXaiAddress);
             token.transfer(msg.sender, rewardEsXai);
             _referralRewardsEsXai[msg.sender] = 0;
+            emit RewardClaimed(msg.sender, rewardEsXai); //TODO Talk to management about preferred way to emit events
         }
-        emit RewardClaimed(msg.sender, reward);
+            emit RewardClaimed(msg.sender, reward); //TODO Talk to management about preferred way to emit events
     }
 
     /**
