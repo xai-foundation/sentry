@@ -224,14 +224,21 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @param _promoCode The promo code.
      * @param _useEsXai a boolean to determine if the payment is in XAI or esXai
      */
-    function mintWithXai(uint256 _amount, string calldata _promoCode, bool _useEsXai) public {
+    function mintWithXai(uint256 _amount, string calldata _promoCode, bool _useEsXai, uint256 _expectedCost) public {
 
         _validateMint(_amount, _promoCode);
 
-        uint256 finalPrice = price(_amount, _promoCode);
-        uint256 averageCost = ethToXai(finalPrice) / _amount;
+        uint256 finalEthPrice = price(_amount, _promoCode);
+        // Convert the final price to XAI
+        uint256 finalPrice = ethToXai(finalEthPrice);
 
-        _validatePayment(finalPrice, _useEsXai);
+        // Confirm the final price does not exceed the expected cost
+        require(_expectedCost >= finalPrice, "Price Exceeds Expected Cost");
+
+        
+        uint256 averageCost = finalEthPrice / _amount;
+
+        _validatePayment(finalPrice, _useEsXai, _expectedCost);
         _mintNodeLicense(_amount, averageCost);
 
         uint256 referralReward = _calculateReferralReward(finalPrice, _promoCode);
@@ -316,7 +323,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @param _totalCost the total cost of the minting
      * @param _useEsXai a boolean to determine if the payment is in XAI or esXai
      */
-    function _validatePayment(uint256 _totalCost, bool _useEsXai) internal view{
+    function _validatePayment(uint256 _totalCost, bool _useEsXai, uint256 _expectedCost) internal view{
         IERC20 token = IERC20(_useEsXai ? esXaiAddress : xaiAddress);
         require(
             token.balanceOf(msg.sender) >= _totalCost,
