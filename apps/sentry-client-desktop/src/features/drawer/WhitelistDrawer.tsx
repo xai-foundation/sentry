@@ -10,8 +10,8 @@ import {AiOutlineInfoCircle} from "react-icons/ai";
 
 export function WhitelistDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const {owners} = useAtomValue(chainStateAtom);
-	const {data, setData} = useStorage();
+	const {owners, pools} = useAtomValue(chainStateAtom);
+	const {data} = useStorage();
 	const [selected, setSelected] = useState<string[]>([]);
 	const {sentryRunning, stopRuntime} = useOperatorRuntime();
 	const {publicKey: operatorAddress} = useOperator();
@@ -52,10 +52,10 @@ export function WhitelistDrawer() {
 
 	const getDropdownItems = () => (
 		<div>
-			{owners.map((wallet, i) => (
+			{owners.map((wallet) => (
 				<div
 					className="p-2 cursor-pointer hover:bg-gray-100"
-					key={`whitelist-item-${i}`}
+					key={`whitelist-item-${wallet}`}
 				>
 					<XaiCheckbox
 						onClick={() => toggleSelected(wallet)}
@@ -65,18 +65,31 @@ export function WhitelistDrawer() {
 					</XaiCheckbox>
 				</div>
 			))}
+			{pools.map((pool) => (
+				<div
+				className="p-2 cursor-pointer hover:bg-gray-100"
+				key={`whitelist-item-${pool}`}
+			>
+				<XaiCheckbox
+					onClick={() => toggleSelected(pool)}
+					condition={selected.includes(pool)}
+				>
+					{pool}
+				</XaiCheckbox>
+			</div>
+			))}
 		</div>
 	);
 
 	async function handleSubmit() {
-		await setData({
-			...data,
-			whitelistedWallets: selected,
-		});
-
 		setDrawerState(null);
+
 		if (stopRuntime) {
-			void stopRuntime();
+			void stopRuntime({
+				...data,
+				sentryRunning: false,
+				whitelistedWallets: selected,
+			});
 		}
 	}
 
@@ -107,7 +120,7 @@ export function WhitelistDrawer() {
 						</Tooltip>
 					</div>
 					{getOperatorItem()}
-					<p className="text-[12px]">Assigned Wallets</p>
+					<p className="text-[12px]">Assigned Wallets/Pools</p>
 					{getDropdownItems()}
 				</div>
 			</div>

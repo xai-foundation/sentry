@@ -58,6 +58,12 @@ export function Sidebar() {
 						</div>
 						Sentry Wallet
 					</Link>
+					<a
+						onClick={() => window.electron.openExternal('https://app.xai.games')}
+						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
+					>
+						<XaiLogo className="w-[16px]"/> Staking
+					</a>
 
 					{/*<Link*/}
 					{/*	to="/redeem"*/}
@@ -106,7 +112,7 @@ export function Sidebar() {
 				<p>v{import.meta.env.APP_VERSION}</p>
 				<a
 					className="text-[#F30919] cursor-pointer hover:underline"
-					onClick={() => window.electron.openExternal("https://xai.games/sentrynodeagreement")}
+					onClick={() => window.electron.openExternal("https://xai.games/sentry-node-agreement")}
 				>
 					Sentry Node Agreement
 				</a>

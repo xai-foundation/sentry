@@ -7,10 +7,9 @@ import {config, NodeLicenseAbi} from "@sentry/core";
 import {BiLoaderAlt} from "react-icons/bi";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useProvider} from "@/features/checkout/hooks/useProvider";
-import {AiOutlineInfoCircle} from "react-icons/ai";
-import {Tooltip} from "@sentry/ui";
-import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
-import {XaiBanner} from "@/features/checkout/XaiBanner";
+import {PrimaryButton, Tooltip} from "@sentry/ui";
+import { InfoPointRed, RedSentryIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import logo from '../../../public/images/sentry-main.png'
 
 export function Checkout() {
 	const queryString = window.location.search;
@@ -53,47 +52,40 @@ export function Checkout() {
 
 	return (
 		<div>
-			<div className="h-full min-h-[90vh] flex flex-col justify-center items-center">
-				<XaiBanner/>
-
+			<div className="h-full xl:min-h-screen flex-1 flex flex-col justify-center items-center">
 				{isLoading && (
-					<div className="w-[744px] h-[208px] flex flex-col justify-center border border-[#E5E5E5] m-4">
+					<div className="lg:w-[744px] h-[208px] sm:w-[90%] flex flex-col justify-center bg-darkLicorice m-4">
 						<div className="w-full h-[390px] flex flex-col justify-center items-center gap-2">
-							<BiLoaderAlt className="animate-spin" color={"#A3A3A3"} size={32}/>
-							<p>Processing transaction...</p>
+							<BiLoaderAlt className="animate-spin" color={"#F30919"} size={32}/>
+							<p className="text-elementalGrey text-[18px]">Transaction in progress…</p>
 						</div>
 					</div>
 				)}
 
 				{isSuccess && (
 					<div
-						className="flex flex-col justify-center items-center w-[744px] h-[320px] border border-gray-200 bg-white m-4">
+						className="flex flex-col justify-center items-center sm:max-w-[90%] lg:w-[844px] lg:px-[60px] lg:py-[40px] sm:px-[20px] sm:py-[35px] bg-darkLicorice m-4 shadow-main">
 						<div
 							className="flex flex-col justify-center items-center gap-2">
 							<FaCircleCheck color={"#16A34A"} size={64}/>
-							<span className="text-2xl font-semibold mt-2">Purchase successful</span>
-							<p className="text-[15px]">Transaction ID:
-								<a
-									onClick={() => window.open(`${providerData?.blockExplorer}/tx/${data?.hash}`)}
-									className="text-[#F30919] ml-1 cursor-pointer"
+							<span className="text-3xl text-white text-center uppercase font-bold mt-2">Purchase successful</span>
+							<div className="flex lg:flex-row sm:flex-col break-words"> 
+							<span className="text-[18px] sm:text-center text-elementalGrey">Transaction ID:</span>
+							<a
+								onClick={() => window.open(`${providerData?.blockExplorer}/tx/${data?.hash}`)}
+									className="text-white text-center underline ml-1 cursor-pointer text-[18px] sm:max-w-[260px] lg:max-w-full"
 								>
-									{data?.hash}
-								</a>
-							</p>
-
-							<button
-								onClick={returnToClient}
-								className="w-[436px] bg-[#F30919] text-white p-4 font-semibold mt-8"
-							>
-								Return to Xai Client
-							</button>
-							<div className="text-[15px] mt-1">
-								Haven't installed Xai Client yet?
+								{data?.hash}
+							</a>
+							</div>
+							<PrimaryButton onClick={returnToClient} btnText={"Return to Xai Client"} colorStyle="primary" className="w-full text-white text-xl font-bold my-8 uppercase"/>
+							<div className="flex lg:flex-row sm:flex-col items-center text-[18px] text-americanSilver mt-1">
+								<span>Haven't installed Xai Client yet?</span>
 								<a
 									onClick={() => window.open("https://xai.games/sentrynodes/", "_blank", "noopener noreferrer")}
-									className="text-[#F30919] ml-1 cursor-pointer"
+									className="text-[#F30919] ml-1 cursor-pointer font-bold"
 								>
-									Click here to download and run a node.
+									Download it here.
 								</a>
 							</div>
 						</div>
@@ -101,27 +93,33 @@ export function Checkout() {
 				)}
 
 				{!isLoading && !isSuccess && (
-					<div className="w-[744px] h-auto flex flex-col justify-center border border-[#E5E5E5] m-4">
-						<div className="w-full flex justify-center items-center border-b border-[#E5E5E5] px-6 py-4">
-							<span className="text-3xl py-2 px-6 font-semibold">Your purchase is ready</span>
-						</div>
-						<div className="w-full flex justify-between items-center border-b border-[#E5E5E5] px-6 py-4">
-							<div className="flex flex-col gap-2">
-								<div className="flex flex-row items-center gap-1">
-									<XaiLogo className="w-[16px] text-[#F30919]"/>
-									<p className="text-lg font-semibold">
-										Xai Sentry Node Key
+					<div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-darkLicorice shadow-main md:my-0 my-[24px]">
+						<div className="flex flex-col justify-start items-center h-auto sm:px-4 sm:py-4 lg:p-12 xg:pl-[80px] lg:pt-1 ">
+							<div className="w-full flex justify-center">
+								<img className="max-w-[280px]" src={logo} />
+							</div>
+							<div className="w-full flex justify-center lg:max-w-[280px]">
+								<span className="sm:text-4xl lg:text-6xl text-center font-bold text-white">YOUR PURCHASE IS READY</span>
+							</div>
+					</div>
+						<div className="h-auto xl:p-12 sm:px-2 sm:py-10">
+						<div className="flex sm:flex-col lg:flex-row justify-between lg:items-start sm:items-center">
+							<div className="flex flex-col sm:items-center lg:items-start gap-2">
+								<div className="flex flex-row sm:w-full sm:justify-center lg:justify-start items-center gap-1">
+									<RedSentryIcon width={32} height={32} />
+									<p className="sm:text-2xl lg:text-3xl text-white font-bold">
+										XAI SENTRY NODE KEY
 									</p>
-									<Tooltip
+									<span className="h-full flex items-center ml-2"><Tooltip
 										header={"Xai keys are required for nodes to receive $esXAI network rewards."}
 										body={"All purchases must be made in Arbitrum ETH."}
 										width={452}
 									>
-										<AiOutlineInfoCircle size={16} className="text-[#A3A3A3]"/>
-									</Tooltip>
+										<InfoPointRed/>
+									</Tooltip></span>
 								</div>
-								<p className="w-[294px] text-[15px] text-[#525252]">
-									Key for submitting one claim to each Xai network challenge
+								<p className="sm:w-full lg:w-[400px] sm:text-center sm:px-8 lg:px-0 lg:text-left text-[18px] text-elementalGrey font-medium">
+									Each Sentry Node Key enables you to submit up to 1 reward claim for each network challenge.
 								</p>
 							</div>
 
@@ -140,7 +138,8 @@ export function Checkout() {
 							promoCode={promoCode}
 							setPromoCode={setPromoCode}
 							error={error}
-						/>
+							/>
+						</div>
 					</div>
 				)}
 			</div>
