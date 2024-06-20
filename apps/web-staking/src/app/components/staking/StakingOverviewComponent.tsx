@@ -17,7 +17,7 @@ import { loadingNotification, updateNotification } from "../notifications/Notifi
 import { getNetwork, getTotalClaimAmount, mapWeb3Error } from "@/services/web3.service";
 import { Id } from "react-toastify";
 import { useGetTiers } from "@/app/hooks/useGetTiers";
-import MintSuccessfulComponent from "../modal/MintSuccessfulComponent";
+import MessageModalComponent from "../modal/MessageModalComponent";
 
 export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPools }) => {
   const router = useRouter();
@@ -144,7 +144,7 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   return (
     <div className="relative flex sm:flex-col items-start lg:px-6 sm:px-0 sm:w-full">
       <AgreeModalComponent address={address} />
-      <MintSuccessfulComponent isOpen={mintSuccessfulRedirect} setOpen={() => setMintSuccessfulRedirect(false)} />
+      <MessageModalComponent isOpen={mintSuccessfulRedirect} setOpen={() => setMintSuccessfulRedirect(false)} modalText="Stake your key in a pool to start earning rewards!" />
       <div className="flex justify-between w-full flex-col xl:flex-row sm:mb-[70px] lg:mb-6 xl:mb-3">
         <MainTitle title={"Staking"} classNames="sm:indent-4 lg:indent-0" />
 

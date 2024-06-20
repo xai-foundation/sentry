@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useDisclosure } from "@nextui-org/react";
 import { BaseModal } from "@/app/components/ui";
 
-const MintSuccessfulComponent = ({ isOpen, setOpen }: { isOpen: boolean, setOpen: () => void }) => {
+const MessageModalComponent = ({ isOpen, setOpen, modalText }: { isOpen: boolean, setOpen: () => void, modalText: string }) => {
   const { onClose } = useDisclosure();
   const [openModal, setOpenModal] = useState(isOpen);
 
@@ -20,7 +20,7 @@ const MintSuccessfulComponent = ({ isOpen, setOpen }: { isOpen: boolean, setOpen
       modalBody={<>
         <div className="flex items-center">
           <div className="items-baseline mr-[10px]">
-            Stake your key in a pool to start earning rewards!
+            {modalText}
           </div>
         </div>
       </>}
@@ -31,4 +31,4 @@ const MintSuccessfulComponent = ({ isOpen, setOpen }: { isOpen: boolean, setOpen
   );
 };
 
-export default MintSuccessfulComponent;
+export default MessageModalComponent;
