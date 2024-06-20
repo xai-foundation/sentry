@@ -73,7 +73,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     IAggregatorV3Interface internal xaiPriceFeed; //TODO: Implement Chainlink price feed SDK or stay with external interface
 
     // Token Addresses
-    address public ethAddress;
     address public xaiAddress;
     address public esXaiAddress;
 
@@ -118,24 +117,15 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      */
 
 
-    function initialize(address _ethAddress, address _xaiAddress,  address _esXaiAddress, address ethPriceFeedAddress, address xaiPriceFeedAddress, PromoCode[] calldata promoCodeData, string[] calldata promoCodesToAdd) public reinitializer(3) {
-        require(_ethAddress != address(0), "Invalid eth address");
+    function initialize(address _xaiAddress,  address _esXaiAddress, address ethPriceFeedAddress, address xaiPriceFeedAddress) public reinitializer(3) {
         require(_xaiAddress != address(0), "Invalid xai address");
         require(_esXaiAddress != address(0), "Invalid esXai address");
         require(ethPriceFeedAddress != address(0), "Invalid ethPriceFeed address");
         require(xaiPriceFeedAddress != address(0), "Invalid xaiPriceFeed address");
         ethPriceFeed = IAggregatorV3Interface(ethPriceFeedAddress);
         xaiPriceFeed = IAggregatorV3Interface(xaiPriceFeedAddress);
-        ethAddress = _ethAddress;
         xaiAddress = _xaiAddress;
         esXaiAddress = _esXaiAddress;
-
-        require(promoCodeData.length == promoCodesToAdd.length, "Invalid input");
-        for(uint16 i = 0; i < promoCodeData.length; i++){
-            _promoCodes[promoCodesToAdd[i]] = promoCodeData[i]; // Todo: check to see if this will overwrite existing promo codes/lifetime rewards
-            _promoCodesXai[promoCodesToAdd[i]] = promoCodeData[i];
-            _promoCodesEsXai[promoCodesToAdd[i]] = promoCodeData[i];
-        }
     }
 
     /**
