@@ -11,6 +11,7 @@ import MainCheckbox from "@sentry/ui/src/rebrand/checkboxes/MainCheckbox";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 import {WarningIcon} from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import {mapWeb3Error} from "@/utils/errors";
+import { useGetExchangeRate } from "./hooks/useGetExchangeRate";
 
 interface PriceDataInterface {
 	price: bigint;
@@ -41,12 +42,14 @@ export function WebBuyKeysOrderTotal(
 		error
 	}: WebBuyKeysOrderTotalProps) {
 	const {isLoading: isTotalLoading} = useGetTotalSupplyAndCap();
+	const {data, isLoading: isExchangeRateLoading} = useGetExchangeRate();
 	const { chain } = useNetwork()
 
 	const [promo, setPromo] = useState<boolean>(false);
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
 	const [checkboxTwo, setCheckboxTwo] = useState<boolean>(false);
 	const [checkboxThree, setCheckboxThree] = useState<boolean>(false);
+	const [currency, setCurrency] = useState<string>("AETH");
 	const ready = checkboxOne && checkboxTwo && checkboxThree;
 
 	const handleSubmit = async () => {
@@ -65,6 +68,33 @@ export function WebBuyKeysOrderTotal(
 			setPromoCode("");
 		}
 	};
+
+	function calculateTotalPrice(): bigint {
+		let price =  0n;
+		if(currency === "AETH") {
+			price = _calculateAethTotal();
+		}else {
+			price = _calculateXaiTotal();
+		}
+		return price;
+	}
+
+	function _calculateAethTotal(): bigint {
+		const price = getPriceData?.price ?? 0n;
+		if (discount.applied) {
+			return price * BigInt(95) / BigInt(100);
+		}
+		return price;
+	}
+	
+
+	function _calculateXaiTotal(): bigint {
+		const totalEthPrice = _calculateAethTotal();
+		const exchangeRate = data?.exchangeRate ?? 0n;
+		return totalEthPrice * exchangeRate;
+	}
+	
+
 
 	function getKeys() {
 		if (!getPriceData || !getPriceData.nodesAtEachPrice) {
@@ -102,7 +132,7 @@ export function WebBuyKeysOrderTotal(
 
 	return (
 		<div>
-			{isPriceLoading || isTotalLoading || !getPriceData
+			{isPriceLoading || isTotalLoading  || isExchangeRateLoading || !getPriceData
 				? (
 					<div className="w-full h-[365px] flex flex-col justify-center items-center gap-2">
 						<BiLoaderAlt className="animate-spin" color={"#FF0030"} size={32}/>
@@ -113,7 +143,7 @@ export function WebBuyKeysOrderTotal(
 						<div className="w-full flex flex-col gap-4">
 							<div className="mt-4">
 								{getKeys()}
-
+								
 								{discount.applied && (
 									<>
 										<div className="flex flex-row items-center justify-between text-lg">
@@ -239,16 +269,33 @@ export function WebBuyKeysOrderTotal(
 								<hr className="my-2 border-[#525252]"/>
 								<div className="flex sm:flex-col lg:flex-row items-center justify-between py-2">
 									<div className="flex flex-row items-center gap-2 sm:text-xl lg:text-2xl">
+										<span className="text-white font-bold text-2xl">Choose Currency 1 AETH = {data?.exchangeRate.toString()}  XAI</span>
+									</div>
+									<div className="flex flex-row items-center gap-1 bg-black">
+										<span className="text-white font-bold text-3xl bg-black">	
+										<form onSubmit={(e) => e.preventDefault()}>										
+										<select id="currency" name="currency"
+										onChange={(e) => setCurrency(e.target.value)}
+										>
+											<option value="AETH">AETH</option>
+											<option value="XAI">XAI</option>
+											<option value="ESXAI">ESXAI</option>
+										</select>
+										</form>
+										</span>
+										<span className="text-white font-bold text-3xl">{currency}</span>≈
+									</div>
+								</div>
+								<hr className="my-2 border-[#525252]"/>
+								<div className="flex sm:flex-col lg:flex-row items-center justify-between py-2">
+									<div className="flex flex-row items-center gap-2 sm:text-xl lg:text-2xl">
 										<span className="text-white font-bold text-2xl">You pay</span>
 									</div>
 									<div className="flex flex-row items-center gap-1">
 										<span className="text-white font-bold text-3xl">
-											{discount.applied
-												? ethers.formatEther(getPriceData.price * BigInt(95) / BigInt(100))
-												: ethers.formatEther(getPriceData.price)
-											}
+											{ethers.formatEther(calculateTotalPrice())} 
 										</span>
-										<span className="text-white font-bold text-3xl">AETH</span>
+										<span className="text-white font-bold text-3xl">{currency}</span>
 									</div>
 								</div>
 							</div>
