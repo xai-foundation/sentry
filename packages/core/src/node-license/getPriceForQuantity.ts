@@ -3,7 +3,7 @@ import {NodeLicenseAbi} from '../abis/index.js';
 import {config} from '../config.js';
 import {getProvider} from '../utils/getProvider.js';
 import {Tier} from './index.js';
-import tierData from './tiers.json';
+import tierData from './tiers.json' assert { type: "json" };
 
 /**
  * Pricing tier structure.
