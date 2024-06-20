@@ -100,6 +100,12 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
     }
   };
 
+  useEffect(() => {
+    if (isSuccess) {
+        window.open("https://app.xai.games/staking?mint=success", '_blank');
+    }
+}, [isSuccess]);
+
   const buildURI = (search: string, page: number, showTable: boolean, hideKeys: boolean, hideEsXai: boolean) => {
     return `/staking?chainId=${chainId}&search=${search}&page=${page}&showKeys=${showTable}&hideFull=${hideEsXai}&hideFullKeys=${hideKeys}`
   }
