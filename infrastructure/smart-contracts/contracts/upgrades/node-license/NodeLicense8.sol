@@ -67,13 +67,13 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     mapping (address => uint256) private _referralRewardsEsXai;
 
     // Chainlink Eth/USD price feed
-    IAggregatorV3Interface internal ethPriceFeed; //TODO: Implement Chainlink price feed
+    IAggregatorV3Interface internal ethPriceFeed; //TODO: Implement Chainlink price feed SDK or stay with external interface
 
     //Chainlink XAI/USD price feed
-    IAggregatorV3Interface internal xaiPriceFeed; //TODO: Implement Chainlink price feed
+    IAggregatorV3Interface internal xaiPriceFeed; //TODO: Implement Chainlink price feed SDK or stay with external interface
 
     // Token Addresses
-    address public wEthAddress;
+    address public ethAddress;
     address public xaiAddress;
     address public esXaiAddress;
 
@@ -118,17 +118,17 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      */
 
 
-    function initialize(address _wEthAddress, address _xaiAddress,  address _esXaiAddress, address ethPriceFeedAddress, address xaiPriceFeedAddress, PromoCode[] calldata promoCodeData, string[] calldata promoCodesToAdd) public reinitializer(3) {
-        require(_wEthAddress != address(0), "Invalid wEth address");
+    function initialize(address _ethAddress, address _xaiAddress,  address _esXaiAddress, address ethPriceFeedAddress, address xaiPriceFeedAddress, PromoCode[] calldata promoCodeData, string[] calldata promoCodesToAdd) public reinitializer(3) {
+        require(_ethAddress != address(0), "Invalid eth address");
         require(_xaiAddress != address(0), "Invalid xai address");
         require(_esXaiAddress != address(0), "Invalid esXai address");
         require(ethPriceFeedAddress != address(0), "Invalid ethPriceFeed address");
         require(xaiPriceFeedAddress != address(0), "Invalid xaiPriceFeed address");
         ethPriceFeed = IAggregatorV3Interface(ethPriceFeedAddress);
         xaiPriceFeed = IAggregatorV3Interface(xaiPriceFeedAddress);
-        _wEthAddress = _wEthAddress;
-        _xaiAddress = _xaiAddress;
-        _esXaiAddress = _esXaiAddress;
+        ethAddress = _ethAddress;
+        xaiAddress = _xaiAddress;
+        esXaiAddress = _esXaiAddress;
 
         require(promoCodeData.length == promoCodesToAdd.length, "Invalid input");
         for(uint16 i = 0; i < promoCodeData.length; i++){
@@ -171,7 +171,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @return The promo code details.
      */
     function getPromoCode(string calldata _promoCode) external view returns (PromoCode memory) {
-        return _promoCodes[_promoCode]; //TODO Make sure initial values loaded into the new mappings align with existing promo codes or change to point to one of the new mappings
+        return _promoCodes[_promoCode]; //TODO Make sure initial values in the new mappings align with existing promo codes or change to point to one of the new mappings
     }
 
     /**
