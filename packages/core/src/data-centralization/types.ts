@@ -25,8 +25,13 @@ export interface IPool {
     socials: [website: string, twitter: string, discord: string, telegram: string, instagram: string, tiktok: string, youtube: string],
     visibility: 'active' | 'inactive' | 'banned',
     network: string,
+    esXaiRewardRate: number,
+    keyRewardRate: number,
+    totalEsXaiClaimed: number,
     updatedAt?: Date
-    createdAt: Date
+    createdAt: Date,
+    keyRewardRate: number,
+    esXaiRewardRate: number
 };
 
 export const PoolSchema = new mongoose.Schema<IPool>({
@@ -130,6 +135,21 @@ export const PoolSchema = new mongoose.Schema<IPool>({
     network: {
         type: String,
         required: true
+    },
+    totalEsXaiClaimed: {
+        type: Number,
+        required: true,
+        default: 0
+    },   
+    esXaiRewardRate: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    keyRewardRate: {
+        type: Number,
+        required: true,
+        default: 0
     },
     createdAt: {
         type: Date,

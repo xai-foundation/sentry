@@ -14,9 +14,11 @@ import { formatCurrencyNoDecimals, formatCurrencyWithDecimals, hideDecimals, sho
 import { WarningIcon } from "@/app/components/icons/IconsComponent";
 import { BaseCallout } from "@/app/components/ui";
 import React from "react";
+import { formatDailyRewardRate, formatDailyRewardRatePercentage } from "@/app/utils/formatDailyRewardRate";
 
 interface StakingCardsProps {
   poolInfo: PoolInfo;
+  poolFromDb?: PoolInfo;
   unstakeRequests: OrderedUnstakeRequests;
   onClaimRequest: (unstakeRequest: UnstakeRequest) => object;
   isBannedPool: boolean
@@ -24,6 +26,7 @@ interface StakingCardsProps {
 
 const StakingCards = ({
   poolInfo,
+  poolFromDb,
   unstakeRequests,
   onClaimRequest,
   isBannedPool
@@ -83,6 +86,12 @@ const StakingCards = ({
               title={"Pool capacity"}
               content={`${formatCurrencyNoDecimals.format(poolInfo.maxStakedAmount)} esXAI`}
             />
+            <PoolStakingInfoChild
+              title={"esXAI rate"}
+              content={`${formatDailyRewardRatePercentage(poolFromDb?.esXaiRewardRate, 2)} %`}
+              toolTipText={"Estimated annual rate for staking esXAI based off of current stake and reward breakdown and past 7 days of pool rewards."}
+              toolTipClasses={{ tooltipContainer: "whitespace-normal lg:left-auto lg:!right-[-444px] xl:left-[-444px] left-[-444px]  md:w-[500px] sm:w-[356px]", tooltipText: "mb-0" }}
+             />
           </div>
         </div>
       </PoolStakingInfo>
@@ -122,6 +131,12 @@ const StakingCards = ({
             <PoolStakingInfoChild
               title={"Pool capacity"}
               content={`${poolInfo.maxKeyCount} keys`}
+            />
+            <PoolStakingInfoChild
+              title={"Key rate"}
+              content={`${formatDailyRewardRate(poolFromDb?.keyRewardRate, 2)} esXAI`}
+              toolTipText={"Estimated annual rate for staking a key based off of current stake and reward breakdown and past 7 days of pool rewards."}
+              toolTipClasses={{ tooltipContainer: "whitespace-normal lg:left-auto lg:!right-[-433px] xl:left-[-433px] left-[-433px]  md:w-[500px] sm:w-[356px]", tooltipText: "mb-0" }}
             />
           </div>
         </div>

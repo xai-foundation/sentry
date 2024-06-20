@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useGetPoolInfoHooks } from "@/app/hooks/hooks";
+import { useGetPoolInfoHooks } from "@/app/hooks";
 import { useRouter } from "next/navigation";
 import PoolDetailsComponent from "../createPool/PoolDetailsComponent";
 import { ButtonBack } from "../buttons/ButtonsComponent";
