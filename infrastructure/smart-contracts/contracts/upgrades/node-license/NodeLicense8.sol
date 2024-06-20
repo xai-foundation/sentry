@@ -54,6 +54,17 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     // Mapping for whitelist to claim NFTs without a price
     mapping (address => uint16) public whitelistAmounts;
 
+    /**
+     *  @dev New promo code mappings are ONLY used for 
+     *  reward tacking of XAI and esXAI rewards
+     *  The original promo code mapping is used for promo
+     *  code creation, removal, activation and recipient tracking
+     * 
+     *  @notice The new mappings should not be checked for 
+     *  promo code existence, activation, they simply track 
+     *  the referral rewards paid for XAI and esXAI 
+     */
+
     // Mapping from promo code to PromoCode struct for esXai
     mapping (string => PromoCode) private _promoCodesXai;
 
@@ -99,7 +110,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
 
     event PromoCodeCreated(string promoCode, address recipient);
     event PromoCodeRemoved(string promoCode);
-    event RewardClaimed(address indexed claimer, uint256 amount);
+    event RewardClaimed(address indexed claimer, uint256 ethAmount, uint256 xaiAmount, uint256 esXaiAmount);
     event PricingTierSetOrAdded(uint256 index, uint256 price, uint256 quantity);
     event ReferralRewardPercentagesChanged(uint256 referralDiscountPercentage, uint256 referralRewardPercentage);
     event RefundOccurred(address indexed refundee, uint256 amount);
@@ -138,8 +149,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         require(_promoCodes[_promoCode].recipient == address(0), "Promo code already exists");
         require(bytes(_promoCode).length > 0, "Promo code cannot be empty");
         _promoCodes[_promoCode] = PromoCode(_recipient, true, 0);
-        _promoCodesXai[_promoCode] = PromoCode(_recipient, true, 0);
-        _promoCodesEsXai[_promoCode] = PromoCode(_recipient, true, 0);
         emit PromoCodeCreated(_promoCode, _recipient);
     }
 
@@ -150,8 +159,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     function removePromoCode(string calldata _promoCode) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(_promoCodes[_promoCode].recipient != address(0), "Promo code does not exist");
         _promoCodes[_promoCode].active = false; // 'active' is set to false
-        _promoCodesXai[_promoCode].active = false; // 'active' is set to false
-        _promoCodesEsXai[_promoCode].active = false; // 'active' is set to false
         emit PromoCodeRemoved(_promoCode);
     }
 
@@ -161,7 +168,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @return The promo code details.
      */
     function getPromoCode(string calldata _promoCode) external view returns (PromoCode memory) {
-        return _promoCodes[_promoCode]; //TODO Make sure initial values in the new mappings align with existing promo codes or change to point to one of the new mappings
+        return _promoCodes[_promoCode];
     }
 
     /**
@@ -233,6 +240,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         token.transferFrom(msg.sender, fundsReceiver, finalPrice - referralReward);
 
         if(referralReward > 0){
+            // Use promo original code mapping for codes & new mappings for reward tracking
             PromoCode memory promoCode = _promoCodes[_promoCode];
             // Trasnfer the referral reward to the this contract
             token.transferFrom(msg.sender, address(this), referralReward);
@@ -289,7 +297,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @param _promoCode The promo code used for the minting
      */
     function _calculateReferralReward(uint256 _finalPrice, string memory _promoCode) internal returns(uint256) {
-        PromoCode memory promoCode = _promoCodes[_promoCode]; //TODO Consider changing this to point to the new mappings
+        PromoCode memory promoCode = _promoCodes[_promoCode]; 
         if(!promoCode.active){
             return 0;
         }
@@ -414,15 +422,13 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             IERC20 token = IERC20(xaiAddress);
             token.transfer(msg.sender, rewardXai);
             _referralRewardsXai[msg.sender] = 0;
-            emit RewardClaimed(msg.sender, rewardXai); //TODO Talk to management about preferred way to emit events
         }
         if(rewardEsXai > 0){
             IERC20 token = IERC20(esXaiAddress);
             token.transfer(msg.sender, rewardEsXai);
             _referralRewardsEsXai[msg.sender] = 0;
-            emit RewardClaimed(msg.sender, rewardEsXai); //TODO Talk to management about preferred way to emit events
         }
-            emit RewardClaimed(msg.sender, reward); //TODO Talk to management about preferred way to emit events
+        emit RewardClaimed(msg.sender, reward, rewardXai, rewardEsXai); 
     }
 
     /**
