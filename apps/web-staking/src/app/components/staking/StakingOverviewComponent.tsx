@@ -11,7 +11,7 @@ import { PagedPools } from "@/server/services/Pool.service";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import AgreeModalComponent from "../modal/AgreeModalComponents";
-import { useGetMaxKeyPerPool, useGetTotalStakedHooks, useGetUserInteractedPools } from "@/app/hooks/hooks";
+import { useGetMaxKeyPerPool, useGetTotalStakedHooks, useGetUserInteractedPools } from "@/app/hooks";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import { loadingNotification, updateNotification } from "../notifications/NotificationsComponent";
 import { getNetwork, getTotalClaimAmount, mapWeb3Error } from "@/services/web3.service";
@@ -94,7 +94,7 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
         switchChain
       ) as `0x${string}`);
 
-    } catch (ex: any) {
+    } catch (ex: unknown) {
       const error = mapWeb3Error(ex);
       updateNotification(error, toastId.current as Id, true);
     }
