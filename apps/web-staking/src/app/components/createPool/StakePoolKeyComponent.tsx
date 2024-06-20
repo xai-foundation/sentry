@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ButtonBack } from "../buttons/ButtonsComponent";
-import { useGetMaxStakePerLicense, useGetUnstakedNodeLicenseCount } from "@/app/hooks/hooks";
+import { useGetMaxStakePerLicense, useGetUnstakedNodeLicenseCount } from "@/app/hooks";
 import MainTitle from "../titles/MainTitle";
 import KeyInfoComponent from "./KeyInfoComponent";
 import KeyReviewComponent from "./KeyReviewComponent";

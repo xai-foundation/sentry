@@ -12,6 +12,7 @@ import { iconType } from "@/app/components/dashboard/constants/constants";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { useAccount } from "wagmi";
 import { BasePagination } from "@/app/components/ui";
+import { formatDailyRewardRate, formatDailyRewardRatePercentage } from "@/app/utils/formatDailyRewardRate";
 
 const POOL_DATA_COLUMS = [
   "POOL NAME",
@@ -21,6 +22,7 @@ const POOL_DATA_COLUMS = [
   "OWNER SPLIT",
   "KEY SPLIT",
   "esXAI SPLIT",
+  "esXAI RATE",
   "ACTIONS",
 ];
 
@@ -28,11 +30,12 @@ const POOL_DATA_COLUMS_MOBILE = [
   "",
   "POOL TIER",
   "",
-  "POOL UPTIME",
-  "OWNER SPLIT",
-  "esXAI SPLIT",
+  // "POOL UPTIME",
+  // "OWNER SPLIT",
+  // "esXAI SPLIT",
   // "POOL UPTIME",
   "REWARDS BREAKDOWN",
+  "",
 ];
 
 interface AvailableTableProps {
@@ -103,12 +106,22 @@ const AvailablePoolsTableComponent = ({
                     tier={getCurrentTierByStaking(Math.min(pool.totalStakedAmount, pool.maxStakedAmount), tiers) as TierInfo & {
                       icon: iconType
                     }} poolAddress={pool.address} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" />
-                  <TableRowCapacity pool={pool} showTableKeys={showTableKeys} maxKeyPerPool={maxKeyPerPool} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" progressClass="lg:max-w-[65%]" />
+                  <TableRowCapacity pool={pool} showTableKeys={showTableKeys} maxKeyPerPool={maxKeyPerPool} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in sm:min-w-[90px]" progressClass="lg:max-w-[65%]" />
                   {/* <TableRowStaked value={"__%"} positionStyles="sm:items-end"/> POOL UPTIME */}
-                  <TableRowStaked value={`${pool.ownerShare}%`} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in"/>
-                  <TableRowStaked value={`${pool.keyBucketShare}%`} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="lg:pr-1"/>
-                  <TableRowStaked value={`${pool.stakedBucketShare}%`} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in"/>
+                  <TableRowStaked value={`${pool.ownerShare}%`}  poolAddress={pool.address} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
+                  <TableRowStaked value={`${pool.keyBucketShare}%`} poolAddress={pool.address} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in"  positionStyles="!items-end"/>
+                  <TableRowStaked value={`${pool.stakedBucketShare}%`} poolAddress={pool.address} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
+                  {showTableKeys ? (
+                    <TableRowStaked value={`${formatDailyRewardRate(pool.keyRewardRate, 2)} esXAI`} poolAddress={pool.address} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
+                  ) : (
+                    <TableRowStaked value={`${formatDailyRewardRatePercentage(pool.esXaiRewardRate, 2)}%`} poolAddress={pool.address} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
+                  )}
                   <TableRowRewards pool={pool} showTableKeys={showTableKeys} isDisconnected={isDisconnected} onClick={open} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" />
+                  {showTableKeys ? (
+                    <TableRowStaked value={`${formatDailyRewardRate(pool.keyRewardRate, 2)} esXAI`} poolAddress={pool.address} customClass="sm:table-cell lg:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end" rateClass="!text-right"/>
+                  ) : (
+                    <TableRowStaked value={`${formatDailyRewardRatePercentage(pool.esXaiRewardRate, 2)}%`} poolAddress={pool.address} customClass="sm:table-cell lg:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
+                  )}
                 </tr>
               );
             })}

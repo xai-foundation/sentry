@@ -79,51 +79,14 @@ export type PoolInfo = {
 	ownerRequestedUnstakeKeyAmount: number;					// Amount of unstake requested keys by the owner
 	ownerLatestUnstakeRequestCompletionTime?: number;		// timestamp when the genesis key is claimable
 	visibility?: string;
+	keyRewardRate: number;									// The average reward rate for the last 7 days per 1 key staked 
+	esXaiRewardRate: number;								// The average reward rate for the last 7 days per 1 esXAI staked
 }
 
-export type CreatePool = {
+export type PoolRewardRates = {
 	poolAddress: string;
-	poolIndex: number;
-	owner: string;
-	name: string;
-	description: string;
-	logo?: string;
-	keyBucketTracker: string;
-	esXaiBucketTracker: string;
-	keyCount: number;
-	totalStakedAmount: number;
-	maxStakedAmount: number;
-	tierIndex?: number;
-	ownerShare: number;
-	keyBucketShare: number;
-	stakedBucketShare: number;
-	updateSharesTimestamp: number;
-	pendingShares: number[];
-	socials: string[];
-	network: string;
-	ownerStakedKeys: number;
-	ownerRequestedUnstakeKeyAmount: number;
-	ownerLatestUnstakeRequestCompletionTime: number;
-}
-
-export type UpdateablePoolProps = {
-	name?: string;
-	description?: string;
-	logo?: string;
-	keyCount?: number;
-	totalStakedAmount?: number;
-	maxStakedAmount?: number;
-	tierIndex?: number;
-	ownerShare?: number;
-	keyBucketShare?: number;
-	stakedBucketShare?: number;
-	updateSharesTimestamp?: number;
-	pendingShares?: number[];
-	socials?: string[];
-	visibility?: string;
-	ownerStakedKeys?: number;
-	ownerRequestedUnstakeKeyAmount?: number;
-	ownerLatestUnstakeRequestCompletionTime?: number;
+	keyRewardRate: number;								
+	esXaiRewardRate: number;
 }
 
 /* export type Socials = {
