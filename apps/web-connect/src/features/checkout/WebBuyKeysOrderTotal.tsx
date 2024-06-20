@@ -9,7 +9,7 @@ import {KYCTooltip} from "@/features/checkout/KYCTooltip";
 import {useNetwork} from 'wagmi';
 import MainCheckbox from "@sentry/ui/src/rebrand/checkboxes/MainCheckbox";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
-import {WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
+import {WarningIcon} from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import {mapWeb3Error} from "@/utils/errors";
 
 interface PriceDataInterface {
