@@ -233,7 +233,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						View Wallet
 					</p>
 					<div className="relative flex flex-row gap-3">
-						<div className="max-h-[48px]">
+						<div className="max-h-[48px] pt-[1px]">
 						<Dropdown
 						isOpen={isOpen}
 						setIsOpen={setIsOpen}
@@ -250,7 +250,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						<PrimaryButton
 							isDisabled={selectedWallet === null}
 							onClick={copySelectedWallet}
-							className={`flex justify-center !h-[48px] items-center !w-[155px] text-lg uppercase font-bold !py-1 !px-[10px] disabled:!h-[50px]`}
+							className={`flex justify-center !h-[49px] items-center !w-[155px] text-lg uppercase font-bold !py-1 !px-[10px] disabled:!h-[50px]`}
 							btnText="Copy address"
 							colorStyle="outline"
 							icon={copiedSelectedWallet ? (<AiOutlineCheck className="h-[18px]"/>) : (<PiCopy className="h-[18px]"/>)}
@@ -259,7 +259,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
                         <div>
 						<PrimaryButton
 							onClick={() => setDrawerState(DrawerView.ViewKeys)}
-							className={`flex flex-row-reverse group !w-[147px] !h-[50px] justify-center items-center gap-2 text-lg font-bold uppercase !py-1 !px-[14px]`}
+							className={`flex flex-row-reverse group !w-[147px] !h-[51px] justify-center items-center gap-2 text-lg font-bold uppercase !py-1 !px-[14px]`}
 							btnText="Add wallet"
 							icon={<AiOutlinePlus className="h-[15px] w-[15px] group-hover:fill-hornetSting duration-200 easy in" color={"#ffffff"}/>}
 						/>
@@ -268,7 +268,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						<PrimaryButton
 							isDisabled={selectedWallet === null}
 							onClick={() => setIsRemoveWalletOpen(true)}
-							className={`flex flex-row-reverse justify-center items-center gap-2 !h-[48px] !w-[173px] text-lg uppercase font-bold !py-1 !px-[14px] disabled:!h-[50px]`}
+							className={`flex flex-row-reverse justify-center items-center gap-2 !h-[49px] !w-[173px] text-lg uppercase font-bold !py-1 !px-[14px] disabled:!h-[50px]`}
 							btnText="Remove wallet"
 							colorStyle="outline"
 							icon={<AiOutlineMinus className="h-[15px] w-[15px]"/>}
