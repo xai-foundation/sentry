@@ -29,9 +29,7 @@ export interface IPool {
     keyRewardRate: number,
     totalEsXaiClaimed: number,
     updatedAt?: Date
-    createdAt: Date,
-    keyRewardRate: number,
-    esXaiRewardRate: number
+    createdAt: Date
 };
 
 export const PoolSchema = new mongoose.Schema<IPool>({
