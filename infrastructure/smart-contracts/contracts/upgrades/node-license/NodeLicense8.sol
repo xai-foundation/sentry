@@ -56,12 +56,12 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
 
     /**
      *  @dev New promo code mappings are ONLY used for 
-     *  reward tacking of XAI and esXAI rewards
+     *  reward tracking of XAI and esXAI rewards
      *  The original promo code mapping is used for promo
      *  code creation, removal, activation and recipient tracking
      * 
      *  @notice The new mappings should not be checked for 
-     *  promo code existence, activation, they simply track 
+     *  promo code existence or activation, they simply track 
      *  the referral rewards paid for XAI and esXAI 
      */
 
