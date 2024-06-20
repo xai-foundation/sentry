@@ -9,16 +9,7 @@ import "@openzeppelin/contracts-upgradeable/utils/Base64Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 interface IAggregatorV3Interface {
-    function latestRoundData()
-        external
-        view
-        returns (
-            uint80 roundId,
-            int256 answer,
-            uint256 startedAt,
-            uint256 updatedAt,
-            uint80 answeredInRound
-        );
+    function latestAnswer() external view returns (int256);
 }
 
 contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
@@ -235,7 +226,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         // Confirm the final price does not exceed the expected cost
         require(_expectedCost >= finalPrice, "Price Exceeds Expected Cost");
 
-        
+
         uint256 averageCost = finalEthPrice / _amount;
 
         _validatePayment(finalPrice, _useEsXai, _expectedCost);
@@ -666,8 +657,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @return The equivalent amount in XAI with 18 decimals
      */
     function ethToXai(uint256 _amount) public view returns (uint256) {
-        (, int256 ethPrice, , , ) = ethPriceFeed.latestRoundData();
-        (, int256 xaiPrice, , , ) = xaiPriceFeed.latestRoundData();
+        int256 ethPrice = ethPriceFeed.latestAnswer();
+        int256 xaiPrice = xaiPriceFeed.latestAnswer();
         
         // Convert ethPrice and xaiPrice to uint256 with 18 decimals
         uint256 ethPriceWith18Decimals = uint256(ethPrice) * 10**10;
