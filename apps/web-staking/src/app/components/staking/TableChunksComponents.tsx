@@ -335,9 +335,9 @@ export function TableHead({
       )} 
 
       {index === 4 && (
-        <div className="flex items-center sm:block lg:hidden text-left">
+        <div className="flex items-center sm:block lg:hidden text-left indent-3">
         <span className="text-left">{showTableKeys ? "KEY " : "esXAI "}</span>
-          <div className="flex w-full items-center lg:hidden">
+          <div className="flex w-full items-center lg:hidden justify-end">
             <div className="mr-1">{"RATE"}</div>
             <TableTooltip
           extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] !left-[-340px] pb-[10px] !text-left !py-[15px] !w-[356px]" }}
@@ -389,7 +389,7 @@ export function TableHead({
       {/* Tooltip for column Key Rate */}
       {index === 6 ? (
         <div className="flex items-center justify-end">
-        <span className="text-elementalGrey mr-2">{showTableKeys ?  "KEYS RATE" : "esXAI RATE"}</span>
+        <span className="text-elementalGrey mr-2">{showTableKeys ?  "KEY RATE" : "esXAI RATE"}</span>
         <TableTooltip
           extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-400px] pb-[10px] !text-left !py-[15px]" }}
           content={showTableKeys ? "Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards." : "Estimated annual rate for staking esXAI based off of stake and reward breakdown and past 7 days of pool rewards."}
