@@ -64,7 +64,8 @@ export function WalletsCard() {
 				</p>}
                 {sentryRunning && kycRequired && (
 					<TextButton
-						className="text-lg font-bold !px-0 !py-0 max-h-[28px]"
+						className="text-lg font-bold !px-0 !py-0 max-h-[28px] w-full"
+						textClassName="text-left"
 						onClick={() => setDrawerState(DrawerView.ActionsRequiredNotAccruing)}
 						buttonText="Complete KYC"
 					/>
