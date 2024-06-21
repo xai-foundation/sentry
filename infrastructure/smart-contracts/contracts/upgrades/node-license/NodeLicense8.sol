@@ -53,7 +53,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * 
      *  @notice The new mappings should not be checked for 
      *  promo code existence or activation, they simply track 
-     *  the referral rewards paid for XAI and esXAI 
+     *  the referral rewards due in XAI and esXAI 
      */
 
     // Mapping from promo code to PromoCode struct for esXai
