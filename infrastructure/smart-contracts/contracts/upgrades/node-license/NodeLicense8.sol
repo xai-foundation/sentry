@@ -310,7 +310,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         return referralReward;
     }
 
-
     /**
      * @notice internal function to validate payment for minting
      * a node license token using XAI or esXai as payment
@@ -328,8 +327,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             "Insufficient allowance"
         );
     }
-
-
     
     /**
      * @notice Public function to redeem tokens from on whitelist.
@@ -430,34 +427,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             _referralRewardsEsXai[msg.sender] = 0;
         }
         emit RewardClaimed(msg.sender, reward, rewardXai, rewardEsXai); 
-    }
-
-    /**
-     * @notice Allows the admin to withdraw all funds from the contract.
-     * @dev Only callable by the admin.
-     */
-    function withdrawFunds() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        uint256 amount = address(this).balance;
-        fundsReceiver.transfer(amount);
-        emit FundsWithdrawn(msg.sender, amount);
-    }
-
-    /**
-     * 
-     * @notice Allows the admin to withdraw all XAI and esXAI from the contract.
-     * @dev Only callable by the admin.
-     */
-    function withdrawTokens(uint256 xaiAmount, uint256 esXaiAmount) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        if(xaiAmount > 0){
-            IERC20 token = IERC20(xaiAddress);
-            token.transfer(fundsReceiver, xaiAmount);
-            emit TokensWithdrawn(msg.sender, xaiAmount, xaiAddress);
-        }
-        if(esXaiAmount > 0){
-            IERC20 token = IERC20(esXaiAddress);
-            token.transfer(fundsReceiver, esXaiAmount);
-            emit TokensWithdrawn(msg.sender, esXaiAmount, esXaiAddress);
-        }
     }
 
     /**
@@ -592,22 +561,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             )
         );
         return string(abi.encodePacked("data:application/json;base64,", json));
-    }
-
-    /**
-     * @notice Allows the admin to refund a NodeLicense.
-     * @param _tokenId The ID of the token to refund.
-     * @dev Only callable by the admin.
-     */
-    function refundNodeLicense(uint256 _tokenId) external payable onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(_exists(_tokenId), "ERC721Metadata: Refund for nonexistent token");
-        uint256 refundAmount = _averageCost[_tokenId];
-        require(refundAmount > 0, "No funds to refund");
-        _averageCost[_tokenId] = 0;
-        (bool success, ) = payable(ownerOf(_tokenId)).call{value: refundAmount}("");
-        require(success, "Transfer failed.");
-        emit RefundOccurred(ownerOf(_tokenId), refundAmount);
-        _burn(_tokenId);
     }
 
     /**
