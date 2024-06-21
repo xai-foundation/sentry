@@ -618,9 +618,17 @@ const loadOperatorKeysFromGraph = async (
     // refereeConfig will be used to locally calculate the boos factor (hold tier thresholds and boostFactors as well as max staking capacity per key)
     const { wallets, pools, refereeConfig } = await retry(() => getSentryWalletsForOperator(operator, passedInOwnersAndPools));
 
+    if (wallets.length == 0 && pools.length == 0) {
+        cachedLogger(`No operatorWallets found, approve your wallet for operating keys or delegate it to a staking pool to operate for it.`);
+        return { wallets: [], sentryKeys: [], sentryWalletMap: {}, sentryKeysMap: {}, nodeLicenseIds: [], mappedPools: {}, refereeConfig };
+    }
+
+    if (wallets.length > 0) {
+        cachedLogger(`Found ${wallets.length} operatorWallets. The addresses are: ${wallets.map(w => w.address).join(', ')}`);
+    }
+
     const mappedPools: { [poolAddress: string]: PoolInfo } = {};
 
-    cachedLogger(`Found ${wallets.length} operatorWallets. The addresses are: ${wallets.map(w => w.address).join(', ')}`);
     if (pools.length) {
         pools.forEach(p => { mappedPools[p.address] = p });
         cachedLogger(`Found ${pools.length} pools. The addresses are: ${Object.keys(mappedPools).join(', ')}`);
