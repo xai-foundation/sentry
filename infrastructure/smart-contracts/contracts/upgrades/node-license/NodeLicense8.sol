@@ -228,7 +228,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
 
         uint256 averageCost = finalEthPrice / _amount;
 
-        _validatePayment(finalPrice, _useEsXai, _expectedCost);
+        _validatePayment(finalPrice, _useEsXai);
         _mintNodeLicense(_amount, averageCost);
 
         uint256 referralReward = _calculateReferralReward(finalPrice, _promoCode);
@@ -239,7 +239,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         if(referralReward > 0){
             // Use promo original code mapping for codes & new mappings for reward tracking
             PromoCode memory promoCode = _promoCodes[_promoCode];
-            
+
             // Trasnfer the referral reward to the this contract
             token.transferFrom(msg.sender, address(this), referralReward);
 
@@ -316,7 +316,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @param _totalCost the total cost of the minting
      * @param _useEsXai a boolean to determine if the payment is in XAI or esXai
      */
-    function _validatePayment(uint256 _totalCost, bool _useEsXai, uint256 _expectedCost) internal view{
+    function _validatePayment(uint256 _totalCost, bool _useEsXai) internal view{
         IERC20 token = IERC20(_useEsXai ? esXaiAddress : xaiAddress);
         require(
             token.balanceOf(msg.sender) >= _totalCost,
