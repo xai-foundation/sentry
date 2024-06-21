@@ -56,7 +56,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      *  the referral rewards for XAI and esXAI 
      */
 
-    // Mapping from promo code to PromoCode struct for esXai
+    // Mapping from promo code to PromoCode struct for Xai
     mapping (string => PromoCode) private _promoCodesXai;
 
     // Mapping from promo code to PromoCode struct for esXai
@@ -69,10 +69,10 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     mapping (address => uint256) private _referralRewardsEsXai;
 
     // Chainlink Eth/USD price feed
-    IAggregatorV3Interface internal ethPriceFeed; //TODO: Implement Chainlink price feed SDK or stay with external interface
+    IAggregatorV3Interface internal ethPriceFeed;
 
     //Chainlink XAI/USD price feed
-    IAggregatorV3Interface internal xaiPriceFeed; //TODO: Implement Chainlink price feed SDK or stay with external interface
+    IAggregatorV3Interface internal xaiPriceFeed;
 
     // Token Addresses
     address public xaiAddress;
@@ -84,7 +84,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[490] private __gap;
+    uint256[491] private __gap;
 
     // Define the pricing tiers
     struct Tier {
@@ -285,6 +285,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             _tokenIds.increment();
             uint256 newItemId = _tokenIds.current();
             _mint(msg.sender, newItemId);
+             // Record the minting timestamp
             _mintTimestamps[newItemId] = block.timestamp;
             // Record the average cost
             _averageCost[newItemId] = averageCost;
@@ -659,8 +660,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @return The equivalent amount in XAI with 18 decimals
      */
     function ethToXai(uint256 _amount) public view returns (uint256) {
-        int256 ethPrice = ethPriceFeed.latestAnswer();
-        int256 xaiPrice = xaiPriceFeed.latestAnswer();
+        int256 ethPrice = ethPriceFeed.latestAnswer(); // price returned in 8 decimals
+        int256 xaiPrice = xaiPriceFeed.latestAnswer(); // price returned in 8 decimals
         
         // Convert ethPrice and xaiPrice to uint256 with 18 decimals
         uint256 ethPriceWith18Decimals = uint256(ethPrice) * 10**10;
