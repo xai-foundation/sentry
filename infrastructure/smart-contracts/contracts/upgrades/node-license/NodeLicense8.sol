@@ -239,8 +239,11 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         if(referralReward > 0){
             // Use promo original code mapping for codes & new mappings for reward tracking
             PromoCode memory promoCode = _promoCodes[_promoCode];
+            
             // Trasnfer the referral reward to the this contract
             token.transferFrom(msg.sender, address(this), referralReward);
+
+            // Store the referral reward in the appropriate mapping
             if(_useEsXai){
                 _promoCodesEsXai[_promoCode].receivedLifetime += referralReward;
                 _referralRewardsEsXai[promoCode.recipient] += referralReward;
