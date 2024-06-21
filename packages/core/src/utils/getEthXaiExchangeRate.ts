@@ -1,5 +1,6 @@
 import {ethers} from 'ethers';
 import {getProvider} from '../utils/getProvider.js';
+import { config } from '../index.js';
 
 /**
  * Fetches the eth price from chainlink and then the xai price from chainlink.
@@ -8,8 +9,7 @@ import {getProvider} from '../utils/getProvider.js';
  */
 
 export async function getEthXaiExchangeRate(): Promise<{ exchangeRate: bigint}> {
-    const ETH_FEED_ADDRESS = '0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612'; //TODO Move to Config File
-    const XAI_FEED_ADDRESS = '0x806c532D543352e7C344ba6C7F3F00Bfbd309Af1'; //TODO Move to Config File
+    
     const abi = ["function latestAnswer() external view returns (int256)"];
 
     // Get the provider
@@ -20,7 +20,7 @@ export async function getEthXaiExchangeRate(): Promise<{ exchangeRate: bigint}> 
     const provider = getProvider(providerUrls[Math.floor(Math.random() * providerUrls.length)]);
 
     // Create an instance of the Chainlink price feed contract
-    const ethPriceFeedContract = new ethers.Contract(ETH_FEED_ADDRESS, abi, provider);
+    const ethPriceFeedContract = new ethers.Contract(config.chainlinkEthUsdPriceFeed, abi, provider);
 
     // Get the latest round data from the Chainlink price feed contract
     const ethPriceFeedData = await ethPriceFeedContract.latestAnswer();
@@ -28,7 +28,7 @@ export async function getEthXaiExchangeRate(): Promise<{ exchangeRate: bigint}> 
     // Get the eth price from the latest round data
     const ethPrice = BigInt(ethPriceFeedData.toString());
     // Create an instance of the Chainlink price feed contract
-    const xaiPriceFeedContract = new ethers.Contract(XAI_FEED_ADDRESS, abi, provider);
+    const xaiPriceFeedContract = new ethers.Contract(config.chainlinkXaiUsdPriceFeed, abi, provider);
 
     // Get the latest round data from the Chainlink price feed contract
     const xaiPriceFeedData = await xaiPriceFeedContract.latestAnswer();

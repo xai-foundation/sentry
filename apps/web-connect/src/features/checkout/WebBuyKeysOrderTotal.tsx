@@ -3,7 +3,7 @@ import {AiFillInfoCircle} from "react-icons/ai";
 import {useGetTotalSupplyAndCap} from "@/features/checkout/hooks/useGetTotalSupplyAndCap";
 import {Dispatch, SetStateAction, useState} from "react";
 import {ethers} from "ethers";
-import {CheckoutTierSummary, getPromoCode} from "@sentry/core";
+import {CheckoutTierSummary, config, getPromoCode, getXaiAllowance, getXaiBalance} from "@sentry/core";
 import {PrimaryButton} from "@sentry/ui";
 import {KYCTooltip} from "@/features/checkout/KYCTooltip";
 import {useNetwork} from 'wagmi';
@@ -42,7 +42,8 @@ export function WebBuyKeysOrderTotal(
 		error
 	}: WebBuyKeysOrderTotalProps) {
 	const {isLoading: isTotalLoading} = useGetTotalSupplyAndCap();
-	const {data, isLoading: isExchangeRateLoading} = useGetExchangeRate();
+	const {data: exchangeRateData, isLoading: isExchangeRateLoading} = useGetExchangeRate();	
+
 	const { chain } = useNetwork()
 
 	const [promo, setPromo] = useState<boolean>(false);
@@ -50,6 +51,9 @@ export function WebBuyKeysOrderTotal(
 	const [checkboxTwo, setCheckboxTwo] = useState<boolean>(false);
 	const [checkboxThree, setCheckboxThree] = useState<boolean>(false);
 	const [currency, setCurrency] = useState<string>("AETH");
+	const [tokenBalance, setTokenBalance] = useState<bigint>(0n);
+	const [tokenAllowance, setTokenAllowance] = useState<bigint>(0n);
+
 	const ready = checkboxOne && checkboxTwo && checkboxThree;
 
 	const handleSubmit = async () => {
@@ -67,6 +71,24 @@ export function WebBuyKeysOrderTotal(
 			});
 			setPromoCode("");
 		}
+	};
+
+	const handleCurrencyChange = async (newCurrency:	string) => {
+		setCurrency(newCurrency);
+		if(newCurrency === "AETH") {
+			setTokenBalance(0n);
+			setTokenAllowance(0n);
+		}else if(newCurrency === "XAI") {
+			const xaiBalance = await getXaiBalance(""); //Todo Add wallet address
+			const xaiAllowance = await getXaiAllowance("", config.nodeLicenseAddress);
+			setTokenBalance(xaiBalance.balance);
+			setTokenAllowance(xaiAllowance.approvalAmount);
+		}else{
+			const esxaiBalance = await getXaiBalance(""); //Todo Add wallet address
+			const esxaiAllowance = await getXaiAllowance("", config.nodeLicenseAddress);
+			setTokenBalance(esxaiBalance.balance);
+			setTokenAllowance(esxaiAllowance.approvalAmount);
+		}	
 	};
 
 	function calculateTotalPrice(): bigint {
@@ -90,9 +112,22 @@ export function WebBuyKeysOrderTotal(
 
 	function _calculateXaiTotal(): bigint {
 		const totalEthPrice = _calculateAethTotal();
-		const exchangeRate = data?.exchangeRate ?? 0n;
+		const exchangeRate = exchangeRateData?.exchangeRate ?? 0n;
 		return totalEthPrice * exchangeRate;
 	}
+
+	function getApproveButtonText(): string {
+		const xaiTotal = _calculateXaiTotal();
+		if(xaiTotal > tokenBalance) {
+			return `Insufficient ${currency} balance`;
+		}
+		if(xaiTotal > tokenAllowance) {
+			return `Approve ${currency}`;
+		}
+		return "BUY NOW";
+	}
+
+	
 	
 
 
@@ -269,13 +304,13 @@ export function WebBuyKeysOrderTotal(
 								<hr className="my-2 border-[#525252]"/>
 								<div className="flex sm:flex-col lg:flex-row items-center justify-between py-2">
 									<div className="flex flex-row items-center gap-2 sm:text-xl lg:text-2xl">
-										<span className="text-white font-bold text-2xl">Choose Currency 1 AETH = {data?.exchangeRate.toString()}  XAI</span>
+										<span className="text-white font-bold text-2xl">Choose Currency 1 AETH = {exchangeRateData?.exchangeRate.toString()}  XAI</span>
 									</div>
 									<div className="flex flex-row items-center gap-1 bg-black">
 										<span className="text-white font-bold text-3xl bg-black">	
 										<form onSubmit={(e) => e.preventDefault()}>										
 										<select id="currency" name="currency"
-										onChange={(e) => setCurrency(e.target.value)}
+										onChange={(e) => handleCurrencyChange(e.target.value)}
 										>
 											<option value="AETH">AETH</option>
 											<option value="XAI">XAI</option>
@@ -346,12 +381,17 @@ export function WebBuyKeysOrderTotal(
 							</div>
 
 							<div>
-								<PrimaryButton
+								{currency === 'AETH' ? <PrimaryButton
 									onClick={() => onClick()}
 									className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
 									isDisabled={!ready || chain?.id !== 42_161}
 									btnText={chain?.id === 42_161 ? "BUY NOW" : "Please Switch to Arbitrum One"}
-								/>
+								/> :<PrimaryButton
+								onClick={() => {}}
+								className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
+								isDisabled={!ready || chain?.id !== 42_161}
+								btnText={chain?.id === 42_161 ? getApproveButtonText(): "Please Switch to Arbitrum One"}
+							/> }
 									
 								{error && (
 									<div>

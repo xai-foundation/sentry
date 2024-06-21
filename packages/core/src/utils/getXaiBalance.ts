@@ -1,17 +1,17 @@
 import {ethers} from 'ethers';
 import {getProvider} from '../utils/getProvider.js';
 import { XaiAbi } from '../abis/index.js';
+import { config } from '../index.js';
 
 /**
- * Fetches a wallet's erc20 balance.
+ * Fetches a wallet's Xai balance.
  * @param walletAddress - The address of the wallet to fetch the balance of.
- * @param erc20Address - The address of the erc20 token.
- * @returns bigint The balance of the wallet.
+ * @returns bigint The Xai balance of the wallet.
  */
 
-export async function getErc20Balance(wallet: string, token: string): Promise<{ balance: bigint}> {
-    if(!wallet || !token || wallet.length !== 42 || token.length !== 42) {
-        throw new Error("Wallet and token addresses are required.");
+export async function getXaiBalance(wallet: string): Promise<{ balance: bigint}> {
+    if(!wallet || wallet.length !== 42) {
+        return { balance: BigInt(0) };
     }
 
     // Get the provider
@@ -21,10 +21,10 @@ export async function getErc20Balance(wallet: string, token: string): Promise<{ 
     ];
     const provider = getProvider(providerUrls[Math.floor(Math.random() * providerUrls.length)]);
 
-    // Create an instance of an Erc20 token contract
-    const tokenContract = new ethers.Contract(token, XaiAbi, provider);
+    // Create an instance of the Xai token contract
+    const tokenContract = new ethers.Contract(config.xaiAddress, XaiAbi, provider);
 
-    // Get the wallet balance of the erc20 token
+    // Get the wallet balance of the Xai token
     const balance = await tokenContract.balanceOf(wallet);
 
     return { balance };
