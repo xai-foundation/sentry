@@ -113,25 +113,25 @@ export function SentryWallet() {
 			return data?.whitelistedWallets.map((wallet, i) => (
 				<DropdownItem
 					onClick={() => {
-						setSelectedWallet(wallet);
+						setSelectedWallet(wallet.toLowerCase());
 						setIsOpen(false);
 					}}
 					key={`sentry-item-${i}`}
 				>
-					{wallet}
+					{wallet.toLowerCase()}
 				</DropdownItem>
 			));
 		} else {
 			return owners.map((wallet, i) => (
 				<p
 					onClick={() => {
-						setSelectedWallet(wallet);
+						setSelectedWallet(wallet.toLowerCase());
 						setIsOpen(false);
 					}}
-					className="p-2 cursor-pointer hover:bg-gray-100"
+					className="py-2 px-[15px] cursor-pointer hover:bg-abaddonBlack"
 					key={`sentry-item-${i}`}
 				>
-					{wallet}
+					{wallet.toLowerCase()}
 				</p>
 			));
 		}
