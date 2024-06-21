@@ -8,19 +8,12 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20Burnable
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 import "../../Xai.sol";
+import "../../upgrades/referee/Referee8.sol";
 
 /**
  * @title esXai
  * @dev Implementation of the esXai
  */
-
-/**
- * @dev Interface for the Referee contract to determine KYC status of a wallet
- */
-interface Referee {
-    function isKycApproved(address wallet) external view returns (bool) ;
-}
-
 contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgradeable {
 
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -42,7 +35,7 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[495] private __gap;
+    uint256[494] private __gap;
 
     struct RedemptionRequest {
         uint256 amount;
@@ -228,7 +221,7 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
 
         // If the wallet owns more licenses than the maxKeysNonKyc, check if the wallet is KYC approved
         if(licenseCountOwned > maxKeysNonKyc){
-            Referee referee = Referee(refereeAddress);
+            Referee8 referee = Referee8(refereeAddress);
             require(referee.isKycApproved(_msgSender()), "You own too many keys, must be KYC approved to claim.");
         }
 
