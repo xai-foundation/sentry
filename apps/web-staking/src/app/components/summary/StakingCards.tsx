@@ -79,7 +79,7 @@ const StakingCards = ({
           }
           <div className="flex w-full gap-14">
             <div className="flex sm:flex-col lg:flex-row lg:gap-14">
-            <div className="flex lg:gap-14">
+            <div className="flex sm:gap-10 lg:gap-14">
             <PoolStakingInfoChild
               title={"Pool balance"}
               content={`${hideDecimals(formatCurrencyWithDecimals.format(poolInfo.totalStakedAmount))} esXAI`}
@@ -132,7 +132,7 @@ const StakingCards = ({
           )}
           <div className="flex w-full gap-14">
             <div className="flex sm:flex-col lg:flex-row lg:gap-14">
-            <div className="flex lg:gap-14">
+            <div className="flex sm:gap-10 lg:gap-14">
             <PoolStakingInfoChild
               title={"Pool balance"}
               content={`${poolInfo.keyCount} keys`}
