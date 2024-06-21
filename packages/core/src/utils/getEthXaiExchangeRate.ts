@@ -1,8 +1,5 @@
 import {ethers} from 'ethers';
-import {NodeLicenseAbi} from '../abis/index.js';
-import {config} from '../config.js';
 import {getProvider} from '../utils/getProvider.js';
-import {listTiers} from './listTiers.js';
 
 /**
  * Fetches the eth price from chainlink and then the xai price from chainlink.
