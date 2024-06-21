@@ -6,7 +6,7 @@ import {ethers} from "ethers";
 import {CheckoutTierSummary, config, getPromoCode, getXaiAllowance, getXaiBalance} from "@sentry/core";
 import {PrimaryButton} from "@sentry/ui";
 import {KYCTooltip} from "@/features/checkout/KYCTooltip";
-import {useNetwork} from 'wagmi';
+import {useAccount, useNetwork} from 'wagmi';
 import MainCheckbox from "@sentry/ui/src/rebrand/checkboxes/MainCheckbox";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 import {WarningIcon} from "@sentry/ui/src/rebrand/icons/IconsComponents";
@@ -44,7 +44,8 @@ export function WebBuyKeysOrderTotal(
 	const {isLoading: isTotalLoading} = useGetTotalSupplyAndCap();
 	const {data: exchangeRateData, isLoading: isExchangeRateLoading} = useGetExchangeRate();	
 
-	const { chain } = useNetwork()
+	const { chain } = useNetwork();
+	const {address} = useAccount();
 
 	const [promo, setPromo] = useState<boolean>(false);
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
@@ -75,17 +76,18 @@ export function WebBuyKeysOrderTotal(
 
 	const handleCurrencyChange = async (newCurrency:	string) => {
 		setCurrency(newCurrency);
+		const walletAddress = address ? address : "";
 		if(newCurrency === "AETH") {
 			setTokenBalance(0n);
 			setTokenAllowance(0n);
 		}else if(newCurrency === "XAI") {
-			const xaiBalance = await getXaiBalance(""); //Todo Add wallet address
-			const xaiAllowance = await getXaiAllowance("", config.nodeLicenseAddress);
+			const xaiBalance = await getXaiBalance(walletAddress);
+			const xaiAllowance = await getXaiAllowance(walletAddress, config.nodeLicenseAddress);
 			setTokenBalance(xaiBalance.balance);
 			setTokenAllowance(xaiAllowance.approvalAmount);
 		}else{
-			const esxaiBalance = await getXaiBalance(""); //Todo Add wallet address
-			const esxaiAllowance = await getXaiAllowance("", config.nodeLicenseAddress);
+			const esxaiBalance = await getXaiBalance(walletAddress); 
+			const esxaiAllowance = await getXaiAllowance(walletAddress, config.nodeLicenseAddress);
 			setTokenBalance(esxaiBalance.balance);
 			setTokenAllowance(esxaiAllowance.approvalAmount);
 		}	
