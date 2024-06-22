@@ -64,8 +64,9 @@ import "../../staking-v2/PoolFactory.sol";
 // 49: Maximum staking amount exceeded.
 // 50: Invalid amount.
 // 51: Invalid stake rewards tier percentage.
+// 52: Staking Temporarily Disabled.
 
-contract Referee9B is Initializable, AccessControlEnumerableUpgradeable {
+contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
     // Define roles
@@ -151,6 +152,9 @@ contract Referee9B is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping for amount of assigned keys of a user
     mapping(address => uint256) public assignedKeysOfUserCount;
 
+    // Challenge number the KYC check was removed for claims
+    uint256 public kycCheckRemovedChallengeNumber;
+
     //TODO - review added variables and review if uint256 can be reduced
     // Minimum percentages of total supply for each staking tier in basis points
     // 1% = 100 basis points
@@ -170,7 +174,7 @@ contract Referee9B is Initializable, AccessControlEnumerableUpgradeable {
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[486] private __gap;
+    uint256[485] private __gap;
 
     // Struct for the submissions
     struct Submission {
@@ -219,7 +223,7 @@ contract Referee9B is Initializable, AccessControlEnumerableUpgradeable {
     event RewardsClaimed(uint256 indexed challengeId, uint256 amount);
     event BatchRewardsClaimed(uint256 indexed challengeId, uint256 totalReward, uint256 keysLength);
     event ChallengeExpired(uint256 indexed challengeId);
-    event StakingEnabled();
+    event StakingEnabled(bool enabled);
     event UpdateMaxStakeAmount(uint256 prevAmount, uint256 newAmount);
     event UpdateMaxKeysPerPool(uint256 prevAmount, uint256 newAmount);
     event StakedV1(address indexed user, uint256 amount, uint256 totalStaked);
@@ -263,10 +267,8 @@ contract Referee9B is Initializable, AccessControlEnumerableUpgradeable {
         stakeAmountTierThresholds[2] = 4_000_000 * 10 ** 18;
         stakeAmountTierThresholds[3] = 8_000_000 * 10 ** 18;
 
-        //stakeAmountBoostFactors[0] = 150;
-        //stakeAmountBoostFactors[1] = 200;
-        //stakeAmountBoostFactors[2] = 300;
-        //stakeAmountBoostFactors[3] = 700;
+        // Set the challenge Id where the KYC check was removed
+        kycCheckRemovedChallengeNumber = challengeCounter;
     }
 
     modifier onlyPoolFactory() {
@@ -450,9 +452,8 @@ contract Referee9B is Initializable, AccessControlEnumerableUpgradeable {
      */
     function calculateChallengeEmissionAndTier() public view returns (uint256, uint256) {
 
+        uint256 totalSupply = getCombinedTotalSupply();  
         uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
-        uint256 totalSupply = getCombinedTotalSupply();
-
         require(maxSupply > totalSupply, "5");
 
         uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply)); // calculate which tier we are in starting from 0
@@ -504,8 +505,8 @@ contract Referee9B is Initializable, AccessControlEnumerableUpgradeable {
             require(node.confirmData == _confirmData, "11");
             require(node.createdAtBlock == _assertionTimestamp, "12");
         }
-
-        //TODO review halving check
+        
+        // check if we need to halve the emission rewards
         _checkHalving();
 
         // we need to determine how much token will be emitted
@@ -704,7 +705,10 @@ contract Referee9B is Initializable, AccessControlEnumerableUpgradeable {
 
         // Check if the owner of the NodeLicense is KYC'd
         address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
-        require(isKycApproved(owner), "22");
+
+        if(_challengeId < kycCheckRemovedChallengeNumber){    
+            require(isKycApproved(owner), "22");
+        }
 
         // Check if the submission has already been claimed
         require(!submission.claimed, "23");
@@ -772,7 +776,8 @@ contract Referee9B is Initializable, AccessControlEnumerableUpgradeable {
 
             // Check if the nodeLicenseId is eligible for a payout
             if (
-                isKycApproved(owner) &&
+                // Confirm the owner is KYC'd, or the challenge is past the kycCheckRemovedChallengeNumber
+                (isKycApproved(owner) || _challengeId >= kycCheckRemovedChallengeNumber) &&
                 mintTimestamp < challengeToClaimFor.createdTimestamp && 
                 !submission.claimed &&
                 submission.eligibleForPayout
@@ -925,30 +930,6 @@ contract Referee9B is Initializable, AccessControlEnumerableUpgradeable {
         emit UpdateMaxKeysPerPool(prevAmount, newAmount);
     }
 
-    //TODO remove this function - all updates should go through updateStakingTierPercentages to validate data
-    /**
-     * @dev Admin update the tier thresholds and the corresponding reward chance boost
-     * @param index The index if the tier to update
-     * @param newThreshold The new threshold of the tier
-     * @param newBoostFactor The new boost factor for the tier
-     */
-    function updateStakingTier(uint256 index, uint256 newThreshold, uint256 newBoostFactor) external onlyRole(DEFAULT_ADMIN_ROLE) {
-
-        require(newBoostFactor > 0 && newBoostFactor <= 10000, "33");
-
-        uint256 lastIndex = stakeAmountTierThresholds.length - 1;
-        if (index == 0) {
-            require(stakeAmountTierThresholds[1] > newThreshold, "34");
-        } else if (index == lastIndex) {
-            require(stakeAmountTierThresholds[lastIndex - 1] < newThreshold, "35");
-        } else {
-            require(stakeAmountTierThresholds[index + 1] > newThreshold && stakeAmountTierThresholds[index - 1] < newThreshold, "36");
-        }
-
-        stakeAmountTierThresholds[index] = newThreshold;
-        stakeAmountBoostFactors[index] = newBoostFactor;
-    }
-
     //TODO review new setter
     /**
      * @dev Admin update the staking tier threshold percentages and the corresponding reward chance boosts.
@@ -960,37 +941,6 @@ contract Referee9B is Initializable, AccessControlEnumerableUpgradeable {
      */
     function updateStakingTierPercentages(uint256[] memory newPercentages, uint256[] memory newBoostFactors, bool activateNow) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _updateRewardTierPercentages(newPercentages, newBoostFactors, activateNow);
-    }
-
-    //TODO remove this function - all updates should go through updateStakingTierPercentages to validate data
-    /**
-     * @dev Admin add a new staking tier to the end of the tier array
-     * @param newThreshold The new threshold of the tier
-     * @param newBoostFactor The new boost factor for the tier
-     */
-    function addStakingTier(uint256 newThreshold, uint256 newBoostFactor) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(newBoostFactor > 0 && newBoostFactor <= 10000, "37");
-
-        uint256 lastIndex = stakeAmountTierThresholds.length - 1;
-        require(stakeAmountTierThresholds[lastIndex] < newThreshold, "38");
-
-        stakeAmountTierThresholds.push(newThreshold);
-        stakeAmountBoostFactors.push(newBoostFactor);
-    }
-    //TODO remove this function - all updates should go through updateStakingTierPercentages to validate data
-    /**
-     * @dev Admin remove a staking tier
-     * @param index The index if the tier to remove
-     */
-    function removeStakingTier(uint256 index) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(stakeAmountTierThresholds.length > 1, "39");
-        require(index < stakeAmountTierThresholds.length, "40");
-        for (uint i = index; i < stakeAmountTierThresholds.length - 1; i++) {
-            stakeAmountTierThresholds[i] = stakeAmountTierThresholds[i + 1];
-            stakeAmountBoostFactors[i] = stakeAmountBoostFactors[i + 1];
-        }
-        stakeAmountTierThresholds.pop();
-        stakeAmountBoostFactors.pop();
     }
 
     /**
@@ -1028,7 +978,7 @@ contract Referee9B is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function stakeKeys(address pool, address staker, uint256[] memory keyIds) external onlyPoolFactory {
-		require(isKycApproved(staker), "42");
+        require(stakingEnabled, "52");
         uint256 keysLength = keyIds.length;
         require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "43");
 
@@ -1045,6 +995,7 @@ contract Referee9B is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function unstakeKeys(address pool, address staker, uint256[] memory keyIds) external onlyPoolFactory {
+        require(stakingEnabled, "52");
         uint256 keysLength = keyIds.length;
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
 
@@ -1155,5 +1106,16 @@ contract Referee9B is Initializable, AccessControlEnumerableUpgradeable {
             stakeAmountBoostFactors[i] = stagedTierBoostFactors[i];
             emit StakingTierSet(i, newThreshold, stakeAmountBoostFactors[i]);
         }
+    }
+
+    /**
+     * @notice Admin function to enable or disable staking.
+     * @param enabled A boolean to determine if staking should be enabled or disabled.
+     * @dev This function can only be called by an admin.
+     */
+
+    function setStakingEnabled(bool enabled) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        stakingEnabled = enabled;
+        emit StakingEnabled(enabled);
     }
 }
