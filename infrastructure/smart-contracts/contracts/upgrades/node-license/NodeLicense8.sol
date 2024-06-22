@@ -104,10 +104,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     event RewardClaimed(address indexed claimer, uint256 ethAmount, uint256 xaiAmount, uint256 esXaiAmount);
     event PricingTierSetOrAdded(uint256 index, uint256 price, uint256 quantity);
     event ReferralRewardPercentagesChanged(uint256 referralDiscountPercentage, uint256 referralRewardPercentage);
-    event RefundOccurred(address indexed refundee, uint256 amount);
     event ReferralReward(address indexed buyer, address indexed referralAddress, uint256 amount);
-    event FundsWithdrawn(address indexed admin, uint256 amount);
-    event TokensWithdrawn(address indexed admin, uint256 amount, address tokenAddress);
     event FundsReceiverChanged(address indexed admin, address newFundsReceiver);
     event ClaimableChanged(address indexed admin, bool newClaimableState);
     event WhitelistAmountUpdatedByAdmin(address indexed redeemer, uint16 newAmount);
@@ -243,7 +240,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
 
             // Trasnfer the referral reward to the this contract
             token.transferFrom(msg.sender, address(this), referralReward);
-
+            //TODO Ask about just sending the payment to the recipient address now vs keeping records and requiring a claim
             // Store the referral reward in the appropriate mapping
             if(_useEsXai){
                 _promoCodesEsXai[_promoCode].receivedLifetime += referralReward;
@@ -338,7 +335,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         if(promoCodeAsAddress != address(0)){
 
             // Set the promo code recipient to the address
-            _promoCodes[_promoCode].recipient = promoCodeAsAddress;            
+            _promoCodes[_promoCode].recipient = promoCodeAsAddress;
+            _promoCodes[_promoCode].active = true;            
 
             // Calculate the referral reward
             referralReward = _finalPrice * referralRewardPercentage / 100;
