@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeab
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
-import "../../upgrades/referee/Referee5.sol";
+import "../../upgrades/referee/Referee9.sol";
 import "../../Xai.sol";
 import "../../upgrades/esXai/esXai2.sol";
 import "../../staking-v2/StakingPool.sol";
@@ -406,7 +406,7 @@ contract PoolFactoryV2 is Initializable, AccessControlEnumerableUpgradeable {
      * @param staker The address of the staker.
      */
     function _stakeKeys(address pool, uint256[] memory keyIds, address staker) internal {
-        Referee5(refereeAddress).stakeKeys(pool, staker, keyIds);
+        Referee9(refereeAddress).stakeKeys(pool, staker, keyIds);
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.stakeKeys(staker, keyIds);
 
@@ -524,7 +524,7 @@ contract PoolFactoryV2 is Initializable, AccessControlEnumerableUpgradeable {
     ) external {
         require(poolsCreatedViaFactory[pool], "23"); // Pool must be created via factory
 
-        Referee5(refereeAddress).unstakeKeys(pool, msg.sender, keyIds);
+        Referee9(refereeAddress).unstakeKeys(pool, msg.sender, keyIds);
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.unstakeKeys(msg.sender, unstakeRequestIndex, keyIds);
 
@@ -549,7 +549,7 @@ contract PoolFactoryV2 is Initializable, AccessControlEnumerableUpgradeable {
     function stakeEsXai(address pool, uint256 amount) external {
         require(poolsCreatedViaFactory[pool], "27"); // Pool must be created via factory
 
-        Referee5(refereeAddress).stakeEsXai(pool, amount);
+        Referee9(refereeAddress).stakeEsXai(pool, amount);
         esXai(esXaiAddress).transferFrom(msg.sender, address(this), amount);
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.stakeEsXai(msg.sender, amount);
@@ -561,7 +561,7 @@ contract PoolFactoryV2 is Initializable, AccessControlEnumerableUpgradeable {
             pool,
             amount,
             stakingPool.getStakedAmounts(msg.sender),
-            Referee5(refereeAddress).stakedAmounts(pool)
+            Referee9(refereeAddress).stakedAmounts(pool)
         );
     }
 
@@ -579,7 +579,7 @@ contract PoolFactoryV2 is Initializable, AccessControlEnumerableUpgradeable {
         require(poolsCreatedViaFactory[pool], "28"); // Pool must be created via factory
 
         esXai(esXaiAddress).transfer(msg.sender, amount);
-        Referee5(refereeAddress).unstakeEsXai(pool, amount);
+        Referee9(refereeAddress).unstakeEsXai(pool, amount);
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.unstakeEsXai(msg.sender, unstakeRequestIndex, amount);
 
@@ -592,7 +592,7 @@ contract PoolFactoryV2 is Initializable, AccessControlEnumerableUpgradeable {
             pool,
             amount,
             stakingPool.getStakedAmounts(msg.sender),
-            Referee5(refereeAddress).stakedAmounts(pool)
+            Referee9(refereeAddress).stakedAmounts(pool)
         );
     }
 
@@ -742,7 +742,7 @@ contract PoolFactoryV2 is Initializable, AccessControlEnumerableUpgradeable {
 
         for (uint256 i = offset; i < userKeyBalance && i < limit; i++) {
             uint256 keyId = NodeLicense(nodeLicenseAddress).tokenOfOwnerByIndex(user, i);
-            if (Referee5(refereeAddress).assignedKeyToPool(keyId) == address(0)) {
+            if (Referee9(refereeAddress).assignedKeyToPool(keyId) == address(0)) {
                 unstakedKeyIds[currentIndexUnstaked] = keyId;
                 currentIndexUnstaked++;
             }
@@ -759,7 +759,7 @@ contract PoolFactoryV2 is Initializable, AccessControlEnumerableUpgradeable {
     ) external view returns (bool[] memory isStaked) {
         isStaked = new bool[](keyIds.length);
         for (uint256 i; i < keyIds.length; i++) {
-            isStaked[i] = Referee5(refereeAddress).assignedKeyToPool(keyIds[i]) != address(0);
+            isStaked[i] = Referee9(refereeAddress).assignedKeyToPool(keyIds[i]) != address(0);
         }
     }
 }
