@@ -189,12 +189,14 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         // Mint the NodeLicense tokens
         _mintNodeLicense(_amount, averageCost);
 
-        // Calculate the referral reward
-        uint256 referralReward = _calculateReferralReward(finalPrice, _promoCode);
+        // Calculate the referral reward and determine if the promo code is an address
+        (uint256 referralReward, address recipientAddress)  = _calculateReferralReward(finalPrice, _promoCode);
+
+        // Update the promo code mappings for Eth rewards
         if(referralReward > 0){
-            PromoCode memory promoCode = _promoCodes[_promoCode];
+            // Use promo original code mapping for codes & new mappings for reward tracking
             _promoCodes[_promoCode].receivedLifetime += referralReward;
-            _referralRewards[promoCode.recipient] += referralReward;
+            _referralRewards[recipientAddress] += referralReward;            
         }
 
         // Send the funds to the fundsReceiver
@@ -231,14 +233,13 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         _validatePayment(finalPrice, _useEsXai);
         _mintNodeLicense(_amount, averageCost);
 
-        uint256 referralReward = _calculateReferralReward(finalPrice, _promoCode);
+        // Calculate the referral reward and determine if the promo code is an address
+        (uint256 referralReward, address recipientAddress)  = _calculateReferralReward(finalPrice, _promoCode);
 
         IERC20 token = IERC20(_useEsXai ? esXaiAddress : xaiAddress);
         token.transferFrom(msg.sender, fundsReceiver, finalPrice - referralReward);
 
         if(referralReward > 0){
-            // Use promo original code mapping for codes & new mappings for reward tracking
-            PromoCode memory promoCode = _promoCodes[_promoCode];
 
             // Trasnfer the referral reward to the this contract
             token.transferFrom(msg.sender, address(this), referralReward);
@@ -246,10 +247,10 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             // Store the referral reward in the appropriate mapping
             if(_useEsXai){
                 _promoCodesEsXai[_promoCode].receivedLifetime += referralReward;
-                _referralRewardsEsXai[promoCode.recipient] += referralReward;
+                _referralRewardsEsXai[recipientAddress] += referralReward;
             } else {
                 _promoCodesXai[_promoCode].receivedLifetime += referralReward;
-                _referralRewardsXai[promoCode.recipient] += referralReward;
+                _referralRewardsXai[recipientAddress] += referralReward;
             }
         }     
     }
@@ -292,22 +293,63 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         }
     }
 
-    /** 
-     * @notice internal function to calculate the referral reward amount
-     * @param _finalPrice The final price of the minting
-     * @param _promoCode The promo code used for the minting
+    /**
+     * @notice Calculates the referral reward based on the promo code
+     * @dev the promo code may be a string, or an address, but will be passed
+     * as a string to this function
+     * @param _finalPrice The final cost of the minting
+     * @param _promoCode The promo code used
+     * @return A tuple containing the referral reward and a boolean indicating if the promo code was an address
      */
-    function _calculateReferralReward(uint256 _finalPrice, string memory _promoCode) internal returns(uint256) {
-        PromoCode memory promoCode = _promoCodes[_promoCode]; 
-        if(!promoCode.active){
-            return 0;
-        }
+    function _calculateReferralReward(uint256 _finalPrice, string memory _promoCode) internal returns(uint256, address) {
         uint256 referralReward = 0;
-        if (promoCode.recipient != address(0)) {
-            referralReward = _finalPrice * referralRewardPercentage / 100;
-            emit ReferralReward(msg.sender, promoCode.recipient, referralReward);
+        // Retrieve the promo code details
+        PromoCode memory promoCode = _promoCodes[_promoCode];
+
+        // Check if the promo code already exists in the mappings
+        if(promoCode.recipient != address(0)){
+            // Promo code exists in the mapping
+            // If the promo code is not active, return 0
+            if (!promoCode.active) {
+                return (0,  address(0));
+            }
+
+            // Calculate the referral reward
+            if (promoCode.recipient != address(0)) {
+                referralReward = _finalPrice * referralRewardPercentage / 100;
+                emit ReferralReward(msg.sender, promoCode.recipient, referralReward);
+            }
+
+            return (referralReward, promoCode.recipient);
+            
+        }else{
+        // If promo code does not exist in the mapping
+
+        // Check if the promo code is an address
+        address promoCodeAsAddress = validateAndConvertAddress(_promoCode);
+
+        // Get the node license balance of the promo code address
+        if(this.balanceOf(promoCodeAsAddress) == 0){
+            // If the promo code is an address, the address must own at least one node license
+            return (0, address(0));
         }
-        return referralReward;
+
+        // If the promo code is an address, determine if the recipient has been set
+        if(promoCodeAsAddress != address(0)){
+
+            // Set the promo code recipient to the address
+            _promoCodes[_promoCode].recipient = promoCodeAsAddress;            
+
+            // Calculate the referral reward
+            referralReward = _finalPrice * referralRewardPercentage / 100;
+            emit ReferralReward(msg.sender, promoCodeAsAddress, referralReward);
+
+            return (referralReward, promoCodeAsAddress);
+        }
+
+        // If the promo code is not in the existing mappings and is not an address
+        return (0, address(0));
+        }
     }
 
     /**
@@ -625,6 +667,49 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         
         return amountInXai;
     }
+
+    /**
+     * @notice Takes in a string and converts it to an address if valid, otherwise returns the zero address
+     * @param _address The string that is a potential address to validate and convert
+     * @return The address if valid, otherwise the zero address
+     */
+    function validateAndConvertAddress(string memory _address) public pure returns (address) {
+        bytes memory addrBytes = bytes(_address);
+
+        // Check if the length is 42 characters
+        if (addrBytes.length != 42) {
+            return address(0);
+        }
+
+        // Check if it starts with '0x'
+        if (addrBytes[0] != '0' || addrBytes[1] != 'x') {
+            return address(0);
+        }
+
+        uint160 addr = 0;
+
+        // Convert and validate each character
+        for (uint i = 2; i < 42; i++) {
+            uint8 b = uint8(addrBytes[i]);
+            if (b >= 48 && b <= 57) {
+                // '0' to '9'
+                addr = addr * 16 + (b - 48);
+            } else if (b >= 97 && b <= 102) {
+                // 'a' to 'f'
+                addr = addr * 16 + (b - 87);
+            } else if (b >= 65 && b <= 70) {
+                // 'A' to 'F'
+                addr = addr * 16 + (b - 55);
+            } else {
+                // Invalid character found
+                return address(0);
+            }
+        }
+
+        return address(addr);
+    }
+
+
 
 }
 
