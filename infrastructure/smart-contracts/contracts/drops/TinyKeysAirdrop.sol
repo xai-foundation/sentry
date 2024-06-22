@@ -23,7 +23,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable{
     address public refereeAddress;
 
     // Airdrop counter
-    uint256 public airdropCounter; // Will be incremented after each airdrop
+    uint256 public airdropCounter; // Will be incremented after each airdrop segment
 
     // Total Supply At Start
     uint256 public totalSupplyAtStart; // Will be set at airdrop start
