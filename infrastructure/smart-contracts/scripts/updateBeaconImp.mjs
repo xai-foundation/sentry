@@ -6,7 +6,7 @@ import { PoolBeaconAbi } from "@sentry/core";
 // Find this in the deployed PoolProxyDeployer's public fields. This should reflect which set of proxies you want to change; staking pools, key buckets, or esXai buckets
 const beaconAddress = "0x27e57D41D633E9ea30326911aC3E19F203099c12";     //TODO Update to the beacon contract that needs to be updated
 const currentContractImplementationName = "StakingPool";                //TODO Update to the contract name of the previous implementation
-const newContractImplementationName = "StakingPool2";                   //TODO Update to the contract name of the new implementation
+const newContractImplementationName = "StakingPool3";                   //TODO Update to the contract name of the new implementation Shouldn't this be StakingPoolImplementationV3
 
 async function main() {
     // Grab the deployer

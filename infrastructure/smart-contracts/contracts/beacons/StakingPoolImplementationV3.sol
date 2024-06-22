@@ -20,21 +20,19 @@ contract StakingPoolImplementationV3 is Initializable, AccessControlUpgradeable 
      * @param _name The name of the staking pool.
      * @param _keys The initial number of keys.
      * @param _some An additional state variable for future use?
-     * @param admin The address of the admin who will have special privileges.
      */
     function initialize(
         string memory _name,
         uint256 _keys,
-        uint256 _some,
-        address admin
+        uint256 _some
     ) external initializer {
         name = _name;
         keys = _keys;
         some = _some;
 
         // Setup roles
-        _setupRole(DEFAULT_ADMIN_ROLE, admin);
-        _setupRole(ADMIN_ROLE, admin);
+        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _setupRole(ADMIN_ROLE, msg.sender);
 
         // Enable staking by default
         stakingEnabled = true;
