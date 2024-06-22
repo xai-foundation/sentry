@@ -117,7 +117,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * 
      */
 
-    function initialize(address _xaiAddress,  address _esXaiAddress, address ethPriceFeedAddress, address xaiPriceFeedAddress, address airdropAdmin, uint256 _newMaxSupply) public reinitializer(3) {
+    function initialize(address _xaiAddress,  address _esXaiAddress, address ethPriceFeedAddress, address xaiPriceFeedAddress, address airdropAdmin) public reinitializer(3) {
         require(_xaiAddress != address(0), "Invalid xai address");
         require(_esXaiAddress != address(0), "Invalid esXai address");
         require(ethPriceFeedAddress != address(0), "Invalid ethPriceFeed address");
@@ -127,7 +127,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         xaiAddress = _xaiAddress;
         esXaiAddress = _esXaiAddress;
 
-        maxSupply = _newMaxSupply;
+        maxSupply = 0;
         _grantRole(AIRDROP_ADMIN_ROLE, airdropAdmin);
     }
 
