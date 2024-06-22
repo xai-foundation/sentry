@@ -181,5 +181,17 @@ export function esXaiTests(deployInfrastructure) {
             expect(whitelistedAddress3).to.equal(addr3.address);
         })
 
+        it("Check that redemption will fail for a non-kyc wallets if keys exceed max allowed", async function() {
+            const {esXai, addr3} = await loadFixture(deployInfrastructure);
+            await esXai.connect(esXaiDefaultAdmin).changeRedemptionStatus(true);
+            const redemptionAmount = BigInt(1000);
+            const index = await esXai.connect(addr3).startRedemption(redemptionAmount, duration);
+            const duration = 15 * 24 * 60 * 60; // 15 days in seconds
+            await network.provider.send("evm_increaseTime", [duration]);
+            await network.provider.send("evm_mine");
+            expect(esXai.connect(addr3).completeRedemption(index)).to.be.revertedWith("You own too many keys, must be KYC approved to claim.");
+
+        })
+
     }
 }

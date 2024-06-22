@@ -28,7 +28,7 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     mapping(address => RedemptionRequestExt[]) private _extRedemptionRequests;
     address public refereeAddress;
     address public nodeLicenseAddress;
-    uint256 private maxKeysNonKyc;
+    uint256 private maxKeysNonKyc; // TODO Get the initial value from management & confirm variable size needed
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
@@ -62,7 +62,7 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     event XaiAddressChanged(address indexed newXaiAddress);
     event FoundationBasepointsUpdated(uint256 newBasepoints);
 
-    function initialize (address _esXaiBurnFoundationRecipient, uint256 _esXaiBurnFoundationBasePoints, address _refereeAddress, address _nodeLicenseAddress) public reinitializer(3) {
+    function initialize (address _esXaiBurnFoundationRecipient, uint256 _esXaiBurnFoundationBasePoints, address _refereeAddress, address _nodeLicenseAddress, uint256 _maxKeys) public reinitializer(3) {
         require(_esXaiBurnFoundationRecipient != address(0) && _esXaiBurnFoundationBasePoints <= 1000, "Invalid initialize");
         require(_refereeAddress != address(0), "Invalid referee address");
         require(_nodeLicenseAddress != address(0), "Invalid node license address");
@@ -70,7 +70,7 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         esXaiBurnFoundationBasePoints = _esXaiBurnFoundationBasePoints;
         refereeAddress = _refereeAddress;
         nodeLicenseAddress = _nodeLicenseAddress;
-        maxKeysNonKyc = 10; //TODO Get the initial value from management
+        maxKeysNonKyc = _maxKeys; //TODO Get the initial value from management & confirm variable size needed
     }
 
     /**
@@ -170,8 +170,9 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      * @dev Function to start the redemption process
      * @param amount The amount of esXai to redeem.
      * @param duration The duration of the redemption process in seconds.
+     * @return The index of the redemption request.
      */
-    function startRedemption(uint256 amount, uint256 duration) public {
+    function startRedemption(uint256 amount, uint256 duration) public returns (uint256) {
         require(_redemptionActive, "Redemption is currently inactive");
         require(amount > 0, "Invalid Amount");
         require(balanceOf(msg.sender) >= amount, "Insufficient esXai balance");
@@ -183,6 +184,7 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         // Store the redemption request
         _extRedemptionRequests[msg.sender].push(RedemptionRequestExt(amount, block.timestamp, duration, 0, false, false, [uint256(0),0,0,0,0]));
         emit RedemptionStarted(msg.sender, _extRedemptionRequests[msg.sender].length - 1);
+        return _extRedemptionRequests[msg.sender].length - 1;
     }
 
     /**

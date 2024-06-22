@@ -112,8 +112,9 @@ describe("Fixture Tests", function () {
 		await nodeLicense.waitForDeployment();
 
         // Upgrade esXai3 upgrade - moved here due to needing referee and node license addresses as a parameters
+        const maxKeysNonKyc = BigInt(1);
         const EsXai3 = await ethers.getContractFactory("esXai3");
-        const esXai3 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai3, { call: { fn: "initialize", args: [(await deployer.getAddress()), BigInt(500), referee.getAddress(), nodeLicense.getAddress()] } });
+        const esXai3 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai3, { call: { fn: "initialize", args: [(await deployer.getAddress()), BigInt(500), referee.getAddress(), nodeLicense.getAddress(), maxKeysNonKyc] } });
         await esXai3.waitForDeployment();
 
 		// Deploy the Pool Factory
@@ -258,8 +259,8 @@ describe("Fixture Tests", function () {
         await nodeLicense.connect(addr2).mint(10, "", {value: price});
 
         // Mint addr3 a node license
-        price = await nodeLicense.price(1, "");
-        await nodeLicense.connect(addr3).mint(1, "", {value: price});
+        price = await nodeLicense.price(2, "");
+        await nodeLicense.connect(addr3).mint(2, "", {value: price});
 
         // KYC addr1 and addr 2, but not addr 3
         await referee.connect(kycAdmin).addKycWallet(await addr1.getAddress());
@@ -320,7 +321,7 @@ describe("Fixture Tests", function () {
     // describe("CNY 2024", CNYAirDropTests.bind(this));
     // describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
     // describe("Xai", XaiTests(deployInfrastructure).bind(this));
-    // describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
+     describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
     // describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
     describe("Referee", RefereeTests(deployInfrastructure).bind(this));
     // describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
