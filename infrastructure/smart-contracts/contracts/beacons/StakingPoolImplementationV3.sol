@@ -93,6 +93,4 @@ contract StakingPoolImplementationV3 is Initializable, AccessControlUpgradeable 
         // Functionality to disable the adminReStakeKeys function
         renounceRole(ADMIN_ROLE, msg.sender);
     }
-
-    // Additional functionality can be added here
 }
