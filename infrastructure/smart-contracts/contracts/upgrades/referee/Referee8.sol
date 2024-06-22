@@ -133,7 +133,7 @@ contract Referee8 is Initializable, AccessControlEnumerableUpgradeable {
     uint256 public maxStakeAmountPerLicense;
     
     // Enabling staking on the Referee
-    bool public stakingEnabled;
+    bool public stakingEnabled; // TODO ask why this is not used/referenced/changed
 
     // Mapping for a key id assigned to a staking pool
     mapping(uint256 => address) public assignedKeyToPool;
