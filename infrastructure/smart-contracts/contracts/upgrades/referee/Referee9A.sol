@@ -65,7 +65,7 @@ import "../../staking-v2/PoolFactory.sol";
 // 50: Invalid amount.
 // 51: Staking Temporarily Disabled.
 
-contract Referee8 is Initializable, AccessControlEnumerableUpgradeable {
+contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
     // Define roles
@@ -151,12 +151,15 @@ contract Referee8 is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping for amount of assigned keys of a user
     mapping(address => uint256) public assignedKeysOfUserCount;
 
+    // Challenge number the KYC check was removed for claims
+    uint256 public kycCheckRemovedChallengeNumber;
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[490] private __gap;
+    uint256[489] private __gap;
 
     // Struct for the submissions
     struct Submission {
@@ -219,6 +222,8 @@ contract Referee8 is Initializable, AccessControlEnumerableUpgradeable {
         stakeAmountBoostFactors[1] = 200;
         stakeAmountBoostFactors[2] = 300;
         stakeAmountBoostFactors[3] = 700;
+
+        kycCheckRemovedChallengeNumber = challengeCounter;
     }
 
     modifier onlyPoolFactory() {
@@ -652,7 +657,10 @@ contract Referee8 is Initializable, AccessControlEnumerableUpgradeable {
 
         // Check if the owner of the NodeLicense is KYC'd
         address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
-        require(isKycApproved(owner), "22");
+
+        if(_challengeId < kycCheckRemovedChallengeNumber){    
+            require(isKycApproved(owner), "22");
+        }
 
         // Check if the submission has already been claimed
         require(!submission.claimed, "23");
@@ -720,7 +728,8 @@ contract Referee8 is Initializable, AccessControlEnumerableUpgradeable {
 
             // Check if the nodeLicenseId is eligible for a payout
             if (
-                isKycApproved(owner) &&
+                // Confirm the owner is KYC'd, or the challenge is past the kycCheckRemovedChallengeNumber
+                (isKycApproved(owner) || _challengeId >= kycCheckRemovedChallengeNumber) &&
                 mintTimestamp < challengeToClaimFor.createdTimestamp && 
                 !submission.claimed &&
                 submission.eligibleForPayout
@@ -962,7 +971,6 @@ contract Referee8 is Initializable, AccessControlEnumerableUpgradeable {
 
     function stakeKeys(address pool, address staker, uint256[] memory keyIds) external onlyPoolFactory {
         require(stakingEnabled, "51");
-		require(isKycApproved(staker), "42"); //TODO, see if this needs to be removed
         uint256 keysLength = keyIds.length;
         require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "43");
 
