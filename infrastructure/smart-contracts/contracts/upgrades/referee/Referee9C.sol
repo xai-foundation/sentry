@@ -267,6 +267,7 @@ contract Referee9C is Initializable, AccessControlEnumerableUpgradeable {
         stakeAmountTierThresholds[2] = 4_000_000 * 10 ** 18;
         stakeAmountTierThresholds[3] = 8_000_000 * 10 ** 18;
 
+        // Set the challenge Id where the KYC check was removed
         kycCheckRemovedChallengeNumber = challengeCounter;
     }
 
@@ -451,9 +452,8 @@ contract Referee9C is Initializable, AccessControlEnumerableUpgradeable {
      */
     function calculateChallengeEmissionAndTier() public view returns (uint256, uint256) {
 
+        uint256 totalSupply = getCombinedTotalSupply();  
         uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
-        uint256 totalSupply = getCombinedTotalSupply();
-
         require(maxSupply > totalSupply, "5");
 
         uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply)); // calculate which tier we are in starting from 0
@@ -505,8 +505,8 @@ contract Referee9C is Initializable, AccessControlEnumerableUpgradeable {
             require(node.confirmData == _confirmData, "11");
             require(node.createdAtBlock == _assertionTimestamp, "12");
         }
-
-        //TODO review halving check
+        
+        // check if we need to halve the emission rewards
         _checkHalving();
 
         // we need to determine how much token will be emitted
