@@ -198,12 +198,12 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
 
         // Send the funds to the fundsReceiver
         uint256 remainder = msg.value - finalPrice;
-        (bool sent, bytes memory data) = fundsReceiver.call{value: finalPrice - referralReward}("");
+        (bool sent,) = fundsReceiver.call{value: finalPrice - referralReward}("");
         require(sent, "Failed to send Ether");
 
         // Send back the remainder amount
         if (remainder > 0) {
-            (bool sentRemainder, bytes memory dataRemainder) = msg.sender.call{value: remainder}("");
+            (bool sentRemainder,) = msg.sender.call{value: remainder}("");
             require(sentRemainder, "Failed to send back the remainder Ether");
         }
     }
@@ -644,7 +644,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         address from,
         address to,
         uint256 tokenId
-    ) internal override {
+    ) internal override pure {
         revert("NodeLicense: transfer is not allowed");
     }
 
