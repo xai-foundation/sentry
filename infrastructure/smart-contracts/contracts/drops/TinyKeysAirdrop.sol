@@ -91,8 +91,15 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         uint256 startingKeyId = airdropCounter;
         uint256 endingKeyId = Math.min(airdropCounter + _qtyToProcess, totalSupplyAtStart);
         
+        Referee8 referee = Referee8(refereeAddress);
+        NodeLicense8 nodeLicense = NodeLicense8(nodeLicenseAddress);
         for (uint256 i = startingKeyId; i < endingKeyId; i++) {
-            _processAirdropKey(i);
+            address owner = nodeLicense.ownerOf(i);
+            uint256[] memory tokenIds = nodeLicense.mintForAirdrop(keyMultiplier, owner);
+            address poolAddress = referee.assignedKeyToPool(i);
+            if (poolAddress != address(0)) {
+                PoolFactoryV2(poolAddress).stakeKeysAdmin(poolAddress, tokenIds, owner);                                
+            }
         }
         
         airdropCounter = endingKeyId;
@@ -103,34 +110,5 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         }
 
         return endingKeyId;
-    }
-
-    /**
-     * @notice Internal function to process one key airdrop
-     * @dev This function will be called internally by the processAirdropSegment function
-     * @dev It will be called once for each node license in the segment
-     * @dev It will mint and airdrop keys to the node license owner
-     * @dev It will check to see if the node license is staked, if so, it will auto-stake the new keys
-     * @dev If not, it will air-drop to the owner's wallet
-     * @param _nodeLicenseId The Id of the node license to process
-     * // TODO check if Onwer staked keys require different handling
-     */
-    function _processAirdropKey(uint256 _nodeLicenseId) internal {
-        Referee8 referee = Referee8(refereeAddress);
-        NodeLicense8 nodeLicense = NodeLicense8(nodeLicenseAddress);
-        
-        // Get the owner of the node license
-        address owner = nodeLicense.ownerOf(_nodeLicenseId);
-        
-        // Mint the keys for the airdrop
-        uint256[] memory tokenIds = nodeLicense.mintForAirdrop(keyMultiplier, owner);
-        
-        // Check if the node license is staked
-        address poolAddress = referee.assignedKeyToPool(_nodeLicenseId);
-        
-        // If the node license is staked, auto-stake the new keys
-        if (poolAddress != address(0)) {
-            PoolFactoryV2(poolAddress).stakeKeysAdmin(poolAddress, tokenIds, owner);                                
-        }
     }
 }
