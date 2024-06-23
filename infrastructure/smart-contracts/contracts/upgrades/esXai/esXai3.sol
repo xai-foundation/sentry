@@ -170,9 +170,8 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      * @dev Function to start the redemption process
      * @param amount The amount of esXai to redeem.
      * @param duration The duration of the redemption process in seconds.
-     * @return The index of the redemption request.
      */
-    function startRedemption(uint256 amount, uint256 duration) public returns (uint256) {
+    function startRedemption(uint256 amount, uint256 duration) public {
         require(_redemptionActive, "Redemption is currently inactive");
         require(amount > 0, "Invalid Amount");
         require(balanceOf(msg.sender) >= amount, "Insufficient esXai balance");
@@ -184,7 +183,6 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         // Store the redemption request
         _extRedemptionRequests[msg.sender].push(RedemptionRequestExt(amount, block.timestamp, duration, 0, false, false, [uint256(0),0,0,0,0]));
         emit RedemptionStarted(msg.sender, _extRedemptionRequests[msg.sender].length - 1);
-        return _extRedemptionRequests[msg.sender].length - 1;
     }
 
     /**
@@ -219,12 +217,12 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         require(block.timestamp >= request.startTime + request.duration, "Redemption period not yet over");
 
         // Retrieve the number of licenses owned from the nodeLicense contract
-        uint256 licenseCountOwned = ERC721Upgradeable(nodeLicenseAddress).balanceOf(_msgSender());
+        uint256 licenseCountOwned = ERC721Upgradeable(nodeLicenseAddress).balanceOf(msg.sender);
 
         // If the wallet owns more licenses than the maxKeysNonKyc, check if the wallet is KYC approved
         if(licenseCountOwned > maxKeysNonKyc){
             Referee8 referee = Referee8(refereeAddress);
-            require(referee.isKycApproved(_msgSender()), "You own too many keys, must be KYC approved to claim.");
+            require(referee.isKycApproved(msg.sender), "You own too many keys, must be KYC approved to claim.");
         }
 
         // Calculate the conversion ratio based on the duration
