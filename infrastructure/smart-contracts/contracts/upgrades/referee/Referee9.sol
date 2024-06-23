@@ -262,7 +262,8 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         maxStakeAmountPerLicense = 20000 * 10 ** 18;
         maxKeysPerPool = 1000;
 
-        stakeAmountTierThresholds[0] = 30_000 * 10 ** 18;
+        // TODO Look into these being removed? Not needed as not changing?
+        stakeAmountTierThresholds[0] = 30_000 * 10 ** 18; 
         stakeAmountTierThresholds[1] = 2_000_000 * 10 ** 18;
         stakeAmountTierThresholds[2] = 4_000_000 * 10 ** 18;
         stakeAmountTierThresholds[3] = 8_000_000 * 10 ** 18;
@@ -706,6 +707,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         // Check if the owner of the NodeLicense is KYC'd
         address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
 
+        // If the challenge is before the kycCheckRemovedChallengeNumber, check if the owner is KYC'd
         if(_challengeId < kycCheckRemovedChallengeNumber){    
             require(isKycApproved(owner), "22");
         }
@@ -777,7 +779,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             // Check if the nodeLicenseId is eligible for a payout
             if (
                 // Confirm the owner is KYC'd, or the challenge is past the kycCheckRemovedChallengeNumber
-                (isKycApproved(owner) || _challengeId >= kycCheckRemovedChallengeNumber) &&
+                (_challengeId >= kycCheckRemovedChallengeNumber || isKycApproved(owner)) &&
                 mintTimestamp < challengeToClaimFor.createdTimestamp && 
                 !submission.claimed &&
                 submission.eligibleForPayout
@@ -930,7 +932,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         emit UpdateMaxKeysPerPool(prevAmount, newAmount);
     }
 
-    //TODO review new setter
+    //TODO review new setter - These will need to be updated in the operator CLI
     /**
      * @dev Admin update the staking tier threshold percentages and the corresponding reward chance boosts.
      * @notice This function should be used in lieu of the addStakingTier, updateStakingTier and removeStakingTier functions to ensure
