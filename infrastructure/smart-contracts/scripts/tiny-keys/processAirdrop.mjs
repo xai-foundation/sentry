@@ -8,7 +8,7 @@ async function main() {
     // get the deployer
     const [deployer] = (await ethers.getSigners());
 
-    let nextIndex = 0;
+    let nextIndex = 1;
     let totalSupply = 0;
     const qtyPerSegment = 100;
 
@@ -23,7 +23,7 @@ async function main() {
     // Connect the signer to the contract
     const tinyKeysAirdropWithSigner = tinyKeysAirdrop.connect(deployer);
 
-    while (nextIndex < totalSupply) {    
+    while (nextIndex <= totalSupply) {    
         console.log(`Processing Airdrop Segment for ${qtyPerSegment} tokens beginning at token id ${nextIndex}...`);
         nextIndex = await tinyKeysAirdropWithSigner.processAirdropSegment(qtyPerSegment);
     }
