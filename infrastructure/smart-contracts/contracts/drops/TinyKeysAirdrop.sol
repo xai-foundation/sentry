@@ -59,7 +59,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         nodeLicenseAddress = _nodeLicenseAddress;
         keyMultiplier = _keyMultiplier;
 
-        airdropCounter = 0;
+        airdropCounter = 1;
         airdropStarted = false;
     }
 
@@ -93,7 +93,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         
         Referee8 referee = Referee8(refereeAddress);
         NodeLicense8 nodeLicense = NodeLicense8(nodeLicenseAddress);
-        for (uint256 i = startingKeyId; i < endingKeyId; i++) {
+        for (uint256 i = startingKeyId; i <= endingKeyId; i++) {
             address owner = nodeLicense.ownerOf(i);
             uint256[] memory tokenIds = nodeLicense.mintForAirdrop(keyMultiplier, owner);
             address poolAddress = referee.assignedKeyToPool(i);
