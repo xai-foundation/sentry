@@ -268,10 +268,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      */
 
     function mintForAirdrop(uint256 _qtyToMint, address _theRecipient) external onlyRole(AIRDROP_ADMIN_ROLE) returns (uint256 [] memory tokenIds) {
-        require(
-            _tokenIds.current() + _qtyToMint <= maxSupply,
-            "Exceeds maxSupply"
-        );
         tokenIds = _mintNodeLicense(_qtyToMint, 0, _theRecipient);
     }
 
@@ -282,7 +278,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @param _airdropAdmin The address of the airdrop admin to remove
      */
 
-    function removeAirdropAdmin(address _airdropAdmin) external onlyRole(AIRDROP_ADMIN_ROLE) {
+    function removeAirdropAdmin(address _airdropAdmin) external onlyRole(DEFAULT_ADMIN_ROLE) {
         revokeRole(AIRDROP_ADMIN_ROLE, _airdropAdmin);
     }
 
