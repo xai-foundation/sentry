@@ -234,7 +234,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     event StakingTierSet(uint256 indexed tier, uint256 threshold, uint256 boostFactor);
 
     //TODO does reinitializer(6) need to be incremented?
-    function initialize() public reinitializer(6) {
+    function initialize() public reinitializer(7) {
         //TODO - review initializer
         // Set Initial Tier Percentages
         uint256[] memory _initTierPercentageThresholds = new uint256[](4);
