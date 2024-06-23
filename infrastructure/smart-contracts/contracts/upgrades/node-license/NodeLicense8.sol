@@ -127,7 +127,10 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         xaiAddress = _xaiAddress;
         esXaiAddress = _esXaiAddress;
 
+        // Set max supply to 0 to prevent minting until airdrop is complete and pricing tiers are set
         maxSupply = 0;
+
+        // Grant the airdrop admin role to the airdrop admin address
         _grantRole(AIRDROP_ADMIN_ROLE, airdropAdmin);
     }
 
@@ -282,8 +285,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     function removeAirdropAdmin(address _airdropAdmin) external onlyRole(AIRDROP_ADMIN_ROLE) {
         revokeRole(AIRDROP_ADMIN_ROLE, _airdropAdmin);
     }
-
-
 
 
     /**
