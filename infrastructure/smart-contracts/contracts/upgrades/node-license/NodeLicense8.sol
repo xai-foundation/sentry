@@ -78,6 +78,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     address public xaiAddress;
     address public esXaiAddress;
 
+    bytes32 public constant AIRDROP_ADMIN_ROLE = keccak256("AIRDROP_ADMIN_ROLE");
+
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
@@ -115,8 +117,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * 
      */
 
-
-    function initialize(address _xaiAddress,  address _esXaiAddress, address ethPriceFeedAddress, address xaiPriceFeedAddress) public reinitializer(3) {
+    function initialize(address _xaiAddress,  address _esXaiAddress, address ethPriceFeedAddress, address xaiPriceFeedAddress, address airdropAdmin) public reinitializer(3) {
         require(_xaiAddress != address(0), "Invalid xai address");
         require(_esXaiAddress != address(0), "Invalid esXai address");
         require(ethPriceFeedAddress != address(0), "Invalid ethPriceFeed address");
@@ -125,6 +126,9 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         xaiPriceFeed = IAggregatorV3Interface(xaiPriceFeedAddress);
         xaiAddress = _xaiAddress;
         esXaiAddress = _esXaiAddress;
+
+        maxSupply = 0;
+        _grantRole(AIRDROP_ADMIN_ROLE, airdropAdmin);
     }
 
     /**
@@ -184,7 +188,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         require(msg.value >= finalPrice, "Ether value sent is not correct");
 
         // Mint the NodeLicense tokens
-        _mintNodeLicense(_amount, averageCost);
+        _mintNodeLicense(_amount, averageCost, msg.sender);
 
         // Calculate the referral reward and determine if the promo code is an address
         (uint256 referralReward, address recipientAddress)  = _calculateReferralReward(finalPrice, _promoCode);
@@ -228,7 +232,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         uint256 averageCost = finalEthPrice / _amount;
 
         _validatePayment(finalPrice, _useEsXai);
-        _mintNodeLicense(_amount, averageCost);
+        _mintNodeLicense(_amount, averageCost, msg.sender);
 
         // Calculate the referral reward and determine if the promo code is an address
         (uint256 referralReward, address recipientAddress)  = _calculateReferralReward(finalPrice, _promoCode);
@@ -251,6 +255,36 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             }
         }     
     }
+
+    /**
+     *  @notice Mints new NodeLicense tokens for the tiny keys airdrop
+     *  @param _qtyToMint The qty of tokens to mint.
+     *  @param _theRecipient The recipient of the airdrop 
+     *  @return tokenIds The tokenIds of the minted tokens
+     *  @dev Only callable by the airdrop admin
+     */
+
+    function mintForAirdrop(uint256 _qtyToMint, address _theRecipient) external onlyRole(AIRDROP_ADMIN_ROLE) returns (uint256 [] memory tokenIds) {
+        require(
+            _tokenIds.current() + _qtyToMint <= maxSupply,
+            "Exceeds maxSupply"
+        );
+        tokenIds = _mintNodeLicense(_qtyToMint, 0, _theRecipient);
+    }
+
+
+    /**
+     * @notice function to remove the airdrop admin role after completion of the airdrop
+     * @dev Only callable by the airdrop admin
+     * @param _airdropAdmin The address of the airdrop admin to remove
+     */
+
+    function removeAirdropAdmin(address _airdropAdmin) external onlyRole(AIRDROP_ADMIN_ROLE) {
+        revokeRole(AIRDROP_ADMIN_ROLE, _airdropAdmin);
+    }
+
+
+
 
     /**
      * @notice Validate new mint request
@@ -278,15 +312,16 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @notice internal function to mint new NodeLicense tokens
      * @param _amount The amount of tokens to mint.
      */
-    function _mintNodeLicense(uint256 _amount, uint256 averageCost) internal {
+    function _mintNodeLicense(uint256 _amount, uint256 averageCost, address _receiver) internal returns (uint256 [] memory tokenIds){
         for (uint256 i = 0; i < _amount; i++) {
             _tokenIds.increment();
             uint256 newItemId = _tokenIds.current();
-            _mint(msg.sender, newItemId);
+            _mint(_receiver, newItemId);
              // Record the minting timestamp
             _mintTimestamps[newItemId] = block.timestamp;
             // Record the average cost
             _averageCost[newItemId] = averageCost;
+            tokenIds[i] = newItemId;
         }
     }
 

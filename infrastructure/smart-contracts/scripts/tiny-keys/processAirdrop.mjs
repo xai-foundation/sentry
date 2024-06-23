@@ -14,11 +14,11 @@ async function main() {
 
     // Get the total supply of node licenses
     const NodeLicense = await ethers.getContractFactory("NodeLicense9");
-    const nodeLicense = NodeLicense.attach(NODE_LICENSE_CONTRACT);
+    const nodeLicense = NodeLicense.connect(NODE_LICENSE_CONTRACT);
     totalSupply = await nodeLicense.totalSupply();
 
     const TinyKeysAirdrop = await ethers.getContractFactory("TinyKeysAirdrop");
-    const tinyKeysAirdrop =  TinyKeysAirdrop.attach(TINY_KEYS_AIRDROP_ADDRESS);
+    const tinyKeysAirdrop =  TinyKeysAirdrop.connect(TINY_KEYS_AIRDROP_ADDRESS);
 
     // Connect the signer to the contract
     const tinyKeysAirdropWithSigner = tinyKeysAirdrop.connect(deployer);

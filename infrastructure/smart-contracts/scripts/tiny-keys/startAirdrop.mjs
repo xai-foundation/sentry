@@ -10,7 +10,7 @@ async function main() {
     // Activate tiny keys airdrop
     console.log("Activating Tiny Keys Airdrop...");
     const TinyKeysAirdrop = await ethers.getContractFactory("TinyKeysAirdrop");
-    const tinyKeysAirdrop =  TinyKeysAirdrop.attach(TINY_KEYS_AIRDROP_ADDRESS);
+    const tinyKeysAirdrop =  TinyKeysAirdrop.connect(TINY_KEYS_AIRDROP_ADDRESS);
 
     // Connect the signer to the contract
     const tinyKeysAirdropWithSigner = tinyKeysAirdrop.connect(deployer);
