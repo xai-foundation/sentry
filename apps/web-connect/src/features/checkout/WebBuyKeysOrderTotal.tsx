@@ -3,7 +3,7 @@ import {AiFillInfoCircle} from "react-icons/ai";
 import {useGetTotalSupplyAndCap} from "@/features/checkout/hooks/useGetTotalSupplyAndCap";
 import {Dispatch, SetStateAction, useState} from "react";
 import {ethers} from "ethers";
-import {CheckoutTierSummary, config, getPromoCode, getXaiAllowance, getXaiBalance} from "@sentry/core";
+import {CheckoutTierSummary, config, getEsXaiAllowance, getEsXaiBalance, getPromoCode, getXaiAllowance, getXaiBalance} from "@sentry/core";
 import {PrimaryButton} from "@sentry/ui";
 import {KYCTooltip} from "@/features/checkout/KYCTooltip";
 import {useAccount, useNetwork} from 'wagmi';
@@ -86,8 +86,8 @@ export function WebBuyKeysOrderTotal(
 			setTokenBalance(xaiBalance.balance);
 			setTokenAllowance(xaiAllowance.approvalAmount);
 		}else{
-			const esxaiBalance = await getXaiBalance(walletAddress); 
-			const esxaiAllowance = await getXaiAllowance(walletAddress, config.nodeLicenseAddress);
+			const esxaiBalance = await getEsXaiBalance(walletAddress); 
+			const esxaiAllowance = await getEsXaiAllowance(walletAddress, config.nodeLicenseAddress);
 			setTokenBalance(esxaiBalance.balance);
 			setTokenAllowance(esxaiAllowance.approvalAmount);
 		}	
