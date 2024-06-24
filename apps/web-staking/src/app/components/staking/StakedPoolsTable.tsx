@@ -13,7 +13,7 @@ import MessageComponent from "./MessageComponent";
 import { PoolInfo, TierInfo } from "@/types/Pool";
 import { iconType } from "../dashboard/constants/constants";
 import { getCurrentTierByStaking } from "./utils";
-import { formatCurrencyNoDecimals, formatCurrencyWithDecimals, hideDecimals } from "@/app/utils/formatCurrency";
+import { formatCurrencyCompact, formatCurrencyNoDecimals, formatCurrencyWithDecimals, hideDecimals } from "@/app/utils/formatCurrency";
 import { formatDailyRewardRate, formatDailyRewardRatePercentage } from "@/app/utils/formatDailyRewardRate";
 
 const POOL_DATA_COLUMNS_STAKED = [
@@ -70,7 +70,7 @@ const StakedPoolsTable = (
         />
       )}
       <table className="min-w-full text-base font-light sm:mb-[25px] lg:mb-[50px] bg-nulnOilBackground shadow-default">
-        <thead className="sm:hidden lg:table-header-group">
+        <thead className="sm:hidden lg:table-header-group bg-dynamicBlack">
           <tr>
             {POOL_DATA_COLUMNS_STAKED.map((column, index) => {
               return (
@@ -84,7 +84,7 @@ const StakedPoolsTable = (
             })}
           </tr>
         </thead>
-        <thead className="lg:hidden">
+        <thead className="lg:hidden bg-dynamicBlack">
           <tr>
             {POOL_DATA_COLUMNS_STAKED_MOBILE.map((column, index) => {
               return (
@@ -127,10 +127,10 @@ const StakedPoolsTable = (
                   <TableRowCapacity pool={pool} showTableKeys={showTableKeys} maxKeyPerPool={maxKeyPerPool} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in pl-1 min-w-[90px]" />
                   {/* <TableRowStaked value={"__%"}/> POOL UPTIME */} 
                   <TableRowStaked value={`${pool.userStakedEsXaiAmount ? pool.userStakedEsXaiAmount < 0.0001 ? "<0.0001" : hideDecimals(formatCurrencyWithDecimals.format(pool.userStakedEsXaiAmount)) : 0} esXAI`} poolAddress={pool.address} keys={`${pool.userStakedKeyIds.length} keys`} customClass="lg:pr-4 group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in sm:pr-[5px]" positionStyles="!items-end" rateClass="text-right" />
-                  <TableRowStaked value={`${formatDailyRewardRatePercentage(pool.esXaiRewardRate, 2)}%`} keys={`${formatDailyRewardRate(pool.keyRewardRate, 2)} esXAI`} customClass="lg:pr-4 lg:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end" />
+                  <TableRowStaked value={`${pool.keyCount == 0 ? 0 : formatCurrencyCompact.format(formatDailyRewardRatePercentage(pool.esXaiRewardRate, 2))}%`} keys={`${pool.keyCount == 0 ? 0 : formatCurrencyCompact.format(formatDailyRewardRate(pool.keyRewardRate, 2))} esXAI`} customClass="lg:pr-4 lg:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end" />
                   <TableRowStaked value={`${formatCurrencyNoDecimals.format(pool.userStakedKeyIds.length)} keys`} poolAddress={pool.address} customClass="lg:table-cell sm:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
-                  <TableRowStaked value={`${formatDailyRewardRatePercentage(pool.esXaiRewardRate, 2)}%`}  poolAddress={pool.address} customClass="lg:table-cell sm:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
-                  <TableRowStaked value={`${formatDailyRewardRate(pool.keyRewardRate, 2)} esXAI`}  poolAddress={pool.address} customClass="lg:table-cell sm:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
+                  <TableRowStaked value={`${pool.keyCount == 0 ? 0 : formatDailyRewardRatePercentage(pool.esXaiRewardRate, 2)}%`}  poolAddress={pool.address} customClass="lg:table-cell sm:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
+                  <TableRowStaked value={`${pool.keyCount == 0 ? 0 : formatDailyRewardRate(pool.keyRewardRate, 2)} esXAI`}  poolAddress={pool.address} customClass="lg:table-cell sm:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
                   <TableRowKeysRewards pool={pool} totalStaked={0} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" />
                 </tr>
               )

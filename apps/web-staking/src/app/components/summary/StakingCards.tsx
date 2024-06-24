@@ -78,6 +78,8 @@ const StakingCards = ({
             </BaseCallout>
           }
           <div className="flex w-full gap-14">
+            <div className="flex sm:flex-col lg:flex-row lg:gap-14">
+            <div className="flex sm:gap-10 lg:gap-14">
             <PoolStakingInfoChild
               title={"Pool balance"}
               content={`${hideDecimals(formatCurrencyWithDecimals.format(poolInfo.totalStakedAmount))} esXAI`}
@@ -86,12 +88,17 @@ const StakingCards = ({
               title={"Pool capacity"}
               content={`${formatCurrencyNoDecimals.format(poolInfo.maxStakedAmount)} esXAI`}
             />
+            </div>
+            <div>
             <PoolStakingInfoChild
               title={"esXAI rate"}
-              content={`${formatDailyRewardRatePercentage(poolFromDb?.esXaiRewardRate, 2)} %`}
+              content={`${poolInfo.keyCount == 0 ? 0 : formatDailyRewardRatePercentage(poolFromDb?.esXaiRewardRate, 2)} %`}
               toolTipText={"Estimated annual rate for staking esXAI based off of current stake and reward breakdown and past 7 days of pool rewards."}
-              toolTipClasses={{ tooltipContainer: "whitespace-normal lg:left-auto lg:!right-[-444px] xl:left-[-444px] left-[-444px]  md:w-[500px] sm:w-[356px]", tooltipText: "mb-0" }}
-             />
+              toolTipClasses={{ tooltipContainer: "whitespace-normal lg:left-auto lg:!right-[-444px] xl:left-[-444px] sm:!left-[-85px] lg:!left-[-444px]  md:w-[500px] sm:w-[356px]", tooltipText: "mb-0" }}
+              customClass="sm:!mt-0 lg:!mt-[15px]"
+            />
+            </div>
+            </div>
           </div>
         </div>
       </PoolStakingInfo>
@@ -124,6 +131,8 @@ const StakingCards = ({
             </BaseCallout>
           )}
           <div className="flex w-full gap-14">
+            <div className="flex sm:flex-col lg:flex-row lg:gap-14">
+            <div className="flex sm:gap-10 lg:gap-14">
             <PoolStakingInfoChild
               title={"Pool balance"}
               content={`${poolInfo.keyCount} keys`}
@@ -132,12 +141,17 @@ const StakingCards = ({
               title={"Pool capacity"}
               content={`${poolInfo.maxKeyCount} keys`}
             />
+            </div>
+            <div>
             <PoolStakingInfoChild
               title={"Key rate"}
-              content={`${formatDailyRewardRate(poolFromDb?.keyRewardRate, 2)} esXAI`}
+              content={`${poolInfo.keyCount == 0 ? 0 : formatDailyRewardRate(poolFromDb?.keyRewardRate, 2)} esXAI`}
               toolTipText={"Estimated annual rate for staking a key based off of current stake and reward breakdown and past 7 days of pool rewards."}
-              toolTipClasses={{ tooltipContainer: "whitespace-normal lg:left-auto lg:!right-[-433px] xl:left-[-433px] left-[-433px]  md:w-[500px] sm:w-[356px]", tooltipText: "mb-0" }}
+              toolTipClasses={{ tooltipContainer: "whitespace-normal lg:left-auto lg:!right-[-433px] xl:left-[-433px] sm:!left-[-70px] lg:!left-[-444px] md:w-[500px] sm:w-[356px]", tooltipText: "mb-0" }}
+              customClass="sm:!mt-0 lg:!mt-[15px]"
             />
+            </div>
+            </div>
           </div>
         </div>
       </PoolStakingInfo>
