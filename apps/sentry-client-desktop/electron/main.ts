@@ -102,6 +102,7 @@ function createWindow() {
 		minWidth: 1650,
 		minHeight: 900,
 		autoHideMenuBar: true,
+		resizable: false,
 		icon: path.join(process.env.VITE_PUBLIC, 'xai-logo.svg'),
 		webPreferences: {
 			preload: path.join(__dirname, 'preload.js'),
