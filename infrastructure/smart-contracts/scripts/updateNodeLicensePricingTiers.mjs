@@ -19,7 +19,7 @@ async function main() {
     // Read the csv from tierUpload.csv, and add the pricing tiers to NodeLicense
     const tiers = parse(fs.readFileSync('tierUpload.csv'), { columns: true });
     for (const tier of tiers) {
-        const adjustedPrice = tier.unitCostInEth * changeFactor;
+        const adjustedPrice = tier.unitCostInEth / changeFactor;
         const adjustedQuantity = tier.quantityBeforeNextTier * changeFactor;
         console.log(`Setting pricing tier ${tier.tierIndex} with unit cost ${adjustedPrice} and quantity before next tier ${adjustedQuantity}`);
         await nodeLicenseWithSigner.setOrAddPricingTier(tier.tierIndex, ethers.parseEther(adjustedPrice), adjustedQuantity);
