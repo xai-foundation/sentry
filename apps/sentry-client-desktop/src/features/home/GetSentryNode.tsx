@@ -44,7 +44,8 @@ export function GetSentryNode() {
 	}
 
 	return (
-		<div className="w-full flex flex-row bg-nulnOil h-full pt-[260px] pl-[97px]">
+		<div className="pl-[15px]">
+		<div className="w-full flex flex-row bg-nulnOil h-screen pt-[260px] pl-[97px]">
 			<div className="flex flex-col z-10 w-full">
 				<div className="flex gap-1 items-center">
 					<h1 className="text-[30px] font-bold text-white uppercase">
@@ -76,6 +77,7 @@ export function GetSentryNode() {
 				</div>
 			</div>
             <img src={img} alt="logo" className="fixed w-full scale-[1.2] translate-x-[7%] translate-y-[-20%] h-screen left-0 object-cover" />
+		</div>
 		</div>
 	);
 }
