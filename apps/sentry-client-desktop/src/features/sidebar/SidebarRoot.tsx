@@ -28,7 +28,7 @@ export function Sidebar() {
 
 	return (
 		<div
-			className="flex flex-col justify-between sticky h-full w-[237px] min-w-[237px] text-[15px] z-10"
+			className="flex flex-col justify-between sticky h-full w-[253px] min-w-[253px] text-[15px] z-10"
 		>
 			<div className="fixed flex flex-col">
 				<div
@@ -38,7 +38,7 @@ export function Sidebar() {
 					<XaiHeaderIcon width={39} height={34} />
 				</div>
 
-				<div className="w-[237px] mb-[145px]">
+				<div className="w-[253px] mb-[145px]">
 					<Link
 						to="/dashboard"
 						className={`flex items-center w-[253px] text-xl text-white font-bold  cursor-pointer gap-2 py-[11px] pl-[17px] hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/dashboard')}`}
