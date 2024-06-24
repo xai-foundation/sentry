@@ -92,7 +92,7 @@ const StakingCards = ({
             <div>
             <PoolStakingInfoChild
               title={"esXAI rate"}
-              content={`${formatDailyRewardRatePercentage(poolFromDb?.esXaiRewardRate, 2)} %`}
+              content={`${poolInfo.keyCount == 0 ? 0 : formatDailyRewardRatePercentage(poolFromDb?.esXaiRewardRate, 2)} %`}
               toolTipText={"Estimated annual rate for staking esXAI based off of current stake and reward breakdown and past 7 days of pool rewards."}
               toolTipClasses={{ tooltipContainer: "whitespace-normal lg:left-auto lg:!right-[-444px] xl:left-[-444px] sm:!left-[-85px] lg:!left-[-444px]  md:w-[500px] sm:w-[356px]", tooltipText: "mb-0" }}
               customClass="sm:!mt-0 lg:!mt-[15px]"
@@ -145,7 +145,7 @@ const StakingCards = ({
             <div>
             <PoolStakingInfoChild
               title={"Key rate"}
-              content={`${formatDailyRewardRate(poolFromDb?.keyRewardRate, 2)} esXAI`}
+              content={`${poolInfo.keyCount == 0 ? 0 : formatDailyRewardRate(poolFromDb?.keyRewardRate, 2)} esXAI`}
               toolTipText={"Estimated annual rate for staking a key based off of current stake and reward breakdown and past 7 days of pool rewards."}
               toolTipClasses={{ tooltipContainer: "whitespace-normal lg:left-auto lg:!right-[-433px] xl:left-[-433px] sm:!left-[-70px] lg:!left-[-444px] md:w-[500px] sm:w-[356px]", tooltipText: "mb-0" }}
               customClass="sm:!mt-0 lg:!mt-[15px]"
