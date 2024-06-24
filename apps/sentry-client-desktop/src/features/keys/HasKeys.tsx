@@ -232,7 +232,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					<p className="text-sm uppercase text-[#A3A3A3] mb-1 mt-2">
 						View Wallet
 					</p>
-					<div className="relative flex flex-row gap-3">
+					<div className="relative flex flex-row gap-3 items-center">
 						<div className="max-h-[48px]">
 						<Dropdown
 						isOpen={isOpen}
