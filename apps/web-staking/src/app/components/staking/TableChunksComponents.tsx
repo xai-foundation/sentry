@@ -96,12 +96,12 @@ export function TableRowPool({ pool, tier, customClass }: { pool: PoolInfo, tier
         </Link>
       </td>
       {/*this TD we show when screen narrower than MD*/}
-      <td className={`lg:whitespace-nowrap lg:hidden sm:block flex sm:h-auto lg:h-auto items-center lg:px-7 lg:py-5 sm:px-2 sm:py-2 sm:pr-1 sm:pl-[17px] lg:text-base text-white text-left font-bold sm:text-xs ${customClass}`}>
+      <td className={`lg:whitespace-nowrap lg:hidden sm:block flex sm:h-auto lg:h-auto items-center lg:px-7 lg:py-5 sm:px-2 sm:py-2 sm:pr-1 sm:pl-[17px] lg:text-base text-white text-left font-bold sm:text-xs ${customClass} max-w-[140px]`}>
         <Link href={`/pool/${pool.address}/summary`} className="w-fit h-full flex items-center">
-          <div className="flex items-center max-w-[120px]">
+          <div className="flex items-center">
             <Avatar src={pool.meta.logo} className="lg:w-[48px] lg:h-[48px] sm:min-w-[32px] sm:min-h-[32px] mr-2" />
             <div className="flex sm:flex-col lg:flex-row lg:items-center sm:items-start">
-              <span className="sm:text-base lg:text-[18px]">{pool.meta.name}</span>
+              <span className="sm:text-[15px] lg:text-[18px]">{pool.meta.name}</span>
               <div className="flex my-1">
 
                 <OnwerUnstakeInfo pool={pool} showTooltipOnClick tooltipDelay={5000} />
@@ -175,7 +175,7 @@ export function TableRowCapacity({
     <>
       <td className={`lg:whitespace-nowrap text-graphiteGray lg:py-4 sm:py-2 text-left ${customClass}`}>
         <Link href={`/pool/${pool.address}/summary`} className="w-full">
-          <div className="lg:w-3/4 sm:w-full sm:text-base md:text-[18px] text-white font-medium">
+          <div className="lg:w-3/4 sm:w-full sm:text-[15px] md:text-[18px] text-white font-medium">
             <div className="flex sm:flex-wrap lg:flex-nowrap justify-start sm:mb-1 sm:hidden lg:table-cell">
               {showTableKeys
                 ? <><span>{formatCurrencyNoDecimals.format(pool.keyCount)}</span>/<span>{formatCurrencyNoDecimals.format(maxKeyPerPool)} keys</span></>
@@ -221,10 +221,10 @@ export function TableRowRewards({
     <>
       {/*this TD we show when screen narrower than MD*/}
       <td
-        className={`whitespace-nowrap text-white lg:py-4 sm:py-2 sm:pl-2 text-right sm:text-base lg:text-base table-cell md:hidden ${customClass}`}>
+        className={`whitespace-nowrap text-white lg:py-4 sm:py-2 sm:pl-2 text-right sm:text-[15px] lg:text-base table-cell md:hidden ${customClass}`}>
         <div className="flex justify-start">
           <span
-            className="block text-white font-normal text-base md:font-medium md:text-lg mr-[5px] md:mr-0 ">
+            className="block text-white font-normal text-[15px] md:font-medium md:text-lg mr-[5px] md:mr-0 ">
             {pool?.ownerShare}%
           </span>
           <span className="block font-medium">
@@ -233,7 +233,7 @@ export function TableRowRewards({
         </div>
         <div className="flex justify-start">
           <span
-            className="block text-white font-normal text-base md:font-medium md:text-lg mr-[5px] md:mr-0 ">
+            className="block text-white font-normal text-[15px] md:font-medium md:text-lg mr-[5px] md:mr-0 ">
             {pool?.keyBucketShare}%
           </span>
           <span className="block font-medium">
@@ -242,7 +242,7 @@ export function TableRowRewards({
         </div>
         <div className="flex justify-start">
           <span
-            className="block text-white font-normal text-base md:font-medium md:text-lg mr-[5px] md:mr-0 ">
+            className="block text-white font-normal text-[15px] md:font-medium md:text-lg mr-[5px] md:mr-0 ">
             {pool?.stakedBucketShare}%
           </span>
           <span className="block font-medium">
@@ -289,7 +289,7 @@ export function TableHead({
         ${index === 1 && "lg:table-cell lg:w-[10%] sm:hidden pr-2"} lg:py-4 sm:py-2 bg-crystalWhite font-medium lg:text-[18px] sm:text-sm
         ${index === 2 ?  "sm:w-[15%] lg:w-[20%]" : ""}
         ${index === 3 && "sm:text-left lg:text-right sm:w-[15%] lg:w-[9%] sm:pl-2 lg:pr-4"} 
-        ${index === 4 && "text-right lg:pr-4 sm:text-right sm:pr-[14px] sm:pl-[5px] lg:w-[9%]"} 
+        ${index === 4 && "text-right lg:pr-4 sm:text-right sm:pr-[14px] sm:pl-[5px] sm:w-[20%] lg:w-[9%]"} 
         ${index === 5 && "text-right lg:pr-4"}
         ${index === 6 && "text-right sm:pl-2 lg:pl-5 lg:pr-4 lg:w-[10%]"}
         ${index === 7 && "text-right sm:pr-2 lg:pr-7"}
@@ -335,9 +335,9 @@ export function TableHead({
       )} 
 
       {index === 4 && (
-        <div className="flex items-center sm:block lg:hidden text-left">
-        <span className="text-left">{showTableKeys ? "KEYS " : "esXAI "}</span>
-          <div className="flex w-full items-center lg:hidden">
+        <div className="flex items-center sm:block lg:hidden text-left indent-3">
+        <span className="text-left">{showTableKeys ? "KEY " : "esXAI "}</span>
+          <div className="flex w-full items-center lg:hidden justify-end">
             <div className="mr-1">{"RATE"}</div>
             <TableTooltip
           extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] !left-[-340px] pb-[10px] !text-left !py-[15px] !w-[356px]" }}
@@ -389,7 +389,7 @@ export function TableHead({
       {/* Tooltip for column Key Rate */}
       {index === 6 ? (
         <div className="flex items-center justify-end">
-        <span className="text-elementalGrey mr-2">{showTableKeys ?  "KEYS RATE" : "esXAI RATE"}</span>
+        <span className="text-elementalGrey mr-2">{showTableKeys ?  "KEY RATE" : "esXAI RATE"}</span>
         <TableTooltip
           extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-400px] pb-[10px] !text-left !py-[15px]" }}
           content={showTableKeys ? "Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards." : "Estimated annual rate for staking esXAI based off of stake and reward breakdown and past 7 days of pool rewards."}
