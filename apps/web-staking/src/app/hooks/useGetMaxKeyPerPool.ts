@@ -10,7 +10,6 @@ export const useGetMaxKeyPerPool = () => {
   const { chainId } = useAccount();
 
   useEffect(() => {
-    if (!chainId) return;
     getMaxKeyCount(getNetwork(chainId)).then((keys) => {
       setMaxKeyPerPool(keys);
     });
