@@ -359,24 +359,25 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         // Check if the promo code is an address
         address promoCodeAsAddress = validateAndConvertAddress(_promoCode);
 
+        // If the promo code is an address, determine if the recipient has been set
+        if(promoCodeAsAddress != address(0)){
+
         // Get the node license balance of the promo code address
         if(this.balanceOf(promoCodeAsAddress) == 0){
             // If the promo code is an address, the address must own at least one node license
             return (0, address(0));
         }
 
-        // If the promo code is an address, determine if the recipient has been set
-        if(promoCodeAsAddress != address(0)){
 
-            // Set the promo code recipient to the address
-            _promoCodes[_promoCode].recipient = promoCodeAsAddress;
-            _promoCodes[_promoCode].active = true;            
+        // Set the promo code recipient to the address
+        _promoCodes[_promoCode].recipient = promoCodeAsAddress;
+        _promoCodes[_promoCode].active = true;            
 
-            // Calculate the referral reward
-            referralReward = _finalPrice * referralRewardPercentage / 100;
-            emit ReferralReward(msg.sender, promoCodeAsAddress, referralReward);
+        // Calculate the referral reward
+        referralReward = _finalPrice * referralRewardPercentage / 100;
+        emit ReferralReward(msg.sender, promoCodeAsAddress, referralReward);
 
-            return (referralReward, promoCodeAsAddress);
+        return (referralReward, promoCodeAsAddress);
         }
 
         // If the promo code is not in the existing mappings and is not an address
