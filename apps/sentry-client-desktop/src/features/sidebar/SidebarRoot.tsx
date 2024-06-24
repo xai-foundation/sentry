@@ -31,7 +31,7 @@ export function Sidebar() {
 	
 	return (
 		<div
-			className="flex flex-col justify-between sticky h-full w-[253px] min-w-[253px] text-[15px] z-10"
+			className="flex flex-col justify-between sticky h-full w-[237px] min-w-[237px] text-[15px] z-10"
 		>
 			<div className="fixed flex flex-col">
 				<div
@@ -41,24 +41,24 @@ export function Sidebar() {
 					<XaiHeaderIcon width={39} height={34} />
 				</div>
 
-				<div className="w-[253px] mb-[145px]">
+				<div className="w-[237px] mb-[145px]">
 					<Link
 						to={data?.addedWallets?.length && data.addedWallets.length > 0 ? "/dashboard" : "#"}
-						className={`flex items-center w-[253px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/dashboard')}` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
+						className={`flex items-center w-[237px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/dashboard')}` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
 					>
 						{data?.addedWallets?.length && data.addedWallets.length > 0 ? <img src={DashboardIconWhite} width={14} height={14} className="ml-1" /> : <img src={DashboardIconGrey} width={14} height={14} className="ml-1" />} DASHBOARD
 					</Link>
 
 					<Link
 						to={data?.addedWallets?.length && data.addedWallets.length > 0 ? "/keys" : "#"}
-						className={`flex items-center w-[253px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/keys')}` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
+						className={`flex items-center w-[237px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/keys')}` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
 					>
 						<RiKey2Line size={20}/> KEYS
 					</Link>
 
 					<Link
 						to={data?.addedWallets?.length && data.addedWallets.length > 0 ? "/sentry-wallet" : "#"}
-						className={`flex items-center w-[253px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/sentry-wallet')}` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
+						className={`flex items-center w-[237px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/sentry-wallet')}` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
 					>
 						<div className="w-auto h-auto flex justify-center items-center">
 							{sentryRunning && data?.addedWallets?.length !== 0 && hasAssignedKeys && funded && <GreenPulse size='lg' />}
@@ -69,7 +69,7 @@ export function Sidebar() {
 					</Link>
 					<a
 						onClick={() => data?.addedWallets?.length && data.addedWallets.length > 0 && window.electron.openExternal('https://app.xai.games')}
-						className={`flex items-center w-[253px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
+						className={`flex items-center w-[237px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
 					>
 						<XaiHeaderIcon width={20} height={20} fill={`${data?.addedWallets?.length && data.addedWallets.length === 0 && "fill-foggyLondon"}`} /> STAKING
 					</a>
