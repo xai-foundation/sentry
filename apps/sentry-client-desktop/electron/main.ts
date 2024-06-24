@@ -97,7 +97,7 @@ ipcMain.handle('buffer-from', (_, str, encoding) => {
 
 function createWindow() {
 	win = new BrowserWindow({
-		width: 1300,
+		width: 1280,
 		height: 720,
 		minWidth: 1280,
 		minHeight: 720,
