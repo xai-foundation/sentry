@@ -166,7 +166,7 @@ const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean,
   return (
     <>
       {poolInfo && (
-        <div className="flex w-full flex-col items-center lg:px-[35px] lg:pb-[50px] xl:pr-[56px] px-0">
+        <div className="flex w-full flex-col items-center lg:px-[35px] lg:pb-[50px] xl:pr-[56px] px-0 sm:pb-[70px]">
           <>
             <div className="mt-2 flex w-full justify-start lg:z-40">
               <ButtonBack
