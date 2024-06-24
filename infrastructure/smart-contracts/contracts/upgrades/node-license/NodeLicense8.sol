@@ -332,7 +332,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * as a string to this function
      * @param _finalPrice The final cost of the minting
      * @param _promoCode The promo code used
-     * @return A tuple containing the referral reward and a boolean indicating if the promo code was an address
+     * @return A tuple containing the referral reward and an address with 0 address indicating the promo code was not an address
      */
     function _calculateReferralReward(uint256 _finalPrice, string memory _promoCode) internal returns(uint256, address) {
         uint256 referralReward = 0;
