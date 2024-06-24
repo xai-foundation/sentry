@@ -348,10 +348,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             }
 
             // Calculate the referral reward
-            if (promoCode.recipient != address(0)) {
-                referralReward = _finalPrice * referralRewardPercentage / 100;
-                emit ReferralReward(msg.sender, promoCode.recipient, referralReward);
-            }
+            referralReward = _finalPrice * referralRewardPercentage / 100;
+            emit ReferralReward(msg.sender, promoCode.recipient, referralReward);
 
             return (referralReward, promoCode.recipient);
             
