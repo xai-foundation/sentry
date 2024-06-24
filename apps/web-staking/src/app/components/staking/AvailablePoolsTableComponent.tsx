@@ -112,15 +112,15 @@ const AvailablePoolsTableComponent = ({
                   <TableRowStaked value={`${pool.keyBucketShare}%`} poolAddress={pool.address} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in"  positionStyles="!items-end"/>
                   <TableRowStaked value={`${pool.stakedBucketShare}%`} poolAddress={pool.address} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
                   {showTableKeys ? (
-                    <TableRowStaked value={`${formatDailyRewardRate(pool.keyRewardRate, 2)} esXAI`} poolAddress={pool.address} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
+                    <TableRowStaked value={`${pool.keyCount == 0 ? 0 : formatDailyRewardRate(pool.keyRewardRate, 2)} esXAI`} poolAddress={pool.address} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
                   ) : (
-                    <TableRowStaked value={`${formatDailyRewardRatePercentage(pool.esXaiRewardRate, 2)}%`} poolAddress={pool.address} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
+                    <TableRowStaked value={`${pool.keyCount == 0 ? 0 : formatDailyRewardRatePercentage(pool.esXaiRewardRate, 2)}%`} poolAddress={pool.address} customClass="sm:hidden lg:table-cell group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
                   )}
                   <TableRowRewards pool={pool} showTableKeys={showTableKeys} isDisconnected={isDisconnected} onClick={open} customClass="group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" />
                   {showTableKeys ? (
-                    <TableRowStaked value={`${formatDailyRewardRate(pool.keyRewardRate, 2)} esXAI`} poolAddress={pool.address} customClass="sm:table-cell lg:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end" rateClass="!text-right"/>
+                    <TableRowStaked value={`${pool.keyCount == 0 ? 0 : formatDailyRewardRate(pool.keyRewardRate, 2)} esXAI`} poolAddress={pool.address} customClass="sm:table-cell lg:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end" rateClass="!text-right"/>
                   ) : (
-                    <TableRowStaked value={`${formatDailyRewardRatePercentage(pool.esXaiRewardRate, 2)}%`} poolAddress={pool.address} customClass="sm:table-cell lg:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
+                    <TableRowStaked value={`${pool.keyCount == 0 ? 0 : formatDailyRewardRatePercentage(pool.esXaiRewardRate, 2)}%`} poolAddress={pool.address} customClass="sm:table-cell lg:hidden group-hover:bg-dynamicBlack group-hover:bg-opacity-50 duration-100 ease-in" positionStyles="!items-end"/>
                   )}
                 </tr>
               );
