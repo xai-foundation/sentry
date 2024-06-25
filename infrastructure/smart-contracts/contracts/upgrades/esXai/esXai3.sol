@@ -62,15 +62,12 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     event XaiAddressChanged(address indexed newXaiAddress);
     event FoundationBasepointsUpdated(uint256 newBasepoints);
 
-    function initialize (address _esXaiBurnFoundationRecipient, uint256 _esXaiBurnFoundationBasePoints, address _refereeAddress, address _nodeLicenseAddress, uint256 _maxKeys) public reinitializer(3) {
-        require(_esXaiBurnFoundationRecipient != address(0) && _esXaiBurnFoundationBasePoints <= 1000, "Invalid initialize");
+    function initialize (address _refereeAddress, address _nodeLicenseAddress, uint256 _maxKeys) public reinitializer(3) {
         require(_refereeAddress != address(0), "Invalid referee address");
         require(_nodeLicenseAddress != address(0), "Invalid node license address");
-        esXaiBurnFoundationRecipient = _esXaiBurnFoundationRecipient;
-        esXaiBurnFoundationBasePoints = _esXaiBurnFoundationBasePoints;
         refereeAddress = _refereeAddress;
         nodeLicenseAddress = _nodeLicenseAddress;
-        maxKeysNonKyc = _maxKeys; //TODO Get the initial value from management & confirm variable size needed
+        maxKeysNonKyc = _maxKeys; //TODO Get the initial value from management & confirm variable size needed uint256?
     }
 
     /**
