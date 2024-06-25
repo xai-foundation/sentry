@@ -412,7 +412,7 @@ export function SentryWallet() {
 												}
 												setSelectedValue={setSelectedWallet}
 												getDropdownItems={getDropdownItems}
-												extraClasses={{dropdown: "!w-[340px] !h-[44px]"}}
+												extraClasses={{dropdown: "!w-[330px] !h-[44px]"}}
 											/>
 
 											<PrimaryButton
