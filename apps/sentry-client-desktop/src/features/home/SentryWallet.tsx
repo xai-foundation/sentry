@@ -216,7 +216,7 @@ export function SentryWallet() {
 				/>
 			)}
 
-			<div className="h-full flex flex-col shadow-default pl-4 w-[1004px]">
+			<div className="h-full flex flex-col shadow-default pl-4">
 				<div
 					className="sticky top-0 flex flex-col items-center  h-auto z-10">
 					<div
