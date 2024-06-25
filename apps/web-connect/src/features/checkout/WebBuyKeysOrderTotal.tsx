@@ -3,14 +3,15 @@ import {AiFillInfoCircle} from "react-icons/ai";
 import {useGetTotalSupplyAndCap} from "@/features/checkout/hooks/useGetTotalSupplyAndCap";
 import {Dispatch, SetStateAction, useState} from "react";
 import {ethers} from "ethers";
-import {CheckoutTierSummary, getPromoCode} from "@sentry/core";
+import {CheckoutTierSummary, config, getEsXaiAllowance, getEsXaiBalance, getPromoCode, getXaiAllowance, getXaiBalance} from "@sentry/core";
 import {PrimaryButton} from "@sentry/ui";
 import {KYCTooltip} from "@/features/checkout/KYCTooltip";
-import {useNetwork} from 'wagmi';
+import {useAccount, useNetwork} from 'wagmi';
 import MainCheckbox from "@sentry/ui/src/rebrand/checkboxes/MainCheckbox";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
-import {WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
+import {WarningIcon} from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import {mapWeb3Error} from "@/utils/errors";
+import { useGetExchangeRate } from "./hooks/useGetExchangeRate";
 
 interface PriceDataInterface {
 	price: bigint;
@@ -41,12 +42,19 @@ export function WebBuyKeysOrderTotal(
 		error
 	}: WebBuyKeysOrderTotalProps) {
 	const {isLoading: isTotalLoading} = useGetTotalSupplyAndCap();
-	const { chain } = useNetwork()
+	const {data: exchangeRateData, isLoading: isExchangeRateLoading} = useGetExchangeRate();	
+
+	const { chain } = useNetwork();
+	const {address} = useAccount();
 
 	const [promo, setPromo] = useState<boolean>(false);
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
 	const [checkboxTwo, setCheckboxTwo] = useState<boolean>(false);
 	const [checkboxThree, setCheckboxThree] = useState<boolean>(false);
+	const [currency, setCurrency] = useState<string>("AETH");
+	const [tokenBalance, setTokenBalance] = useState<bigint>(0n);
+	const [tokenAllowance, setTokenAllowance] = useState<bigint>(0n);
+
 	const ready = checkboxOne && checkboxTwo && checkboxThree;
 
 	const handleSubmit = async () => {
@@ -65,6 +73,65 @@ export function WebBuyKeysOrderTotal(
 			setPromoCode("");
 		}
 	};
+
+	const handleCurrencyChange = async (newCurrency:	string) => {
+		setCurrency(newCurrency);
+		const walletAddress = address ? address : "";
+		if(newCurrency === "AETH") {
+			setTokenBalance(0n);
+			setTokenAllowance(0n);
+		}else if(newCurrency === "XAI") {
+			const xaiBalance = await getXaiBalance(walletAddress);
+			const xaiAllowance = await getXaiAllowance(walletAddress, config.nodeLicenseAddress);
+			setTokenBalance(xaiBalance.balance);
+			setTokenAllowance(xaiAllowance.approvalAmount);
+		}else{
+			const esxaiBalance = await getEsXaiBalance(walletAddress); 
+			const esxaiAllowance = await getEsXaiAllowance(walletAddress, config.nodeLicenseAddress);
+			setTokenBalance(esxaiBalance.balance);
+			setTokenAllowance(esxaiAllowance.approvalAmount);
+		}	
+	};
+
+	function calculateTotalPrice(): bigint {
+		let price =  0n;
+		if(currency === "AETH") {
+			price = _calculateAethTotal();
+		}else {
+			price = _calculateXaiTotal();
+		}
+		return price;
+	}
+
+	function _calculateAethTotal(): bigint {
+		const price = getPriceData?.price ?? 0n;
+		if (discount.applied) {
+			return price * BigInt(95) / BigInt(100);
+		}
+		return price;
+	}
+	
+
+	function _calculateXaiTotal(): bigint {
+		const totalEthPrice = _calculateAethTotal();
+		const exchangeRate = exchangeRateData?.exchangeRate ?? 0n;
+		return totalEthPrice * exchangeRate;
+	}
+
+	function getApproveButtonText(): string {
+		const xaiTotal = _calculateXaiTotal();
+		if(xaiTotal > tokenBalance) {
+			return `Insufficient ${currency} balance`;
+		}
+		if(xaiTotal > tokenAllowance) {
+			return `Approve ${currency}`;
+		}
+		return "BUY NOW";
+	}
+
+	
+	
+
 
 	function getKeys() {
 		if (!getPriceData || !getPriceData.nodesAtEachPrice) {
@@ -102,7 +169,7 @@ export function WebBuyKeysOrderTotal(
 
 	return (
 		<div>
-			{isPriceLoading || isTotalLoading || !getPriceData
+			{isPriceLoading || isTotalLoading  || isExchangeRateLoading || !getPriceData
 				? (
 					<div className="w-full h-[365px] flex flex-col justify-center items-center gap-2">
 						<BiLoaderAlt className="animate-spin" color={"#FF0030"} size={32}/>
@@ -113,7 +180,7 @@ export function WebBuyKeysOrderTotal(
 						<div className="w-full flex flex-col gap-4">
 							<div className="mt-4">
 								{getKeys()}
-
+								
 								{discount.applied && (
 									<>
 										<div className="flex flex-row items-center justify-between text-lg">
@@ -239,16 +306,33 @@ export function WebBuyKeysOrderTotal(
 								<hr className="my-2 border-[#525252]"/>
 								<div className="flex sm:flex-col lg:flex-row items-center justify-between py-2">
 									<div className="flex flex-row items-center gap-2 sm:text-xl lg:text-2xl">
+										<span className="text-white font-bold text-2xl">Choose Currency 1 AETH = {exchangeRateData?.exchangeRate.toString()}  XAI</span>
+									</div>
+									<div className="flex flex-row items-center gap-1 bg-black">
+										<span className="text-white font-bold text-3xl bg-black">	
+										<form onSubmit={(e) => e.preventDefault()}>										
+										<select id="currency" name="currency"
+										onChange={(e) => handleCurrencyChange(e.target.value)}
+										>
+											<option value="AETH">AETH</option>
+											<option value="XAI">XAI</option>
+											<option value="ESXAI">ESXAI</option>
+										</select>
+										</form>
+										</span>
+										<span className="text-white font-bold text-3xl">{currency}</span>≈
+									</div>
+								</div>
+								<hr className="my-2 border-[#525252]"/>
+								<div className="flex sm:flex-col lg:flex-row items-center justify-between py-2">
+									<div className="flex flex-row items-center gap-2 sm:text-xl lg:text-2xl">
 										<span className="text-white font-bold text-2xl">You pay</span>
 									</div>
 									<div className="flex flex-row items-center gap-1">
 										<span className="text-white font-bold text-3xl">
-											{discount.applied
-												? ethers.formatEther(getPriceData.price * BigInt(95) / BigInt(100))
-												: ethers.formatEther(getPriceData.price)
-											}
+											{ethers.formatEther(calculateTotalPrice())} 
 										</span>
-										<span className="text-white font-bold text-3xl">AETH</span>
+										<span className="text-white font-bold text-3xl">{currency}</span>
 									</div>
 								</div>
 							</div>
@@ -299,12 +383,17 @@ export function WebBuyKeysOrderTotal(
 							</div>
 
 							<div>
-								<PrimaryButton
+								{currency === 'AETH' ? <PrimaryButton
 									onClick={() => onClick()}
 									className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
 									isDisabled={!ready || chain?.id !== 42_161}
 									btnText={chain?.id === 42_161 ? "BUY NOW" : "Please Switch to Arbitrum One"}
-								/>
+								/> :<PrimaryButton
+								onClick={() => {}}
+								className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
+								isDisabled={!ready || chain?.id !== 42_161}
+								btnText={chain?.id === 42_161 ? getApproveButtonText(): "Please Switch to Arbitrum One"}
+							/> }
 									
 								{error && (
 									<div>
