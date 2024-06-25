@@ -75,8 +75,7 @@ export function Sidebar() {
 						<XaiHeaderIcon extraClasses="mt-[-4px]" width={20} height={20} fill={`${!data?.addedWallets?.length ? "fill-foggyLondon" : "fill-white"}`} />
 						STAKING
 						<ExternalLinkIcon
-						fill={!data?.addedWallets?.length ? "#5B5757" : "#fff"}
-						extraClasses="mt-[-4px]"
+						extraClasses={{svgClasses: "mt-[-4px]", pathClasses: `${!data?.addedWallets?.length ? "fill-foggyLondon" : "fill-white"}`}}
 					/>
 					</a>
 				</div>
