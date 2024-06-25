@@ -8,7 +8,9 @@ import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {useAtomValue} from "jotai";
 import { TelegramIcon, XaiHeaderIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
-import DashboardIcon from "@/assets/images/dashboard-icon-white.png";
+import DashboardIconWhite from "@/assets/images/dashboard-icon-white.png";
+import DashboardIconGrey from "@/assets/images/dashboard-icon-grey.png";
+import { useStorage } from "@/features/storage";
 
 /**
  * Sidebar component
@@ -19,16 +21,17 @@ export function Sidebar() {
 	const location = useLocation();
 	const {sentryRunning} = useOperatorRuntime();
 	const { funded, hasAssignedKeys } = useAtomValue(accruingStateAtom);
+	const {data} = useStorage();
 	const getActiveLink = (url: string) => {
 		if(location.pathname.includes(url)) {
 			return "bg-hornetSting global-clip-path text-white";
 		}
 		return "";
 	}
-
+	
 	return (
 		<div
-			className="flex flex-col justify-between sticky h-full w-[253px] min-w-[253px] text-[15px] z-10"
+			className="flex flex-col justify-between sticky h-full w-[237px] min-w-[237px] text-[15px] z-10"
 		>
 			<div className="fixed flex flex-col">
 				<div
@@ -38,37 +41,37 @@ export function Sidebar() {
 					<XaiHeaderIcon width={39} height={34} />
 				</div>
 
-				<div className="w-[253px] mb-[145px]">
+				<div className="w-[237px] mb-[145px]">
 					<Link
-						to="/dashboard"
-						className={`flex items-center w-[253px] text-xl text-white font-bold  cursor-pointer gap-2 py-[11px] pl-[17px] hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/dashboard')}`}
+						to={data?.addedWallets?.length && data.addedWallets.length > 0 ? "/dashboard" : "#"}
+						className={`flex items-center w-[237px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/dashboard')}` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
 					>
-						<img src={DashboardIcon} width={14} height={14} className="ml-1"/> DASHBOARD
+						{data?.addedWallets?.length && data.addedWallets.length > 0 ? <img src={DashboardIconWhite} width={14} height={14} className="ml-1" /> : <img src={DashboardIconGrey} width={14} height={14} className="ml-1" />} DASHBOARD
 					</Link>
 
 					<Link
-						to="/keys"
-						className={`flex items-center w-[253px] text-xl text-white font-bold cursor-pointer gap-2 py-[11px] pl-[17px] hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/keys')}`}
+						to={data?.addedWallets?.length && data.addedWallets.length > 0 ? "/keys" : "#"}
+						className={`flex items-center w-[237px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/keys')}` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
 					>
 						<RiKey2Line size={20}/> KEYS
 					</Link>
 
 					<Link
-						to="/sentry-wallet"
-						className={`flex items-center w-[253px] text-xl text-white font-bold cursor-pointer gap-2 py-[11px] pl-[17px] hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/sentry-wallet')}`}
+						to={data?.addedWallets?.length && data.addedWallets.length > 0 ? "/sentry-wallet" : "#"}
+						className={`flex items-center w-[237px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/sentry-wallet')}` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
 					>
 						<div className="w-auto h-auto flex justify-center items-center">
-							{sentryRunning && hasAssignedKeys && funded && <GreenPulse size='lg' />}
-							{sentryRunning && !hasAssignedKeys && !funded && <YellowPulse size='lg' />}
-							{!sentryRunning && <GreyPulse size='lg' />}
+							{sentryRunning && data?.addedWallets?.length !== 0 && hasAssignedKeys && funded && <GreenPulse size='lg' />}
+							{sentryRunning && data?.addedWallets?.length !== 0 && !hasAssignedKeys && !funded && <YellowPulse size='lg' />}
+							{!sentryRunning || data?.addedWallets?.length === 0 && <GreyPulse size='lg' />}
 						</div>
 						SENTRY WALLET
 					</Link>
 					<a
-						onClick={() => window.electron.openExternal('https://app.xai.games')}
-						className="flex items-center w-[253px] mb-1 text-xl text-white font-bold cursor-pointer gap-2 py-[11px] pl-[17px] hover:global-clip-path hover:bg-darkRoom"
+						onClick={() => data?.addedWallets?.length && data.addedWallets.length > 0 && window.electron.openExternal('https://app.xai.games')}
+						className={`flex items-center w-[237px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
 					>
-						<XaiHeaderIcon width={20} height={20}/> STAKING
+						<XaiHeaderIcon width={20} height={20} fill={`${data?.addedWallets?.length && data.addedWallets.length === 0 && "fill-foggyLondon"}`} /> STAKING
 					</a>
 				</div>
 
