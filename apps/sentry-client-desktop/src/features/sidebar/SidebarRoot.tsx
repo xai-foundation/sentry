@@ -11,6 +11,7 @@ import { TelegramIcon, XaiHeaderIcon } from "@sentry/ui/src/rebrand/icons/IconsC
 import DashboardIconWhite from "@/assets/images/dashboard-icon-white.png";
 import DashboardIconGrey from "@/assets/images/dashboard-icon-grey.png";
 import { useStorage } from "@/features/storage";
+import ExternalLinkIcon from "@sentry/ui/dist/src/rebrand/icons/ExternalLinkIcon";
 
 /**
  * Sidebar component
@@ -38,7 +39,7 @@ export function Sidebar() {
 					className="flex group items-centertext-base w-[5rem] h-[5rem] mb-[37px] font-semibold cursor-pointer bg-hornetSting hover:bg-white duration-200 ease-in px-[20px] py-[23px]"
 					onClick={() => navigate("/")}
 				>
-					<XaiHeaderIcon width={39} height={34} />
+					<XaiHeaderIcon width={39} height={34} fill="fill-white" />
 				</div>
 
 				<div className="w-[237px] mb-[145px]">
@@ -71,7 +72,12 @@ export function Sidebar() {
 						onClick={() => data?.addedWallets?.length && data.addedWallets.length > 0 && window.electron.openExternal('https://app.xai.games')}
 						className={`flex items-center w-[237px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
 					>
-						<XaiHeaderIcon width={20} height={20} fill={`${data?.addedWallets?.length && data.addedWallets.length === 0 && "fill-foggyLondon"}`} /> STAKING
+						<XaiHeaderIcon extraClasses="mt-[-4px]" width={20} height={20} fill={`${!data?.addedWallets?.length ? "fill-foggyLondon" : "fill-white"}`} />
+						STAKING
+						<ExternalLinkIcon
+						fill={!data?.addedWallets?.length ? "#5B5757" : "#fff"}
+						extraClasses="mt-[-4px]"
+					/>
 					</a>
 				</div>
 
