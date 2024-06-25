@@ -45,7 +45,7 @@ export function GetSentryNode() {
 
 	return (
 		<div className="pl-[15px]">
-		<div className="w-full flex flex-row bg-nulnOil h-screen pt-[260px] pl-[97px]">
+		<div className="w-full flex flex-row bg-nulnOil h-screen pt-[250px] pl-[97px]">
 			<div className="flex flex-col z-10 w-full">
 				<div className="flex gap-1 items-center">
 					<h1 className="text-[30px] font-bold text-white uppercase">
@@ -56,7 +56,7 @@ export function GetSentryNode() {
 				<span className="text-lg text-americanSilver mt-4">
 					Purchase a key to begin earning esXAI
 				</span>
-				<div className="flex items-center justify-start mt-5 gap-7 mb-[140px]">
+				<div className="flex items-center justify-start mt-5 gap-7 mb-[120px]">
 					<div className="max-w-[202px]">
 					<PrimaryButton
 						onClick={() => setDrawerState(DrawerView.BuyKeys)}
