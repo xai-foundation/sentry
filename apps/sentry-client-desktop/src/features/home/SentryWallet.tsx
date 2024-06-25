@@ -216,12 +216,12 @@ export function SentryWallet() {
 				/>
 			)}
 
-			<div className="w-full h-full flex flex-col shadow-default pl-4">
+			<div className="h-full flex flex-col shadow-default pl-4">
 				<div
-					className="sticky top-0 flex flex-col items-center w-full h-auto z-10">
+					className="sticky top-0 flex flex-col items-center  h-auto z-10">
 					<div
 						className={`flex flex-row justify-between items-center w-full ${drawerState === null ? "py-[11px]" : "py-[15px]"} bg-nulnOil gap-2 border-b border-chromaphobicBlack pl-[24px] pr-2`}>
-						<div className="flex flex-row items-center gap-2 w-full max-w-[50%] z-[60]">
+						<div className="flex flex-row items-center gap-2 w-full max-w-[70%] z-[60]">
 							<span>
 								{sentryRunning && hasAssignedKeys && funded && <GreenPulse size='md'/>}
 								{sentryRunning && !hasAssignedKeys && !funded && <YellowPulse size='md'/>}
@@ -398,7 +398,7 @@ export function SentryWallet() {
 						{sentryRunning && owners && owners.length > 0 && (
 							<>
 								<div className="w-full">
-									<div className="w-full h-auto flex flex-col pb-3 mt-[15px]">
+									<div className="w-full h-auto flex flex-col pb-3 mt-[15px] pr-[10px]">
 										<div className="flex flex-row gap-2 h-[44px]">
 											<Dropdown
 												setIsOpen={setIsOpen}
@@ -412,14 +412,14 @@ export function SentryWallet() {
 												}
 												setSelectedValue={setSelectedWallet}
 												getDropdownItems={getDropdownItems}
-												extraClasses={{dropdown: "!w-[351px] !h-[44px]"}}
+												extraClasses={{dropdown: "!w-[340px] !h-[44px]"}}
 											/>
 
 											<PrimaryButton
 												isDisabled={selectedWallet === null}
 												onClick={() => copySelectedWallet()}
 												btnText={"Copy address"}
-												wrapperClassName={`!h-[48px] max-w-[146px]`}
+												wrapperClassName={`!h-[48px] max-w-[146px] mt-[-2px]`}
 												colorStyle={"outline"}
 												className={`w-[144px] ${selectedWallet === null ? "!h-[48px]" : "!h-[46px]"} text-lg font-bold uppercase !p-0`}
 
@@ -430,17 +430,17 @@ export function SentryWallet() {
 													setModalState(ModalView.TransactionInProgress)
 													window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`)
 												}}
-												wrapperClassName={`max-w-[161px]`}
+												wrapperClassName={`max-w-[161px] mt-[-2px]`}
 												className={`w-[159px] !h-[48px] text-lg font-bold uppercase !p-0`}
 												btnText={"Assign wallet"}
 											/>
 
 											<PrimaryButton
 												onClick={() => setDrawerState(DrawerView.Whitelist)}
-												wrapperClassName={`!h-[48px] max-w-[225px]`}
-												className={`w-[223px] !h-[46px]  text-lg font-bold uppercase !p-0`}
+												wrapperClassName={`!h-[48px] max-w-[179px] mt-[-2px]`}
+												className={`w-[177px] !h-[46px]  text-lg font-bold uppercase !p-0`}
 												colorStyle={"outline"}
-												btnText={"Allowed wallets/pools"}
+												btnText={"Allowed wallets"}
 											/>
 
 											<PrimaryButton
@@ -449,10 +449,10 @@ export function SentryWallet() {
 													setModalState(ModalView.TransactionInProgress)
 													window.electron.openExternal(`https://sentry.xai.games/#/unassign-wallet/${operatorAddress}`)
 												}}
-												wrapperClassName={`!h-[48px] max-w-[175px]`}
+												wrapperClassName={`!h-[48px] max-w-[123px] mt-[-2px]`}
 												colorStyle={"outline"}
-												className={`w-[173px] ${selectedWallet === null ? "!h-[48px]" : "!h-[46px]"} text-lg font-bold uppercase !p-0`}
-												btnText={"Un-assign wallet"}
+												className={`w-[121px] ${selectedWallet === null ? "!h-[48px]" : "!h-[46px]"} text-lg font-bold uppercase !p-0`}
+												btnText={"Unassign"}
 											/>
 
 										</div>

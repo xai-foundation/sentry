@@ -5,7 +5,7 @@ import {NetworkRewardsCard} from "@/features/home/dashboard/NetworkRewardsCard";
 
 export function Dashboard() {
 	return (
-		<div className="w-full h-screen flex flex-row gap-4 p-4 bg-transparent">
+		<div className="w-full h-screen flex flex-row gap-4 p-4 !pr-0 bg-transparent">
 			<div className="flex flex-col gap-6">
 				<SentryNodeStatusCard/>
 
