@@ -114,7 +114,7 @@ describe("Fixture Tests", function () {
         // Upgrade esXai3 upgrade - moved here due to needing referee and node license addresses as a parameters
         const maxKeysNonKyc = BigInt(1);
         const EsXai3 = await ethers.getContractFactory("esXai3");
-        const esXai3 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai3, { call: { fn: "initialize", args: [(await deployer.getAddress()), BigInt(500), referee.getAddress(), nodeLicense.getAddress(), maxKeysNonKyc] } });
+        const esXai3 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai3, { call: { fn: "initialize", args: [referee.getAddress(), nodeLicense.getAddress(), maxKeysNonKyc] } });
         await esXai3.waitForDeployment();
 
 		// Deploy the Pool Factory
