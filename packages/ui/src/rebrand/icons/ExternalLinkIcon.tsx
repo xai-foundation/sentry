@@ -1,6 +1,5 @@
 
 interface ExternalLinkIconProps {
-    fill?: string
     extraClasses?: {
         svgClasses?: string;
         pathClasses?: string;
