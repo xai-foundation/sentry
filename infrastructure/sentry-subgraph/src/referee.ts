@@ -93,7 +93,7 @@ export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
     return;
   }
 
-  let refereeConfig = RefereeConfig.load("RefereeConfig")
+  const refereeConfig = RefereeConfig.load("RefereeConfig")
   if (!refereeConfig) {
     log.warning("Failed to find refereeConfig handleAssertionSubmitted TX: " + event.transaction.hash.toHexString(), [])
     return;
@@ -336,7 +336,7 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
   }
 }
 
-export function handleBatchRewardsClaimed(event: BatchRewardsClaimedEvent): void {
+export function handleBatchRewardsClaimed(event: BatchRewardsClaimedEvent): void {  
   if (event.params.keysLength.equals(BigInt.fromI32(0))) {
     //Empty claim did not actually claim any esXai
     return;
@@ -397,9 +397,20 @@ export function handleBatchRewardsClaimed(event: BatchRewardsClaimedEvent): void
     }
 
     const ownerWallet = SentryWallet.load(sentryKey.sentryWallet)
+
+    const refereeConfig = RefereeConfig.load("RefereeConfig")
+    if (!refereeConfig) {
+      log.warning("Failed to find refereeConfig handleBatchRewardsClaimed TX: " + event.transaction.hash.toHexString(), [])
+      return;
+    }
+
+    //TODO determine where version number is set
+    //TODO determine if we should store version number in config file? Hardcode?
+    const versionThreshold = BigInt.fromI32(9); // Convert the number to BigInt for comparison to refereeConfig.version
+
     if (ownerWallet) {
       if (
-        ownerWallet.isKYCApproved &&
+        (ownerWallet.isKYCApproved || refereeConfig.version >= versionThreshold) &&
         sentryKey.mintTimeStamp.lt(challenge.createdTimestamp) &&
         !submission.claimed &&
         submission.eligibleForPayout
