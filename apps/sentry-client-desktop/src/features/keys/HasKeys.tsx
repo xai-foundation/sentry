@@ -106,13 +106,13 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 			}
 
 			return (
-				<tr className={`bg-nulnOil flex px-6 text-lg border-b border-chromaphobicBlack`} key={`license-${i}`}>
-					<td className="min-w-[7%] px-2 py-2 text-elementalGrey">{keyString}</td>
-					<td className="min-w-[37%] px-2 py-2 text-elementalGrey">{owner}</td>
+				<tr className={`bg-nulnOil flex pl-6  text-lg border-b border-chromaphobicBlack`} key={`license-${i}`}>
+					<td className="min-w-[7%] pr-2 py-2 text-elementalGrey">{keyString}</td>
+					<td className="min-w-[39%] px-2 py-2 text-elementalGrey">{owner}</td>
 					<td className="min-w-[27%] px-4 py-2 text-elementalGrey">
 
 						{_status === "sentryNotRunning" && (
-							<div className="relative flex items-center gap-[10px] font-bold text-bananaBoat">
+							<div className="relative flex items-center gap-[5px] font-bold text-bananaBoat">
 								<WarningIcon width={18} height={16}/>
 								Sentry not running
 								<a
@@ -125,7 +125,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						)}
 
 						{_status === "walletNotAssigned" && (
-							<div className="relative flex items-center gap-[10px] font-bold text-bananaBoat">
+							<div className="relative flex items-center gap-[7px] font-bold text-bananaBoat">
 								<WarningIcon width={18} height={16}/>
 								Wallet not assigned
 								<a
@@ -138,7 +138,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						)}
 
 						{_status === "kycStart" && (
-							<div className="relative flex items-center gap-[10px] font-bold text-bananaBoat">
+							<div className="relative flex items-center gap-[7px] font-bold text-bananaBoat">
 								<WarningIcon width={18} height={16}/>
 								KYC required
 								<BlockPassKYC
@@ -151,7 +151,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						)}
 
 						{_status === "kycContinue" && (
-							<div className="relative flex items-center gap-[10px] font-bold text-bananaBoat">
+							<div className="relative flex items-center gap-[7px] font-bold text-bananaBoat">
 								<WarningIcon width={18} height={16}/>
 								KYC required
 								<BlockPassKYC
@@ -163,18 +163,18 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						)}
 
 						{_status === "claiming" && (
-							<div className="relative flex items-center gap-[10px] font-bold text-drunkenDragonFly">
+							<div className="relative flex items-center gap-[5px] text-[15px] font-bold text-drunkenDragonFly">
 								<AiFillCheckCircle className="w-[18px] h-[16px] text-drunkenDragonFly"/> Claiming rewards when available
 							</div>
 						)}
 
 					</td>
-					<td className="min-w-[17%] px-4 py-2 text-right text-elementalGrey">
+					<td className="min-w-[15%] pl-4 pr-2  py-2 text-right text-elementalGrey">
 						{balances && balances[keyString]
 							? ethers.formatEther(balances[keyString].totalAccruedEsXai)
 							: "Loading..."}
 					</td>
-					<td className="min-w-[12%] px-4 py-2 text-hornetSting font-bold text-right">
+					<td className="min-w-[12%] pl-4 pr-2 py-2 text-hornetSting font-bold text-right">
 						<span
 							className="cursor-pointer pr-[3px] uppercase hover:text-white duration-300 ease-in-out"
 							onClick={() => window.electron.openExternal(`https://opensea.io/assets/arbitrum/${config.nodeLicenseAddress}/${keyString}`)}
@@ -244,6 +244,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 						}
 						setSelectedValue={setSelectedWallet}
 						getDropdownItems={getDropdownItems}
+						extraClasses={{dropdown: "max-w-[456px]"}}
 						/>
 						</div>
                         <div>
@@ -328,7 +329,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 							<CustomTooltip
 								header={"Each key will accrue esXAI. Pass KYC to claim."}
 								content={"This value is the sum of all esXAI accrued for the selected wallet. If esXAI has already been claimed, it will appear in esXAI balance."}
-								position="end"
+								position="start"
 								mouseOver={setMouseOverTooltip}
 								extraClasses={{group: mouseOverTooltip ? "z-40" : "z-auto"}}
 							>
@@ -361,16 +362,16 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					<div className="w-full overflow-y-auto">
 						<table className="w-full bg-nulnOil">
 							<thead className="text-elementalGrey text-base sticky top-0 bg-nulnOil z-10">
-							<tr className="flex items-center text-left text-base border-b border-t border-chromaphobicBlack px-[25px] py-[15px] bg-dynamicBlack">
-								<th className="min-w-[7%] px-2 py-0">KEY ID</th>
-								<th className="min-w-[37%] px-2 py-0">OWNER ADDRESS</th>
+							<tr className="flex items-center text-left text-base border-b border-t border-chromaphobicBlack pl-[25px] py-[15px] bg-dynamicBlack">
+								<th className="min-w-[7%] pr-2 py-0">KEY ID</th>
+								<th className="min-w-[39%] px-2 py-0">OWNER ADDRESS</th>
 								<th className="min-w-[27%] px-4 py-0">STATUS</th>
-								<th className="min-w-[17%] px-4 py-0 flex items-center justify-end gap-1">
+								<th className="min-w-[15%] px-2 py-0 flex items-center justify-end gap-1">
 									{isBalancesLoading &&
                                         <BiLoaderAlt className="animate-spin w-[18px]" color={"#FF0030"}/>}
 									ACCRUED esXAI
 								</th>
-								<th className="min-w-[12%] px-4 py-0 text-right">OPENSEA URL</th>
+								<th className="min-w-[12%] pl-4 pr-2 py-0 text-right">OPENSEA URL</th>
 							</tr>
 							</thead>
 							<tbody className="relative">{renderKeys()}</tbody>

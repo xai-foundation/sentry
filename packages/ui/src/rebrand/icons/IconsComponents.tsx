@@ -188,9 +188,9 @@ export const Lock = ({width = 22, height = 23, className = ""}) => {
 }
 
 
-export const XaiHeaderIcon = ({width = 16, height = 16}) => {
+export const XaiHeaderIcon = ({width = 16, height = 16, fill = "", extraClasses = ""}) => {
   return (
-  <svg className="fill-white group-hover:fill-hornetSting duration-200 ease-in"  version="1.0" xmlns="http://www.w3.org/2000/svg"
+  <svg className={`${fill} group-hover:fill-hornetSting duration-200 ease-in ${extraClasses}`}
  width={width} height={height} viewBox="0 0 600.000000 600.000000"
  preserveAspectRatio="xMidYMid meet">
 <g transform="translate(0.000000,600.000000) scale(0.100000,-0.100000)"
