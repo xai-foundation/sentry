@@ -77,32 +77,32 @@ export function Sidebar() {
 						onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/about-xai/sentry-node-purchase-and-setup/common-troubleshooting-steps/how-do-i-run-a-xai-node-on-vps")}
 						className="flex items-center mb-[5px] text-base font-medium text-white cursor-pointer gap-2 hover:text-hornetSting duration-200 ease-in"
 					>
-						<AiOutlineCloudUpload size={16}/> SET UP ON CLOUD
+						<AiOutlineCloudUpload size={20}/> SET UP ON CLOUD
 					</a>
 					<a
 						onClick={() => window.electron.openExternal(" https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup/step-3-complete-requirements-to-accrue-esxai")}
 						className="flex items-center mb-[5px] text-base font-medium text-white cursor-pointer gap-2 hover:text-hornetSting duration-200 ease-in"
 					>
-						<SiGitbook size={16}/> GITBOOK
+						<SiGitbook size={20}/> GITBOOK
 					</a>
 
 					<a
 						onClick={() => window.electron.openExternal('https://discord.com/invite/xaigames')}
 						className="flex items-center mb-[5px] text-base font-medium text-white cursor-pointer gap-2 hover:text-hornetSting duration-200 ease-in"
 					>
-						<FaDiscord size={16}/> DISCORD
+						<FaDiscord size={20}/> DISCORD
 					</a>
 					<a
 						onClick={() => window.electron.openExternal('https://twitter.com/xai_games')}
 						className="flex items-center mb-[5px] text-base font-medium text-white cursor-pointer gap-2 hover:text-hornetSting duration-200 ease-in"
 					>
-						<RiTwitterXFill size={16}/> X
+						<RiTwitterXFill size={20}/> X
 					</a>
 					<a
 						onClick={() => window.electron.openExternal('https://t.me/XaiSentryNodes')}
 						className="flex group items-center mb-[20px] text-base font-medium text-white cursor-pointer gap-2 hover:text-hornetSting duration-200 ease-in"
 					>
-						<TelegramIcon width={16} height={16} className="fill-white group-hover:fill-hornetSting duration-200 ease-in"/> TELEGRAM
+						<TelegramIcon width={18} height={16} className="fill-white group-hover:fill-hornetSting duration-200 ease-in"/> TELEGRAM
 					</a>
 				<a
 					className="text-elementalGrey text-[15px] cursor-pointer hover:underline duration-200 ease-in"
