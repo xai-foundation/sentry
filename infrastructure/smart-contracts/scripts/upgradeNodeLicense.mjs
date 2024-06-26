@@ -1,10 +1,10 @@
-import hardhat from "hardhat";
+import hardhat, { config } from "hardhat";
 const { ethers, upgrades } = hardhat;
 const address = "0xbc14d8563b248B79689ECbc43bBa53290e0b6b66";
-const xaiAddress = "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66";
-const esXaiAddress = "0x4C749d097832DE2FEcc989ce18fDc5f1BD76700c";
-const ethChainLinkFeedAddress = "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612";
-const xaiChainLinkFeedAddress = "0x806c532D543352e7C344ba6C7F3F00Bfbd309Af1";
+const xaiAddress = config.xaiAddress;
+const esXaiAddress = config.esXaiAddress;
+const ethChainLinkFeedAddress = config.ethChainLinkFeedAddress;
+const xaiChainLinkFeedAddress = config.xaiChainLinkFeedAddress;
 
 
 async function main() {
