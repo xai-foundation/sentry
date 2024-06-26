@@ -26,6 +26,12 @@ export function Header() {
 						link={"https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup"}
 						customClass={"no-underline !font-bold text-xl hover:text-hornetSting"}/>
 					<span className="block uppercase text-foggyLondon">|</span>
+					<ExternalLink
+						content={"BUILD WITH US"}
+						externalTab
+						link={"https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup"}
+						customClass={"no-underline !font-bold text-xl hover:text-hornetSting"}/>
+					<span className="block uppercase text-foggyLondon">|</span>
 
 					<div className="flex gap-[16px]">
 						<ExternalLink

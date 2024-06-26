@@ -1,6 +1,5 @@
 import {useAccount, useContractWrite, useNetwork} from "wagmi";
 import {ConnectButton, PrimaryButton, XaiCheckbox} from "@sentry/ui";
-import {KYCTooltip} from "@/features/checkout/KYCTooltip";
 import {useState} from "react";
 import {useListClaimableAmount} from "@/features/checkout/hooks/useListClaimableAmount";
 import {BiLoaderAlt} from "react-icons/bi";
@@ -9,6 +8,7 @@ import {FaCircleCheck} from "react-icons/fa6";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
+import { KYCTooltip } from "@/features/checkout/components/KYCTooltip";
 
 export function DropClaim() {
 	const {blocked, loading} = useBlockIp({blockUsa: true});

@@ -17,3 +17,4 @@ export * from "./getEsXaiAllowance.js";
 export * from "./getEsXaiBalance.js";
 export * from "./getXaiAllowance.js";
 export * from "./getXaiBalance.js";
+export * from "./formatWeiToEther.js";
