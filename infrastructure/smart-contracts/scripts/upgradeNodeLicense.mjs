@@ -1,6 +1,6 @@
 import hardhat, { config } from "hardhat";
 const { ethers, upgrades } = hardhat;
-const address = "0xbc14d8563b248B79689ECbc43bBa53290e0b6b66";
+const address = config.nodeLicenseAddress;
 const xaiAddress = config.xaiAddress;
 const esXaiAddress = config.esXaiAddress;
 const ethChainLinkFeedAddress = config.ethChainLinkFeedAddress;
