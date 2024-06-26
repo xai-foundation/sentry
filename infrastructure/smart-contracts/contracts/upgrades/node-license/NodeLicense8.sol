@@ -185,7 +185,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      */
     function mint(uint256 _amount, string calldata _promoCode) public payable {
         // Validate the mint data
-        _validateMint(_amount, _promoCode);
+        _validateMint(_amount);
 
         // Calculate the final price and average cost
         uint256 finalPrice = price(_amount, _promoCode);
@@ -227,7 +227,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      */
     function mintWithXai(uint256 _amount, string calldata _promoCode, bool _useEsXai, uint256 _expectedCost) public {
 
-        _validateMint(_amount, _promoCode);
+        _validateMint(_amount);
 
         uint256 finalEthPrice = price(_amount, _promoCode);
         // Convert the final price to XAI
@@ -291,21 +291,11 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @notice Validate new mint request
      * @dev this is called internally to validate the minting process
      * @param _amount The amount of tokens to mint.
-     * @param _promoCode The promo code.
      */
-    function _validateMint(uint256 _amount, string calldata _promoCode) internal view {
+    function _validateMint(uint256 _amount) internal view {
         require(
             _tokenIds.current() + _amount <= maxSupply,
             "Exceeds maxSupply"
-        );
-        PromoCode memory promoCode = _promoCodes[_promoCode];
-        require(
-            (promoCode.recipient != address(0) && promoCode.active) || bytes(_promoCode).length == 0,
-            "Invalid or inactive promo code"
-        );
-        require(
-            promoCode.recipient != msg.sender,
-            "Referral address cannot be the sender's address"
         );
     }
 
@@ -335,10 +325,17 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @return A tuple containing the referral reward and an address with 0 address indicating the promo code was not an address
      */
     function _calculateReferralReward(uint256 _finalPrice, string memory _promoCode) internal returns(uint256, address) {
-        uint256 referralReward = 0;
-        // Retrieve the promo code details
+
+        // If the promo code is empty, return 0
+        if(bytes(_promoCode).length == 0){
+            return (0, address(0));
+        }
+
+        // Retrieve the promo code from storage if it exists
         PromoCode memory promoCode = _promoCodes[_promoCode];
 
+        uint256 referralReward = 0;
+        
         // Check if the promo code already exists in the mappings
         if(promoCode.recipient != address(0)){
             // Promo code exists in the mapping
@@ -346,6 +343,9 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             if (!promoCode.active) {
                 return (0,  address(0));
             }
+
+            // Confirm the recipient is not the sender
+            require(promoCode.recipient != msg.sender, "Referral address cannot be the sender's address");
 
             // Calculate the referral reward
             referralReward = _finalPrice * referralRewardPercentage / 100;
@@ -362,22 +362,25 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         // If the promo code is an address, determine if the recipient has been set
         if(promoCodeAsAddress != address(0)){
 
-        // Get the node license balance of the promo code address
-        if(this.balanceOf(promoCodeAsAddress) == 0){
-            // If the promo code is an address, the address must own at least one node license
-            return (0, address(0));
-        }
+            // Confirm the promo code is not the sender's address
+            require(promoCodeAsAddress != msg.sender, "Referral address cannot be the sender's address");
+
+            // Get the node license balance of the promo code address
+            if(this.balanceOf(promoCodeAsAddress) == 0){
+                // If the promo code is an address, the address must own at least one node license
+                return (0, address(0));
+            }
 
 
-        // Set the promo code recipient to the address
-        _promoCodes[_promoCode].recipient = promoCodeAsAddress;
-        _promoCodes[_promoCode].active = true;            
+            // Set the promo code recipient to the address
+            _promoCodes[_promoCode].recipient = promoCodeAsAddress;
+            _promoCodes[_promoCode].active = true;            
 
-        // Calculate the referral reward
-        referralReward = _finalPrice * referralRewardPercentage / 100;
-        emit ReferralReward(msg.sender, promoCodeAsAddress, referralReward);
+            // Calculate the referral reward
+            referralReward = _finalPrice * referralRewardPercentage / 100;
+            emit ReferralReward(msg.sender, promoCodeAsAddress, referralReward);
 
-        return (referralReward, promoCodeAsAddress);
+            return (referralReward, promoCodeAsAddress);
         }
 
         // If the promo code is not in the existing mappings and is not an address
