@@ -59,17 +59,18 @@ export function AssignedKeysCard() {
 			)}
 		</SquareCard>
 		</div>
-		<div className="absolute top-[18px] left-[182px]">
-		<SideBarTooltip
-            header={"Purchased keys must be assigned to Sentry Wallet"}
-            body={"To assign keys, connect all wallets containing Sentry Keys"}
-			body2={"The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry."}
-            position={"end"}
-			sideOffset={25}
-        >
-           <HelpIcon width={14} height={14} />
-        </SideBarTooltip>		
-		</div>
+			{!hasAssignedKeys && <div className="absolute top-[18px] left-[182px]">
+				<SideBarTooltip
+					header={"Purchased keys must be assigned to Sentry Wallet"}
+					body={"To assign keys, connect all wallets containing Sentry Keys. The wallet containing the purchased keys will perform a gas transaction to assign the keys to the Sentry."}
+					position={"end"}
+					sideOffset={32}
+					width={630}
+					height={40}
+				>
+					<HelpIcon width={14} height={14} />
+				</SideBarTooltip>
+			</div>}
 		</div>
 	);
 }

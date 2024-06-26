@@ -51,17 +51,19 @@ export function AllowedWalletsCard() {
 			)}
 		</SquareCard>
 		</div>
-		<div className="absolute top-[18px] left-[265px]">
-		<SideBarTooltip
-            header={"Wallets must be allowed to KYC"}
-            body={"By allowing a wallet, you are accepting the responsibility of paying the gas fee associated with submitting an assertion and claiming rewards."}
-            position={"end"}
-			sideOffset={32}
-			height={50}
-        >
-           <HelpIcon width={14} height={14} />
-        </SideBarTooltip>		
-		</div>
+			{!data?.whitelistedWallets && <div className="absolute top-[18px] left-[265px]">
+				<SideBarTooltip
+					header={"Wallets must be allowed to KYC"}
+					body={"By allowing a wallet, you are accepting the responsibility of paying the gas fee associated with submitting an assertion and claiming rewards."}
+					position={"end"}
+					sideOffset={32}
+					width={630}
+					height={50}
+					avoidCollisions={false}
+				>
+					<HelpIcon width={14} height={14} />
+				</SideBarTooltip>
+			</div>}
 		</div>
 	);
 }
