@@ -2,7 +2,7 @@ import MainTitle from "../titles/MainTitle";
 import RemainingComponent from "./RemainingComponent";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { WarningIcon } from "../icons/IconsComponent";
-import { useGetMaxBucketShares } from "@/app/hooks/hooks";
+import { useGetMaxBucketShares } from "@/app/hooks";
 import BaseInput, { InputSizes } from "../ui/inputs/BaseInput";
 import { BaseCallout } from "../ui";
 

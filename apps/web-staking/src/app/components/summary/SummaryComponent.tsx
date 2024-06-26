@@ -8,7 +8,7 @@ import PoolTierCard from "@/app/components/pool/PoolTierCard";
 import HeadlineComponent from "@/app/components/summary/HeadlineComponent";
 import StakingCards from "@/app/components/summary/StakingCards";
 import SummaryDescriptions from "@/app/components/summary/summaryDescriptions/SummaryDescriptions";
-import { useGetUnstakeRequests, useGetUserPoolInfo } from "@/app/hooks/hooks";
+import { useGetUnstakeRequests, useGetUserPoolInfo } from "@/app/hooks";
 import {
   UnstakeRequest,
   mapWeb3Error,
@@ -166,7 +166,7 @@ const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean,
   return (
     <>
       {poolInfo && (
-        <div className="flex w-full flex-col items-center lg:px-[35px] xl:pr-[56px] px-0">
+        <div className="flex w-full flex-col items-center lg:px-[35px] lg:pb-[50px] xl:pr-[56px] px-0 sm:pb-[70px]">
           <>
             <div className="mt-2 flex w-full justify-start lg:z-40">
               <ButtonBack
@@ -196,6 +196,7 @@ const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean,
               unstakeRequests={unstakeRequests}
               onClaimRequest={onClaimRequest}
               poolInfo={poolInfo}
+              poolFromDb={poolFromDb}
               isBannedPool={isBannedPool}
             />
           </>

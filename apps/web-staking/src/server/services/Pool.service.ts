@@ -1,6 +1,6 @@
 import { FilterQuery, ObjectId } from "mongoose";
 import IPool from "../types/IPool";
-import { PoolInfo } from "@/types/Pool";
+import { PoolInfo, PoolRewardRates } from "@/types/Pool";
 import PoolModel from "../models/pool.schema";
 import { executeQuery } from "./Database.service";
 import { getMaxKeyCount, NetworkKey } from "@/services/web3.service";
@@ -14,7 +14,7 @@ export async function findPool(filter: FilterQuery<IPool>): Promise<PoolInfo> {
 		const pool = await executeQuery(PoolModel.findOne(filter).lean()) as IPool;
 		if (!pool) {
 			throw new Error(`ERROR @findPool: No pool found`);
-		};
+		}
 		return mapPool(pool);
 	} catch (error) {
 		throw new Error(`ERROR @findPool: ${error}`);
@@ -102,6 +102,22 @@ export const findPools = async ({
 	}
 }
 
+export const getPoolRewardRatesByAddress = async (poolAddresses: string[]): Promise<PoolRewardRates[]> => {
+    try {
+        const pools = (await executeQuery(PoolModel.find({ poolAddress: { $in: poolAddresses } }).select('poolAddress keyRewardRate esXaiRewardRate').lean())) as IPool[];
+        return pools.map((p) => {
+            return {
+                poolAddress: p.poolAddress,
+                keyRewardRate: p.keyRewardRate,
+                esXaiRewardRate: p.esXaiRewardRate
+            }
+        });
+    } catch (error) {
+        throw new Error(`ERROR @getPoolRewardRatesByAddress: ${error}`);
+    }
+}
+
+
 export interface INetworkData extends IDocument {
 	networkTotalStakedKeys: number;
 	networkTotalStakedEsXAI: number;
@@ -167,9 +183,11 @@ export function mapPool(pool: IPool): PoolInfo {
 		ownerRequestedUnstakeKeyAmount: pool.ownerRequestedUnstakeKeyAmount,
 		ownerLatestUnstakeRequestCompletionTime: pool.ownerLatestUnstakeRequestCompletionTime,
 		pendingShares: pool.pendingShares || [0, 0, 0],
-		visibility: pool.visibility
+		visibility: pool.visibility,
+		keyRewardRate: pool.keyRewardRate,
+		esXaiRewardRate: pool.esXaiRewardRate
 	}
-};
+}
 
 export async function isPoolBanned(poolAddress: string): Promise<boolean> {
 

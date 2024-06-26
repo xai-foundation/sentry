@@ -105,6 +105,16 @@ const PoolSchema = new mongoose.Schema<IPool>({
         type: Date,
         required: true,
         default: Date.now
+    },
+    keyRewardRate: {
+        type: Number,
+        required: true,
+        default: 0
+    },
+    esXaiRewardRate: {
+        type: Number,
+        required: true,
+        default: 0
     }
 });
 
