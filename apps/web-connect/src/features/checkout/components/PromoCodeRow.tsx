@@ -1,40 +1,26 @@
-import { Dispatch, SetStateAction } from "react";
+import { useState } from 'react';
 import { AiFillInfoCircle } from "react-icons/ai";
 import { PrimaryButton } from "@sentry/ui";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
-import { PriceDataInterface } from "../hooks/useWebBuyKeysOrderTotal";
 import { formatWeiToEther } from "@sentry/core";
+import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 
-interface PromoCodeRowProps {
-    discount: { applied: boolean; error: boolean };
-    setDiscount: Dispatch<SetStateAction<{ applied: boolean; error: boolean }>>;
-    promoCode: string;
-    setPromoCode: Dispatch<SetStateAction<string>>;
-    handleSubmit: () => Promise<void>;
-    promo: boolean;
-    currency: string;
-    decimalPlaces: number;
-    calculateTotalPrice: () => bigint;
-    setPromo: Dispatch<SetStateAction<boolean>>;
-    displayPricesMayVary: boolean;
-    getPriceData: PriceDataInterface | undefined;
-}
+export function PromoCodeRow() {
+    const {
+        discount,
+        setDiscount,
+        promoCode,
+        setPromoCode,
+        handleSubmit,
+        currency,
+        decimalPlaces,
+        calculateTotalPrice,
+        displayPricesMayVary
+    } = useWebBuyKeysContext();
 
-export function PromoCodeRow({
-    discount,
-    setDiscount,
-    promoCode,
-    decimalPlaces,
-    setPromoCode,
-    handleSubmit,
-    promo,
-    currency,
-    setPromo,
-    calculateTotalPrice,
-    displayPricesMayVary,
-    getPriceData,
-}: PromoCodeRowProps) {
+    const [promo, setPromo] = useState(false);
+
     return (
         <div>
             {discount.applied && (
@@ -51,7 +37,7 @@ export function PromoCodeRow({
                         </div>
                         <div className="flex flex-row items-center gap-1">
                             <span className="text-white font-semibold">
-                                {getPriceData ? formatWeiToEther(calculateTotalPrice() * BigInt(5) / BigInt(100), decimalPlaces) : "0"} {currency}
+                            {formatWeiToEther(calculateTotalPrice() * BigInt(5) / BigInt(100), decimalPlaces)} {currency}
                             </span>
                         </div>
                     </div>

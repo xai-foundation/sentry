@@ -1,12 +1,20 @@
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
-import {PropsWithChildren} from "react";
+import { PropsWithChildren } from "react";
 
+/**
+ * Props for the KYCTooltip component
+ * @interface TooltipProps
+ * @extends {PropsWithChildren}
+ */
 interface TooltipProps extends PropsWithChildren {
-	width?: number;
-	position?: "start" | "center" | "end";
-	side?: "top" | "right" | "bottom" | "left";
+    width?: number;
+    position?: "start" | "center" | "end";
+    side?: "top" | "right" | "bottom" | "left";
 }
 
+/**
+ * List of countries with their translations that are not allowed to pass KYC
+ */
 const countryList: { country: string; translation: string }[] = [
 	{country: "United States", translation: "United States"},
 	{country: "Afghanistan", translation: "افغانستان‎"},
@@ -43,55 +51,68 @@ const countryList: { country: string; translation: string }[] = [
 	{country: "Zimbabwe", translation: "Zimbabwe"},
 ];
 
-export const KYCTooltip = ({width = 443, position = "center", side = "top", children}: TooltipProps) => {
-	function getCountries() {
+/**
+ * KYCTooltip Component
+ * 
+ * This component renders a tooltip that displays a list of countries
+ * that are not allowed to pass KYC due to local regulations.
+ * 
+ * @param {TooltipProps} props - The props for the KYCTooltip component
+ * @returns {JSX.Element} The rendered KYCTooltip component
+ */
+export const KYCTooltip = ({ width = 443, position = "center", side = "top", children }: TooltipProps): JSX.Element => {
+    /**
+     * Generates a three-column layout of countries
+     * @returns {JSX.Element} The rendered list of countries
+     */
+    function getCountries(): JSX.Element {
+        const countriesPerColumn = Math.ceil(countryList.length / 3);
 
-		const countriesPerColumn = Math.ceil(countryList.length / 3); // Calculate the number of countries per column
+        const columns = Array.from({ length: 3 }, (_, columnIndex) =>
+            countryList.slice(columnIndex * countriesPerColumn, (columnIndex + 1) * countriesPerColumn)
+        );
 
-		const columns = Array.from({length: 3}, (_, columnIndex) =>
-			countryList.slice(columnIndex * countriesPerColumn, (columnIndex + 1) * countriesPerColumn)
-		);
+        return (
+            <div className="flex w-full justify-between">
+                {columns.map((column, columnIndex) => (
+                    <ul key={columnIndex} className="flex flex-col flex-grow">
+                        {column.map(({ country, translation }) => (
+                            <li key={country} className="mx-2 text-[#A19F9F]">
+                                <span className="text-[#FF0030]">*</span> {country} - {translation}
+                            </li>
+                        ))}
+                    </ul>
+                ))}
+            </div>
+        );
+    }
 
-		// Render the columns
-		return (
-			<div className="flex w-full justify-between">
-				{columns.map((column, columnIndex) => (
-					<ul key={columnIndex} className="flex flex-col flex-grow">
-						{column.map(({country, translation}) => (
-							<li key={country} className="mx-2 text-[#A19F9F]">
-							<span className="text-[#FF0030]">*</span>	{country} - {translation}
-							</li>
-						))}
-					</ul>
-				))}
-			</div>
-		);
-	}
-
-	return (
-		<TooltipPrimitive.Provider delayDuration={0}>
-			<TooltipPrimitive.Root>
-				<TooltipPrimitive.Trigger asChild>
-					<button>{children}</button>
-				</TooltipPrimitive.Trigger>
-				<TooltipPrimitive.Content
-					align={position}
-					side={side}
-					sideOffset={12}
-					className={`relative -bottom-1 items-center flex-col flex text-black z-50`}
-					style={{width: `${width}px`}}
-				>
-					<div className={`relative w-full py-3 px-4 bg-[#000000] shadow-lg`}>
-						<p className="text-base font-semibold pb-2">
-							The following countries will not be allowed to pass KYC in accordance with local
-							regulations:
-						</p>
-						{getCountries()}
-					</div>
-					<div
-						className="w-3 h-3 -mt-[0.4rem] mx-[0.5rem] rotate-45 bg-[#000000] border-b border-r border-[#D4D4D4] z-30"/>
-				</TooltipPrimitive.Content>
-			</TooltipPrimitive.Root>
-		</TooltipPrimitive.Provider>
-	);
+    return (
+        <TooltipPrimitive.Provider delayDuration={0}>
+            <TooltipPrimitive.Root>
+                <TooltipPrimitive.Trigger asChild>
+                    <button>{children}</button>
+                </TooltipPrimitive.Trigger>
+                <TooltipPrimitive.Content
+                    align={position}
+                    side={side}
+                    sideOffset={12}
+                    className={`relative -bottom-1 items-center flex-col flex text-black z-50`}
+                    style={{ width: `${width}px` }}
+                >
+                    <div className={`relative w-full py-3 px-4 bg-[#000000] shadow-lg`}>
+                        <p className="text-base font-semibold pb-2">
+                            The following countries will not be allowed to pass KYC in accordance with local
+                            regulations:
+                        </p>
+                        {getCountries()}
+                    </div>
+                    {/* Tooltip arrow */}
+                    <div
+                        className="w-3 h-3 -mt-[0.4rem] mx-[0.5rem] rotate-45 bg-[#000000] border-b border-r border-[#D4D4D4] z-30"
+                    />
+                </TooltipPrimitive.Content>
+            </TooltipPrimitive.Root>
+        </TooltipPrimitive.Provider>
+    );
 };
