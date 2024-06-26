@@ -15,7 +15,7 @@ export function LogoColumn(): JSX.Element {
             {/* Logo container */}
             <div className="w-full flex justify-center">
                 <img 
-                    className="max-w-[280px]" 
+                    className="max-w-[390px]" 
                     src={logo} 
                     alt="Sentry Logo"  // Added alt text for accessibility
                 />
