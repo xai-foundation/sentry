@@ -67,6 +67,7 @@ export function AssignedKeysCard() {
 					sideOffset={32}
 					width={630}
 					height={40}
+					avoidCollisions={false}
 				>
 					<HelpIcon width={14} height={14} />
 				</SideBarTooltip>

@@ -42,7 +42,7 @@ export function Sidebar() {
 					<XaiHeaderIcon width={39} height={34} fill="fill-white" />
 				</div>
 
-				<div className="w-[237px] mb-[145px]">
+				<div className="w-[237px] mb-[120px]">
 					<Link
 						to={data?.addedWallets?.length && data.addedWallets.length > 0 ? "/dashboard" : "#"}
 						className={`flex items-center w-[237px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/dashboard')}` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
