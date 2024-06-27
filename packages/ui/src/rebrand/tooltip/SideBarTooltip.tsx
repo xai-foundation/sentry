@@ -15,10 +15,11 @@ interface TooltipProps extends PropsWithChildren {
     height?: number;
 	position?: "start" | "center" | "end";
     side?: "top" | "right" | "bottom" | "left";
-    sideOffset?: number;
+	sideOffset?: number;
+	avoidCollisions?: boolean;
 }
 
-export const SideBarTooltip = ({header, body, body2, body3, banner, bannerTitle, bannerValue, width = 443, height, position = "start", side = "bottom", sideOffset = 12, children}: TooltipProps) => {
+export const SideBarTooltip = ({header, body, body2, body3, banner, bannerTitle, bannerValue, width = 443, height, position = "start", side = "bottom", sideOffset = 12, avoidCollisions = true, children}: TooltipProps) => {
 	return (
 		<TooltipPrimitive.Provider delayDuration={0}>
 			<TooltipPrimitive.Root>
@@ -30,7 +31,8 @@ export const SideBarTooltip = ({header, body, body2, body3, banner, bannerTitle,
 					side={side}
 					sideOffset={sideOffset}
 					className={`relative -top-1 ${position === "start" ? "left-[-0.39rem] items-start" : "right-[-0.39rem] items-end"} flex-col flex text-black shadow-md z-50`}
-					style={{width: `${width}px `, height: `${height}px`}}
+					style={{ width: `${width}px `, height: `${height}px` }}
+					avoidCollisions={avoidCollisions}	
 				>
 					<div
 						className="w-3 h-3 -mb-[0.4rem] mx-[0.5rem] rotate-45 bg-[#000000] z-30"/>
