@@ -1,5 +1,7 @@
 import {Dispatch, MutableRefObject, ReactNode, SetStateAction, useEffect, useRef} from "react";
 import {DropdownArrow} from "../../rebrand/icons/IconsComponents";
+
+const DROPDOWN_ITEMS_WITHOUT_SCROLL = 11;
 interface DropdownProps {
     setIsOpen: (isOpen: boolean) => void;
     isOpen: boolean;
@@ -25,7 +27,7 @@ interface DropdownItemProps {
 }
 
 export const DropdownItem = ({onClick, extraClasses, key, dropdownOptionsCount, children}: DropdownItemProps) => {
-    return <p onClick={onClick} className={`flex items-center px-[15px] hover:bg-abaddonBlack bg-black cursor-pointer duration-300 ease-in-out text-lg min-h-[48px] font-medium ${dropdownOptionsCount > 11 && "mr-[2px]"} ${extraClasses}`} key={key}>{children}</p>
+    return <p onClick={onClick} className={`flex items-center px-[15px] hover:bg-abaddonBlack bg-black cursor-pointer duration-300 ease-in-out text-lg min-h-[48px] font-medium ${dropdownOptionsCount > DROPDOWN_ITEMS_WITHOUT_SCROLL && "mr-[2px]"} ${extraClasses}`} key={key}>{children}</p>
 }
 
 export const Dropdown = ({setIsOpen, isOpen, dropdownOptionsCount, setSelectedValue, getDropdownItems, selectedValueRender, extraClasses, defaultValue}: DropdownProps) => {
@@ -64,18 +66,18 @@ export const Dropdown = ({setIsOpen, isOpen, dropdownOptionsCount, setSelectedVa
             {isOpen && (
                 <>
                     <div
-                        className={`absolute top-[55px] left-[-1px] flex flex-col w-[538px] bg-black text-americanSilver z-30 text-lg max-h-[528px] ${extraClasses?.dropdownOptions} ${dropdownOptionsCount > 11 && "overflow-y-scroll overflow-x-hidden"} dropdown-options`}>
+                        className={`absolute top-[55px] left-[-1px] flex flex-col w-[538px] bg-black text-americanSilver z-30 text-lg max-h-[528px] ${extraClasses?.dropdownOptions} ${dropdownOptionsCount > DROPDOWN_ITEMS_WITHOUT_SCROLL && "overflow-y-scroll overflow-x-hidden"} dropdown-options`}>
                         {defaultValue && <p
                             onClick={() => {
                                 setSelectedValue(null);
                                 setIsOpen(false);
                             }}
-                            className={`px-[15px] min-h-[48px] flex items-center cursor-pointer bg-black ${dropdownOptionsCount > 11 && "mr-[2px]"} hover:bg-abaddonBlack`}
+                            className={`px-[15px] min-h-[48px] flex items-center cursor-pointer bg-black ${dropdownOptionsCount > DROPDOWN_ITEMS_WITHOUT_SCROLL && "mr-[2px]"} hover:bg-abaddonBlack`}
                         >
                             {defaultValue}
                         </p>}
                         {getDropdownItems()}
-                        {dropdownOptionsCount > 11 && <div
+                        {dropdownOptionsCount > DROPDOWN_ITEMS_WITHOUT_SCROLL && <div
                             className="h-full min-h-[48px] max-h-[528px] w-[10px] absolute top-0 right-[-10px] bg-white z-[60]"
                             ref={scrollbarRef}></div>
                         }
