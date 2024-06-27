@@ -112,6 +112,7 @@ export function SentryWallet() {
 		if (data?.whitelistedWallets) {
 			return data?.whitelistedWallets.map((wallet, i) => (
 				<DropdownItem
+					dropdownOptionsCount={data.whitelistedWallets!.length}
 					onClick={() => {
 						setSelectedWallet(wallet.toLowerCase());
 						setIsOpen(false);
@@ -400,20 +401,23 @@ export function SentryWallet() {
 								<div className="w-full">
 									<div className="w-full h-auto flex flex-col pb-3 mt-[15px] pr-[10px]">
 										<div className="flex flex-row gap-2 h-[44px]">
-											<Dropdown
-												setIsOpen={setIsOpen}
-												isOpen={isOpen}
-												defaultValue={"All"}
-												selectedValue={
-													selectedWallet
-												}
-												selectedValueRender={
-													<p>{selectedWallet ? `${selectedWallet!.slice(0, 6)}...${selectedWallet!.slice(-6)}` : `All assigned wallets/pools (${data?.whitelistedWallets ? data.whitelistedWallets.length : owners.length})`}</p>
-												}
-												setSelectedValue={setSelectedWallet}
-												getDropdownItems={getDropdownItems}
-												extraClasses={{dropdown: "!w-[330px] !h-[44px]"}}
-											/>
+											{data?.whitelistedWallets && data?.whitelistedWallets?.length > 0 &&
+												<Dropdown
+													setIsOpen={setIsOpen}
+													isOpen={isOpen}
+													defaultValue={"All"}
+													selectedValue={
+														selectedWallet
+													}
+													selectedValueRender={
+														<p>{selectedWallet ? `${selectedWallet!.slice(0, 6)}...${selectedWallet!.slice(-6)}` : `All assigned wallets/pools (${data?.whitelistedWallets ? data.whitelistedWallets.length : owners.length})`}</p>
+													}
+													setSelectedValue={setSelectedWallet}
+													getDropdownItems={getDropdownItems}
+													extraClasses={{dropdown: "!w-[330px] !h-[44px]"}}
+													dropdownOptionsCount={data.whitelistedWallets.length}
+												/>
+											}
 
 											<PrimaryButton
 												isDisabled={selectedWallet === null}

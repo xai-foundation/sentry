@@ -7,30 +7,34 @@ interface DropdownProps {
     selectedValueRender: ReactNode;
     setSelectedValue: Dispatch<SetStateAction<string | null>>;
     getDropdownItems: () => JSX.Element[];
+    dropdownOptionsCount: number; // just put here arr.length
     defaultValue?: string;
     extraClasses?: {
         dropdownContainer?: string;
         dropdown?: string;
+        dropdownOptions?: string;
     }
 }
 
 interface DropdownItemProps {
     onClick: () => void;
     extraClasses?: string;
+    dropdownOptionsCount: number; // just put here arr.length
     key: string;
     children: ReactNode;
 }
 
-export const DropdownItem = ({onClick, extraClasses, key, children}: DropdownItemProps) => {
-    return <p onClick={onClick} className={`flex items-center px-[15px] hover:bg-abaddonBlack cursor-pointer duration-300 ease-in-out text-lg h-[48px] font-medium ${extraClasses}`} key={key}>{children}</p>
+export const DropdownItem = ({onClick, extraClasses, key, dropdownOptionsCount, children}: DropdownItemProps) => {
+    return <p onClick={onClick} className={`flex items-center px-[15px] hover:bg-abaddonBlack bg-black cursor-pointer duration-300 ease-in-out text-lg min-h-[48px] font-medium ${dropdownOptionsCount > 11 && "mr-[2px]"} ${extraClasses}`} key={key}>{children}</p>
 }
 
-export const Dropdown = ({setIsOpen, isOpen, setSelectedValue, getDropdownItems, selectedValueRender, extraClasses, defaultValue}: DropdownProps) => {
+export const Dropdown = ({setIsOpen, isOpen, dropdownOptionsCount, setSelectedValue, getDropdownItems, selectedValueRender, extraClasses, defaultValue}: DropdownProps) => {
     const dropdownRef = useRef(null) as unknown as MutableRefObject<HTMLDivElement>;
+    const scrollbarRef = useRef(null) as unknown as MutableRefObject<HTMLDivElement>;
 
     useEffect(() => {
         const handleKeyDown = (e: MouseEvent) => {
-            if(!dropdownRef.current.contains(e.target as Node)) {
+            if(!dropdownRef.current.contains(e.target as Node) && !scrollbarRef.current.contains(e.target as Node)) {
                 setIsOpen(false);
             }
         };
@@ -58,19 +62,25 @@ export const Dropdown = ({setIsOpen, isOpen, setSelectedValue, getDropdownItems,
                 className="bg-foggyLondon transition-bg ease-in-out duration-300 absolute left-[-2px] top-[-2px] z-10 w-[calc(100%+4px)] h-[calc(100%+4px)] dropdown-clip-path dropdown-border"></span>
 
             {isOpen && (
-                <div
-                    className="absolute top-[55px] left-[-1px] flex flex-col w-[538px] bg-nulnOil text-americanSilver z-30 text-lg">
-                    <p
-                        onClick={() => {
-                            setSelectedValue(null);
-                            setIsOpen(false);
-                        }}
-                        className="px-[15px] h-[48px] flex items-center cursor-pointer hover:bg-abaddonBlack"
-                    >
-                        {defaultValue}
-                    </p>
-                    {getDropdownItems()}
-                </div>
+                <>
+                    <div
+                        className={`absolute top-[55px] left-[-1px] flex flex-col w-[538px] bg-black text-americanSilver z-30 text-lg max-h-[528px] ${extraClasses?.dropdownOptions} ${dropdownOptionsCount > 11 && "overflow-y-scroll overflow-x-hidden"} dropdown-options`}>
+                        {defaultValue && <p
+                            onClick={() => {
+                                setSelectedValue(null);
+                                setIsOpen(false);
+                            }}
+                            className={`px-[15px] min-h-[48px] flex items-center cursor-pointer bg-black ${dropdownOptionsCount > 11 && "mr-[2px]"} hover:bg-abaddonBlack`}
+                        >
+                            {defaultValue}
+                        </p>}
+                        {getDropdownItems()}
+                        {dropdownOptionsCount > 11 && <div
+                            className="h-full min-h-[48px] max-h-[528px] w-[10px] absolute top-0 right-[-10px] bg-white z-[60]"
+                            ref={scrollbarRef}></div>
+                        }
+                    </div>
+                </>
             )}
         </div>
     );
