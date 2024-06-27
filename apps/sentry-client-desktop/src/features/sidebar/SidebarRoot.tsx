@@ -64,7 +64,7 @@ export function Sidebar() {
 						<div className="w-auto h-auto flex justify-center items-center">
 							{sentryRunning && data?.addedWallets?.length !== 0 && hasAssignedKeys && funded && <GreenPulse size='lg' />}
 							{sentryRunning && data?.addedWallets?.length !== 0 && !hasAssignedKeys && !funded && <YellowPulse size='lg' />}
-							{(!sentryRunning || data?.addedWallets?.length === 0) && <GreyPulse size='lg' />}
+							{(!sentryRunning || !data?.addedWallets?.length || data?.addedWallets?.length === 0) && <GreyPulse size='lg' />}
 						</div>
 						SENTRY WALLET
 					</Link>
