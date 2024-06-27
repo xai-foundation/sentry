@@ -29,7 +29,7 @@ export function Sidebar() {
 		}
 		return "";
 	}
-	
+		
 	return (
 		<div
 			className="flex flex-col justify-between sticky h-full w-[237px] min-w-[237px] text-[15px] z-10"
@@ -64,7 +64,7 @@ export function Sidebar() {
 						<div className="w-auto h-auto flex justify-center items-center">
 							{sentryRunning && data?.addedWallets?.length !== 0 && hasAssignedKeys && funded && <GreenPulse size='lg' />}
 							{sentryRunning && data?.addedWallets?.length !== 0 && !hasAssignedKeys && !funded && <YellowPulse size='lg' />}
-							{!sentryRunning || data?.addedWallets?.length === 0 && <GreyPulse size='lg' />}
+							{(!sentryRunning || !data?.addedWallets?.length || data?.addedWallets?.length === 0) && <GreyPulse size='lg' />}
 						</div>
 						SENTRY WALLET
 					</Link>
