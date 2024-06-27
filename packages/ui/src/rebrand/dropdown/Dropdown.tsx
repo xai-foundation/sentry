@@ -8,6 +8,7 @@ interface DropdownProps {
     selectedValue: string | null;
     selectedValueRender: ReactNode;
     setSelectedValue: Dispatch<SetStateAction<string | null>>;
+    getPreferableItems?: () => JSX.Element[];
     getDropdownItems: () => JSX.Element[];
     dropdownOptionsCount: number; // just put here arr.length
     defaultValue?: string;
@@ -30,7 +31,7 @@ export const DropdownItem = ({onClick, extraClasses, key, dropdownOptionsCount, 
     return <p onClick={onClick} className={`flex items-center px-[15px] hover:bg-abaddonBlack bg-black cursor-pointer duration-300 ease-in-out text-lg min-h-[48px] font-medium ${dropdownOptionsCount > DROPDOWN_ITEMS_WITHOUT_SCROLL && "mr-[2px]"} ${extraClasses}`} key={key}>{children}</p>
 }
 
-export const Dropdown = ({setIsOpen, isOpen, dropdownOptionsCount, setSelectedValue, getDropdownItems, selectedValueRender, extraClasses, defaultValue}: DropdownProps) => {
+export const Dropdown = ({setIsOpen, isOpen, dropdownOptionsCount, setSelectedValue, getPreferableItems, getDropdownItems, selectedValueRender, extraClasses, defaultValue}: DropdownProps) => {
     const dropdownRef = useRef(null) as unknown as MutableRefObject<HTMLDivElement>;
     const scrollbarRef = useRef(null) as unknown as MutableRefObject<HTMLDivElement>;
 
@@ -76,6 +77,11 @@ export const Dropdown = ({setIsOpen, isOpen, dropdownOptionsCount, setSelectedVa
                         >
                             {defaultValue}
                         </p>}
+                        {getPreferableItems && <div className="relative mb-[12px]">
+                            {getPreferableItems()}
+                            <span
+                                className="w-[calc(100%-30px)] h-[1px] bg-foggyLondon absolute bottom-[-7px] left-[15px]"></span>
+                        </div>}
                         {getDropdownItems()}
                         {dropdownOptionsCount > DROPDOWN_ITEMS_WITHOUT_SCROLL && <div
                             className="h-full min-h-[48px] max-h-[528px] w-[10px] absolute top-0 right-[-10px] bg-white z-[60]"
