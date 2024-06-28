@@ -1,5 +1,5 @@
 import {Dispatch, MutableRefObject, ReactNode, SetStateAction, useEffect, useRef} from "react";
-import {DropdownArrow} from "../../rebrand/icons/IconsComponents";
+import {DropdownArrow, WarningIcon} from "../../rebrand/icons/IconsComponents";
 
 const DROPDOWN_ITEMS_WITHOUT_SCROLL = 11;
 interface DropdownProps {
@@ -11,6 +11,7 @@ interface DropdownProps {
     getPreferableItems?: () => JSX.Element[];
     getDropdownItems: () => JSX.Element[];
     dropdownOptionsCount: number; // just put here arr.length
+    isInvalid?: boolean;
     defaultValue?: string;
     extraClasses?: {
         dropdownContainer?: string;
@@ -31,7 +32,7 @@ export const DropdownItem = ({onClick, extraClasses, key, dropdownOptionsCount, 
     return <p onClick={onClick} className={`flex items-center px-[15px] hover:bg-abaddonBlack bg-black cursor-pointer duration-300 ease-in-out text-lg min-h-[48px] font-medium ${dropdownOptionsCount > DROPDOWN_ITEMS_WITHOUT_SCROLL && "mr-[2px]"} ${extraClasses}`} key={key}>{children}</p>
 }
 
-export const Dropdown = ({setIsOpen, isOpen, dropdownOptionsCount, setSelectedValue, getPreferableItems, getDropdownItems, selectedValueRender, extraClasses, defaultValue}: DropdownProps) => {
+export const Dropdown = ({setIsOpen, isOpen, isInvalid, dropdownOptionsCount, setSelectedValue, getPreferableItems, getDropdownItems, selectedValueRender, extraClasses, defaultValue}: DropdownProps) => {
     const dropdownRef = useRef(null) as unknown as MutableRefObject<HTMLDivElement>;
     const scrollbarRef = useRef(null) as unknown as MutableRefObject<HTMLDivElement>;
 
@@ -55,14 +56,17 @@ export const Dropdown = ({setIsOpen, isOpen, dropdownOptionsCount, setSelectedVa
                 onClick={() => setIsOpen(!isOpen)}
                 className={`relative h-[48px] px-[15px] group z-[20] text-lg font-medium text-americanSilver transition-bg duration-300 ease-in-out ${isOpen ? "bg-velvetBlack" : "bg-nulnOil"} flex items-center justify-between w-[538px] dropdown-clip-path dropdown ${extraClasses?.dropdown}`}
             >
-                {selectedValueRender}
+                <div className="flex items-center gap-[10px]">
+                    {isInvalid && <WarningIcon width={18} height={16} fill={"#F76808"}/>}
+                    {selectedValueRender}
+                </div>
                 <DropdownArrow
                     className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
                 />
 
             </div>
             <span
-                className="bg-foggyLondon transition-bg ease-in-out duration-300 absolute left-[-2px] top-[-2px] z-10 w-[calc(100%+4px)] h-[calc(100%+4px)] dropdown-clip-path dropdown-border"></span>
+                className={`bg-foggyLondon transition-bg ease-in-out duration-300 absolute left-[-2px] top-[-2px] z-10 w-[calc(100%+4px)] h-[calc(100%+4px)] ${isInvalid && "!bg-blazeOrange hover:!bg-blazeOrange"} dropdown-clip-path dropdown-border`}></span>
 
             {isOpen && (
                 <>

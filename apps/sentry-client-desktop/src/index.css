@@ -56,7 +56,7 @@ body {
       }
 
     .dropdown:hover + .dropdown-border {
-        background-color: #FF2C3A !important;
+        background-color: #FF2C3A;
     }
 
     .global-cta-clip-path {
