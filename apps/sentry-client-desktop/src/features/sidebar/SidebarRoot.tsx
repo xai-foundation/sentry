@@ -42,7 +42,7 @@ export function Sidebar() {
 					<XaiHeaderIcon width={39} height={34} fill="fill-white" />
 				</div>
 
-				<div className="w-[237px] mb-[145px]">
+				<div className="w-[237px] mb-[110px]">
 					<Link
 						to={data?.addedWallets?.length && data.addedWallets.length > 0 ? "/dashboard" : "#"}
 						className={`flex items-center w-[237px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/dashboard')}` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
@@ -62,8 +62,8 @@ export function Sidebar() {
 						className={`flex items-center w-[237px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/sentry-wallet')}` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
 					>
 						<div className="w-auto h-auto flex justify-center items-center">
-							{sentryRunning && data?.addedWallets?.length !== 0 && hasAssignedKeys && funded && <GreenPulse size='lg' />}
-							{sentryRunning && data?.addedWallets?.length !== 0 && !hasAssignedKeys && !funded && <YellowPulse size='lg' />}
+							{sentryRunning && data?.addedWallets?.length && data?.addedWallets?.length !== 0 && hasAssignedKeys && funded && <GreenPulse size='lg' />}
+							{sentryRunning && data?.addedWallets?.length && data?.addedWallets?.length !== 0 && !hasAssignedKeys && !funded && <YellowPulse size='lg' />}
 							{(!sentryRunning || !data?.addedWallets?.length || data?.addedWallets?.length === 0) && <GreyPulse size='lg' />}
 						</div>
 						SENTRY WALLET
