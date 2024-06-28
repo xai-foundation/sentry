@@ -319,7 +319,7 @@ export function SentryWallet() {
 									onClick={() => {
 										setDrawerState(DrawerView.Whitelist)
 									}}
-									className={`ml-[10px] flex flex-row justify-center items-center gap-2 text-pelati text-lg font-bold ${!stopRuntime ? 'cursor-not-allowed' : "hover:text-white duration-300"}`}
+									className={`ml-[5px] flex flex-row justify-center items-center gap-2 text-pelati text-lg font-bold ${!stopRuntime ? 'cursor-not-allowed' : "hover:text-white duration-300"}`}
 									disabled={!stopRuntime}
 								>
 									{stopRuntime ?
