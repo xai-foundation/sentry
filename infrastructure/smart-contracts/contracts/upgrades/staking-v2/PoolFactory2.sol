@@ -51,7 +51,7 @@ import "../../staking-v2/PoolBeacon.sol";
 // 34: Invalid delegate update; pool needs to have been created via the PoolFactory
 
 
-contract PoolFactoryV2 is Initializable, AccessControlEnumerableUpgradeable {
+contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
     // address of the NodeLicense NFT contract
@@ -159,37 +159,38 @@ contract PoolFactoryV2 is Initializable, AccessControlEnumerableUpgradeable {
         bool isKey
     );
 
-    /**
-     * @dev Initializes the contract with the provided addresses.
-     * Grants DEFAULT_ADMIN_ROLE and STAKE_KEYS_ADMIN_ROLEs.
-     * @param _refereeAddress Address of the Referee contract.
-     * @param _esXaiAddress Address of the esXai token contract.
-     * @param _nodeLicenseAddress Address of the NodeLicense NFT contract.
-     * @param _stakeKeysAdminRole Address to be granted STAKE_KEYS_ADMIN_ROLE.
-     */
-    function initialize(
-        address _refereeAddress,
-        address _esXaiAddress,
-        address _nodeLicenseAddress,
-        address _stakeKeysAdminRole
-    ) public initializer {
-        __AccessControlEnumerable_init();
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(STAKE_KEYS_ADMIN_ROLE, _stakeKeysAdminRole);
+    // TODO Confirm initializer can be removed.
+    // /**
+    //  * @dev Initializes the contract with the provided addresses.
+    //  * Grants DEFAULT_ADMIN_ROLE and STAKE_KEYS_ADMIN_ROLEs.
+    //  * @param _refereeAddress Address of the Referee contract.
+    //  * @param _esXaiAddress Address of the esXai token contract.
+    //  * @param _nodeLicenseAddress Address of the NodeLicense NFT contract.
+    //  * @param _stakeKeysAdminRole Address to be granted STAKE_KEYS_ADMIN_ROLE.
+    //  */
+    // function initialize(
+    //     address _refereeAddress,
+    //     address _esXaiAddress,
+    //     address _nodeLicenseAddress,
+    //     address _stakeKeysAdminRole
+    // ) public initializer { // Needs to Be Incremented
+    //     __AccessControlEnumerable_init();
+    //     _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    //     _grantRole(STAKE_KEYS_ADMIN_ROLE, _stakeKeysAdminRole);
 
-        bucketshareMaxValues[0] = 100_000; // 10%
-        bucketshareMaxValues[1] = 950_000; // 95%
-        bucketshareMaxValues[2] = 850_000; // 85%
+    //     bucketshareMaxValues[0] = 100_000; // 10%
+    //     bucketshareMaxValues[1] = 950_000; // 95%
+    //     bucketshareMaxValues[2] = 850_000; // 85%
 
-        refereeAddress = _refereeAddress;
-        nodeLicenseAddress = _nodeLicenseAddress;
-        esXaiAddress = _esXaiAddress;
+    //     refereeAddress = _refereeAddress;
+    //     nodeLicenseAddress = _nodeLicenseAddress;
+    //     esXaiAddress = _esXaiAddress;
 
-        unstakeKeysDelayPeriod = 7 days;
-        unstakeGenesisKeyDelayPeriod = 60 days;
-        unstakeEsXaiDelayPeriod = 7 days;
-        updateRewardBreakdownDelayPeriod = 14 days;
-    }
+    //     unstakeKeysDelayPeriod = 7 days;
+    //     unstakeGenesisKeyDelayPeriod = 60 days;
+    //     unstakeEsXaiDelayPeriod = 7 days;
+    //     updateRewardBreakdownDelayPeriod = 14 days;
+    // }
 
     /**
      * @notice Enables staking on the Factory.
