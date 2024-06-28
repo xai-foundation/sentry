@@ -49,7 +49,7 @@ export function SentryActiveCard() {
 			)}
 			</SquareCard>
 		</div>
-			{!sentryRunning && <div className="absolute top-[18px] left-[200px]">
+			{!sentryRunning && <div className="absolute top-[18px] left-[215px]">
 				<SideBarTooltip
 					header={"Your Sentry Wallet is inactive"}
 					body={"esXAI cannot be accrued while your Sentry Wallet is inactive."}
