@@ -23,7 +23,6 @@ export function Checkout() {
     const queryString = window.location.search;
     const queryParams = new URLSearchParams(queryString);
     const prefilledPromoCode = queryParams.get("promoCode");
-
     const {
         isTotalLoading,
         isPriceLoading,
