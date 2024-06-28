@@ -195,6 +195,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					setIsOpen(false);
 				}}
 				key={`sentry-item-${i}`}
+				dropdownOptionsCount={Object.values(combinedOwners).length}
 			>
 				{wallet}
 			</DropdownItem>
@@ -235,16 +236,17 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 					<div className="relative flex flex-row gap-3 items-center">
 						<div className="max-h-[48px]">
 						<Dropdown
-						isOpen={isOpen}
-						setIsOpen={setIsOpen}
-						selectedValue={selectedWallet}
-						defaultValue={"All"}
-						selectedValueRender={
-							<p>{selectedWallet || `All wallets (${Object.keys(combinedOwners).length})`}</p>
-						}
-						setSelectedValue={setSelectedWallet}
-						getDropdownItems={getDropdownItems}
-						extraClasses={{dropdown: "max-w-[456px]"}}
+							isOpen={isOpen}
+							setIsOpen={setIsOpen}
+							selectedValue={selectedWallet}
+							defaultValue={"All"}
+							selectedValueRender={
+								<p>{selectedWallet || `All wallets (${Object.keys(combinedOwners).length})`}</p>
+							}
+							setSelectedValue={setSelectedWallet}
+							getDropdownItems={getDropdownItems}
+							extraClasses={{dropdown: "max-w-[456px]"}}
+							dropdownOptionsCount={Object.values(combinedOwners).length}
 						/>
 						</div>
                         <div>
