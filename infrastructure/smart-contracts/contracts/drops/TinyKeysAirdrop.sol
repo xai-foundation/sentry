@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "../upgrades/referee/Referee8.sol";
 import "../upgrades/node-license/NodeLicense8.sol";
-import "../upgrades/staking-v2/PoolFactoryV2.sol";
+import "../upgrades/staking-v2/PoolFactory2.sol";
 
 contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
     using Math for uint256;
@@ -71,7 +71,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
     function startAirdrop() external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(!Referee8(refereeAddress).stakingEnabled(), "Referee staking must be disabled to start airdrop");       
         require(!airdropStarted, "Airdrop already started");
-        totalSupplyAtStart = NodeLicense7(nodeLicenseAddress).totalSupply();
+        totalSupplyAtStart = NodeLicense8(nodeLicenseAddress).totalSupply();
         airdropStarted = true;
         emit AirdropStarted(totalSupplyAtStart, keyMultiplier);
     }
@@ -98,7 +98,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
             uint256[] memory tokenIds = nodeLicense.mintForAirdrop(keyMultiplier, owner);
             address poolAddress = referee.assignedKeyToPool(i);
             if (poolAddress != address(0)) {
-                PoolFactoryV2(poolAddress).stakeKeysAdmin(poolAddress, tokenIds, owner);                                
+                PoolFactory2(poolAddress).stakeKeysAdmin(poolAddress, tokenIds, owner);                                
             }
         }
         

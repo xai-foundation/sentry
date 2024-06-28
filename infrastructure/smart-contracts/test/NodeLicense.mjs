@@ -7,7 +7,9 @@ export function NodeLicenseTests(deployInfrastructure) {
     return function() {
 
         it("Check calling the initializer is not allowed afterwards", async function() {
+            console.log("NodeLicenseTests");
             const {nodeLicense, nodeLicenseDefaultAdmin, addr1} = await loadFixture(deployInfrastructure);
+            console.log("NodeLicenseTests2: ", nodeLicense, nodeLicenseDefaultAdmin, addr1);
             const expectedRevertMessage = "Initializable: contract is already initialized";
             await expect(nodeLicense.connect(nodeLicenseDefaultAdmin).initialize(await addr1.getAddress(), 0, 0)).to.be.revertedWith(expectedRevertMessage);
         })

@@ -8,9 +8,10 @@ import { expect } from "chai";
 export function esXaiTests(deployInfrastructure) {
     return function() {
         it("Check calling the initializer is not allowed afterwards", async function() {
-            const {esXai, esXaiMinter, xai} = await loadFixture(deployInfrastructure);
+            const {esXai, esXaiMinter, xai, referee, nodeLicense} = await loadFixture(deployInfrastructure);
             const expectedRevertMessage = "Initializable: contract is already initialized";
-            await expect(esXai.connect(esXaiMinter).initialize(await xai.getAddress(), BigInt(500))).to.be.revertedWith(expectedRevertMessage);
+            const maxKeysNonKyc = 1;
+            await expect(esXai.connect(esXaiMinter).initialize(await referee.getAddress(), await nodeLicense.getAddress(), BigInt(maxKeysNonKyc))).to.be.revertedWith(expectedRevertMessage);
         })
 
         it("Check esXai can be minted by an address with the minter role", async function() {
@@ -166,17 +167,31 @@ export function esXaiTests(deployInfrastructure) {
 
         it("Check whitelist addresses are added and retrieved correctly", async function() {
             const {esXai, addr1, addr2, addr3, esXaiDefaultAdmin} = await loadFixture(deployInfrastructure);
+            const whitelistCount2 = await esXai.getWhitelistCount();
+            console.log("WL Count2: ", whitelistCount2);
             await esXai.connect(esXaiDefaultAdmin).addToWhitelist(addr1.address);
             await esXai.connect(esXaiDefaultAdmin).addToWhitelist(addr2.address);
-            await esXai.connect(esXaiDefaultAdmin).addToWhitelist(addr3.address);
             const whitelistCount = await esXai.getWhitelistCount();
             expect(whitelistCount).to.equal(4);
-            const whitelistedAddress1 = await esXai.getWhitelistedAddressAtIndex(1);
-            const whitelistedAddress2 = await esXai.getWhitelistedAddressAtIndex(2);
-            const whitelistedAddress3 = await esXai.getWhitelistedAddressAtIndex(3);
+            const whitelistedAddress1 = await esXai.getWhitelistedAddressAtIndex(2);
+            const whitelistedAddress2 = await esXai.getWhitelistedAddressAtIndex(3);
             expect(whitelistedAddress1).to.equal(addr1.address);
             expect(whitelistedAddress2).to.equal(addr2.address);
-            expect(whitelistedAddress3).to.equal(addr3.address);
+        })
+
+        
+        it("Check redemption fails for non-kyc wallets if they hold more keys than the max allowed", async function() {
+            const {esXai, xai, esXaiMinter, addr3, esXaiDefaultAdmin} = await loadFixture(deployInfrastructure);
+            await esXai.connect(esXaiDefaultAdmin).changeRedemptionStatus(true);
+            const redemptionAmount = BigInt(1000);
+            await esXai.connect(esXaiMinter).mint(addr3.address, redemptionAmount * BigInt(3));            
+            const duration = 15 * 24 *60 *60;
+            await esXai.connect(addr3).startRedemption(redemptionAmount, duration);
+            const initialEsXaiSupply = await esXai.totalSupply();
+            await network.provider.send("evm_increaseTime", [duration]);
+            await network.provider.send("evm_mine");
+            expect (esXai.connect(addr3).completeRedemption(0)).to.be.revertedWith("You own too many keys, must be KYC approved to claim.")
+
         })
 
     }

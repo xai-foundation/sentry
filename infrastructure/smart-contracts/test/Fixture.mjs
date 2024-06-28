@@ -20,6 +20,7 @@ describe("Fixture Tests", function () {
     // loadFixture to run this setup once, snapshot that state, and reset Hardhat
     // Network to that snapshot in every test.
     async function deployInfrastructure() {
+        console.log("Deploying Infrastructure");
 
         // Get addresses to use in the tests
         const [
@@ -104,6 +105,7 @@ describe("Fixture Tests", function () {
         await referee4.waitForDeployment();
         await referee4.enableStaking();
 
+
 		// Deploy Node License
 		const NodeLicense = await ethers.getContractFactory("NodeLicense");
 		const referralDiscountPercentage = BigInt(10);
@@ -114,7 +116,7 @@ describe("Fixture Tests", function () {
         // Upgrade esXai3 upgrade - moved here due to needing referee and node license addresses as a parameters
         const maxKeysNonKyc = BigInt(1);
         const EsXai3 = await ethers.getContractFactory("esXai3");
-        const esXai3 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai3, { call: { fn: "initialize", args: [referee.getAddress(), nodeLicense.getAddress(), maxKeysNonKyc] } });
+        const esXai3 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai3, { call: { fn: "initialize", args: [await referee.getAddress(), await nodeLicense.getAddress(), maxKeysNonKyc] } });
         await esXai3.waitForDeployment();
 
 		// Deploy the Pool Factory
@@ -208,6 +210,8 @@ describe("Fixture Tests", function () {
         await xai.grantRole(xaiMinterRole, await referee.getAddress());
         await xai.grantRole(xaiMinterRole, await esXai.getAddress());
 
+        console.log("esXai Address: ", await esXai.getAddress());
+
         // Setup esXai Roles
         const esXaiAdminRole = await esXai.DEFAULT_ADMIN_ROLE();
         await esXai.grantRole(esXaiAdminRole, await esXaiDefaultAdmin.getAddress());
@@ -222,6 +226,8 @@ describe("Fixture Tests", function () {
         // Setup Node License Roles 
         const nodeLicenseAdminRole = await nodeLicense.DEFAULT_ADMIN_ROLE();
         await nodeLicense.grantRole(nodeLicenseAdminRole, await nodeLicenseDefaultAdmin.getAddress());
+
+        console.log("Infrastructure Deployed1")
 
         // Setup Gas Subsidy License Roles
         const gasSubsidyAdminRole = await gasSubsidy.DEFAULT_ADMIN_ROLE();
@@ -241,6 +247,8 @@ describe("Fixture Tests", function () {
         await referee.grantRole(kycAdminRole, await kycAdmin.getAddress());
 		const poolFactoryAdminRole = await poolFactory.DEFAULT_ADMIN_ROLE();
 		await poolFactory.grantRole(poolFactoryAdminRole, refereeDefaultAdmin.getAddress());
+
+        console.log("Infrastructure Deployed2")
 
 		// Renounce the default admin role of the deployer
         await referee.renounceRole(refereeAdminRole, await deployer.getAddress());
@@ -271,6 +279,8 @@ describe("Fixture Tests", function () {
 
         // Impersonate the rollup controller
         const rollupController = await ethers.getImpersonatedSigner("0x6347446605e6f6680addb7c4ff55da299ecd2e69");
+
+        console.log("Infrastructure Deployed3")
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
@@ -312,7 +322,7 @@ describe("Fixture Tests", function () {
             nodeLicense,
 			poolFactory,
             gasSubsidy,
-            esXai: esXai2,
+            esXai: esXai3,
             xai,
             rollupContract
         };
@@ -326,7 +336,7 @@ describe("Fixture Tests", function () {
     //describe("Referee", RefereeTests(deployInfrastructure).bind(this));
     // describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
     // describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
-    // describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
+     //describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
     // describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
 
     // This doesn't work when running coverage
