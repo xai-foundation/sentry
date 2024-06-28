@@ -180,18 +180,34 @@ export function esXaiTests(deployInfrastructure) {
         })
 
         
+        it("Check redemption passes for kyc wallets if they hold more keys than the max allowed", async function() {
+            const {esXai, esXaiMinter, addr2, esXaiDefaultAdmin} = await loadFixture(deployInfrastructure);
+            await esXai.connect(esXaiDefaultAdmin).changeRedemptionStatus(true);            
+            const redemptionAmount = BigInt(1000);            
+            const initialBalance = await esXai.balanceOf(addr2.address);
+            await esXai.connect(esXaiMinter).mint(addr2.address, redemptionAmount * BigInt(3));            
+            const duration = 15 * 24 *60 *60;
+            await esXai.connect(addr2).startRedemption(redemptionAmount, duration);
+            await network.provider.send("evm_increaseTime", [duration]);
+            await network.provider.send("evm_mine");            
+
+            // Complete redemption    
+            // Assuming the redemption was successful, check the new total supply
+            const finalBalance = await esXai.balanceOf(addr2.address);
+            expect(initialBalance).to.be.below(finalBalance); // Check if the total balance increased
+
+        })
+
         it("Check redemption fails for non-kyc wallets if they hold more keys than the max allowed", async function() {
-            const {esXai, xai, esXaiMinter, addr3, esXaiDefaultAdmin} = await loadFixture(deployInfrastructure);
+            const {esXai, esXaiMinter, addr3, esXaiDefaultAdmin} = await loadFixture(deployInfrastructure);
             await esXai.connect(esXaiDefaultAdmin).changeRedemptionStatus(true);
             const redemptionAmount = BigInt(1000);
             await esXai.connect(esXaiMinter).mint(addr3.address, redemptionAmount * BigInt(3));            
             const duration = 15 * 24 *60 *60;
             await esXai.connect(addr3).startRedemption(redemptionAmount, duration);
-            const initialEsXaiSupply = await esXai.totalSupply();
             await network.provider.send("evm_increaseTime", [duration]);
             await network.provider.send("evm_mine");
             expect (esXai.connect(addr3).completeRedemption(0)).to.be.revertedWith("You own too many keys, must be KYC approved to claim.")
-
         })
 
     }
