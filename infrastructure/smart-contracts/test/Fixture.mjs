@@ -12,8 +12,9 @@ import { XaiGaslessClaimTests } from "./XaiGaslessClaim.mjs";
 import {CNYAirDropTests} from "./CNYAirDrop.mjs";
 import {StakingV2} from "./StakingV2.mjs";
 import {extractAbi} from "../utils/exportAbi.mjs";
-import {Beacons} from "./Beacons.mjs";
+import {NodeLicenseTinyKeysTest} from "./NodeLicenseTinyKeys.mjs";
 
+import {Beacons} from "./Beacons.mjs";
 describe("Fixture Tests", function () {
 
     // We define a fixture to reuse the same setup in every test. We use
@@ -41,6 +42,7 @@ describe("Fixture Tests", function () {
             addr3,
             addr4,
             operator,
+            airdropAdmin,
         ] = await ethers.getSigners();
 
         // Deploy Xai
@@ -210,8 +212,6 @@ describe("Fixture Tests", function () {
         await xai.grantRole(xaiMinterRole, await referee.getAddress());
         await xai.grantRole(xaiMinterRole, await esXai.getAddress());
 
-        console.log("esXai Address: ", await esXai.getAddress());
-
         // Setup esXai Roles
         const esXaiAdminRole = await esXai.DEFAULT_ADMIN_ROLE();
         await esXai.grantRole(esXaiAdminRole, await esXaiDefaultAdmin.getAddress());
@@ -226,8 +226,6 @@ describe("Fixture Tests", function () {
         // Setup Node License Roles 
         const nodeLicenseAdminRole = await nodeLicense.DEFAULT_ADMIN_ROLE();
         await nodeLicense.grantRole(nodeLicenseAdminRole, await nodeLicenseDefaultAdmin.getAddress());
-
-        console.log("Infrastructure Deployed1")
 
         // Setup Gas Subsidy License Roles
         const gasSubsidyAdminRole = await gasSubsidy.DEFAULT_ADMIN_ROLE();
@@ -247,8 +245,6 @@ describe("Fixture Tests", function () {
         await referee.grantRole(kycAdminRole, await kycAdmin.getAddress());
 		const poolFactoryAdminRole = await poolFactory.DEFAULT_ADMIN_ROLE();
 		await poolFactory.grantRole(poolFactoryAdminRole, refereeDefaultAdmin.getAddress());
-
-        console.log("Infrastructure Deployed2")
 
 		// Renounce the default admin role of the deployer
         await referee.renounceRole(refereeAdminRole, await deployer.getAddress());
@@ -276,11 +272,54 @@ describe("Fixture Tests", function () {
 
         // Add addr 1 to the operator
         await referee.connect(addr1).setApprovalForOperator(await operator.getAddress(), true);
+        
+		// Node License2 Upgrade
+		const NodeLicense2 = await ethers.getContractFactory("NodeLicense2");
+		const nodeLicense2 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense2);
+		await nodeLicense2.waitForDeployment();
 
+		// Node License3 Upgrade
+		const NodeLicense3 = await ethers.getContractFactory("NodeLicense3");
+		const nodeLicense3 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense3, { call: { fn: "initialize", args: [] } });
+		await nodeLicense3.waitForDeployment();
+
+    //     // Node License4 Upgrade
+        const NodeLicense4 = await ethers.getContractFactory("NodeLicense4");
+        const nodeLicense4 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense4);
+        await nodeLicense4.waitForDeployment();
+
+        // Node License5 Upgrade
+        const NodeLicense5 = await ethers.getContractFactory("NodeLicense5");
+        const nodeLicense5 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense5);
+        await nodeLicense5.waitForDeployment();
+
+        // Node License6 Upgrade
+        const NodeLicense6 = await ethers.getContractFactory("NodeLicense6");
+        const nodeLicense6 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense6);
+        await nodeLicense6.waitForDeployment();
+
+        // Node License7 Upgrade
+        const NodeLicense7 = await ethers.getContractFactory("NodeLicense7");
+        const nodeLicense7 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense7);
+        await nodeLicense7.waitForDeployment();
+
+        // Deploy Mock Chainlink Aggregator Price Feeds
+        const MockChainlinkPriceFeed = await ethers.getContractFactory("MockChainlinkPriceFeed");
+        const ethPrice = ethers.parseUnits("3000", 8);
+        const chainlinkEthUsdPriceFeed = await MockChainlinkPriceFeed.deploy(ethPrice);
+        await chainlinkEthUsdPriceFeed.waitForDeployment();
+
+        const xaiPrice = ethers.parseUnits("1", 8);
+        const chainlinkXaiUsdPriceFeed = await MockChainlinkPriceFeed.deploy(xaiPrice);
+        await chainlinkXaiUsdPriceFeed.waitForDeployment();
+
+       // Node License8 Upgrade
+        const NodeLicense8 = await ethers.getContractFactory("NodeLicense8");
+        const nodeLicense8 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense8, { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await airdropAdmin.getAddress()] } });
+        await nodeLicense8.waitForDeployment();
+        
         // Impersonate the rollup controller
         const rollupController = await ethers.getImpersonatedSigner("0x6347446605e6f6680addb7c4ff55da299ecd2e69");
-
-        console.log("Infrastructure Deployed3")
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
@@ -313,33 +352,37 @@ describe("Fixture Tests", function () {
             addr4,
             operator,
             rollupController,
-
             tiers,
             secretKeyHex,
             publicKeyHex: "0x" + publicKeyHex,
-
             referee: referee8,
-            nodeLicense,
+            nodeLicense: nodeLicense8,
 			poolFactory,
             gasSubsidy,
             esXai: esXai3,
             xai,
-            rollupContract
+            rollupContract,
+            airdropAdmin,
+            chainlinkEthUsdPriceFeed,
+            chainlinkXaiUsdPriceFeed
         };
     }
 
     // describe("CNY 2024", CNYAirDropTests.bind(this));
     // describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
     // describe("Xai", XaiTests(deployInfrastructure).bind(this));
-     describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
+    // describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
     // describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
-    //describe("Referee", RefereeTests(deployInfrastructure).bind(this));
+     describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure).bind(this));
+     
+    //  //describe("Referee", RefereeTests(deployInfrastructure).bind(this));
     // describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
     // describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
-     //describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
-    // describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
+    // describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
+    // ///describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
 
-    // This doesn't work when running coverage
-    // describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));
+    // // This doesn't work when running coverage
+    // //describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));
+     //describe("TinyKeysTests", TinyKeysTest(deployInfrastructure).bind(this));
 
 })

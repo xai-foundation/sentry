@@ -27,7 +27,7 @@
     "update-beacon-impl": "hardhat run scripts/updateBeaconImp.mjs",
     "deploy-staking-v2": "hardhat run scripts/deployStakingV2.mjs",
     "enable-staking-v2": "hardhat run scripts/enableStakingV2.mjs",
-    "fork-main": "hardhat node --fork https://arb1.arbitrum.io/rpc",
+    "fork": "hardhat node --fork https://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
     "local": "hardhat node",    
     "test": "hardhat test --network localhost",
     "coverage": "hardhat coverage --network localhost --solcoverjs ./.solcover.cjs --temp artifacts --testfiles \"./test/**/*.mjs\"",

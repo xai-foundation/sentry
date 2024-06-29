@@ -71,6 +71,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
     function startAirdrop() external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(!Referee8(refereeAddress).stakingEnabled(), "Referee staking must be disabled to start airdrop");       
         require(!airdropStarted, "Airdrop already started");
+        NodeLicense8(nodeLicenseAddress).startAirdrop();
         totalSupplyAtStart = NodeLicense8(nodeLicenseAddress).totalSupply();
         airdropStarted = true;
         emit AirdropStarted(totalSupplyAtStart, keyMultiplier);
