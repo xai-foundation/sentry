@@ -220,6 +220,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
     event InvalidBatchSubmission(uint256 indexed challengeId, address operator, uint256 keysLength);
     event RewardsClaimed(uint256 indexed challengeId, uint256 amount);
     event BatchRewardsClaimed(uint256 indexed challengeId, uint256 totalReward, uint256 keysLength);
+    event PoolRewardsClaimed(uint256 indexed challengeId, address indexed poolAddress, uint256 totalReward, uint256 winningKeys);
     event ChallengeExpired(uint256 indexed challengeId);
     event StakingEnabled(bool enabled);
     event UpdateMaxStakeAmount(uint256 prevAmount, uint256 newAmount);
@@ -754,7 +755,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
 	function claimMultipleRewards(
 		uint256[] memory _nodeLicenseIds,
 		uint256 _challengeId,
-        address claimForAddressInBatch
+        address claimForAddressInBatch 
 	) external {
         
         Challenge memory challengeToClaimFor  = challenges[_challengeId];
@@ -1270,8 +1271,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
             // unallocate the tokens that have now been converted to esXai
             _allocatedTokens -= poolMintAmount;
         }
-
-        return;
+        emit PoolRewardsClaimed(_challengeId, _poolAddress, poolMintAmount, poolSubmission.winningKeyCount);
     }
 
     /** 
