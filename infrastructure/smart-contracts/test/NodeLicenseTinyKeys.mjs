@@ -2,13 +2,20 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { parse } from "csv/sync";
 import { expect } from "chai";
 import fs from "fs";
-import exp from "constants";
 
 /**
  * @title Mint with Xai/esXai Tests
  * @dev Implementation of the mint with Xai/esXai Tests
  */
-export function NodeLicenseTinyKeysTest(deployInfrastructure) {
+export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations) {
+	const {
+		validShareValues,
+		poolMetaData,
+		poolSocials,
+		poolTrackerDetails,
+		noDelegateOwner,
+	} = poolConfigurations;
+
     return function() {
 
         it("Check the max supply is 50,000", async function() {
@@ -278,7 +285,60 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure) {
         });
 
         it("Process the tiny keys airdrop and confirm balances after", async function() {
-            const {nodeLicense, nodeLicenseDefaultAdmin, addr3, addr4, tinyKeysAirDrop, airdropAdmin} = await loadFixture(deployInfrastructure);
+            const {nodeLicense, nodeLicenseDefaultAdmin, addr1, addr2, addr3, addr4, tinyKeysAirDrop, deployer,referee, poolFactory} = await loadFixture(deployInfrastructure);
+            //Confirm initial total supply
+            const totalSupplyBefore = await nodeLicense.totalSupply();
+            console.log(totalSupplyBefore, "totalSupplyBefore");
+            const user1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
+            console.log(user1BalanceBefore, "user1BalanceBefore");
+            const user2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
+            console.log(user2BalanceBefore, "user2BalanceBefore");
+            const user3BalanceBefore = await nodeLicense.balanceOf(addr3.address);
+            console.log(user3BalanceBefore, "user3BalanceBefore");
+
+            // Create a Stake pool with user 1 as the owner staking a single key
+			await poolFactory.connect(addr1).createPool(
+				noDelegateOwner,
+				[1],
+				validShareValues,
+				poolMetaData,
+				poolSocials,
+				poolTrackerDetails
+			)
+			// Check the user's updated assigned key count
+			const user1KeyCountStakedBefore = await referee.connect(addr1).assignedKeysOfUserCount(addr1.address);
+			expect(user1KeyCountStakedBefore).to.equal(1);  
+            
+            const poolAddress = referee.assignedKeyToPool(1);
+
+            // User 2 will stake 4 keys in the pool
+            await poolFactory.connect(addr2).stakeKeys(poolAddress, [2, 3, 4, 5]);
+            const user2KeyCountStakedBefore = await referee.connect(addr2).assignedKeysOfUserCount(addr2.address);
+            expect(user2KeyCountStakedBefore).to.equal(4);      
+            
+            // User 3 will stake 0 keys in the pool
+            const user3KeyCountStakedBefore = await referee.connect(addr3).assignedKeysOfUserCount(addr3.address);
+            expect(user3KeyCountStakedBefore).to.equal(0);
+
+            // Starting Airdrop
+            
+            // Confirm airdrop wont start with staking enabled
+            await expect(tinyKeysAirDrop.connect(deployer).startAirdrop()).to.be.revertedWith("Referee staking must be disabled to start airdrop");
+
+            // Disable Staking
+            //await referee.connect(deployer).setStakingEnabled(false);
+
+            // Confirm Staking Disabled
+            // Start Airdrop
+            // Confirm Minting Disabled
+            // Process Airdrop
+            // Confirm unstaked balances after
+            // Confirm staked balances after
+            // Process supply upgrade
+            // Confirm pricing and supply values updated
+            // Enable staking
+            // Confirm minting enabled
+            // Confirm staking enabled
             
         
         

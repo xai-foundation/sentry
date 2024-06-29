@@ -7,10 +7,10 @@ export function NodeLicenseTests(deployInfrastructure) {
     return function() {
 
         it("Check calling the initializer is not allowed afterwards", async function() {
-            const {nodeLicense, nodeLicenseDefaultAdmin, airdropAdmin, xai, esXai, chainlinkEthUsdPriceFeed,
+            const {nodeLicense, nodeLicenseDefaultAdmin, deployer, xai, esXai, chainlinkEthUsdPriceFeed,
                 chainlinkXaiUsdPriceFeed} = await loadFixture(deployInfrastructure);
             const expectedRevertMessage = "Initializable: contract is already initialized";
-            await expect(nodeLicense.connect(nodeLicenseDefaultAdmin).initialize(await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), chainlinkXaiUsdPriceFeed.getAddress(), await airdropAdmin.getAddress())).to.be.revertedWith(expectedRevertMessage);
+            await expect(nodeLicense.connect(nodeLicenseDefaultAdmin).initialize(await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), chainlinkXaiUsdPriceFeed.getAddress(), await deployer.getAddress())).to.be.revertedWith(expectedRevertMessage);
         })
 
         it("Check the max supply is 50,000", async function() {

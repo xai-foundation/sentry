@@ -10,6 +10,7 @@ import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "../upgrades/referee/Referee8.sol";
 import "../upgrades/node-license/NodeLicense8.sol";
 import "../upgrades/staking-v2/PoolFactory2.sol";
+import "hardhat/console.sol";
 
 contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
     using Math for uint256;
@@ -53,6 +54,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
      */
     function initialize(address _nodeLicenseAddress, address _refereeAddress, uint256 _keyMultiplier) public initializer {
         __AccessControl_init();
+        console.log("initialize: ", msg.sender);
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
 
         refereeAddress = _refereeAddress;
@@ -69,11 +71,17 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
      * @dev It will set the total supply at start and emit the AirdropStarted event
      */
     function startAirdrop() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(!Referee8(refereeAddress).stakingEnabled(), "Referee staking must be disabled to start airdrop");       
+        console.log("startAirdrop");
+        require(!Referee8(refereeAddress).stakingEnabled(), "Referee staking must be disabled to start airdrop");   
+        console.log("startAirdrop1");    
         require(!airdropStarted, "Airdrop already started");
+        console.log("startAirdrop2");
         NodeLicense8(nodeLicenseAddress).startAirdrop();
+        console.log("startAirdrop3");
         totalSupplyAtStart = NodeLicense8(nodeLicenseAddress).totalSupply();
+        console.log("startAirdrop4");
         airdropStarted = true;
+        console.log("startAirdrop5");
         emit AirdropStarted(totalSupplyAtStart, keyMultiplier);
     }
 

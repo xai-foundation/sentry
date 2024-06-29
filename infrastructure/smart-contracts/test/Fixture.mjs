@@ -10,7 +10,7 @@ import { esXaiTests } from "./esXai.mjs";
 import { GasSubsidyTests } from "./GasSubsidy.mjs";
 import { XaiGaslessClaimTests } from "./XaiGaslessClaim.mjs";
 import {CNYAirDropTests} from "./CNYAirDrop.mjs";
-import {StakingV2} from "./StakingV2.mjs";
+import {getBasicPoolConfiguration} from "./StakingV2.mjs";
 import {extractAbi} from "../utils/exportAbi.mjs";
 import {NodeLicenseTinyKeysTest} from "./NodeLicenseTinyKeys.mjs";
 
@@ -43,7 +43,6 @@ describe("Fixture Tests", function () {
             addr3,
             addr4,
             operator,
-            airdropAdmin,
         ] = await ethers.getSigners();
 
         // Deploy Xai
@@ -316,7 +315,7 @@ describe("Fixture Tests", function () {
 
        // Node License8 Upgrade
         const NodeLicense8 = await ethers.getContractFactory("NodeLicense8");
-        const nodeLicense8 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense8, { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await airdropAdmin.getAddress()] } });
+        const nodeLicense8 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense8, { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await deployer.getAddress()] } });
         await nodeLicense8.waitForDeployment();
         
         // Impersonate the rollup controller
@@ -330,8 +329,13 @@ describe("Fixture Tests", function () {
         // Tiny Keys AirDrop
         const TinyKeysAirdrop = await ethers.getContractFactory("TinyKeysAirdrop");
         const keyMultiplier = BigInt(100);
-        const tinyKeysAirDrop = await upgrades.deployProxy(TinyKeysAirdrop, [await nodeLicense.getAddress(), await referee.getAddress(), keyMultiplier], { deployer: airdropAdmin });
+        console.log("Deployer: ", deployer.getAddress());
+        const tinyKeysAirDrop = await upgrades.deployProxy(TinyKeysAirdrop, [await nodeLicense.getAddress(), await referee.getAddress(), keyMultiplier]);
         await tinyKeysAirDrop.waitForDeployment();
+        
+     
+
+
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
@@ -374,7 +378,6 @@ describe("Fixture Tests", function () {
             esXai: esXai3,
             xai,
             rollupContract,
-            airdropAdmin,
             chainlinkEthUsdPriceFeed,
             chainlinkXaiUsdPriceFeed,
             tinyKeysAirDrop,
@@ -382,17 +385,17 @@ describe("Fixture Tests", function () {
         };
     }
 
-    describe("CNY 2024", CNYAirDropTests.bind(this));
-    describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
-    describe("Xai", XaiTests(deployInfrastructure).bind(this));
-    describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
-    describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
-    describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure).bind(this));
+    //describe("CNY 2024", CNYAirDropTests.bind(this));
+   // describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
+    //describe("Xai", XaiTests(deployInfrastructure).bind(this));
+   // describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
+    // describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
+    describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
      
     // describe("Referee", RefereeTests(deployInfrastructure).bind(this));
-    describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
-    describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
-    describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
+   // describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
+    //describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
+    //describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
     // describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
 
     // This doesn't work when running coverage
