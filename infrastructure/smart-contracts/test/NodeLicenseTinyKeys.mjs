@@ -122,8 +122,6 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure) {
             await xai.connect(xaiMinter).mint(minter.address, ethers.parseEther("3500"));
             const initialBalanceMinter = await xai.balanceOf(minter.address);
 
-            console.log("Minter Initial Balance: ", initialBalanceMinter.toString());
-
             // Create a new promo code
             const promoCode = "PROMO2023";
             await nodeLicense.connect(nodeLicenseDefaultAdmin).createPromoCode(promoCode, recipient.address);
@@ -279,10 +277,11 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure) {
             expect(priceWithValidCode).to.be.below(priceWithInValidCode);
         });
 
-
-
-
-    
-
+        it("Process the tiny keys airdrop and confirm balances after", async function() {
+            const {nodeLicense, nodeLicenseDefaultAdmin, addr3, addr4, tinyKeysAirDrop, airdropAdmin} = await loadFixture(deployInfrastructure);
+            
+        
+        
+        });
     }
 }

@@ -598,7 +598,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     function updatePricingAndQuantity(uint256 keyMultiplier) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(keyMultiplier > 1, "Multiplier must be greater than 1");
         require(mintingPaused, "Minting must be paused to update pricing tiers");
-        require(pricingTiers[0].quantity == 0, "Pricing tiers have already been reduced"); // TODO determine the original quantity of the first tier to determine if this is the first time reducing the tiers
+        require(pricingTiers[0].quantity == 3000, "Pricing tiers have already been reduced"); // TODO determine the original quantity of the first tier to determine if this is the first time reducing the tiers
         for (uint256 i = 0; i < pricingTiers.length; i++) {
             pricingTiers[i].price = pricingTiers[i].price / keyMultiplier;
             pricingTiers[i].quantity = pricingTiers[i].quantity * keyMultiplier;

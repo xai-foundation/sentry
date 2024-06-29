@@ -15,6 +15,7 @@ import {extractAbi} from "../utils/exportAbi.mjs";
 import {NodeLicenseTinyKeysTest} from "./NodeLicenseTinyKeys.mjs";
 
 import {Beacons} from "./Beacons.mjs";
+import { Console } from "console";
 describe("Fixture Tests", function () {
 
     // We define a fixture to reuse the same setup in every test. We use
@@ -320,6 +321,17 @@ describe("Fixture Tests", function () {
         
         // Impersonate the rollup controller
         const rollupController = await ethers.getImpersonatedSigner("0x6347446605e6f6680addb7c4ff55da299ecd2e69");
+        
+        // Upgrade the Pool Factory
+		const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");  
+        const poolFactory2 = await upgrades.upgradeProxy((await poolFactory.getAddress()), PoolFactory2);
+		await poolFactory2.waitForDeployment();
+
+        // Tiny Keys AirDrop
+        const TinyKeysAirdrop = await ethers.getContractFactory("TinyKeysAirdrop");
+        const keyMultiplier = BigInt(100);
+        const tinyKeysAirDrop = await upgrades.deployProxy(TinyKeysAirdrop, [await nodeLicense.getAddress(), await referee.getAddress(), keyMultiplier], { deployer: airdropAdmin });
+        await tinyKeysAirDrop.waitForDeployment();
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
@@ -357,14 +369,16 @@ describe("Fixture Tests", function () {
             publicKeyHex: "0x" + publicKeyHex,
             referee: referee8,
             nodeLicense: nodeLicense8,
-			poolFactory,
+			poolFactory:poolFactory2,
             gasSubsidy,
             esXai: esXai3,
             xai,
             rollupContract,
             airdropAdmin,
             chainlinkEthUsdPriceFeed,
-            chainlinkXaiUsdPriceFeed
+            chainlinkXaiUsdPriceFeed,
+            tinyKeysAirDrop,
+            
         };
     }
 
@@ -372,7 +386,7 @@ describe("Fixture Tests", function () {
     // describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
     // describe("Xai", XaiTests(deployInfrastructure).bind(this));
     // describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
-    // describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
+    //describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
      describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure).bind(this));
      
     //  //describe("Referee", RefereeTests(deployInfrastructure).bind(this));
