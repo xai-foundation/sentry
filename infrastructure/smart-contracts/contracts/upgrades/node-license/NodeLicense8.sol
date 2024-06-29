@@ -7,6 +7,7 @@ import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/Base64Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "hardhat/console.sol";
 
 interface IAggregatorV3Interface {
     function latestAnswer() external view returns (int256);
@@ -311,15 +312,19 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @param _amount The amount of tokens to mint.
      */
     function _mintNodeLicense(uint256 _amount, uint256 averageCost, address _receiver) internal returns (uint256 [] memory){
+        console.log("Minting %s tokens", _amount);
         uint256 [] memory tokenIds = new uint256[](_amount);
         for (uint256 i = 0; i < _amount; i++) {
             _tokenIds.increment();
             uint256 newItemId = _tokenIds.current();
+             console.log("newItemId", newItemId);
             _mint(_receiver, newItemId);
              // Record the minting timestamp
             _mintTimestamps[newItemId] = block.timestamp;
+             console.log("newItemId2");
             // Record the average cost
             _averageCost[newItemId] = averageCost;
+             console.log("newItemId3");
             tokenIds[i] = newItemId;
         }
         return tokenIds;

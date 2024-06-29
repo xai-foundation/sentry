@@ -285,16 +285,14 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
         });
 
         it("Process the tiny keys airdrop and confirm balances after", async function() {
-            const {nodeLicense, nodeLicenseDefaultAdmin, addr1, addr2, addr3, addr4, tinyKeysAirDrop, deployer,referee, poolFactory} = await loadFixture(deployInfrastructure);
+            const {nodeLicense, refereeDefaultAdmin, addr1, addr2, addr3, addr4, tinyKeysAirDrop, deployer,referee, poolFactory, airdropMultiplier, nodeLicenseDefaultAdmin} = await loadFixture(deployInfrastructure);
+
             //Confirm initial total supply
+            const maxSupplyBefore = await nodeLicense.maxSupply();
             const totalSupplyBefore = await nodeLicense.totalSupply();
-            console.log(totalSupplyBefore, "totalSupplyBefore");
             const user1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
-            console.log(user1BalanceBefore, "user1BalanceBefore");
             const user2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
-            console.log(user2BalanceBefore, "user2BalanceBefore");
             const user3BalanceBefore = await nodeLicense.balanceOf(addr3.address);
-            console.log(user3BalanceBefore, "user3BalanceBefore");
 
             // Create a Stake pool with user 1 as the owner staking a single key
 			await poolFactory.connect(addr1).createPool(
@@ -325,20 +323,77 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             // Confirm airdrop wont start with staking enabled
             await expect(tinyKeysAirDrop.connect(deployer).startAirdrop()).to.be.revertedWith("Referee staking must be disabled to start airdrop");
 
+            // Confirm staking is enabled
+            expect(await referee.stakingEnabled()).to.be.true;
+
             // Disable Staking
-            //await referee.connect(deployer).setStakingEnabled(false);
+            await referee.connect(refereeDefaultAdmin).setStakingEnabled(false);
 
             // Confirm Staking Disabled
+            expect(await referee.stakingEnabled()).to.be.false;
+
+            // Staking Key Should revert
+            await expect(poolFactory.connect(addr4).stakeKeys(poolAddress, [6])).to.be.revertedWith("52");
+
             // Start Airdrop
-            // Confirm Minting Disabled
+            await tinyKeysAirDrop.connect(deployer).startAirdrop();
+            
+            // Confirm Minting Disabled - Expect a mint to be reverted
+            let priceBeforeAirdrop = await nodeLicense.price(1, "");
+            await expect(nodeLicense.connect(addr1).mint(1, "", {value: priceBeforeAirdrop})).to.be.revertedWith("Minting is paused");
+
             // Process Airdrop
-            // Confirm unstaked balances after
-            // Confirm staked balances after
-            // Process supply upgrade
-            // Confirm pricing and supply values updated
-            // Enable staking
-            // Confirm minting enabled
-            // Confirm staking enabled
+            const qtyToProcess = BigInt(50);
+            await tinyKeysAirDrop.connect(deployer).processAirdropSegment(qtyToProcess);
+
+            // Confirm balances after
+            const user1BalanceAfter = await nodeLicense.balanceOf(addr1.address);
+            const user2BalanceAfter = await nodeLicense.balanceOf(addr2.address);
+            const user3BalanceAfter = await nodeLicense.balanceOf(addr3.address);
+
+            expect(user1BalanceAfter).to.equal((user1BalanceBefore * airdropMultiplier) + user1BalanceBefore);
+            expect(user2BalanceAfter).to.equal((user2BalanceBefore * airdropMultiplier) + user2BalanceBefore);
+            expect(user3BalanceAfter).to.equal((user3BalanceBefore * airdropMultiplier) + user3BalanceBefore);
+
+            // // Confirm staked balances after
+            const user1KeyCountStakedAfter = await referee.connect(addr1).assignedKeysOfUserCount(addr1.address);
+            expect(user1KeyCountStakedAfter).to.equal((user1KeyCountStakedBefore * airdropMultiplier) + user1KeyCountStakedBefore);
+            
+            const user2KeyCountStakedAfter = await referee.connect(addr2).assignedKeysOfUserCount(addr2.address);
+            expect(user2KeyCountStakedAfter).to.equal((user2KeyCountStakedBefore * airdropMultiplier) + user2KeyCountStakedBefore);
+
+            const user3KeyCountStakedAfter = await referee.connect(addr3).assignedKeysOfUserCount(addr3.address);
+            expect(user3KeyCountStakedAfter).to.equal((user3KeyCountStakedBefore * airdropMultiplier) + user3KeyCountStakedBefore);
+
+            let priceBeforeSupplyUpgrade = await nodeLicense.price(1, "");
+
+            // // Process supply upgrade
+            await nodeLicense.connect(nodeLicenseDefaultAdmin).updatePricingAndQuantity(airdropMultiplier);
+            
+            // // Confirm pricing and supply values updated
+            const priceAfter = await nodeLicense.price(1, "");
+            const totalSupplyAfter = await nodeLicense.totalSupply();
+            expect(priceAfter).to.equal(priceBeforeSupplyUpgrade / airdropMultiplier);
+            expect(totalSupplyAfter).to.equal((totalSupplyBefore * airdropMultiplier)+ totalSupplyBefore);
+
+            // // Enable staking
+            await referee.connect(refereeDefaultAdmin).setStakingEnabled(true);
+            expect(await referee.stakingEnabled()).to.be.true;
+
+            
+            // // Confirm minting works after airdrop
+            await nodeLicense.connect(addr1).mint(1, "", {value: priceAfter});
+            const user1BalanceAfterMint = await nodeLicense.balanceOf(addr1.address);
+            expect(user1BalanceAfterMint).to.equal(user1BalanceAfter + BigInt(1));
+            
+            // Confirm staking works after airdrop            
+            await poolFactory.connect(addr2).stakeKeys(poolAddress, [6]);
+            const user2KeyCountStakedAfterMint = await referee.connect(addr2).assignedKeysOfUserCount(addr2.address);
+            expect(user2KeyCountStakedAfterMint).to.equal(user2KeyCountStakedAfter + BigInt(1));
+
+            // Confirm max supply after air drop
+            const maxSupplyAfter = await nodeLicense.maxSupply();
+            expect(maxSupplyAfter).to.equal(maxSupplyBefore * airdropMultiplier);
             
         
         

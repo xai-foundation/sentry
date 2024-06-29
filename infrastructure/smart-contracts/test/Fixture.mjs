@@ -107,7 +107,6 @@ describe("Fixture Tests", function () {
         await referee4.waitForDeployment();
         await referee4.enableStaking();
 
-
 		// Deploy Node License
 		const NodeLicense = await ethers.getContractFactory("NodeLicense");
 		const referralDiscountPercentage = BigInt(10);
@@ -182,6 +181,12 @@ describe("Fixture Tests", function () {
 		const Referee8 = await ethers.getContractFactory("Referee8");
 		const referee8 = await upgrades.upgradeProxy((await referee.getAddress()), Referee8, { call: { fn: "initialize", args: [] } });
 		await referee8.waitForDeployment();
+
+        // Referee9
+        const Referee9 = await ethers.getContractFactory("Referee9");
+        const referee9 = await upgrades.upgradeProxy((await referee.getAddress()), Referee9, { call: { fn: "initialize", args: [] } });
+        await referee9.waitForDeployment();
+
 
         // Set Rollup Address
         const rollupAddress = config.rollupAddress;
@@ -265,7 +270,6 @@ describe("Fixture Tests", function () {
         // Mint addr3 2 node licenses
         price = await nodeLicense.price(2, "");
         await nodeLicense.connect(addr3).mint(2, "", {value: price});
-
         // KYC addr1 and addr 2, but not addr 3
         await referee.connect(kycAdmin).addKycWallet(await addr1.getAddress());
         await referee.connect(kycAdmin).addKycWallet(await addr2.getAddress());
@@ -312,30 +316,24 @@ describe("Fixture Tests", function () {
         const xaiPrice = ethers.parseUnits("1", 8);
         const chainlinkXaiUsdPriceFeed = await MockChainlinkPriceFeed.deploy(xaiPrice);
         await chainlinkXaiUsdPriceFeed.waitForDeployment();
-
-       // Node License8 Upgrade
-        const NodeLicense8 = await ethers.getContractFactory("NodeLicense8");
-        const nodeLicense8 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense8, { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await deployer.getAddress()] } });
-        await nodeLicense8.waitForDeployment();
         
         // Impersonate the rollup controller
         const rollupController = await ethers.getImpersonatedSigner("0x6347446605e6f6680addb7c4ff55da299ecd2e69");
+        // Tiny Keys AirDrop
+        const TinyKeysAirdrop = await ethers.getContractFactory("TinyKeysAirdrop");
+        const airdropMultiplier = BigInt(5);
+        const tinyKeysAirDrop = await upgrades.deployProxy(TinyKeysAirdrop, [await nodeLicense.getAddress(), await referee.getAddress(), await poolFactory.getAddress(), airdropMultiplier]);
+        await tinyKeysAirDrop.waitForDeployment();
         
         // Upgrade the Pool Factory
 		const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");  
-        const poolFactory2 = await upgrades.upgradeProxy((await poolFactory.getAddress()), PoolFactory2);
+        const poolFactory2 = await upgrades.upgradeProxy((await poolFactory.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
 		await poolFactory2.waitForDeployment();
 
-        // Tiny Keys AirDrop
-        const TinyKeysAirdrop = await ethers.getContractFactory("TinyKeysAirdrop");
-        const keyMultiplier = BigInt(100);
-        console.log("Deployer: ", deployer.getAddress());
-        const tinyKeysAirDrop = await upgrades.deployProxy(TinyKeysAirdrop, [await nodeLicense.getAddress(), await referee.getAddress(), keyMultiplier]);
-        await tinyKeysAirDrop.waitForDeployment();
-        
-     
-
-
+        // Node License8 Upgrade
+         const NodeLicense8 = await ethers.getContractFactory("NodeLicense8");
+         const nodeLicense8 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense8, { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await tinyKeysAirDrop.getAddress()] } });
+         await nodeLicense8.waitForDeployment();
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
@@ -371,7 +369,7 @@ describe("Fixture Tests", function () {
             tiers,
             secretKeyHex,
             publicKeyHex: "0x" + publicKeyHex,
-            referee: referee8,
+            referee: referee9,
             nodeLicense: nodeLicense8,
 			poolFactory:poolFactory2,
             gasSubsidy,
@@ -381,7 +379,7 @@ describe("Fixture Tests", function () {
             chainlinkEthUsdPriceFeed,
             chainlinkXaiUsdPriceFeed,
             tinyKeysAirDrop,
-            
+            airdropMultiplier,
         };
     }
 
