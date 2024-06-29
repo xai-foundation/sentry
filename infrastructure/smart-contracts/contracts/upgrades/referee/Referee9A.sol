@@ -201,8 +201,8 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         bool submitted;
         bool claimed;
         uint256 pendingStakedKeys;
-        uint256 stakedKeys;
-        uint256 winningKeys;
+        uint256 stakedKeyCount;
+        uint256 winningKeyCount;
         bytes assertionStateRootOrConfirmData;
     }
 
@@ -663,6 +663,13 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         emit AssertionSubmitted(_challengeId, _nodeLicenseId);
     }
 
+    function _validateChallengeIsClaimable(Challenge memory _challenge) internal pure{
+        // Check the challenge exists by checking the timestamp is not 0
+        require(_challenge.createdTimestamp != 0, "18");
+        // Check if the challenge is closed for submissions
+        require(!_challenge.openForSubmissions, "19");
+    }   
+
     /**
      * @notice Claims a reward for a successful assertion.
      * @dev This function looks up the submission, checks if the challenge is closed for submissions, and if valid for a payout, sends a reward.
@@ -674,17 +681,15 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         uint256 _challengeId
     ) public {
         Challenge memory challengeToClaimFor  = challenges[_challengeId];
-        // check the challenge exists by checking the timestamp is not 0
-        require(challengeToClaimFor.createdTimestamp != 0, "18");
-        // Check if the challenge is closed for submissions
-        require(!challengeToClaimFor.openForSubmissions, "19");
+
+        // Validate the challenge is claimable
+        _validateChallengeIsClaimable(challengeToClaimFor);
+
         // expire the challenge if 270 days old
-        if (block.timestamp >= challengeToClaimFor.createdTimestamp + 270 days) {
-            expireChallengeRewards(_challengeId);
-            return;
-        }
-        // Check if the challenge rewards have expired
-        require(!challengeToClaimFor.expiredForRewarding, "20");
+        bool expired = _checkChallengeRewardsExpired(_challengeId);
+
+        // If the challenge has expired, end early
+        if (expired) return;
 
         // Get the minting timestamp of the nodeLicenseId
         uint256 mintTimestamp = NodeLicense(nodeLicenseAddress).getMintTimestamp(_nodeLicenseId);
@@ -695,7 +700,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         // Look up the submission
         Submission memory submission = submissions[_challengeId][_nodeLicenseId];
 
-        // Check if the owner of the NodeLicense is KYC'd
+        // Get the owner of the nodeLicenseId
         address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
 
         // If the challenge is before the kycCheckRemovedChallengeNumber, check if the owner is KYC'd
@@ -703,36 +708,47 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
             require(isKycApproved(owner), "22");
         }
 
-        // Check if the submission has already been claimed
-        require(!submission.claimed, "23");
-
-        require(submission.eligibleForPayout, "24");
-
         // Take the amount that was allocated for the rewards and divide it by the number of claimers
         uint256 reward = challengeToClaimFor.rewardAmountForClaimers / challengeToClaimFor.numberOfEligibleClaimers;
 
-        // mark the submission as claimed
-        submissions[_challengeId][_nodeLicenseId].claimed = true;
-
-        // increment the amount claimed on the challenge
-        challenges[_challengeId].amountClaimedByClaimers += reward;
-
+        // Set the reward receiver
         address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
-        if (rewardReceiver == address(0)) {
+
+        // Check if the key is assigned to a pool
+        bool keyAssignedToPool = rewardReceiver != address(0);
+
+        // If the key is assigned to a pool and the key has not been submitted for individually
+        if (keyAssignedToPool && !submissions[_challengeId][_nodeLicenseId].submitted) {
+            // If the key is assigned to a pool, claim the pool rewards
+            _claimPoolSubmissionRewards(rewardReceiver, _challengeId);
+        }else{        
+            // If the key is not assigned to a pool, set the reward receiver to the owner       
+            // Check if the nodeLicenseId is eligible for a payout
             rewardReceiver = owner;
+            // Check if the submission has already been claimed
+            require(!submission.claimed, "23");
+
+            require(submission.eligibleForPayout, "24");
+
+            // mark the submission as claimed
+            submissions[_challengeId][_nodeLicenseId].claimed = true;
+
+            // increment the amount claimed on the challenge
+            challenges[_challengeId].amountClaimedByClaimers += reward;
+
+
+            // Mint the reward to the owner of the nodeLicense
+            esXai(esXaiAddress).mint(rewardReceiver, reward);
+
+            // Emit the RewardsClaimed event
+            emit RewardsClaimed(_challengeId, reward);
+
+            // Increment the total claims of this address
+            _lifetimeClaims[rewardReceiver] += reward;
+
+            // unallocate the tokens that have now been converted to esXai
+            _allocatedTokens -= reward;
         }
-
-        // Mint the reward to the owner of the nodeLicense
-        esXai(esXaiAddress).mint(rewardReceiver, reward);
-
-        // Emit the RewardsClaimed event
-        emit RewardsClaimed(_challengeId, reward);
-
-        // Increment the total claims of this address
-        _lifetimeClaims[rewardReceiver] += reward;
-
-        // unallocate the tokens that have now been converted to esXai
-        _allocatedTokens -= reward;
     }
 
 	function claimMultipleRewards(
@@ -742,23 +758,19 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
 	) external {
         
         Challenge memory challengeToClaimFor  = challenges[_challengeId];
-        // check the challenge exists by checking the timestamp is not 0
-        require(challengeToClaimFor.createdTimestamp != 0, "25");
-        // Check if the challenge is closed for submissions
-        require(!challengeToClaimFor.openForSubmissions, "26");
-        // expire the challenge if 270 days old
-        if (block.timestamp >= challengeToClaimFor.createdTimestamp + 270 days) {
-            expireChallengeRewards(_challengeId);
-            return;
-        }
+        
+        // Validate the challenge is claimable
+        _validateChallengeIsClaimable(challengeToClaimFor);
 
-        // Check if the challenge rewards have expired
-        require(!challengeToClaimFor.expiredForRewarding, "27");
+        // expire the challenge if 270 days old
+        bool expired = _checkChallengeRewardsExpired(_challengeId);
+
+        // If the challenge has expired, end early
+        if (expired) return;
 
         uint256 reward = challengeToClaimFor.rewardAmountForClaimers / challengeToClaimFor.numberOfEligibleClaimers;
         uint256 keyLength = _nodeLicenseIds.length;
         uint256 claimCount = 0;
-        uint256 poolMintAmount = 0;
 
 		for (uint256 i = 0; i < keyLength; i++) {
             uint256 _nodeLicenseId = _nodeLicenseIds[i];
@@ -767,7 +779,20 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
             address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
             Submission memory submission = submissions[_challengeId][_nodeLicenseId];
 
+            // Set the reward receiver
+            address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
+
+            // Check if the key is assigned to a pool
+            bool keyAssignedToPool = rewardReceiver != address(0);
+
+            // If the key is assigned to a pool and the key has not been submitted for individually
+            if (keyAssignedToPool && !submissions[_challengeId][_nodeLicenseId].submitted) {
+                // If the key is assigned to a pool, confirm the pool submitted for this challenge
+                _claimPoolSubmissionRewards(rewardReceiver, _challengeId);
+            }else{        
+            // If the key is not assigned to a pool, set the reward receiver to the owner       
             // Check if the nodeLicenseId is eligible for a payout
+                rewardReceiver = owner;
             if (
                 // Confirm the owner is KYC'd, or the challenge is past the kycCheckRemovedChallengeNumber
                 (_challengeId >= kycCheckRemovedChallengeNumber || isKycApproved(owner)) &&
@@ -779,31 +804,20 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
                 submissions[_challengeId][_nodeLicenseId].claimed = true;
 
                 // increment the amount claimed on the challenge
-                challenges[_challengeId].amountClaimedByClaimers += reward;
+                challenges[_challengeId].amountClaimedByClaimers += reward;                
+
+                // Mint the reward to the owner of the nodeLicense
+                esXai(esXaiAddress).mint(rewardReceiver, reward);
                 
-                address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
-                if (rewardReceiver == address(0)) {
-                    rewardReceiver = owner;
-                }
+                // Increment the total claims of this address
+                _lifetimeClaims[rewardReceiver] += reward;
 
-                //If we have set the poolAddress we will only claim if the license is staked to that pool
-                if (claimForAddressInBatch != address(0) && rewardReceiver == claimForAddressInBatch) {
-                    poolMintAmount += reward;
-                } else {
-                    // Mint the reward to the owner of the nodeLicense
-                    esXai(esXaiAddress).mint(rewardReceiver, reward);
-                    _lifetimeClaims[rewardReceiver] += reward;
-                }
-
+                // Increment the claim count
                 claimCount++;
+                }
             }
-		}
-
-        if (poolMintAmount > 0) {
-            esXai(esXaiAddress).mint(claimForAddressInBatch, poolMintAmount);
-            _lifetimeClaims[claimForAddressInBatch] += poolMintAmount;
         }
-        
+
         _allocatedTokens -= claimCount * reward;
         emit BatchRewardsClaimed(_challengeId, claimCount * reward, claimCount);
 	}
@@ -847,30 +861,6 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
             submissionsArray[i] = submissions[_challengeIds[i]][_nodeLicenseId];
         }
         return submissionsArray;
-    }
-
-    /**
-     * @notice Expires the rewards for a challenge if it is at least 270 days old.
-     * @param _challengeId The ID of the challenge.
-     */
-    function expireChallengeRewards(uint256 _challengeId) public {
-        // check the challenge exists by checking the timestamp is not 0
-        require(challenges[_challengeId].createdTimestamp != 0, "28");
-
-        // Check if the challenge is at least 270 days old
-        require(block.timestamp >= challenges[_challengeId].createdTimestamp + 270 days, "29");
-
-        // Check the challenge isn't already expired
-        require(challenges[_challengeId].expiredForRewarding == false, "30");
-
-        // Remove the unclaimed tokens from the allocation
-        _allocatedTokens -= challenges[_challengeId].rewardAmountForClaimers - challenges[_challengeId].amountClaimedByClaimers;
-
-        // Set expiredForRewarding to true
-        challenges[_challengeId].expiredForRewarding = true;
-
-        // Emit the ChallengeExpired event
-        emit ChallengeExpired(_challengeId);
     }
 
     /**
@@ -1137,7 +1127,8 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
     @param _challengeId The ID of the challenge.
     @param _confirmData The confirm data of the assertion.
      */
-	function _submitNewPoolAssertion(
+	
+    function _submitNewPoolAssertion(
 		address _poolAddress,
 		uint256 _challengeId,
 		bytes memory _confirmData
@@ -1170,8 +1161,8 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         // Store the pool submission struct
         poolSubmissions[_challengeId][_poolAddress].submitted = true;
         poolSubmissions[_challengeId][_poolAddress].claimed = false;
-        poolSubmissions[_challengeId][_poolAddress].stakedKeys = totalStakedKeys;
-        poolSubmissions[_challengeId][_poolAddress].winningKeys = winningKeyCount;
+        poolSubmissions[_challengeId][_poolAddress].stakedKeyCount = totalStakedKeys;
+        poolSubmissions[_challengeId][_poolAddress].winningKeyCount = winningKeyCount;
         poolSubmissions[_challengeId][_poolAddress].assertionStateRootOrConfirmData = _confirmData;
 
         // Emit the New Pool Submission event
@@ -1207,27 +1198,27 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         uint256 winningKeysDecreaseAmount = 0;
 
         // If winning key count has increased, add the difference to the total number of eligible claimers
-        if(winningKeyCount > poolSubmissions[_challengeId][_poolAddress].winningKeys){
+        if(winningKeyCount > poolSubmissions[_challengeId][_poolAddress].winningKeyCount){
 
             // Determine the increase amount
-            winningKeysIncreaseAmount = winningKeyCount - poolSubmissions[_challengeId][_poolAddress].winningKeys;
+            winningKeysIncreaseAmount = winningKeyCount - poolSubmissions[_challengeId][_poolAddress].winningKeyCount;
 
             // Update the challenge by adding the increase amount to the total number of eligible claimers
             challenges[_challengeId].numberOfEligibleClaimers += winningKeysIncreaseAmount;
 
         // Else if winning key count has decreased, subtract the difference from the total number of eligible claimers
-        }else if (winningKeyCount < poolSubmissions[_challengeId][_poolAddress].winningKeys){
+        }else if (winningKeyCount < poolSubmissions[_challengeId][_poolAddress].winningKeyCount){
 
             // Determine the decrease amount
-            winningKeysDecreaseAmount = poolSubmissions[_challengeId][_poolAddress].winningKeys - winningKeyCount;
+            winningKeysDecreaseAmount = poolSubmissions[_challengeId][_poolAddress].winningKeyCount - winningKeyCount;
 
             // Update the challenge by subtracting the decrease amount from the total number of eligible claimers
             challenges[_challengeId].numberOfEligibleClaimers -= winningKeysDecreaseAmount;
         }
         
         // Store the updated pool submission data to the struct
-        poolSubmissions[_challengeId][_poolAddress].stakedKeys = totalStakedKeys;
-        poolSubmissions[_challengeId][_poolAddress].winningKeys = winningKeyCount;
+        poolSubmissions[_challengeId][_poolAddress].stakedKeyCount = totalStakedKeys;
+        poolSubmissions[_challengeId][_poolAddress].winningKeyCount = winningKeyCount;
 
         // Emit the Updated Pool Submission event
         emit UpdatePoolSubmission(_challengeId, _poolAddress, totalStakedKeys, winningKeyCount, winningKeysIncreaseAmount, winningKeysDecreaseAmount);	
@@ -1237,13 +1228,82 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
     * @dev This function is called internally from the claimMultipleRewards function or claimPoolRewards function.
     * @param _poolAddress The address of the pool.
     * @param _challengeId The ID of the challenge.
-    * @return amountClaimed The amount claimed.    
     */
 
-    function _claimPoolSubmissionRewards(address _poolAddress, uint256 _challengeId) internal returns (uint256 amountClaimed) {
-        return 0;
+    function _claimPoolSubmissionRewards(address _poolAddress, uint256 _challengeId) internal {                
+        Challenge memory challengeToClaimFor  = challenges[_challengeId];
+        
+        // Validate the challenge is claimable
+        _validateChallengeIsClaimable(challengeToClaimFor);
+
+        // expire the challenge if 270 days old
+        bool expired = _checkChallengeRewardsExpired(_challengeId);
+
+        // If the challenge has expired, end early
+        if (expired) return;
+
+        PoolSubmission memory poolSubmission = poolSubmissions[_challengeId][_poolAddress];
+
+        uint256 reward = challengeToClaimFor.rewardAmountForClaimers / challengeToClaimFor.numberOfEligibleClaimers;
+        uint256 poolMintAmount = 0;
+
+        // Check if the pool is elegible for a payout
+        if (poolSubmission.submitted && !poolSubmission.claimed && poolSubmission.winningKeyCount > 0) {
+
+                // Calculate the amount to mint to the pool
+                poolMintAmount = (reward * poolSubmission.winningKeyCount);     
+
+                // mark the submission as claimed
+                poolSubmissions[_challengeId][_poolAddress].claimed = true;
+
+                // increment the amount claimed on the challenge
+                challenges[_challengeId].amountClaimedByClaimers += (poolMintAmount);    
+            }
+		
+        // If the pool mint amount is greater than 0, mint the reward to the pool
+        if (poolMintAmount > 0) {
+            esXai(esXaiAddress).mint(_poolAddress, poolMintAmount);
+
+            // Increment the total claims of this address
+            _lifetimeClaims[_poolAddress] += poolMintAmount;
+
+            // unallocate the tokens that have now been converted to esXai
+            _allocatedTokens -= poolMintAmount;
+        }
+
+        return;
     }
 
+    /** 
+    * @notice Function to check if challenge rewards are expired
+    * @dev This function is called internally from the claimReward function.
+    * @param _challengeId The ID of the challenge.
+    * @return A boolean indicating if the challenge rewards are expired.
+    */
+
+    function _checkChallengeRewardsExpired(uint256 _challengeId) internal returns (bool) {
+        // Check if the challenge rewards have expired
+        bool expired = block.timestamp >= challenges[_challengeId].createdTimestamp + 270 days;
+
+        // If the challenge rewards have expired and the mapping has
+        // not been updated, then update the mapping
+        if(expired && !challenges[_challengeId].expiredForRewarding){            
+            // Remove the unclaimed tokens from the allocation
+            _allocatedTokens -= challenges[_challengeId].rewardAmountForClaimers - challenges[_challengeId].amountClaimedByClaimers;
+
+            // Set expiredForRewarding to true
+            challenges[_challengeId].expiredForRewarding = true;
+
+            // Emit the ChallengeExpired event
+            emit ChallengeExpired(_challengeId);
+        }else {
+            // If challenge has expired and mapping has been updated, then revert
+            require(!expired, "20");
+            return false;
+        }
+
+        return expired;
+    }
 
     /** 
     * @notice Submit Pool Assertion external function
@@ -1264,11 +1324,11 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
     * @dev this function is called by the pool owner, or an approved operator, to claim rewards for a pool submission.
     * @param _poolAddress The address of the pool.
     * @param _challengeId The ID of the challenge.
-    * @return amountClaimed The amount claimed.
     */
 
-    function claimPoolSubmissionRewards(address _poolAddress, uint256 _challengeId) external returns (uint256 amountClaimed) {
+    function claimPoolSubmissionRewards(address _poolAddress, uint256 _challengeId) external {
         require(isValidOperator(_poolAddress, msg.sender), "17"); // TODO - see if this should be removed to allow anyone to initiate claim
-        return _claimPoolSubmissionRewards(_poolAddress, _challengeId);
+        _claimPoolSubmissionRewards(_poolAddress, _challengeId);
+        return;
     }
 }
