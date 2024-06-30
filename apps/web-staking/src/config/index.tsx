@@ -1,4 +1,4 @@
-import { defaultWagmiConfig } from '@web3modal/wagmi/react/config'
+import { defaultWagmiConfig } from '@web3modal/wagmi/react'
 
 // import { cookieStorage, createStorage } from 'wagmi'
 import { arbitrum, arbitrumSepolia } from 'wagmi/chains'
@@ -18,16 +18,16 @@ const metadata = {
 }
 
 export const config = defaultWagmiConfig({
-    chains, // required
+    chains: chains as any, // required
     projectId, // required
     metadata, // required
-    ssr: true,
+    // ssr: true,
     // storage: createStorage({
     //     storage: cookieStorage
     // }),
-    enableWalletConnect: true, // Optional - true by default
-    enableInjected: true, // Optional - true by default
-    enableEIP6963: true, // Optional - true by default
-    enableCoinbase: true, // Optional - true by default
+    // enableWalletConnect: true, // Optional - true by default
+    // enableInjected: true, // Optional - true by default
+    // enableEIP6963: true, // Optional - true by default
+    // enableCoinbase: true, // Optional - true by default
     // ...wagmiOptions // Optional - Override createConfig parameters
 })

@@ -5,6 +5,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 RUN npm install -g pnpm
 WORKDIR /app
 COPY . .
-RUN pnpm install --loglevel debug
+RUN pnpm install --ignore-scripts --loglevel debug
+RUN pnpm -filter @sentry/web-staking run build
 EXPOSE 3000
-CMD [ "pnpm", "run", "web-staking-production" ]
+CMD [ "pnpm -filter @sentry/web-staking", "run", "start" ]
