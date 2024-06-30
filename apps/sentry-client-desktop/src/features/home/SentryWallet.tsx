@@ -222,7 +222,7 @@ export function SentryWallet() {
 					className="sticky top-0 flex flex-col items-center  h-auto z-10">
 					<div
 						className={`flex flex-row justify-between items-center w-full ${drawerState === null ? "py-[11px]" : "py-[15px]"} bg-nulnOil gap-2 border-b border-chromaphobicBlack pl-[24px] pr-2`}>
-						<div className="flex flex-row items-center gap-2 w-full max-w-[70%] z-[60]">
+						<div className="flex flex-row items-center gap-2 w-full max-w-[65%] z-[60]">
 							<span>
 								{sentryRunning && hasAssignedKeys && funded && <GreenPulse size='md'/>}
 								{sentryRunning && !hasAssignedKeys && !funded && <YellowPulse size='md'/>}
@@ -319,7 +319,7 @@ export function SentryWallet() {
 									onClick={() => {
 										setDrawerState(DrawerView.Whitelist)
 									}}
-									className={`ml-[10px] flex flex-row justify-center items-center gap-2 text-pelati text-lg font-bold ${!stopRuntime ? 'cursor-not-allowed' : "hover:text-white duration-300"}`}
+									className={`ml-[5px] flex flex-row justify-center items-center gap-2 text-pelati text-lg font-bold ${!stopRuntime ? 'cursor-not-allowed' : "hover:text-white duration-300"}`}
 									disabled={!stopRuntime}
 								>
 									{stopRuntime ?
