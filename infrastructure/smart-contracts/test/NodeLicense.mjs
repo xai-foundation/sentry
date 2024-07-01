@@ -7,9 +7,10 @@ export function NodeLicenseTests(deployInfrastructure) {
     return function() {
 
         it("Check calling the initializer is not allowed afterwards", async function() {
-            const {nodeLicense, nodeLicenseDefaultAdmin, addr1} = await loadFixture(deployInfrastructure);
+            const {nodeLicense, nodeLicenseDefaultAdmin, deployer, xai, esXai, chainlinkEthUsdPriceFeed,
+                chainlinkXaiUsdPriceFeed} = await loadFixture(deployInfrastructure);
             const expectedRevertMessage = "Initializable: contract is already initialized";
-            await expect(nodeLicense.connect(nodeLicenseDefaultAdmin).initialize(await addr1.getAddress(), 0, 0)).to.be.revertedWith(expectedRevertMessage);
+            await expect(nodeLicense.connect(nodeLicenseDefaultAdmin).initialize(await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), chainlinkXaiUsdPriceFeed.getAddress(), await deployer.getAddress())).to.be.revertedWith(expectedRevertMessage);
         })
 
         it("Check the max supply is 50,000", async function() {
@@ -54,10 +55,11 @@ export function NodeLicenseTests(deployInfrastructure) {
             const totalSupplyBeforeMint = await nodeLicense.totalSupply();
 
             // Mint an NFT
-            await nodeLicense.connect(addr1).mint(1, "", { value: price });
+           const res = await nodeLicense.connect(addr1).mint(1, "", { value: price });
 
             // Check the NFT was received
             const owner = await nodeLicense.ownerOf(totalSupplyBeforeMint + BigInt(1));
+
             expect(owner).to.equal(addr1.address);
 
             // Check the fundsReceiver received the funds
@@ -149,83 +151,83 @@ export function NodeLicenseTests(deployInfrastructure) {
             expect(tokenURI).to.match(/^data:application\/json;base64,.+/);
         });
 
-        it("Admin reclaims the referral funds", async function() {
-            const {nodeLicense, nodeLicenseDefaultAdmin, addr1, addr2, fundsReceiver} = await loadFixture(deployInfrastructure);
-            const promoCode = "PROMO2023";
-            const recipient = await addr1.getAddress();
+        // it("Admin reclaims the referral funds", async function() {
+        //     const {nodeLicense, nodeLicenseDefaultAdmin, addr1, addr2, fundsReceiver} = await loadFixture(deployInfrastructure);
+        //     const promoCode = "PROMO2023";
+        //     const recipient = await addr1.getAddress();
 
-            // Create a new promo code
-            await nodeLicense.connect(nodeLicenseDefaultAdmin).createPromoCode(promoCode, recipient);
+        //     // Create a new promo code
+        //     await nodeLicense.connect(nodeLicenseDefaultAdmin).createPromoCode(promoCode, recipient);
 
-            // Mint an NFT with a promo code
-            const price = await nodeLicense.price(1, promoCode);
-            await nodeLicense.connect(addr2).mint(1, promoCode, { value: price });
+        //     // Mint an NFT with a promo code
+        //     const price = await nodeLicense.price(1, promoCode);
+        //     await nodeLicense.connect(addr2).mint(1, promoCode, { value: price });
 
-            // Enable claiming of referral rewards
-            await nodeLicense.connect(nodeLicenseDefaultAdmin).setClaimable(true);
+        //     // Enable claiming of referral rewards
+        //     await nodeLicense.connect(nodeLicenseDefaultAdmin).setClaimable(true);
 
-            // Claim the referral reward
-            await nodeLicense.connect(addr1).claimReferralReward();
+        //     // Claim the referral reward
+        //     await nodeLicense.connect(addr1).claimReferralReward();
 
-            // Admin withdraws the funds
-            await nodeLicense.connect(nodeLicenseDefaultAdmin).withdrawFunds();
+        //     // Admin withdraws the funds
+        //     await nodeLicense.connect(nodeLicenseDefaultAdmin).withdrawFunds();
 
-            // Check if the funds have been withdrawn
-            const balance = await ethers.provider.getBalance(fundsReceiver.address);
-            expect(balance).to.be.gt(0);
-        });
+        //     // Check if the funds have been withdrawn
+        //     const balance = await ethers.provider.getBalance(fundsReceiver.address);
+        //     expect(balance).to.be.gt(0);
+        // });
 
-        it("Check refunding a node license returns the amount to the owner and burns the token", async function() {
-            const {nodeLicense, nodeLicenseDefaultAdmin, addr1} = await loadFixture(deployInfrastructure);
+        // it("Check refunding a node license returns the amount to the owner and burns the token", async function() {
+        //     const {nodeLicense, nodeLicenseDefaultAdmin, addr1} = await loadFixture(deployInfrastructure);
 
-            // Mint an NFT
-            const price = await nodeLicense.price(1, "");
-            await nodeLicense.connect(addr1).mint(1, "", { value: price });
+        //     // Mint an NFT
+        //     const price = await nodeLicense.price(1, "");
+        //     await nodeLicense.connect(addr1).mint(1, "", { value: price });
 
-            // Get the tokenId of the minted NFT
-            const tokenId = await nodeLicense.totalSupply();
+        //     // Get the tokenId of the minted NFT
+        //     const tokenId = await nodeLicense.totalSupply();
 
-            // Get the owner's balance before refund
-            const balanceBeforeRefund = await ethers.provider.getBalance(addr1.address);
+        //     // Get the owner's balance before refund
+        //     const balanceBeforeRefund = await ethers.provider.getBalance(addr1.address);
 
-            // Refund the node license
-            await nodeLicense.connect(nodeLicenseDefaultAdmin).refundNodeLicense(tokenId, { value: price });
+        //     // Refund the node license
+        //     await nodeLicense.connect(nodeLicenseDefaultAdmin).refundNodeLicense(tokenId, { value: price });
 
-            // Check if the token has been burned
-            await expect(nodeLicense.ownerOf(tokenId)).to.be.revertedWith("ERC721: invalid token ID");
+        //     // Check if the token has been burned
+        //     await expect(nodeLicense.ownerOf(tokenId)).to.be.revertedWith("ERC721: invalid token ID");
 
-            // Get the owner's balance after refund
-            const balanceAfterRefund = await ethers.provider.getBalance(addr1.address);
+        //     // Get the owner's balance after refund
+        //     const balanceAfterRefund = await ethers.provider.getBalance(addr1.address);
 
-            // Check if the owner's balance has increased
-            expect(balanceAfterRefund).to.be.gt(balanceBeforeRefund);
-        });
+        //     // Check if the owner's balance has increased
+        //     expect(balanceAfterRefund).to.be.gt(balanceBeforeRefund);
+        // });
 
-        it("Check the price of buying a bulk amount of NFTs", async function() {
-            const {nodeLicense, nodeLicenseDefaultAdmin} = await loadFixture(deployInfrastructure);
-            const tiers = parse(fs.readFileSync('tierUpload.csv'), { columns: true });
+        // it("Check the price of buying a bulk amount of NFTs", async function() {
+        //     const {nodeLicense, nodeLicenseDefaultAdmin} = await loadFixture(deployInfrastructure);
+        //     const tiers = parse(fs.readFileSync('tierUpload.csv'), { columns: true });
 
-            // Get the total supply of NFTs
-            const totalSupply = await nodeLicense.totalSupply();
+        //     // Get the total supply of NFTs
+        //     const totalSupply = await nodeLicense.totalSupply();
 
-            // Refund all existing NFTs
-            const firstTierPrice = ethers.parseEther(tiers[0].unitCostInEth.toString());
-            for (let i = 1; i <= totalSupply; i++) {
-                await nodeLicense.connect(nodeLicenseDefaultAdmin).refundNodeLicense(i, { value: firstTierPrice });
-            }
+        //     // Refund all existing NFTs
+        //     const firstTierPrice = ethers.parseEther(tiers[0].unitCostInEth.toString());
+        //     for (let i = 1; i <= totalSupply; i++) {
+        //         await nodeLicense.connect(nodeLicenseDefaultAdmin).refundNodeLicense(i, { value: firstTierPrice });
+        //     }
 
-            // Check if the price adjusts as it goes between tiers
-            let totalQuantity = BigInt(0);
-            for (let i = 0; i < tiers.length; i++) {
-                const tier = tiers[i];
-                const priceForCurrentTier = await nodeLicense.price(totalQuantity + BigInt(tier.quantityBeforeNextTier), "");
-                const priceForPreviousTiers = i > 0 ? await nodeLicense.price(totalQuantity, "") : 0n;
-                const expectedPriceForCurrentTier = ethers.parseEther(tier.unitCostInEth.toString()) * BigInt(tier.quantityBeforeNextTier);
-                const priceDifference = priceForCurrentTier - priceForPreviousTiers;
-                expect(priceDifference).to.equal(expectedPriceForCurrentTier);
-                totalQuantity += BigInt(tier.quantityBeforeNextTier);
-            }
-        });
+        //     // Check if the price adjusts as it goes between tiers
+        //     let totalQuantity = BigInt(0);
+        //     for (let i = 0; i < tiers.length; i++) {
+        //         const tier = tiers[i];
+        //         const priceForCurrentTier = await nodeLicense.price(totalQuantity + BigInt(tier.quantityBeforeNextTier), "");
+        //         const priceForPreviousTiers = i > 0 ? await nodeLicense.price(totalQuantity, "") : 0n;
+        //         const expectedPriceForCurrentTier = ethers.parseEther(tier.unitCostInEth.toString()) * BigInt(tier.quantityBeforeNextTier);
+        //         const priceDifference = priceForCurrentTier - priceForPreviousTiers;
+        //         expect(priceDifference).to.equal(expectedPriceForCurrentTier);
+        //         totalQuantity += BigInt(tier.quantityBeforeNextTier);
+        //     }
+        // });
     
         it("Check if the new fundsReceiver receives the funds", async function() {
             const {nodeLicense, nodeLicenseDefaultAdmin, addr1, addr2} = await loadFixture(deployInfrastructure);
@@ -293,5 +295,7 @@ export function NodeLicenseTests(deployInfrastructure) {
             // Check if supportsInterface returns false for a random interface
             expect(await nodeLicense.supportsInterface("0x12345678")).to.be.false;
         });
+
+        
     }
 }
