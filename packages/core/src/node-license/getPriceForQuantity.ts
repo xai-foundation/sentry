@@ -2,8 +2,7 @@ import {ethers} from 'ethers';
 import {NodeLicenseAbi} from '../abis/index.js';
 import {config} from '../config.js';
 import {getProvider} from '../utils/getProvider.js';
-import {Tier} from './index.js';
-import tierData from './tiers.json' assert { type: "json" };
+import {listTiers} from './listTiers.js';
 
 /**
  * Pricing tier structure.
@@ -21,12 +20,7 @@ export interface CheckoutTierSummary {
  */
 export async function getPriceForQuantity(quantity: number): Promise<{ price: bigint, nodesAtEachPrice: CheckoutTierSummary[] }> {
 
-    // Get the provider
-    const providerUrls = [
-        "https://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
-        "https://arb1.arbitrum.io/rpc",
-    ];
-    const provider = getProvider(providerUrls[Math.floor(Math.random() * providerUrls.length)]);
+    const provider = getProvider();
 
     // Create an instance of the NodeLicense contract
     const nodeLicenseContract = new ethers.Contract(config.nodeLicenseAddress, NodeLicenseAbi, provider);
@@ -37,10 +31,8 @@ export async function getPriceForQuantity(quantity: number): Promise<{ price: bi
     // Get the total supply of NodeLicenses
     let totalSupply = await nodeLicenseContract.totalSupply();
 
-    // Get the pricing tiers from json file
-    const tiers: Tier[] = tierData.map(tier => {
-        return { price: BigInt(tier.price), quantity: BigInt(tier.quantity) };
-    });
+    // Get the pricing tiers
+    const tiers = await listTiers();
 
     // Initialize the price
     let price: bigint = 0n;
@@ -83,12 +75,9 @@ export async function getPriceForQuantity(quantity: number): Promise<{ price: bi
  */
 export async function getPrice(quantity: number): Promise<{ price: bigint }> {
 
-    // Get the provider
-    const providerUrls = [
-        "https://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
-        "https://arb1.arbitrum.io/rpc",
-    ];
-    const provider = getProvider(providerUrls[Math.floor(Math.random() * providerUrls.length)]);
+
+    const provider = getProvider();
+
 
     // Create an instance of the NodeLicense contract
     const nodeLicenseContract = new ethers.Contract(config.nodeLicenseAddress, NodeLicenseAbi, provider);

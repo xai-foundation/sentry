@@ -6,7 +6,7 @@ import {ethers} from "ethers";
 import {CheckoutTierSummary, getPromoCode} from "@sentry/core";
 import {PrimaryButton} from "@sentry/ui";
 import {KYCTooltip} from "@/features/checkout/KYCTooltip";
-import {useNetwork} from 'wagmi';
+// import {useNetwork} from 'wagmi';
 import MainCheckbox from "@sentry/ui/src/rebrand/checkboxes/MainCheckbox";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 import {WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
@@ -41,7 +41,7 @@ export function WebBuyKeysOrderTotal(
 		error
 	}: WebBuyKeysOrderTotalProps) {
 	const {isLoading: isTotalLoading} = useGetTotalSupplyAndCap();
-	const { chain } = useNetwork()
+	// const { chain } = useNetwork()
 
 	const [promo, setPromo] = useState<boolean>(false);
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
@@ -141,7 +141,7 @@ export function WebBuyKeysOrderTotal(
 								)}
 
 								{displayPricesMayVary && (
-									<div className="lg:max-w-[575px] md:max-w-[675px] flex flex-col bg-bananaBoat px-5 py-4 gap-2 mb-4">
+									<div className="w-full flex flex-col bg-bananaBoat px-5 py-4 gap-2 mb-4">
 										<div className="flex items-center gap-2 font-semibold">
 											<AiFillInfoCircle className="w-[20px] h-[20px] text-bananaBoatText"/>
 											<p className="text-lg text-bananaBoatText">
@@ -301,9 +301,9 @@ export function WebBuyKeysOrderTotal(
 							<div>
 								<PrimaryButton
 									onClick={() => onClick()}
-									className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161 ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-									isDisabled={!ready || chain?.id !== 42_161}
-									btnText={chain?.id === 42_161 ? "BUY NOW" : "Please Switch to Arbitrum One"}
+									className={`w-full h-16 ${checkboxOne && checkboxTwo && checkboxThree ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
+									isDisabled={!ready}
+									btnText={"BUY NOW"}
 								/>
 									
 								{error && (
