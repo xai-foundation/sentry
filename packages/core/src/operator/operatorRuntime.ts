@@ -373,44 +373,15 @@ async function processClosedChallenges(
             }
 
             updateNodeLicenseStatus(nodeLicenseId, `Checking KYC Status`);
-            safeStatusCallback();
+            safeStatusCallback();  
 
-            let isKYC: boolean = false;
-            if (sentryWalletMap) {
-                isKYC = sentryWalletMap[sentryKey.owner].isKYCApproved;
-            } else {
-                //If we are running on RPC we should not check every single pool key that did not come from an owner for KYC. 
-                //The Referee will let the transaction go through but won't claim
-                if (sentryKey.assignedPool != "0x") {
-                    isKYC = true;
-                } else {
-                    //Cache KYC status on owner basis for each challenge
-                    if (ownerKYCStatus[sentryKey.owner] === undefined) {
-                        const [{ isKycApproved }] = await retry(async () => await checkKycStatus([sentryKey.owner]));
-                        ownerKYCStatus[sentryKey.owner] = isKycApproved
-                    }
-                    isKYC = ownerKYCStatus[sentryKey.owner];
-                }
+            if (!challengeToEligibleNodeLicensesMap.has(challengeId)) {
+                challengeToEligibleNodeLicensesMap.set(challengeId, []);
             }
+            challengeToEligibleNodeLicensesMap.get(challengeId)?.push(BigInt(nodeLicenseId));
 
-            if (isKYC) {
-                if (!challengeToEligibleNodeLicensesMap.has(challengeId)) {
-                    challengeToEligibleNodeLicensesMap.set(challengeId, []);
-                }
-                challengeToEligibleNodeLicensesMap.get(challengeId)?.push(BigInt(nodeLicenseId));
-
-                updateNodeLicenseStatus(nodeLicenseId, `Claiming esXAI...`);
-                safeStatusCallback();
-            } else {
-
-                if (!nonKYCWallets[sentryKey.owner]) {
-                    nonKYCWallets[sentryKey.owner] = 0;
-                }
-                nonKYCWallets[sentryKey.owner]++;
-
-                updateNodeLicenseStatus(nodeLicenseId, `Cannot Claim, Failed KYC`);
-                safeStatusCallback();
-            }
+            updateNodeLicenseStatus(nodeLicenseId, `Claiming esXAI...`);
+            safeStatusCallback();  
 
         } catch (error: any) {
             cachedLogger(`Error processing submissions for Sentry Key ${nodeLicenseId} - ${error && error.message ? error.message : error}`);
