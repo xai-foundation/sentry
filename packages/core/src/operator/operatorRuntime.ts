@@ -372,9 +372,6 @@ async function processClosedChallenges(
                 continue;
             }
 
-            updateNodeLicenseStatus(nodeLicenseId, `Checking KYC Status`);
-            safeStatusCallback();  
-
             if (!challengeToEligibleNodeLicensesMap.has(challengeId)) {
                 challengeToEligibleNodeLicensesMap.set(challengeId, []);
             }
