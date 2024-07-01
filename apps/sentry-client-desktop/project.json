@@ -1,0 +1,13 @@
+{
+	"name": "@sentry/sentry-client-desktop",
+	"targets": {
+		"build": {
+			"outputs": [
+				"{projectRoot}/dist",
+				"{projectRoot}/release",
+				"{projectRoot}/dist-electron",
+				"{projectRoot}/tsconfig.tsbuildinfo"
+			]
+		}
+	}
+}

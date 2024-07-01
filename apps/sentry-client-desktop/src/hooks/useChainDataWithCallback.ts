@@ -5,11 +5,13 @@ import {useEffect} from "react";
 import {StatusMap, useKycStatusesWithCallback} from "@/hooks/useKycStatusesWithCallback";
 import {getLicensesList, LicenseList, LicenseMap, useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
 import {useCombinedOwners} from "@/hooks/useCombinedOwners";
+import { useGetOwnerOrDelegatePools } from "./useGetOwnerOrDelegatepools";
 
 interface ChainState {
 	anyLoading: boolean;
 	ownersLoading: boolean;
 	owners: string[];
+	pools: string[];
 	ownersKycLoading: boolean;
 	ownersKycMap: StatusMap;
 	combinedWalletsKycMap: StatusMap;
@@ -24,6 +26,7 @@ const defaultChainState: ChainState = {
 	anyLoading: true,
 	ownersLoading: true,
 	owners: [],
+	pools: [],
 	ownersKycLoading: false,
 	ownersKycMap: {},
 	combinedWalletsKycMap: {},
@@ -50,6 +53,7 @@ export function useChainDataWithCallback() {
 	const {publicKey} = useOperator();
 	const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey, false, chainStateRefresh);
 	const {combinedOwners} = useCombinedOwners(owners);
+	const {pools} = useGetOwnerOrDelegatePools(publicKey);
 	const {isLoading: ownersKycLoading, statusMap: combinedWalletsKycMap} = useKycStatusesWithCallback(combinedOwners, chainStateRefresh);
 	const {isLoading: licensesLoading, licensesMap: combinedLicensesMap} = useListNodeLicensesWithCallback(combinedOwners, chainStateRefresh);
 
@@ -80,6 +84,16 @@ export function useChainDataWithCallback() {
 			}
 		});
 	}, [owners]);
+
+	// return pools
+	useEffect(() => {
+		setChainState((_chainState) => {
+			return {
+				..._chainState,
+				pools,
+			}
+		});
+	}, [pools]);
 
 	// return ownersKycMap & combinedWalletsKycMap
 	useEffect(() => {

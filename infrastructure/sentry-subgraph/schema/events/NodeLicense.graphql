@@ -1,0 +1,9 @@
+type SentryKey @entity(immutable: false) {
+  id: String!
+  owner: Bytes! # address
+  sentryWallet: SentryWallet!
+  keyId: BigInt!
+  mintTimeStamp: BigInt!
+  assignedPool: Bytes! # address
+  submissions: [Submission!]! @derivedFrom(field: "sentryKey")
+}
