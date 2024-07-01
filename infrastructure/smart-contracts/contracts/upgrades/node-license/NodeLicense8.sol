@@ -7,6 +7,7 @@ import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/Base64Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "../../upgrades/referee/Referee9.sol";
 
 interface IAggregatorV3Interface {
     function latestAnswer() external view returns (int256);
@@ -78,6 +79,9 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     address public xaiAddress;
     address public esXaiAddress;
 
+    // Pause Minting
+    bool public mintingPaused;
+
     bytes32 public constant AIRDROP_ADMIN_ROLE = keccak256("AIRDROP_ADMIN_ROLE");
 
 
@@ -126,14 +130,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         xaiPriceFeed = IAggregatorV3Interface(xaiPriceFeedAddress);
         xaiAddress = _xaiAddress;
         esXaiAddress = _esXaiAddress;
-
-        // Set max supply to 0 to prevent minting until airdrop is complete and pricing tiers are set
-        maxSupply = 0;
-
-        // Delete Existing Pricing Tiers
-        // This is required to ensure when the new pricing tiers are set, the maxSupply is updated correctly
-        delete pricingTiers;
-
+        
         // Grant the airdrop admin role to the airdrop admin address
         _grantRole(AIRDROP_ADMIN_ROLE, airdropAdmin);
     }
@@ -238,20 +235,16 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
 
         uint256 averageCost = finalEthPrice / _amount;
 
-        _validatePayment(finalPrice, _useEsXai);
         _mintNodeLicense(_amount, averageCost, msg.sender);
 
         // Calculate the referral reward and determine if the promo code is an address
         (uint256 referralReward, address recipientAddress)  = _calculateReferralReward(finalPrice, _promoCode);
-
+        
         IERC20 token = IERC20(_useEsXai ? esXaiAddress : xaiAddress);
-        token.transferFrom(msg.sender, fundsReceiver, finalPrice - referralReward);
+        token.transferFrom(msg.sender, address(this), finalPrice);
+        token.transfer(fundsReceiver, finalPrice - referralReward);
 
         if(referralReward > 0){
-
-            // Trasnfer the referral reward to the this contract
-            token.transferFrom(msg.sender, address(this), referralReward);
-            //TODO Ask about just sending the payment to the recipient address now vs keeping records and requiring a claim
             // Store the referral reward in the appropriate mapping
             if(_useEsXai){
                 _promoCodesEsXai[_promoCode].receivedLifetime += referralReward;
@@ -261,6 +254,23 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
                 _referralRewardsXai[recipientAddress] += referralReward;
             }
         }     
+    }
+
+    /**
+     * @notice Start the airdrop process
+     * @dev Only callable by the airdrop admin
+     * pauses mintting until completion of the airdrop
+     */
+
+    function startAirdrop(address refereeAddress) external onlyRole(AIRDROP_ADMIN_ROLE) {
+        mintingPaused = true;
+        Referee9(refereeAddress).setStakingEnabled(false);
+    }
+
+    function finishAirdrop(address refereeAddress, uint256 keyMultiplier) external onlyRole(AIRDROP_ADMIN_ROLE) {
+        updatePricingAndQuantity(keyMultiplier);
+        mintingPaused = false;
+        Referee9(refereeAddress).setStakingEnabled(true);
     }
 
     /**
@@ -275,16 +285,16 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         tokenIds = _mintNodeLicense(_qtyToMint, 0, _theRecipient);
     }
 
-
     /**
-     * @notice function to remove the airdrop admin role after completion of the airdrop
-     * @dev Only callable by the airdrop admin
-     * @param _airdropAdmin The address of the airdrop admin to remove
-     */
+    * @notice Revokes the airdrop admin role for the address passed in
+    * @param _address The address to revoke the airdrop admin role from
+    * @dev Only callable by the airdrop admin
+    */
 
-    function removeAirdropAdmin(address _airdropAdmin) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        revokeRole(AIRDROP_ADMIN_ROLE, _airdropAdmin);
+    function revokeAirdropAdmin(address _address) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        revokeRole(AIRDROP_ADMIN_ROLE, _address);
     }
+    
 
 
     /**
@@ -297,13 +307,16 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             _tokenIds.current() + _amount <= maxSupply,
             "Exceeds maxSupply"
         );
+
+        require(!mintingPaused, "Minting is paused");
     }
 
     /** 
      * @notice internal function to mint new NodeLicense tokens
      * @param _amount The amount of tokens to mint.
      */
-    function _mintNodeLicense(uint256 _amount, uint256 averageCost, address _receiver) internal returns (uint256 [] memory tokenIds){
+    function _mintNodeLicense(uint256 _amount, uint256 averageCost, address _receiver) internal returns (uint256 [] memory){
+        uint256 [] memory tokenIds = new uint256[](_amount);
         for (uint256 i = 0; i < _amount; i++) {
             _tokenIds.increment();
             uint256 newItemId = _tokenIds.current();
@@ -314,6 +327,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             _averageCost[newItemId] = averageCost;
             tokenIds[i] = newItemId;
         }
+        return tokenIds;
     }
 
     /**
@@ -325,7 +339,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @return A tuple containing the referral reward and an address with 0 address indicating the promo code was not an address
      */
     function _calculateReferralReward(uint256 _finalPrice, string memory _promoCode) internal returns(uint256, address) {
-
         // If the promo code is empty, return 0
         if(bytes(_promoCode).length == 0){
             return (0, address(0));
@@ -333,11 +346,11 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
 
         // Retrieve the promo code from storage if it exists
         PromoCode memory promoCode = _promoCodes[_promoCode];
-
         uint256 referralReward = 0;
         
         // Check if the promo code already exists in the mappings
         if(promoCode.recipient != address(0)){
+
             // Promo code exists in the mapping
             // If the promo code is not active, return 0
             if (!promoCode.active) {
@@ -388,24 +401,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         }
     }
 
-    /**
-     * @notice internal function to validate payment for minting
-     * a node license token using XAI or esXai as payment
-     * @param _totalCost the total cost of the minting
-     * @param _useEsXai a boolean to determine if the payment is in XAI or esXai
-     */
-    function _validatePayment(uint256 _totalCost, bool _useEsXai) internal view{
-        IERC20 token = IERC20(_useEsXai ? esXaiAddress : xaiAddress);
-        require(
-            token.balanceOf(msg.sender) >= _totalCost,
-            "Insufficient balance"
-        );
-        require(
-            token.allowance(msg.sender, address(this)) >= _totalCost,
-            "Insufficient allowance"
-        );
-    }
-    
+
     /**
      * @notice Public function to redeem tokens from on whitelist.
      */
@@ -470,12 +466,24 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         }
 
         require(remaining == 0, "Not enough licenses available for sale");
-
-        // Apply discount if promo code is active
+        // Apply discount if promo code is active otherwise check if promo code is an address
+        // If promocode is an address and owns a license, apply discount
         if (_promoCodes[_promoCode].active) {
             totalCost = totalCost * (100 - referralDiscountPercentage) / 100;
-        }
+        }else{
+            // Check if the promo code is an address
+            // Returns 0 address if not an address
+            address promoCodeAsAddress = validateAndConvertAddress(_promoCode);
 
+            // If the promo code is a valid address, check if it owns a license
+            if(promoCodeAsAddress != address(0)){
+
+                // If the address owns a license, apply discount
+                if(this.balanceOf(promoCodeAsAddress) > 0){
+                    totalCost = totalCost * (100 - referralDiscountPercentage) / 100;
+                }   
+            }
+        }
         return totalCost;
     }
 
@@ -487,13 +495,19 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     function claimReferralReward() external {
         require(claimable, "Claiming of referral rewards is currently disabled");
         uint256 reward = _referralRewards[msg.sender];
-        require(reward > 0, "No referral reward to claim");
-        _referralRewards[msg.sender] = 0;
-        (bool success, ) = msg.sender.call{value: reward}("");
-        require(success, "Transfer failed.");
         // Pay Xai & esXAI rewards if they exist
         uint256 rewardXai = _referralRewardsXai[msg.sender];
         uint256 rewardEsXai = _referralRewardsEsXai[msg.sender];
+
+        // Require that the user has a reward to claim
+        require(reward > 0 || rewardXai > 0 || rewardEsXai > 0, "No referral reward to claim");
+
+        (bool success, ) = msg.sender.call{value: reward}("");
+        require(success, "Transfer failed.");
+
+        // Reset the referral reward balance
+        _referralRewards[msg.sender] = 0;
+
         if(rewardXai > 0){
             IERC20 token = IERC20(xaiAddress);
             token.transfer(msg.sender, rewardXai);
@@ -568,6 +582,25 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         maxSupply += _quantity;
         emit PricingTierSetOrAdded(_index, _price, _quantity);
     }
+
+    /**
+     * @notice loops the pricing tiers and increases supply while reducing the price of 
+     * of each tier by the multiplier provided.
+     * @dev This function is used to reduce the pricing tiers and increase the supply of the NodeLicense tokens.
+     * @dev This function is only called once.
+     * @param keyMultiplier The multiplier to reduce the price of each tier by.
+     */
+
+    function updatePricingAndQuantity(uint256 keyMultiplier) internal {
+        require(keyMultiplier >= 1, "Multiplier must be greater than 1");
+        require(maxSupply == 50000, "Pricing tiers have already been reduced");
+        for (uint256 i = 0; i < pricingTiers.length; i++) {
+            pricingTiers[i].price = pricingTiers[i].price / keyMultiplier;
+            pricingTiers[i].quantity = pricingTiers[i].quantity * keyMultiplier;
+        }
+        maxSupply = maxSupply * keyMultiplier;
+    }
+
 
     /**
      * @notice Returns the pricing tier at the given index.
@@ -682,7 +715,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         address from,
         address to,
         uint256 tokenId
-    ) internal override pure {
+    ) internal override {
         revert("NodeLicense: transfer is not allowed");
     }
 
