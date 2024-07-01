@@ -12,9 +12,11 @@ import { ClaimToken } from '../wallet/routes/ClaimToken';
 import { TermsAndConditions } from '../wallet/routes/TermsAndConditions';
 import {RedEnvelope2024} from "@/features/wallet/routes/RedEnvelope2024";
 import {ClaimRedEnvelope2024} from "@/features/wallet/routes/ClaimRedEnvelope2024";
+import { ReactCookieConsent } from '../footer/ReactCookieConsent';
+import UrlVerification from "@/features/UrlVerification";
 
 export function AppRoutes() {
-	const {blocked, loading} = useBlockIp({blockUsa: false});
+	const {blocked, loading} = useBlockIp({blockUsa: true});
 	const queryClient = new QueryClient();
 
 	if (loading) {
@@ -27,7 +29,9 @@ export function AppRoutes() {
 
 	if (blocked) {
 		return (
-			<pre className="p-2 text-sm">Not Found</pre>
+			<div className='w-full h-screen flex justify-center items-center'>
+				<p className="p-2 text-md text-white">You are in a country restricted from using this application.</p>
+			</div>
 		)
 	}
 
@@ -35,6 +39,7 @@ export function AppRoutes() {
 		<Router basename={"/"}>
 			<QueryClientProvider client={queryClient}>
 				<Header/>
+				<UrlVerification />
 				<Routes>
 					<Route path="/drop-claim" element={<DropClaim/>}/>
 					<Route path="/claim-token" element={<ClaimToken/>}/>
@@ -47,6 +52,7 @@ export function AppRoutes() {
 					<Route path="*" element={<Navigate to="/" replace={true}/>}/>
 				</Routes>
 				<Footer/>
+				<ReactCookieConsent/>
 			</QueryClientProvider>
 		</Router>
 	);

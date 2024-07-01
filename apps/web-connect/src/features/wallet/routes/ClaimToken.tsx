@@ -1,14 +1,16 @@
 import {useAccount, useNetwork, useContractWrite} from "wagmi";
-import {XaiBanner} from "@/features/checkout/XaiBanner";
 import {useState, useEffect} from "react";
-import {XaiCheckbox} from "@sentry/ui";
+import {ConnectButton, XaiCheckbox} from "@sentry/ui";
 import {useNavigate} from "react-router-dom";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import {BiLoaderAlt} from "react-icons/bi";
 import {XaiGaslessClaimAbi, config} from "@sentry/core";
 import {ethers} from "ethers";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
 
 export function ClaimToken() {
+	const {open} = useWeb3Modal()
 	const {blocked, loading} = useBlockIp({blockUsa: true});
 	const {address: _address} = useAccount();
 	const address = _address?.toLowerCase();
@@ -43,21 +45,23 @@ export function ClaimToken() {
 	if (loading) {
 		return (
 			<div className="w-full h-screen flex justify-center items-center">
-				<BiLoaderAlt className="animate-spin" size={32} color={"#000000"}/>
+				<BiLoaderAlt className="animate-spin" size={32} color={"#F30919"}/>
 			</div>
 		)
 	}
 
 	if (blocked) {
 		return (
-			<pre className="p-2 text-[14px]">Not Found</pre>
+			<div className='w-full h-screen flex justify-center items-center'>
+				<p className="p-2 text-md text-white">You are in a country restricted from using this application.</p>
+			</div>
 		)
 	}
 
 	if (isLoading) {
 		return (
 			<div className="w-full h-screen flex justify-center items-center">
-				<BiLoaderAlt className="animate-spin" size={32} color={"#000000"}/>
+				<BiLoaderAlt className="animate-spin" size={32} color={"#F30919"}/>
 			</div>
 		)
 	}
@@ -65,25 +69,24 @@ export function ClaimToken() {
 	if (isSuccess) {
 		return (
 			<div className="w-full h-screen flex justify-center items-center">
-				<p>Claim successful!</p>
+				<p className="text-3xl font-bold text-white">Claim successful!</p>
 			</div>
 		)
 	}
 
 	return (
 		<div>
-			<div className="h-full min-h-[90vh] flex flex-col justify-center items-center">
-				<XaiBanner/>
+			<div className="h-full min-h-screen flex-1 flex flex-col justify-center items-center">
 				<div
-					className="flex flex-col justify-center items-center w-[744px] border border-gray-200 bg-white m-4 p-12">
+					className="flex flex-col justify-center items-center lg:w-[744px] bg-darkLicorice shadow-main m-4 lg:p-12 sm:p-8">
 					<div
 						className="flex flex-col justify-center items-center gap-2 w-full overflow-hidden">
-						<p className="text-3xl font-semibold">
-							Claim Xai Tokens
+						<p className="text-3xl font-bold text-white mb-4">
+							CLAIM XAI TOKENS
 						</p>
 
 						{!address && (
-							<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
+							<p className="text-lg text-medium text-elementalGrey max-w-[590px] text-center mt-2">
 								Connect your wallet to check your eligibility.
 							</p>
 						)}
@@ -121,28 +124,24 @@ export function ClaimToken() {
 												</button>
 											</div>
 											{error && (
-												<p className="text-center break-words w-full mt-4 text-red-500">
+												<div className="text-center sm:w-[400px] md:w-[600px] h-[200px] p-4 overflow-y-auto break-words mt-4 text-[#F30919]">
 													You will see an error if you have already claimed!
 													<br/><br/>
 													{error.message}
-												</p>
+												</div>
 											)}
 										</div>
 									</>
 								) : (
-									<>
-										<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
-											This wallet ({address}) is ineligible to claim any Xai Tokens.
-										</p>
-										<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
-											You can connect a different wallet to determine if it is eligible.
-										</p>
+										<>
+										<WarningNotification title="Wallet is ineligible" showIcon text={`This wallet (${address}) is not eligible to claim any Xai Tokens. You can connect a different wallet to determine if it is
+											eligible.`} />
 									</>
 								)}
 							</>
 						) : (
-							<div className="m-8">
-								<w3m-button/>
+							<div className="m-8 w-full">
+								<ConnectButton onOpen={open} address={address} isFullWidth/>
 							</div>
 						)}
 					</div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { Id, toast } from "react-toastify";
-import { CheckMark } from "../icons/IconsComponent";
+import { CheckMark, WarningIcon } from "../icons/IconsComponent";
 import { getNetwork, getWeb3Instance } from "@/services/web3.service";
 
 type ToastPositionType =
@@ -19,7 +19,7 @@ const toastMarkUp = (message: string, receipt: string, explorer: string) => (
     <a
       href={`${explorer}tx/${receipt}`}
       target="_blank"
-      className="text-red font-medium"
+      className="text-white font-medium underline"
     >
       View
     </a>
@@ -61,7 +61,8 @@ export function loadingNotification(message: string) {
     pauseOnHover: false,
     draggable: false,
     progress: undefined,
-    theme: "light",
+    theme: "colored",
+    style: { background: "black", color: "#D0CFCF" },
   });
 }
 
@@ -75,9 +76,11 @@ export function updateNotification(
   if (isError) {
     toast.update(loadingToast, {
       render: message,
-      type: "error",
+      type: "warning",
+      icon: <WarningIcon fill="#F76808" />,
       isLoading: false,
       autoClose: 3000,
+      theme: "light",
     });
   } else {
     toast.update(loadingToast, {
@@ -85,11 +88,14 @@ export function updateNotification(
       type: "success",
       style: {
         boxShadow: "0px 3px 6px #00000026",
+        background: "black",
+        color: "#D0CFCF",
       },
       icon: <CheckMark />,
       isLoading: false,
       autoClose: 10000,
       closeButton: true,
+      theme: "colored",
     });
   }
 }
