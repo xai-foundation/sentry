@@ -87,29 +87,42 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
      * @dev If not, it will air-drop to the owner's wallet
      * @param _qtyToProcess The quantity of node licenses to process in this segment
     */
-    function processAirdropSegment(uint256 _qtyToProcess) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
+    function processAirdropSegment(uint256 _qtyToProcess) external onlyRole(DEFAULT_ADMIN_ROLE)  {
         require(airdropStarted, "Airdrop not started");
         require(airdropCounter <= totalSupplyAtStart, "Airdrop complete");
+        // Start where we left off
         uint256 startingKeyId = airdropCounter;
+        // Ensure we don't go over the total supply
         uint256 endingKeyId = Math.min(airdropCounter + _qtyToProcess, totalSupplyAtStart);     
+        // Connect to the referee and node license contracts
         Referee9 referee = Referee9(refereeAddress);
         NodeLicense8 nodeLicense = NodeLicense8(nodeLicenseAddress);
+        // Loop through the range of node licenses
         for (uint256 i = startingKeyId; i <= endingKeyId; i++) {
+            // Determine the owner of each specific node license
             address owner = nodeLicense.ownerOf(i);
+            // Mint the airdropped keys for the owner
             uint256[] memory tokenIds = nodeLicense.mintForAirdrop(keyMultiplier, owner);
+            // Check if the node license is staked
             address poolAddress = referee.assignedKeyToPool(i);
             if (poolAddress != address(0)) {
+                // If staked, auto-stake the new keys
                 PoolFactory2(poolFactoryAddress).stakeKeysAdmin(poolAddress, tokenIds, owner);                           
             }
         }
-        
+
+        // Update the airdrop counter
         airdropCounter = endingKeyId;
         emit AirdropSegmentComplete(startingKeyId, endingKeyId);
 
+        // If we have processed all node licenses, end the airdrop
         if (airdropCounter == totalSupplyAtStart) {
+            // Notify the node license contract that the airdrop is complete
+            // The node license contract will then notify the referee contract
+            // This will re-enable minting in the node license contract
+            // This will also re-enable staking in the referee contract
             NodeLicense8(nodeLicenseAddress).finishAirdrop(refereeAddress, keyMultiplier);
             emit AirdropEnded();
         }
-        return endingKeyId;
     }
 }
