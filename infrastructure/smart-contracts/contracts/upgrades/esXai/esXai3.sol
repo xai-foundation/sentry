@@ -3,12 +3,12 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC721/ERC721Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/ERC20BurnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 import "../../Xai.sol";
-import "../../upgrades/referee/Referee7.sol";
+import "../../upgrades/referee/Referee9.sol";
+import "../../upgrades/node-license/NodeLicense8.sol";
 
 /**
  * @title esXai
@@ -28,7 +28,7 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     mapping(address => RedemptionRequestExt[]) private _extRedemptionRequests;
     address public refereeAddress;
     address public nodeLicenseAddress;
-    uint256 private maxKeysNonKyc; // TODO Get the initial value from management & confirm variable size needed
+    uint256 public maxKeysNonKyc;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
@@ -214,11 +214,11 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         require(block.timestamp >= request.startTime + request.duration, "Redemption period not yet over");
 
         // Retrieve the number of licenses owned from the nodeLicense contract
-        uint256 licenseCountOwned = ERC721Upgradeable(nodeLicenseAddress).balanceOf(msg.sender);
+        uint256 licenseCountOwned = NodeLicense8(nodeLicenseAddress).balanceOf(msg.sender);
 
         // If the wallet owns more licenses than the maxKeysNonKyc, check if the wallet is KYC approved
         if(licenseCountOwned > maxKeysNonKyc){
-            Referee7 referee = Referee7(refereeAddress);
+            Referee9 referee = Referee9(refereeAddress);
             require(referee.isKycApproved(msg.sender), "You own too many keys, must be KYC approved to claim.");
         }
 
