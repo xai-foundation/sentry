@@ -3,10 +3,8 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
-import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "../upgrades/referee/Referee9.sol";
 import "../upgrades/node-license/NodeLicense8.sol";
 import "../upgrades/pool-factory/PoolFactory2.sol";
