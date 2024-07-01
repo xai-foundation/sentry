@@ -863,7 +863,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         emit UpdateMaxKeysPerPool(prevAmount, newAmount);
     }
 
-  /**
+    /**
      * @dev Admin update the tier thresholds and the corresponding reward chance boost
      * @param index The index if the tier to update
      * @param newThreshold The new threshold of the tier
