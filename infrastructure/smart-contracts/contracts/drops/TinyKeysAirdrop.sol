@@ -7,10 +7,9 @@ import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeab
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
-import "../upgrades/referee/Referee8.sol";
+import "../upgrades/referee/Referee9.sol";
 import "../upgrades/node-license/NodeLicense8.sol";
-import "../upgrades/staking-v2/PoolFactory2.sol";
-import "hardhat/console.sol";
+import "../upgrades/pool-factory/PoolFactory2.sol";
 
 contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
     using Math for uint256;
@@ -57,7 +56,6 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
      */
     function initialize(address _nodeLicenseAddress, address _refereeAddress, address _poolFactoryAddress, uint256 _keyMultiplier) public initializer {
         __AccessControl_init();
-        console.log("initialize: ", msg.sender);
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
 
         refereeAddress = _refereeAddress;
@@ -76,7 +74,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
      * @dev It will set the total supply at start and emit the AirdropStarted event
      */
     function startAirdrop() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(!Referee8(refereeAddress).stakingEnabled(), "Referee staking must be disabled to start airdrop");   
+        require(!Referee9(refereeAddress).stakingEnabled(), "Referee staking must be disabled to start airdrop");   
         require(!airdropStarted, "Airdrop already started");
         NodeLicense8(nodeLicenseAddress).startAirdrop();
         totalSupplyAtStart = NodeLicense8(nodeLicenseAddress).totalSupply();
@@ -98,31 +96,24 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         
         uint256 startingKeyId = airdropCounter;
         uint256 endingKeyId = Math.min(airdropCounter + _qtyToProcess, totalSupplyAtStart);        
-        Referee8 referee = Referee8(refereeAddress);
+        Referee9 referee = Referee9(refereeAddress);
         NodeLicense8 nodeLicense = NodeLicense8(nodeLicenseAddress);
         for (uint256 i = startingKeyId; i <= endingKeyId; i++) {
             address owner = nodeLicense.ownerOf(i);
             uint256[] memory tokenIds = nodeLicense.mintForAirdrop(keyMultiplier, owner);
             address poolAddress = referee.assignedKeyToPool(i);
-                console.log("poolAddress: ", poolAddress);
             if (poolAddress != address(0)) {
-                console.log("processAirdropSegment6");
-                PoolFactory2(poolFactoryAddress).stakeKeysAdmin(poolAddress, tokenIds, owner); //TODO Get this working                                
+                PoolFactory2(poolFactoryAddress).stakeKeysAdmin(poolAddress, tokenIds, owner);                           
             }
-        console.log("processAirdropSegment7");
         }
         
         airdropCounter = endingKeyId;
         emit AirdropSegmentComplete(startingKeyId, endingKeyId);
-        console.log("processAirdropSegment8");
 
         if (airdropCounter == totalSupplyAtStart) {
-        console.log("processAirdropSegment9");
+
             emit AirdropEnded();
         }
-        console.log("processAirdropSegment10");
-
-        console.log("endingKeyId: ", endingKeyId);
         return endingKeyId;
     }
 }

@@ -7,7 +7,6 @@ import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/Base64Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "hardhat/console.sol";
 
 interface IAggregatorV3Interface {
     function latestAnswer() external view returns (int256);
@@ -235,7 +234,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
 
         uint256 averageCost = finalEthPrice / _amount;
 
-        _validatePayment(finalPrice, _useEsXai);
         _mintNodeLicense(_amount, averageCost, msg.sender);
 
         // Calculate the referral reward and determine if the promo code is an address
@@ -246,7 +244,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         token.transfer(fundsReceiver, finalPrice - referralReward);
 
         if(referralReward > 0){
-            //TODO Ask about just sending the payment to the recipient address now vs keeping records and requiring a claim
             // Store the referral reward in the appropriate mapping
             if(_useEsXai){
                 _promoCodesEsXai[_promoCode].receivedLifetime += referralReward;
@@ -312,19 +309,15 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @param _amount The amount of tokens to mint.
      */
     function _mintNodeLicense(uint256 _amount, uint256 averageCost, address _receiver) internal returns (uint256 [] memory){
-        console.log("Minting %s tokens", _amount);
         uint256 [] memory tokenIds = new uint256[](_amount);
         for (uint256 i = 0; i < _amount; i++) {
             _tokenIds.increment();
             uint256 newItemId = _tokenIds.current();
-             console.log("newItemId", newItemId);
             _mint(_receiver, newItemId);
              // Record the minting timestamp
             _mintTimestamps[newItemId] = block.timestamp;
-             console.log("newItemId2");
             // Record the average cost
             _averageCost[newItemId] = averageCost;
-             console.log("newItemId3");
             tokenIds[i] = newItemId;
         }
         return tokenIds;
@@ -401,24 +394,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         }
     }
 
-    /**
-     * @notice internal function to validate payment for minting
-     * a node license token using XAI or esXai as payment
-     * @param _totalCost the total cost of the minting
-     * @param _useEsXai a boolean to determine if the payment is in XAI or esXai
-     */
-    function _validatePayment(uint256 _totalCost, bool _useEsXai) internal view{
-        IERC20 token = IERC20(_useEsXai ? esXaiAddress : xaiAddress);
-        require(
-            token.balanceOf(msg.sender) >= _totalCost,
-            "Insufficient balance"
-        );
-        require(
-            token.allowance(msg.sender, address(this)) >= _totalCost,
-            "Insufficient allowance"
-        );
-    }
-    
+
     /**
      * @notice Public function to redeem tokens from on whitelist.
      */
@@ -512,13 +488,19 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     function claimReferralReward() external {
         require(claimable, "Claiming of referral rewards is currently disabled");
         uint256 reward = _referralRewards[msg.sender];
-        _referralRewards[msg.sender] = 0;
-        (bool success, ) = msg.sender.call{value: reward}("");
-        require(success, "Transfer failed.");
         // Pay Xai & esXAI rewards if they exist
         uint256 rewardXai = _referralRewardsXai[msg.sender];
         uint256 rewardEsXai = _referralRewardsEsXai[msg.sender];
+
+        // Require that the user has a reward to claim
         require(reward > 0 || rewardXai > 0 || rewardEsXai > 0, "No referral reward to claim");
+
+        (bool success, ) = msg.sender.call{value: reward}("");
+        require(success, "Transfer failed.");
+
+        // Reset the referral reward balance
+        _referralRewards[msg.sender] = 0;
+
         if(rewardXai > 0){
             IERC20 token = IERC20(xaiAddress);
             token.transfer(msg.sender, rewardXai);
@@ -601,9 +583,9 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      */
 
     function updatePricingAndQuantity(uint256 keyMultiplier) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(keyMultiplier > 1, "Multiplier must be greater than 1");
+        require(keyMultiplier >= 1, "Multiplier must be greater than 1");
         require(mintingPaused, "Minting must be paused to update pricing tiers");
-        require(pricingTiers[0].quantity == 3000, "Pricing tiers have already been reduced"); // TODO determine the original quantity of the first tier to determine if this is the first time reducing the tiers
+        require(totalSupply() <= 50000, "Pricing tiers have already been reduced");
         for (uint256 i = 0; i < pricingTiers.length; i++) {
             pricingTiers[i].price = pricingTiers[i].price / keyMultiplier;
             pricingTiers[i].quantity = pricingTiers[i].quantity * keyMultiplier;
@@ -726,7 +708,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         address from,
         address to,
         uint256 tokenId
-    ) internal override pure {
+    ) internal override {
         revert("NodeLicense: transfer is not allowed");
     }
 

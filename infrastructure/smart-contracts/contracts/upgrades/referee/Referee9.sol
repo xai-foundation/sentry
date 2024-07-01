@@ -211,6 +211,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         // Set max keys per pool TODO verify these from management
         maxStakeAmountPerLicense = 200 * 10 ** 18;
         maxKeysPerPool = 100000;        
+        stakingEnabled = false;
     }
 
     modifier onlyPoolFactory() {
@@ -951,7 +952,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function stakeKeys(address pool, address staker, uint256[] memory keyIds, bool _asAdmin) external onlyPoolFactory {
-        require(_asAdmin || stakingEnabled, "52");
+        require(_asAdmin || stakingEnabled, "51");
         uint256 keysLength = keyIds.length;
         require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "43");
 

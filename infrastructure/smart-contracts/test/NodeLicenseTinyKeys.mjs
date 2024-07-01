@@ -327,7 +327,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             expect(await referee.stakingEnabled()).to.be.true;
 
             // Disable Staking
-            await referee.connect(refereeDefaultAdmin).setStakingEnabled(false);
+            //await referee.connect(refereeDefaultAdmin).setStakingEnabled();
 
             // Confirm Staking Disabled
             expect(await referee.stakingEnabled()).to.be.false;
@@ -377,7 +377,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             expect(totalSupplyAfter).to.equal((totalSupplyBefore * airdropMultiplier)+ totalSupplyBefore);
 
             // // Enable staking
-            await referee.connect(refereeDefaultAdmin).setStakingEnabled(true);
+            await referee.connect(refereeDefaultAdmin).setStakingEnabled();
             expect(await referee.stakingEnabled()).to.be.true;
 
             
