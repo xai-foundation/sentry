@@ -209,7 +209,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
     function initialize() public reinitializer(7) {
 
-        // Set max keys per pool TODO verify these from management
         maxStakeAmountPerLicense = 200 * 10 ** 18;
         maxKeysPerPool = 100000;    
     }
