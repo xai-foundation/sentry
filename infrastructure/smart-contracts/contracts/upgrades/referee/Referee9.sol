@@ -11,7 +11,6 @@ import "../../NodeLicense.sol";
 import "../../Xai.sol";
 import "../../esXai.sol";
 import "../../staking-v2/PoolFactory.sol";
-import "hardhat/console.sol";
 
 // Error Codes
 // 1: Only PoolFactory can call this function.
@@ -64,8 +63,7 @@ import "hardhat/console.sol";
 // 48: Not owner of key.
 // 49: Maximum staking amount exceeded.
 // 50: Invalid amount.
-// 51: Invalid stake rewards tier percentage.
-// 52: Staking Temporarily Disabled.
+// 51: Staking Temporarily Disabled.
 
 contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -153,14 +151,12 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping for amount of assigned keys of a user
     mapping(address => uint256) public assignedKeysOfUserCount;
 
-    // Challenge number the KYC check was removed for claims
-    uint256 public kycCheckRemovedChallengeNumber;
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[489] private __gap;
+    uint256[490] private __gap;
 
     // Struct for the submissions
     struct Submission {
@@ -204,7 +200,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     event RewardsClaimed(uint256 indexed challengeId, uint256 amount);
     event BatchRewardsClaimed(uint256 indexed challengeId, uint256 totalReward, uint256 keysLength);
     event ChallengeExpired(uint256 indexed challengeId);
-    event StakingEnabled(bool enabled);
+    event StakingEnabled(bool enabled); 
     event UpdateMaxStakeAmount(uint256 prevAmount, uint256 newAmount);
     event UpdateMaxKeysPerPool(uint256 prevAmount, uint256 newAmount);
     event StakedV1(address indexed user, uint256 amount, uint256 totalStaked);
@@ -212,11 +208,9 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
     function initialize() public reinitializer(7) {
 
-        // Set max keys per pool TODO update this once determined
-        maxKeysPerPool = 1000;
-        
-        // Set the challenge Id where the KYC check was removed
-        kycCheckRemovedChallengeNumber = challengeCounter;
+        // Set max keys per pool TODO verify these from management
+        maxStakeAmountPerLicense = 200 * 10 ** 18;
+        maxKeysPerPool = 100000;        
     }
 
     modifier onlyPoolFactory() {
@@ -651,11 +645,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         // Check if the owner of the NodeLicense is KYC'd
         address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
 
-        // If the challenge is before the kycCheckRemovedChallengeNumber, check if the owner is KYC'd
-        if(_challengeId < kycCheckRemovedChallengeNumber){    
-            require(isKycApproved(owner), "22");
-        }
-
         // Check if the submission has already been claimed
         require(!submission.claimed, "23");
 
@@ -722,8 +711,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
             // Check if the nodeLicenseId is eligible for a payout
             if (
-                // Confirm the owner is KYC'd, or the challenge is past the kycCheckRemovedChallengeNumber
-                (_challengeId >= kycCheckRemovedChallengeNumber || isKycApproved(owner)) &&
                 mintTimestamp < challengeToClaimFor.createdTimestamp && 
                 !submission.claimed &&
                 submission.eligibleForPayout
@@ -981,7 +968,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function unstakeKeys(address pool, address staker, uint256[] memory keyIds) external onlyPoolFactory {
-        require(stakingEnabled, "52");
         uint256 keysLength = keyIds.length;
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
 
@@ -1008,12 +994,10 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
     /**
      * @dev Admin function to enable or disable staking.
-     * @param enabled The new staking status.
      */
-    function setStakingEnabled(bool enabled) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        console.log("Referee: ", address(this));
-        stakingEnabled = enabled;
-        emit StakingEnabled(enabled);
+    function setStakingEnabled() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        stakingEnabled = true;
+        emit StakingEnabled(true);
     }
 
 }
