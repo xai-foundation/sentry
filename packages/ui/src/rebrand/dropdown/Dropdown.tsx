@@ -1,5 +1,7 @@
 import {Dispatch, MutableRefObject, ReactNode, SetStateAction, useEffect, useRef} from "react";
-import {DropdownArrow, WarningIcon} from "../../rebrand/icons/IconsComponents";
+import { DropdownArrow } from "../icons/DropArrowIcon";
+import { WarningIcon } from "../icons/WarningIcon";
+
 
 const DROPDOWN_ITEMS_WITHOUT_SCROLL = 11;
 interface DropdownProps {

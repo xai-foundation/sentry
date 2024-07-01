@@ -12,6 +12,7 @@ interface PrimaryButtonProps {
   hoverClassName?: string;
   spinner?: boolean;
   icon?: ReactNode;
+  rightIcon?: ReactNode;
 }
 
 export const PrimaryButton = ({
@@ -23,7 +24,8 @@ export const PrimaryButton = ({
                                 wrapperClassName,
                                 colorStyle,
                                 spinner,
-                                icon
+                                icon,
+                                rightIcon,
 }: PrimaryButtonProps) => {
   const disabledStyles = isDisabled
     ? "!bg-[#2A2828] !text-[#433F3F] text-bold"
@@ -67,6 +69,7 @@ export const PrimaryButton = ({
         {spinner && <BaseSpinner />}
         {icon && <span className="mr-2">{icon}</span>}
         {btnText}
+        {rightIcon && <span className="ml-2">{rightIcon}</span>}
       </button>
     </div>
   );
