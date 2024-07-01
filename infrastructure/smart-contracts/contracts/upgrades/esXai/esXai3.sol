@@ -67,7 +67,7 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         require(_nodeLicenseAddress != address(0), "Invalid node license address");
         refereeAddress = _refereeAddress;
         nodeLicenseAddress = _nodeLicenseAddress;
-        maxKeysNonKyc = _maxKeys; //TODO Get the initial value from management & confirm variable size needed uint256?
+        maxKeysNonKyc = _maxKeys;
     }
 
     /**
