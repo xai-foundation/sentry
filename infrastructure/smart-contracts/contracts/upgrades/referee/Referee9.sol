@@ -64,6 +64,7 @@ import "../../staking-v2/PoolFactory.sol";
 // 49: Maximum staking amount exceeded.
 // 50: Invalid amount.
 // 51: Staking Temporarily Disabled.
+// 52: Only Node License contract can call this function.
 
 contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -210,8 +211,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
         // Set max keys per pool TODO verify these from management
         maxStakeAmountPerLicense = 200 * 10 ** 18;
-        maxKeysPerPool = 100000;        
-        stakingEnabled = false;
+        maxKeysPerPool = 100000;    
     }
 
     modifier onlyPoolFactory() {
@@ -994,11 +994,14 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     /**
-     * @dev Admin function to enable or disable staking.
+     * @notice Enables or disables staking.
+     * @param enabled Whether staking is enabled.
+     * @dev This function can only be called by the NodeLicense contract.
      */
-    function setStakingEnabled() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        stakingEnabled = true;
-        emit StakingEnabled(true);
+    function setStakingEnabled(bool enabled) external {
+        require(msg.sender == nodeLicenseAddress, "52");
+        stakingEnabled = enabled;
+        emit StakingEnabled(enabled);
     }
 
 }

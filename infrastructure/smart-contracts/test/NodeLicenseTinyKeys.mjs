@@ -151,8 +151,6 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             // Approve the contract to spend the Xai
             await xai.connect(minter).approve(await nodeLicense.getAddress(), discountedPriceInXai);
 
-            const allowance = await xai.allowance(minter.address, await nodeLicense.getAddress());
-
             // Mint an NFT with a promo code - false indicates use of Xai instead of esXai
             await nodeLicense.connect(minter).mintWithXai(1, promoCode, false, discountedPriceInXai);
 
@@ -303,6 +301,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
 				poolSocials,
 				poolTrackerDetails
 			)
+
 			// Check the user's updated assigned key count
 			const user1KeyCountStakedBefore = await referee.connect(addr1).assignedKeysOfUserCount(addr1.address);
 			expect(user1KeyCountStakedBefore).to.equal(1);  
@@ -313,33 +312,23 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             await poolFactory.connect(addr2).stakeKeys(poolAddress, [2, 3, 4, 5]);
             const user2KeyCountStakedBefore = await referee.connect(addr2).assignedKeysOfUserCount(addr2.address);
             expect(user2KeyCountStakedBefore).to.equal(4);      
-            
+
             // User 3 will stake 0 keys in the pool
             const user3KeyCountStakedBefore = await referee.connect(addr3).assignedKeysOfUserCount(addr3.address);
             expect(user3KeyCountStakedBefore).to.equal(0);
 
             // Starting Airdrop
-            
-            // Confirm airdrop wont start with staking enabled
-            await expect(tinyKeysAirDrop.connect(deployer).startAirdrop()).to.be.revertedWith("Referee staking must be disabled to start airdrop");
 
             // Confirm staking is enabled
             expect(await referee.stakingEnabled()).to.be.true;
-
-            // Disable Staking
-            //await referee.connect(refereeDefaultAdmin).setStakingEnabled();
-
-            // Confirm Staking Disabled
-            expect(await referee.stakingEnabled()).to.be.false;
-
-            // Staking Key Should revert
-            await expect(poolFactory.connect(addr4).stakeKeys(poolAddress, [6])).to.be.revertedWith("52");
-
             // Start Airdrop
             await tinyKeysAirDrop.connect(deployer).startAirdrop();
-            
+
+            // Staking Key Should revert
+            await expect(poolFactory.connect(addr4).stakeKeys(poolAddress, [6])).to.be.revertedWith("51");
+
             // Confirm Minting Disabled - Expect a mint to be reverted
-            let priceBeforeAirdrop = await nodeLicense.price(1, "");
+            const priceBeforeAirdrop = await nodeLicense.price(1, "");
             await expect(nodeLicense.connect(addr1).mint(1, "", {value: priceBeforeAirdrop})).to.be.revertedWith("Minting is paused");
 
             // Process Airdrop
@@ -357,32 +346,28 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
 
             // // Confirm staked balances after
             const user1KeyCountStakedAfter = await referee.connect(addr1).assignedKeysOfUserCount(addr1.address);
-            expect(user1KeyCountStakedAfter).to.equal((user1KeyCountStakedBefore * airdropMultiplier) + user1KeyCountStakedBefore);
-            
+            expect(user1KeyCountStakedAfter).to.equal((user1KeyCountStakedBefore * airdropMultiplier) + user1KeyCountStakedBefore);   
+
             const user2KeyCountStakedAfter = await referee.connect(addr2).assignedKeysOfUserCount(addr2.address);
-            expect(user2KeyCountStakedAfter).to.equal((user2KeyCountStakedBefore * airdropMultiplier) + user2KeyCountStakedBefore);
+            expect(user2KeyCountStakedAfter).to.equal((user2KeyCountStakedBefore * airdropMultiplier) + user2KeyCountStakedBefore);  
 
             const user3KeyCountStakedAfter = await referee.connect(addr3).assignedKeysOfUserCount(addr3.address);
+
             expect(user3KeyCountStakedAfter).to.equal((user3KeyCountStakedBefore * airdropMultiplier) + user3KeyCountStakedBefore);
-
-            let priceBeforeSupplyUpgrade = await nodeLicense.price(1, "");
-
-            // // Process supply upgrade
-            await nodeLicense.connect(nodeLicenseDefaultAdmin).updatePricingAndQuantity(airdropMultiplier);
             
             // // Confirm pricing and supply values updated
-            const priceAfter = await nodeLicense.price(1, "");
+            const priceAfterAirdrop = await nodeLicense.price(1, "");            
             const totalSupplyAfter = await nodeLicense.totalSupply();
-            expect(priceAfter).to.equal(priceBeforeSupplyUpgrade / airdropMultiplier);
+            
+            expect(priceAfterAirdrop).to.be.below(priceBeforeAirdrop);
             expect(totalSupplyAfter).to.equal((totalSupplyBefore * airdropMultiplier)+ totalSupplyBefore);
 
-            // // Enable staking
-            await referee.connect(refereeDefaultAdmin).setStakingEnabled();
+            // // Confirm Staking re-enabled
             expect(await referee.stakingEnabled()).to.be.true;
 
             
             // // Confirm minting works after airdrop
-            await nodeLicense.connect(addr1).mint(1, "", {value: priceAfter});
+            await nodeLicense.connect(addr1).mint(1, "", {value: priceAfterAirdrop});
             const user1BalanceAfterMint = await nodeLicense.balanceOf(addr1.address);
             expect(user1BalanceAfterMint).to.equal(user1BalanceAfter + BigInt(1));
             

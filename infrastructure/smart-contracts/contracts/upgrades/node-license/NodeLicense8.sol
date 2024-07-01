@@ -7,6 +7,7 @@ import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/Base64Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "../../upgrades/referee/Referee9.sol";
 
 interface IAggregatorV3Interface {
     function latestAnswer() external view returns (int256);
@@ -261,10 +262,16 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * pauses mintting until completion of the airdrop
      */
 
-    function startAirdrop() external onlyRole(AIRDROP_ADMIN_ROLE) {
+    function startAirdrop(address refereeAddress) external onlyRole(AIRDROP_ADMIN_ROLE) {
         mintingPaused = true;
+        Referee9(refereeAddress).setStakingEnabled(false);
     }
 
+    function finishAirdrop(address refereeAddress, uint256 keyMultiplier) external onlyRole(AIRDROP_ADMIN_ROLE) {
+        updatePricingAndQuantity(keyMultiplier);
+        mintingPaused = false;
+        Referee9(refereeAddress).setStakingEnabled(true);
+    }
 
     /**
      *  @notice Mints new NodeLicense tokens for the tiny keys airdrop
@@ -278,16 +285,16 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
         tokenIds = _mintNodeLicense(_qtyToMint, 0, _theRecipient);
     }
 
-
     /**
-     * @notice function to remove the airdrop admin role after completion of the airdrop
-     * @dev Only callable by the airdrop admin
-     * @param _airdropAdmin The address of the airdrop admin to remove
-     */
+    * @notice Revokes the airdrop admin role for the address passed in
+    * @param _address The address to revoke the airdrop admin role from
+    * @dev Only callable by the airdrop admin
+    */
 
-    function removeAirdropAdmin(address _airdropAdmin) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        revokeRole(AIRDROP_ADMIN_ROLE, _airdropAdmin);
+    function revokeAirdropAdmin(address _address) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        revokeRole(AIRDROP_ADMIN_ROLE, _address);
     }
+    
 
 
     /**
@@ -579,19 +586,19 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     /**
      * @notice loops the pricing tiers and increases supply while reducing the price of 
      * of each tier by the multiplier provided.
+     * @dev This function is used to reduce the pricing tiers and increase the supply of the NodeLicense tokens.
+     * @dev This function is only called once.
      * @param keyMultiplier The multiplier to reduce the price of each tier by.
      */
 
-    function updatePricingAndQuantity(uint256 keyMultiplier) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function updatePricingAndQuantity(uint256 keyMultiplier) internal {
         require(keyMultiplier >= 1, "Multiplier must be greater than 1");
-        require(mintingPaused, "Minting must be paused to update pricing tiers");
-        require(totalSupply() <= 50000, "Pricing tiers have already been reduced");
+        require(maxSupply == 50000, "Pricing tiers have already been reduced");
         for (uint256 i = 0; i < pricingTiers.length; i++) {
             pricingTiers[i].price = pricingTiers[i].price / keyMultiplier;
             pricingTiers[i].quantity = pricingTiers[i].quantity * keyMultiplier;
         }
         maxSupply = maxSupply * keyMultiplier;
-        mintingPaused = false;
     }
 
 

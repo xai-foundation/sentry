@@ -73,10 +73,9 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
      * @dev This function will be called by the admin to start the airdrop
      * @dev It will set the total supply at start and emit the AirdropStarted event
      */
-    function startAirdrop() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(!Referee9(refereeAddress).stakingEnabled(), "Referee staking must be disabled to start airdrop");   
+    function startAirdrop() external onlyRole(DEFAULT_ADMIN_ROLE) { 
         require(!airdropStarted, "Airdrop already started");
-        NodeLicense8(nodeLicenseAddress).startAirdrop();
+        NodeLicense8(nodeLicenseAddress).startAirdrop(refereeAddress);
         totalSupplyAtStart = NodeLicense8(nodeLicenseAddress).totalSupply();
         airdropStarted = true;
         emit AirdropStarted(totalSupplyAtStart, keyMultiplier);
@@ -93,9 +92,8 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
     function processAirdropSegment(uint256 _qtyToProcess) external onlyRole(DEFAULT_ADMIN_ROLE) returns (uint256) {
         require(airdropStarted, "Airdrop not started");
         require(airdropCounter <= totalSupplyAtStart, "Airdrop complete");
-        
         uint256 startingKeyId = airdropCounter;
-        uint256 endingKeyId = Math.min(airdropCounter + _qtyToProcess, totalSupplyAtStart);        
+        uint256 endingKeyId = Math.min(airdropCounter + _qtyToProcess, totalSupplyAtStart);     
         Referee9 referee = Referee9(refereeAddress);
         NodeLicense8 nodeLicense = NodeLicense8(nodeLicenseAddress);
         for (uint256 i = startingKeyId; i <= endingKeyId; i++) {
@@ -111,7 +109,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         emit AirdropSegmentComplete(startingKeyId, endingKeyId);
 
         if (airdropCounter == totalSupplyAtStart) {
-
+            NodeLicense8(nodeLicenseAddress).finishAirdrop(refereeAddress, keyMultiplier);
             emit AirdropEnded();
         }
         return endingKeyId;
