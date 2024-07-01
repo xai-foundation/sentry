@@ -770,10 +770,9 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         if (expired) return;
 
         uint256 reward = challengeToClaimFor.rewardAmountForClaimers / challengeToClaimFor.numberOfEligibleClaimers;
-        uint256 keyLength = _nodeLicenseIds.length;
         uint256 claimCount = 0;
 
-		for (uint256 i = 0; i < keyLength; i++) {
+		for (uint256 i = 0; i < _nodeLicenseIds.length; i++) {
             uint256 _nodeLicenseId = _nodeLicenseIds[i];
 
             uint256 mintTimestamp = NodeLicense(nodeLicenseAddress).getMintTimestamp(_nodeLicenseId);
