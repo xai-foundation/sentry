@@ -1,0 +1,12 @@
+{
+	"name": "@sentry/web-connect",
+	"targets": {
+		"build": {
+			"outputs": [
+				"{projectRoot}/dist",
+                "{projectRoot}/build",
+				"{workspaceRoot}/apps/sentry-client-desktop/public/web"
+			]
+		}
+	}
+}

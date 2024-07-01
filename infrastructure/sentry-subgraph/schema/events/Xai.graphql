@@ -1,0 +1,6 @@
+type ConvertedToEsXaiEvent @entity(immutable: true) {
+    id: Bytes!
+    user: Bytes! # address
+    amount: BigInt!
+    timestamp: BigInt!
+}

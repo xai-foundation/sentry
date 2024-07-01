@@ -5,6 +5,7 @@ import {createWeb3Modal, defaultWagmiConfig} from '@web3modal/wagmi/react'
 import {WagmiConfig} from 'wagmi'
 import {arbitrum, arbitrumNova} from 'wagmi/chains'
 import './index.css'
+import { IpLocationChecker } from './features/ipchecker/IpLocationChecker'
 
 const projectId = '8f5121741edc292ac7e4203b648d61e2'
 
@@ -32,7 +33,9 @@ createWeb3Modal({wagmiConfig, projectId, chains})
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	<WagmiConfig config={wagmiConfig as any}>
 		<React.StrictMode>
-			<AppRoutes/>
+			<IpLocationChecker>
+				<AppRoutes/>
+			</IpLocationChecker>
 		</React.StrictMode>
 	</WagmiConfig>
 )
