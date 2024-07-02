@@ -102,6 +102,15 @@ body {
         border-bottom: 2px black solid;
         background-clip: padding-box;
     }
+
+    .checkboxLabel input:before {
+        opacity: 0;
+        transition: opacity .25s ease-in-out;
+    }
+
+    .checkboxLabel input:checked:before {
+        opacity: 100;
+    }
 }
 
 @layer utilities {
