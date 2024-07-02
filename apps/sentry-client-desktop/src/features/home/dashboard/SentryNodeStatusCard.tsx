@@ -105,7 +105,7 @@ export function SentryNodeStatusCard() {
 							className="absolute left-0 right-0 bottom-7 w-full h-[40px] flex justify-center items-center gap-1 px-6 pt-4 pb-7">
 							<PrimaryButton
 								className={`w-[643px] text-[20px] uppercase font-bold mt-2 !global-cta-clip-path text-melanzaneBlack`}
-								onClick={() => startRuntime}
+								onClick={startRuntime!}
 								btnText="Start Node"
 								colorStyle="primary"
 								size="md"
