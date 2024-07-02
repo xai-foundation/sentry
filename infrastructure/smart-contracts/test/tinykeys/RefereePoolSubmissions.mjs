@@ -1,7 +1,6 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import {findWinningStateRoot} from "../Referee.mjs";
-import { getBoostFactor } from "@sentry/core";
 
 function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations) {
     const {
@@ -15,7 +14,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
     return function () {
 
         it("Pool owner should be able to submit a pool assertion & claim pool submission rewards", async function () {
-            const { poolFactory, addr1, addr2, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
+            const { poolFactory, addr1, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
             const singlePrice = await nodeLicense.price(1, "");
             await nodeLicense.connect(addr1).mint(1, "", { value: singlePrice });
             const addr1MintedKeyId = await nodeLicense.totalSupply();
@@ -154,7 +153,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
         });
 
         it("User unstakes from a pool with key included in poolSubmission & user unstakes while the pool does not have a poolSubmission", async function () {
-            const { poolFactory, addr1, addr2, addr3, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
+            const { poolFactory, addr1, addr2, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
             
             const addr1KeyMintPrice = await nodeLicense.price(1, "");
             const addr2KeyMintPrice = await nodeLicense.price(1, "");
@@ -222,7 +221,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
             //TODO the pool does not have a pool submission
         });
 
-        it("Check user submitsAssertion for their keyID while assigned to pool", async function () {
+        it("Check user submitsAssertion for their keyID while assigned to pool switches to submitPoolAssertion", async function () {
             const { poolFactory, addr1, addr2, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
             const singlePrice = await nodeLicense.price(1, "");
             await nodeLicense.connect(addr1).mint(1, "", { value: singlePrice });
@@ -282,7 +281,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
 
         it("Check the amount of winning keys for pools based on keys staked and boostfactor", async function () {
             //TODO check winning amount of keys for 1, 10, 100, 1000 keys 
-            const { poolFactory, addr1, addr2, addr3, addr4, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
+            const { addr1, addr2, addr3, addr4, nodeLicense, referee } = await loadFixture(deployInfrastructure);
             
             const addr1KeyMintPrice = await nodeLicense.price(1, "");
             const addr2KeyMintPrice = await nodeLicense.price(1, "");
@@ -310,7 +309,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
             const winningKeyCount3 = await referee.getWinningKeyCount(addr3MintedKeyId, stakingTierThresholds[4]);
             const winningKeyCount4 = await referee.getWinningKeyCount(addr4MintedKeyId, stakingTierThresholds[4]);
             
-            expect(winningKeyCount1).to.equal(1 || 0);
+            expect(winningKeyCount1).to.be.oneOf([1, 0]);
             expect(winningKeyCount3).to.be.close(7, 2);
             expect(winningKeyCount4).to.be.close(70, 0.10 * 70);
         })
