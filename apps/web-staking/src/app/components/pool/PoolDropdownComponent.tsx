@@ -6,7 +6,7 @@ import {
   listOfPreferableCountries,
 } from "../constants/constants";
 import { useBlockIp } from "@/app/hooks";
-import { Dropdown, DropdownItem } from "./Dropdown";
+import { Dropdown, DropdownItem } from '../../../../../../packages/ui/src/rebrand/dropdown/Dropdown'
 import ExternalLinkIcon from "../../../../../../packages/ui/src/rebrand/icons/ExternalLinkIcon";
 
 const PoolDropdownComponent = () => {
@@ -88,7 +88,7 @@ const PoolDropdownComponent = () => {
         onClick={onClickHelper}
         btnText={"Continue"}
         className="group uppercase my-2 w-[337px] text-xl"
-        rightIcon={<ExternalLinkIcon extraClasses={{svgClasses: "mb-[3px]", pathClasses: `${blocked || selectedCountryValue === "" || selectedCountryValue === "US" ? "!fill-darkRoom" : "!fill-white" } group-hover:!fill-hornetSting duration-200 ease-in` }} />}
+        rightIcon={<ExternalLinkIcon extraClasses={{svgClasses: "mb-[3px]", pathClasses: `${blocked || selectedCountryValue === "" || selectedCountryValue === "US" ? "!fill-darkRoom" : "!fill-white" } group-hover:!fill-current duration-200 ease-out` }} />}
       />
     </div>
   );

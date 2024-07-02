@@ -40,7 +40,7 @@ export const Dropdown = ({setIsOpen, isOpen, isInvalid, dropdownOptionsCount, se
 
     useEffect(() => {
         const handleKeyDown = (e: MouseEvent) => {
-            if(!dropdownRef.current.contains(e.target as Node) && !scrollbarRef.current.contains(e.target as Node)) {
+            if(!dropdownRef.current.contains(e.target as Node) && !scrollbarRef?.current?.contains(e.target as Node)) {
                 setIsOpen(false);
             }
         };
