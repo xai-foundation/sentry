@@ -62,8 +62,8 @@ export function Sidebar() {
 						className={`flex items-center w-[237px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/sentry-wallet')}` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
 					>
 						<div className="w-auto h-auto flex justify-center items-center">
-							{sentryRunning && data?.addedWallets?.length && data?.addedWallets?.length !== 0 && hasAssignedKeys && funded && <GreenPulse size='lg' />}
-							{sentryRunning && data?.addedWallets?.length && data?.addedWallets?.length !== 0 && !hasAssignedKeys && !funded && <YellowPulse size='lg' />}
+							{sentryRunning && !!data?.addedWallets?.length && data?.addedWallets?.length !== 0 && hasAssignedKeys && funded && <GreenPulse size='lg' />}
+							{sentryRunning && !!data?.addedWallets?.length && data?.addedWallets?.length !== 0 && (!hasAssignedKeys || !funded) && <YellowPulse size='lg' />}
 							{(!sentryRunning || !data?.addedWallets?.length || data?.addedWallets?.length === 0) && <GreyPulse size='lg' />}
 						</div>
 						SENTRY WALLET
