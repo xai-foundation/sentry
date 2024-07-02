@@ -385,13 +385,15 @@ async function processClosedChallenges(
         }
     }
 
-    const nonKYC = Object.keys(nonKYCWallets);
-    if (nonKYC.length) {
-        cachedLogger(`Failed KYC check for ${nonKYC.length} owners: `);
-        nonKYC.forEach(w => {
-            cachedLogger(`${w} (${nonKYCWallets[w]} keys)`);
-        })
-    }
+    // Leaving temporarily in case we decide to handle failed KYC wallets differently
+    //  Story ID: 187790951
+    // const nonKYC = Object.keys(nonKYCWallets);
+    // if (nonKYC.length) {
+    //     cachedLogger(`Failed KYC check for ${nonKYC.length} owners: `);
+    //     nonKYC.forEach(w => {
+    //         cachedLogger(`${w} (${nonKYCWallets[w]} keys)`);
+    //     })
+    // }
 
     // Iterate over the map and call processClaimForChallenge for each challenge with its unique list of eligible nodeLicenseIds
     for (const [challengeId, nodeLicenseIds] of challengeToEligibleNodeLicensesMap) {
