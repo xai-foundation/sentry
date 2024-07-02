@@ -40,7 +40,7 @@ const MainStepper = ({
           min={1}
           max={99}
           onChange={onChange}
-          className={`font-bold text-3xl text-center indent-3 max-w-[60px] text-white bg-nulnOil py-[7px] focus:outline-none ${inputClassName}`}
+          className={`font-bold text-3xl text-center indent-3 min-w-[30%] text-white bg-nulnOil py-[7px] focus:outline-none ${inputClassName}`}
         />
         <button
           className={`bg-nulnOil p-[20px] global-cta-clip-path hover:bg-velvetBlack duration-200 ease-in ${btnClassName}`}
