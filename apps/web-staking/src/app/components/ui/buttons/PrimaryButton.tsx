@@ -23,7 +23,7 @@ export const PrimaryButton = ({
                                 wrapperClassName,
                                 colorStyle,
                                 spinner,
-                                icon,
+                                icon
 }: PrimaryButtonProps) => {
   const disabledStyles = isDisabled
     ? "!bg-[#2A2828] !text-[#433F3F] text-bold"
