@@ -73,3 +73,13 @@ type RefereeConfig @entity(immutable: false) {
   stakeAmountTierThresholds: [BigInt!]!
   stakeAmountBoostFactors: [BigInt!]!
 }
+
+type PoolSubmission @entity(immutable: false) {
+  id: String!
+  challengeId: BigInt!
+  stakedKeyCount: BigInt!
+  winningKeyCount: BigInt!
+  claimedRewardsAmount: BigInt!
+  poolAddress: Bytes!
+  claimed: Boolean!
+}
