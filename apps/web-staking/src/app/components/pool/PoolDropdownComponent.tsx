@@ -1,28 +1,23 @@
 import React, { useState } from "react";
-
-import { PrimaryButton } from "@/app/components/ui";
-import {
-  listOfCountries,
-  listOfPreferableCountries,
-} from "../constants/constants";
 import { useBlockIp } from "@/app/hooks";
-import { Dropdown, DropdownItem } from '../../../../../../packages/ui/src/rebrand/dropdown/Dropdown'
+import { PrimaryButton } from '../../../../../../packages/ui/src/rebrand/buttons/PrimaryButton';
+import { DropdownText, DropdownItem } from "../dropdown/DropdownText";
 import ExternalLinkIcon from "../../../../../../packages/ui/src/rebrand/icons/ExternalLinkIcon";
+import {listOfCountries} from '../../../../../sentry-client-desktop/src/components/blockpass/CountryDropdown';
 
 const PoolDropdownComponent = () => {
   const [selectedCountry, setSelectedCountry] = useState<string | null>("");
-  const [selectedCountryValue, setSelectedCountryValue] = useState("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { blocked, loading } = useBlockIp();
+  const { blocked, loading, data } = useBlockIp();
   
     function onClickHelper() {
 		 if (selectedCountry) {
 			if (
-				selectedCountryValue === "CN" || //China
-				selectedCountryValue === "HK" || //Hong Kong
-				selectedCountryValue === "MK" || //Macedonia
-				selectedCountryValue === "TR" || //Turkey
-				selectedCountryValue === "UA" 	 //Ukraine
+				selectedCountry === "China" || 
+				selectedCountry === "Hong Kong" || 
+				selectedCountry === "Republic of North Macedonia" ||
+				selectedCountry === "Turkey" || 
+				selectedCountry === "Ukraine" 	 
 			) {
 				return window.open(`https://verify-with.blockpass.org/?clientId=xai_sentry_node__edd_60145`, "_blank",
             "noopener noreferrer");
@@ -35,12 +30,11 @@ const PoolDropdownComponent = () => {
 		}
 	}
 
-  const countries: JSX.Element[] = listOfCountries.map((item, i, arr) => (
+  const countries: JSX.Element[] = listOfCountries.filter(item => item.label.toLocaleLowerCase().startsWith(selectedCountry?.toLowerCase()!)).map((item, i, arr) => (
     <DropdownItem
       onClick={() => {
         setSelectedCountry(item.label);
         setIsOpen(false);
-        setSelectedCountryValue(item.value);
       }}
       dropdownOptionsCount={arr.length}
       key={`sentry-item-${i}`}
@@ -50,29 +44,30 @@ const PoolDropdownComponent = () => {
     </DropdownItem>
   ));
 
-  const preferableCountries = listOfPreferableCountries.map((item, i, arr) => (
-    <DropdownItem
-      onClick={() => {
-        setSelectedCountry(item.label);
-        setIsOpen(false);
-        setSelectedCountryValue(item.value);
-      }}
-      dropdownOptionsCount={arr.length}
-      key={`sentry-item-${i}`}
-      extraClasses={"hover:!bg-velvetBlack"}
-    >
-      {item.label}
-    </DropdownItem>
-  ));
+  const isBlockedCountry = () => { 
+    if((listOfCountries.find(item => item.value === data.country)?.label === selectedCountry) && blocked) {
+      return true
+    }
+    return false
+  }
+
+  const validationButton = () => { 
+    if (blocked || loading || selectedCountry === "United States") {
+      return true;
+    }
+    if (listOfCountries.filter(item => item.label === selectedCountry).length === 0) {
+      return true;
+    }
+    return false;
+  }
 
   return (
     <div className="max-w-[337px]">
-      <Dropdown
-        getPreferableItems={() => preferableCountries}
+      <DropdownText
         dropdownOptionsCount={countries.length}
         isOpen={isOpen}
         selectedValue={selectedCountry}
-        selectedValueRender={<p>{selectedCountry || `Select your country`}</p>}
+        selectedValueRender={selectedCountry}
         setSelectedValue={setSelectedCountry}
         setIsOpen={setIsOpen}
         getDropdownItems={() => countries}
@@ -80,15 +75,15 @@ const PoolDropdownComponent = () => {
           dropdown: "my-4 max-w-[337px]",
           dropdownOptions: "max-w-[340px]",
         }}
-        isInvalid={blocked || selectedCountryValue === "US"}
+        isInvalid={isBlockedCountry() || selectedCountry === "United States"}
       />
-      {((selectedCountry && blocked) || selectedCountryValue === "US") && <span className="block text-lg font-medium text-[#F76808]">{"KYC is not available for the selected country"}</span>}
+      {((selectedCountry && isBlockedCountry()) || selectedCountry === "United States") && <span className="block text-lg font-medium text-[#F76808]">{"KYC is not available for the selected country"}</span>}
       <PrimaryButton
-        isDisabled={blocked || loading || selectedCountryValue === "" || selectedCountryValue === "US"}
+        isDisabled={validationButton() || isBlockedCountry()}
         onClick={onClickHelper}
         btnText={"Continue"}
-        className="group uppercase my-2 w-[337px] text-xl"
-        rightIcon={<ExternalLinkIcon extraClasses={{svgClasses: "mb-[3px]", pathClasses: `${blocked || selectedCountryValue === "" || selectedCountryValue === "US" ? "!fill-darkRoom" : "!fill-white" } group-hover:!fill-current duration-200 ease-out` }} />}
+        className="flex items-center justify-center group uppercase my-2 w-[337px] text-xl global-clip-btn disabled:!text-elementalGrey"
+        icon={<ExternalLinkIcon extraClasses={{svgClasses: "mb-[3px] ml-[5px]", pathClasses: `${isBlockedCountry() || validationButton() ? "!fill-elementalGrey" : "!fill-white" } group-hover:!fill-current duration-200 ease-in` }} />}
       />
     </div>
   );
