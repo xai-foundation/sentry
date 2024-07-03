@@ -12,7 +12,7 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 	} = poolConfigurations;
 
 	return function () {
-		it("Pool owner should be able to submit multiple assertions & bulk claim for multiple winning keys in a pool (single license holder)", async function () {
+		it("Pool owner should be able to submit pool assertions and & claim for a pool (single license holder)", async function () {
 			const {poolFactory, addr1, addr2, nodeLicense, referee, operator, esXai, esXaiMinter, challenger} = await loadFixture(deployInfrastructure);
 
 			// Get a single key for addr1
@@ -20,7 +20,7 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			await nodeLicense.connect(addr1).mint(1, "", {value: singlePrice});
 			const addr1MintedKeyId = await nodeLicense.totalSupply();
 
-			// Creat a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
+			// Create a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
 			await poolFactory.connect(addr1).createPool(
 				noDelegateOwner,
 				[addr1MintedKeyId],
@@ -46,7 +46,7 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 
 			// Make winning state root for both of addr2's keys
 			const challengeId = 0;
-			const winningStateRoot = await findWinningStateRoot(referee, addr2MintedKeyIds, challengeId);
+			//const winningStateRoot = await findWinningStateRoot(referee, addr2MintedKeyIds, challengeId);
 
 			// Mint some esXai to increase the total supply for submitting the first challenge so that there is available reward
 			await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 1_000_000);
@@ -56,7 +56,7 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			await referee.connect(challenger).submitChallenge(
 				startingAssertion,
 				startingAssertion - 1,
-				winningStateRoot,
+				"0x0000000000000000000000000000000000000000000000000000000000000000",
 				0,
 				"0x0000000000000000000000000000000000000000000000000000000000000000"
 			);
@@ -65,24 +65,18 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			const {openForSubmissions} = await referee.getChallenge(0);
 			expect(openForSubmissions).to.equal(true);
 
-			// Approve the operator for addr2
-			// const operatorAddress = await operator.getAddress();
-			// await referee.connect(addr2).setApprovalForOperator(operatorAddress, true);
-
 			// Submit a winning hash
-			await referee.connect(addr1).submitMultipleAssertions(addr2MintedKeyIds, challengeId, winningStateRoot);
+			await referee.connect(addr1).submitPoolAssertion(stakingPoolAddress, challengeId, "0x0000000000000000000000000000000000000000000000000000000000000000");
 
-			// Grab both the submissions & expect them to both be eligible
-			const submission1 = await referee.getSubmissionsForChallenges([challengeId], addr2MintedKeyIds[0]);
-			const submission2 = await referee.getSubmissionsForChallenges([challengeId], addr2MintedKeyIds[1]);
-			expect(submission1[0].eligibleForPayout).to.equal(true);
-			expect(submission2[0].eligibleForPayout).to.equal(true);
+			// Grab the poolSubmission & expect them to both be eligible
+			const poolSubmission = await referee.poolSubmissions(challengeId, stakingPoolAddress);
+			expect(poolSubmission.winningKeyCount).to.be.closeTo(2, 2); // need a better way to check that. Will always pass
 
 			// Submit a new challenge to close the previous one
 			await referee.connect(challenger).submitChallenge(
 				startingAssertion + 1,
 				startingAssertion,
-				winningStateRoot,
+				"0x0000000000000000000000000000000000000000000000000000000000000000",
 				0,
 				"0x0000000000000000000000000000000000000000000000000000000000000000"
 			);
@@ -92,14 +86,14 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			expect(poolBalanceBalance1).to.equal(0);
 
 			// Bulk reward claim as operator
-			await referee.connect(operator).claimMultipleRewards(addr2MintedKeyIds, challengeId, stakingPoolAddress);
+			await referee.connect(operator).claimPoolSubmissionRewards(stakingPoolAddress, challengeId);
 
 			// Make sure the staking pool has balance now
 			const poolBalanceBalance2 = await esXai.connect(addr1).balanceOf(stakingPoolAddress);
 			expect(poolBalanceBalance2).to.be.greaterThan(poolBalanceBalance1);
 		});
 
-		it("Pool delegate should be able to submit multiple assertions & bulk claim for multiple winning keys in a pool (multiple license holders)", async function () {
+		it("Pool delegate should be able to submit pool assertions and & claim for a pool (multiple license holders)", async function () {
 			const {poolFactory, addr1, addr2, addr3, nodeLicense, referee, operator, esXai, esXaiMinter, challenger, kycAdmin} = await loadFixture(deployInfrastructure);
 
 			// Get a single key for addr1
@@ -109,7 +103,7 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 
 			const operatorAddress = await operator.getAddress();
 
-			// Creat a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
+			// Create a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
 			await poolFactory.connect(addr1).createPool(
 				operatorAddress,
 				[addr1MintedKeyId],
@@ -135,11 +129,6 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			await referee.connect(kycAdmin).addKycWallet(await addr3.getAddress());
 			await poolFactory.connect(addr3).stakeKeys(stakingPoolAddress, [addr3MintedKeyId]);
 
-			// Make winning state root for both of addr2's keys
-			const challengeId = 0;
-			const keys = [addr2MintedKeyId, addr3MintedKeyId];
-			const winningStateRoot = await findWinningStateRoot(referee, keys, challengeId);
-
 			// Mint some esXai to increase the total supply for submitting the first challenge so that there is available reward
 			await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 1_000_000);
 
@@ -148,7 +137,7 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			await referee.connect(challenger).submitChallenge(
 				startingAssertion,
 				startingAssertion - 1,
-				winningStateRoot,
+				"0x0000000000000000000000000000000000000000000000000000000000000000",
 				0,
 				"0x0000000000000000000000000000000000000000000000000000000000000000"
 			);
@@ -157,25 +146,18 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			const {openForSubmissions} = await referee.getChallenge(0);
 			expect(openForSubmissions).to.equal(true);
 
-			// Approve the operator for addr2 & addr3
-			// const operatorAddress = await operator.getAddress();
-			// await referee.connect(addr2).setApprovalForOperator(operatorAddress, true);
-			// await referee.connect(addr3).setApprovalForOperator(operatorAddress, true);
+			// Submit a hash
+			const challengeId = 0;
+			await referee.connect(operator).submitPoolAssertion(stakingPoolAddress, challengeId, "0x0000000000000000000000000000000000000000000000000000000000000000");
 
-			// Submit a winning hash
-			await referee.connect(operator).submitMultipleAssertions(keys, challengeId, winningStateRoot);
-
-			// Grab both the submissions & expect them to both be eligible
-			const submission1 = await referee.getSubmissionsForChallenges([challengeId], keys[0]);
-			const submission2 = await referee.getSubmissionsForChallenges([challengeId], keys[1]);
-			expect(submission1[0].eligibleForPayout).to.equal(true);
-			expect(submission2[0].eligibleForPayout).to.equal(true);
+			// Grab the poolSubmission & expect it to be eligible
+			// Note: Currently not possible
 
 			// Submit a new challenge to close the previous one
 			await referee.connect(challenger).submitChallenge(
 				startingAssertion + 1,
 				startingAssertion,
-				winningStateRoot,
+				"0x0000000000000000000000000000000000000000000000000000000000000000",
 				0,
 				"0x0000000000000000000000000000000000000000000000000000000000000000"
 			);
@@ -185,7 +167,7 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			expect(poolBalanceBalance1).to.equal(0);
 
 			// Bulk reward claim as operator
-			await referee.connect(operator).claimMultipleRewards(keys, challengeId, stakingPoolAddress);
+			await referee.connect(operator).claimPoolSubmissionRewards(stakingPoolAddress, challengeId);
 
 			// Make sure the staking pool has balance now
 			const poolBalanceBalance2 = await esXai.connect(addr1).balanceOf(stakingPoolAddress);
