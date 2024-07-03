@@ -293,8 +293,10 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
             // await nodeLicense.connect(addr2).mint(10, "", { value: addr2KeyMintPrice });
             await nodeLicense.connect(addr3).mint(100, "", { value: addr3KeyMintPrice });
 
+            let i = 0;
             while (i < 5) {
                 await nodeLicense.connect(addr4).mint(200, "", { value: addr4KeyMintPrice });
+                i++;
             }
 
             const addr1MintedKeyId = await nodeLicense.totalSupply();
