@@ -6,11 +6,10 @@ import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 
 export const useGetMaxKeyPerPool = () => {
-  const [maxKeyPerPool, setMaxKeyPerPool] = useState(750);
+  const [maxKeyPerPool, setMaxKeyPerPool] = useState(1000);
   const { chainId } = useAccount();
 
   useEffect(() => {
-    if (!chainId) return;
     getMaxKeyCount(getNetwork(chainId)).then((keys) => {
       setMaxKeyPerPool(keys);
     });

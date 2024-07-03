@@ -8,16 +8,18 @@ interface PoolStakingInfoChildProps {
   toolTipText?: string;
   toolTipClasses?: Record<string, string>;
   showOnClick?: boolean;
+  customClass?: string;
 }
 
 const PoolStakingInfoChild = ({
   title,
   content,
   toolTipText,
-  toolTipClasses
+  toolTipClasses,
+  customClass
 }: PoolStakingInfoChildProps) => {
   return (
-    <div className="pb-[15px] mt-[15px] min-w-32">
+    <div className={`pb-[15px] mt-[15px] min-w-32 ${customClass}`}>
       <div className="flex items-center">
       <span className="block text-elementalGrey text-lg font-medium">{title}</span>
             {toolTipText

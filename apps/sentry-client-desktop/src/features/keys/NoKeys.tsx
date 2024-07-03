@@ -1,7 +1,7 @@
-import {AiFillWarning} from "react-icons/ai";
 import {useSetAtom} from "jotai";
-import {RiKey2Line} from "react-icons/ri";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
+import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { PrimaryButton } from "@sentry/ui";
 
 export function NoKeys() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -9,30 +9,28 @@ export function NoKeys() {
 	return (
 		<div className="w-full h-auto flex flex-col justify-center items-center">
 			<div className="absolute top-0 bottom-0 flex flex-col justify-center items-center gap-4">
-				<AiFillWarning className="w-16 h-16 text-[#F59E28]"/>
-				<p className="text-2xl font-semibold">
+				<WarningIcon width={64} height={55}/>
+				<p className="text-3xl font-bold text-white uppercase">
 					You do not own any keys
 				</p>
-				<p className="text-lg text-[#525252]">
+				<p className="text-lg text-americanSilver">
 					Purchase a key to be able to begin accruing esXAI
 				</p>
-
-				<button
+                <div className="flex justify-center">
+				<PrimaryButton
 					onClick={() => setDrawerState(DrawerView.BuyKeys)}
-					className="flex justify-center items-center gap-1 text-[15px] text-white bg-[#F30919] font-semibold mt-2 px-6 py-3"
-				>
-					<RiKey2Line className="w-5 h-5"/>
-					Purchase keys
-				</button>
-
-				<p className="text-[15px] text-[#525252] mt-2">
+					className="w-[202px] text-[20px] font-bold uppercase !py-1 !global-cta-clip-path text-melanzaneBlack"
+					btnText="Purchase keys"
+				/>
+                </div>
+				<p className="text-lg text-americanSilver mt-2">
 					Already own a key?
 
 					<a
 						onClick={() => setDrawerState(DrawerView.ViewKeys)}
-						className="text-[#F30919] ml-1 cursor-pointer"
+						className="text-hornetSting font-bold hover:text-white ml-1 cursor-pointer duration-200 ease-in"
 					>
-						Add wallet to Xai Client
+						Add wallet
 					</a>
 				</p>
 			</div>
