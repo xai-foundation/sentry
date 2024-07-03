@@ -490,3 +490,33 @@ export function handleUnstakeV1(event: UnstakeV1): void {
   sentryWallet.v1EsXaiStakeAmount = event.params.totalStaked
   sentryWallet.save()
 }
+
+export function handleNewPoolSubmission(event: NewPoolSubmission): void {
+  let poolSubmission = new PoolSubmission(event.params.challengeId.toHexString() + event.params.poolAddress.toHexString())
+  poolSubmission.challengeId = event.params.challengeId
+  poolSubmission.stakedKeyCount = event.params.stakedKeys
+  poolSubmission.winningKeyCount = event.params.winningKeys
+  poolSubmission.claimedRewardsAmount = 0
+  poolSubmission.poolAddress = event.params.poolAddress
+}
+
+export function handleUpdatePoolSubmission(event: UpdatePoolSubmission): void {
+  let poolSubmission = PoolSubmission.load(event.params.challengeId.toHexString() + event.params.poolAddress.toHexString())
+  if (!poolSubmission) {
+    poolSubmission = new PoolSubmission(event.params.challengeId.toHexString() + event.params.poolAddress.toHexString())
+    poolSubmission.challengeId = event.params.challengeId
+    poolSubmission.stakedKeyCount = event.params.stakedKeys
+    poolSubmission.winningKeyCount = event.params.winningKeys
+    poolSubmission.claimedRewardsAmount = 0
+    poolSubmission.poolAddress = event.params.poolAddress
+  }
+}
+
+export function handlePoolRewardsClaimed(event: PoolRewardsClaimed): void {
+  let poolSubmission = PoolSubmission.load(event.params.challengeId.toHexString() + event.params.poolAddress.toHexString())
+  if (!poolSubmission) {
+    log.warning("Failed to find poolSubmission on PoolRewardsClaimed TX: " + event.transaction.hash.toHexString(), [])
+    return
+  }
+  poolSubmission.claimedRewardsAmount = event.params.totalReward
+}
