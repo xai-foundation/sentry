@@ -498,6 +498,7 @@ export function handleNewPoolSubmission(event: NewPoolSubmissionEvent): void {
   poolSubmission.winningKeyCount = event.params.winningKeys
   poolSubmission.claimedRewardsAmount = BigInt.fromI32(0)
   poolSubmission.poolAddress = event.params.poolAddress
+  poolSubmission.claimed = false
   poolSubmission.save()
 }
 
@@ -510,13 +511,12 @@ export function handleUpdatePoolSubmission(event: UpdatePoolSubmissionEvent): vo
     poolSubmission.winningKeyCount = event.params.winningKeys
     poolSubmission.claimedRewardsAmount = BigInt.fromI32(0)
     poolSubmission.poolAddress = event.params.poolAddress
+    poolSubmission.claimed = false
   } else {
     poolSubmission.stakedKeyCount = event.params.stakedKeys
     poolSubmission.winningKeyCount = event.params.winningKeys
   }
   poolSubmission.save()
-
-
 }
 
 export function handlePoolRewardsClaimed(event: PoolRewardsClaimedEvent): void {
@@ -526,5 +526,6 @@ export function handlePoolRewardsClaimed(event: PoolRewardsClaimedEvent): void {
     return
   }
   poolSubmission.claimedRewardsAmount = event.params.totalReward
+  poolSubmission.claimed = true
   poolSubmission.save()
 }
