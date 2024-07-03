@@ -212,7 +212,7 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 
 			// Prepare for the submissions loop
 			const numSubmissions = 1000;
-			const stateRoots = await getStateRoots(numSubmissions * 2);
+			const stateRoots = await getStateRoots(numSubmissions);
 
 			let numSoloKeyPayouts = 0;
 			let numBoostedPoolPayouts = 0;
@@ -238,17 +238,16 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 				await referee.connect(addr2).submitAssertionToChallenge(keyIds[0], i, stateRoot);
 
 				// Check submissions, count payouts
-				const submission1 = await referee.getSubmissionsForChallenges([i], addr1MintedKeyId);
-				assert.equal(submission1[0].submitted, true, "The submission was not submitted");
-				if (submission1[0].eligibleForPayout) {
+
+				const submission1 = await referee.submissions(i, addr1MintedKeyId);
+				assert.equal(submission1.submitted, true, "The submission was not submitted");
+				if (submission1.eligibleForPayout) {
 					numSoloKeyPayouts++;
 				}
 
-				const submission2 = await referee.getSubmissionsForChallenges([i], keyIds[0]);
-				assert.equal(submission2[0].submitted, true, "The submission was not submitted");
-				if (submission2[0].eligibleForPayout) {
-					numBoostedPoolPayouts++;
-				}
+				const submission2 = await referee.poolSubmissions(i, stakingPoolAddress);
+				assert.equal(submission2.submitted, true, "The poolSubmission was not submitted");
+				numBoostedPoolPayouts++;
 			}
 
 			expect(numBoostedPoolPayouts).to.be.greaterThan(numSoloKeyPayouts);
