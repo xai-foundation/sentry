@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeab
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
-import "../../upgrades/referee/Referee8.sol";
+import "../../upgrades/referee/Referee9.sol";
 import "../../Xai.sol";
 import "../../upgrades/esXai/esXai2.sol";
 import "../../staking-v2/StakingPool.sol";
@@ -50,7 +50,6 @@ import "../../staking-v2/PoolBeacon.sol";
 // 33: Invalid pool for claim; pool needs to have been created via the PoolFactory
 // 34: Invalid delegate update; pool needs to have been created via the PoolFactory
 
-
 contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
@@ -61,7 +60,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     address public esXaiAddress;
     address public refereeAddress;
 
-    // Boolean to enable/disable staking on the eferee contract
+    // Boolean to enable/disable staking on the referee contract
     bool public stakingEnabled;
 
     // Array to store addresses of staking pool contracts
@@ -74,7 +73,8 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     mapping(address => address[]) public interactedPoolsOfUser;
 
     // Mapping of user addresses to pool addresses to index in user array for efficient removal
-    mapping(address => mapping(address => uint256)) public userToInteractedPoolIds;
+    mapping(address => mapping(address => uint256))
+        public userToInteractedPoolIds;
 
     // Mapping of delegates to the pools they are delegates of
     mapping(address => address[]) public poolsOfDelegate;
@@ -97,9 +97,10 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     uint256 public updateRewardBreakdownDelayPeriod;
 
     // Role definition for stake keys admin
-    bytes32 public constant STAKE_KEYS_ADMIN_ROLE = keccak256("STAKE_KEYS_ADMIN_ROLE");
+    bytes32 public constant STAKE_KEYS_ADMIN_ROLE =
+        keccak256("STAKE_KEYS_ADMIN_ROLE");
 
-      /**
+    /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
@@ -159,38 +160,14 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         bool isKey
     );
 
-    // TODO Confirm initializer can be removed.
     // /**
     //  * @dev Initializes the contract with the provided addresses.
-    //  * Grants DEFAULT_ADMIN_ROLE and STAKE_KEYS_ADMIN_ROLEs.
-    //  * @param _refereeAddress Address of the Referee contract.
-    //  * @param _esXaiAddress Address of the esXai token contract.
-    //  * @param _nodeLicenseAddress Address of the NodeLicense NFT contract.
-    //  * @param _stakeKeysAdminRole Address to be granted STAKE_KEYS_ADMIN_ROLE.
+    //  * Grants STAKE_KEYS_ADMIN_ROLE.
+    //  * @param _stakeKeysAdmin Address to be granted STAKE_KEYS_ADMIN_ROLE.
     //  */
-    // function initialize(
-    //     address _refereeAddress,
-    //     address _esXaiAddress,
-    //     address _nodeLicenseAddress,
-    //     address _stakeKeysAdminRole
-    // ) public initializer { // Needs to Be Incremented
-    //     __AccessControlEnumerable_init();
-    //     _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    //     _grantRole(STAKE_KEYS_ADMIN_ROLE, _stakeKeysAdminRole);
-
-    //     bucketshareMaxValues[0] = 100_000; // 10%
-    //     bucketshareMaxValues[1] = 950_000; // 95%
-    //     bucketshareMaxValues[2] = 850_000; // 85%
-
-    //     refereeAddress = _refereeAddress;
-    //     nodeLicenseAddress = _nodeLicenseAddress;
-    //     esXaiAddress = _esXaiAddress;
-
-    //     unstakeKeysDelayPeriod = 7 days;
-    //     unstakeGenesisKeyDelayPeriod = 60 days;
-    //     unstakeEsXaiDelayPeriod = 7 days;
-    //     updateRewardBreakdownDelayPeriod = 14 days;
-    // }
+    function initialize(address _stakeKeysAdmin) public reinitializer(2) {
+        _setupRole(STAKE_KEYS_ADMIN_ROLE, _stakeKeysAdmin);
+    }
 
     /**
      * @notice Enables staking on the Factory.
@@ -204,7 +181,9 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
      * @notice Updates the address of the pool proxy deployer contract.
      * @param newDeployer The new deployer contract address.
      */
-    function updatePoolProxyDeployer(address newDeployer) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function updatePoolProxyDeployer(
+        address newDeployer
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         address prevDeployer = deployerAddress;
         deployerAddress = newDeployer;
         emit PoolProxyDeployerUpdated(prevDeployer, deployerAddress);
@@ -305,7 +284,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         esXai(esXaiAddress).addToWhitelist(keyBucketProxy);
         esXai(esXaiAddress).addToWhitelist(esXaiBucketProxy);
 
-        _stakeKeys(poolProxy, _keyIds, msg.sender);
+        _stakeKeys(poolProxy, _keyIds, msg.sender, false);
         emit PoolCreated(
             stakingPools.length - 1,
             poolProxy,
@@ -382,10 +361,14 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         address oldDelegate = stakingPool.getDelegateOwner();
         if (oldDelegate != address(0)) {
             uint256 indexOfPoolToRemove = poolsOfDelegateIndices[pool]; // Index of pool in delegate's list
-            address lastDelegatePoolId = poolsOfDelegate[oldDelegate][poolsOfDelegate[oldDelegate].length - 1];
+            address lastDelegatePoolId = poolsOfDelegate[oldDelegate][
+                poolsOfDelegate[oldDelegate].length - 1
+            ];
 
             poolsOfDelegateIndices[lastDelegatePoolId] = indexOfPoolToRemove;
-            poolsOfDelegate[oldDelegate][indexOfPoolToRemove] = lastDelegatePoolId;
+            poolsOfDelegate[oldDelegate][
+                indexOfPoolToRemove
+            ] = lastDelegatePoolId;
             poolsOfDelegate[oldDelegate].pop();
         }
 
@@ -405,9 +388,15 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
      * @param pool The address of the pool.
      * @param keyIds Array of key IDs to be staked.
      * @param staker The address of the staker.
+     * @param _asAdmin Boolean indicating if admin is staking on behalf of a user for airdropped keys.
      */
-    function _stakeKeys(address pool, uint256[] memory keyIds, address staker) internal {
-        Referee8(refereeAddress).stakeKeys(pool, staker, keyIds);
+    function _stakeKeys(
+        address pool,
+        uint256[] memory keyIds,
+        address staker,
+        bool _asAdmin
+    ) internal {
+        Referee9(refereeAddress).stakeKeys(pool, staker, keyIds, _asAdmin);
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.stakeKeys(staker, keyIds);
 
@@ -432,7 +421,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         require(keyIds.length > 0, "11"); // At least 1 key required
         require(poolsCreatedViaFactory[pool], "12"); // Pool must be created via factory
 
-        _stakeKeys(pool, keyIds, msg.sender);
+        _stakeKeys(pool, keyIds, msg.sender, false);
     }
 
     /**
@@ -441,19 +430,25 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
      * @param keyIds Array of key IDs to be staked.
      * @param staker The address of the staker.
      */
-    function stakeKeysAdmin(address pool, uint256[] memory keyIds, address staker) external onlyRole(STAKE_KEYS_ADMIN_ROLE) {
+    function stakeKeysAdmin(
+        address pool,
+        uint256[] memory keyIds,
+        address staker
+    ) external onlyRole(STAKE_KEYS_ADMIN_ROLE) {
         require(pool != address(0), "10"); // Invalid pool address
         require(keyIds.length > 0, "11"); // At least 1 key required
         require(poolsCreatedViaFactory[pool], "12"); // Pool must be created via factory
 
-        _stakeKeys(pool, keyIds, staker);
+        _stakeKeys(pool, keyIds, staker, true);
     }
 
     /**
      * @notice Removes the STAKE_KEYS_ADMIN_ROLE from an address.
      * @param account The address to remove the role from.
      */
-    function revokeStakeKeysAdminRole(address account) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function revokeStakeKeysAdminRole(
+        address account
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         revokeRole(STAKE_KEYS_ADMIN_ROLE, account);
     }
 
@@ -465,7 +460,11 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     function createUnstakeKeyRequest(address pool, uint256 keyAmount) external {
         require(keyAmount > 0, "13"); // At least 1 key required
         require(poolsCreatedViaFactory[pool], "14"); // Pool must be created via factory
-        StakingPool(pool).createUnstakeKeyRequest(msg.sender, keyAmount, unstakeKeysDelayPeriod);
+        StakingPool(pool).createUnstakeKeyRequest(
+            msg.sender,
+            keyAmount,
+            unstakeKeysDelayPeriod
+        );
 
         emit UnstakeRequestStarted(
             msg.sender,
@@ -482,7 +481,10 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
      */
     function createUnstakeOwnerLastKeyRequest(address pool) external {
         require(poolsCreatedViaFactory[pool], "18"); // Pool must be created via factory
-        StakingPool(pool).createUnstakeOwnerLastKeyRequest(msg.sender, unstakeGenesisKeyDelayPeriod);
+        StakingPool(pool).createUnstakeOwnerLastKeyRequest(
+            msg.sender,
+            unstakeGenesisKeyDelayPeriod
+        );
 
         emit UnstakeRequestStarted(
             msg.sender,
@@ -501,7 +503,11 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     function createUnstakeEsXaiRequest(address pool, uint256 amount) external {
         require(amount > 0, "20"); // Amount must be greater than 0
         require(poolsCreatedViaFactory[pool], "22"); // Pool must be created via factory
-        StakingPool(pool).createUnstakeEsXaiRequest(msg.sender, amount, unstakeEsXaiDelayPeriod);
+        StakingPool(pool).createUnstakeEsXaiRequest(
+            msg.sender,
+            amount,
+            unstakeEsXaiDelayPeriod
+        );
 
         emit UnstakeRequestStarted(
             msg.sender,
@@ -525,7 +531,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     ) external {
         require(poolsCreatedViaFactory[pool], "23"); // Pool must be created via factory
 
-        Referee8(refereeAddress).unstakeKeys(pool, msg.sender, keyIds);
+        Referee9(refereeAddress).unstakeKeys(pool, msg.sender, keyIds);
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.unstakeKeys(msg.sender, unstakeRequestIndex, keyIds);
 
@@ -550,7 +556,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     function stakeEsXai(address pool, uint256 amount) external {
         require(poolsCreatedViaFactory[pool], "27"); // Pool must be created via factory
 
-        Referee8(refereeAddress).stakeEsXai(pool, amount);
+        Referee9(refereeAddress).stakeEsXai(pool, amount);
         esXai(esXaiAddress).transferFrom(msg.sender, address(this), amount);
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.stakeEsXai(msg.sender, amount);
@@ -562,7 +568,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
             pool,
             amount,
             stakingPool.getStakedAmounts(msg.sender),
-            Referee8(refereeAddress).stakedAmounts(pool)
+            Referee9(refereeAddress).stakedAmounts(pool)
         );
     }
 
@@ -580,7 +586,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         require(poolsCreatedViaFactory[pool], "28"); // Pool must be created via factory
 
         esXai(esXaiAddress).transfer(msg.sender, amount);
-        Referee8(refereeAddress).unstakeEsXai(pool, amount);
+        Referee9(refereeAddress).unstakeEsXai(pool, amount);
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.unstakeEsXai(msg.sender, unstakeRequestIndex, amount);
 
@@ -593,7 +599,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
             pool,
             amount,
             stakingPool.getStakedAmounts(msg.sender),
-            Referee8(refereeAddress).stakedAmounts(pool)
+            Referee9(refereeAddress).stakedAmounts(pool)
         );
     }
 
@@ -621,9 +627,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     function removeUserFromPool(address user, address pool) internal {
         uint256 indexOfPool = userToInteractedPoolIds[user][pool];
         uint256 userLength = interactedPoolsOfUser[user].length;
-        address lastPool = interactedPoolsOfUser[user][
-            userLength - 1
-        ];
+        address lastPool = interactedPoolsOfUser[user][userLength - 1];
 
         interactedPoolsOfUser[user][indexOfPool] = lastPool;
         userToInteractedPoolIds[user][lastPool] = indexOfPool;
@@ -667,11 +671,10 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         address delegate,
         address pool
     ) external view returns (bool) {
-        return (
-            poolsOfDelegate[delegate].length > poolsOfDelegateIndices[pool] &&
-            poolsOfDelegate[delegate][poolsOfDelegateIndices[pool]] == pool
-        ) ||
-        StakingPool(pool).getPoolOwner() == delegate;
+        return
+            (poolsOfDelegate[delegate].length > poolsOfDelegateIndices[pool] &&
+                poolsOfDelegate[delegate][poolsOfDelegateIndices[pool]] ==
+                pool) || StakingPool(pool).getPoolOwner() == delegate;
     }
 
     /**
@@ -736,14 +739,21 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         uint16 offset,
         uint16 pageLimit
     ) external view returns (uint256[] memory unstakedKeyIds) {
-        uint256 userKeyBalance = NodeLicense(nodeLicenseAddress).balanceOf(user);
+        uint256 userKeyBalance = NodeLicense(nodeLicenseAddress).balanceOf(
+            user
+        );
         unstakedKeyIds = new uint256[](pageLimit);
         uint256 currentIndexUnstaked = 0;
         uint256 limit = offset + pageLimit;
 
         for (uint256 i = offset; i < userKeyBalance && i < limit; i++) {
-            uint256 keyId = NodeLicense(nodeLicenseAddress).tokenOfOwnerByIndex(user, i);
-            if (Referee8(refereeAddress).assignedKeyToPool(keyId) == address(0)) {
+            uint256 keyId = NodeLicense(nodeLicenseAddress).tokenOfOwnerByIndex(
+                user,
+                i
+            );
+            if (
+                Referee9(refereeAddress).assignedKeyToPool(keyId) == address(0)
+            ) {
                 unstakedKeyIds[currentIndexUnstaked] = keyId;
                 currentIndexUnstaked++;
             }
@@ -760,7 +770,9 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     ) external view returns (bool[] memory isStaked) {
         isStaked = new bool[](keyIds.length);
         for (uint256 i; i < keyIds.length; i++) {
-            isStaked[i] = Referee8(refereeAddress).assignedKeyToPool(keyIds[i]) != address(0);
+            isStaked[i] =
+                Referee9(refereeAddress).assignedKeyToPool(keyIds[i]) !=
+                address(0);
         }
     }
 }
