@@ -281,39 +281,31 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
 
         it("Check the amount of winning keys for pools based on keys staked and boostfactor", async function () {
             //TODO check winning amount of keys for 1, 10, 100, 1000 keys 
-            const { addr1, addr2, addr3, addr4, nodeLicense, referee } = await loadFixture(deployInfrastructure);
-            
-            const addr1KeyMintPrice = await nodeLicense.price(1, "");
-            const addr2KeyMintPrice = await nodeLicense.price(1, "");
-            const addr3KeyMintPrice = await nodeLicense.price(1, "");
-            const addr4KeyMintPrice = await nodeLicense.price(1, "");
-
-
-            await nodeLicense.connect(addr1).mint(1, "", { value: addr1KeyMintPrice });
-            // await nodeLicense.connect(addr2).mint(10, "", { value: addr2KeyMintPrice });
-            await nodeLicense.connect(addr3).mint(100, "", { value: addr3KeyMintPrice });
-
-            let i = 0;
-            while (i < 5) {
-                await nodeLicense.connect(addr4).mint(200, "", { value: addr4KeyMintPrice });
-                i++;
-            }
-
-            const addr1MintedKeyId = await nodeLicense.totalSupply();
-            // const addr2MintedKeyId = await nodeLicense.totalSupply();
-            const addr3MintedKeyId = await nodeLicense.totalSupply();
-            const addr4MintedKeyId = await nodeLicense.totalSupply();
-
+            const { referee } = await loadFixture(deployInfrastructure);
             const stakingTierThresholds = await referee.stakeAmountTierThresholds;
+                        
+            // Test configurations for key amounts and expected winning counts per tier
+            const keyAmountTests = [
+                { keysToMint: 1, expectedWinningCounts: [0, 0, 0, 0, 0] },
+                { keysToMint: 10, expectedWinningCounts: [0, 0, 0, 1, 1] },
+                { keysToMint: 100, expectedWinningCounts: [1, 2, 2, 5, 7] },
+                { keysToMint: 1000, expectedWinningCounts: [10, 15, 20, 50, 70] },
+            ];
 
-            const winningKeyCount1 = await referee.getWinningKeyCount(addr1MintedKeyId, stakingTierThresholds[0]);
-            // const winningKeyCount2 = await referee.getWinningKeyCount(addr1MintedKeyId, stakingTierThresholds[4]);
-            const winningKeyCount3 = await referee.getWinningKeyCount(addr3MintedKeyId, stakingTierThresholds[4]);
-            const winningKeyCount4 = await referee.getWinningKeyCount(addr4MintedKeyId, stakingTierThresholds[4]);
-            
-            expect(winningKeyCount1).to.be.oneOf([1, 0]);
-            expect(winningKeyCount3).to.be.close(7, 2);
-            expect(winningKeyCount4).to.be.close(70, 0.10 * 70);
+            for (let testCase of keyAmountTests) {
+                const { keysToMint, expectedWinningCounts } = testCase;
+
+                for (let j = 0; j < stakingTierThresholds.length; j++) {
+                    const winningKeyCount = await referee.getWinningKeyCount(keysToMint, stakingTierThresholds[j]);
+                    const expectedWinningCount = expectedWinningCounts[j];
+                    const tolerance = Math.ceil(0.10 * expectedWinningCount);
+
+                    const minExpected = Math.max(0, expectedWinningCount - tolerance);
+                    const maxExpected = expectedWinningCount + tolerance;
+
+                    expect(winningKeyCount).to.be.within(minExpected, maxExpected);
+                }
+            }            
         })
     }
 }
