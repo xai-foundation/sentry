@@ -10,18 +10,21 @@ import { esXaiTests } from "./esXai.mjs";
 import { GasSubsidyTests } from "./GasSubsidy.mjs";
 import { XaiGaslessClaimTests } from "./XaiGaslessClaim.mjs";
 import {CNYAirDropTests} from "./CNYAirDrop.mjs";
-import {StakingV2} from "./StakingV2.mjs";
+import {getBasicPoolConfiguration,StakingV2} from "./StakingV2.mjs";
 import {extractAbi} from "../utils/exportAbi.mjs";
 import {Beacons} from "./Beacons.mjs";
 import {RefereePoolSubmissions} from "./tinykeys/RefereePoolSubmissions.mjs";
+import {NodeLicenseTinyKeysTest} from "./NodeLicenseTinyKeys.mjs";
 
-
+import {Beacons} from "./Beacons.mjs";
+import { Console } from "console";
 describe("Fixture Tests", function () {
 
     // We define a fixture to reuse the same setup in every test. We use
     // loadFixture to run this setup once, snapshot that state, and reset Hardhat
     // Network to that snapshot in every test.
     async function deployInfrastructure() {
+        console.log("Deploying Infrastructure");
 
         // Get addresses to use in the tests
         const [
@@ -116,7 +119,7 @@ describe("Fixture Tests", function () {
         // Upgrade esXai3 upgrade - moved here due to needing referee and node license addresses as a parameters
         const maxKeysNonKyc = BigInt(1);
         const EsXai3 = await ethers.getContractFactory("esXai3");
-        const esXai3 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai3, { call: { fn: "initialize", args: [referee.getAddress(), nodeLicense.getAddress(), maxKeysNonKyc] } });
+        const esXai3 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai3, { call: { fn: "initialize", args: [await referee.getAddress(), await nodeLicense.getAddress(), maxKeysNonKyc] } });
         await esXai3.waitForDeployment();
 
 		// Deploy the Pool Factory
@@ -180,6 +183,12 @@ describe("Fixture Tests", function () {
 		const Referee8 = await ethers.getContractFactory("Referee8");
 		const referee8 = await upgrades.upgradeProxy((await referee.getAddress()), Referee8, { call: { fn: "initialize", args: [] } });
 		await referee8.waitForDeployment();
+
+        // Referee9
+        const Referee9 = await ethers.getContractFactory("Referee9");
+        const referee9 = await upgrades.upgradeProxy((await referee.getAddress()), Referee9, { call: { fn: "initialize", args: [] } });
+        await referee9.waitForDeployment();
+
 
         // Set Rollup Address
         const rollupAddress = config.rollupAddress;
@@ -263,16 +272,75 @@ describe("Fixture Tests", function () {
         // Mint addr3 2 node licenses
         price = await nodeLicense.price(2, "");
         await nodeLicense.connect(addr3).mint(2, "", {value: price});
-
         // KYC addr1 and addr 2, but not addr 3
         await referee.connect(kycAdmin).addKycWallet(await addr1.getAddress());
         await referee.connect(kycAdmin).addKycWallet(await addr2.getAddress());
 
         // Add addr 1 to the operator
         await referee.connect(addr1).setApprovalForOperator(await operator.getAddress(), true);
+        
+		// Node License2 Upgrade
+		const NodeLicense2 = await ethers.getContractFactory("NodeLicense2");
+		const nodeLicense2 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense2);
+		await nodeLicense2.waitForDeployment();
 
+		// Node License3 Upgrade
+		const NodeLicense3 = await ethers.getContractFactory("NodeLicense3");
+		const nodeLicense3 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense3, { call: { fn: "initialize", args: [] } });
+		await nodeLicense3.waitForDeployment();
+
+    //     // Node License4 Upgrade
+        const NodeLicense4 = await ethers.getContractFactory("NodeLicense4");
+        const nodeLicense4 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense4);
+        await nodeLicense4.waitForDeployment();
+
+        // Node License5 Upgrade
+        const NodeLicense5 = await ethers.getContractFactory("NodeLicense5");
+        const nodeLicense5 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense5);
+        await nodeLicense5.waitForDeployment();
+
+        // Node License6 Upgrade
+        const NodeLicense6 = await ethers.getContractFactory("NodeLicense6");
+        const nodeLicense6 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense6);
+        await nodeLicense6.waitForDeployment();
+
+        // Node License7 Upgrade
+        const NodeLicense7 = await ethers.getContractFactory("NodeLicense7");
+        const nodeLicense7 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense7);
+        await nodeLicense7.waitForDeployment();
+
+        // Deploy Mock Chainlink Aggregator Price Feeds
+        const MockChainlinkPriceFeed = await ethers.getContractFactory("MockChainlinkPriceFeed");
+        const ethPrice = ethers.parseUnits("3000", 8);
+        const chainlinkEthUsdPriceFeed = await MockChainlinkPriceFeed.deploy(ethPrice);
+        await chainlinkEthUsdPriceFeed.waitForDeployment();
+
+        const xaiPrice = ethers.parseUnits("1", 8);
+        const chainlinkXaiUsdPriceFeed = await MockChainlinkPriceFeed.deploy(xaiPrice);
+        await chainlinkXaiUsdPriceFeed.waitForDeployment();
+        
         // Impersonate the rollup controller
         const rollupController = await ethers.getImpersonatedSigner("0x6347446605e6f6680addb7c4ff55da299ecd2e69");
+        // Tiny Keys AirDrop
+        const TinyKeysAirdrop = await ethers.getContractFactory("TinyKeysAirdrop");
+        const airdropMultiplier = BigInt(5);
+        const tinyKeysAirDrop = await upgrades.deployProxy(TinyKeysAirdrop, [await nodeLicense.getAddress(), await referee.getAddress(), await poolFactory.getAddress(), airdropMultiplier]);
+        await tinyKeysAirDrop.waitForDeployment();
+        
+        // Upgrade the Pool Factory
+		const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");  
+        const poolFactory2 = await upgrades.upgradeProxy((await poolFactory.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
+		await poolFactory2.waitForDeployment();
+
+
+        
+
+
+
+        // Node License8 Upgrade
+         const NodeLicense8 = await ethers.getContractFactory("NodeLicense8");
+         const nodeLicense8 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense8, { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await tinyKeysAirDrop.getAddress()] } });
+         await nodeLicense8.waitForDeployment();
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
@@ -305,18 +373,20 @@ describe("Fixture Tests", function () {
             addr4,
             operator,
             rollupController,
-
             tiers,
             secretKeyHex,
             publicKeyHex: "0x" + publicKeyHex,
-
-            referee: referee8,
-            nodeLicense,
-			poolFactory,
+            referee: referee9,
+            nodeLicense: nodeLicense8,
+			poolFactory:poolFactory2,
             gasSubsidy,
-            esXai: esXai2,
+            esXai: esXai3,
             xai,
-            rollupContract
+            rollupContract,
+            chainlinkEthUsdPriceFeed,
+            chainlinkXaiUsdPriceFeed,
+            tinyKeysAirDrop,
+            airdropMultiplier,
         };
     }
 
@@ -331,9 +401,10 @@ describe("Fixture Tests", function () {
     // describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
     // describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
     // describe("PoolSubmissions", RefereePoolSubmissions(deployInfrastructure).bind(this));
+    // describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
 
 
     // This doesn't work when running coverage
-    // describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));
+    //describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));
 
 })

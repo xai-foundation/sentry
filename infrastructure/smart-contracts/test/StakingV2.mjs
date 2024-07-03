@@ -26,7 +26,7 @@ export async function findHighestStakeTier(referee, refAdmin) {
 	return [highestFoundStakeAmountTierThreshold, highestFoundTier];
 }
 
-function getBasicPoolConfiguration() {
+export function getBasicPoolConfiguration() {
 	const poolName1 = "Testing Pool";
 	const poolDescription1 = "This is for testing purposes only!!";
 	const poolLogo1 = "Pool Logo";
