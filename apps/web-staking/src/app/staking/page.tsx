@@ -11,12 +11,12 @@ export const metadata: Metadata = {
   description: "Xai App Staking"
 };
 
-export default async function Staking({ searchParams }: { searchParams: { page: number, search: string, chainId: number, hideFull: string, hideFullKeys: string } }) {
+export default async function Staking({ searchParams }: { searchParams: { page: number, search: string, chainId: number, hideFull: string, hideFullKeys: string, sort: string } }) {
 
   const pageFilter: any = {
     limit: 10,
     page: searchParams.page ? Number(searchParams.page) : 1,
-    sort: [['tierIndex', -1], ['totalStakedAmount', -1], ['name', 1]]
+    sort: searchParams.sort ? [[searchParams.sort, searchParams.sort === "name" ? 1 : -1]] : [["esXaiRewardRate", -1]]
   };
 
   const searchName = searchParams.search || "";

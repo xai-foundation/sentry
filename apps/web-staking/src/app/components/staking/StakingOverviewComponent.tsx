@@ -31,6 +31,8 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   const [showTableKeys, setShowTableKeys] = useState(searchParams.get("showKeys") ? searchParams.get("showKeys") === "true" : false);
   const [hideFullKeys, setHideFullKeys] = useState(searchParams.get("hideFullKeys") ? searchParams.get("hideFullKeys") === "true" : false);
   const [hideFullEsXai, setHideFullEsXai] = useState(searchParams.get("hideFull") ? searchParams.get("hideFull") === "true" : true);
+  const [sort, setSort] = useState(searchParams.get("page") || "")
+
   const [currentTotalClaimableAmount, setCurrentTotalClaimableAmount] = useState<number>(totalClaimableAmount);
   const { address, chainId } = useAccount();
   const { switchChain } = useSwitchChain();
@@ -100,27 +102,27 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
     }
   };
 
-  const buildURI = (search: string, page: number, showTable: boolean, hideKeys: boolean, hideEsXai: boolean) => {
-    return `/staking?chainId=${chainId}&search=${search}&page=${page}&showKeys=${showTable}&hideFull=${hideEsXai}&hideFullKeys=${hideKeys}`
+  const buildURI = (search: string, page: number, showTable: boolean, hideKeys: boolean, hideEsXai: boolean, sort: string) => {
+    return `/staking?chainId=${chainId}&search=${search}&page=${page}&showKeys=${showTable}&hideFull=${hideEsXai}&hideFullKeys=${hideKeys}&sort=${sort}`
   }
 
   const submitSearch = () => {
     setCurrentPage(1);
-    router.push(buildURI(searchValue, 1, showTableKeys, hideFullKeys, hideFullEsXai),
+    router.push(buildURI(searchValue, 1, showTableKeys, hideFullKeys, hideFullEsXai, sort),
       { scroll: false }
     );
   };
 
   const setPage = (page: number) => {
     setCurrentPage(page);
-    router.push(buildURI(searchValue, page, showTableKeys, hideFullKeys, hideFullEsXai),
+    router.push(buildURI(searchValue, page, showTableKeys, hideFullKeys, hideFullEsXai, sort),
       { scroll: false }
     );
   };
 
   const onToggleShowKeys = (showKeys: boolean) => {
     setShowTableKeys(showKeys);
-    router.push(buildURI(searchValue, currentPage, showKeys, hideFullKeys, hideFullEsXai),
+    router.push(buildURI(searchValue, currentPage, showKeys, hideFullKeys, hideFullEsXai, sort),
       { scroll: false }
     );
   };
@@ -128,57 +130,70 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   const onClickFilterCB = (checked: boolean) => {
     if (showTableKeys) {
       setHideFullKeys(checked);
-      router.push(buildURI(searchValue, currentPage, showTableKeys, checked, hideFullEsXai),
+      router.push(buildURI(searchValue, currentPage, showTableKeys, checked, hideFullEsXai, sort),
         { scroll: false }
       );
     } else {
       setHideFullEsXai(checked);
-      router.push(buildURI(searchValue, currentPage, showTableKeys, hideFullKeys, checked),
+      router.push(buildURI(searchValue, currentPage, showTableKeys, hideFullKeys, checked, sort),
         { scroll: false }
       );
     }
   }
 
+  const setCurrentSort = (field: string) => {
+    setSort(field);
+    router.push(buildURI(searchValue, currentPage, showTableKeys, hideFullKeys, hideFullEsXai, field),
+        { scroll: false }
+    );
+  };
+
   return (
-    <div className="relative flex sm:flex-col items-start lg:px-6 sm:px-0 sm:w-full">
-      <AgreeModalComponent address={address} />
-      <div className="flex justify-between w-full flex-col xl:flex-row sm:mb-[70px] lg:mb-6 xl:mb-3">
-        <MainTitle title={"Staking"} classNames="sm:indent-4 lg:indent-0" />
+      <div className="relative flex sm:flex-col items-start lg:px-6 sm:px-0 sm:w-full">
+        <AgreeModalComponent address={address}/>
+        <div className="flex justify-between w-full flex-col xl:flex-row sm:mb-[70px] lg:mb-6 xl:mb-3">
+          <MainTitle title={"Staking"} classNames="sm:indent-4 lg:indent-0"/>
 
-        {address && <div className="sm:w-[91%] absolute sm:right-[17px] sm:top-[85px] lg:right-[55px] lg:top-6 lg:w-[450px] shadow-light"><ClaimableRewardsComponent
-          disabled={isLoading || transactionLoading || currentTotalClaimableAmount === 0}
-          totalClaimAmount={currentTotalClaimableAmount}
-          onClaim={onClaimAll}
-        /></div>}
 
+          {address && <div
+              className="sm:w-[91%] absolute sm:right-[17px] sm:top-[85px] lg:right-[55px] lg:top-6 lg:w-[450px] shadow-light">
+            <ClaimableRewardsComponent
+                disabled={isLoading || transactionLoading || currentTotalClaimableAmount === 0}
+                totalClaimAmount={currentTotalClaimableAmount}
+                onClaim={onClaimAll}
+            /></div>}
+
+        </div>
+
+        {(address && (userPools.length > 0 || totalStaked > 0)) &&
+            <StakedPoolsTable v1Stake={totalStaked} v1MaxStake={maxStakedCapacity} userPools={userPools} tiers={tiers}
+                              showTableKeys={showTableKeys} maxKeyPerPool={maxKeyPerPool}/>}
+
+        <SearchBarComponent
+            searchValue={searchValue}
+            showTableKeys={showTableKeys}
+            setSearchValue={setSearchValue}
+            setShowKeyInfo={setShowTableKeys}
+            setClickSearch={submitSearch}
+            filterCheckbox={showTableKeys ? hideFullKeys : hideFullEsXai}
+            setFilterCheckbox={onClickFilterCB}
+            onToggleShowKeys={onToggleShowKeys}
+            showedPools={pagedPools.count}
+            hiddenPools={pagedPools.totalPoolsInDB - pagedPools.count}
+            userPools={userPools.length}
+        />
+
+        <AvailablePoolsTableComponent
+            showTableKeys={showTableKeys}
+            pools={pagedPools.poolInfos}
+            page={currentPage}
+            totalPages={Math.ceil(pagedPools.count / 10)}
+            setPage={setPage}
+            address={address}
+            tiers={tiers}
+            maxKeyPerPool={maxKeyPerPool}
+            setCurrentSort={setCurrentSort}
+        />
       </div>
-
-      {(address && (userPools.length > 0 || totalStaked > 0)) && <StakedPoolsTable v1Stake={totalStaked} v1MaxStake={maxStakedCapacity} userPools={userPools} tiers={tiers} showTableKeys={showTableKeys} maxKeyPerPool={maxKeyPerPool} />}
-
-      <SearchBarComponent
-        searchValue={searchValue}
-        showTableKeys={showTableKeys}
-        setSearchValue={setSearchValue}
-        setShowKeyInfo={setShowTableKeys}
-        setClickSearch={submitSearch}
-        filterCheckbox={showTableKeys ? hideFullKeys : hideFullEsXai}
-        setFilterCheckbox={onClickFilterCB}
-        onToggleShowKeys={onToggleShowKeys}
-        showedPools={pagedPools.count}
-        hiddenPools={pagedPools.totalPoolsInDB - pagedPools.count}
-        userPools={userPools.length}
-      />
-
-      <AvailablePoolsTableComponent
-        showTableKeys={showTableKeys}
-        pools={pagedPools.poolInfos}
-        page={currentPage}
-        totalPages={Math.ceil(pagedPools.count / 10)}
-        setPage={setPage}
-        address={address}
-        tiers={tiers}
-        maxKeyPerPool={maxKeyPerPool}
-      /> 
-    </div>
   );
 }
