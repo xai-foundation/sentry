@@ -11,7 +11,7 @@ import "../../NodeLicense.sol";
 import "../../Xai.sol";
 import "../../esXai.sol";
 import "../../staking-v2/PoolFactory.sol";
-import "hardhat/console.sol";
+import "../../RefereeEvents.sol";
 
 // Error Codes
 // 1: Only PoolFactory can call this function.
@@ -206,30 +206,6 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         bytes assertionStateRootOrConfirmData;
     }
 
-    // Define events
-    event ChallengeSubmitted(uint256 indexed challengeNumber);
-    event ChallengeClosed(uint256 indexed challengeNumber);
-    event AssertionSubmitted(uint256 indexed challengeId, uint256 indexed nodeLicenseId);
-    event RollupAddressChanged(address newRollupAddress);
-    event ChallengerPublicKeyChanged(bytes newChallengerPublicKey);
-    event NodeLicenseAddressChanged(address newNodeLicenseAddress);
-    event AssertionCheckingToggled(bool newState);
-    event Approval(address indexed owner, address indexed operator, bool approved);
-    event KycStatusChanged(address indexed wallet, bool isKycApproved);
-    event InvalidSubmission(uint256 indexed challengeId, uint256 nodeLicenseId);
-    event InvalidBatchSubmission(uint256 indexed challengeId, address operator, uint256 keysLength);
-    event RewardsClaimed(uint256 indexed challengeId, uint256 amount);
-    event BatchRewardsClaimed(uint256 indexed challengeId, uint256 totalReward, uint256 keysLength);
-    event PoolRewardsClaimed(uint256 indexed challengeId, address indexed poolAddress, uint256 totalReward, uint256 winningKeys);
-    event ChallengeExpired(uint256 indexed challengeId);
-    event StakingEnabled(bool enabled);
-    event UpdateMaxStakeAmount(uint256 prevAmount, uint256 newAmount);
-    event UpdateMaxKeysPerPool(uint256 prevAmount, uint256 newAmount);
-    event StakedV1(address indexed user, uint256 amount, uint256 totalStaked);
-    event UnstakeV1(address indexed user, uint256 amount, uint256 totalStaked);
-    event NewPoolSubmission(uint256 indexed challengeId, address indexed poolAddress, uint256 stakedKeys, uint256 winningKeys);
-    event UpdatePoolSubmission(uint256 indexed challengeId, address indexed poolAddress, uint256 stakedKeys, uint256 winningKeys, uint256 increase, uint256 decrease);
-
     function initialize() public reinitializer(7) {
 
         // Set max keys per pool TODO update this once determined
@@ -258,7 +234,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
      */
     function toggleAssertionChecking() external onlyRole(DEFAULT_ADMIN_ROLE) {
         isCheckingAssertions = !isCheckingAssertions;
-        emit AssertionCheckingToggled(isCheckingAssertions);
+        emit RefereeEvents.AssertionCheckingToggled(isCheckingAssertions);
     }
 	
     /**
@@ -267,7 +243,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
      */
     function setChallengerPublicKey(bytes memory _challengerPublicKey) external onlyRole(DEFAULT_ADMIN_ROLE) {
         challengerPublicKey = _challengerPublicKey;
-        emit ChallengerPublicKeyChanged(_challengerPublicKey);
+        emit RefereeEvents.ChallengerPublicKeyChanged(_challengerPublicKey);
     }
 
     /**
@@ -276,7 +252,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
      */
     function setRollupAddress(address _rollupAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
         rollupAddress = _rollupAddress;
-        emit RollupAddressChanged(_rollupAddress);
+        emit RefereeEvents.RollupAddressChanged(_rollupAddress);
     }
 
     /**
@@ -285,7 +261,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
      */
     function setNodeLicenseAddress(address _nodeLicenseAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
         nodeLicenseAddress = _nodeLicenseAddress;
-        emit NodeLicenseAddressChanged(_nodeLicenseAddress);
+        emit RefereeEvents.NodeLicenseAddressChanged(_nodeLicenseAddress);
     }
 
     /**
@@ -301,7 +277,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
             _operatorApprovals[msg.sender].remove(operator);
             _ownersForOperator[operator].remove(msg.sender);
         }
-        emit Approval(msg.sender, operator, approved);
+        emit RefereeEvents.Approval(msg.sender, operator, approved);
     }
 
     /**
@@ -360,7 +336,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
      */
     function addKycWallet(address wallet) external onlyRole(KYC_ADMIN_ROLE) {
         kycWallets.add(wallet);
-        emit KycStatusChanged(wallet, true);
+        emit RefereeEvents.KycStatusChanged(wallet, true);
     }
 
     /**
@@ -369,7 +345,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
      */
     function removeKycWallet(address wallet) external onlyRole(KYC_ADMIN_ROLE) {
         kycWallets.remove(wallet);
-        emit KycStatusChanged(wallet, false);
+        emit RefereeEvents.KycStatusChanged(wallet, false);
     }
 
     /**
@@ -492,7 +468,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         // close the previous challenge with the start of the next challenge
         if (challengeCounter > 0) {
             challenges[challengeCounter - 1].openForSubmissions = false;
-            emit ChallengeClosed(challengeCounter - 1);
+            emit RefereeEvents.ChallengeClosed(challengeCounter - 1);
         }
 
         // add challenge to the mapping
@@ -513,8 +489,8 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
             amountClaimedByClaimers: 0
         });
 
-        // emit the events
-        emit ChallengeSubmitted(challengeCounter);   
+        // emit RefereeEvents.the events
+        emit RefereeEvents.ChallengeSubmitted(challengeCounter);   
 
         // increment the challenge counter
         challengeCounter++;
@@ -547,9 +523,9 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         // Check that _nodeLicenseId hasn't already been submitted for this challenge
         require(!submissions[_challengeId][_nodeLicenseId].submitted, "15");
 
-        // If the submission successor hash, doesn't match the one submitted by the challenger, then end early and emit an event
+        // If the submission successor hash, doesn't match the one submitted by the challenger, then end early and emit RefereeEvents.an event
         if (keccak256(abi.encodePacked(_confirmData)) != keccak256(abi.encodePacked(challenges[_challengeId].assertionStateRootOrConfirmData))) {
-            emit InvalidSubmission(_challengeId, _nodeLicenseId);
+            emit RefereeEvents.InvalidSubmission(_challengeId, _nodeLicenseId);
             return;
         }
 
@@ -581,9 +557,9 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         
         uint256 keyLength = _nodeLicenseIds.length;
 
-        // If the submission successor hash, doesn't match the one submitted by the challenger, then end early and emit an event
+        // If the submission successor hash, doesn't match the one submitted by the challenger, then end early and emit RefereeEvents.an event
 		if (keccak256(abi.encodePacked(_confirmData)) != keccak256(abi.encodePacked(challenges[_challengeId].assertionStateRootOrConfirmData))) {
-            emit InvalidBatchSubmission(_challengeId, msg.sender, keyLength);
+            emit RefereeEvents.InvalidBatchSubmission(_challengeId, msg.sender, keyLength);
 			return;
 		}
 
@@ -661,7 +637,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         }
 
         // Emit the AssertionSubmitted event
-        emit AssertionSubmitted(_challengeId, _nodeLicenseId);
+        emit RefereeEvents.AssertionSubmitted(_challengeId, _nodeLicenseId);
     }
 
     function _validateChallengeIsClaimable(Challenge memory _challenge) internal pure{
@@ -742,7 +718,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
             esXai(esXaiAddress).mint(rewardReceiver, reward);
 
             // Emit the RewardsClaimed event
-            emit RewardsClaimed(_challengeId, reward);
+            emit RefereeEvents.RewardsClaimed(_challengeId, reward);
 
             // Increment the total claims of this address
             _lifetimeClaims[rewardReceiver] += reward;
@@ -819,7 +795,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         }
 
         _allocatedTokens -= claimCount * reward;
-        emit BatchRewardsClaimed(_challengeId, claimCount * reward, claimCount);
+        emit RefereeEvents.BatchRewardsClaimed(_challengeId, claimCount * reward, claimCount);
 	}
 
     /**
@@ -899,7 +875,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         require(newAmount != 0, "31");
         uint256 prevAmount = maxStakeAmountPerLicense;
         maxStakeAmountPerLicense = newAmount;
-        emit UpdateMaxStakeAmount(prevAmount, newAmount);
+        emit RefereeEvents.UpdateMaxStakeAmount(prevAmount, newAmount);
     }
     
     /**
@@ -910,7 +886,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         require(newAmount != 0, "32");
         uint256 prevAmount = maxKeysPerPool;
         maxKeysPerPool = newAmount;
-        emit UpdateMaxKeysPerPool(prevAmount, newAmount);
+        emit RefereeEvents.UpdateMaxKeysPerPool(prevAmount, newAmount);
     }
 
     /**
@@ -997,7 +973,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         require(stakedAmounts[msg.sender] >= amount, "41");
         esXai(esXaiAddress).transfer(msg.sender, amount);
         stakedAmounts[msg.sender] -= amount;
-        emit UnstakeV1(msg.sender, amount, stakedAmounts[msg.sender]);
+        emit RefereeEvents.UnstakeV1(msg.sender, amount, stakedAmounts[msg.sender]);
     }
 
     function stakeKeys(address pool, address staker, uint256[] memory keyIds, bool _asAdmin) external onlyPoolFactory {
@@ -1105,9 +1081,8 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
      * @param enabled The new staking status.
      */
     function setStakingEnabled(bool enabled) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        console.log("Referee: ", address(this));
         stakingEnabled = enabled;
-        emit StakingEnabled(enabled);
+        emit RefereeEvents.StakingEnabled(enabled);
     }
 
     /**
@@ -1142,9 +1117,9 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         // Add the number of keys staked in the pool to the total owner staked keys
         uint256 totalStakedKeys = assignedKeysOfUserCount[_poolAddress] + assignedKeysToPoolCount[_poolAddress];
 
-        // Check if the submission successor hash, doesn't match the one submitted by the challenger, then end early and emit an event
+        // Check if the submission successor hash, doesn't match the one submitted by the challenger, then end early and emit RefereeEvents.an event
 		if (keccak256(abi.encodePacked(_confirmData)) != keccak256(abi.encodePacked(challenges[_challengeId].assertionStateRootOrConfirmData))) {
-            emit InvalidBatchSubmission(_challengeId, msg.sender, totalStakedKeys);
+            emit RefereeEvents.InvalidBatchSubmission(_challengeId, msg.sender, totalStakedKeys);
 			return;
 		}
 
@@ -1166,7 +1141,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         poolSubmissions[_challengeId][_poolAddress].assertionStateRootOrConfirmData = _confirmData;
 
         // Emit the New Pool Submission event
-        emit NewPoolSubmission(_challengeId, _poolAddress, totalStakedKeys, winningKeyCount);
+        emit RefereeEvents.NewPoolSubmission(_challengeId, _poolAddress, totalStakedKeys, winningKeyCount);
 	}
 
     /**
@@ -1221,7 +1196,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         poolSubmissions[_challengeId][_poolAddress].winningKeyCount = winningKeyCount;
 
         // Emit the Updated Pool Submission event
-        emit UpdatePoolSubmission(_challengeId, _poolAddress, totalStakedKeys, winningKeyCount, winningKeysIncreaseAmount, winningKeysDecreaseAmount);	
+        emit RefereeEvents.UpdatePoolSubmission(_challengeId, _poolAddress, totalStakedKeys, winningKeyCount, winningKeysIncreaseAmount, winningKeysDecreaseAmount);	
 	}
 
     /** @notice Claim Pool Rewards
@@ -1270,7 +1245,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
             // unallocate the tokens that have now been converted to esXai
             _allocatedTokens -= poolMintAmount;
         }
-        emit PoolRewardsClaimed(_challengeId, _poolAddress, poolMintAmount, poolSubmission.winningKeyCount);
+        emit RefereeEvents.PoolRewardsClaimed(_challengeId, _poolAddress, poolMintAmount, poolSubmission.winningKeyCount);
     }
 
     /** 
@@ -1294,7 +1269,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
             challenges[_challengeId].expiredForRewarding = true;
 
             // Emit the ChallengeExpired event
-            emit ChallengeExpired(_challengeId);
+            emit RefereeEvents.ChallengeExpired(_challengeId);
         }else {
             // If challenge has expired and mapping has been updated, then revert
             require(!expired, "20");
