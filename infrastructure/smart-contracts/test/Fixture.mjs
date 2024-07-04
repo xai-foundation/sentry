@@ -331,10 +331,29 @@ describe("Fixture Tests", function () {
         const nodeLicense8 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense8, { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await tinyKeysAirDrop.getAddress()] } });
         await nodeLicense8.waitForDeployment();
 
+        // Deploy the Referee Calculations Library
+        const RefereeCalculations = await ethers.getContractFactory("RefereeCalculations");
+        const refereeCalculations = await RefereeCalculations.deploy();
+        await refereeCalculations.waitForDeployment();
+        console.log("RefereeCalculations deployed to:", await refereeCalculations.getAddress());
+        
         // Referee9
         // This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
-        const Referee9 = await ethers.getContractFactory("Referee9");
-        const referee9 = await upgrades.upgradeProxy((await referee.getAddress()), Referee9, { call: { fn: "initialize", args: [] } });
+        const Referee9 = await ethers.getContractFactory("Referee9", {
+            libraries: {
+            RefereeCalculations: await refereeCalculations.getAddress(),
+            },
+        });
+
+        // Upgrade the Referee
+        const referee9 = await upgrades.upgradeProxy(await referee.getAddress(), Referee9, {
+            // call the initialize function on the new implementation
+            call: { fn: "initialize", args: [] },
+            // allow unsafe external library linking
+            // this is needed because the new implementation uses an external library and the contract is upgradeable
+            // Open Zeppelin Upgrades doesn't support this yet, so we need to use this flag, or move the functions to the main contract
+            unsafeAllow: ["external-library-linking"],
+          });
         await referee9.waitForDeployment();
 
         config.esXaiAddress = await esXai.getAddress();
@@ -385,16 +404,16 @@ describe("Fixture Tests", function () {
         };
     }
 
-    // describe("CNY 2024", CNYAirDropTests.bind(this));
-    // describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
-    // describe("Xai", XaiTests(deployInfrastructure).bind(this));
-    // describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
-    // describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
+    describe("CNY 2024", CNYAirDropTests.bind(this));
+    describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
+    describe("Xai", XaiTests(deployInfrastructure).bind(this));
+    describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
+    describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
     // describe("Referee", RefereeTests(deployInfrastructure).bind(this));
-    // describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
-    // describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
-    // describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
-    describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
+    describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
+    describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
+    describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
+    // describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
     // describe("PoolSubmissions", RefereePoolSubmissions(deployInfrastructure).bind(this));
     // describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
 
