@@ -112,7 +112,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
     mapping (address => EnumerableSetUpgradeable.AddressSet) private _ownersForOperator;
 
     // Mappings to keep track of all claims
-    mapping (address => uint256) private _lifetimeClaims;
+    mapping (address => uint256) public _lifetimeClaims;
 
     // Mapping to track rollup assertions (combination of the assertionId and the rollupAddress used, because we allow switching the rollupAddress, and can't assume assertionIds are unique.)
     mapping (bytes32 => bool) public rollupAssertionTracker;
@@ -251,41 +251,6 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
      */
     function getCombinedTotalSupply() public view returns (uint256) {
         return esXai(esXaiAddress).totalSupply() + Xai(xaiAddress).totalSupply() + _allocatedTokens;
-    }
-
-    /**
-     * @notice Toggles the assertion checking.
-     */
-    function toggleAssertionChecking() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        isCheckingAssertions = !isCheckingAssertions;
-        emit AssertionCheckingToggled(isCheckingAssertions);
-    }
-	
-    /**
-     * @notice Sets the challengerPublicKey.
-     * @param _challengerPublicKey The public key of the challenger.
-     */
-    function setChallengerPublicKey(bytes memory _challengerPublicKey) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        challengerPublicKey = _challengerPublicKey;
-        emit ChallengerPublicKeyChanged(_challengerPublicKey);
-    }
-
-    /**
-     * @notice Sets the rollupAddress.
-     * @param _rollupAddress The address of the rollup.
-     */
-    function setRollupAddress(address _rollupAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        rollupAddress = _rollupAddress;
-        emit RollupAddressChanged(_rollupAddress);
-    }
-
-    /**
-     * @notice Sets the nodeLicenseAddress.
-     * @param _nodeLicenseAddress The address of the NodeLicense NFT.
-     */
-    function setNodeLicenseAddress(address _nodeLicenseAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        nodeLicenseAddress = _nodeLicenseAddress;
-        emit NodeLicenseAddressChanged(_nodeLicenseAddress);
     }
 
     /**
@@ -850,15 +815,6 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     /**
-     * @notice Get the total claims for a specific address.
-     * @param owner The address to query.
-     * @return The total claims for the address.
-     */
-    function getTotalClaims(address owner) public view returns (uint256) {
-        return _lifetimeClaims[owner];
-    }
-
-    /**
      * @dev Looks up payout boostFactor based on the staking tier.
      * @param stakedAmount The staked amount.
      * @return The payout chance boostFactor. 200 for double the chance.
@@ -876,81 +832,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         }
         return stakeAmountBoostFactors[length - 1];
     }
-    
-    /**
-     * @dev Admin update the maximum staking amount per NodeLicense
-     * @param newAmount The new maximum amount per NodeLicense
-     */
-    function updateMaxStakePerLicense(uint256 newAmount) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(newAmount != 0, "31");
-        uint256 prevAmount = maxStakeAmountPerLicense;
-        maxStakeAmountPerLicense = newAmount;
-        emit UpdateMaxStakeAmount(prevAmount, newAmount);
-    }
-    
-    /**
-     * @dev Admin update the maximum number of NodeLicense staked in a pool
-     * @param newAmount The new maximum amount per NodeLicense
-     */
-    function updateMaxKeysPerPool(uint256 newAmount) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(newAmount != 0, "32");
-        uint256 prevAmount = maxKeysPerPool;
-        maxKeysPerPool = newAmount;
-        emit UpdateMaxKeysPerPool(prevAmount, newAmount);
-    }
 
-    /**
-     * @dev Admin update the tier thresholds and the corresponding reward chance boost
-     * @param index The index if the tier to update
-     * @param newThreshold The new threshold of the tier
-     * @param newBoostFactor The new boost factor for the tier
-     */
-    function updateStakingTier(uint256 index, uint256 newThreshold, uint256 newBoostFactor) external onlyRole(DEFAULT_ADMIN_ROLE) {
-
-        require(newBoostFactor > 0 && newBoostFactor <= 10000, "33");
-
-        uint256 lastIndex = stakeAmountTierThresholds.length - 1;
-        if (index == 0) {
-            require(stakeAmountTierThresholds[1] > newThreshold, "34");
-        } else if (index == lastIndex) {
-            require(stakeAmountTierThresholds[lastIndex - 1] < newThreshold, "35");
-        } else {
-            require(stakeAmountTierThresholds[index + 1] > newThreshold && stakeAmountTierThresholds[index - 1] < newThreshold, "36");
-        }
-
-        stakeAmountTierThresholds[index] = newThreshold;
-        stakeAmountBoostFactors[index] = newBoostFactor;
-    }
-
-    /**
-     * @dev Admin add a new staking tier to the end of the tier array
-     * @param newThreshold The new threshold of the tier
-     * @param newBoostFactor The new boost factor for the tier
-     */
-    function addStakingTier(uint256 newThreshold, uint256 newBoostFactor) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(newBoostFactor > 0 && newBoostFactor <= 10000, "37");
-
-        uint256 lastIndex = stakeAmountTierThresholds.length - 1;
-        require(stakeAmountTierThresholds[lastIndex] < newThreshold, "38");
-
-        stakeAmountTierThresholds.push(newThreshold);
-        stakeAmountBoostFactors.push(newBoostFactor);
-    }
-
-    /**
-     * @dev Admin remove a staking tier
-     * @param index The index if the tier to remove
-     */
-    function removeStakingTier(uint256 index) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(stakeAmountTierThresholds.length > 1, "39");
-        require(index < stakeAmountTierThresholds.length, "40");
-        for (uint i = index; i < stakeAmountTierThresholds.length - 1; i++) {
-            stakeAmountTierThresholds[i] = stakeAmountTierThresholds[i + 1];
-            stakeAmountBoostFactors[i] = stakeAmountBoostFactors[i + 1];
-        }
-        stakeAmountTierThresholds.pop();
-        stakeAmountBoostFactors.pop();
-    }
 
     /**
      * @dev Looks up payout boostFactor based on the staking tier for a staker wallet.
