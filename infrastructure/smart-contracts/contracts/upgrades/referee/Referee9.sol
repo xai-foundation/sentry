@@ -69,6 +69,7 @@ import "../../RefereeCalculations.sol";
 // 53: Pool has already been submitted for this challenge.
 // 54: Pool has not submitted for this challenge.
 // 55: Cannot stake mixed keys. All keys must be same status (submitted or not submitted) for the current challenge.
+// 56: Only NodeLicense contract can call this function.
 
 contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -933,7 +934,8 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
      * @dev Admin function to enable or disable staking.
      * @param enabled The new staking status.
      */
-    function setStakingEnabled(bool enabled) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setStakingEnabled(bool enabled) external {
+        require(msg.sender == nodeLicenseAddress, "56");
         stakingEnabled = enabled;
         emit StakingEnabled(enabled);
     }

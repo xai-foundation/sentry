@@ -406,7 +406,7 @@ describe("Fixture Tests", function () {
     describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
     // describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
     // describe("PoolSubmissions", RefereePoolSubmissions(deployInfrastructure).bind(this));
-    //describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
+    describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
 
 
     // This doesn't work when running coverage
