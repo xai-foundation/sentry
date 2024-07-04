@@ -907,11 +907,14 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
     /**
      * @notice Get winning key count for a pool submission.
      * @param stakedKeyCount The total number of keys staked in the pool.
+     * @param boostFactor the boost factor of the pool
+     * @param poolAddress used as parameter for randomization
+     * @param challengeId used as parameter for radomization
      * @return winningKeyCount The number of winning keys.
      */
-    function getWinningKeyCount(uint256 stakedKeyCount) internal returns (uint256) {
-        return RefereeCalculations.getWinningKeyCount(stakedKeyCount);
-    }   
+    function getWinningKeyCount(uint256 stakedKeyCount, uint256 boostFactor, address poolAddress, uint256 challengeId) internal view returns (uint256) {
+        return RefereeCalculations.getWinningKeyCount(stakedKeyCount, boostFactor, poolAddress, challengeId);
+    }
 
     /**
     @notice Submit a New Pool assertion to a challenge.
@@ -945,8 +948,10 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         // the user has already submitted assertions to the current challenge but the pool has not.
         uint256 keysHaveSubmitted = poolSubmissions[_challengeId][_poolAddress].pendingStakedKeys;
 
+        // Get the stakedAmount of _poolAddress for determining boostFactor
+        uint256 stakedAmount = stakedAmounts[_poolAddress];
         // Determine the number of winning keys
-        uint256 winningKeyCount = getWinningKeyCount(totalStakedKeys - keysHaveSubmitted);
+        uint256 winningKeyCount = getWinningKeyCount((totalStakedKeys - keysHaveSubmitted), _getBoostFactor(stakedAmount), _poolAddress, _challengeId);
 
         // Update the challenge by adding the winning key count to the total winning keys
         challenges[_challengeId].numberOfEligibleClaimers += winningKeyCount;
@@ -983,8 +988,10 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         // the user has already submitted assertions to the current challenge but the pool has not.
         uint256 keysHaveSubmitted = poolSubmissions[_challengeId][_poolAddress].pendingStakedKeys;
 
+        // Get the stakedAmount of _poolAddress for determining boostFactor
+        uint256 stakedAmount = stakedAmounts[_poolAddress];
         // Determine the number of winning keys
-        uint256 winningKeyCount = getWinningKeyCount(totalStakedKeys - keysHaveSubmitted);
+        uint256 winningKeyCount = getWinningKeyCount((totalStakedKeys - keysHaveSubmitted), _getBoostFactor(stakedAmount),_poolAddress, _challengeId);
 
         // Determine the winning key count increase or decrease amounts
         uint256 winningKeysIncreaseAmount = 0;
