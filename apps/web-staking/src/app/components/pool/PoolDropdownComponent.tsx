@@ -51,8 +51,8 @@ const PoolDropdownComponent = () => {
     return false
   }
 
-  const validationButton = () => { 
-    if (blocked || loading || selectedCountry === "United States") {
+  const validateAndContinue = () => { 
+    if (isBlockedCountry() || loading || selectedCountry === "United States") {
       return true;
     }
     if (listOfCountries.filter(item => item.label === selectedCountry).length === 0) {
@@ -79,11 +79,11 @@ const PoolDropdownComponent = () => {
       />
       {((selectedCountry && isBlockedCountry()) || selectedCountry === "United States") && <span className="block text-lg font-medium text-[#F76808]">{"KYC is not available for the selected country"}</span>}
       <PrimaryButton
-        isDisabled={validationButton() || isBlockedCountry()}
+        isDisabled={validateAndContinue()}
         onClick={onClickHelper}
         btnText={"Continue"}
         className="flex items-center justify-center group uppercase my-2 w-[337px] text-xl global-clip-btn disabled:!text-elementalGrey"
-        icon={<ExternalLinkIcon extraClasses={{svgClasses: "mb-[3px] ml-[5px]", pathClasses: `${isBlockedCountry() || validationButton() ? "!fill-elementalGrey" : "!fill-white" } group-hover:!fill-current duration-200 ease-in` }} />}
+        icon={<ExternalLinkIcon extraClasses={{svgClasses: "mb-[3px] ml-[5px]", pathClasses: `${validateAndContinue() ? "!fill-elementalGrey" : "!fill-white" } group-hover:!fill-current duration-200 ease-in` }} />}
       />
     </div>
   );
