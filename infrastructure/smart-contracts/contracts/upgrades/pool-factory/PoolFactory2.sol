@@ -562,7 +562,6 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
             referee.unstakeKey(pool, msg.sender, keyId, keyHasSubmitted, poolHasSubmitted);
         }
 
-        Referee9A(refereeAddress).unstakeKeys(pool, msg.sender, keyIds);
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.unstakeKeys(msg.sender, unstakeRequestIndex, keyIds);
 
