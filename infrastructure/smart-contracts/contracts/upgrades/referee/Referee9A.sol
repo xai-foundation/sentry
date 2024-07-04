@@ -999,93 +999,42 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         stakedAmounts[msg.sender] -= amount;
         emit UnstakeV1(msg.sender, amount, stakedAmounts[msg.sender]);
     }
-
-    function stakeKeys(address pool, address staker, uint256[] memory keyIds, bool _asAdmin) external onlyPoolFactory {
-        require(_asAdmin || stakingEnabled, "52");
-        uint256 keysLength = keyIds.length;
-        require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "43");
-        
-        uint256 keysHaveSubmitted = 0;
-
-        NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
-        for (uint256 i = 0; i < keysLength; i++) {
-            uint256 keyId = keyIds[i];
-            require(assignedKeyToPool[keyId] == address(0), "44");
-            require(nodeLicenseContract.ownerOf(keyId) == staker, "45");
-            if (submissions[challengeCounter][keyId].submitted) {
-                keysHaveSubmitted += 1;
-            }   
+    function stakeKey(address pool, address staker, uint256 keyId, bool userHasSubmitted, bool poolHasSubmitted) external onlyPoolFactory {
             assignedKeyToPool[keyId] = pool;
-        }
-
-        assignedKeysToPoolCount[pool] += keysLength;
-        assignedKeysOfUserCount[staker] += keysLength;
-
-        bool poolHasSubmitted = poolSubmissions[challengeCounter][pool].submitted;
-        bool userHasSubmitted = keysHaveSubmitted > 0;
+            assignedKeysToPoolCount[pool] += 1;
+            assignedKeysOfUserCount[staker] += 1;
 
         if(poolHasSubmitted && !userHasSubmitted) {  
             // If the pool has submitted and the user has not, then update the pool assertion based on the new keys staked
             _updatePoolAssertion(pool, challengeCounter);
         }else if(!poolHasSubmitted && userHasSubmitted) {       
             // If the pool has not submitted and the user has, then update the pending staked keys
-            poolSubmissions[challengeCounter][pool].pendingStakedKeys += keysHaveSubmitted;
+            poolSubmissions[challengeCounter][pool].pendingStakedKeys += 1;
         }else if (poolHasSubmitted && userHasSubmitted) { 
             // If both the pool and user have submitted, then update the pending staked keys
             // Before the challenge is over, if another user stakes in the pool and that user has
             // not submitted, this ensures the previously submitted keys are not counted in the updated pool assertions.
-            poolSubmissions[challengeCounter][pool].pendingStakedKeys += keysHaveSubmitted;
-
-            // If the user has not submitted for all keys, then update the pool assertion based on the new keys staked
-            if(keysHaveSubmitted < keysLength){
-                _updatePoolAssertion(pool, challengeCounter);
-            }
+            poolSubmissions[challengeCounter][pool].pendingStakedKeys += 1;
         }
+
     }
 
-    function unstakeKeys(address pool, address staker, uint256[] memory keyIds) external onlyPoolFactory {
-        require(stakingEnabled, "52");
-        uint256 keysLength = keyIds.length;
-        NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
-
-        uint256 keysHaveSubmitted = 0;
-
-        for (uint256 i = 0; i < keysLength; i++) {
-            uint256 keyId = keyIds[i];
-            require(assignedKeyToPool[keyId] == pool, "47");
-            require(nodeLicenseContract.ownerOf(keyId) == staker, "48");
-            assignedKeyToPool[keyId] = address(0);
-            
-            // Count any keys that have been submitted for individually in the current challenge
-            // This would only happen if a user submits for a key, then stakes it in a pool, then unstakes
-            // it from the pool before the challenge is over.
-            if (submissions[challengeCounter][keyId].submitted) {
-                keysHaveSubmitted += 1;
-            }   
-        }
-
-        assignedKeysToPoolCount[pool] -= keysLength;
-        assignedKeysOfUserCount[staker] -= keysLength;        
-
-        bool poolHasSubmitted = poolSubmissions[challengeCounter][pool].submitted;
-        bool userHasSubmitted = keysHaveSubmitted > 0;
+    function unstakeKey(address pool, address staker, uint256 keyId, bool userHasSubmitted, bool poolHasSubmitted) external onlyPoolFactory {
+        assignedKeyToPool[keyId] = address(0);
+        assignedKeysToPoolCount[pool] -= 1;
+        assignedKeysOfUserCount[staker] -= 1;
 
         if(poolHasSubmitted && !userHasSubmitted) {  
-            // If the pool has submitted and the individual user keys have not, then update the pool assertion based on the new keys staked
+            // If the pool has submitted and the user has not, then update the pool assertion based on the new keys staked
             _updatePoolAssertion(pool, challengeCounter);
         }else if(!poolHasSubmitted && userHasSubmitted) {       
             // If the pool has not submitted and the user has, then update the pending staked keys
-            poolSubmissions[challengeCounter][pool].pendingStakedKeys -= keysHaveSubmitted;
-        }else if (poolHasSubmitted && userHasSubmitted) {
+            poolSubmissions[challengeCounter][pool].pendingStakedKeys -= 1;
+        }else if (poolHasSubmitted && userHasSubmitted) { 
             // If both the pool and user have submitted, then update the pending staked keys
             // Before the challenge is over, if another user stakes in the pool and that user has
             // not submitted, this ensures the previously submitted keys are not counted in the updated pool assertions.
-            poolSubmissions[challengeCounter][pool].pendingStakedKeys -= keysHaveSubmitted;
-
-            // If the user has not submitted for all keys, then update the pool assertion based on the new keys staked
-            if(keysHaveSubmitted < keysLength){
-                _updatePoolAssertion(pool, challengeCounter);
-            }
+            poolSubmissions[challengeCounter][pool].pendingStakedKeys -= 1;
         }
     }
 
