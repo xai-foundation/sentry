@@ -57,11 +57,46 @@ library RefereeCalculations {
     }
 
     /**
-     * @notice Get winning key count for a pool submission.
-     * @param stakedKeyCount The total number of keys staked in the pool.
-     * @return winningKeyCount The number of winning keys.
+     * @dev Calculates the number of winning keys for a staking pool
+     * @notice This function determines the winning key count based on the staked amount and pool tier,
+     * with a random adjustment of up to 10% to the boost factor.
+     * @param _stakedKeyCount Amount of keys staked in pool
+     * @param _boostFactor The factor controlling the chance of eligibility for payout as a multiplicator
+     * @param _poolAddress The Address of the pool. Is only used for randomzie
+     * @param _challengeId The ID of the challenge. Is only used for randomzie
+     * @return winningKeyCount Number of winning keys
      */
-    function getWinningKeyCount(uint256 stakedKeyCount) internal returns (uint256) {
-        return (stakedKeyCount * 5000) / 10000;
+
+    function getWinningKeyCount(
+        uint256 _stakedKeyCount,
+        uint256 _boostFactor,
+        address _poolAddress,
+        uint256 _challengeId
+    ) public view returns (uint256 winningKeyCount) {
+        require(_stakedKeyCount > 0, "41");
+
+        //creates a seed to determine the random number between 0-99 to use for dice roll.
+        uint256 seed = uint256(keccak256(abi.encodePacked(block.timestamp, _boostFactor, _stakedKeyCount, _poolAddress, _challengeId, msg.sender)));
+        
+        // Dice for rolling possible winning Amount
+        uint256 dice = seed % 100;
+
+        if (dice <= 40) {
+            // WinningKeyCount is stakedAmount * 0.5 of boostFactor
+            winningKeyCount = (_stakedKeyCount * (_boostFactor / 2)) / 10000;
+        } else if (dice <= 60) {
+            // WinningKeyCount is stakedAmount * 0.75 of boostFactor
+            winningKeyCount = (_stakedKeyCount * ((_boostFactor * 75) / 100)) / 10000;
+        } else if (dice <= 90) {
+            // WinningKeyCount is stakedAmount * boostFactor
+            winningKeyCount = (_stakedKeyCount * _boostFactor) / 10000;
+        } else if (dice > 90) {
+            // WinningKeyCount is stakedAmount * 1.5 of boostFactor
+            winningKeyCount =
+                (_stakedKeyCount * ((_boostFactor * 15) / 10)) /
+                10000;
+        }
+
+        return winningKeyCount;
     }
 }
