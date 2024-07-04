@@ -668,37 +668,44 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         // Check if the key is assigned to a pool
         bool keyAssignedToPool = rewardReceiver != address(0);
 
-        // If the key is assigned to a pool and the key has not been submitted for individually
-        if (keyAssignedToPool && !submissions[_challengeId][_nodeLicenseId].submitted) {
+        // If key was submitted for individually
+        if(submissions[_challengeId][_nodeLicenseId].submitted){
+            if(keyAssignedToPool){
+                // If the key is assigned to a pool, claim the pool rewards
+                _claimPoolSubmissionRewards(rewardReceiver, _challengeId);
+            }else{
+                // If the key is not assigned to a pool, set the reward receiver to the owner
+                rewardReceiver = owner;
+                // Check if the submission has already been claimed
+                require(!submission.claimed, "23");
+
+                require(submission.eligibleForPayout, "24");
+
+                // mark the submission as claimed
+                submissions[_challengeId][_nodeLicenseId].claimed = true;
+
+                // increment the amount claimed on the challenge
+                challenges[_challengeId].amountClaimedByClaimers += reward;
+
+                // Mint the reward to the owner of the nodeLicense
+                esXai(esXaiAddress).mint(rewardReceiver, reward);
+
+                // Emit the RewardsClaimed event
+                emit RewardsClaimed(_challengeId, reward);
+
+                // Increment the total claims of this address
+                _lifetimeClaims[rewardReceiver] += reward;
+
+                // unallocate the tokens that have now been converted to esXai
+                _allocatedTokens -= reward;
+            }
+        }else{
+            // If the key was not submitted for individually
+            // Check if the key is assigned to a pool
+            require(keyAssignedToPool, "47");
+
             // If the key is assigned to a pool, claim the pool rewards
             _claimPoolSubmissionRewards(rewardReceiver, _challengeId);
-        }else{        
-            // If the key is not assigned to a pool, set the reward receiver to the owner       
-            // Check if the nodeLicenseId is eligible for a payout
-            rewardReceiver = owner;
-            // Check if the submission has already been claimed
-            require(!submission.claimed, "23");
-
-            require(submission.eligibleForPayout, "24");
-
-            // mark the submission as claimed
-            submissions[_challengeId][_nodeLicenseId].claimed = true;
-
-            // increment the amount claimed on the challenge
-            challenges[_challengeId].amountClaimedByClaimers += reward;
-
-
-            // Mint the reward to the owner of the nodeLicense
-            esXai(esXaiAddress).mint(rewardReceiver, reward);
-
-            // Emit the RewardsClaimed event
-            emit RewardsClaimed(_challengeId, reward);
-
-            // Increment the total claims of this address
-            _lifetimeClaims[rewardReceiver] += reward;
-
-            // unallocate the tokens that have now been converted to esXai
-            _allocatedTokens -= reward;
         }
     }
 
@@ -735,34 +742,44 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             // Check if the key is assigned to a pool
             bool keyAssignedToPool = rewardReceiver != address(0);
 
-            // If the key is assigned to a pool and the key has not been submitted for individually
-            if (keyAssignedToPool && !submissions[_challengeId][_nodeLicenseId].submitted) {
-                // If the key is assigned to a pool, confirm the pool submitted for this challenge
-                _claimPoolSubmissionRewards(rewardReceiver, _challengeId);
-            }else{        
-            // If the key is not assigned to a pool, set the reward receiver to the owner       
-            // Check if the nodeLicenseId is eligible for a payout
-                rewardReceiver = owner;
-            if (
-                mintTimestamp < challengeToClaimFor.createdTimestamp && 
-                !submission.claimed &&
-                submission.eligibleForPayout
-            ) {
-                // mark the submission as claimed
-                submissions[_challengeId][_nodeLicenseId].claimed = true;
+            // If the key has submitted individually
+            if(submissions[_challengeId][_nodeLicenseId].submitted){
+                // Check if the key is assigned to a pool
+                if(keyAssignedToPool){
+                    // If the key is assigned to a pool, claim the pool rewards
+                    _claimPoolSubmissionRewards(rewardReceiver, _challengeId);
+                }else{
+                    // If the key is not assigned to a pool, set the reward receiver to the owner
+                    rewardReceiver = owner;
+                    // Confirm the submission is eligible to be claimed
+                    if (
+                        mintTimestamp < challengeToClaimFor.createdTimestamp && 
+                        !submission.claimed &&
+                        submission.eligibleForPayout
+                    ) {
+                        // mark the submission as claimed
+                        submissions[_challengeId][_nodeLicenseId].claimed = true;
 
-                // increment the amount claimed on the challenge
-                challenges[_challengeId].amountClaimedByClaimers += reward;                
+                        // increment the amount claimed on the challenge
+                        challenges[_challengeId].amountClaimedByClaimers += reward;                
 
-                // Mint the reward to the owner of the nodeLicense
-                esXai(esXaiAddress).mint(rewardReceiver, reward);
-                
-                // Increment the total claims of this address
-                _lifetimeClaims[rewardReceiver] += reward;
+                        // Mint the reward to the owner of the nodeLicense
+                        esXai(esXaiAddress).mint(rewardReceiver, reward);
+                        
+                        // Increment the total claims of this address
+                        _lifetimeClaims[rewardReceiver] += reward;
 
-                // Increment the claim count
-                claimCount++;
+                        // Increment the claim count
+                        claimCount++;
+                    }
                 }
+            }else{
+                // If the key was not submitted for individually
+                // Check if the key is assigned to a pool
+                require(keyAssignedToPool, "47");
+
+                // If the key is assigned to a pool, claim the pool rewards
+                _claimPoolSubmissionRewards(rewardReceiver, _challengeId);
             }
         }
 
