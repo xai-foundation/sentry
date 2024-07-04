@@ -21,7 +21,7 @@ contract RefereeGetWinningKeyCount {
             keccak256(
                 abi.encodePacked(
                     block.timestamp,
-                    block.prevrandao,
+                  //  block.prevrandao,
                     msg.sender,
                     tx.gasprice
                 )
