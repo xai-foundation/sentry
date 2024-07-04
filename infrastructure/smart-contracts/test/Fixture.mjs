@@ -334,17 +334,13 @@ describe("Fixture Tests", function () {
         const RefereeCalculations = await ethers.getContractFactory("RefereeCalculations");
         const refereeCalculations = await upgrades.deployProxy(RefereeCalculations, [], { deployer: deployer });
         await refereeCalculations.waitForDeployment();
-        console.log("RefereeCalculations deployed to:", await refereeCalculations.getAddress());
         
         // Referee9
         // This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
         const Referee9 = await ethers.getContractFactory("Referee9");
         // Upgrade the Referee
-        console.log("Upgrading Referee to Referee9");
         const referee9 = await upgrades.upgradeProxy((await referee.getAddress()), Referee9, { call: { fn: "initialize", args: [await refereeCalculations.getAddress()] } });
-        console.log("Waiting for Referee9 deployment")
         await referee9.waitForDeployment();
-        console.log("Referee9 deployed to:", await referee9.getAddress());
 
 
         config.esXaiAddress = await esXai.getAddress();
