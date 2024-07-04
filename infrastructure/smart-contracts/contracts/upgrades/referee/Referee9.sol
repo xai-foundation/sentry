@@ -650,67 +650,11 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         // If the challenge has expired, end early
         if (expired) return;
 
-        // Get the minting timestamp of the nodeLicenseId
-        uint256 mintTimestamp = NodeLicense(nodeLicenseAddress).getMintTimestamp(_nodeLicenseId);
-
-        // Check if the nodeLicenseId is eligible for a payout
-        require(mintTimestamp < challengeToClaimFor.createdTimestamp, "21");
-
-        // Look up the submission
-        Submission memory submission = submissions[_challengeId][_nodeLicenseId];
-
-        // Get the owner of the nodeLicenseId
-        address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
-
-
         // Take the amount that was allocated for the rewards and divide it by the number of claimers
         uint256 reward = challengeToClaimFor.rewardAmountForClaimers / challengeToClaimFor.numberOfEligibleClaimers;
 
-        // Set the reward receiver
-        address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
-
-        // Check if the key is assigned to a pool
-        bool keyAssignedToPool = rewardReceiver != address(0);
-
-        // If key was submitted for individually
-        if(submissions[_challengeId][_nodeLicenseId].submitted){
-            if(keyAssignedToPool){
-                // If the key is assigned to a pool, claim the pool rewards
-                _claimPoolSubmissionRewards(rewardReceiver, _challengeId);
-            }else{
-                // If the key is not assigned to a pool, set the reward receiver to the owner
-                rewardReceiver = owner;
-                // Check if the submission has already been claimed
-                require(!submission.claimed, "23");
-
-                require(submission.eligibleForPayout, "24");
-
-                // mark the submission as claimed
-                submissions[_challengeId][_nodeLicenseId].claimed = true;
-
-                // increment the amount claimed on the challenge
-                challenges[_challengeId].amountClaimedByClaimers += reward;
-
-                // Mint the reward to the owner of the nodeLicense
-                esXai(esXaiAddress).mint(rewardReceiver, reward);
-
-                // Emit the RewardsClaimed event
-                emit RewardsClaimed(_challengeId, reward);
-
-                // Increment the total claims of this address
-                _lifetimeClaims[rewardReceiver] += reward;
-
-                // unallocate the tokens that have now been converted to esXai
-                _allocatedTokens -= reward;
-            }
-        }else{
-            // If the key was not submitted for individually
-            // Check if the key is assigned to a pool
-            require(keyAssignedToPool, "47");
-
-            // If the key is assigned to a pool, claim the pool rewards
-            _claimPoolSubmissionRewards(rewardReceiver, _challengeId);
-        }
+        // Call the internal function to claim the reward
+        _claimSubmission(_challengeId, _nodeLicenseId, reward);
     }
 
 	function claimMultipleRewards(
@@ -735,61 +679,90 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
 		for (uint256 i = 0; i < _nodeLicenseIds.length; i++) {
             uint256 _nodeLicenseId = _nodeLicenseIds[i];
-
-            uint256 mintTimestamp = NodeLicense(nodeLicenseAddress).getMintTimestamp(_nodeLicenseId);
-            address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
-            Submission memory submission = submissions[_challengeId][_nodeLicenseId];
-
-            // Set the reward receiver
-            address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
-
-            // Check if the key is assigned to a pool
-            bool keyAssignedToPool = rewardReceiver != address(0);
-
-            // If the key has submitted individually
-            if(submissions[_challengeId][_nodeLicenseId].submitted){
-                // Check if the key is assigned to a pool
-                if(keyAssignedToPool){
-                    // If the key is assigned to a pool, claim the pool rewards
-                    _claimPoolSubmissionRewards(rewardReceiver, _challengeId);
-                }else{
-                    // If the key is not assigned to a pool, set the reward receiver to the owner
-                    rewardReceiver = owner;
-                    // Confirm the submission is eligible to be claimed
-                    if (
-                        mintTimestamp < challengeToClaimFor.createdTimestamp && 
-                        !submission.claimed &&
-                        submission.eligibleForPayout
-                    ) {
-                        // mark the submission as claimed
-                        submissions[_challengeId][_nodeLicenseId].claimed = true;
-
-                        // increment the amount claimed on the challenge
-                        challenges[_challengeId].amountClaimedByClaimers += reward;                
-
-                        // Mint the reward to the owner of the nodeLicense
-                        esXai(esXaiAddress).mint(rewardReceiver, reward);
-                        
-                        // Increment the total claims of this address
-                        _lifetimeClaims[rewardReceiver] += reward;
-
-                        // Increment the claim count
-                        claimCount++;
-                    }
-                }
-            }else{
-                // If the key was not submitted for individually
-                // Check if the key is assigned to a pool
-                require(keyAssignedToPool, "47");
-
-                // If the key is assigned to a pool, claim the pool rewards
-                _claimPoolSubmissionRewards(rewardReceiver, _challengeId);
-            }
+            // Call the internal function to claim the reward
+            bool incrementClaimCount =  _claimSubmission(_challengeId, _nodeLicenseId, reward);
+            // If the claim was an individual key claim (not staked in a pool), increment the claim count
+            if(incrementClaimCount){
+                claimCount++;
+            }               
         }
-
+        // Decrement the allocated tokens by the total reward claimed
         _allocatedTokens -= claimCount * reward;
         emit BatchRewardsClaimed(_challengeId, claimCount * reward, claimCount);
 	}
+
+    /**
+    * @notice Manages a submission claim for an individual key or a pool.
+    * @dev This function checks if the key was submitted for individually or assigned to a pool, and claims the rewards accordingly.
+    * @param _challengeId The ID of the challenge.
+    * @param _nodeLicenseId The ID of the NodeLicense.
+    * @param reward The reward to be claimed.
+    * @return incrementClaimCount A boolean indicating if the claim count should be incremented. True if the key was submitted and claimed for individually.
+    */
+
+    function _claimSubmission(uint256 _challengeId, uint256 _nodeLicenseId, uint256 reward) internal returns (bool incrementClaimCount) {
+
+        // Get the submission from storage
+        Submission memory submission = submissions[_challengeId][_nodeLicenseId];
+
+        // Get the owner of the nodeLicenseId
+        address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
+
+        // Set the intitial reward receiver to be the assigned pool
+        address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
+
+        // Check if the key is assigned to a pool
+        bool keyAssignedToPool = rewardReceiver != address(0);
+
+        // If key was submitted for individually
+        if(submission.submitted){
+            if(keyAssignedToPool){
+                // If the key was submitted for individually and is assigned to a pool, claim the pool rewards
+                _claimPoolSubmissionRewards(rewardReceiver, _challengeId);
+            }else{
+                // If the key was submitted for individually and is not assigned to a pool, set the reward receiver to the owner
+                rewardReceiver = owner;
+                // Check if the submission has already been claimed
+                require(!submission.claimed, "23");
+
+                // Check if the submission is eligible for payout
+                require(submission.eligibleForPayout, "24");
+
+                // Get the minting timestamp of the nodeLicenseId
+                uint256 mintTimestamp = NodeLicense(nodeLicenseAddress).getMintTimestamp(_nodeLicenseId);
+
+                // Check if the minting timestamp is before the challenge was created
+                require(mintTimestamp < challenges[_challengeId].createdTimestamp, "21");
+
+                // mark the submission as claimed
+                submissions[_challengeId][_nodeLicenseId].claimed = true;
+
+                // increment the amount claimed on the challenge
+                challenges[_challengeId].amountClaimedByClaimers += reward;
+
+                // Mint the reward to the owner of the nodeLicense
+                esXai(esXaiAddress).mint(rewardReceiver, reward);
+
+                // Emit the RewardsClaimed event
+                emit RewardsClaimed(_challengeId, reward);
+
+                // Increment the total claims of this address
+                _lifetimeClaims[rewardReceiver] += reward;
+
+                // Set the incrementClaimCount to true
+                // This will be used by the calling function to determine if the claim count should be incremented
+                // Claim counts are not incremented for pool submissions
+                incrementClaimCount = true;
+            }
+        }else{
+            // If the key was not submitted for individually
+            // Check if the key is assigned to a pool
+            require(keyAssignedToPool, "47");            
+
+            // If the key is assigned to a pool, claim the pool rewards
+            _claimPoolSubmissionRewards(rewardReceiver, _challengeId);
+        }
+    }
 
     /**
      * @notice Creates an assertion hash and determines if the hash payout is below the threshold.
