@@ -198,9 +198,6 @@ export function SentryWallet() {
 		void queryClient.invalidateQueries({queryKey: ["ownersForOperator", operatorAddress]});
 	}
 
-	console.log('funded', funded)
-	console.log('hasAssignedKeys', hasAssignedKeys)
-
 	return (
 		<>
 			{assignedWallet.show && (
