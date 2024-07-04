@@ -21,7 +21,8 @@ export const SORT_FIELDS = {
   ownerSplit: "ownerShare",
   keySplit: "keyBucketShare",
   esXaiSplit: "stakedBucketShare",
-  esXaiRewardRate: "esXaiRewardRate"
+  esXaiRewardRate: "esXaiRewardRate",
+  keyRewardRate: "keyRewardRate"
 }
 
 const POOL_DATA_COLUMS = [
@@ -32,7 +33,7 @@ const POOL_DATA_COLUMS = [
   {title: "OWNER SPLIT", sortField: SORT_FIELDS.ownerSplit},
   {title: "KEY SPLIT", sortField: SORT_FIELDS.keySplit},
   {title: "esXAI SPLIT", sortField: SORT_FIELDS.esXaiSplit},
-  {title: "esXAI RATE", sortField: SORT_FIELDS.esXaiRewardRate},
+  {title: "esXAI RATE", sortField: null},
   {title: "ACTIONS", sortField: null},
 ];
 

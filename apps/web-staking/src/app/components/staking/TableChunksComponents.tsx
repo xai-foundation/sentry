@@ -298,8 +298,10 @@ export function TableHead({
         return "name";
       case 2:
         return showTableKeys ? "keyCount" : "totalStakedAmount";
+      case 4:
+        return !column.sortField ? (showTableKeys ? "keyRewardRate" : "esXaiRewardRate" ) : "";
       case 6:
-        return "esXaiRewardRate";
+        return showTableKeys ? "keyRewardRate" : "esXaiRewardRate";
       default:
         return "";
     }
@@ -330,6 +332,22 @@ export function TableHead({
     setIsSorted(false)
 
   }, [sortFilter]);
+
+  useEffect(() => {
+
+
+    if (!sortFilter) {
+      setCurrentSort(showTableKeys ? SORT_FIELDS.keyRewardRate : SORT_FIELDS.esXaiRewardRate)
+
+    } else if (sortFilter === SORT_FIELDS.keyRewardRate && !showTableKeys) {
+      setCurrentSort(SORT_FIELDS.esXaiRewardRate)
+
+    } else if  (sortFilter === SORT_FIELDS.esXaiRewardRate && showTableKeys) {
+      setCurrentSort(SORT_FIELDS.keyRewardRate)
+
+    }
+
+  }, [showTableKeys]);
 
   return (
     <th
