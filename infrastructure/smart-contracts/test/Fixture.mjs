@@ -333,7 +333,7 @@ describe("Fixture Tests", function () {
 
         // Referee9
         // This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
-        const Referee9 = await ethers.getContractFactory("Referee9A");
+        const Referee9 = await ethers.getContractFactory("Referee9");
         const referee9 = await upgrades.upgradeProxy((await referee.getAddress()), Referee9, { call: { fn: "initialize", args: [] } });
         await referee9.waitForDeployment();
 

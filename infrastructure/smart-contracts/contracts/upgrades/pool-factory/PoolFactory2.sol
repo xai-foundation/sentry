@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeab
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
-import "../../upgrades/referee/Referee9A.sol";
+import "../../upgrades/referee/Referee9.sol";
 import "../../Xai.sol";
 import "../../upgrades/esXai/esXai2.sol";
 import "../../upgrades/node-license/NodeLicense8.sol";
@@ -397,7 +397,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         address staker,
         bool _asAdmin
     ) internal {
-        Referee9A referee = Referee9A(refereeAddress);
+        Referee9 referee = Referee9(refereeAddress);
         NodeLicense8 nodeLicenseContract = NodeLicense8(nodeLicenseAddress);
         require(_asAdmin || referee.stakingEnabled(), "52");        
         uint256 keysLength = keyIds.length;
@@ -547,7 +547,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         uint256[] memory keyIds
     ) external {
         NodeLicense8 nodeLicenseContract = NodeLicense8(nodeLicenseAddress);
-        Referee9A referee = Referee9A(refereeAddress);
+        Referee9 referee = Referee9(refereeAddress);
 
         require(poolsCreatedViaFactory[pool], "23"); // Pool must be created via factory
 
@@ -586,7 +586,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     function stakeEsXai(address pool, uint256 amount) external {
         require(poolsCreatedViaFactory[pool], "27"); // Pool must be created via factory
 
-        Referee9A(refereeAddress).stakeEsXai(pool, amount);
+        Referee9(refereeAddress).stakeEsXai(pool, amount);
         esXai(esXaiAddress).transferFrom(msg.sender, address(this), amount);
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.stakeEsXai(msg.sender, amount);
@@ -598,7 +598,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
             pool,
             amount,
             stakingPool.getStakedAmounts(msg.sender),
-            Referee9A(refereeAddress).stakedAmounts(pool)
+            Referee9(refereeAddress).stakedAmounts(pool)
         );
     }
 
@@ -616,7 +616,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         require(poolsCreatedViaFactory[pool], "28"); // Pool must be created via factory
 
         esXai(esXaiAddress).transfer(msg.sender, amount);
-        Referee9A(refereeAddress).unstakeEsXai(pool, amount);
+        Referee9(refereeAddress).unstakeEsXai(pool, amount);
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.unstakeEsXai(msg.sender, unstakeRequestIndex, amount);
 
@@ -629,7 +629,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
             pool,
             amount,
             stakingPool.getStakedAmounts(msg.sender),
-            Referee9A(refereeAddress).stakedAmounts(pool)
+            Referee9(refereeAddress).stakedAmounts(pool)
         );
     }
 
@@ -782,7 +782,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
                 i
             );
             if (
-                Referee9A(refereeAddress).assignedKeyToPool(keyId) == address(0)
+                Referee9(refereeAddress).assignedKeyToPool(keyId) == address(0)
             ) {
                 unstakedKeyIds[currentIndexUnstaked] = keyId;
                 currentIndexUnstaked++;
@@ -801,7 +801,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         isStaked = new bool[](keyIds.length);
         for (uint256 i; i < keyIds.length; i++) {
             isStaked[i] =
-                Referee9A(refereeAddress).assignedKeyToPool(keyIds[i]) !=
+                Referee9(refereeAddress).assignedKeyToPool(keyIds[i]) !=
                 address(0);
         }
     }
