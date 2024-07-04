@@ -506,40 +506,69 @@ export function handleUnstakeV1(event: UnstakeV1): void {
 }
 
 export function handleNewPoolSubmission(event: NewPoolSubmissionEvent): void {
+
+  const challenge = Challenge.load(event.params.challengeId.toString())
+  if (!challenge) {
+    log.warning("Failed to find challenge handleNewPoolSubmission: keyID: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
+    return;
+  }
+
+  const pool = PoolInfo.load(event.params.poolAddress.toHexString())
+  if (!pool) {
+    log.warning("Failed to find pool handleNewPoolSubmission: poolAddress: " + event.params.poolAddress.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
+    return;
+  }
+
   let poolSubmission = new PoolSubmission(event.params.challengeId.toHexString() + event.params.poolAddress.toHexString())
   poolSubmission.challengeId = event.params.challengeId
+  poolSubmission.poolAddress = event.params.poolAddress
+  poolSubmission.challenge = challenge.id
+  poolSubmission.poolInfo = pool.id
   poolSubmission.stakedKeyCount = event.params.stakedKeys
   poolSubmission.winningKeyCount = event.params.winningKeys
   poolSubmission.claimedRewardsAmount = BigInt.fromI32(0)
-  poolSubmission.poolAddress = event.params.poolAddress
+  poolSubmission.createdTimestamp = event.block.timestamp
+  poolSubmission.createdTxHash = event.transaction.hash
+  poolSubmission.claimTimestamp = BigInt.fromI32(0)
+  poolSubmission.claimTxHash = Bytes.fromI32(0)
   poolSubmission.claimed = false
+
+  const transactionSignature = getTxSignatureFromEvent(event)
+  let assertionStateRootOrConfirmData: Bytes = Bytes.fromI32(0);
+  const dataToDecode = getInputFromEvent(event, true)
+  let decoded = ethereum.decode('(address,uint256,bytes)', dataToDecode)
+
+  if (decoded) {
+    assertionStateRootOrConfirmData = decoded.toTuple()[2].toBytes()
+  } else {
+    log.warning(`Failed to decode handleNewPoolSubmission (${transactionSignature}) TX: ` + event.transaction.hash.toHexString(), [])
+  }
+  poolSubmission.assertionsStateRootOrConfirmData = assertionStateRootOrConfirmData
+
   poolSubmission.save()
 }
 
 export function handleUpdatePoolSubmission(event: UpdatePoolSubmissionEvent): void {
   let poolSubmission = PoolSubmission.load(event.params.challengeId.toHexString() + event.params.poolAddress.toHexString())
   if (!poolSubmission) {
-    poolSubmission = new PoolSubmission(event.params.challengeId.toHexString() + event.params.poolAddress.toHexString())
-    poolSubmission.challengeId = event.params.challengeId
-    poolSubmission.stakedKeyCount = event.params.stakedKeys
-    poolSubmission.winningKeyCount = event.params.winningKeys
-    poolSubmission.claimedRewardsAmount = BigInt.fromI32(0)
-    poolSubmission.poolAddress = event.params.poolAddress
-    poolSubmission.claimed = false
-  } else {
-    poolSubmission.stakedKeyCount = event.params.stakedKeys
-    poolSubmission.winningKeyCount = event.params.winningKeys
+    log.warning("Failed to find poolSubmission in handleUpdatePoolSubmission for challenge " + event.params.challengeId.toHexString() + " and poolAdress: " + event.params.poolAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), [])
+    return
   }
+  
+  poolSubmission.stakedKeyCount = event.params.stakedKeys
+  poolSubmission.winningKeyCount = event.params.winningKeys
   poolSubmission.save()
 }
 
 export function handlePoolRewardsClaimed(event: PoolRewardsClaimedEvent): void {
   let poolSubmission = PoolSubmission.load(event.params.challengeId.toHexString() + event.params.poolAddress.toHexString())
   if (!poolSubmission) {
-    log.warning("Failed to find poolSubmission on PoolRewardsClaimed TX: " + event.transaction.hash.toHexString(), [])
+    log.warning("Failed to find poolSubmission in handlePoolRewardsClaimed for challenge " + event.params.challengeId.toHexString() + " and poolAdress: " + event.params.poolAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), [])
     return
   }
   poolSubmission.claimedRewardsAmount = event.params.totalReward
+  poolSubmission.claimTimestamp = event.block.timestamp
+  poolSubmission.claimTxHash = event.transaction.hash
   poolSubmission.claimed = true
   poolSubmission.save()
 }
