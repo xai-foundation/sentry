@@ -18,7 +18,7 @@ library RefereeCalculations {
      * @return uint256 The challenge emission.
      * @return uint256 The emission tier.
      */
-    function calculateChallengeEmissionAndTier(uint256 totalSupply, uint256 maxSupply) internal pure returns (uint256, uint256) {
+    function calculateChallengeEmissionAndTier(uint256 totalSupply, uint256 maxSupply) external pure returns (uint256, uint256) {
         require(maxSupply > totalSupply, "5");
 
         uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply)); // calculate which tier we are in starting from 0
@@ -48,7 +48,7 @@ library RefereeCalculations {
         uint256 _boostFactor,
         bytes memory _confirmData,
         bytes memory _challengerSignedHash
-    ) internal pure returns (bool, bytes32) {
+    ) external pure returns (bool, bytes32) {
         bytes32 assertionHash = keccak256(abi.encodePacked(_nodeLicenseId, _challengeId, _confirmData, _challengerSignedHash));
         uint256 hashNumber = uint256(assertionHash);
         // hashNumber % 10_000 equals {0...9999}
@@ -72,7 +72,7 @@ library RefereeCalculations {
         uint256 _boostFactor,
         address _poolAddress,
         uint256 _challengeId
-    ) public view returns (uint256 winningKeyCount) {
+    ) external view returns (uint256 winningKeyCount) {
         require(_stakedKeyCount > 0, "41");
 
         //creates a seed to determine the random number between 0-99 to use for dice roll.
