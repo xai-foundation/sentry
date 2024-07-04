@@ -15,28 +15,37 @@ import { BasePagination } from "@/app/components/ui";
 import { formatDailyRewardRate, formatDailyRewardRatePercentage } from "@/app/utils/formatDailyRewardRate";
 import { formatCurrencyCompact } from "@/app/utils/formatCurrency";
 
+export const SORT_FIELDS = {
+  tier: "tierIndex",
+  name: "name",
+  ownerSplit: "ownerShare",
+  keySplit: "keyBucketShare",
+  esXaiSplit: "stakedBucketShare",
+  esXaiRewardRate: "esXaiRewardRate"
+}
+
 const POOL_DATA_COLUMS = [
-  "POOL NAME",
-  "POOL TIER",
-  "",
+  {title: "POOL NAME", sortField: SORT_FIELDS.name},
+  {title: "POOL TIER", sortField: SORT_FIELDS.tier},
+  {title: "", sortField: null},
   // "POOL UPTIME",
-  "OWNER SPLIT",
-  "KEY SPLIT",
-  "esXAI SPLIT",
-  "esXAI RATE",
-  "ACTIONS",
+  {title: "OWNER SPLIT", sortField: SORT_FIELDS.ownerSplit},
+  {title: "KEY SPLIT", sortField: SORT_FIELDS.keySplit},
+  {title: "esXAI SPLIT", sortField: SORT_FIELDS.esXaiSplit},
+  {title: "esXAI RATE", sortField: SORT_FIELDS.esXaiRewardRate},
+  {title: "ACTIONS", sortField: null},
 ];
 
 const POOL_DATA_COLUMS_MOBILE = [
-  "",
-  "POOL TIER",
-  "",
+  {title: "", sortField: null},
+  {title: "POOL TIER", sortField: SORT_FIELDS.tier},
+  {title: "", sortField: null},
   // "POOL UPTIME",
   // "OWNER SPLIT",
   // "esXAI SPLIT",
   // "POOL UPTIME",
-  "REWARDS BREAKDOWN",
-  "",
+  {title: "REWARDS BREAKDOWN", sortField: SORT_FIELDS.keySplit},
+  {title: "", sortField: null},
 ];
 
 interface AvailableTableProps {
@@ -48,6 +57,7 @@ interface AvailableTableProps {
   address: string | undefined;
   tiers?: Array<TierInfo & { icon?: iconType }>;
   maxKeyPerPool: number;
+  setCurrentSort: (field: string) => void;
 }
 
 const AvailablePoolsTableComponent = ({
@@ -59,6 +69,7 @@ const AvailablePoolsTableComponent = ({
   address,
   tiers,
   maxKeyPerPool,
+  setCurrentSort
 }: AvailableTableProps) => {
   const { open } = useWeb3Modal();
   const { isDisconnected } = useAccount();
@@ -75,6 +86,7 @@ const AvailablePoolsTableComponent = ({
                   column={column}
                   index={index}
                   showTableKeys={showTableKeys}
+                  setCurrentSort={setCurrentSort}
                 />
               );
             })}
@@ -89,6 +101,7 @@ const AvailablePoolsTableComponent = ({
                   column={column}
                   index={index}
                   showTableKeys={showTableKeys}
+                  setCurrentSort={setCurrentSort}
                 />
               );
             })}

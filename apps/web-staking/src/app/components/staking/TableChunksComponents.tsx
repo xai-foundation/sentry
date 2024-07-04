@@ -9,6 +9,11 @@ import moment from "moment";
 import Image from "next/image";
 import TableTooltip from "../ui/tooltips/TableTooltip";
 
+import { AiFillCaretUp } from "react-icons/ai";
+import {useEffect, useState} from "react";
+import {SORT_FIELDS} from "@/app/components/staking/AvailablePoolsTableComponent";
+
+
 function OnwerUnstakeInfo({ pool, showTooltipOnClick, tooltipDelay }: { pool: PoolInfo, showTooltipOnClick?: boolean, tooltipDelay?: number }) {
   let content: { title: string, body: string } = { title: "null", body: "no content." };
 
@@ -275,134 +280,188 @@ export function TableRowRewards({
 export function TableHead({
   column,
   index,
-  showTableKeys
+  showTableKeys,
+  setCurrentSort
 }: {
-  column: string;
+  column: {title: string, sortField: string | null};
   index: number;
   showTableKeys: boolean;
+  setCurrentSort: (field: string) => void;
 }) {
+
+  const [isSorted, setIsSorted] = useState(false);
+  const sortFilter = useSearchParams().get("sort") || "";
+
+  const defineSortField = (index: number) => {
+    switch (index) {
+      case 0:
+        return "name";
+      case 2:
+        return showTableKeys ? "keyCount" : "totalStakedAmount";
+      case 6:
+        return "esXaiRewardRate";
+      default:
+        return "";
+    }
+  }
+
+  const handleClick = () => {
+    if (column.sortField) {
+      setCurrentSort(column.sortField)
+      return;
+    }
+    setCurrentSort(defineSortField(index));
+  }
+
+
+  useEffect(() => {
+
+    if (!sortFilter && defineSortField(index) === SORT_FIELDS.esXaiRewardRate) {
+      return setIsSorted(true)
+
+    } else if (!sortFilter) {
+      return setIsSorted(false)
+    }
+
+    if (column.sortField === sortFilter || defineSortField(index) === sortFilter) {
+      return setIsSorted(true)
+    }
+
+    setIsSorted(false)
+
+  }, [sortFilter]);
+
   return (
     <th
+      onClick={index !== 7 ? handleClick : () => {}}
       scope="col"
-      className={`text-left bg-dynamicBlack font-medium text-elementalGrey border-b border-t border-chromaphobicBlack
+      className={`text-left hover:text-hornetSting duration-300 cursor-pointer bg-dynamicBlack font-medium text-elementalGrey border-b border-t border-chromaphobicBlack
         ${index === 0 ? "lg:w-[23%] pl-[17px] lg:pl-7 pr-2 lg:pr-0 text-nowrap lg:text-wrap" : ""}
         ${index === 1 && "lg:table-cell lg:w-[10%] sm:hidden pr-2"} lg:py-4 sm:py-2 bg-crystalWhite font-medium lg:text-[18px] sm:text-sm
         ${index === 2 ?  "sm:w-[15%] lg:w-[20%]" : ""}
-        ${index === 3 && "sm:text-left lg:text-right sm:w-[15%] lg:w-[9%] sm:pl-2 lg:pr-4"} 
+        ${index === 3 && "sm:text-left lg:text-right sm:w-[15%] lg:w-[10%] sm:pl-2 lg:pr-4"} 
         ${index === 4 && "text-right lg:pr-4 sm:text-right sm:pr-[14px] sm:pl-[5px] sm:w-[20%] lg:w-[9%]"} 
         ${index === 5 && "text-right lg:pr-4"}
-        ${index === 6 && "text-right sm:pl-2 lg:pl-5 lg:pr-4 lg:w-[10%]"}
+        ${index === 6 && `text-right sm:pl-2 lg:pl-5 lg:pr-4 ${isSorted ? "lg:w-[11%]" : "lg:w-[10%]"}`}
         ${index === 7 && "text-right sm:pr-2 lg:pr-7"}
         `}
       key={index}
     >
-      {index === 0 && (
-        <span className="">{column}</span>
-      )} 
+     <div className={`w-full flex h-full items-center justify-end
+     ${index === 0 && "!justify-start"}
+     ${index === 1 && "!justify-start"}
+     ${index === 2 && "!justify-start"}
+       `}
+     >
+       {index === 0 && (
+           <span className="cursor-pointer">{column.title}</span>
+       )}
 
-      {index === 1 && (
-        <div className="flex items-center">
-          <span className="mr-2">{column}</span>
-          <TableTooltip
-            extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-38px] xl:left-[-38px] left-[-38px] pb-[10px]", tooltipText: "mb-4" }}
-            content={`Pool tier is determined by the amount of esXAI staked. The higher the pool tier, the higher the reward probability.`}
-            delay={30000}
-            withCTA={true}
-            onCTAClick={() => {
-              window.open("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/staking-explained/staking-rewards-and-tiers", '_blank');
-            }}
-          >
-            <HelpIcon
-              width={14}
-              height={14} />
-          </TableTooltip>
-        </div>
-      )}
+       {index === 1 && (
+           <div className="flex items-center">
+             <span className="mr-2 cursor-pointer">{column.title}</span>
+             <TableTooltip
+                 extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-38px] xl:left-[-38px] left-[-38px] pb-[10px]", tooltipText: "mb-4" }}
+                 content={`Pool tier is determined by the amount of esXAI staked. The higher the pool tier, the higher the reward probability.`}
+                 delay={30000}
+                 withCTA={true}
+                 onCTAClick={() => {
+                   window.open("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/staking-explained/staking-rewards-and-tiers", '_blank');
+                 }}
+             >
+               <HelpIcon
+                   width={14}
+                   height={14} />
+             </TableTooltip>
+           </div>
+       )}
 
-      {index === 2 && !showTableKeys && (
-        <span className="lg:mr-2">{"esXAI STAKING CAPACITY"}</span>
-      )}
-      {index === 2 && showTableKeys && (
-        <span className="lg:mr-2">{"KEY STAKING CAPACITY"}</span>
-      )}
+       {index === 2 && !showTableKeys && (
+           <span className="lg:mr-2">{"esXAI STAKING CAPACITY"}</span>
+       )}
+       {index === 2 && showTableKeys && (
+           <span className="lg:mr-2">{"KEY STAKING CAPACITY"}</span>
+       )}
 
-      {index === 3 && (
-         <span className="">{column}</span>
-      )} 
+       {index === 3 && (
+           <span className="">{column.title}</span>
+       )}
 
-      {index === 4 && (
-         <span className="sm:hidden lg:block">{column}</span>
-      )} 
+       {index === 4 && (
+           <span className="sm:hidden lg:block">{column.title}</span>
+       )}
 
-      {index === 4 && (
-        <div className="flex items-center sm:block lg:hidden text-left indent-3">
-        <span className="text-left">{showTableKeys ? "KEY " : "esXAI "}</span>
-          <div className="flex w-full items-center lg:hidden justify-end">
-            <div className="mr-1">{"RATE"}</div>
-            <TableTooltip
-          extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] !left-[-340px] pb-[10px] !text-left !py-[15px] !w-[356px]" }}
-          content={showTableKeys ? "Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards." : "Estimated annual rate for staking esXAI based off of stake and reward breakdown and past 7 days of pool rewards."}
-          delay={30000}
-        >
-          <HelpIcon width={14} height={14} />
-        </TableTooltip>
-          </div>
-        </div>
-      )} 
+       {index === 4 && (
+           <div className="flex items-center sm:block lg:hidden text-left indent-3">
+             <span className="text-left">{showTableKeys ? "KEY " : "esXAI "}</span>
+             <div className="flex w-full items-center lg:hidden justify-end">
+               <div className="mr-1">{"RATE"}</div>
+               <TableTooltip
+                   extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] !left-[-340px] pb-[10px] !text-left !py-[15px] !w-[356px]" }}
+                   content={showTableKeys ? "Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards." : "Estimated annual rate for staking esXAI based off of stake and reward breakdown and past 7 days of pool rewards."}
+                   delay={30000}
+               >
+                 <HelpIcon width={14} height={14} />
+               </TableTooltip>
+             </div>
+           </div>
+       )}
 
-      {index === 5 && (
-         <span className="">{column}</span>
-      )} 
-      {index === 7 && (
-         <span className="">{column}</span>
-      )} 
+       {index === 5 && (
+           <span className="">{column.title}</span>
+       )}
 
-
-      {index === 0 ? (
-        <div className="flex flex-col items-start whitespace-normal">
-          <span className="sm:table-cell lg:hidden mr-1">{"POOL NAME /"}</span>
-          <div className="flex w-full items-center lg:hidden">
-            <div className="mr-1">{"TIER"}</div>
-            <TableTooltip
-              extraClasses={{ tooltipContainer: "whitespace-normal lg:left-auto lg:!right-[-38px] xl:left-[-38px] left-[-38px] sm:w-[356px] !text-left !py-[15px]" }}
-              content={`Pool tier is determined by the amount of esXAI staked. The higher the pool tier, the higher the reward probability.`}
-              withCTA={true}
-              delay={15000}
-              showOnClick={true}
-              onCTAClick={() => {
-                window.open("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/staking-explained/staking-rewards-and-tiers", '_blank');
-              }}
-            >
-              <HelpIcon
-                width={14}
-                height={14} />
-            </TableTooltip>
-          </div>
-
-        </div>
-      ) : (
-        ""
-      )}
+       {index === 7 && (
+           <span className="justify-self-end text-end">{column.title}</span>
+       )}
 
 
+       {index === 0 ? (
+           <div className="flex flex-col items-start whitespace-normal">
+             <span className="sm:table-cell lg:hidden mr-1">{"POOL NAME /"}</span>
+             <div className="flex w-full items-center lg:hidden">
+               <div className="mr-1">{"TIER"}</div>
+               <TableTooltip
+                   extraClasses={{ tooltipContainer: "whitespace-normal lg:left-auto lg:!right-[-38px] xl:left-[-38px] left-[-38px] sm:w-[356px] !text-left !py-[15px]" }}
+                   content={`Pool tier is determined by the amount of esXAI staked. The higher the pool tier, the higher the reward probability.`}
+                   withCTA={true}
+                   delay={15000}
+                   showOnClick={true}
+                   onCTAClick={() => {
+                     window.open("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/staking-explained/staking-rewards-and-tiers", '_blank');
+                   }}
+               >
+                 <HelpIcon
+                     width={14}
+                     height={14} />
+               </TableTooltip>
+             </div>
 
-      {/* Tooltip for column Key Rate */}
-      {index === 6 ? (
-        <div className="flex items-center justify-end">
-        <span className="text-elementalGrey mr-2">{showTableKeys ?  "KEY RATE" : "esXAI RATE"}</span>
-        <TableTooltip
-          extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-400px] pb-[10px] !text-left !py-[15px]" }}
-          content={showTableKeys ? "Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards." : "Estimated annual rate for staking esXAI based off of stake and reward breakdown and past 7 days of pool rewards."}
-          delay={30000}
-        >
-          <HelpIcon width={14} height={14} />
-        </TableTooltip>
-        </div>
-      ): (
-        ""
-      )}
+           </div>
+       ) : (
+           ""
+       )}
 
 
+
+       {/* Tooltip for column Key Rate */}
+       {index === 6 ? (
+           <div className="flex items-center justify-end">
+             <span className="mr-2">{showTableKeys ?  "KEY RATE" : "esXAI RATE"}</span>
+             <TableTooltip
+                 extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-400px] pb-[10px] !text-left !py-[15px]" }}
+                 content={showTableKeys ? "Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards." : "Estimated annual rate for staking esXAI based off of stake and reward breakdown and past 7 days of pool rewards."}
+                 delay={30000}
+             >
+               <HelpIcon  width={14} height={14} />
+             </TableTooltip>
+           </div>
+       ): (
+           ""
+       )}
+
+       {isSorted && <AiFillCaretUp className="xl:block hidden ml-[5px]"/>}
+     </div>
 
     </th>
   );
