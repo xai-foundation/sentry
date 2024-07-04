@@ -159,12 +159,15 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping to store all of the pool submissions
     mapping(uint256 => mapping(address => PoolSubmission)) public poolSubmissions;
 
+    // Referee Calculations contract address
+    address public refereeCalculationsAddress;
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[489] private __gap;
+    uint256[488] private __gap;
 
     // Struct for the submissions
     struct Submission {
@@ -227,9 +230,9 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     event NewPoolSubmission(uint256 indexed challengeId, address indexed poolAddress, uint256 stakedKeys, uint256 winningKeys);
     event UpdatePoolSubmission(uint256 indexed challengeId, address indexed poolAddress, uint256 stakedKeys, uint256 winningKeys, uint256 increase, uint256 decrease);
 
-    function initialize() public reinitializer(7) {
+    function initialize(address _refereeCalculationsAddress) public reinitializer(7) {
 
-        // TODO need to check correct initialize values
+        refereeCalculationsAddress = _refereeCalculationsAddress;
 
         // Set max keys per pool TODO update this once determined
         maxStakeAmountPerLicense = 200 * 10 ** 18;
@@ -384,7 +387,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
      function calculateChallengeEmissionAndTier() public view returns (uint256, uint256) {
         uint256 totalSupply = getCombinedTotalSupply();  
         uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
-        return RefereeCalculations.calculateChallengeEmissionAndTier(totalSupply, maxSupply);
+        return RefereeCalculations(refereeCalculationsAddress).calculateChallengeEmissionAndTier(totalSupply, maxSupply);
     }
 
     /**
@@ -805,8 +808,8 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 _boostFactor,
         bytes memory _confirmData,
         bytes memory _challengerSignedHash
-    ) public pure returns (bool, bytes32) {
-        return RefereeCalculations.createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _boostFactor, _confirmData, _challengerSignedHash);
+    ) public view returns (bool, bytes32) {
+        return RefereeCalculations(refereeCalculationsAddress).createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _boostFactor, _confirmData, _challengerSignedHash);
     }
 
     /**
@@ -944,7 +947,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
      * @return winningKeyCount The number of winning keys.
      */
     function getWinningKeyCount(uint256 stakedKeyCount, uint256 boostFactor, address poolAddress, uint256 challengeId) internal view returns (uint256) {
-        return RefereeCalculations.getWinningKeyCount(stakedKeyCount, boostFactor, poolAddress, challengeId);
+        return RefereeCalculations(refereeCalculationsAddress).getWinningKeyCount(stakedKeyCount, boostFactor, poolAddress, challengeId);
     }
 
     /**

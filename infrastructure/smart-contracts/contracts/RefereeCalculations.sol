@@ -1,9 +1,31 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
+import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
+import "./nitro-contracts/rollup/IRollupCore.sol";
+import "./NodeLicense.sol";
+import "./Xai.sol";
+import "./esXai.sol";
 
-library RefereeCalculations {
+
+contract RefereeCalculations is Initializable, AccessControlUpgradeable {
+    using Math for uint256;
+    
+    /**
+     * @dev This empty reserved space is put in place to allow future versions to add new
+     * variables without shifting down storage in the inheritance chain.
+     * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+     */
+    uint256[500] private __gap;
+
+    function initialize() public initializer {
+        __AccessControl_init();
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    }
+
     /**
      * @notice Calculate the emission and tier for a challenge.
      * @dev This function uses a halving formula to determine the emission tier and challenge emission.
@@ -18,7 +40,7 @@ library RefereeCalculations {
      * @return uint256 The challenge emission.
      * @return uint256 The emission tier.
      */
-    function calculateChallengeEmissionAndTier(uint256 totalSupply, uint256 maxSupply) external pure returns (uint256, uint256) {
+    function calculateChallengeEmissionAndTier(uint256 totalSupply, uint256 maxSupply) public pure returns (uint256, uint256) {
         require(maxSupply > totalSupply, "5");
 
         uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply)); // calculate which tier we are in starting from 0
@@ -48,7 +70,7 @@ library RefereeCalculations {
         uint256 _boostFactor,
         bytes memory _confirmData,
         bytes memory _challengerSignedHash
-    ) external pure returns (bool, bytes32) {
+    ) public pure returns (bool, bytes32) {
         bytes32 assertionHash = keccak256(abi.encodePacked(_nodeLicenseId, _challengeId, _confirmData, _challengerSignedHash));
         uint256 hashNumber = uint256(assertionHash);
         // hashNumber % 10_000 equals {0...9999}
@@ -72,7 +94,7 @@ library RefereeCalculations {
         uint256 _boostFactor,
         address _poolAddress,
         uint256 _challengeId
-    ) external view returns (uint256 winningKeyCount) {
+    ) public view returns (uint256 winningKeyCount) {
         require(_stakedKeyCount > 0, "41");
 
         //creates a seed to determine the random number between 0-99 to use for dice roll.
