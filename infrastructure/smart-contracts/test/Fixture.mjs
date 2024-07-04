@@ -1,4 +1,4 @@
-import {NodeLicenseTests} from "./NodeLicense.mjs";
+import { NodeLicenseTests } from "./NodeLicense.mjs";
 import { parse } from "csv/sync";
 import fs from "fs";
 import { XaiTests } from "./Xai.mjs";
@@ -9,15 +9,14 @@ import { RefereeTests } from "./Referee.mjs";
 import { esXaiTests } from "./esXai.mjs";
 import { GasSubsidyTests } from "./GasSubsidy.mjs";
 import { XaiGaslessClaimTests } from "./XaiGaslessClaim.mjs";
-import {CNYAirDropTests} from "./CNYAirDrop.mjs";
-import {getBasicPoolConfiguration,StakingV2} from "./StakingV2.mjs";
-import {extractAbi} from "../utils/exportAbi.mjs";
-import {Beacons} from "./Beacons.mjs";
-import {RefereePoolSubmissions} from "./tinykeys/RefereePoolSubmissions.mjs";
-import {NodeLicenseTinyKeysTest} from "./NodeLicenseTinyKeys.mjs";
-
-import {Beacons} from "./Beacons.mjs";
+import { CNYAirDropTests } from "./CNYAirDrop.mjs";
+import { getBasicPoolConfiguration, StakingV2 } from "./StakingV2.mjs";
+import { extractAbi } from "../utils/exportAbi.mjs";
+import { Beacons } from "./Beacons.mjs";
+import { RefereePoolSubmissions } from "./tinykeys/RefereePoolSubmissions.mjs";
+import { NodeLicenseTinyKeysTest } from "./NodeLicenseTinyKeys.mjs";
 import { Console } from "console";
+
 describe("Fixture Tests", function () {
 
     // We define a fixture to reuse the same setup in every test. We use
@@ -56,7 +55,7 @@ describe("Fixture Tests", function () {
         const EsXai = await ethers.getContractFactory("esXai");
         const esXai = await upgrades.deployProxy(EsXai, [await xai.getAddress()], { deployer: deployer });
         await esXai.waitForDeployment();
-        
+
         //Upgrade esXai
         const EsXai2 = await ethers.getContractFactory("esXai2");
         const esXai2 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai2, { call: { fn: "initialize", args: [(await deployer.getAddress()), BigInt(500)] } });
@@ -70,24 +69,24 @@ describe("Fixture Tests", function () {
         const gasSubsidy = await upgrades.deployProxy(GasSubsidy, [], { deployer: deployer });
         await gasSubsidy.waitForDeployment();
 
-		// Deploy the Staking Pool (implementation only)
-		const StakingPool = await ethers.deployContract("StakingPool");
-		await StakingPool.waitForDeployment();
-		const stakingPoolImplAddress = await StakingPool.getAddress();
-		await extractAbi("StakingPool", StakingPool);
+        // Deploy the Staking Pool (implementation only)
+        const StakingPool = await ethers.deployContract("StakingPool");
+        await StakingPool.waitForDeployment();
+        const stakingPoolImplAddress = await StakingPool.getAddress();
+        await extractAbi("StakingPool", StakingPool);
 
-		// Deploy the Key Bucket Tracker (implementation only)
-		const KeyBucketTracker = await ethers.deployContract("BucketTracker");
-		await KeyBucketTracker.waitForDeployment();
-		const keyBucketTrackerImplAddress = await KeyBucketTracker.getAddress();
-		await extractAbi("BucketTracker", KeyBucketTracker);
+        // Deploy the Key Bucket Tracker (implementation only)
+        const KeyBucketTracker = await ethers.deployContract("BucketTracker");
+        await KeyBucketTracker.waitForDeployment();
+        const keyBucketTrackerImplAddress = await KeyBucketTracker.getAddress();
+        await extractAbi("BucketTracker", KeyBucketTracker);
 
-		// Deploy the esXai Bucket Tracker (implementation only)
-		const EsXaiBucketTracker = await ethers.deployContract("BucketTracker");
-		await EsXaiBucketTracker.waitForDeployment();
-		const esXaiBucketTrackerImplAddress = await EsXaiBucketTracker.getAddress();
+        // Deploy the esXai Bucket Tracker (implementation only)
+        const EsXaiBucketTracker = await ethers.deployContract("BucketTracker");
+        await EsXaiBucketTracker.waitForDeployment();
+        const esXaiBucketTrackerImplAddress = await EsXaiBucketTracker.getAddress();
 
-		// Deploy Referee
+        // Deploy Referee
         const Referee = await ethers.getContractFactory("Referee");
         const gasSubsidyPercentage = BigInt(15);
         const referee = await upgrades.deployProxy(Referee, [await esXai.getAddress(), await xai.getAddress(), await gasSubsidy.getAddress(), gasSubsidyPercentage], { deployer: deployer });
@@ -98,7 +97,7 @@ describe("Fixture Tests", function () {
         const referee2 = await upgrades.upgradeProxy((await referee.getAddress()), Referee2, { call: { fn: "initialize", args: [] } });
         await referee2.waitForDeployment();
         await referee2.enableStaking();
-                
+
         const Referee3 = await ethers.getContractFactory("Referee3");
         const referee3 = await upgrades.upgradeProxy((await referee.getAddress()), Referee3, { call: { fn: "initialize", args: [] } });
         await referee3.waitForDeployment();
@@ -109,12 +108,12 @@ describe("Fixture Tests", function () {
         await referee4.waitForDeployment();
         await referee4.enableStaking();
 
-		// Deploy Node License
-		const NodeLicense = await ethers.getContractFactory("NodeLicense");
-		const referralDiscountPercentage = BigInt(10);
-		const referralRewardPercentage = BigInt(2);
-		const nodeLicense = await upgrades.deployProxy(NodeLicense, [await fundsReceiver.getAddress(), referralDiscountPercentage, referralRewardPercentage], { deployer: deployer });
-		await nodeLicense.waitForDeployment();
+        // Deploy Node License
+        const NodeLicense = await ethers.getContractFactory("NodeLicense");
+        const referralDiscountPercentage = BigInt(10);
+        const referralRewardPercentage = BigInt(2);
+        const nodeLicense = await upgrades.deployProxy(NodeLicense, [await fundsReceiver.getAddress(), referralDiscountPercentage, referralRewardPercentage], { deployer: deployer });
+        await nodeLicense.waitForDeployment();
 
         // Upgrade esXai3 upgrade - moved here due to needing referee and node license addresses as a parameters
         const maxKeysNonKyc = BigInt(1);
@@ -122,73 +121,67 @@ describe("Fixture Tests", function () {
         const esXai3 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai3, { call: { fn: "initialize", args: [await referee.getAddress(), await nodeLicense.getAddress(), maxKeysNonKyc] } });
         await esXai3.waitForDeployment();
 
-		// Deploy the Pool Factory
-		const PoolFactory = await ethers.getContractFactory("PoolFactory");
-		const poolFactory = await upgrades.deployProxy(PoolFactory, [
-			await referee.getAddress(),
-			await esXai.getAddress(),
-			await nodeLicense.getAddress()
-		], { kind: "transparent", deployer });
-		await poolFactory.waitForDeployment();
-		await poolFactory.enableStaking();
-		const poolFactoryAddress = await poolFactory.getAddress();
+        // Deploy the Pool Factory
+        const PoolFactory = await ethers.getContractFactory("PoolFactory");
+        const poolFactory = await upgrades.deployProxy(PoolFactory, [
+            await referee.getAddress(),
+            await esXai.getAddress(),
+            await nodeLicense.getAddress()
+        ], { kind: "transparent", deployer });
+        await poolFactory.waitForDeployment();
+        await poolFactory.enableStaking();
+        const poolFactoryAddress = await poolFactory.getAddress();
 
-		// Deploy the StakingPool's PoolBeacon
-		const StakingPoolPoolBeacon = await ethers.deployContract("PoolBeacon", [stakingPoolImplAddress]);
-		await StakingPoolPoolBeacon.waitForDeployment();
-		const stakingPoolPoolBeaconAddress = await StakingPoolPoolBeacon.getAddress();
-		await extractAbi("PoolBeacon", StakingPoolPoolBeacon);
+        // Deploy the StakingPool's PoolBeacon
+        const StakingPoolPoolBeacon = await ethers.deployContract("PoolBeacon", [stakingPoolImplAddress]);
+        await StakingPoolPoolBeacon.waitForDeployment();
+        const stakingPoolPoolBeaconAddress = await StakingPoolPoolBeacon.getAddress();
+        await extractAbi("PoolBeacon", StakingPoolPoolBeacon);
 
-		// Deploy the key BucketTracker's PoolBeacon
-		const KeyBucketTrackerPoolBeacon = await ethers.deployContract("PoolBeacon", [keyBucketTrackerImplAddress]);
-		await KeyBucketTrackerPoolBeacon.waitForDeployment();
-		const keyBucketTrackerPoolBeaconAddress = await KeyBucketTrackerPoolBeacon.getAddress();
+        // Deploy the key BucketTracker's PoolBeacon
+        const KeyBucketTrackerPoolBeacon = await ethers.deployContract("PoolBeacon", [keyBucketTrackerImplAddress]);
+        await KeyBucketTrackerPoolBeacon.waitForDeployment();
+        const keyBucketTrackerPoolBeaconAddress = await KeyBucketTrackerPoolBeacon.getAddress();
 
-		// Deploy the esXai BucketTracker's PoolBeacon
-		const EsXaiBucketTrackerPoolBeacon = await ethers.deployContract("PoolBeacon", [esXaiBucketTrackerImplAddress]);
-		await EsXaiBucketTrackerPoolBeacon.waitForDeployment();
-		const esXaiBucketTrackerPoolBeaconAddress = await EsXaiBucketTrackerPoolBeacon.getAddress();
+        // Deploy the esXai BucketTracker's PoolBeacon
+        const EsXaiBucketTrackerPoolBeacon = await ethers.deployContract("PoolBeacon", [esXaiBucketTrackerImplAddress]);
+        await EsXaiBucketTrackerPoolBeacon.waitForDeployment();
+        const esXaiBucketTrackerPoolBeaconAddress = await EsXaiBucketTrackerPoolBeacon.getAddress();
 
-		// Deploy the PoolProxyDeployer
-		const PoolProxyDeployer = await ethers.getContractFactory("PoolProxyDeployer");
-		const poolProxyDeployer = await upgrades.deployProxy(PoolProxyDeployer, [
-			poolFactoryAddress,
-			stakingPoolPoolBeaconAddress,
-			keyBucketTrackerPoolBeaconAddress,
-			esXaiBucketTrackerPoolBeaconAddress,
-		]);
-		await poolProxyDeployer.waitForDeployment();
-		const poolProxyDeployerAddress = await poolProxyDeployer.getAddress();
+        // Deploy the PoolProxyDeployer
+        const PoolProxyDeployer = await ethers.getContractFactory("PoolProxyDeployer");
+        const poolProxyDeployer = await upgrades.deployProxy(PoolProxyDeployer, [
+            poolFactoryAddress,
+            stakingPoolPoolBeaconAddress,
+            keyBucketTrackerPoolBeaconAddress,
+            esXaiBucketTrackerPoolBeaconAddress,
+        ]);
+        await poolProxyDeployer.waitForDeployment();
+        const poolProxyDeployerAddress = await poolProxyDeployer.getAddress();
 
-		// Update the PoolFactory with the PoolProxyDeployer's address
-		await poolFactory.updatePoolProxyDeployer(poolProxyDeployerAddress);
+        // Update the PoolFactory with the PoolProxyDeployer's address
+        await poolFactory.updatePoolProxyDeployer(poolProxyDeployerAddress);
 
-		// Referee5
-		const Referee5 = await ethers.getContractFactory("Referee5");
-		const referee5 = await upgrades.upgradeProxy((await referee.getAddress()), Referee5, { call: { fn: "initialize", args: [poolFactoryAddress] } });
-		await referee5.waitForDeployment();
-		await referee5.enableStaking();
-        
-		// Referee6
-		const Referee6 = await ethers.getContractFactory("Referee6");
-		const referee6 = await upgrades.upgradeProxy((await referee.getAddress()), Referee6, { call: { fn: "initialize", args: [] } });
-		await referee6.waitForDeployment();
+        // Referee5
+        const Referee5 = await ethers.getContractFactory("Referee5");
+        const referee5 = await upgrades.upgradeProxy((await referee.getAddress()), Referee5, { call: { fn: "initialize", args: [poolFactoryAddress] } });
+        await referee5.waitForDeployment();
+        await referee5.enableStaking();
 
-		// Referee7
-		const Referee7 = await ethers.getContractFactory("Referee7");
-		const referee7 = await upgrades.upgradeProxy((await referee.getAddress()), Referee7);
-		await referee7.waitForDeployment();
-        
-		// Referee8
-		const Referee8 = await ethers.getContractFactory("Referee8");
-		const referee8 = await upgrades.upgradeProxy((await referee.getAddress()), Referee8, { call: { fn: "initialize", args: [] } });
-		await referee8.waitForDeployment();
+        // Referee6
+        const Referee6 = await ethers.getContractFactory("Referee6");
+        const referee6 = await upgrades.upgradeProxy((await referee.getAddress()), Referee6, { call: { fn: "initialize", args: [] } });
+        await referee6.waitForDeployment();
 
-        // Referee9
-        const Referee9 = await ethers.getContractFactory("Referee9");
-        const referee9 = await upgrades.upgradeProxy((await referee.getAddress()), Referee9, { call: { fn: "initialize", args: [] } });
-        await referee9.waitForDeployment();
+        // Referee7
+        const Referee7 = await ethers.getContractFactory("Referee7");
+        const referee7 = await upgrades.upgradeProxy((await referee.getAddress()), Referee7);
+        await referee7.waitForDeployment();
 
+        // Referee8
+        const Referee8 = await ethers.getContractFactory("Referee8");
+        const referee8 = await upgrades.upgradeProxy((await referee.getAddress()), Referee8, { call: { fn: "initialize", args: [] } });
+        await referee8.waitForDeployment();
 
         // Set Rollup Address
         const rollupAddress = config.rollupAddress;
@@ -208,7 +201,7 @@ describe("Fixture Tests", function () {
         }
 
         // set a Challenger Public key
-        const {secretKeyHex, publicKeyHex} = await createBlsKeyPair("29dba7dc550c653b085e9c067d2b6c3b0859096204b6892c697982ed52e720f5");
+        const { secretKeyHex, publicKeyHex } = await createBlsKeyPair("29dba7dc550c653b085e9c067d2b6c3b0859096204b6892c697982ed52e720f5");
         await referee.setChallengerPublicKey("0x" + publicKeyHex);
 
         // Setup Xai roles
@@ -240,8 +233,9 @@ describe("Fixture Tests", function () {
         const gasSubsidyTransferRole = await gasSubsidy.TRANSFER_ROLE();
         await gasSubsidy.grantRole(gasSubsidyTransferRole, await gasSubsidyTransferAdmin.getAddress());
 
-        // Set the Rollup Address on Referee
-        await referee.setRollupAddress
+        // TODO What was this doing ?
+        // // Set the Rollup Address on Referee
+        // await referee.setRollupAddress
 
         // Setup Referee Roles
         const refereeAdminRole = await referee.DEFAULT_ADMIN_ROLE();
@@ -250,10 +244,10 @@ describe("Fixture Tests", function () {
         await referee.grantRole(challengerRole, await challenger.getAddress());
         const kycAdminRole = await referee.KYC_ADMIN_ROLE();
         await referee.grantRole(kycAdminRole, await kycAdmin.getAddress());
-		const poolFactoryAdminRole = await poolFactory.DEFAULT_ADMIN_ROLE();
-		await poolFactory.grantRole(poolFactoryAdminRole, refereeDefaultAdmin.getAddress());
+        const poolFactoryAdminRole = await poolFactory.DEFAULT_ADMIN_ROLE();
+        await poolFactory.grantRole(poolFactoryAdminRole, refereeDefaultAdmin.getAddress());
 
-		// Renounce the default admin role of the deployer
+        // Renounce the default admin role of the deployer
         await referee.renounceRole(refereeAdminRole, await deployer.getAddress());
         await nodeLicense.renounceRole(nodeLicenseAdminRole, await deployer.getAddress());
         await gasSubsidy.renounceRole(gasSubsidyAdminRole, await deployer.getAddress());
@@ -263,33 +257,33 @@ describe("Fixture Tests", function () {
 
         // Mint addr1 a node license
         let price = await nodeLicense.price(1, "");
-        await nodeLicense.connect(addr1).mint(1, "", {value: price});
+        await nodeLicense.connect(addr1).mint(1, "", { value: price });
 
         // Mint addr2 10 node licenses
         price = await nodeLicense.price(10, "");
-        await nodeLicense.connect(addr2).mint(10, "", {value: price});
+        await nodeLicense.connect(addr2).mint(10, "", { value: price });
 
         // Mint addr3 2 node licenses
         price = await nodeLicense.price(2, "");
-        await nodeLicense.connect(addr3).mint(2, "", {value: price});
+        await nodeLicense.connect(addr3).mint(2, "", { value: price });
         // KYC addr1 and addr 2, but not addr 3
         await referee.connect(kycAdmin).addKycWallet(await addr1.getAddress());
         await referee.connect(kycAdmin).addKycWallet(await addr2.getAddress());
 
         // Add addr 1 to the operator
         await referee.connect(addr1).setApprovalForOperator(await operator.getAddress(), true);
-        
-		// Node License2 Upgrade
-		const NodeLicense2 = await ethers.getContractFactory("NodeLicense2");
-		const nodeLicense2 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense2);
-		await nodeLicense2.waitForDeployment();
 
-		// Node License3 Upgrade
-		const NodeLicense3 = await ethers.getContractFactory("NodeLicense3");
-		const nodeLicense3 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense3, { call: { fn: "initialize", args: [] } });
-		await nodeLicense3.waitForDeployment();
+        // Node License2 Upgrade
+        const NodeLicense2 = await ethers.getContractFactory("NodeLicense2");
+        const nodeLicense2 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense2);
+        await nodeLicense2.waitForDeployment();
 
-    //     // Node License4 Upgrade
+        // Node License3 Upgrade
+        const NodeLicense3 = await ethers.getContractFactory("NodeLicense3");
+        const nodeLicense3 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense3, { call: { fn: "initialize", args: [] } });
+        await nodeLicense3.waitForDeployment();
+
+        //     // Node License4 Upgrade
         const NodeLicense4 = await ethers.getContractFactory("NodeLicense4");
         const nodeLicense4 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense4);
         await nodeLicense4.waitForDeployment();
@@ -318,7 +312,7 @@ describe("Fixture Tests", function () {
         const xaiPrice = ethers.parseUnits("1", 8);
         const chainlinkXaiUsdPriceFeed = await MockChainlinkPriceFeed.deploy(xaiPrice);
         await chainlinkXaiUsdPriceFeed.waitForDeployment();
-        
+
         // Impersonate the rollup controller
         const rollupController = await ethers.getImpersonatedSigner("0x6347446605e6f6680addb7c4ff55da299ecd2e69");
         // Tiny Keys AirDrop
@@ -326,21 +320,22 @@ describe("Fixture Tests", function () {
         const airdropMultiplier = BigInt(5);
         const tinyKeysAirDrop = await upgrades.deployProxy(TinyKeysAirdrop, [await nodeLicense.getAddress(), await referee.getAddress(), await poolFactory.getAddress(), airdropMultiplier]);
         await tinyKeysAirDrop.waitForDeployment();
-        
+
         // Upgrade the Pool Factory
-		const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");  
+        const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
         const poolFactory2 = await upgrades.upgradeProxy((await poolFactory.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
-		await poolFactory2.waitForDeployment();
-
-
-        
-
-
+        await poolFactory2.waitForDeployment();
 
         // Node License8 Upgrade
-         const NodeLicense8 = await ethers.getContractFactory("NodeLicense8");
-         const nodeLicense8 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense8, { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await tinyKeysAirDrop.getAddress()] } });
-         await nodeLicense8.waitForDeployment();
+        const NodeLicense8 = await ethers.getContractFactory("NodeLicense8");
+        const nodeLicense8 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense8, { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await tinyKeysAirDrop.getAddress()] } });
+        await nodeLicense8.waitForDeployment();
+
+        // Referee9
+        // This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
+        const Referee9 = await ethers.getContractFactory("Referee9A");
+        const referee9 = await upgrades.upgradeProxy((await referee.getAddress()), Referee9, { call: { fn: "initialize", args: [] } });
+        await referee9.waitForDeployment();
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
@@ -378,7 +373,7 @@ describe("Fixture Tests", function () {
             publicKeyHex: "0x" + publicKeyHex,
             referee: referee9,
             nodeLicense: nodeLicense8,
-			poolFactory:poolFactory2,
+            poolFactory: poolFactory2,
             gasSubsidy,
             esXai: esXai3,
             xai,
@@ -399,7 +394,7 @@ describe("Fixture Tests", function () {
     // describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
     // describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
     // describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
-    // describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
+    describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
     // describe("PoolSubmissions", RefereePoolSubmissions(deployInfrastructure).bind(this));
     // describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
 

@@ -157,9 +157,6 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
     // Mapping for amount of assigned keys of a user
     mapping(address => uint256) public assignedKeysOfUserCount;
 
-    // Challenge number the KYC check was removed for claims
-    uint256 public kycCheckRemovedChallengeNumber;
-    
     // Mapping to store all of the pool submissions
     mapping(uint256 => mapping(address => PoolSubmission)) public poolSubmissions;
 
@@ -168,7 +165,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[488] private __gap;
+    uint256[489] private __gap;
 
     // Struct for the submissions
     struct Submission {
@@ -209,11 +206,11 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
 
     function initialize() public reinitializer(7) {
 
+        // TODO need to check correct initialize values
+
         // Set max keys per pool TODO update this once determined
-        maxKeysPerPool = 1000;
-        
-        // Set the challenge Id where the KYC check was removed
-        kycCheckRemovedChallengeNumber = challengeCounter;
+        maxStakeAmountPerLicense = 200 * 10 ** 18;
+        maxKeysPerPool = 100000;
     }
 
     modifier onlyPoolFactory() {
@@ -638,10 +635,6 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         // Get the owner of the nodeLicenseId
         address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
 
-        // If the challenge is before the kycCheckRemovedChallengeNumber, check if the owner is KYC'd
-        if(_challengeId < kycCheckRemovedChallengeNumber){    
-            require(isKycApproved(owner), "22");
-        }
 
         // Take the amount that was allocated for the rewards and divide it by the number of claimers
         uint256 reward = challengeToClaimFor.rewardAmountForClaimers / challengeToClaimFor.numberOfEligibleClaimers;
@@ -728,8 +721,6 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
             // Check if the nodeLicenseId is eligible for a payout
                 rewardReceiver = owner;
             if (
-                // Confirm the owner is KYC'd, or the challenge is past the kycCheckRemovedChallengeNumber
-                (_challengeId >= kycCheckRemovedChallengeNumber || isKycApproved(owner)) &&
                 mintTimestamp < challengeToClaimFor.createdTimestamp && 
                 !submission.claimed &&
                 submission.eligibleForPayout
