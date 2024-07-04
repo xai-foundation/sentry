@@ -11,6 +11,7 @@ import "../../NodeLicense.sol";
 import "../../Xai.sol";
 import "../../esXai.sol";
 import "../../staking-v2/PoolFactory.sol";
+import "../../RefereeCalculations.sol";
 import "../../RefereeEvents.sol";
 
 // Error Codes
@@ -360,19 +361,10 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
      * @return uint256 The challenge emission.
      * @return uint256 The emission tier.
      */
-    function calculateChallengeEmissionAndTier() public view returns (uint256, uint256) {
-
+     function calculateChallengeEmissionAndTier() public view returns (uint256, uint256) {
         uint256 totalSupply = getCombinedTotalSupply();  
         uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
-        require(maxSupply > totalSupply, "5");
-
-        uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply)); // calculate which tier we are in starting from 0
-        require(tier < 23, "6");
-
-        uint256 emissionTier = maxSupply / (2**(tier + 1)); // equal to the amount of tokens that are emitted during this tier
-
-        // determine what the size of the emission is based on each challenge having an estimated static length
-        return (emissionTier / 17520, emissionTier);
+        return RefereeCalculations.calculateChallengeEmissionAndTier(totalSupply, maxSupply);
     }
 
     /**
@@ -783,12 +775,7 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
         bytes memory _confirmData,
         bytes memory _challengerSignedHash
     ) public pure returns (bool, bytes32) {
-
-        bytes32 assertionHash = keccak256(abi.encodePacked(_nodeLicenseId, _challengeId, _confirmData, _challengerSignedHash));
-        uint256 hashNumber = uint256(assertionHash);
-        // hashNumber % 10_000 equals {0...9999}
-        // hashNumber % 10_000 < 100 means a 100 / 10000 = 1 /100
-        return (hashNumber % 10_000 < _boostFactor, assertionHash);
+        return RefereeCalculations.createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _boostFactor, _confirmData, _challengerSignedHash);
     }
 
     /**
@@ -973,9 +960,8 @@ contract Referee9A is Initializable, AccessControlEnumerableUpgradeable {
      * @param stakedKeyCount The total number of keys staked in the pool.
      * @return winningKeyCount The number of winning keys.
      */
-    // TODO - implement the logic for the winning key count, currently a placeholder
-    function getWinningKeyCount(uint256 stakedKeyCount) public view returns (uint256) {
-        return (stakedKeyCount * 5000) / 10000;
+    function getWinningKeyCount(uint256 stakedKeyCount) internal returns (uint256) {
+        return RefereeCalculations.getWinningKeyCount(stakedKeyCount);
     }   
 
     /**
