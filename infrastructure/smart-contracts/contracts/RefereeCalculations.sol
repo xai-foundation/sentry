@@ -18,7 +18,7 @@ library RefereeCalculations {
      * @return uint256 The challenge emission.
      * @return uint256 The emission tier.
      */
-    function calculateChallengeEmissionAndTier(uint256 totalSupply, uint256 maxSupply) external pure returns (uint256, uint256) {
+    function calculateChallengeEmissionAndTier(uint256 totalSupply, uint256 maxSupply) internal pure returns (uint256, uint256) {
         require(maxSupply > totalSupply, "5");
 
         uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply)); // calculate which tier we are in starting from 0
@@ -48,7 +48,7 @@ library RefereeCalculations {
         uint256 _boostFactor,
         bytes memory _confirmData,
         bytes memory _challengerSignedHash
-    ) external pure returns (bool, bytes32) {
+    ) internal pure returns (bool, bytes32) {
         bytes32 assertionHash = keccak256(abi.encodePacked(_nodeLicenseId, _challengeId, _confirmData, _challengerSignedHash));
         uint256 hashNumber = uint256(assertionHash);
         // hashNumber % 10_000 equals {0...9999}
@@ -61,7 +61,7 @@ library RefereeCalculations {
      * @param stakedKeyCount The total number of keys staked in the pool.
      * @return winningKeyCount The number of winning keys.
      */
-    function getWinningKeyCount(uint256 stakedKeyCount) external returns (uint256) {
+    function getWinningKeyCount(uint256 stakedKeyCount) internal returns (uint256) {
         return (stakedKeyCount * 5000) / 10000;
     }
 }
