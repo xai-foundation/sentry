@@ -1,6 +1,7 @@
 import PoolTextComponent from "./PoolTextComponent";
 import { ExternalLinkComponent } from "@/app/components/ui/links/ExternalLink";
-import { ConnectButton, PrimaryButton } from "@/app/components/ui/buttons";
+import { ConnectButton } from "@/app/components/ui/buttons";
+import PoolDropdownComponent from "./PoolDropdownComponent";
 
 interface NewPoolProps {
   onOpen: () => void;
@@ -21,11 +22,7 @@ const NewPoolComponent = ({ onOpen, address, isApproved }: NewPoolProps) => {
         <ConnectButton onOpen={onOpen} address={address} size="md" extraClasses="!global-double-clip-path-15px" />
       }
       {address && !isApproved && (
-        <PrimaryButton
-          onClick={() => window.open("https://xai.games/sentrynodes", "_blank", "noopener noreferrer")}
-          btnText={"Download Operator"}
-          className="uppercase global-double-clip-path-15px my-2 w-[242px]"
-        />
+        <PoolDropdownComponent/>
       )}
         {(!isApproved || !address) && (
           <>

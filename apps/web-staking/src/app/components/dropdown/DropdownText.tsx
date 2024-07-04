@@ -1,6 +1,7 @@
 import {Dispatch, MutableRefObject, ReactNode, SetStateAction, useEffect, useRef} from "react";
-import { DropdownArrow } from "../icons/DropArrowIcon";
-import { WarningIcon } from "../icons/WarningIcon";
+import { DropdownArrow } from "../../../../../../packages/ui/src/rebrand/icons/DropArrowIcon";
+import { WarningIcon } from "../../../../../../packages/ui/src/rebrand/icons/WarningIcon";
+
 
 
 const DROPDOWN_ITEMS_WITHOUT_SCROLL = 11;
@@ -8,7 +9,7 @@ interface DropdownProps {
     setIsOpen: (isOpen: boolean) => void;
     isOpen: boolean;
     selectedValue: string | null;
-    selectedValueRender: ReactNode;
+    selectedValueRender: string | null;
     setSelectedValue: Dispatch<SetStateAction<string | null>>;
     getPreferableItems?: () => JSX.Element[];
     getDropdownItems: () => JSX.Element[];
@@ -34,7 +35,7 @@ export const DropdownItem = ({onClick, extraClasses, key, dropdownOptionsCount, 
     return <p onClick={onClick} className={`flex items-center px-[15px] hover:bg-abaddonBlack bg-black cursor-pointer duration-300 ease-in-out text-lg min-h-[48px] font-medium ${dropdownOptionsCount > DROPDOWN_ITEMS_WITHOUT_SCROLL && "mr-[2px]"} ${extraClasses}`} key={key}>{children}</p>
 }
 
-export const Dropdown = ({setIsOpen, isOpen, isInvalid, dropdownOptionsCount, setSelectedValue, getPreferableItems, getDropdownItems, selectedValueRender, extraClasses, defaultValue}: DropdownProps) => {
+export const DropdownText = ({setIsOpen, isOpen, isInvalid, dropdownOptionsCount, setSelectedValue, getPreferableItems, getDropdownItems, selectedValueRender, extraClasses, defaultValue}: DropdownProps) => {
     const dropdownRef = useRef(null) as unknown as MutableRefObject<HTMLDivElement>;
     const scrollbarRef = useRef(null) as unknown as MutableRefObject<HTMLDivElement>;
 
@@ -52,6 +53,10 @@ export const Dropdown = ({setIsOpen, isOpen, isInvalid, dropdownOptionsCount, se
         };
     }, []);
 
+    const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSelectedValue(e.target.value);
+    }
+
     return (
         <div className="relative z-30" ref={dropdownRef}>
             <div
@@ -59,8 +64,8 @@ export const Dropdown = ({setIsOpen, isOpen, isInvalid, dropdownOptionsCount, se
                 className={`relative h-[48px] px-[15px] group z-[20] text-lg font-medium text-americanSilver transition-bg duration-300 ease-in-out ${isOpen ? "bg-velvetBlack" : "bg-nulnOil"} flex items-center justify-between w-[538px] dropdown-clip-path dropdown ${extraClasses?.dropdown}`}
             >
                 <div className="flex items-center gap-[10px]">
-                    {isInvalid && <WarningIcon width={18} height={16} fill={"#F76808"}/>}
-                    {selectedValueRender}
+                    {isInvalid && <WarningIcon width={18} height={16} fill={"#F76808"} />}
+                    <input type="text" placeholder="Select your country" className={`w-full ${isOpen ? "bg-velvetBlack" : "bg-nulnOil"} transition-bg duration-300 ease-in-out outline-none placeholder-americanSilver`} value={selectedValueRender!} onChange={handleInput} />
                 </div>
                 <DropdownArrow
                     className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
