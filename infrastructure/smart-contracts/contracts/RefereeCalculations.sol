@@ -96,52 +96,75 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
      */
 
     function getWinningKeyCount(
-        uint256 _stakedKeyCount,
-        uint256 _boostFactor,
-        address _poolAddress,
-        uint256 _challengeId,
-        bytes memory _confirmData,
-        bytes memory _challengerSignedHash
-    ) public view returns (uint256 winningKeyCount) {
-        require(_stakedKeyCount > 0, "41");
+    uint256 _stakedKeyCount,
+    uint256 _boostFactor,
+    address _poolAddress,
+    uint256 _challengeId,
+    bytes memory _confirmData,
+    bytes memory _challengerSignedHash
+    ) public pure returns (uint256 winningKeyCount) {
+        require(_stakedKeyCount > 0, "Staked key count must be positive");
+        require(_boostFactor > 0, "Boost factor must be positive");
 
-        //creates a seed to determine the random number between 0-99 to use for dice roll.
-        uint256 seed = uint256(
-            keccak256(
-                abi.encodePacked(
-                    block.timestamp,
-                    _stakedKeyCount,
-                    _poolAddress,
-                    _challengeId,
-                    _confirmData,
-                    _challengerSignedHash
-                )
+        // The probability is directly represented by the boost factor
+        // _boostFactor of 100 represents 1% chance (100/10000)
+        uint256 probability = _boostFactor;
+
+        // Create a unique seed for this specific pool and challenge
+        // This ensures different randomness for each pool and challenge combination
+        bytes32 seedHash = keccak256(
+            abi.encodePacked(
+                _stakedKeyCount,
+                _poolAddress,
+                _challengeId,
+                _confirmData,
+                _challengerSignedHash
             )
         );
+        uint256 seed = uint256(seedHash);
 
-        bool goUp = seed % 2 == 0;
+        // Generate a random number between 0 and 9999
+        // This will be used for statistical approximation in larger pools
+        uint256 random = seed % 10000;
 
-        uint256 baseAmount = (_stakedKeyCount * _boostFactor) / 10000;
-        
-        uint256 chance = seed % 100;
+        // For small pools (100 keys or fewer), we simulate each key individually
+        // This ensures accurate probabilities for small pools, including single-key pools
+        if (_stakedKeyCount <= 100) {
+            for (uint256 i = 0; i < _stakedKeyCount; i++) {
+                // Generate a unique random number for each key
+                // We use the seed and the key index to ensure uniqueness
+                uint256 keyRandom = uint256(keccak256(abi.encodePacked(seed, i))) % 10000;
+                
+                // If the random number is less than the probability, this key wins
+                if (keyRandom < probability) {
+                    winningKeyCount++;
+                }
+            }
+        } else {
+            // For larger pools, we use a statistical approximation
+            // This is more gas-efficient for high key counts
+            
+            // Calculate the expected number of winning keys
+            // This is a straightforward probability calculation
+            uint256 expectedWinningKeys = (_stakedKeyCount * probability) / 10000;
+            
+            // Apply a random adjustment with magnitude influenced by the boost factor
+            // This simulates potentially higher variance for pools with higher winning probabilities
+            uint256 maxAdjustmentPercentage = 10 + (_boostFactor / 100); // Base 10% plus up to 10% more based on boost factor
+            uint256 adjustmentFactor = random % (maxAdjustmentPercentage * 2); // 0 to 2x maxAdjustmentPercentage
 
-        uint256 boost = 0;
+            // Calculate the adjustment amount
+            uint256 adjustment = (expectedWinningKeys * adjustmentFactor) / 1000;
 
-        if (chance > 95) {
-            // WinningKeyCount is stakedAmount * 1.2 of boostFactor
-            boost = (_stakedKeyCount * ((_boostFactor * 12) / 10)) / 10000;
+            // Randomly decide whether to add or subtract the adjustment
+            if (random % 2 == 0) {
+                winningKeyCount = expectedWinningKeys + adjustment;
+            } else {
+                // Ensure we don't underflow when subtracting
+                winningKeyCount = expectedWinningKeys > adjustment ? expectedWinningKeys - adjustment : 0;
+            }
         }
 
-        if (chance > 60) {
-            // WinningKeyCount is stakedAmount * boostFactor
-            return (_stakedKeyCount * _boostFactor) / 10000;
-        }
-
-        if (chance > 40) {
-            // WinningKeyCount is stakedAmount * 0.75 of boostFactor
-            return (_stakedKeyCount * ((_boostFactor * 75) / 100)) / 10000;
-        }
-
-        return (_stakedKeyCount * (_boostFactor / 2)) / 10000;
+        return winningKeyCount;
     }
 }
