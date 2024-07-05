@@ -237,7 +237,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
         // Set max keys per pool TODO update this once determined
         maxStakeAmountPerLicense = 200 * 10 ** 18;
-        maxKeysPerPool = 100000;
+        maxKeysPerPool = 1000;
     }
 
     modifier onlyPoolFactory() {
@@ -800,6 +800,31 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         return submissionsArray;
     }
 
+    
+    /**
+     * @notice Expires the rewards for a challenge if it is at least 270 days old.
+     * @param _challengeId The ID of the challenge.
+     */
+    function expireChallengeRewards(uint256 _challengeId) external {
+        // check the challenge exists by checking the timestamp is not 0
+        require(challenges[_challengeId].createdTimestamp != 0, "28");
+
+        // Check if the challenge is at least 270 days old
+        require(block.timestamp >= challenges[_challengeId].createdTimestamp + 270 days, "29");
+
+        // Check the challenge isn't already expired
+        require(challenges[_challengeId].expiredForRewarding == false, "30");
+
+        // Remove the unclaimed tokens from the allocation
+        _allocatedTokens -= challenges[_challengeId].rewardAmountForClaimers - challenges[_challengeId].amountClaimedByClaimers;
+
+        // Set expiredForRewarding to true
+        challenges[_challengeId].expiredForRewarding = true;
+
+        // Emit the ChallengeExpired event
+        emit ChallengeExpired(_challengeId);
+    }
+
     /**
      * @dev Looks up payout boostFactor based on the staking tier.
      * @param stakedAmount The staked amount.
@@ -919,10 +944,12 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
      * @param boostFactor the boost factor of the pool
      * @param poolAddress used as parameter for randomization
      * @param challengeId used as parameter for radomization
+     * @param _confirmData The confirm data of the assertion.
+     * @param _challengerSignedHash The signed hash for the challenge
      * @return winningKeyCount The number of winning keys.
      */
-    function getWinningKeyCount(uint256 stakedKeyCount, uint256 boostFactor, address poolAddress, uint256 challengeId) internal view returns (uint256) {
-        return RefereeCalculations(refereeCalculationsAddress).getWinningKeyCount(stakedKeyCount, boostFactor, poolAddress, challengeId);
+    function getWinningKeyCount(uint256 stakedKeyCount, uint256 boostFactor, address poolAddress, uint256 challengeId, bytes memory _confirmData, bytes memory _challengerSignedHash) internal view returns (uint256) {
+        return RefereeCalculations(refereeCalculationsAddress).getWinningKeyCount(stakedKeyCount, boostFactor, poolAddress, challengeId, _confirmData, _challengerSignedHash);
     }
 
     /**
@@ -960,7 +987,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         // Get the stakedAmount of _poolAddress for determining boostFactor
         uint256 stakedAmount = stakedAmounts[_poolAddress];
         // Determine the number of winning keys
-        uint256 winningKeyCount = getWinningKeyCount((totalStakedKeys - keysHaveSubmitted), _getBoostFactor(stakedAmount), _poolAddress, _challengeId);
+        uint256 winningKeyCount = getWinningKeyCount((totalStakedKeys - keysHaveSubmitted), _getBoostFactor(stakedAmount), _poolAddress, _challengeId, _confirmData, challenges[_challengeId].challengerSignedHash);
 
         // Update the challenge by adding the winning key count to the total winning keys
         challenges[_challengeId].numberOfEligibleClaimers += winningKeyCount;
@@ -1000,7 +1027,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         // Get the stakedAmount of _poolAddress for determining boostFactor
         uint256 stakedAmount = stakedAmounts[_poolAddress];
         // Determine the number of winning keys
-        uint256 winningKeyCount = getWinningKeyCount((totalStakedKeys - keysHaveSubmitted), _getBoostFactor(stakedAmount),_poolAddress, _challengeId);
+        uint256 winningKeyCount = getWinningKeyCount((totalStakedKeys - keysHaveSubmitted), _getBoostFactor(stakedAmount),_poolAddress, _challengeId, poolSubmissions[_challengeId][_poolAddress].assertionStateRootOrConfirmData, challenges[_challengeId].challengerSignedHash);
 
         // Determine the winning key count increase or decrease amounts
         uint256 winningKeysIncreaseAmount = 0;
@@ -1121,7 +1148,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     * @param _confirmData The confirm data of the assertion.
     */
     function submitPoolAssertion(address _poolAddress, uint256 _challengeId, bytes memory _confirmData) external {
-        require(isValidOperator(_poolAddress, msg.sender), "17");
+        require(isValidOperator(_poolAddress, msg.sender), "17"); //TODO this is not going to work, isValidOperator is expecting a licenseOwner and a assigned pool. This needs to verify if the caller has staked keys in the pool or is the owner / delegate
         // Confirm not already submitted
         require(!poolSubmissions[_challengeId][_poolAddress].submitted, "54");
         _submitNewPoolAssertion(_poolAddress, _challengeId, _confirmData);
@@ -1135,7 +1162,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     */
 
     function claimPoolSubmissionRewards(address _poolAddress, uint256 _challengeId) external {
-        require(isValidOperator(_poolAddress, msg.sender), "17"); // TODO - see if this should be removed to allow anyone to initiate claim
+        require(isValidOperator(_poolAddress, msg.sender), "17"); //TODO this is not going to work, isValidOperator is expecting a licenseOwner and a assigned pool. This needs to verify if the caller has staked keys in the pool or is the owner / delegate
         _claimPoolSubmissionRewards(_poolAddress, _challengeId);
         return;
     }

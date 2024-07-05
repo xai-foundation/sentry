@@ -5,10 +5,9 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 
-
 contract RefereeCalculations is Initializable, AccessControlUpgradeable {
     using Math for uint256;
-    
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
@@ -24,24 +23,27 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
     /**
      * @notice Calculate the emission and tier for a challenge.
      * @dev This function uses a halving formula to determine the emission tier and challenge emission.
-     * The formula is as follows: 
+     * The formula is as follows:
      * 1. Start with the max supply divided by 2 as the initial emission tier.
      * 2. The challenge emission is the emission tier divided by 17520.
      * 3. While the total supply is less than the emission tier, halve the emission tier and challenge emission.
      * 4. The function returns the challenge emission and the emission tier.
-     * 
+     *
      * @param totalSupply The current total supply of tokens.
      * @param maxSupply The maximum supply of tokens.
      * @return uint256 The challenge emission.
      * @return uint256 The emission tier.
      */
-    function calculateChallengeEmissionAndTier(uint256 totalSupply, uint256 maxSupply) public pure returns (uint256, uint256) {
+    function calculateChallengeEmissionAndTier(
+        uint256 totalSupply,
+        uint256 maxSupply
+    ) public pure returns (uint256, uint256) {
         require(maxSupply > totalSupply, "5");
 
         uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply)); // calculate which tier we are in starting from 0
         require(tier < 23, "6");
 
-        uint256 emissionTier = maxSupply / (2**(tier + 1)); // equal to the amount of tokens that are emitted during this tier
+        uint256 emissionTier = maxSupply / (2 ** (tier + 1)); // equal to the amount of tokens that are emitted during this tier
 
         // determine what the size of the emission is based on each challenge having an estimated static length
         return (emissionTier / 17520, emissionTier);
@@ -66,7 +68,14 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
         bytes memory _confirmData,
         bytes memory _challengerSignedHash
     ) public pure returns (bool, bytes32) {
-        bytes32 assertionHash = keccak256(abi.encodePacked(_nodeLicenseId, _challengeId, _confirmData, _challengerSignedHash));
+        bytes32 assertionHash = keccak256(
+            abi.encodePacked(
+                _nodeLicenseId,
+                _challengeId,
+                _confirmData,
+                _challengerSignedHash
+            )
+        );
         uint256 hashNumber = uint256(assertionHash);
         // hashNumber % 10_000 equals {0...9999}
         // hashNumber % 10_000 < 100 means a 100 / 10000 = 1 /100
@@ -81,6 +90,8 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
      * @param _boostFactor The factor controlling the chance of eligibility for payout as a multiplicator
      * @param _poolAddress The Address of the pool. Is only used for randomzie
      * @param _challengeId The ID of the challenge. Is only used for randomzie
+     * @param _confirmData The confirm data of the assertion.
+     * @param _challengerSignedHash The signed hash for the challenge
      * @return winningKeyCount Number of winning keys
      */
 
@@ -88,32 +99,49 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
         uint256 _stakedKeyCount,
         uint256 _boostFactor,
         address _poolAddress,
-        uint256 _challengeId
+        uint256 _challengeId,
+        bytes memory _confirmData,
+        bytes memory _challengerSignedHash
     ) public view returns (uint256 winningKeyCount) {
         require(_stakedKeyCount > 0, "41");
 
         //creates a seed to determine the random number between 0-99 to use for dice roll.
-        uint256 seed = uint256(keccak256(abi.encodePacked(block.timestamp, _boostFactor, _stakedKeyCount, _poolAddress, _challengeId, msg.sender)));
-        
-        // Dice for rolling possible winning Amount
-        uint256 dice = seed % 100;
+        uint256 seed = uint256(
+            keccak256(
+                abi.encodePacked(
+                    block.timestamp,
+                    _stakedKeyCount,
+                    _poolAddress,
+                    _challengeId,
+                    _confirmData,
+                    _challengerSignedHash
+                )
+            )
+        );
 
-        if (dice <= 40) {
-            // WinningKeyCount is stakedAmount * 0.5 of boostFactor
-            winningKeyCount = (_stakedKeyCount * (_boostFactor / 2)) / 10000;
-        } else if (dice <= 60) {
-            // WinningKeyCount is stakedAmount * 0.75 of boostFactor
-            winningKeyCount = (_stakedKeyCount * ((_boostFactor * 75) / 100)) / 10000;
-        } else if (dice <= 90) {
-            // WinningKeyCount is stakedAmount * boostFactor
-            winningKeyCount = (_stakedKeyCount * _boostFactor) / 10000;
-        } else if (dice > 90) {
-            // WinningKeyCount is stakedAmount * 1.5 of boostFactor
-            winningKeyCount =
-                (_stakedKeyCount * ((_boostFactor * 15) / 10)) /
-                10000;
+        bool goUp = seed % 2 == 0;
+
+        uint256 baseAmount = (_stakedKeyCount * _boostFactor) / 10000;
+        
+        uint256 chance = seed % 100;
+
+        uint256 boost = 0;
+
+        if (chance > 95) {
+            // WinningKeyCount is stakedAmount * 1.2 of boostFactor
+            boost = (_stakedKeyCount * ((_boostFactor * 12) / 10)) / 10000;
         }
 
-        return winningKeyCount;
+        if (chance > 60) {
+            // WinningKeyCount is stakedAmount * boostFactor
+            return (_stakedKeyCount * _boostFactor) / 10000;
+        }
+
+        if (chance > 40) {
+            // WinningKeyCount is stakedAmount * 0.75 of boostFactor
+            return (_stakedKeyCount * ((_boostFactor * 75) / 100)) / 10000;
+        }
+
+        return (_stakedKeyCount * (_boostFactor / 2)) / 10000;
     }
 }
