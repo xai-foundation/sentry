@@ -10,6 +10,7 @@ RUN npm install --loglevel verbose -dd
 # ---- Build ----
 FROM base AS build
 ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_PUBLIC_APP_ENV=development
 WORKDIR /app
 COPY . .
 RUN npm run build
