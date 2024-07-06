@@ -33,8 +33,9 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			// Save the new pool's address
 			const stakingPoolAddress = await poolFactory.connect(addr2).getPoolAddress(0);
 
-			// Mint 2 keys to addr2 & stake
-			const keysToMintForAddr2 = 2n;
+			// Mint 100 keys to addr2 & stake
+			// Changed to 100 as 2 keys would not generate a reward thus causing a divide by zero error for number of eligible claimers
+			const keysToMintForAddr2 = 100n;
 			const addr2KeyMintPrice = await nodeLicense.price(keysToMintForAddr2, "");
 			await nodeLicense.connect(addr2).mint(keysToMintForAddr2, "", {value: addr2KeyMintPrice});
 			const addr2MintedKeyIds = [];
@@ -85,8 +86,8 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			const poolBalanceBalance1 = await esXai.connect(addr1).balanceOf(stakingPoolAddress);
 			expect(poolBalanceBalance1).to.equal(0);
 
-			// Bulk reward claim as operator
-			await referee.connect(operator).claimPoolSubmissionRewards(stakingPoolAddress, challengeId);
+			// Bulk reward claim as pool owner
+			await referee.connect(addr1).claimPoolSubmissionRewards(stakingPoolAddress, challengeId);
 
 			// Make sure the staking pool has balance now
 			const poolBalanceBalance2 = await esXai.connect(addr1).balanceOf(stakingPoolAddress);
@@ -116,11 +117,17 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			// Save the new pool's address
 			const stakingPoolAddress = await poolFactory.connect(addr2).getPoolAddress(0);
 
-			// Mint a key to addr2 & stake
-			const addr2KeyMintPrice = await nodeLicense.price(1, "");
-			await nodeLicense.connect(addr2).mint(1, "", {value: addr2KeyMintPrice});
-			const addr2MintedKeyId = await nodeLicense.totalSupply();
-			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [addr2MintedKeyId]);
+			// Mint 100 keys to addr2 & stake
+			// Changed to 100 as 2 keys would not generate a reward thus causing a divide by zero error for number of eligible claimers
+			const keysToMintForAddr2 = 100n;
+			const addr2KeyMintPrice = await nodeLicense.price(keysToMintForAddr2, "");
+			await nodeLicense.connect(addr2).mint(keysToMintForAddr2, "", {value: addr2KeyMintPrice});
+			const addr2MintedKeyIds = [];
+			for (let i = addr1MintedKeyId; i < addr1MintedKeyId + keysToMintForAddr2; i++) {
+				addr2MintedKeyIds.push(i + 1n);
+			}
+
+			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, addr2MintedKeyIds);
 
 			// Mint a key to addr3 & stake
 			const addr3KeyMintPrice = await nodeLicense.price(1, "");

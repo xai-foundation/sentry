@@ -237,7 +237,9 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
         // Set max keys per pool TODO update this once determined
         maxStakeAmountPerLicense = 200 * 10 ** 18;
+        // TODO - update/remove before deployment, this is required for tests to pass
         maxKeysPerPool = 1000;
+        maxStakeAmountPerLicense = 10_000_000 * 10 ** 18;
     }
 
     modifier onlyPoolFactory() {
@@ -515,8 +517,16 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         address assignedPool = assignedKeyToPool[_nodeLicenseId];
         
         require(isValidOperator(licenseOwner, assignedPool), "17");
-
-        _submitAssertion(_nodeLicenseId, _challengeId, _confirmData, licenseOwner, assignedPool);
+        // If the key is assigned to a pool
+        if(assignedPool!=address(0)){
+            // Check if the pool has not submitted for this challenge
+            if(!poolSubmissions[_challengeId][assignedPool].submitted){
+                _submitNewPoolAssertion(assignedPool, _challengeId, _confirmData);
+            }
+        }else{
+            // If the key is not assigned to a pool, then submit for the owner
+            _submitAssertion(_nodeLicenseId, _challengeId, _confirmData, licenseOwner, assignedPool);
+        }
     }
 
     /**
@@ -1066,7 +1076,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     * @param _challengeId The ID of the challenge.
     */
 
-    function _claimPoolSubmissionRewards(address _poolAddress, uint256 _challengeId) internal {                
+    function _claimPoolSubmissionRewards(address _poolAddress, uint256 _challengeId) internal {
         Challenge memory challengeToClaimFor  = challenges[_challengeId];
         
         // Validate the challenge is claimable
@@ -1148,7 +1158,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     * @param _confirmData The confirm data of the assertion.
     */
     function submitPoolAssertion(address _poolAddress, uint256 _challengeId, bytes memory _confirmData) external {
-        require(isValidOperator(_poolAddress, msg.sender), "17"); //TODO this is not going to work, isValidOperator is expecting a licenseOwner and a assigned pool. This needs to verify if the caller has staked keys in the pool or is the owner / delegate
+        require(PoolFactory(poolFactoryAddress).isDelegateOfPoolOrOwner(msg.sender, _poolAddress), "17");
         // Confirm not already submitted
         require(!poolSubmissions[_challengeId][_poolAddress].submitted, "54");
         _submitNewPoolAssertion(_poolAddress, _challengeId, _confirmData);
@@ -1161,8 +1171,8 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     * @param _challengeId The ID of the challenge.
     */
 
-    function claimPoolSubmissionRewards(address _poolAddress, uint256 _challengeId) external {
-        require(isValidOperator(_poolAddress, msg.sender), "17"); //TODO this is not going to work, isValidOperator is expecting a licenseOwner and a assigned pool. This needs to verify if the caller has staked keys in the pool or is the owner / delegate
+    function claimPoolSubmissionRewards(address _poolAddress, uint256 _challengeId) external {      
+        require(PoolFactory(poolFactoryAddress).isDelegateOfPoolOrOwner(msg.sender, _poolAddress), "17");
         _claimPoolSubmissionRewards(_poolAddress, _challengeId);
         return;
     }

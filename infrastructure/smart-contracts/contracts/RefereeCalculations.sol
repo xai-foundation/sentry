@@ -41,7 +41,7 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
         require(maxSupply > totalSupply, "5");
 
         uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply)); // calculate which tier we are in starting from 0
-        require(tier < 23, "6");
+        require(tier <= 23, "6");
 
         uint256 emissionTier = maxSupply / (2 ** (tier + 1)); // equal to the amount of tokens that are emitted during this tier
 
@@ -103,15 +103,16 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
     bytes memory _confirmData,
     bytes memory _challengerSignedHash
     ) public pure returns (uint256 winningKeyCount) {
+        // Ensure inputs are valid
         require(_stakedKeyCount > 0, "Staked key count must be positive");
         require(_boostFactor > 0, "Boost factor must be positive");
 
-        // The probability is directly represented by the boost factor
-        // _boostFactor of 100 represents 1% chance (100/10000)
+        // Set the winning probability
+        // For example, a _boostFactor of 100 means a 1% chance (100/10000)
         uint256 probability = _boostFactor;
 
-        // Create a unique seed for this specific pool and challenge
-        // This ensures different randomness for each pool and challenge combination
+        // Create a unique random seed for this specific scenario
+        // This ensures different randomness for each unique combination of inputs
         bytes32 seedHash = keccak256(
             abi.encodePacked(
                 _stakedKeyCount,
@@ -124,15 +125,13 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
         uint256 seed = uint256(seedHash);
 
         // Generate a random number between 0 and 9999
-        // This will be used for statistical approximation in larger pools
+        // This will be used for various random decisions later
         uint256 random = seed % 10000;
 
-        // For small pools (100 keys or fewer), we simulate each key individually
-        // This ensures accurate probabilities for small pools, including single-key pools
+        // For small pools (100 keys or fewer), we check each key individually
         if (_stakedKeyCount <= 100) {
             for (uint256 i = 0; i < _stakedKeyCount; i++) {
                 // Generate a unique random number for each key
-                // We use the seed and the key index to ensure uniqueness
                 uint256 keyRandom = uint256(keccak256(abi.encodePacked(seed, i))) % 10000;
                 
                 // If the random number is less than the probability, this key wins
@@ -141,30 +140,33 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
                 }
             }
         } else {
-            // For larger pools, we use a statistical approximation
-            // This is more gas-efficient for high key counts
+            // For larger pools, we use a statistical approximation method
             
             // Calculate the expected number of winning keys
-            // This is a straightforward probability calculation
             uint256 expectedWinningKeys = (_stakedKeyCount * probability) / 10000;
             
-            // Apply a random adjustment with magnitude influenced by the boost factor
-            // This simulates potentially higher variance for pools with higher winning probabilities
-            uint256 maxAdjustmentPercentage = 10 + (_boostFactor / 100); // Base 10% plus up to 10% more based on boost factor
-            uint256 adjustmentFactor = random % (maxAdjustmentPercentage * 2); // 0 to 2x maxAdjustmentPercentage
+            // Calculate the maximum adjustment percentage
+            // This is higher for lower boost factors to introduce more variability
+            uint256 baseVariability = 30 + (1000 / _boostFactor);
+            uint256 maxAdjustmentPercentage = baseVariability > 50 ? 50 : baseVariability; // Cap at 50%
 
-            // Calculate the adjustment amount
-            uint256 adjustment = (expectedWinningKeys * adjustmentFactor) / 1000;
+            // Generate a random factor for adjustment calculation
+            uint256 randomFactor1 = uint256(keccak256(abi.encodePacked(seed, "factor1"))) % 1000;
+            
+            // Calculate the actual adjustment percentage and amount
+            uint256 adjustmentPercentage = (randomFactor1 * maxAdjustmentPercentage) / 1000;
+            uint256 adjustment = (expectedWinningKeys * adjustmentPercentage) / 100;
 
             // Randomly decide whether to add or subtract the adjustment
             if (random % 2 == 0) {
                 winningKeyCount = expectedWinningKeys + adjustment;
             } else {
-                // Ensure we don't underflow when subtracting
+                // Subtract the adjustment, but ensure we don't go below zero
                 winningKeyCount = expectedWinningKeys > adjustment ? expectedWinningKeys - adjustment : 0;
             }
         }
 
+        // Return the final count of winning keys
         return winningKeyCount;
     }
 }
