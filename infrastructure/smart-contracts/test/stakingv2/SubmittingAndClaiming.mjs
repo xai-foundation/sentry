@@ -67,7 +67,8 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			expect(openForSubmissions).to.equal(true);
 
 			// Submit a winning hash
-			await referee.connect(addr1).submitPoolAssertion(stakingPoolAddress, challengeId, "0x0000000000000000000000000000000000000000000000000000000000000000");
+			// await referee.connect(addr1).submitPoolAssertion(stakingPoolAddress, challengeId, "0x0000000000000000000000000000000000000000000000000000000000000000");
+			await referee.connect(addr1).submitMultipleAssertions(addr2MintedKeyIds, challengeId, "0x0000000000000000000000000000000000000000000000000000000000000000");
 
 			// Grab the poolSubmission & expect them to both be eligible
 			const poolSubmission = await referee.poolSubmissions(challengeId, stakingPoolAddress);
@@ -87,7 +88,7 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			expect(poolBalanceBalance1).to.equal(0);
 
 			// Bulk reward claim as pool owner
-			await referee.connect(addr1).claimPoolSubmissionRewards(stakingPoolAddress, challengeId);
+			await referee.connect(operator).claimMultipleRewards(addr2MintedKeyIds, challengeId, stakingPoolAddress);
 
 			// Make sure the staking pool has balance now
 			const poolBalanceBalance2 = await esXai.connect(addr1).balanceOf(stakingPoolAddress);
@@ -155,7 +156,7 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 
 			// Submit a hash
 			const challengeId = 0;
-			await referee.connect(operator).submitPoolAssertion(stakingPoolAddress, challengeId, "0x0000000000000000000000000000000000000000000000000000000000000000");
+			await referee.connect(operator).submitMultipleAssertions(addr2MintedKeyIds, challengeId, "0x0000000000000000000000000000000000000000000000000000000000000000");
 
 			// Grab the poolSubmission & expect it to be eligible
 			// Note: Currently not possible
@@ -174,7 +175,7 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			expect(poolBalanceBalance1).to.equal(0);
 
 			// Bulk reward claim as operator
-			await referee.connect(operator).claimPoolSubmissionRewards(stakingPoolAddress, challengeId);
+			await referee.connect(operator).claimMultipleRewards(addr2MintedKeyIds, challengeId, stakingPoolAddress);
 
 			// Make sure the staking pool has balance now
 			const poolBalanceBalance2 = await esXai.connect(addr1).balanceOf(stakingPoolAddress);
