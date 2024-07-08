@@ -375,11 +375,17 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
             expect(poolSubmission1.claimed).to.equal(false);
         });
 
-        // it("Check user submitsAssertion for their keyID while assigned to pool switches to submitPoolAssertion", async function () {
+        // it("Check claim of staked keyId", async function () {
         //     const { poolFactory, addr1, addr2, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
-        //     const singlePrice = await nodeLicense.price(1, "");
-        //     await nodeLicense.connect(addr1).mint(1, "", { value: singlePrice });
+            
+        //     const addr1KeyMintPrice = await nodeLicense.price(1, "");
+        //     const addr2KeyMintPrice = await nodeLicense.price(1, "");
+
+        //     await nodeLicense.connect(addr1).mint(1, "", { value: addr1KeyMintPrice });
         //     const addr1MintedKeyId = await nodeLicense.totalSupply();
+
+        //     await nodeLicense.connect(addr2).mint(1, "", { value: addr2KeyMintPrice });
+        //     const addr2MintedKeyId = await nodeLicense.totalSupply();
 
         //     // Create a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
         //     await poolFactory.connect(addr1).createPool(
@@ -421,9 +427,6 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
         //     await network.provider.send("evm_increaseTime", [duration]);
         //     await network.provider.send("evm_mine");
             
-        //     // Make sure the staking pool has no balance yet
-        //     // const poolBalance = await esXai.connect(addr1).balanceOf(stakingPoolAddress);
-
         //     // Submit a new challenge so that the previous one is claimable
         //     const startingAssertion2 = startingAssertion + 1;
 
@@ -440,11 +443,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
         //     // resulting in a division by zero error due to number of eligible claimers being 0;
         //     // await referee.connect(addr1).claimPoolSubmissionRewards(stakingPoolAddress, challengeId);
             
-        //     // Get poolSubmissions
-        //     const poolSubmission = await referee.poolSubmissions(challengeId, stakingPoolAddress);
-        //     expect(poolSubmission.submitted).to.equal(true);
-        //     //expect(poolSubmission.claimed).to.equal(true);
-            
+        //     await referee.claimReward(addr1MintedKeyId, challengeId);
 		// 	// Make sure the staking pool has balance now
         //     // TODO/Note this will fail because submitting for a single keyID is not likely to win a reward
         //     // resulting in a division by zero error due to number of eligible claimers being 0;
