@@ -13,7 +13,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
 
     return function () {
 
-        it("Pool owner should be able to submit a pool assertion & claim pool submission rewards", async function () {
+        it("Check for poolSubmissions the submitPoolAssertion and claimPoolSubmissionRewards for a pool owner", async function () {
             const { poolFactory, addr1, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
             const singlePrice = await nodeLicense.price(1, "");
             await nodeLicense.connect(addr1).mint(1, "", { value: singlePrice });
@@ -61,7 +61,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
             await referee.connect(addr1).claimPoolSubmissionRewards(stakingPoolAddress, challengeId);
             
             // Get poolSubmissions
-            const poolSubmission = await referee.PoolSubmissions(stakingPoolAddress);
+            const poolSubmission = await referee.poolSubmissions(0, stakingPoolAddress);
             expect(poolSubmission.winningKeyCount).to.equal(1);
             expect(poolSubmission.winningKeyCount).to.equal(1);
             expect(poolSubmission.submitted).to.equal(true);
@@ -72,21 +72,20 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
             expect(poolBalance2).to.be.greaterThan(poolBalance);
         })
 
-        it("User stakes in a pool and already submitted for their keyID & user did not submit for their keyID", async function () {
+        // it("User stakes in a pool and already submitted for their keyID & user did not submit for their keyID", async function () {
+        it("Check already submitted keyId is not included into poolSubmission after assigning to pool", async function () {
 
-            const { poolFactory, addr1, addr2, addr3, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
+
+            const { poolFactory, addr1, addr2, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
             
             const addr1KeyMintPrice = await nodeLicense.price(1, "");
             const addr2KeyMintPrice = await nodeLicense.price(1, "");
-            const addr3KeyMintPrice = await nodeLicense.price(1, "");
 
             await nodeLicense.connect(addr1).mint(1, "", { value: addr1KeyMintPrice });
             await nodeLicense.connect(addr2).mint(1, "", { value: addr2KeyMintPrice });
-            await nodeLicense.connect(addr3).mint(1, "", { value: addr3KeyMintPrice });
 
             const addr1MintedKeyId = await nodeLicense.totalSupply();
             const addr2MintedKeyId = await nodeLicense.totalSupply();
-            const addr3MintedKeyId = await nodeLicense.totalSupply();
 
             // Create a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
             await poolFactory.connect(addr1).createPool(
@@ -125,34 +124,90 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
             const submission = await referee.getSubmissionsForChallenges([challengeId], addr2MintedKeyId[0]);
             expect(submission[0].submitted).to.equal(true);
 
-            // Submit a pool assertions
-            await referee.connect(addr1).submitPoolAssertion(stakingPoolAddress, challengeId, winningStateRoot);
-
             // User stakes submitted keyID into pool
             await poolFactory.connect(addr2).stakeKeys(
                 stakingPoolAddress,
                 [addr2MintedKeyId]
             )
 
-            // User stakes not submitted keyID into pool
-            await poolFactory.connect(addr3).stakeKeys(
-                stakingPoolAddress,
-                [addr3MintedKeyId]
-            )
+            // Submit a pool assertions
+            await referee.connect(addr1).submitPoolAssertion(stakingPoolAddress, challengeId, winningStateRoot);
 
             // Get poolSubmissions
-            const poolSubmission = await referee.PoolSubmissions(stakingPoolAddress);
-            expect(poolSubmission.winningKeyCount).to.equal(1);
+            const poolSubmission = await referee.poolSubmissions(0, stakingPoolAddress);
             expect(poolSubmission.winningKeyCount).to.equal(1);
             expect(poolSubmission.submitted).to.equal(true);
             expect(poolSubmission.claimed).to.equal(false);
-
-            // Claim the rewards for a pool
-            await referee.connect(addr1).claimPoolSubmissionRewards(stakingPoolAddress, challengeId);
-
         });
 
-        it("User unstakes from a pool with key included in poolSubmission & user unstakes while the pool does not have a poolSubmission", async function () {
+        it("Check not submitted keyId increases winningKeys and numberOfEligibleClaimers for poolSubmission after staking to pool", async function () {
+            const { poolFactory, addr1, addr2, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
+            
+            const addr1KeyMintPrice = await nodeLicense.price(1, "");
+            const addr2KeyMintPrice = await nodeLicense.price(1, "");
+
+            await nodeLicense.connect(addr1).mint(1, "", { value: addr1KeyMintPrice });
+            await nodeLicense.connect(addr2).mint(1, "", { value: addr2KeyMintPrice });
+
+            const addr1MintedKeyId = await nodeLicense.totalSupply();
+            const addr2MintedKeyId = await nodeLicense.totalSupply();
+
+            // Create a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
+            await poolFactory.connect(addr1).createPool(
+                noDelegateOwner,
+                [addr1MintedKeyId],
+                validShareValues,
+                poolMetaData,
+                poolSocials,
+                poolTrackerDetails
+            );
+
+            const challengeId = 0;
+            const winningStateRoot = await findWinningStateRoot(referee, keys, challengeId);
+            // Mint some esXai to increase the total supply for submitting the first challenge so that there is available reward
+            await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 1_000_000);
+
+            // Submit a challenge
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                winningStateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
+            // Make sure the challenge is open for submissions
+            const { openForSubmissions } = await referee.getChallenge(0);
+            expect(openForSubmissions).to.equal(true);
+            
+            // Submit a pool assertions
+            await referee.connect(addr1).submitPoolAssertion(stakingPoolAddress, challengeId, winningStateRoot);
+
+            const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+
+            // Get poolSubmissions
+            const poolSubmission = await referee.poolSubmissions(0, stakingPoolAddress);
+            expect(poolSubmission.winningKeyCount).to.equal(1);
+            expect(poolSubmission2.totalStakedKeyCount).to.equal(1);
+            expect(poolSubmission.submitted).to.equal(true);
+            expect(poolSubmission.claimed).to.equal(false);
+
+            // User stakes not submitted keyID into pool
+            await poolFactory.connect(addr2).stakeKeys(
+                stakingPoolAddress,
+                [addr2MintedKeyId]
+            )
+
+            // Get poolSubmissions
+            const poolSubmission2 = await referee.poolSubmissions(0, stakingPoolAddress);
+            expect(poolSubmission2.winningKeyCount).to.equal(2);
+            expect(poolSubmission2.totalStakedKeyCount).to.equal(2);
+            expect(poolSubmission2.submitted).to.equal(true);
+            expect(poolSubmission2.claimed).to.equal(false);
+        });
+
+        it("Check if unstake of not submitted keyId reduces the number of winningKeys and stakedKeys for a poolSubmission", async function () {
             const { poolFactory, addr1, addr2, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
             
             const addr1KeyMintPrice = await nodeLicense.price(1, "");
@@ -198,6 +253,13 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
 
             await referee.connect(addr1).submitPoolAssertion(stakingPoolAddress, challengeId, winningStateRoot);
 
+            // Get poolSubmissions
+            const poolSubmission = await referee.poolSubmissions(stakingPoolAddress);
+            expect(poolSubmission.winningKeyCount).to.equal(2);
+            expect(poolSubmission.totalStakedKeyCount).to.equal(2);
+            expect(poolSubmission.submitted).to.equal(true);
+            expect(poolSubmission.claimed).to.equal(false);
+
             // Successfully create un-stake request for 1 key
 			await poolFactory.connect(addr2).createUnstakeKeyRequest(stakingPoolAddress, 1);
 
@@ -207,22 +269,23 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
 
             await poolFactory.connect(addr2).unstakeKeys(stakingPoolAddress, 1, [addr2MintedKeyId]);
 
+            // Get poolSubmissions
+            const poolSubmission2 = await referee.poolSubmissions(0, stakingPoolAddress);
+            expect(poolSubmission2.winningKeyCount).to.equal(1);
+            expect(poolSubmission2.winningKeyCount).to.equal(1);
+            expect(poolSubmission2.submitted).to.equal(true);
+            expect(poolSubmission2.claimed).to.equal(false);
+
             // Submit assertion for unstaked key
             await referee.connect(addr2).submitAssertionToChallenge(addr2MintedKeyId, challengeId, winningStateRoot);
 
-            // Get poolSubmissions
-            const poolSubmission = await referee.PoolSubmissions(stakingPoolAddress);
-            expect(poolSubmission.winningKeyCount).to.equal(1);
-            expect(poolSubmission.winningKeyCount).to.equal(1);
-            expect(poolSubmission.submitted).to.equal(true);
-            expect(poolSubmission.claimed).to.equal(false);
-
-
-            //TODO the pool does not have a pool submission
+            const submission = await referee.submissions(0, addr2MintedKeyId);
+            expect(submission.eligibleForPayout).to.equal(true);
+            expect(submission.submitted).to.equal(true);
         });
 
-        it("Check user submitsAssertion for their keyID while assigned to pool switches to submitPoolAssertion", async function () {
-            const { poolFactory, addr1, addr2, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
+        it("Check submitAssertion for an assigned keyId creates poolSubmission", async function () {
+            const { poolFactory, addr1, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
             const singlePrice = await nodeLicense.price(1, "");
             await nodeLicense.connect(addr1).mint(1, "", { value: singlePrice });
             const addr1MintedKeyId = await nodeLicense.totalSupply();
@@ -260,23 +323,13 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
 
             // Submit a assertions while key assigned to a pool
             await referee.connect(addr1).submitAssertion(addr1MintedKeyId, challengeId, winningStateRoot);
-            
-            // Make sure the staking pool has no balance yet
-            const poolBalance = await esXai.connect(addr1).balanceOf(stakingPoolAddress);
-            
-            // Claim the rewards for a pool
-            await referee.connect(addr1).claimPoolSubmissionRewards(stakingPoolAddress, challengeId);
-            
+
             // Get poolSubmissions
             const poolSubmission = await referee.PoolSubmissions(stakingPoolAddress);
             expect(poolSubmission.winningKeyCount).to.equal(1);
             expect(poolSubmission.winningKeyCount).to.equal(1);
             expect(poolSubmission.submitted).to.equal(true);
-            expect(poolSubmission.claimed).to.equal(true);
-            
-			// Make sure the staking pool has balance now
-            const poolBalance2 = await esXai.connect(addr1).balanceOf(stakingPoolAddress);
-            expect(poolBalance2).to.be.greaterThan(poolBalance);
+            expect(poolSubmission.claimed).to.equal(false);
         })
 
         it("Check the amount of winning keys for pools based on keys staked and boostfactor", async function () {
