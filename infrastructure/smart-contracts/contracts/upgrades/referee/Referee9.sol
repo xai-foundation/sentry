@@ -10,7 +10,7 @@ import "../../nitro-contracts/rollup/IRollupCore.sol";
 import "../../NodeLicense.sol";
 import "../../Xai.sol";
 import "../../esXai.sol";
-import "../../staking-v2/PoolFactory.sol";
+import "../pool-factory/PoolFactory2.sol";
 import "../../RefereeCalculations.sol";
 
 // Error Codes
@@ -831,10 +831,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 keysLength = keyIds.length;
         require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "43");
 
-        uint256 currentChallenge = 0;
-        if (challengeCounter > 0) {
-            currentChallenge = challengeCounter - 1;
-        }
+        uint256 currentChallenge = challengeCounter - 1;
 
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
         for (uint256 i = 0; i < keysLength; i++) {
@@ -873,10 +870,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         assignedKeysToPoolCount[pool] -= keysLength;
         assignedKeysOfUserCount[staker] -= keysLength;
         
-        uint256 currentChallenge = 0;
-        if (challengeCounter > 0) {
-            currentChallenge = challengeCounter - 1;
-        }
+        uint256 currentChallenge = challengeCounter - 1;
         if(poolSubmissions[currentChallenge][pool].submitted){
             _updatePoolAssertion(pool, currentChallenge);
         }
@@ -887,10 +881,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         require(stakedAmounts[pool] + amount <= maxStakedAmount, "49");
         stakedAmounts[pool] += amount;
         
-        uint256 currentChallenge = 0;
-        if (challengeCounter > 0) {
-            currentChallenge = challengeCounter - 1;
-        }
+        uint256 currentChallenge = challengeCounter - 1;
         if(poolSubmissions[currentChallenge][pool].submitted){
             _updatePoolAssertion(pool, currentChallenge);
         }
@@ -900,10 +891,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         require(stakedAmounts[pool] >= amount, "50");
         stakedAmounts[pool] -= amount;
         
-        uint256 currentChallenge = 0;
-        if (challengeCounter > 0) {
-            currentChallenge = challengeCounter - 1;
-        }
+        uint256 currentChallenge = challengeCounter - 1;
         if(poolSubmissions[currentChallenge][pool].submitted){
             _updatePoolAssertion(pool, currentChallenge);
         }
@@ -1115,7 +1103,8 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 			return;
 		}
 
-        require(PoolFactory(poolFactoryAddress).isDelegateOfPoolOrOwner(msg.sender, _poolAddress), "17");
+        require(PoolFactory2(poolFactoryAddress).validateSubmitPoolAssertion(_poolAddress, msg.sender), "17");
+
         // Confirm not already submitted
         require(!poolSubmissions[_challengeId][_poolAddress].submitted, "54");
         _submitNewPoolAssertion(_poolAddress, _challengeId, _confirmData);
@@ -1127,9 +1116,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     * @param _poolAddress The address of the pool.
     * @param _challengeId The ID of the challenge.
     */
-    function claimPoolSubmissionRewards(address _poolAddress, uint256 _challengeId) external {      
-        require(PoolFactory(poolFactoryAddress).isDelegateOfPoolOrOwner(msg.sender, _poolAddress), "17");
-        
+    function claimPoolSubmissionRewards(address _poolAddress, uint256 _challengeId) external {
         // Validate the challenge is claimable
         _validateChallengeIsClaimable(challenges[_challengeId]);
 

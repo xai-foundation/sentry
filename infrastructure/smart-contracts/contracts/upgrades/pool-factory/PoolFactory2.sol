@@ -50,6 +50,8 @@ import "../../staking-v2/PoolBeacon.sol";
 // 32: You must have at least the desired un-stake amount staked in order to un-stake
 // 33: Invalid pool for claim; pool needs to have been created via the PoolFactory
 // 34: Invalid delegate update; pool needs to have been created via the PoolFactory
+// 35: Invalid submission; pool needs to have been created via the PoolFactory
+// 36: Invalid submission; user needs to be owner, delegate or staker to submit
 
 contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -676,7 +678,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     function isDelegateOfPoolOrOwner(
         address delegate,
         address pool
-    ) external view returns (bool) {
+    ) public view returns (bool) {
         return
             (poolsOfDelegate[delegate].length > poolsOfDelegateIndices[pool] &&
                 poolsOfDelegate[delegate][poolsOfDelegateIndices[pool]] ==
@@ -780,5 +782,18 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
                 Referee9(refereeAddress).assignedKeyToPool(keyIds[i]) !=
                 address(0);
         }
+    }
+
+    function validateSubmitPoolAssertion(
+        address pool, address user
+    ) external view returns (bool) {
+        require(poolsCreatedViaFactory[pool], "35"); // Pool must be created via factory
+
+        if(!isDelegateOfPoolOrOwner(user, pool)){
+            (uint256 userStakedEsXaiAmount, ,uint256[] memory userStakedKeyIds, ,) = StakingPool(pool).getUserPoolData(user);
+            return userStakedEsXaiAmount > 0 || userStakedKeyIds.length > 0;
+        }
+
+        return true;
     }
 }
