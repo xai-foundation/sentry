@@ -419,7 +419,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
 
         //     const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
 
-        //     // Submit a assertions while key assigned to a pool
+        //     // Submit a assertions while key assigned to a pool with winningStateRoot
         //     await referee.connect(addr1).submitAssertionToChallenge(addr1MintedKeyId, challengeId, winningStateRoot);
 
         //     const duration = 60 * 75 // 75 minutes
@@ -443,6 +443,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
         //     // resulting in a division by zero error due to number of eligible claimers being 0;
         //     // await referee.connect(addr1).claimPoolSubmissionRewards(stakingPoolAddress, challengeId);
             
+        //     // Check if user can claim the reward
         //     await referee.claimReward(addr1MintedKeyId, challengeId);
 		// 	// Make sure the staking pool has balance now
         //     // TODO/Note this will fail because submitting for a single keyID is not likely to win a reward
