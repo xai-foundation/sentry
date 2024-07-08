@@ -75,6 +75,14 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 			expect(poolBoostFactor2).to.equal(minBoostFactor);
 		});
 
+
+		/**
+		 * TODO Update Levels in Referee temporarily to test the following tests
+		 * The tests below are commented out as it would require 40k keys to be minted and staked to a pool to reach the highest tier.
+		 * Updating the tiers temporarily in the initializer will work, however, it will break other tests around max staked amounts.
+		 *  
+		 */
+
 		it("Verify that a pool with enough esXai is in a higher tier", async function () {
 			const {
 				poolFactory,
@@ -94,12 +102,13 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 			const keysForHighestTier = highestFoundStakeAmountTierThreshold / maxStakeAmountPerLicense;
 			const startingSupply = await nodeLicense.totalSupply();
 			await mitBatchedLicenses(keysForHighestTier, nodeLicense.connect(addr1));
+
 			// const price = await nodeLicense.price(keysForHighestTier, "");
 			// await nodeLicense.connect(addr1).mint(keysForHighestTier, "", { value: price });
 			const endingSupply = await nodeLicense.totalSupply();
-
 			// Save the key ids we minted to an array for pool creation
 			const keyIds = [];
+
 			for (let i = startingSupply; i < endingSupply; i++) {
 				keyIds.push(i + 1n);
 			}
@@ -132,7 +141,6 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 				);
 			}
 
-
 			// Save the new pool's address
 			const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
 
@@ -147,6 +155,7 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 			expect(poolBoostFactor2).to.equal(maxBoostFactor);
 		});
 
+		//TODO this test needs to be reworked, the pool with 1000 keys staked in diamond will now win more on the pool basis, it does not really make sense to compare to an unstaked key that submits for itself
 		it("Verify that keys in a pool with esXai staked wins more challenges", async function () {
 			const { poolFactory, addr1, addr2, nodeLicense, referee, refereeDefaultAdmin, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
 

@@ -330,12 +330,18 @@ describe("Fixture Tests", function () {
         const NodeLicense8 = await ethers.getContractFactory("NodeLicense8");
         const nodeLicense8 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense8, { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await tinyKeysAirDrop.getAddress()] } });
         await nodeLicense8.waitForDeployment();
-
+        // Deploy the Referee Calculations contract
+        const RefereeCalculations = await ethers.getContractFactory("RefereeCalculations");
+        const refereeCalculations = await upgrades.deployProxy(RefereeCalculations, [], { deployer: deployer });
+        await refereeCalculations.waitForDeployment();
+        
         // Referee9
         // This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
-        const Referee9 = await ethers.getContractFactory("Referee9A");
-        const referee9 = await upgrades.upgradeProxy((await referee.getAddress()), Referee9, { call: { fn: "initialize", args: [] } });
+        const Referee9 = await ethers.getContractFactory("Referee9");
+        // Upgrade the Referee
+        const referee9 = await upgrades.upgradeProxy((await referee.getAddress()), Referee9, { call: { fn: "initialize", args: [await refereeCalculations.getAddress()] } });
         await referee9.waitForDeployment();
+
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
@@ -382,22 +388,22 @@ describe("Fixture Tests", function () {
             chainlinkXaiUsdPriceFeed,
             tinyKeysAirDrop,
             airdropMultiplier,
+            refereeCalculations
         };
     }
 
-    // describe("CNY 2024", CNYAirDropTests.bind(this));
-    // describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
-    // describe("Xai", XaiTests(deployInfrastructure).bind(this));
-    // describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
-    // describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
-    // describe("Referee", RefereeTests(deployInfrastructure).bind(this));
-    // describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
-    // describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
-    // describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
-    describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
-    // describe("PoolSubmissions", RefereePoolSubmissions(deployInfrastructure).bind(this));
-    // describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
-
+    //describe("CNY 2024", CNYAirDropTests.bind(this));
+    //describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
+    //describe("Xai", XaiTests(deployInfrastructure).bind(this));
+    //describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
+    //describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
+    //describe("Referee", RefereeTests(deployInfrastructure).bind(this));
+    //describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
+    //describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
+    //describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
+    //describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
+    describe("PoolSubmissions", RefereePoolSubmissions(deployInfrastructure).bind(this));
+    //describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
 
     // This doesn't work when running coverage
     //describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));

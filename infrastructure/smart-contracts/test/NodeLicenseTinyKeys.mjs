@@ -284,7 +284,6 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
 
         it("Process the tiny keys airdrop and confirm balances after", async function() {
             const {nodeLicense, refereeDefaultAdmin, addr1, addr2, addr3, addr4, tinyKeysAirDrop, deployer,referee, poolFactory, airdropMultiplier, nodeLicenseDefaultAdmin} = await loadFixture(deployInfrastructure);
-
             //Confirm initial total supply
             const maxSupplyBefore = await nodeLicense.maxSupply();
             const totalSupplyBefore = await nodeLicense.totalSupply();
@@ -301,7 +300,6 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
 				poolSocials,
 				poolTrackerDetails
 			)
-
 			// Check the user's updated assigned key count
 			const user1KeyCountStakedBefore = await referee.connect(addr1).assignedKeysOfUserCount(addr1.address);
 			expect(user1KeyCountStakedBefore).to.equal(1);  
@@ -316,20 +314,24 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             // User 3 will stake 0 keys in the pool
             const user3KeyCountStakedBefore = await referee.connect(addr3).assignedKeysOfUserCount(addr3.address);
             expect(user3KeyCountStakedBefore).to.equal(0);
-
             // Starting Airdrop
 
             // Confirm staking is enabled
             expect(await referee.stakingEnabled()).to.be.true;
+
             // Start Airdrop
             await tinyKeysAirDrop.connect(deployer).startAirdrop();
 
+
             // Staking Key Should revert
-            await expect(poolFactory.connect(addr4).stakeKeys(poolAddress, [6])).to.be.revertedWith("51");
+            await expect(poolFactory.connect(addr4).stakeKeys(poolAddress, [6])).to.be.revertedWith("52");
+
 
             // Confirm Minting Disabled - Expect a mint to be reverted
             const priceBeforeAirdrop = await nodeLicense.price(1, "");
+
             await expect(nodeLicense.connect(addr1).mint(1, "", {value: priceBeforeAirdrop})).to.be.revertedWith("Minting is paused");
+
 
             // Process Airdrop
             const qtyToProcess = BigInt(50);
@@ -339,7 +341,6 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             const user1BalanceAfter = await nodeLicense.balanceOf(addr1.address);
             const user2BalanceAfter = await nodeLicense.balanceOf(addr2.address);
             const user3BalanceAfter = await nodeLicense.balanceOf(addr3.address);
-
             expect(user1BalanceAfter).to.equal((user1BalanceBefore * airdropMultiplier) + user1BalanceBefore);
             expect(user2BalanceAfter).to.equal((user2BalanceBefore * airdropMultiplier) + user2BalanceBefore);
             expect(user3BalanceAfter).to.equal((user3BalanceBefore * airdropMultiplier) + user3BalanceBefore);
