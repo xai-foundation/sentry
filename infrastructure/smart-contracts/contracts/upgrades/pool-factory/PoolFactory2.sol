@@ -14,6 +14,7 @@ import "../../upgrades/node-license/NodeLicense8.sol";
 import "../../staking-v2/StakingPool.sol";
 import "../../staking-v2/PoolProxyDeployer.sol";
 import "../../staking-v2/PoolBeacon.sol";
+import "hardhat/console.sol";
 
 // Error Codes
 // 1: Staking must be enabled before creating pool

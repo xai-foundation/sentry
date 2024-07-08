@@ -12,6 +12,7 @@ import "../../Xai.sol";
 import "../../esXai.sol";
 import "../../staking-v2/PoolFactory.sol";
 import "../../RefereeCalculations.sol";
+import "hardhat/console.sol";
 
 // Error Codes
 // 1: Only PoolFactory can call this function.
@@ -596,7 +597,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     }
     
     function _submitAssertion(uint256 _nodeLicenseId, uint256 _challengeId, bytes memory _confirmData, address licenseOwner, address assignedPool) internal {
-        
         // Support v1 (no pools) & v2 (pools)
 		uint256 stakedAmount = stakedAmounts[assignedPool];
 		if (assignedPool == address(0)) {
@@ -892,7 +892,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             assignedKeyToPool[keyId] = pool;
             assignedKeysToPoolCount[pool] += 1;
             assignedKeysOfUserCount[staker] += 1;
-
+            console.log(challengeCounter);
         if(poolHasSubmitted && !userHasSubmitted) {  
             // If the pool has submitted and the user has not, then update the pool assertion based on the new keys staked
             _updatePoolAssertion(pool, challengeCounter);
