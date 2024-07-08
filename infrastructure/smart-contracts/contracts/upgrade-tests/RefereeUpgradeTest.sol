@@ -138,7 +138,6 @@ contract RefereeUpgradeTest is AccessControlEnumerableUpgradeable {
     struct PoolSubmission {
         bool submitted;
         bool claimed;
-        uint256 pendingStakedKeys;
         uint256 stakedKeyCount;
         uint256 winningKeyCount;
         bytes assertionStateRootOrConfirmData;
