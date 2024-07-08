@@ -30,7 +30,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
             );
 
             const challengeId = 0;
-            const winningStateRoot = await findWinningStateRoot(referee, keys, challengeId);
+            const winningStateRoot = await findWinningStateRoot(referee, [addr1MintedKeyId], challengeId);
             // Mint some esXai to increase the total supply for submitting the first challenge so that there is available reward
             await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 1_000_000);
 
@@ -61,7 +61,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
             await referee.connect(addr1).claimPoolSubmissionRewards(stakingPoolAddress, challengeId);
             
             // Get poolSubmissions
-            const poolSubmission = await referee.poolSubmissions(0, stakingPoolAddress);
+            const poolSubmission = await referee.poolSubmissions(stakingPoolAddress);
             expect(poolSubmission.winningKeyCount).to.equal(1);
             expect(poolSubmission.winningKeyCount).to.equal(1);
             expect(poolSubmission.submitted).to.equal(true);
@@ -134,7 +134,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
             await referee.connect(addr1).submitPoolAssertion(stakingPoolAddress, challengeId, winningStateRoot);
 
             // Get poolSubmissions
-            const poolSubmission = await referee.poolSubmissions(0, stakingPoolAddress);
+            const poolSubmission = await referee.poolSubmissions(stakingPoolAddress);
             expect(poolSubmission.winningKeyCount).to.equal(1);
             expect(poolSubmission.submitted).to.equal(true);
             expect(poolSubmission.claimed).to.equal(false);
@@ -163,7 +163,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
             );
 
             const challengeId = 0;
-            const winningStateRoot = await findWinningStateRoot(referee, keys, challengeId);
+            const winningStateRoot = await findWinningStateRoot(referee, [addr1MintedKeyId], challengeId);
             // Mint some esXai to increase the total supply for submitting the first challenge so that there is available reward
             await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 1_000_000);
 
@@ -187,7 +187,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
             const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
 
             // Get poolSubmissions
-            const poolSubmission = await referee.poolSubmissions(0, stakingPoolAddress);
+            const poolSubmission = await referee.poolSubmissions(stakingPoolAddress);
             expect(poolSubmission.winningKeyCount).to.equal(1);
             expect(poolSubmission2.totalStakedKeyCount).to.equal(1);
             expect(poolSubmission.submitted).to.equal(true);
@@ -200,7 +200,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
             )
 
             // Get poolSubmissions
-            const poolSubmission2 = await referee.poolSubmissions(0, stakingPoolAddress);
+            const poolSubmission2 = await referee.poolSubmissions(stakingPoolAddress);
             expect(poolSubmission2.winningKeyCount).to.equal(2);
             expect(poolSubmission2.totalStakedKeyCount).to.equal(2);
             expect(poolSubmission2.submitted).to.equal(true);
@@ -270,7 +270,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
             await poolFactory.connect(addr2).unstakeKeys(stakingPoolAddress, 1, [addr2MintedKeyId]);
 
             // Get poolSubmissions
-            const poolSubmission2 = await referee.poolSubmissions(0, stakingPoolAddress);
+            const poolSubmission2 = await referee.poolSubmissions(stakingPoolAddress);
             expect(poolSubmission2.winningKeyCount).to.equal(1);
             expect(poolSubmission2.winningKeyCount).to.equal(1);
             expect(poolSubmission2.submitted).to.equal(true);
@@ -301,7 +301,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
             );
 
             const challengeId = 0;
-            const winningStateRoot = await findWinningStateRoot(referee, keys, challengeId);
+            const winningStateRoot = await findWinningStateRoot(referee, [addr1MintedKeyId], challengeId);
             // Mint some esXai to increase the total supply for submitting the first challenge so that there is available reward
             await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 1_000_000);
 
@@ -325,7 +325,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
             await referee.connect(addr1).submitAssertion(addr1MintedKeyId, challengeId, winningStateRoot);
 
             // Get poolSubmissions
-            const poolSubmission = await referee.PoolSubmissions(stakingPoolAddress);
+            const poolSubmission = await referee.poolSubmissions(stakingPoolAddress);
             expect(poolSubmission.winningKeyCount).to.equal(1);
             expect(poolSubmission.winningKeyCount).to.equal(1);
             expect(poolSubmission.submitted).to.equal(true);
