@@ -12,6 +12,7 @@ import "../../Xai.sol";
 import "../../esXai.sol";
 import "../pool-factory/PoolFactory2.sol";
 import "../../RefereeCalculations.sol";
+import "hardhat/console.sol";
 
 // Error Codes
 // 1: Only PoolFactory can call this function.
@@ -589,7 +590,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     }
     
     function _submitAssertion(uint256 _nodeLicenseId, uint256 _challengeId, bytes memory _confirmData, address licenseOwner, address assignedPool) internal {
-        
         // Support v1 (no pools) & v2 (pools)
 		uint256 stakedAmount = getMaxStakedAmount(assignedPool, licenseOwner);
 
