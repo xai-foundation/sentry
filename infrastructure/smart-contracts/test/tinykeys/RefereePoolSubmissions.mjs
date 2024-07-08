@@ -93,7 +93,6 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
             // Get poolSubmissions    
             const poolSubmission = await referee.poolSubmissions(challengeId, stakingPoolAddress);
             expect(poolSubmission.winningKeyCount).to.be.gt(0);
-            //expect(poolSubmission.winningKeyCount).to.equal(1);
             expect(poolSubmission.submitted).to.equal(true);
             expect(poolSubmission.claimed).to.equal(true);
             
@@ -164,7 +163,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
 
             // Get poolSubmissions
             const poolSubmission = await referee.poolSubmissions(challengeId, stakingPoolAddress);
-            // expect(poolSubmission.winningKeyCount).to.equal(1); //TODO How can we expect this to be 1?
+            // expect(poolSubmission.winningKeyCount).to.equal(1); //TODO Cannot know winning key amount
             expect(poolSubmission.stakedKeyCount).to.equal(1);
             expect(poolSubmission.submitted).to.equal(true);
             expect(poolSubmission.claimed).to.equal(false);
@@ -221,7 +220,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
 
             // Get poolSubmissions
             const poolSubmission = await referee.poolSubmissions(challengeId, stakingPoolAddress);
-            // expect(poolSubmission.winningKeyCount).to.equal(1); 
+            // expect(poolSubmission.winningKeyCount).to.equal(1); //TODO Cannot know winning key amount
             expect(poolSubmission.stakedKeyCount).to.equal(1);
             expect(poolSubmission.submitted).to.equal(true);
             expect(poolSubmission.claimed).to.equal(false);
@@ -234,7 +233,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
 
             // Get poolSubmissions
             const poolSubmission2 = await referee.poolSubmissions(challengeId, stakingPoolAddress);
-            // expect(poolSubmission2.winningKeyCount).to.equal(2);
+            // expect(poolSubmission2.winningKeyCount).to.equal(2); //TODO Cannot know winning key amount
             expect(poolSubmission2.stakedKeyCount).to.equal(2);
             expect(poolSubmission2.submitted).to.equal(true);
             expect(poolSubmission2.claimed).to.equal(false);
@@ -290,7 +289,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
 
             // Get poolSubmissions
             const poolSubmission1 = await referee.poolSubmissions(challengeId, stakingPoolAddress);
-            // expect(poolSubmission1.winningKeyCount).to.equal(2);
+            // expect(poolSubmission1.winningKeyCount).to.equal(2); //TODO Cannot know winning key amount
             expect(poolSubmission1.stakedKeyCount).to.equal(2);
             expect(poolSubmission1.submitted).to.equal(true);
             expect(poolSubmission1.claimed).to.equal(false);
@@ -307,7 +306,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
             
             // Get poolSubmissions
             const poolSubmission = await referee.poolSubmissions(challengeId, stakingPoolAddress);
-            //expect(poolSubmission.winningKeyCount).to.equal(1); //TODO How can we expect this to be 1?
+            //expect(poolSubmission.winningKeyCount).to.equal(1); //TODO Cannot know winning key amount
             expect(poolSubmission.stakedKeyCount).to.equal(1);
             expect(poolSubmission.submitted).to.equal(true);
             expect(poolSubmission.claimed).to.equal(false);
@@ -362,7 +361,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
 
             // Get poolSubmissions
             const poolSubmission1 = await referee.poolSubmissions(challengeId, stakingPoolAddress);
-            // expect(poolSubmission1.winningKeyCount).to.equal(2);
+            // expect(poolSubmission1.winningKeyCount).to.equal(2); //TODO Cannot know winning key amount
             expect(poolSubmission1.stakedKeyCount).to.equal(1);
             expect(poolSubmission1.submitted).to.equal(true);
             expect(poolSubmission1.claimed).to.equal(false);
