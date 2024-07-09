@@ -1,5 +1,6 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { assert, expect } from "chai";
+import {findWinningStateRoot} from "../Referee.mjs";
 import { findHighestStakeTier } from "../StakingV2.mjs";
 import { getStateRoots } from "../Referee.mjs";
 
@@ -39,13 +40,27 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 				referee,
 				refereeDefaultAdmin,
 				esXai,
-				esXaiMinter
+				esXaiMinter, 
+				challenger
 			} = await loadFixture(deployInfrastructure);
 
 			// Mint key to make basic pool
 			const price = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr1).mint(1, "", { value: price });
 			const mintedKeyId = await nodeLicense.totalSupply();
+			
+			const winningStateRoot = await findWinningStateRoot(referee, [mintedKeyId], 0);
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                winningStateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
 
 			await poolFactory.connect(addr1).createPool(
 				noDelegateOwner,
@@ -91,7 +106,8 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 				referee,
 				refereeDefaultAdmin,
 				esXai,
-				esXaiMinter
+				esXaiMinter, 
+				challenger
 			} = await loadFixture(deployInfrastructure);
 
 			// Manually find the highest stake tier thresholds as we have no way to check the array lengths (no functions to get length, and public array's cannot be length-queried)
@@ -112,6 +128,19 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 			for (let i = startingSupply; i < endingSupply; i++) {
 				keyIds.push(i + 1n);
 			}
+			
+			const winningStateRoot = await findWinningStateRoot(referee, [1], 0);
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                winningStateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
 
 			// Creat a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
 			if (keyIds.length > 200) {
@@ -163,6 +192,19 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 			const singlePrice = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr1).mint(1, "", { value: singlePrice });
 			const addr1MintedKeyId = await nodeLicense.totalSupply();
+			
+			const winningStateRoot = await findWinningStateRoot(referee, [addr1MintedKeyId], 0);
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                winningStateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
 
 			// Manually find the highest stake tier thresholds as we have no way to check the array lengths (no functions to get length, and public array's cannot be length-queried)
 			const [highestFoundStakeAmountTierThreshold, highestFoundTier] = await findHighestStakeTier(referee, refereeDefaultAdmin);

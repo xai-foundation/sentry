@@ -842,6 +842,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             }
             assignedKeyToPool[keyId] = pool;
             if(submissions[currentChallenge][keyId].submitted && submissions[currentChallenge][keyId].eligibleForPayout){
+                submissions[currentChallenge][keyId].submitted = false;
                 submissions[currentChallenge][keyId].eligibleForPayout = false;
                 challenges[currentChallenge].numberOfEligibleClaimers--;
                 emit AssertionCancelled(currentChallenge, keyId);
@@ -850,6 +851,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
         assignedKeysToPoolCount[pool] += keysLength;
         assignedKeysOfUserCount[staker] += keysLength;
+        console.log(" assignedKeysOfUserCount[staker]: ", assignedKeysOfUserCount[staker]);
 
         if(poolSubmissions[currentChallenge][pool].submitted){
             _updatePoolAssertion(pool, currentChallenge);
