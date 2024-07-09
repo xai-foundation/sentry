@@ -611,6 +611,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         }
 
         // Emit the AssertionSubmitted event
+        emit AssertionSubmitted(_challengeId, _nodeLicenseId);
         emit AssertionSubmittedV2(_challengeId, _nodeLicenseId, _confirmData);
     }
 
@@ -699,6 +700,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
                 }
 
                 claimCount++;
+                emit RewardsClaimed(_challengeId, reward);
                 emit RewardsClaimedV2(_challengeId, _nodeLicenseId, reward);
             }
 		}
