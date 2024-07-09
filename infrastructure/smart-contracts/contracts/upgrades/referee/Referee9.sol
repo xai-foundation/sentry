@@ -12,7 +12,6 @@ import "../../Xai.sol";
 import "../../esXai.sol";
 import "../pool-factory/PoolFactory2.sol";
 import "../../RefereeCalculations.sol";
-import "hardhat/console.sol";
 
 // Error Codes
 // 1: Only PoolFactory can call this function.
@@ -852,7 +851,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
         assignedKeysToPoolCount[pool] += keysLength;
         assignedKeysOfUserCount[staker] += keysLength;
-        console.log(" assignedKeysOfUserCount[staker]: ", assignedKeysOfUserCount[staker]);
 
         if(poolSubmissions[currentChallenge][pool].submitted){
             _updatePoolAssertion(pool, currentChallenge);
