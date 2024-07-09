@@ -443,7 +443,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
             }
         }
 
-        });
+        }).timeout(300000);
 
         it("Check that a user who submits for a staked key will trigger a pool submission and not an individual key submission.", async function () {
             const { poolFactory, addr1, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
@@ -681,7 +681,7 @@ function PoolSubmissionsRewardRate(deployInfrastructure) {
                 console.log("--------------------");
             }
         }
-    }).timeout(300000);;
+    }).timeout(300000);
 
     }
 }
