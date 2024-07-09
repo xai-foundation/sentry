@@ -32,20 +32,16 @@ async function main() {
 
     // Deploy Mock Chainlink Price Feeds
     console.log("Deploying Chainlink Price Feeds...");
-    const MockChainlinkPriceFeed = await ethers.getContractFactory("MockChainlinkPriceFeed");
-    console.log("Got ChainlinkPriceFeeds factory");
 
-    const chainlinkEthUsdPriceFeed = await MockChainlinkPriceFeed.deploy(ethToUsdPrice);
-    await chainlinkEthUsdPriceFeed.wait(BLOCKS_TO_WAIT);
+    const chainlinkEthUsdPriceFeed = await ethers.deployContract("MockChainlinkPriceFeed", [ethToUsdPrice]);
+    await chainlinkEthUsdPriceFeed.waitForDeployment();
     const chainlinkEthUsdPriceFeedAddress = await chainlinkEthUsdPriceFeed.getAddress();
-    
-    const chainlinkXaiUsdPriceFeed = await MockChainlinkPriceFeed.deploy(xaiToUsdPrice);
-    await chainlinkXaiUsdPriceFeed.wait(BLOCKS_TO_WAIT);
+
+    const chainlinkXaiUsdPriceFeed = await ethers.deployContract("MockChainlinkPriceFeed", [xaiToUsdPrice]);
+    await chainlinkXaiUsdPriceFeed.waitForDeployment();
     const chainlinkXaiUsdPriceFeedAddress = await chainlinkXaiUsdPriceFeed.getAddress();
 
     console.log("Chainlink Price Feeds deployed to:", chainlinkEthUsdPriceFeedAddress, chainlinkXaiUsdPriceFeedAddress);
-
-
 
 
 
@@ -148,7 +144,8 @@ async function main() {
      */
     console.log("Adding NodeLicense to esXai transfer whitelist...");
     const esXai = await new ethers.Contract(config.esXaiAddress, esXaiAbi, deployer);
-    await esXai.grantRole(esXaiAdminRole, config.nodeLicenseAddress);
+    await esXai.addToWhitelist(config.nodeLicenseAddress);
+    console.log("Successfully Added NodeLicense to esXai transfer whitelist");
 
     // TODO confirm the deployer has the required role to add to whitelist
     await esXai.addToWhitelist(config.nodeLicenseAddress);
@@ -167,40 +164,46 @@ async function main() {
      * @description Verifies all deployed and upgraded contracts on the blockchain explorer
      */
     console.log("Starting verification... ");
-
-    run("verify:verify", {
+    await run("verify:verify", {
         address: refereeCalculationsAddress,
         constructorArguments: [],
     });
+    await new Promise((resolve)=> setTimeout(resolve, 1000));
 
-    run("verify:verify", {
+    await run("verify:verify", {
         address: tinyKeysAirdropAddress,
-        constructorArguments: tinyKeysAirdropParams,
+        constructorArguments: [],
     });
+    await new Promise((resolve)=> setTimeout(resolve, 1000));
 
-    run("verify:verify", {
+    await run("verify:verify", {
         address: config.esXaiAddress,
-        constructorArguments: esXaiUpgradeParams,
+        constructorArguments: [],
         contract: "esXai3"
     });
+    await new Promise((resolve)=> setTimeout(resolve, 1000));
     
-    run("verify:verify", {
+    await run("verify:verify", {
         address: config.nodeLicenseAddress,
-        constructorArguments: nodeLicenseUpgradeParams,
+        constructorArguments: [],
         contract: "NodeLicense8"
     });
+    await new Promise((resolve)=> setTimeout(resolve, 1000));
 
-    run("verify:verify", {
+    await run("verify:verify", {
         address: config.poolFactoryAddress,
-        constructorArguments: poolFactoryUpgradeParams,
+        constructorArguments: [],
         contract: "PoolFactory2"
     });
+    await new Promise((resolve)=> setTimeout(resolve, 1000));
 
-    run("verify:verify", {
+    await run("verify:verify", {
         address: config.refereeAddress,
-        constructorArguments: refereeUpgradeParams,
+        constructorArguments: [],
         contract: "Referee9"
     });
+
+    console.log("Verification complete ");
 }
 
 // We recommend this pattern to be able to use async/await everywhere

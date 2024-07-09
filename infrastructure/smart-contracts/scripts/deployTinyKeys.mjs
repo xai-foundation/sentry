@@ -126,9 +126,6 @@ async function main() {
      */
     console.log("Adding NodeLicense to esXai transfer whitelist...");
     const esXai = await new ethers.Contract(config.esXaiAddress, esXaiAbi, deployer);
-    await esXai.grantRole(esXaiAdminRole, config.nodeLicenseAddress);
-
-    // TODO confirm the deployer has the required role to add to whitelist
     await esXai.addToWhitelist(config.nodeLicenseAddress);
     console.log("Successfully Added NodeLicense to esXai transfer whitelist");
 
@@ -146,39 +143,46 @@ async function main() {
      */
     console.log("Starting verification... ");
 
-    run("verify:verify", {
+    await run("verify:verify", {
         address: refereeCalculationsAddress,
         constructorArguments: [],
     });
+    await new Promise((resolve)=> setTimeout(resolve, 1000));
 
-    run("verify:verify", {
+    await run("verify:verify", {
         address: tinyKeysAirdropAddress,
-        constructorArguments: tinyKeysAirdropParams,
+        constructorArguments: [],
     });
+    await new Promise((resolve)=> setTimeout(resolve, 1000));
 
-    run("verify:verify", {
+    await run("verify:verify", {
         address: config.esXaiAddress,
-        constructorArguments: esXaiUpgradeParams,
+        constructorArguments: [],
         contract: "esXai3"
     });
+    await new Promise((resolve)=> setTimeout(resolve, 1000));
     
-    run("verify:verify", {
+    await run("verify:verify", {
         address: config.nodeLicenseAddress,
-        constructorArguments: nodeLicenseUpgradeParams,
+        constructorArguments: [],
         contract: "NodeLicense8"
     });
+    await new Promise((resolve)=> setTimeout(resolve, 1000));
 
-    run("verify:verify", {
+    await run("verify:verify", {
         address: config.poolFactoryAddress,
-        constructorArguments: poolFactoryUpgradeParams,
+        constructorArguments: [],
         contract: "PoolFactory2"
     });
+    await new Promise((resolve)=> setTimeout(resolve, 1000));
 
-    run("verify:verify", {
+    await run("verify:verify", {
         address: config.refereeAddress,
-        constructorArguments: refereeUpgradeParams,
+        constructorArguments: [],
         contract: "Referee9"
     });
+
+    console.log("Verification complete ");
 }
 
 // We recommend this pattern to be able to use async/await everywhere
