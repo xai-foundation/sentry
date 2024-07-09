@@ -18,6 +18,7 @@ import { esXaiAbi, config } from "@sentry/core";
  * 8. Verify all deployed and upgraded contracts
  */
 async function main() {
+    const BLOCKS_TO_WAIT = 3;
 
     const airDropKeyMultiplier = 99; // Number of new NodeLicense received per 1 NodeLicense currently owned 
     const maxKeysNonKyc = 100;//Maximum number of keys that a non-KYC user can own and still complete esXai redemptions
@@ -37,7 +38,7 @@ async function main() {
     const refereeCalculations = await upgrades.deployProxy(RefereeCalculations, [], { kind: "transparent", deployer });
     const txRefereeCalc = await refereeCalculations.deploymentTransaction();
 
-    await txRefereeCalc.wait(3);
+    await txRefereeCalc.wait(BLOCKS_TO_WAIT);
 
     const refereeCalculationsAddress = await refereeCalculations.getAddress();
     console.log("RefereeCalculations deployed to:", refereeCalculationsAddress);
@@ -58,7 +59,7 @@ async function main() {
     const tinyKeysAirdrop = await upgrades.deployProxy(TinyKeysAirdrop, tinyKeysAirdropParams, { kind: "transparent", deployer });
 
     const txAirdrop = await tinyKeysAirdrop.deploymentTransaction();
-    await txAirdrop.wait(3);
+    await txAirdrop.wait(BLOCKS_TO_WAIT);
 
     const tinyKeysAirdropAddress = await tinyKeysAirdrop.getAddress();
     console.log("TinyKeysAirdrop deployed to:", tinyKeysAirdropAddress);
