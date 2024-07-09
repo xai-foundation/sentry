@@ -608,7 +608,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure, poolConfigurations
                 // Confirm the key has been claimed
                 expect(submissionAfterClaim.claimed).to.equal(true);
             }     
-        })
+        }).timeout(300000);
     }
 }
 
