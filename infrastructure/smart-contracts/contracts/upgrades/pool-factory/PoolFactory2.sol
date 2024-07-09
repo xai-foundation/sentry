@@ -403,7 +403,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         Referee9 referee = Referee9(refereeAddress);
         require(_asAdmin || referee.stakingEnabled(), "52");
         
-        referee.stakeKeys(pool, msg.sender, keyIds, _asAdmin);
+        referee.stakeKeys(pool, staker, keyIds, _asAdmin);
 
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.stakeKeys(staker, keyIds);

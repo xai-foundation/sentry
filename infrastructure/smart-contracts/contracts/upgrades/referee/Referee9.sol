@@ -850,6 +850,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
         assignedKeysToPoolCount[pool] += keysLength;
         assignedKeysOfUserCount[staker] += keysLength;
+        console.log(" assignedKeysOfUserCount[staker]: ", assignedKeysOfUserCount[staker]);
 
         if(poolSubmissions[currentChallenge][pool].submitted){
             _updatePoolAssertion(pool, currentChallenge);

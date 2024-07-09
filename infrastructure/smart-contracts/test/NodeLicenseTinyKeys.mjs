@@ -1,6 +1,7 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { parse } from "csv/sync";
 import { expect } from "chai";
+import {findWinningStateRoot} from "./Referee.mjs";
 import fs from "fs";
 
 /**
@@ -283,13 +284,26 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
         });
 
         it("Process the tiny keys airdrop and confirm balances after", async function() {
-            const {nodeLicense, refereeDefaultAdmin, addr1, addr2, addr3, addr4, tinyKeysAirDrop, deployer,referee, poolFactory, airdropMultiplier, nodeLicenseDefaultAdmin} = await loadFixture(deployInfrastructure);
+            const {nodeLicense, challenger, addr1, addr2, addr3, addr4, tinyKeysAirDrop, deployer,referee, poolFactory, airdropMultiplier, nodeLicenseDefaultAdmin} = await loadFixture(deployInfrastructure);
             //Confirm initial total supply
             const maxSupplyBefore = await nodeLicense.maxSupply();
             const totalSupplyBefore = await nodeLicense.totalSupply();
             const user1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
             const user2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
             const user3BalanceBefore = await nodeLicense.balanceOf(addr3.address);
+			
+			const winningStateRoot = await findWinningStateRoot(referee, [1], 0);
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                winningStateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
 
             // Create a Stake pool with user 1 as the owner staking a single key
 			await poolFactory.connect(addr1).createPool(
@@ -309,12 +323,13 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             // User 2 will stake 4 keys in the pool
             await poolFactory.connect(addr2).stakeKeys(poolAddress, [2, 3, 4, 5]);
             const user2KeyCountStakedBefore = await referee.connect(addr2).assignedKeysOfUserCount(addr2.address);
-            expect(user2KeyCountStakedBefore).to.equal(4);      
+            expect(user2KeyCountStakedBefore).to.equal(4);  
 
             // User 3 will stake 0 keys in the pool
             const user3KeyCountStakedBefore = await referee.connect(addr3).assignedKeysOfUserCount(addr3.address);
             expect(user3KeyCountStakedBefore).to.equal(0);
             // Starting Airdrop
+
 
             // Confirm staking is enabled
             expect(await referee.stakingEnabled()).to.be.true;
@@ -322,16 +337,13 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             // Start Airdrop
             await tinyKeysAirDrop.connect(deployer).startAirdrop();
 
-
             // Staking Key Should revert
             await expect(poolFactory.connect(addr4).stakeKeys(poolAddress, [6])).to.be.revertedWith("52");
-
 
             // Confirm Minting Disabled - Expect a mint to be reverted
             const priceBeforeAirdrop = await nodeLicense.price(1, "");
 
             await expect(nodeLicense.connect(addr1).mint(1, "", {value: priceBeforeAirdrop})).to.be.revertedWith("Minting is paused");
-
 
             // Process Airdrop
             const qtyToProcess = BigInt(50);
@@ -341,13 +353,16 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             const user1BalanceAfter = await nodeLicense.balanceOf(addr1.address);
             const user2BalanceAfter = await nodeLicense.balanceOf(addr2.address);
             const user3BalanceAfter = await nodeLicense.balanceOf(addr3.address);
+
             expect(user1BalanceAfter).to.equal((user1BalanceBefore * airdropMultiplier) + user1BalanceBefore);
             expect(user2BalanceAfter).to.equal((user2BalanceBefore * airdropMultiplier) + user2BalanceBefore);
             expect(user3BalanceAfter).to.equal((user3BalanceBefore * airdropMultiplier) + user3BalanceBefore);
-
+            
             // // Confirm staked balances after
             const user1KeyCountStakedAfter = await referee.connect(addr1).assignedKeysOfUserCount(addr1.address);
-            expect(user1KeyCountStakedAfter).to.equal((user1KeyCountStakedBefore * airdropMultiplier) + user1KeyCountStakedBefore);   
+            console.log("user1Balance: ", user1BalanceBefore, " - " , user1BalanceAfter);
+            console.log("user1KeyCountStaked: ", user1KeyCountStakedBefore,  " - " , user1KeyCountStakedAfter);
+            expect(user1KeyCountStakedAfter).to.equal((user1KeyCountStakedBefore * airdropMultiplier) + user1KeyCountStakedBefore);  
 
             const user2KeyCountStakedAfter = await referee.connect(addr2).assignedKeysOfUserCount(addr2.address);
             expect(user2KeyCountStakedAfter).to.equal((user2KeyCountStakedBefore * airdropMultiplier) + user2KeyCountStakedBefore);  

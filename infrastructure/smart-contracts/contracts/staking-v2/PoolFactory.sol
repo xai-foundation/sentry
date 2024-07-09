@@ -7,7 +7,9 @@ import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeab
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
+import "./BucketTracker.sol";
 import "../upgrades/referee/Referee5.sol";
+import "../NodeLicense.sol";
 import "../Xai.sol";
 import "../esXai.sol";
 import "./StakingPool.sol";

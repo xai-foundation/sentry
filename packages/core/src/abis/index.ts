@@ -9,6 +9,7 @@ export * from "./PoolBeaconAbi.js";
 export * from "./PoolBeaconAbi.js";
 export * from "./PoolBeaconAbi.js";
 export * from "./PoolBeaconAbi.js";
+export * from "./PoolBeaconAbi.js";
 export * from "./RefereeAbi.js";
 export * from "./RollupAdminLogicAbi.js";
 export * from "./StakingPoolAbi.js";
