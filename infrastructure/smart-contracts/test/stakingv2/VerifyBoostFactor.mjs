@@ -196,7 +196,7 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 			const winningStateRoot = await findWinningStateRoot(referee, [addr1MintedKeyId], 0);
 
             // Submit two challenges so that the contract tests will run successfully
-            const startingAssertion = 100;
+            let startingAssertion = 100;
             await referee.connect(challenger).submitChallenge(
                 startingAssertion,
                 startingAssertion - 1,
@@ -267,19 +267,20 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 
 			let numSoloKeyPayouts = 0;
 			let numBoostedPoolPayouts = 0;
-
-			for (let i = 0; i < numSubmissions; i++) {
+			
+			for (let i = 1; i < numSubmissions; i++) {
 				const stateRoot = stateRoots[i];
+
+				startingAssertion++;
 
 				// Submit a challenge
 				await referee.connect(challenger).submitChallenge(
-					i + 1,
-					i,
+					startingAssertion,
+					startingAssertion - 1,
 					stateRoot,
 					0,
 					"0x0000000000000000000000000000000000000000000000000000000000000000"
 				);
-
 				// Check to see the challenge is open for submissions
 				const { openForSubmissions } = await referee.getChallenge(i);
 				expect(openForSubmissions).to.be.eq(true);
@@ -298,7 +299,7 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 
 				const submission2 = await referee.poolSubmissions(i, stakingPoolAddress);
 				assert.equal(submission2.submitted, true, "The poolSubmission was not submitted");
-				numBoostedPoolPayouts++;
+				numBoostedPoolPayouts += submission2.winningKeyCount;
 			}
 
 			expect(numBoostedPoolPayouts).to.be.greaterThan(numSoloKeyPayouts);
