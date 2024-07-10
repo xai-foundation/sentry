@@ -276,11 +276,12 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     /**
      *  @notice Mints new NodeLicense tokens for the tiny keys airdrop
      *  @param _qtyToMint The qty of tokens to mint.
-     *  @param _theRecipient The recipient of the airdrop 
+     *  @param _keyId The keyId of the node license receiving the airdrop
      *  @dev Only callable by the airdrop admin
      */
-    function mintForAirdrop(uint256 _qtyToMint, address _theRecipient) external onlyRole(AIRDROP_ADMIN_ROLE) {
-        _mintNodeLicense(_qtyToMint, 0, _theRecipient);
+    function mintForAirdrop(uint256 _qtyToMint, uint256 _keyId) external onlyRole(AIRDROP_ADMIN_ROLE) returns (uint256 startingId) {
+        startingId = totalSupply() + 1;
+        _mintNodeLicense(_qtyToMint, 0, ownerOf(_keyId));
     }
 
     /**
