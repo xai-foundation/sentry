@@ -1,1101 +1,1387 @@
 export const NodeLicenseAbi = [
   {
-    "type": "event",
-    "anonymous": false,
-    "name": "Approval",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "owner",
-        "indexed": true
-      },
-      {
-        "type": "address",
-        "name": "approved",
-        "indexed": true
-      },
-      {
-        "type": "uint256",
-        "name": "tokenId",
-        "indexed": true
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "ApprovalForAll",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "owner",
-        "indexed": true
-      },
-      {
-        "type": "address",
-        "name": "operator",
-        "indexed": true
-      },
-      {
-        "type": "bool",
-        "name": "approved",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "ClaimableChanged",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "admin",
-        "indexed": true
-      },
-      {
-        "type": "bool",
-        "name": "newClaimableState",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "FundsReceiverChanged",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "admin",
-        "indexed": true
-      },
-      {
-        "type": "address",
-        "name": "newFundsReceiver",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "FundsWithdrawn",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "admin",
-        "indexed": true
-      },
-      {
-        "type": "uint256",
-        "name": "amount",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "Initialized",
-    "inputs": [
-      {
-        "type": "uint8",
-        "name": "version",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "PricingTierSetOrAdded",
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "index",
-        "indexed": false
-      },
-      {
-        "type": "uint256",
-        "name": "price",
-        "indexed": false
-      },
-      {
-        "type": "uint256",
-        "name": "quantity",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "PromoCodeCreated",
-    "inputs": [
-      {
-        "type": "string",
-        "name": "promoCode",
-        "indexed": false
-      },
-      {
-        "type": "address",
-        "name": "recipient",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "PromoCodeRemoved",
-    "inputs": [
-      {
-        "type": "string",
-        "name": "promoCode",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "ReferralReward",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "buyer",
-        "indexed": true
-      },
-      {
-        "type": "address",
-        "name": "referralAddress",
-        "indexed": true
-      },
-      {
-        "type": "uint256",
-        "name": "amount",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "ReferralRewardPercentagesChanged",
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "referralDiscountPercentage",
-        "indexed": false
-      },
-      {
-        "type": "uint256",
-        "name": "referralRewardPercentage",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "RefundOccurred",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "refundee",
-        "indexed": true
-      },
-      {
-        "type": "uint256",
-        "name": "amount",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "RewardClaimed",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "claimer",
-        "indexed": true
-      },
-      {
-        "type": "uint256",
-        "name": "amount",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "RoleAdminChanged",
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role",
-        "indexed": true
-      },
-      {
-        "type": "bytes32",
-        "name": "previousAdminRole",
-        "indexed": true
-      },
-      {
-        "type": "bytes32",
-        "name": "newAdminRole",
-        "indexed": true
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "RoleGranted",
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role",
-        "indexed": true
-      },
-      {
-        "type": "address",
-        "name": "account",
-        "indexed": true
-      },
-      {
-        "type": "address",
-        "name": "sender",
-        "indexed": true
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "RoleRevoked",
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role",
-        "indexed": true
-      },
-      {
-        "type": "address",
-        "name": "account",
-        "indexed": true
-      },
-      {
-        "type": "address",
-        "name": "sender",
-        "indexed": true
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "Transfer",
-    "inputs": [
-      {
-        "type": "address",
-        "name": "from",
-        "indexed": true
-      },
-      {
-        "type": "address",
-        "name": "to",
-        "indexed": true
-      },
-      {
-        "type": "uint256",
-        "name": "tokenId",
-        "indexed": true
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "DEFAULT_ADMIN_ROLE",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "bytes32",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "approve",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "to"
-      },
-      {
-        "type": "uint256",
-        "name": "tokenId"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "balanceOf",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "owner"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "claimReferralReward",
-    "constant": false,
-    "payable": false,
-    "inputs": [],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "claimable",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "bool",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "createPromoCode",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "string",
-        "name": "_promoCode"
-      },
-      {
-        "type": "address",
-        "name": "_recipient"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "fundsReceiver",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "address",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getApproved",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "tokenId"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "address",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getAverageCost",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "_tokenId"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getMintTimestamp",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "_tokenId"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getPricingTier",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "_index"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "tuple",
-        "name": "",
-        "components": [
+      "anonymous": false,
+      "inputs": [
           {
-            "type": "uint256",
-            "name": "price"
+              "indexed": true,
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
           },
           {
-            "type": "uint256",
-            "name": "quantity"
+              "indexed": true,
+              "internalType": "address",
+              "name": "approved",
+              "type": "address"
+          },
+          {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
           }
-        ]
-      }
-    ]
+      ],
+      "name": "Approval",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "getPricingTiersLength",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getPromoCode",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "string",
-        "name": "_promoCode"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "tuple",
-        "name": "",
-        "components": [
+      "anonymous": false,
+      "inputs": [
           {
-            "type": "address",
-            "name": "recipient"
+              "indexed": true,
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
           },
           {
-            "type": "bool",
-            "name": "active"
+              "indexed": true,
+              "internalType": "address",
+              "name": "operator",
+              "type": "address"
           },
           {
-            "type": "uint256",
-            "name": "receivedLifetime"
+              "indexed": false,
+              "internalType": "bool",
+              "name": "approved",
+              "type": "bool"
           }
-        ]
-      }
-    ]
+      ],
+      "name": "ApprovalForAll",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "getRoleAdmin",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bytes32",
-        "name": ""
-      }
-    ]
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "admin",
+              "type": "address"
+          },
+          {
+              "indexed": false,
+              "internalType": "bool",
+              "name": "newClaimableState",
+              "type": "bool"
+          }
+      ],
+      "name": "ClaimableChanged",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "grantRole",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role"
-      },
-      {
-        "type": "address",
-        "name": "account"
-      }
-    ],
-    "outputs": []
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "admin",
+              "type": "address"
+          },
+          {
+              "indexed": false,
+              "internalType": "address",
+              "name": "newFundsReceiver",
+              "type": "address"
+          }
+      ],
+      "name": "FundsReceiverChanged",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "hasRole",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role"
-      },
-      {
-        "type": "address",
-        "name": "account"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bool",
-        "name": ""
-      }
-    ]
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": false,
+              "internalType": "uint8",
+              "name": "version",
+              "type": "uint8"
+          }
+      ],
+      "name": "Initialized",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "initialize",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "_fundsReceiver"
-      },
-      {
-        "type": "uint256",
-        "name": "_referralDiscountPercentage"
-      },
-      {
-        "type": "uint256",
-        "name": "_referralRewardPercentage"
-      }
-    ],
-    "outputs": []
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "price",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "quantity",
+              "type": "uint256"
+          }
+      ],
+      "name": "PricingTierSetOrAdded",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "isApprovedForAll",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "owner"
-      },
-      {
-        "type": "address",
-        "name": "operator"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bool",
-        "name": ""
-      }
-    ]
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": false,
+              "internalType": "string",
+              "name": "promoCode",
+              "type": "string"
+          },
+          {
+              "indexed": false,
+              "internalType": "address",
+              "name": "recipient",
+              "type": "address"
+          }
+      ],
+      "name": "PromoCodeCreated",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "maxSupply",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": false,
+              "internalType": "string",
+              "name": "promoCode",
+              "type": "string"
+          }
+      ],
+      "name": "PromoCodeRemoved",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "mint",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "_amount"
-      },
-      {
-        "type": "string",
-        "name": "_promoCode"
-      }
-    ],
-    "outputs": []
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "buyer",
+              "type": "address"
+          },
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "referralAddress",
+              "type": "address"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+          }
+      ],
+      "name": "ReferralReward",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "name",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "string",
-        "name": ""
-      }
-    ]
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "referralDiscountPercentage",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "referralRewardPercentage",
+              "type": "uint256"
+          }
+      ],
+      "name": "ReferralRewardPercentagesChanged",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "ownerOf",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "tokenId"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "address",
-        "name": ""
-      }
-    ]
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "claimer",
+              "type": "address"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "ethAmount",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "xaiAmount",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "esXaiAmount",
+              "type": "uint256"
+          }
+      ],
+      "name": "RewardClaimed",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "price",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "_amount"
-      },
-      {
-        "type": "string",
-        "name": "_promoCode"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+          },
+          {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "previousAdminRole",
+              "type": "bytes32"
+          },
+          {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "newAdminRole",
+              "type": "bytes32"
+          }
+      ],
+      "name": "RoleAdminChanged",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "referralDiscountPercentage",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+          },
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+          },
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+          }
+      ],
+      "name": "RoleGranted",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "referralRewardPercentage",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+          },
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+          },
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+          }
+      ],
+      "name": "RoleRevoked",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "refundNodeLicense",
-    "constant": false,
-    "stateMutability": "payable",
-    "payable": true,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "_tokenId"
-      }
-    ],
-    "outputs": []
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+          },
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+          },
+          {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+          }
+      ],
+      "name": "Transfer",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "removePromoCode",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "string",
-        "name": "_promoCode"
-      }
-    ],
-    "outputs": []
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "redeemer",
+              "type": "address"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint16",
+              "name": "newAmount",
+              "type": "uint16"
+          }
+      ],
+      "name": "WhitelistAmountRedeemed",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "renounceRole",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role"
-      },
-      {
-        "type": "address",
-        "name": "account"
-      }
-    ],
-    "outputs": []
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "redeemer",
+              "type": "address"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint16",
+              "name": "newAmount",
+              "type": "uint16"
+          }
+      ],
+      "name": "WhitelistAmountUpdatedByAdmin",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "revokeRole",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role"
-      },
-      {
-        "type": "address",
-        "name": "account"
-      }
-    ],
-    "outputs": []
+      "inputs": [],
+      "name": "AIRDROP_ADMIN_ROLE",
+      "outputs": [
+          {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "safeTransferFrom",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "from"
-      },
-      {
-        "type": "address",
-        "name": "to"
-      },
-      {
-        "type": "uint256",
-        "name": "tokenId"
-      }
-    ],
-    "outputs": []
+      "inputs": [],
+      "name": "DEFAULT_ADMIN_ROLE",
+      "outputs": [
+          {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "safeTransferFrom",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "from"
-      },
-      {
-        "type": "address",
-        "name": "to"
-      },
-      {
-        "type": "uint256",
-        "name": "tokenId"
-      },
-      {
-        "type": "bytes",
-        "name": "data"
-      }
-    ],
-    "outputs": []
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+          }
+      ],
+      "name": "approve",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "setApprovalForAll",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "operator"
-      },
-      {
-        "type": "bool",
-        "name": "approved"
-      }
-    ],
-    "outputs": []
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+          }
+      ],
+      "name": "balanceOf",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "setClaimable",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bool",
-        "name": "_claimable"
-      }
-    ],
-    "outputs": []
+      "inputs": [],
+      "name": "claimReferralReward",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "setFundsReceiver",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "_newFundsReceiver"
-      }
-    ],
-    "outputs": []
+      "inputs": [],
+      "name": "claimable",
+      "outputs": [
+          {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "setOrAddPricingTier",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "_index"
-      },
-      {
-        "type": "uint256",
-        "name": "_price"
-      },
-      {
-        "type": "uint256",
-        "name": "_quantity"
-      }
-    ],
-    "outputs": []
+      "inputs": [
+          {
+              "internalType": "string",
+              "name": "_promoCode",
+              "type": "string"
+          },
+          {
+              "internalType": "address",
+              "name": "_recipient",
+              "type": "address"
+          }
+      ],
+      "name": "createPromoCode",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "setReferralPercentages",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "_referralDiscountPercentage"
-      },
-      {
-        "type": "uint256",
-        "name": "_referralRewardPercentage"
-      }
-    ],
-    "outputs": []
+      "inputs": [],
+      "name": "esXaiAddress",
+      "outputs": [
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "supportsInterface",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes4",
-        "name": "interfaceId"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bool",
-        "name": ""
-      }
-    ]
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+          }
+      ],
+      "name": "ethToXai",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "symbol",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "string",
-        "name": ""
-      }
-    ]
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "refereeAddress",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "keyMultiplier",
+              "type": "uint256"
+          }
+      ],
+      "name": "finishAirdrop",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "tokenByIndex",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "index"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
+      "inputs": [],
+      "name": "fundsReceiver",
+      "outputs": [
+          {
+              "internalType": "address payable",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "tokenOfOwnerByIndex",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "owner"
-      },
-      {
-        "type": "uint256",
-        "name": "index"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+          }
+      ],
+      "name": "getApproved",
+      "outputs": [
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "tokenURI",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": "_tokenId"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "string",
-        "name": ""
-      }
-    ]
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "_tokenId",
+              "type": "uint256"
+          }
+      ],
+      "name": "getAverageCost",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "totalSupply",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "_tokenId",
+              "type": "uint256"
+          }
+      ],
+      "name": "getMintTimestamp",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "transferFrom",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "from"
-      },
-      {
-        "type": "address",
-        "name": "to"
-      },
-      {
-        "type": "uint256",
-        "name": "tokenId"
-      }
-    ],
-    "outputs": []
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "_index",
+              "type": "uint256"
+          }
+      ],
+      "name": "getPricingTier",
+      "outputs": [
+          {
+              "components": [
+                  {
+                      "internalType": "uint256",
+                      "name": "price",
+                      "type": "uint256"
+                  },
+                  {
+                      "internalType": "uint256",
+                      "name": "quantity",
+                      "type": "uint256"
+                  }
+              ],
+              "internalType": "struct NodeLicense10.Tier",
+              "name": "",
+              "type": "tuple"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "withdrawFunds",
-    "constant": false,
-    "payable": false,
-    "inputs": [],
-    "outputs": []
+      "inputs": [],
+      "name": "getPricingTiersLength",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "string",
+              "name": "_promoCode",
+              "type": "string"
+          }
+      ],
+      "name": "getPromoCode",
+      "outputs": [
+          {
+              "components": [
+                  {
+                      "internalType": "address",
+                      "name": "recipient",
+                      "type": "address"
+                  },
+                  {
+                      "internalType": "bool",
+                      "name": "active",
+                      "type": "bool"
+                  },
+                  {
+                      "internalType": "uint256",
+                      "name": "receivedLifetime",
+                      "type": "uint256"
+                  }
+              ],
+              "internalType": "struct NodeLicense10.PromoCode",
+              "name": "",
+              "type": "tuple"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+          }
+      ],
+      "name": "getRoleAdmin",
+      "outputs": [
+          {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+          },
+          {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+          }
+      ],
+      "name": "grantRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+          },
+          {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+          }
+      ],
+      "name": "hasRole",
+      "outputs": [
+          {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "_xaiAddress",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "_esXaiAddress",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "ethPriceFeedAddress",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "xaiPriceFeedAddress",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "airdropAdmin",
+              "type": "address"
+          }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "operator",
+              "type": "address"
+          }
+      ],
+      "name": "isApprovedForAll",
+      "outputs": [
+          {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "maxSupply",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+          },
+          {
+              "internalType": "string",
+              "name": "_promoCode",
+              "type": "string"
+          }
+      ],
+      "name": "mint",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "_qtyToMint",
+              "type": "uint256"
+          },
+          {
+              "internalType": "address",
+              "name": "_theRecipient",
+              "type": "address"
+          }
+      ],
+      "name": "mintForAirdrop",
+      "outputs": [
+          {
+              "internalType": "uint256[]",
+              "name": "tokenIds",
+              "type": "uint256[]"
+          }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+          },
+          {
+              "internalType": "string",
+              "name": "_promoCode",
+              "type": "string"
+          },
+          {
+              "internalType": "bool",
+              "name": "_useEsXai",
+              "type": "bool"
+          },
+          {
+              "internalType": "uint256",
+              "name": "_expectedCost",
+              "type": "uint256"
+          }
+      ],
+      "name": "mintWithXai",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "mintingPaused",
+      "outputs": [
+          {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "name",
+      "outputs": [
+          {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+          }
+      ],
+      "name": "ownerOf",
+      "outputs": [
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "_amount",
+              "type": "uint256"
+          },
+          {
+              "internalType": "string",
+              "name": "_promoCode",
+              "type": "string"
+          }
+      ],
+      "name": "price",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "redeemFromWhitelist",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "referralDiscountPercentage",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "referralRewardPercentage",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "string",
+              "name": "_promoCode",
+              "type": "string"
+          }
+      ],
+      "name": "removePromoCode",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+          },
+          {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+          }
+      ],
+      "name": "renounceRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "_address",
+              "type": "address"
+          }
+      ],
+      "name": "revokeAirdropAdmin",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+          },
+          {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+          }
+      ],
+      "name": "revokeRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+          }
+      ],
+      "name": "safeTransferFrom",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+          },
+          {
+              "internalType": "bytes",
+              "name": "data",
+              "type": "bytes"
+          }
+      ],
+      "name": "safeTransferFrom",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "operator",
+              "type": "address"
+          },
+          {
+              "internalType": "bool",
+              "name": "approved",
+              "type": "bool"
+          }
+      ],
+      "name": "setApprovalForAll",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "bool",
+              "name": "_claimable",
+              "type": "bool"
+          }
+      ],
+      "name": "setClaimable",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address payable",
+              "name": "_newFundsReceiver",
+              "type": "address"
+          }
+      ],
+      "name": "setFundsReceiver",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "_index",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "_price",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "_quantity",
+              "type": "uint256"
+          }
+      ],
+      "name": "setOrAddPricingTier",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "_referralDiscountPercentage",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "_referralRewardPercentage",
+              "type": "uint256"
+          }
+      ],
+      "name": "setReferralPercentages",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "refereeAddress",
+              "type": "address"
+          }
+      ],
+      "name": "startAirdrop",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "bytes4",
+              "name": "interfaceId",
+              "type": "bytes4"
+          }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+          {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "symbol",
+      "outputs": [
+          {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256"
+          }
+      ],
+      "name": "tokenByIndex",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256"
+          }
+      ],
+      "name": "tokenOfOwnerByIndex",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "_tokenId",
+              "type": "uint256"
+          }
+      ],
+      "name": "tokenURI",
+      "outputs": [
+          {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "totalSupply",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "from",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "to",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "tokenId",
+              "type": "uint256"
+          }
+      ],
+      "name": "transferFrom",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address[]",
+              "name": "_toWhitelist",
+              "type": "address[]"
+          },
+          {
+              "internalType": "uint16[]",
+              "name": "_amounts",
+              "type": "uint16[]"
+          }
+      ],
+      "name": "updateWhitelistAmounts",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "string",
+              "name": "_address",
+              "type": "string"
+          }
+      ],
+      "name": "validateAndConvertAddress",
+      "outputs": [
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "name": "whitelistAmounts",
+      "outputs": [
+          {
+              "internalType": "uint16",
+              "name": "",
+              "type": "uint16"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "xaiAddress",
+      "outputs": [
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   }
 ];

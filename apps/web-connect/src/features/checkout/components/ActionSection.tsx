@@ -34,7 +34,7 @@ export function ActionSection(): JSX.Element {
      */
     const getButtonText = useCallback(() => {
         if (mintWithEth.isLoading || mintWithXai.isLoading) return "WAITING FOR CONFIRMATION";
-        if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
+        // if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
         return "BUY NOW";
     }, [mintWithEth.isLoading, mintWithXai.isLoading, chain]);
 
@@ -45,7 +45,7 @@ export function ActionSection(): JSX.Element {
      */
     const getTokenButtonText = useCallback(() => {
         if (mintWithEth.isLoading || mintWithXai.isLoading || approve.isLoading) return "WAITING FOR CONFIRMATION";
-        if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
+        // if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
         return getApproveButtonText();
     }, [mintWithEth.isLoading, mintWithXai.isLoading, approve.isLoading, chain, getApproveButtonText]);
 
@@ -56,15 +56,15 @@ export function ActionSection(): JSX.Element {
                 {currency === 'AETH' ? (
                     <PrimaryButton
                         onClick={() => mintWithEth.write?.()}
-                        className={`w-full h-16 ${ready && chain?.id === 42161 ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || chain?.id !== 42161}
+                        className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
+                        isDisabled={!ready}
                         btnText={getButtonText()}
                     />
                 ) : (
                     <PrimaryButton
                         onClick={() => mintWithXai.write?.()}
-                        className={`w-full h-16 ${ready && chain?.id === 42161 ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || chain?.id !== 42161 || !userHasTokenBalance}
+                        className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
+                        isDisabled={!ready || !userHasTokenBalance}
                         btnText={getTokenButtonText()}
                     />
                 )}
