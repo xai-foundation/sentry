@@ -14,6 +14,8 @@ graph TD;
     operatorRuntime --> getSubgraphHealthStatus
     operatorRuntime <--> fetchBlockNumber
     operatorRuntime <--> stop
+    loadOperatorKeysFromGraph <--> getSentryWalletsForOperator
+    loadOperatorKeysFromGraph <--> getSentryKeysFromGraph
     loadOperatorKeysFromGraph <--> getPoolInfosFromGraph
 
     getSubgraphHealthStatus <--> loadOperatorKeysFromGraph

@@ -1,7 +1,7 @@
 ---
 id: "operator-challenger"
 title: "Operator Interaction With Challenger"
-sidebar_label: "Referee"
+sidebar_label: "Challenger"
 sidebar_position: 5
 custom_edit_url: null
 ---
@@ -11,6 +11,8 @@ custom_edit_url: null
 The operator interacts indirectly with the challenger through the following function:
 
 ## listenForChallenges
+
+Listens for ChallengeSubmitted events and triggers a callback function when the event is emitted. Keeps a map of challengeNumbers that have called the callback to ensure uniqueness.
 
 • **Params**: `callback: (challengeNumber: bigint, challenge: Challenge, event: any) => void`
 

@@ -31,6 +31,8 @@ On fallback we get the necessary data for the operator through these functions:
 
 ## reloadPoolKeysForRPC
 
+Load all the keys from pool the operator should operate and exclude pools which are not whitelisted.
+
 • **Params**: `operator: string, sentryKeysMap: { [keyId: string]: SentryKey }, operatorOwners?: string[]`
 
 • **Returns**: `{ [keyId: string]: SentryKey }`
