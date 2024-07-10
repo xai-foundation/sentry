@@ -33,6 +33,9 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
     // Airdrop Started
     bool public airdropStarted;
 
+    // Marker for keyids to be auto staked
+    mapping(uint256 => uint256[2]) public keyToStartEnd;
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
@@ -133,4 +136,64 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
             emit AirdropEnded();
         }
     }
+
+    
+    function processAirdropSegmentOnlyMint(uint256 _qtyToProcess) external onlyRole(DEFAULT_ADMIN_ROLE)  {
+        require(airdropStarted, "Airdrop not started");
+        require(airdropCounter <= totalSupplyAtStart, "Airdrop complete");
+        // Start where we left off
+        uint256 startingKeyId = airdropCounter;
+        // Ensure we don't go over the total supply
+        uint256 endingKeyId = Math.min(airdropCounter + _qtyToProcess, totalSupplyAtStart);     
+        // Connect to the referee and node license contracts
+        NodeLicense10 nodeLicense = NodeLicense10(nodeLicenseAddress);
+        // Loop through the range of node licenses
+        for (uint256 i = startingKeyId; i < endingKeyId; i++) {
+            // Determine the owner of each specific node license
+            address owner = nodeLicense.ownerOf(i);
+
+            uint256 start = nodeLicense.totalSupply() + 1;
+            // Mint the airdropped keys for the owner
+            nodeLicense.mintForAirdrop(keyMultiplier, owner);
+
+            uint256 end = (start + keyMultiplier) - 1;
+
+            keyToStartEnd[i] = [start, end];
+        }
+
+        // Update the airdrop counter
+        airdropCounter = endingKeyId;
+        emit AirdropSegmentComplete(startingKeyId, endingKeyId);
+    }
+
+    function processAirdropSegmentOnlyStake(uint256[] memory keyIds) external onlyRole(DEFAULT_ADMIN_ROLE)  {
+        require(airdropStarted, "Airdrop not started");
+
+        for (uint256 j = 0; j < keyIds.length; j++) {
+            uint256 keyId = keyIds[j];
+            uint256 startKeyId = keyToStartEnd[keyId][0];
+            uint256 endKeyId = keyToStartEnd[keyId][1];
+
+            require(endKeyId > startKeyId, "Invalid input");
+
+            Referee9 referee = Referee9(refereeAddress);
+            address owner = NodeLicense10(nodeLicenseAddress).ownerOf(keyId);
+
+            address poolAddress = referee.assignedKeyToPool(keyId);
+
+            //TODO do we need to allow this and just return ?
+            // require(poolAddress != address(0), "Key not staked");
+            if(poolAddress == address(0)){
+                continue;
+            }
+
+            uint256[] memory stakeKeyIds = new uint256[](endKeyId - startKeyId);
+            for (uint256 i = 0; i < stakeKeyIds.length; i++) {
+                stakeKeyIds[i] = startKeyId + i;
+            }
+
+            PoolFactory10(poolFactoryAddress).stakeKeysAdmin(poolAddress, stakeKeyIds, owner);
+        }
+    }
+
 }
