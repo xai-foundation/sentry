@@ -276,13 +276,12 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
     /**
      *  @notice Mints new NodeLicense tokens for the tiny keys airdrop
      *  @param _qtyToMint The qty of tokens to mint.
-     *  @param _theRecipient The recipient of the airdrop 
-     *  @return tokenIds The tokenIds of the minted tokens
+     *  @param _keyId The keyId of the node license receiving the airdrop
      *  @dev Only callable by the airdrop admin
      */
-
-    function mintForAirdrop(uint256 _qtyToMint, address _theRecipient) external onlyRole(AIRDROP_ADMIN_ROLE) returns (uint256 [] memory tokenIds) {
-        tokenIds = _mintNodeLicense(_qtyToMint, 0, _theRecipient);
+    function mintForAirdrop(uint256 _qtyToMint, uint256 _keyId) external onlyRole(AIRDROP_ADMIN_ROLE) returns (uint256 startingId) {
+        startingId = totalSupply() + 1;
+        _mintNodeLicense(_qtyToMint, 0, ownerOf(_keyId));
     }
 
     /**
@@ -315,8 +314,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @notice internal function to mint new NodeLicense tokens
      * @param _amount The amount of tokens to mint.
      */
-    function _mintNodeLicense(uint256 _amount, uint256 averageCost, address _receiver) internal returns (uint256 [] memory){
-        uint256 [] memory tokenIds = new uint256[](_amount);
+    function _mintNodeLicense(uint256 _amount, uint256 averageCost, address _receiver) internal {
+        // uint256 [] memory tokenIds = new uint256[](_amount);
         for (uint256 i = 0; i < _amount; i++) {
             _tokenIds.increment();
             uint256 newItemId = _tokenIds.current();
@@ -325,9 +324,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
             _mintTimestamps[newItemId] = block.timestamp;
             // Record the average cost
             _averageCost[newItemId] = averageCost;
-            tokenIds[i] = newItemId;
         }
-        return tokenIds;
+        // return tokenIds;
     }
 
     /**
@@ -777,8 +775,4 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
 
         return address(addr);
     }
-
-
-
 }
-

@@ -1,4 +1,4 @@
-import {config} from "@sentry/core";
+import {config, TinyKeysAirdropAbi} from "@sentry/core";
 
 const TINY_KEYS_AIRDROP_ADDRESS = config.tinyKeysAirdropAddress; // Needs to be set after deployment
 
@@ -9,14 +9,9 @@ async function main() {
   
     // Activate tiny keys airdrop
     console.log("Activating Tiny Keys Airdrop...");
-    const TinyKeysAirdrop = await ethers.getContractFactory("TinyKeysAirdrop");
-    const tinyKeysAirdrop =  TinyKeysAirdrop.connect(TINY_KEYS_AIRDROP_ADDRESS);
-
-    // Connect the signer to the contract
-    const tinyKeysAirdropWithSigner = tinyKeysAirdrop.connect(deployer);
-
-    await tinyKeysAirdropWithSigner.startAirdrop();
-    console.log("Tiny Keys Airdrop Started...");    
+    const TinyKeysAirdrop = await new ethers.Contract(TINY_KEYS_AIRDROP_ADDRESS, TinyKeysAirdropAbi, deployer);
+    await TinyKeysAirdrop.startAirdrop();
+    console.log("Tiny Keys Airdrop Started...");   
 }
 
 // We recommend this pattern to be able to use async/await everywhere

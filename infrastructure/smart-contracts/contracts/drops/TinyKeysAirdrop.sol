@@ -33,6 +33,12 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
     // Airdrop Started
     bool public airdropStarted;
 
+    // Airdrop Ended
+    bool public airdropEnded;
+
+    // Marker for keyids to be auto staked
+    mapping(uint256 => uint256[2]) public keyToStartEnd;
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
@@ -64,6 +70,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
 
         airdropCounter = 1;
         airdropStarted = false;
+        airdropEnded = false;
     }
 
     /**
@@ -87,15 +94,8 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         emit AirdropStarted(totalSupplyAtStart, keyMultiplier);
     }
 
-    /** 
-     * @notice Process a segment of the airdrop
-     * @dev This function will be called by the admin to process a segment of the airdrop
-     * @dev It will airdrop keys to the node licenses in the specified range
-     * @dev It will check to see if the node license is staked, if so, it will auto-stake the new keys
-     * @dev If not, it will air-drop to the owner's wallet
-     * @param _qtyToProcess The quantity of node licenses to process in this segment
-    */
-    function processAirdropSegment(uint256 _qtyToProcess) external onlyRole(DEFAULT_ADMIN_ROLE)  {
+    
+    function processAirdropSegmentOnlyMint(uint256 _qtyToProcess) external onlyRole(DEFAULT_ADMIN_ROLE)  {
         require(airdropStarted, "Airdrop not started");
         require(airdropCounter <= totalSupplyAtStart, "Airdrop complete");
         // Start where we left off
@@ -103,34 +103,74 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         // Ensure we don't go over the total supply
         uint256 endingKeyId = Math.min(airdropCounter + _qtyToProcess, totalSupplyAtStart);     
         // Connect to the referee and node license contracts
-        Referee9 referee = Referee9(refereeAddress);
         NodeLicense8 nodeLicense = NodeLicense8(nodeLicenseAddress);
         // Loop through the range of node licenses
+        // Needs to be <= to include the last key
         for (uint256 i = startingKeyId; i <= endingKeyId; i++) {
-            // Determine the owner of each specific node license
-            address owner = nodeLicense.ownerOf(i);
+            
+            // Moved this into the node license contract
+            // It now returns the start of the range
+            // Reducing the number of calls to the contract from 3 to 1
+            // uint256 owner = nodeLicense.ownerOf(i);
+            // uint256 start = nodeLicense.totalSupply() + 1;
+
             // Mint the airdropped keys for the owner
-            uint256[] memory tokenIds = nodeLicense.mintForAirdrop(keyMultiplier, owner);
-            // Check if the node license is staked
-            address poolAddress = referee.assignedKeyToPool(i);
-            if (poolAddress != address(0)) {
-                // If staked, auto-stake the new keys
-                PoolFactory2(poolFactoryAddress).stakeKeysAdmin(poolAddress, tokenIds, owner);                           
-            }
+            uint256 start = nodeLicense.mintForAirdrop(keyMultiplier, i);
+
+            uint256 end = (start + keyMultiplier) - 1;
+
+            keyToStartEnd[i] = [start, end];
         }
 
         // Update the airdrop counter
-        airdropCounter = endingKeyId;
+        // Increment the counter by the ending key id + 1
+        // If the airdrop counter exceeds the total supply at start this means the airdrop is complete
+        airdropCounter = endingKeyId < totalSupplyAtStart ? endingKeyId + 1 : endingKeyId;
         emit AirdropSegmentComplete(startingKeyId, endingKeyId);
+    }
 
-        // If we have processed all node licenses, end the airdrop
-        if (airdropCounter == totalSupplyAtStart) {
-            // Notify the node license contract that the airdrop is complete
-            // The node license contract will then notify the referee contract
-            // This will re-enable minting in the node license contract
-            // This will also re-enable staking in the referee contract
-            NodeLicense8(nodeLicenseAddress).finishAirdrop(refereeAddress, keyMultiplier);
-            emit AirdropEnded();
+    function processAirdropSegmentOnlyStake(uint256[] memory keyIds) external onlyRole(DEFAULT_ADMIN_ROLE)  {
+        require(airdropStarted, "Airdrop not started");
+
+        for (uint256 j = 0; j < keyIds.length; j++) {
+            uint256 keyId = keyIds[j];
+            uint256 startKeyId = keyToStartEnd[keyId][0];
+            uint256 endKeyId = keyToStartEnd[keyId][1];
+
+            require(endKeyId > startKeyId, "Invalid input");
+
+            Referee9 referee = Referee9(refereeAddress);
+            address owner = NodeLicense8(nodeLicenseAddress).ownerOf(keyId);
+
+            address poolAddress = referee.assignedKeyToPool(keyId);
+
+            //TODO do we need to allow this and just return ?
+            // require(poolAddress != address(0), "Key not staked");
+            if(poolAddress == address(0)){
+                continue;
+            }
+
+            //Array size needs to be 1 more than the difference between the start and end key ids
+            uint256[] memory stakeKeyIds = new uint256[](endKeyId - startKeyId + 1);
+            for (uint256 i = 0; i < stakeKeyIds.length; i++) {
+                stakeKeyIds[i] = startKeyId + i;
+            }
+
+            PoolFactory2(poolFactoryAddress).stakeKeysAdmin(poolAddress, stakeKeyIds, owner);
         }
     }
+
+    function completeAirDrop() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(airdropStarted, "Airdrop not started");
+        require(!airdropEnded, "Airdrop already complete");
+        require(airdropCounter == totalSupplyAtStart, "Airdrop not complete");
+
+        // Notify the node license contract that the airdrop is complete
+        NodeLicense8(nodeLicenseAddress).finishAirdrop(refereeAddress, keyMultiplier);
+
+        airdropStarted = false;
+        airdropEnded = true;
+        emit AirdropEnded();
+    }
+
 }

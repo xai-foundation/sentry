@@ -1,31 +1,34 @@
-import {config} from "@sentry/core";
+import {config, TinyKeysAirdropAbi, NodeLicenseAbi} from "@sentry/core";
 
 const TINY_KEYS_AIRDROP_ADDRESS = config.tinyKeysAirdropAddress; // Needs to be set after tiny key airdrop contract deployment
-const NODE_LICENSE_CONTRACT = config.nodeLicenseContract;
 
 async function main() {
 
     // get the deployer
     const [deployer] = (await ethers.getSigners());
 
-    let nextIndex = 1;
-    let totalSupply = 0;
-    const qtyPerSegment = 100;
+    const qtyPerSegment = 2;
 
     // Get the total supply of node licenses
-    const NodeLicense = await ethers.getContractFactory("NodeLicense9");
-    const nodeLicense = NodeLicense.connect(NODE_LICENSE_CONTRACT);
-    totalSupply = await nodeLicense.totalSupply();
 
-    const TinyKeysAirdrop = await ethers.getContractFactory("TinyKeysAirdrop");
-    const tinyKeysAirdrop =  TinyKeysAirdrop.connect(TINY_KEYS_AIRDROP_ADDRESS);
+    const TinyKeysAirdrop = await new ethers.Contract(TINY_KEYS_AIRDROP_ADDRESS, TinyKeysAirdropAbi, deployer);
+    
+    const totalSupplyAtStart = await TinyKeysAirdrop.totalSupplyAtStart();
+    const currentIndex = Number(await TinyKeysAirdrop.airdropCounter());
+    let nextIndex = currentIndex;
 
-    // Connect the signer to the contract
-    const tinyKeysAirdropWithSigner = tinyKeysAirdrop.connect(deployer);
-
-    while (nextIndex <= totalSupply) {    
+    while (nextIndex <= totalSupplyAtStart) {
         console.log(`Processing Airdrop Segment for ${qtyPerSegment} tokens beginning at token id ${nextIndex}...`);
-        nextIndex = await tinyKeysAirdropWithSigner.processAirdropSegment(qtyPerSegment);
+        try {
+            await TinyKeysAirdrop.processAirdropSegmentOnlyMint(qtyPerSegment);
+            //TODO we should be running this from multiple wallets so we don't get errors for tx nonce or tx queue then remove that timeout
+            await new Promise((resolve)=> setTimeout(resolve, 100));
+            await TinyKeysAirdrop.processAirdropSegmentOnlyStake([nextIndex, nextIndex + 1]);
+            nextIndex += qtyPerSegment
+        } catch (error) {
+            console.error("Tiny Keys Airdrop error", error);
+            return;
+        }
     }
     console.log("Tiny Keys Airdrop Completed...");
 }

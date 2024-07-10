@@ -49,6 +49,14 @@ export function ActionSection(): JSX.Element {
         return getApproveButtonText();
     }, [mintWithEth.isLoading, mintWithXai.isLoading, approve.isLoading, chain, getApproveButtonText]);
 
+    const handleBuyWithXaiClicked = () => { 
+        if (getTokenButtonText().startsWith("Approve")) {
+            approve.write?.();
+        } else {
+            mintWithXai.write?.();
+        }
+    };
+
     return (
         <div className="flex flex-col justify-center gap-8 mt-8">
             <div>
@@ -62,7 +70,7 @@ export function ActionSection(): JSX.Element {
                     />
                 ) : (
                     <PrimaryButton
-                        onClick={() => mintWithXai.write?.()}
+                        onClick={handleBuyWithXaiClicked}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
                         isDisabled={!ready || !userHasTokenBalance}
                         btnText={getTokenButtonText()}
