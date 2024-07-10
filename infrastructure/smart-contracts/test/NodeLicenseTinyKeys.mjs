@@ -346,22 +346,20 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             await expect(nodeLicense.connect(addr1).mint(1, "", {value: priceBeforeAirdrop})).to.be.revertedWith("Minting is paused");
 
             // Process Airdrop
-            let qtyToProcess = BigInt(50);
+            let qtyToProcess = BigInt(5);
             let airdropCounter = await tinyKeysAirDrop.airdropCounter();
 
-            if(qtyToProcess > totalSupplyBefore - airdropCounter) {
-                qtyToProcess = totalSupplyBefore - airdropCounter + 1n;
-            }
-
-            const tokenIds = [];
-            for (let i = 0; i < qtyToProcess; i++) {
-                tokenIds.push(airdropCounter);
-                airdropCounter = airdropCounter + BigInt(1);
-            }
+            const tokenIds1 = [1,2,3,4,5];
+            const tokenIds2 = [6,7,8,9,10];
+            const tokenIds3 = [11,12,13];
             await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(qtyToProcess);
-            await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(tokenIds);
+            await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(tokenIds1);
+            await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(qtyToProcess);
+            await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(tokenIds2);
+            await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(3);
+            await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(tokenIds3);
             await tinyKeysAirDrop.connect(deployer).completeAirDrop();
-
+            
             // Confirm balances after
             const user1BalanceAfter = await nodeLicense.balanceOf(addr1.address);
             const user2BalanceAfter = await nodeLicense.balanceOf(addr2.address);

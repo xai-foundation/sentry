@@ -105,6 +105,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         // Connect to the referee and node license contracts
         NodeLicense8 nodeLicense = NodeLicense8(nodeLicenseAddress);
         // Loop through the range of node licenses
+        // Needs to be <= to include the last key
         for (uint256 i = startingKeyId; i <= endingKeyId; i++) {
             
             // Moved this into the node license contract
@@ -122,7 +123,9 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         }
 
         // Update the airdrop counter
-        airdropCounter = endingKeyId;
+        // Increment the counter by the ending key id + 1
+        // If the airdrop counter exceeds the total supply at start this means the airdrop is complete
+        airdropCounter = endingKeyId < totalSupplyAtStart ? endingKeyId + 1 : endingKeyId;
         emit AirdropSegmentComplete(startingKeyId, endingKeyId);
     }
 
@@ -147,6 +150,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
                 continue;
             }
 
+            //Array size needs to be 1 more than the difference between the start and end key ids
             uint256[] memory stakeKeyIds = new uint256[](endKeyId - startKeyId + 1);
             for (uint256 i = 0; i < stakeKeyIds.length; i++) {
                 stakeKeyIds[i] = startKeyId + i;
