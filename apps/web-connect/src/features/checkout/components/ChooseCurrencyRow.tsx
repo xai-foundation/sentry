@@ -1,6 +1,7 @@
-import { useCallback } from 'react';
+import { useState } from 'react';
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 import { CURRENCIES, Currency } from '@/features/hooks';
+import { Dropdown, DropdownItem } from "@sentry/ui";
 
 /**
  * ChooseCurrencyRow Component
@@ -13,15 +14,35 @@ import { CURRENCIES, Currency } from '@/features/hooks';
 export function ChooseCurrencyRow(): JSX.Element {
     // Destructure setCurrency and currency from the context
     const { setCurrency, currency } = useWebBuyKeysContext();
+    const [isOpen, setIsOpen] = useState(false);
 
     /**
-     * Handles the change event of the currency select dropdown
+     * Handles the change event of the currency dropdown
      * 
-     * @param {React.ChangeEvent<HTMLSelectElement>} e - The change event
+     * @param {Currency} value - The selected currency value
      */
-    const handleCurrencyChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-        setCurrency(e.target.value as Currency);
-    }, [setCurrency]);
+    const handleChange = (value: Currency) => {
+        setCurrency(value);
+        setIsOpen(false);
+    };
+
+    /**
+     * Generates dropdown items for the currency selection
+     * 
+     * @returns {JSX.Element[]} An array of DropdownItem elements
+     */
+    function getDropdownItems() {
+        return Object.values(CURRENCIES).map((currency, i) => (
+            <DropdownItem
+                key={i.toString()}
+                onClick={() => handleChange(currency)}
+                dropdownOptionsCount={Object.values(CURRENCIES).length}
+                extraClasses='bg-black text-white hover:bg-gray-700'
+            >
+                {currency}
+            </DropdownItem>
+        ));
+    }
 
     return (
         <div className="w-full flex flex-col gap-4">
@@ -35,17 +56,18 @@ export function ChooseCurrencyRow(): JSX.Element {
                         <span className="text-white font-bold text-3xl bg-black">
                             {/* Form to prevent default submit behavior */}
                             <form onSubmit={(e) => e.preventDefault()}>
-                                <select
-                                    id="currency"
-                                    name="currency"
-                                    onChange={handleCurrencyChange}
-                                    value={currency}
-                                >
-                                    {/* Render options for each currency */}
-                                    {Object.entries(CURRENCIES).map(([key, value]) => (
-                                        <option key={key} value={value}>{value}</option>
-                                    ))}
-                                </select>
+                                <Dropdown
+                                    isOpen={isOpen}
+                                    setIsOpen={setIsOpen}
+                                    selectedValue={currency}
+                                    selectedValueRender={
+                                        <p>{currency}</p>
+                                    }
+                                    setSelectedValue={(e) => handleChange(e as Currency)}
+                                    getDropdownItems={getDropdownItems}
+                                    extraClasses={{ dropdown: "max-w-[170px] bg-black text-white" }}
+                                    dropdownOptionsCount={Object.values(CURRENCIES).length}
+                                />
                             </form>
                         </span>
                     </div>
