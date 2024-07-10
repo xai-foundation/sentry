@@ -20,6 +20,12 @@ contract esXaiUpgradeTest is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessC
     address public xai;
     bool private _redemptionActive;
     mapping(address => RedemptionRequest[]) private _redemptionRequests;
+    address public esXaiBurnFoundationRecipient;
+    uint256 public esXaiBurnFoundationBasePoints;
+    mapping(address => RedemptionRequestExt[]) private _extRedemptionRequests;
+    address public refereeAddress;
+    address public nodeLicenseAddress;
+    uint256 public maxKeysNonKyc;
     uint256 private _count;
 
     struct RedemptionRequest {
@@ -29,12 +35,22 @@ contract esXaiUpgradeTest is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessC
         bool completed;
     }
 
+    struct RedemptionRequestExt {
+        uint256 amount;
+        uint256 startTime;
+        uint256 duration;
+        uint256 endTime;
+        bool completed;
+        bool cancelled;
+        uint256[5] __gap;
+    }
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[499] private __gap;
+    uint256[493] private __gap;
 
     /**
      * @dev Function to increment the count

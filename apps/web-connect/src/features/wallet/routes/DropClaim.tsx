@@ -1,14 +1,14 @@
 import {useAccount, useContractWrite, useNetwork} from "wagmi";
 import {ConnectButton, PrimaryButton, XaiCheckbox} from "@sentry/ui";
-import {KYCTooltip} from "@/features/checkout/KYCTooltip";
 import {useState} from "react";
-import {useListClaimableAmount} from "@/features/checkout/hooks/useListClaimableAmount";
 import {BiLoaderAlt} from "react-icons/bi";
 import {config, NodeLicenseAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
+import { KYCTooltip } from "@/features/checkout/components/KYCTooltip";
+import { useListClaimableAmount } from "@/features/hooks";
 
 export function DropClaim() {
 	const {blocked, loading} = useBlockIp({blockUsa: true});
@@ -21,7 +21,7 @@ export function DropClaim() {
 	const [checkboxThree, setCheckboxThree] = useState<boolean>(false);
 	const ready = checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161;
 
-	const {data: listClaimableAmountData, isLoading: isClaimableAmountLoading} = useListClaimableAmount(address);
+	const {data: claimableAmount, isLoading: isClaimableAmountLoading} = useListClaimableAmount(address);
 
 	const {isLoading: isRedeemFromWhitelistLoading, write, error, isSuccess} = useContractWrite({
 		address: config.nodeLicenseAddress as `0x${string}`,
@@ -88,11 +88,11 @@ export function DropClaim() {
 
 									{address ? (
 										<>
-											{listClaimableAmountData && Number(listClaimableAmountData?.claimableAmount) !== 0 ? (
+											{claimableAmount && Number(claimableAmount) !== 0 ? (
 												<>
 													<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
 														This wallet ({address}) is eligible to claim <span
-														className="font-semibold">{BigInt(listClaimableAmountData.claimableAmount).toString()}</span> {Number(listClaimableAmountData.claimableAmount) === 1 ? "Key" : "Keys"}.
+														className="font-semibold">{BigInt(claimableAmount).toString()}</span> {Number(claimableAmount) === 1 ? "Key" : "Keys"}.
 													</p>
 													<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
 														You will be able to claim up to 50 Keys per transaction until

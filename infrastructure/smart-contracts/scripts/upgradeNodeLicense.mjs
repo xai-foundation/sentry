@@ -1,6 +1,10 @@
-import hardhat from "hardhat";
+import hardhat, { config } from "hardhat";
 const { ethers, upgrades } = hardhat;
-const address = "0xbc14d8563b248B79689ECbc43bBa53290e0b6b66";
+const address = config.nodeLicenseAddress;
+const xaiAddress = config.xaiAddress;
+const esXaiAddress = config.esXaiAddress;
+const ethChainLinkFeedAddress = config.ethChainLinkFeedAddress;
+const xaiChainLinkFeedAddress = config.xaiChainLinkFeedAddress;
 
 
 async function main() {
@@ -8,8 +12,15 @@ async function main() {
     const deployerAddress = await deployer.getAddress();
     console.log("Deployer address", deployerAddress);
     const NodeLicense = await ethers.getContractFactory("NodeLicense7");
-    console.log("Got factory");
-    await upgrades.upgradeProxy(address, NodeLicense);
+    console.log("Got factory");   
+    await upgrades.upgradeProxy(address, NodeLicense,
+         { call: { fn: "initialize",
+             args: [
+                xaiAddress, 
+                esXaiAddress, 
+                ethChainLinkFeedAddress, 
+                xaiChainLinkFeedAddress
+            ] } });
     console.log("Upgraded");
 
     await run("verify:verify", {

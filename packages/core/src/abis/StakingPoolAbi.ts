@@ -1124,6 +1124,10 @@ export const StakingPoolAbi = [
       {
         "type": "uint32",
         "name": "_stakedBucketShare"
+      },
+      {
+        "type": "uint256",
+        "name": "period"
       }
     ],
     "outputs": []

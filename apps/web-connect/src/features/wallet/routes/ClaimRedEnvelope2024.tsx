@@ -1,5 +1,4 @@
 import {useAccount, useNetwork, useContractWrite} from "wagmi";
-import {XaiBanner} from "@/features/checkout/XaiBanner";
 import {useState, useEffect} from "react";
 import {XaiCheckbox} from "@sentry/ui";
 import {useNavigate} from "react-router-dom";
@@ -7,6 +6,7 @@ import {useBlockIp} from "@/hooks/useBlockIp";
 import {BiLoaderAlt} from "react-icons/bi";
 import {XaiGaslessClaimAbi, config} from "@sentry/core";
 import {ethers} from "ethers";
+import { XaiBanner } from "@/features/checkout/components/XaiBanner";
 
 export function ClaimRedEnvelope2024() {
 	// TODO update all to new contract

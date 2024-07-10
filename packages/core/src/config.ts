@@ -5,6 +5,8 @@ export let config = {
   "arbitrumOneWebSocketUrl": "wss://arb-sepolia.g.alchemy.com/v2/8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B",
   "defaultRpcUrl": "https://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
   "esXaiAddress": "0x5776784C2012887D1f2FA17281E406643CBa5330",
+  "chainlinkEthUsdPriceFeed": "0x96452A47527e30a50F238c9867663F7c4D1e8656",
+  "chainlinkXaiUsdPriceFeed": "0x88EBC5D5317BC539efdb01dc8f425808B402D420",
   "esXaiDeployedBlockNumber": 157193630,
   "esXaiImplementationAddress": "0x8d6c063656b00e5c37ce007c0f99848d58f19d6b",
   "gasSubsidyAddress": "0x94F4aBC83eae00b693286B6eDCa09e1D76183C97",

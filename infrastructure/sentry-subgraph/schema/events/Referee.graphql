@@ -6,11 +6,11 @@ enum ChallengeStatus {
 
 type Challenge @entity(immutable: false) {
   id: String!
-  challengeNumber: BigInt! # uint256
+  challengeNumber: BigInt! @index # uint256
   status: ChallengeStatus!
   assertionId: BigInt! # uint256
   assertionStateRootOrConfirmData: Bytes! # bytes
-  assertionTimestamp: BigInt! # uint64
+  assertionTimestamp: BigInt! @index # uint64
   challengerSignedHash: Bytes! # bytes
   activeChallengerPublicKey: Bytes! # bytes
   rollupUsed: Bytes! # address
@@ -56,7 +56,7 @@ type Submission @entity(immutable: false) {
 type SentryWallet @entity(immutable: false) {
   id: String!
   isKYCApproved: Boolean!
-  address: Bytes!
+  address: Bytes! @index
   approvedOperators: [Bytes!]!
   v1EsXaiStakeAmount: BigInt!
   esXaiStakeAmount: BigInt!
@@ -72,4 +72,14 @@ type RefereeConfig @entity(immutable: false) {
   maxKeysPerPool: BigInt!
   stakeAmountTierThresholds: [BigInt!]!
   stakeAmountBoostFactors: [BigInt!]!
+}
+
+type PoolSubmission @entity(immutable: false) {
+  id: String!
+  challengeId: BigInt!
+  stakedKeyCount: BigInt!
+  winningKeyCount: BigInt!
+  claimedRewardsAmount: BigInt!
+  poolAddress: Bytes!
+  claimed: Boolean!
 }
