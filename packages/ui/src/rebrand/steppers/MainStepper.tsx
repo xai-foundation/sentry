@@ -6,6 +6,10 @@ interface MainStepperProps {
   quantity: number;
   setQuantity: (quantity: number) => void;
   maxSupply: number;
+  wrapperClassName?: string;
+  containerClassName?: string;
+  btnClassName?: string;
+  inputClassName?: string;
 }
 
 const MainStepper = ({
@@ -13,12 +17,17 @@ const MainStepper = ({
   quantity,
   setQuantity,
   maxSupply,
+  wrapperClassName = "",
+  containerClassName = "",
+  btnClassName = "",
+  inputClassName = "",
+
 }: MainStepperProps) => {
   return (
-    <div className="hover:bg-hornetSting global-cta-clip-path p-[1px] duration-200 ease-in">
-      <div className="flex justify-between items-center bg-nulnOil global-cta-clip-path">
+    <div className={`hover:bg-hornetSting global-cta-clip-path p-[1px] duration-200 ease-in ${wrapperClassName}`}>
+      <div className={`flex justify-between items-center bg-nulnOil global-cta-clip-path ${containerClassName}`}>
         <button
-          className="bg-nulnOil px-[20px] py-[25px] global-cta-clip-path hover:bg-velvetBlack duration-200 ease-in"
+          className={`bg-nulnOil px-[20px] py-[25px] global-cta-clip-path hover:bg-velvetBlack duration-200 ease-in ${btnClassName}`}
           type="button"
           title={`Decrease`}
           onClick={() => (quantity > 1 ? setQuantity(quantity - 1) : 1)}
@@ -31,10 +40,10 @@ const MainStepper = ({
           min={1}
           max={99}
           onChange={onChange}
-          className="font-bold text-3xl text-center indent-3 max-w-[60px] text-white bg-nulnOil py-[7px] focus:outline-none"
+          className={`font-bold text-3xl text-center indent-3 min-w-[30%] text-white bg-nulnOil py-[7px] focus:outline-none ${inputClassName}`}
         />
         <button
-          className="bg-nulnOil p-[20px] global-cta-clip-path hover:bg-velvetBlack duration-200 ease-in"
+          className={`bg-nulnOil p-[20px] global-cta-clip-path hover:bg-velvetBlack duration-200 ease-in ${btnClassName}`}
           type="button"
           title={`Increase`}
           onClick={() =>

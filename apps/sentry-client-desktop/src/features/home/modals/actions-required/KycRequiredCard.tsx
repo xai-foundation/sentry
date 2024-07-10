@@ -29,13 +29,14 @@ export function KycRequiredCard({wallet, status}: KycRequiredCardProps) {
 	}
 
 	return (
-		<SquareCard className="bg-[#F5F5F5]">
+		<SquareCard className="bg-dynamicBlack global-cta-clip-path">
 			{!status && !kycStarted && (
 				<>
 					<IconLabel
 						icon={IoMdCloseCircle}
-						color="#F59E28"
+						color="#FFC53D"
 						title={`KYC required: ${clampAddress(wallet)}`}
+						titleStyles="text-white text-lg"
 					/>
 
 					<Blockpass onClick={onStartKyc}/>
@@ -46,8 +47,9 @@ export function KycRequiredCard({wallet, status}: KycRequiredCardProps) {
 				<>
 					<IconLabel
 						icon={BsHourglassBottom}
-						color="#F59E28"
+						color="#FFC53D"
 						title={`KYC pending: ${clampAddress(wallet, 10)}`}
+						titleStyles="text-white text-lg"
 					/>
 
 					<Blockpass onClick={onStartKyc}>
@@ -59,8 +61,9 @@ export function KycRequiredCard({wallet, status}: KycRequiredCardProps) {
 			{status && (
 				<IconLabel
 					icon={AiFillCheckCircle}
-					color="#16A34A"
+					color="#3DD68C"
 					title={`KYC complete: ${clampAddress(wallet, 10)}`}
+					titleStyles="text-white text-lg"
 				/>
 			)}
 		</SquareCard>
