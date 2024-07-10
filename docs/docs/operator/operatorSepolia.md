@@ -1,13 +1,13 @@
 ---
 id: operator-sepolia
 title: Operator Run On Sepolia
-sidebar_label: Sepolia
+sidebar_label: Run On Sepolia Network
 sidebar_position: 3
 ---
 
 # Run Operator On Sepolia
 
-To run the operator on the sepolia network the contracts must be deployed. And then update the following values in the config file:
+To run the operator on the sepolia network the contracts must be deployed on the `Arbitrum Sepolia Testnet` network with the chainId `421614`. And then update the following values in the config file:
 
 • arbitrumOneJsonRpcUrl
 

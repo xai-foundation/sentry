@@ -1,7 +1,7 @@
 ---
 id: "operator-keys"
 title: "Operator Interaction With NodeLicenses"
-sidebar_label: "NodeLicenses"
+sidebar_label: "NodeLicenses Interactions"
 sidebar_position: 6
 custom_edit_url: null
 ---

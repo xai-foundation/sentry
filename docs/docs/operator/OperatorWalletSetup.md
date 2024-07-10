@@ -1,7 +1,7 @@
 ---
 id: "operator-wallet"
 title: "Operator Setup Wallet"
-sidebar_label: "Add Operator Wallet"
+sidebar_label: "Add Wallet"
 sidebar_position: 7
 custom_edit_url: null
 ---
@@ -14,9 +14,10 @@ Press the button `Connect to Web3` and connect with your new testing wallet. Go 
 
 The testing wallet should have a balance on the network `Arbitrum Sepolia Testnet` with the chainId `421614`.
 
-Go to `2. addKycWallet` and add your wallet address.
+Go to `2. addKycWallet` and approve your wallet with the wallet address.
 
 Then go to the nodeLicense contract to mint test keys [NodeLicense](https://sepolia.arbiscan.io/address/0x07C05C6459B0F86A6aBB3DB71C259595d22af3C2#writeProxyContract). Connect with your testing wallet by pressing `Connect to Web3`.
 
 Go to `6. mintDev` and mint the amount of keys to test.
 
+Now on `boot-operator` the new testing wallet with its keys should be included.

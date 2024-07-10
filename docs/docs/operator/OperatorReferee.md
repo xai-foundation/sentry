@@ -1,7 +1,7 @@
 ---
 id: "operator-referee"
 title: "Operator Interaction With Referee"
-sidebar_label: "Referee"
+sidebar_label: "Referee Interactions"
 sidebar_position: 4
 custom_edit_url: null
 ---
@@ -38,7 +38,7 @@ The operator interacts with the referee contract through the following functions
 
 **Defined in**:
 
-[operator/claimRewardsBulk.ts](https://github.com/xai-foundation/sentry/blob/fe751c5eb031e20365a15eef1f0eba36a8144d5e/packages/core/src/operator/claimRewardsBulk.ts)
+[operator/claimRewardBulk.ts](https://github.com/xai-foundation/sentry/blob/fe751c5eb031e20365a15eef1f0eba36a8144d5e/packages/core/src/operator/claimRewardBulk.ts)
 
 ## submitMultipleAssertions
 
@@ -48,4 +48,4 @@ The operator interacts with the referee contract through the following functions
 
 **Defined in**:
 
-[operator/claimRewardsBulk.ts](https://github.com/xai-foundation/sentry/blob/fe751c5eb031e20365a15eef1f0eba36a8144d5e/packages/core/src/operator/claimRewardsBulk.ts)
+[operator/submitMultipleAssertions.ts](https://github.com/xai-foundation/sentry/blob/fe751c5eb031e20365a15eef1f0eba36a8144d5e/packages/core/src/operator/submitMultipleAssertions.ts)

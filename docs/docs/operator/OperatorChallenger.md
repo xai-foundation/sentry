@@ -1,7 +1,7 @@
 ---
 id: "operator-challenger"
 title: "Operator Interaction With Challenger"
-sidebar_label: "Challenger"
+sidebar_label: "Challenger Interactions"
 sidebar_position: 5
 custom_edit_url: null
 ---
