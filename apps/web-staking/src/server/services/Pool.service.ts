@@ -152,6 +152,10 @@ export function mapPool(pool: IPool): PoolInfo {
 	 *
 	 * @dev DB Socials structure: [website: string, twitter: string, discord: string, telegram: string, instagram: string, tiktok: string, youtube: string]
 	 */
+	const ownerShare = pool.pendingShares ? pool.pendingShares[0] : 0;
+	const keyBucketShare = pool.pendingShares ? pool.pendingShares[1] : 0;
+	const stakedBucketShare = pool.pendingShares ? pool.pendingShares[2] : 0;
+
 	return {
 		address: pool.poolAddress,
 		owner: pool.owner,
@@ -160,9 +164,9 @@ export function mapPool(pool: IPool): PoolInfo {
 		keyCount: pool.keyCount,
 		totalStakedAmount: pool.totalStakedAmount,
 		maxStakedAmount: pool.maxStakedAmount,
-		ownerShare: pool.ownerShare,
-		keyBucketShare: pool.keyBucketShare,
-		stakedBucketShare: pool.stakedBucketShare,
+		ownerShare: ownerShare,
+		keyBucketShare: keyBucketShare,
+		stakedBucketShare: stakedBucketShare,
 		userStakedEsXaiAmount: 0,
 		userClaimAmount: 0,
 		userStakedKeyIds: pool.userStakedKeyIds,
