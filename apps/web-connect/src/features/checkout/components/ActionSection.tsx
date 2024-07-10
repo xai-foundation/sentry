@@ -50,7 +50,7 @@ export function ActionSection(): JSX.Element {
     }, [mintWithEth.isLoading, mintWithXai.isLoading, approve.isLoading, chain, getApproveButtonText]);
 
     const handleBuyWithXaiClicked = () => { 
-        if (getTokenButtonText() === "Approve") {
+        if (getTokenButtonText().startsWith("Approve")) {
             approve.write?.();
         } else {
             mintWithXai.write?.();
