@@ -19,6 +19,18 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			const singlePrice = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr1).mint(1, "", {value: singlePrice});
 			const addr1MintedKeyId = await nodeLicense.totalSupply();
+			
+
+			// Submit a challenge
+			const startingAssertion = 100;
+			await referee.connect(challenger).submitChallenge(
+				startingAssertion,
+				startingAssertion - 1,
+				"0x0000000000000000000000000000000000000000000000000000000000000000",
+				0,
+				"0x0000000000000000000000000000000000000000000000000000000000000000"
+			);
+
 
 			// Create a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
 			await poolFactory.connect(addr1).createPool(
@@ -51,17 +63,6 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 
 			// Mint some esXai to increase the total supply for submitting the first challenge so that there is available reward
 			await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 1_000_000);
-
-			// Submit a challenge
-			const startingAssertion = 100;
-			await referee.connect(challenger).submitChallenge(
-				startingAssertion,
-				startingAssertion - 1,
-				"0x0000000000000000000000000000000000000000000000000000000000000000",
-				0,
-				"0x0000000000000000000000000000000000000000000000000000000000000000"
-			);
-
 			// Make sure the challenge is open for submissions
 			const {openForSubmissions} = await referee.getChallenge(0);
 			expect(openForSubmissions).to.equal(true);
@@ -103,6 +104,17 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			await nodeLicense.connect(addr1).mint(1, "", {value: singlePrice});
 			const addr1MintedKeyId = await nodeLicense.totalSupply();
 
+			// Submit a challenge
+			const startingAssertion = 100;
+			await referee.connect(challenger).submitChallenge(
+				startingAssertion,
+				startingAssertion - 1,
+				"0x0000000000000000000000000000000000000000000000000000000000000000",
+				0,
+				"0x0000000000000000000000000000000000000000000000000000000000000000"
+			);
+
+
 			const operatorAddress = await operator.getAddress();
 
 			// Create a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
@@ -139,17 +151,6 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 
 			// Mint some esXai to increase the total supply for submitting the first challenge so that there is available reward
 			await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 1_000_000);
-
-			// Submit a challenge
-			const startingAssertion = 100;
-			await referee.connect(challenger).submitChallenge(
-				startingAssertion,
-				startingAssertion - 1,
-				"0x0000000000000000000000000000000000000000000000000000000000000000",
-				0,
-				"0x0000000000000000000000000000000000000000000000000000000000000000"
-			);
-
 			// Make sure the challenge is open for submissions
 			const {openForSubmissions} = await referee.getChallenge(0);
 			expect(openForSubmissions).to.equal(true);

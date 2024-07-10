@@ -14,7 +14,6 @@ import "../../upgrades/node-license/NodeLicense8.sol";
 import "../../staking-v2/StakingPool.sol";
 import "../../staking-v2/PoolProxyDeployer.sol";
 import "../../staking-v2/PoolBeacon.sol";
-import "hardhat/console.sol";
 
 // Error Codes
 // 1: Staking must be enabled before creating pool
@@ -403,7 +402,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         Referee9 referee = Referee9(refereeAddress);
         require(_asAdmin || referee.stakingEnabled(), "52");
         
-        referee.stakeKeys(pool, msg.sender, keyIds, _asAdmin);
+        referee.stakeKeys(pool, staker, keyIds, _asAdmin);
 
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.stakeKeys(staker, keyIds);

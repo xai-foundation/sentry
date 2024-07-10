@@ -12,7 +12,6 @@ import "../../Xai.sol";
 import "../../esXai.sol";
 import "../pool-factory/PoolFactory2.sol";
 import "../../RefereeCalculations.sol";
-import "hardhat/console.sol";
 
 // Error Codes
 // 1: Only PoolFactory can call this function.
@@ -611,6 +610,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         }
 
         // Emit the AssertionSubmitted event
+        emit AssertionSubmitted(_challengeId, _nodeLicenseId);
         emit AssertionSubmittedV2(_challengeId, _nodeLicenseId, _confirmData);
     }
 
@@ -699,6 +699,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
                 }
 
                 claimCount++;
+                emit RewardsClaimed(_challengeId, reward);
                 emit RewardsClaimedV2(_challengeId, _nodeLicenseId, reward);
             }
 		}
