@@ -89,6 +89,10 @@
     padding-right: 0 !important;
     gap: 10px !important;
   }
+
+  .announcementBannerGradient {
+    background: transparent linear-gradient(92deg, #97C8EB 0%, #FFC7D2 100%) 0% 0% no-repeat padding-box;
+  }
 }
 
 @layer utilities {
