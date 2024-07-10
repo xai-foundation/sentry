@@ -75,6 +75,6 @@ Not shared components are components that used on [Staking Website](https://app.
 * **[Toggles](./apps/web-staking/src/app/components/ui/toggles)**
   * **MainToggle.tsx** - a toggle component to switch between two states. Written without any ui libs.
 * **[React Cookie Consent](./apps/web-staking/src/app/components/ReactCookieConsent.tsx)**
-  * **MainToggle.tsx** - component from [react-cookie-consent](https://www.npmjs.com/package/react-cookie-consent) library because it's the best solution for such component.
+  * **ReactCookieConsent.tsx** - component from [react-cookie-consent](https://www.npmjs.com/package/react-cookie-consent) library because it's the best solution for such component.
 
 
