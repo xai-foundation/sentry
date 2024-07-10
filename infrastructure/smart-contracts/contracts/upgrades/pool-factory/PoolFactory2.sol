@@ -52,6 +52,7 @@ import "../../staking-v2/PoolBeacon.sol";
 // 34: Invalid delegate update; pool needs to have been created via the PoolFactory
 // 35: Invalid submission; pool needs to have been created via the PoolFactory
 // 36: Invalid submission; user needs to be owner, delegate or staker to submit
+// 37: Invalid auth: msg.sender must be kyc approved to create a pool
 
 contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -233,6 +234,9 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         require(_keyIds.length > 0, "2"); // At least 1 key needed to create a pool
         require(validateShareValues(_shareConfig), "3"); // Validate share configuration
         require(msg.sender != _delegateOwner, "4"); // Delegate cannot be pool creator
+
+        Referee9 referee = Referee9(refereeAddress);
+        require(!referee.isKycApproved(msg.sender), "37"); // Owner must be kyc approved
 
         (
             address poolProxy,
