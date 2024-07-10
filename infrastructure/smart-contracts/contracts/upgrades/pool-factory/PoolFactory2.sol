@@ -236,7 +236,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         require(msg.sender != _delegateOwner, "4"); // Delegate cannot be pool creator
 
         Referee9 referee = Referee9(refereeAddress);
-        require(!referee.isKycApproved(msg.sender), "37"); // Owner must be kyc approved
+        require(referee.isKycApproved(msg.sender), "37"); // Owner must be kyc approved
 
         (
             address poolProxy,
