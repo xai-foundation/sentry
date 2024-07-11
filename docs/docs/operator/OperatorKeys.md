@@ -12,7 +12,7 @@ The operator interacts with NodeLicenses through the following function:
 
 ## loadOperatorKeysFromGraph
 
-Loads all operating keys and metadata from the subgraph. It will find all keys and pool for this operator, including key timestamps, assigned pools and owner kyc status and will also attach submission objects to each sentryKey for processing the last closed challenge.
+• **Description**: Loads all operating keys and metadata from the subgraph. It will find all keys and pool for this operator, including key timestamps, assigned pools and owner kyc status and will also attach submission objects to each sentryKey for processing the last closed challenge.
 
 • **Params**: `operator: string, latestChallengeNumber?: bigint`
 

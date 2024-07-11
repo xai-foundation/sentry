@@ -7,7 +7,7 @@ sidebar_position: 3
 
 # Run Operator On Sepolia
 
-To run the operator on the sepolia network the contracts must be deployed on the `Arbitrum Sepolia Testnet` network with the chainId `421614`. And then update the following values in the config file:
+To run the operator on the sepolia network the contracts must be deployed on the `Arbitrum Sepolia Testnet` with the chainId `421614`. And then update the following values in the config file:
 
 • arbitrumOneJsonRpcUrl
 

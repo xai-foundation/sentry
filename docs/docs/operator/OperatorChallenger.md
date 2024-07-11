@@ -12,7 +12,7 @@ The operator interacts indirectly with the challenger through the following func
 
 ## listenForChallenges
 
-Listens for ChallengeSubmitted events and triggers a callback function when the event is emitted. Keeps a map of challengeNumbers that have called the callback to ensure uniqueness.
+• **Description**: Listens for ChallengeSubmitted events and triggers a callback function when the event is emitted. Keeps a map of challengeNumbers that have called the callback to ensure uniqueness.
 
 • **Params**: `callback: (challengeNumber: bigint, challenge: Challenge, event: any) => void`
 

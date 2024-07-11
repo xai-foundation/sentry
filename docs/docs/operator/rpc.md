@@ -7,9 +7,11 @@ sidebar_position: 2
 
 # Operator Data From RPC Call
 
-On fallback we get the necessary data for the operator through these functions:
+In the case of a failed subgraph connection, we use the RPC fallback option to get the necessary data for the operator through these functions:
 
 ## getBoostFactor
+
+• **Description**: Get the boost factor for a key from the referee contract.
 
 • **Params**: `ownerPublicKey: string`
 
@@ -21,6 +23,8 @@ On fallback we get the necessary data for the operator through these functions:
 
 ## loadOperatorKeysFromRPC
 
+• **Description**: Loads all keys and metadata for the operator wallet. 
+
 • **Params**: `operator: string`
 
 • **Returns**: `{sentryKeysMap: { [keyId: string]: SentryKey }, nodeLicenseIds: bigint[]}`
@@ -31,7 +35,7 @@ On fallback we get the necessary data for the operator through these functions:
 
 ## reloadPoolKeysForRPC
 
-Load all the keys from pool the operator should operate and exclude pools which are not whitelisted.
+• **Description**: Load all the keys from pool the operator should operate and exclude pools which are not whitelisted.
 
 • **Params**: `operator: string, sentryKeysMap: { [keyId: string]: SentryKey }, operatorOwners?: string[]`
 
@@ -43,6 +47,8 @@ Load all the keys from pool the operator should operate and exclude pools which 
 
 ## syncOwnerStakedKeysForRPC
 
+• **Description**: Syncs the keys that are assigned to a pool. This needs to happen in case someone stakes or unstakes their keys from a pool.
+
 • **Params**: `owners: string[], sentryKeysMap: { [keyId: string]: SentryKey }`
 
 • **Returns**: `{ [keyId: string]: SentryKey }`
@@ -52,6 +58,8 @@ Load all the keys from pool the operator should operate and exclude pools which 
 [operator/operatorRuntime.ts:503](https://github.com/xai-foundation/sentry/blob/fe751c5eb031e20365a15eef1f0eba36a8144d5e/packages/core/src/operator/operatorRuntime.ts#L503)
 
 ## getLatestChallenge
+
+• **Description**: Gets the latest challenge from the referee contract.
 
 • **Returns**: `[bigint, Challenge]`
 

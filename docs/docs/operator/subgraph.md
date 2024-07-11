@@ -12,6 +12,8 @@ We get the subgraph data for the operator through these functions:
 
 ## getSubgraphHealthStatus
 
+• **Description**: Checks the subgraph url for the current health status.
+
 • **Returns**: `{ healthy: boolean, error?: string }`
 
 **Defined in**:
@@ -20,6 +22,8 @@ We get the subgraph data for the operator through these functions:
 
 ## getLatestChallengeFromGraph
 
+• **Description**: Submits a query to the subgraph to get the latest challenge.
+
 • **Returns**: `Challenge`
 
 **Defined in**:
@@ -27,6 +31,8 @@ We get the subgraph data for the operator through these functions:
 [subgraph/getLatestChallengeFromGraph.ts](https://github.com/xai-foundation/sentry/blob/fe751c5eb031e20365a15eef1f0eba36a8144d5e/packages/core/src/subgraph/getLatestChallengeFromGraph.ts)
 
 ## getPoolInfosFromGraph
+
+• **Description**: Submits a query to the subgraph to retrieve information of the pools specified in the params.
 
 • **Params**: `poolAddresses: string[], extendPoolInfo?: boolean, fetchRefereeConfig?: boolean`
 
@@ -38,6 +44,8 @@ We get the subgraph data for the operator through these functions:
 
 ## getSentryKeysFromGraph
 
+• **Description**: Submits a query to the subgraph to get a list of sentry keys from a list of owners and pools.
+
 • **Params**: `owners: string[], stakingPools: string[], includeSubmissions: boolean, submissionsFilter: { eligibleForPayout?: boolean, claimed?: boolean, latestChallengeNumber?: bigint }`
 
 • **Returns**: `SentryKey[]`
@@ -47,6 +55,8 @@ We get the subgraph data for the operator through these functions:
 [subgraph/getSentryKeysFromGraph.ts](https://github.com/xai-foundation/sentry/blob/fe751c5eb031e20365a15eef1f0eba36a8144d5e/packages/core/src/subgraph/getSentryKeysFromGraph.ts)
 
 ## getSentryWalletsForOperator
+
+• **Description**: Submits a query to the subgraph to get the sentry wallets, pools and refereeConfig from a list of whitelisted pools and wallets.
 
 • **Params**: `operator: string, whitelist?: string[]`
 
