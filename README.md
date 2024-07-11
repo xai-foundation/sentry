@@ -18,63 +18,115 @@
 - **[Operator Desktop](./apps/sentry-client-desktop)**
 
 ### UI Libraries/Frameworks
-Most of the shared/not shared components are written without any UI libraries/frameworks. Next there will be a list of components, in which we will add a comment about whether it is used any ui library/framework or not.
+We minimized the usage of UI libraries/framewroks, so most of the shared/not shared components are written without any UI libraries/frameworks.
 
 ### Duplicated Components
 All components in [web-staking](./apps/web-staking) which are also in [shared ui folder](./packages/ui/src/rebrand) are duplicated because **web-staking** is not integrated to monorepo.
 So for further updates you need updated both variants of components to avoid merge-conflics or integrate **web-staking** to monorepo.
 
 ### Deprecated Components
-Most of the components in [web-staking](./apps/web-staking) which are not in [ui folder](./apps/web-staking/src/app/components/ui) are deprecated and not and are not used at all or partially. 
+Most of the components in [web-staking](./apps/web-staking) which are not in [ui folder](./apps/web-staking/src/app/components/ui) are deprecated and not used in whole or in part. 
 
-### Shared components. 
-Most of the components you can find [here](./packages/ui/src/rebrand).
+### Shared components 
+Next there will be a list of components, in which we will add a comment about whether it is used any ui library/framework or not.
 There is a list of shared components:
 * **[Buttons](./packages/ui/src/rebrand/buttons)**
-  * **ConnectButton.tsx** - used for connect user wallet
-  * **PrimaryButton.tsx** - red button with clip-path
-  * **TextButton.tsx** - button without specific background and clip-path
+  * **ConnectButton.tsx:**
+    * **Description:** Button that allows user connect his wallet.
+    * **Defined in:** [File](./packages/ui/src/rebrand/buttons/ConnectButton.tsx)
+  * **PrimaryButton.tsx:**
+    * **Description:** Primary button.
+    * **Defined in:** [File](./packages/ui/src/rebrand/buttons/PrimaryButton.tsx)
+  * **TextButton.tsx:**
+    * **Description:** Secondary button.
+    * **Defined in:** [File](./packages/ui/src/rebrand/buttons/TextButton.tsx)
 * **[Callout](./packages/ui/src/rebrand/callout)**
-  * **BaseCallout.tsx** - wrapper with specific styles, has 2 style schemas (default, warning) 
+  * **BaseCallout.tsx:**
+    * **Description:** Wrapper for other components/elements.
+    * **Defined in:** [File](./packages/ui/src/rebrand/callout/BaseCallout.tsx)
 * **[Checkboxes](./packages/ui/src/rebrand/checkboxes)**
-  * **MainCheckbox.tsx** - just a styled checkbox, nothing special.
+  * **MainCheckbox.tsx:**
+    * **Description:** Checkbox.
+    * **Defined in:** [File](./packages/ui/src/rebrand/checkboxes/MainCheckbox.tsx)
 * **[Dropdowns](./packages/ui/src/rebrand/dropdown)**
-  * **Dropdown.tsx** - has specific functionality/styles. Invalid state (orange borders), preferableItems (items that appears at the top of the dropdown list) 
+  * **Dropdown.tsx:**
+    * **Description:** Dropdown.
+    * **Defined in:** [File](./packages/ui/src/rebrand/dropdown/Dropdown.tsx)
 * **[Inputs](./packages/ui/src/rebrand/dropdown)**
-  * **BaseInput.tsx** - just a styled input without any specific functionality/styles
+  * **BaseInput.tsx:**
+    * **Description:** Primary input for user information.
+    * **Defined in:** [File](./packages/ui/src/rebrand/inputs/BaseInput.tsx)
 * **[Links](./packages/ui/src/rebrand/links)**
-  * **ExternalLink.tsx** - just a styled link tag.
+  * **ExternalLink.tsx:**
+    * **Description:** Primary link.
+    * **Defined in:** [File](./packages/ui/src/rebrand/links/ExternalLink.tsx)
 * **[Notifications](./packages/ui/src/rebrand/notifications)** 
-  * **WarningNotification.tsx** - similar to warning callout component. 
+  * **WarningNotification.tsx:**
+    * **Description:** Primary warning notification.
+    * **Defined in:** [File](./packages/ui/src/rebrand/notifications/WarningNotification.tsx)
 * **[Steppers](./packages/ui/src/rebrand/steppers)**
-  * **MainStepper.tsx** - stepper component (kinda counter). Has increment/decrement buttons and can show value. 
+  * **MainStepper.tsx:**
+    * **Description:** Counter with increase/decrease buttons.
+    * **Defined in:** [File](./packages/ui/src/rebrand/steppers/MainStepper.tsx)
 * **[Tooltips](./packages/ui/src/rebrand/tooltip)**
-  * **Tooltips.tsx** - regular tooltip (native).
-  * **SideBarTooltip.tsx** - styled tooltip from [RadixUI](https://www.radix-ui.com/themes/docs/components/tooltip).
+  * **Tooltips.tsx:**
+    * **Description:** Tooltip.
+    * **Defined in:** [File](./packages/ui/src/rebrand/tooltip/Tooltip.tsx)
+  * **SideBarTooltip.tsx:**
+    * **Description:** Tooltip for sidebars.
+    * **UI Library:** [RadixUI](https://www.radix-ui.com/themes/docs/components/tooltip). We encountered a problem with display and positioning when opening/closing sidebars, so we decided to use the library in some places. 
+    * **Defined in:** [File](./packages/ui/src/rebrand/tooltip/SideBarTooltip.tsx)
 
 ### Not shared components. 
 Not shared components are components that used on [Staking Website](https://app.xai.games/) but have not yet been transferred to monorepo ui folder from [web-staking](./apps/web-staking):
 * **[Buttons](./apps/web-staking/src/app/components/ui/buttons)**
-  * **CTAButton.tsx** - similar to primary, but has another clip-path.
-  * **IconButton.tsx** - button only with icon.
-  * **ButtonBack.tsx** - button with text and back arrow icon.
+  * **CTAButton.tsx:**
+    * **Description:** Similar to primary button. Has another clip-path.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/ui/buttons/CTAButton.tsx)
+  * **IconButton.tsx:**
+    * **Description:** Button that has only icon as child element.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/ui/buttons/IconButton.tsx)
+  * **ButtonBack.tsx:**
+    * **Description:** Button that uses redirect user to previous page.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/ui/buttons/ButtonBack.tsx)
 * **[Radio](./apps/web-staking/src/app/components/ui/checkboxes)**
-  * **Radio.tsx** - has 2 components: RadioGroup, RadioItem. Uses context for correct value handling.
+  * **Radio.tsx:**
+    * **Description:** Radio group/button. Uses ReactContext for correct value handling.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/ui/checkboxes/Radio.tsx)
 * **[Inputs](./apps/web-staking/src/app/components/ui/inputs)**
-  * **StakingInput.tsx** - input with specific styles. Uses for stake/unstake/redeem operations.
+  * **StakingInput.tsx:**
+    * **Description:** Primary input for operations with user wallet's balance (stake/unstake/redeem).
+    * **Defined in:** [File](./apps/web-staking/src/app/components/ui/inputs/StakingInput.tsx)
 * **[Modals](./apps/web-staking/src/app/components/ui/modals)**
-  * **BaseModal.tsx** - custom modal components, written without ui libs.
+  * **BaseModal.tsx:**
+    * **Description:** Modal.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/ui/modals/BaseModal.tsx)
 * **[Notifications](./apps/web-staking/src/app/components/ui/notifications)**
-  * **LoadingNotification.tsx** - a notification component that show loader. Written with [React Toastify](https://www.npmjs.com/package/react-toastify) because it's the best solution for such component.
-  * **UpdateNotification.tsx** - a notification component that allow update toast notification. Written with [React Toastify](https://www.npmjs.com/package/react-toastify) because it's the best solution for such component.
+  * **LoadingNotification.tsx:**
+    * **Description:** Loading notification.
+    * **UI Library:** [ReactToastify](https://www.npmjs.com/package/react-toastify). The best/most popular solution for such kind of components.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/ui/notifications/LoadingNotification.tsx)
+  * **UpdateNotification.tsx:**
+* **Description:** Allows update state of notification.
+  * **UI Library:** [ReactToastify](https://www.npmjs.com/package/react-toastify). The best/most popular solution for such kind of components.
+  * **Defined in:** [File](./apps/web-staking/src/app/components/ui/notifications/UpdateNotification.tsx)
 * **[Pagination](./apps/web-staking/src/app/components/ui/pagination)**
-  * **BasePagination.tsx** - default pagination written without any ui libs.
-  * **BasePaginationItem.tsx** - item of the pagination (1,2,3,4,5, etc.)
+  * **BasePagination.tsx:**
+    * **Description:** Pagination.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/ui/pagination/BasePagination.tsx)
+  * **BasePaginationItem.tsx:**
+    * **Description:** Pagination page.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/ui/pagination/BasePaginationItem.tsx)
 * **[Spinners](./apps/web-staking/src/app/components/ui/spinners)**
-  * **BaseSpinner.tsx** - default svg spinner that uses to show loading state on buttons.
+  * **BaseSpinner.tsx:**
+    * **Description:** Svg spinner.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/ui/spinners/BaseSpinner.tsx)
 * **[Toggles](./apps/web-staking/src/app/components/ui/toggles)**
-  * **MainToggle.tsx** - a toggle component to switch between two states. Written without any ui libs.
+  * **MainToggle.tsx:**
+    * **Description:** Styled switcher between two states.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/ui/toggles/MainToggle.tsx)
 * **[React Cookie Consent](./apps/web-staking/src/app/components/ReactCookieConsent.tsx)**
-  * **ReactCookieConsent.tsx** - component from [react-cookie-consent](https://www.npmjs.com/package/react-cookie-consent) library because it's the best solution for such component.
-
-
+  * **ReactCookieConsent.tsx:**
+    * **Description:** Cookies consent component.
+    * **UI Library:** [ReactCookieConsent](https://www.npmjs.com/package/react-cookie-consent) The best/most popular solution for such kind of components.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/ReactCookieConsent.tsx)
