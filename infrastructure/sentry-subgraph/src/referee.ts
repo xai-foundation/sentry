@@ -505,41 +505,41 @@ export function handleUnstakeV1(event: UnstakeV1): void {
   sentryWallet.save()
 }
 
-export function handleNewPoolSubmission(event: NewPoolSubmissionEvent): void {
-  let poolSubmission = new PoolSubmission(event.params.challengeId.toHexString() + event.params.poolAddress.toHexString())
-  poolSubmission.challengeId = event.params.challengeId
-  poolSubmission.stakedKeyCount = event.params.stakedKeys
-  poolSubmission.winningKeyCount = event.params.winningKeys
-  poolSubmission.claimedRewardsAmount = BigInt.fromI32(0)
-  poolSubmission.poolAddress = event.params.poolAddress
-  poolSubmission.claimed = false
-  poolSubmission.save()
-}
+// export function handleNewPoolSubmission(event: NewPoolSubmissionEvent): void {
+//   let poolSubmission = new PoolSubmission(event.params.challengeId.toHexString() + event.params.poolAddress.toHexString())
+//   poolSubmission.challengeId = event.params.challengeId
+//   poolSubmission.stakedKeyCount = event.params.stakedKeys
+//   poolSubmission.winningKeyCount = event.params.winningKeys
+//   poolSubmission.claimedRewardsAmount = BigInt.fromI32(0)
+//   poolSubmission.poolAddress = event.params.poolAddress
+//   poolSubmission.claimed = false
+//   poolSubmission.save()
+// }
 
-export function handleUpdatePoolSubmission(event: UpdatePoolSubmissionEvent): void {
-  let poolSubmission = PoolSubmission.load(event.params.challengeId.toHexString() + event.params.poolAddress.toHexString())
-  if (!poolSubmission) {
-    poolSubmission = new PoolSubmission(event.params.challengeId.toHexString() + event.params.poolAddress.toHexString())
-    poolSubmission.challengeId = event.params.challengeId
-    poolSubmission.stakedKeyCount = event.params.stakedKeys
-    poolSubmission.winningKeyCount = event.params.winningKeys
-    poolSubmission.claimedRewardsAmount = BigInt.fromI32(0)
-    poolSubmission.poolAddress = event.params.poolAddress
-    poolSubmission.claimed = false
-  } else {
-    poolSubmission.stakedKeyCount = event.params.stakedKeys
-    poolSubmission.winningKeyCount = event.params.winningKeys
-  }
-  poolSubmission.save()
-}
+// export function handleUpdatePoolSubmission(event: UpdatePoolSubmissionEvent): void {
+//   let poolSubmission = PoolSubmission.load(event.params.challengeId.toHexString() + event.params.poolAddress.toHexString())
+//   if (!poolSubmission) {
+//     poolSubmission = new PoolSubmission(event.params.challengeId.toHexString() + event.params.poolAddress.toHexString())
+//     poolSubmission.challengeId = event.params.challengeId
+//     poolSubmission.stakedKeyCount = event.params.stakedKeys
+//     poolSubmission.winningKeyCount = event.params.winningKeys
+//     poolSubmission.claimedRewardsAmount = BigInt.fromI32(0)
+//     poolSubmission.poolAddress = event.params.poolAddress
+//     poolSubmission.claimed = false
+//   } else {
+//     poolSubmission.stakedKeyCount = event.params.stakedKeys
+//     poolSubmission.winningKeyCount = event.params.winningKeys
+//   }
+//   poolSubmission.save()
+// }
 
-export function handlePoolRewardsClaimed(event: PoolRewardsClaimedEvent): void {
-  let poolSubmission = PoolSubmission.load(event.params.challengeId.toHexString() + event.params.poolAddress.toHexString())
-  if (!poolSubmission) {
-    log.warning("Failed to find poolSubmission on PoolRewardsClaimed TX: " + event.transaction.hash.toHexString(), [])
-    return
-  }
-  poolSubmission.claimedRewardsAmount = event.params.totalReward
-  poolSubmission.claimed = true
-  poolSubmission.save()
-}
+// export function handlePoolRewardsClaimed(event: PoolRewardsClaimedEvent): void {
+//   let poolSubmission = PoolSubmission.load(event.params.challengeId.toHexString() + event.params.poolAddress.toHexString())
+//   if (!poolSubmission) {
+//     log.warning("Failed to find poolSubmission on PoolRewardsClaimed TX: " + event.transaction.hash.toHexString(), [])
+//     return
+//   }
+//   poolSubmission.claimedRewardsAmount = event.params.totalReward
+//   poolSubmission.claimed = true
+//   poolSubmission.save()
+// }
