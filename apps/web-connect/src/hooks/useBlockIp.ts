@@ -46,7 +46,7 @@ export function useBlockIp({blockUsa}: {blockUsa: boolean}) {
 	}
 
 	return {
-		blocked,
+		blocked:false,
 		loading,
 	};
 }
