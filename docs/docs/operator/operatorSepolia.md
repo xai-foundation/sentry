@@ -36,4 +36,4 @@ pnpm cli
 boot-operator
 ```
 
-To test the operator you need a challenger running on sepolia and a set up testing wallet. We have an interactive Test UI that can assert a new Challenge through an interval or on click. If this should not be available yet, then use the fake challenger from the branch `sepolia-fake-challenger`.
+To test the operator you need a challenger running on sepolia and a set up testing wallet. We will an interactive Test UI (TDD) that can assert a new Challenge through an interval or on click. Please check the documentation for TDD, else if this should not be available yet, use the fake challenger from the branch `sepolia-fake-challenger`.
