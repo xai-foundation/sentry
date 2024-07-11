@@ -30,7 +30,8 @@ Most of the components in [web-staking](./apps/web-staking) which are not in [ui
 ### Shared components 
 Next there will be a list of components, in which we will add a comment about whether it is used any ui library/framework or not.
 There is a list of shared components:
-* **[Buttons](./packages/ui/src/rebrand/buttons)**
+
+**[Buttons](./packages/ui/src/rebrand/buttons)**
   * **ConnectButton.tsx:**
     * **Description:** Button that allows user connect his wallet.
     * **Defined in:** [File](./packages/ui/src/rebrand/buttons/ConnectButton.tsx)
@@ -40,35 +41,43 @@ There is a list of shared components:
   * **TextButton.tsx:**
     * **Description:** Secondary button.
     * **Defined in:** [File](./packages/ui/src/rebrand/buttons/TextButton.tsx)
-* **[Callout](./packages/ui/src/rebrand/callout)**
+
+**[Callouts](./packages/ui/src/rebrand/callout)**
   * **BaseCallout.tsx:**
     * **Description:** Wrapper for other components/elements.
     * **Defined in:** [File](./packages/ui/src/rebrand/callout/BaseCallout.tsx)
-* **[Checkboxes](./packages/ui/src/rebrand/checkboxes)**
+
+**[Checkboxes](./packages/ui/src/rebrand/checkboxes)**
   * **MainCheckbox.tsx:**
     * **Description:** Checkbox.
     * **Defined in:** [File](./packages/ui/src/rebrand/checkboxes/MainCheckbox.tsx)
-* **[Dropdowns](./packages/ui/src/rebrand/dropdown)**
+
+**[Dropdowns](./packages/ui/src/rebrand/dropdown)**
   * **Dropdown.tsx:**
     * **Description:** Dropdown.
     * **Defined in:** [File](./packages/ui/src/rebrand/dropdown/Dropdown.tsx)
-* **[Inputs](./packages/ui/src/rebrand/dropdown)**
+
+**[Inputs](./packages/ui/src/rebrand/dropdown)**
   * **BaseInput.tsx:**
     * **Description:** Primary input for user information.
     * **Defined in:** [File](./packages/ui/src/rebrand/inputs/BaseInput.tsx)
-* **[Links](./packages/ui/src/rebrand/links)**
+
+**[Links](./packages/ui/src/rebrand/links)**
   * **ExternalLink.tsx:**
     * **Description:** Primary link.
     * **Defined in:** [File](./packages/ui/src/rebrand/links/ExternalLink.tsx)
-* **[Notifications](./packages/ui/src/rebrand/notifications)** 
+
+**[Notifications](./packages/ui/src/rebrand/notifications)** 
   * **WarningNotification.tsx:**
     * **Description:** Primary warning notification.
     * **Defined in:** [File](./packages/ui/src/rebrand/notifications/WarningNotification.tsx)
-* **[Steppers](./packages/ui/src/rebrand/steppers)**
+
+**[Steppers](./packages/ui/src/rebrand/steppers)**
   * **MainStepper.tsx:**
     * **Description:** Counter with increase/decrease buttons.
     * **Defined in:** [File](./packages/ui/src/rebrand/steppers/MainStepper.tsx)
-* **[Tooltips](./packages/ui/src/rebrand/tooltip)**
+
+**[Tooltips](./packages/ui/src/rebrand/tooltip)**
   * **Tooltips.tsx:**
     * **Description:** Tooltip.
     * **Defined in:** [File](./packages/ui/src/rebrand/tooltip/Tooltip.tsx)
@@ -79,7 +88,8 @@ There is a list of shared components:
 
 ### Not shared components. 
 Not shared components are components that used on [Staking Website](https://app.xai.games/) but have not yet been transferred to monorepo ui folder from [web-staking](./apps/web-staking):
-* **[Buttons](./apps/web-staking/src/app/components/ui/buttons)**
+
+**[Buttons](./apps/web-staking/src/app/components/ui/buttons)**
   * **CTAButton.tsx:**
     * **Description:** Similar to primary button. Has another clip-path.
     * **Defined in:** [File](./apps/web-staking/src/app/components/ui/buttons/CTAButton.tsx)
@@ -89,43 +99,51 @@ Not shared components are components that used on [Staking Website](https://app.
   * **ButtonBack.tsx:**
     * **Description:** Button that uses redirect user to previous page.
     * **Defined in:** [File](./apps/web-staking/src/app/components/ui/buttons/ButtonBack.tsx)
-* **[Radio](./apps/web-staking/src/app/components/ui/checkboxes)**
+
+**[Radio](./apps/web-staking/src/app/components/ui/checkboxes)**
   * **Radio.tsx:**
     * **Description:** Radio group/button. Uses ReactContext for correct value handling.
     * **Defined in:** [File](./apps/web-staking/src/app/components/ui/checkboxes/Radio.tsx)
-* **[Inputs](./apps/web-staking/src/app/components/ui/inputs)**
+
+**[Inputs](./apps/web-staking/src/app/components/ui/inputs)**
   * **StakingInput.tsx:**
     * **Description:** Primary input for operations with user wallet's balance (stake/unstake/redeem).
     * **Defined in:** [File](./apps/web-staking/src/app/components/ui/inputs/StakingInput.tsx)
-* **[Modals](./apps/web-staking/src/app/components/ui/modals)**
+
+**[Modals](./apps/web-staking/src/app/components/ui/modals)**
   * **BaseModal.tsx:**
     * **Description:** Modal.
     * **Defined in:** [File](./apps/web-staking/src/app/components/ui/modals/BaseModal.tsx)
-* **[Notifications](./apps/web-staking/src/app/components/ui/notifications)**
+
+**[Notifications](./apps/web-staking/src/app/components/ui/notifications)**
   * **LoadingNotification.tsx:**
     * **Description:** Loading notification.
     * **UI Library:** [ReactToastify](https://www.npmjs.com/package/react-toastify). The best/most popular solution for such kind of components.
     * **Defined in:** [File](./apps/web-staking/src/app/components/ui/notifications/LoadingNotification.tsx)
   * **UpdateNotification.tsx:**
-* **Description:** Allows update state of notification.
-  * **UI Library:** [ReactToastify](https://www.npmjs.com/package/react-toastify). The best/most popular solution for such kind of components.
-  * **Defined in:** [File](./apps/web-staking/src/app/components/ui/notifications/UpdateNotification.tsx)
-* **[Pagination](./apps/web-staking/src/app/components/ui/pagination)**
+    * **Description:** Allows update state of notification.
+    * **UI Library:** [ReactToastify](https://www.npmjs.com/package/react-toastify). The best/most popular solution for such kind of components.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/ui/notifications/UpdateNotification.tsx)
+
+**[Pagination](./apps/web-staking/src/app/components/ui/pagination)**
   * **BasePagination.tsx:**
     * **Description:** Pagination.
     * **Defined in:** [File](./apps/web-staking/src/app/components/ui/pagination/BasePagination.tsx)
   * **BasePaginationItem.tsx:**
     * **Description:** Pagination page.
     * **Defined in:** [File](./apps/web-staking/src/app/components/ui/pagination/BasePaginationItem.tsx)
-* **[Spinners](./apps/web-staking/src/app/components/ui/spinners)**
+
+**[Spinners](./apps/web-staking/src/app/components/ui/spinners)**
   * **BaseSpinner.tsx:**
     * **Description:** Svg spinner.
     * **Defined in:** [File](./apps/web-staking/src/app/components/ui/spinners/BaseSpinner.tsx)
-* **[Toggles](./apps/web-staking/src/app/components/ui/toggles)**
+
+**[Toggles](./apps/web-staking/src/app/components/ui/toggles)**
   * **MainToggle.tsx:**
     * **Description:** Styled switcher between two states.
     * **Defined in:** [File](./apps/web-staking/src/app/components/ui/toggles/MainToggle.tsx)
-* **[React Cookie Consent](./apps/web-staking/src/app/components/ReactCookieConsent.tsx)**
+
+**[React Cookie Consent](./apps/web-staking/src/app/components/ReactCookieConsent.tsx)**
   * **ReactCookieConsent.tsx:**
     * **Description:** Cookies consent component.
     * **UI Library:** [ReactCookieConsent](https://www.npmjs.com/package/react-cookie-consent) The best/most popular solution for such kind of components.
