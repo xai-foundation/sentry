@@ -52,7 +52,7 @@ export function Checkout() {
     useEffect(() => {
         const newTab = (mintWithEth.isSuccess || mintWithXai.isSuccess) && window.open(`${redirects[pathName as keyof IRedirects]}/staking/?chainId=${chain?.id}&modal=true`, "_blank")
         newTab && newTab.focus();
-    }, [mintWithEth]);
+    }, [mintWithEth, mintWithXai]);
 
     return (
         <div>
