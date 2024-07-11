@@ -11,8 +11,11 @@ import TableTooltip from "../ui/tooltips/TableTooltip";
 
 import { useEffect, useState } from "react";
 import { SORT_FIELDS } from "@/app/components/staking/AvailablePoolsTableComponent";
-import SortArrowUp from "../../../../../../packages/ui/src/rebrand/icons/SortArrowUp";
-import SortArrowDown from "../../../../../../packages/ui/src/rebrand/icons/SortArrowDown";
+// import SortArrowUp from "../../../../../../packages/ui/src/rebrand/icons/SortArrowUp";
+// import SortArrowDown from "../../../../../../packages/ui/src/rebrand/icons/SortArrowDown";
+// This can only work once the docker build is building from the monorepo root
+import SortArrowDown from "@/app/components/icons/SortArrowDown";
+import SortArrowUp from "@/app/components/icons/SortArrowUp";
 
 function OnwerUnstakeInfo({ pool, showTooltipOnClick, tooltipDelay }: { pool: PoolInfo, showTooltipOnClick?: boolean, tooltipDelay?: number }) {
   let content: { title: string, body: string } = { title: "null", body: "no content." };
@@ -350,7 +353,8 @@ export function TableHead({
 
 
     if (!sortFilter) {
-      setCurrentSort(showTableKeys ? SORT_FIELDS.keyRewardRate : SORT_FIELDS.esXaiRewardRate);
+      setCurrentSort(SORT_FIELDS.tier);
+
     } else if (sortFilter === SORT_FIELDS.keyRewardRate && !showTableKeys) {
       setCurrentSort(SORT_FIELDS.esXaiRewardRate);
 
