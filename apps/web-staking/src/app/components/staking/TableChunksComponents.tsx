@@ -350,7 +350,8 @@ export function TableHead({
 
 
     if (!sortFilter) {
-      setCurrentSort(showTableKeys ? SORT_FIELDS.keyRewardRate : SORT_FIELDS.esXaiRewardRate);
+      setCurrentSort(SORT_FIELDS.tier);
+
     } else if (sortFilter === SORT_FIELDS.keyRewardRate && !showTableKeys) {
       setCurrentSort(SORT_FIELDS.esXaiRewardRate);
 

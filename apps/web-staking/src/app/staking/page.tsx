@@ -40,7 +40,7 @@ export default async function Staking({ searchParams }: {
   const pageFilter: any = {
     limit: 10,
     page: searchParams.page ? Number(searchParams.page) : 1,
-    sort: searchParams.sort ? [[searchParams.sort, isSortedByName()]] : [["esXaiRewardRate", -1]]
+    sort: searchParams.sort ? [[searchParams.sort, isSortedByName()]] : [["tierIndex", -1]]
   };
 
   const searchName = searchParams.search || "";
