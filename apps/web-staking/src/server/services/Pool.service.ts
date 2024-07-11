@@ -158,7 +158,7 @@ export function mapPool(pool: IPool): PoolInfo {
 	let keyBucketShare = pool.keyBucketShare || 0;
 	let stakedBucketShare = pool.stakedBucketShare || 0;
 
-	//Determine if there is a pending share update
+	// Determine if there is a pending share update
 	const nowInSeconds = Math.floor(Date.now() / 1000);
 	const updateSharesTimestamp = pool.updateSharesTimestamp || 0;
 
