@@ -83,7 +83,6 @@ type PoolSubmission @entity(immutable: false) {
   stakedKeyCount: BigInt!
   winningKeyCount: BigInt!
   claimedRewardsAmount: BigInt!
-  assertionsStateRootOrConfirmData: String!
   createdTimestamp: BigInt!
   createdTxHash: Bytes!
   claimTimestamp: BigInt!

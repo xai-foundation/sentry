@@ -54,6 +54,7 @@ type PoolInfo @entity(immutable: false) {
   ownerLatestUnstakeRequestCompletionTime: BigInt!
   createdTimestamp: BigInt!
   poolChallenges: [PoolChallenge!]! @derivedFrom(field: "pool")
+  submissions: [PoolSubmission!]! @derivedFrom(field: "poolInfo")
 }
 
 type UnstakeRequest @entity(immutable: false) {
@@ -179,7 +180,6 @@ type PoolSubmission @entity(immutable: false) {
   stakedKeyCount: BigInt!
   winningKeyCount: BigInt!
   claimedRewardsAmount: BigInt!
-  assertionsStateRootOrConfirmData: String!
   createdTimestamp: BigInt!
   createdTxHash: Bytes!
   claimTimestamp: BigInt!
