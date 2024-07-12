@@ -230,7 +230,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     event NewPoolSubmission(uint256 indexed challengeId, address indexed poolAddress, uint256 stakedKeys, uint256 winningKeys);
     event UpdatePoolSubmission(uint256 indexed challengeId, address indexed poolAddress, uint256 stakedKeys, uint256 winningKeys, uint256 increase, uint256 decrease);
 
-    event AssertionSubmittedV2(uint256 indexed challengeId, uint256 indexed nodeLicenseId, bytes assertionStateRootOrConfirmData);
+    event AssertionSubmittedV2(uint256 indexed challengeId, uint256 indexed nodeLicenseId, bytes assertionStateRootOrConfirmData, bool eligibleForPayout);
     event RewardsClaimedV2(uint256 indexed challengeId, uint256 indexed nodeLicenseId, uint256 amount);
     event AssertionCancelled(uint256 indexed challengeId, uint256 indexed nodeLicenseId);
 
@@ -611,7 +611,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
         // Emit the AssertionSubmitted event
         emit AssertionSubmitted(_challengeId, _nodeLicenseId);
-        emit AssertionSubmittedV2(_challengeId, _nodeLicenseId, _confirmData);
+        emit AssertionSubmittedV2(_challengeId, _nodeLicenseId, _confirmData, hashEligible);
     }
 
     function _validateChallengeIsClaimable(Challenge memory _challenge) internal pure{
