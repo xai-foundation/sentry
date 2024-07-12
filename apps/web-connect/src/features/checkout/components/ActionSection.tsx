@@ -35,7 +35,7 @@ export function ActionSection(): JSX.Element {
      */
     const getButtonText = useCallback(() => {
         if (mintWithEth.isLoading || mintWithXai.isLoading) return "WAITING FOR CONFIRMATION";
-        // if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
+        if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
         return "BUY NOW";
     }, [mintWithEth.isLoading, mintWithXai.isLoading, chain]);
 
@@ -46,7 +46,7 @@ export function ActionSection(): JSX.Element {
      */
     const getTokenButtonText = useCallback(() => {
         if (mintWithEth.isLoading || mintWithXai.isLoading || approve.isLoading) return "WAITING FOR CONFIRMATION..";
-        // if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
+        if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
         return getApproveButtonText();
     }, [mintWithEth.isLoading, mintWithXai.isLoading, approve.isLoading, chain, getApproveButtonText]);
 
