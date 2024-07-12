@@ -31,17 +31,17 @@ type Pagination = {
 export type PagedPools = { count: number, poolInfos: PoolInfo[], totalPoolsInDB: number }
 
 export const findPools = async ({
-	pagination = {
-		limit: 10,
-		page: 1,
-		sort: [['tierIndex', -1], ['name', 1]],
-	},
-	hideFullEsXai = false,
-	hideFullKeys = false,
-	searchName,
-	owner,
-	network
-}: {
+									pagination = {
+										limit: 10,
+										page: 1,
+										sort: [['tierIndex', -1], ['name', 1]],
+									},
+									hideFullEsXai = false,
+									hideFullKeys = false,
+									searchName,
+									owner,
+									network
+								}: {
 	pagination: Pagination;
 	searchName?: string;
 	owner?: string;
@@ -89,8 +89,8 @@ export const findPools = async ({
 		)) as number;
 
 		const totalPoolsInDB = (await executeQuery(
-            PoolModel.find().countDocuments()
-        )) as number;
+			PoolModel.find().countDocuments()
+		)) as number;
 
 		return {
 			count: poolCount,
@@ -103,18 +103,18 @@ export const findPools = async ({
 }
 
 export const getPoolRewardRatesByAddress = async (poolAddresses: string[]): Promise<PoolRewardRates[]> => {
-    try {
-        const pools = (await executeQuery(PoolModel.find({ poolAddress: { $in: poolAddresses } }).select('poolAddress keyRewardRate esXaiRewardRate').lean())) as IPool[];
-        return pools.map((p) => {
-            return {
-                poolAddress: p.poolAddress,
-                keyRewardRate: p.keyRewardRate,
-                esXaiRewardRate: p.esXaiRewardRate
-            }
-        });
-    } catch (error) {
-        throw new Error(`ERROR @getPoolRewardRatesByAddress: ${error}`);
-    }
+	try {
+		const pools = (await executeQuery(PoolModel.find({ poolAddress: { $in: poolAddresses } }).select('poolAddress keyRewardRate esXaiRewardRate').lean())) as IPool[];
+		return pools.map((p) => {
+			return {
+				poolAddress: p.poolAddress,
+				keyRewardRate: p.keyRewardRate,
+				esXaiRewardRate: p.esXaiRewardRate
+			}
+		});
+	} catch (error) {
+		throw new Error(`ERROR @getPoolRewardRatesByAddress: ${error}`);
+	}
 }
 
 
@@ -137,7 +137,7 @@ export async function getNetworkData(network: NetworkKey): Promise<INetworkData>
 				}
 			}
 		])) as INetworkData[];
-		
+
 		return aggregatedData[0];
 
 	} catch (error) {
@@ -200,7 +200,7 @@ export async function isPoolBanned(poolAddress: string): Promise<boolean> {
 			throw "Pool not found";
 		}
 		isBannedPool = pool.visibility == "banned";
-		
+
 	} catch (error) {
 		throw new Error(`ERROR @isPoolBanned: ${error}`);
 	}

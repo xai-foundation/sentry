@@ -31,7 +31,8 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   const [showTableKeys, setShowTableKeys] = useState(searchParams.get("showKeys") ? searchParams.get("showKeys") === "true" : false);
   const [hideFullKeys, setHideFullKeys] = useState(searchParams.get("hideFullKeys") ? searchParams.get("hideFullKeys") === "true" : false);
   const [hideFullEsXai, setHideFullEsXai] = useState(searchParams.get("hideFull") ? searchParams.get("hideFull") === "true" : true);
-  const [sort, setSort] = useState(searchParams.get("page") || "")
+  const [sort, setSort] = useState(searchParams.get("sort") || "");
+  const [sortOrder, setSortOrder] = useState(Number(searchParams.get("sortOrder")) || -1);
 
   const [currentTotalClaimableAmount, setCurrentTotalClaimableAmount] = useState<number>(totalClaimableAmount);
   const { address, chainId } = useAccount();
@@ -51,17 +52,17 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
 
   const updateOnSuccess = useCallback(() => {
     updateNotification(
-      "Successfully claimed",
-      toastId.current as Id,
-      false,
-      receipt,
-      chainId
+        "Successfully claimed",
+        toastId.current as Id,
+        false,
+        receipt,
+        chainId
     );
 
     getTotalClaimAmount(getNetwork(chainId), userPools.map(p => p.address), address!)
-      .then(totalClaim => {
-        setCurrentTotalClaimableAmount(totalClaim);
-      });
+        .then(totalClaim => {
+          setCurrentTotalClaimableAmount(totalClaim);
+        });
   }, [receipt, chainId, userPools, address])
 
   const updateOnError = useCallback(() => {
@@ -89,11 +90,11 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
     try {
 
       setReceipt(await executeContractWrite(
-        WriteFunctions.claimFromPools,
-        [poolsToClaim.slice(0, 10)], //TODO test if this works for more than 10 pools in 1 transaction
-        chainId,
-        writeContractAsync,
-        switchChain
+          WriteFunctions.claimFromPools,
+          [poolsToClaim.slice(0, 10)], //TODO test if this works for more than 10 pools in 1 transaction
+          chainId,
+          writeContractAsync,
+          switchChain
       ) as `0x${string}`);
 
     } catch (ex: unknown) {
@@ -102,57 +103,64 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
     }
   };
 
-  const buildURI = (search: string, page: number, showTable: boolean, hideKeys: boolean, hideEsXai: boolean, sort: string) => {
-    return `/staking?chainId=${chainId}&search=${search}&page=${page}&showKeys=${showTable}&hideFull=${hideEsXai}&hideFullKeys=${hideKeys}&sort=${sort}`
+  const buildURI = (search: string, page: number, showTable: boolean, hideKeys: boolean, hideEsXai: boolean, sort: string, order: number) => {
+    return `/staking?chainId=${chainId}&search=${search}&page=${page}&showKeys=${showTable}&hideFull=${hideEsXai}&hideFullKeys=${hideKeys}&sort=${sort}&sortOrder=${order}`;
   }
 
   const submitSearch = () => {
     setCurrentPage(1);
-    router.push(buildURI(searchValue, 1, showTableKeys, hideFullKeys, hideFullEsXai, sort),
-      { scroll: false }
+    router.push(buildURI(searchValue, 1, showTableKeys, hideFullKeys, hideFullEsXai, sort, sortOrder),
+        { scroll: false }
     );
   };
 
   const setPage = (page: number) => {
     setCurrentPage(page);
-    router.push(buildURI(searchValue, page, showTableKeys, hideFullKeys, hideFullEsXai, sort),
-      { scroll: false }
+    router.push(buildURI(searchValue, page, showTableKeys, hideFullKeys, hideFullEsXai, sort, sortOrder),
+        { scroll: false }
     );
   };
 
   const onToggleShowKeys = (showKeys: boolean) => {
     setShowTableKeys(showKeys);
-    router.push(buildURI(searchValue, currentPage, showKeys, hideFullKeys, hideFullEsXai, sort),
-      { scroll: false }
+    router.push(buildURI(searchValue, currentPage, showKeys, hideFullKeys, hideFullEsXai, sort, sortOrder),
+        { scroll: false }
     );
   };
 
   const onClickFilterCB = (checked: boolean) => {
     if (showTableKeys) {
       setHideFullKeys(checked);
-      router.push(buildURI(searchValue, currentPage, showTableKeys, checked, hideFullEsXai, sort),
-        { scroll: false }
+      router.push(buildURI(searchValue, currentPage, showTableKeys, checked, hideFullEsXai, sort, sortOrder),
+          { scroll: false }
       );
     } else {
       setHideFullEsXai(checked);
-      router.push(buildURI(searchValue, currentPage, showTableKeys, hideFullKeys, checked, sort),
-        { scroll: false }
+      router.push(buildURI(searchValue, currentPage, showTableKeys, hideFullKeys, checked, sort, sortOrder),
+          { scroll: false }
       );
     }
   }
 
   const setCurrentSort = (field: string) => {
     setSort(field);
-    router.push(buildURI(searchValue, currentPage, showTableKeys, hideFullKeys, hideFullEsXai, field),
+    router.push(buildURI(searchValue, currentPage, showTableKeys, hideFullKeys, hideFullEsXai, field, sortOrder),
+        { scroll: false }
+    );
+  };
+
+  const setCurrentSortOrder = (order: number) => {
+    setSortOrder(order);
+    router.push(buildURI(searchValue, currentPage, showTableKeys, hideFullKeys, hideFullEsXai, sort, order),
         { scroll: false }
     );
   };
 
   return (
       <div className="relative flex sm:flex-col items-start lg:px-6 sm:px-0 sm:w-full">
-        <AgreeModalComponent address={address}/>
+        <AgreeModalComponent address={address} />
         <div className="flex justify-between w-full flex-col xl:flex-row sm:mb-[70px] lg:mb-6 xl:mb-3">
-          <MainTitle title={"Staking"} classNames="sm:indent-4 lg:indent-0"/>
+          <MainTitle title={"Staking"} classNames="sm:indent-4 lg:indent-0" />
 
 
           {address && <div
@@ -167,7 +175,7 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
 
         {(address && (userPools.length > 0 || totalStaked > 0)) &&
             <StakedPoolsTable v1Stake={totalStaked} v1MaxStake={maxStakedCapacity} userPools={userPools} tiers={tiers}
-                              showTableKeys={showTableKeys} maxKeyPerPool={maxKeyPerPool}/>}
+                              showTableKeys={showTableKeys} maxKeyPerPool={maxKeyPerPool} />}
 
         <SearchBarComponent
             searchValue={searchValue}
@@ -193,6 +201,8 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
             tiers={tiers}
             maxKeyPerPool={maxKeyPerPool}
             setCurrentSort={setCurrentSort}
+            setCurrentSortOrder={setCurrentSortOrder}
+            currentSortOrder={sortOrder}
         />
       </div>
   );
