@@ -25,7 +25,7 @@ All components in [web-staking](./apps/web-staking) which are also in [shared ui
 Therefore, for further updates, you need to update both versions of the components to avoid merge conflicts or integrate **web-staking** into the monorepo.
 
 ### Deprecated Components
-Most of the components in [web-staking](./apps/web-staking) which are not in the [ui folder](./apps/web-staking/src/app/components/ui) are deprecated and not used, either in whole or in part.. 
+Most of the components in [web-staking](./apps/web-staking) which are not in the [ui folder](./apps/web-staking/src/app/components/ui) are deprecated and not used, either in whole or in part. 
 
 ### Shared components 
 Next there will be a list of components, in which we will add a comment about whether it is used any ui library/framework or not.
