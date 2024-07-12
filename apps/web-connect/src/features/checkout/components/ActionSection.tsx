@@ -66,14 +66,14 @@ export function ActionSection(): JSX.Element {
                     <PrimaryButton
                         onClick={() => mintWithEth.write?.()}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready}
+                        isDisabled={!ready && chain?.id === 42161}
                         btnText={getButtonText()}
                     />
                 ) : (
                     <PrimaryButton
                         onClick={handleBuyWithXaiClicked}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || !userHasTokenBalance}
+                        isDisabled={!ready || chain?.id !== 42161 || !userHasTokenBalance}
                         btnText={getTokenButtonText()}
                     />
                 )}
