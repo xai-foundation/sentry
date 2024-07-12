@@ -25,11 +25,118 @@ All components in [web-staking](./apps/web-staking) which are also in [shared ui
 Therefore, for further updates, you need to update both versions of the components to avoid merge conflicts or integrate **web-staking** into the monorepo.
 
 ### Deprecated Components
-Most of the components in [web-staking](./apps/web-staking) which are not in the [ui folder](./apps/web-staking/src/app/components/ui) are deprecated and not used, either in whole or in part. 
+Most of the components in [web-staking](./apps/web-staking) which are not in the [ui folder](./apps/web-staking/src/app/components/ui) are deprecated and not used, either in whole or in part. They should be deleted.
+
+**[Buttons](./apps/web-staking/src/app/components/buttons/ButtonsComponent.tsx)**:
+ * **PrimaryButton:**
+   * **Description:** Primary button.
+   * **UI Library:** [NextUI](https://nextui.org/). Library that has good support from NextJS.
+   * **Defined in:** [File](./apps/web-staking/src/app/components/buttons/ButtonsComponent.tsx)
+* **SecondaryButton:**
+    * **Description:** Secondary button.
+    * **UI Library:** [NextUI](https://nextui.org/). Library that has good support from NextJS.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/buttons/ButtonsComponent.tsx)
+* **ConnectButton:**
+    * **Description:** Button that allows users connect his wallet.
+    * **UI Library:** [NextUI](https://nextui.org/). Library that has good support from NextJS.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/buttons/ButtonsComponent.tsx)
+* **ButtonBack:**
+    * **Description:** Button that redirects the user to the previous page.
+    * **UI Library:** [NextUI](https://nextui.org/). Library that has good support from NextJS.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/buttons/ButtonsComponent.tsx)
+
+**[Wrappers](./apps/web-staking/src/app/components/borderWrapper/BorderWrapperComponent.tsx):**
+* **BorderWrapperComponent.tsx:**
+    * **Description:** Wrapper that added border and border radius.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/borderWrapper/BorderWrapperComponent.tsx)
+
+**[Inputs](./apps/web-staking/src/app/components/input/InputComponent.tsx):**
+* **CustomInput:**
+    * **Description:** Primary input for user information.
+    * **UI Library:** [NextUI](https://nextui.org/). Library that has good support from NextJS.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/input/InputComponent.tsx)
+* **StakingInput:**
+    * **Description:** Primary input for operations with user wallet's balance (stake/unstake/redeem).
+    * **UI Library:** [NextUI](https://nextui.org/). Library that has good support from NextJS.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/input/InputComponent.tsx)
+* **PoolInput:**
+    * **Description:** Special input for pool pages.
+    * **UI Library:** [NextUI](https://nextui.org/). Library that has good support from NextJS.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/input/InputComponent.tsx)
+
+**[Links](./apps/web-staking/src/app/components/links/LinkComponent.tsx):**
+* **LinkComponent:**
+    * **Description:** Primary link.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/links/LinkComponent.tsx)
+* **LinkLogoComponent:**
+    * **Description:** Link with logo.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/links/LinkComponent.tsx)
+* **ExternalLinkComponent:**
+    * **Description:** Secondary link.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/links/LinkComponent.tsx)
+* **LegalLink:**
+    * **Description:** Tertiary link.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/links/LinkComponent.tsx)
+      
+**[Modals](./apps/web-staking/src/app/components/modal):**
+* **ModalComponent:**
+    * **Description:** Primary modal.
+    * **UI Library:** [NextUI](https://nextui.org/). Library that has good support from NextJS.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/modal/ModalComponent.tsx)
+* **ModalTermsAndConditions:**
+    * **Description:** Special component with additional styles for terms/conditions.
+    * **UI Library:** [NextUI](https://nextui.org/). Library that has good support from NextJS.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/modal/ModalComponent.tsx)
+
+**[Notifications](./apps/web-staking/src/app/components/notifications/NotificationsComponent.tsx):**
+* **toastMarkUp:**
+    * **Description:** Mark up for notification.
+    * **UI Library:** [ReactToastify](https://www.npmjs.com/package/react-toastify). The best/most popular solution for such kind of components.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/notifications/NotificationsComponent.tsx)
+* **successNotification:**
+    * **Description:** Success Notification.
+    * **UI Library:** [ReactToastify](https://www.npmjs.com/package/react-toastify). The best/most popular solution for such kind of components.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/notifications/NotificationsComponent.tsx)
+* **errorNotification:**
+    * **Description:** Error Notification.
+    * **UI Library:** [ReactToastify](https://www.npmjs.com/package/react-toastify). The best/most popular solution for such kind of components.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/notifications/NotificationsComponent.tsx)
+* **loadingNotification:**
+    * **Description:** Loading Notification.
+    * **UI Library:** [ReactToastify](https://www.npmjs.com/package/react-toastify). The best/most popular solution for such kind of components.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/notifications/NotificationsComponent.tsx)
+* **updateNotification:**
+    * **Description:** Function for updating notifications.
+    * **UI Library:** [ReactToastify](https://www.npmjs.com/package/react-toastify). The best/most popular solution for such kind of components.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/notifications/NotificationsComponent.tsx)
+
+**[Pagination](./apps/web-staking/src/app/components/pagination/PaginationComponent.tsx):**
+* **PaginationComponent:**
+    * **Description:** Pagination.
+    * **UI Library:** [NextUI](https://nextui.org/). Library that has good support from NextJS.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/pagination/PaginationComponent.tsx)
+
+**[Popovers](./apps/web-staking/src/app/components/popovers/PopoversComponents.tsx):**
+* **CustomPopover:**
+    * **Description:** Popover.
+    * **UI Library:** [NextUI](https://nextui.org/). Library that has good support from NextJS.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/popovers/PopoversComponents.tsx)
+
+**[Radios](./apps/web-staking/src/app/components/radio/Radio.tsx):**
+* **RadioCard:**
+    * **Description:** Radio button.
+    * **UI Library:** [NextUI](https://nextui.org/). Library that has good support from NextJS.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/radio/Radio.tsx)
+* **RadioGroupWrapper:**
+    * **Description:** Radio group for correct value handling.
+    * **UI Library:** [NextUI](https://nextui.org/). Library that has good support from NextJS.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/radio/Radio.tsx)
+
+
 
 ### Shared components 
-Next there will be a list of components, in which we will add a comment about whether it is used any ui library/framework or not.
-There is a list of shared components:
+Next there will be a list of components, in which we will add a comment about whether it is using any ui library/framework or not.
+Here is a list of the shared components:
 
 **[Buttons](./packages/ui/src/rebrand/buttons)**
   * **ConnectButton.tsx:**
@@ -97,7 +204,7 @@ Non-shared components are those utilized on the [Staking Website](https://app.xa
     * **Description:** Button that has only icon as child element.
     * **Defined in:** [File](./apps/web-staking/src/app/components/ui/buttons/IconButton.tsx)
   * **ButtonBack.tsx:**
-    * **Description:** Button that uses redirect user to previous page.
+    * **Description:** Button that redirects the user to the previous page.
     * **Defined in:** [File](./apps/web-staking/src/app/components/ui/buttons/ButtonBack.tsx)
 
 **[Radio](./apps/web-staking/src/app/components/ui/checkboxes)**
@@ -142,6 +249,24 @@ Non-shared components are those utilized on the [Staking Website](https://app.xa
   * **MainToggle.tsx:**
     * **Description:** Styled switcher between two states.
     * **Defined in:** [File](./apps/web-staking/src/app/components/ui/toggles/MainToggle.tsx)
+
+**[Progress bars](./apps/web-staking/src/app/components/progress/Progress.tsx)**
+* **Progress.tsx:**
+    * **Description:** Styled switcher between two states.
+    * **UI Library:** [NextUI](https://nextui.org/). Library that has good support from NextJS. Non-shared because it uses NextUI lib.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/progress/Progress.tsx)
+
+**[Textareas](./apps/web-staking/src/app/components/progress/Progress.tsx)**
+* **Textarea.tsx:**
+    * **Description:** Styled switcher between two states.
+    * **UI Library:** [NextUI](https://nextui.org/). Library that has good support from NextJS. Non-shared because it uses NextUI lib.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/textareas/TextareasComponent.tsx)
+
+**[Titles](./apps/web-staking/src/app/components/progress/Progress.tsx)**
+* **MainTitle.tsx:**
+    * **Description:** Styled title.
+    * **Defined in:** [File](./apps/web-staking/src/app/components/titles/MainTitle.tsx)
+
 
 **[React Cookie Consent](./apps/web-staking/src/app/components/ReactCookieConsent.tsx)**
   * **ReactCookieConsent.tsx:**
