@@ -37,7 +37,7 @@ Most of the components in [web-staking](./apps/web-staking) which are not in the
     * **UI Library:** [NextUI](https://nextui.org/). Library that has good support from NextJS.
     * **Defined in:** [File](./apps/web-staking/src/app/components/buttons/ButtonsComponent.tsx)
 * **ConnectButton:**
-    * **Description:** Button that allows users connect his wallet.
+    * **Description:** Button that allows users connect their wallet.
     * **UI Library:** [NextUI](https://nextui.org/). Library that has good support from NextJS.
     * **Defined in:** [File](./apps/web-staking/src/app/components/buttons/ButtonsComponent.tsx)
 * **ButtonBack:**
@@ -140,7 +140,7 @@ Here is a list of the shared components:
 
 **[Buttons](./packages/ui/src/rebrand/buttons)**
   * **ConnectButton.tsx:**
-    * **Description:** Button that allows users connect his wallet.
+    * **Description:** Button that allows users connect their wallet.
     * **Defined in:** [File](./packages/ui/src/rebrand/buttons/ConnectButton.tsx)
   * **PrimaryButton.tsx:**
     * **Description:** Primary button.
