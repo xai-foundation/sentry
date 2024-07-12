@@ -9,7 +9,7 @@ const { ethers } = hardhat;
  * and writes the data to a CSV file with headers "Qty" and "Price".
  *
  * @async
- * @function getMockDataAndWriteCSV
+ * @function getPricingTierDataAndWriteCSV
  * @returns {Promise<void>} - A promise that resolves when the CSV file has been written.
  */
 async function getPricingTierDataAndWriteCSV() {
