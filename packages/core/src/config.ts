@@ -1,8 +1,8 @@
 export let config = {
   "arbitrumBlockExplorer": "https://arbiscan.io",
   "arbitrumGoerliBlockExplorer": "https://goerli.arbiscan.io",
-  "arbitrumOneJsonRpcUrl": "https://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
-  "arbitrumOneWebSocketUrl": "wss://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
+  "arbitrumOneJsonRpcUrl": process.env.ARB_ONE_RPC || "https://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
+  "arbitrumOneWebSocketUrl": process.env.ARB_ONE_WEBSOCKET ||"wss://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
   "defaultRpcUrl": "https://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
   "esXaiAddress": "0x4C749d097832DE2FEcc989ce18fDc5f1BD76700c",
   "esXaiDeployedBlockNumber": 157193630,
@@ -26,7 +26,7 @@ export let config = {
   "poolFactoryAddress": "0xF9E08660223E2dbb1c0b28c82942aB6B5E38b8E5",
   "poolFactoryAddressImplementationAddress": "0x21EEC6626f15d02A8896ebB7EDD68ff3CB61e89E",
   "defaultNetworkName": "arbitrum",
-  "subgraphEndpoint": "https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry/api"
+  "subgraphEndpoint": "https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry/api",
 };
 
 export function setConfig(_config: any) { config = _config; }
