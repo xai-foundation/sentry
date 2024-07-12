@@ -55,6 +55,7 @@ export const Dropdown = ({setIsOpen, isOpen, isInvalid, dropdownOptionsCount, se
             <div
                 onClick={() => setIsOpen(!isOpen)}
                 className={`relative h-[48px] px-[15px] group z-[20] text-lg font-medium text-americanSilver transition-bg duration-300 ease-in-out ${isOpen ? "bg-velvetBlack" : "bg-nulnOil"} flex items-center justify-between w-[538px] dropdown-clip-path dropdown ${extraClasses?.dropdown}`}
+                style={{clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px)"}}
             >
                 <div className="flex items-center gap-[10px]">
                     {isInvalid && <WarningIcon width={18} height={16} fill={"#F76808"}/>}
@@ -66,7 +67,9 @@ export const Dropdown = ({setIsOpen, isOpen, isInvalid, dropdownOptionsCount, se
 
             </div>
             <span
-                className={`bg-foggyLondon transition-bg ease-in-out duration-300 absolute left-[-2px] top-[-2px] z-10 w-[calc(100%+4px)] h-[calc(100%+4px)] ${isInvalid && "!bg-blazeOrange hover:!bg-blazeOrange"} dropdown-clip-path dropdown-border`}></span>
+                className={`bg-foggyLondon transition-bg ease-in-out duration-300 absolute left-[-2px] top-[-2px] z-10 w-[calc(100%+4px)] h-[calc(100%+4px)] ${isInvalid && "!bg-blazeOrange hover:!bg-blazeOrange"} dropdown-clip-path dropdown-border`}
+                style={{clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px)"}}
+            ></span>
 
             {isOpen && (
                 <>
