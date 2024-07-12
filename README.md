@@ -256,13 +256,13 @@ Non-shared components are those utilized on the [Staking Website](https://app.xa
     * **UI Library:** [NextUI](https://nextui.org/). Library that has good support from NextJS. Non-shared because it uses NextUI lib.
     * **Defined in:** [File](./apps/web-staking/src/app/components/progress/Progress.tsx)
 
-**[Textareas](./apps/web-staking/src/app/components/progress/Progress.tsx)**
+**[Textareas](./apps/web-staking/src/app/components/textareas/TextareasComponent.tsx)**
 * **Textareas.tsx:**
     * **Description:** Styled switcher between two states.
     * **UI Library:** [NextUI](https://nextui.org/). Library that has good support from NextJS. Non-shared because it uses NextUI lib.
     * **Defined in:** [File](./apps/web-staking/src/app/components/textareas/TextareasComponent.tsx)
 
-**[Titles](./apps/web-staking/src/app/components/progress/Progress.tsx)**
+**[Titles](./apps/web-staking/src/app/components/titles/MainTitle.tsx)**
 * **MainTitle.tsx:**
     * **Description:** Styled title.
     * **Defined in:** [File](./apps/web-staking/src/app/components/titles/MainTitle.tsx)
