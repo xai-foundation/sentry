@@ -163,7 +163,7 @@ export function mapPool(pool: IPool): PoolInfo {
 	const updateSharesTimestamp = pool.updateSharesTimestamp || 0;
 
 	// If there is a pending share update, use the pending share values
-	if(updateSharesTimestamp > 0 && updateSharesTimestamp > nowInSeconds) {
+	if(updateSharesTimestamp > nowInSeconds) {
 		ownerShare = pool.pendingShares ? pool.pendingShares[0] : 0;
 		keyBucketShare = pool.pendingShares ? pool.pendingShares[1] : 0;
 		stakedBucketShare = pool.pendingShares ? pool.pendingShares[2] : 0;
