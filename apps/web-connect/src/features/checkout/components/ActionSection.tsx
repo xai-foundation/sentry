@@ -23,6 +23,7 @@ export function ActionSection(): JSX.Element {
         userHasTokenBalance,
         mintWithEth,
         mintWithXai,
+        mintWithEthError,
         approve,
         getApproveButtonText
     } = useWebBuyKeysContext();
@@ -44,12 +45,12 @@ export function ActionSection(): JSX.Element {
      * @returns {string} The button text
      */
     const getTokenButtonText = useCallback(() => {
-        if (mintWithEth.isLoading || mintWithXai.isLoading || approve.isLoading) return "WAITING FOR CONFIRMATION";
+        if (mintWithEth.isLoading || mintWithXai.isLoading || approve.isLoading) return "WAITING FOR CONFIRMATION..";
         // if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
         return getApproveButtonText();
     }, [mintWithEth.isLoading, mintWithXai.isLoading, approve.isLoading, chain, getApproveButtonText]);
 
-    const handleBuyWithXaiClicked = () => { 
+    const handleBuyWithXaiClicked = async () => { 
         if (getTokenButtonText().startsWith("Approve")) {
             approve.write?.();
         } else {
@@ -80,7 +81,7 @@ export function ActionSection(): JSX.Element {
                 {/* Error section for ETH transactions */}
                 {mintWithEth.error && (
                     <div>
-                        {mapWeb3Error(mintWithEth.error) === "Insufficient funds" && (
+                        {mintWithEthError && mapWeb3Error(mintWithEthError) === "Insufficient funds" && (
                             <BaseCallout extraClasses={{ calloutWrapper: "md:h-[100px] h-[159px] mt-[12px]", calloutFront: "!justify-start" }} isWarning>
                                 <div className="flex md:gap-[21px] gap-[10px]">
                                     <span className="block mt-2"><WarningIcon /></span>
