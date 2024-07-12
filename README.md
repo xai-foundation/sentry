@@ -86,7 +86,7 @@ There is a list of shared components:
     * **UI Library:** [RadixUI](https://www.radix-ui.com/themes/docs/components/tooltip). We encountered a problem with display and positioning when opening/closing sidebars, so we decided to use the library in some places. 
     * **Defined in:** [File](./packages/ui/src/rebrand/tooltip/SideBarTooltip.tsx)
 
-### Not shared components. 
+### Non-shared Components:
 Non-shared components are those utilized on the [Staking Website](https://app.xai.games/) but have not yet been migrated from the [web-staking](./apps/web-staking) repository to the monorepo UI folder:
 
 **[Buttons](./apps/web-staking/src/app/components/ui/buttons)**
