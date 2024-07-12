@@ -18,14 +18,14 @@
 - **[Operator Desktop](./apps/sentry-client-desktop)**
 
 ### UI Libraries/Frameworks
-We minimized the usage of UI libraries/framewroks, so most of the shared/not shared components are written without any UI libraries/frameworks.
+We minimized the usage of UI libraries/frameworks, so most of the shared/non-shared components are written without any UI libraries/frameworks.
 
 ### Duplicated Components
-All components in [web-staking](./apps/web-staking) which are also in [shared ui folder](./packages/ui/src/rebrand) are duplicated because **web-staking** is not integrated to monorepo.
-So for further updates you need updated both variants of components to avoid merge-conflics or integrate **web-staking** to monorepo.
+All components in [web-staking](./apps/web-staking) which are also in [shared ui folder](./packages/ui/src/rebrand) are duplicated because **web-staking** is not integrated into the monorepo.
+Therefore, for further updates, you need to update both versions of the components to avoid merge conflicts or integrate **web-staking** into the monorepo.
 
 ### Deprecated Components
-Most of the components in [web-staking](./apps/web-staking) which are not in [ui folder](./apps/web-staking/src/app/components/ui) are deprecated and not used in whole or in part. 
+Most of the components in [web-staking](./apps/web-staking) which are not in the [ui folder](./apps/web-staking/src/app/components/ui) are deprecated and not used, either in whole or in part.. 
 
 ### Shared components 
 Next there will be a list of components, in which we will add a comment about whether it is used any ui library/framework or not.
@@ -33,7 +33,7 @@ There is a list of shared components:
 
 **[Buttons](./packages/ui/src/rebrand/buttons)**
   * **ConnectButton.tsx:**
-    * **Description:** Button that allows user connect his wallet.
+    * **Description:** Button that allows users connect his wallet.
     * **Defined in:** [File](./packages/ui/src/rebrand/buttons/ConnectButton.tsx)
   * **PrimaryButton.tsx:**
     * **Description:** Primary button.
@@ -87,7 +87,7 @@ There is a list of shared components:
     * **Defined in:** [File](./packages/ui/src/rebrand/tooltip/SideBarTooltip.tsx)
 
 ### Not shared components. 
-Not shared components are components that used on [Staking Website](https://app.xai.games/) but have not yet been transferred to monorepo ui folder from [web-staking](./apps/web-staking):
+Non-shared components are those utilized on the [Staking Website](https://app.xai.games/) but have not yet been migrated from the [web-staking](./apps/web-staking) repository to the monorepo UI folder:
 
 **[Buttons](./apps/web-staking/src/app/components/ui/buttons)**
   * **CTAButton.tsx:**
