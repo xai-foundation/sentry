@@ -14,7 +14,14 @@ import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
  */
 export function ChooseQuantityRow(): JSX.Element {
     // Destructure necessary values from the WebBuyKeysContext
-    const { quantity, setQuantity } = useWebBuyKeysContext();
+    const { quantity, setQuantity, maxSupply } = useWebBuyKeysContext();
+
+    const calculateMaxPurchase = (): number => {
+        if (quantity > maxSupply) {
+            return maxSupply;
+        }
+        return quantity
+    }
 
     return (
         <div>
@@ -50,7 +57,7 @@ export function ChooseQuantityRow(): JSX.Element {
                     <XaiNumberInput
                         quantity={quantity}
                         setQuantity={setQuantity}
-                        maxSupply={100}
+                        maxSupply={calculateMaxPurchase()}
                     />
                 </div>
             </div>
@@ -59,8 +66,8 @@ export function ChooseQuantityRow(): JSX.Element {
                     <div className="flex md:gap-[21px] gap-[10px]">
                         <span className="block mt-2"><WarningIcon /></span>
                         <div>
-                            <span className="block font-bold text-lg">100 Maximum Per Transaction</span>
-                            <span className="block font-medium text-lg">A maximum of 100 NodeLicenses can be purchased in a single transaction.</span>
+                            <span className="block font-bold text-lg">175 Maximum Per Transaction</span>
+                            <span className="block font-medium text-lg">A maximum of 175 NodeLicenses can be purchased in a single transaction.</span>
                         </div>
                     </div>
                 </BaseCallout>}
