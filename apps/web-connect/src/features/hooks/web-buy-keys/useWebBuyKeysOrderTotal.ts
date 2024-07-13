@@ -104,7 +104,6 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const calculateTotalPrice = useMemo(() => {
         return () => {
             const price = getPriceData?.price ?? 0n;
-            console.log('price', price);
             const discountedPrice = discount.applied ? price * BigInt(95) / BigInt(100) : price;
             if (currency === CURRENCIES.AETH) {
                 return discountedPrice;
@@ -141,8 +140,6 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         clearErrors();
         resetTransactions();
     }, [currency]);
-
-    console.log('mintWithEthError', mintWithEthError);
 
     /**
      * Determines the text to display on the approve button based on the current state.

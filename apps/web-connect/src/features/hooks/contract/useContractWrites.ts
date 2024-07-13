@@ -71,7 +71,6 @@ export function useContractWrites({
     args: [quantity, promoCode],
     value: priceWithGasForEth(),
     onSuccess: (data) => {
-      console.log('Mint with ETH success:', data);
       setMintWithEthHash(data.hash as `0x${string}`);
       setMintWithEthError(null);
       window.location = `xai-sentry://assigned-wallet?txHash=${data.hash}` as unknown as Location;
