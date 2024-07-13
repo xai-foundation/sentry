@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useAccount, useNetwork, Chain, useWaitForTransaction } from 'wagmi';
 import { CheckoutTierSummary, formatWeiToEther } from '@sentry/core';
 import { CURRENCIES, Currency, useContractWrites, UseContractWritesReturn, useCurrencyHandler, useGetExchangeRate, useGetPriceForQuantity, useGetTotalSupplyAndCap, usePromoCodeHandler, useUserBalances } from '..';
+import {useProvider} from "../provider/useProvider";
 
 export interface PriceDataInterface {
     price: bigint;
@@ -57,6 +58,7 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
     approveTx: ReturnType<typeof useWaitForTransaction>;
     ethMintTx: ReturnType<typeof useWaitForTransaction>;
     xaiMintTx: ReturnType<typeof useWaitForTransaction>;
+    blockExplorer: string;
 
 }
 
@@ -70,6 +72,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const { data: exchangeRateData, isLoading: isExchangeRateLoading } = useGetExchangeRate();
     const { chain } = useNetwork();
     const { address } = useAccount();
+    const { data: providerData } = useProvider();
 
     const maxSupply = getTotalData?.cap && getTotalData?.totalSupply
         ? Number(getTotalData.cap) - Number(getTotalData.totalSupply)
@@ -101,6 +104,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const calculateTotalPrice = useMemo(() => {
         return () => {
             const price = getPriceData?.price ?? 0n;
+            console.log('price', price);
             const discountedPrice = discount.applied ? price * BigInt(95) / BigInt(100) : price;
             if (currency === CURRENCIES.AETH) {
                 return discountedPrice;
@@ -118,6 +122,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         xaiMintTx,
         approveTx,
         clearErrors,
+        resetTransactions,
         mintWithEthError,
     } = useContractWrites({
         quantity,
@@ -134,7 +139,10 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
 
     useEffect(() => {
         clearErrors();
+        resetTransactions();
     }, [currency]);
+
+    console.log('mintWithEthError', mintWithEthError);
 
     /**
      * Determines the text to display on the approve button based on the current state.
@@ -214,6 +222,8 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         xaiMintTx,
         approveTx,
         clearErrors,
-        mintWithEthError        
+        resetTransactions,
+        mintWithEthError,
+        blockExplorer: providerData?.blockExplorer ?? '',        
     };
 }

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { TransactionInProgress } from "./components/TransactionInProgress";
 import { ChooseQuantityRow } from "./components/ChooseQuantityRow";
 import { LogoColumn } from "./components/LogoColumn";
@@ -20,6 +20,7 @@ const LoadingState = () => (
 );
 
 export function Checkout() {
+    const [stakingTabOpened, setStakingTabOpened] = useState(false);
     const queryString = window.location.search;
     const queryParams = new URLSearchParams(queryString);
     const prefilledPromoCode = queryParams.get("promoCode");
@@ -31,6 +32,7 @@ export function Checkout() {
         mintWithEth,
         mintWithXai,
         approve,
+        resetTransactions,
     } = useWebBuyKeysContext();
 
     useEffect(() => {
@@ -40,9 +42,15 @@ export function Checkout() {
     }, [prefilledPromoCode, setPromoCode]);
 
     function returnToClient() {
-        const hash = mintWithEth.data?.hash ?? mintWithXai.data?.hash;
-        window.location = `xai-sentry://purchase-successful?txHash=${hash}` as unknown as Location;
+        resetTransactions();
     }
+
+	useEffect(() => {
+		if (!stakingTabOpened && mintWithEth.isSuccess || mintWithXai.isSuccess) {	
+            setStakingTabOpened(true);
+			window.open("https://app.xai.games/staking?mint=true", '_blank');
+		}
+	}, [mintWithEth.isSuccess, mintWithXai.isSuccess]);
 
     return (
         <div>
