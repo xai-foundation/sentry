@@ -46,30 +46,12 @@ export function useContractWrites({
   const [approveHash, setApproveHash] = useState<`0x${string}` | undefined>(undefined);
   const [mintWithXaiHash, setMintWithXaiHash] = useState<`0x${string}` | undefined>(undefined);
   const [mintWithEthError, setMintWithEthError] = useState<Error | null>(null);
-
-  const defaultGasPrice = ethers.parseUnits('20', 'gwei'); // Default gas price, can be adjusted
-  const gasBufferPercentage = 1n; // 1% buffer
-  
-  const calculateGasCost = (estimatedGasLimit: bigint) => {
-    const gasBuffer = estimatedGasLimit + (estimatedGasLimit * gasBufferPercentage / 100n); // Adding a 1% buffer
-    return gasBuffer * defaultGasPrice;
-  };
-
-  const priceWithGasForEth = () => {
-    const initialPrice = discount.applied ? calculateTotalPrice() * BigInt(95) / BigInt(100) : calculateTotalPrice();
-    const estimatedGasLimit = BigInt(200000); // Estimated gas limit
-    const gasCost = calculateGasCost(estimatedGasLimit);
-    return initialPrice + gasCost;
-  };
-
-
-
   const mintWithEthConfig: ExtendedUseContractWriteConfig = {
     address: config.nodeLicenseAddress as `0x${string}`,
     abi: NodeLicenseAbi as Abi,
     functionName: "mint",
     args: [quantity, promoCode],
-    value: priceWithGasForEth(),
+    value: discount.applied ? calculateTotalPrice() * BigInt(95) / BigInt(100) : calculateTotalPrice(),
     onSuccess: (data) => {
       setMintWithEthHash(data.hash as `0x${string}`);
       setMintWithEthError(null);
