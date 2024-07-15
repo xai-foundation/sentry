@@ -404,9 +404,43 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             // Confirm max supply after air drop
             const maxSupplyAfter = await nodeLicense.maxSupply();
             expect(maxSupplyAfter).to.equal(maxSupplyBefore * airdropMultiplier);
-            
-        
-        
+        });
+
+        it("Check the maximum number of keys that can be minted in a single transaction using Eth", async function() {            
+            const BATCH_SIZE = 184;
+            const {nodeLicense, addr1} = await loadFixture(deployInfrastructure);
+            const price = await nodeLicense.price(BATCH_SIZE, "");
+
+            // Mint the remaining licenses
+           const tx = await nodeLicense.connect(addr1).mint(BATCH_SIZE, "", { value: price });
+           console.log("Gas limit: ", tx.gasLimit.toString());
+            const txWait = await tx.wait(1);
+            console.log("Gas used: ", txWait.gasUsed.toString());
+
+
+            const balanceAfter = await nodeLicense.balanceOf(addr1.address);
+            expect(balanceAfter).to.eq(BATCH_SIZE + 1);
+        });
+        it("Check the maximum number of keys that can be minted in a single transaction using Xai", async function() {            
+            const BATCH_SIZE = 184;
+            const {nodeLicense, addr1, xaiMinter, xai} = await loadFixture(deployInfrastructure);
+            const ethPrice = await nodeLicense.price(BATCH_SIZE, "");            
+            const xaiPrice = await nodeLicense.ethToXai(ethPrice);
+
+            // Mint some Xai to addr1
+            await xai.connect(xaiMinter).mint(addr1.address, xaiPrice * 2n);
+
+            await xai.connect(addr1).approve(await nodeLicense.getAddress(), xaiPrice);
+
+            // Mint the remaining licenses
+            const tx = await nodeLicense.connect(addr1).mintWithXai(BATCH_SIZE, "", false, ethPrice);
+            console.log("Gas limit: ", tx.gasLimit.toString());
+            const txWait = await tx.wait(1);
+            console.log("Gas used: ", txWait.gasUsed.toString());
+
+
+            const balanceAfter = await nodeLicense.balanceOf(addr1.address);
+            expect(balanceAfter).to.eq(BATCH_SIZE + 1);
         });
     }
 }
