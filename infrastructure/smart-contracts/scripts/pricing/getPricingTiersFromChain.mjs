@@ -14,8 +14,8 @@ const { ethers } = hardhat;
  */
 async function getPricingTierDataAndWriteJSON() {
     // Initialize the smart contract instance   
-    const nodeLicenseAddress = "0x07C05C6459B0F86A6aBB3DB71C259595d22af3C2";
-  //  const nodeLicenseAddress = config.nodeLicenseAddress;
+    const nodeLicenseAddress = config.nodeLicenseAddress;
+    console.log("Node License Address:", nodeLicenseAddress);
     const nodeLicense = new ethers.Contract(nodeLicenseAddress, NodeLicenseAbi, ethers.provider);
 
     // Get the number of pricing tiers from the contract
@@ -23,13 +23,13 @@ async function getPricingTierDataAndWriteJSON() {
     console.log("Number of tiers:", numberOfTiers);
 
     // Create an array to hold the JSON data
-    const pricingData = [];
+    const pricingData = []; 
 
     // Loop through each tier and retrieve the data
     for (let i = 0; i < numberOfTiers; i++) {
         const tierData = await nodeLicense.getPricingTier(i);
-        const quantity = tierData.quantity.toString();
-        const price = tierData.price.toString();
+        const quantity = (tierData.quantity * 100n).toString();
+        const price = (tierData.price / 100n).toString();
         pricingData.push({ price, quantity });
     }
 
