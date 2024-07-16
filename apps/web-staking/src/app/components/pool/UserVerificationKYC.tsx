@@ -1,38 +1,38 @@
 import React, { useState } from "react";
 import { useBlockIp } from "@/app/hooks";
 import { PrimaryButton } from '../../../../../../packages/ui/src/rebrand/buttons/PrimaryButton';
-import { DropdownText, DropdownItem } from "../dropdown/DropdownText";
 import ExternalLinkIcon from "../../../../../../packages/ui/src/rebrand/icons/ExternalLinkIcon";
 import {listOfCountries} from '../../../../../sentry-client-desktop/src/components/blockpass/CountryDropdown';
+import { AutocompleteDropdown, DropdownItem } from "../dropdown/AutocompleteDropdown";
 
-const PoolDropdownComponent = () => {
+const UserVerificationKYC = () => {
   const [selectedCountry, setSelectedCountry] = useState<string | null>("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { blocked, loading, data } = useBlockIp();
+  const { blocked, loading } = useBlockIp();
   
-    function onClickHelper() {
-		 if (selectedCountry) {
-			if (
+  function onClickHelper() {
+    if (selectedCountry) {
+      if (
 				selectedCountry === "China" || 
 				selectedCountry === "Hong Kong" || 
 				selectedCountry === "Republic of North Macedonia" ||
 				selectedCountry === "Turkey" || 
 				selectedCountry === "Ukraine" 	 
-			) {
-				return window.open(`https://verify-with.blockpass.org/?clientId=xai_sentry_node__edd_60145`, "_blank",
-            "noopener noreferrer");
+        ) {
+          return window.open(`https://verify-with.blockpass.org/?clientId=xai_sentry_node__edd_60145`, "_blank",
+          "noopener noreferrer");
 			} else if (selectedCountry !== "") {
-				return window.open(`https://verify-with.blockpass.org/?clientId=xai_node_007da`, "_blank",
-            "noopener noreferrer");
+        return window.open(`https://verify-with.blockpass.org/?clientId=xai_node_007da`, "_blank",
+        "noopener noreferrer");
 			}
 		} else {
-			return
+      return
 		}
 	}
-
+  
   const countries: JSX.Element[] = listOfCountries.filter(item => item.label.toLocaleLowerCase().startsWith(selectedCountry?.toLowerCase()!)).map((item, i, arr) => (
     <DropdownItem
-      onClick={() => {
+    onClick={() => {
         setSelectedCountry(item.label);
         setIsOpen(false);
       }}
@@ -44,15 +44,10 @@ const PoolDropdownComponent = () => {
     </DropdownItem>
   ));
 
-  const isBlockedCountry = () => { 
-    if((listOfCountries.find(item => item.value === data.country)?.label === selectedCountry) && blocked) {
-      return true
-    }
-    return false
-  }
-
+  const isBlocked = () => blocked || selectedCountry === "United States";
+  
   const validateAndContinue = () => { 
-    if (isBlockedCountry() || loading || selectedCountry === "United States") {
+    if (isBlocked() || loading) {
       return true;
     }
     if (listOfCountries.filter(item => item.label === selectedCountry).length === 0) {
@@ -60,10 +55,10 @@ const PoolDropdownComponent = () => {
     }
     return false;
   }
-
+  
   return (
     <div className="max-w-[337px]">
-      <DropdownText
+      <AutocompleteDropdown
         dropdownOptionsCount={countries.length}
         isOpen={isOpen}
         selectedValue={selectedCountry}
@@ -75,9 +70,9 @@ const PoolDropdownComponent = () => {
           dropdown: "my-4 max-w-[337px]",
           dropdownOptions: "max-w-[340px]",
         }}
-        isInvalid={isBlockedCountry() || selectedCountry === "United States"}
+        isInvalid={isBlocked()}
       />
-      {((selectedCountry && isBlockedCountry()) || selectedCountry === "United States") && <span className="block text-lg font-medium text-[#F76808]">{"KYC is not available for the selected country"}</span>}
+      {isBlocked() && <span className="block text-lg font-medium text-[#F76808]">{"KYC is not available for the selected country"}</span>}
       <PrimaryButton
         isDisabled={validateAndContinue()}
         onClick={onClickHelper}
@@ -89,4 +84,4 @@ const PoolDropdownComponent = () => {
   );
 };
 
-export default PoolDropdownComponent;
+export default UserVerificationKYC;
