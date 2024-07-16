@@ -42,7 +42,7 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   const isModal = useSearchParams().get("modal");
 
   const onModalSubmit = () => {
-    router.replace(`http://localhost:3000/staking?chainId=${chainId}`);
+    router.replace(`https://app.xai.games/staking?chainId=${chainId}`);
   };
 
   // Substitute Timeouts with useWaitForTransaction

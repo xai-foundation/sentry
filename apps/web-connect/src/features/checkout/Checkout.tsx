@@ -11,7 +11,6 @@ import { ActionSection } from "./components/ActionSection";
 import { BiLoaderAlt } from "react-icons/bi";
 import PurchaseSuccessful from "./components/PurchaseSuccessful";
 import { useWebBuyKeysContext } from './contexts/useWebBuyKeysContext';
-import {IRedirects, redirects} from "./constants";
 
 const LoadingState = () => (
     <div className="w-full h-[365px] flex flex-col justify-center items-center gap-2">
@@ -45,10 +44,8 @@ export function Checkout() {
         window.location = `xai-sentry://purchase-successful?txHash=${hash}` as unknown as Location;
     }
 
-    const pathName = window.location.href;
-
     useEffect(() => {
-        (mintWithEth.isSuccess || mintWithXai.isSuccess) && window.open(`${redirects[pathName as keyof IRedirects]}/staking/?modal=true`, "_blank")
+        (mintWithEth.isSuccess || mintWithXai.isSuccess) && window.open(`https://app.xai.game/staking/?modal=true`, "_blank")
     }, [mintWithEth.isSuccess, mintWithXai.isSuccess]);
 
     return (
