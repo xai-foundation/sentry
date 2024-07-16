@@ -106,22 +106,23 @@ export function handleStakeKeys(event: StakeKeys): void {
 
     for (let i = 0; i < autoStakeKeyIds.length; i++) {
       let sentryKey = SentryKey.load(autoStakeKeyIds[i].toString())
-      if (sentryKey && sentryKey.assignedPool == event.params.pool) {
+      if(!sentryKey){
+        log.warning("Failed to find sentryKey on handleStakeKeys, processAirdropSegmentOnlyStake: TX: " + event.transaction.hash.toHexString() + ", keyId: " + autoStakeKeyIds[i].toString(), []);
+        continue;
+      }
+      
+      //Only process the keys mintend from the key id staked in the pool of the event.
+      //On process could have multiple keys in different pools, we don't need to reprocess them for each stake event.
+      if (sentryKey.assignedPool == event.params.pool) {
 
         const start = airdropContract.keyToStartEnd(autoStakeKeyIds[i], BigInt.fromI32(0));
         const end = airdropContract.keyToStartEnd(autoStakeKeyIds[i], BigInt.fromI32(1));
 
-        const stakeKeyIds: BigInt[] = [];
         const keyLength = end.minus(start).toI32();
 
         for (let j = 0; j < keyLength; j++) {
-          stakeKeyIds[i] = start.plus(BigInt.fromI32(j));
           nodeLicenseIds.push(start.plus(BigInt.fromI32(j)))
         }
-
-      } else {
-        log.warning("Failed to find sentryKey on handleStakeKeys, processAirdropSegmentOnlyStake: TX: " + event.transaction.hash.toHexString() + ", keyId: " + nodeLicenseIds[i].toString(), []);
-        return;
       }
     }
 
