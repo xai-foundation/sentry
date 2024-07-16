@@ -281,96 +281,109 @@ export function TableRowRewards({
 }
 
 export function TableHead({
-                            column,
-                            index,
-                            showTableKeys,
-                            setCurrentSort,
-                            setCurrentSortOrder,
-                            currentSortOrder
+                              column,
+                              index,
+                              showTableKeys,
+                              setCurrentSort,
+                              setCurrentSortOrder,
+                              currentSortOrder,
+                              currentSort
                           }: {
-  column: { title: string, sortField: string | null };
-  index: number;
-  showTableKeys: boolean;
-  setCurrentSort: (field: string) => void;
-  setCurrentSortOrder: (order: number) => void;
-  currentSortOrder: number;
+    column: { title: string, sortField: string | null };
+    index: number;
+    showTableKeys: boolean;
+    setCurrentSort: (field: string) => void;
+    setCurrentSortOrder: (order: number) => void;
+    currentSortOrder: number;
+    currentSort: string;
 }) {
 
-  const [isSorted, setIsSorted] = useState(false);
-  const sortFilter = useSearchParams().get("sort") || "";
-  const sortOrder = useSearchParams().get("sortOrder") || 1;
+    const [isSorted, setIsSorted] = useState(false);
+    const sortFilter = useSearchParams().get("sort") || "";
+    const sortOrder = useSearchParams().get("sortOrder") || -1;
 
-
-  const defineSortField = (index: number) => {
-    switch (index) {
-      case 0:
-        return "name";
-      case 2:
-        return showTableKeys ? "keyCount" : "totalStakedAmount";
-      case 4:
-        return !column.sortField ? (showTableKeys ? "keyRewardRate" : "esXaiRewardRate") : "";
-      case 6:
-        return showTableKeys ? "keyRewardRate" : "esXaiRewardRate";
-      default:
-        return "";
-    }
-  }
-
-  const handleClick = () => {
-
-    if (sortFilter === column.sortField || sortFilter === defineSortField(index)) {
-      setCurrentSortOrder(Number(sortOrder) === 1 ? -1 : 1);
-      return;
+    const defineSortField = (index: number) => {
+        switch (index) {
+            case 0:
+                return "name";
+            case 2:
+                return showTableKeys ? "keyCount" : "totalStakedAmount";
+            case 4:
+                return !column.sortField ? (showTableKeys ? "keyRewardRate" : "esXaiRewardRate") : "";
+            case 6:
+                return showTableKeys ? "keyRewardRate" : "esXaiRewardRate";
+            default:
+                return "";
+        }
     }
 
-    if (column.sortField) {
-      setCurrentSort(column.sortField);
-      return;
+    const handleClick = () => {
+
+        if (!sortFilter && column.sortField) {
+            setCurrentSort(column.sortField);
+            return;
+        }
+
+        if (sortFilter === column.sortField || sortFilter === defineSortField(index)) {
+            setCurrentSortOrder(Number(sortOrder) === 1 ? -1 : 1);
+            return;
+        }
+
+        if (column.sortField) {
+            setCurrentSort(column.sortField);
+            return;
+        }
+
+        setCurrentSort(defineSortField(index));
     }
 
-    setCurrentSort(defineSortField(index));
-  }
+
+    useEffect(() => {
+
+        if (!sortFilter && currentSort && column.sortField === SORT_FIELDS.tier) {
+            return setIsSorted(true);
+        }
+
+        if (!sortFilter) {
+            return setIsSorted(false);
+        }
+
+        if (column.sortField === sortFilter || defineSortField(index) === sortFilter) {
+            return setIsSorted(true);
+        }
+
+        setIsSorted(false);
+
+    }, [sortFilter]);
+
+    useEffect(() => {
 
 
-  useEffect(() => {
+        if (!sortFilter) {
+            return;
+        }
 
-    if (!sortFilter && defineSortField(index) === SORT_FIELDS.esXaiRewardRate) {
-      return setIsSorted(true);
-
-    } else if (!sortFilter) {
-      return setIsSorted(false);
-    }
-
-    if (column.sortField === sortFilter || defineSortField(index) === sortFilter) {
-      return setIsSorted(true);
-    }
-
-    setIsSorted(false);
-
-  }, [sortFilter]);
-
-  useEffect(() => {
+        console.log("sortFilter", sortFilter);
 
 
-    if (!sortFilter) {
-      setCurrentSort(SORT_FIELDS.tier);
+        if (sortFilter === SORT_FIELDS.keyRewardRate && !showTableKeys) {
+            setCurrentSort(SORT_FIELDS.esXaiRewardRate);
+        } else if (sortFilter === SORT_FIELDS.esXaiRewardRate && showTableKeys) {
+            setCurrentSort(SORT_FIELDS.keyRewardRate);
+        } else if (sortFilter === SORT_FIELDS.esXaiStaked && showTableKeys) {
+            setCurrentSort(SORT_FIELDS.keyStaked);
+        } else if (sortFilter === SORT_FIELDS.keyStaked && !showTableKeys) {
+            setCurrentSort(SORT_FIELDS.esXaiStaked);
+        }
 
-    } else if (sortFilter === SORT_FIELDS.keyRewardRate && !showTableKeys) {
-      setCurrentSort(SORT_FIELDS.esXaiRewardRate);
+    }, [showTableKeys]);
 
-    } else if (sortFilter === SORT_FIELDS.esXaiRewardRate && showTableKeys) {
-      setCurrentSort(SORT_FIELDS.keyRewardRate);
-
-    }
-
-  }, [showTableKeys]);
-
-  return (
-      <th
-          onClick={index !== 7 ? handleClick : () => {
-          }}
-          scope="col"
-          className={`text-left select-none hover:bg-chromaphobicBlack cursor-pointer bg-dynamicBlack font-medium text-elementalGrey border-b border-t border-chromaphobicBlack
+    return (
+        <th
+            onClick={index !== 7 ? handleClick : () => {
+            }}
+            scope="col"
+            className={`text-left select-none hover:bg-chromaphobicBlack cursor-pointer bg-dynamicBlack font-medium text-elementalGrey border-b border-t border-chromaphobicBlack
         ${index === 0 ? "lg:w-[21%] pl-[17px] lg:pl-7 pr-2 lg:pr-0 text-nowrap lg:text-wrap" : ""}
         ${index === 1 && "lg:table-cell lg:pl-[16px] lg:w-[10%] sm:hidden pr-2"} lg:py-4 sm:py-2 bg-crystalWhite font-medium lg:text-[18px] sm:text-sm
         ${index === 2 ? "sm:w-[15%] lg:w-[20%] lg:pl-[16px]" : ""}
@@ -380,133 +393,132 @@ export function TableHead({
         ${index === 6 && `text-right sm:pl-2 lg:pl-5 lg:pr-4 ${isSorted ? "lg:w-[11%]" : "lg:w-[10%]"}`}
         ${index === 7 && "text-right sm:pr-2 lg:pr-7"}
         `}
-          key={index}
-      >
-        <div className={`w-full flex h-full items-center justify-end
+            key={index}
+        >
+            <div className={`w-full flex h-full items-center justify-end
      ${index === 0 && "!justify-start"}
      ${index === 1 && "!justify-start"}
      ${index === 2 && "!justify-start"}
        `}
-        >
-          {index === 0 && (
-              <span className="cursor-pointer">{column.title}</span>
-          )}
+            >
+                {index === 0 && (
+                    <span className="cursor-pointer">{column.title}</span>
+                )}
 
-          {index === 1 && (
-              <div className="flex items-center">
-                <span className="mr-2 cursor-pointer">{column.title}</span>
-                <TableTooltip
-                    extraClasses={{
-                      tooltipContainer: "lg:left-auto lg:!right-[-38px] xl:left-[-38px] left-[-38px] pb-[10px]",
-                      tooltipText: "mb-4"
-                    }}
-                    content={`Pool tier is determined by the amount of esXAI staked. The higher the pool tier, the higher the reward probability.`}
-                    delay={30000}
-                    withCTA={true}
-                    onCTAClick={() => {
-                      window.open("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/staking-explained/staking-rewards-and-tiers", "_blank");
-                    }}
-                >
-                  <HelpIcon
-                      width={14}
-                      height={14} />
-                </TableTooltip>
-              </div>
-          )}
+                {index === 1 && (
+                    <div className="flex items-center">
+                        <span className="mr-2 cursor-pointer">{column.title}</span>
+                        <TableTooltip
+                            extraClasses={{
+                                tooltipContainer: "lg:left-auto lg:!right-[-38px] xl:left-[-38px] left-[-38px] pb-[10px]",
+                                tooltipText: "mb-4"
+                            }}
+                            content={`Pool tier is determined by the amount of esXAI staked. The higher the pool tier, the higher the reward probability.`}
+                            delay={30000}
+                            withCTA={true}
+                            onCTAClick={() => {
+                                window.open("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/staking-explained/staking-rewards-and-tiers", "_blank");
+                            }}
+                        >
+                            <HelpIcon
+                                width={14}
+                                height={14} />
+                        </TableTooltip>
+                    </div>
+                )}
 
-          {index === 2 && !showTableKeys && (
-              <span className="lg:mr-2">{"esXAI STAKING CAPACITY"}</span>
-          )}
-          {index === 2 && showTableKeys && (
-              <span className="lg:mr-2">{"KEY STAKING CAPACITY"}</span>
-          )}
+                {index === 2 && !showTableKeys && (
+                    <span className="lg:mr-2">{"esXAI STAKING CAPACITY"}</span>
+                )}
+                {index === 2 && showTableKeys && (
+                    <span className="lg:mr-2">{"KEY STAKING CAPACITY"}</span>
+                )}
 
-          {index === 3 && (
-              <span className="">{column.title}</span>
-          )}
+                {index === 3 && (
+                    <span className="">{column.title}</span>
+                )}
 
-          {index === 4 && (
-              <span className="sm:hidden lg:block">{column.title}</span>
-          )}
+                {index === 4 && (
+                    <span className="sm:hidden lg:block">{column.title}</span>
+                )}
 
-          {index === 4 && (
-              <div className="flex items-center sm:block lg:hidden text-left indent-3">
-                <span className="text-left">{showTableKeys ? "KEY " : "esXAI "}</span>
-                <div className="flex w-full items-center lg:hidden justify-end">
-                  <div className="mr-1">{"RATE"}</div>
-                  <TableTooltip
-                      extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] !left-[-340px] pb-[10px] !text-left !py-[15px] !w-[356px]" }}
-                      content={showTableKeys ? "Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards." : "Estimated annual rate for staking esXAI based off of stake and reward breakdown and past 7 days of pool rewards."}
-                      delay={30000}
-                  >
-                    <HelpIcon width={14} height={14} />
-                  </TableTooltip>
-                </div>
-              </div>
-          )}
+                {index === 4 && (
+                    <div className="flex items-center sm:block lg:hidden text-left indent-3">
+                        <span className="text-left">{showTableKeys ? "KEY " : "esXAI "}</span>
+                        <div className="flex w-full items-center lg:hidden justify-end">
+                            <div className="mr-1">{"RATE"}</div>
+                            <TableTooltip
+                                extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] !left-[-340px] pb-[10px] !text-left !py-[15px] !w-[356px]" }}
+                                content={showTableKeys ? "Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards." : "Estimated annual rate for staking esXAI based off of stake and reward breakdown and past 7 days of pool rewards."}
+                                delay={30000}
+                            >
+                                <HelpIcon width={14} height={14} />
+                            </TableTooltip>
+                        </div>
+                    </div>
+                )}
 
-          {index === 5 && (
-              <span className="">{column.title}</span>
-          )}
+                {index === 5 && (
+                    <span className="">{column.title}</span>
+                )}
 
-          {index === 7 && (
-              <span className="justify-self-end text-end">{column.title}</span>
-          )}
-
-
-          {index === 0 ? (
-              <div className="flex flex-col items-start whitespace-normal">
-                <span className="sm:table-cell lg:hidden mr-1">{"POOL NAME /"}</span>
-                <div className="flex w-full items-center lg:hidden">
-                  <div className="mr-1">{"TIER"}</div>
-                  <TableTooltip
-                      extraClasses={{ tooltipContainer: "whitespace-normal lg:left-auto lg:!right-[-38px] xl:left-[-38px] left-[-38px] sm:w-[356px] !text-left !py-[15px]" }}
-                      content={`Pool tier is determined by the amount of esXAI staked. The higher the pool tier, the higher the reward probability.`}
-                      withCTA={true}
-                      delay={15000}
-                      showOnClick={true}
-                      onCTAClick={() => {
-                        window.open("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/staking-explained/staking-rewards-and-tiers", "_blank");
-                      }}
-                  >
-                    <HelpIcon
-                        width={14}
-                        height={14} />
-                  </TableTooltip>
-                </div>
-
-              </div>
-          ) : (
-              ""
-          )}
+                {index === 7 && (
+                    <span className="justify-self-end text-end">{column.title}</span>
+                )}
 
 
+                {index === 0 ? (
+                    <div className="flex flex-col items-start whitespace-normal">
+                        <span className="sm:table-cell lg:hidden mr-1">{"POOL NAME /"}</span>
+                        <div className="flex w-full items-center lg:hidden">
+                            <div className="mr-1">{"TIER"}</div>
+                            <TableTooltip
+                                extraClasses={{ tooltipContainer: "whitespace-normal lg:left-auto lg:!right-[-38px] xl:left-[-38px] left-[-38px] sm:w-[356px] !text-left !py-[15px]" }}
+                                content={`Pool tier is determined by the amount of esXAI staked. The higher the pool tier, the higher the reward probability.`}
+                                withCTA={true}
+                                delay={15000}
+                                showOnClick={true}
+                                onCTAClick={() => {
+                                    window.open("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/staking-explained/staking-rewards-and-tiers", "_blank");
+                                }}
+                            >
+                                <HelpIcon
+                                    width={14}
+                                    height={14} />
+                            </TableTooltip>
+                        </div>
 
-          {/* Tooltip for column Key Rate */}
-          {index === 6 ? (
-              <div className="flex items-center justify-end">
-                <span className="mr-2">{showTableKeys ? "KEY RATE" : "esXAI RATE"}</span>
-                <TableTooltip
-                    extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-400px] pb-[10px] !text-left !py-[15px]" }}
-                    content={showTableKeys ? "Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards." : "Estimated annual rate for staking esXAI based off of stake and reward breakdown and past 7 days of pool rewards."}
-                    delay={30000}
-                >
-                  <HelpIcon width={14} height={14} />
-                </TableTooltip>
-              </div>
-          ) : (
-              ""
-          )}
+                    </div>
+                ) : (
+                    ""
+                )}
 
-          {isSorted && (Number(sortOrder) === 1 ? <SortArrowUp extraClasses="xl:block hidden ml-[5px]" /> :
-                  <SortArrowDown extraClasses="xl:block hidden ml-[5px]" />
-          )}
-        </div>
 
-      </th>
-  );
+
+                {/* Tooltip for column Key Rate */}
+                {index === 6 ? (
+                    <div className="flex items-center justify-end">
+                        <span className="mr-2">{showTableKeys ? "KEY RATE" : "esXAI RATE"}</span>
+                        <TableTooltip
+                            extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-400px] xl:left-[-400px] left-[-400px] pb-[10px] !text-left !py-[15px]" }}
+                            content={showTableKeys ? "Estimated annual rate for staking a key based off of stake and reward breakdown and past 7 days of pool rewards." : "Estimated annual rate for staking esXAI based off of stake and reward breakdown and past 7 days of pool rewards."}
+                            delay={30000}
+                        >
+                            <HelpIcon width={14} height={14} />
+                        </TableTooltip>
+                    </div>
+                ) : (
+                    ""
+                )}
+
+                {isSorted && (Number(sortOrder) === 1 ? <SortArrowUp extraClasses="xl:block hidden ml-[5px]" /> :
+                        <SortArrowDown extraClasses="xl:block hidden ml-[5px]" />
+                )}
+            </div>
+
+        </th>
+    );
 }
-
 export function TableHeadStaking({
                                    column,
                                    index

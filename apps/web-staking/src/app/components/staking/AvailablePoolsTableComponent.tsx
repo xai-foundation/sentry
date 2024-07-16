@@ -22,7 +22,9 @@ export const SORT_FIELDS = {
   keySplit: "keyBucketShare",
   esXaiSplit: "stakedBucketShare",
   esXaiRewardRate: "esXaiRewardRate",
-  keyRewardRate: "keyRewardRate"
+  keyRewardRate: "keyRewardRate",
+  esXaiStaked: "totalStakedAmount",
+  keyStaked: "keyCount"
 }
 
 const POOL_DATA_COLUMS = [
@@ -61,6 +63,7 @@ interface AvailableTableProps {
   setCurrentSort: (field: string) => void;
   setCurrentSortOrder: (order: number) => void;
   currentSortOrder: number;
+  currentSort: string;
 }
 
 const AvailablePoolsTableComponent = ({
@@ -74,7 +77,8 @@ const AvailablePoolsTableComponent = ({
                                         maxKeyPerPool,
                                         setCurrentSort,
                                         setCurrentSortOrder,
-                                        currentSortOrder
+                                        currentSortOrder,
+                                        currentSort
                                       }: AvailableTableProps) => {
   const { open } = useWeb3Modal();
   const { isDisconnected } = useAccount();
@@ -94,6 +98,7 @@ const AvailablePoolsTableComponent = ({
                       setCurrentSort={setCurrentSort}
                       setCurrentSortOrder={setCurrentSortOrder}
                       currentSortOrder={currentSortOrder}
+                      currentSort={currentSort}
                   />
               );
             })}
@@ -111,6 +116,7 @@ const AvailablePoolsTableComponent = ({
                       setCurrentSort={setCurrentSort}
                       setCurrentSortOrder={setCurrentSortOrder}
                       currentSortOrder={currentSortOrder}
+                      currentSort={currentSort}
                   />
               );
             })}

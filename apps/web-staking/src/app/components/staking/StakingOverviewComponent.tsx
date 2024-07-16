@@ -31,7 +31,7 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   const [showTableKeys, setShowTableKeys] = useState(searchParams.get("showKeys") ? searchParams.get("showKeys") === "true" : false);
   const [hideFullKeys, setHideFullKeys] = useState(searchParams.get("hideFullKeys") ? searchParams.get("hideFullKeys") === "true" : false);
   const [hideFullEsXai, setHideFullEsXai] = useState(searchParams.get("hideFull") ? searchParams.get("hideFull") === "true" : true);
-  const [sort, setSort] = useState(searchParams.get("sort") || "");
+  const [sort, setSort] = useState(searchParams.get("sort") || "tierIndex");
   const [sortOrder, setSortOrder] = useState(Number(searchParams.get("sortOrder")) || -1);
 
   const [currentTotalClaimableAmount, setCurrentTotalClaimableAmount] = useState<number>(totalClaimableAmount);
