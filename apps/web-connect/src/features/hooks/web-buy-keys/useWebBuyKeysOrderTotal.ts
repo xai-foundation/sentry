@@ -1,7 +1,8 @@
-import { useState, useMemo } from 'react';
-import { useAccount, useNetwork, Chain } from 'wagmi';
+import { useState, useMemo, useEffect } from 'react';
+import { useAccount, useNetwork, Chain, useWaitForTransaction } from 'wagmi';
 import { CheckoutTierSummary, formatWeiToEther } from '@sentry/core';
-import { CURRENCIES, Currency, UseContractWritesReturn, useContractWrites, useCurrencyHandler, useGetExchangeRate, useGetPriceForQuantity, useGetTotalSupplyAndCap, usePromoCodeHandler, useUserBalances } from '..';
+import { CURRENCIES, Currency, useContractWrites, UseContractWritesReturn, useCurrencyHandler, useGetExchangeRate, useGetPriceForQuantity, useGetTotalSupplyAndCap, usePromoCodeHandler, useUserBalances } from '..';
+import {useProvider} from "../provider/useProvider";
 
 export interface PriceDataInterface {
     price: bigint;
@@ -10,7 +11,6 @@ export interface PriceDataInterface {
 
 export interface UseWebBuyKeysOrderTotalProps {
     initialQuantity: number;
-    //getPriceData: PriceDataInterface | undefined;
 }
 
 export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
@@ -52,13 +52,27 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
     maxSupply: number;
     setQuantity: React.Dispatch<React.SetStateAction<number>>;
     handleSubmit: () => Promise<void>;
+    approve: UseContractWritesReturn['approve'];
+    mintWithEth: UseContractWritesReturn['mintWithEth'];
+    mintWithXai: UseContractWritesReturn['mintWithXai'];
+    approveTx: ReturnType<typeof useWaitForTransaction>;
+    ethMintTx: ReturnType<typeof useWaitForTransaction>;
+    xaiMintTx: ReturnType<typeof useWaitForTransaction>;
+    blockExplorer: string;
+
 }
 
+/**
+ * Custom hook to manage the state and logic for the web buy keys order total.
+ * @param initialQuantity - The initial quantity of items to mint.
+ * @returns An object containing various properties and functions related to the order total.
+ */
 export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysOrderTotalReturn {
     const { isLoading: isTotalLoading, data: getTotalData } = useGetTotalSupplyAndCap();
     const { data: exchangeRateData, isLoading: isExchangeRateLoading } = useGetExchangeRate();
     const { chain } = useNetwork();
     const { address } = useAccount();
+    const { data: providerData } = useProvider();
 
     const maxSupply = getTotalData?.cap && getTotalData?.totalSupply
         ? Number(getTotalData.cap) - Number(getTotalData.totalSupply)
@@ -73,7 +87,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const [quantity, setQuantity] = useState<number>(initialQuantity);
 
     const { tokenBalance, ethBalance } = useUserBalances(currency);
-    const { tokenAllowance } = useCurrencyHandler(currency, address);
+    const { tokenAllowance, refetchAllowance } = useCurrencyHandler(currency, address);
     const { promoCode, setPromoCode, discount, setDiscount, handleSubmit, isLoading: isPromoLoading } = usePromoCodeHandler();
 
     const ready = checkboxes.one && checkboxes.two && checkboxes.three;
@@ -99,7 +113,17 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         };
     }, [getPriceData, discount, currency, exchangeRateData]);
 
-    const contractWrites = useContractWrites({
+    const { 
+        mintWithEth, 
+        approve, 
+        mintWithXai, 
+        ethMintTx,
+        xaiMintTx,
+        approveTx,
+        clearErrors,
+        resetTransactions,
+        mintWithEthError,
+    } = useContractWrites({
         quantity,
         promoCode,
         calculateTotalPrice,
@@ -107,18 +131,35 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         discount,
     });
 
+    useEffect(() => {
+        refetchAllowance();
+    }, [approveTx.status, refetchAllowance]);
+
+
+    useEffect(() => {
+        clearErrors();
+        resetTransactions();
+    }, [currency]);
+
     /**
-     * Gets the text for the approve button based on the user's balance and allowance.
+     * Determines the text to display on the approve button based on the current state.
      * @returns The approve button text as a string.
      */
     const getApproveButtonText = (): string => {
         const total = calculateTotalPrice();
+
+        if (approve.isLoading || xaiMintTx.isLoading) {
+            return "WAITING FOR CONFIRMATION...";
+        }
+
         if (total > tokenBalance) {
             return `Insufficient ${currency} balance`;
         }
+
         if (total > tokenAllowance) {
             return `Approve ${currency}`;
         }
+
         return "BUY NOW";
     };
 
@@ -139,7 +180,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const userHasEthBalance = ethBalance >= calculateTotalPrice();
 
     const displayPricesMayVary = (getPriceData?.nodesAtEachPrice?.filter((node: CheckoutTierSummary) => node.quantity !== 0n) ?? []).length >= 2;
-
+    
     return {
         isTotalLoading,
         isExchangeRateLoading,
@@ -171,6 +212,15 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         maxSupply,
         setQuantity,
         handleSubmit,
-        ...contractWrites,
+        mintWithEth,
+        approve,
+        mintWithXai,
+        ethMintTx,
+        xaiMintTx,
+        approveTx,
+        clearErrors,
+        resetTransactions,
+        mintWithEthError,
+        blockExplorer: providerData?.blockExplorer ?? '',        
     };
 }

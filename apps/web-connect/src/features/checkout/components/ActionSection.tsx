@@ -23,6 +23,7 @@ export function ActionSection(): JSX.Element {
         userHasTokenBalance,
         mintWithEth,
         mintWithXai,
+        mintWithEthError,
         approve,
         getApproveButtonText
     } = useWebBuyKeysContext();
@@ -44,12 +45,12 @@ export function ActionSection(): JSX.Element {
      * @returns {string} The button text
      */
     const getTokenButtonText = useCallback(() => {
-        if (mintWithEth.isLoading || mintWithXai.isLoading || approve.isLoading) return "WAITING FOR CONFIRMATION";
+        if (mintWithEth.isLoading || mintWithXai.isLoading || approve.isLoading) return "WAITING FOR CONFIRMATION..";
         if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
         return getApproveButtonText();
     }, [mintWithEth.isLoading, mintWithXai.isLoading, approve.isLoading, chain, getApproveButtonText]);
 
-    const handleBuyWithXaiClicked = () => { 
+    const handleBuyWithXaiClicked = async () => { 
         if (getTokenButtonText().startsWith("Approve")) {
             approve.write?.();
         } else {
@@ -64,15 +65,15 @@ export function ActionSection(): JSX.Element {
                 {currency === 'AETH' ? (
                     <PrimaryButton
                         onClick={() => mintWithEth.write?.()}
-                        className={`w-full h-16 ${ready && chain?.id === 42161 ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || chain?.id !== 42161}
+                        className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
+                        isDisabled={!ready || chain?.id === 42161}
                         btnText={getButtonText()}
                     />
                 ) : (
                     <PrimaryButton
                         onClick={handleBuyWithXaiClicked}
-                        className={`w-full h-16 ${ready && chain?.id === 42161 ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || chain?.id !== 42161 || !userHasTokenBalance}
+                        className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
+                        isDisabled={!ready || chain?.id === 42161 || !userHasTokenBalance}
                         btnText={getTokenButtonText()}
                     />
                 )}
@@ -80,7 +81,7 @@ export function ActionSection(): JSX.Element {
                 {/* Error section for ETH transactions */}
                 {mintWithEth.error && (
                     <div>
-                        {mapWeb3Error(mintWithEth.error) === "Insufficient funds" && (
+                        {mintWithEthError && mapWeb3Error(mintWithEthError) === "Insufficient funds" && (
                             <BaseCallout extraClasses={{ calloutWrapper: "md:h-[100px] h-[159px] mt-[12px]", calloutFront: "!justify-start" }} isWarning>
                                 <div className="flex md:gap-[21px] gap-[10px]">
                                     <span className="block mt-2"><WarningIcon /></span>
