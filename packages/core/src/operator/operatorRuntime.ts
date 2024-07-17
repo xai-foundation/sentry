@@ -23,7 +23,10 @@ import {
     listOwnersForOperator,
     checkKycStatus,
     getSubmissionsForChallenges,
-    getUnStakedKeysOfUser
+    getUnStakedKeysOfUser,
+    submitPoolAssertions,
+    claimPoolSubmissionRewards
+
 } from "../index.js";
 import axios from "axios";
 import { PoolInfo, RefereeConfig, SentryKey, SentryWallet, Submission } from "@sentry/sentry-subgraph-client";
@@ -287,6 +290,15 @@ async function processNewChallenge(
     if (batchedWinnerKeys.length) {
         await submitMultipleAssertions(batchedWinnerKeys, challengeNumber, challenge.assertionStateRootOrConfirmData, KEYS_PER_BATCH, cachedSigner, cachedLogger);
     }
+
+    // Process any Pool Submissions
+    if(cachedPoolsOfOperator && cachedPoolsOfOperator.length > 0) {
+            try {
+                    await submitPoolAssertions(cachedPoolsOfOperator, challengeNumber, challenge.assertionStateRootOrConfirmData, cachedSigner, cachedLogger);
+            } catch (error: any) {
+                cachedLogger(`Error submitting pool assertions for challenge ${challengeNumber} - ${error && error.message ? error.message : error}`);
+            }    
+    }
 }
 
 async function processClaimForChallenge(challengeNumber: bigint, eligibleNodeLicenseIds: bigint[], sentryKeysMap: { [keyId: string]: SentryKey }) {
@@ -322,6 +334,17 @@ async function processClaimForChallenge(challengeNumber: bigint, eligibleNodeLic
         } catch (error: any) {
             cachedLogger(`Error during bulk claim for address ${claimForAddress} and challenge ${challengeNumber}: ${error.message}`);
         }
+    }
+    
+    // Process any Pool Claims
+    if(cachedPoolsOfOperator && cachedPoolsOfOperator.length > 0) {
+        try {
+            await claimPoolSubmissionRewards(cachedPoolsOfOperator, challengeNumber, cachedSigner, cachedLogger);
+            cachedLogger(`Bulk claim successful for address ${operatorAddress} and challenge ${challengeNumber}`);
+        } catch (error: any) {
+            cachedLogger(`Error during bulk claim for address ${operatorAddress} and challenge ${challengeNumber}: ${error.message}`);
+        }
+
     }
 }
 
