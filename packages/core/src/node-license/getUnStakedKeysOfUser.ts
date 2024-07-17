@@ -8,10 +8,9 @@ import { getUserNodeLicenseBalance } from './index.js';
  * Retrieves a specified number of unstaked keys for a given user.
  * 
  * @param {string} walletAddress - The Ethereum address of the user.
- * @param {number} requestedCount - The number of unstaked keys to retrieve.
  * @returns {Promise<BigInt[]>} A promise that resolves to an array of BigInt representing unstaked key IDs.
  */
-export const getUnStakedKeysOfUser = async (walletAddress: string, requestedCount: number): Promise<BigInt[]> => {
+export const getUnStakedKeysOfUser = async (walletAddress: string): Promise<bigint[]> => {
     // Get the Ethereum provider
     const provider = getProvider();
 
@@ -29,9 +28,9 @@ export const getUnStakedKeysOfUser = async (walletAddress: string, requestedCoun
         let offset = 0n;
 
         // Loop until we have collected the requested number of keys or exhausted all licenses
-        while (availableKeys.length < requestedCount) {
+        while (availableKeys.length < numNodeLicenses) {
             // Fetch a batch of 10 unstaked keys starting from the current offset
-            const keys = await poolFactoryContract.getUnstakedKeyIdsFromUser(walletAddress, BigInt(offset), BigInt(10)) as bigint[];
+            const keys = await poolFactoryContract.getUnstakedKeyIdsFromUser(walletAddress, BigInt(offset), BigInt(500)) as bigint[];
 
             // Filter out any zero values and add valid keys to the availableKeys array
             keys.forEach(k => {
@@ -54,5 +53,5 @@ export const getUnStakedKeysOfUser = async (walletAddress: string, requestedCoun
     }
 
     // Return only the requested number of keys
-    return availableKeys.slice(0, requestedCount);
+    return availableKeys;
 }
