@@ -528,8 +528,9 @@ async function syncOwnerStakedKeysForRPC(owners: string[], sentryKeysMap: { [key
 //Exclude pool that are not in the whitelist
 const reloadPoolKeysForRPC = async (
     operator: string,
+    sentryKeysMap: { [keyId: string]: SentryKey },
     operatorOwners?: string[]
-): Promise<string[]> => {
+): Promise<{ [keyId: string]: SentryKey }> => {
 
     let operatorPoolAddresses = await getOwnerOrDelegatePools(operator);
 
@@ -537,7 +538,45 @@ const reloadPoolKeysForRPC = async (
         operatorPoolAddresses = operatorPoolAddresses.filter(o => operatorOwners.includes(o.toLowerCase()))
     }
 
-    return operatorPoolAddresses;
+    if (operatorPoolAddresses.length) {
+
+        cachedLogger(`Found ${operatorPoolAddresses.length} pools for operator.`);
+
+        for (const pool of operatorPoolAddresses) {
+            //Check every key and find out if its already in the nodeLicenseIds list
+            cachedLogger(`Fetching node licenses for pool ${pool}.`);
+
+            const keys = await getKeysOfPool(pool);
+
+            for (const key of keys) {
+
+
+                if (sentryKeysMap[key.toString()]) {
+
+                    sentryKeysMap[key.toString()].assignedPool = pool;
+
+                } else {
+
+                    if (!mintTimestamps[key.toString()]) {
+                        mintTimestamps[key.toString()] = await retry(async () => await getMintTimestamp(key))
+                    }
+
+                    sentryKeysMap[key.toString()] = {
+                        assignedPool: pool,
+                        keyId: key,
+                        mintTimeStamp: mintTimestamps[key.toString()],
+                        id: key.toString(),
+                        owner: "",
+                        sentryWallet: {} as any,
+                        submissions: []
+                    }
+                }
+
+            }
+        }
+    }
+
+    return sentryKeysMap;
 }
 
 
@@ -567,7 +606,7 @@ const loadOperatorKeysFromGraph = async (
     if (passedInOwnersAndPools && passedInOwnersAndPools.length) {
         cachedLogger(`Operator owners were passed in.`);
     } else {
-        cachedLogger(`No operator owners were passed in.`); 
+        cachedLogger(`No operator owners were passed in.`);
     }
 
     // Load all operator addresses and pool addresses, pass in the whitelist to get them filtered
@@ -717,17 +756,15 @@ const loadOperatorKeysFromRPC = async (
 
         for (const owner of owners) {
             cachedLogger(`Fetching node licenses for owner ${owner}.`);
-            const unstakedLicensesOfOwner = await getUnStakedKeysOfUser(owner);
+            const licensesOfOwner = await listNodeLicenses(owner, (keyId) => {
+                cachedLogger(`Fetched node licenses key ${keyId.toString()}.`);
+            });
 
-            for (const licenseId of unstakedLicensesOfOwner) {
+            for (const licenseId of licensesOfOwner) {
 
                 if (!mintTimestamps[licenseId.toString()]) {
-                    if(licenseId < 35000){                        
-                        mintTimestamps[licenseId.toString()] = 0n;
-                    }else{
-                        mintTimestamps[licenseId.toString()] = await retry(async () => await getMintTimestamp(licenseId))
+                    mintTimestamps[licenseId.toString()] = await retry(async () => await getMintTimestamp(licenseId))
                 }
-            }
 
                 const sentryKey: SentryKey = {
                     assignedPool: "0x",
@@ -742,8 +779,8 @@ const loadOperatorKeysFromRPC = async (
                 sentryKeysMap[licenseId.toString()] = sentryKey;
             }
 
-            if (unstakedLicensesOfOwner.length) {
-                cachedLogger(`Fetched ${unstakedLicensesOfOwner.length} node licenses for owner ${owner}.`);
+            if (licensesOfOwner.length) {
+                cachedLogger(`Fetched ${licensesOfOwner.length} node licenses for owner ${owner}.`);
             }
         }
     } else {
@@ -752,7 +789,7 @@ const loadOperatorKeysFromRPC = async (
 
     const keysOfOwnersCount = Object.keys(sentryKeysMap).length;
     // Map the keys from pools our operator should operate, filter pools if passedInOwnersAndPools whitelist is enabled
-    cachedPoolsOfOperator = await reloadPoolKeysForRPC(operator, passedInOwnersAndPools);
+    sentryKeysMap = await reloadPoolKeysForRPC(operator, sentryKeysMap, passedInOwnersAndPools);
 
     // Map all the assigned pools from keys of owners
     sentryKeysMap = await syncOwnerStakedKeysForRPC(owners, sentryKeysMap);
