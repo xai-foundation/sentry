@@ -54,6 +54,7 @@ type PoolInfo @entity(immutable: false) {
   ownerLatestUnstakeRequestCompletionTime: BigInt!
   createdTimestamp: BigInt!
   poolChallenges: [PoolChallenge!]! @derivedFrom(field: "pool")
+  submissions: [PoolSubmission!]! @derivedFrom(field: "poolInfo")
 }
 
 type UnstakeRequest @entity(immutable: false) {
@@ -129,6 +130,7 @@ enum ClaimedFrom {
   claimRewards
   claimMultipleRewards
   unclaimed
+  unknown
 }
 
 type Submission @entity(immutable: false) {
@@ -136,7 +138,7 @@ type Submission @entity(immutable: false) {
   challengeNumber: BigInt!
   claimed: Boolean!
   eligibleForPayout: Boolean!
-  nodeLicenseId: BigInt!
+  nodeLicenseId: BigInt! 
   assertionsStateRootOrConfirmData: String!
   claimAmount: BigInt!
   createdTimestamp: BigInt!
@@ -168,6 +170,22 @@ type RefereeConfig @entity(immutable: false) {
   maxKeysPerPool: BigInt!
   stakeAmountTierThresholds: [BigInt!]!
   stakeAmountBoostFactors: [BigInt!]!
+}
+
+type PoolSubmission @entity(immutable: false) {
+  id: String!
+  challengeId: BigInt!
+  poolAddress: Bytes!
+  challenge: Challenge!
+  poolInfo: PoolInfo!
+  stakedKeyCount: BigInt!
+  winningKeyCount: BigInt!
+  claimedRewardsAmount: BigInt!
+  createdTimestamp: BigInt!
+  createdTxHash: Bytes!
+  claimTimestamp: BigInt!
+  claimTxHash: Bytes!
+  claimed: Boolean!
 }
 
 ######################################################

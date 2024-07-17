@@ -45,6 +45,12 @@ dataSources:
           handler: handleStakedV1
         - event: UnstakeV1(indexed address,uint256,uint256)
           handler: handleUnstakeV1
+        - event: NewPoolSubmission(indexed uint256,indexed address,uint256,uint256)
+          handler: handleNewPoolSubmission
+        - event: UpdatePoolSubmission(indexed uint256,indexed address,uint256,uint256,uint256,uint256)
+          handler: handleUpdatePoolSubmission
+        - event: PoolRewardsClaimed(indexed uint256,indexed address,uint256,uint256)
+          handler: handlePoolRewardsClaimed
       file: ./src/referee.ts
   - kind: ethereum
     name: NodeLicense
