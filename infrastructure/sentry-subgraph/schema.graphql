@@ -135,10 +135,10 @@ enum ClaimedFrom {
 
 type Submission @entity(immutable: false) {
   id: String!
-  challengeNumber: BigInt!
+  challengeNumber: BigInt! @index
   claimed: Boolean!
   eligibleForPayout: Boolean!
-  nodeLicenseId: BigInt! 
+  nodeLicenseId: BigInt! @index
   assertionsStateRootOrConfirmData: String!
   claimAmount: BigInt!
   createdTimestamp: BigInt!
@@ -174,8 +174,8 @@ type RefereeConfig @entity(immutable: false) {
 
 type PoolSubmission @entity(immutable: false) {
   id: String!
-  challengeId: BigInt!
-  poolAddress: Bytes!
+  challengeId: BigInt! @index
+  poolAddress: Bytes! @index
   challenge: Challenge!
   poolInfo: PoolInfo!
   stakedKeyCount: BigInt!
