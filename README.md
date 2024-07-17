@@ -267,6 +267,11 @@ Non-shared components are those utilized on the [Staking Website](https://app.xa
     * **Description:** Styled title.
     * **Defined in:** [File](./apps/web-staking/src/app/components/titles/MainTitle.tsx)
 
+**[Dropdowns](./apps/web-staking/src/app/components/dropdown)**
+  * **SearchableDropdown.tsx:**
+      * **Description:**  For correct application of custom dropdown styles with search the best solution is to apply styles via global css, as other ways do not give the desired result due to non simple custom styles
+      * **Defined in:** [File](./apps/web-staking/src/app/components/dropdown/SearchableDropdown.tsx)
+
 
 **[React Cookie Consent](./apps/web-staking/src/app/components/ReactCookieConsent.tsx)**
   * **ReactCookieConsent.tsx:**
