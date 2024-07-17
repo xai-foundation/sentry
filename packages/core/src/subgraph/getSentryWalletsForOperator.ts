@@ -14,8 +14,12 @@ export async function getSentryWalletsForOperator(
 
   const client = new GraphQLClient(config.subgraphEndpoint);
 
+  // Get the timestamp for the last claimable duration (270 days in seconds)
+  const claimableDuration = 270 * 24 * 60 * 60;
+  const timestamp = Math.floor(Date.now() / 1000) - claimableDuration;
+
   const query = gql`
-    query OperatorAddresses {
+    query OperatorAddresses($timestamp: Int!) {
       sentryWallets(first: 1000, where: {
         or: [
           {address: "${operator.toLowerCase()}"}, 
@@ -35,6 +39,12 @@ export async function getSentryWalletsForOperator(
         totalStakedEsXaiAmount
         totalStakedKeyAmount
         metadata
+        poolSubmissions: submissions(where: {createdTimestamp_gt: $timestamp, claimed: false, winningKeyCount_gt: 0}){
+          id
+          challenge{
+            challengeNumber
+          }
+        }
       }
       refereeConfig(id: "RefereeConfig") {
         maxKeysPerPool
@@ -46,7 +56,7 @@ export async function getSentryWalletsForOperator(
     }
   `
 
-  const result = await client.request(query) as any;
+  const result = await client.request(query, { timestamp }) as any;
 
   let wallets: SentryWallet[] = result.sentryWallets;
   let pools: PoolInfo[] = result.poolInfos;
