@@ -368,13 +368,14 @@ function PoolSubmissionPermissions(deployInfrastructure) {
         const { poolFactory, addr1, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
 
         // Mint additional keys so that there are enough keys to stake in the pool and earn a reward
-        const keysToMintForAddr1 = 300n;
+        const keysToMintForAddr1 = 175n;
 
         // Mint keys for addr1
         // Count backwards from the last minted keyId to get the keyIds to stake in the pool
         const addr1MintedKeyIds = await mintBatchedLicenses(keysToMintForAddr1, nodeLicense, addr1);
         
-        const winningStateRoot = await findWinningStateRoot(referee, keysToMintForAddr1[0], 0);
+        const winningKeys = [addr1MintedKeyIds[0]];
+        const winningStateRoot = await findWinningStateRoot(referee, winningKeys, 0);
 
         // Mint some esXai to increase the total supply for submitting the first challenge so that there is available reward
         await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 1_000_000);
@@ -386,7 +387,7 @@ function PoolSubmissionPermissions(deployInfrastructure) {
         await submitTestChallenge(referee, challenger, startingAssertion, winningStateRoot);
 
         // Create a pool with the minted keys
-        const poolAddress = await createPool(poolFactory, addr1, keys);
+        const poolAddress = await createPool(poolFactory, addr1, winningKeys);
 
         // Stake the remaining keys in the pool minus the one that was submitted at pool creation
         await poolFactory.connect(addr1).stakeKeys(poolAddress, addr1MintedKeyIds.slice(1));
@@ -704,7 +705,7 @@ function PoolSubmissionsRewardRate(deployInfrastructure) {
 
 export function RefereePoolSubmissions(deployInfrastructure) {
 	return function () {
-		describe("Check edge cases for pool submissions", PoolSubmissionsStakeAndUnstake(deployInfrastructure).bind(this));
+        describe("Check edge cases for pool submissions", PoolSubmissionsStakeAndUnstake(deployInfrastructure).bind(this));
         describe("Check pool submission reward", PoolSubmissionsRewardRate(deployInfrastructure).bind(this));
         describe("Check pool submission permissions", PoolSubmissionPermissions(deployInfrastructure).bind(this));
 	}
