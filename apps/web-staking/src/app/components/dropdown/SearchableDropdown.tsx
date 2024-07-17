@@ -4,6 +4,7 @@ import { WarningIcon } from "../../../../../../packages/ui/src/rebrand/icons/War
 
 
 
+
 const DROPDOWN_ITEMS_WITHOUT_SCROLL = 11;
 interface DropdownProps {
     setIsOpen: (isOpen: boolean) => void;
@@ -35,7 +36,7 @@ export const DropdownItem = ({onClick, extraClasses, key, dropdownOptionsCount, 
     return <p onClick={onClick} className={`flex items-center px-[15px] hover:bg-abaddonBlack bg-black cursor-pointer duration-300 ease-in-out text-lg min-h-[48px] font-medium ${dropdownOptionsCount > DROPDOWN_ITEMS_WITHOUT_SCROLL && "mr-[2px]"} ${extraClasses}`} key={key}>{children}</p>
 }
 
-export const AutocompleteDropdown = ({setIsOpen, isOpen, isInvalid, dropdownOptionsCount, setSelectedValue, getPreferableItems, getDropdownItems, selectedValueRender, extraClasses, defaultValue}: DropdownProps) => {
+export const SearchableDropdown = ({setIsOpen, isOpen, isInvalid, dropdownOptionsCount, setSelectedValue, getPreferableItems, getDropdownItems, selectedValueRender, extraClasses, defaultValue}: DropdownProps) => {
     const dropdownRef = useRef(null) as unknown as MutableRefObject<HTMLDivElement>;
     const scrollbarRef = useRef(null) as unknown as MutableRefObject<HTMLDivElement>;
 

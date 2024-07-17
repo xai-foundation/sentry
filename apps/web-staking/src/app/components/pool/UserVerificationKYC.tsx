@@ -3,7 +3,7 @@ import { useBlockIp } from "@/app/hooks";
 import { PrimaryButton } from '../../../../../../packages/ui/src/rebrand/buttons/PrimaryButton';
 import ExternalLinkIcon from "../../../../../../packages/ui/src/rebrand/icons/ExternalLinkIcon";
 import {listOfCountries} from '../../../../../sentry-client-desktop/src/components/blockpass/CountryDropdown';
-import { AutocompleteDropdown, DropdownItem } from "../dropdown/AutocompleteDropdown";
+import { SearchableDropdown, DropdownItem } from "../dropdown/SearchableDropdown";
 
 const UserVerificationKYC = () => {
   const [selectedCountry, setSelectedCountry] = useState<string | null>("");
@@ -46,7 +46,7 @@ const UserVerificationKYC = () => {
 
   const isBlocked = () => blocked || selectedCountry === "United States";
   
-  const validateAndContinue = () => { 
+  const checkCountryOptions = () => { 
     if (isBlocked() || loading) {
       return true;
     }
@@ -58,7 +58,7 @@ const UserVerificationKYC = () => {
   
   return (
     <div className="max-w-[337px]">
-      <AutocompleteDropdown
+      <SearchableDropdown
         dropdownOptionsCount={countries.length}
         isOpen={isOpen}
         selectedValue={selectedCountry}
@@ -74,11 +74,11 @@ const UserVerificationKYC = () => {
       />
       {isBlocked() && <span className="block text-lg font-medium text-[#F76808]">{"KYC is not available for the selected country"}</span>}
       <PrimaryButton
-        isDisabled={validateAndContinue()}
+        isDisabled={checkCountryOptions()}
         onClick={onClickHelper}
         btnText={"Continue"}
         className="flex items-center justify-center group uppercase my-2 w-[337px] text-xl global-clip-btn disabled:!text-elementalGrey"
-        icon={<ExternalLinkIcon extraClasses={{svgClasses: "mb-[3px] ml-[5px]", pathClasses: `${validateAndContinue() ? "!fill-elementalGrey" : "!fill-white" } group-hover:!fill-current duration-200 ease-in` }} />}
+        icon={<ExternalLinkIcon extraClasses={{svgClasses: "mb-[3px] ml-[5px]", pathClasses: `${checkCountryOptions() ? "!fill-elementalGrey" : "!fill-white" } group-hover:!fill-current duration-200 ease-in` }} />}
       />
     </div>
   );
