@@ -91,6 +91,14 @@ type PoolChallenge @entity(immutable: false) {
   eligibleSubmissionsCount: BigInt!
 }
 
+type PoolStake @entity(immutable: false) {
+  id: String!
+  pool: PoolInfo!
+  wallet: SentryWallet! @index
+  keyStakeAmount: BigInt!
+  esXaiStakeAmount: BigInt!
+}
+
 ##############################################################
 # Referee.graphql                                            #
 # schema\events\Referee.graphql                              #
@@ -161,6 +169,7 @@ type SentryWallet @entity(immutable: false) {
   keyCount: BigInt!
   stakedKeyCount: BigInt!
   sentryKeys: [SentryKey!]! @derivedFrom(field: "sentryWallet")
+  poolStakes: [PoolStake!]! @derivedFrom(field: "wallet")
 }
 
 type RefereeConfig @entity(immutable: false) {
@@ -181,12 +190,13 @@ type PoolSubmission @entity(immutable: false) {
   stakedKeyCount: BigInt!
   winningKeyCount: BigInt!
   claimedRewardsAmount: BigInt!
-  createdTimestamp: BigInt!
+  createdTimestamp: BigInt! @index
   createdTxHash: Bytes!
   claimTimestamp: BigInt!
   claimTxHash: Bytes!
-  claimed: Boolean!
+  claimed: Boolean! @index
 }
+
 
 ######################################################
 # Xai.graphql                                        #
