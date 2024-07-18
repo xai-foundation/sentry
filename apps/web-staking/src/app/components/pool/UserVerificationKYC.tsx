@@ -3,7 +3,7 @@ import { useBlockIp } from "@/app/hooks";
 import { PrimaryButton } from '../../../../../../packages/ui/src/rebrand/buttons/PrimaryButton';
 import ExternalLinkIcon from "../../../../../../packages/ui/src/rebrand/icons/ExternalLinkIcon";
 import {listOfCountries} from '../../../../../sentry-client-desktop/src/components/blockpass/CountryDropdown';
-import { SearchableDropdown, DropdownItem } from "../dropdown/SearchableDropdown";
+import {SearchableDropdown, SearchableDropdownItem} from "../../../../../../packages/ui/src/rebrand/dropdown";
 
 const UserVerificationKYC = () => {
   const [selectedCountry, setSelectedCountry] = useState<string | null>("");
@@ -31,7 +31,7 @@ const UserVerificationKYC = () => {
 	}
   
   const countries: JSX.Element[] = listOfCountries.filter(item => item.label.toLocaleLowerCase().startsWith(selectedCountry?.toLowerCase()!)).map((item, i, arr) => (
-    <DropdownItem
+    <SearchableDropdownItem
     onClick={() => {
         setSelectedCountry(item.label);
         setIsOpen(false);
@@ -41,7 +41,7 @@ const UserVerificationKYC = () => {
       extraClasses={"hover:!bg-velvetBlack"}
     >
       {item.label}
-    </DropdownItem>
+    </SearchableDropdownItem>
   ));
 
   const isBlocked = () => blocked || selectedCountry === "United States";
