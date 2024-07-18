@@ -1,4 +1,4 @@
-import {expect, assert} from "chai";
+import {expect} from "chai";
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {submitTestChallenge} from "../utils/submitTestChallenge.mjs";
 import {mintSingleLicense} from "../utils/mintLicenses.mjs";
