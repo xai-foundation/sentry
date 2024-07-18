@@ -39,11 +39,11 @@ export async function getSentryWalletsForOperator(
         totalStakedEsXaiAmount
         totalStakedKeyAmount
         metadata
-        poolSubmissions: submissions(where: {createdTimestamp_gt: $timestamp, claimed: false, winningKeyCount_gt: 0}){
+        poolSubmissions: submissions(where: {createdTimestamp_gt: $timestamp}){
           id
-          challenge{
-            challengeNumber
-          }
+          challengeId
+          claimed
+          winningKeyCount
         }
       }
       refereeConfig(id: "RefereeConfig") {
@@ -53,6 +53,22 @@ export async function getSentryWalletsForOperator(
         stakeAmountTierThresholds
         version
       }
+      poolStakes(first:1000, where: {
+        wallet_: {address: $operatorAddress}
+      }){
+        id
+        pool{
+          id
+          address
+          pool
+          poolSubmissions: submissions{
+            id
+            challengeId
+            claimed
+            winningKeyCount
+          }
+        }
+      }
     }
   `
 
@@ -60,6 +76,7 @@ export async function getSentryWalletsForOperator(
 
   let wallets: SentryWallet[] = result.sentryWallets;
   let pools: PoolInfo[] = result.poolInfos;
+  // TODO Merge poolStakes into pools
 
   if (whitelist && whitelist.length) {
     const _whitelist = whitelist.map(w => w.toLowerCase())
