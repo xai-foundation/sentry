@@ -12,7 +12,7 @@ export function PromoCodeRow() {
         setDiscount,
         promoCode,
         setPromoCode,
-        handleSubmit,
+        handleApplyPromoCode,
         currency,
         decimalPlaces,
         calculateTotalPrice,
@@ -86,7 +86,7 @@ export function PromoCodeRow() {
                                     />
                                     <div className="lg:hidden sm:block">
                                         <PrimaryButton
-                                            onClick={() => handleSubmit()}
+                                            onClick={() => handleApplyPromoCode()}
                                             btnText="APPLY"
                                             className="text-white text-sm !py-2 max-h-[42.5px] max-w-[90px]"
                                         />
@@ -94,7 +94,7 @@ export function PromoCodeRow() {
                                 </div>
                                 <div className="lg:block sm:hidden">
                                     <PrimaryButton
-                                        onClick={() => handleSubmit()}
+                                        onClick={() => handleApplyPromoCode()}
                                         btnText="APPLY"
                                         className="text-white text-sm !py-2 max-h-[42.5px] max-w-[90px]"
                                     />

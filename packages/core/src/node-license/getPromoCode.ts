@@ -23,6 +23,45 @@ export interface PromoCode {
 export async function getPromoCode(promoCode: string): Promise<PromoCode> {
     const provider = getProvider();
     const nodeLicenseContract = new ethers.Contract(config.nodeLicenseAddress, NodeLicenseAbi, provider);
+
+    
     const promoCodeDetails = await nodeLicenseContract.getPromoCode(promoCode);
-    return promoCodeDetails;
+    const promoCodeIsActive = promoCodeDetails[1];
+
+    // If the promo code is active, return the details
+    if(promoCodeIsActive){
+        return promoCodeDetails;
+    }
+    
+    // Otherwise Check if the promo code is an address that owns a node license
+    // If this is the case, it means the promo code has not been used yet
+    // This will return the zero address if the promo code is not an address
+    const promoCodeAsAddress = await nodeLicenseContract.validateAndConvertAddress(promoCode);
+
+    // If the promo code is an address
+    if(promoCodeAsAddress!== ethers.ZeroAddress){ 
+
+        //Check if the address owns a node license
+        const balance = await nodeLicenseContract.balanceOf(promoCodeAsAddress);
+
+        // If the address owns a node license
+        if(balance>0){
+
+            // Create the promo code details object
+            const promoCodeDetails = {
+                recipient: promoCodeAsAddress,
+                active: true,
+                receivedLifetime: 0n
+            }
+
+            return promoCodeDetails;
+        }
+    }
+    
+    // If the promo code is not active and is not an address that owns a node license, return the 0 values
+    return {
+        recipient: ethers.ZeroAddress,
+        active: false,
+        receivedLifetime: BigInt(0)
+    }
 }

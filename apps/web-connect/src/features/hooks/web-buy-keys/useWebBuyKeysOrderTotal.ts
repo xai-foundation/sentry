@@ -50,8 +50,9 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
     decimalPlaces: number;
     quantity: number;
     maxSupply: number;
+    address: `0x${string}` | undefined;
     setQuantity: React.Dispatch<React.SetStateAction<number>>;
-    handleSubmit: () => Promise<void>;
+    handleApplyPromoCode: () => Promise<void>;
     approve: UseContractWritesReturn['approve'];
     mintWithEth: UseContractWritesReturn['mintWithEth'];
     mintWithXai: UseContractWritesReturn['mintWithXai'];
@@ -88,7 +89,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
 
     const { tokenBalance, ethBalance } = useUserBalances(currency);
     const { tokenAllowance, refetchAllowance } = useCurrencyHandler(currency, address);
-    const { promoCode, setPromoCode, discount, setDiscount, handleSubmit, isLoading: isPromoLoading } = usePromoCodeHandler();
+    const { promoCode, setPromoCode, discount, setDiscount, handleApplyPromoCode, isLoading: isPromoLoading } = usePromoCodeHandler(address);
 
     const ready = checkboxes.one && checkboxes.two && checkboxes.three;
 
@@ -211,13 +212,14 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         quantity,
         maxSupply,
         setQuantity,
-        handleSubmit,
+        handleApplyPromoCode,
         mintWithEth,
         approve,
         mintWithXai,
         ethMintTx,
         xaiMintTx,
         approveTx,
+        address,
         clearErrors,
         resetTransactions,
         mintWithEthError,
