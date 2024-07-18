@@ -15,12 +15,7 @@ export async function getXaiAllowance(wallet: string, operator: string): Promise
         return { approvalAmount: BigInt(0) };
     }
 
-    // Get the provider
-    const providerUrls = [
-        "https://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
-        "https://arb1.arbitrum.io/rpc",
-    ];
-    const provider = getProvider(providerUrls[Math.floor(Math.random() * providerUrls.length)]);
+    const provider = getProvider();
 
     // Create an instance of the Xai token contract
     const tokenContract = new ethers.Contract(config.xaiAddress, XaiAbi, provider);
