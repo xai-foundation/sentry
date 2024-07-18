@@ -1,8 +1,8 @@
 export let config = {
   "arbitrumBlockExplorer": "https://arbiscan.io",
   "arbitrumGoerliBlockExplorer": "https://goerli.arbiscan.io",
-  "arbitrumOneJsonRpcUrl": "https://arb-sepolia.g.alchemy.com/v2/8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B",
-  "arbitrumOneWebSocketUrl": "wss://arb-sepolia.g.alchemy.com/v2/8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B",
+  "arbitrumOneJsonRpcUrl": process.env.ARB_ONE_RPC || "https://arb-sepolia.g.alchemy.com/v2/8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B",
+  "arbitrumOneWebSocketUrl": process.env.ARB_ONE_WEBSOCKET || "wss://arb-sepolia.g.alchemy.com/v2/8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B",
   "defaultRpcUrl": "https://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
   "esXaiAddress": "0x5776784C2012887D1f2FA17281E406643CBa5330",
   "chainlinkEthUsdPriceFeed": "0x96452A47527e30a50F238c9867663F7c4D1e8656",
