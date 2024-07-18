@@ -58,10 +58,8 @@ export async function getPromoCode(promoCode: string): Promise<PromoCode> {
         }
     }
     
-    // If the promo code is not active and is not an address that owns a node license, return the 0 values
-    return {
-        recipient: ethers.ZeroAddress,
-        active: false,
-        receivedLifetime: BigInt(0)
-    }
+    // If the promo code is not active and is not an address that owns a node license, return the original details
+    // This will return zeroes if the promo code is not valid
+    // If it is valid but not active, it will return the original details
+    return promoCodeDetails
 }
