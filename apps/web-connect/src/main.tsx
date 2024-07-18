@@ -12,7 +12,7 @@ const projectId = '8f5121741edc292ac7e4203b648d61e2'
 const chains = [
 	arbitrum,
 	arbitrumNova,
-	// arbitrumSepolia
+	arbitrumSepolia
 ]
 
 const metadata = {
