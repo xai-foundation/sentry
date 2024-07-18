@@ -14,11 +14,18 @@ graph TD;
     operatorRuntime --> getSubgraphHealthStatus
     operatorRuntime <--> fetchBlockNumber
     operatorRuntime <--> stop
+    loadOperatorKeysFromRPC <--> listOwnersForOperator
+    loadOperatorKeysFromRPC <--> reloadPoolKeysForRPC
+    loadOperatorKeysFromRPC <--> syncOwnerStakedKeysForRPC
     loadOperatorKeysFromGraph <--> getSentryWalletsForOperator
     loadOperatorKeysFromGraph <--> getSentryKeysFromGraph
     loadOperatorKeysFromGraph <--> getPoolInfosFromGraph
 
+    getSubgraphHealthStatus <--> loadOperatorKeysFromRPC
     getSubgraphHealthStatus <--> loadOperatorKeysFromGraph
+    listOwnersForOperator --> getOwnerCountForOperator & getOwnerForOperatorAtIndex
+    reloadPoolKeysForRPC --> getOwnerOrDelegatePools & getKeysOfPool
+    syncOwnerStakedKeysForRPC --> getUserInteractedPools & getUserStakedKeysOfPool
 
     getSubgraphHealthStatus --> listenForChallengesCallback
     getSubgraphHealthStatus --> processNewChallenge
