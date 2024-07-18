@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import {AppRoutes} from './features/router'
 import {createWeb3Modal, defaultWagmiConfig} from '@web3modal/wagmi/react'
 import {WagmiConfig} from 'wagmi'
-import {arbitrum, arbitrumNova} from 'wagmi/chains'
+import {arbitrum, arbitrumNova, arbitrumSepolia} from 'wagmi/chains'
 import './index.css'
 import { IpLocationChecker } from './features/ipchecker/IpLocationChecker'
 
