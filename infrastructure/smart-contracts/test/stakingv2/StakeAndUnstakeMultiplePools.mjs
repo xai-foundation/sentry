@@ -38,32 +38,32 @@ export function StakeAndUnstakeMultiplePools(deployInfrastructure) {
             // Confirm the pool has 1 staked key
             expect(await referee.assignedKeysToPoolCount(stakingPool1Address)).to.equal(1);
 
-            // Confirm the pool has 10 staked keys
+            // Confirm the pool has 1 staked key
             expect(await referee.assignedKeysToPoolCount(stakingPool2Address)).to.equal(1);    
             
             const stakerPool1TokenIds = [stakerPool1KeyId];
             const stakerPool2TokenIds = [stakerPool2KeyId];
 
-            // Staker stakes token Id 12 in Pool 1
+            // Staker stakes in Pool 1
             await poolFactory.connect(staker).stakeKeys(stakingPool1Address, stakerPool1TokenIds);
             expect(await referee.assignedKeysToPoolCount(stakingPool1Address)).to.equal(2);
 
-            // Staker stakes token Id 13 in Pool 2
+            // Staker stakes in Pool 2
             await poolFactory.connect(staker).stakeKeys(stakingPool2Address, stakerPool2TokenIds);
             expect(await referee.assignedKeysToPoolCount(stakingPool2Address)).to.equal(2);
 
-            // Staker requests to un-stake token Id 13 from Pool 2
+            // Staker requests to un-stake 1 key from Pool 2
 			await poolFactory.connect(staker).createUnstakeKeyRequest(stakingPool2Address, 1);
 
             // Wait for unstake request to season
 			await ethers.provider.send("evm_increaseTime", [2592000 * 2]);
 			await ethers.provider.send("evm_mine");
 
-            // Staker un-stakes token Id 13 from Pool 2
+            // Staker un-stakes key from Pool 2
             await poolFactory.connect(staker).unstakeKeys(stakingPool2Address, 0, stakerPool2TokenIds);
             expect(await referee.assignedKeysToPoolCount(stakingPool2Address)).to.equal(1);
 
-            // Staker re-stakes token Id 13 in Pool 2        
+            // Staker re-stakes key in Pool 2        
             await poolFactory.connect(staker).stakeKeys(stakingPool2Address, stakerPool2TokenIds);    
             expect(await referee.assignedKeysToPoolCount(stakingPool2Address)).to.equal(2);
 		});
