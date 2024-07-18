@@ -166,7 +166,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         require(airdropCounter == totalSupplyAtStart, "Airdrop not complete");
 
         // Notify the node license contract that the airdrop is complete
-        NodeLicense8(nodeLicenseAddress).finishAirdrop(refereeAddress, keyMultiplier);
+        NodeLicense8(nodeLicenseAddress).finishAirdrop(refereeAddress, keyMultiplier + 1);
 
         airdropStarted = false;
         airdropEnded = true;
