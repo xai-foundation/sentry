@@ -643,6 +643,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
 
         interactedPoolsOfUser[user][indexOfPool] = lastPool;
         userToInteractedPoolIds[user][lastPool] = indexOfPool;
+        userToInteractedPoolIds[user][pool] = 0;
 
         interactedPoolsOfUser[user].pop();
     }
