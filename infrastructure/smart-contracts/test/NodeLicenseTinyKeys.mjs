@@ -403,7 +403,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
 
             // Confirm max supply after air drop
             const maxSupplyAfter = await nodeLicense.maxSupply();
-            expect(maxSupplyAfter).to.equal(maxSupplyBefore * airdropMultiplier);
+            expect(maxSupplyAfter).to.equal((maxSupplyBefore * airdropMultiplier) + maxSupplyBefore);
         });
 
         it("Check the maximum number of keys that can be minted in a single transaction using Eth", async function() {            

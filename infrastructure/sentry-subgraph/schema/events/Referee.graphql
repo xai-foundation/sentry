@@ -33,14 +33,15 @@ enum ClaimedFrom {
   claimRewards
   claimMultipleRewards
   unclaimed
+  unknown
 }
 
 type Submission @entity(immutable: false) {
   id: String!
-  challengeNumber: BigInt!
+  challengeNumber: BigInt! @index
   claimed: Boolean!
   eligibleForPayout: Boolean!
-  nodeLicenseId: BigInt! 
+  nodeLicenseId: BigInt! @index
   assertionsStateRootOrConfirmData: String!
   claimAmount: BigInt!
   createdTimestamp: BigInt!
@@ -76,10 +77,16 @@ type RefereeConfig @entity(immutable: false) {
 
 type PoolSubmission @entity(immutable: false) {
   id: String!
-  challengeId: BigInt!
+  challengeId: BigInt! @index
+  poolAddress: Bytes! @index
+  challenge: Challenge!
+  poolInfo: PoolInfo!
   stakedKeyCount: BigInt!
   winningKeyCount: BigInt!
   claimedRewardsAmount: BigInt!
-  poolAddress: Bytes!
-  claimed: Boolean!
+  createdTimestamp: BigInt! @index
+  createdTxHash: Bytes!
+  claimTimestamp: BigInt!
+  claimTxHash: Bytes!
+  claimed: Boolean! @index
 }

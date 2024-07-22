@@ -22,7 +22,6 @@ import {
     submitPoolAssertions,
     claimPoolSubmissionRewards,
     getMultipleUsersInteractedPoolsRpc
-
 } from "../index.js";
 import axios from "axios";
 import { PoolInfo, RefereeConfig, SentryKey, SentryWallet, Submission } from "@sentry/sentry-subgraph-client";
@@ -290,7 +289,9 @@ async function processNewChallenge(
     // Process any Pool Submissions
     if(cachedPoolsOfOperator && cachedPoolsOfOperator.length > 0) {
             try {
-                await submitPoolAssertions(cachedPoolsOfOperator, challengeNumber, challenge.assertionStateRootOrConfirmData, cachedSigner, cachedLogger);
+
+              await submitPoolAssertions(cachedPoolsOfOperator, challengeNumber, challenge.assertionStateRootOrConfirmData, cachedSigner, cachedLogger);
+
             } catch (error: any) {
                 cachedLogger(`Error submitting pool assertions for challenge ${challengeNumber} - ${error && error.message ? error.message : error}`);
             }    

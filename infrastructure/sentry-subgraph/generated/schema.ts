@@ -381,6 +381,14 @@ export class PoolInfo extends Entity {
       "poolChallenges",
     );
   }
+
+  get submissions(): PoolSubmissionLoader {
+    return new PoolSubmissionLoader(
+      "PoolInfo",
+      this.get("id")!.toString(),
+      "submissions",
+    );
+  }
 }
 
 export class UnstakeRequest extends Entity {
@@ -1484,6 +1492,204 @@ export class RefereeConfig extends Entity {
   }
 }
 
+export class PoolSubmission extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save PoolSubmission entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type PoolSubmission must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("PoolSubmission", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): PoolSubmission | null {
+    return changetype<PoolSubmission | null>(
+      store.get_in_block("PoolSubmission", id),
+    );
+  }
+
+  static load(id: string): PoolSubmission | null {
+    return changetype<PoolSubmission | null>(store.get("PoolSubmission", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get challengeId(): BigInt {
+    let value = this.get("challengeId");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set challengeId(value: BigInt) {
+    this.set("challengeId", Value.fromBigInt(value));
+  }
+
+  get poolAddress(): Bytes {
+    let value = this.get("poolAddress");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set poolAddress(value: Bytes) {
+    this.set("poolAddress", Value.fromBytes(value));
+  }
+
+  get challenge(): string {
+    let value = this.get("challenge");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set challenge(value: string) {
+    this.set("challenge", Value.fromString(value));
+  }
+
+  get poolInfo(): string {
+    let value = this.get("poolInfo");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set poolInfo(value: string) {
+    this.set("poolInfo", Value.fromString(value));
+  }
+
+  get stakedKeyCount(): BigInt {
+    let value = this.get("stakedKeyCount");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set stakedKeyCount(value: BigInt) {
+    this.set("stakedKeyCount", Value.fromBigInt(value));
+  }
+
+  get winningKeyCount(): BigInt {
+    let value = this.get("winningKeyCount");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set winningKeyCount(value: BigInt) {
+    this.set("winningKeyCount", Value.fromBigInt(value));
+  }
+
+  get claimedRewardsAmount(): BigInt {
+    let value = this.get("claimedRewardsAmount");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set claimedRewardsAmount(value: BigInt) {
+    this.set("claimedRewardsAmount", Value.fromBigInt(value));
+  }
+
+  get createdTimestamp(): BigInt {
+    let value = this.get("createdTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set createdTimestamp(value: BigInt) {
+    this.set("createdTimestamp", Value.fromBigInt(value));
+  }
+
+  get createdTxHash(): Bytes {
+    let value = this.get("createdTxHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set createdTxHash(value: Bytes) {
+    this.set("createdTxHash", Value.fromBytes(value));
+  }
+
+  get claimTimestamp(): BigInt {
+    let value = this.get("claimTimestamp");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set claimTimestamp(value: BigInt) {
+    this.set("claimTimestamp", Value.fromBigInt(value));
+  }
+
+  get claimTxHash(): Bytes {
+    let value = this.get("claimTxHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set claimTxHash(value: Bytes) {
+    this.set("claimTxHash", Value.fromBytes(value));
+  }
+
+  get claimed(): boolean {
+    let value = this.get("claimed");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set claimed(value: boolean) {
+    this.set("claimed", Value.fromBoolean(value));
+  }
+}
+
 export class ConvertedToEsXaiEvent extends Entity {
   constructor(id: Bytes) {
     super();
@@ -1603,6 +1809,24 @@ export class PoolChallengeLoader extends Entity {
   load(): PoolChallenge[] {
     let value = store.loadRelated(this._entity, this._id, this._field);
     return changetype<PoolChallenge[]>(value);
+  }
+}
+
+export class PoolSubmissionLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): PoolSubmission[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<PoolSubmission[]>(value);
   }
 }
 

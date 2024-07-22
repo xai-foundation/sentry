@@ -14,9 +14,9 @@ interface PromoCodeValidationResponse {
 /**
  * Custom hook to handle promo code validation.
  * Manages promo code input, discount state, and loading state.
- * @returns An object containing the promo code, discount state, handleSubmit function, and loading state.
+ * @returns An object containing the promo code, discount state, handleApplyPromoCode function, and loading state.
  */
-export function usePromoCodeHandler() {
+export function usePromoCodeHandler(address:`0x${string}` | undefined) {
   const [promoCode, setPromoCode] = useState<string>("");
   const [discount, setDiscount] = useState<DiscountState>({ applied: false, error: false });
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -25,10 +25,15 @@ export function usePromoCodeHandler() {
    * Handles the submission of the promo code.
    * Validates the promo code and updates the discount state accordingly.
    */
-  const handleSubmit = useCallback(async () => {
+  const handleApplyPromoCode = useCallback(async () => {
     setIsLoading(true);
     try {
-      const validatePromoCode: PromoCodeValidationResponse = await getPromoCode(promoCode);
+      if(address && address.toLowerCase() === promoCode.toLowerCase()){
+        setDiscount({ applied: false, error: true, errorMessage: "Promo code cannot be your own address." });
+        return;
+      }
+
+      const validatePromoCode: PromoCodeValidationResponse = await getPromoCode(promoCode);      
       setDiscount({
         applied: validatePromoCode.active,
         error: !validatePromoCode.active,
@@ -43,5 +48,5 @@ export function usePromoCodeHandler() {
     }
   }, [promoCode]);
 
-  return { promoCode, setPromoCode, discount, setDiscount, handleSubmit, isLoading };
+  return { promoCode, setPromoCode, discount, setDiscount, handleApplyPromoCode, isLoading };
 }
