@@ -97,6 +97,7 @@ jobs:
           username: ${{ secrets.SSL_USERNAME }}
           password: ${{ secrets.SSL_PASSWORD }}
           totp_secret: ${{ secrets.SSL_TOTP_SECRET }}
+          credential_id: ${{ secrets.SSL_CREDENTIAL_ID }}
           file_path: release-desktop-windows-latest/sentry-client-windows.exe
           output_path: release-desktop-windows-latest/signed-builds
       
