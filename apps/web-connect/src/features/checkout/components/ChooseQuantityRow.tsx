@@ -16,13 +16,6 @@ export function ChooseQuantityRow(): JSX.Element {
     // Destructure necessary values from the WebBuyKeysContext
     const { quantity, setQuantity, maxSupply } = useWebBuyKeysContext();
 
-    const calculateMaxPurchase = (): number => {
-        if (quantity > maxSupply) {
-            return maxSupply;
-        }
-        return quantity
-    }
-
     return (
         <div>
         <div className="flex sm:flex-col lg:flex-row justify-between lg:items-start sm:items-center">
@@ -57,7 +50,7 @@ export function ChooseQuantityRow(): JSX.Element {
                     <XaiNumberInput
                         quantity={quantity}
                         setQuantity={setQuantity}
-                        maxSupply={calculateMaxPurchase()}
+                        maxSupply={maxSupply}
                     />
                 </div>
             </div>
