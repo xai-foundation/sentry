@@ -278,3 +278,6 @@ Non-shared components are those utilized on the [Staking Website](https://app.xa
     * **Description:** Cookies consent component.
     * **UI Library:** [ReactCookieConsent](https://www.npmjs.com/package/react-cookie-consent) The best/most popular solution for such kind of components.
     * **Defined in:** [File](./apps/web-staking/src/app/components/ReactCookieConsent.tsx)
+
+### Removing duplicated components:
+When removing duplicate components, you should be cautious about ensuring that the functionality remains intact. First, check the props and styles of the components to see if they are identical. Secondly, some components might have divergent functionality due to differences in specific tasks and goals, which means you need to carefully assess if they can truly be merged. The new consolidated component might become overly complex if it needs to handle many different use cases. Additionally, consider any side effects or dependencies each component might have, as these could impact the overall behavior of your application. Lastly, thoroughly test the unified component to ensure it meets all necessary requirements without introducing new bugs.
