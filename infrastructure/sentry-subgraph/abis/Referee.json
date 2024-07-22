@@ -28,6 +28,25 @@
 		"anonymous": false,
 		"inputs": [
 			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "challengeId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "nodeLicenseId",
+				"type": "uint256"
+			}
+		],
+		"name": "AssertionCancelled",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
 				"indexed": false,
 				"internalType": "bool",
 				"name": "newState",
@@ -54,6 +73,37 @@
 			}
 		],
 		"name": "AssertionSubmitted",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "challengeId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "nodeLicenseId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "bytes",
+				"name": "assertionStateRootOrConfirmData",
+				"type": "bytes"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "eligibleForPayout",
+				"type": "bool"
+			}
+		],
+		"name": "AssertionSubmittedV2",
 		"type": "event"
 	},
 	{
@@ -213,6 +263,37 @@
 		"anonymous": false,
 		"inputs": [
 			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "challengeId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "poolAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "stakedKeys",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "winningKeys",
+				"type": "uint256"
+			}
+		],
+		"name": "NewPoolSubmission",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
 				"indexed": false,
 				"internalType": "address",
 				"name": "newNodeLicenseAddress",
@@ -232,6 +313,37 @@
 				"type": "uint256"
 			},
 			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "poolAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "totalReward",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "winningKeys",
+				"type": "uint256"
+			}
+		],
+		"name": "PoolRewardsClaimed",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "challengeId",
+				"type": "uint256"
+			},
+			{
 				"indexed": false,
 				"internalType": "uint256",
 				"name": "amount",
@@ -239,6 +351,31 @@
 			}
 		],
 		"name": "RewardsClaimed",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "challengeId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "nodeLicenseId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amount",
+				"type": "uint256"
+			}
+		],
+		"name": "RewardsClaimedV2",
 		"type": "event"
 	},
 	{
@@ -356,7 +493,14 @@
 	},
 	{
 		"anonymous": false,
-		"inputs": [],
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "enabled",
+				"type": "bool"
+			}
+		],
 		"name": "StakingEnabled",
 		"type": "event"
 	},
@@ -424,6 +568,49 @@
 		"type": "event"
 	},
 	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "challengeId",
+				"type": "uint256"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "poolAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "stakedKeys",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "winningKeys",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "increase",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "decrease",
+				"type": "uint256"
+			}
+		],
+		"name": "UpdatePoolSubmission",
+		"type": "event"
+	},
+	{
 		"inputs": [],
 		"name": "CHALLENGER_ROLE",
 		"outputs": [
@@ -450,19 +637,6 @@
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amount",
-				"type": "uint256"
-			}
-		],
-		"name": "DEV_StakeV1",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"name": "KYC_ADMIN_ROLE",
 		"outputs": [
@@ -479,29 +653,30 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "wallet",
+				"name": "",
 				"type": "address"
 			}
 		],
-		"name": "addKycWallet",
-		"outputs": [],
-		"stateMutability": "nonpayable",
+		"name": "_lifetimeClaims",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
-				"name": "newThreshold",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "newBoostFactor",
-				"type": "uint256"
+				"internalType": "address",
+				"name": "wallet",
+				"type": "address"
 			}
 		],
-		"name": "addStakingTier",
+		"name": "addKycWallet",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -717,6 +892,24 @@
 	{
 		"inputs": [
 			{
+				"internalType": "address",
+				"name": "_poolAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_challengeId",
+				"type": "uint256"
+			}
+		],
+		"name": "claimPoolSubmissionRewards",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "uint256",
 				"name": "_nodeLicenseId",
 				"type": "uint256"
@@ -773,14 +966,7 @@
 				"type": "bytes32"
 			}
 		],
-		"stateMutability": "pure",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "enableStaking",
-		"outputs": [],
-		"stateMutability": "nonpayable",
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -924,7 +1110,7 @@
 						"type": "uint256"
 					}
 				],
-				"internalType": "struct Referee5.Challenge",
+				"internalType": "struct Referee16.Challenge",
 				"name": "",
 				"type": "tuple"
 			}
@@ -1168,28 +1354,9 @@
 						"type": "bytes"
 					}
 				],
-				"internalType": "struct Referee5.Submission[]",
+				"internalType": "struct Referee16.Submission[]",
 				"name": "",
 				"type": "tuple[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "owner",
-				"type": "address"
-			}
-		],
-		"name": "getTotalClaims",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -1235,6 +1402,19 @@
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_refereeCalculationsAddress",
+				"type": "address"
+			}
+		],
+		"name": "initialize",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -1348,25 +1528,69 @@
 	{
 		"inputs": [
 			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			},
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "poolSubmissions",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "submitted",
+				"type": "bool"
+			},
+			{
+				"internalType": "bool",
+				"name": "claimed",
+				"type": "bool"
+			},
+			{
+				"internalType": "uint256",
+				"name": "stakedKeyCount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "winningKeyCount",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes",
+				"name": "assertionStateRootOrConfirmData",
+				"type": "bytes"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "refereeCalculationsAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "address",
 				"name": "wallet",
 				"type": "address"
 			}
 		],
 		"name": "removeKycWallet",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "index",
-				"type": "uint256"
-			}
-		],
-		"name": "removeStakingTier",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -1460,38 +1684,12 @@
 	{
 		"inputs": [
 			{
-				"internalType": "bytes",
-				"name": "_challengerPublicKey",
-				"type": "bytes"
+				"internalType": "bool",
+				"name": "enabled",
+				"type": "bool"
 			}
 		],
-		"name": "setChallengerPublicKey",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_nodeLicenseAddress",
-				"type": "address"
-			}
-		],
-		"name": "setNodeLicenseAddress",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_rollupAddress",
-				"type": "address"
-			}
-		],
-		"name": "setRollupAddress",
+		"name": "setStakingEnabled",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -1568,6 +1766,11 @@
 				"internalType": "uint256[]",
 				"name": "keyIds",
 				"type": "uint256[]"
+			},
+			{
+				"internalType": "bool",
+				"name": "isAdminStake",
+				"type": "bool"
 			}
 		],
 		"name": "stakeKeys",
@@ -1733,6 +1936,29 @@
 	{
 		"inputs": [
 			{
+				"internalType": "address",
+				"name": "_poolAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_challengeId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes",
+				"name": "_confirmData",
+				"type": "bytes"
+			}
+		],
+		"name": "submitPoolAssertion",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "bytes4",
 				"name": "interfaceId",
 				"type": "bytes4"
@@ -1747,13 +1973,6 @@
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "toggleAssertionChecking",
-		"outputs": [],
-		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -1811,55 +2030,6 @@
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "newAmount",
-				"type": "uint256"
-			}
-		],
-		"name": "updateMaxKeysPerPool",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "newAmount",
-				"type": "uint256"
-			}
-		],
-		"name": "updateMaxStakePerLicense",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "index",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "newThreshold",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "newBoostFactor",
-				"type": "uint256"
-			}
-		],
-		"name": "updateStakingTier",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"name": "xaiAddress",
 		"outputs": [
@@ -1872,4 +2042,4 @@
 		"stateMutability": "view",
 		"type": "function"
 	}
-]
+  ]

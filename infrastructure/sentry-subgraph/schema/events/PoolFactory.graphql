@@ -17,6 +17,7 @@ type PoolInfo @entity(immutable: false) {
   ownerLatestUnstakeRequestCompletionTime: BigInt!
   createdTimestamp: BigInt!
   poolChallenges: [PoolChallenge!]! @derivedFrom(field: "pool")
+  submissions: [PoolSubmission!]! @derivedFrom(field: "poolInfo")
 }
 
 type UnstakeRequest @entity(immutable: false) {
@@ -51,4 +52,12 @@ type PoolChallenge @entity(immutable: false) {
   totalStakedKeyAmount: BigInt!
   totalClaimedEsXaiAmount: BigInt!
   eligibleSubmissionsCount: BigInt!
+}
+
+type PoolStake @entity(immutable: false) {
+  id: String!
+  pool: PoolInfo!
+  wallet: SentryWallet! @index
+  keyStakeAmount: BigInt!
+  esXaiStakeAmount: BigInt!
 }

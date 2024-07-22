@@ -54,6 +54,7 @@ type PoolInfo @entity(immutable: false) {
   ownerLatestUnstakeRequestCompletionTime: BigInt!
   createdTimestamp: BigInt!
   poolChallenges: [PoolChallenge!]! @derivedFrom(field: "pool")
+  submissions: [PoolSubmission!]! @derivedFrom(field: "poolInfo")
 }
 
 type UnstakeRequest @entity(immutable: false) {
@@ -88,6 +89,14 @@ type PoolChallenge @entity(immutable: false) {
   totalStakedKeyAmount: BigInt!
   totalClaimedEsXaiAmount: BigInt!
   eligibleSubmissionsCount: BigInt!
+}
+
+type PoolStake @entity(immutable: false) {
+  id: String!
+  pool: PoolInfo!
+  wallet: SentryWallet! @index
+  keyStakeAmount: BigInt!
+  esXaiStakeAmount: BigInt!
 }
 
 ##############################################################
@@ -129,14 +138,15 @@ enum ClaimedFrom {
   claimRewards
   claimMultipleRewards
   unclaimed
+  unknown
 }
 
 type Submission @entity(immutable: false) {
   id: String!
-  challengeNumber: BigInt!
+  challengeNumber: BigInt! @index
   claimed: Boolean!
   eligibleForPayout: Boolean!
-  nodeLicenseId: BigInt!
+  nodeLicenseId: BigInt! @index
   assertionsStateRootOrConfirmData: String!
   claimAmount: BigInt!
   createdTimestamp: BigInt!
@@ -159,6 +169,7 @@ type SentryWallet @entity(immutable: false) {
   keyCount: BigInt!
   stakedKeyCount: BigInt!
   sentryKeys: [SentryKey!]! @derivedFrom(field: "sentryWallet")
+  poolStakes: [PoolStake!]! @derivedFrom(field: "wallet")
 }
 
 type RefereeConfig @entity(immutable: false) {
@@ -169,6 +180,23 @@ type RefereeConfig @entity(immutable: false) {
   stakeAmountTierThresholds: [BigInt!]!
   stakeAmountBoostFactors: [BigInt!]!
 }
+
+type PoolSubmission @entity(immutable: false) {
+  id: String!
+  challengeId: BigInt! @index
+  poolAddress: Bytes! @index
+  challenge: Challenge!
+  poolInfo: PoolInfo!
+  stakedKeyCount: BigInt!
+  winningKeyCount: BigInt!
+  claimedRewardsAmount: BigInt!
+  createdTimestamp: BigInt! @index
+  createdTxHash: Bytes!
+  claimTimestamp: BigInt!
+  claimTxHash: Bytes!
+  claimed: Boolean! @index
+}
+
 
 ######################################################
 # Xai.graphql                                        #
