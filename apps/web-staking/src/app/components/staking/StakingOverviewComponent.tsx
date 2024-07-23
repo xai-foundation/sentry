@@ -31,6 +31,7 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   const [showTableKeys, setShowTableKeys] = useState(searchParams.get("showKeys") ? searchParams.get("showKeys") === "true" : false);
   const [hideFullKeys, setHideFullKeys] = useState(searchParams.get("hideFullKeys") ? searchParams.get("hideFullKeys") === "true" : false);
   const [hideFullEsXai, setHideFullEsXai] = useState(searchParams.get("hideFull") ? searchParams.get("hideFull") === "true" : true);
+  const [minEsXaiStake, setMinEsXaiStake] = useState(searchParams.get("esXaiMinStake") ? Number(searchParams.get("esXaiMinStake")) : 0);
   const [sort, setSort] = useState(searchParams.get("sort") || "");
   const [sortOrder, setSortOrder] = useState(Number(searchParams.get("sortOrder")) || -1);
 
@@ -103,27 +104,28 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
     }
   };
 
-  const buildURI = (search: string, page: number, showTable: boolean, hideKeys: boolean, hideEsXai: boolean, sort: string, order: number) => {
-    return `/staking?chainId=${chainId}&search=${search}&page=${page}&showKeys=${showTable}&hideFull=${hideEsXai}&hideFullKeys=${hideKeys}&sort=${sort}&sortOrder=${order}`;
+  const buildURI = (search: string, page: number, showTable: boolean, hideKeys: boolean, hideEsXai: boolean, sort: string, order: number, esXaiMinStake: number) => {
+    return `/staking?chainId=${chainId}&search=${search}&page=${page}&showKeys=${showTable}&hideFull=${hideEsXai}&hideFullKeys=${hideKeys}&sort=${sort}&sortOrder=${order}&esXaiMinStake=${esXaiMinStake}`;
   }
 
   const submitSearch = () => {
+    console.log("submitSearch");
     setCurrentPage(1);
-    router.push(buildURI(searchValue, 1, showTableKeys, hideFullKeys, hideFullEsXai, sort, sortOrder),
+    router.push(buildURI(searchValue, 1, showTableKeys, hideFullKeys, hideFullEsXai, sort, sortOrder, minEsXaiStake),
         { scroll: false }
     );
   };
 
   const setPage = (page: number) => {
     setCurrentPage(page);
-    router.push(buildURI(searchValue, page, showTableKeys, hideFullKeys, hideFullEsXai, sort, sortOrder),
+    router.push(buildURI(searchValue, page, showTableKeys, hideFullKeys, hideFullEsXai, sort, sortOrder, minEsXaiStake),
         { scroll: false }
     );
   };
 
   const onToggleShowKeys = (showKeys: boolean) => {
     setShowTableKeys(showKeys);
-    router.push(buildURI(searchValue, currentPage, showKeys, hideFullKeys, hideFullEsXai, sort, sortOrder),
+    router.push(buildURI(searchValue, currentPage, showKeys, hideFullKeys, hideFullEsXai, sort, sortOrder, minEsXaiStake),
         { scroll: false }
     );
   };
@@ -131,12 +133,12 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   const onClickFilterCB = (checked: boolean) => {
     if (showTableKeys) {
       setHideFullKeys(checked);
-      router.push(buildURI(searchValue, currentPage, showTableKeys, checked, hideFullEsXai, sort, sortOrder),
+      router.push(buildURI(searchValue, currentPage, showTableKeys, checked, hideFullEsXai, sort, sortOrder, minEsXaiStake),
           { scroll: false }
       );
     } else {
       setHideFullEsXai(checked);
-      router.push(buildURI(searchValue, currentPage, showTableKeys, hideFullKeys, checked, sort, sortOrder),
+      router.push(buildURI(searchValue, currentPage, showTableKeys, hideFullKeys, checked, sort, sortOrder, minEsXaiStake),
           { scroll: false }
       );
     }
@@ -144,14 +146,14 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
 
   const setCurrentSort = (field: string) => {
     setSort(field);
-    router.push(buildURI(searchValue, currentPage, showTableKeys, hideFullKeys, hideFullEsXai, field, sortOrder),
+    router.push(buildURI(searchValue, currentPage, showTableKeys, hideFullKeys, hideFullEsXai, field, sortOrder, minEsXaiStake),
         { scroll: false }
     );
   };
 
   const setCurrentSortOrder = (order: number) => {
     setSortOrder(order);
-    router.push(buildURI(searchValue, currentPage, showTableKeys, hideFullKeys, hideFullEsXai, sort, order),
+    router.push(buildURI(searchValue, currentPage, showTableKeys, hideFullKeys, hideFullEsXai, sort, order, minEsXaiStake),
         { scroll: false }
     );
   };
@@ -179,6 +181,8 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
 
         <SearchBarComponent
             searchValue={searchValue}
+            minEsXaiStake={minEsXaiStake}
+            setMinStakeValue={setMinEsXaiStake}
             showTableKeys={showTableKeys}
             setSearchValue={setSearchValue}
             setShowKeyInfo={setShowTableKeys}
