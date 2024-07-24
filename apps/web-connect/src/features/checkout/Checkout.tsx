@@ -46,9 +46,9 @@ export function Checkout() {
     }
 
 	useEffect(() => {
-		if (!stakingTabOpened && mintWithEth.isSuccess || mintWithXai.isSuccess) {	
+		if (!stakingTabOpened && (mintWithEth.isSuccess || mintWithXai.isSuccess)) {	
             setStakingTabOpened(true);
-			window.open("https://app.xai.games/staking?mint=true", '_blank');
+			window.open("https://develop.app.xai.games/staking?showKeys=true", '_blank');
 		}
 	}, [mintWithEth.isSuccess, mintWithXai.isSuccess]);
 
