@@ -81,7 +81,7 @@ const SearchBarComponent = ({
                 placeholder="0" 
                 value={minEsXaiStake.toString()} 
                 onChange={(e) => setMinStakeValue(Number(e.target.value))} 
-                onClick={setClickSearch}
+                onEnter={setClickSearch}
               />
             </div>
             <div className="text-elementalGrey text-[18px] text-end ml-2 whitespace-nowrap mr-2">esXAI </div>
