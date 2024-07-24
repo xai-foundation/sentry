@@ -23,6 +23,8 @@ interface checkIpProps {
 export function useBlockIp() {
 	const [blocked, setBlocked] = useState(true);
 	const [loading, setLoading] = useState(true);
+	const [data, setData] = useState<any>();
+
 
 	const pathname = usePathname();
 
@@ -31,6 +33,7 @@ export function useBlockIp() {
 		async function checkIp() {
 			try {
 				const { data } = await axios.post(`https://centralized-services.expopulus.com/check-ip`);
+                setData(data);
 				const invalidIp = data.reasons?.find(({ type }: checkIpProps) => type === "INVALID_IP");
 				const ofacSanction = data.reasons?.find(({ type, geoBanType }: checkIpProps) => type === "GEO" && geoBanType === "OFAC_SANCTIONS");
 
@@ -54,5 +57,6 @@ export function useBlockIp() {
 	return {
 		blocked,
 		loading,
+		data
 	};
 }

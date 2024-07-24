@@ -1,6 +1,8 @@
-import React, { ReactNode, useEffect } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import { PrimaryButton, TextButton } from "@/app/components/ui/buttons";
 import { CloseIcon } from "@/app/components/icons/IconsComponent";
+import { Dropdown, DropdownItem } from "../../redeem/Dropdown";
+import { listOfCountries, listOfPreferableCountries } from "../../constants/constants";
 
 interface BaseModalProps {
   isOpened: boolean;
@@ -13,6 +15,14 @@ interface BaseModalProps {
   withOutCancelButton?: boolean;
   isDisabled?: boolean;
   withOutCloseButton?: boolean;
+  isDropdown?: boolean;
+  selectedWallet?: string | null;
+  setSelectedWallet?: React.Dispatch<React.SetStateAction<string | null>>;
+  setSelectedValue?: React.Dispatch<React.SetStateAction<string>>
+  isOpen?: boolean;
+  setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>
+  isError?: boolean;
+  errorMessage?: string;
 }
 
 const BaseModal = ({
@@ -25,7 +35,15 @@ const BaseModal = ({
                      isDisabled,
                      withOutCancelButton,
                      cancelText = "Cancel",
-                     submitText = "Submit"
+                     submitText = "Submit",
+                     isDropdown = false,
+                     selectedWallet,
+                     setSelectedWallet,
+                     setSelectedValue,
+                     isOpen,
+                     setIsOpen,
+                     isError,
+                     errorMessage
                    }: BaseModalProps) => {
   useEffect(() => {
     if (isOpened) {
@@ -34,6 +52,35 @@ const BaseModal = ({
       document.body.style.overflow = "visible";
     }
   }, [isOpened]);
+
+  const countries: JSX.Element[] = listOfCountries.map((item, i, arr) => (
+    <DropdownItem
+				onClick={() => {
+					setSelectedWallet && setSelectedWallet(item.label);
+					setIsOpen && setIsOpen(false);
+          setSelectedValue && setSelectedValue(item.value);
+      }}
+      dropdownOptionsCount={arr.length}
+				key={`sentry-item-${i}`}
+        extraClasses={"hover:!bg-velvetBlack"}
+			>
+				{item.label}
+    </DropdownItem>))
+  
+  const preferableCountries = listOfPreferableCountries.map((item, i, arr) => ((
+    <DropdownItem
+				onClick={() => {
+					setSelectedWallet && setSelectedWallet(item.label);
+					setIsOpen && setIsOpen(false);
+          setSelectedValue && setSelectedValue(item.value);
+      }}
+      dropdownOptionsCount={arr.length}
+				key={`sentry-item-${i}`}
+        extraClasses={"hover:!bg-velvetBlack"}
+			>
+				{item.label}
+    </DropdownItem>)));
+  
   return (
     <>
       {isOpened &&
@@ -56,6 +103,8 @@ const BaseModal = ({
             </span>}
             <span className="block font-bold text-white text-2xl mb-[18px]">{modalHeader}</span>
             <span className="block text-[17px] font-medium text-americanSilver">{modalBody}</span>
+            {isDropdown && <Dropdown getPreferableItems={() => preferableCountries} dropdownOptionsCount={countries.length} isOpen={isOpen!} selectedValue={selectedWallet!} selectedValueRender={<p>{selectedWallet || `Select your country`}</p>} setSelectedValue={setSelectedWallet!} setIsOpen={setIsOpen!} getDropdownItems={() => countries} extraClasses={{ dropdown: "!w-full my-3", dropdownOptions: "!w-full" }} defaultValue="Select your country" isInvalid={isError}  />}
+            {isError && <span className="block text-lg font-medium text-[#F76808]">{errorMessage}</span>}
             <div className="flex justify-end items-end mt-2">
               {!withOutCancelButton &&
                 <TextButton buttonText={cancelText} onClick={closeModal} textClassName="!text-lg !font-bold" />}

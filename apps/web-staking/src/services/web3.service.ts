@@ -563,8 +563,14 @@ export const getMaxBucketShares = async (network: NetworkKey): Promise<[ownerSha
 	return BUCKET_MAX_SHARES;
 }
 
-export const isKYCApproved = async (network: NetworkKey, walletAddress: string): Promise<boolean> => {
+export const isKYCApprovedForRedemption = async (network: NetworkKey, walletAddress: string): Promise<boolean> => {
 	const web3Instance = getWeb3Instance(network);
+
+	const ownedKeyCount = await getNodeLicenses(network, walletAddress);
+	if(ownedKeyCount <= 100){
+		return true;
+	}
+	
 	const refereeContract = new web3Instance.web3.eth.Contract(RefereeAbi, web3Instance.refereeAddress);
 	try {
 		const isApproved = await refereeContract.methods.isKycApproved(walletAddress).call() as boolean;
@@ -573,6 +579,7 @@ export const isKYCApproved = async (network: NetworkKey, walletAddress: string):
 		console.log("Error checking isKYCApproved", error);
 		return false;
 	}
+
 }
 
 export const POOL_SHARES_BASE = 10_000;
