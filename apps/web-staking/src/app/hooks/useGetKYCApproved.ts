@@ -1,6 +1,6 @@
 import {
     getNetwork,
-    isKYCApproved
+    isKYCApprovedForRedemption
 } from "@/services/web3.service";
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
@@ -11,7 +11,7 @@ export const useGetKYCApproved = () => {
 
   useEffect(() => {
     if (!address || !chainId) return;
-    isKYCApproved(getNetwork(chainId), address).then((approved) => {
+    isKYCApprovedForRedemption(getNetwork(chainId), address).then((approved) => {
       setIsApproved(approved);
     });
   }, [address, chainId]);
