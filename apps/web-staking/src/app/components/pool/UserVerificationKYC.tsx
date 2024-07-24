@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useBlockIp } from "@/app/hooks";
 import { PrimaryButton } from '../../../../../../packages/ui/src/rebrand/buttons/PrimaryButton';
 import ExternalLinkIcon from "../../../../../../packages/ui/src/rebrand/icons/ExternalLinkIcon";
-import {listOfCountries} from '../../../../../sentry-client-desktop/src/components/blockpass/CountryDropdown';
+import { listOfCountries } from "../constants/constants";
 import {SearchableDropdown, SearchableDropdownItem} from "../../../../../../packages/ui/src/rebrand/dropdown";
 
 const UserVerificationKYC = () => {
