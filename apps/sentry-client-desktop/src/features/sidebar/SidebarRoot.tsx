@@ -1,14 +1,17 @@
 import {AiOutlineCloudUpload} from "react-icons/ai";
 import {FaDiscord} from 'react-icons/fa';
-import {Link, useNavigate} from 'react-router-dom';
-import {ReactComponent as XaiLogo} from "@/svgs/xai-logo.svg";
+import {Link, useLocation, useNavigate} from 'react-router-dom';
 import {RiKey2Line, RiTwitterXFill} from "react-icons/ri";
 import {SiGitbook} from "react-icons/si";
-import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse.js";
+import {GreenPulse, GreyPulse, YellowPulse} from "@/features/keys/StatusPulse.js";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {useAtomValue} from "jotai";
-import {MdOutlineSpaceDashboard} from "react-icons/md";
+import { TelegramIcon, XaiHeaderIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import DashboardIconWhite from "@/assets/images/dashboard-icon-white.png";
+import DashboardIconGrey from "@/assets/images/dashboard-icon-grey.png";
+import { useStorage } from "@/features/storage";
+import ExternalLinkIcon from "@sentry/ui/dist/src/rebrand/icons/ExternalLinkIcon";
 
 /**
  * Sidebar component
@@ -16,108 +19,112 @@ import {MdOutlineSpaceDashboard} from "react-icons/md";
  */
 export function Sidebar() {
 	const navigate = useNavigate();
+	const location = useLocation();
 	const {sentryRunning} = useOperatorRuntime();
-	const {funded, hasAssignedKeys} = useAtomValue(accruingStateAtom);
-
+	const { funded, hasAssignedKeys } = useAtomValue(accruingStateAtom);
+	const {data} = useStorage();
+	const getActiveLink = (url: string) => {
+		if(location.pathname.includes(url)) {
+			return "bg-hornetSting global-clip-path text-white";
+		}
+		return "";
+	}
+		
 	return (
 		<div
-			className="flex flex-col justify-between sticky h-full w-[14.625rem] min-w-[14.625rem] bg-white border-r border-gray-200 text-[15px] p-4 z-10"
+			className="flex flex-col justify-between sticky h-full w-[237px] min-w-[237px] text-[15px] z-10"
 		>
-			<div className="fixed h-full flex flex-col gap-5">
+			<div className="fixed flex flex-col">
 				<div
-					className="flex items-center gap-2 text-base font-semibold cursor-pointer"
+					className="flex group items-centertext-base w-[5rem] h-[5rem] mb-[37px] font-semibold cursor-pointer bg-hornetSting hover:bg-white duration-200 ease-in px-[20px] py-[23px]"
 					onClick={() => navigate("/")}
 				>
-					<XaiLogo className="w-[16px] text-[#F30919]"/>
-					<h1>Xai Client</h1>
+					<XaiHeaderIcon width={39} height={34} fill="fill-white" />
 				</div>
 
-				<div>
-					<h2 className="text-gray-400 text-[12px] mb-2 uppercase">Sentry Node</h2>
-
+				<div className="w-[237px] mb-[110px]">
 					<Link
-						to="/dashboard"
-						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
+						to={data?.addedWallets?.length && data.addedWallets.length > 0 ? "/dashboard" : "#"}
+						className={`flex items-center w-[237px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/dashboard')}` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
 					>
-						<MdOutlineSpaceDashboard size={15}/> Dashboard
+						{data?.addedWallets?.length && data.addedWallets.length > 0 ? <img src={DashboardIconWhite} width={14} height={14} className="ml-1" /> : <img src={DashboardIconGrey} width={14} height={14} className="ml-1" />} DASHBOARD
 					</Link>
 
 					<Link
-						to="/keys"
-						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
+						to={data?.addedWallets?.length && data.addedWallets.length > 0 ? "/keys" : "#"}
+						className={`flex items-center w-[237px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/keys')}` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
 					>
-						<RiKey2Line size={15}/> Keys
+						<RiKey2Line size={20}/> KEYS
 					</Link>
 
 					<Link
-						to="/sentry-wallet"
-						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
+						to={data?.addedWallets?.length && data.addedWallets.length > 0 ? "/sentry-wallet" : "#"}
+						className={`flex items-center w-[237px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom ${getActiveLink('/sentry-wallet')}` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
 					>
-						<div className="w-[15px] h-[15px] flex justify-center items-center">
-							{sentryRunning && hasAssignedKeys && funded ? <GreenPulse/> : <YellowPulse/>}
+						<div className="w-auto h-auto flex justify-center items-center">
+							{sentryRunning && !!data?.addedWallets?.length && data?.addedWallets?.length !== 0 && hasAssignedKeys && funded && <GreenPulse size='lg' />}
+							{sentryRunning && !!data?.addedWallets?.length && data?.addedWallets?.length !== 0 && (!hasAssignedKeys || !funded) && <YellowPulse size='lg' />}
+							{(!sentryRunning || !data?.addedWallets?.length || data?.addedWallets?.length === 0) && <GreyPulse size='lg' />}
 						</div>
-						Sentry Wallet
+						SENTRY WALLET
 					</Link>
 					<a
-						onClick={() => window.electron.openExternal('https://app.xai.games')}
-						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
+						onClick={() => data?.addedWallets?.length && data.addedWallets.length > 0 && window.electron.openExternal('https://app.xai.games')}
+						className={`flex items-center w-[237px] text-xl font-bold ${data?.addedWallets?.length && data.addedWallets.length > 0 ? `text-white cursor-pointer hover:global-clip-path hover:bg-darkRoom` : "text-foggyLondon cursor-auto"} gap-2 py-[11px] pl-[17px]`}
 					>
-						<XaiLogo className="w-[16px]"/> Staking
+						<XaiHeaderIcon extraClasses="mt-[-4px]" width={20} height={20} fill={`${!data?.addedWallets?.length ? "fill-foggyLondon" : "fill-white"}`} />
+						STAKING
+						<ExternalLinkIcon
+						extraClasses={{svgClasses: "mt-[-4px]", pathClasses: `${!data?.addedWallets?.length ? "fill-foggyLondon" : "fill-white"}`}}
+					/>
 					</a>
-
-					{/*<Link*/}
-					{/*	to="/redeem"*/}
-					{/*	className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"*/}
-					{/*>*/}
-					{/*	<IoGiftOutline size={15}/> Redeem*/}
-					{/*</Link>*/}
 				</div>
 
-				<div>
-					<h2 className="text-gray-400 text-[12px] mb-2 uppercase">Help</h2>
+				<div className="px-[17px]">
 					<a
-						onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup/step-2-download-and-run-the-xai-sentry-node")}
-						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
+						onClick={() => window.electron.openExternal("https://xai-foundation.gitbook.io/xai-network/about-xai/sentry-node-purchase-and-setup/common-troubleshooting-steps/how-do-i-run-a-xai-node-on-vps")}
+						className="flex items-center mb-[5px] text-base font-medium text-white cursor-pointer gap-2 hover:text-hornetSting duration-200 ease-in"
 					>
-						<AiOutlineCloudUpload size={15}/> Set up on Cloud
+						<AiOutlineCloudUpload size={20}/> SET UP ON CLOUD
 					</a>
 					<a
 						onClick={() => window.electron.openExternal(" https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup/step-3-complete-requirements-to-accrue-esxai")}
-						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
+						className="flex items-center mb-[5px] text-base font-medium text-white cursor-pointer gap-2 hover:text-hornetSting duration-200 ease-in"
 					>
-						<SiGitbook size={15}/> Gitbook
+						<SiGitbook size={20}/> GITBOOK
 					</a>
-				</div>
 
-				<div>
-					<h2 className="text-gray-400 text-[12px] mb-2 uppercase">Social</h2>
 					<a
 						onClick={() => window.electron.openExternal('https://discord.com/invite/xaigames')}
-						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
+						className="flex items-center mb-[5px] text-base font-medium text-white cursor-pointer gap-2 hover:text-hornetSting duration-200 ease-in"
 					>
-						<FaDiscord size={15}/> Discord
+						<FaDiscord size={20}/> DISCORD
 					</a>
 					<a
 						onClick={() => window.electron.openExternal('https://twitter.com/xai_games')}
-						className="flex items-center mb-1 text-[15px] text-gray-600 hover:text-gray-400 cursor-pointer gap-2"
+						className="flex items-center mb-[5px] text-base font-medium text-white cursor-pointer gap-2 hover:text-hornetSting duration-200 ease-in"
 					>
-						<RiTwitterXFill size={15}/> X
+						<RiTwitterXFill size={20}/> X
 					</a>
-				</div>
-			</div>
-
-			<div/>
-
-			<div className="flex flex-col gap-1 text-[12px] z-10">
-				<p>v{import.meta.env.APP_VERSION}</p>
+					<a
+						onClick={() => window.electron.openExternal('https://t.me/XaiSentryNodes')}
+						className="flex group items-center mb-[20px] text-base font-medium text-white cursor-pointer gap-2 hover:text-hornetSting duration-200 ease-in"
+					>
+						<TelegramIcon width={18} height={16} className="fill-white group-hover:fill-hornetSting duration-200 ease-in"/> TELEGRAM
+					</a>
 				<a
-					className="text-[#F30919] cursor-pointer hover:underline"
+					className="text-elementalGrey text-[15px] cursor-pointer hover:underline duration-200 ease-in"
 					onClick={() => window.electron.openExternal("https://xai.games/sentry-node-agreement")}
 				>
-					Sentry Node Agreement
-				</a>
-				<p>©2023 XAI. All Rights Reserved</p>
+					SENTRY NODE AGREEMENT
+					</a>
+					<div className="text-elementalGrey text-[15px] mt-[20px]">
+						<p>v{import.meta.env.APP_VERSION}</p>
+						<p>©2024 XAI. ALL RIGHTS RESERVED</p>
+					</div>
+				</div>
 			</div>
+			<div/>
 		</div>
 	);
 }

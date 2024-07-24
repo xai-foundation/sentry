@@ -5,9 +5,13 @@ interface XaiNumberInput {
   quantity: number;
   setQuantity: (quantity: number) => void;
   maxSupply?: number;
+  wrapperClassName?: string;
+  containerClassName?: string;
+  btnClassName?: string;
+  inputClassName?: string;
 }
 
-export function XaiNumberInput({quantity, setQuantity, maxSupply = 50000}: XaiNumberInput) {
+export function XaiNumberInput({quantity, setQuantity, maxSupply = 50000, wrapperClassName = "", containerClassName = "", btnClassName = "", inputClassName = ""}: XaiNumberInput) {
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     const numericInput = event.target.value.replace(/[^0-9]/g, "");
     let newAmount = parseInt(numericInput);
@@ -25,7 +29,7 @@ export function XaiNumberInput({quantity, setQuantity, maxSupply = 50000}: XaiNu
 
   return (
     <div className="relative sm:w-full lg:w-auto">
-      <MainStepper onChange={handleInputChange} quantity={quantity} setQuantity={setQuantity} maxSupply={maxSupply} />
+      <MainStepper onChange={handleInputChange} quantity={quantity} setQuantity={setQuantity} maxSupply={maxSupply} wrapperClassName={wrapperClassName} containerClassName={containerClassName} btnClassName={btnClassName} inputClassName={inputClassName} />
     </div>
   );
 }

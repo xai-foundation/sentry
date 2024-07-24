@@ -1,56 +1,127 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@200;300;400;500;600;700&display=swap');
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-.din-alternate_light {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 200;
+@font-face {
+  font-family: "Rajdhani", sans-serif;
+  src: url("./assets/fonts/Rajdhani-Regular.ttf");
+  font-weight: normal;
+  font-style: normal;
 }
 
-.din-alternate_regular {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 300;
+@font-face {
+  font-family: "Rajdhani";
+  src: url("./assets//fonts//Rajdhani-Bold.ttf");
+  font-weight: 700;
+  font-style: normal;
 }
 
-.din-alternate_medium {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 400;
+@font-face {
+  font-family: "Rajdhani";
+  src: url("./assets//fonts/Rajdhani-Medium.ttf");
+  font-weight: 500;
+  font-style: normal;
 }
 
-.din-alternate_demi {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 500;
+@font-face {
+  font-family: "Rajdhani";
+  src: url("./assets/fonts/Rajdhani-SemiBold.ttf");
+  font-weight: 600;
+  font-style: normal;
 }
 
-.din-alternate_semi-bold {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 600;
-}
-
-.din-alternate_bold {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 700;
-}
-
-td {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 13px;
-    font-style: normal;
-    font-weight: 300;
+@font-face {
+  font-family: "Rajdhani";
+  src: url("./assets/fonts/Rajdhani-Light.ttf");
+  font-weight: 300;
+  font-style: normal;
 }
 
 body {
-    font-family: "urw-din", sans-serif;
-    font-style: normal;
-    font-weight: 300;
+  font-family: "Rajdhani", sans-serif;
+  font-style: normal;
+  background-image: url("./assets/images/background.png"), linear-gradient(180deg, #221d1d 0%, #221d1d 100%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
 }
+
+@layer components {
+    .global-clip-path {
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+      }
+
+    .dropdown-clip-path {
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+      }
+
+    .dropdown:hover + .dropdown-border {
+        background-color: #FF2C3A;
+    }
+
+    .global-cta-clip-path {
+        clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
+    }
+
+    .global-clip-primary-btn {
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+    }
+
+    .global-clip-btn {
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+    }
+
+    .global-input-clip-path {
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+    }
+
+    .shadow-default {
+        filter: drop-shadow(0px 10px 10px #00000090);
+    }
+
+    .base-input {
+        background-color: transparent;
+    }
+
+    .remove-wallet-modal-close:hover .close-stick,
+    .remove-assign-wallet-modal:hover .close-stick {
+        fill: #FF0030 !important;
+        transition: .25s ease-in-out;
+    }
+
+
+    .dropdown-options::-webkit-scrollbar {
+            width: 10px;
+            background: #000;
+        }
+
+    .dropdown-options::-webkit-scrollbar-thumb {
+        background: #1F1B1B;
+        border-right: 2px black solid;
+        border-top: 2px black solid;
+        border-bottom: 2px black solid;
+        background-clip: padding-box;
+    }
+
+    .checkboxLabel input:before {
+        opacity: 0;
+        transition: opacity .25s ease-in-out;
+    }
+
+    .checkboxLabel input:checked:before {
+        opacity: 100;
+    }
+}
+
+@layer utilities {
+      .no-scrollbar::-webkit-scrollbar {
+          display: none;
+      }
+      .no-scrollbar {
+          -ms-overflow-style: none;  /* IE and Edge */
+          scrollbar-width: none;  /* Firefox */
+    }
+  }
 
 
 @keyframes pulse-green {
@@ -87,3 +158,20 @@ body {
         box-shadow: 0 0 0 0 rgba(255, 177, 66, 0);
     }
 }
+
+select:focus > option:checked {
+  background: #140F0F !important;
+}
+
+input[type='number'] {
+    -moz-appearance:textfield;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+.shadow-box-main {
+    box-shadow: 0px 10px 15px #00000080;;
+ }

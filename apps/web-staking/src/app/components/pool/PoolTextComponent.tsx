@@ -1,7 +1,7 @@
 enum PoolText {
   GET_STARTED = "Let's get started setting up your pool",
   UNSTAKED_KEYS = "You do not own any unstaked keys that have passed KYC.",
-  NOT_OWN = "You do not own any unstaked keys that have passed KYC. Download the operator to pass KYC before creating a pool.",
+  NOT_OWN = "Wallet must pass KYC first before a pool can be created. To start KYC, first choose country before continuing.",
   OWN_KEYS = "Own at least one unstaked key that has passed KYC?",
   CONNECT_WALLET = "Connect your wallet to create a pool.",
 }
@@ -23,7 +23,7 @@ const PoolTextComponent = ({ address, isApproved }: PoolTextProps) => {
           ) : (
             <>
               {" "}
-              <span className="w-full max-w-[456px] text-center">
+              <span className="w-full max-w-[420px] text-center">
                 {PoolText.NOT_OWN}
               </span>
             </>
