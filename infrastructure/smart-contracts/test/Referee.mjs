@@ -61,17 +61,18 @@ export function RefereeTests(deployInfrastructure) {
 
 	return function () {
 
-		it("Check to make sure the setChallengerPublicKey actually saves the value and only callable as an admin", async function () {
-			const {referee, refereeDefaultAdmin, kycAdmin, challenger} = await loadFixture(deployInfrastructure);
-			const newPublicKey = "0x1234567890abcdef";
-			await referee.connect(refereeDefaultAdmin).setChallengerPublicKey(newPublicKey);
-			const savedPublicKey = await referee.challengerPublicKey();
-			assert.equal(savedPublicKey, newPublicKey, "The saved public key does not match the new public key");
-			const expectedRevertMessageAdmin = `AccessControl: account ${kycAdmin.address.toLowerCase()} is missing role ${await referee.DEFAULT_ADMIN_ROLE()}`;
-			await expect(referee.connect(kycAdmin).setChallengerPublicKey(newPublicKey)).to.be.revertedWith(expectedRevertMessageAdmin);
-			const expectedRevertMessageChallenger = `AccessControl: account ${challenger.address.toLowerCase()} is missing role ${await referee.DEFAULT_ADMIN_ROLE()}`;
-			await expect(referee.connect(challenger).setChallengerPublicKey(newPublicKey)).to.be.revertedWith(expectedRevertMessageChallenger);
-		})
+		// With Referee version 9 we removed the setChallengerPublicKey function for contract size savings. The publickey would be updated with an upgrade initialize
+		// it("Check to make sure the setChallengerPublicKey actually saves the value and only callable as an admin", async function () {
+		// 	const {referee, refereeDefaultAdmin, kycAdmin, challenger} = await loadFixture(deployInfrastructure);
+		// 	const newPublicKey = "0x1234567890abcdef";
+		// 	await referee.connect(refereeDefaultAdmin).setChallengerPublicKey(newPublicKey);
+		// 	const savedPublicKey = await referee.challengerPublicKey();
+		// 	assert.equal(savedPublicKey, newPublicKey, "The saved public key does not match the new public key");
+		// 	const expectedRevertMessageAdmin = `AccessControl: account ${kycAdmin.address.toLowerCase()} is missing role ${await referee.DEFAULT_ADMIN_ROLE()}`;
+		// 	await expect(referee.connect(kycAdmin).setChallengerPublicKey(newPublicKey)).to.be.revertedWith(expectedRevertMessageAdmin);
+		// 	const expectedRevertMessageChallenger = `AccessControl: account ${challenger.address.toLowerCase()} is missing role ${await referee.DEFAULT_ADMIN_ROLE()}`;
+		// 	await expect(referee.connect(challenger).setChallengerPublicKey(newPublicKey)).to.be.revertedWith(expectedRevertMessageChallenger);
+		// })
 
 		it("Check isApprovedForOperator function", async function () {
 			const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
@@ -156,43 +157,43 @@ export function RefereeTests(deployInfrastructure) {
 			assert.equal(finalCount, BigInt(initialCount + BigInt(1)), "The KYC wallet count does not match");
 		})
 
-		// it("Check calculateChallengeEmissionAndTier function with increased total supply", async function() {
-		//     const {referee, xai, xaiMinter} = await loadFixture(deployInfrastructure);
-		//     const maxSupply = await xai.MAX_SUPPLY();
+		it("Check calculateChallengeEmissionAndTier function with increased total supply", async function() {
+		    const {referee, xai, xaiMinter} = await loadFixture(deployInfrastructure);
+		    const maxSupply = await xai.MAX_SUPPLY();
 
 
-		//     let previousEmissionAndTier = await referee.calculateChallengeEmissionAndTier();
-		//     let currentSupply = await referee.getCombinedTotalSupply();
-		//     let currentTier = maxSupply / BigInt(2);
-		//     let iterationCount = 0;
+		    let previousEmissionAndTier = await referee.calculateChallengeEmissionAndTier();
+		    let currentSupply = await referee.getCombinedTotalSupply();
+		    let currentTier = maxSupply / BigInt(2);
+		    let iterationCount = 0;
 
-		//     while(currentSupply < maxSupply && iterationCount < 29) {
-		//         // Calculate the amount to mint to reach the next tier
-		//         let mintAmount = currentTier - currentSupply;
+		    while(currentSupply < maxSupply && iterationCount < 23) {
+		        // Calculate the amount to mint to reach the next tier
+		        let mintAmount = currentTier - currentSupply;
 
-		//         // Break out of the loop if mint amount is 0
-		//         if (mintAmount === BigInt(0)) {
-		//             break;
-		//         }
+		        // Break out of the loop if mint amount is 0
+		        if (mintAmount === BigInt(0)) {
+		            break;
+		        }
 
-		//         // Mint the calculated amount
-		//         await xai.connect(xaiMinter).mint(xaiMinter.address, mintAmount);
+		        // Mint the calculated amount
+		        await xai.connect(xaiMinter).mint(xaiMinter.address, mintAmount);
 
-		//         // Update the current supply
-		//         currentSupply = await referee.getCombinedTotalSupply();
+		        // Update the current supply
+		        currentSupply = await referee.getCombinedTotalSupply();
 
-		//         // Check that the emission and tier have changed
-		//         const currentEmissionAndTier = await referee.calculateChallengeEmissionAndTier();
-		//         assert.notDeepEqual(previousEmissionAndTier, currentEmissionAndTier, "The emission and tier did not change after increasing total supply");
-		//         previousEmissionAndTier = currentEmissionAndTier;
+		        // Check that the emission and tier have changed
+		        const currentEmissionAndTier = await referee.calculateChallengeEmissionAndTier();
+		        assert.notDeepEqual(previousEmissionAndTier, currentEmissionAndTier, "The emission and tier did not change after increasing total supply");
+		        previousEmissionAndTier = currentEmissionAndTier;
 
-		//         // Calculate the next tier
-		//         currentTier = currentSupply + (mintAmount / BigInt(2));
+		        // Calculate the next tier
+		        currentTier = currentSupply + (mintAmount / BigInt(2));
 
-		//         // Increase iteration count
-		//         iterationCount++;
-		//     }
-		// })
+		        // Increase iteration count
+		        iterationCount++;
+		    }
+		})
 
 		it("Check calculateChallengeEmissionAndTier", async function () {
 			const {referee, xai, xaiMinter} = await loadFixture(deployInfrastructure);
@@ -402,7 +403,7 @@ export function RefereeTests(deployInfrastructure) {
 			assert.equal(balanceAfter, balanceBefore + rewardAmountForClaimers, "The amount of esXai minted was wrong")
 
 			// check the esxai balance is equal to the total claims for the node owner
-			const totalClaimsForAddr1 = await referee.getTotalClaims(await addr1.getAddress());
+			const totalClaimsForAddr1 = await referee._lifetimeClaims(await addr1.getAddress());
 			assert.equal(totalClaimsForAddr1, balanceAfter, "total claims does not match the esXai value")
 
 			// check getChallenge is able to iterate over both challenges
@@ -705,109 +706,113 @@ export function RefereeTests(deployInfrastructure) {
 		//     }).timeout(300_000) // 5 min
 		// })
 
-		describe("The rollup protocol should be checking if values are correct", function () {
 
-		    it("Check that toggling assertion, makes so you have to send in the correct assertion data from the rollup protocol", async function () {
-		        const { referee, refereeDefaultAdmin, challenger } = await loadFixture(deployInfrastructure);
+		// These can only be run on a fork from the mainnet chain using the mainnet rollup.
+		// For Referee9 we removed toggleAssertionChecking so these testcases need to be udpated.
+		// These tests have not been run since Referee2
+		// describe("The rollup protocol should be checking if values are correct", function () {
 
-		        // check isCheckingAssertions is false
-		        const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
-		        assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
+		//     it("Check that toggling assertion, makes so you have to send in the correct assertion data from the rollup protocol", async function () {
+		//         const { referee, refereeDefaultAdmin, challenger } = await loadFixture(deployInfrastructure);
 
-		        // turn on assertion checking
-		        await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
+		//         // check isCheckingAssertions is false
+		//         const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
+		//         assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
 
-		        // check isCheckingAssertions is true
-		        const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
-		        assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
+		//         // turn on assertion checking
+		//         await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
 
-		        // get an arbitrary node from the protocol and check to see that the referee actually checks it
-		        await referee.connect(challenger).submitChallenge(
-		            2252,
-		            2251,
-		            "0x2fd53fdb1cd3d34d509978b94af510451ab103c5ba7aef645fd27c97af8aacb0",
-		            10117582,
-		            "0x0000000000000000000000000000000000000000000000000000000000000000"
-		        );
-		    })
+		//         // check isCheckingAssertions is true
+		//         const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
+		//         assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
 
-		    it("Check that passing an incorrect _predecessorAssertionId throws an error", async function() {
+		//         // get an arbitrary node from the protocol and check to see that the referee actually checks it
+		//         await referee.connect(challenger).submitChallenge(
+		//             2252,
+		//             2251,
+		//             "0x2fd53fdb1cd3d34d509978b94af510451ab103c5ba7aef645fd27c97af8aacb0",
+		//             10117582,
+		//             "0x0000000000000000000000000000000000000000000000000000000000000000"
+		//         );
+		//     })
 
-		        const {referee, refereeDefaultAdmin, challenger} = await loadFixture(deployInfrastructure);
+		//     it("Check that passing an incorrect _predecessorAssertionId throws an error", async function() {
 
-		        // check isCheckingAssertions is false
-		        const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
-		        assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
+		//         const {referee, refereeDefaultAdmin, challenger} = await loadFixture(deployInfrastructure);
 
-		        // turn on assertion checking
-		        await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
+		//         // check isCheckingAssertions is false
+		//         const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
+		//         assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
 
-		        // check isCheckingAssertions is true
-		        const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
-		        assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
+		//         // turn on assertion checking
+		//         await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
 
-		        await expect(
-		            referee.connect(challenger).submitChallenge(
-		                2252,
-		                9999,
-		                "0x2fd53fdb1cd3d34d509978b94af510451ab103c5ba7aef645fd27c97af8aacb0",
-		                10117582,
-		                "0x0000000000000000000000000000000000000000000000000000000000000000"
-		            )
-		        ).to.be.revertedWith("10");
-		    })
+		//         // check isCheckingAssertions is true
+		//         const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
+		//         assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
 
-		    it("Check that passing an incorrect _confirmData throws an error", async function() {
+		//         await expect(
+		//             referee.connect(challenger).submitChallenge(
+		//                 2252,
+		//                 9999,
+		//                 "0x2fd53fdb1cd3d34d509978b94af510451ab103c5ba7aef645fd27c97af8aacb0",
+		//                 10117582,
+		//                 "0x0000000000000000000000000000000000000000000000000000000000000000"
+		//             )
+		//         ).to.be.revertedWith("10");
+		//     })
 
-		        const {referee, refereeDefaultAdmin, challenger} = await loadFixture(deployInfrastructure);
+		//     it("Check that passing an incorrect _confirmData throws an error", async function() {
 
-		        // check isCheckingAssertions is false
-		        const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
-		        assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
+		//         const {referee, refereeDefaultAdmin, challenger} = await loadFixture(deployInfrastructure);
 
-		        // turn on assertion checking
-		        await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
+		//         // check isCheckingAssertions is false
+		//         const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
+		//         assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
 
-		        // check isCheckingAssertions is true
-		        const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
-		        assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
+		//         // turn on assertion checking
+		//         await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
 
-		        await expect(
-		            referee.connect(challenger).submitChallenge(
-		                2252,
-		                2251,
-		                "0x0000000000000000000000000000000000000000000000000000000000000000",
-		                10117582,
-		                "0x0000000000000000000000000000000000000000000000000000000000000000"
-		            )
-		        ).to.be.revertedWith("11");
-		    })
+		//         // check isCheckingAssertions is true
+		//         const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
+		//         assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
 
-		    it("Check that passing an incorrect _assertionTimestamp throws an error", async function() {
+		//         await expect(
+		//             referee.connect(challenger).submitChallenge(
+		//                 2252,
+		//                 2251,
+		//                 "0x0000000000000000000000000000000000000000000000000000000000000000",
+		//                 10117582,
+		//                 "0x0000000000000000000000000000000000000000000000000000000000000000"
+		//             )
+		//         ).to.be.revertedWith("11");
+		//     })
 
-		        const {referee, refereeDefaultAdmin, challenger} = await loadFixture(deployInfrastructure);
+		//     it("Check that passing an incorrect _assertionTimestamp throws an error", async function() {
 
-		        // check isCheckingAssertions is false
-		        const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
-		        assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
+		//         const {referee, refereeDefaultAdmin, challenger} = await loadFixture(deployInfrastructure);
 
-		        // turn on assertion checking
-		        await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
+		//         // check isCheckingAssertions is false
+		//         const isCheckingAssertionsBefore = await referee.isCheckingAssertions();
+		//         assert.equal(isCheckingAssertionsBefore, false, "Assertions are turned on");
 
-		        // check isCheckingAssertions is true
-		        const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
-		        assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
+		//         // turn on assertion checking
+		//         await referee.connect(refereeDefaultAdmin).toggleAssertionChecking();
 
-		        await expect(
-		            referee.connect(challenger).submitChallenge(
-		                2252,
-		                2251,
-		                "0x2fd53fdb1cd3d34d509978b94af510451ab103c5ba7aef645fd27c97af8aacb0",
-		                99999999,
-		                "0x0000000000000000000000000000000000000000000000000000000000000000"
-		            )
-		        ).to.be.revertedWith("12");
-		    })
-		})
+		//         // check isCheckingAssertions is true
+		//         const isCheckingAssertionsAfter = await referee.isCheckingAssertions();
+		//         assert.equal(isCheckingAssertionsAfter, true, "Assertions are turned off");
+
+		//         await expect(
+		//             referee.connect(challenger).submitChallenge(
+		//                 2252,
+		//                 2251,
+		//                 "0x2fd53fdb1cd3d34d509978b94af510451ab103c5ba7aef645fd27c97af8aacb0",
+		//                 99999999,
+		//                 "0x0000000000000000000000000000000000000000000000000000000000000000"
+		//             )
+		//         ).to.be.revertedWith("12");
+		//     })
+		// })
 	}
 }

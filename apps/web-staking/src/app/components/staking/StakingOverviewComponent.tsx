@@ -17,6 +17,7 @@ import { loadingNotification, updateNotification } from "../notifications/Notifi
 import { getNetwork, getTotalClaimAmount, mapWeb3Error } from "@/services/web3.service";
 import { Id } from "react-toastify";
 import { useGetTiers } from "@/app/hooks/useGetTiers";
+import MessageModalComponent from "../modal/MessageModalComponent";
 
 export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPools }) => {
   const router = useRouter();
@@ -40,6 +41,7 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   const { writeContractAsync } = useWriteContract();
   const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
   const toastId = useRef<Id>();
+  const [mintSuccessfulRedirect, setMintSuccessfulRedirect] = useState(searchParams.get("mint") ? searchParams.get("mint") === "true" : false);
 
   // Substitute Timeouts with useWaitForTransaction
   const { data, isError, isLoading: transactionLoading, isSuccess, status } = useWaitForTransactionReceipt({
@@ -142,13 +144,6 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
     }
   }
 
-  const setCurrentSort = (field: string) => {
-    setSort(field);
-    router.push(buildURI(searchValue, currentPage, showTableKeys, hideFullKeys, hideFullEsXai, field, sortOrder),
-        { scroll: false }
-    );
-  };
-
   const setCurrentSortOrder = (order: number) => {
     setSortOrder(order);
     router.push(buildURI(searchValue, currentPage, showTableKeys, hideFullKeys, hideFullEsXai, sort, order),
@@ -157,11 +152,11 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   };
 
   return (
-      <div className="relative flex sm:flex-col items-start lg:px-6 sm:px-0 sm:w-full">
-        <AgreeModalComponent address={address} />
-        <div className="flex justify-between w-full flex-col xl:flex-row sm:mb-[70px] lg:mb-6 xl:mb-3">
-          <MainTitle title={"Staking"} classNames="sm:indent-4 lg:indent-0" />
-
+    <div className="relative flex sm:flex-col items-start lg:px-6 sm:px-0 sm:w-full">
+      <AgreeModalComponent address={address} />
+      <MessageModalComponent isOpen={mintSuccessfulRedirect} setOpen={() => setMintSuccessfulRedirect(false)} modalText="Stake your key in a pool to start earning rewards!" />
+      <div className="flex justify-between w-full flex-col xl:flex-row sm:mb-[70px] lg:mb-6 xl:mb-3">
+        <MainTitle title={"Staking"} classNames="sm:indent-4 lg:indent-0" />
 
           {address && <div
               className="sm:w-[91%] absolute sm:right-[17px] sm:top-[85px] lg:right-[55px] lg:top-6 lg:w-[450px] shadow-light">

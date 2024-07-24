@@ -11,29 +11,96 @@ import "../Referee.sol";
  * @dev Implementation of the RefereeUpgradeTest
  */
 contract RefereeUpgradeTest is AccessControlEnumerableUpgradeable {
-
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
+    // Define roles
     bytes32 public constant CHALLENGER_ROLE = keccak256("CHALLENGER_ROLE");
     bytes32 public constant KYC_ADMIN_ROLE = keccak256("KYC_ADMIN_ROLE");
 
+    // The Challenger's public key of their registered BLS-Pair
     bytes public challengerPublicKey;
+
+    // the address of the rollup, so we can get assertions
     address public rollupAddress;
+
+    // the address of the NodeLicense NFT
     address public nodeLicenseAddress;
+
+    // contract addresses for esXai and xai
     address public esXaiAddress;
     address public xaiAddress;
+
+    // Counter for the challenges
     uint256 public challengeCounter;
+
+    // This is the address where we sent the Xai emission to for the gas subsidy
     address public gasSubsidyRecipient;
+
+    // mapping to store all of the challenges
     mapping(uint256 => Challenge) public challenges;
+
+    // Mapping to store all of the submissions
     mapping(uint256 => mapping(uint256 => Submission)) public submissions;
+
+    // Toggle for assertion checking
     bool public isCheckingAssertions;
+
+    // Mapping from owner to operator approvals
     mapping (address => EnumerableSetUpgradeable.AddressSet) private _operatorApprovals;
+
+    // Mapping from operator to owners
     mapping (address => EnumerableSetUpgradeable.AddressSet) private _ownersForOperator;
-    mapping (address => uint256) private _lifetimeClaims;
+
+    // Mappings to keep track of all claims
+    mapping (address => uint256) public _lifetimeClaims;
+
+    // Mapping to track rollup assertions (combination of the assertionId and the rollupAddress used, because we allow switching the rollupAddress, and can't assume assertionIds are unique.)
     mapping (bytes32 => bool) public rollupAssertionTracker;
+
+    // Mapping to track KYC'd wallets
     EnumerableSetUpgradeable.AddressSet private kycWallets;
+
+    // This value keeps track of how many token are not yet minted but are allocated by the referee. This should be used in calculating the total supply for emissions
     uint256 private _allocatedTokens;
+
+    // This is the percentage of each challenge emission to be given to the gas subsidy. Should be a whole number like 15% = 15
     uint256 private _gasSubsidyPercentage;
+
+    // Mapping for users staked amount in V1 staking
+    mapping(address => uint256) public stakedAmounts;
+
+    // Minimum amounts of staked esXai to be in the tier of the respective index
+    uint256[] public stakeAmountTierThresholds;
+
+    // Reward chance boost factor based on tier of the respective index
+    uint256[] public stakeAmountBoostFactors;
+
+    // The maximum amount of esXai (in wei) that can be staked per NodeLicense
+    uint256 public maxStakeAmountPerLicense;
+    
+    // Enabling staking on the Referee
+    bool public stakingEnabled;
+
+    // Mapping for a key id assigned to a staking pool
+    mapping(uint256 => address) public assignedKeyToPool;
+
+    // Mapping for pool to assigned key count for calculating max stake amount
+    mapping(address => uint256) public assignedKeysToPoolCount;
+
+    // The maximum number of NodeLicenses that can be staked to a pool
+    uint256 public maxKeysPerPool;
+
+    // The pool factory contract that is allowed to update the stake state of the Referee
+    address public poolFactoryAddress;
+    
+    // Mapping for amount of assigned keys of a user
+    mapping(address => uint256) public assignedKeysOfUserCount;
+
+    // Mapping to store all of the pool submissions
+    mapping(uint256 => mapping(address => PoolSubmission)) public poolSubmissions;
+
+    // Referee Calculations contract address
+    address public refereeCalculationsAddress;
     uint256 private _count;
 
     /**
@@ -41,7 +108,7 @@ contract RefereeUpgradeTest is AccessControlEnumerableUpgradeable {
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[499] private __gap;
+    uint256[487] private __gap;
 
     struct Submission {
         bool submitted;
@@ -66,6 +133,14 @@ contract RefereeUpgradeTest is AccessControlEnumerableUpgradeable {
         uint256 amountForGasSubsidy; // this is how much Xai was minted for the gas subsidy
         uint256 numberOfEligibleClaimers; // how many submitters are eligible for claiming, used to determine the reward amount
         uint256 amountClaimedByClaimers; // keep track of how much Xai has been claimed by the claimers, primarily used to expire unclaimed rewards 
+    }
+    // Struct for PoolSubmissions
+    struct PoolSubmission {
+        bool submitted;
+        bool claimed;
+        uint256 stakedKeyCount;
+        uint256 winningKeyCount;
+        bytes assertionStateRootOrConfirmData;
     }
 
     /**
