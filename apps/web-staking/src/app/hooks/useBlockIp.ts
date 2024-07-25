@@ -24,7 +24,6 @@ export function useBlockIp() {
 	const [blocked, setBlocked] = useState(true);
 	const [loading, setLoading] = useState(true);
 
-
 	const pathname = usePathname();
 
 	useEffect(() => {

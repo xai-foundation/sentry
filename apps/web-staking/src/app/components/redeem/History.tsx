@@ -172,7 +172,7 @@ export default function History({ redemptions, reloadRedemptions }: {
 
 	// Substitute Timeouts with useWaitForTransaction
 	const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
-	hash: receipt,
+		hash: receipt,
 	});
 
 	const [loadingIndex, setLoadingIndex] = useState(-1);
@@ -192,12 +192,12 @@ export default function History({ redemptions, reloadRedemptions }: {
 
 	useEffect(() => {
 
-	if (isSuccess) {
-	updateOnSuccess();
-	}
+		if (isSuccess) {
+			updateOnSuccess();
+		}
 		if (isError) {
-	updateOnError()
-	}
+			updateOnError()
+		}
 	}, [isSuccess, isError, updateOnSuccess, updateOnError]);
 
 	const onClaim = async (redemption: RedemptionRequest) => {
@@ -210,11 +210,11 @@ export default function History({ redemptions, reloadRedemptions }: {
 		toastId.current = loadingNotification("Transaction is pending...");
 		try {
 			setReceipt(await executeContractWrite(
-			WriteFunctions.completeRedemption,
-			[BigInt(redemption.index)],
-			chainId,
-			writeContractAsync,
-			switchChain
+				WriteFunctions.completeRedemption,
+				[BigInt(redemption.index)],
+				chainId,
+				writeContractAsync,
+				switchChain
 			) as `0x${string}`);
 
 		} catch (ex: any) {
@@ -229,11 +229,11 @@ export default function History({ redemptions, reloadRedemptions }: {
 		toastId.current = loadingNotification("Transaction is canceling...");
 		try {
 			setReceipt(await executeContractWrite(
-			WriteFunctions.cancelRedemption,
-			[BigInt(redemption.index)],
-			chainId,
-			writeContractAsync,
-			switchChain
+				WriteFunctions.cancelRedemption,
+				[BigInt(redemption.index)],
+				chainId,
+				writeContractAsync,
+				switchChain
 			) as `0x${string}`);
 			onClose();
 		} catch (ex: any) {
