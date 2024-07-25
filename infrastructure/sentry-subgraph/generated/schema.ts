@@ -792,6 +792,98 @@ export class PoolChallenge extends Entity {
   }
 }
 
+export class PoolStake extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save PoolStake entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type PoolStake must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("PoolStake", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): PoolStake | null {
+    return changetype<PoolStake | null>(store.get_in_block("PoolStake", id));
+  }
+
+  static load(id: string): PoolStake | null {
+    return changetype<PoolStake | null>(store.get("PoolStake", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get pool(): string {
+    let value = this.get("pool");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set pool(value: string) {
+    this.set("pool", Value.fromString(value));
+  }
+
+  get wallet(): string {
+    let value = this.get("wallet");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set wallet(value: string) {
+    this.set("wallet", Value.fromString(value));
+  }
+
+  get keyStakeAmount(): BigInt {
+    let value = this.get("keyStakeAmount");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set keyStakeAmount(value: BigInt) {
+    this.set("keyStakeAmount", Value.fromBigInt(value));
+  }
+
+  get esXaiStakeAmount(): BigInt {
+    let value = this.get("esXaiStakeAmount");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set esXaiStakeAmount(value: BigInt) {
+    this.set("esXaiStakeAmount", Value.fromBigInt(value));
+  }
+}
+
 export class Challenge extends Entity {
   constructor(id: string) {
     super();
@@ -1383,6 +1475,14 @@ export class SentryWallet extends Entity {
       "sentryKeys",
     );
   }
+
+  get poolStakes(): PoolStakeLoader {
+    return new PoolStakeLoader(
+      "SentryWallet",
+      this.get("id")!.toString(),
+      "poolStakes",
+    );
+  }
 }
 
 export class RefereeConfig extends Entity {
@@ -1845,5 +1945,23 @@ export class SentryKeyLoader extends Entity {
   load(): SentryKey[] {
     let value = store.loadRelated(this._entity, this._id, this._field);
     return changetype<SentryKey[]>(value);
+  }
+}
+
+export class PoolStakeLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): PoolStake[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<PoolStake[]>(value);
   }
 }
