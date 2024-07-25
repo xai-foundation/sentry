@@ -342,9 +342,6 @@ describe("Fixture Tests", function () {
         const referee9 = await upgrades.upgradeProxy((await referee.getAddress()), Referee9, { call: { fn: "initialize", args: [await refereeCalculations.getAddress()] } });
         await referee9.waitForDeployment();
 
-        // Set Address 4 as Failed KYC
-        await poolFactory2.connect(deployer).setFailedKyc(await addr4.getAddress());
-
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
