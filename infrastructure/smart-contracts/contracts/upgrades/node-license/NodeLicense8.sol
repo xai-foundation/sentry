@@ -7,14 +7,13 @@ import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/Base64Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "../../upgrades/referee/Referee9.sol";
 
 interface IAggregatorV3Interface {
     function latestAnswer() external view returns (int256);
 }
 
-contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable, ReentrancyGuardUpgradeable  {
+contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  {
     using StringsUpgradeable for uint256;
     using CountersUpgradeable for CountersUpgradeable.Counter;
     CountersUpgradeable.Counter private _tokenIds;
@@ -491,7 +490,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable, 
      * @dev The function checks if claiming is enabled and if the caller has a reward to claim.
      * If both conditions are met, the reward is transferred to the caller and their reward balance is reset.
      */
-    function claimReferralReward() external nonReentrant {
+    function claimReferralReward() external {
         require(claimable, "Claiming of referral rewards is currently disabled");
         uint256 reward = _referralRewards[msg.sender];
         // Pay Xai & esXAI rewards if they exist
