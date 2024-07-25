@@ -7,13 +7,14 @@ import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/Base64Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "../../upgrades/referee/Referee9.sol";
 
 interface IAggregatorV3Interface {
     function latestAnswer() external view returns (int256);
 }
 
-contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
+contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable, ReentrancyGuard  {
     using StringsUpgradeable for uint256;
     using CountersUpgradeable for CountersUpgradeable.Counter;
     CountersUpgradeable.Counter private _tokenIds;
@@ -490,7 +491,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @dev The function checks if claiming is enabled and if the caller has a reward to claim.
      * If both conditions are met, the reward is transferred to the caller and their reward balance is reset.
      */
-    function claimReferralReward() external {
+    function claimReferralReward() external nonReentrant {
         require(claimable, "Claiming of referral rewards is currently disabled");
         uint256 reward = _referralRewards[msg.sender];
         // Pay Xai & esXAI rewards if they exist
@@ -499,22 +500,23 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
 
         // Require that the user has a reward to claim
         require(reward > 0 || rewardXai > 0 || rewardEsXai > 0, "No referral reward to claim");
-
-        (bool success, ) = msg.sender.call{value: reward}("");
-        require(success, "Transfer failed.");
-
+        
         // Reset the referral reward balance
         _referralRewards[msg.sender] = 0;
+        _referralRewardsXai[msg.sender] = 0;
+        _referralRewardsEsXai[msg.sender] = 0;
+
+        // Transfer the rewards to the caller
+        (bool success, ) = msg.sender.call{value: reward}("");
+        require(success, "Transfer failed.");
 
         if(rewardXai > 0){
             IERC20 token = IERC20(xaiAddress);
             token.transfer(msg.sender, rewardXai);
-            _referralRewardsXai[msg.sender] = 0;
         }
         if(rewardEsXai > 0){
             IERC20 token = IERC20(esXaiAddress);
             token.transfer(msg.sender, rewardEsXai);
-            _referralRewardsEsXai[msg.sender] = 0;
         }
         emit RewardClaimed(msg.sender, reward, rewardXai, rewardEsXai); 
     }
