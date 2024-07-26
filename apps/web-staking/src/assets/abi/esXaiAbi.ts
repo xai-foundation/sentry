@@ -552,7 +552,7 @@ export const esXaiAbi = [
 						"type": "bool"
 					}
 				],
-				"internalType": "struct esXai6.RedemptionRequestExt",
+				"internalType": "struct esXai3.RedemptionRequestExt",
 				"name": "",
 				"type": "tuple"
 			}
