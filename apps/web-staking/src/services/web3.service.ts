@@ -567,7 +567,10 @@ export const isKYCApprovedForRedemption = async (network: NetworkKey, walletAddr
 	const web3Instance = getWeb3Instance(network);
 
 	const ownedKeyCount = await getNodeLicenses(network, walletAddress);
-	if(ownedKeyCount <= 100){
+	const esXaiContract = new web3Instance.web3.eth.Contract(esXaiAbi, web3Instance.esXaiAddress);
+	const maxKeysNonKyc = await esXaiContract.methods.maxKeysNonKyc().call() as BigInt;
+		
+	if(ownedKeyCount <= Number(maxKeysNonKyc)){
 		return true;
 	}
 	
