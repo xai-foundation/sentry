@@ -9,6 +9,7 @@ import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeab
 import "../../Xai.sol";
 import "../../upgrades/referee/Referee9.sol";
 import "../../upgrades/node-license/NodeLicense8.sol";
+import "../../upgrades/pool-factory/PoolFactory2.sol";
 
 /**
  * @title esXai
@@ -29,13 +30,14 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     address public refereeAddress;
     address public nodeLicenseAddress;
     uint256 public maxKeysNonKyc;
+    address public poolFactoryAddress;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[494] private __gap;
+    uint256[493] private __gap;
 
     struct RedemptionRequest {
         uint256 amount;
@@ -62,11 +64,12 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     event XaiAddressChanged(address indexed newXaiAddress);
     event FoundationBasepointsUpdated(uint256 newBasepoints);
 
-    function initialize (address _refereeAddress, address _nodeLicenseAddress, uint256 _maxKeys) public reinitializer(3) {
+    function initialize (address _refereeAddress, address _nodeLicenseAddress, address _poolFactoryAddress, uint256 _maxKeys) public reinitializer(3) {
         require(_refereeAddress != address(0), "Invalid referee address");
         require(_nodeLicenseAddress != address(0), "Invalid node license address");
         refereeAddress = _refereeAddress;
         nodeLicenseAddress = _nodeLicenseAddress;
+        poolFactoryAddress = _poolFactoryAddress;
         maxKeysNonKyc = _maxKeys;
     }
 
@@ -173,6 +176,10 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         require(amount > 0, "Invalid Amount");
         require(balanceOf(msg.sender) >= amount, "Insufficient esXai balance");
         require(duration == 15 days || duration == 90 days || duration == 180 days, "Invalid duration");
+        
+        // Check if the sender failed KYC
+        bool failedKyc = PoolFactory2(poolFactoryAddress).failedKyc(msg.sender);
+        require(!failedKyc, "KYC failed, cannot redeem");
 
         // Transfer the esXai tokens from the sender's account to this contract
         _transfer(msg.sender, address(this), amount);
@@ -212,6 +219,10 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         require(request.amount > 0, "Invalid request");
         require(!request.completed, "Redemption already completed");
         require(block.timestamp >= request.startTime + request.duration, "Redemption period not yet over");
+
+        // Check if the sender failed KYC
+        bool failedKyc = PoolFactory2(poolFactoryAddress).failedKyc(msg.sender);
+        require(!failedKyc, "KYC failed, cannot redeem");
 
         // Retrieve the number of licenses owned from the nodeLicense contract
         uint256 licenseCountOwned = NodeLicense8(nodeLicenseAddress).balanceOf(msg.sender);
