@@ -93,7 +93,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[490] private __gap;
+    uint256[491] private __gap;
 
     // Define the pricing tiers
     struct Tier {
