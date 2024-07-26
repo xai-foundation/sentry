@@ -392,18 +392,18 @@ describe("Fixture Tests", function () {
         };
     }
 
-    //describe("CNY 2024", CNYAirDropTests.bind(this));
-    //describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
-    //describe("Xai", XaiTests(deployInfrastructure).bind(this));
-    //describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
-    //describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
-    //describe("Referee", RefereeTests(deployInfrastructure).bind(this));
-    //describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
-    //describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
-    //describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
-    //describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
-    //describe("PoolSubmissions", RefereePoolSubmissions(deployInfrastructure).bind(this));
-    //describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
+    describe("CNY 2024", CNYAirDropTests.bind(this));
+    describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
+    describe("Xai", XaiTests(deployInfrastructure).bind(this));
+    describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
+    describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
+    describe("Referee", RefereeTests(deployInfrastructure).bind(this));
+    describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
+    describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
+    describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
+    describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
+    describe("PoolSubmissions", RefereePoolSubmissions(deployInfrastructure).bind(this));
+    describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
     describe("Failed KYC Tests", FailedKycTests(deployInfrastructure).bind(this));
 
     // This doesn't work when running coverage
