@@ -201,7 +201,7 @@ export default function History({ redemptions, reloadRedemptions }: {
 	}, [isSuccess, isError, updateOnSuccess, updateOnError]);
 
 	const onClaim = async (redemption: RedemptionRequest) => {
-		if(isApproved) {
+		if(!isApproved) {
 			setShowKYCModal(true);
 			return
 		}

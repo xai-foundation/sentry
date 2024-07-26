@@ -1,8 +1,9 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import { PrimaryButton, TextButton } from "@/app/components/ui/buttons";
 import { CloseIcon } from "@/app/components/icons/IconsComponent";
-import { SearchableDropdown, SearchableDropdownItem } from "../../redeem/Dropdown";
+
 import { listOfCountries } from "../../constants/constants";
+import { SearchableDropdown, SearchableDropdownItem } from "../dropdowns/SearchableDropdown";
 
 interface BaseModalProps {
   isOpened: boolean;
@@ -84,7 +85,7 @@ const BaseModal = ({
 				{item.label}
     </SearchableDropdownItem>))
   
-  const isValidCountry = () => { 
+  const isInvalidCountry = () => { 
     if (listOfCountries.filter(item => item.label === selectedCountry).length === 0) {
       return true;
     }
@@ -118,7 +119,7 @@ const BaseModal = ({
             <div className="flex justify-end items-end mt-2">
               {!withOutCancelButton &&
                 <TextButton buttonText={cancelText} onClick={closeModal} textClassName="!text-lg !font-bold" />}
-              <PrimaryButton onClick={isDropdown ? onClickHelper : onSubmit} btnText={submitText} size="sm" isDisabled={isDisabled || isValidCountry()} />
+              <PrimaryButton onClick={isDropdown ? onClickHelper : onSubmit} btnText={submitText} size="sm" isDisabled={isDisabled || isInvalidCountry()} />
             </div>
           </div>
         </>
