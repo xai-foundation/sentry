@@ -17,6 +17,7 @@ import { loadingNotification, updateNotification } from "../notifications/Notifi
 import { getNetwork, getTotalClaimAmount, mapWeb3Error } from "@/services/web3.service";
 import { Id } from "react-toastify";
 import { useGetTiers } from "@/app/hooks/useGetTiers";
+import {BaseModal} from "@/app/components/ui";
 
 export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPools }) => {
   const router = useRouter();
@@ -40,6 +41,12 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   const { writeContractAsync } = useWriteContract();
   const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
   const toastId = useRef<Id>();
+
+  const isModal = useSearchParams().get("modal");
+
+  const onModalSubmit = () => {
+    router.replace(`/staking?chainId=${chainId}`);
+  };
 
   // Substitute Timeouts with useWaitForTransaction
   const { data, isError, isLoading: transactionLoading, isSuccess, status } = useWaitForTransactionReceipt({
@@ -159,6 +166,15 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   return (
       <div className="relative flex sm:flex-col items-start lg:px-6 sm:px-0 sm:w-full">
         <AgreeModalComponent address={address} />
+        <BaseModal
+            isOpened={!!isModal}
+            modalHeader={"Stake keys in a pool to earn rewards"}
+            modalBody={"Choose a pool and stake keys in the pool to start earning rewards"}
+            closeModal={onModalSubmit}
+            submitText={"Start staking"}
+            withOutCancelButton
+            onSubmit={onModalSubmit}
+        />
         <div className="flex justify-between w-full flex-col xl:flex-row sm:mb-[70px] lg:mb-6 xl:mb-3">
           <MainTitle title={"Staking"} classNames="sm:indent-4 lg:indent-0" />
 
