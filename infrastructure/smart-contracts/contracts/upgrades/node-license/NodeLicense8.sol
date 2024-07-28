@@ -82,6 +82,9 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     // Pause Minting
     bool public mintingPaused;
 
+    // Reentrancy guard boolean
+    bool private _reentrancyGuardClaimReferralReward;
+
     bytes32 public constant AIRDROP_ADMIN_ROLE = keccak256("AIRDROP_ADMIN_ROLE");
 
 
@@ -133,6 +136,18 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         
         // Grant the airdrop admin role to the airdrop admin address
         _grantRole(AIRDROP_ADMIN_ROLE, airdropAdmin);
+    }
+
+    /** 
+    * @notice Reentrancy guard modifier for the claimReferralReward function
+    * @dev This modifier prevents reentrancy attacks by setting a boolean to true when the function is called
+    */
+    
+    modifier reentrancyGuardClaimReferralReward() {
+        require(!_reentrancyGuardClaimReferralReward, "Reentrancy guard: reentrant call");
+        _reentrancyGuardClaimReferralReward = true;
+        _;
+        _reentrancyGuardClaimReferralReward = false;
     }
 
     /**
@@ -490,7 +505,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * @dev The function checks if claiming is enabled and if the caller has a reward to claim.
      * If both conditions are met, the reward is transferred to the caller and their reward balance is reset.
      */
-    function claimReferralReward() external {
+    function claimReferralReward() external reentrancyGuardClaimReferralReward {
         require(claimable, "Claiming of referral rewards is currently disabled");
         uint256 reward = _referralRewards[msg.sender];
         // Pay Xai & esXAI rewards if they exist
