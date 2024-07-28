@@ -20,6 +20,7 @@ export default async function Staking({ searchParams }: {
     hideFullKeys: string,
     sort: string,
     sortOrder: number;
+    esXaiMinStake: number;
   }
 }) {
 
@@ -46,10 +47,11 @@ export default async function Staking({ searchParams }: {
   const searchName = searchParams.search || "";
   const hideFullEsXai = searchParams.hideFull ? searchParams.hideFull === "true" : true;
   const hideFullKeys = searchParams.hideFullKeys ? searchParams.hideFullKeys === "true" : false;
+  const esXaiMinStake = searchParams.esXaiMinStake || 0;
 
   let pagedPools: PagedPools;
   try {
-    pagedPools = await findPools({ pagination: pageFilter, searchName, network: getNetwork(searchParams.chainId), hideFullEsXai, hideFullKeys })
+    pagedPools = await findPools({ pagination: pageFilter, searchName, network: getNetwork(searchParams.chainId), hideFullEsXai, hideFullKeys, esXaiMinStake})
   } catch (err) {
     console.error("Failed to load pools", err);
     redirect("/");
