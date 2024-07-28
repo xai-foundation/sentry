@@ -13,7 +13,6 @@ export const DropdownArrow = ({width = 10, height = 3, className = ""}) => {
                 <rect  id="rect2-2" width="1.2605684"
                       height="3.478761" x="0.083553314" y="7.4901848" ry="0.13058987"
                     transform="matrix(-0.70710678,0.70710678,0.70710678,0.70710678,0,0)" /></g></g></svg>
-
 }
 
 export const WarningIcon = ({ width = 24, height = 24, className, fill = "#ffc53d" }: { width?: number, height?: number, fill?: string, className?: string }) => {
