@@ -55,7 +55,6 @@ export function useContractWrites({
     onSuccess: (data) => {
       setMintWithEthHash(data.hash as `0x${string}`);
       setMintWithEthError(null);
-      window.location = `xai-sentry://assigned-wallet?txHash=${data.hash}` as unknown as Location;
     },
     onError: (error) => {
       setMintWithEthHash(undefined);
@@ -85,7 +84,6 @@ export function useContractWrites({
     args: [quantity, promoCode, useEsXai, calculateTotalPrice()],
     onSuccess: (data) => {
       setMintWithXaiHash(data.hash as `0x${string}`);
-      window.location = `xai-sentry://assigned-wallet?txHash=${data.hash}` as unknown as Location;
     },
     onError: (error) => {
       setMintWithXaiHash(undefined);
