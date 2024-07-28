@@ -412,6 +412,19 @@ export const PoolFactoryAbi = [
         "type": "function"
     },
     {
+        "inputs": [],
+        "name": "STAKE_KEYS_ADMIN_ROLE",
+        "outputs": [
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [
             {
                 "internalType": "uint256",
@@ -829,7 +842,13 @@ export const PoolFactoryAbi = [
         "type": "function"
     },
     {
-        "inputs": [],
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_stakeKeysAdmin",
+                "type": "address"
+            }
+        ],
         "name": "initialize",
         "outputs": [],
         "stateMutability": "nonpayable",
@@ -1011,6 +1030,19 @@ export const PoolFactoryAbi = [
         "inputs": [
             {
                 "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "revokeStakeKeysAdminRole",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
                 "name": "pool",
                 "type": "address"
             },
@@ -1039,6 +1071,29 @@ export const PoolFactoryAbi = [
             }
         ],
         "name": "stakeKeys",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "pool",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256[]",
+                "name": "keyIds",
+                "type": "uint256[]"
+            },
+            {
+                "internalType": "address",
+                "name": "staker",
+                "type": "address"
+            }
+        ],
+        "name": "stakeKeysAdmin",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -1311,6 +1366,30 @@ export const PoolFactoryAbi = [
                 "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "pool",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            }
+        ],
+        "name": "validateSubmitPoolAssertion",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
             }
         ],
         "stateMutability": "view",

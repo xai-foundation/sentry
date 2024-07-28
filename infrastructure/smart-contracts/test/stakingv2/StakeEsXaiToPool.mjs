@@ -2,6 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {Contract} from "ethers";
 import {StakingPoolAbi} from "@sentry/core";
+import {findWinningStateRoot} from "../Referee.mjs";
 
 export function StakeEsXaiToPool(deployInfrastructure, poolConfigurations) {
 	const {
@@ -14,7 +15,7 @@ export function StakeEsXaiToPool(deployInfrastructure, poolConfigurations) {
 
 	return function () {
 		it("Verify esXai balance of user decrease and balance of PoolFactory increases by amount", async function () {
-			const {poolFactory, addr1, nodeLicense, esXai, esXaiMinter} = await loadFixture(deployInfrastructure);
+			const {poolFactory, addr1, nodeLicense, esXai, esXaiMinter, referee, challenger} = await loadFixture(deployInfrastructure);
 
 			// Mint 10k esXai to addr1
 			const addr1MintAddress = await addr1.getAddress();
@@ -26,6 +27,19 @@ export function StakeEsXaiToPool(deployInfrastructure, poolConfigurations) {
 			const price = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr1).mint(1, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
+			
+			const winningStateRoot = await findWinningStateRoot(referee, [mintedKeyId], 0);
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                winningStateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
 
 			// Creat a pool
 			await poolFactory.connect(addr1).createPool(
@@ -56,7 +70,7 @@ export function StakeEsXaiToPool(deployInfrastructure, poolConfigurations) {
 		});
 
 		it("Verify the Pool Info for the staked user (should have userStakedEsXaiAmount, totalStakedAmount)", async function () {
-			const {poolFactory, addr1, nodeLicense, esXai, esXaiMinter} = await loadFixture(deployInfrastructure);
+			const {poolFactory, addr1, nodeLicense, esXai, esXaiMinter, referee, challenger} = await loadFixture(deployInfrastructure);
 
 			// Mint 10k esXai to addr1
 			const addr1MintAddress = await addr1.getAddress();
@@ -68,6 +82,19 @@ export function StakeEsXaiToPool(deployInfrastructure, poolConfigurations) {
 			const price = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr1).mint(1, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
+			
+			const winningStateRoot = await findWinningStateRoot(referee, [mintedKeyId], 0);
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                winningStateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
 
 			// Creat a pool
 			await poolFactory.connect(addr1).createPool(
@@ -101,13 +128,27 @@ export function StakeEsXaiToPool(deployInfrastructure, poolConfigurations) {
 				nodeLicense,
 				referee,
 				esXai,
-				esXaiMinter
+				esXaiMinter, 
+				challenger
 			} = await loadFixture(deployInfrastructure);
 
 			// Mint a node key & save the id
 			const price = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr1).mint(1, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
+			
+			const winningStateRoot = await findWinningStateRoot(referee, [mintedKeyId], 0);
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                winningStateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
 
 			// Creat a pool
 			await poolFactory.connect(addr1).createPool(
@@ -142,7 +183,8 @@ export function StakeEsXaiToPool(deployInfrastructure, poolConfigurations) {
 				nodeLicense,
 				referee,
 				esXai,
-				esXaiMinter
+				esXaiMinter, 
+				challenger
 			} = await loadFixture(deployInfrastructure);
 
 			// Mint 2 node keys & save the ids
@@ -151,6 +193,19 @@ export function StakeEsXaiToPool(deployInfrastructure, poolConfigurations) {
 			const mintedKeyId1 = await nodeLicense.totalSupply();
 			await nodeLicense.connect(addr1).mint(1, "", {value: price});
 			const mintedKeyId2 = await nodeLicense.totalSupply();
+			
+			const winningStateRoot = await findWinningStateRoot(referee, [mintedKeyId1], 0);
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                winningStateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
 
 			// Creat a pool
 			await poolFactory.connect(addr1).createPool(

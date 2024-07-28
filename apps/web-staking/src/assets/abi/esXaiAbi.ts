@@ -700,6 +700,29 @@ export const esXaiAbi = [
 		"inputs": [
 			{
 				"internalType": "address",
+				"name": "_refereeAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_nodeLicenseAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "_maxKeys",
+				"type": "uint256"
+			}
+		],
+		"name": "initialize",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
 				"name": "account",
 				"type": "address"
 			}
@@ -710,6 +733,19 @@ export const esXaiAbi = [
 				"internalType": "bool",
 				"name": "",
 				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "maxKeysNonKyc",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -741,6 +777,32 @@ export const esXaiAbi = [
 				"internalType": "string",
 				"name": "",
 				"type": "string"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "nodeLicenseAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "refereeAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
 			}
 		],
 		"stateMutability": "view",
@@ -791,6 +853,19 @@ export const esXaiAbi = [
 			}
 		],
 		"name": "revokeRole",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "newMax",
+				"type": "uint256"
+			}
+		],
+		"name": "setMaxKeysNonKyc",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -937,4 +1012,4 @@ export const esXaiAbi = [
 		"stateMutability": "view",
 		"type": "function"
 	}
-] as const;
+  ] as const;

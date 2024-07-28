@@ -36,6 +36,28 @@ export class Approval__Params {
   }
 }
 
+export class AssertionCancelled extends ethereum.Event {
+  get params(): AssertionCancelled__Params {
+    return new AssertionCancelled__Params(this);
+  }
+}
+
+export class AssertionCancelled__Params {
+  _event: AssertionCancelled;
+
+  constructor(event: AssertionCancelled) {
+    this._event = event;
+  }
+
+  get challengeId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get nodeLicenseId(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+}
+
 export class AssertionCheckingToggled extends ethereum.Event {
   get params(): AssertionCheckingToggled__Params {
     return new AssertionCheckingToggled__Params(this);
@@ -73,6 +95,36 @@ export class AssertionSubmitted__Params {
 
   get nodeLicenseId(): BigInt {
     return this._event.parameters[1].value.toBigInt();
+  }
+}
+
+export class AssertionSubmittedV2 extends ethereum.Event {
+  get params(): AssertionSubmittedV2__Params {
+    return new AssertionSubmittedV2__Params(this);
+  }
+}
+
+export class AssertionSubmittedV2__Params {
+  _event: AssertionSubmittedV2;
+
+  constructor(event: AssertionSubmittedV2) {
+    this._event = event;
+  }
+
+  get challengeId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get nodeLicenseId(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get assertionStateRootOrConfirmData(): Bytes {
+    return this._event.parameters[2].value.toBytes();
+  }
+
+  get eligibleForPayout(): boolean {
+    return this._event.parameters[3].value.toBoolean();
   }
 }
 
@@ -262,6 +314,36 @@ export class KycStatusChanged__Params {
   }
 }
 
+export class NewPoolSubmission extends ethereum.Event {
+  get params(): NewPoolSubmission__Params {
+    return new NewPoolSubmission__Params(this);
+  }
+}
+
+export class NewPoolSubmission__Params {
+  _event: NewPoolSubmission;
+
+  constructor(event: NewPoolSubmission) {
+    this._event = event;
+  }
+
+  get challengeId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get poolAddress(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get stakedKeys(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+
+  get winningKeys(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+}
+
 export class NodeLicenseAddressChanged extends ethereum.Event {
   get params(): NodeLicenseAddressChanged__Params {
     return new NodeLicenseAddressChanged__Params(this);
@@ -277,6 +359,36 @@ export class NodeLicenseAddressChanged__Params {
 
   get newNodeLicenseAddress(): Address {
     return this._event.parameters[0].value.toAddress();
+  }
+}
+
+export class PoolRewardsClaimed extends ethereum.Event {
+  get params(): PoolRewardsClaimed__Params {
+    return new PoolRewardsClaimed__Params(this);
+  }
+}
+
+export class PoolRewardsClaimed__Params {
+  _event: PoolRewardsClaimed;
+
+  constructor(event: PoolRewardsClaimed) {
+    this._event = event;
+  }
+
+  get challengeId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get poolAddress(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get totalReward(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+
+  get winningKeys(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
   }
 }
 
@@ -299,6 +411,32 @@ export class RewardsClaimed__Params {
 
   get amount(): BigInt {
     return this._event.parameters[1].value.toBigInt();
+  }
+}
+
+export class RewardsClaimedV2 extends ethereum.Event {
+  get params(): RewardsClaimedV2__Params {
+    return new RewardsClaimedV2__Params(this);
+  }
+}
+
+export class RewardsClaimedV2__Params {
+  _event: RewardsClaimedV2;
+
+  constructor(event: RewardsClaimedV2) {
+    this._event = event;
+  }
+
+  get challengeId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get nodeLicenseId(): BigInt {
+    return this._event.parameters[1].value.toBigInt();
+  }
+
+  get amount(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
   }
 }
 
@@ -436,6 +574,10 @@ export class StakingEnabled__Params {
   constructor(event: StakingEnabled) {
     this._event = event;
   }
+
+  get enabled(): boolean {
+    return this._event.parameters[0].value.toBoolean();
+  }
 }
 
 export class UnstakeV1 extends ethereum.Event {
@@ -505,6 +647,44 @@ export class UpdateMaxStakeAmount__Params {
 
   get newAmount(): BigInt {
     return this._event.parameters[1].value.toBigInt();
+  }
+}
+
+export class UpdatePoolSubmission extends ethereum.Event {
+  get params(): UpdatePoolSubmission__Params {
+    return new UpdatePoolSubmission__Params(this);
+  }
+}
+
+export class UpdatePoolSubmission__Params {
+  _event: UpdatePoolSubmission;
+
+  constructor(event: UpdatePoolSubmission) {
+    this._event = event;
+  }
+
+  get challengeId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get poolAddress(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get stakedKeys(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+
+  get winningKeys(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+
+  get increase(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+
+  get decrease(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
   }
 }
 
@@ -762,6 +942,58 @@ export class Referee__getSubmissionsForChallengesResultValue0Struct extends ethe
   }
 }
 
+export class Referee__poolSubmissionsResult {
+  value0: boolean;
+  value1: boolean;
+  value2: BigInt;
+  value3: BigInt;
+  value4: Bytes;
+
+  constructor(
+    value0: boolean,
+    value1: boolean,
+    value2: BigInt,
+    value3: BigInt,
+    value4: Bytes,
+  ) {
+    this.value0 = value0;
+    this.value1 = value1;
+    this.value2 = value2;
+    this.value3 = value3;
+    this.value4 = value4;
+  }
+
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromBoolean(this.value0));
+    map.set("value1", ethereum.Value.fromBoolean(this.value1));
+    map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
+    map.set("value3", ethereum.Value.fromUnsignedBigInt(this.value3));
+    map.set("value4", ethereum.Value.fromBytes(this.value4));
+    return map;
+  }
+
+  getSubmitted(): boolean {
+    return this.value0;
+  }
+
+  getClaimed(): boolean {
+    return this.value1;
+  }
+
+  getStakedKeyCount(): BigInt {
+    return this.value2;
+  }
+
+  getWinningKeyCount(): BigInt {
+    return this.value3;
+  }
+
+  getAssertionStateRootOrConfirmData(): Bytes {
+    return this.value4;
+  }
+}
+
 export class Referee__submissionsResult {
   value0: boolean;
   value1: boolean;
@@ -882,6 +1114,29 @@ export class Referee extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBytes());
+  }
+
+  _lifetimeClaims(param0: Address): BigInt {
+    let result = super.call(
+      "_lifetimeClaims",
+      "_lifetimeClaims(address):(uint256)",
+      [ethereum.Value.fromAddress(param0)],
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try__lifetimeClaims(param0: Address): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "_lifetimeClaims",
+      "_lifetimeClaims(address):(uint256)",
+      [ethereum.Value.fromAddress(param0)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
   assignedKeyToPool(param0: BigInt): Address {
@@ -1523,29 +1778,6 @@ export class Referee extends ethereum.SmartContract {
     );
   }
 
-  getTotalClaims(owner: Address): BigInt {
-    let result = super.call(
-      "getTotalClaims",
-      "getTotalClaims(address):(uint256)",
-      [ethereum.Value.fromAddress(owner)],
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_getTotalClaims(owner: Address): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "getTotalClaims",
-      "getTotalClaims(address):(uint256)",
-      [ethereum.Value.fromAddress(owner)],
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
   hasRole(role: Bytes, account: Address): boolean {
     let result = super.call("hasRole", "hasRole(bytes32,address):(bool)", [
       ethereum.Value.fromFixedBytes(role),
@@ -1716,6 +1948,78 @@ export class Referee extends ethereum.SmartContract {
     let result = super.tryCall(
       "poolFactoryAddress",
       "poolFactoryAddress():(address)",
+      [],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  poolSubmissions(
+    param0: BigInt,
+    param1: Address,
+  ): Referee__poolSubmissionsResult {
+    let result = super.call(
+      "poolSubmissions",
+      "poolSubmissions(uint256,address):(bool,bool,uint256,uint256,bytes)",
+      [
+        ethereum.Value.fromUnsignedBigInt(param0),
+        ethereum.Value.fromAddress(param1),
+      ],
+    );
+
+    return new Referee__poolSubmissionsResult(
+      result[0].toBoolean(),
+      result[1].toBoolean(),
+      result[2].toBigInt(),
+      result[3].toBigInt(),
+      result[4].toBytes(),
+    );
+  }
+
+  try_poolSubmissions(
+    param0: BigInt,
+    param1: Address,
+  ): ethereum.CallResult<Referee__poolSubmissionsResult> {
+    let result = super.tryCall(
+      "poolSubmissions",
+      "poolSubmissions(uint256,address):(bool,bool,uint256,uint256,bytes)",
+      [
+        ethereum.Value.fromUnsignedBigInt(param0),
+        ethereum.Value.fromAddress(param1),
+      ],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      new Referee__poolSubmissionsResult(
+        value[0].toBoolean(),
+        value[1].toBoolean(),
+        value[2].toBigInt(),
+        value[3].toBigInt(),
+        value[4].toBytes(),
+      ),
+    );
+  }
+
+  refereeCalculationsAddress(): Address {
+    let result = super.call(
+      "refereeCalculationsAddress",
+      "refereeCalculationsAddress():(address)",
+      [],
+    );
+
+    return result[0].toAddress();
+  }
+
+  try_refereeCalculationsAddress(): ethereum.CallResult<Address> {
+    let result = super.tryCall(
+      "refereeCalculationsAddress",
+      "refereeCalculationsAddress():(address)",
       [],
     );
     if (result.reverted) {
@@ -1936,36 +2240,6 @@ export class Referee extends ethereum.SmartContract {
   }
 }
 
-export class DEV_StakeV1Call extends ethereum.Call {
-  get inputs(): DEV_StakeV1Call__Inputs {
-    return new DEV_StakeV1Call__Inputs(this);
-  }
-
-  get outputs(): DEV_StakeV1Call__Outputs {
-    return new DEV_StakeV1Call__Outputs(this);
-  }
-}
-
-export class DEV_StakeV1Call__Inputs {
-  _call: DEV_StakeV1Call;
-
-  constructor(call: DEV_StakeV1Call) {
-    this._call = call;
-  }
-
-  get amount(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-}
-
-export class DEV_StakeV1Call__Outputs {
-  _call: DEV_StakeV1Call;
-
-  constructor(call: DEV_StakeV1Call) {
-    this._call = call;
-  }
-}
-
 export class AddKycWalletCall extends ethereum.Call {
   get inputs(): AddKycWalletCall__Inputs {
     return new AddKycWalletCall__Inputs(this);
@@ -1992,40 +2266,6 @@ export class AddKycWalletCall__Outputs {
   _call: AddKycWalletCall;
 
   constructor(call: AddKycWalletCall) {
-    this._call = call;
-  }
-}
-
-export class AddStakingTierCall extends ethereum.Call {
-  get inputs(): AddStakingTierCall__Inputs {
-    return new AddStakingTierCall__Inputs(this);
-  }
-
-  get outputs(): AddStakingTierCall__Outputs {
-    return new AddStakingTierCall__Outputs(this);
-  }
-}
-
-export class AddStakingTierCall__Inputs {
-  _call: AddStakingTierCall;
-
-  constructor(call: AddStakingTierCall) {
-    this._call = call;
-  }
-
-  get newThreshold(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get newBoostFactor(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-}
-
-export class AddStakingTierCall__Outputs {
-  _call: AddStakingTierCall;
-
-  constructor(call: AddStakingTierCall) {
     this._call = call;
   }
 }
@@ -2068,6 +2308,40 @@ export class ClaimMultipleRewardsCall__Outputs {
   }
 }
 
+export class ClaimPoolSubmissionRewardsCall extends ethereum.Call {
+  get inputs(): ClaimPoolSubmissionRewardsCall__Inputs {
+    return new ClaimPoolSubmissionRewardsCall__Inputs(this);
+  }
+
+  get outputs(): ClaimPoolSubmissionRewardsCall__Outputs {
+    return new ClaimPoolSubmissionRewardsCall__Outputs(this);
+  }
+}
+
+export class ClaimPoolSubmissionRewardsCall__Inputs {
+  _call: ClaimPoolSubmissionRewardsCall;
+
+  constructor(call: ClaimPoolSubmissionRewardsCall) {
+    this._call = call;
+  }
+
+  get _poolAddress(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get _challengeId(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+}
+
+export class ClaimPoolSubmissionRewardsCall__Outputs {
+  _call: ClaimPoolSubmissionRewardsCall;
+
+  constructor(call: ClaimPoolSubmissionRewardsCall) {
+    this._call = call;
+  }
+}
+
 export class ClaimRewardCall extends ethereum.Call {
   get inputs(): ClaimRewardCall__Inputs {
     return new ClaimRewardCall__Inputs(this);
@@ -2098,32 +2372,6 @@ export class ClaimRewardCall__Outputs {
   _call: ClaimRewardCall;
 
   constructor(call: ClaimRewardCall) {
-    this._call = call;
-  }
-}
-
-export class EnableStakingCall extends ethereum.Call {
-  get inputs(): EnableStakingCall__Inputs {
-    return new EnableStakingCall__Inputs(this);
-  }
-
-  get outputs(): EnableStakingCall__Outputs {
-    return new EnableStakingCall__Outputs(this);
-  }
-}
-
-export class EnableStakingCall__Inputs {
-  _call: EnableStakingCall;
-
-  constructor(call: EnableStakingCall) {
-    this._call = call;
-  }
-}
-
-export class EnableStakingCall__Outputs {
-  _call: EnableStakingCall;
-
-  constructor(call: EnableStakingCall) {
     this._call = call;
   }
 }
@@ -2192,6 +2440,36 @@ export class GrantRoleCall__Outputs {
   }
 }
 
+export class InitializeCall extends ethereum.Call {
+  get inputs(): InitializeCall__Inputs {
+    return new InitializeCall__Inputs(this);
+  }
+
+  get outputs(): InitializeCall__Outputs {
+    return new InitializeCall__Outputs(this);
+  }
+}
+
+export class InitializeCall__Inputs {
+  _call: InitializeCall;
+
+  constructor(call: InitializeCall) {
+    this._call = call;
+  }
+
+  get _refereeCalculationsAddress(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class InitializeCall__Outputs {
+  _call: InitializeCall;
+
+  constructor(call: InitializeCall) {
+    this._call = call;
+  }
+}
+
 export class RemoveKycWalletCall extends ethereum.Call {
   get inputs(): RemoveKycWalletCall__Inputs {
     return new RemoveKycWalletCall__Inputs(this);
@@ -2218,36 +2496,6 @@ export class RemoveKycWalletCall__Outputs {
   _call: RemoveKycWalletCall;
 
   constructor(call: RemoveKycWalletCall) {
-    this._call = call;
-  }
-}
-
-export class RemoveStakingTierCall extends ethereum.Call {
-  get inputs(): RemoveStakingTierCall__Inputs {
-    return new RemoveStakingTierCall__Inputs(this);
-  }
-
-  get outputs(): RemoveStakingTierCall__Outputs {
-    return new RemoveStakingTierCall__Outputs(this);
-  }
-}
-
-export class RemoveStakingTierCall__Inputs {
-  _call: RemoveStakingTierCall;
-
-  constructor(call: RemoveStakingTierCall) {
-    this._call = call;
-  }
-
-  get index(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-}
-
-export class RemoveStakingTierCall__Outputs {
-  _call: RemoveStakingTierCall;
-
-  constructor(call: RemoveStakingTierCall) {
     this._call = call;
   }
 }
@@ -2354,92 +2602,32 @@ export class SetApprovalForOperatorCall__Outputs {
   }
 }
 
-export class SetChallengerPublicKeyCall extends ethereum.Call {
-  get inputs(): SetChallengerPublicKeyCall__Inputs {
-    return new SetChallengerPublicKeyCall__Inputs(this);
+export class SetStakingEnabledCall extends ethereum.Call {
+  get inputs(): SetStakingEnabledCall__Inputs {
+    return new SetStakingEnabledCall__Inputs(this);
   }
 
-  get outputs(): SetChallengerPublicKeyCall__Outputs {
-    return new SetChallengerPublicKeyCall__Outputs(this);
+  get outputs(): SetStakingEnabledCall__Outputs {
+    return new SetStakingEnabledCall__Outputs(this);
   }
 }
 
-export class SetChallengerPublicKeyCall__Inputs {
-  _call: SetChallengerPublicKeyCall;
+export class SetStakingEnabledCall__Inputs {
+  _call: SetStakingEnabledCall;
 
-  constructor(call: SetChallengerPublicKeyCall) {
+  constructor(call: SetStakingEnabledCall) {
     this._call = call;
   }
 
-  get _challengerPublicKey(): Bytes {
-    return this._call.inputValues[0].value.toBytes();
+  get enabled(): boolean {
+    return this._call.inputValues[0].value.toBoolean();
   }
 }
 
-export class SetChallengerPublicKeyCall__Outputs {
-  _call: SetChallengerPublicKeyCall;
+export class SetStakingEnabledCall__Outputs {
+  _call: SetStakingEnabledCall;
 
-  constructor(call: SetChallengerPublicKeyCall) {
-    this._call = call;
-  }
-}
-
-export class SetNodeLicenseAddressCall extends ethereum.Call {
-  get inputs(): SetNodeLicenseAddressCall__Inputs {
-    return new SetNodeLicenseAddressCall__Inputs(this);
-  }
-
-  get outputs(): SetNodeLicenseAddressCall__Outputs {
-    return new SetNodeLicenseAddressCall__Outputs(this);
-  }
-}
-
-export class SetNodeLicenseAddressCall__Inputs {
-  _call: SetNodeLicenseAddressCall;
-
-  constructor(call: SetNodeLicenseAddressCall) {
-    this._call = call;
-  }
-
-  get _nodeLicenseAddress(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-}
-
-export class SetNodeLicenseAddressCall__Outputs {
-  _call: SetNodeLicenseAddressCall;
-
-  constructor(call: SetNodeLicenseAddressCall) {
-    this._call = call;
-  }
-}
-
-export class SetRollupAddressCall extends ethereum.Call {
-  get inputs(): SetRollupAddressCall__Inputs {
-    return new SetRollupAddressCall__Inputs(this);
-  }
-
-  get outputs(): SetRollupAddressCall__Outputs {
-    return new SetRollupAddressCall__Outputs(this);
-  }
-}
-
-export class SetRollupAddressCall__Inputs {
-  _call: SetRollupAddressCall;
-
-  constructor(call: SetRollupAddressCall) {
-    this._call = call;
-  }
-
-  get _rollupAddress(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-}
-
-export class SetRollupAddressCall__Outputs {
-  _call: SetRollupAddressCall;
-
-  constructor(call: SetRollupAddressCall) {
+  constructor(call: SetStakingEnabledCall) {
     this._call = call;
   }
 }
@@ -2505,6 +2693,10 @@ export class StakeKeysCall__Inputs {
 
   get keyIds(): Array<BigInt> {
     return this._call.inputValues[2].value.toBigIntArray();
+  }
+
+  get isAdminStake(): boolean {
+    return this._call.inputValues[3].value.toBoolean();
   }
 }
 
@@ -2638,28 +2830,40 @@ export class SubmitMultipleAssertionsCall__Outputs {
   }
 }
 
-export class ToggleAssertionCheckingCall extends ethereum.Call {
-  get inputs(): ToggleAssertionCheckingCall__Inputs {
-    return new ToggleAssertionCheckingCall__Inputs(this);
+export class SubmitPoolAssertionCall extends ethereum.Call {
+  get inputs(): SubmitPoolAssertionCall__Inputs {
+    return new SubmitPoolAssertionCall__Inputs(this);
   }
 
-  get outputs(): ToggleAssertionCheckingCall__Outputs {
-    return new ToggleAssertionCheckingCall__Outputs(this);
+  get outputs(): SubmitPoolAssertionCall__Outputs {
+    return new SubmitPoolAssertionCall__Outputs(this);
   }
 }
 
-export class ToggleAssertionCheckingCall__Inputs {
-  _call: ToggleAssertionCheckingCall;
+export class SubmitPoolAssertionCall__Inputs {
+  _call: SubmitPoolAssertionCall;
 
-  constructor(call: ToggleAssertionCheckingCall) {
+  constructor(call: SubmitPoolAssertionCall) {
     this._call = call;
   }
+
+  get _poolAddress(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get _challengeId(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+
+  get _confirmData(): Bytes {
+    return this._call.inputValues[2].value.toBytes();
+  }
 }
 
-export class ToggleAssertionCheckingCall__Outputs {
-  _call: ToggleAssertionCheckingCall;
+export class SubmitPoolAssertionCall__Outputs {
+  _call: SubmitPoolAssertionCall;
 
-  constructor(call: ToggleAssertionCheckingCall) {
+  constructor(call: SubmitPoolAssertionCall) {
     this._call = call;
   }
 }
@@ -2762,104 +2966,6 @@ export class UnstakeKeysCall__Outputs {
   _call: UnstakeKeysCall;
 
   constructor(call: UnstakeKeysCall) {
-    this._call = call;
-  }
-}
-
-export class UpdateMaxKeysPerPoolCall extends ethereum.Call {
-  get inputs(): UpdateMaxKeysPerPoolCall__Inputs {
-    return new UpdateMaxKeysPerPoolCall__Inputs(this);
-  }
-
-  get outputs(): UpdateMaxKeysPerPoolCall__Outputs {
-    return new UpdateMaxKeysPerPoolCall__Outputs(this);
-  }
-}
-
-export class UpdateMaxKeysPerPoolCall__Inputs {
-  _call: UpdateMaxKeysPerPoolCall;
-
-  constructor(call: UpdateMaxKeysPerPoolCall) {
-    this._call = call;
-  }
-
-  get newAmount(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-}
-
-export class UpdateMaxKeysPerPoolCall__Outputs {
-  _call: UpdateMaxKeysPerPoolCall;
-
-  constructor(call: UpdateMaxKeysPerPoolCall) {
-    this._call = call;
-  }
-}
-
-export class UpdateMaxStakePerLicenseCall extends ethereum.Call {
-  get inputs(): UpdateMaxStakePerLicenseCall__Inputs {
-    return new UpdateMaxStakePerLicenseCall__Inputs(this);
-  }
-
-  get outputs(): UpdateMaxStakePerLicenseCall__Outputs {
-    return new UpdateMaxStakePerLicenseCall__Outputs(this);
-  }
-}
-
-export class UpdateMaxStakePerLicenseCall__Inputs {
-  _call: UpdateMaxStakePerLicenseCall;
-
-  constructor(call: UpdateMaxStakePerLicenseCall) {
-    this._call = call;
-  }
-
-  get newAmount(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-}
-
-export class UpdateMaxStakePerLicenseCall__Outputs {
-  _call: UpdateMaxStakePerLicenseCall;
-
-  constructor(call: UpdateMaxStakePerLicenseCall) {
-    this._call = call;
-  }
-}
-
-export class UpdateStakingTierCall extends ethereum.Call {
-  get inputs(): UpdateStakingTierCall__Inputs {
-    return new UpdateStakingTierCall__Inputs(this);
-  }
-
-  get outputs(): UpdateStakingTierCall__Outputs {
-    return new UpdateStakingTierCall__Outputs(this);
-  }
-}
-
-export class UpdateStakingTierCall__Inputs {
-  _call: UpdateStakingTierCall;
-
-  constructor(call: UpdateStakingTierCall) {
-    this._call = call;
-  }
-
-  get index(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get newThreshold(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-
-  get newBoostFactor(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
-  }
-}
-
-export class UpdateStakingTierCall__Outputs {
-  _call: UpdateStakingTierCall;
-
-  constructor(call: UpdateStakingTierCall) {
     this._call = call;
   }
 }

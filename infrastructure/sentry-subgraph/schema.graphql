@@ -37,10 +37,10 @@ type SentryKey @entity(immutable: false) {
 ######################################################################
 type PoolInfo @entity(immutable: false) {
   id: String!
-  address: Bytes!
+  address: Bytes! @index
   owner: Bytes!
   delegateAddress: Bytes!
-  totalStakedEsXaiAmount: BigInt!
+  totalStakedEsXaiAmount: BigInt! @index
   totalStakedKeyAmount: BigInt!
   ownerShare: BigInt!
   keyBucketShare: BigInt!
@@ -54,6 +54,7 @@ type PoolInfo @entity(immutable: false) {
   ownerLatestUnstakeRequestCompletionTime: BigInt!
   createdTimestamp: BigInt!
   poolChallenges: [PoolChallenge!]! @derivedFrom(field: "pool")
+  submissions: [PoolSubmission!]! @derivedFrom(field: "poolInfo")
 }
 
 type UnstakeRequest @entity(immutable: false) {
@@ -81,13 +82,21 @@ type PoolFactoryConfig @entity(immutable: false) {
 type PoolChallenge @entity(immutable: false) {
   id: String!
   pool: PoolInfo!
-  challenge: Challenge!
+  challenge: Challenge! @index
   submittedKeyCount: BigInt!
   claimKeyCount: BigInt!
   totalStakedEsXaiAmount: BigInt!
   totalStakedKeyAmount: BigInt!
   totalClaimedEsXaiAmount: BigInt!
   eligibleSubmissionsCount: BigInt!
+}
+
+type PoolStake @entity(immutable: false) {
+  id: String!
+  pool: PoolInfo!
+  wallet: SentryWallet! @index
+  keyStakeAmount: BigInt!
+  esXaiStakeAmount: BigInt!
 }
 
 ##############################################################
@@ -102,11 +111,11 @@ enum ChallengeStatus {
 
 type Challenge @entity(immutable: false) {
   id: String!
-  challengeNumber: BigInt! # uint256
+  challengeNumber: BigInt! @index # uint256
   status: ChallengeStatus!
   assertionId: BigInt! # uint256
   assertionStateRootOrConfirmData: Bytes! # bytes
-  assertionTimestamp: BigInt! # uint64
+  assertionTimestamp: BigInt! @index # uint64
   challengerSignedHash: Bytes! # bytes
   activeChallengerPublicKey: Bytes! # bytes
   rollupUsed: Bytes! # address
@@ -129,14 +138,15 @@ enum ClaimedFrom {
   claimRewards
   claimMultipleRewards
   unclaimed
+  unknown
 }
 
 type Submission @entity(immutable: false) {
   id: String!
-  challengeNumber: BigInt!
+  challengeNumber: BigInt! @index
   claimed: Boolean!
   eligibleForPayout: Boolean!
-  nodeLicenseId: BigInt! 
+  nodeLicenseId: BigInt! @index
   assertionsStateRootOrConfirmData: String!
   claimAmount: BigInt!
   createdTimestamp: BigInt!
@@ -152,13 +162,14 @@ type Submission @entity(immutable: false) {
 type SentryWallet @entity(immutable: false) {
   id: String!
   isKYCApproved: Boolean!
-  address: Bytes!
+  address: Bytes! @index
   approvedOperators: [Bytes!]!
   v1EsXaiStakeAmount: BigInt!
   esXaiStakeAmount: BigInt!
   keyCount: BigInt!
   stakedKeyCount: BigInt!
   sentryKeys: [SentryKey!]! @derivedFrom(field: "sentryWallet")
+  poolStakes: [PoolStake!]! @derivedFrom(field: "wallet")
 }
 
 type RefereeConfig @entity(immutable: false) {
@@ -169,6 +180,23 @@ type RefereeConfig @entity(immutable: false) {
   stakeAmountTierThresholds: [BigInt!]!
   stakeAmountBoostFactors: [BigInt!]!
 }
+
+type PoolSubmission @entity(immutable: false) {
+  id: String!
+  challengeId: BigInt! @index
+  poolAddress: Bytes! @index
+  challenge: Challenge!
+  poolInfo: PoolInfo!
+  stakedKeyCount: BigInt!
+  winningKeyCount: BigInt!
+  claimedRewardsAmount: BigInt!
+  createdTimestamp: BigInt! @index
+  createdTxHash: Bytes!
+  claimTimestamp: BigInt!
+  claimTxHash: Bytes!
+  claimed: Boolean! @index
+}
+
 
 ######################################################
 # Xai.graphql                                        #

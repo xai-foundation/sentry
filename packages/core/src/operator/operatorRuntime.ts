@@ -13,16 +13,15 @@ import {
     getSentryKeysFromGraph,
     getPoolInfosFromGraph,
     getOwnerOrDelegatePools,
-    getKeysOfPool,
-    getUserInteractedPools,
-    getUserStakedKeysOfPool,
-    listNodeLicenses,
     getLatestChallenge,
     getBoostFactor as getBoostFactorRPC,
     getMintTimestamp,
     listOwnersForOperator,
-    checkKycStatus,
-    getSubmissionsForChallenges
+    getSubmissionsForChallenges,
+    getUnStakedKeysOfUser,
+    submitPoolAssertions,
+    claimPoolSubmissionRewards,
+    getMultipleUsersInteractedPoolsRpc
 } from "../index.js";
 import axios from "axios";
 import { PoolInfo, RefereeConfig, SentryKey, SentryWallet, Submission } from "@sentry/sentry-subgraph-client";
@@ -73,6 +72,7 @@ const KEYS_PER_BATCH = 100;
 let cachedOperatorWallets: string[];
 const mintTimestamps: { [nodeLicenseId: string]: bigint } = {};
 let cachedKeysOfOwner: { [keyId: string]: SentryKey };
+let cachedPoolsOfOperator: string[];
 
 // SUBGRAPH EDIT
 let nodeLicenseStatusMap: NodeLicenseStatusMap = new Map();
@@ -285,6 +285,17 @@ async function processNewChallenge(
     if (batchedWinnerKeys.length) {
         await submitMultipleAssertions(batchedWinnerKeys, challengeNumber, challenge.assertionStateRootOrConfirmData, KEYS_PER_BATCH, cachedSigner, cachedLogger);
     }
+
+    // Process any Pool Submissions
+    if(cachedPoolsOfOperator && cachedPoolsOfOperator.length > 0) {
+            try {
+
+              await submitPoolAssertions(cachedPoolsOfOperator, challengeNumber, challenge.assertionStateRootOrConfirmData, cachedSigner, cachedLogger);
+
+            } catch (error: any) {
+                cachedLogger(`Error submitting pool assertions for challenge ${challengeNumber} - ${error && error.message ? error.message : error}`);
+            }    
+    }
 }
 
 async function processClaimForChallenge(challengeNumber: bigint, eligibleNodeLicenseIds: bigint[], sentryKeysMap: { [keyId: string]: SentryKey }) {
@@ -320,6 +331,17 @@ async function processClaimForChallenge(challengeNumber: bigint, eligibleNodeLic
         } catch (error: any) {
             cachedLogger(`Error during bulk claim for address ${claimForAddress} and challenge ${challengeNumber}: ${error.message}`);
         }
+    }
+    
+    // Process any Pool Claims
+    if(cachedPoolsOfOperator && cachedPoolsOfOperator.length > 0) {
+        try {
+            await claimPoolSubmissionRewards(cachedPoolsOfOperator, challengeNumber, cachedSigner, cachedLogger);
+            cachedLogger(`Bulk claim successful for address ${operatorAddress} and challenge ${challengeNumber}`);
+        } catch (error: any) {
+            cachedLogger(`Error during bulk claim for address ${operatorAddress} and challenge ${challengeNumber}: ${error.message}`);
+        }
+
     }
 }
 
@@ -372,58 +394,28 @@ async function processClosedChallenges(
                 continue;
             }
 
-            updateNodeLicenseStatus(nodeLicenseId, `Checking KYC Status`);
-            safeStatusCallback();
-
-            let isKYC: boolean = false;
-            if (sentryWalletMap) {
-                isKYC = sentryWalletMap[sentryKey.owner].isKYCApproved;
-            } else {
-                //If we are running on RPC we should not check every single pool key that did not come from an owner for KYC. 
-                //The Referee will let the transaction go through but won't claim
-                if (sentryKey.assignedPool != "0x") {
-                    isKYC = true;
-                } else {
-                    //Cache KYC status on owner basis for each challenge
-                    if (ownerKYCStatus[sentryKey.owner] === undefined) {
-                        const [{ isKycApproved }] = await retry(async () => await checkKycStatus([sentryKey.owner]));
-                        ownerKYCStatus[sentryKey.owner] = isKycApproved
-                    }
-                    isKYC = ownerKYCStatus[sentryKey.owner];
-                }
+            if (!challengeToEligibleNodeLicensesMap.has(challengeId)) {
+                challengeToEligibleNodeLicensesMap.set(challengeId, []);
             }
+            challengeToEligibleNodeLicensesMap.get(challengeId)?.push(BigInt(nodeLicenseId));
 
-            if (isKYC) {
-                if (!challengeToEligibleNodeLicensesMap.has(challengeId)) {
-                    challengeToEligibleNodeLicensesMap.set(challengeId, []);
-                }
-                challengeToEligibleNodeLicensesMap.get(challengeId)?.push(BigInt(nodeLicenseId));
-
-                updateNodeLicenseStatus(nodeLicenseId, `Claiming esXAI...`);
-                safeStatusCallback();
-            } else {
-
-                if (!nonKYCWallets[sentryKey.owner]) {
-                    nonKYCWallets[sentryKey.owner] = 0;
-                }
-                nonKYCWallets[sentryKey.owner]++;
-
-                updateNodeLicenseStatus(nodeLicenseId, `Cannot Claim, Failed KYC`);
-                safeStatusCallback();
-            }
+            updateNodeLicenseStatus(nodeLicenseId, `Claiming esXAI...`);
+            safeStatusCallback();  
 
         } catch (error: any) {
             cachedLogger(`Error processing submissions for Sentry Key ${nodeLicenseId} - ${error && error.message ? error.message : error}`);
         }
     }
 
-    const nonKYC = Object.keys(nonKYCWallets);
-    if (nonKYC.length) {
-        cachedLogger(`Failed KYC check for ${nonKYC.length} owners: `);
-        nonKYC.forEach(w => {
-            cachedLogger(`${w} (${nonKYCWallets[w]} keys)`);
-        })
-    }
+    // Leaving temporarily in case we decide to handle failed KYC wallets differently
+    //  Story ID: 187790951
+    // const nonKYC = Object.keys(nonKYCWallets);
+    // if (nonKYC.length) {
+    //     cachedLogger(`Failed KYC check for ${nonKYC.length} owners: `);
+    //     nonKYC.forEach(w => {
+    //         cachedLogger(`${w} (${nonKYCWallets[w]} keys)`);
+    //     })
+    // }
 
     // Iterate over the map and call processClaimForChallenge for each challenge with its unique list of eligible nodeLicenseIds
     for (const [challengeId, nodeLicenseIds] of challengeToEligibleNodeLicensesMap) {
@@ -494,48 +486,17 @@ async function listenForChallengesCallback(challengeNumber: bigint, challenge: C
     } catch (error: any) {
         cachedLogger(`Error processing new challenge in listener callback: - ${error && error.message ? error.message : error}`);
     }
-
-
 }
 
 
-//Set the assignedPool field to our owner keys should they be staked
-async function syncOwnerStakedKeysForRPC(owners: string[], sentryKeysMap: { [keyId: string]: SentryKey }): Promise<{ [keyId: string]: SentryKey }> {
 
-    for (const owner of owners) {
-        const ownerInteractedPools = await getUserInteractedPools(owner);
-
-        if (ownerInteractedPools.length) {
-
-            for (const pool of ownerInteractedPools) {
-
-                const keys = await getUserStakedKeysOfPool(pool, owner);
-                for (const key of keys) {
-
-                    //The key needs to be in the list already
-                    //We just need to check if we already mapped the pool because it was staked in one of the operators owned / delegated pools
-
-                    if (!sentryKeysMap[key.toString()]) {
-                        cachedLogger(`Error key not found in list of keys to operate, restart the operator to reload for \nowner: ${owner}, \npool: ${pool}, \nkey: ${key.toString()}.`);
-                        continue;
-                    }
-
-                    sentryKeysMap[key.toString()].assignedPool = pool;
-                }
-            }
-        }
-    }
-
-    return sentryKeysMap;
-}
 
 //Load all the keys from pool our operator should operate
 //Exclude pool that are not in the whitelist
 const reloadPoolKeysForRPC = async (
     operator: string,
-    sentryKeysMap: { [keyId: string]: SentryKey },
     operatorOwners?: string[]
-): Promise<{ [keyId: string]: SentryKey }> => {
+): Promise<string[]> => {
 
     let operatorPoolAddresses = await getOwnerOrDelegatePools(operator);
 
@@ -543,45 +504,7 @@ const reloadPoolKeysForRPC = async (
         operatorPoolAddresses = operatorPoolAddresses.filter(o => operatorOwners.includes(o.toLowerCase()))
     }
 
-    if (operatorPoolAddresses.length) {
-
-        cachedLogger(`Found ${operatorPoolAddresses.length} pools for operator.`);
-
-        for (const pool of operatorPoolAddresses) {
-            //Check every key and find out if its already in the nodeLicenseIds list
-            cachedLogger(`Fetching node licenses for pool ${pool}.`);
-
-            const keys = await getKeysOfPool(pool);
-
-            for (const key of keys) {
-
-
-                if (sentryKeysMap[key.toString()]) {
-
-                    sentryKeysMap[key.toString()].assignedPool = pool;
-
-                } else {
-
-                    if (!mintTimestamps[key.toString()]) {
-                        mintTimestamps[key.toString()] = await retry(async () => await getMintTimestamp(key))
-                    }
-
-                    sentryKeysMap[key.toString()] = {
-                        assignedPool: pool,
-                        keyId: key,
-                        mintTimeStamp: mintTimestamps[key.toString()],
-                        id: key.toString(),
-                        owner: "",
-                        sentryWallet: {} as any,
-                        submissions: []
-                    }
-                }
-
-            }
-        }
-    }
-
-    return sentryKeysMap;
+    return operatorPoolAddresses;
 }
 
 
@@ -760,15 +683,17 @@ const loadOperatorKeysFromRPC = async (
         cachedKeysOfOwner = {};
 
         for (const owner of owners) {
-            cachedLogger(`Fetching node licenses for owner ${owner}.`);
-            const licensesOfOwner = await listNodeLicenses(owner, (keyId) => {
-                cachedLogger(`Fetched node licenses key ${keyId.toString()}.`);
-            });
+            cachedLogger(`Fetching node licenses for owner ${owner}.`);       
+            const unstakedLicensesOfOwner = await getUnStakedKeysOfUser(owner);
 
-            for (const licenseId of licensesOfOwner) {
+            for (const licenseId of unstakedLicensesOfOwner) {
 
-                if (!mintTimestamps[licenseId.toString()]) {
-                    mintTimestamps[licenseId.toString()] = await retry(async () => await getMintTimestamp(licenseId))
+                if (!mintTimestamps[licenseId.toString()]) {   
+                    if(licenseId < 35000){                          
+                        mintTimestamps[licenseId.toString()] = 0n;
+                    }else{      
+                        mintTimestamps[licenseId.toString()] = await retry(async () => await getMintTimestamp(licenseId))
+                    }
                 }
 
                 const sentryKey: SentryKey = {
@@ -784,8 +709,8 @@ const loadOperatorKeysFromRPC = async (
                 sentryKeysMap[licenseId.toString()] = sentryKey;
             }
 
-            if (licensesOfOwner.length) {
-                cachedLogger(`Fetched ${licensesOfOwner.length} node licenses for owner ${owner}.`);
+            if (unstakedLicensesOfOwner.length) {
+                cachedLogger(`Fetched ${unstakedLicensesOfOwner.length} node licenses for owner ${owner}.`);
             }
         }
     } else {
@@ -794,10 +719,16 @@ const loadOperatorKeysFromRPC = async (
 
     const keysOfOwnersCount = Object.keys(sentryKeysMap).length;
     // Map the keys from pools our operator should operate, filter pools if passedInOwnersAndPools whitelist is enabled
-    sentryKeysMap = await reloadPoolKeysForRPC(operator, sentryKeysMap, passedInOwnersAndPools);
+    const ownedPools = await reloadPoolKeysForRPC(operator, passedInOwnersAndPools);
 
     // Map all the assigned pools from keys of owners
-    sentryKeysMap = await syncOwnerStakedKeysForRPC(owners, sentryKeysMap);
+    const userInteractedPools = await getMultipleUsersInteractedPoolsRpc(owners);
+
+    // Merge ownedPools and userInteractedPools without duplicates
+    const uniquePools = new Set<string>([...ownedPools, ...userInteractedPools]);
+
+    // Assign the merged, deduplicated pools to cachedPoolsOfOperator
+    cachedPoolsOfOperator = Array.from(uniquePools);
 
     // Sync the nodeLicenseStatusMap
     Object.keys(sentryKeysMap).forEach(key => {
