@@ -505,7 +505,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * @dev The function checks if claiming is enabled and if the caller has a reward to claim.
      * If both conditions are met, the reward is transferred to the caller and their reward balance is reset.
      */
-    function claimReferralReward() external reentrancyGuardClaimReferralReward{
+    function claimReferralReward() external reentrancyGuardClaimReferralReward {
         require(claimable, "Claiming of referral rewards is currently disabled");
         uint256 reward = _referralRewards[msg.sender];
         // Pay Xai & esXAI rewards if they exist

@@ -60,6 +60,28 @@
     clip-path: polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px);
   }
 
+  .dropdown-options::-webkit-scrollbar {
+    width: 10px;
+    background: #000;
+  }
+
+  .dropdown-options::-webkit-scrollbar-thumb {
+    background: #1F1B1B;
+    border-right: 2px black solid;
+    border-top: 2px black solid;
+    border-bottom: 2px black solid;
+    background-clip: padding-box;
+  }
+
+  .dropdown-clip-path {
+    clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+  }
+
+  .dropdown:hover + .dropdown-border {
+    background-color: #FF2C3A;
+  }
+
+
   .text-button:hover .arrow-icon {
     fill: white
   }

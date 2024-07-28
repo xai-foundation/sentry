@@ -53,3 +53,11 @@ type PoolChallenge @entity(immutable: false) {
   totalClaimedEsXaiAmount: BigInt!
   eligibleSubmissionsCount: BigInt!
 }
+
+type PoolStake @entity(immutable: false) {
+  id: String!
+  pool: PoolInfo!
+  wallet: SentryWallet! @index
+  keyStakeAmount: BigInt!
+  esXaiStakeAmount: BigInt!
+}
