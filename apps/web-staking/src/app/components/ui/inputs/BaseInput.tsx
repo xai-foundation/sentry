@@ -25,8 +25,9 @@ interface InputProps {
     // maybe we can improve this approach in future
     inputWrapper?: number;
   },
-  inputMaxWidth?: string
-  onClick?: () => void
+  inputMaxWidth?: string,
+  onClick?: () => void,
+  onEnter?: () => void
 }
 
 //todo fix font
@@ -48,11 +49,20 @@ const Input = ({
                  isInvalid = false,
                  widthProperties,
                  inputMaxWidth,
-                 onClick
+                 onClick,
+                 onEnter
                }: InputProps) => {
   const inputHeight = size === InputSizes.md ? "h-[40px]" : "h-[48px]";
   const borderHeight = size === InputSizes.md ? "h-[38px]" : "h-[46px]";
   const [isFocused, setIsFocused] = useState(false);
+
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && onEnter) {
+      onEnter();
+    }
+  };
+
     return (
     <div className={`flex flex-col max-w-[${widthProperties?.inputWrapper}px]`}>
         {label && <span className="text-lg text-americanSilver font-bold mb-[8px]">{label}</span>}
@@ -72,6 +82,7 @@ const Input = ({
                onFocus={() => setIsFocused(prev => !prev)}
                onBlur={() => setIsFocused(prev => !prev)}
                onChange={onChange}
+               onKeyDown={handleKeyDown}
                value={value}
                disabled={disabled}
                className={`${inputHeight} w-full group z-20 bg-transparent ${disabled ? "text-darkRoom" : "text-americanSilver"} ${disabled ? "placeholder-darkRoom" : `${placeholderColor}`} focus:outline-0 ${inputMaxWidth && `${inputMaxWidth}`} base-input`} />
