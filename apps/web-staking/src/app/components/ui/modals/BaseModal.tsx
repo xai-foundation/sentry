@@ -1,8 +1,9 @@
 import React, { ReactNode, useEffect, useState } from "react";
 import { PrimaryButton, TextButton } from "@/app/components/ui/buttons";
 import { CloseIcon } from "@/app/components/icons/IconsComponent";
-import { Dropdown, DropdownItem } from "../../redeem/Dropdown";
-import { listOfCountries, listOfPreferableCountries } from "../../constants/constants";
+
+import { listOfCountries } from "../../constants/constants";
+import { SearchableDropdown, SearchableDropdownItem } from "../dropdowns/SearchableDropdown";
 
 interface BaseModalProps {
   isOpened: boolean;
@@ -16,9 +17,8 @@ interface BaseModalProps {
   isDisabled?: boolean;
   withOutCloseButton?: boolean;
   isDropdown?: boolean;
-  selectedWallet?: string | null;
-  setSelectedWallet?: React.Dispatch<React.SetStateAction<string | null>>;
-  setSelectedValue?: React.Dispatch<React.SetStateAction<string>>
+  selectedCountry?: string | null;
+  setSelectedCountry?: React.Dispatch<React.SetStateAction<string | null>>;
   isOpen?: boolean;
   setIsOpen?: React.Dispatch<React.SetStateAction<boolean>>
   isError?: boolean;
@@ -37,9 +37,8 @@ const BaseModal = ({
                      cancelText = "Cancel",
                      submitText = "Submit",
                      isDropdown = false,
-                     selectedWallet,
-                     setSelectedWallet,
-                     setSelectedValue,
+                     selectedCountry,
+                     setSelectedCountry,
                      isOpen,
                      setIsOpen,
                      isError,
@@ -53,33 +52,45 @@ const BaseModal = ({
     }
   }, [isOpened]);
 
-  const countries: JSX.Element[] = listOfCountries.map((item, i, arr) => (
-    <DropdownItem
+  function onClickHelper() {
+    if (selectedCountry) {
+      if (
+				selectedCountry === "China" || 
+				selectedCountry === "Hong Kong" || 
+				selectedCountry === "Republic of North Macedonia" ||
+				selectedCountry === "Turkey" || 
+				selectedCountry === "Ukraine" 	 
+        ) {
+          return window.open(`https://verify-with.blockpass.org/?clientId=xai_sentry_node__edd_60145`, "_blank",
+          "noopener noreferrer");
+			} else if (selectedCountry !== "") {
+        return window.open(`https://verify-with.blockpass.org/?clientId=xai_node_007da`, "_blank",
+        "noopener noreferrer");
+			}
+		} else {
+      return
+		}
+	}
+
+  const countries: JSX.Element[] = listOfCountries.filter(item => item.label.toLocaleLowerCase().startsWith(selectedCountry?.toLowerCase()!)).map((item, i, arr) => (
+    <SearchableDropdownItem
 				onClick={() => {
-					setSelectedWallet && setSelectedWallet(item.label);
+					setSelectedCountry && setSelectedCountry(item.label);
 					setIsOpen && setIsOpen(false);
-          setSelectedValue && setSelectedValue(item.value);
       }}
       dropdownOptionsCount={arr.length}
 				key={`sentry-item-${i}`}
         extraClasses={"hover:!bg-velvetBlack"}
 			>
 				{item.label}
-    </DropdownItem>))
+    </SearchableDropdownItem>))
   
-  const preferableCountries = listOfPreferableCountries.map((item, i, arr) => ((
-    <DropdownItem
-				onClick={() => {
-					setSelectedWallet && setSelectedWallet(item.label);
-					setIsOpen && setIsOpen(false);
-          setSelectedValue && setSelectedValue(item.value);
-      }}
-      dropdownOptionsCount={arr.length}
-				key={`sentry-item-${i}`}
-        extraClasses={"hover:!bg-velvetBlack"}
-			>
-				{item.label}
-    </DropdownItem>)));
+  const isInvalidCountry = () => { 
+    if (listOfCountries.filter(item => item.label === selectedCountry).length === 0) {
+      return true;
+    }
+    return false;
+  }
   
   return (
     <>
@@ -103,12 +114,12 @@ const BaseModal = ({
             </span>}
             <span className="block font-bold text-white text-2xl mb-[18px]">{modalHeader}</span>
             <span className="block text-[17px] font-medium text-americanSilver">{modalBody}</span>
-            {isDropdown && <Dropdown getPreferableItems={() => preferableCountries} dropdownOptionsCount={countries.length} isOpen={isOpen!} selectedValue={selectedWallet!} selectedValueRender={<p>{selectedWallet || `Select your country`}</p>} setSelectedValue={setSelectedWallet!} setIsOpen={setIsOpen!} getDropdownItems={() => countries} extraClasses={{ dropdown: "!w-full my-3", dropdownOptions: "!w-full" }} defaultValue="Select your country" isInvalid={isError}  />}
+            {isDropdown && <SearchableDropdown dropdownOptionsCount={countries.length} isOpen={isOpen!} selectedValue={selectedCountry!} selectedValueRender={selectedCountry!} setSelectedValue={setSelectedCountry!} setIsOpen={setIsOpen!} getDropdownItems={() => countries} extraClasses={{ dropdown: "!w-full my-3", dropdownOptions: "!w-full" }} isInvalid={isError}  />}
             {isError && <span className="block text-lg font-medium text-[#F76808]">{errorMessage}</span>}
             <div className="flex justify-end items-end mt-2">
               {!withOutCancelButton &&
                 <TextButton buttonText={cancelText} onClick={closeModal} textClassName="!text-lg !font-bold" />}
-              <PrimaryButton onClick={onSubmit} btnText={submitText} size="sm" isDisabled={isDisabled} />
+              <PrimaryButton onClick={isDropdown ? onClickHelper : onSubmit} btnText={submitText} size="sm" isDisabled={isDisabled || isInvalidCountry()} />
             </div>
           </div>
         </>

@@ -250,9 +250,3 @@ export const listOfCountries = [
   { value: "ZM", label: "Zambia" },
   { value: "ZW", label: "Zimbabwe" },
 ];
-
-export const listOfPreferableCountries = [
-  { value: "US", label: "United States" },
-  { value: "CA", label: "Canada" },
-  { value: "UA", label: "Ukraine" },
-];

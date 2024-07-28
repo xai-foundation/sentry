@@ -161,11 +161,10 @@ export default function History({ redemptions, reloadRedemptions }: {
 	const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
 	const [isCancel, setIsCancel] = useState(false);
 	const [showKYCModal, setShowKYCModal] = useState(false);
-	const [selectedWallet, setSelectedWallet] = useState<string | null>('');
-	const [selectedCountryValue, setSelectedCountryValue] = useState('');
+	const [selectedCountry, setSelectedCountry] = useState<string | null>('');
     const [isOpen, setIsOpen] = useState<boolean>(false);
 	const { isApproved } = useGetKYCApproved();
-	const {blocked, loading, data: dataIP} = useBlockIp();
+	const {blocked, loading} = useBlockIp();
 	
 
 	const { switchChain } = useSwitchChain();
@@ -202,7 +201,7 @@ export default function History({ redemptions, reloadRedemptions }: {
 	}, [isSuccess, isError, updateOnSuccess, updateOnError]);
 
 	const onClaim = async (redemption: RedemptionRequest) => {
-		if(isApproved) {
+		if(!isApproved) {
 			setShowKYCModal(true);
 			return
 		}
@@ -253,14 +252,13 @@ export default function History({ redemptions, reloadRedemptions }: {
 		          modalHeader="Pass KYC to claim" 
 		          modalBody={<>Your wallet must pass KYC first before you are able to claim. <br className="hidden lg:block" /> To start KYC, first choose your country before continuing.</>} 
 		          submitText="CONTINUE"
-				  isDisabled={dataIP && dataIP.country === selectedCountryValue && (blocked || loading)}
+				  isDisabled={blocked || loading}
 				  isDropdown
-				  selectedWallet={selectedWallet}
-				  setSelectedWallet={setSelectedWallet}
-				  setSelectedValue={setSelectedCountryValue}
+				  selectedCountry={selectedCountry}
+				  setSelectedCountry={setSelectedCountry}
 				  isOpen={isOpen}
 				  setIsOpen={setIsOpen}
-				  isError={dataIP && dataIP.country === selectedCountryValue && blocked}
+				  isError={blocked || selectedCountry === "United States"}
 				  errorMessage="KYC is not available for the selected country"
 		  />
 				{(redemptions.claimable.length > 0 || redemptions.open.length > 0) &&
