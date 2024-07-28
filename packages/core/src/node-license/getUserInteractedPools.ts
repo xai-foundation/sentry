@@ -25,3 +25,22 @@ export async function getUserInteractedPools(
 
     return userPoolAddresses;
 }
+
+/**
+ * Fetches all pools the ownerAddresses are either owner of or delegated operator of.
+ * @param ownerAddresses - The addresses of the owners.
+ * @returns An array of pool addresses.
+ */
+
+export async function getMultipleUsersInteractedPoolsRpc(
+    ownerAddresses: string[]
+): Promise<string[]> {
+    const uniquePoolAddresses = new Set<string>();
+
+    for (const ownerAddress of ownerAddresses) {
+        const pools = await getUserInteractedPools(ownerAddress);
+        pools.forEach(pool => uniquePoolAddresses.add(pool));
+    }
+
+    return Array.from(uniquePoolAddresses);
+}
