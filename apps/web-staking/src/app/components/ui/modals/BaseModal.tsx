@@ -85,13 +85,6 @@ const BaseModal = ({
 				{item.label}
     </SearchableDropdownItem>))
   
-  const isInvalidCountry = () => { 
-    if (listOfCountries.filter(item => item.label === selectedCountry).length === 0) {
-      return true;
-    }
-    return false;
-  }
-  
   return (
     <>
       {isOpened &&
@@ -119,7 +112,7 @@ const BaseModal = ({
             <div className="flex justify-end items-end mt-2">
               {!withOutCancelButton &&
                 <TextButton buttonText={cancelText} onClick={closeModal} textClassName="!text-lg !font-bold" />}
-              <PrimaryButton onClick={isDropdown ? onClickHelper : onSubmit} btnText={submitText} size="sm" isDisabled={isDisabled || isInvalidCountry()} />
+              <PrimaryButton onClick={isDropdown ? onClickHelper : onSubmit} btnText={submitText} size="sm" isDisabled={isDisabled} />
             </div>
           </div>
         </>
