@@ -40,14 +40,16 @@ export const findPools = async ({
 									hideFullKeys = false,
 									searchName,
 									owner,
-									network
+									network,
+									esXaiMinStake
 								}: {
 	pagination: Pagination;
 	searchName?: string;
 	owner?: string;
 	hideFullEsXai?: boolean,
 	hideFullKeys?: boolean,
-	network: NetworkKey
+	network: NetworkKey,
+	esXaiMinStake: number
 }): Promise<PagedPools> => {
 
 	const maxKeyCount = await getMaxKeyCount(network);
@@ -73,6 +75,11 @@ export const findPools = async ({
 		} else {
 			filter.$expr = { $gt: [maxKeyCount, "$keyCount"] };
 		}
+	}
+	
+	// Filter by minimum esXAI stake
+	if(esXaiMinStake){
+		filter.totalStakedAmount = { $gte: esXaiMinStake };
 	}
 
 	try {

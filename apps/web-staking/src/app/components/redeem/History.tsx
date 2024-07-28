@@ -16,6 +16,8 @@ import { MODAL_BODY_TEXT } from "./Constants";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import { BaseModal, PrimaryButton } from "@/app/components/ui";
 import { TextButton } from "@/app/components/ui/buttons";
+import { useBlockIp, useGetKYCApproved } from "@/app/hooks";
+import { listOfCountries } from "../constants/constants";
 
 interface HistoryCardProps {
 	receivedAmount: number,
@@ -42,6 +44,10 @@ function formatTimespan(durationMillis: number) {
 		return durationStr + ` left`;
 	else
 		return durationStr + ` ago`;
+}
+
+const isInvalidCountry = (country: string | null) => {
+	return listOfCountries.some(item => item.label === country) == false;
 }
 
 function HistoryCard({
@@ -75,22 +81,6 @@ function HistoryCard({
 
 	return (
 		<>
-
-			{/*<ModalComponent*/}
-			{/*	isOpen={isOpen}*/}
-			{/*	onOpenChange={onOpenChange}*/}
-			{/*	onSuccess={onModalSuccessClick}*/}
-			{/*	cancelBtnText="No, I changed my mind"*/}
-			{/*	confirmBtnText="Yes, cancel"*/}
-			{/*	modalHeader="Cancel redemption"*/}
-			{/*	modalBody={(*/}
-			{/*		<span className="text-sm">*/}
-			{/*			{MODAL_BODY_TEXT}*/}
-			{/*		</span>*/}
-			{/*	)}*/}
-			{/*/>*/}
-
-
 			<BaseModal
 				isOpened={isOpen}
 				modalBody={MODAL_BODY_TEXT}
@@ -159,6 +149,12 @@ export default function History({ redemptions, reloadRedemptions }: {
 	const { chainId } = useAccount();
 	const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
 	const [isCancel, setIsCancel] = useState(false);
+	const [showKYCModal, setShowKYCModal] = useState(false);
+	const [selectedCountry, setSelectedCountry] = useState<string | null>('');
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+	const { isApproved } = useGetKYCApproved();
+	const {blocked, loading} = useBlockIp();
+	
 
 	const { switchChain } = useSwitchChain();
 	const { writeContractAsync } = useWriteContract();
@@ -194,6 +190,10 @@ export default function History({ redemptions, reloadRedemptions }: {
 	}, [isSuccess, isError, updateOnSuccess, updateOnError]);
 
 	const onClaim = async (redemption: RedemptionRequest) => {
+		if(!isApproved) {
+			setShowKYCModal(true);
+			return
+		}
 		setIsCancel(false);
 		setLoadingIndex(redemption.index);
 		toastId.current = loadingNotification("Transaction is pending...");
@@ -235,6 +235,21 @@ export default function History({ redemptions, reloadRedemptions }: {
 	return (
 		<>
 			<div className="group flex flex-col w-xl">
+				<BaseModal isOpened={showKYCModal}
+		          closeModal={() => setShowKYCModal(false)} 
+		          onSubmit={() => { }} 
+		          modalHeader="Pass KYC to claim" 
+		          modalBody={<>Your wallet must pass KYC first before you are able to claim. <br className="hidden lg:block" /> To start KYC, first choose your country before continuing.</>} 
+		          submitText="CONTINUE"
+				  isDisabled={loading || isInvalidCountry(selectedCountry)}
+				  isDropdown
+				  selectedCountry={selectedCountry}
+				  setSelectedCountry={setSelectedCountry}
+				  isOpen={isOpen}
+				  setIsOpen={setIsOpen}
+				  isError={selectedCountry === "United States"}
+				  errorMessage="KYC is not available for the selected country"
+		  />
 				{(redemptions.claimable.length > 0 || redemptions.open.length > 0) &&
 					<div className="bg-nulnOil/85 box-shadow-default mb-[53px]">
 						<MainTitle

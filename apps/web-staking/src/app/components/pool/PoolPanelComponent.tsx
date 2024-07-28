@@ -1,14 +1,15 @@
 import PoolTextComponent from "./PoolTextComponent";
 import { ExternalLinkComponent } from "@/app/components/ui/links/ExternalLink";
-import { ConnectButton, PrimaryButton } from "@/app/components/ui/buttons";
+import { ConnectButton } from "@/app/components/ui/buttons";
+import UserVerificationKYC from "./UserVerificationKYC";
 
-interface NewPoolProps {
+interface PoolPanelProps {
   onOpen: () => void;
   address: string | undefined;
   isApproved: boolean;
 }
 
-const NewPoolComponent = ({ onOpen, address, isApproved }: NewPoolProps) => {
+const PoolPanelComponent = ({ onOpen, address, isApproved }: PoolPanelProps) => {
   return (
     <div
       className="h-[438px] w-full flex flex-col items-center justify-center gap-[15px] shadow-default bg-nulnOil/75">
@@ -21,11 +22,7 @@ const NewPoolComponent = ({ onOpen, address, isApproved }: NewPoolProps) => {
         <ConnectButton onOpen={onOpen} address={address} size="md" extraClasses="!global-double-clip-path-15px" />
       }
       {address && !isApproved && (
-        <PrimaryButton
-          onClick={() => window.open("https://xai.games/sentrynodes", "_blank", "noopener noreferrer")}
-          btnText={"Download Operator"}
-          className="uppercase global-double-clip-path-15px my-2 w-[242px]"
-        />
+        <UserVerificationKYC/>
       )}
         {(!isApproved || !address) && (
           <>
@@ -44,4 +41,4 @@ const NewPoolComponent = ({ onOpen, address, isApproved }: NewPoolProps) => {
   );
 };
 
-export default NewPoolComponent;
+export default PoolPanelComponent;
