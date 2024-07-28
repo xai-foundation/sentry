@@ -1,5 +1,7 @@
 import {Dispatch, MutableRefObject, ReactNode, SetStateAction, useEffect, useRef} from "react";
-import {DropdownArrow, WarningIcon} from "../../rebrand/icons/IconsComponents";
+import { DropdownArrow } from "../icons/DropArrowIcon";
+import { WarningIcon } from "../icons/WarningIcon";
+
 
 const DROPDOWN_ITEMS_WITHOUT_SCROLL = 11;
 interface DropdownProps {
@@ -38,7 +40,7 @@ export const Dropdown = ({setIsOpen, isOpen, isInvalid, dropdownOptionsCount, se
 
     useEffect(() => {
         const handleKeyDown = (e: MouseEvent) => {
-            if(!dropdownRef.current.contains(e.target as Node) && !scrollbarRef.current.contains(e.target as Node)) {
+            if(!dropdownRef.current.contains(e.target as Node) && !scrollbarRef?.current?.contains(e.target as Node)) {
                 setIsOpen(false);
             }
         };
