@@ -1,8 +1,11 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useAccount, useNetwork, Chain, useWaitForTransaction } from 'wagmi';
+import {wagmiConfig, chains} from "../../../main";
+import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
+import { Chain } from 'viem';
 import { CheckoutTierSummary, formatWeiToEther } from '@sentry/core';
 import { CURRENCIES, Currency, useContractWrites, UseContractWritesReturn, useCurrencyHandler, useGetExchangeRate, useGetPriceForQuantity, useGetTotalSupplyAndCap, usePromoCodeHandler, useUserBalances } from '..';
 import {useProvider} from "../provider/useProvider";
+import { getAccount } from '@wagmi/core'
 
 export interface PriceDataInterface {
     price: bigint;
@@ -56,11 +59,13 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
     approve: UseContractWritesReturn['approve'];
     mintWithEth: UseContractWritesReturn['mintWithEth'];
     mintWithXai: UseContractWritesReturn['mintWithXai'];
-    approveTx: ReturnType<typeof useWaitForTransaction>;
-    ethMintTx: ReturnType<typeof useWaitForTransaction>;
-    xaiMintTx: ReturnType<typeof useWaitForTransaction>;
+    approveTx: ReturnType<typeof useWaitForTransactionReceipt>;
+    ethMintTx: ReturnType<typeof useWaitForTransactionReceipt>;
+    xaiMintTx: ReturnType<typeof useWaitForTransactionReceipt>;
     blockExplorer: string;
-
+    handleMintWithEthClicked: () => void;
+    handleApproveClicked: () => void;
+    handleMintWithXaiClicked: () => void;
 }
 
 /**
@@ -71,7 +76,10 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
 export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysOrderTotalReturn {
     const { isLoading: isTotalLoading, data: getTotalData } = useGetTotalSupplyAndCap();
     const { data: exchangeRateData, isLoading: isExchangeRateLoading } = useGetExchangeRate();
-    const { chain } = useNetwork();
+
+	const { chainId } = getAccount(wagmiConfig);
+	const chain = chains.find(chain => chain.id === chainId)
+
     const { address } = useAccount();
     const { data: providerData } = useProvider();
 
@@ -124,6 +132,9 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         clearErrors,
         resetTransactions,
         mintWithEthError,
+        handleMintWithEthClicked,
+        handleApproveClicked,
+        handleMintWithXaiClicked,
     } = useContractWrites({
         quantity,
         promoCode,
@@ -149,7 +160,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const getApproveButtonText = (): string => {
         const total = calculateTotalPrice();
 
-        if (approve.isLoading || xaiMintTx.isLoading) {
+        if (approve.isPending || xaiMintTx.isLoading) {
             return "WAITING FOR CONFIRMATION...";
         }
 
@@ -223,6 +234,9 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         clearErrors,
         resetTransactions,
         mintWithEthError,
-        blockExplorer: providerData?.blockExplorer ?? '',        
+        blockExplorer: providerData?.blockExplorer ?? '',   
+        handleMintWithEthClicked,
+        handleApproveClicked,
+        handleMintWithXaiClicked,     
     };
 }
