@@ -64,22 +64,24 @@ export function Checkout() {
                         <LogoColumn />
                         <div className="h-auto xl:p-12 sm:px-2 sm:py-10">
                             <ChooseQuantityRow />
-                            {isTotalLoading || isExchangeRateLoading || isPriceLoading ? (
-                                <LoadingState />
-                            ) : (
-                                <>
-                                    <ChooseCurrencyRow />
-                                    <hr className="my-2 border-[#525252]" />
-                                    <PricePerKeyRow />
-                                    <hr className="my-2 border-[#525252]" />
-                                    <PromoCodeRow />
-                                    <hr className="my-2 border-[#525252]" />
-                                    <TotalCostRow />
-                                    <hr className="my-2 border-[#525252]" />
-                                    <AgreementCheckboxes />
-                                    <ActionSection />
-                                </>
-                            )}
+                            <div className="min-h-[540px]">
+                                {isTotalLoading || isExchangeRateLoading || isPriceLoading ? (
+                                    <LoadingState />
+                                ) : (
+                                    <>
+                                        <ChooseCurrencyRow />
+                                        <hr className="my-2 border-[#525252]" />
+                                        <PricePerKeyRow />
+                                        <hr className="my-2 border-[#525252]" />
+                                        <PromoCodeRow />
+                                        <hr className="my-2 border-[#525252]" />
+                                        <TotalCostRow />
+                                        <hr className="my-2 border-[#525252]" />
+                                        <AgreementCheckboxes />
+                                        <ActionSection />
+                                    </>
+                                )}
+                            </div>
                         </div>
                     </div>
                 )}
