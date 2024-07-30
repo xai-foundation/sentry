@@ -36,7 +36,6 @@ export function useContractWrites({
   promoCode,
   calculateTotalPrice,
   currency,
-  discount,
 }: UseContractWritesProps): UseContractWritesReturn {
   const useEsXai = currency === CURRENCIES.ES_XAI;
   const tokenAddress = getTokenAddress(currency);
@@ -51,7 +50,7 @@ export function useContractWrites({
     abi: NodeLicenseAbi as Abi,
     functionName: "mint",
     args: [quantity, promoCode],
-    value: discount.applied ? calculateTotalPrice() * BigInt(95) / BigInt(100) : calculateTotalPrice(),
+    value: calculateTotalPrice(),
     onSuccess: (data) => {
       setMintWithEthHash(data.hash as `0x${string}`);
       setMintWithEthError(null);
