@@ -50,6 +50,7 @@ export function useContractWrites({
     functionName: "mint",
     args: [quantity, promoCode],
     value: calculateTotalPrice(),
+
     onSuccess: (data: `0x${string}`) => {
       setMintWithEthHash(data);
       setMintWithEthError(null);
