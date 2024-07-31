@@ -10,7 +10,6 @@ RUN npm install --loglevel verbose -dd --prefix ./apps/web-staking
 # ---- Build ----
 FROM base AS build
 ENV NEXT_TELEMETRY_DISABLED 1
-ENV NEXT_PUBLIC_APP_ENV=development
 WORKDIR /app
 COPY . .
 RUN npm run build --prefix ./apps/web-staking
