@@ -230,10 +230,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     event NewPoolSubmission(uint256 indexed challengeId, address indexed poolAddress, uint256 stakedKeys, uint256 winningKeys);
     event UpdatePoolSubmission(uint256 indexed challengeId, address indexed poolAddress, uint256 stakedKeys, uint256 winningKeys, uint256 increase, uint256 decrease);
 
-    event AssertionSubmittedV2(uint256 indexed challengeId, uint256 indexed nodeLicenseId, bytes assertionStateRootOrConfirmData, bool eligibleForPayout);
-    event RewardsClaimedV2(uint256 indexed challengeId, uint256 indexed nodeLicenseId, uint256 amount);
-    event AssertionCancelled(uint256 indexed challengeId, uint256 indexed nodeLicenseId);
-
     function initialize(address _refereeCalculationsAddress) public reinitializer(7) {
 
         refereeCalculationsAddress = _refereeCalculationsAddress;
@@ -388,7 +384,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
      * @return uint256 The challenge emission.
      * @return uint256 The emission tier.
      */
-     function calculateChallengeEmissionAndTier() public view returns (uint256, uint256) {
+    function calculateChallengeEmissionAndTier() public view returns (uint256, uint256) {
         uint256 totalSupply = getCombinedTotalSupply();  
         uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
         return RefereeCalculations(refereeCalculationsAddress).calculateChallengeEmissionAndTier(totalSupply, maxSupply);
@@ -499,32 +495,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
                 PoolFactory(poolFactoryAddress).isDelegateOfPoolOrOwner(msg.sender, assignedPool)
             );
     }
-    
-    function _submitAssertion(uint256 _nodeLicenseId, uint256 _challengeId, bytes memory _confirmData, address licenseOwner, address assignedPool) internal {
-        // Support v1 (no pools) & v2 (pools)
-		uint256 stakedAmount = getMaxStakedAmount(assignedPool, licenseOwner);
 
-        // Check the user is actually eligible for receiving a reward, do not count them in numberOfEligibleClaimers if they are not able to receive a reward
-        (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _getBoostFactor(stakedAmount), _confirmData, challenges[_challengeId].challengerSignedHash);
-
-        // Store the assertionSubmission to a map
-        submissions[_challengeId][_nodeLicenseId] = Submission({
-            submitted: true,
-            claimed: false,
-            eligibleForPayout: hashEligible,
-            nodeLicenseId: _nodeLicenseId,
-            assertionStateRootOrConfirmData: _confirmData
-        });
-
-        // Keep track of how many submissions submitted were eligible for the reward
-        if (hashEligible) {
-            challenges[_challengeId].numberOfEligibleClaimers++;
-        }
-
-        // Emit the AssertionSubmitted event
-        emit AssertionSubmitted(_challengeId, _nodeLicenseId);
-        emit AssertionSubmittedV2(_challengeId, _nodeLicenseId, _confirmData, hashEligible);
-    }
 
     function _validateChallengeIsClaimable(Challenge memory _challenge) internal pure{
         // Check the challenge exists by checking the timestamp is not 0
@@ -532,120 +503,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         // Check if the challenge is closed for submissions
         require(!_challenge.openForSubmissions, "19");
     }   
-
-    /**
-     * @notice Claims a reward for a successful assertion.
-     * @dev This function looks up the submission, checks if the challenge is closed for submissions, and if valid for a payout, sends a reward.
-     * @param _nodeLicenseId The ID of the NodeLicense.
-     * @param _challengeId The ID of the challenge.
-     */
-    function claimReward(
-        uint256 _nodeLicenseId,
-        uint256 _challengeId
-    ) public {
-        // Call the internal function to claim the reward
-        uint256[] memory keyIds = new uint256[](1);
-        keyIds[0] = _nodeLicenseId;
-        claimMultipleRewards(keyIds, _challengeId, msg.sender);
-    }
-
-    function claimMultipleRewards(
-		uint256[] memory _nodeLicenseIds,
-		uint256 _challengeId,
-        address claimForAddressInBatch
-	) public {
-        
-        Challenge storage challengeToClaimFor = challenges[_challengeId];
-        
-        // Validate the challenge is claimable
-        _validateChallengeIsClaimable(challengeToClaimFor);
-        
-        // expire the challenge if 270 days old
-        bool expired = _checkChallengeRewardsExpired(_challengeId);
-
-        // If the challenge has expired, end early
-        if (expired) return;
-
-        // Check if the challenge rewards have expired
-        require(!challengeToClaimFor.expiredForRewarding, "27");
-
-        uint256 reward = challengeToClaimFor.rewardAmountForClaimers / challengeToClaimFor.numberOfEligibleClaimers;
-        uint256 keyLength = _nodeLicenseIds.length;
-        uint256 claimCount = 0;
-        uint256 poolMintAmount = 0;
-
-		for (uint256 i = 0; i < keyLength; i++) {
-            uint256 _nodeLicenseId = _nodeLicenseIds[i];
-
-            uint256 mintTimestamp = NodeLicense(nodeLicenseAddress).getMintTimestamp(_nodeLicenseId);
-            address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
-            Submission storage submission = submissions[_challengeId][_nodeLicenseId];
-            
-            address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
-            if (rewardReceiver == address(0)) {
-                rewardReceiver = owner;
-            } else {
-                //If assigned to pool try to claim pool submission
-                _claimPoolSubmissionRewards(rewardReceiver, _challengeId);
-            }
-
-            // Check if the nodeLicenseId is eligible for a payout
-            if (
-                mintTimestamp < challengeToClaimFor.createdTimestamp && 
-                !submission.claimed &&
-                submission.eligibleForPayout
-            ) {
-                // mark the submission as claimed
-                submission.claimed = true;
-
-                // increment the amount claimed on the challenge
-                challengeToClaimFor.amountClaimedByClaimers += reward;
-                
-                //If we have set the poolAddress we will only claim if the license is staked to that pool
-                if (claimForAddressInBatch != address(0) && rewardReceiver == claimForAddressInBatch) {
-                    poolMintAmount += reward;
-                } else {
-                    // Mint the reward to the owner of the nodeLicense
-                    esXai(esXaiAddress).mint(rewardReceiver, reward);
-                    _lifetimeClaims[rewardReceiver] += reward;
-                }
-
-                claimCount++;
-                emit RewardsClaimed(_challengeId, reward);
-                emit RewardsClaimedV2(_challengeId, _nodeLicenseId, reward);
-            }
-		}
-
-        if (poolMintAmount > 0) {
-            esXai(esXaiAddress).mint(claimForAddressInBatch, poolMintAmount);
-            _lifetimeClaims[claimForAddressInBatch] += poolMintAmount;
-        }
-        
-        _allocatedTokens -= claimCount * reward;
-        emit BatchRewardsClaimed(_challengeId, claimCount * reward, claimCount);
-	}
-
-    /**
-     * @notice Creates an assertion hash and determines if the hash payout is below the threshold.
-     * @dev This function creates a hash of the _nodeLicenseId, _challengeId, challengerSignedHash from the challenge, and _newStateRoot.
-     * It then converts the hash to a number and checks if it is below the threshold.
-     * The threshold is calculated as the maximum uint256 value divided by 100 and then multiplied by the total supply of NodeLicenses.
-     * @param _nodeLicenseId The ID of the NodeLicense.
-     * @param _challengeId The ID of the challenge.
-     * @param _boostFactor The factor controlling the chance of eligibility for payout as a multiplicator (base chance is 1/100 - Example: _boostFactor 200 will double the payout chance to 1/50, _boostFactor 16 maps to 1/6.25).
-     * @param _confirmData The confirm hash, will change to assertionState after BOLD.
-     * @param _challengerSignedHash The signed hash for the challenge
-     * @return a boolean indicating if the hash is eligible, and the assertionHash.
-     */
-    function createAssertionHashAndCheckPayout(
-        uint256 _nodeLicenseId,
-        uint256 _challengeId,
-        uint256 _boostFactor,
-        bytes memory _confirmData,
-        bytes memory _challengerSignedHash
-    ) public view returns (bool, bytes32) {
-        return RefereeCalculations(refereeCalculationsAddress).createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _boostFactor, _confirmData, _challengerSignedHash);
-    }
 
     /**
      * @notice Returns the submissions for a given array of challenges and a NodeLicense.
@@ -757,7 +614,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             if(submissions[currentChallenge][keyId].submitted && submissions[currentChallenge][keyId].eligibleForPayout){
                 submissions[currentChallenge][keyId].eligibleForPayout = false;
                 challenges[currentChallenge].numberOfEligibleClaimers--;
-                emit AssertionCancelled(currentChallenge, keyId);
             }
         }
 
