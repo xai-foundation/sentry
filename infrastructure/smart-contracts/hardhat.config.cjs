@@ -11,7 +11,7 @@ const accounts = {
 };
 
 const config = {
-  defaultNetwork: "xai",
+  defaultNetwork: "arbitrumOne",
   solidity: {
     compilers: [
       {
@@ -57,7 +57,7 @@ const config = {
       accounts,
     },
     arbitrumOne: {
-      url: "https://tame-alpha-violet.arbitrum-mainnet.quiknode.pro/d55a31b32f04c82b0e1bcb77f1fc6dcf53147f2a/",
+      url: "https://arb1.arbitrum.io/rpc",
       accounts,
       chainId: 42161,
     },
