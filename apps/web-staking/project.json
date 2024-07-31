@@ -3,7 +3,8 @@
 	"targets": {
 		"build": {
 			"outputs": [
-                "{projectRoot}/build"
+                "{projectRoot}/.next",
+                "{projectRoot}/public"
 			]
 		}
 	}
