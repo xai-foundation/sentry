@@ -64,7 +64,7 @@ export function Checkout() {
                         <LogoColumn />
                         <div className="h-auto xl:p-12 sm:px-2 sm:py-10">
                             <ChooseQuantityRow />
-                            <div className="min-h-[540px]">
+                            <div className="min-h-[545px]">
                                 {isTotalLoading || isExchangeRateLoading || isPriceLoading ? (
                                     <LoadingState />
                                 ) : (
