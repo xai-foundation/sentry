@@ -1,12 +1,15 @@
 import {useAtomValue, useSetAtom} from "jotai";
 import {drawerStateAtom} from "@/features/drawer/DrawerManager";
 import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
-import {Tooltip, XaiCheckbox} from "@sentry/ui";
+import {CustomTooltip, PrimaryButton} from "@sentry/ui";
 import {useEffect, useState} from "react";
 import {useStorage} from "@/features/storage";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {useOperator} from "@/features/operator";
-import {AiOutlineInfoCircle} from "react-icons/ai";
+import {HelpIcon, WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
+import MainCheckbox from "@sentry/ui/dist/src/rebrand/checkboxes/MainCheckbox";
+import BaseCallout from "@sentry/ui/dist/src/rebrand/callout/BaseCallout";
+import {AiOutlineClose} from "react-icons/ai";
 
 export function WhitelistDrawer() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -36,14 +39,16 @@ export function WhitelistDrawer() {
 			return (
 				<div>
 					<div
-						className="p-2 cursor-pointer hover:bg-gray-100"
+						className="p-2 cursor-pointer hover:bg-gray-100 px-6"
 					>
-						<XaiCheckbox
-							onClick={() => toggleSelected(operatorAddress)}
-							condition={selected.includes(operatorAddress)}
+						<MainCheckbox
+							isChecked={selected.includes(operatorAddress)}
+							disabled={false}
+							extraClasses={{wrapper: "text-[18px]"}}
+							onChange={() => toggleSelected(operatorAddress)}
 						>
-							{operatorAddress}
-						</XaiCheckbox>
+							{operatorAddress.slice(0, 9)}...{operatorAddress.slice(-9)}
+						</MainCheckbox>
 					</div>
 				</div>
 			)
@@ -54,28 +59,30 @@ export function WhitelistDrawer() {
 		<div>
 			{owners.map((wallet) => (
 				<div
-					className="p-2 cursor-pointer hover:bg-gray-100"
+					className="py-2 cursor-pointer hover:bg-gray-100"
 					key={`whitelist-item-${wallet}`}
 				>
-					<XaiCheckbox
-						onClick={() => toggleSelected(wallet)}
-						condition={selected.includes(wallet)}
+					<MainCheckbox
+						onChange={() => toggleSelected(wallet)}
+						isChecked={selected.includes(wallet)}
+						extraClasses={{wrapper: "text-[18px]"}}
 					>
-						{wallet}
-					</XaiCheckbox>
+						{wallet.slice(0, 9)}...{wallet.slice(-9)}
+					</MainCheckbox>
 				</div>
 			))}
 			{pools.map((pool) => (
 				<div
-				className="p-2 cursor-pointer hover:bg-gray-100"
+				className="py-2 cursor-pointer hover:bg-gray-100"
 				key={`whitelist-item-${pool}`}
 			>
-				<XaiCheckbox
-					onClick={() => toggleSelected(pool)}
-					condition={selected.includes(pool)}
+				<MainCheckbox
+					onChange={() => toggleSelected(pool)}
+					isChecked={selected.includes(pool)}
+					extraClasses={{wrapper: "text-[18px]"}}
 				>
-					{pool}
-				</XaiCheckbox>
+					{pool.slice(0, 9)}...{pool.slice(-9)}
+				</MainCheckbox>
 			</div>
 			))}
 		</div>
@@ -94,68 +101,74 @@ export function WhitelistDrawer() {
 	}
 
 	return (
-		<div className="relative h-full flex flex-col justify-start items-center">
+		<div className="relative h-full flex flex-col justify-start items-center !text-white ">
 			<div
-				className="w-full h-[4rem] min-h-[4rem] flex flex-row justify-between items-center border-b border-gray-200 text-lg font-semibold px-8">
+				className="w-full flex flex-row justify-between items-center border-b border-chromaphobicBlack text-2xl font-bold px-8 py-[24px]">
 				<p>Allowed Wallet</p>
+				<span
+					onClick={() => {setDrawerState(null)}}
+					className="cursor-pointer"
+				>
+					<AiOutlineClose size={20} color="white" className="hover:!text-hornetSting duration-300 ease-in" />
+				</span>
 			</div>
 
-			<div className="flex-grow overflow-y-scroll max-h-[calc(100vh-4rem)] px-6 pt-[1rem]">
-				<p className="mb-2 text-[15px]">
-					Below are the wallets assigned to your Sentry Wallet ({operatorAddress}). Select the wallets
-					you'd like to enable.
-				</p>
-				<p className="mb-4 text-[15px]">
-					Note: Gas fees will be covered using your Sentry Wallet funds whenever an enabled wallet is eligible
-					to participate in a challenge.
-				</p>
-				<div>
-					<div className="flex gap-1 items-center">
-						<p className="text-[12px]">Your Sentry Wallet</p>
-						<Tooltip
-							body={"You should allow the Sentry Wallet only if it contains at least one Key. Otherwise, it is not necessary to select."}
-							position={"end"}
-						>
-							<AiOutlineInfoCircle size={14} className="text-[#A3A3A3]"/>
-						</Tooltip>
+			<div className={`flex-grow ${owners.length + pools.length > 5 && "overflow-y-scroll"} max-h-[calc(100vh-4rem)] text-americanSilver font-medium max-w-[429px]`}>
+				<div className="py-6 border-b border-chromaphobicBlack max-w-[429px]">
+					<p className="mb-4 text-lg px-6">
+						Below are the wallets assigned to your Sentry Wallet ({operatorAddress}). Select the wallets
+						you'd like to enable.
+					</p>
+					<p className="text-lg px-6">
+						Note: Gas fees will be covered using your Sentry Wallet funds whenever an enabled wallet is
+						eligible
+						to participate in a challenge.
+					</p>
+				</div>
+				<div className="">
+					<div className="py-6 border-b border-chromaphobicBlack">
+						<div className="flex gap-1 items-center px-6">
+							<p className="text-lg font-medium text-americanSilver">Your Sentry Wallet</p>
+							<CustomTooltip
+								extraClasses={{tooltipContainer: "!left-[-38px] max-w-[275px]"}}
+								content={"You should allow the Sentry Wallet only if it contains at least one Key. Otherwise, it is not necessary to select."}
+							>
+								<HelpIcon width={14} height={14}/>
+							</CustomTooltip>
+						</div>
+						{getOperatorItem()}
 					</div>
-					{getOperatorItem()}
-					<p className="text-[12px]">Assigned Wallets/Pools</p>
-					{getDropdownItems()}
+					<div className="py-6">
+						<div className="px-6">
+							<p className="text-lg font-medium text-americanSilver">Assigned Wallets/Pools</p>
+							{getDropdownItems()}
+						</div>
+					</div>
 				</div>
 			</div>
 
-			<div className="w-full flex-shrink-0 h-18 bg-white flex flex-col items-center justify-center px-2">
-				<p className="text-sm">
-					Applying changes will restart your sentry
-				</p>
+			<div className="w-full flex-shrink-0 h-18 flex flex-col items-center justify-center px-2 pt-[69px] border-t border-chromaphobicBlack">
+				<BaseCallout extraClasses={{calloutWrapper: "w-full max-w-[370px]", calloutFront: "text-[#FFC53D] !px-0"}} isWarning>
+					<WarningIcon /> <span className="ml-[10px] text-lg font-medium">Applying changes will restart your sentry</span>
+				</BaseCallout>
 
-				<div className="w-full h-16 flex items-center justify-center gap-1">
-					<button
+				<div className="w-full my-[10px] flex items-center justify-center gap-2 px-6">
+					<PrimaryButton
 						onClick={() => {
 							setDrawerState(null)
 						}}
-						className="w-full h-auto text-[15px] text-[#F30919] border border-[#F30919] px-4 py-3 font-semibold"
-					>
-						Cancel
-					</button>
-
+						wrapperClassName={`max-w-[178px]`}
+						className={`w-[176px] !h-[48px] text-lg font-bold uppercase !p-0`}
+						colorStyle={"outline"}
+						btnText={"Cancel"}
+					/>
 					{sentryRunning && (
-						<button
+						<PrimaryButton
 							onClick={() => handleSubmit()}
-							disabled={disableButton}
-							className={`w-full h-auto bg-[#F30919] text-[15px] border border-[#F30919] text-white px-4 py-3 font-semibold ${disableButton ? "bg-gray-400 border-gray-400 cursor-not-allowed" : ""}`}
-						>
-							{stopRuntime ?
-								<>
-									Apply
-								</>
-								:
-								<>
-									Loading...
-								</>
-							}
-						</button>
+							isDisabled={disableButton}
+							className={`!h-[48px] w-full !font-bold !text-lg !uppercase !p-0 flex items-center justify-center `}
+							btnText={stopRuntime ? "Apply" : "Loading..."}
+						/>
 					)}
 				</div>
 			</div>

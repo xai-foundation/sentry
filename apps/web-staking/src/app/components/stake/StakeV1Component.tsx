@@ -8,7 +8,7 @@ import MainTitle from "../titles/MainTitle";
 import AvailableBalanceComponent from "./AvailableBalanceComponent";
 import ReviewStakeComponent from "./ReviewStakeComponent";
 import CurrencyStakeComponent from "./CurrencyStakeComponent";
-import { useGetBalanceHooks, useGetEsXaiAllowance, useGetMaxTotalStakedHooks, useGetTotalStakedHooks } from "@/app/hooks/hooks";
+import { useGetBalanceHooks, useGetEsXaiAllowance, useGetMaxTotalStakedHooks, useGetTotalStakedHooks } from "@/app/hooks";
 import { useAccount } from "wagmi";
 import { BorderWrapperComponent } from "../borderWrapper/BorderWrapperComponent";
 import { getWeiAmountFromTextInput } from "@/services/web3.service";

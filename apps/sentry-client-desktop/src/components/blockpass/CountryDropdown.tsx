@@ -271,19 +271,22 @@ export function CountryDropdown({selectedCountry, setSelectedCountry}: CountryDr
 	};
 
 	return (
-		<div className="flex flex-col py-2 mt-2">
+		<div className="flex relativeflex-col pl-8 mt-[10px]">
+			<div className="bg-chromaphobicBlack p-[1px] global-clip-primary-btn w-[280px]">
 			<select
 				id="country"
 				onChange={handleCountryChange}
 				value={selectedCountry}
-			>
+				className="bg-dynamicBlack px-[14px] py-[11px] w-full text-white text-lg global-clip-primary-btn focus:outline-none pr-8 appearance-none"
+			>  
 				<option value="">Select your country</option>
 				{countries.map(({value, label}) => (
-					<option key={value} value={value}>
+					<option key={value} value={value} className="bg-nulnOil text-americanSilver">
 						{label}
 					</option>
 				))}
-			</select>
+				</select>
+			</div>
 		</div>
 	);
 }

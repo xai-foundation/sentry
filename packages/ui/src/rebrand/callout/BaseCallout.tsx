@@ -13,9 +13,9 @@ interface BaseCalloutProps {
 const BaseCallout = ({ extraClasses, isWarning, isFocused, children }: BaseCalloutProps) => {
     return (
         <div
-            className={`global-cta-clip-path  ${isWarning ? "text-bananaBoatText bg-transparent" : "text-americanSilver bg-chromaphobicBlack"} ${isFocused && "bg-hornetSting"} flex justify-center items-center text-lg font-medium z-0 ${extraClasses.calloutWrapper}`}>
+            className={`global-cta-clip-path  ${isWarning ? "text-bananaBoat bg-transparent" : "text-americanSilver bg-chromaphobicBlack"} ${isFocused && "bg-hornetSting"} flex justify-center items-center text-lg font-medium z-0 ${extraClasses.calloutWrapper}`}>
             <div
-                className={`global-cta-clip-path w-full ${isWarning ? "bg-bananaBoatText/10 md:px-[24px] md:py-[15px]" : "bg-dynamicBlack md:p-[14px]"} px-[18px] py-[7px] max-w-[calc(100%-2px)] h-[calc(100%-2px)] flex justify-center items-center z-0 ${extraClasses.calloutFront}`}>
+                className={`global-cta-clip-path w-full ${isWarning ? "bg-bananaBoat/10 md:px-[24px] md:py-[15px]" : "bg-dynamicBlack md:p-[14px]"} px-[18px] py-[7px] max-w-[calc(100%-2px)] h-[calc(100%-2px)] flex justify-center items-center z-0 ${extraClasses.calloutFront}`}>
                 {children}
             </div>
         </div>

@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { useAccount } from "wagmi";
 
-import { useGetUnstakePeriods, useGetUserPoolInfo } from "@/app/hooks/hooks";
+import { useGetUnstakePeriods, useGetUserPoolInfo } from "@/app/hooks";
 import StakingKeysDetailComponent from "./StakingKeysDetailComponent";
 
 interface StakeProps {

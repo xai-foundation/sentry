@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import PoolSocials from "@/app/components/summary/summaryDescriptions/PoolSocials";
-import { useGetPoolInfoHooks } from "@/app/hooks/hooks";
+import { useGetPoolInfoHooks } from "@/app/hooks";
 import { PoolInfo } from "@/types/Pool";
 
 import { useRouter } from "next/navigation";

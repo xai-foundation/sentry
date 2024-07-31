@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { WarningIcon } from "../icons/IconsComponent";
 import RewardComponent from "../createPool/RewardComponent";
 import MainTitle from "../titles/MainTitle";
-import { useGetPoolInfoHooks, useGetRewardBreakdownUpdateDelay } from "@/app/hooks/hooks";
+import { useGetPoolInfoHooks, useGetRewardBreakdownUpdateDelay } from "@/app/hooks";
 import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import {
   loadingNotification,

@@ -11,7 +11,7 @@ import { Id } from "react-toastify";
 
 import { useRouter } from "next/navigation";
 import UnstakeTimeReview from "./UnstakeTimeReview";
-import { useGetUnstakePeriods } from "@/app/hooks/hooks";
+import { useGetUnstakePeriods } from "@/app/hooks";
 import { PrimaryButton } from "../ui";
 
 

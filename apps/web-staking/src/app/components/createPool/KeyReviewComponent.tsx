@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useGetUnstakePeriods } from "@/app/hooks/hooks";
+import { useGetUnstakePeriods } from "@/app/hooks";
 import moment from "moment";
 import MainTitle from "../titles/MainTitle";
 import { Avatar } from "@nextui-org/react";

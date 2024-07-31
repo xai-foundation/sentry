@@ -52,7 +52,7 @@ const PoolStakingInfo = ({
   };
 
   return (
-    <div className="w-full bg-nulnOil/75 shadow-default">
+    <div className="w-full bg-nulnOil/75 sm:box-shadow-default lg:shadow-default">
       <div
         className="flex md:px-[24px] px-[18px]  py-[10px] flex-col items-center md:flex-row after:content-[''] after:w-full after:h-[1px] after:bg-chromaphobicBlack after:absolute after:left-0 md:after:top-[75px] after:top-[120px]">
         <div className="flex w-full items-center md:gap-0 gap-3">

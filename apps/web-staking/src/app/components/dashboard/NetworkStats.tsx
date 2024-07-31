@@ -1,7 +1,7 @@
 import React from "react";
 import { formatCurrencyNoDecimals } from "@/app/utils/formatCurrency";
 import { INetworkData } from "@/server/services/Pool.service";
-import { useGetTotalV1StakedAmount } from "@/app/hooks/hooks";
+import { useGetTotalV1StakedAmount } from "@/app/hooks";
 
 interface INetworkStats {
   networkData: INetworkData;

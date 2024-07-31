@@ -15,7 +15,7 @@ import ReviewRedemptionComponent from "./ReviewRedemptionComponent";
 import RedemptionPeriod from "./RedemptionPeriod";
 import { ExchangeIcon } from "../icons/IconsComponent";
 import { CURRENCY } from "./Constants";
-import { useGetBalanceHooks } from "@/app/hooks/hooks";
+import { useGetBalanceHooks } from "@/app/hooks";
 import AgreeModalComponent from "../modal/AgreeModalComponents";
 import RedeemWarning from "@/app/components/redeem/RedeemWarning";
 import { PrimaryButton, StakingInput } from "@/app/components/ui";

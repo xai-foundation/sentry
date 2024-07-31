@@ -7,7 +7,7 @@ import {config, NodeLicenseAbi} from "@sentry/core";
 import {BiLoaderAlt} from "react-icons/bi";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useProvider} from "@/features/checkout/hooks/useProvider";
-import {PrimaryButton, Tooltip} from "@sentry/ui";
+import {CustomTooltip, PrimaryButton} from "@sentry/ui";
 import { InfoPointRed, RedSentryIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import logo from '../../../public/images/sentry-main.png'
 
@@ -107,16 +107,17 @@ export function Checkout() {
 							<div className="flex flex-col sm:items-center lg:items-start gap-2">
 								<div className="flex flex-row sm:w-full sm:justify-center lg:justify-start items-center gap-1">
 									<RedSentryIcon width={32} height={32} />
-									<p className="sm:text-2xl lg:text-3xl text-white font-bold">
-										XAI SENTRY NODE KEY
-									</p>
-									<span className="h-full flex items-center ml-2"><Tooltip
+								<p className="sm:text-2xl lg:text-3xl text-white font-bold">
+									XAI SENTRY NODE KEY
+								</p>
+								<div className="h-full flex items-center ml-2">
+									<CustomTooltip
 										header={"Xai keys are required for nodes to receive $esXAI network rewards."}
-										body={"All purchases must be made in Arbitrum ETH."}
-										width={452}
+										content={"All purchases must be made in Arbitrum ETH."}
+										extraClasses={{tooltipContainer: "sm:w-[340px] lg:w-[452px] sm:left-[-295px] lg:left-[-38px]"}}
 									>
 										<InfoPointRed/>
-									</Tooltip></span>
+									</CustomTooltip></div>
 								</div>
 								<p className="sm:w-full lg:w-[400px] sm:text-center sm:px-8 lg:px-0 lg:text-left text-[18px] text-elementalGrey font-medium">
 									Each Sentry Node Key enables you to submit up to 1 reward claim for each network challenge.

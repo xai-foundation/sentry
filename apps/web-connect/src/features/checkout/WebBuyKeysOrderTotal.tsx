@@ -141,7 +141,7 @@ export function WebBuyKeysOrderTotal(
 								)}
 
 								{displayPricesMayVary && (
-									<div className="w-full flex flex-col bg-bananaBoat px-5 py-4 gap-2 mb-4">
+									<div className="lg:max-w-[575px] md:max-w-[675px] flex flex-col bg-bananaBoat px-5 py-4 gap-2 mb-4">
 										<div className="flex items-center gap-2 font-semibold">
 											<AiFillInfoCircle className="w-[20px] h-[20px] text-bananaBoatText"/>
 											<p className="text-lg text-bananaBoatText">

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useGetMaxKeyPerPool, useGetUnstakedNodeLicenseCount } from "@/app/hooks/hooks";
+import { useGetMaxKeyPerPool, useGetUnstakedNodeLicenseCount } from "@/app/hooks";
 import MainTitle from "../titles/MainTitle";
 import moment from "moment";
 import { PoolInfo } from "@/types/Pool";

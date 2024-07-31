@@ -1,8 +1,10 @@
-import {AiFillWarning, AiOutlineClose} from "react-icons/ai";
 import {useStorage} from "@/features/storage";
 import {useState} from "react";
 import {FaCircleCheck} from "react-icons/fa6";
 import {WalletAssignedMap} from "@/features/keys/Keys";
+import {WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
+import {CloseIcon} from "@sentry/ui/dist/src/rebrand/icons/CloseIcon";
+import {PrimaryButton} from "@sentry/ui";
 
 interface ImportSentryAlertModalProps {
 	onClose: () => void;
@@ -35,14 +37,14 @@ export function RemoveWalletModal({onClose, selectedWallet, isWalletAssignedMap}
 	if (success) {
 		return (
 			<div
-				className="absolute top-0 right-0 left-0 bottom-0 m-auto w-auto h-auto flex flex-col justify-start items-center z-30">
-				<div className="w-full h-full bg-white opacity-75"/>
+				className="absolute top-0 right-0 left-0 bottom-0 m-auto w-auto h-auto flex flex-col justify-start items-center z-[60]">
+				<div className="w-full h-full bg-chromaphobicBlack opacity-75"/>
 				<div
-					className="absolute top-0 right-0 left-0 bottom-0 m-auto flex flex-col justify-start items-center w-[506px] h-[190px] border border-gray-200 bg-white">
+					className="absolute top-0 right-0 left-0 bottom-0 m-auto flex flex-col justify-start items-center w-[692px] h-[200px] bg-black">
 					<div
 						className="absolute top-0 bottom-0 left-0 right-0 m-auto flex flex-col justify-center items-center gap-4">
 						<FaCircleCheck color={"#16A34A"} size={32}/>
-						<span className="text-xl font-semibold text-center">Wallet removed</span>
+						<span className="text-2xl font-bold text-white text-center">Wallet removed</span>
 					</div>
 				</div>
 			</div>
@@ -52,33 +54,35 @@ export function RemoveWalletModal({onClose, selectedWallet, isWalletAssignedMap}
 	if (isAssigned) {
 		return (
 			<div
-				className="absolute top-0 right-0 left-0 bottom-0 m-auto w-auto h-auto flex flex-col justify-start items-center z-30">
-				<div className="w-full h-full bg-white opacity-75"/>
+				className="absolute top-0 right-0 left-0 bottom-0 m-auto w-auto h-auto flex flex-col justify-start items-center z-[60]">
+				<div className="w-full h-full bg-chromaphobicBlack opacity-75"/>
 				<div
-					className="absolute top-0 right-0 left-0 bottom-0 m-auto flex flex-col justify-start items-center w-[506px] h-[272px] border border-gray-200 bg-white px-6">
+					className="absolute top-0 right-0 left-0 bottom-0 m-auto flex flex-col justify-start items-center w-[692px] h-[200px] bg-black px-6">
 					<div
 						className="absolute top-0 right-0 h-16 flex flex-row justify-between items-center text-lg px-6">
-						<div className="cursor-pointer z-10" onClick={() => onClose()}>
-							<AiOutlineClose/>
+						<div className="cursor-pointer z-10 remove-assign-wallet-modal" onClick={() => onClose()}>
+							<CloseIcon fill={"#fff"}/>
 						</div>
 					</div>
-					<div className="w-full h-full flex flex-col justify-center items-center gap-2">
-						<AiFillWarning className="w-16 h-16 text-[#F59E28]"/>
-						<p className="text-[15px] font-semibold">
-							Attempting to remove an assigned wallet
-						</p>
-						<p className="text-[#525252] text-[15px]">
+					<div className="w-full h-full flex flex-col justify-center items-start gap-2">
+						<div className="flex items-center gap-[17px]">
+							<WarningIcon width={37} height={32} />
+							<p className="text-2xl font-bold text-white">
+								Attempting to remove an assigned wallet
+							</p>
+						</div>
+						<p className="text-americanSilver text-[17px] font-medium ml-[55px]">
 							If you would like to remove this wallet from the Keys page, you will need to un-assign it
 							from the Sentry Wallet page first.
 						</p>
 
-						<div className="flex gap-8 mt-4">
-							<button
+						<div className="flex justify-end w-full gap-8 mt-4">
+							<PrimaryButton
 								onClick={() => onClose()}
-								className="w-fit h-auto bg-[#F30919] text-[15px] text-white px-8 py-3 font-semibold"
-							>
-								Okay
-							</button>
+								wrapperClassName="w-max"
+								className="w-fit text-lg uppercase px-4 !py-0 !h-[40px]"
+								btnText={"Okay"}
+							/>
 						</div>
 					</div>
 				</div>
@@ -89,38 +93,40 @@ export function RemoveWalletModal({onClose, selectedWallet, isWalletAssignedMap}
 	if (!isAssigned) {
 		return (
 			<div
-				className="absolute top-0 right-0 left-0 bottom-0 m-auto w-auto h-auto flex flex-col justify-start items-center z-30">
-				<div className="w-full h-full bg-white opacity-75"/>
+				className="absolute top-0 right-0 left-0 bottom-0 m-auto w-auto h-auto flex flex-col justify-start items-center z-[60]">
+				<div className="w-full h-full bg-chromaphobicBlack opacity-75"/>
 				<div
-					className="absolute top-0 right-0 left-0 bottom-0 m-auto flex flex-col justify-start items-center w-[506px] h-[272px] border border-gray-200 bg-white">
+					className="absolute top-0 right-0 left-0 bottom-0 m-auto flex flex-col justify-start items-center w-[692px] h-[181px] bg-black">
 					<div
-						className="absolute top-0 right-0 h-16 flex flex-row justify-between items-center text-lg px-6">
-						<div className="cursor-pointer z-10" onClick={() => onClose()}>
-							<AiOutlineClose/>
+						className="absolute top-0 right-0 h-16 flex flex-row justify-between items-center text-lg px-6 mt-[2px]">
+						<div className="cursor-pointer z-10 remove-wallet-modal-close" onClick={() => onClose()}>
+							<CloseIcon fill="#fff" />
 						</div>
 					</div>
-					<div className="w-full h-full flex flex-col justify-center items-center gap-2">
-						<AiFillWarning className="w-16 h-16 text-[#F59E28]"/>
-						<p className="text-[15px] font-semibold">
-							Are you sure you want to remove this wallet?
-						</p>
-						<p className="text-[#525252] text-[15px]">
+					<div className="w-full h-full flex flex-col justify-center items-start gap-2 px-5">
+						<div className="flex items-center gap-[17px]">
+							<WarningIcon width={37} height={32} />
+							<p className="text-2xl font-bold text-white">
+								Are you sure you want to remove this wallet?
+							</p>
+						</div>
+						<p className="text-americanSilver text-[17px] font-medium ml-[55px]">
 							You will stop tracking all esXAI accrued on this wallet
 						</p>
 
-						<div className="flex gap-8 mt-4">
+						<div className="flex gap-4 mt-4 justify-end w-full items-center">
 							<button
 								onClick={() => removeWallet()}
-								className="w-fit h-auto text-[15px] text-[#F30919] px-4 py-3 font-semibold"
+								className="w-fit h-auto text-lg font-bold text-[#F30919] py-3 hover:text-white duration-300 ease-in-out"
 							>
 								Yes, remove this wallet
 							</button>
-							<button
+							<PrimaryButton
 								onClick={() => onClose()}
-								className="w-fit h-auto bg-[#F30919] text-[15px] text-white px-4 py-3 font-semibold"
-							>
-								No, take me back
-							</button>
+								wrapperClassName="w-max"
+								className="w-fit text-lg uppercase font-bold px-4 !py-0 !h-[40px]"
+								btnText={"No, take me back"}
+							/>
 						</div>
 					</div>
 				</div>

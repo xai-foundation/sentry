@@ -1,11 +1,14 @@
 import {BiLoaderAlt} from "react-icons/bi";
-import {AiFillInfoCircle, AiOutlineClose, AiOutlineInfoCircle} from "react-icons/ai";
+import {AiOutlineClose} from "react-icons/ai";
 import {useGetPriceForQuantity} from "@/features/keys/hooks/useGetPriceForQuantity";
 import {useGetTotalSupplyAndCap} from "@/features/keys/hooks/useGetTotalSupplyAndCap";
 import {Dispatch, SetStateAction, useState} from "react";
 import {ethers} from "ethers";
-import {Tooltip} from "@sentry/ui";
+// import {Tooltip} from "@sentry/ui";
 import {getPromoCode} from "@sentry/core";
+import { PlusIcon, WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { PrimaryButton } from "@sentry/ui";
+import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 
 interface BuyKeysOrderTotalProps {
 	quantity: number;
@@ -51,15 +54,15 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 					<div key={`get-keys-${i}`}>
 						<div className="flex flex-row items-center justify-between text-[15px]">
 							<div className="flex flex-row items-center gap-2">
-								<p className="">{item.quantity.toString()} x Xai Sentry Node Key</p>
+								<p className="text-white font-medium text-lg">{item.quantity.toString()} x Xai Sentry Node Key</p>
 							</div>
 							<div className="flex flex-row items-center gap-1">
-								<p className="font-semibold">
+								<p className="font-bold uppercase text-lg text-white">
 									{ethers.formatEther(item.totalPriceForTier)} AETH
 								</p>
 							</div>
 						</div>
-						<p className="text-[13px] text-[#A3A3A3] mb-4">
+						<p className="text-base text-elementalGrey mb-4">
 							{ethers.formatEther(item.pricePer)} AETH per key
 						</p>
 					</div>
@@ -75,16 +78,13 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 			{isPriceLoading || isTotalLoading || !getPriceData
 				? (
 					<div className="w-full h-full flex flex-col justify-center items-center">
-						<BiLoaderAlt className="animate-spin" color={"#A3A3A3"} size={32}/>
-						<p>Updating total...</p>
+						<BiLoaderAlt className="animate-spin" color={"#FF0030"} size={32}/>
+						<p className="text-lg text-white font-semibold">Updating total...</p>
 					</div>
 				) : (
 					<>
 						<div className="w-full flex flex-col gap-4">
-							<div className="w-full items-center gap-2">
-								<div className="w-full">
-									<hr/>
-								</div>
+							{/* <div className="w-full items-center gap-2">
 								<div className="w-12 flex flex-row text-sm text-[#A3A3A3] mt-4 px-6">
 									<p className="flex items-center gap-1">
 										TOTAL
@@ -97,7 +97,7 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 										</Tooltip>
 									</p>
 								</div>
-							</div>
+							</div> */}
 
 							<div className="px-6">
 								{getKeys()}
@@ -106,18 +106,18 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 									<>
 										<div className="flex flex-row items-center justify-between text-[15px]">
 											<div className="flex flex-row items-center gap-2">
-												<p>Discount (5%)</p>
+												<p className="text-lg text-white font-bold">Discount (5%)</p>
 
 												<a
 													onClick={() => setDiscount({applied: false, error: false})}
-													className="text-[#F30919] ml-1 cursor-pointer"
+													className="text-[#FF0030] ml-1 cursor-pointer"
 												>
 													Remove
 												</a>
 
 											</div>
 											<div className="flex flex-row items-center gap-1">
-												<p className="text-[#2A803D] font-semibold">
+												<p className="text-white font-bold text-xl">
 													{ethers.formatEther(getPriceData.price * BigInt(5) / BigInt(100))} AETH
 												</p>
 											</div>
@@ -129,14 +129,14 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 								)}
 
 								{displayPricesMayVary && (
-									<div className="w-full flex flex-col bg-[#F5F5F5] px-5 py-4 gap-2 mb-4">
+									<BaseCallout extraClasses={{ calloutWrapper: "", calloutFront: "flex-col !items-start text-bananaBoat !text-lg" }} isWarning>
 										<div className="flex items-center gap-2 font-semibold">
-											<AiFillInfoCircle className="w-[20px] h-[20px] text-[#3B82F6]"/>
-											<p className="text-[15px]">
+											<WarningIcon width={16} height={16}/>
+											<p className="text-lg">
 												Your transaction may be reverted
 											</p>
 										</div>
-										<p className="text-sm">
+										<p className="text-base">
 											Xai Sentry Node Key prices vary depending on the quantity of remaining
 											supply. In general, as the quantity of available keys decreases, the price
 											of a key will increase. If you purchase more Keys than are available in the
@@ -144,18 +144,18 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 											purchase into two transactions - one for the current pricing tier and
 											another in the next pricing tier.
 										</p>
-									</div>
+									</BaseCallout>
 								)}
 
 								{/*		Promo section		*/}
 								{!discount.applied && (
 									<>
-										<hr className="my-2"/>
+										<hr className="my-2 border-t-chromaphobicBlack"/>
 										{promo ? (
 											<div>
 												<div
 													className="w-full h-auto flex flex-row justify-between items-center text-[15px] text-[#525252] mt-2 py-2">
-													<p>Add promo code</p>
+													<p className="text-lg text-americanSilver">Add promo code</p>
 													<div
 														className="cursor-pointer z-10"
 														onClick={() => {
@@ -163,12 +163,13 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 															setPromo(false);
 														}}
 													>
-														<AiOutlineClose/>
+														<AiOutlineClose size={20} color={"#D0CFCF"}/>
 													</div>
 												</div>
 
 												<div className="flex gap-2 items-center">
 
+													<div className={`w-full bg-foggyLondon global-clip-primary-btn p-[1px] focus-within:bg-hornetSting`}>
 													<input
 														type="text"
 														value={promoCode}
@@ -176,41 +177,42 @@ export function BuyKeysOrderTotal({quantity, promoCode, setPromoCode}: BuyKeysOr
 															setPromoCode(e.target.value)
 															setDiscount({applied: false, error: false})
 														}}
-														className={`w-full my-2 p-2 border ${discount.error ? "border-[#AB0914]" : "border-[#A3A3A3]"}`}
+														className={`w-full p-2 global-clip-primary-btn focus:outline-0 placeholder:text-americanSilver placeholder:text-lg bg-nulnOil text-americanSilver text-lg`}
 														placeholder="Enter promo code"
 													/>
-
-													<button
+													</div>
+													<div>
+													<PrimaryButton
 														onClick={() => handleSubmit()}
-														className="flex flex-row justify-center items-center w-[92px] p-2 bg-[#F30919] text-[15px] text-white font-semibold uppercase"
-													>
-														Apply
-													</button>
+														className="w-[92px] h-[44px] !p-1 text-lg font-semibold uppercase"
+														btnText="Apply"
+														/>
+													</div>
 												</div>
 
 												{discount.error && (
-													<p className="text-sm text-[#AB0914]">Error with Promo Code</p>
+													<BaseCallout isWarning extraClasses={{calloutWrapper: "w-full text-bananaBoat mt-2"}}> <WarningIcon width={20} height={20}/> <span className="ml-2">Error with Promo Code</span></BaseCallout>
 												)}
 											</div>
 										) : (
 											<p className="text-[15px] py-2">
 												<a
 													onClick={() => setPromo(true)}
-													className="text-[#F30919] ml-1 cursor-pointer"
+													className="flex items-center text-[#FF2C3A] text-lg font-bold ml-1 cursor-pointer"
 												>
-													+ Add promo code
+													<PlusIcon width={14} height={14}/> <span className="ml-1">Add promo code</span>
 												</a>
 											</p>
 										)}
 									</>
 								)}
 
-								<hr className="my-2"/>
+								<hr className="my-2 border-t-chromaphobicBlack"/>
 								<div className="flex flex-row items-center justify-between">
-									<div className="flex flex-row items-center gap-2 text-lg">
+									<div className="flex flex-row items-center gap-2 text-2xl font-bold text-white">
 										<p className="">You pay</p>
 									</div>
-									<div className="flex flex-row items-center gap-1 font-semibold">
+									<div className="flex flex-row items-center gap-1 font-bold text-white text-3xl">
 										<p>
 											{discount.applied
 												? ethers.formatEther(getPriceData.price * BigInt(95) / BigInt(100))

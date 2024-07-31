@@ -4,6 +4,10 @@ interface CheckboxProps {
   disabled?: boolean;
   isChecked?: boolean;
   labelStyle?: string;
+  extraClasses?: {
+    input?: string;
+    wrapper?: string;
+  };
 }
 
 const MainCheckbox = ({
@@ -12,9 +16,10 @@ const MainCheckbox = ({
   isChecked,
   children,
   labelStyle,
+    extraClasses
 }: CheckboxProps) => {
   return (
-    <label className={`flex items-center gap-[10px] cursor-pointer select-none text-americanSilver !rounded-none ${labelStyle} checkboxLabel`}>
+    <label className={`flex items-center gap-[10px] cursor-pointer select-none text-americanSilver !rounded-none ${labelStyle} ${extraClasses?.wrapper} checkboxLabel`}>
       <input
         type="checkbox"
         onChange={onChange}
@@ -22,7 +27,7 @@ const MainCheckbox = ({
         checked={isChecked}
         className={`before:content[''] peer relative h-[24px] w-[24px] cursor-pointer !rounded-none appearance-none transition-all before:absolute before:top-2/4 before:left-2/4 before:block before:h-[14px] before:w-[14px] before:-translate-y-2/4 before:-translate-x-2/4 before:bg-hornetSting before:opacity-0 before:transition-opacity checked:border-gray-900 bg-[#525252] ${
           !disabled && "checked:before:opacity-100"
-        } ${disabled && "bg-dynamicBlack"}`}
+        } ${disabled && "bg-dynamicBlack"} ${extraClasses?.input}`}
       />
       {children}
     </label>

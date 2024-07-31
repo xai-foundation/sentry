@@ -25,4 +25,4 @@ export default async function StakeEsXaiForPool({ params }: { params: StakeParam
   return (
     <StakeComponent poolAddress={params.poolAddress} isBannedPool={isBannedPool} />
   );
-};
+}

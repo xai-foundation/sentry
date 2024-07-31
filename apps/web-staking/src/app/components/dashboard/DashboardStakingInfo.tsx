@@ -11,7 +11,7 @@ import {
 import {
   useGetRedemptionsHooks,
   useGetUserTotalStakedKeysCount,
-} from "@/app/hooks/hooks";
+} from "@/app/hooks";
 import {
   ACTIVE_NETWORK_IDS,
   mapWeb3Error,

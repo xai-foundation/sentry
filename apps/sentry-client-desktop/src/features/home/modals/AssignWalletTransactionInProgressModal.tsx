@@ -8,14 +8,14 @@ export function AssignWalletTransactionInProgressModal() {
 	return (
 		<div
 			className="absolute top-0 right-0 left-0 bottom-0 m-auto w-auto h-auto flex flex-col justify-start items-center z-30">
-			<div className="w-full h-full bg-white opacity-75"/>
+			<div className="w-full h-full bg-[rgba(0,0,0,0.5)]"/>
 			<div
-				className="absolute top-0 right-0 left-0 bottom-0 m-auto flex flex-col justify-start items-center w-[506px] h-[190px] border border-gray-200 bg-white">
+				className="absolute top-0 right-0 left-0 bottom-0 m-auto flex flex-col justify-start items-center w-[692px] h-[168px] border border-gray-200 bg-[#000000]">
 
 				<div
 					className="absolute top-0 right-0 h-16 flex flex-row justify-between items-center text-lg px-6">
 					<div className="cursor-pointer z-10" onClick={() => setModalState(null)}>
-						<AiOutlineClose/>
+						<AiOutlineClose color={"#FFFFFF"}/>
 					</div>
 				</div>
 
@@ -26,7 +26,7 @@ export function AssignWalletTransactionInProgressModal() {
 						<svg
 							aria-hidden="true"
 							className="inline w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-gray-600 dark:fill-gray-300"
-							viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 100 101" fill="#F30919" xmlns="http://www.w3.org/2000/svg"
 						>
 							<path
 								d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
@@ -40,8 +40,8 @@ export function AssignWalletTransactionInProgressModal() {
 						<span className="sr-only">Loading...</span>
 					</div>
 
-					<span className="text-xl font-semibold text-center">Transaction in progress</span>
-					<span className="text-[15px] text-center">
+					<span className="text-2xl font-bold text-center text-white">Transaction in progress</span>
+					<span className="text-[17px] text-center text-americanSilver">
 						Complete transaction in web browser before returning to Xai Client
 					</span>
 				</div>

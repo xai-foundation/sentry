@@ -9,7 +9,7 @@ import { useAccount } from "wagmi";
 import {
   useGetKYCApproved,
   useGetUserInteractedPools,
-} from "@/app/hooks/hooks";
+} from "@/app/hooks";
 import { useRouter } from "next/navigation";
 
 import AgreeModalComponent from "../modal/AgreeModalComponents";

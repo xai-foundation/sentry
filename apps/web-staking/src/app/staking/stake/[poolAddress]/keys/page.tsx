@@ -25,4 +25,4 @@ export default async function StakeKeysForPool({ params }: { params: StakeParams
   return (
     <StakeKeysComponent poolAddress={params.poolAddress} isBannedPool={isBannedPool} />
   );
-};
+}

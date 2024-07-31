@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@nextui-org/react";
 import { HelpIcon } from "../icons/IconsComponent";
-import { useGetMaxStakePerLicense } from "@/app/hooks/hooks";
+import { useGetMaxStakePerLicense } from "@/app/hooks";
 
 const TOKEN_TRACKER_TEXT =
   "When people stake in your pool they will receive a tracker token to represent their stake. The tracker name and ticker are how his token will appear in their wallet and on block explorers like Arbiscan";

@@ -66,13 +66,17 @@ export function bootOperator(cli: Vorpal) {
                     choices,
                 };
 
-                const result = await this.prompt(ownerPrompt);
-                selectedOwners = result.selectedOwners;
+                if (!choices.length) {
+                    throw new Error(`No operatorWallets found for publicKey: ${operatorAddress}, approve your wallet for operating keys or delegate it to a staking pool to operate for it.`)
+                } else {
+                    const result = await this.prompt(ownerPrompt);
+                    selectedOwners = result.selectedOwners;
 
-                Logger.log("selectedOwners", selectedOwners);
+                    Logger.log("selectedOwners", selectedOwners);
 
-                if (!selectedOwners || selectedOwners.length < 1) {
-                    throw new Error("No owners selected. Please select at least one owner.")
+                    if (!selectedOwners || selectedOwners.length < 1) {
+                        throw new Error("No owners selected. Please select at least one owner.")
+                    }
                 }
             }
 

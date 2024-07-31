@@ -4,7 +4,7 @@ import React, { ChangeEvent, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import MainTitle from "../titles/MainTitle";
 import ReviewStakeComponent from "./ReviewStakeComponent";
-import { useGetEsXaiAllowance, useGetMaxStakePerLicense, useGetUserPoolInfo } from "@/app/hooks/hooks";
+import { useGetEsXaiAllowance, useGetMaxStakePerLicense, useGetUserPoolInfo } from "@/app/hooks";
 import { useAccount } from "wagmi";
 import { Avatar } from "@nextui-org/react";
 import { getWeiAmountFromTextInput } from "@/services/web3.service";

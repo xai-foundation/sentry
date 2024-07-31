@@ -1,4 +1,4 @@
-import {GreenPulse, YellowPulse} from "@/features/keys/StatusPulse";
+import {GreenPulse, GreyPulse, YellowPulse} from "@/features/keys/StatusPulse";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {AiFillWarning} from "react-icons/ai";
 import {Card} from "@/features/home/cards/Card";
@@ -9,6 +9,9 @@ import {recommendedFundingBalance} from "@/features/home/SentryWallet";
 import {getLatestChallenge} from "@sentry/core";
 import {ReactNode, useEffect, useState} from "react";
 import log from "electron-log";
+import { PrimaryButton } from "@sentry/ui";
+import img from '@/assets/images/dashboard-card.png';
+import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 
 export function SentryNodeStatusCard() {
 	const {publicKey} = useOperator();
@@ -51,42 +54,33 @@ export function SentryNodeStatusCard() {
 
 	function getNodeFunds() {
 		return (
-			<div
-				className={`absolute bottom-4 left-4 max-w-[280px] h-[40px] flex justify-center items-center gap-1 rounded-lg ${nodeStatus ? "text-[15px] text-[#16A34A] bg-[#F0FDF4]" : "text-sm text-[#F59E28] bg-[#FFFBEB]"} mix-blend-multiply p-3`}>
-				<div className="flex justify-center items-center gap-2">
+			<BaseCallout
+				isWarning={!nodeStatus}
+				extraClasses={{ calloutWrapper: `absolute bottom-4 left-6 w-[328px] !p-0 flex justify-center items-center gap-1 ${nodeStatus ? "text-lg !text-drunkenDragonFly !bg-drunkenDragonFly/10" : "text-lg text-bananaBoat bg-bananaBoat/10"}`, calloutFront: `!justify-start ${nodeStatus ? "!bg-drunkenDragonFly/10" : "!bg-bananaBoat/10"}` }}>
 					<div className="flex justify-center items-center gap-2">
 						{nodeStatus
 							? (
-								<><FaCircleCheck color={"#16A34A"} size={20}/>Your node is sufficiently funded</>
+								<><FaCircleCheck color={"#3DD68C"} size={23}/>Your node is sufficiently funded</>
 							) : (
-								<><AiFillWarning color={"#F59E28"} size={20}/>Your node is insufficiently funded</>
+								<><AiFillWarning color={"#FFC53D"} size={23}/>Your node is insufficiently funded</>
 							)}
 					</div>
-				</div>
-			</div>
+			</BaseCallout>
 		);
 	}
 
 	return (
-		<Card width={"726px"} height={"328px"}>
+		<Card width={"695px"} height={"367px"} customClasses="bg-nulnOil shadow-default">
 			{sentryRunning && (
-				<div className="absolute top-[-10.5rem] left-0 right-0 w-full h-full">
-					<video
-						className="w-full object-contain"
-						autoPlay
-						loop
-						muted
-						playsInline
-					>
-						<source src="/videos/node-active.mp4" type="video/mp4"/>
-					</video>
+				<div className="absolute left-0 right-0 w-[695px] h-[367px] scale-[1.4] translate-x-[-90px] translate-y-[-15px]">
+					<img src={img} alt="logo" />
 				</div>
 			)}
 
-			<div className="sticky flex flex-row justify-between items-center py-2 px-4 border-b border-[#F5F5F5] z-10">
-				<div className="flex flex-row items-center gap-1 text-[#A3A3A3] text-[15px]">
-					<h2 className="font-medium">Sentry Node Status</h2>
-					<p className="flex items-center ml-2 text-sm text-[#D4D4D4]">
+			<div className="sticky flex flex-row justify-between items-center py-5 px-6 border-b border-chromaphobicBlack bg-nulnOil z-10">
+				<div className="flex flex-row items-center gap-1 text-white text-2xl">
+					<h2 className="font-bold">Sentry Node Status</h2>
+					<p className="flex items-center ml-2 text-lg text-elementalGrey">
 						{timeAgoString}
 					</p>
 				</div>
@@ -95,26 +89,27 @@ export function SentryNodeStatusCard() {
 			<div className="p-6">
 				{sentryRunning ? (
 					<>
-						<div className="relative text-5xl flex items-center gap-5 font-semibold">
-							{nodeStatus ? (<GreenPulse size={"md"}/>) : (<YellowPulse size={"md"}/>)} Your node is
+						<div className="relative text-[54px] text-white flex items-center gap-5 font-bold">
+							{nodeStatus ? (<GreenPulse size={"lg"}/>) : (<YellowPulse size={"lg"}/>)} Your node is
 							running
 						</div>
 						{getNodeFunds()}
 					</>
 				) : (
 					<>
-						<div className="relative text-5xl flex items-center gap-5 font-semibold">
-							<YellowPulse size={"md"}/> Your node is not running
+						<div className="relative text-[54px] text-white flex items-center gap-5 font-semibold">
+							<GreyPulse size={"lg"}/> Your node is not running
 						</div>
 
 						<div
-							className="absolute left-0 right-0 bottom-6 w-full h-[40px] flex justify-center items-center gap-1  text-[15px] text-[#16A34A] bg-[#F0FDF4] p-4">
-							<button
-								className={`w-full bg-[#F30919] flex justify-center items-center gap-2 text-lg text-white px-6 py-3 rounded-lg font-semibold mt-2`}
-								onClick={startRuntime}
-							>
-								Start Node
-							</button>
+							className="absolute left-0 right-0 bottom-7 w-full h-[40px] flex justify-center items-center gap-1 px-6 pt-4 pb-7">
+							<PrimaryButton
+								className={`w-[643px] text-[20px] uppercase font-bold mt-2 !global-cta-clip-path text-melanzaneBlack`}
+								onClick={startRuntime!}
+								btnText="Start Node"
+								colorStyle="primary"
+								size="md"
+							/>
 						</div>
 					</>
 				)}

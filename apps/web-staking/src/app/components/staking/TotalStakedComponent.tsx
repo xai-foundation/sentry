@@ -7,7 +7,7 @@ import {
 import { useRouter } from "next/navigation";
 import ReportComponent from "./ReportComponent";
 import { getAmountRequiredForUpgrade, getCurrentTierByStaking, getProgressValue, iconType } from "./utils";
-import { useGetMaxTotalStakedHooks } from "@/app/hooks/hooks";
+import { useGetMaxTotalStakedHooks } from "@/app/hooks";
 import { formatCurrency } from "@/app/utils/formatCurrency";
 import { useAccount } from "wagmi";
 import { TierInfo } from "@/types/Pool";

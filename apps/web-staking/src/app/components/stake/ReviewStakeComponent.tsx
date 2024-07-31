@@ -26,7 +26,7 @@ import { PoolInfo } from "@/types/Pool";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import { Avatar } from "@nextui-org/react";
 import UnstakeTimeReview from "../stakeKeysComponent.tsx/UnstakeTimeReview";
-import { useGetUnstakePeriods } from "@/app/hooks/hooks";
+import { useGetUnstakePeriods } from "@/app/hooks";
 import { ButtonBack, PrimaryButton } from "@/app/components/ui/buttons";
 
 interface ReviewStakeProps {

@@ -3,12 +3,13 @@ import {PropsWithChildren} from "react";
 interface CardProps extends PropsWithChildren {
 	width: string;
 	height: string;
+	customClasses?: string
 }
 
-export function Card({width, height, children}: CardProps) {
+export function Card({width, height, children, customClasses}: CardProps) {
 	return (
 		<div
-			className="relative bg-white border border-[#00000005] shadow rounded-lg overflow-hidden"
+			className={`relative shadow overflow-hidden ${customClasses}`}
 			style={{width: width, height: height}}
 		>
 			<div>{children}</div>

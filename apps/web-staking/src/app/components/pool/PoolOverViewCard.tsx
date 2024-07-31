@@ -1,4 +1,3 @@
-import React from "react";
 import { Avatar } from "@nextui-org/react";
 import MainTitle from "../titles/MainTitle";
 import PoolCapacity from "./PoolCapacity";
@@ -11,7 +10,7 @@ import Image from "next/image";
 
 interface PoolOverViewCardProps {
   poolInfo: PoolInfo,
-  tiers: Array<TierInfo & { icon?: iconType }>
+  tiers?: Array<TierInfo & { icon?: iconType }>
 }
 
 const PoolOverViewCard = ({ poolInfo, tiers }: PoolOverViewCardProps) => {

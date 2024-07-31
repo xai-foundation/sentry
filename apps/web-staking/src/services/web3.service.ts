@@ -680,6 +680,8 @@ export const toPoolInfo = async (
 			youtube: rawPoolInfo._socials[5],
 			tiktok: rawPoolInfo._socials[6],
 		},
+		keyRewardRate: 0,
+		esXaiRewardRate: 0
 	};
 };
 
