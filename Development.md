@@ -69,7 +69,7 @@ Push a **tag** on `xai-foundation/sentry-development:working-branch` to trigger 
 
 THIS WILL TRIGGER THE AUTO UPDATE FOR ALL PREVIOUS DESKTOP CLIENTS !
 
-**Important sepolia testnet updates:**
+**Important Config Changes That Must be Made To Run on Sepolia testnet:**
 - `packages\core\src\config.ts` needs to be updated, current sepolia testnet config can be found here https://github.com/xai-foundation/sentry-development/blob/build-sepolia/packages/core/src/config.ts
 - `useBlockIp()` hook in `apps/web-connect` needs to set `setBlocked(false);` for any user to disable geo-block
 - currently we still need to comment out hardcoded checks for chainIds and RPCs in web-connect and core. For this we can use the prepared branch `xai-foundation/sentry-development:build-sepolia`. For local testing and test deploys new branches can be created off `build-sepolia` and tags pushed from there.
@@ -82,12 +82,19 @@ Push to `xai-foundation/sentry-development:develop` to trigger the cloud deploy 
 - develop.app.xai.games
 - https://console.cloud.google.com/cloud-build/builds?hl=de&project=xai-games Source: `xai-foundation/sentry-development` (Google Cloud access required)
 
-
 Enabling sepolia testnet for the staking app is managed through environment variables set by the services team. The staking app has both sets of contract addresses and manages the main network through the env variable `NEXT_PUBLIC_APP_ENV=development`. This enables connecting the arbitrum sepolia network and disables the geo-block for the staking app.
 
 Local development requires a local mongoDB instance or access to the develop mongoDB used for develop.app.xai.games.
 A local mongoDB can be synced by running the CLI cmd `sync-staking-pools` with the local mongoDB URI locally with a [sepolia `config.json`](https://github.com/xai-foundation/sentry-development/blob/build-sepolia/packages/core/src/config.ts).
 The cloud build, build trigger and develop mongoDB is configured, deployed and maintained by the Services Team.
+
+Setup local development for web-staking:
+1. Create a `.env` file
+2. Set the `NEXT_PUBLIC_APP_ENV=development` in the .env
+3. Set the `MONGODB_URL=mongodb://127.0.0.1:27017/xai-app`
+    * note: if you have not "prepopulated" your local mongoDb, you need to do that next.
+    * For syncing testnet data ensure the current config file in packages/core/src/config.json is the Sepolia config file.
+    * Prepopulate mongoDb by starting the CLI and running the `sync-staking-pools` command.
 
 ### Sentry Subgraph
 
