@@ -32,7 +32,9 @@ Ongoing development will be done on the sentry fork https://github.com/xai-found
   - What has been done
   - How has it been tested
 - Every story links to it's PR for it to be marked as finished
-- Once the PR is approved the PR requester will merge and deploy, mark the story as delivered and add info for testing to the story
+- Once the PR is approved the PR requester will merge the PR
+- After merge the requester needs to deploy for testing, this can be pushing a tag for creating a release build or pushing a branch to trigger the cloud build (see "Deployments & Releases). Not all PRs will follow the same deployment strategy, this should be discussed for each story before starting any updates
+- Once deployed mark the story as delivered and add info for testing to the story
 
 ## Local development
 
