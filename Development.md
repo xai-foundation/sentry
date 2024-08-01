@@ -44,11 +44,12 @@ Currently the monorepo can be installed and built using **pnpm** except `web-sta
 
 Run the different apps by their commands in the root's `package.json` like
 
+- `pnpm clean` (!) to delete all release / build artifacts
 - `pnpm cli` for running the CLI
 - `pnpm web` for running sentry-xai.games locally
 - `pnpm desktop` for running the desktop app locally
 
-For local release building and signing SSL.com access is requires. Currently the credentials are set in the github repositories sentry & sentry-development, however, sentry.development is currently breaking on sign.
+For local release building and signing SSL.com access is requires. Currently the credentials are set in the github repositories sentry & sentry-development, however, sentry.development is currently breaking on sign tracked in this story https://www.pivotaltracker.com/story/show/187983657.
 
 A local release and a github release can be created without signing the release.
 Currently only the windows release gets signed.
