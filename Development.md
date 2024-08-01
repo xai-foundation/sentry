@@ -6,17 +6,20 @@ The XAI infrastructure is built in [Sentry Node Monorepo xai-foundation/sentry](
 
 This monorepo holds the following packages:
 
-- Core package
-  - shared libraries like operatorRuntime and blockchain & subgraph interactions
-- custom ui libraries
-  - shared ui components for websites and desktop client
-- CLI
-- Desktop App
-- sentry.xai.games website
-- app.xai.games website
-- smart contracts
-- public node
-- subgraph sync
+- apps
+  - CLI: User cli for running an operators node. It also has functions  for data syncing runtimes and the challenger runtime.
+  - Sentry Client Desktop App: User interface for running an operator node
+  - Web-Connect: this is the Sentry website that hosts the Key Sale page for Node Licenses as well as blockchain interactions for key holder / operator setup
+  - Web-Staking: this is the website for the Staking Application, it displays pools, reward rates, and allows users to interact with pools
+- infrastructure
+  - gcp-nitro-node: Terrafor setup for the public node host on google cloud
+  - nitro-node-wrapper: Public node stack config and custom publisher software
+  - smart-contracts: ecosystem smart contract infrastructure, deployment / upgrade scripts and tests
+  - sentry-subgraph: subgraph schemas and syncing scripts, subgraphs will be deployed from here
+- packages
+  - core: shared libraries like operatorRuntime and blockchain & subgraph interactions
+  - ui: shared ui components for web-connect, web-staking and desktop app
+  - sentry-subgraph-client: graphprotocol client, used in core for TS support of subgraph entities and used for a dev playground UI
 
 ## Development cycle
 
