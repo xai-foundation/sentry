@@ -830,30 +830,36 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     
     function stakeKeys(address pool, address staker, uint256[] memory keyIds, bool isAdminStake) external onlyPoolFactory {
         uint256 keysLength = keyIds.length;
+        // Check if the pool has enough capacity to stake the keys
         require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "43");
 
         uint256 currentChallenge = challengeCounter - 1;
 
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
+        // Assign the keys to the pool
         for (uint256 i = 0; i < keysLength; i++) {
             uint256 keyId = keyIds[i];
+            // Check if the key is not already assigned to a pool
             require(assignedKeyToPool[keyId] == address(0), "44");
             if(!isAdminStake){
+                // If not admin stake, check if the staker is the owner of the key
                 require(nodeLicenseContract.ownerOf(keyId) == staker, "45");
             }
             assignedKeyToPool[keyId] = pool;
-            if(submissions[currentChallenge][keyId].submitted && submissions[currentChallenge][keyId].eligibleForPayout){
-                submissions[currentChallenge][keyId].eligibleForPayout = false;
-                challenges[currentChallenge].numberOfEligibleClaimers--;
-                emit AssertionCancelled(currentChallenge, keyId);
-            }
         }
 
+        // Update the user and pool staked key counts
         assignedKeysToPoolCount[pool] += keysLength;
         assignedKeysOfUserCount[staker] += keysLength;
 
+        // If the pool has submitted for the current challenge, update the pool bulk submission
         if(poolSubmissions[currentChallenge][pool].submitted){
             _updatePoolAssertion(pool, currentChallenge);
+        }
+
+        // If the owner has submitted for the current challenge, update the owner bulk submission 
+        if(poolSubmissions[currentChallenge][staker].submitted){
+            _updatePoolAssertion(staker, currentChallenge);
         }
     }
 
@@ -861,19 +867,32 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 keysLength = keyIds.length;
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
 
+        // Unassign the keys from the pool
         for (uint256 i = 0; i < keysLength; i++) {
             uint256 keyId = keyIds[i];
+            // Check if the key is assigned to the pool
             require(assignedKeyToPool[keyId] == pool, "47");
+            // Check if the staker is the owner of the key
             require(nodeLicenseContract.ownerOf(keyId) == staker, "48");
+
+            // Unassign the key from the pool
             assignedKeyToPool[keyId] = address(0);
         }
 
+        // Update the user and pool staked key counts
         assignedKeysToPoolCount[pool] -= keysLength;
         assignedKeysOfUserCount[staker] -= keysLength;
         
         uint256 currentChallenge = challengeCounter - 1;
+
+        // If the pool has submitted for the current challenge, update the pool bulk submission
         if(poolSubmissions[currentChallenge][pool].submitted){
             _updatePoolAssertion(pool, currentChallenge);
+        }
+
+        // If the owner has submitted for the current challenge, update the owner bulk submission
+        if(poolSubmissions[currentChallenge][staker].submitted){
+            _updatePoolAssertion(staker, currentChallenge);
         }
     }
 
@@ -883,6 +902,8 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         stakedAmounts[pool] += amount;
         
         uint256 currentChallenge = challengeCounter - 1;
+
+        // If the pool has submitted for the current challenge, update the pool bulk submission
         if(poolSubmissions[currentChallenge][pool].submitted){
             _updatePoolAssertion(pool, currentChallenge);
         }
@@ -893,6 +914,8 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         stakedAmounts[pool] -= amount;
         
         uint256 currentChallenge = challengeCounter - 1;
+
+        // If the pool has submitted for the current challenge, update the pool bulk submission
         if(poolSubmissions[currentChallenge][pool].submitted){
             _updatePoolAssertion(pool, currentChallenge);
         }
