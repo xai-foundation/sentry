@@ -201,7 +201,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
 
         // Calculate the final price and average cost
         uint256 finalPrice = price(_amount, _promoCode);
-        uint256 averageCost = msg.value / _amount;
+        uint256 averageCost = finalPrice / _amount;
 
         // Confirm that the ether value sent is correct
         require(msg.value >= finalPrice, "Ether value sent is not correct");
