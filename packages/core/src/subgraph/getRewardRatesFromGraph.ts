@@ -38,12 +38,12 @@ export async function getRewardRatesFromGraph(
       poolInfos(first: 1000, orderBy: totalStakedEsXaiAmount, orderDirection: desc${queryWhere}) {
         poolChallenges(first: ${QUERY_CHALLENGE_COUNT}, where: {challenge_: {createdTimestamp_gt: ${startTimestamp}}}) {
           totalClaimedEsXaiAmount
-          totalStakedEsXaiAmount
-          totalStakedKeyAmount
         }
         address
         keyBucketShare
         stakedBucketShare
+        totalStakedEsXaiAmount
+        totalStakedKeyAmount
       }
     }
   `
@@ -64,9 +64,13 @@ export async function getRewardRatesFromGraph(
     let totalKeyRewardsWei = 0n;
     let totalRewards = 0;
 
+    // TODO this needs to be refactored for efficiency !
+    // We needed to quickly remove the average calculation by staked amounts at the challenge
+    // Without having to average out the code bellow should only sum up the total rewards, then divide by bucket shares and staked amount once.
+    // Because of urgency and lack of time for testing we now only updated to use the pool's current stake amounts and still do the same calculation in the loop
     poolInfo.poolChallenges.forEach(challenge => {
-      const stakedEsXaiAmountWei = BigInt(challenge.totalStakedEsXaiAmount);
-      const stakedKeyAmount = BigInt(challenge.totalStakedKeyAmount);
+      const stakedEsXaiAmountWei = BigInt(poolInfo.totalStakedEsXaiAmount);
+      const stakedKeyAmount = BigInt(poolInfo.totalStakedKeyAmount);
       const totalRewardsWei = BigInt(challenge.totalClaimedEsXaiAmount);
       totalRewards = Number(totalRewardsWei / BigInt(10**18)) 
 

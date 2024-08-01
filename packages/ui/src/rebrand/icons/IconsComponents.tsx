@@ -186,3 +186,97 @@ export const Lock = ({width = 22, height = 23, className = ""}) => {
             d="M376 192h-24v-46.7c0-52.7-42-96.5-94.7-97.3-53.4-.7-97.3 42.8-97.3 96v48h-24c-22 0-40 18-40 40v192c0 22 18 40 40 40h240c22 0 40-18 40-40V232c0-22-18-40-40-40zM270 316.8v68.8c0 7.5-5.8 14-13.3 14.4-8 .4-14.7-6-14.7-14v-69.2c-11.5-5.6-19.1-17.8-17.9-31.7 1.4-15.5 14.1-27.9 29.6-29 18.7-1.3 34.3 13.5 34.3 31.9 0 12.7-7.3 23.6-18 28.8zM324 192H188v-48c0-18.1 7.1-35.1 20-48s29.9-20 48-20 35.1 7.1 48 20 20 29.9 20 48v48z"></path>
     </svg>
 }
+
+
+export const XaiHeaderIcon = ({width = 16, height = 16, fill = "", extraClasses = ""}) => {
+  return (
+  <svg className={`${fill} group-hover:fill-hornetSting duration-200 ease-in ${extraClasses}`}
+ width={width} height={height} viewBox="0 0 600.000000 600.000000"
+ preserveAspectRatio="xMidYMid meet">
+<g transform="translate(0.000000,600.000000) scale(0.100000,-0.100000)"
+>
+<path d="M2740 4858 c-140 -243 -256 -448 -258 -457 -1 -9 358 -639 798 -1401
+l799 -1385 -1076 -3 c-592 -1 -1078 0 -1080 2 -3 2 167 301 376 664 210 363
+381 665 381 672 0 7 -115 212 -257 457 -204 354 -259 441 -268 431 -18 -19
+-1806 -3120 -1802 -3124 2 -2 1194 -3 2649 -2 l2646 3 -1320 2285 c-725 1257
+-1322 2288 -1326 2292 -4 4 -122 -191 -262 -434z"/>
+</g>
+</svg>
+  );
+};
+
+export const DropdownArrow = ({width = 10, height = 3, className = ""}) => {
+    return <svg
+        width={width} height={height} className={className}
+        fill="#fff"
+        xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 4.8117635 3.2432653" version="1.1" id="svg1" >
+        <defs id="defs1"/>
+        <g  id="layer1"
+           transform="translate(-0.23995138,-1.0242006)"><path  d="M 2.6458332,2.6458333 V -2.3262066 8.1888758" id="path1"/>
+            <g id="g2" transform="translate(-4.1599448,-4.385214)"><rect id="rect2" width="1.2605684" height="3.478761" x="9.7083769" y="-2.1346393" ry="0.13058987" transform="rotate(45)"/>
+                <rect  id="rect2-2" width="1.2605684"
+                      height="3.478761" x="0.083553314" y="7.4901848" ry="0.13058987"
+                      transform="matrix(-0.70710678,0.70710678,0.70710678,0.70710678,0,0)"/></g></g></svg>
+}
+
+export const HelpIcon = ({ width = 20, height = 20, fill = "#D0CFCF" }) => {
+    return <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height}
+                viewBox="0 0 14 14">
+        <path id="Path_3878" data-name="Path 3878"
+              d="M9,16a7,7,0,1,1,7-7A7,7,0,0,1,9,16Zm-.7-4.9v1.4H9.7V11.1ZM9.7,9.949A2.45,2.45,0,1,0,6.6,7.119l1.373.275A1.05,1.05,0,1,1,9,8.65a.7.7,0,0,0-.7.7V10.4H9.7Z"
+              transform="translate(-2 -2)" fill={fill}/>
+    </svg>
+}
+export const ArrowIcon = ({ width = 16, height = 16, fill = "fill-hornetSting" }) => {
+  return (
+    <svg className={`${fill} duration-200 ease-in arrow-icon`} xmlns="http://www.w3.org/2000/svg" width={width}
+         height={height} viewBox="0 0 16 15.556">
+  <path id="Path_3748" data-name="Path 3748" d="M16.172,11,10.808,5.636l1.414-1.414L20,12l-7.778,7.778-1.414-1.414L16.172,13H4V11Z" transform="translate(-4 -4.222)"/>
+</svg>
+  )
+}
+
+export const SuccessIcon = ({ width = 17, height = 17 }) => {
+  return <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} viewBox="0 0 20 20">
+    <path id="Path_3847" data-name="Path 3847"
+          d="M12,22A10,10,0,1,1,22,12,10,10,0,0,1,12,22Zm-1-6,7.071-7.071L16.66,7.515,11,13.172,8.174,10.343,6.76,11.757Z"
+          transform="translate(-2 -2)" fill="#36b979" />
+  </svg>;
+};
+
+export const CopyIcon = ({ fill = "#D0CFCF" }) => {
+  return <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17.778" viewBox="0 0 16 17.778">
+    <path id="Path_3606" data-name="Path 3606"
+          d="M6.555,5.556V2.889A.889.889,0,0,1,7.444,2H18.111A.889.889,0,0,1,19,2.889V15.333a.889.889,0,0,1-.889.889H15.444v2.666a.892.892,0,0,1-.895.89H3.895A.89.89,0,0,1,3,18.888L3,6.445a.892.892,0,0,1,.895-.89ZM4.78,7.333,4.778,18h8.889V7.333ZM8.333,5.556h7.111v8.889h1.778V3.778H8.333Z"
+          transform="translate(-3 -2)" fill={fill} />
+  </svg>;
+};
+export const BlackPyramidIcon = ({ width = 17, height = 17 }) => {
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox="0 0 27.713 24"
+      version="1.1"
+      id="svg1"
+    >
+      <defs id="defs1" />
+      <path
+        style={{ fill: "#000000", fillOpacity: 1, stroke: "none" }}
+        id="path1-8"
+        d="m 13.854,9.9916573 4.013743,6.9520067 4.013743,6.952007 -8.027486,0 -8.027486,0 4.0137431,-6.952007 z"
+        inkscape:transform-center-y="-4.0000281"
+        transform="matrix(1.7261319,0,0,1.7261319,-10.057332,-17.247081)"
+      />
+      <path
+        style={{ fill: "#ff0030", fillOpacity: 1, stroke: "none" }}
+        id="path1"
+        d="m 13.854,9.9916573 4.013743,6.9520067 4.013743,6.952007 -8.027486,0 -8.027486,0 4.0137431,-6.952007 z"
+        inkscape:transform-center-y="-1.0378301"
+        transform="matrix(0.44785487,0,0,0.44785487,7.6496336,8.4001876)"
+      />
+    </svg>
+  );
+};
+

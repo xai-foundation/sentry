@@ -7,3 +7,4 @@ export * from "./getChallengesFromGraph.js";
 export * from "./getPoolAddressesFromGraph.js";
 export * from "./getRewardRatesFromGraph.js";
 export * from "./getPoolRewardRate.js";
+export * from "./getAllSentryWallets.js";
