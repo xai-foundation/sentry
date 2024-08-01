@@ -218,7 +218,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     event Approval(address indexed owner, address indexed operator, bool approved);
     event KycStatusChanged(address indexed wallet, bool isKycApproved);
     event InvalidSubmission(uint256 indexed challengeId, uint256 nodeLicenseId);
-    event InvalidBatchSubmission(uint256 indexed challengeId, address operator, uint256 keysLength);
+    event InvalidBatchSubmission(uint256 indexed challengeId, address submissionAddress, address operator, uint256 keysLength);
     event RewardsClaimed(uint256 indexed challengeId, uint256 amount);
     event BatchRewardsClaimed(uint256 indexed challengeId, uint256 totalReward, uint256 keysLength);
     event BulkRewardsClaimed(uint256 indexed challengeId, address indexed bulkAddress, uint256 totalReward, uint256 winningKeys);
@@ -838,7 +838,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         // If the bulk address is a pool, determine the boost factor
         if(isPool){
             // Get the stakedAmount of _poolAddress for determining boostFactor
-            uint256 stakedAmount = stakedAmounts[_bulkAddress];
+            uint256 stakedAmount = getMaxStakedAmount(_bulkAddress, address(0));
             // Determine the boostFactor
             boostFactor = _getBoostFactor(stakedAmount);
         }
@@ -922,7 +922,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
         // Check if the submission successor hash, doesn't match the one submitted by the challenger, then end early and emit an event
 		if (keccak256(abi.encodePacked(_confirmData)) != keccak256(abi.encodePacked(challenges[_challengeId].assertionStateRootOrConfirmData))) {
-            emit InvalidBatchSubmission(_challengeId, msg.sender, numberOfKeys);
+            emit InvalidBatchSubmission(_challengeId, _bulkAddress, msg.sender, numberOfKeys);
 			return;
 		}
 

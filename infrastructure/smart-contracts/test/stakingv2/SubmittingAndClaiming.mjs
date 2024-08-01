@@ -68,12 +68,12 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			expect(openForSubmissions).to.equal(true);
 
 			// Submit a winning hash
-			// await referee.connect(addr1).submitPoolAssertion(stakingPoolAddress, challengeId, "0x0000000000000000000000000000000000000000000000000000000000000000");
+			// await referee.connect(addr1).submitBulkAssertion(stakingPoolAddress, challengeId, "0x0000000000000000000000000000000000000000000000000000000000000000");
 			await referee.connect(addr1).submitMultipleAssertions(addr2MintedKeyIds, challengeId, "0x0000000000000000000000000000000000000000000000000000000000000000");
 
-			// Grab the poolSubmission & expect them to both be eligible
-			const poolSubmission = await referee.poolSubmissions(challengeId, stakingPoolAddress);
-			expect(poolSubmission.winningKeyCount).to.be.closeTo(2, 2); // need a better way to check that. Will always pass
+			// Grab the bulkSubmission & expect them to both be eligible
+			const bulkSubmission = await referee.bulkSubmissions(challengeId, stakingPoolAddress);
+			expect(bulkSubmission.winningKeyCount).to.be.closeTo(2, 2); // need a better way to check that. Will always pass
 
 			// Submit a new challenge to close the previous one
 			await referee.connect(challenger).submitChallenge(
@@ -159,7 +159,7 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			const challengeId = 0;
 			await referee.connect(operator).submitMultipleAssertions(addr2MintedKeyIds, challengeId, "0x0000000000000000000000000000000000000000000000000000000000000000");
 
-			// Grab the poolSubmission & expect it to be eligible
+			// Grab the bulkSubmission & expect it to be eligible
 			// Note: Currently not possible
 
 			// Submit a new challenge to close the previous one
