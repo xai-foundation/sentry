@@ -144,8 +144,6 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
 
             address poolAddress = referee.assignedKeyToPool(keyId);
 
-            //TODO do we need to allow this and just return ?
-            // require(poolAddress != address(0), "Key not staked");
             if(poolAddress == address(0)){
                 continue;
             }
