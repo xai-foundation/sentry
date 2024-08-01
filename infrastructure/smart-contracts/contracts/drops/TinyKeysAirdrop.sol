@@ -124,8 +124,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
 
         // Update the airdrop counter
         // Increment the counter by the ending key id + 1
-        // If the airdrop counter exceeds the total supply at start this means the airdrop is complete
-        airdropCounter = endingKeyId < totalSupplyAtStart ? endingKeyId + 1 : endingKeyId;
+        airdropCounter = endingKeyId <= totalSupplyAtStart ? endingKeyId + 1;
         emit AirdropSegmentComplete(startingKeyId, endingKeyId);
     }
 
@@ -161,7 +160,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
     function completeAirDrop() external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(airdropStarted, "Airdrop not started");
         require(!airdropEnded, "Airdrop already complete");
-        require(airdropCounter == totalSupplyAtStart, "Airdrop not complete");
+        require(airdropCounter == totalSupplyAtStart + 1, "Airdrop not complete");
 
         // Notify the node license contract that the airdrop is complete
         NodeLicense8(nodeLicenseAddress).finishAirdrop(refereeAddress, keyMultiplier + 1);
