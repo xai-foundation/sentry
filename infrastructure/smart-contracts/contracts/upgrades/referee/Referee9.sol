@@ -230,9 +230,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     event NewPoolSubmission(uint256 indexed challengeId, address indexed poolAddress, uint256 stakedKeys, uint256 winningKeys);
     event UpdatePoolSubmission(uint256 indexed challengeId, address indexed poolAddress, uint256 stakedKeys, uint256 winningKeys, uint256 increase, uint256 decrease);
 
-    event AssertionSubmittedV2(uint256 indexed challengeId, uint256 indexed nodeLicenseId, bytes assertionStateRootOrConfirmData, bool eligibleForPayout);
-    event AssertionCancelled(uint256 indexed challengeId, uint256 indexed nodeLicenseId);
-
     function initialize(address _refereeCalculationsAddress) public reinitializer(7) {
 
         refereeCalculationsAddress = _refereeCalculationsAddress;
@@ -490,94 +487,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         return challenges[_challengeId];
     }
 
-    /**
-     * @notice Submits an assertion to a challenge.
-     * @dev This function can only be called by the owner of a NodeLicense or addresses they have approved on this contract.
-     * @param _nodeLicenseId The ID of the NodeLicense.
-     */
-    function submitAssertionToChallenge(
-        uint256 _nodeLicenseId,
-        uint256 _challengeId,
-        bytes memory _confirmData
-    ) public {
-
-        // Check the challenge is open for submissions
-        require(challenges[_challengeId].openForSubmissions, "14");
-
-        // If the submission successor hash, doesn't match the one submitted by the challenger, then end early and emit an event
-        if (keccak256(abi.encodePacked(_confirmData)) != keccak256(abi.encodePacked(challenges[_challengeId].assertionStateRootOrConfirmData))) {
-            emit InvalidSubmission(_challengeId, _nodeLicenseId);
-            return;
-        }
-
-        address licenseOwner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
-        address assignedPool = assignedKeyToPool[_nodeLicenseId];
-        
-        require(isValidOperator(licenseOwner, assignedPool), "17");
-        // If the key is assigned to a pool
-        if(assignedPool != address(0)) {
-            // Check if the pool has not submitted for this challenge
-            _submitNewPoolAssertion(assignedPool, _challengeId, _confirmData);
-        } else {
-            // Check that _nodeLicenseId hasn't already been submitted for this challenge
-            require(!submissions[_challengeId][_nodeLicenseId].submitted, "15");
-            // If the key is not assigned to a pool, then submit for the owner
-            _submitAssertion(_nodeLicenseId, _challengeId, _confirmData, licenseOwner, assignedPool);
-        }
-    }
-
-    /**
-     * @notice Allows users to submit multiple assertions to a challenge for a batch of keys, or for a pool to submit for a batch of keys.
-     * @dev This function was updated to be backwards compatible with the previous implementation, but the submitPoolAssertion function
-     * @dev should be used by pools to submit for multiple keys for gas optimizations.
-     * @dev This function can only be called by the owner of a NodeLicense, Pool Owner(s) or addresses they have approved on this contract.
-     * @param _nodeLicenseIds The IDs of the NodeLicenses.
-     * @param _challengeId The ID of the challenge.
-     * @param _confirmData The confirm data of the assertion. This will change with implementation of BOLD 2
-     */
-
-	function submitMultipleAssertions(
-		uint256[] memory _nodeLicenseIds,
-		uint256 _challengeId,
-		bytes memory _confirmData
-	) external {    
-        // Check the challenge is open for submissions
-		require(challenges[_challengeId].openForSubmissions, "16");
-        
-        uint256 keyLength = _nodeLicenseIds.length;
-
-        // If the submission successor hash, doesn't match the one submitted by the challenger, then end early and emit an event
-		if (keccak256(abi.encodePacked(_confirmData)) != keccak256(abi.encodePacked(challenges[_challengeId].assertionStateRootOrConfirmData))) {
-            emit InvalidBatchSubmission(_challengeId, msg.sender, keyLength);
-			return;
-		}
-
-        // Loop through the keys and submit for each key
-		for (uint256 i = 0; i < keyLength; i++) {
-            uint256 _nodeLicenseId = _nodeLicenseIds[i];
-
-            address licenseOwner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
-            address assignedPool = assignedKeyToPool[_nodeLicenseId];
-
-            // Check if the operator is the pool owner or a delegate
-            if(isValidOperator(licenseOwner, assignedPool)){
-                if(assignedPool != address(0)){
-                    // If the key is assigned to a pool
-                    // Only call _submitNewPoolAssertion if the submission does not exists so it won't throw an error and stop the submission for the other keys
-                    if(!poolSubmissions[_challengeId][assignedPool].submitted) {
-                        _submitNewPoolAssertion(assignedPool, _challengeId, _confirmData);
-                    }
-                }else {
-                    // Check that _nodeLicenseId hasn't already been submitted for this challenge
-                    if (!submissions[_challengeId][_nodeLicenseId].submitted) {
-                        // If the key is not assigned to a pool  
-                        _submitAssertion(_nodeLicenseId, _challengeId, _confirmData, licenseOwner, assignedPool);
-                    }
-                }
-            }
-		}
-	}
-
     function isValidOperator(address licenseOwner, address assignedPool) internal view returns (bool) {
         return licenseOwner == msg.sender ||
             isApprovedForOperator(licenseOwner, msg.sender) ||
@@ -585,32 +494,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
                 assignedPool != address(0) &&
                 PoolFactory(poolFactoryAddress).isDelegateOfPoolOrOwner(msg.sender, assignedPool)
             );
-    }
-    
-    function _submitAssertion(uint256 _nodeLicenseId, uint256 _challengeId, bytes memory _confirmData, address licenseOwner, address assignedPool) internal {
-        // Support v1 (no pools) & v2 (pools)
-		uint256 stakedAmount = getMaxStakedAmount(assignedPool, licenseOwner);
-
-        // Check the user is actually eligible for receiving a reward, do not count them in numberOfEligibleClaimers if they are not able to receive a reward
-        (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _getBoostFactor(stakedAmount), _confirmData, challenges[_challengeId].challengerSignedHash);
-
-        // Store the assertionSubmission to a map
-        submissions[_challengeId][_nodeLicenseId] = Submission({
-            submitted: true,
-            claimed: false,
-            eligibleForPayout: hashEligible,
-            nodeLicenseId: _nodeLicenseId,
-            assertionStateRootOrConfirmData: _confirmData
-        });
-
-        // Keep track of how many submissions submitted were eligible for the reward
-        if (hashEligible) {
-            challenges[_challengeId].numberOfEligibleClaimers++;
-        }
-
-        // Emit the AssertionSubmitted event
-        emit AssertionSubmitted(_challengeId, _nodeLicenseId);
-        emit AssertionSubmittedV2(_challengeId, _nodeLicenseId, _confirmData, hashEligible);
     }
 
     function _validateChallengeIsClaimable(Challenge memory _challenge) internal pure{
@@ -707,28 +590,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         _allocatedTokens -= claimCount * reward;
         emit BatchRewardsClaimed(_challengeId, claimCount * reward, claimCount);
 	}
-
-    /**
-     * @notice Creates an assertion hash and determines if the hash payout is below the threshold.
-     * @dev This function creates a hash of the _nodeLicenseId, _challengeId, challengerSignedHash from the challenge, and _newStateRoot.
-     * It then converts the hash to a number and checks if it is below the threshold.
-     * The threshold is calculated as the maximum uint256 value divided by 100 and then multiplied by the total supply of NodeLicenses.
-     * @param _nodeLicenseId The ID of the NodeLicense.
-     * @param _challengeId The ID of the challenge.
-     * @param _boostFactor The factor controlling the chance of eligibility for payout as a multiplicator (base chance is 1/100 - Example: _boostFactor 200 will double the payout chance to 1/50, _boostFactor 16 maps to 1/6.25).
-     * @param _confirmData The confirm hash, will change to assertionState after BOLD.
-     * @param _challengerSignedHash The signed hash for the challenge
-     * @return a boolean indicating if the hash is eligible, and the assertionHash.
-     */
-    function createAssertionHashAndCheckPayout(
-        uint256 _nodeLicenseId,
-        uint256 _challengeId,
-        uint256 _boostFactor,
-        bytes memory _confirmData,
-        bytes memory _challengerSignedHash
-    ) public view returns (bool, bytes32) {
-        return RefereeCalculations(refereeCalculationsAddress).createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _boostFactor, _confirmData, _challengerSignedHash);
-    }
 
     /**
      * @notice Returns the submissions for a given array of challenges and a NodeLicense.
