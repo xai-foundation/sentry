@@ -717,11 +717,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         if(bulkSubmissions[currentChallenge][staker].submitted){
             _updateBulkAssertion(staker, currentChallenge);
         }
-
-        // If the owner has submitted for the current challenge, update the owner bulk submission 
-        if(poolSubmissions[currentChallenge][staker].submitted){
-            _updatePoolAssertion(staker, currentChallenge);
-        }
     }
 
     function unstakeKeys(address pool, address staker, uint256[] memory keyIds) external onlyPoolFactory {
@@ -754,11 +749,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         // If the owner has submitted for the current challenge, update the owner bulk submission
         if(bulkSubmissions[currentChallenge][staker].submitted){
             _updateBulkAssertion(staker, currentChallenge);
-        }
-
-        // If the owner has submitted for the current challenge, update the owner bulk submission
-        if(poolSubmissions[currentChallenge][staker].submitted){
-            _updatePoolAssertion(staker, currentChallenge);
         }
     }
 
