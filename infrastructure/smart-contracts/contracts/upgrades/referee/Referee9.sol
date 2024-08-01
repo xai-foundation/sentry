@@ -232,7 +232,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     event UpdateBulkSubmission(uint256 indexed challengeId, address indexed bulkAddress, uint256 stakedKeys, uint256 winningKeys, uint256 increase, uint256 decrease);
 
     function initialize(address _refereeCalculationsAddress) public reinitializer(7) {
-
         refereeCalculationsAddress = _refereeCalculationsAddress;
 
         //TODO update with correct values on deploy
@@ -718,6 +717,11 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         if(bulkSubmissions[currentChallenge][staker].submitted){
             _updateBulkAssertion(staker, currentChallenge);
         }
+
+        // If the owner has submitted for the current challenge, update the owner bulk submission 
+        if(poolSubmissions[currentChallenge][staker].submitted){
+            _updatePoolAssertion(staker, currentChallenge);
+        }
     }
 
     function unstakeKeys(address pool, address staker, uint256[] memory keyIds) external onlyPoolFactory {
@@ -750,6 +754,11 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         // If the owner has submitted for the current challenge, update the owner bulk submission
         if(bulkSubmissions[currentChallenge][staker].submitted){
             _updateBulkAssertion(staker, currentChallenge);
+        }
+
+        // If the owner has submitted for the current challenge, update the owner bulk submission
+        if(poolSubmissions[currentChallenge][staker].submitted){
+            _updatePoolAssertion(staker, currentChallenge);
         }
     }
 
@@ -1008,7 +1017,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
             // mark the submission as claimed
             bulkSubmission.claimed = true;
-
             // increment the amount claimed on the challenge
             challenges[_challengeId].amountClaimedByClaimers += rewardMintAmount;    
 		
@@ -1019,7 +1027,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
             // unallocate the tokens that have now been converted to esXai
             _allocatedTokens -= rewardMintAmount;
-
             emit BulkRewardsClaimed(_challengeId, _bulkAddress, rewardMintAmount, bulkSubmission.winningKeyCount);
         }
     }
