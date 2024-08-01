@@ -220,7 +220,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     event InvalidBatchSubmission(uint256 indexed challengeId, address operator, uint256 keysLength);
     event RewardsClaimed(uint256 indexed challengeId, uint256 amount);
     event BatchRewardsClaimed(uint256 indexed challengeId, uint256 totalReward, uint256 keysLength);
-    event PoolRewardsClaimed(uint256 indexed challengeId, address indexed poolAddress, uint256 totalReward, uint256 winningKeys);
+    event BulkRewardsClaimed(uint256 indexed challengeId, address indexed bulkAddress, uint256 totalReward, uint256 winningKeys);
     event ChallengeExpired(uint256 indexed challengeId);
     event StakingEnabled(bool enabled);
     event UpdateMaxStakeAmount(uint256 prevAmount, uint256 newAmount);
@@ -229,7 +229,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     event UnstakeV1(address indexed user, uint256 amount, uint256 totalStaked);
     event NewPoolSubmission(uint256 indexed challengeId, address indexed poolAddress, uint256 stakedKeys, uint256 winningKeys);
     event UpdatePoolSubmission(uint256 indexed challengeId, address indexed poolAddress, uint256 stakedKeys, uint256 winningKeys, uint256 increase, uint256 decrease);
-
     event RewardsClaimedV2(uint256 indexed challengeId, uint256 indexed nodeLicenseId, uint256 amount);
 
     function initialize(address _refereeCalculationsAddress) public reinitializer(7) {
@@ -556,9 +555,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
             if (rewardReceiver == address(0)) {
                 rewardReceiver = owner;
-            } else {
-                //If assigned to pool try to claim pool submission
-                _claimPoolSubmissionRewards(rewardReceiver, _challengeId);
             }
 
             // Check if the nodeLicenseId is eligible for a payout
@@ -584,7 +580,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
                 claimCount++;
                 emit RewardsClaimed(_challengeId, reward);
-                emit RewardsClaimedV2(_challengeId, _nodeLicenseId, reward);
             }
 		}
 
@@ -896,51 +891,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         // Emit the Updated Pool Submission event
         emit UpdatePoolSubmission(_challengeId, _poolAddress, totalStakedKeys, winningKeyCount, winningKeysIncreaseAmount, winningKeysDecreaseAmount);	
 	}
-
-    /** @notice Claim Pool Rewards
-    * @dev This function is called internally from the claimMultipleRewards function or claimPoolRewards function.
-    * @param _poolAddress The address of the pool.
-    * @param _challengeId The ID of the challenge.
-    */
-
-    function _claimPoolSubmissionRewards(address _poolAddress, uint256 _challengeId) internal {
-        Challenge memory challengeToClaimFor  = challenges[_challengeId];
-        
-        // expire the challenge if 270 days old
-        bool expired = _checkChallengeRewardsExpired(_challengeId);
-
-        // If the challenge has expired, end early
-        if (expired) return;
-
-        PoolSubmission storage poolSubmission = poolSubmissions[_challengeId][_poolAddress];
-
-        // Check if the pool is elegible for a payout
-        if (poolSubmission.submitted && !poolSubmission.claimed && poolSubmission.winningKeyCount > 0) {
-
-            uint256 reward = challengeToClaimFor.rewardAmountForClaimers / challengeToClaimFor.numberOfEligibleClaimers;
-            uint256 poolMintAmount = 0;
-
-            // Calculate the amount to mint to the pool
-            poolMintAmount = (reward * poolSubmission.winningKeyCount);     
-
-            // mark the submission as claimed
-            poolSubmission.claimed = true;
-
-            // increment the amount claimed on the challenge
-            challenges[_challengeId].amountClaimedByClaimers += poolMintAmount;    
-		
-            esXai(esXaiAddress).mint(_poolAddress, poolMintAmount);
-
-            // Increment the total claims of this address
-            _lifetimeClaims[_poolAddress] += poolMintAmount;
-
-            // unallocate the tokens that have now been converted to esXai
-            _allocatedTokens -= poolMintAmount;
-
-            emit PoolRewardsClaimed(_challengeId, _poolAddress, poolMintAmount, poolSubmission.winningKeyCount);
-        }
-    }
-
     /** 
     * @notice Function to check if challenge rewards are expired
     * @dev This function is called internally from the claimReward function.
@@ -997,16 +947,51 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     /**
-    * @notice Claim Pool Submission Rewards external function
-    * @dev this function is called by the pool owner, or an approved operator, to claim rewards for a pool submission.
-    * @param _poolAddress The address of the pool.
+    * @notice Claim Bulk rewards for either a pool, or a wallet owner with unstaked keys.
+    * @dev this function is called by the pool owner, an approved operator, or a sentry wallet owner to claim rewards for a bulk submissions.
+    * @param _bulkAddress The address of the pool or owner wallet.
     * @param _challengeId The ID of the challenge.
     */
-    function claimPoolSubmissionRewards(address _poolAddress, uint256 _challengeId) external {
+    function claimBulkRewards(address _bulkAddress, uint256 _challengeId) external {
+
         // Validate the challenge is claimable
         _validateChallengeIsClaimable(challenges[_challengeId]);
 
-        _claimPoolSubmissionRewards(_poolAddress, _challengeId);
+        Challenge memory challengeToClaimFor  = challenges[_challengeId];
+        
+        // expire the challenge if 270 days old
+        bool expired = _checkChallengeRewardsExpired(_challengeId);
+
+        // If the challenge has expired, end early
+        if (expired) return;
+
+        PoolSubmission storage poolSubmission = poolSubmissions[_challengeId][_bulkAddress];
+
+        // Check if the pool is elegible for a payout
+        if (poolSubmission.submitted && !poolSubmission.claimed && poolSubmission.winningKeyCount > 0) {
+
+            uint256 reward = challengeToClaimFor.rewardAmountForClaimers / challengeToClaimFor.numberOfEligibleClaimers;
+            uint256 rewardMintAmount = 0;
+
+            // Calculate the amount to mint to the pool
+            rewardMintAmount = (reward * poolSubmission.winningKeyCount);     
+
+            // mark the submission as claimed
+            poolSubmission.claimed = true;
+
+            // increment the amount claimed on the challenge
+            challenges[_challengeId].amountClaimedByClaimers += rewardMintAmount;    
+		
+            esXai(esXaiAddress).mint(_bulkAddress, rewardMintAmount);
+
+            // Increment the total claims of this address
+            _lifetimeClaims[_bulkAddress] += rewardMintAmount;
+
+            // unallocate the tokens that have now been converted to esXai
+            _allocatedTokens -= rewardMintAmount;
+
+            emit BulkRewardsClaimed(_challengeId, _bulkAddress, rewardMintAmount, poolSubmission.winningKeyCount);
+        }
     }
 
     /**
