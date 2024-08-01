@@ -80,6 +80,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
      */
     function startAirdrop() external onlyRole(DEFAULT_ADMIN_ROLE) { 
         require(!airdropStarted, "Airdrop already started");
+        require(!airdropEnded, "Airdrop already complete");
         // Start the airdrop
         // This will notify the node license contract to start the airdrop
         // The node license contract will then notify the referee contract
