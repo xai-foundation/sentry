@@ -76,13 +76,14 @@ type RefereeConfig @entity(immutable: false) {
   stakeAmountBoostFactors: [BigInt!]!
 }
 
-type PoolSubmission @entity(immutable: false) {
+type BulkSubmission @entity(immutable: false) {
   id: String!
   challengeId: BigInt! @index
-  poolAddress: Bytes! @index
+  bulkAddress: Bytes! @index
   challenge: Challenge!
+  #TODO: Add Sentry Wallet Field & bool for isPool?
   poolInfo: PoolInfo!
-  stakedKeyCount: BigInt!
+  keyCount: BigInt!
   winningKeyCount: BigInt!
   claimedRewardsAmount: BigInt!
   createdTimestamp: BigInt! @index

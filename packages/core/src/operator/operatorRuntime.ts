@@ -19,7 +19,7 @@ import {
     listOwnersForOperator,
     getSubmissionsForChallenges,
     getUnStakedKeysOfUser,
-    submitPoolAssertions,
+    submitBulkAssertions,
     claimPoolSubmissionRewards,
     getMultipleUsersInteractedPoolsRpc
 } from "../index.js";
@@ -290,7 +290,7 @@ async function processNewChallenge(
     if(cachedPoolsOfOperator && cachedPoolsOfOperator.length > 0) {
             try {
 
-              await submitPoolAssertions(cachedPoolsOfOperator, challengeNumber, challenge.assertionStateRootOrConfirmData, cachedSigner, cachedLogger);
+              await submitBulkAssertions(cachedPoolsOfOperator, challengeNumber, challenge.assertionStateRootOrConfirmData, cachedSigner, cachedLogger);
 
             } catch (error: any) {
                 cachedLogger(`Error submitting pool assertions for challenge ${challengeNumber} - ${error && error.message ? error.message : error}`);

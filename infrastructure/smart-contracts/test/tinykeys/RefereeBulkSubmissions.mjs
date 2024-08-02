@@ -5,11 +5,11 @@ import {submitTestChallenge} from "../utils/submitTestChallenge.mjs";
 import {mintBatchedLicenses, mintSingleLicense} from "../utils/mintLicenses.mjs";
 import {createPool} from "../utils/createPool.mjs";
 
-function PoolSubmissionsStakeAndUnstake(deployInfrastructure) {
+function BulkSubmissionsStakeAndUnstake(deployInfrastructure) {
 
     return function () {
 
-        it("Check that a previously submitted keyId should be canceled and added to poolSubmission submitted key count", async function () {
+        it("Check that a previously submitted keyId should be canceled and added to bulkSubmission submitted key count", async function () {
             const { poolFactory, addr1, addr2, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
 
             // Mint Node Licenses
@@ -34,7 +34,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure) {
             const { openForSubmissions } = await referee.getChallenge(0);
             expect(openForSubmissions).to.equal(true);
 
-            // Submit assertion to check the key on stake is not added to the poolSubmission
+            // Submit assertion to check the key on stake is not added to the bulkSubmission
             // Note the key was submitted and owned by address 2
             await referee.connect(addr2).submitAssertionToChallenge(addr2MintedKeyId, challengeId, winningStateRoot);
             
@@ -44,13 +44,13 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure) {
             
             // Submit a pool assertions
             // Note the keys and pool address are owned by address 1
-            await referee.connect(addr1).submitPoolAssertion(stakingPoolAddress, challengeId, winningStateRoot);
+            await referee.connect(addr1).submitBulkAssertion(stakingPoolAddress, challengeId, winningStateRoot);
 
             // Confirm pool submission was created and key counts are correct
-            const poolSubmissionBeforeStaker = await referee.poolSubmissions(challengeId, stakingPoolAddress);
-            expect(poolSubmissionBeforeStaker.stakedKeyCount).to.equal(1);
-            expect(poolSubmissionBeforeStaker.submitted).to.equal(true);
-            expect(poolSubmissionBeforeStaker.claimed).to.equal(false);
+            const bulkSubmissionBeforeStaker = await referee.bulkSubmissions(challengeId, stakingPoolAddress);
+            expect(bulkSubmissionBeforeStaker.keyCount).to.equal(1);
+            expect(bulkSubmissionBeforeStaker.submitted).to.equal(true);
+            expect(bulkSubmissionBeforeStaker.claimed).to.equal(false);
 
 
             // Address 2 now stakes previously submitted keyId into pool
@@ -60,11 +60,11 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure) {
             const submissionAfterStaker = await referee.getSubmissionsForChallenges([challengeId], addr1MintedKeyId);
             expect(submissionAfterStaker[0].submitted).to.equal(false);
 
-            // Get poolSubmissions
-            const poolSubmissionAfterStaker = await referee.poolSubmissions(challengeId, stakingPoolAddress);
-            expect(poolSubmissionAfterStaker.stakedKeyCount).to.equal(2);
-            expect(poolSubmissionAfterStaker.submitted).to.equal(true);
-            expect(poolSubmissionAfterStaker.claimed).to.equal(false);
+            // Get bulkSubmissions
+            const bulkSubmissionAfterStaker = await referee.bulkSubmissions(challengeId, stakingPoolAddress);
+            expect(bulkSubmissionAfterStaker.keyCount).to.equal(2);
+            expect(bulkSubmissionAfterStaker.submitted).to.equal(true);
+            expect(bulkSubmissionAfterStaker.claimed).to.equal(false);
         });
 
         it("Check that an existing pool submission's stakedKyCount increases when an un-submitted key is staked", async function () {
@@ -93,13 +93,13 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure) {
             expect(openForSubmissions).to.equal(true);
 
             // Submit a pool assertion for first challenge
-            await referee.connect(addr1).submitPoolAssertion(stakingPoolAddress, challengeId, winningStateRoot);
+            await referee.connect(addr1).submitBulkAssertion(stakingPoolAddress, challengeId, winningStateRoot);
 
             // Confirm pool submission was created and key counts are correct
-            const poolSubmission = await referee.poolSubmissions(challengeId, stakingPoolAddress);
-            expect(poolSubmission.stakedKeyCount).to.equal(100);
-            expect(poolSubmission.submitted).to.equal(true);
-            expect(poolSubmission.claimed).to.equal(false);
+            const bulkSubmission = await referee.bulkSubmissions(challengeId, stakingPoolAddress);
+            expect(bulkSubmission.keyCount).to.equal(100);
+            expect(bulkSubmission.submitted).to.equal(true);
+            expect(bulkSubmission.claimed).to.equal(false);
 
             // User stakes not submitted keyID into pool
             await poolFactory.connect(addr2).stakeKeys(
@@ -107,15 +107,15 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure) {
                 [addr2MintedKeyId]
             )
             
-            const poolSubmissionAfterStake = await referee.poolSubmissions(challengeId, stakingPoolAddress);
+            const bulkSubmissionAfterStake = await referee.bulkSubmissions(challengeId, stakingPoolAddress);
 
             // Confirm pool submission was updated and key count was increased
-            expect(poolSubmissionAfterStake.stakedKeyCount).to.equal(101);
-            expect(poolSubmissionAfterStake.submitted).to.equal(true);
-            expect(poolSubmissionAfterStake.claimed).to.equal(false);
+            expect(bulkSubmissionAfterStake.keyCount).to.equal(101);
+            expect(bulkSubmissionAfterStake.submitted).to.equal(true);
+            expect(bulkSubmissionAfterStake.claimed).to.equal(false);
         });
         
-        it("Check that an existing poolSubmission's stakedKeyCount decreases upon the un-staking of a key & that key can then submit and claim.", async function () {
+        it("Check that an existing bulkSubmission's keyCount decreases upon the un-staking of a key & that key can then submit and claim.", async function () {
             const { poolFactory, addr1, addr2, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
 
             // Mint keys for addr1
@@ -141,7 +141,7 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure) {
             // Confirm the pool has 1 staked key
             expect(await referee.assignedKeysToPoolCount(stakingPoolAddress)).to.equal(1);
             
-            // Stake key into pool to later check the stakedKeyCount after unstake 
+            // Stake key into pool to later check the keyCount after unstake 
             // Pool should now have 1 staked key prior to first pool assertion             
             // split the addr2MintedKeyIds array into 2 arrays of 100 keys each
             const slice1 = addr2MintedKeyIds.slice(0, 100);
@@ -172,22 +172,22 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure) {
             await ethers.provider.send("evm_mine");
 
             // Submit a pool assertion while both keys are staked
-            await referee.connect(addr1).submitPoolAssertion(stakingPoolAddress, challengeId, winningStateRoot);
+            await referee.connect(addr1).submitBulkAssertion(stakingPoolAddress, challengeId, winningStateRoot);
 
-            // Get poolSubmission after poolAssertion to check the stakedKeyCount
-            const poolSubmissionBeforeUnstake = await referee.poolSubmissions(challengeId, stakingPoolAddress);
-            expect(poolSubmissionBeforeUnstake.stakedKeyCount).to.equal(201);
-            expect(poolSubmissionBeforeUnstake.submitted).to.equal(true);
-            expect(poolSubmissionBeforeUnstake.claimed).to.equal(false);
+            // Get bulkSubmission after bulkAssertion to check the keyCount
+            const bulkSubmissionBeforeUnstake = await referee.bulkSubmissions(challengeId, stakingPoolAddress);
+            expect(bulkSubmissionBeforeUnstake.keyCount).to.equal(201);
+            expect(bulkSubmissionBeforeUnstake.submitted).to.equal(true);
+            expect(bulkSubmissionBeforeUnstake.claimed).to.equal(false);
 
             // Complete the unstake request after pool assertion has been submitted
             await poolFactory.connect(addr2).unstakeKeys(stakingPoolAddress, 0, winningKeys);
             
-            // Confirm the existing poolSubmission's stakedKeyCount is updated after unstake
-            const poolSubmissionAfterUnstake = await referee.poolSubmissions(challengeId, stakingPoolAddress);
-            expect(poolSubmissionAfterUnstake.stakedKeyCount).to.equal(200);
-            expect(poolSubmissionAfterUnstake.submitted).to.equal(true);
-            expect(poolSubmissionAfterUnstake.claimed).to.equal(false);
+            // Confirm the existing bulkSubmission's keyCount is updated after unstake
+            const bulkSubmissionAfterUnstake = await referee.bulkSubmissions(challengeId, stakingPoolAddress);
+            expect(bulkSubmissionAfterUnstake.keyCount).to.equal(200);
+            expect(bulkSubmissionAfterUnstake.submitted).to.equal(true);
+            expect(bulkSubmissionAfterUnstake.claimed).to.equal(false);
             
             // Submit assertion for un-staked key to check if possible to submit a assertion
             await referee.connect(addr2).submitMultipleAssertions(winningKeys, challengeId, winningStateRoot);
@@ -207,10 +207,10 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure) {
             expect(userBalanceBeforeClaim).to.equal(0);
 
             // Claim the rewards for a pool
-            await referee.connect(addr1).claimPoolSubmissionRewards(stakingPoolAddress, challengeId);
+            await referee.connect(addr1).claimBulkSubmissionRewards(stakingPoolAddress, challengeId);
 
-            const poolSubmissionAfterClaim = await referee.poolSubmissions(challengeId, stakingPoolAddress);
-            expect(poolSubmissionAfterClaim.claimed).to.equal(true);
+            const bulkSubmissionAfterClaim = await referee.bulkSubmissions(challengeId, stakingPoolAddress);
+            expect(bulkSubmissionAfterClaim.claimed).to.equal(true);
 
             // Confirm the balances after the claim
             const poolBalanceAfterClaim = await esXai.connect(addr2).balanceOf(stakingPoolAddress);
@@ -264,19 +264,19 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure) {
             // Create a pool
             const stakingPoolAddress = await createPool(poolFactory, addr1, addr1MintedKeyIds);
 
-            // Get poolSubmission struct to confirm the poolSubmission is empty and the stakedKeyCount is 0 as there should not be a submission yet
-            const poolSubmissionBefore = await referee.poolSubmissions(challengeId, stakingPoolAddress);
-            expect(poolSubmissionBefore.stakedKeyCount).to.equal(0);
-            expect(poolSubmissionBefore.submitted).to.equal(false);
+            // Get bulkSubmission struct to confirm the bulkSubmission is empty and the keyCount is 0 as there should not be a submission yet
+            const bulkSubmissionBefore = await referee.bulkSubmissions(challengeId, stakingPoolAddress);
+            expect(bulkSubmissionBefore.keyCount).to.equal(0);
+            expect(bulkSubmissionBefore.submitted).to.equal(false);
 
             // Submit an assertion using the keyId
             await referee.connect(addr1).submitAssertionToChallenge(addr1MintedKeyIds[0], challengeId, winningStateRoot);
 
-            // Get poolSubmission struct to confirm the poolSubmission is created and the stakedKeyCount is correct
-            const poolSubmissionAfter = await referee.poolSubmissions(challengeId, stakingPoolAddress);
-            expect(poolSubmissionAfter.stakedKeyCount).to.equal(100);
-            expect(poolSubmissionAfter.submitted).to.equal(true);
-            expect(poolSubmissionAfter.claimed).to.equal(false);
+            // Get bulkSubmission struct to confirm the bulkSubmission is created and the keyCount is correct
+            const bulkSubmissionAfter = await referee.bulkSubmissions(challengeId, stakingPoolAddress);
+            expect(bulkSubmissionAfter.keyCount).to.equal(100);
+            expect(bulkSubmissionAfter.submitted).to.equal(true);
+            expect(bulkSubmissionAfter.claimed).to.equal(false);
             
             // Confirm that there is not an individual submission for the key
             const submission = await referee.submissions(challengeId, addr1MintedKeyIds[0]);
@@ -360,11 +360,11 @@ function PoolSubmissionsStakeAndUnstake(deployInfrastructure) {
 }
 
 
-function PoolSubmissionPermissions(deployInfrastructure) {
+function BulkSubmissionPermissions(deployInfrastructure) {
 
     return function () {
 
-    it("Check that a pool owner can submit poolAssertions, and claimPoolSubmission rewards successfully.", async function () {
+    it("Check that a pool owner can submit bulkAssertions, and claimBulkSubmission rewards successfully.", async function () {
         const { poolFactory, addr1, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
 
         // Mint additional keys so that there are enough keys to stake in the pool and earn a reward
@@ -400,18 +400,18 @@ function PoolSubmissionPermissions(deployInfrastructure) {
 
         const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
 
-        // Confirm that the poolSubmission does not exist before submitting a pool assertion
-        const poolSubmissionBefore = await referee.poolSubmissions(challengeId, stakingPoolAddress);
-        expect(poolSubmissionBefore.submitted).to.equal(false);
-        expect(poolSubmissionBefore.stakedKeyCount).to.equal(0);
+        // Confirm that the bulkSubmission does not exist before submitting a pool assertion
+        const bulkSubmissionBefore = await referee.bulkSubmissions(challengeId, stakingPoolAddress);
+        expect(bulkSubmissionBefore.submitted).to.equal(false);
+        expect(bulkSubmissionBefore.keyCount).to.equal(0);
 
         // Submit a pool assertions
-        await referee.connect(addr1).submitPoolAssertion(stakingPoolAddress, challengeId, winningStateRoot);
+        await referee.connect(addr1).submitBulkAssertion(stakingPoolAddress, challengeId, winningStateRoot);
 
-        // Confirm that the poolSubmission was created and the staked key count is correct
-        const poolSubmissionAfter = await referee.poolSubmissions(challengeId, stakingPoolAddress);
-        expect(poolSubmissionAfter.submitted).to.equal(true);
-        expect(poolSubmissionAfter.stakedKeyCount).to.equal(keysToMintForAddr1);
+        // Confirm that the bulkSubmission was created and the staked key count is correct
+        const bulkSubmissionAfter = await referee.bulkSubmissions(challengeId, stakingPoolAddress);
+        expect(bulkSubmissionAfter.submitted).to.equal(true);
+        expect(bulkSubmissionAfter.keyCount).to.equal(keysToMintForAddr1);
         
         // Make sure the staking pool has no balance yet
         const poolBalance = await esXai.connect(addr1).balanceOf(stakingPoolAddress);
@@ -423,20 +423,20 @@ function PoolSubmissionPermissions(deployInfrastructure) {
         await submitTestChallenge(referee, challenger, startingAssertion2, winningStateRoot);
         
         // Claim the rewards for a pool
-        await referee.connect(addr1).claimPoolSubmissionRewards(stakingPoolAddress, challengeId);
+        await referee.connect(addr1).claimBulkSubmissionRewards(stakingPoolAddress, challengeId);
         
-        // Get poolSubmissions    
-        const poolSubmission = await referee.poolSubmissions(challengeId, stakingPoolAddress);
-        expect(poolSubmission.winningKeyCount).to.be.gt(0);
-        expect(poolSubmission.submitted).to.equal(true);
-        expect(poolSubmission.claimed).to.equal(true);
+        // Get bulkSubmissions    
+        const bulkSubmission = await referee.bulkSubmissions(challengeId, stakingPoolAddress);
+        expect(bulkSubmission.winningKeyCount).to.be.gt(0);
+        expect(bulkSubmission.submitted).to.equal(true);
+        expect(bulkSubmission.claimed).to.equal(true);
         
         // Make sure the staking pool has balance now
         const poolBalance2 = await esXai.connect(addr1).balanceOf(stakingPoolAddress);
         expect(poolBalance2).to.be.greaterThan(poolBalance);
     })
 
-    it("Check that a pool delegate can submit poolAssertions, and claimPoolSubmission rewards successfully.", async function () {        
+    it("Check that a pool delegate can submit bulkAssertions, and claimBulkSubmission rewards successfully.", async function () {        
         const { poolFactory, addr1: poolOwner, addr2: poolDelegate, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
         
         // Mint some esXai to increase the total supply for submitting the first challenge so that there is available reward
@@ -459,13 +459,13 @@ function PoolSubmissionPermissions(deployInfrastructure) {
         expect(delegatePoolAddress).to.equal(poolAddress);
 
         // Submit a pool assertion with address2
-        await referee.connect(poolDelegate).submitPoolAssertion(poolAddress, challengeId, winningStateRoot);
+        await referee.connect(poolDelegate).submitBulkAssertion(poolAddress, challengeId, winningStateRoot);
 
         // Confirm the pool submission was created and the staked key count is correct
-        const poolSubmission = await referee.poolSubmissions(challengeId, poolAddress);
-        expect(poolSubmission.stakedKeyCount).to.equal(100);
-        expect(poolSubmission.submitted).to.equal(true);
-        expect(poolSubmission.claimed).to.equal(false);
+        const bulkSubmission = await referee.bulkSubmissions(challengeId, poolAddress);
+        expect(bulkSubmission.keyCount).to.equal(100);
+        expect(bulkSubmission.submitted).to.equal(true);
+        expect(bulkSubmission.claimed).to.equal(false);
 
         // Submit new challenge to make the previous one claimable
         const startingAssertion2 = startingAssertion + 1;
@@ -476,11 +476,11 @@ function PoolSubmissionPermissions(deployInfrastructure) {
         expect(poolBalanceBeforeClaim).to.equal(0);
 
         // Submit a pool claim with address2
-        await referee.connect(poolDelegate).claimPoolSubmissionRewards(poolAddress, challengeId);
+        await referee.connect(poolDelegate).claimBulkSubmissionRewards(poolAddress, challengeId);
 
         // Confirm the pool submission was claimed
-        const poolSubmissionAfterClaim = await referee.poolSubmissions(challengeId, poolAddress);
-        expect(poolSubmissionAfterClaim.claimed).to.equal(true);
+        const bulkSubmissionAfterClaim = await referee.bulkSubmissions(challengeId, poolAddress);
+        expect(bulkSubmissionAfterClaim.claimed).to.equal(true);
 
         // Confirm the pool balance increased after the claim
         const poolBalanceAfterClaim = await esXai.connect(esXaiMinter).balanceOf(poolAddress);
@@ -488,7 +488,7 @@ function PoolSubmissionPermissions(deployInfrastructure) {
 
     });
     
-    it("Check that a pool key staker can submit poolAssertions, and claimPoolSubmission rewards successfully.", async function () {
+    it("Check that a pool key staker can submit bulkAssertions, and claimBulkSubmission rewards successfully.", async function () {
         const { poolFactory, addr1:poolOwner, addr2: keyStaker, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
 
         // Mint some esXai to increase the total supply for submitting the first challenge so that there is available reward
@@ -513,13 +513,13 @@ function PoolSubmissionPermissions(deployInfrastructure) {
         await poolFactory.connect(keyStaker).stakeKeys(poolAddress, licenseIds2);
 
         // Submit a pool assertion with addr2
-        await referee.connect(keyStaker).submitPoolAssertion(poolAddress, challengeId, winningStateRoot);
+        await referee.connect(keyStaker).submitBulkAssertion(poolAddress, challengeId, winningStateRoot);
 
         // Confirm the pool submission was created and the staked key count is correct
-        const poolSubmission = await referee.poolSubmissions(challengeId, poolAddress);
-        expect(poolSubmission.stakedKeyCount).to.equal(200);
-        expect(poolSubmission.submitted).to.equal(true);
-        expect(poolSubmission.claimed).to.equal(false);
+        const bulkSubmission = await referee.bulkSubmissions(challengeId, poolAddress);
+        expect(bulkSubmission.keyCount).to.equal(200);
+        expect(bulkSubmission.submitted).to.equal(true);
+        expect(bulkSubmission.claimed).to.equal(false);
 
         // Submit a new challenge to make the previous one claimable
         const startingAssertion2 = startingAssertion + 1;
@@ -531,11 +531,11 @@ function PoolSubmissionPermissions(deployInfrastructure) {
         expect(poolBalanceBeforeClaim).to.equal(0);
         
         // Submit a pool claim with addr2
-        await referee.connect(keyStaker).claimPoolSubmissionRewards(poolAddress, challengeId);
+        await referee.connect(keyStaker).claimBulkSubmissionRewards(poolAddress, challengeId);
 
         // Confirm the pool submission was claimed
-        const poolSubmissionAfterClaim = await referee.poolSubmissions(challengeId, poolAddress);
-        expect(poolSubmissionAfterClaim.claimed).to.equal(true);
+        const bulkSubmissionAfterClaim = await referee.bulkSubmissions(challengeId, poolAddress);
+        expect(bulkSubmissionAfterClaim.claimed).to.equal(true);
 
         // Confirm the pool balance increased after the claim
         const poolBalanceAfterClaim = await esXai.connect(esXaiMinter).balanceOf(poolAddress);
@@ -543,7 +543,7 @@ function PoolSubmissionPermissions(deployInfrastructure) {
 
     });
     
-    it("Check that a pool esXai staker can submit poolAssertions, and claimPoolSubmission rewards successfully.", async function () {
+    it("Check that a pool esXai staker can submit bulkAssertions, and claimBulkSubmission rewards successfully.", async function () {
         const { poolFactory, addr1: poolOwner, addr2: esXaiStaker, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
 
         // Mint some esXai to increase the total supply for submitting the first challenge so that there is available reward
@@ -572,13 +572,13 @@ function PoolSubmissionPermissions(deployInfrastructure) {
         await poolFactory.connect(esXaiStaker).stakeEsXai(poolAddress, 10_000_000);        
         
         // Submit a pool assertion with addr2
-        await referee.connect(esXaiStaker).submitPoolAssertion(poolAddress, challengeId, winningStateRoot);
+        await referee.connect(esXaiStaker).submitBulkAssertion(poolAddress, challengeId, winningStateRoot);
         
         // Confirm the pool submission was created and the staked key count is correct
-        const poolSubmission = await referee.poolSubmissions(challengeId, poolAddress);
-        expect(poolSubmission.stakedKeyCount).to.equal(100);
-        expect(poolSubmission.submitted).to.equal(true);
-        expect(poolSubmission.claimed).to.equal(false);
+        const bulkSubmission = await referee.bulkSubmissions(challengeId, poolAddress);
+        expect(bulkSubmission.keyCount).to.equal(100);
+        expect(bulkSubmission.submitted).to.equal(true);
+        expect(bulkSubmission.claimed).to.equal(false);
 
         // Submit a new challenge to make the previous one claimable
         const startingAssertion2 = startingAssertion + 1;
@@ -589,11 +589,11 @@ function PoolSubmissionPermissions(deployInfrastructure) {
         expect(poolBalanceBeforeClaim).to.equal(0);
 
         // Submit a pool claim with addr2
-        await referee.connect(esXaiStaker).claimPoolSubmissionRewards(poolAddress, challengeId);
+        await referee.connect(esXaiStaker).claimBulkSubmissionRewards(poolAddress, challengeId);
 
         // Confirm the pool submission was claimed
-        const poolSubmissionAfterClaim = await referee.poolSubmissions(challengeId, poolAddress);
-        expect(poolSubmissionAfterClaim.claimed).to.equal(true);
+        const bulkSubmissionAfterClaim = await referee.bulkSubmissions(challengeId, poolAddress);
+        expect(bulkSubmissionAfterClaim.claimed).to.equal(true);
 
         // Confirm the pool balance increased after the claim
         const poolBalanceAfterClaim = await esXai.connect(esXaiMinter).balanceOf(poolAddress);
@@ -620,7 +620,7 @@ function PoolSubmissionPermissions(deployInfrastructure) {
         const poolAddress = await createPool(poolFactory, poolOwner, licenseIds);
 
         // Submit a pool assertion with addr2
-        await expect(referee.connect(nonOwner).submitPoolAssertion(poolAddress, challengeId, winningStateRoot)).to.be.revertedWith("17");
+        await expect(referee.connect(nonOwner).submitBulkAssertion(poolAddress, challengeId, winningStateRoot)).to.be.revertedWith("17");
 
         // Confirm the pool submission was not created/reverted
     });
@@ -629,7 +629,7 @@ function PoolSubmissionPermissions(deployInfrastructure) {
 
 }
 
-function PoolSubmissionsRewardRate(deployInfrastructure) {
+function BulkSubmissionsRewardRate(deployInfrastructure) {
 
     return function () {
 
@@ -640,7 +640,7 @@ function PoolSubmissionsRewardRate(deployInfrastructure) {
         const iterations = 100;  // Number of times to run each test case
 
         // Run tests for each key amount in the keyAmountTests array
-        for (let stakedKeyCount of keyAmountTests) {
+        for (let keyCount of keyAmountTests) {
             // Run tests for each boost factor in the stakingBoostFactors array
             for (let boostFactor of stakingBoostFactors) {
                 let totalWinningKeys = BigInt(0);
@@ -654,7 +654,7 @@ function PoolSubmissionsRewardRate(deployInfrastructure) {
                 for (let i = 0; i < iterations; i++) {
                     // Get the winning key count for the current test case iteration
                     const winningKeyCount = await refereeCalculations.getWinningKeyCount(
-                        stakedKeyCount, 
+                        keyCount, 
                         boostFactor, 
                         await addr1.getAddress(), // Pool address will be used in production for the seed
                         i,  // Use iteration as challengeId for variety
@@ -676,13 +676,13 @@ function PoolSubmissionsRewardRate(deployInfrastructure) {
                 // Calculate the average winning key count for the test case
                 const averageWinningKeys = Number(totalWinningKeys) / iterations;
                 // Calculate the expected winning key count based on the staked key amount and boost factor
-                const expectedWinningKeys = (stakedKeyCount * boostFactor) / 10000;
+                const expectedWinningKeys = (keyCount * boostFactor) / 10000;
                 // Calculate the maximum allowable tolerance for variance of expectations
                 const tolerance = Math.max(1, expectedWinningKeys * 0.1);  // 10% tolerance or at least 1
 
                 // TODO - Remove console.log statements once we are confident in the algorithm
 
-                console.log(`Staked Keys: ${stakedKeyCount}, Boost Factor: ${boostFactor}`);
+                console.log(`Staked Keys: ${keyCount}, Boost Factor: ${boostFactor}`);
                 console.log(`Average Winning Keys: ${averageWinningKeys.toFixed(2)}`);
                 console.log(`Expected Winning Keys: ${expectedWinningKeys.toFixed(2)}`);
                 console.log(`Minimum Winning Keys: ${minWinningKeys}`);
@@ -703,10 +703,10 @@ function PoolSubmissionsRewardRate(deployInfrastructure) {
     }
 }
 
-export function RefereePoolSubmissions(deployInfrastructure) {
+export function RefereeBulkSubmissions(deployInfrastructure) {
 	return function () {
-        describe("Check edge cases for pool submissions", PoolSubmissionsStakeAndUnstake(deployInfrastructure).bind(this));
-        describe("Check pool submission reward", PoolSubmissionsRewardRate(deployInfrastructure).bind(this));
-        describe("Check pool submission permissions", PoolSubmissionPermissions(deployInfrastructure).bind(this));
+        describe("Check edge cases for pool submissions", BulkSubmissionsStakeAndUnstake(deployInfrastructure).bind(this));
+        describe("Check pool submission reward", BulkSubmissionsRewardRate(deployInfrastructure).bind(this));
+        describe("Check pool submission permissions", BulkSubmissionPermissions(deployInfrastructure).bind(this));
 	}
 }
