@@ -23,10 +23,11 @@ export async function submitBulkAssertions(
     // Create an instance of the Referee contract
     const refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, signer);
     let successfulSubmissions = 0;
+    for (const address of bulkAddresses) {
         try {
             // Retry submitting the assertion to the Referee contract for each pool up to 3 times
             await retry(() => refereeContract.submitBulkAssertion(
-                bulkAddresses,
+                address,
                 challengeNumber,
                 successorConfirmData
             ), 3);
@@ -38,6 +39,7 @@ export async function submitBulkAssertions(
             // Log error for the current pool
             logger(`Failed to submit assertion for ${bulkAddresses.length} addresses, Error: ${error}`);
         }
+    }
     
     return successfulSubmissions;
 }

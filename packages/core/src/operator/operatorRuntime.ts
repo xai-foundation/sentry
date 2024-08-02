@@ -20,7 +20,7 @@ import {
     getSubmissionsForChallenges,
     getUnStakedKeysOfUser,
     submitBulkAssertions,
-    claimPoolSubmissionRewards,
+    claimBulkSubmissionRewards,
     getMultipleUsersInteractedPoolsRpc
 } from "../index.js";
 import axios from "axios";
@@ -336,7 +336,7 @@ async function processClaimForChallenge(challengeNumber: bigint, eligibleNodeLic
     // Process any Pool Claims
     if(cachedPoolsOfOperator && cachedPoolsOfOperator.length > 0) {
         try {
-            await claimPoolSubmissionRewards(cachedPoolsOfOperator, challengeNumber, cachedSigner, cachedLogger);
+            await claimBulkSubmissionRewards(cachedPoolsOfOperator, challengeNumber, cachedSigner, cachedLogger);
             cachedLogger(`Bulk claim successful for address ${operatorAddress} and challenge ${challengeNumber}`);
         } catch (error: any) {
             cachedLogger(`Error during bulk claim for address ${operatorAddress} and challenge ${challengeNumber}: ${error.message}`);
