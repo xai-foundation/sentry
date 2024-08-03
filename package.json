@@ -7,13 +7,14 @@
   "author": "",
   "main": "index.js",
   "scripts": {
-    "build": "pnpm -filter @sentry/sentry-subgraph-client run build && pnpm -r -filter !web-staking -filter !@sentry/sentry-subgraph-client -filter !@sentry/sentry-subgraph run build",
+    "build": "pnpm -filter @sentry/sentry-subgraph-client run build && pnpm -r -filter !@sentry/sentry-subgraph-client -filter !@sentry/sentry-subgraph run build",
     "clean": "pnpm recursive -filter !@sentry/sentry-subgraph-client run clean",
     "cli": "pnpm -filter @sentry/core run build && pnpm -r -filter @sentry/sentry-node-cli run compile && pnpm -r -filter @sentry/sentry-node-cli run start",
     "deploy-smart-contracts": "pnpm -r -filter @sentry/core run build && pnpm -r -filter @sentry/smart-contracts run deploy",
     "desktop": "pnpm -filter @sentry/web-connect run build && pnpm -r -filter @sentry/sentry-client-desktop run dev",
     "docs": "pnpm -filter @sentry/docs run start",
     "lint": "pnpm recursive run lint",
+    "staking": "pnpm -filter @sentry/web-staking run dev",
     "web": "pnpm -filter @sentry/web-connect run dev",
     "postinstall": "node ./postinstall"
   },
