@@ -1,5 +1,5 @@
 import { resilientEventListener, config, RefereeAbi } from '@sentry/core';
-import Vorpal from 'vorpal';
+import Vorpal, {Args} from 'vorpal';
 
 export function eventListener(cli: Vorpal) {
     cli
@@ -9,7 +9,7 @@ export function eventListener(cli: Vorpal) {
         .option('-a, --abi <abi>', 'ABI of the contract')
         .option('-e, --eventName <eventName>', 'Event name to listen for')
         .action(async function (this: Vorpal.CommandInstance, args) {
-            const { rpcUrl, contractAddress, abi, eventName } = args.options;
+            const { rpcUrl, contractAddress, abi, eventName } = (args as Args).options;
 
             const { stop } = resilientEventListener({
                 rpcUrl: rpcUrl ? rpcUrl : config.arbitrumOneWebSocketUrl,

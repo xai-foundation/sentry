@@ -11,8 +11,6 @@ import { IpLocationChecker } from './features/ipchecker/IpLocationChecker'
 
 const projectId = '8f5121741edc292ac7e4203b648d61e2'
 
-
-
 export const chains: [Chain, ...Chain[]] = [
 	arbitrum as Chain,
 	arbitrumSepolia as Chain
