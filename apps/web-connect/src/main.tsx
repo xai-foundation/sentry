@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import {AppRoutes} from './features/router'
+import { defaultWagmiConfig } from '@web3modal/wagmi/react/config'
 import { Config, WagmiProvider, createConfig, http  } from 'wagmi'
 import {Chain} from 'viem'
 import { createWeb3Modal } from "@web3modal/wagmi/react"
@@ -25,18 +26,29 @@ const metadata = {
 	icons: ['https://avatars.githubusercontent.com/u/37784886']
 }
 
-export const wagmiConfig = createConfig({
-	chains,	
+export const wagmiConfig = defaultWagmiConfig({
+    chains, // required
+    projectId, // required
+    metadata, // required
+    ssr: true,
+    // storage: createStorage({
+    //     storage: cookieStorage
+    // }),
 	transports: {
 		[arbitrum.id]: http(),
 		[arbitrumSepolia.id]: http(),
 	},
+    enableWalletConnect: true, // Optional - true by default
+    enableInjected: true, // Optional - true by default
+    enableEIP6963: true, // Optional - true by default
+    enableCoinbase: true, // Optional - true by default
+    // ...wagmiOptions // Optional - Override createConfig parameters
 })
 
 createWeb3Modal({
 	projectId,
 	wagmiConfig,
-	metadata,
+	metadata
 })
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
