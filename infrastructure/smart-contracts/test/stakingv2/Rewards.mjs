@@ -25,14 +25,14 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			await nodeLicense.connect(addr1).mint(addr1KeyQuantity, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
 			
-			const winningStateRoot = await findWinningStateRoot(referee, [mintedKeyId], 0);
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
             // Submit two challenges so that the contract tests will run successfully
             const startingAssertion = 100;
             await referee.connect(challenger).submitChallenge(
                 startingAssertion,
                 startingAssertion - 1,
-                winningStateRoot,
+                stateRoot,
                 0,
                 "0x0000000000000000000000000000000000000000000000000000000000000000"
             );
@@ -180,14 +180,14 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			await nodeLicense.connect(addr1).mint(addr1KeyQuantity, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
 			
-			const winningStateRoot = await findWinningStateRoot(referee, [mintedKeyId], 0);
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
             // Submit two challenges so that the contract tests will run successfully
             const startingAssertion = 100;
             await referee.connect(challenger).submitChallenge(
                 startingAssertion,
                 startingAssertion - 1,
-                winningStateRoot,
+                stateRoot,
                 0,
                 "0x0000000000000000000000000000000000000000000000000000000000000000"
             );
@@ -282,14 +282,14 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			await nodeLicense.connect(addr1).mint(addr1KeyQuantity, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
 			
-			const winningStateRoot = await findWinningStateRoot(referee, [mintedKeyId], 0);
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
             // Submit two challenges so that the contract tests will run successfully
             const startingAssertion = 100;
             await referee.connect(challenger).submitChallenge(
                 startingAssertion,
                 startingAssertion - 1,
-                winningStateRoot,
+                stateRoot,
                 0,
                 "0x0000000000000000000000000000000000000000000000000000000000000000"
             );
@@ -404,15 +404,15 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const price = await nodeLicense.price(addr1KeyQuantity, "");
 			await nodeLicense.connect(addr1).mint(addr1KeyQuantity, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
-			
-			const winningStateRoot = await findWinningStateRoot(referee, [mintedKeyId], 0);
+
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
             // Submit two challenges so that the contract tests will run successfully
             const startingAssertion = 100;
             await referee.connect(challenger).submitChallenge(
                 startingAssertion,
                 startingAssertion - 1,
-                winningStateRoot,
+                stateRoot,
                 0,
                 "0x0000000000000000000000000000000000000000000000000000000000000000"
             );
@@ -617,15 +617,15 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const price = await nodeLicense.price(addr1KeyQuantity, "");
 			await nodeLicense.connect(addr1).mint(addr1KeyQuantity, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
-			
-			const winningStateRoot = await findWinningStateRoot(referee, [mintedKeyId], 0);
+
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
             // Submit two challenges so that the contract tests will run successfully
             const startingAssertion = 100;
             await referee.connect(challenger).submitChallenge(
                 startingAssertion,
                 startingAssertion - 1,
-                winningStateRoot,
+                stateRoot,
                 0,
                 "0x0000000000000000000000000000000000000000000000000000000000000000"
             );
@@ -722,15 +722,15 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const price = await nodeLicense.price(addr1KeyQuantity, "");
 			await nodeLicense.connect(addr1).mint(addr1KeyQuantity, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
-			
-			const winningStateRoot = await findWinningStateRoot(referee, [mintedKeyId], 0);
+
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
             // Submit two challenges so that the contract tests will run successfully
             const startingAssertion = 100;
             await referee.connect(challenger).submitChallenge(
                 startingAssertion,
                 startingAssertion - 1,
-                winningStateRoot,
+                stateRoot,
                 0,
                 "0x0000000000000000000000000000000000000000000000000000000000000000"
             );
