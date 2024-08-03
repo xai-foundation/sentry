@@ -37,8 +37,9 @@ export function ActionSection(): JSX.Element {
      * @returns {string} The button text
      */
     const getButtonText = useCallback(() => {
-        if (mintWithEth.isPending || mintWithXai.isPending) return "WAITING FOR CONFIRMATION";
-        if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
+        if (mintWithEth.isPending || mintWithXai.isPending) return "WAITING FOR CONFIRMATION"; 
+        // if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
+
         return "BUY NOW";
     }, [mintWithEth.isPending, mintWithXai.isPending, chain]);
 
@@ -48,8 +49,9 @@ export function ActionSection(): JSX.Element {
      * @returns {string} The button text
      */
     const getTokenButtonText = useCallback(() => {
-        if (mintWithEth.isPending || mintWithXai.isPending || approve.isPending) return "WAITING FOR CONFIRMATION..";
-        if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
+        if (mintWithEth.isPending || mintWithXai.isPending || approve.isPending) return "WAITING FOR CONFIRMATION.."; 
+        // if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
+
         return getApproveButtonText();
     }, [mintWithEth.isPending, mintWithXai.isPending, approve.isPending, chain, getApproveButtonText]);
 
@@ -69,14 +71,14 @@ export function ActionSection(): JSX.Element {
                     <PrimaryButton
                         onClick={() => handleMintWithEthClicked()}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || chain?.id === 42161}
+                        isDisabled={!ready}
                         btnText={getButtonText()}
                     />
                 ) : (
                     <PrimaryButton
                         onClick={handleBuyWithXaiClicked}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || chain?.id === 42161 || !userHasTokenBalance}
+                        isDisabled={!ready || !userHasTokenBalance}
                         btnText={getTokenButtonText()}
                     />
                 )}

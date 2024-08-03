@@ -1,8 +1,8 @@
- # Sentry Code Repository
+ # Sentry Development Code Repository
 
  This repository, named Sentry, is part of the Xai Foundation's infrastructure. It contains the codebase for various components, including:
 
- - **Sentry Nodes**: These nodes form the backbone of our network, ensuring secure and efficient communication. The repository includes smart contracts for running the rewards system for these Sentry Nodes.
+ - **Sentry Development Nodes**: These nodes form the backbone of our network, ensuring secure and efficient communication. The repository includes smart contracts for running the rewards system for these Sentry Nodes.
  - **Challenger**: This component is responsible for challenging any suspicious activity on the network.
  - **Desktop and Web GUIs**: These graphical user interfaces allow users to interact with our network in a user-friendly manner.
 
