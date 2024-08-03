@@ -5,7 +5,7 @@ import { WagmiProvider, createConfig, http  } from 'wagmi'
 import {Chain} from 'viem'
 import { createWeb3Modal } from "@web3modal/wagmi/react"
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import {arbitrum, arbitrumNova} from 'wagmi/chains'
+import {arbitrum, arbitrumSepolia} from 'wagmi/chains'
 import './index.css'
 import { IpLocationChecker } from './features/ipchecker/IpLocationChecker'
 
@@ -13,8 +13,7 @@ const projectId = '8f5121741edc292ac7e4203b648d61e2'
 
 export const chains: [Chain, ...Chain[]] = [
 	arbitrum as Chain,
-	arbitrumNova as Chain,
-	// arbitrumSepolia
+	arbitrumSepolia as Chain,
 ]
 
 const queryClient = new QueryClient()
@@ -30,7 +29,7 @@ export const wagmiConfig = createConfig({
 	chains,	
 	transports: {
 		[arbitrum.id]: http(),
-		[arbitrumNova.id]: http(),
+		[arbitrumSepolia.id]: http(),
 	},
 })
 
