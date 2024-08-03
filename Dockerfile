@@ -30,7 +30,7 @@
     COPY --from=build /app /app
     
     # Expose the desired port
-    EXPOSE 3000
+    EXPOSE 8080
     
     # Command to run the application
     CMD ["./node_modules/next/dist/bin/next", "start"]
