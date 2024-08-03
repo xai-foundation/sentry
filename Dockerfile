@@ -1,8 +1,5 @@
 # ---- Base Node ----
     FROM node:20.11.0 AS base
-
-    # TODO => Remove this line for production deployment
-    ENV NEXT_PUBLIC_APP_ENV=development
     
     # Install PNPM
     RUN npm install -g pnpm
