@@ -5,7 +5,6 @@ import ExternalLinkIcon from "../../../../../../packages/ui/src/rebrand/icons/Ex
 import { listOfCountries } from "../constants/constants";
 import { SearchableDropdown, SearchableDropdownItem } from "../ui/dropdowns/SearchableDropdown";
 
-
 const UserVerificationKYC = () => {
   const [selectedCountry, setSelectedCountry] = useState<string | null>("");
   const [isOpen, setIsOpen] = useState<boolean>(false);
