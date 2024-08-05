@@ -39,9 +39,6 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
     // Airdrop Ended
     bool public airdropEnded;
 
-    // Marker for keyids to be auto staked
-    mapping(uint256 => uint256[2]) public keyToStartEnd;
-
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
