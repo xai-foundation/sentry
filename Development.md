@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The XAI infrastructure is built in [Sentry Node Monorepo xai-foundation/sentry](https://github.com/xai-foundation/sentry
+The XAI infrastructure is built in [Sentry Node Monorepo xai-foundation/sentry](https://github.com/xai-foundation/sentry)
 
 This monorepo holds the following packages:
 
@@ -12,7 +12,7 @@ This monorepo holds the following packages:
   - Web-Connect: this is the Sentry website that hosts the Key Sale page for Node Licenses as well as blockchain interactions for key holder / operator setup
   - Web-Staking: this is the website for the Staking Application, it displays pools, reward rates, and allows users to interact with pools
 - infrastructure
-  - gcp-nitro-node: Terrafor setup for the public node host on google cloud
+  - gcp-nitro-node: Terraform setup for the public node host on google cloud
   - nitro-node-wrapper: Public node stack config and custom publisher software
   - smart-contracts: ecosystem smart contract infrastructure, deployment / upgrade scripts and tests
   - sentry-subgraph: subgraph schemas and syncing scripts, subgraphs will be deployed from here
@@ -88,7 +88,7 @@ Local development requires a local mongoDB instance or access to the develop mon
 A local mongoDB can be synced by running the CLI cmd `sync-staking-pools` with the local mongoDB URI locally with a [sepolia `config.json`](https://github.com/xai-foundation/sentry-development/blob/build-sepolia/packages/core/src/config.ts).
 The cloud build, build trigger and develop mongoDB is configured, deployed and maintained by the Services Team.
 
-Setup local development for web-staking:
+#### Setup local development for web-staking:
 1. Create a `.env` file
 2. Set the `NEXT_PUBLIC_APP_ENV=development` in the .env
 3. Set the `MONGODB_URL=mongodb://127.0.0.1:27017/xai-app`
@@ -105,6 +105,13 @@ The sepolia graphs are in `sentry-sepolia` https://subgraphs.alchemy.com/subgrap
 Build and deploy from the local machine in `infrastructure/sentry-subgraph` with `pnpm codegen`, `pnpm build` and the deployment cmd from the alchemy subgraph page. The sepolia sync has sepolia contract specific logic for managing Poolfactory and Referee versions as well as reducing the submissions entity count since sepolia has more challenges than one every hour during specific testing time frames. Sepolia deploys that sync should be done from `xai-foundation/sentry-development:subgraph-sepolia-sync` or a local branch off `xai-foundation/sentry-development:subgraph-sepolia-sync`. `xai-foundation/sentry-development:subgraph-sepolia-sync` needs to be kept up to date with sync script updates.
 
 For local testing the subgraph endpoint needs to be updated in `packages\sentry-subgraph-client\.graphclientrc.yml` and launched to a local playground by running `pnpm dev` in `packages\sentry-subgraph-client`.
+
+#### Special Instructions For Sepolia Subgraph deployments
+
+1. Make code changes
+2. Generate the types with: `pnpm codegen`
+3. Build the subgraph with: `pnpm build`
+4. Deploy using the deploy command provided by the alchemy dashboard. (Note: ensure to maintain the version name/formatting).
 
 ### Smart contracts
 
@@ -123,6 +130,7 @@ All deployments and upgrades are managed by scripts in `infrastructure/smart-con
 
 Update the `hardhat.config.cjs`, define the network to use in the `defaultNetwork` set to `hardhat`
 In `infrastructure/smart-contracts` run `pnpm local` for running a local node
+Some tests will use core function, so core has to be built locally before running the test suite with `pnpm -filter @sentry/core run build`.
 Run `pnpm test` to run all tests referenced in `infrastructure\smart-contracts\test\Fixture.mjs`
 
 ---------------------------------
@@ -131,7 +139,7 @@ Run `pnpm test` to run all tests referenced in `infrastructure\smart-contracts\t
 
 ### Operator & Web-Connect
 
-Push a **tag** on `xai-foundation/sentry:develop` to trigger the github actions. This will deploy
+Push a **tag** on `xai-foundation/sentry:master` (default case to deploy a production release will be from `master` however, for special cases we can push a tag from any release-branch) to trigger the github actions. This will deploy
 
 - **web-connect** to https://xai-foundation.github.io/sentry-development/ (github pages)
 - **CLI & Desktop App (all OS)** to https://github.com/xai-foundation/sentry-development/releases
@@ -208,7 +216,26 @@ The xai node and arb node data will be stored in `/opt/public-node/data`
 
 # Deployed Runtimes
 
+All runtimes are deployed within a [`screen` session](https://www.gnu.org/software/screen/manual/screen.html)
+Important screen commands used:
+
+- `screen ls` - view the active screens
+- `screen -S <session name>` - Start a new screen session
+- `screen -r challenger` - resume a screen session
+
+Within a screen session:
+
+- `CTRL + A, D` - exit a screen session (will keep running in the background)
+- `CTRL + A, ESC` - to enter scroll mode, exit scroll mode with `ESC`
+
+IMPORTANT: using `CTRL + C` will exit the running cli command, if that is done in the challenger screen it can only be restarted with the private keys !
+
+
 ## Challenger
+
+The Challenger is one of the main parts to the Sentry-Node assertion and reward process.
+Its a cli runtime (`boot-challenger`) that will listen on `NodeConfirmed` EVM events on the XAI Rollup Protocol (deployed on parent layer arbitrum-one).
+For every `NodeConfirmed` event the challenger will currently create a challenge (`submitChallenge`) on the Referee contract. This will be the trigger for NodeLicense operators running the sentry-node software to submit assertions to that challenge and claim for the previous.
 
 The sentry CLI running `boot-challenger` on a google cloud compute VM instance 
 https://console.cloud.google.com/compute/instances?hl=de&project=xai-sentry-node-challenger
@@ -220,6 +247,8 @@ Needs the "challenger" privateKey (`0xc74c1e08963ceef0e1f2f2a2eeb879f443e86836`)
 
 ## Data sync
 
+The data-sync is a cli runtime (`start-centralization-runtime`) that will listen on blockchain events and trigger a centralized database sync based on the emitted event. It will listen on the PoolFactory for any staking pool update. It will also listen on the Referee `ChallengeSubmitted` event to trigger the pool reward rate calculation. This centralized database will only be used in the staking app for a smoother user experience offering filter sort and search across all the created staking pools.
+
 The sentry CLI running `start-centralization-runtime` on a google cloud compute VM instance
 https://console.cloud.google.com/compute/instancesDetail/zones/us-central1-c/instances/backup-runtime?hl=de&project=xai-watchtower-node
 
@@ -227,7 +256,7 @@ This is syncing the mongoDB used for the staking app on events emitted from the 
 
 Google Cloud access to project `xai-watchtower-node` required
 
-Running a docker container with a `screen` session running the CLI for each runtime.
+Each runtime is in it's own docker container. Each container has a `screen` session running that you may connect to in order to interact with the container.
 
 Currently we have one instance for each network:
 
@@ -244,5 +273,6 @@ Another challenger instance running on the infura RPC.
 https://console.cloud.google.com/compute/instancesDetail/zones/us-central1-c/instances/backup-runtime?hl=de&project=xai-watchtower-node
 
 Within docker container running a `screen` session with `boot-challenger` on infura RPCs
+Each runtime is in it's own docker container. Each container has a `screen` session running that you may connect to in order to interact with the container.
 
 Container image built from Dockerfile in `/opt/backup-challenger-infura`
