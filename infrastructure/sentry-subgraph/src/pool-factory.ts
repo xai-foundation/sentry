@@ -1,4 +1,4 @@
-import { Address, bigInt, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import {
   StakeKeys,
   UnstakeKeys,
