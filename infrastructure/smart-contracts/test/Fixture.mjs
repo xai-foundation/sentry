@@ -13,9 +13,9 @@ import { CNYAirDropTests } from "./CNYAirDrop.mjs";
 import { getBasicPoolConfiguration, StakingV2 } from "./StakingV2.mjs";
 import { extractAbi } from "../utils/exportAbi.mjs";
 import { Beacons } from "./Beacons.mjs";
-import { RefereePoolSubmissions } from "./tinykeys/RefereePoolSubmissions.mjs";
+import { RefereeBulkSubmissions } from "./tinykeys/RefereeBulkSubmissions.mjs";
 import { NodeLicenseTinyKeysTest } from "./NodeLicenseTinyKeys.mjs";
-import { Console } from "console";
+import { FailedKycTests } from "./failed-kyc/FailedKyc.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -114,13 +114,6 @@ describe("Fixture Tests", function () {
         const referralRewardPercentage = BigInt(2);
         const nodeLicense = await upgrades.deployProxy(NodeLicense, [await fundsReceiver.getAddress(), referralDiscountPercentage, referralRewardPercentage], { deployer: deployer });
         await nodeLicense.waitForDeployment();
-
-        // Upgrade esXai3 upgrade - moved here due to needing referee and node license addresses as a parameters
-        const maxKeysNonKyc = BigInt(1);
-        const EsXai3 = await ethers.getContractFactory("esXai3");
-        const esXai3 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai3, { call: { fn: "initialize", args: [await referee.getAddress(), await nodeLicense.getAddress(), maxKeysNonKyc] } });
-        await esXai3.waitForDeployment();
-
         // Deploy the Pool Factory
         const PoolFactory = await ethers.getContractFactory("PoolFactory");
         const poolFactory = await upgrades.deployProxy(PoolFactory, [
@@ -131,6 +124,13 @@ describe("Fixture Tests", function () {
         await poolFactory.waitForDeployment();
         await poolFactory.enableStaking();
         const poolFactoryAddress = await poolFactory.getAddress();
+
+        // Upgrade esXai3 upgrade - moved here due to needing referee and node license addresses as a parameters
+        const maxKeysNonKyc = BigInt(1);
+        const EsXai3 = await ethers.getContractFactory("esXai3");
+        const esXai3 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai3, { call: { fn: "initialize", args: [await referee.getAddress(), await nodeLicense.getAddress(), poolFactoryAddress, maxKeysNonKyc] } });
+        await esXai3.waitForDeployment();
+
 
         // Deploy the StakingPool's PoolBeacon
         const StakingPoolPoolBeacon = await ethers.deployContract("PoolBeacon", [stakingPoolImplAddress]);
@@ -402,8 +402,9 @@ describe("Fixture Tests", function () {
     describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
     describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
     describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
-    describe("PoolSubmissions", RefereePoolSubmissions(deployInfrastructure).bind(this));
+    describe("BulkSubmissions", RefereeBulkSubmissions(deployInfrastructure).bind(this));
     describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
+    describe("Failed KYC Tests", FailedKycTests(deployInfrastructure).bind(this));
 
     // This doesn't work when running coverage
     //describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));

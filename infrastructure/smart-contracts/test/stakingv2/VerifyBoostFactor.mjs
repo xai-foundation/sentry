@@ -297,8 +297,8 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 					numSoloKeyPayouts++;
 				}
 
-				const submission2 = await referee.poolSubmissions(i, stakingPoolAddress);
-				assert.equal(submission2.submitted, true, "The poolSubmission was not submitted");
+				const submission2 = await referee.bulkSubmissions(i, stakingPoolAddress);
+				assert.equal(submission2.submitted, true, "The bulkSubmission was not submitted");
 				numBoostedPoolPayouts += submission2.winningKeyCount;
 			}
 

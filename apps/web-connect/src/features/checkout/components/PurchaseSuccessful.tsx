@@ -19,7 +19,6 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 	}
 
 	const handleReturnToClient = () => {
-        window.location = `xai-sentry://purchase-successful?txHash=${getHash()}` as unknown as Location;
 		returnToClient(getHash());
 	}
 

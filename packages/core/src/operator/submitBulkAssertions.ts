@@ -12,8 +12,8 @@ import { retry } from '../index.js';
  * @param logger - A logger function to log progress.
  * @returns The number of assertions successfully submitted.
  */
-export async function submitPoolAssertions(
-    pools: string[],
+export async function submitBulkAssertions(
+    bulkAddresses: string[],
     challengeNumber: bigint,
     successorConfirmData: string,
     signer: ethers.Signer,
@@ -22,26 +22,24 @@ export async function submitPoolAssertions(
 
     // Create an instance of the Referee contract
     const refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, signer);
-
     let successfulSubmissions = 0;
-
-    for (const pool of pools) {
+    for (const address of bulkAddresses) {
         try {
             // Retry submitting the assertion to the Referee contract for each pool up to 3 times
-            await retry(() => refereeContract.submitPoolAssertion(
-                pool,
+            await retry(() => refereeContract.submitBulkAssertion(
+                address,
                 challengeNumber,
                 successorConfirmData
             ), 3);
 
             // Log success for the current pool
-            logger(`Successfully submitted assertion for pool: ${pool}`);
+            logger(`Successfully submitted assertion for ${bulkAddresses.length} addresses`);
             successfulSubmissions++;
         } catch (error) {
             // Log error for the current pool
-            logger(`Failed to submit assertion for pool: ${pool}, Error: ${error}`);
+            logger(`Failed to submit assertion for ${bulkAddresses.length} addresses, Error: ${error}`);
         }
     }
-
+    
     return successfulSubmissions;
 }

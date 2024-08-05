@@ -87,6 +87,10 @@ contract NodeLicenseUpgradeTest is
 
     // Pause Minting
     bool public mintingPaused;
+    
+    // Reentrancy guard boolean
+    bool private _reentrancyGuardClaimReferralReward;
+
 
     bytes32 public constant AIRDROP_ADMIN_ROLE =
         keccak256("AIRDROP_ADMIN_ROLE");

@@ -36,7 +36,6 @@ export function useContractWrites({
   promoCode,
   calculateTotalPrice,
   currency,
-  discount,
 }: UseContractWritesProps): UseContractWritesReturn {
   const useEsXai = currency === CURRENCIES.ES_XAI;
   const tokenAddress = getTokenAddress(currency);
@@ -51,11 +50,10 @@ export function useContractWrites({
     abi: NodeLicenseAbi as Abi,
     functionName: "mint",
     args: [quantity, promoCode],
-    value: discount.applied ? calculateTotalPrice() * BigInt(95) / BigInt(100) : calculateTotalPrice(),
+    value: calculateTotalPrice(),
     onSuccess: (data) => {
       setMintWithEthHash(data.hash as `0x${string}`);
       setMintWithEthError(null);
-      window.location = `xai-sentry://assigned-wallet?txHash=${data.hash}` as unknown as Location;
     },
     onError: (error) => {
       setMintWithEthHash(undefined);
@@ -85,7 +83,6 @@ export function useContractWrites({
     args: [quantity, promoCode, useEsXai, calculateTotalPrice()],
     onSuccess: (data) => {
       setMintWithXaiHash(data.hash as `0x${string}`);
-      window.location = `xai-sentry://assigned-wallet?txHash=${data.hash}` as unknown as Location;
     },
     onError: (error) => {
       setMintWithXaiHash(undefined);

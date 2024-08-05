@@ -31,23 +31,25 @@ type Pagination = {
 export type PagedPools = { count: number, poolInfos: PoolInfo[], totalPoolsInDB: number }
 
 export const findPools = async ({
-	pagination = {
-		limit: 10,
-		page: 1,
-		sort: [['tierIndex', -1], ['name', 1]],
-	},
-	hideFullEsXai = false,
-	hideFullKeys = false,
-	searchName,
-	owner,
-	network
-}: {
+									pagination = {
+										limit: 10,
+										page: 1,
+										sort: [['tierIndex', -1], ['name', 1]],
+									},
+									hideFullEsXai = false,
+									hideFullKeys = false,
+									searchName,
+									owner,
+									network,
+									esXaiMinStake
+								}: {
 	pagination: Pagination;
 	searchName?: string;
 	owner?: string;
 	hideFullEsXai?: boolean,
 	hideFullKeys?: boolean,
-	network: NetworkKey
+	network: NetworkKey,
+	esXaiMinStake: number
 }): Promise<PagedPools> => {
 
 	const maxKeyCount = await getMaxKeyCount(network);
@@ -74,6 +76,11 @@ export const findPools = async ({
 			filter.$expr = { $gt: [maxKeyCount, "$keyCount"] };
 		}
 	}
+	
+	// Filter by minimum esXAI stake
+	if(esXaiMinStake){
+		filter.totalStakedAmount = { $gte: esXaiMinStake };
+	}
 
 	try {
 		const filteredPools = (await executeQuery(
@@ -89,8 +96,8 @@ export const findPools = async ({
 		)) as number;
 
 		const totalPoolsInDB = (await executeQuery(
-            PoolModel.find().countDocuments()
-        )) as number;
+			PoolModel.find().countDocuments()
+		)) as number;
 
 		return {
 			count: poolCount,
@@ -103,18 +110,18 @@ export const findPools = async ({
 }
 
 export const getPoolRewardRatesByAddress = async (poolAddresses: string[]): Promise<PoolRewardRates[]> => {
-    try {
-        const pools = (await executeQuery(PoolModel.find({ poolAddress: { $in: poolAddresses } }).select('poolAddress keyRewardRate esXaiRewardRate').lean())) as IPool[];
-        return pools.map((p) => {
-            return {
-                poolAddress: p.poolAddress,
-                keyRewardRate: p.keyRewardRate,
-                esXaiRewardRate: p.esXaiRewardRate
-            }
-        });
-    } catch (error) {
-        throw new Error(`ERROR @getPoolRewardRatesByAddress: ${error}`);
-    }
+	try {
+		const pools = (await executeQuery(PoolModel.find({ poolAddress: { $in: poolAddresses } }).select('poolAddress keyRewardRate esXaiRewardRate').lean())) as IPool[];
+		return pools.map((p) => {
+			return {
+				poolAddress: p.poolAddress,
+				keyRewardRate: p.keyRewardRate,
+				esXaiRewardRate: p.esXaiRewardRate
+			}
+		});
+	} catch (error) {
+		throw new Error(`ERROR @getPoolRewardRatesByAddress: ${error}`);
+	}
 }
 
 
@@ -137,7 +144,7 @@ export async function getNetworkData(network: NetworkKey): Promise<INetworkData>
 				}
 			}
 		])) as INetworkData[];
-		
+
 		return aggregatedData[0];
 
 	} catch (error) {
@@ -152,6 +159,23 @@ export function mapPool(pool: IPool): PoolInfo {
 	 *
 	 * @dev DB Socials structure: [website: string, twitter: string, discord: string, telegram: string, instagram: string, tiktok: string, youtube: string]
 	 */
+
+	// Set initial values from DB
+	let ownerShare = pool.ownerShare || 0;
+	let keyBucketShare = pool.keyBucketShare || 0;
+	let stakedBucketShare = pool.stakedBucketShare || 0;
+
+	// Determine if there is a pending share update
+	const nowInSeconds = Math.floor(Date.now() / 1000);
+	const updateSharesTimestamp = pool.updateSharesTimestamp || 0;
+
+	// If there is a pending share update, use the pending share values
+	if (updateSharesTimestamp != 0 && updateSharesTimestamp <= nowInSeconds) {
+		ownerShare = pool.pendingShares ? pool.pendingShares[0] : 0;
+		keyBucketShare = pool.pendingShares ? pool.pendingShares[1] : 0;
+		stakedBucketShare = pool.pendingShares ? pool.pendingShares[2] : 0;
+	}
+
 	return {
 		address: pool.poolAddress,
 		owner: pool.owner,
@@ -160,9 +184,9 @@ export function mapPool(pool: IPool): PoolInfo {
 		keyCount: pool.keyCount,
 		totalStakedAmount: pool.totalStakedAmount,
 		maxStakedAmount: pool.maxStakedAmount,
-		ownerShare: pool.ownerShare,
-		keyBucketShare: pool.keyBucketShare,
-		stakedBucketShare: pool.stakedBucketShare,
+		ownerShare: ownerShare,
+		keyBucketShare: keyBucketShare,
+		stakedBucketShare: stakedBucketShare,
 		userStakedEsXaiAmount: 0,
 		userClaimAmount: 0,
 		userStakedKeyIds: pool.userStakedKeyIds,
@@ -200,7 +224,7 @@ export async function isPoolBanned(poolAddress: string): Promise<boolean> {
 			throw "Pool not found";
 		}
 		isBannedPool = pool.visibility == "banned";
-		
+
 	} catch (error) {
 		throw new Error(`ERROR @isPoolBanned: ${error}`);
 	}

@@ -20,8 +20,8 @@ import {
     getSentryKeysFromGraphByPool,
     getSubmissionsForChallenges,
     getUnStakedKeysOfUser,
-    submitPoolAssertions,
-    claimPoolSubmissionRewards,
+    submitBulkAssertions,
+    claimBulkSubmissionRewards,
     getMultipleUsersInteractedPoolsRpc
 } from "../index.js";
 import axios from "axios";
@@ -291,7 +291,7 @@ async function processNewChallenge(
     if(cachedPoolsOfOperator && cachedPoolsOfOperator.length > 0) {
             try {
 
-              await submitPoolAssertions(cachedPoolsOfOperator, challengeNumber, challenge.assertionStateRootOrConfirmData, cachedSigner, cachedLogger);
+              await submitBulkAssertions(cachedPoolsOfOperator, challengeNumber, challenge.assertionStateRootOrConfirmData, cachedSigner, cachedLogger);
 
             } catch (error: any) {
                 cachedLogger(`Error submitting pool assertions for challenge ${challengeNumber} - ${error && error.message ? error.message : error}`);
@@ -337,7 +337,7 @@ async function processClaimForChallenge(challengeNumber: bigint, eligibleNodeLic
     // Process any Pool Claims
     if(cachedPoolsOfOperator && cachedPoolsOfOperator.length > 0) {
         try {
-            await claimPoolSubmissionRewards(cachedPoolsOfOperator, challengeNumber, cachedSigner, cachedLogger);
+            await claimBulkSubmissionRewards(cachedPoolsOfOperator, challengeNumber, cachedSigner, cachedLogger);
             cachedLogger(`Bulk claim successful for address ${operatorAddress} and challenge ${challengeNumber}`);
         } catch (error: any) {
             cachedLogger(`Error during bulk claim for address ${operatorAddress} and challenge ${challengeNumber}: ${error.message}`);

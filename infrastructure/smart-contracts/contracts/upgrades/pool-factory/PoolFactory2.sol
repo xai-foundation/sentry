@@ -53,6 +53,7 @@ import "../../staking-v2/PoolBeacon.sol";
 // 35: Invalid submission; pool needs to have been created via the PoolFactory
 // 36: Invalid submission; user needs to be owner, delegate or staker to submit
 // 37: Invalid auth: msg.sender must be kyc approved to create a pool
+// 38: Address failed kyc
 
 contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -100,16 +101,18 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     // Period (in seconds) to update reward breakdown changes
     uint256 public updateRewardBreakdownDelayPeriod;
 
+    // Mapping to track if an address failed kyc
+    mapping(address => bool) public failedKyc; // Default is false
+
     // Role definition for stake keys admin
-    bytes32 public constant STAKE_KEYS_ADMIN_ROLE =
-        keccak256("STAKE_KEYS_ADMIN_ROLE");
+    bytes32 public constant STAKE_KEYS_ADMIN_ROLE = keccak256("STAKE_KEYS_ADMIN_ROLE");
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[500] private __gap;
+    uint256[499] private __gap;
 
     // Events for various actions within the contract
     event StakingEnabled();
@@ -237,6 +240,10 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
 
         Referee9 referee = Referee9(refereeAddress);
         require(referee.isKycApproved(msg.sender), "37"); // Owner must be kyc approved
+        
+        // This is redundant, but being added in case the approved kyc requirement is ever removed
+        // this would still prevent a user from creating a pool if they failed kyc
+        require(failedKyc[msg.sender] == false, "38"); // Owner must not have failed kyc
 
         (
             address poolProxy,
@@ -431,6 +438,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         require(pool != address(0), "10"); // Invalid pool address
         require(keyIds.length > 0, "11"); // At least 1 key required
         require(poolsCreatedViaFactory[pool], "12"); // Pool must be created via factory
+        require(failedKyc[msg.sender] == false, "38"); // Owner must not have failed kyc
 
         _stakeKeys(pool, keyIds, msg.sender, false);
     }
@@ -567,6 +575,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
      */
     function stakeEsXai(address pool, uint256 amount) external {
         require(poolsCreatedViaFactory[pool], "27"); // Pool must be created via factory
+        require(failedKyc[msg.sender] == false, "38"); // Owner must not have failed kyc
 
         Referee9(refereeAddress).stakeEsXai(pool, amount);
         esXai(esXaiAddress).transferFrom(msg.sender, address(this), amount);
@@ -643,6 +652,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
 
         interactedPoolsOfUser[user][indexOfPool] = lastPool;
         userToInteractedPoolIds[user][lastPool] = indexOfPool;
+        userToInteractedPoolIds[user][pool] = 0;
 
         interactedPoolsOfUser[user].pop();
     }
@@ -799,5 +809,15 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         }
 
         return true;
+    }
+    
+    /**
+    * @notice Allows the admin to set the failed kyc status of a user
+    * @param user The address of the user
+    * @param failed Boolean indicating if the user failed kyc
+    */
+
+    function setFailedKyc(address user, bool failed) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        failedKyc[user] = failed;
     }
 }

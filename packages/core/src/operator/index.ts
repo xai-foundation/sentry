@@ -8,5 +8,5 @@ export * from "./claimReward.js";
 export * from "./getBoostFactor.js";
 export * from "./submitMultipleAssertions.js";
 export * from "./claimRewardBulk.js";
-export * from "./submitPoolAssertions.js";
-export * from "./claimPoolSubmissionRewards.js";
+export * from "./submitBulkAssertions.js";
+export * from "./claimBulkSubmissionRewards.js";
