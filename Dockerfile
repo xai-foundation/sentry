@@ -1,37 +1,44 @@
-# ---- Base Node ----
-    FROM node:20.11.0 AS base
+# Base stage
+FROM node:20.11.0 AS base
 
-    # TODO => Remove this line for production deployment
-    ENV NEXT_PUBLIC_APP_ENV=development
-    
-    # Install PNPM
-    RUN npm install -g pnpm
-    
-    # ---- Build ----
-    FROM base AS build
-    ENV NEXT_TELEMETRY_DISABLED 1
-    WORKDIR /app
-    COPY . .
-    
-    # Install dependencies with PNPM
-    RUN pnpm install
-    
-    # Remove ESLint config file if needed
-    RUN rm .eslintrc.js
-    
-    # Build the project
-    RUN pnpm -filter @sentry/web-staking run build
-    
-    # ---- Release ----
-    FROM node:20.11.0 AS release
-    WORKDIR /app
-    
-    # Copy built project from build stage
-    COPY --from=build /app /app
-    
-    # Expose the desired port
-    EXPOSE 8080
-    
-    # Command to run the application
-    CMD ["./node_modules/next/dist/bin/next", "start"]
-    
+# Set environment variables
+ENV NEXT_PUBLIC_APP_ENV=development
+
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the entire monorepo to the container, excluding node_modules and other ignored files
+COPY . .
+
+# Install all dependencies for the monorepo
+RUN pnpm install
+
+# Build the web-staking application
+WORKDIR /app/apps/web-staking
+RUN pnpm build
+
+# Release stage
+FROM node:20.11.0 AS release
+
+# Set environment variables
+ENV NEXT_PUBLIC_APP_ENV=development
+
+# Install pnpm globally
+RUN npm install -g pnpm
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy only necessary files from the base stage
+COPY --from=base /app/apps/web-staking /app/apps/web-staking
+COPY --from=base /app/node_modules /app/node_modules
+COPY --from=base /app/package.json /app/package.json
+
+# Expose the port the app runs on
+EXPOSE 3000
+
+# Command to run the application
+CMD ["pnpm", "staking"]
