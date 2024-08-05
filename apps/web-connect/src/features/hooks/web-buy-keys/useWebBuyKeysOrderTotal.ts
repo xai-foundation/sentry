@@ -36,6 +36,7 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
     ready: boolean;
     calculateTotalPrice: () => bigint;
     getApproveButtonText: () => string;
+    getEthButtonText: () => string;
     formatItemPricePer: (item: CheckoutTierSummary) => string;
     displayPricesMayVary: boolean;
     nodesAtEachPrice: Array<CheckoutTierSummary> | undefined;
@@ -164,6 +165,18 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         return "BUY NOW";
     };
 
+    const getEthButtonText = (): string => {
+        if (mintWithEth.isPending || ethMintTx.isLoading) {
+            return "WAITING FOR CONFIRMATION...";
+        }
+
+        if (calculateTotalPrice() > ethBalance) {
+            return "Insufficient ETH balance";
+        }
+
+        return "BUY NOW";
+    };
+
     /**
      * Formats the price per item based on the currency and exchange rate.
      * @param item - The item to format the price for.
@@ -197,6 +210,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         ready,
         calculateTotalPrice,
         getApproveButtonText,
+        getEthButtonText,
         formatItemPricePer,
         displayPricesMayVary,
         nodesAtEachPrice: getPriceData?.nodesAtEachPrice,
