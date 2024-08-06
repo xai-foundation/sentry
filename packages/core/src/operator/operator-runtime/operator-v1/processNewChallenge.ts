@@ -1,10 +1,10 @@
 import { PoolInfo, RefereeConfig, SentryKey, SentryWallet } from "@sentry/sentry-subgraph-client";
-import { getBoostFactor as getBoostFactorRPC, getSubmissionsForChallenges, KEYS_PER_BATCH, NodeLicenseStatus, ProcessChallenge, submitMultipleAssertions } from "../index.js";
-import { operatorState } from "./operatorState.js";
-import { updateNodeLicenseStatus } from "./updateNodeLicenseStatus.js";
+import { getBoostFactor as getBoostFactorRPC, getSubmissionsForChallenges, KEYS_PER_BATCH, NodeLicenseStatus, ProcessChallenge, submitMultipleAssertions } from "../../index.js";
+import { operatorState } from "../operatorState.js";
+import { updateNodeLicenseStatus } from "../updateNodeLicenseStatus.js";
 import { createAssertionHashAndCheckPayout } from "./createAssertionHashAndCheckPayout.js";
 import { calculateBoostFactor } from "./calculateBoostFactor.js";
-import { retry } from "../../index.js";
+import { retry } from "../../../index.js";
 
 /**
  * Processes a new challenge for all the node licenses.
