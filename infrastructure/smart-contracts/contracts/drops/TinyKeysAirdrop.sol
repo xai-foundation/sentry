@@ -151,8 +151,8 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
                 uint256[] memory stakeKeyIds = new uint256[](keyMultiplier);
                 // Determine the initial token id for the newly minted keys
                 // Calculate the starting ID for the new batch of tokens
-                uint256 tokensAlreadyMinted = (i - 1) * keyMultiplier;
-                uint256 newTokenStartId = totalSupplyAtStart + tokensAlreadyMinted + 1;
+                uint256 tokensAlreadyProcessed = (i - 1) * keyMultiplier;
+                uint256 newTokenStartId = totalSupplyAtStart + tokensAlreadyProcessed + 1;
 
                 // Create an array of key ids to stake
                 for (uint256 j = 0; j < keyMultiplier; j++) {
