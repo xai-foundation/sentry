@@ -19,15 +19,14 @@ export function StakeAndUnstakeMultiplePools(deployInfrastructure) {
             const stakerPool2KeyId = await mintSingleLicense(nodeLicense, staker);
 
             // Submit an initial challenge to allow pool creation
-            const challengeId = 0;
-
             const pool1OwnerKeys = [pool1OwnerKeyId];
             const pool2OwnerKeys = [pool2OwnerKeyId];
-            const winningStateRoot = await findWinningStateRoot(referee, pool1OwnerKeys, challengeId);
+
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";		
 
             // Submit a challenge
             const startingAssertion = 100;
-            await submitTestChallenge(referee, challenger, startingAssertion, winningStateRoot);
+            await submitTestChallenge(referee, challenger, startingAssertion, stateRoot);
 
             // Create Pool with pool1Owner
             const stakingPool1Address = await createPool(poolFactory, pool1Owner, pool1OwnerKeys);

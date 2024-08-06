@@ -824,9 +824,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             // Determine the number of keys to be submitted for by the owner
             // This is calculated by taking the total number of keys owned and subtracting the number of keys staked in pools
             numberOfKeys = NodeLicense(nodeLicenseAddress).balanceOf(_bulkAddress) - assignedKeysOfUserCount[_bulkAddress];
-        }else {
-            // If the bulk address is a pool, check if the caller is the pool owner or an approved operator
-            require(PoolFactory2(poolFactoryAddress).validateSubmitPoolAssertion(_bulkAddress, msg.sender), "17");
         }
 
         require(numberOfKeys > 0, "57");

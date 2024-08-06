@@ -46,9 +46,10 @@ export function FailedKycTests(deployInfrastructure) {
             // Submit a challenge so that a pool can be created (required to prevent overflow subtraction error)
             const challengeId = 0;
             const keys = [poolOwnerKeyId];
-            const winningStateRoot = await findWinningStateRoot(referee, keys, challengeId);
+			
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
             const startingAssertion = 100;
-            await submitTestChallenge(referee, challenger, startingAssertion, winningStateRoot);
+            await submitTestChallenge(referee, challenger, startingAssertion, stateRoot);
 
             // Create a new pool
             const stakingPoolAddress = await createPool(poolFactory, poolOwner, keys);
