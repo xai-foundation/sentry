@@ -17,6 +17,7 @@ import {
     getBoostFactor as getBoostFactorRPC,
     getMintTimestamp,
     listOwnersForOperator,
+    getSentryKeysFromGraphByPool,
     getSubmissionsForChallenges,
     getUnStakedKeysOfUser,
     submitBulkAssertions,
@@ -558,11 +559,13 @@ const loadOperatorKeysFromGraph = async (
     }
 
     // Load SentryKey objects from the subgraph
-    const sentryKeys = await retry(() => getSentryKeysFromGraph(
+    // Ony load keys that are not staked
+    const assignedPool = '0x';
+    const sentryKeys = await retry(() => getSentryKeysFromGraphByPool(
         wallets.map(w => w.address),
-        pools.map(p => p.address),
+        assignedPool,
         true,
-        { latestChallengeNumber, eligibleForPayout: true, claimed: false }
+        { }
     ));
 
     const sentryWalletMap: { [owner: string]: SentryWallet } = {}
@@ -621,13 +624,6 @@ const loadOperatorKeysFromGraph = async (
         }
     }
 
-    // If we have keys from pools we would not operate from the owners map the pool metadata for 
-    if (keyPools.size) {
-        const keyPoolsData = await retry(() => getPoolInfosFromGraph([...keyPools]));
-        keyPoolsData.pools.forEach(p => {
-            mappedPools[p.address] = p;
-        })
-    }
 
     safeStatusCallback();
 
