@@ -2,10 +2,10 @@ import axios from "axios";
 import { PublicNodeBucketInformation } from "../index.js";
 import { operatorState } from "./operatorState.js";
 import { Challenge, config, getSubgraphHealthStatus } from "../../index.js";
-import { processNewChallenge } from "./operator-v1/processNewChallenge.js";
-import { loadOperatorKeysFromGraph } from "./operator-v1/loadOperatorKeysFromGraph.js";
-import { loadOperatorKeysFromRPC } from "./operator-v1/loadOperatorKeysFromRPC.js";
-import { processClosedChallenges } from "./operator-v1/processClosedChallenges.js";
+import { processNewChallenge_V1 } from "./operator-v1/processNewChallenge.js";
+import { loadOperatorKeysFromGraph_V1 } from "./operator-v1/loadOperatorKeysFromGraph.js";
+import { loadOperatorKeysFromRPC_V1 } from "./operator-v1/loadOperatorKeysFromRPC.js";
+import { processClosedChallenges_V1 } from "./operator-v1/processClosedChallenges.js";
 
 /**
  * Update the status message for display in the operator desktop app key list
@@ -42,24 +42,24 @@ export async function listenForChallengesCallback(challengeNumber: bigint, chall
         const graphStatus = await getSubgraphHealthStatus();
         if (graphStatus.healthy) {
             const { sentryWalletMap, sentryKeysMap, nodeLicenseIds, mappedPools, refereeConfig } =
-                await loadOperatorKeysFromGraph(operatorState.operatorAddress, challengeNumber - 1n);
+                await loadOperatorKeysFromGraph_V1(operatorState.operatorAddress, challengeNumber - 1n);
 
-            await processNewChallenge(challengeNumber, challenge, nodeLicenseIds, sentryKeysMap, sentryWalletMap, mappedPools, refereeConfig);
+            await processNewChallenge_V1(challengeNumber, challenge, nodeLicenseIds, sentryKeysMap, sentryWalletMap, mappedPools, refereeConfig);
             // check the previous challenge, that should be closed now
             if (challengeNumber > BigInt(1)) {
-                await processClosedChallenges(challengeNumber - BigInt(1), nodeLicenseIds, sentryKeysMap, sentryWalletMap);
+                await processClosedChallenges_V1(challengeNumber - BigInt(1), nodeLicenseIds, sentryKeysMap, sentryWalletMap);
             }
 
 
         } else {
             operatorState.cachedLogger(`Revert to RPC call instead of using subgraph. Subgraph status error: ${graphStatus.error}`)
 
-            const { sentryKeysMap, nodeLicenseIds } = await loadOperatorKeysFromRPC(operatorState.operatorAddress);
+            const { sentryKeysMap, nodeLicenseIds } = await loadOperatorKeysFromRPC_V1(operatorState.operatorAddress);
 
-            await processNewChallenge(challengeNumber, challenge, nodeLicenseIds, sentryKeysMap);
+            await processNewChallenge_V1(challengeNumber, challenge, nodeLicenseIds, sentryKeysMap);
             // check the previous challenge, that should be closed now
             if (challengeNumber > BigInt(1)) {
-                await processClosedChallenges(challengeNumber - BigInt(1), nodeLicenseIds, sentryKeysMap);
+                await processClosedChallenges_V1(challengeNumber - BigInt(1), nodeLicenseIds, sentryKeysMap);
             }
         }
     } catch (error: any) {

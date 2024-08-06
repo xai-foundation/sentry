@@ -1,16 +1,15 @@
 import { getLatestChallenge, getLatestChallengeFromGraph, getSubgraphHealthStatus, listenForChallenges, MAX_CHALLENGE_CLAIM_AMOUNT, retry } from "../../../index.js";
 import { listenForChallengesCallback } from "../listenForChallengesCallback.js";
-import { processNewChallenge } from "./processNewChallenge.js";
+import { processNewChallenge_V1 } from "./processNewChallenge.js";
 import { findSubmissionOnSentryKey } from "../findSubmissionOnSentryKey.js";
 import { operatorState } from "../operatorState.js";
-import { loadOperatorKeysFromGraph, processPastChallenges } from "../index.js";
-import { loadOperatorKeysFromRPC } from "./loadOperatorKeysFromRPC.js";
+import { loadOperatorKeysFromGraph_V1, processPastChallenges_V1 } from "../index.js";
+import { loadOperatorKeysFromRPC_V1 } from "./loadOperatorKeysFromRPC.js";
 
 /**
- * Looks up payout boostFactor based on the staking tier.
- * @return The payout chance boostFactor. 200 for double the chance.
+ * Startup the operatorRuntime challenger listener as well as process previous challenges
  */
-export const bootOperatorRuntime = async (
+export const bootOperatorRuntime_V1 = async (
     logFunction: (log: string) => void
 ): Promise<() => void> => {
     let closeChallengeListener: () => void;
@@ -26,9 +25,9 @@ export const bootOperatorRuntime = async (
 
         // Load all sentryKey objects including all winning and unclaimed submissions up until latestClaimableChallenge
         const { sentryWalletMap, sentryKeysMap, nodeLicenseIds, mappedPools, refereeConfig } =
-            await retry(() => loadOperatorKeysFromGraph(operatorState.operatorAddress, BigInt(latestClaimableChallenge)));
+            await retry(() => loadOperatorKeysFromGraph_V1(operatorState.operatorAddress, BigInt(latestClaimableChallenge)));
 
-        await processNewChallenge(BigInt(openChallenge.challengeNumber), openChallenge, nodeLicenseIds, sentryKeysMap, sentryWalletMap, mappedPools, refereeConfig);
+        await processNewChallenge_V1(BigInt(openChallenge.challengeNumber), openChallenge, nodeLicenseIds, sentryKeysMap, sentryWalletMap, mappedPools, refereeConfig);
         logFunction(`Processing open challenges.`);
 
         //Remove submissions for current challenge so we don't process it again
@@ -40,7 +39,7 @@ export const bootOperatorRuntime = async (
         });
 
         //Process all past challenges check for unclaimed
-        processPastChallenges(
+        processPastChallenges_V1(
             nodeLicenseIds,
             sentryKeysMap,
             sentryWalletMap,
@@ -53,10 +52,10 @@ export const bootOperatorRuntime = async (
     } else {
         operatorState.cachedLogger(`Revert to RPC call instead of using subgraph. Subgraph status error: ${graphStatus.error}`)
 
-        const { sentryKeysMap, nodeLicenseIds } = await loadOperatorKeysFromRPC(operatorState.operatorAddress);
+        const { sentryKeysMap, nodeLicenseIds } = await loadOperatorKeysFromRPC_V1(operatorState.operatorAddress);
 
         const [latestChallengeNumber, latestChallenge] = await getLatestChallenge();
-        await processNewChallenge(latestChallengeNumber, latestChallenge, nodeLicenseIds, sentryKeysMap);
+        await processNewChallenge_V1(latestChallengeNumber, latestChallenge, nodeLicenseIds, sentryKeysMap);
 
         closeChallengeListener = listenForChallenges(listenForChallengesCallback)
 

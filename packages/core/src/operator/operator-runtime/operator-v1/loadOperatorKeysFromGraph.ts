@@ -13,7 +13,7 @@ import { getPoolInfosFromGraph, getSentryKeysFromGraph, getSentryWalletsForOpera
  * @param submissionsFilter - The filter for the submissions if submissions should be included
  * @returns mapped sentry key objects, pool objects, owner information and Referee config (this will be used to locally calculate the boost Factor)
  */
-export const loadOperatorKeysFromGraph = async (
+export const loadOperatorKeysFromGraph_V1 = async (
     operator: string,
     latestChallengeNumber?: bigint
 ): Promise<{

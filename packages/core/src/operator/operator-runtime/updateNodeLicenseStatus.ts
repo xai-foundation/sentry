@@ -1,5 +1,4 @@
-import { PoolInfo, RefereeConfig, SentryKey, SentryWallet } from "@sentry/sentry-subgraph-client";
-import { NodeLicenseStatus, ProcessChallenge } from "../index.js";
+import { NodeLicenseStatus } from "../index.js";
 import { operatorState } from "./operatorState.js";
 
 /**

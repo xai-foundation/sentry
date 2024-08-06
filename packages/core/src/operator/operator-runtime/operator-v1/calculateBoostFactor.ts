@@ -23,7 +23,7 @@ const getBoostFactor = (
  * Looks up payout boostFactor based on the staking tier.
  * @return The payout chance boostFactor. 200 for double the chance.
  */
-export const calculateBoostFactor = (sentryKey: SentryKey, sentryWallet: SentryWallet, mappedPools: { [poolAddress: string]: PoolInfo }, refereeConfig: RefereeConfig): bigint => {
+export const calculateBoostFactor_V1 = (sentryKey: SentryKey, sentryWallet: SentryWallet, mappedPools: { [poolAddress: string]: PoolInfo }, refereeConfig: RefereeConfig): bigint => {
 
     let stakeAmount = BigInt(sentryWallet.v1EsXaiStakeAmount);
     let keyCount = BigInt(sentryWallet.keyCount) - BigInt(sentryWallet.stakedKeyCount);
