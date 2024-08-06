@@ -2,8 +2,8 @@ import { PoolInfo, RefereeConfig, SentryKey, SentryWallet } from "@sentry/sentry
 import { getBoostFactor as getBoostFactorRPC, getSubmissionsForChallenges, KEYS_PER_BATCH, NodeLicenseStatus, ProcessChallenge, submitMultipleAssertions } from "../../index.js";
 import { operatorState } from "../operatorState.js";
 import { updateNodeLicenseStatus } from "../updateNodeLicenseStatus.js";
-import { createAssertionHashAndCheckPayout } from "./createAssertionHashAndCheckPayout.js";
-import { calculateBoostFactor } from "./calculateBoostFactor.js";
+import { createAssertionHashAndCheckPayout_V1 } from "./createAssertionHashAndCheckPayout.js";
+import { calculateBoostFactor_V1 } from "./calculateBoostFactor.js";
 import { retry } from "../../../index.js";
 
 /**
@@ -12,7 +12,7 @@ import { retry } from "../../../index.js";
  * @param {ProcessChallenge} challenge - The challenge object.
  * @param {Challenge} challenge - The challenge.
  */
-export async function processNewChallenge(
+export async function processNewChallenge_V1(
     challengeNumber: bigint,
     challenge: ProcessChallenge,
     nodeLicenseIds: bigint[],
@@ -51,7 +51,7 @@ export async function processNewChallenge(
             const keyOwner = isPool ? sentryKey.assignedPool : sentryKey.owner;
             if (!operatorState.cachedBoostFactor[keyOwner]) {
                 if (mappedPools && refereeConfig && sentryWalletMap) {
-                    operatorState.cachedBoostFactor[keyOwner] = calculateBoostFactor(sentryKey, sentryWalletMap[sentryKey.owner], mappedPools, refereeConfig);
+                    operatorState.cachedBoostFactor[keyOwner] = calculateBoostFactor_V1(sentryKey, sentryWalletMap[sentryKey.owner], mappedPools, refereeConfig);
                     operatorState.cachedLogger(`Found chance boost of ${Number(operatorState.cachedBoostFactor[keyOwner]) / 100}% for ${isPool ? `pool: ${mappedPools[keyOwner].metadata[0]} (${keyOwner})` : `owner: ${keyOwner}`}`);
                 } else {
                     operatorState.cachedBoostFactor[keyOwner] = await getBoostFactorRPC(keyOwner);
@@ -59,7 +59,7 @@ export async function processNewChallenge(
                 }
             }
 
-            const [payoutEligible] = createAssertionHashAndCheckPayout(nodeLicenseId, challengeNumber, operatorState.cachedBoostFactor[keyOwner], challenge.assertionStateRootOrConfirmData, challenge.challengerSignedHash);
+            const [payoutEligible] = createAssertionHashAndCheckPayout_V1(nodeLicenseId, challengeNumber, operatorState.cachedBoostFactor[keyOwner], challenge.assertionStateRootOrConfirmData, challenge.challengerSignedHash);
 
             if (!payoutEligible) {
                 nonWinnerKeysCount++;

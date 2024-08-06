@@ -1,6 +1,6 @@
-import { SentryKey, SentryWallet, PoolInfo, RefereeConfig } from "@sentry/sentry-subgraph-client";
+import { SentryKey } from "@sentry/sentry-subgraph-client";
 import { operatorState } from "../operatorState.js";
-import { getKeysOfPool, getMintTimestamp, getOwnerOrDelegatePools, getPoolInfosFromGraph, getSentryKeysFromGraph, getSentryWalletsForOperator, getUserInteractedPools, getUserStakedKeysOfPool, listNodeLicenses, listOwnersForOperator, NodeLicenseStatus, retry } from "../../../index.js";
+import { getKeysOfPool, getMintTimestamp, getOwnerOrDelegatePools, getUserInteractedPools, getUserStakedKeysOfPool, listNodeLicenses, listOwnersForOperator, NodeLicenseStatus, retry } from "../../../index.js";
 
 /**
  * Load all the operating keys and metadata from the RPC.
@@ -10,7 +10,7 @@ import { getKeysOfPool, getMintTimestamp, getOwnerOrDelegatePools, getPoolInfosF
  * @param operator - The public key of the operator wallet
  * @returns mapped sentry key objects
  */
-export const loadOperatorKeysFromRPC = async (
+export const loadOperatorKeysFromRPC_V1 = async (
     operator: string
 ): Promise<{
     sentryKeysMap: { [keyId: string]: SentryKey },

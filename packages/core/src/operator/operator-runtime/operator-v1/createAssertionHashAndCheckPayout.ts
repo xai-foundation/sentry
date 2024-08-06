@@ -10,7 +10,7 @@ import { ethers } from "ethers";
  * @param challengerSignedHash The signed hash for the challenge
  * @return {[boolean, string]} a boolean indicating if the hash is eligible, and the assertionHash.
  */
-export const createAssertionHashAndCheckPayout = (nodeLicenseId: bigint, challengeId: bigint, boostFactor: bigint, confirmData: string, challengerSignedHash: string): [boolean, string] => {
+export const createAssertionHashAndCheckPayout_V1 = (nodeLicenseId: bigint, challengeId: bigint, boostFactor: bigint, confirmData: string, challengerSignedHash: string): [boolean, string] => {
     const assertionHash = ethers.keccak256(ethers.solidityPacked(["uint256", "uint256", "bytes", "bytes"], [nodeLicenseId, challengeId, confirmData, challengerSignedHash]));
     return [Number((BigInt(assertionHash) % BigInt(10_000))) < Number(boostFactor), assertionHash];
 }

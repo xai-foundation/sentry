@@ -5,7 +5,7 @@ import {
     version
 } from "../index.js";
 import { operatorState } from "./operator-runtime/operatorState.js";
-import { bootOperatorRuntime } from "./operator-runtime/operator-v1/bootOperatorRuntime.js";
+import { bootOperatorRuntime_V1 } from "./operator-runtime/operator-v1/bootOperatorRuntime.js";
 
 export enum NodeLicenseStatus {
     WAITING_IN_QUEUE = "Booting Operator For Key", // waiting to do an action, but in a queue
@@ -83,7 +83,7 @@ export async function operatorRuntime(
     operatorState.operatorAddress = await signer.getAddress();
     logFunction(`Fetched address of operator ${operatorState.operatorAddress}.`);
 
-    let closeChallengeListener = await bootOperatorRuntime(logFunction);
+    let closeChallengeListener = await bootOperatorRuntime_V1(logFunction);
     logFunction(`Started listener for new challenges.`);
 
     const fetchBlockNumber = async () => {

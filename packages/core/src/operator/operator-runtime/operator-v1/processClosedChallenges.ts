@@ -12,7 +12,7 @@ import { findSubmissionOnSentryKey } from "../findSubmissionOnSentryKey.js";
  * @param {{ [keyId: string]: SentryKey }} sentryKeysMap - A mapping keyId to key metadata
  * @param {{ [owner: string]: SentryWallet }} sentryWalletMap - A mapping walletAddress to owner metadata
  */
-export async function processClosedChallenges(
+export async function processClosedChallenges_V1(
     challengeId: bigint,
     nodeLicenseIds: bigint[],
     sentryKeysMap: { [keyId: string]: SentryKey },

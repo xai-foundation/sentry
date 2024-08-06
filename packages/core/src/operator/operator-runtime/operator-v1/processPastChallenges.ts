@@ -1,12 +1,12 @@
 import { SentryKey, SentryWallet } from "@sentry/sentry-subgraph-client";
 import { operatorState } from "../operatorState.js";
-import { processClosedChallenges } from "./processClosedChallenges.js";
+import { processClosedChallenges_V1 } from "./processClosedChallenges.js";
 
 // Process past challenges from subgraph submissions
 // This will first sort all keys and their submissions by challenge and then process each challenge
 // This could block the thread since its not loading any additional information from any external resource so a await for a timeout is required
 // In future updates it should be considered to run this in its own thread but the desktop client and cli will both have to support the implementation
-export const processPastChallenges = async (
+export const processPastChallenges_V1 = async (
     nodeLicenseIds: bigint[],
     sentryKeysMap: { [keyId: string]: SentryKey },
     sentryWalletMap: { [owner: string]: SentryWallet },
@@ -45,7 +45,7 @@ export const processPastChallenges = async (
     // Process each mapped challenge with only the keys that have submissions
     for (let i = 0; i < openChallenges.length; i++) {
         operatorState.cachedLogger(`Processing closed challenge ${openChallenges[i]} for ${challengeToKeys[openChallenges[i]].length} keys ...`);
-        await processClosedChallenges(BigInt(openChallenges[i]), challengeToKeys[openChallenges[i]], sentryKeysMap, sentryWalletMap);
+        await processClosedChallenges_V1(BigInt(openChallenges[i]), challengeToKeys[openChallenges[i]], sentryKeysMap, sentryWalletMap);
 
         await new Promise((resolve) => {
             setTimeout(resolve, 100);
