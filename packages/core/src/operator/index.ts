@@ -1,4 +1,3 @@
-export * from "./operatorRuntime.js";
 export * from "./listenForChallenges.js";
 export * from "./getSubmissionsForChallenges.js";
 export * from "./submitAssertionToChallenge.js";
@@ -10,3 +9,4 @@ export * from "./submitMultipleAssertions.js";
 export * from "./claimRewardBulk.js";
 export * from "./submitBulkAssertions.js";
 export * from "./claimBulkSubmissionRewards.js";
+export * from "./operatorRuntime.js";
