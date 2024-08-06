@@ -137,23 +137,23 @@ dataSources:
         - event: ConvertedToEsXai(indexed address,uint256)
           handler: handleConvertedToEsXai
       file: ./src/xai.ts
-  # - kind: ethereum
-  #   name: TinyKeysAirdrop
-  #   network: arbitrum-one
-  #   source:
-  #     address: "0xTODO-ADD-ONCE-DEPLOYED"
-  #     abi: TinyKeysAirdrop
-  #     startBlock: TODO_STARTING_BLOCK
-  #   mapping:
-  #     kind: ethereum/events
-  #     apiVersion: 0.0.7
-  #     language: wasm/assemblyscript
-  #     entities:
-  #       - AirdropSegmentCompleteEvent
-  #     abis:
-  #       - name: TinyKeysAirdrop
-  #         file: ./abis/TinyKeysAirdrop.json
-  #     eventHandlers:
-  #       - event: AirdropSegmentComplete(uint256,uint256)
-  #         handler: handleAirdropSegmentComplete
-  #     file: ./src/tiny-keys-airdrop.ts
+  - kind: ethereum
+    name: TinyKeysAirdrop
+    network: arbitrum-one
+    source:
+      address: "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66"
+      abi: TinyKeysAirdrop
+      startBlock: 1
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - AirdropSegmentCompleteEvent
+      abis:
+        - name: TinyKeysAirdrop
+          file: ./abis/TinyKeysAirdrop.json
+      eventHandlers:
+        - event: AirdropSegmentComplete(uint256,uint256)
+          handler: handleAirdropSegmentComplete
+      file: ./src/tiny-keys-airdrop.ts

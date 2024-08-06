@@ -21,6 +21,7 @@ type Challenge @entity(immutable: false) {
   numberOfEligibleClaimers: BigInt! # uint256
   amountClaimedByClaimers: BigInt! # uint256
   submissions: [Submission!]! @derivedFrom(field: "challenge")
+  bulkSubmissions: [BulkSubmission!]! @derivedFrom(field: "challenge")
 }
 
 enum SubmittedFrom {
@@ -65,6 +66,7 @@ type SentryWallet @entity(immutable: false) {
   stakedKeyCount: BigInt!
   sentryKeys: [SentryKey!]! @derivedFrom(field: "sentryWallet")
   poolStakes: [PoolStake!]! @derivedFrom(field: "wallet")
+  bulkSubmissions: [BulkSubmission!]! @derivedFrom(field: "sentryWallet")
 }
 
 type RefereeConfig @entity(immutable: false) {
@@ -81,8 +83,7 @@ type BulkSubmission @entity(immutable: false) {
   challengeId: BigInt! @index
   bulkAddress: Bytes! @index
   challenge: Challenge!
-  #TODO: Add Sentry Wallet Field & bool for isPool?
-  poolInfo: PoolInfo!
+  poolInfo: PoolInfo
   keyCount: BigInt!
   winningKeyCount: BigInt!
   claimedRewardsAmount: BigInt!
@@ -91,4 +92,6 @@ type BulkSubmission @entity(immutable: false) {
   claimTimestamp: BigInt!
   claimTxHash: Bytes!
   claimed: Boolean! @index
+  sentryWallet: SentryWallet
+  isPool: Boolean! @index
 }
