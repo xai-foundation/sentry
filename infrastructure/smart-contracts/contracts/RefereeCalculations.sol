@@ -82,7 +82,6 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
         // This ensures different randomness for each unique combination of inputs
         bytes32 seedHash = keccak256(
             abi.encodePacked(
-                _stakedKeyCount,
                 _poolAddress,
                 _challengeId,
                 _confirmData,
