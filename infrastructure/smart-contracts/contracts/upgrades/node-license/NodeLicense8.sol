@@ -201,7 +201,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
 
         // Calculate the final price and average cost
         uint256 finalPrice = price(_amount, _promoCode);
-        uint256 averageCost = msg.value / _amount;
+        uint256 averageCost = finalPrice / _amount;
 
         // Confirm that the ether value sent is correct
         require(msg.value >= finalPrice, "Ether value sent is not correct");
@@ -294,8 +294,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      *  @param _keyId The keyId of the node license receiving the airdrop
      *  @dev Only callable by the airdrop admin
      */
-    function mintForAirdrop(uint256 _qtyToMint, uint256 _keyId) external onlyRole(AIRDROP_ADMIN_ROLE) returns (uint256 startingId) {
-        startingId = totalSupply() + 1;
+    function mintForAirdrop(uint256 _qtyToMint, uint256 _keyId) external onlyRole(AIRDROP_ADMIN_ROLE) {
         _mintNodeLicense(_qtyToMint, 0, ownerOf(_keyId));
     }
 
