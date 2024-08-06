@@ -36,6 +36,7 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
     ready: boolean;
     calculateTotalPrice: () => bigint;
     getApproveButtonText: () => string;
+    getEthButtonText: () => string;
     formatItemPricePer: (item: CheckoutTierSummary) => string;
     displayPricesMayVary: boolean;
     nodesAtEachPrice: Array<CheckoutTierSummary> | undefined;
@@ -149,7 +150,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const getApproveButtonText = (): string => {
         const total = calculateTotalPrice();
 
-        if (approve.isLoading || xaiMintTx.isLoading) {
+        if (approve.isPending || xaiMintTx.isPending) {
             return "WAITING FOR CONFIRMATION...";
         }
 
@@ -159,6 +160,19 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
 
         if (total > tokenAllowance) {
             return `Approve ${currency}`;
+        }
+
+        return "BUY NOW";
+    };
+
+    const getEthButtonText = (): string => {        
+        if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
+        if (mintWithEth.isPending || ethMintTx.isPending) {
+            return "WAITING FOR CONFIRMATION...";
+        }
+
+        if (calculateTotalPrice() > ethBalance) {
+            return "Insufficient ETH balance";
         }
 
         return "BUY NOW";
@@ -197,6 +211,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         ready,
         calculateTotalPrice,
         getApproveButtonText,
+        getEthButtonText,
         formatItemPricePer,
         displayPricesMayVary,
         nodesAtEachPrice: getPriceData?.nodesAtEachPrice,

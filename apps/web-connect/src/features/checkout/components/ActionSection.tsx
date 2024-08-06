@@ -25,19 +25,9 @@ export function ActionSection(): JSX.Element {
         mintWithXai,
         mintWithEthError,
         approve,
-        getApproveButtonText
+        getApproveButtonText,
+        getEthButtonText,
     } = useWebBuyKeysContext();
-
-    /**
-     * Determines the text to display on the main action button for ETH transactions
-     * 
-     * @returns {string} The button text
-     */
-    const getButtonText = useCallback(() => {
-        if (mintWithEth.isLoading || mintWithXai.isLoading) return "WAITING FOR CONFIRMATION";
-        if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
-        return "BUY NOW";
-    }, [mintWithEth.isLoading, mintWithXai.isLoading, chain]);
 
     /**
      * Determines the text to display on the main action button for token transactions
@@ -67,7 +57,7 @@ export function ActionSection(): JSX.Element {
                         onClick={() => mintWithEth.write?.()}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
                         isDisabled={!ready || chain?.id === 42161}
-                        btnText={getButtonText()}
+                        btnText={getEthButtonText()}
                     />
                 ) : (
                     <PrimaryButton
