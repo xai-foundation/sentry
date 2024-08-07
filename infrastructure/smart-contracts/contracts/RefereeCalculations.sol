@@ -20,7 +20,7 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
-        /**
+    /**
      * @notice Calculate the emission and tier for a challenge.
      * @dev This function uses a halving formula to determine the emission tier and challenge emission.
      * The formula is as follows:
