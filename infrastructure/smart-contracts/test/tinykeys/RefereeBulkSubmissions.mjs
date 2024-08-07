@@ -4,6 +4,7 @@ import {findWinningStateRoot} from "../Referee.mjs";
 import {submitTestChallenge} from "../utils/submitTestChallenge.mjs";
 import {mintBatchedLicenses, mintSingleLicense} from "../utils/mintLicenses.mjs";
 import {createPool} from "../utils/createPool.mjs";
+import {getWinningKeyCountLocal} from "../utils/getWinningKeyCountLocal.mjs";
 
 function BulkSubmissionsStakeAndUnstake(deployInfrastructure) {
 
@@ -580,14 +581,29 @@ function BulkSubmissionsRewardRate(deployInfrastructure) {
                 // multiple times to get an average winning key count
                 for (let i = 0; i < iterations; i++) {
                     // Get the winning key count for the current test case iteration
-                    const winningKeyCount = await refereeCalculations.getWinningKeyCount(
+                    const random1 = ethers.randomBytes(32);
+                    const random2 = ethers.randomBytes(32);
+
+                    const winningKeyCount = await getWinningKeyCountLocal(
                         keyCount, 
                         boostFactor, 
                         await addr1.getAddress(), // Pool address will be used in production for the seed
                         i,  // Use iteration as challengeId for variety
-                        ethers.randomBytes(32),  // Random confirmData
-                        ethers.randomBytes(32)   // Random challengerSignedHash
+                        random1,  // Random confirmData
+                        random2   // Random challengerSignedHash
                     );
+                    
+                    // const winningKeyCount2 = await refereeCalculations.getWinningKeyCount(
+                    //     keyCount, 
+                    //     boostFactor, 
+                    //     await addr1.getAddress(), // Pool address will be used in production for the seed
+                    //     i,  // Use iteration as challengeId for variety
+                    //     random1,  // Random confirmData
+                    //     random2   // Random challengerSignedHash
+                    //     // Random challengerSignedHash
+                    // );
+
+                    console.log("Winning Counts: ", winningKeyCount, winningKeyCount2);
                     
                     // The amount of winning keys returned from the simulation
                     const winningKeysBigInt = BigInt(winningKeyCount);

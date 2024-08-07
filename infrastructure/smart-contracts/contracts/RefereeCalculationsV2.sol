@@ -104,7 +104,7 @@ contract RefereeCalculationsV2 is Initializable, AccessControlUpgradeable {
 
         // We then add some variability.
         // The variability is based on the boost factor, with lower boost factors having higher variability.
-        uint256 baseVariability = 50 + (1000 / _boostFactor);
+        uint256 baseVariability = 30 + (1000 / _boostFactor);
 
         /**
          * Explanation:
@@ -113,8 +113,8 @@ contract RefereeCalculationsV2 is Initializable, AccessControlUpgradeable {
          * - This helps to balance the game by giving more variability to players with lower bonuses.
          */
 
-        uint256 maxAdjustmentPercentage = baseVariability > 75
-            ? 75
+        uint256 maxAdjustmentPercentage = baseVariability > 30
+            ? 30
             : baseVariability;
 
         /**
