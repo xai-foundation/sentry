@@ -5,7 +5,7 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 
-contract RefereeCalculationsV2 is Initializable, AccessControlUpgradeable {
+contract RefereeCalculations is Initializable, AccessControlUpgradeable {
     using Math for uint256;
 
     /**
@@ -18,6 +18,35 @@ contract RefereeCalculationsV2 is Initializable, AccessControlUpgradeable {
     function initialize() public initializer {
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    }
+
+        /**
+     * @notice Calculate the emission and tier for a challenge.
+     * @dev This function uses a halving formula to determine the emission tier and challenge emission.
+     * The formula is as follows:
+     * 1. Start with the max supply divided by 2 as the initial emission tier.
+     * 2. The challenge emission is the emission tier divided by 17520.
+     * 3. While the total supply is less than the emission tier, halve the emission tier and challenge emission.
+     * 4. The function returns the challenge emission and the emission tier.
+     *
+     * @param totalSupply The current total supply of tokens.
+     * @param maxSupply The maximum supply of tokens.
+     * @return uint256 The challenge emission.
+     * @return uint256 The emission tier.
+     */
+    function calculateChallengeEmissionAndTier(
+        uint256 totalSupply,
+        uint256 maxSupply
+    ) public pure returns (uint256, uint256) {
+        require(maxSupply > totalSupply, "5");
+
+        uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply)); // calculate which tier we are in starting from 0
+        require(tier <= 23, "6");
+
+        uint256 emissionTier = maxSupply / (2 ** (tier + 1)); // equal to the amount of tokens that are emitted during this tier
+
+        // determine what the size of the emission is based on each challenge having an estimated static length
+        return (emissionTier / 17520, emissionTier);
     }
 
     /**
@@ -42,9 +71,7 @@ contract RefereeCalculationsV2 is Initializable, AccessControlUpgradeable {
     ) public pure returns (uint256 winningKeyCount) {
         // We first check to confirm the bulk submission has some keys and the boost factor is valid.
         require(_keyCount > 0, "Error: Key Count Must Be Greater Than 0.");
-        require(
-            _boostFactor > 0,
-            "Error: Boost factor must be greater than zero."
+        require(_boostFactor > 0, "Error: Boost factor must be greater than zero."
         );
 
         // The submission's chance of winning is based on the bonus (boost factor) 100 = 1% per key.
