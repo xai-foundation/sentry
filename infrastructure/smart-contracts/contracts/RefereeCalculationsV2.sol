@@ -5,7 +5,7 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 
-contract RefereeCalculations is Initializable, AccessControlUpgradeable {
+contract RefereeCalculationsV2 is Initializable, AccessControlUpgradeable {
     using Math for uint256;
 
     /**

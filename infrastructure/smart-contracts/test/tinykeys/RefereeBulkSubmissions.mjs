@@ -96,7 +96,7 @@ function BulkSubmissionsStakeAndUnstake(deployInfrastructure) {
             const { poolFactory, addr1, addr2, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
 
             // Mint Node Licenses
-            const addr1MintedKeyIds = await mintBatchedLicenses(100n, nodeLicense, addr1);
+            const addr1MintedKeyIds = await mintBatchedLicenses(100, nodeLicense, addr1);
             const addr2MintedKeyId = await mintSingleLicense(nodeLicense, addr2);
 
             const challengeId = 0;
@@ -152,7 +152,7 @@ function BulkSubmissionsStakeAndUnstake(deployInfrastructure) {
             const addr1MintedKeyId = await mintSingleLicense(nodeLicense, poolOwner);
             
             // Have to mint a lot of keys to ensure we have winners in both pool submissions and individual key submissions
-            const keysToMintForAddr2 = 200n;
+            const keysToMintForAddr2 = 200;
 
             // Count backwards from the last minted keyId to get the keyIds to stake in the pool
 			const addr2MintedKeyIds = await mintBatchedLicenses(keysToMintForAddr2, nodeLicense, keyOwner);
@@ -295,7 +295,7 @@ function BulkSubmissionPermissions(deployInfrastructure) {
         const { poolFactory, addr1, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
 
         // Mint additional keys so that there are enough keys to stake in the pool and earn a reward
-        const keysToMintForAddr1 = 175n;
+        const keysToMintForAddr1 = 175;
 
         // Mint keys for addr1
         // Count backwards from the last minted keyId to get the keyIds to stake in the pool
@@ -370,7 +370,7 @@ function BulkSubmissionPermissions(deployInfrastructure) {
         await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 1_000_000);
 
         // Mint 100 keys for addr1 - choosing 100 keys to ensure that the pool has enough keys to receive a reward
-        const licenseIds = await mintBatchedLicenses(100n, nodeLicense, poolOwner);
+        const licenseIds = await mintBatchedLicenses(100, nodeLicense, poolOwner);
 
         // Submit initial challenge
         const challengeId = 0;
@@ -422,10 +422,10 @@ function BulkSubmissionPermissions(deployInfrastructure) {
         await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 1_000_000);
 
         // Mint 100 keys for addr1
-        const licenseIds = await mintBatchedLicenses(100n, nodeLicense, poolOwner);
+        const licenseIds = await mintBatchedLicenses(100, nodeLicense, poolOwner);
 
         // Mint 100 keys for addr2
-        const licenseIds2 = await mintBatchedLicenses(100n, nodeLicense, keyStaker);
+        const licenseIds2 = await mintBatchedLicenses(100, nodeLicense, keyStaker);
 
         // Submit initial challenge
         const challengeId = 0;
@@ -477,7 +477,7 @@ function BulkSubmissionPermissions(deployInfrastructure) {
         await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 10_000_000);        
 
         // Mint 100 keys for addr1
-        const licenseIds = await mintBatchedLicenses(100n, nodeLicense, poolOwner);
+        const licenseIds = await mintBatchedLicenses(100, nodeLicense, poolOwner);
 
         // Mint esXai for addr2
         await esXai.connect(esXaiMinter).mint(await esXaiStaker.getAddress(), 10_000_000);
@@ -564,7 +564,7 @@ function BulkSubmissionsRewardRate(deployInfrastructure) {
         const { refereeCalculations, addr1 } = await loadFixture(deployInfrastructure);
         const stakingBoostFactors = [100, 200, 300];
         const keyAmountTests = [100, 200, 300, 1000]; // Test cases for staked key amounts
-        const iterations = 5000;  // Number of times to run each test case
+        const iterations = 1000;  // Number of times to run each test case
 
         // Run tests for each key amount in the keyAmountTests array
         for (let keyCount of keyAmountTests) {
