@@ -53,7 +53,7 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
      * @dev Calculates the number of winning keys for a bulk submission.
      * @notice This function determines the winning key count based on the boost factor and the number of keys,
      * with a random adjustment.
-     * @param _keyCount Amount of keys staked in pool
+     * @param _keyCount Amount of keys for the bulk submission (# of keys staked in pool, or # of unstaked keys for an owner)
      * @param _boostFactor The factor controlling the chance of eligibility for payout as a multiplicator
      * @param _bulkAddress The Address to be used for randomize
      * @param _challengeId The ID of the challenge. Is only used for randomize
