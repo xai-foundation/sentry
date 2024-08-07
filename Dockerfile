@@ -13,13 +13,13 @@ WORKDIR /app
 
 # Copy the entire monorepo to the container, excluding node_modules and other ignored files
 COPY . .
+COPY .nx .nx
 
 # Install all dependencies for the monorepo
 RUN pnpm install
 
 # Build the web-staking application
 RUN npx nx build @sentry/web-staking
-RUN npx nx start @sentry/web-staking
 
 # Dev expose default port 3000 - should be handled by deployment
 EXPOSE 3000
