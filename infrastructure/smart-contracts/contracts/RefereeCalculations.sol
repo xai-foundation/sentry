@@ -51,7 +51,7 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
 
     /**
      * @dev Calculates the number of winning keys for a bulk submission.
-     * @notice This function determines the winning key count based on the boost factor and the number of staked keys,
+     * @notice This function determines the winning key count based on the boost factor and the number of keys,
      * with a random adjustment.
      * @param _keyCount Amount of keys staked in pool
      * @param _boostFactor The factor controlling the chance of eligibility for payout as a multiplicator
@@ -118,9 +118,9 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
             ) % scaleFactor;
 
             // We compare the random number (randomThreshold) with the scaled expected winning keys (scaledExpectedWinningKeys).
-            // If the random number is less than the scaled expected winning keys, it means the player wins one reward.
+            // If the random number is less than the scaled expected winning keys, it means the player submission wins.
             // This method allows for fair distribution even with very low probabilities.
-            // It ensures that there is a small but fair chance for the player to win a reward.
+            // It ensures that there is a small but fair chance for the submission to win a reward.
             return randomThreshold < scaledExpectedWinningKeys ? 1 : 0;
         }
 
