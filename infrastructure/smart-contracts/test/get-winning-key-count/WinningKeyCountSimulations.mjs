@@ -1,6 +1,7 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import {getWinningKeyCountLocal} from "../utils/getWinningKeyCountLocal.mjs";
+import fs from "fs";
 
 
 function RunWinningKeyCountSimulations(deployInfrastructure) {
@@ -11,7 +12,11 @@ function RunWinningKeyCountSimulations(deployInfrastructure) {
 
         const stakingBoostFactors = [1, 5, 10, 100, 200, 300, 700];
         const keyAmountTests = [1, 5, 10, 100, 200, 300, 1000]; // Test cases for staked key amounts
-        const iterations = 10000;  // Number of times to run each test case
+        const iterations = 100000;  // Number of times to run each test case        
+        
+        // Initialize CSV content with header
+        let csvContent = 'Key Count,Boost Factor,Expected Winning Keys,Actual Winning Keys,Min Keys Won,Max Keys Won,Number of Runs\n';
+
 
         // Run tests for each key amount in the keyAmountTests array
         for (let keyCount of keyAmountTests) {
@@ -84,9 +89,21 @@ function RunWinningKeyCountSimulations(deployInfrastructure) {
 
                 console.log("Test passed");
                 console.log("--------------------");
+
+                // Add the results to the CSV content
+                csvContent += `${keyCount},${boostFactor},${expectedWinningKeys.toFixed(4)}, ${averageWinningKeys.toFixed(4)},${minWinningKeys},${maxWinningKeys},${iterations}\n`;
             }
         }
-    }).timeout(600000);
+
+        // Write the CSV content to a file
+        await fs.writeFile(`./assets/csv-output/key_simulations_${iterations}.csv`, csvContent, {}, (err) => {
+            if (err) {
+                console.error("Error writing to CSV file:", err);
+                return;
+            }
+            console.log("CSV file has been saved.");
+        });
+    }).timeout(6000000);
 
     }
 }
