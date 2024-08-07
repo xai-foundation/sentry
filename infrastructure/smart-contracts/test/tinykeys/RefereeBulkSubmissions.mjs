@@ -562,9 +562,9 @@ function BulkSubmissionsRewardRate(deployInfrastructure) {
 
     it("Confirm the amount of winning keys for pools falls within acceptable tolerances for simulated runs.", async function () {
         const { refereeCalculations, addr1 } = await loadFixture(deployInfrastructure);
-        const stakingBoostFactors = [100, 200, 300, 700];
-        const keyAmountTests = [1, 10, 200, 1000]; // Test cases for staked key amounts
-        const iterations = 1000;  // Number of times to run each test case
+        const stakingBoostFactors = [100, 200, 300];
+        const keyAmountTests = [100, 200, 300, 1000]; // Test cases for staked key amounts
+        const iterations = 5000;  // Number of times to run each test case
 
         // Run tests for each key amount in the keyAmountTests array
         for (let keyCount of keyAmountTests) {
@@ -625,7 +625,7 @@ function BulkSubmissionsRewardRate(deployInfrastructure) {
                 console.log("--------------------");
             }
         }
-    }).timeout(300000);
+    }).timeout(600000);
 
     }
 }

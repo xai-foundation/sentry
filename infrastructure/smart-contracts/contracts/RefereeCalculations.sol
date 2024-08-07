@@ -79,7 +79,7 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
             "Error: Boost factor must be greater than zero."
         );
 
-        // The player's chance of winning is based on their bonus (boost factor) 100 = 1% per key.
+        // The submission's chance of winning is based on the bonus (boost factor) 100 = 1% per key.
         uint256 probability = _boostFactor;
 
         // We create a unique, random number for this specific submission
@@ -95,11 +95,11 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
         uint256 seed = uint256(seedHash);
 
         // We use a large number (1,000,000) to help us calculate very small probabilities accurately.
-        uint256 scaleFactor = 1000000;
+        uint256 scaleFactor = 1_000_000;
 
         // We scale the probability by multiplying it with scaleFactor and then dividing by 10,000.
         // This helps in handling small decimal values accurately without losing precision.
-        uint256 scaledProbability = (probability * scaleFactor) / 10000;
+        uint256 scaledProbability = (probability * scaleFactor) / 10_000;
 
         // This section handles cases where the chance of winning is very small.
         // We check if the probability multiplied by the number of keys is less than the scaled probability.
@@ -118,7 +118,7 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
             ) % scaleFactor;
 
             // We compare the random number (randomThreshold) with the scaled expected winning keys (scaledExpectedWinningKeys).
-            // If the random number is less than the scaled expected winning keys, it means the player submission wins.
+            // If the random number is less than the scaled expected winning keys, it means the submission wins.
             // This method allows for fair distribution even with very low probabilities.
             // It ensures that there is a small but fair chance for the submission to win a reward.
             return randomThreshold < scaledExpectedWinningKeys ? 1 : 0;
@@ -126,10 +126,10 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
 
         // For larger probabilities, we use a different method.
         // This part of the code handles scenarios where the chance of winning is pretty much guaranteed.
-        // We want to add some variability to the winning key count to make the each challenge more exciting and less predictable.
+        // We want to add some variability to the winning key count to make each challenge more exciting and less predictable.
 
-        // First, we calculate the expected number of rewards (winning keys) based on the (key count) and boost factor (probability).
-        uint256 expectedWinningKeys = (_keyCount * probability) / 10000;
+        // First, we calculate the expected number of winning keys based on the (key count) and boost factor (probability).
+        uint256 expectedWinningKeys = (_keyCount * probability) / 10_000;
         
         /**
          * Explanation:
@@ -139,7 +139,7 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
 
         // We then add some variability.
         // The variability is based on the boost factor, with lower boost factors having higher variability.
-        uint256 baseVariability = 30 + (1000 / _boostFactor);
+        uint256 baseVariability = 50 + (1000 / _boostFactor);
         
         /**
          * Explanation:
@@ -148,8 +148,8 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
          * - This helps to balance the game by giving more variability to players with lower bonuses.
          */
 
-        uint256 maxAdjustmentPercentage = baseVariability > 50
-            ? 50
+        uint256 maxAdjustmentPercentage = baseVariability > 75
+            ? 75
             : baseVariability;
         
         /**
