@@ -5,7 +5,7 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
 
-contract RefereeCalculations is Initializable, AccessControlUpgradeable {
+contract RefereeCalculationsV2 is Initializable, AccessControlUpgradeable {
     using Math for uint256;
 
     /**
@@ -18,35 +18,6 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
     function initialize() public initializer {
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-    }
-
-    /**
-     * @notice Calculate the emission and tier for a challenge.
-     * @dev This function uses a halving formula to determine the emission tier and challenge emission.
-     * The formula is as follows:
-     * 1. Start with the max supply divided by 2 as the initial emission tier.
-     * 2. The challenge emission is the emission tier divided by 17520.
-     * 3. While the total supply is less than the emission tier, halve the emission tier and challenge emission.
-     * 4. The function returns the challenge emission and the emission tier.
-     *
-     * @param totalSupply The current total supply of tokens.
-     * @param maxSupply The maximum supply of tokens.
-     * @return uint256 The challenge emission.
-     * @return uint256 The emission tier.
-     */
-    function calculateChallengeEmissionAndTier(
-        uint256 totalSupply,
-        uint256 maxSupply
-    ) public pure returns (uint256, uint256) {
-        require(maxSupply > totalSupply, "5");
-
-        uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply)); // calculate which tier we are in starting from 0
-        require(tier <= 23, "6");
-
-        uint256 emissionTier = maxSupply / (2 ** (tier + 1)); // equal to the amount of tokens that are emitted during this tier
-
-        // determine what the size of the emission is based on each challenge having an estimated static length
-        return (emissionTier / 17520, emissionTier);
     }
 
     /**
@@ -70,10 +41,7 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
         bytes memory _challengerSignedHash
     ) public pure returns (uint256 winningKeyCount) {
         // We first check to confirm the bulk submission has some keys and the boost factor is valid.
-        require(
-            _keyCount > 0,
-            "Error: Key Count Must Be Greater Than 0."
-        );
+        require(_keyCount > 0, "Error: Key Count Must Be Greater Than 0.");
         require(
             _boostFactor > 0,
             "Error: Boost factor must be greater than zero."
@@ -94,17 +62,17 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
         );
         uint256 seed = uint256(seedHash);
 
-        // We use a large number (1,000,000) to help us calculate very small probabilities accurately.
-        uint256 scaleFactor = 1_000_000;
+        // First, we calculate the expected number of winning keys based on the (key count) and boost factor (probability).
+        uint256 expectedWinningKeys = (_keyCount * probability) / 10_000;
 
-        // We scale the probability by multiplying it with scaleFactor and then dividing by 10,000.
-        // This helps in handling small decimal values accurately without losing precision.
-        uint256 scaledProbability = (probability * scaleFactor) / 10_000;
+        if (expectedWinningKeys == 0) {
+            // We use a large number (1,000,000) to help us calculate very small probabilities accurately.
+            uint256 scaleFactor = 1_000_000;
 
-        // This section handles cases where the chance of winning is very small.
-        // We check if the probability multiplied by the number of keys is less than the scaled probability.
-        // This means the chance of winning is less than 1% which would result in 0 due to no decimal values in uint256.
-        if (probability * _keyCount < scaledProbability) {
+            // We scale the probability by multiplying it with scaleFactor and then dividing by 10,000.
+            // This helps in handling small decimal values accurately without losing precision.
+            uint256 scaledProbability = (probability * scaleFactor) / 10_000;
+
             // We calculate the expected number of winning keys, but we scale it up by multiplying with scaledProbability.
             // This scaling helps in better accuracy while dealing with very small probabilities.
             uint256 scaledExpectedWinningKeys = (_keyCount * scaledProbability);
@@ -125,12 +93,9 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
         }
 
         // For larger probabilities, we use a different method.
-        // This part of the code handles scenarios where the chance of winning is pretty much guaranteed.
+        // This part of the code handles scenarios where we expect at least a single winning key.
         // We want to add some variability to the winning key count to make each challenge more exciting and less predictable.
 
-        // First, we calculate the expected number of winning keys based on the (key count) and boost factor (probability).
-        uint256 expectedWinningKeys = (_keyCount * probability) / 10_000;
-        
         /**
          * Explanation:
          * - `expectedWinningKeys` is calculated by multiplying the number of staked keys by the probability, and then dividing by 10,000.
@@ -139,23 +104,23 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
 
         // We then add some variability.
         // The variability is based on the boost factor, with lower boost factors having higher variability.
-        uint256 baseVariability = 50 + (1000 / _boostFactor);
-        
+        uint256 baseVariability = 30 + (1000 / _boostFactor);
+
         /**
          * Explanation:
-         * - `baseVariability` is calculated by adding 30 to the result of 1000 divided by the boost factor.
+         * - `baseVariability` is calculated by adding 50 to the result of 1000 divided by the boost factor.
          * - This means that players with a lower boost factor will have higher variability in their rewards.
          * - This helps to balance the game by giving more variability to players with lower bonuses.
          */
 
-        uint256 maxAdjustmentPercentage = baseVariability > 75
-            ? 75
+        uint256 maxAdjustmentPercentage = baseVariability > 30
+            ? 30
             : baseVariability;
-        
+
         /**
          * Explanation:
-         * - `maxAdjustmentPercentage` is set to the lesser of `baseVariability` or 50.
-         * - This means that the maximum adjustment to the rewards will be capped at 50%.
+         * - `maxAdjustmentPercentage` is set to the lesser of `baseVariability` or 75.
+         * - This means that the maximum adjustment to the rewards will be capped at 75%.
          * - Capping the adjustment percentage ensures that the rewards do not fluctuate too wildly, keeping things balanced and fair.
          */
 
@@ -166,7 +131,7 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
         uint256 randomFactor2 = uint256(
             keccak256(abi.encodePacked(seed, "factor2"))
         ) % 2;
-        
+
         /**
          * Explanation:
          * - We generate two random numbers using the keccak256 hash function with different unique inputs ("factor1" and "factor2").
@@ -176,9 +141,10 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
          */
 
         // We calculate the exact amount to adjust the rewards.
-        uint256 adjustmentPercentage = (randomFactor1 * maxAdjustmentPercentage) / 1000;
+        uint256 adjustmentPercentage = (randomFactor1 *
+            maxAdjustmentPercentage) / 1000;
         uint256 adjustment = (expectedWinningKeys * adjustmentPercentage) / 100;
-        
+
         /**
          * Explanation:
          * - `adjustmentPercentage` is calculated by multiplying `randomFactor1` with `maxAdjustmentPercentage`, and then dividing by 1000.
@@ -196,7 +162,7 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
                 ? expectedWinningKeys - adjustment
                 : 0;
         }
-        
+
         /**
          * Explanation:
          * - If `randomFactor2` is 0, we add the `adjustment` to the expected number of winning keys, increasing the rewards.
@@ -204,7 +170,6 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
          * - We make sure that the winning key count does not go below zero by checking if `expectedWinningKeys` is greater than `adjustment`.
          * - This ensures that players do not end up with negative rewards, maintaining fairness in the game.
          */
-
 
         return winningKeyCount;
     }
