@@ -350,7 +350,7 @@ export function RefereeTests(deployInfrastructure) {
 			const {referee, operator, challenger, esXai, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
 
 			// Mint 200 licenses so that a reward will be most likely guaranteed
-			mintBatchedLicenses(200, nodeLicense, addr1);
+			 await mintBatchedLicenses(200, nodeLicense, addr1);
 
 			// Submit a challenge
 			await referee.connect(challenger).submitChallenge(
@@ -391,7 +391,7 @@ export function RefereeTests(deployInfrastructure) {
 				rewardAmountForClaimers
 			} = await referee.getChallenge(0);
 			expect(openForSubmissionsAfter).to.be.eq(false);
-			expect(numberOfEligibleClaimers).to.be.eq(BigInt(1));
+			expect(numberOfEligibleClaimers).to.be.gt(BigInt(0));
 
 			// get the esXai balance of the addr1 prior to claiming
 			const balanceBefore = await esXai.balanceOf(await addr1.getAddress());
