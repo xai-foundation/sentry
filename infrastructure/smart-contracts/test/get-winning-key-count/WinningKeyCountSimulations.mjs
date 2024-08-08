@@ -10,8 +10,8 @@ function RunWinningKeyCountSimulations(deployInfrastructure) {
     it("Confirm the reward rate for submissions.", async function () {
         const { addr1 } = await loadFixture(deployInfrastructure);
 
-        const stakingBoostFactors = [1, 5, 10, 100, 200, 300, 700];
-        const keyAmountTests = [1, 5, 10, 100, 200, 300, 1000, 100000]; // Test cases for staked key amounts
+        const stakingBoostFactors = [1, 2, 3, 5, 8, 10, 13, 21, 34, 55, 89, 100, 144, 200, 233, 300,  377, 610, 700, 987];
+        const keyAmountTests = [1, 2, 3, 5, 8, 10, 13, 21, 34, 55, 89, 100, 144, 200, 233, 300, 377, 610, 987, 1000, 100000]; // Test cases for staked key amounts
         const iterations = 10000;  // Number of times to run each test case        
         
         // Initialize CSV content with header
