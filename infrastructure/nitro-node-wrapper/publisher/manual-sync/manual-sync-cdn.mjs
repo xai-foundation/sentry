@@ -48,7 +48,7 @@ const uploadToBucket = async (jsonSave) => {
 
 const main = async () => {
 
-    const LATEST_NODE_TO_SYNC_FROM = 4766;
+    const LATEST_NODE_TO_SYNC_FROM = 4894;
 
     let foundAssertions;
     try {
