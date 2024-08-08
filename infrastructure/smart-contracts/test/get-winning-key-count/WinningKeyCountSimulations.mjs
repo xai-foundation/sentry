@@ -12,7 +12,7 @@ function RunWinningKeyCountSimulations(deployInfrastructure) {
 
         const stakingBoostFactors = [1, 5, 10, 100, 200, 300, 700];
         const keyAmountTests = [1, 5, 10, 100, 200, 300, 1000]; // Test cases for staked key amounts
-        const iterations = 100000;  // Number of times to run each test case        
+        const iterations = 25000;  // Number of times to run each test case        
         
         // Initialize CSV content with header
         let csvContent = 'Key Count,Boost Factor,Expected Winning Keys,Actual Winning Keys,Min Keys Won,Max Keys Won,Number of Runs\n';

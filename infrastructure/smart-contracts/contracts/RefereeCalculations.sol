@@ -135,7 +135,7 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
 
         /**
          * Explanation:
-         * - `baseVariability` is calculated by adding 50 to the result of 1000 divided by the boost factor.
+         * - `baseVariability` is calculated by adding 30 to the result of 1000 divided by the boost factor.
          * - This means that players with a lower boost factor will have higher variability in their rewards.
          * - This helps to balance the game by giving more variability to players with lower bonuses.
          */
@@ -146,8 +146,8 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
 
         /**
          * Explanation:
-         * - `maxAdjustmentPercentage` is set to the lesser of `baseVariability` or 75.
-         * - This means that the maximum adjustment to the rewards will be capped at 75%.
+         * - `maxAdjustmentPercentage` is set to the lesser of `baseVariability` or 30.
+         * - This means that the maximum adjustment to the rewards will be capped at 30%.
          * - Capping the adjustment percentage ensures that the rewards do not fluctuate too wildly, keeping things balanced and fair.
          */
 
