@@ -577,7 +577,7 @@ export function handleNewBulkSubmission(event: NewBulkSubmissionEvent): void {
     poolChallenges.save()
   } else {
     bulkSubmission.isPool = false
-    const sentryWallet = SentryWallet.load(event.params.bulkAddress.toString())
+    const sentryWallet = SentryWallet.load(event.params.bulkAddress.toHexString())
     if (!sentryWallet) {
       log.warning("Failed to find sentryWallet handleNewBulkSubmission: bulkAddress: " + event.params.bulkAddress.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
       return;
@@ -653,16 +653,19 @@ export function handleBulkRewardsClaimed(event: BulkRewardsClaimedEvent): void {
   bulkSubmission.claimed = true
   bulkSubmission.save()
 
-  let poolChallenges = PoolChallenge.load(event.params.bulkAddress.toHexString() + "_" + event.params.challengeId.toString())
-  if (poolChallenges == null) {
-    log.warning("Failed to find poolChallenges in handleBulkRewardsClaimed for challenge " + event.params.challengeId.toHexString() + " and poolAdress: " + event.params.bulkAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), [])
-    return
+  if (bulkSubmission.isPool) {
+    let poolChallenges = PoolChallenge.load(event.params.bulkAddress.toHexString() + "_" + event.params.challengeId.toString())
+    if (poolChallenges == null) {
+      log.warning("Failed to find poolChallenges in handleBulkRewardsClaimed for challenge " + event.params.challengeId.toHexString() + " and poolAdress: " + event.params.bulkAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), [])
+      return
+    }
+  
+    poolChallenges.claimKeyCount = event.params.winningKeys;
+    poolChallenges.totalClaimedEsXaiAmount = event.params.totalReward;
+    poolChallenges.save()
+  
+    challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(event.params.totalReward);
+    challenge.save();
   }
 
-  poolChallenges.claimKeyCount = event.params.winningKeys;
-  poolChallenges.totalClaimedEsXaiAmount = event.params.totalReward;
-  poolChallenges.save()
-
-  challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(event.params.totalReward);
-  challenge.save();
 }
