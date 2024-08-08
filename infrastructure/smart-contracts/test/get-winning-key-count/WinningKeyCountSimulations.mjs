@@ -11,7 +11,7 @@ function RunWinningKeyCountSimulations(deployInfrastructure) {
         const { addr1 } = await loadFixture(deployInfrastructure);
 
         const stakingBoostFactors = [1, 5, 10, 100, 200, 300, 700];
-        const keyAmountTests = [1, 5, 10, 100, 200, 300, 1000]; // Test cases for staked key amounts
+        const keyAmountTests = [1, 5, 10, 100, 200, 300, 1000, 100000]; // Test cases for staked key amounts
         const iterations = 10000;  // Number of times to run each test case        
         
         // Initialize CSV content with header
