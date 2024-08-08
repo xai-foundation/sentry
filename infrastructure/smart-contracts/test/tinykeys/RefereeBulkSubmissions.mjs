@@ -449,10 +449,14 @@ function BulkSubmissionPermissions(deployInfrastructure) {
         expect(bulkSubmission.submitted).to.equal(true);
         expect(bulkSubmission.claimed).to.equal(false);
 
+        
+        // Confirm the owner submission was not created
+        const ownerBulkSubmission = await referee.bulkSubmissions(challengeId, keyStaker.address);
+        expect(ownerBulkSubmission.submitted).to.equal(false);
+
         // Submit a new challenge to make the previous one claimable
         const startingAssertion2 = startingAssertion + 1;
         await submitTestChallenge(referee, challenger, startingAssertion2, stateRoot);
-
 
         // Check the pool balance before the claim
         const poolBalanceBeforeClaim = await esXai.connect(esXaiMinter).balanceOf(poolAddress);
@@ -603,7 +607,7 @@ function BulkSubmissionsRewardRate(deployInfrastructure) {
                     //     // Random challengerSignedHash
                     // );
 
-                    console.log("Winning Counts: ", winningKeyCount, winningKeyCount2);
+                    //console.log("Winning Counts: ", winningKeyCount, winningKeyCount2);
                     
                     // The amount of winning keys returned from the simulation
                     const winningKeysBigInt = BigInt(winningKeyCount);
