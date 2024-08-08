@@ -127,17 +127,18 @@ async function compareWithCDN(challenge: Challenge): Promise<{ publicNodeBucket:
     return { publicNodeBucket }
 }
 
-
+// Check the chain to see if the new referee has been deployed
 async function checkIfRefereeIsV2(): Promise<boolean> {
     const provider = getProvider();
     const referee = new ethers.Contract(config.refereeAddress, RefereeAbi, provider);
     let isVersion2 = true;
-
+    // Try to read a new storage variable from the new referee contract
     try {
-        await referee.refereeCalculationsAddress();
-        
+        await referee.refereeCalculationsAddress();        
     } catch (error) {
+        // If there is an error, the contract is not the new version
         isVersion2 = false;
     }
+    
     return isVersion2;
 }
