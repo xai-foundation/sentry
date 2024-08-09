@@ -10,10 +10,22 @@ import { config } from "../config.js";
  */
 export async function getSentryWalletsForOperator(
   operator: string,
-  whitelist?: string[]
+  whitelist?: string[],
 ): Promise<{ wallets: SentryWallet[], pools: PoolInfo[], refereeConfig: RefereeConfig }> {
 
   const client = new GraphQLClient(config.subgraphEndpoint);
+
+  let submissionQueryFilter: string[] = [];
+  const { eligibleForPayout, claimed, latestChallengeNumber } = submissionsFilter;
+  if (eligibleForPayout != undefined) {
+    submissionQueryFilter.push(`eligibleForPayout: ${eligibleForPayout}`)
+  }
+  if (claimed != undefined) {
+    submissionQueryFilter.push(`claimed: ${claimed}`)
+  }
+  if (latestChallengeNumber != undefined) {
+    submissionQueryFilter.push(`challengeNumber_gte: ${latestChallengeNumber.toString()}`)
+  }
 
   const query = gql`
     query OperatorAddresses {
@@ -28,6 +40,7 @@ export async function getSentryWalletsForOperator(
         v1EsXaiStakeAmount
         stakedKeyCount
         keyCount
+        bulkSubmissions(first: 10000, orderBy: challengeNumber, orderDirection: desc, where: {${submissionQueryFilter.join(",")}})
       }
       poolInfos(first: 1000, where: {or: [{owner: "${operator.toLowerCase()}"}, {delegateAddress: "${operator.toLowerCase()}"}]}) {
         address
@@ -36,6 +49,7 @@ export async function getSentryWalletsForOperator(
         totalStakedEsXaiAmount
         totalStakedKeyAmount
         metadata
+        bulkSubmissions(first: 10000, orderBy: challengeNumber, orderDirection: desc, where: {${submissionQueryFilter.join(",")}})
       }
       refereeConfig(id: "RefereeConfig") {
         maxKeysPerPool
