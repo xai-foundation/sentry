@@ -1,4 +1,5 @@
-import {useAccount, useContractRead, useNetwork} from "wagmi";
+import {useAccount, useReadContract } from "wagmi";
+import {wagmiConfig, chains} from "../../../main";
 import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
 import {BiLoaderAlt} from "react-icons/bi";
 import {useEffect, useState} from "react";
@@ -7,13 +8,16 @@ import {useBlockIp} from "@/hooks/useBlockIp";
 import {FaCircleCheck, FaCircleXmark} from "react-icons/fa6";
 import {Link} from "react-router-dom";
 import { config } from "@sentry/core";
+import { getAccount } from '@wagmi/core'
 
 export function RedEnvelope2024() {
 	const {blocked, loading: loadingGeo} = useBlockIp({blockUsa: true});
 
 	const {address} = useAccount();
 	console.log("address:", address);
-	const {chain} = useNetwork();
+
+	const { chainId } = getAccount(wagmiConfig);
+	const chain = chains.find(chain => chain.id === chainId)
 	console.log("chain:", chain);
 
 	// check license balance
@@ -46,17 +50,13 @@ export function RedEnvelope2024() {
 		setKycStatus(res[0]);
 	}
 
-	const {data: isTwitterPostSubmittedData} = useContractRead({
+	const {data: isTwitterPostSubmittedData} = useReadContract ({
 		address: config.xaiRedEnvelope2024Address as `0x${string}`,
 		abi: xaiRedEnvelopeAbi,
 		functionName: "userXPostVerifications",
-		args: [address],
-		watch: true,
-		enabled: !!address,
-		onError(error) {
-			console.warn("isTwitterPostSubmittedData Error", error);
-		},
+		args: [address]	
 	});
+	
 	console.log("isTwitterPostSubmittedData:", isTwitterPostSubmittedData)
 
 	// const {isLoading: isSubmitClaimRequestLoading, write, error, isSuccess: isSubmitClaimRequestSuccess} = useContractWrite({

@@ -1,29 +1,35 @@
 import {useNavigate, useParams} from "react-router-dom";
-import {useAccount, useContractWrite, useNetwork} from "wagmi";
+import {wagmiConfig, chains} from "../../../main";
+import {useAccount, useWriteContract } from "wagmi";
 import {config, RefereeAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {ConnectButton, PrimaryButton} from "@sentry/ui";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
+import { getAccount } from '@wagmi/core'
 
 export function UnassignWallet() {
 	const {open} = useWeb3Modal()
 	const navigate = useNavigate();
 	const params = useParams<{ operatorAddress: string }>();
 	const {isConnected, address} = useAccount();
-	const {chain} = useNetwork();
+	const { chainId } = getAccount(wagmiConfig);
+	const chain = chains.find(chain => chain.id === chainId)
+	
+	const { data, isSuccess, error, isPending, writeContract } = useWriteContract();
 
-	const {isLoading, isSuccess, write, error, data} = useContractWrite({
+	const txData = {
 		address: config.refereeAddress as `0x${string}`,
 		abi: RefereeAbi,
 		functionName: "setApprovalForOperator",
 		args: [params.operatorAddress, false],
-		onSuccess(data) {
+		onSuccess(data : any) {
 			window.location = `xai-sentry://unassigned-wallet?txHash=${data.hash}` as unknown as Location;
 		},
-		onError(error) {
+		onError(error: any) {
 			console.warn("Error", error);
-		},
-	});
+		}
+	};
+
 
 	function getShortenedWallet(address: string) {
 		const firstFiveChars = address.slice(0, 5);
@@ -31,8 +37,9 @@ export function UnassignWallet() {
 		return `${firstFiveChars}...${lastThreeChars}`;
 	}
 
+
 	function returnToClient() {
-		window.location = `xai-sentry://unassigned-wallet?txHash=${data?.hash}` as unknown as Location;
+		window.location = `xai-sentry://unassigned-wallet?txHash=${data}` as unknown as Location;
 	}
 
 	return (
@@ -70,8 +77,8 @@ export function UnassignWallet() {
 							)}
 							{isConnected && address ? (
 								<PrimaryButton
-									onClick={() => write()}
-									isDisabled={isLoading || isSuccess || chain?.id !== 42_161}
+									onClick={() => writeContract(txData)}
+									isDisabled={isPending || isSuccess || chain?.id !== 42_161}
 									btnText={chain?.id === 42_161 ? `Unassign wallet to Sentry (${getShortenedWallet(address)})` : "Please Switch to Arbitrum One"}
 									colorStyle={"primary"}
 									className={"w-full bg-[#F30919] max-w-[700px] text-white mt-3 text-xl uppercase font-bold disabled:bg-slate-400 h-full global-clip-primary-btn"}

@@ -1,0 +1,11 @@
+{
+	"name": "@sentry/web-staking",
+	"targets": {
+		"build": {
+			"outputs": [
+                "{projectRoot}/.next",
+                "{projectRoot}/public"
+			]
+		}
+	}
+}
