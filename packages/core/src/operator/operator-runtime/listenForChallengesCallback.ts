@@ -1,13 +1,11 @@
 import axios from "axios";
 import { PublicNodeBucketInformation } from "../index.js";
 import { operatorState } from "./operatorState.js";
-import { Challenge, config, getProvider, getSubgraphHealthStatus, RefereeAbi } from "../../index.js";
+import { Challenge, config, getSubgraphHealthStatus } from "../../index.js";
 import { processNewChallenge_V1 } from "./operator-v1/processNewChallenge.js";
 import { loadOperatorKeysFromGraph_V1 } from "./operator-v1/loadOperatorKeysFromGraph.js";
 import { loadOperatorKeysFromRPC_V1 } from "./operator-v1/loadOperatorKeysFromRPC.js";
 import { processClosedChallenges_V1 } from "./operator-v1/processClosedChallenges.js";
-import { getCurrentRefereeVersionFromGraph } from "../../subgraph/getCurrentRefereeVersionFromGraph.js";
-import { ethers } from 'ethers';
 
 /**
  * Update the status message for display in the operator desktop app key list
@@ -43,30 +41,15 @@ export async function listenForChallengesCallback(challengeNumber: bigint, chall
     try {
         const graphStatus = await getSubgraphHealthStatus();
         if (graphStatus.healthy) {
-            // Get Referee Config from the subgraph
-            // Load current referee config from the graph
-            const refereeVersion: number = await getCurrentRefereeVersionFromGraph();
-
-            if (refereeVersion > 6) {
-                // TODO implement new function for newer versions of the Referee
-
-            } else {
                 const { sentryWalletMap, sentryKeysMap, nodeLicenseIds, mappedPools, refereeConfig } = await loadOperatorKeysFromGraph_V1(operatorState.operatorAddress, challengeNumber - 1n);
                 await processNewChallenge_V1(challengeNumber, challenge, nodeLicenseIds, sentryKeysMap, sentryWalletMap, mappedPools, refereeConfig);
                 // check the previous challenge, that should be closed now
                 if (challengeNumber > BigInt(1)) {
                     await processClosedChallenges_V1(challengeNumber - BigInt(1), nodeLicenseIds, sentryKeysMap, sentryWalletMap);
                 }
-            }
 
         } else {
             operatorState.cachedLogger(`Revert to RPC call instead of using subgraph. Subgraph status error: ${graphStatus.error}`)
-            // Get Current Referee Version from the RPC
-            const isNewReferee = await checkIfRefereeIsV2();
-
-            if(isNewReferee){
-                // TODO implement new function for newer versions of the Referee
-            }else{
                 const { sentryKeysMap, nodeLicenseIds } = await loadOperatorKeysFromRPC_V1(operatorState.operatorAddress);
     
                 await processNewChallenge_V1(challengeNumber, challenge, nodeLicenseIds, sentryKeysMap);
@@ -74,7 +57,6 @@ export async function listenForChallengesCallback(challengeNumber: bigint, chall
                 if (challengeNumber > BigInt(1)) {
                     await processClosedChallenges_V1(challengeNumber - BigInt(1), nodeLicenseIds, sentryKeysMap);
                 }
-            }
         }
     } catch (error: any) {
         operatorState.cachedLogger(`Error processing new challenge in listener callback: - ${error && error.message ? error.message : error}`);
@@ -125,20 +107,4 @@ async function compareWithCDN(challenge: Challenge): Promise<{ publicNodeBucket:
     }
 
     return { publicNodeBucket }
-}
-
-// Check the chain to see if the new referee has been deployed
-async function checkIfRefereeIsV2(): Promise<boolean> {
-    const provider = getProvider();
-    const referee = new ethers.Contract(config.refereeAddress, RefereeAbi, provider);
-    let isVersion2 = true;
-    // Try to read a new storage variable from the new referee contract
-    try {
-        await referee.refereeCalculationsAddress();        
-    } catch (error) {
-        // If there is an error, the contract is not the new version
-        isVersion2 = false;
-    }
-    
-    return isVersion2;
 }
