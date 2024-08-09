@@ -36,28 +36,6 @@ export class Approval__Params {
   }
 }
 
-export class AssertionCancelled extends ethereum.Event {
-  get params(): AssertionCancelled__Params {
-    return new AssertionCancelled__Params(this);
-  }
-}
-
-export class AssertionCancelled__Params {
-  _event: AssertionCancelled;
-
-  constructor(event: AssertionCancelled) {
-    this._event = event;
-  }
-
-  get challengeId(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
-  }
-
-  get nodeLicenseId(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-}
-
 export class AssertionCheckingToggled extends ethereum.Event {
   get params(): AssertionCheckingToggled__Params {
     return new AssertionCheckingToggled__Params(this);
@@ -98,36 +76,6 @@ export class AssertionSubmitted__Params {
   }
 }
 
-export class AssertionSubmittedV2 extends ethereum.Event {
-  get params(): AssertionSubmittedV2__Params {
-    return new AssertionSubmittedV2__Params(this);
-  }
-}
-
-export class AssertionSubmittedV2__Params {
-  _event: AssertionSubmittedV2;
-
-  constructor(event: AssertionSubmittedV2) {
-    this._event = event;
-  }
-
-  get challengeId(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
-  }
-
-  get nodeLicenseId(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-
-  get assertionStateRootOrConfirmData(): Bytes {
-    return this._event.parameters[2].value.toBytes();
-  }
-
-  get eligibleForPayout(): boolean {
-    return this._event.parameters[3].value.toBoolean();
-  }
-}
-
 export class BatchRewardsClaimed extends ethereum.Event {
   get params(): BatchRewardsClaimed__Params {
     return new BatchRewardsClaimed__Params(this);
@@ -151,6 +99,36 @@ export class BatchRewardsClaimed__Params {
 
   get keysLength(): BigInt {
     return this._event.parameters[2].value.toBigInt();
+  }
+}
+
+export class BulkRewardsClaimed extends ethereum.Event {
+  get params(): BulkRewardsClaimed__Params {
+    return new BulkRewardsClaimed__Params(this);
+  }
+}
+
+export class BulkRewardsClaimed__Params {
+  _event: BulkRewardsClaimed;
+
+  constructor(event: BulkRewardsClaimed) {
+    this._event = event;
+  }
+
+  get challengeId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get bulkAddress(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get totalReward(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+
+  get winningKeys(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
   }
 }
 
@@ -261,12 +239,16 @@ export class InvalidBatchSubmission__Params {
     return this._event.parameters[0].value.toBigInt();
   }
 
-  get operator(): Address {
+  get submissionAddress(): Address {
     return this._event.parameters[1].value.toAddress();
   }
 
+  get operator(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
   get keysLength(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
+    return this._event.parameters[3].value.toBigInt();
   }
 }
 
@@ -314,16 +296,16 @@ export class KycStatusChanged__Params {
   }
 }
 
-export class NewPoolSubmission extends ethereum.Event {
-  get params(): NewPoolSubmission__Params {
-    return new NewPoolSubmission__Params(this);
+export class NewBulkSubmission extends ethereum.Event {
+  get params(): NewBulkSubmission__Params {
+    return new NewBulkSubmission__Params(this);
   }
 }
 
-export class NewPoolSubmission__Params {
-  _event: NewPoolSubmission;
+export class NewBulkSubmission__Params {
+  _event: NewBulkSubmission;
 
-  constructor(event: NewPoolSubmission) {
+  constructor(event: NewBulkSubmission) {
     this._event = event;
   }
 
@@ -331,7 +313,7 @@ export class NewPoolSubmission__Params {
     return this._event.parameters[0].value.toBigInt();
   }
 
-  get poolAddress(): Address {
+  get bulkAddress(): Address {
     return this._event.parameters[1].value.toAddress();
   }
 
@@ -362,36 +344,6 @@ export class NodeLicenseAddressChanged__Params {
   }
 }
 
-export class PoolRewardsClaimed extends ethereum.Event {
-  get params(): PoolRewardsClaimed__Params {
-    return new PoolRewardsClaimed__Params(this);
-  }
-}
-
-export class PoolRewardsClaimed__Params {
-  _event: PoolRewardsClaimed;
-
-  constructor(event: PoolRewardsClaimed) {
-    this._event = event;
-  }
-
-  get challengeId(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
-  }
-
-  get poolAddress(): Address {
-    return this._event.parameters[1].value.toAddress();
-  }
-
-  get totalReward(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
-  }
-
-  get winningKeys(): BigInt {
-    return this._event.parameters[3].value.toBigInt();
-  }
-}
-
 export class RewardsClaimed extends ethereum.Event {
   get params(): RewardsClaimed__Params {
     return new RewardsClaimed__Params(this);
@@ -411,32 +363,6 @@ export class RewardsClaimed__Params {
 
   get amount(): BigInt {
     return this._event.parameters[1].value.toBigInt();
-  }
-}
-
-export class RewardsClaimedV2 extends ethereum.Event {
-  get params(): RewardsClaimedV2__Params {
-    return new RewardsClaimedV2__Params(this);
-  }
-}
-
-export class RewardsClaimedV2__Params {
-  _event: RewardsClaimedV2;
-
-  constructor(event: RewardsClaimedV2) {
-    this._event = event;
-  }
-
-  get challengeId(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
-  }
-
-  get nodeLicenseId(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-
-  get amount(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
   }
 }
 
@@ -606,6 +532,44 @@ export class UnstakeV1__Params {
   }
 }
 
+export class UpdateBulkSubmission extends ethereum.Event {
+  get params(): UpdateBulkSubmission__Params {
+    return new UpdateBulkSubmission__Params(this);
+  }
+}
+
+export class UpdateBulkSubmission__Params {
+  _event: UpdateBulkSubmission;
+
+  constructor(event: UpdateBulkSubmission) {
+    this._event = event;
+  }
+
+  get challengeId(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get bulkAddress(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get stakedKeys(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+
+  get winningKeys(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+
+  get increase(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+
+  get decrease(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+}
+
 export class UpdateMaxKeysPerPool extends ethereum.Event {
   get params(): UpdateMaxKeysPerPool__Params {
     return new UpdateMaxKeysPerPool__Params(this);
@@ -650,41 +614,55 @@ export class UpdateMaxStakeAmount__Params {
   }
 }
 
-export class UpdatePoolSubmission extends ethereum.Event {
-  get params(): UpdatePoolSubmission__Params {
-    return new UpdatePoolSubmission__Params(this);
-  }
-}
+export class Referee__bulkSubmissionsResult {
+  value0: boolean;
+  value1: boolean;
+  value2: BigInt;
+  value3: BigInt;
+  value4: Bytes;
 
-export class UpdatePoolSubmission__Params {
-  _event: UpdatePoolSubmission;
-
-  constructor(event: UpdatePoolSubmission) {
-    this._event = event;
-  }
-
-  get challengeId(): BigInt {
-    return this._event.parameters[0].value.toBigInt();
-  }
-
-  get poolAddress(): Address {
-    return this._event.parameters[1].value.toAddress();
-  }
-
-  get stakedKeys(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
+  constructor(
+    value0: boolean,
+    value1: boolean,
+    value2: BigInt,
+    value3: BigInt,
+    value4: Bytes,
+  ) {
+    this.value0 = value0;
+    this.value1 = value1;
+    this.value2 = value2;
+    this.value3 = value3;
+    this.value4 = value4;
   }
 
-  get winningKeys(): BigInt {
-    return this._event.parameters[3].value.toBigInt();
+  toMap(): TypedMap<string, ethereum.Value> {
+    let map = new TypedMap<string, ethereum.Value>();
+    map.set("value0", ethereum.Value.fromBoolean(this.value0));
+    map.set("value1", ethereum.Value.fromBoolean(this.value1));
+    map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
+    map.set("value3", ethereum.Value.fromUnsignedBigInt(this.value3));
+    map.set("value4", ethereum.Value.fromBytes(this.value4));
+    return map;
   }
 
-  get increase(): BigInt {
-    return this._event.parameters[4].value.toBigInt();
+  getSubmitted(): boolean {
+    return this.value0;
   }
 
-  get decrease(): BigInt {
-    return this._event.parameters[5].value.toBigInt();
+  getClaimed(): boolean {
+    return this.value1;
+  }
+
+  getKeyCount(): BigInt {
+    return this.value2;
+  }
+
+  getWinningKeyCount(): BigInt {
+    return this.value3;
+  }
+
+  getAssertionStateRootOrConfirmData(): Bytes {
+    return this.value4;
   }
 }
 
@@ -837,31 +815,6 @@ export class Referee__challengesResult {
   }
 }
 
-export class Referee__createAssertionHashAndCheckPayoutResult {
-  value0: boolean;
-  value1: Bytes;
-
-  constructor(value0: boolean, value1: Bytes) {
-    this.value0 = value0;
-    this.value1 = value1;
-  }
-
-  toMap(): TypedMap<string, ethereum.Value> {
-    let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromBoolean(this.value0));
-    map.set("value1", ethereum.Value.fromFixedBytes(this.value1));
-    return map;
-  }
-
-  getValue0(): boolean {
-    return this.value0;
-  }
-
-  getValue1(): Bytes {
-    return this.value1;
-  }
-}
-
 export class Referee__getChallengeResultValue0Struct extends ethereum.Tuple {
   get openForSubmissions(): boolean {
     return this[0].toBoolean();
@@ -939,58 +892,6 @@ export class Referee__getSubmissionsForChallengesResultValue0Struct extends ethe
 
   get assertionStateRootOrConfirmData(): Bytes {
     return this[4].toBytes();
-  }
-}
-
-export class Referee__poolSubmissionsResult {
-  value0: boolean;
-  value1: boolean;
-  value2: BigInt;
-  value3: BigInt;
-  value4: Bytes;
-
-  constructor(
-    value0: boolean,
-    value1: boolean,
-    value2: BigInt,
-    value3: BigInt,
-    value4: Bytes,
-  ) {
-    this.value0 = value0;
-    this.value1 = value1;
-    this.value2 = value2;
-    this.value3 = value3;
-    this.value4 = value4;
-  }
-
-  toMap(): TypedMap<string, ethereum.Value> {
-    let map = new TypedMap<string, ethereum.Value>();
-    map.set("value0", ethereum.Value.fromBoolean(this.value0));
-    map.set("value1", ethereum.Value.fromBoolean(this.value1));
-    map.set("value2", ethereum.Value.fromUnsignedBigInt(this.value2));
-    map.set("value3", ethereum.Value.fromUnsignedBigInt(this.value3));
-    map.set("value4", ethereum.Value.fromBytes(this.value4));
-    return map;
-  }
-
-  getSubmitted(): boolean {
-    return this.value0;
-  }
-
-  getClaimed(): boolean {
-    return this.value1;
-  }
-
-  getStakedKeyCount(): BigInt {
-    return this.value2;
-  }
-
-  getWinningKeyCount(): BigInt {
-    return this.value3;
-  }
-
-  getAssertionStateRootOrConfirmData(): Bytes {
-    return this.value4;
   }
 }
 
@@ -1208,6 +1109,55 @@ export class Referee extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  bulkSubmissions(
+    param0: BigInt,
+    param1: Address,
+  ): Referee__bulkSubmissionsResult {
+    let result = super.call(
+      "bulkSubmissions",
+      "bulkSubmissions(uint256,address):(bool,bool,uint256,uint256,bytes)",
+      [
+        ethereum.Value.fromUnsignedBigInt(param0),
+        ethereum.Value.fromAddress(param1),
+      ],
+    );
+
+    return new Referee__bulkSubmissionsResult(
+      result[0].toBoolean(),
+      result[1].toBoolean(),
+      result[2].toBigInt(),
+      result[3].toBigInt(),
+      result[4].toBytes(),
+    );
+  }
+
+  try_bulkSubmissions(
+    param0: BigInt,
+    param1: Address,
+  ): ethereum.CallResult<Referee__bulkSubmissionsResult> {
+    let result = super.tryCall(
+      "bulkSubmissions",
+      "bulkSubmissions(uint256,address):(bool,bool,uint256,uint256,bytes)",
+      [
+        ethereum.Value.fromUnsignedBigInt(param0),
+        ethereum.Value.fromAddress(param1),
+      ],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(
+      new Referee__bulkSubmissionsResult(
+        value[0].toBoolean(),
+        value[1].toBoolean(),
+        value[2].toBigInt(),
+        value[3].toBigInt(),
+        value[4].toBytes(),
+      ),
+    );
+  }
+
   calculateChallengeEmissionAndTier(): Referee__calculateChallengeEmissionAndTierResult {
     let result = super.call(
       "calculateChallengeEmissionAndTier",
@@ -1338,61 +1288,6 @@ export class Referee extends ethereum.SmartContract {
         value[11].toBigInt(),
         value[12].toBigInt(),
         value[13].toBigInt(),
-      ),
-    );
-  }
-
-  createAssertionHashAndCheckPayout(
-    _nodeLicenseId: BigInt,
-    _challengeId: BigInt,
-    _boostFactor: BigInt,
-    _confirmData: Bytes,
-    _challengerSignedHash: Bytes,
-  ): Referee__createAssertionHashAndCheckPayoutResult {
-    let result = super.call(
-      "createAssertionHashAndCheckPayout",
-      "createAssertionHashAndCheckPayout(uint256,uint256,uint256,bytes,bytes):(bool,bytes32)",
-      [
-        ethereum.Value.fromUnsignedBigInt(_nodeLicenseId),
-        ethereum.Value.fromUnsignedBigInt(_challengeId),
-        ethereum.Value.fromUnsignedBigInt(_boostFactor),
-        ethereum.Value.fromBytes(_confirmData),
-        ethereum.Value.fromBytes(_challengerSignedHash),
-      ],
-    );
-
-    return new Referee__createAssertionHashAndCheckPayoutResult(
-      result[0].toBoolean(),
-      result[1].toBytes(),
-    );
-  }
-
-  try_createAssertionHashAndCheckPayout(
-    _nodeLicenseId: BigInt,
-    _challengeId: BigInt,
-    _boostFactor: BigInt,
-    _confirmData: Bytes,
-    _challengerSignedHash: Bytes,
-  ): ethereum.CallResult<Referee__createAssertionHashAndCheckPayoutResult> {
-    let result = super.tryCall(
-      "createAssertionHashAndCheckPayout",
-      "createAssertionHashAndCheckPayout(uint256,uint256,uint256,bytes,bytes):(bool,bytes32)",
-      [
-        ethereum.Value.fromUnsignedBigInt(_nodeLicenseId),
-        ethereum.Value.fromUnsignedBigInt(_challengeId),
-        ethereum.Value.fromUnsignedBigInt(_boostFactor),
-        ethereum.Value.fromBytes(_confirmData),
-        ethereum.Value.fromBytes(_challengerSignedHash),
-      ],
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(
-      new Referee__createAssertionHashAndCheckPayoutResult(
-        value[0].toBoolean(),
-        value[1].toBytes(),
       ),
     );
   }
@@ -1957,55 +1852,6 @@ export class Referee extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  poolSubmissions(
-    param0: BigInt,
-    param1: Address,
-  ): Referee__poolSubmissionsResult {
-    let result = super.call(
-      "poolSubmissions",
-      "poolSubmissions(uint256,address):(bool,bool,uint256,uint256,bytes)",
-      [
-        ethereum.Value.fromUnsignedBigInt(param0),
-        ethereum.Value.fromAddress(param1),
-      ],
-    );
-
-    return new Referee__poolSubmissionsResult(
-      result[0].toBoolean(),
-      result[1].toBoolean(),
-      result[2].toBigInt(),
-      result[3].toBigInt(),
-      result[4].toBytes(),
-    );
-  }
-
-  try_poolSubmissions(
-    param0: BigInt,
-    param1: Address,
-  ): ethereum.CallResult<Referee__poolSubmissionsResult> {
-    let result = super.tryCall(
-      "poolSubmissions",
-      "poolSubmissions(uint256,address):(bool,bool,uint256,uint256,bytes)",
-      [
-        ethereum.Value.fromUnsignedBigInt(param0),
-        ethereum.Value.fromAddress(param1),
-      ],
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(
-      new Referee__poolSubmissionsResult(
-        value[0].toBoolean(),
-        value[1].toBoolean(),
-        value[2].toBigInt(),
-        value[3].toBigInt(),
-        value[4].toBytes(),
-      ),
-    );
-  }
-
   refereeCalculationsAddress(): Address {
     let result = super.call(
       "refereeCalculationsAddress",
@@ -2270,6 +2116,40 @@ export class AddKycWalletCall__Outputs {
   }
 }
 
+export class ClaimBulkRewardsCall extends ethereum.Call {
+  get inputs(): ClaimBulkRewardsCall__Inputs {
+    return new ClaimBulkRewardsCall__Inputs(this);
+  }
+
+  get outputs(): ClaimBulkRewardsCall__Outputs {
+    return new ClaimBulkRewardsCall__Outputs(this);
+  }
+}
+
+export class ClaimBulkRewardsCall__Inputs {
+  _call: ClaimBulkRewardsCall;
+
+  constructor(call: ClaimBulkRewardsCall) {
+    this._call = call;
+  }
+
+  get _bulkAddress(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get _challengeId(): BigInt {
+    return this._call.inputValues[1].value.toBigInt();
+  }
+}
+
+export class ClaimBulkRewardsCall__Outputs {
+  _call: ClaimBulkRewardsCall;
+
+  constructor(call: ClaimBulkRewardsCall) {
+    this._call = call;
+  }
+}
+
 export class ClaimMultipleRewardsCall extends ethereum.Call {
   get inputs(): ClaimMultipleRewardsCall__Inputs {
     return new ClaimMultipleRewardsCall__Inputs(this);
@@ -2304,40 +2184,6 @@ export class ClaimMultipleRewardsCall__Outputs {
   _call: ClaimMultipleRewardsCall;
 
   constructor(call: ClaimMultipleRewardsCall) {
-    this._call = call;
-  }
-}
-
-export class ClaimPoolSubmissionRewardsCall extends ethereum.Call {
-  get inputs(): ClaimPoolSubmissionRewardsCall__Inputs {
-    return new ClaimPoolSubmissionRewardsCall__Inputs(this);
-  }
-
-  get outputs(): ClaimPoolSubmissionRewardsCall__Outputs {
-    return new ClaimPoolSubmissionRewardsCall__Outputs(this);
-  }
-}
-
-export class ClaimPoolSubmissionRewardsCall__Inputs {
-  _call: ClaimPoolSubmissionRewardsCall;
-
-  constructor(call: ClaimPoolSubmissionRewardsCall) {
-    this._call = call;
-  }
-
-  get _poolAddress(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
-  get _challengeId(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-}
-
-export class ClaimPoolSubmissionRewardsCall__Outputs {
-  _call: ClaimPoolSubmissionRewardsCall;
-
-  constructor(call: ClaimPoolSubmissionRewardsCall) {
     this._call = call;
   }
 }
@@ -2708,25 +2554,25 @@ export class StakeKeysCall__Outputs {
   }
 }
 
-export class SubmitAssertionToChallengeCall extends ethereum.Call {
-  get inputs(): SubmitAssertionToChallengeCall__Inputs {
-    return new SubmitAssertionToChallengeCall__Inputs(this);
+export class SubmitBulkAssertionCall extends ethereum.Call {
+  get inputs(): SubmitBulkAssertionCall__Inputs {
+    return new SubmitBulkAssertionCall__Inputs(this);
   }
 
-  get outputs(): SubmitAssertionToChallengeCall__Outputs {
-    return new SubmitAssertionToChallengeCall__Outputs(this);
+  get outputs(): SubmitBulkAssertionCall__Outputs {
+    return new SubmitBulkAssertionCall__Outputs(this);
   }
 }
 
-export class SubmitAssertionToChallengeCall__Inputs {
-  _call: SubmitAssertionToChallengeCall;
+export class SubmitBulkAssertionCall__Inputs {
+  _call: SubmitBulkAssertionCall;
 
-  constructor(call: SubmitAssertionToChallengeCall) {
+  constructor(call: SubmitBulkAssertionCall) {
     this._call = call;
   }
 
-  get _nodeLicenseId(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
+  get _bulkAddress(): Address {
+    return this._call.inputValues[0].value.toAddress();
   }
 
   get _challengeId(): BigInt {
@@ -2738,10 +2584,10 @@ export class SubmitAssertionToChallengeCall__Inputs {
   }
 }
 
-export class SubmitAssertionToChallengeCall__Outputs {
-  _call: SubmitAssertionToChallengeCall;
+export class SubmitBulkAssertionCall__Outputs {
+  _call: SubmitBulkAssertionCall;
 
-  constructor(call: SubmitAssertionToChallengeCall) {
+  constructor(call: SubmitBulkAssertionCall) {
     this._call = call;
   }
 }
@@ -2788,82 +2634,6 @@ export class SubmitChallengeCall__Outputs {
   _call: SubmitChallengeCall;
 
   constructor(call: SubmitChallengeCall) {
-    this._call = call;
-  }
-}
-
-export class SubmitMultipleAssertionsCall extends ethereum.Call {
-  get inputs(): SubmitMultipleAssertionsCall__Inputs {
-    return new SubmitMultipleAssertionsCall__Inputs(this);
-  }
-
-  get outputs(): SubmitMultipleAssertionsCall__Outputs {
-    return new SubmitMultipleAssertionsCall__Outputs(this);
-  }
-}
-
-export class SubmitMultipleAssertionsCall__Inputs {
-  _call: SubmitMultipleAssertionsCall;
-
-  constructor(call: SubmitMultipleAssertionsCall) {
-    this._call = call;
-  }
-
-  get _nodeLicenseIds(): Array<BigInt> {
-    return this._call.inputValues[0].value.toBigIntArray();
-  }
-
-  get _challengeId(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-
-  get _confirmData(): Bytes {
-    return this._call.inputValues[2].value.toBytes();
-  }
-}
-
-export class SubmitMultipleAssertionsCall__Outputs {
-  _call: SubmitMultipleAssertionsCall;
-
-  constructor(call: SubmitMultipleAssertionsCall) {
-    this._call = call;
-  }
-}
-
-export class SubmitPoolAssertionCall extends ethereum.Call {
-  get inputs(): SubmitPoolAssertionCall__Inputs {
-    return new SubmitPoolAssertionCall__Inputs(this);
-  }
-
-  get outputs(): SubmitPoolAssertionCall__Outputs {
-    return new SubmitPoolAssertionCall__Outputs(this);
-  }
-}
-
-export class SubmitPoolAssertionCall__Inputs {
-  _call: SubmitPoolAssertionCall;
-
-  constructor(call: SubmitPoolAssertionCall) {
-    this._call = call;
-  }
-
-  get _poolAddress(): Address {
-    return this._call.inputValues[0].value.toAddress();
-  }
-
-  get _challengeId(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-
-  get _confirmData(): Bytes {
-    return this._call.inputValues[2].value.toBytes();
-  }
-}
-
-export class SubmitPoolAssertionCall__Outputs {
-  _call: SubmitPoolAssertionCall;
-
-  constructor(call: SubmitPoolAssertionCall) {
     this._call = call;
   }
 }

@@ -50,39 +50,6 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
     }
 
     /**
-     * @notice Creates an assertion hash and determines if the hash payout is below the threshold.
-     * @dev This function creates a hash of the _nodeLicenseId, _challengeId, challengerSignedHash from the challenge, and _newStateRoot.
-     * It then converts the hash to a number and checks if it is below the threshold.
-     * The threshold is calculated as the maximum uint256 value divided by 100 and then multiplied by the total supply of NodeLicenses.
-     * @param _nodeLicenseId The ID of the NodeLicense.
-     * @param _challengeId The ID of the challenge.
-     * @param _boostFactor The factor controlling the chance of eligibility for payout as a multiplicator (base chance is 1/100 - Example: _boostFactor 200 will double the payout chance to 1/50, _boostFactor 16 maps to 1/6.25).
-     * @param _confirmData The confirm hash, will change to assertionState after BOLD.
-     * @param _challengerSignedHash The signed hash for the challenge
-     * @return a boolean indicating if the hash is eligible, and the assertionHash.
-     */
-    function createAssertionHashAndCheckPayout(
-        uint256 _nodeLicenseId,
-        uint256 _challengeId,
-        uint256 _boostFactor,
-        bytes memory _confirmData,
-        bytes memory _challengerSignedHash
-    ) public pure returns (bool, bytes32) {
-        bytes32 assertionHash = keccak256(
-            abi.encodePacked(
-                _nodeLicenseId,
-                _challengeId,
-                _confirmData,
-                _challengerSignedHash
-            )
-        );
-        uint256 hashNumber = uint256(assertionHash);
-        // hashNumber % 10_000 equals {0...9999}
-        // hashNumber % 10_000 < 100 means a 100 / 10000 = 1 /100
-        return (hashNumber % 10_000 < _boostFactor, assertionHash);
-    }
-
-    /**
      * @dev Calculates the number of winning keys for a staking pool
      * @notice This function determines the winning key count based on the staked amount and pool tier,
      * with a random adjustment of up to 10% to the boost factor.
@@ -115,7 +82,6 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
         // This ensures different randomness for each unique combination of inputs
         bytes32 seedHash = keccak256(
             abi.encodePacked(
-                _stakedKeyCount,
                 _poolAddress,
                 _challengeId,
                 _confirmData,

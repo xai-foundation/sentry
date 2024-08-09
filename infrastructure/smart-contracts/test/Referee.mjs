@@ -2,6 +2,9 @@ import {expect, assert} from "chai";
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {winningHashForNodeLicense0} from "./AssertionData.mjs";
 import {Contract} from "ethers";
+import {submitTestChallenge} from "./utils/submitTestChallenge.mjs";
+import {mintBatchedLicenses, mintSingleLicense} from "./utils/mintLicenses.mjs";
+import {createPool} from "./utils/createPool.mjs";
 
 export 	async function getStateRoots(count) {
 	let results = [];
@@ -344,15 +347,16 @@ export function RefereeTests(deployInfrastructure) {
 		});
 
 		it("Check that addr1 submitting a winning hash receives the allocated reward", async function () {
-			const {referee, operator, challenger, esXai, addr1} = await loadFixture(deployInfrastructure);
+			const {referee, operator, challenger, esXai, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
 
-			const winningStateRoot = await findWinningStateRoot(referee, [1], 0);
+			// Mint 200 licenses so that a reward will be most likely guaranteed
+			mintBatchedLicenses(200, nodeLicense, addr1);
 
 			// Submit a challenge
 			await referee.connect(challenger).submitChallenge(
 				100,
 				99,
-				winningStateRoot,
+				"0x0000000000000000000000000000000000000000000000000000000000000000",
 				0,
 				"0x0000000000000000000000000000000000000000000000000000000000000000"
 			);
@@ -361,14 +365,15 @@ export function RefereeTests(deployInfrastructure) {
 			const {openForSubmissions} = await referee.getChallenge(0);
 			expect(openForSubmissions).to.be.eq(true);
 
-			// Submit a winning hash
-			await referee.connect(operator).submitAssertionToChallenge(1, 0, winningStateRoot);
+			// Submit a bulk assertion
+			await referee.connect(operator).submitBulkAssertion(addr1.address, 0, "0x0000000000000000000000000000000000000000000000000000000000000000");
 
 			// Check the submission
-			const submission = await referee.getSubmissionsForChallenges([0], 1);
-			assert.equal(submission[0].submitted, true, "The submission was not submitted");
-			assert.equal(submission[0].claimed, false, "The submission was already claimed");
-			assert.equal(submission[0].eligibleForPayout, true, "The hash was not eligible for a payout");
+			const submission = await referee.bulkSubmissions(0, await addr1.getAddress());
+			assert.equal(submission[0], true, "The submission was not submitted");
+			assert.equal(submission[1], false, "The submission was already claimed");
+			const winningKeyCount = submission[3];
+			expect(winningKeyCount).to.be.gt(0);
 
 			// submit another assertion to end the previous challenge
 			await referee.connect(challenger).submitChallenge(
@@ -392,11 +397,11 @@ export function RefereeTests(deployInfrastructure) {
 			const balanceBefore = await esXai.balanceOf(await addr1.getAddress());
 
 			// Claim the reward
-			await referee.connect(operator).claimReward(1, 0);
+			await referee.connect(operator).claimBulkRewards(await addr1.getAddress(), 0);
 
 			// Check the submission again to see its now claimed
-			const claimedSubmission = await referee.getSubmissionsForChallenges([0], 1);
-			assert.equal(claimedSubmission[0].claimed, true, "The reward was not claimed");
+			const claimedSubmission = await referee.bulkSubmissions(0, await addr1.getAddress());
+			assert.equal(claimedSubmission[1], true, "The reward was not claimed");
 
 			// check to see we got all the rewards from the claim
 			const balanceAfter = await esXai.balanceOf(await addr1.getAddress());
@@ -524,7 +529,7 @@ export function RefereeTests(deployInfrastructure) {
 		});
 
 		it("Check that submitting an invalid successorRoot does not create a submission", async function () {
-			const {referee, operator, challenger} = await loadFixture(deployInfrastructure);
+			const {referee, operator, challenger, addr1} = await loadFixture(deployInfrastructure);
 
 			// Submit a challenge
 			await referee.connect(challenger).submitChallenge(
@@ -535,16 +540,13 @@ export function RefereeTests(deployInfrastructure) {
 				"0x0000000000000000000000000000000000000000000000000000000000000000"
 			);
 
-			// Submit an invalid successorRoot
-			referee.connect(operator).submitAssertionToChallenge(
-				1,
-				0,
-				"0x0000000000000000000000000000000000000000000000000000000000000002"
-			)
-
+			
+			// Submit a bulk assertion
+			await referee.connect(operator).submitBulkAssertion(addr1.address, 0, "0x0000000000000000000000000000000000000000000000000000000000000002");
+			
 			// Check that no submission was created
-			const [submission] = await referee.getSubmissionsForChallenges([0], 1);
-			assert.equal(submission.submitted, false, "Submission was created with invalid successorRoot");
+			const submission = await referee.bulkSubmissions(0, await addr1.getAddress());			
+			assert.equal(submission[0], false, "Submission was created with invalid successorRoot");
 		});
 
 		// describe("The Referee should allow users to stake in V1", function () {

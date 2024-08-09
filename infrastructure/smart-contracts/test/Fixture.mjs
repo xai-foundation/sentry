@@ -13,7 +13,7 @@ import { CNYAirDropTests } from "./CNYAirDrop.mjs";
 import { getBasicPoolConfiguration, StakingV2 } from "./StakingV2.mjs";
 import { extractAbi } from "../utils/exportAbi.mjs";
 import { Beacons } from "./Beacons.mjs";
-import { RefereePoolSubmissions } from "./tinykeys/RefereePoolSubmissions.mjs";
+import { RefereeBulkSubmissions } from "./tinykeys/RefereeBulkSubmissions.mjs";
 import { NodeLicenseTinyKeysTest } from "./NodeLicenseTinyKeys.mjs";
 import { FailedKycTests } from "./failed-kyc/FailedKyc.mjs";
 
@@ -402,7 +402,7 @@ describe("Fixture Tests", function () {
     describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
     describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
     describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
-    describe("PoolSubmissions", RefereePoolSubmissions(deployInfrastructure).bind(this));
+    describe("BulkSubmissions", RefereeBulkSubmissions(deployInfrastructure).bind(this));
     describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
     describe("Failed KYC Tests", FailedKycTests(deployInfrastructure).bind(this));
 

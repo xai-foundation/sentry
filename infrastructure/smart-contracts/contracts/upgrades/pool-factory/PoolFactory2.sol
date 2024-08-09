@@ -319,6 +319,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         string[] memory _poolSocials
     ) external {
         StakingPool stakingPool = StakingPool(pool);
+        require(poolsCreatedViaFactory[pool], "35"); // Pool must be created via factory
         require(stakingPool.getPoolOwner() == msg.sender, "5"); // Only pool owner can update metadata
         stakingPool.updateMetadata(_poolMetadata, _poolSocials);
         emit UpdateMetadata(pool);
@@ -334,6 +335,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         uint32[3] memory _shareConfig
     ) external {
         StakingPool stakingPool = StakingPool(pool);
+        require(poolsCreatedViaFactory[pool], "35"); // Pool must be created via factory
         require(stakingPool.getPoolOwner() == msg.sender, "6"); // Only pool owner can update shares
         require(validateShareValues(_shareConfig), "7"); // Validate share configuration
         stakingPool.updateShares(

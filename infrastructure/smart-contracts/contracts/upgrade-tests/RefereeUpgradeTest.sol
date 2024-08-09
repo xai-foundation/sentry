@@ -97,7 +97,7 @@ contract RefereeUpgradeTest is AccessControlEnumerableUpgradeable {
     mapping(address => uint256) public assignedKeysOfUserCount;
 
     // Mapping to store all of the pool submissions
-    mapping(uint256 => mapping(address => PoolSubmission)) public poolSubmissions;
+    mapping(uint256 => mapping(address => BulkSubmission)) public bulkSubmissions;
 
     // Referee Calculations contract address
     address public refereeCalculationsAddress;
@@ -134,11 +134,11 @@ contract RefereeUpgradeTest is AccessControlEnumerableUpgradeable {
         uint256 numberOfEligibleClaimers; // how many submitters are eligible for claiming, used to determine the reward amount
         uint256 amountClaimedByClaimers; // keep track of how much Xai has been claimed by the claimers, primarily used to expire unclaimed rewards 
     }
-    // Struct for PoolSubmissions
-    struct PoolSubmission {
+    // Struct for BulkSubmissions
+    struct BulkSubmission {
         bool submitted;
         bool claimed;
-        uint256 stakedKeyCount;
+        uint256 keyCount;
         uint256 winningKeyCount;
         bytes assertionStateRootOrConfirmData;
     }

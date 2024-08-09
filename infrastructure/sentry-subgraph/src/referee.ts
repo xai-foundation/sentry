@@ -11,12 +11,9 @@ import {
   Initialized,
   StakedV1,
   UnstakeV1,
-  NewPoolSubmission as NewPoolSubmissionEvent,
-  UpdatePoolSubmission as UpdatePoolSubmissionEvent,
-  PoolRewardsClaimed as PoolRewardsClaimedEvent,
-  AssertionSubmittedV2 as AssertionSubmittedV2Event,
-  RewardsClaimedV2 as RewardsClaimedV2Event,
-  AssertionCancelled as AssertionCancelledEvent,
+  NewBulkSubmission as NewBulkSubmissionEvent,
+  UpdateBulkSubmission as UpdateBulkSubmissionEvent,
+  BulkRewardsClaimed as BulkRewardsClaimedEvent,
 } from "../generated/Referee/Referee"
 import {
   Challenge,
@@ -26,7 +23,7 @@ import {
   RefereeConfig,
   PoolInfo,
   PoolChallenge,
-  PoolSubmission
+  BulkSubmission
 } from "../generated/schema"
 import { checkIfSubmissionEligible } from "./utils/checkIfSubmissionEligible"
 import { getBoostFactor } from "./utils/getBoostFactor"
@@ -542,38 +539,38 @@ export function handleUnstakeV1(event: UnstakeV1): void {
   sentryWallet.save()
 }
 
-export function handleNewPoolSubmission(event: NewPoolSubmissionEvent): void {
+export function handleNewBulkSubmission(event: NewBulkSubmissionEvent): void {
 
   const challenge = Challenge.load(event.params.challengeId.toString())
   if (!challenge) {
-    log.warning("Failed to find challenge handleNewPoolSubmission: keyID: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
+    log.warning("Failed to find challenge handleNewBulkSubmission: keyID: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
     return;
   }
 
-  const pool = PoolInfo.load(event.params.poolAddress.toHexString())
+  const pool = PoolInfo.load(event.params.bulkAddress.toHexString())
   if (!pool) {
-    log.warning("Failed to find pool handleNewPoolSubmission: poolAddress: " + event.params.poolAddress.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
+    log.warning("Failed to find pool handleNewBulkSubmission: bulkAddress: " + event.params.bulkAddress.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
     return;
   }
 
-  let poolSubmission = new PoolSubmission(event.params.poolAddress.toHexString() + "_" + event.params.challengeId.toString())
-  poolSubmission.challengeId = event.params.challengeId
-  poolSubmission.poolAddress = event.params.poolAddress
-  poolSubmission.challenge = challenge.id
-  poolSubmission.poolInfo = pool.id
-  poolSubmission.stakedKeyCount = event.params.stakedKeys
-  poolSubmission.winningKeyCount = event.params.winningKeys
-  poolSubmission.claimedRewardsAmount = BigInt.fromI32(0)
-  poolSubmission.createdTimestamp = event.block.timestamp
-  poolSubmission.createdTxHash = event.transaction.hash
-  poolSubmission.claimTimestamp = BigInt.fromI32(0)
-  poolSubmission.claimTxHash = Bytes.fromI32(0)
-  poolSubmission.claimed = false
-  poolSubmission.save()
+  const bulkSubmission = new BulkSubmission(event.params.bulkAddress.toHexString() + "_" + event.params.challengeId.toString())
+  bulkSubmission.challengeId = event.params.challengeId
+  bulkSubmission.bulkAddress = event.params.bulkAddress
+  bulkSubmission.challenge = challenge.id
+  bulkSubmission.poolInfo = pool.id
+  bulkSubmission.keyCount = event.params.stakedKeys
+  bulkSubmission.winningKeyCount = event.params.winningKeys
+  bulkSubmission.claimedRewardsAmount = BigInt.fromI32(0)
+  bulkSubmission.createdTimestamp = event.block.timestamp
+  bulkSubmission.createdTxHash = event.transaction.hash
+  bulkSubmission.claimTimestamp = BigInt.fromI32(0)
+  bulkSubmission.claimTxHash = Bytes.fromI32(0)
+  bulkSubmission.claimed = false
+  bulkSubmission.save()
 
-  let poolChallenges = PoolChallenge.load(event.params.poolAddress.toHexString() + "_" + event.params.challengeId.toString())
+  let poolChallenges = PoolChallenge.load(event.params.bulkAddress.toHexString() + "_" + event.params.challengeId.toString())
   if (poolChallenges == null) {
-    poolChallenges = new PoolChallenge(event.params.poolAddress.toHexString() + "_" + event.params.challengeId.toString())
+    poolChallenges = new PoolChallenge(event.params.bulkAddress.toHexString() + "_" + event.params.challengeId.toString())
     poolChallenges.pool = pool.id;
     poolChallenges.challenge = challenge.id
     poolChallenges.claimKeyCount = BigInt.fromI32(0)
@@ -591,26 +588,26 @@ export function handleNewPoolSubmission(event: NewPoolSubmissionEvent): void {
   challenge.save()
 }
 
-export function handleUpdatePoolSubmission(event: UpdatePoolSubmissionEvent): void {
+export function handleUpdateBulkSubmission(event: UpdateBulkSubmissionEvent): void {
   const challenge = Challenge.load(event.params.challengeId.toString())
   if (!challenge) {
-    log.warning("Failed to find challenge handleUpdatePoolSubmission: keyID: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
+    log.warning("Failed to find challenge handleUpdateBulkSubmission: keyID: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
     return;
   }
 
-  let poolSubmission = PoolSubmission.load(event.params.poolAddress.toHexString() + "_" + event.params.challengeId.toString())
-  if (!poolSubmission) {
-    log.warning("Failed to find poolSubmission in handleUpdatePoolSubmission for challenge " + event.params.challengeId.toHexString() + " and poolAdress: " + event.params.poolAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), [])
+  const bulkSubmission = BulkSubmission.load(event.params.bulkAddress.toHexString() + "_" + event.params.challengeId.toString())
+  if (!bulkSubmission) {
+    log.warning("Failed to find bulkSubmission in handleUpdateBulkSubmission for challenge " + event.params.challengeId.toHexString() + " and poolAdress: " + event.params.bulkAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), [])
     return
   }
 
-  poolSubmission.stakedKeyCount = event.params.stakedKeys
-  poolSubmission.winningKeyCount = event.params.winningKeys
-  poolSubmission.save()
+  bulkSubmission.keyCount = event.params.stakedKeys
+  bulkSubmission.winningKeyCount = event.params.winningKeys
+  bulkSubmission.save()
 
-  let poolChallenges = PoolChallenge.load(event.params.poolAddress.toHexString() + "_" + event.params.challengeId.toString())
+  let poolChallenges = PoolChallenge.load(event.params.bulkAddress.toHexString() + "_" + event.params.challengeId.toString())
   if (poolChallenges == null) {
-    log.warning("Failed to find poolChallenges in handleUpdatePoolSubmission for challenge " + event.params.challengeId.toHexString() + " and poolAdress: " + event.params.poolAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), [])
+    log.warning("Failed to find poolChallenges in handleUpdateBulkSubmission for challenge " + event.params.challengeId.toHexString() + " and poolAdress: " + event.params.bulkAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), [])
     return
   }
 
@@ -626,28 +623,28 @@ export function handleUpdatePoolSubmission(event: UpdatePoolSubmissionEvent): vo
   challenge.save()
 }
 
-export function handlePoolRewardsClaimed(event: PoolRewardsClaimedEvent): void {
+export function handleBulkRewardsClaimed(event: BulkRewardsClaimedEvent): void {
   const challenge = Challenge.load(event.params.challengeId.toString())
   if (!challenge) {
-    log.warning("Failed to find challenge handlePoolRewardsClaimed: keyID: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
+    log.warning("Failed to find challenge handleBulkRewardsClaimed: keyID: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
     return;
   }
 
-  let poolSubmission = PoolSubmission.load(event.params.poolAddress.toHexString() + "_" + event.params.challengeId.toString())
-  if (!poolSubmission) {
-    log.warning("Failed to find poolSubmission in handlePoolRewardsClaimed for challenge " + event.params.challengeId.toHexString() + " and poolAdress: " + event.params.poolAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), [])
+  let bulkSubmission = BulkSubmission.load(event.params.bulkAddress.toHexString() + "_" + event.params.challengeId.toString())
+  if (!bulkSubmission) {
+    log.warning("Failed to find bulkSubmission in handleBulkRewardsClaimed for challenge " + event.params.challengeId.toHexString() + " and poolAdress: " + event.params.bulkAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), [])
     return
   }
 
-  poolSubmission.claimedRewardsAmount = event.params.totalReward
-  poolSubmission.claimTimestamp = event.block.timestamp
-  poolSubmission.claimTxHash = event.transaction.hash
-  poolSubmission.claimed = true
-  poolSubmission.save()
+  bulkSubmission.claimedRewardsAmount = event.params.totalReward
+  bulkSubmission.claimTimestamp = event.block.timestamp
+  bulkSubmission.claimTxHash = event.transaction.hash
+  bulkSubmission.claimed = true
+  bulkSubmission.save()
 
-  let poolChallenges = PoolChallenge.load(event.params.poolAddress.toHexString() + "_" + event.params.challengeId.toString())
+  let poolChallenges = PoolChallenge.load(event.params.bulkAddress.toHexString() + "_" + event.params.challengeId.toString())
   if (poolChallenges == null) {
-    log.warning("Failed to find poolChallenges in handlePoolRewardsClaimed for challenge " + event.params.challengeId.toHexString() + " and poolAdress: " + event.params.poolAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), [])
+    log.warning("Failed to find poolChallenges in handleBulkRewardsClaimed for challenge " + event.params.challengeId.toHexString() + " and poolAdress: " + event.params.bulkAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), [])
     return
   }
 
@@ -656,98 +653,5 @@ export function handlePoolRewardsClaimed(event: PoolRewardsClaimedEvent): void {
   poolChallenges.save()
 
   challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(event.params.totalReward);
-  challenge.save();
-}
-
-export function handleAssertionSubmittedV2(event: AssertionSubmittedV2Event): void {
-  
-  const challenge = Challenge.load(event.params.challengeId.toString())
-  if (!challenge) {
-    log.warning("Failed to find challenge handleAssertionSubmitted: keyID: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
-    return;
-  }
-
-  //submitAssertionToChallenge = 0xb48985e4
-  //submitMultipleAssertions = 0xec6564bf
-  const transactionSignature = getTxSignatureFromEvent(event)
-
-  let submittedFrom = transactionSignature == "0xb48985e4" ? "submitAssertion" : transactionSignature == "0xec6564bf" ? "submitMultipleAssertions" : "unknown"
-
-  const submission = new Submission(event.params.challengeId.toString() + "_" + event.params.nodeLicenseId.toString())
-  submission.nodeLicenseId = event.params.nodeLicenseId
-  submission.challengeNumber = event.params.challengeId
-  submission.claimed = false
-  submission.claimAmount = BigInt.fromI32(0)
-  submission.sentryKey = event.params.nodeLicenseId.toString()
-  submission.challenge = challenge.id
-  submission.createdTimestamp = event.block.timestamp
-  submission.createdTxHash = event.transaction.hash
-  submission.claimTimestamp = BigInt.fromI32(0)
-  submission.claimTxHash = Bytes.fromI32(0)
-  submission.claimedFrom = "unclaimed"
-  submission.submittedFrom = submittedFrom
-  submission.assertionsStateRootOrConfirmData = event.params.assertionStateRootOrConfirmData.toHexString()
-  submission.eligibleForPayout = event.params.eligibleForPayout
-  submission.save()
-
-  if (submission.eligibleForPayout) {
-    challenge.numberOfEligibleClaimers = challenge.numberOfEligibleClaimers.plus(BigInt.fromI32(1))
-    challenge.save()
-  }
-}
-
-export function handleAssertionCancelled(event: AssertionCancelledEvent): void {
-  // query for the challenge and update it
-  const challenge = Challenge.load(event.params.challengeId.toString())
-
-  if (!challenge) {
-    log.warning("Failed to find challenge handleAssertionCancelled challengeId: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
-    return;
-  }
-
-  const submission = Submission.load(event.params.challengeId.toString() + "_" + event.params.nodeLicenseId.toString())
-  if (!submission) {
-    log.warning("Failed to find submission handleAssertionCancelled: nodeLicenseId: " + event.params.nodeLicenseId.toString() + ", challengeId: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
-    return;
-  }
-
-  submission.eligibleForPayout = false;
-  submission.save();
-
-  challenge.numberOfEligibleClaimers = challenge.numberOfEligibleClaimers.minus(BigInt.fromI32(1));
-  challenge.save();
-}
-
-
-
-export function handleRewardsClaimedV2(event: RewardsClaimedV2Event): void {
-  // query for the challenge and update it
-  const challenge = Challenge.load(event.params.challengeId.toString())
-
-  if (!challenge) {
-    log.warning("Failed to find challenge handleRewardsClaimedV2 challengeId: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
-    return;
-  }
-
-  //claimReward = 0x86bb8f37
-  //claimMultipleRewards = "0xb4d6b7df"
-  const transactionSignature = getTxSignatureFromEvent(event)
-
-  let claimedFrom = transactionSignature == "0x86bb8f37" ? "claimRewards" : transactionSignature == "0xb4d6b7df" ? "claimMultipleRewards" : "unknown"
-
-  const submission = Submission.load(event.params.challengeId.toString() + "_" + event.params.nodeLicenseId.toString())
-  if (!submission) {
-    log.warning("Failed to find submission handleRewardsClaimedV2: nodeLicenseId: " + event.params.nodeLicenseId.toString() + ", challengeId: " + event.params.challengeId.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
-    return;
-  }
-
-  submission.claimed = true;
-  submission.claimAmount = event.params.amount;
-  submission.claimTimestamp = event.block.timestamp;
-  submission.claimTxHash = event.transaction.hash;
-  submission.claimedFrom = claimedFrom;
-  submission.save();
-
-  challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(event.params.amount);
   challenge.save();
 }

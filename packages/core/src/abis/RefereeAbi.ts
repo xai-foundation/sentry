@@ -28,25 +28,6 @@ export const RefereeAbi = [
       "anonymous": false,
       "inputs": [
           {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "challengeId",
-              "type": "uint256"
-          },
-          {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "nodeLicenseId",
-              "type": "uint256"
-          }
-      ],
-      "name": "AssertionCancelled",
-      "type": "event"
-  },
-  {
-      "anonymous": false,
-      "inputs": [
-          {
               "indexed": false,
               "internalType": "bool",
               "name": "newState",
@@ -85,31 +66,6 @@ export const RefereeAbi = [
               "type": "uint256"
           },
           {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "nodeLicenseId",
-              "type": "uint256"
-          },
-          {
-              "indexed": false,
-              "internalType": "bytes",
-              "name": "assertionStateRootOrConfirmData",
-              "type": "bytes"
-          }
-      ],
-      "name": "AssertionSubmittedV2",
-      "type": "event"
-  },
-  {
-      "anonymous": false,
-      "inputs": [
-          {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "challengeId",
-              "type": "uint256"
-          },
-          {
               "indexed": false,
               "internalType": "uint256",
               "name": "totalReward",
@@ -123,6 +79,37 @@ export const RefereeAbi = [
           }
       ],
       "name": "BatchRewardsClaimed",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "challengeId",
+              "type": "uint256"
+          },
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "bulkAddress",
+              "type": "address"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "totalReward",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "winningKeys",
+              "type": "uint256"
+          }
+      ],
+      "name": "BulkRewardsClaimed",
       "type": "event"
   },
   {
@@ -202,6 +189,12 @@ export const RefereeAbi = [
           {
               "indexed": false,
               "internalType": "address",
+              "name": "submissionAddress",
+              "type": "address"
+          },
+          {
+              "indexed": false,
+              "internalType": "address",
               "name": "operator",
               "type": "address"
           },
@@ -265,7 +258,7 @@ export const RefereeAbi = [
           {
               "indexed": true,
               "internalType": "address",
-              "name": "poolAddress",
+              "name": "bulkAddress",
               "type": "address"
           },
           {
@@ -281,7 +274,7 @@ export const RefereeAbi = [
               "type": "uint256"
           }
       ],
-      "name": "NewPoolSubmission",
+      "name": "NewBulkSubmission",
       "type": "event"
   },
   {
@@ -307,37 +300,6 @@ export const RefereeAbi = [
               "type": "uint256"
           },
           {
-              "indexed": true,
-              "internalType": "address",
-              "name": "poolAddress",
-              "type": "address"
-          },
-          {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "totalReward",
-              "type": "uint256"
-          },
-          {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "winningKeys",
-              "type": "uint256"
-          }
-      ],
-      "name": "PoolRewardsClaimed",
-      "type": "event"
-  },
-  {
-      "anonymous": false,
-      "inputs": [
-          {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "challengeId",
-              "type": "uint256"
-          },
-          {
               "indexed": false,
               "internalType": "uint256",
               "name": "amount",
@@ -345,31 +307,6 @@ export const RefereeAbi = [
           }
       ],
       "name": "RewardsClaimed",
-      "type": "event"
-  },
-  {
-      "anonymous": false,
-      "inputs": [
-          {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "challengeId",
-              "type": "uint256"
-          },
-          {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "nodeLicenseId",
-              "type": "uint256"
-          },
-          {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "amount",
-              "type": "uint256"
-          }
-      ],
-      "name": "RewardsClaimedV2",
       "type": "event"
   },
   {
@@ -527,6 +464,49 @@ export const RefereeAbi = [
       "anonymous": false,
       "inputs": [
           {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "challengeId",
+              "type": "uint256"
+          },
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "bulkAddress",
+              "type": "address"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "stakedKeys",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "winningKeys",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "increase",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "decrease",
+              "type": "uint256"
+          }
+      ],
+      "name": "UpdateBulkSubmission",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
+      "inputs": [
+          {
               "indexed": false,
               "internalType": "uint256",
               "name": "prevAmount",
@@ -559,49 +539,6 @@ export const RefereeAbi = [
           }
       ],
       "name": "UpdateMaxStakeAmount",
-      "type": "event"
-  },
-  {
-      "anonymous": false,
-      "inputs": [
-          {
-              "indexed": true,
-              "internalType": "uint256",
-              "name": "challengeId",
-              "type": "uint256"
-          },
-          {
-              "indexed": true,
-              "internalType": "address",
-              "name": "poolAddress",
-              "type": "address"
-          },
-          {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "stakedKeys",
-              "type": "uint256"
-          },
-          {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "winningKeys",
-              "type": "uint256"
-          },
-          {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "increase",
-              "type": "uint256"
-          },
-          {
-              "indexed": false,
-              "internalType": "uint256",
-              "name": "decrease",
-              "type": "uint256"
-          }
-      ],
-      "name": "UpdatePoolSubmission",
       "type": "event"
   },
   {
@@ -727,6 +664,50 @@ export const RefereeAbi = [
               "internalType": "uint256",
               "name": "",
               "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          },
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "name": "bulkSubmissions",
+      "outputs": [
+          {
+              "internalType": "bool",
+              "name": "submitted",
+              "type": "bool"
+          },
+          {
+              "internalType": "bool",
+              "name": "claimed",
+              "type": "bool"
+          },
+          {
+              "internalType": "uint256",
+              "name": "keyCount",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "winningKeyCount",
+              "type": "uint256"
+          },
+          {
+              "internalType": "bytes",
+              "name": "assertionStateRootOrConfirmData",
+              "type": "bytes"
           }
       ],
       "stateMutability": "view",
@@ -863,6 +844,24 @@ export const RefereeAbi = [
   {
       "inputs": [
           {
+              "internalType": "address",
+              "name": "_bulkAddress",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "_challengeId",
+              "type": "uint256"
+          }
+      ],
+      "name": "claimBulkRewards",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
               "internalType": "uint256[]",
               "name": "_nodeLicenseIds",
               "type": "uint256[]"
@@ -886,24 +885,6 @@ export const RefereeAbi = [
   {
       "inputs": [
           {
-              "internalType": "address",
-              "name": "_poolAddress",
-              "type": "address"
-          },
-          {
-              "internalType": "uint256",
-              "name": "_challengeId",
-              "type": "uint256"
-          }
-      ],
-      "name": "claimPoolSubmissionRewards",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-  },
-  {
-      "inputs": [
-          {
               "internalType": "uint256",
               "name": "_nodeLicenseId",
               "type": "uint256"
@@ -917,50 +898,6 @@ export const RefereeAbi = [
       "name": "claimReward",
       "outputs": [],
       "stateMutability": "nonpayable",
-      "type": "function"
-  },
-  {
-      "inputs": [
-          {
-              "internalType": "uint256",
-              "name": "_nodeLicenseId",
-              "type": "uint256"
-          },
-          {
-              "internalType": "uint256",
-              "name": "_challengeId",
-              "type": "uint256"
-          },
-          {
-              "internalType": "uint256",
-              "name": "_boostFactor",
-              "type": "uint256"
-          },
-          {
-              "internalType": "bytes",
-              "name": "_confirmData",
-              "type": "bytes"
-          },
-          {
-              "internalType": "bytes",
-              "name": "_challengerSignedHash",
-              "type": "bytes"
-          }
-      ],
-      "name": "createAssertionHashAndCheckPayout",
-      "outputs": [
-          {
-              "internalType": "bool",
-              "name": "",
-              "type": "bool"
-          },
-          {
-              "internalType": "bytes32",
-              "name": "",
-              "type": "bytes32"
-          }
-      ],
-      "stateMutability": "view",
       "type": "function"
   },
   {
@@ -1104,7 +1041,7 @@ export const RefereeAbi = [
                       "type": "uint256"
                   }
               ],
-              "internalType": "struct Referee16.Challenge",
+              "internalType": "struct Referee9.Challenge",
               "name": "",
               "type": "tuple"
           }
@@ -1348,7 +1285,7 @@ export const RefereeAbi = [
                       "type": "bytes"
                   }
               ],
-              "internalType": "struct Referee16.Submission[]",
+              "internalType": "struct Referee9.Submission[]",
               "name": "",
               "type": "tuple[]"
           }
@@ -1514,50 +1451,6 @@ export const RefereeAbi = [
               "internalType": "address",
               "name": "",
               "type": "address"
-          }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-  },
-  {
-      "inputs": [
-          {
-              "internalType": "uint256",
-              "name": "",
-              "type": "uint256"
-          },
-          {
-              "internalType": "address",
-              "name": "",
-              "type": "address"
-          }
-      ],
-      "name": "poolSubmissions",
-      "outputs": [
-          {
-              "internalType": "bool",
-              "name": "submitted",
-              "type": "bool"
-          },
-          {
-              "internalType": "bool",
-              "name": "claimed",
-              "type": "bool"
-          },
-          {
-              "internalType": "uint256",
-              "name": "stakedKeyCount",
-              "type": "uint256"
-          },
-          {
-              "internalType": "uint256",
-              "name": "winningKeyCount",
-              "type": "uint256"
-          },
-          {
-              "internalType": "bytes",
-              "name": "assertionStateRootOrConfirmData",
-              "type": "bytes"
           }
       ],
       "stateMutability": "view",
@@ -1851,9 +1744,9 @@ export const RefereeAbi = [
   {
       "inputs": [
           {
-              "internalType": "uint256",
-              "name": "_nodeLicenseId",
-              "type": "uint256"
+              "internalType": "address",
+              "name": "_bulkAddress",
+              "type": "address"
           },
           {
               "internalType": "uint256",
@@ -1866,7 +1759,7 @@ export const RefereeAbi = [
               "type": "bytes"
           }
       ],
-      "name": "submitAssertionToChallenge",
+      "name": "submitBulkAssertion",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -1900,52 +1793,6 @@ export const RefereeAbi = [
           }
       ],
       "name": "submitChallenge",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-  },
-  {
-      "inputs": [
-          {
-              "internalType": "uint256[]",
-              "name": "_nodeLicenseIds",
-              "type": "uint256[]"
-          },
-          {
-              "internalType": "uint256",
-              "name": "_challengeId",
-              "type": "uint256"
-          },
-          {
-              "internalType": "bytes",
-              "name": "_confirmData",
-              "type": "bytes"
-          }
-      ],
-      "name": "submitMultipleAssertions",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-  },
-  {
-      "inputs": [
-          {
-              "internalType": "address",
-              "name": "_poolAddress",
-              "type": "address"
-          },
-          {
-              "internalType": "uint256",
-              "name": "_challengeId",
-              "type": "uint256"
-          },
-          {
-              "internalType": "bytes",
-              "name": "_confirmData",
-              "type": "bytes"
-          }
-      ],
-      "name": "submitPoolAssertion",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -2034,6 +1881,457 @@ export const RefereeAbi = [
           }
       ],
       "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "challengeId",
+              "type": "uint256"
+          },
+          {
+              "indexed": false,
+              "internalType": "address",
+              "name": "operator",
+              "type": "address"
+          },
+          {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "keysLength",
+              "type": "uint256"
+          }
+      ],
+      "name": "InvalidBatchSubmission",
+      "type": "event"
+  },
+  {
+      "anonymous": false,
+      "inputs": [],
+      "name": "StakingEnabled",
+      "type": "event"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+          }
+      ],
+      "name": "DEV_StakeV1",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "newThreshold",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "newBoostFactor",
+              "type": "uint256"
+          }
+      ],
+      "name": "addStakingTier",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "_nodeLicenseId",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "_challengeId",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "_boostFactor",
+              "type": "uint256"
+          },
+          {
+              "internalType": "bytes",
+              "name": "_confirmData",
+              "type": "bytes"
+          },
+          {
+              "internalType": "bytes",
+              "name": "_challengerSignedHash",
+              "type": "bytes"
+          }
+      ],
+      "name": "createAssertionHashAndCheckPayout",
+      "outputs": [
+          {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+          },
+          {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+          }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "enableStaking",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "_challengeId",
+              "type": "uint256"
+          }
+      ],
+      "name": "getChallenge",
+      "outputs": [
+          {
+              "components": [
+                  {
+                      "internalType": "bool",
+                      "name": "openForSubmissions",
+                      "type": "bool"
+                  },
+                  {
+                      "internalType": "bool",
+                      "name": "expiredForRewarding",
+                      "type": "bool"
+                  },
+                  {
+                      "internalType": "uint64",
+                      "name": "assertionId",
+                      "type": "uint64"
+                  },
+                  {
+                      "internalType": "bytes32",
+                      "name": "assertionStateRootOrConfirmData",
+                      "type": "bytes32"
+                  },
+                  {
+                      "internalType": "uint64",
+                      "name": "assertionTimestamp",
+                      "type": "uint64"
+                  },
+                  {
+                      "internalType": "bytes",
+                      "name": "challengerSignedHash",
+                      "type": "bytes"
+                  },
+                  {
+                      "internalType": "bytes",
+                      "name": "activeChallengerPublicKey",
+                      "type": "bytes"
+                  },
+                  {
+                      "internalType": "address",
+                      "name": "rollupUsed",
+                      "type": "address"
+                  },
+                  {
+                      "internalType": "uint256",
+                      "name": "createdTimestamp",
+                      "type": "uint256"
+                  },
+                  {
+                      "internalType": "uint256",
+                      "name": "totalSupplyOfNodesAtChallengeStart",
+                      "type": "uint256"
+                  },
+                  {
+                      "internalType": "uint256",
+                      "name": "rewardAmountForClaimers",
+                      "type": "uint256"
+                  },
+                  {
+                      "internalType": "uint256",
+                      "name": "amountForGasSubsidy",
+                      "type": "uint256"
+                  },
+                  {
+                      "internalType": "uint256",
+                      "name": "numberOfEligibleClaimers",
+                      "type": "uint256"
+                  },
+                  {
+                      "internalType": "uint256",
+                      "name": "amountClaimedByClaimers",
+                      "type": "uint256"
+                  }
+              ],
+              "internalType": "struct Referee5.Challenge",
+              "name": "",
+              "type": "tuple"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256[]",
+              "name": "_challengeIds",
+              "type": "uint256[]"
+          },
+          {
+              "internalType": "uint256",
+              "name": "_nodeLicenseId",
+              "type": "uint256"
+          }
+      ],
+      "name": "getSubmissionsForChallenges",
+      "outputs": [
+          {
+              "components": [
+                  {
+                      "internalType": "bool",
+                      "name": "submitted",
+                      "type": "bool"
+                  },
+                  {
+                      "internalType": "bool",
+                      "name": "claimed",
+                      "type": "bool"
+                  },
+                  {
+                      "internalType": "bool",
+                      "name": "eligibleForPayout",
+                      "type": "bool"
+                  },
+                  {
+                      "internalType": "uint256",
+                      "name": "nodeLicenseId",
+                      "type": "uint256"
+                  },
+                  {
+                      "internalType": "bytes",
+                      "name": "assertionStateRootOrConfirmData",
+                      "type": "bytes"
+                  }
+              ],
+              "internalType": "struct Referee5.Submission[]",
+              "name": "",
+              "type": "tuple[]"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+          }
+      ],
+      "name": "getTotalClaims",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256"
+          }
+      ],
+      "name": "removeStakingTier",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "bytes",
+              "name": "_challengerPublicKey",
+              "type": "bytes"
+          }
+      ],
+      "name": "setChallengerPublicKey",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "_nodeLicenseAddress",
+              "type": "address"
+          }
+      ],
+      "name": "setNodeLicenseAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "_rollupAddress",
+              "type": "address"
+          }
+      ],
+      "name": "setRollupAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "pool",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "staker",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256[]",
+              "name": "keyIds",
+              "type": "uint256[]"
+          }
+      ],
+      "name": "stakeKeys",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "_nodeLicenseId",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "_challengeId",
+              "type": "uint256"
+          },
+          {
+              "internalType": "bytes",
+              "name": "_confirmData",
+              "type": "bytes"
+          }
+      ],
+      "name": "submitAssertionToChallenge",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256[]",
+              "name": "_nodeLicenseIds",
+              "type": "uint256[]"
+          },
+          {
+              "internalType": "uint256",
+              "name": "_challengeId",
+              "type": "uint256"
+          },
+          {
+              "internalType": "bytes",
+              "name": "_confirmData",
+              "type": "bytes"
+          }
+      ],
+      "name": "submitMultipleAssertions",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "toggleAssertionChecking",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "newAmount",
+              "type": "uint256"
+          }
+      ],
+      "name": "updateMaxKeysPerPool",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "newAmount",
+              "type": "uint256"
+          }
+      ],
+      "name": "updateMaxStakePerLicense",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "newThreshold",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "newBoostFactor",
+              "type": "uint256"
+          }
+      ],
+      "name": "updateStakingTier",
+      "outputs": [],
+      "stateMutability": "nonpayable",
       "type": "function"
   }
 ];

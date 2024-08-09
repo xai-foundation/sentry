@@ -11,8 +11,8 @@ import { retry } from '../index.js';
  * @param logger - A logger function to log progress.
  * @returns The number of rewards successfully claimed.
  */
-export async function claimPoolSubmissionRewards(
-    pools: string[],
+export async function claimBulkSubmissionRewards(
+    bulkAddresses: string[],
     challengeNumber: bigint,
     signer: ethers.Signer,
     logger: (log: string) => void
@@ -23,20 +23,20 @@ export async function claimPoolSubmissionRewards(
 
     let successfulClaims = 0;
 
-    for (const pool of pools) {
+    for (const address of bulkAddresses) {
         try {
             // Retry claiming the submission reward for each pool up to 3 times
-            await retry(() => refereeContract.claimPoolSubmissionRewards(
-                pool,
+            await retry(() => refereeContract.claimBulkRewards(
+                address,
                 challengeNumber
             ), 3);
 
             // Log success for the current pool
-            logger(`Successfully claimed submission reward for pool: ${pool}`);
+            logger(`Successfully claimed bulk submission reward for: ${address}`);
             successfulClaims++;
         } catch (error) {
             // Log error for the current pool
-            logger(`Failed to claim submission reward for pool: ${pool}, Error: ${error}`);
+            logger(`Failed to claim bulk submission reward for: ${address}, Error: ${error}`);
         }
     }
 

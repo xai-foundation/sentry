@@ -5,6 +5,7 @@ import { config } from "../config.js";
 /**
  * 
  * @param operator - The public key of the wallet running the operator
+ * @param whitelist - Optional array of whitelisted addresses
  * @returns The SentryWallet entity from the graph
  */
 export async function getSentryWalletsForOperator(
