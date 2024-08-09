@@ -45,6 +45,7 @@ function RunWinningKeyCountSimulations(deployInfrastructure) {
                         random1,  // Random confirmData
                         random2   // Random challengerSignedHash
                     );
+                    console.log("Winning Key Count: ", winningKeyCount);
                     
                     const winningKeyCount2 = await refereeCalculations.getWinningKeyCount(
                         keyCount, 
@@ -55,6 +56,7 @@ function RunWinningKeyCountSimulations(deployInfrastructure) {
                         random2   // Random challengerSignedHash
                         // Random challengerSignedHash
                     );
+                    console.log("Winning Key Count 2: ", winningKeyCount2);
 
                     expect(winningKeyCount).to.equal(winningKeyCount2);
 
