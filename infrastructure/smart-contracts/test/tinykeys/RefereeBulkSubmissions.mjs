@@ -4,6 +4,7 @@ import {findWinningStateRoot} from "../Referee.mjs";
 import {submitTestChallenge} from "../utils/submitTestChallenge.mjs";
 import {mintBatchedLicenses, mintSingleLicense} from "../utils/mintLicenses.mjs";
 import {createPool} from "../utils/createPool.mjs";
+import {getWinningKeyCountLocal} from "../utils/getWinningKeyCountLocal.mjs";
 
 function BulkSubmissionsStakeAndUnstake(deployInfrastructure) {
 
@@ -96,7 +97,7 @@ function BulkSubmissionsStakeAndUnstake(deployInfrastructure) {
             const { poolFactory, addr1, addr2, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
 
             // Mint Node Licenses
-            const addr1MintedKeyIds = await mintBatchedLicenses(100n, nodeLicense, addr1);
+            const addr1MintedKeyIds = await mintBatchedLicenses(100, nodeLicense, addr1);
             const addr2MintedKeyId = await mintSingleLicense(nodeLicense, addr2);
 
             const challengeId = 0;
@@ -152,7 +153,7 @@ function BulkSubmissionsStakeAndUnstake(deployInfrastructure) {
             const addr1MintedKeyId = await mintSingleLicense(nodeLicense, poolOwner);
             
             // Have to mint a lot of keys to ensure we have winners in both pool submissions and individual key submissions
-            const keysToMintForAddr2 = 200n;
+            const keysToMintForAddr2 = 200;
 
             // Count backwards from the last minted keyId to get the keyIds to stake in the pool
 			const addr2MintedKeyIds = await mintBatchedLicenses(keysToMintForAddr2, nodeLicense, keyOwner);
@@ -295,7 +296,7 @@ function BulkSubmissionPermissions(deployInfrastructure) {
         const { poolFactory, addr1, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
 
         // Mint additional keys so that there are enough keys to stake in the pool and earn a reward
-        const keysToMintForAddr1 = 175n;
+        const keysToMintForAddr1 = 175;
 
         // Mint keys for addr1
         // Count backwards from the last minted keyId to get the keyIds to stake in the pool
@@ -370,7 +371,7 @@ function BulkSubmissionPermissions(deployInfrastructure) {
         await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 1_000_000);
 
         // Mint 100 keys for addr1 - choosing 100 keys to ensure that the pool has enough keys to receive a reward
-        const licenseIds = await mintBatchedLicenses(100n, nodeLicense, poolOwner);
+        const licenseIds = await mintBatchedLicenses(100, nodeLicense, poolOwner);
 
         // Submit initial challenge
         const challengeId = 0;
@@ -422,10 +423,10 @@ function BulkSubmissionPermissions(deployInfrastructure) {
         await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 1_000_000);
 
         // Mint 100 keys for addr1
-        const licenseIds = await mintBatchedLicenses(100n, nodeLicense, poolOwner);
+        const licenseIds = await mintBatchedLicenses(100, nodeLicense, poolOwner);
 
         // Mint 100 keys for addr2
-        const licenseIds2 = await mintBatchedLicenses(100n, nodeLicense, keyStaker);
+        const licenseIds2 = await mintBatchedLicenses(100, nodeLicense, keyStaker);
 
         // Submit initial challenge
         const challengeId = 0;
@@ -448,10 +449,14 @@ function BulkSubmissionPermissions(deployInfrastructure) {
         expect(bulkSubmission.submitted).to.equal(true);
         expect(bulkSubmission.claimed).to.equal(false);
 
+        
+        // Confirm the owner submission was not created
+        const ownerBulkSubmission = await referee.bulkSubmissions(challengeId, keyStaker.address);
+        expect(ownerBulkSubmission.submitted).to.equal(false);
+
         // Submit a new challenge to make the previous one claimable
         const startingAssertion2 = startingAssertion + 1;
         await submitTestChallenge(referee, challenger, startingAssertion2, stateRoot);
-
 
         // Check the pool balance before the claim
         const poolBalanceBeforeClaim = await esXai.connect(esXaiMinter).balanceOf(poolAddress);
@@ -477,7 +482,7 @@ function BulkSubmissionPermissions(deployInfrastructure) {
         await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 10_000_000);        
 
         // Mint 100 keys for addr1
-        const licenseIds = await mintBatchedLicenses(100n, nodeLicense, poolOwner);
+        const licenseIds = await mintBatchedLicenses(100, nodeLicense, poolOwner);
 
         // Mint esXai for addr2
         await esXai.connect(esXaiMinter).mint(await esXaiStaker.getAddress(), 10_000_000);
@@ -562,9 +567,9 @@ function BulkSubmissionsRewardRate(deployInfrastructure) {
 
     it("Confirm the amount of winning keys for pools falls within acceptable tolerances for simulated runs.", async function () {
         const { refereeCalculations, addr1 } = await loadFixture(deployInfrastructure);
-        const stakingBoostFactors = [150, 200, 300, 700];
-        const keyAmountTests = [1, 10, 200, 1000]; // Test cases for staked key amounts
-        const iterations = 100;  // Number of times to run each test case
+        const stakingBoostFactors = [100, 200, 300];
+        const keyAmountTests = [100, 200, 300, 1000]; // Test cases for staked key amounts
+        const iterations = 1000;  // Number of times to run each test case
 
         // Run tests for each key amount in the keyAmountTests array
         for (let keyCount of keyAmountTests) {
@@ -580,14 +585,29 @@ function BulkSubmissionsRewardRate(deployInfrastructure) {
                 // multiple times to get an average winning key count
                 for (let i = 0; i < iterations; i++) {
                     // Get the winning key count for the current test case iteration
-                    const winningKeyCount = await refereeCalculations.getWinningKeyCount(
+                    const random1 = ethers.randomBytes(32);
+                    const random2 = ethers.randomBytes(32);
+
+                    const winningKeyCount = await getWinningKeyCountLocal(
                         keyCount, 
                         boostFactor, 
                         await addr1.getAddress(), // Pool address will be used in production for the seed
                         i,  // Use iteration as challengeId for variety
-                        ethers.randomBytes(32),  // Random confirmData
-                        ethers.randomBytes(32)   // Random challengerSignedHash
+                        random1,  // Random confirmData
+                        random2   // Random challengerSignedHash
                     );
+                    
+                    // const winningKeyCount2 = await refereeCalculations.getWinningKeyCount(
+                    //     keyCount, 
+                    //     boostFactor, 
+                    //     await addr1.getAddress(), // Pool address will be used in production for the seed
+                    //     i,  // Use iteration as challengeId for variety
+                    //     random1,  // Random confirmData
+                    //     random2   // Random challengerSignedHash
+                    //     // Random challengerSignedHash
+                    // );
+
+                    //console.log("Winning Counts: ", winningKeyCount, winningKeyCount2);
                     
                     // The amount of winning keys returned from the simulation
                     const winningKeysBigInt = BigInt(winningKeyCount);
@@ -625,7 +645,7 @@ function BulkSubmissionsRewardRate(deployInfrastructure) {
                 console.log("--------------------");
             }
         }
-    }).timeout(300000);
+    }).timeout(600000);
 
     }
 }

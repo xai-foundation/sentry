@@ -31,7 +31,7 @@ export const mintBatchedLicenses = async (amount, nodeLicenseContract, signerWal
             }
 
             // Decrease the amount left to mint by 50
-            amountLeft -= 50n;
+            amountLeft = amountLeft - 50;
         } else {
             // Get the price for minting the remaining licenses
             const price = await nodeLicenseContract.price(amountLeft, "");

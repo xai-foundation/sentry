@@ -347,17 +347,13 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
 
             // Process Airdrop
             let qtyToProcess = BigInt(5);
-            let airdropCounter = await tinyKeysAirDrop.airdropCounter();
 
-            const tokenIds1 = [1,2,3,4,5];
-            const tokenIds2 = [6,7,8,9,10];
-            const tokenIds3 = [11,12,13];
             await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(qtyToProcess);
-            await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(tokenIds1);
+            await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(qtyToProcess);
             await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(qtyToProcess);
-            await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(tokenIds2);
+            await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(qtyToProcess);
             await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(3);
-            await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(tokenIds3);
+            await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(qtyToProcess);
             await tinyKeysAirDrop.connect(deployer).completeAirDrop();
             
             // Confirm balances after
