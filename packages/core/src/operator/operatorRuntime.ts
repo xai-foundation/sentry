@@ -24,6 +24,17 @@ export interface NodeLicenseInformation {
 
 export type NodeLicenseStatusMap = Map<bigint, NodeLicenseInformation>;
 
+
+export interface SentryAddressInformation {
+    address: string
+    keyCount: string
+    isPool: boolean
+    status: string | NodeLicenseStatus;
+}
+
+//New status map for status mapped to a wallet or a pool address
+export type SentryAddressStatusMap = Map<string, NodeLicenseInformation>;
+
 export type PublicNodeBucketInformation = {
     assertion: number,
     blockHash: string,

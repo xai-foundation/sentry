@@ -1,7 +1,7 @@
 import { PoolInfo, RefereeConfig, SentryKey, SentryWallet } from "@sentry/sentry-subgraph-client";
 import { getBoostFactor as getBoostFactorRPC, getSubmissionsForChallenges, KEYS_PER_BATCH, NodeLicenseStatus, ProcessChallenge, submitMultipleAssertions } from "../../index.js";
 import { operatorState } from "../operatorState.js";
-import { updateNodeLicenseStatus } from "../updateNodeLicenseStatus.js";
+import { updateNodeLicenseStatus_V1 } from "./updateNodeLicenseStatus.js";
 import { createAssertionHashAndCheckPayout_V1 } from "./createAssertionHashAndCheckPayout.js";
 import { calculateBoostFactor_V1 } from "./calculateBoostFactor.js";
 import { retry } from "../../../index.js";
@@ -35,16 +35,16 @@ export async function processNewChallenge_V1(
         const sentryKey = sentryKeysMap[nodeLicenseId.toString()];
 
         // Check the nodeLicense eligibility for this challenge
-        updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.CHECKING_MINT_TIMESTAMP_ELIGIBILITY);
+        updateNodeLicenseStatus_V1(nodeLicenseId, NodeLicenseStatus.CHECKING_MINT_TIMESTAMP_ELIGIBILITY);
 
         if (challenge.createdTimestamp <= sentryKey.mintTimeStamp) {
             operatorState.cachedLogger(`Sentry Key ${nodeLicenseId} is not eligible for challenge ${challengeNumber}.`);
-            updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
+            updateNodeLicenseStatus_V1(nodeLicenseId, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
             continue;
         }
 
         // Check if nodeLicense is eligible for a payout
-        updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.CHECKING_IF_ELIGIBLE_FOR_PAYOUT);
+        updateNodeLicenseStatus_V1(nodeLicenseId, NodeLicenseStatus.CHECKING_IF_ELIGIBLE_FOR_PAYOUT);
 
         try {
             let isPool = sentryKey.assignedPool != "0x";
@@ -64,7 +64,7 @@ export async function processNewChallenge_V1(
             if (!payoutEligible) {
                 nonWinnerKeysCount++;
                 // cachedLogger(`Sentry Key ${nodeLicenseId} did not accrue esXAI for the challenge ${challengeNumber}. A Sentry Key receives esXAI every few days.`);
-                updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
+                updateNodeLicenseStatus_V1(nodeLicenseId, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
                 continue;
             }
         } catch (error: any) {
@@ -91,12 +91,12 @@ export async function processNewChallenge_V1(
 
             if (hasSubmission) {
                 operatorState.cachedLogger(`Sentry Key ${nodeLicenseId} has submitted for challenge ${challengeNumber} by another node. If multiple nodes are running, this message can be ignored.`);
-                updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
+                updateNodeLicenseStatus_V1(nodeLicenseId, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
                 continue;
             }
 
             batchedWinnerKeys.push(nodeLicenseId);
-            updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
+            updateNodeLicenseStatus_V1(nodeLicenseId, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
 
         } catch (error: any) {
             operatorState.cachedLogger(`Error submitting assertion for Sentry Key ${nodeLicenseId} to challenge ${challengeNumber} - ${error && error.message ? error.message : error}`);

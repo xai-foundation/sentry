@@ -1,7 +1,7 @@
 import { SentryKey, SentryWallet } from "@sentry/sentry-subgraph-client";
 import { claimRewardsBulk, getSubmissionsForChallenges, KEYS_PER_BATCH, NodeLicenseStatus } from "../../index.js";
 import { operatorState } from "../operatorState.js";
-import { updateNodeLicenseStatus } from "../updateNodeLicenseStatus.js";
+import { updateNodeLicenseStatus_V1 } from "./updateNodeLicenseStatus.js";
 import { checkKycStatus, retry } from "../../../index.js";
 import { findSubmissionOnSentryKey } from "../findSubmissionOnSentryKey.js";
 
@@ -27,7 +27,7 @@ export async function processClosedChallenges_V1(
 
         const sentryKey = sentryKeysMap[nodeLicenseId.toString()];
         beforeStatus[nodeLicenseId.toString()] = operatorState.nodeLicenseStatusMap.get(nodeLicenseId)?.status;
-        updateNodeLicenseStatus(nodeLicenseId, NodeLicenseStatus.QUERYING_FOR_UNCLAIMED_SUBMISSIONS);
+        updateNodeLicenseStatus_V1(nodeLicenseId, NodeLicenseStatus.QUERYING_FOR_UNCLAIMED_SUBMISSIONS);
         operatorState.safeStatusCallback();
 
         try {
@@ -47,12 +47,12 @@ export async function processClosedChallenges_V1(
             }
 
             if (!hasSubmission) {
-                updateNodeLicenseStatus(nodeLicenseId, beforeStatus[nodeLicenseId.toString()] || "Waiting for next challenge");
+                updateNodeLicenseStatus_V1(nodeLicenseId, beforeStatus[nodeLicenseId.toString()] || "Waiting for next challenge");
                 operatorState.safeStatusCallback();
                 continue;
             }
 
-            updateNodeLicenseStatus(nodeLicenseId, `Checking KYC Status`);
+            updateNodeLicenseStatus_V1(nodeLicenseId, `Checking KYC Status`);
             operatorState.safeStatusCallback();
 
             let isKYC: boolean = false;
@@ -79,7 +79,7 @@ export async function processClosedChallenges_V1(
                 }
                 challengeToEligibleNodeLicensesMap.get(challengeId)?.push(BigInt(nodeLicenseId));
 
-                updateNodeLicenseStatus(nodeLicenseId, `Claiming esXAI...`);
+                updateNodeLicenseStatus_V1(nodeLicenseId, `Claiming esXAI...`);
                 operatorState.safeStatusCallback();
             } else {
 
@@ -88,7 +88,7 @@ export async function processClosedChallenges_V1(
                 }
                 nonKYCWallets[sentryKey.owner]++;
 
-                updateNodeLicenseStatus(nodeLicenseId, `Cannot Claim, Failed KYC`);
+                updateNodeLicenseStatus_V1(nodeLicenseId, `Cannot Claim, Failed KYC`);
                 operatorState.safeStatusCallback();
             }
 
@@ -112,7 +112,7 @@ export async function processClosedChallenges_V1(
             await processClaimForChallenge(challengeId, uniqueNodeLicenseIds, sentryKeysMap);
             uniqueNodeLicenseIds.forEach(key => {
                 if (beforeStatus[key.toString()]) {
-                    updateNodeLicenseStatus(key, beforeStatus[key.toString()]!);
+                    updateNodeLicenseStatus_V1(key, beforeStatus[key.toString()]!);
                 }
             });
             operatorState.safeStatusCallback();

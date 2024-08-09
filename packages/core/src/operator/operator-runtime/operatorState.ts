@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { NodeLicenseStatusMap, PublicNodeBucketInformation } from "../operatorRuntime.js";
+import { NodeLicenseStatusMap, PublicNodeBucketInformation, SentryAddressStatusMap } from "../operatorRuntime.js";
 import { Challenge } from "../../index.js";
 import { SentryKey } from "@sentry/sentry-subgraph-client";
 
@@ -18,6 +18,7 @@ type OperatorState = {
     cachedKeysOfOwner: { [keyId: string]: SentryKey };
     nodeLicenseStatusMap: NodeLicenseStatusMap;
     passedInOwnersAndPools: string[] | undefined;
+    sentryAddressStatusMap: SentryAddressStatusMap;
 };
 
 /**
@@ -34,5 +35,6 @@ export const operatorState: OperatorState = {
     mintTimestamps: {},
     cachedKeysOfOwner: {},
     nodeLicenseStatusMap: new Map(),
-    passedInOwnersAndPools: []
+    passedInOwnersAndPools: [],
+    sentryAddressStatusMap: new Map(),
 };
