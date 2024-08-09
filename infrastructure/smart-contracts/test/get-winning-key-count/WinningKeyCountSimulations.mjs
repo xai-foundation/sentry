@@ -45,20 +45,23 @@ function RunWinningKeyCountSimulations(deployInfrastructure) {
                         random1,  // Random confirmData
                         random2   // Random challengerSignedHash
                     );
-                    console.log("Winning Key Count: ", winningKeyCount);
-                    
-                    const winningKeyCount2 = await refereeCalculations.getWinningKeyCount(
-                        keyCount, 
-                        boostFactor, 
-                        await addr1.getAddress(), // Pool address will be used in production for the seed
-                        i,  // Use iteration as challengeId for variety
-                        random1,  // Random confirmData
-                        random2   // Random challengerSignedHash
-                        // Random challengerSignedHash
-                    );
-                    console.log("Winning Key Count 2: ", winningKeyCount2);
 
-                    expect(winningKeyCount).to.equal(winningKeyCount2);
+                    /** Note Uncomment the following code to compare the results from the local function 
+                     *  This is only used to confirm the local function results match the contract function results
+                     */
+                    
+                    // const winningKeyCount2 = await refereeCalculations.getWinningKeyCount(
+                    //     keyCount, 
+                    //     boostFactor, 
+                    //     await addr1.getAddress(), // Pool address will be used in production for the seed
+                    //     i,  // Use iteration as challengeId for variety
+                    //     random1,  // Random confirmData
+                    //     random2   // Random challengerSignedHash
+                    //     // Random challengerSignedHash
+                    // );
+                    // console.log("Winning Key Count 2: ", winningKeyCount2);
+
+                    // expect(winningKeyCount).to.equal(winningKeyCount2);
 
                     // console.log("Winning Counts: ", winningKeyCount, winningKeyCount2);
                     

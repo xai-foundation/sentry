@@ -33,7 +33,11 @@ export function getWinningKeyCountLocal(keyCount, boostFactor, bulkAddress, chal
         const randomFactor = generateRandomNumber(seed, "factor") % BigInt(2);
         
         if(randomThreshold < 300){
-            randomFactor === BigInt(0) ? 1 : 0;
+            if(randomFactor === BigInt(0)){
+                return expectedWinningKeys + 1;
+            }else{
+                return expectedWinningKeys - 1;
+            }
         }else{
             return expectedWinningKeys;
         }
