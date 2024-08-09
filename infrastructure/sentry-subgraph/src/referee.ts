@@ -74,6 +74,10 @@ export function handleInitialized(event: Initialized): void {
     refereeConfig.maxKeysPerPool = BigInt.fromI32(0)
   }
 
+  // if (event.params.version == 7) {
+  //   //prepared for version 7
+  // }
+
   refereeConfig.save();
 }
 
@@ -547,17 +551,40 @@ export function handleNewBulkSubmission(event: NewBulkSubmissionEvent): void {
     return;
   }
 
-  const pool = PoolInfo.load(event.params.bulkAddress.toHexString())
-  if (!pool) {
-    log.warning("Failed to find pool handleNewBulkSubmission: bulkAddress: " + event.params.bulkAddress.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
-    return;
-  }
-
   const bulkSubmission = new BulkSubmission(event.params.bulkAddress.toHexString() + "_" + event.params.challengeId.toString())
   bulkSubmission.challengeId = event.params.challengeId
   bulkSubmission.bulkAddress = event.params.bulkAddress
   bulkSubmission.challenge = challenge.id
-  bulkSubmission.poolInfo = pool.id
+
+  //will always be either sentry wallet or pool
+  const pool = PoolInfo.load(event.params.bulkAddress.toHexString())
+  if (pool) {
+    bulkSubmission.poolInfo = pool.id
+    bulkSubmission.isPool = true
+    let poolChallenges = PoolChallenge.load(event.params.bulkAddress.toHexString() + "_" + event.params.challengeId.toString())
+    if (poolChallenges == null) {
+      poolChallenges = new PoolChallenge(event.params.bulkAddress.toHexString() + "_" + event.params.challengeId.toString())
+      poolChallenges.pool = pool.id;
+      poolChallenges.challenge = challenge.id
+      poolChallenges.claimKeyCount = BigInt.fromI32(0)
+      poolChallenges.totalClaimedEsXaiAmount = BigInt.fromI32(0)
+      poolChallenges.eligibleSubmissionsCount = BigInt.fromI32(0)
+      poolChallenges.totalStakedEsXaiAmount = pool.totalStakedEsXaiAmount
+      poolChallenges.totalStakedKeyAmount = pool.totalStakedKeyAmount
+    }
+    poolChallenges.submittedKeyCount = event.params.stakedKeys
+    poolChallenges.eligibleSubmissionsCount = event.params.winningKeys
+    poolChallenges.save()
+  } else {
+    bulkSubmission.isPool = false
+    const sentryWallet = SentryWallet.load(event.params.bulkAddress.toHexString())
+    if (!sentryWallet) {
+      log.warning("Failed to find sentryWallet handleNewBulkSubmission: bulkAddress: " + event.params.bulkAddress.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
+      return;
+    }
+    bulkSubmission.sentryWallet = sentryWallet.id
+  }
+
   bulkSubmission.keyCount = event.params.stakedKeys
   bulkSubmission.winningKeyCount = event.params.winningKeys
   bulkSubmission.claimedRewardsAmount = BigInt.fromI32(0)
@@ -568,22 +595,6 @@ export function handleNewBulkSubmission(event: NewBulkSubmissionEvent): void {
   bulkSubmission.claimed = false
   bulkSubmission.save()
 
-  let poolChallenges = PoolChallenge.load(event.params.bulkAddress.toHexString() + "_" + event.params.challengeId.toString())
-  if (poolChallenges == null) {
-    poolChallenges = new PoolChallenge(event.params.bulkAddress.toHexString() + "_" + event.params.challengeId.toString())
-    poolChallenges.pool = pool.id;
-    poolChallenges.challenge = challenge.id
-    poolChallenges.claimKeyCount = BigInt.fromI32(0)
-    poolChallenges.totalClaimedEsXaiAmount = BigInt.fromI32(0)
-    poolChallenges.eligibleSubmissionsCount = BigInt.fromI32(0)
-    poolChallenges.totalStakedEsXaiAmount = pool.totalStakedEsXaiAmount
-    poolChallenges.totalStakedKeyAmount = pool.totalStakedKeyAmount
-  }
-
-  poolChallenges.submittedKeyCount = event.params.stakedKeys
-  poolChallenges.eligibleSubmissionsCount = event.params.winningKeys
-  poolChallenges.save()
-  
   challenge.numberOfEligibleClaimers = challenge.numberOfEligibleClaimers.plus(event.params.winningKeys)
   challenge.save()
 }
@@ -615,9 +626,9 @@ export function handleUpdateBulkSubmission(event: UpdateBulkSubmissionEvent): vo
   poolChallenges.eligibleSubmissionsCount = event.params.winningKeys
   poolChallenges.save()
 
-  if(event.params.increase.gt(BigInt.fromI32(0))){
+  if (event.params.increase.gt(BigInt.fromI32(0))) {
     challenge.numberOfEligibleClaimers = challenge.numberOfEligibleClaimers.plus(event.params.increase)
-  }else{
+  } else {
     challenge.numberOfEligibleClaimers = challenge.numberOfEligibleClaimers.minus(event.params.decrease)
   }
   challenge.save()
@@ -642,16 +653,19 @@ export function handleBulkRewardsClaimed(event: BulkRewardsClaimedEvent): void {
   bulkSubmission.claimed = true
   bulkSubmission.save()
 
-  let poolChallenges = PoolChallenge.load(event.params.bulkAddress.toHexString() + "_" + event.params.challengeId.toString())
-  if (poolChallenges == null) {
-    log.warning("Failed to find poolChallenges in handleBulkRewardsClaimed for challenge " + event.params.challengeId.toHexString() + " and poolAdress: " + event.params.bulkAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), [])
-    return
+  if (bulkSubmission.isPool) {
+    let poolChallenges = PoolChallenge.load(event.params.bulkAddress.toHexString() + "_" + event.params.challengeId.toString())
+    if (poolChallenges == null) {
+      log.warning("Failed to find poolChallenges in handleBulkRewardsClaimed for challenge " + event.params.challengeId.toHexString() + " and poolAdress: " + event.params.bulkAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), [])
+      return
+    }
+  
+    poolChallenges.claimKeyCount = event.params.winningKeys;
+    poolChallenges.totalClaimedEsXaiAmount = event.params.totalReward;
+    poolChallenges.save()
+  
+    challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(event.params.totalReward);
+    challenge.save();
   }
 
-  poolChallenges.claimKeyCount = event.params.winningKeys;
-  poolChallenges.totalClaimedEsXaiAmount = event.params.totalReward;
-  poolChallenges.save()
-
-  challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(event.params.totalReward);
-  challenge.save();
 }
