@@ -2,18 +2,16 @@
 FROM node:20.11.0 AS release
 
 # Set environment variables
-ENV NEXT_PUBLIC_APP_ENV=development
 ENV NEXT_TELEMETRY_DISABLED 1
 
 # Install pnpm globally
-RUN npm install -g pnpm
+RUN npm i -g pnpm@9.7.0 nx@18.3.3
 
 # Set the working directory inside the container
 WORKDIR /app
 
 # Copy the entire monorepo to the container, excluding node_modules and other ignored files
 COPY . .
-COPY .nx .nx
 
 # Install all dependencies for the monorepo
 RUN pnpm install
@@ -25,5 +23,4 @@ RUN npx nx build @sentry/web-staking
 EXPOSE 3000
 
 # Dev CMD to run the staking app - handled by deployment
-# CMD ["./node_modules/next/dist/bin/next", "start"]
 CMD ["npx", "nx", "start", "@sentry/web-staking"]
