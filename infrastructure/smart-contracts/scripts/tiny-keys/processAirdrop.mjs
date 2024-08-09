@@ -1,6 +1,6 @@
 import {config, TinyKeysAirdropAbi} from "@sentry/core";
 
-const TINY_KEYS_AIRDROP_ADDRESS = config.tinyKeysAirdropAddress; // Needs to be set after tiny key airdrop contract deployment
+const TINY_KEYS_AIRDROP_ADDRESS = config.tinyKeysAirdropAddress; //TODO Needs to be set after tiny key airdrop contract deployment
 
 async function main() {
 
