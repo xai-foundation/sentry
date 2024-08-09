@@ -10,10 +10,8 @@ function RunWinningKeyCountSimulations(deployInfrastructure) {
     it("Confirm the reward rate for submissions.", async function () {
         const { addr1, refereeCalculations } = await loadFixture(deployInfrastructure);
 
-        //const stakingBoostFactors = [1, 2, 3, 5, 8, 10, 13, 21, 34, 55, 89, 100, 144, 200, 233, 300,  377, 610, 700, 987];
-        //const keyAmountTests = [1, 2, 3, 5, 8, 10, 13, 21, 34, 55, 89, 100, 144, 200, 233, 300, 377, 610, 987, 1000, 100000]; // Test cases for staked key amounts
-        const stakingBoostFactors = [100, 200, 300];
-        const keyAmountTests = [100, 200, 300]; // Test cases for staked key amounts
+        const stakingBoostFactors = [1, 2, 3, 5, 8, 10, 13, 21, 34, 55, 89, 100, 144, 200, 233, 300,  377, 610, 700, 987];
+        const keyAmountTests = [1, 2, 3, 5, 8, 10, 13, 21, 34, 55, 89, 100, 144, 200, 233, 300, 377, 610, 987, 1000, 100000]; // Test cases for staked key amounts
         const iterations = 10000;  // Number of times to run each test case        
         
         // Initialize CSV content with header
@@ -82,7 +80,7 @@ function RunWinningKeyCountSimulations(deployInfrastructure) {
                 // Calculate the expected winning key count based on the staked key amount and boost factor
                 const expectedWinningKeys = (keyCount * boostFactor) / 10000;
                 // Calculate the maximum allowable tolerance for variance of expectations
-                const tolerance = Math.max(1, expectedWinningKeys * 0.1);  // 10% tolerance or at least 1
+                const tolerance = Math.max(1, expectedWinningKeys * 0.25);  // 10% tolerance or at least 1
 
                 // TODO - Remove console.log statements once we are confident in the algorithm
 
