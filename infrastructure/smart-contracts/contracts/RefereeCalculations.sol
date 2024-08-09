@@ -71,7 +71,9 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
     ) public pure returns (uint256 winningKeyCount) {
         // We first check to confirm the bulk submission has some keys and the boost factor is valid.
         require(_keyCount > 0, "Error: Key Count Must Be Greater Than 0.");
-        require(_boostFactor > 0, "Error: Boost factor must be greater than zero."
+        require(
+            _boostFactor > 0,
+            "Error: Boost factor must be greater than zero."
         );
 
         // The submission's chance of winning is based on the bonus (boost factor) 100 = 1% per key.
@@ -118,6 +120,43 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
             // It ensures that there is a small but fair chance for the submission to win a reward.
             return randomThreshold < scaledExpectedWinningKeys ? 1 : 0;
         }
+
+        if (expectedWinningKeys > 0 && expectedWinningKeys < 4) {
+            // To introduce variance and unpredictability in cases where the expected number of winning keys
+            // is low (between 1 and 3), we add a conditional adjustment to the key count.
+
+            // We generate a random number between 0 and 999.
+            // The random number is generated using the keccak256 hash function.
+            // We combine the seed with the string "threshold" to create a unique input for the hash function.
+            // This ensures that the random number is different each time based on the unique inputs.
+            uint256 randomThreshold = uint256(
+                keccak256(abi.encodePacked(seed, "threshold"))
+            ) % 1000;
+
+            // We introduce variability when the expected winning keys are in the range [1, 3].
+            // We do this by checking if the generated random number is less than 300 (i.e., 30% of the time).
+            // If this condition is met, we proceed to adjust the winning key count by either adding or subtracting 1.
+            if (randomThreshold < 300) {
+                // We generate another random number between 0 and 1.
+                // This number will determine whether we increase or decrease the expected winning keys.
+                // As before, we use the keccak256 hash function, but with a different unique input string ("factor").
+                // This ensures further randomness and unpredictability in the outcome.
+                uint256 randomFactor = uint256(
+                    keccak256(abi.encodePacked(seed, "factor"))
+                ) % 2;
+
+                // If the generated random number (randomFactor) is 0, we add 1 to the expected number of winning keys.
+                // This increases the variability of the outcome, making the results more dynamic.
+                // If the randomFactor is 1, we subtract 1 from the expected number of winning keys.
+                // This reduction ensures that there is a balanced chance for the outcome to swing in either direction.
+                // The goal is to prevent deterministic results and keep the game engaging and fair.
+                return randomFactor == 0 ? expectedWinningKeys + 1 : expectedWinningKeys - 1;
+            }
+        }
+
+
+        // If we didn't enter the above block or if randomThreshold >= 300,
+        // we continue with the rest of the function to determine the winning key count.
 
         // For larger probabilities, we use a different method.
         // This part of the code handles scenarios where we expect at least a single winning key.
