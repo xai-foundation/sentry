@@ -22,7 +22,7 @@ export async function processNewChallenge_V1(
     refereeConfig?: RefereeConfig
 ) {
     operatorState.cachedLogger(`Processing new challenge with number: ${challengeNumber}.`);
-    operatorState.cachedBoostFactor = {};
+    const cachedBoostFactor: { [ownerAddress: string]: bigint } = {};
 
     const batchedWinnerKeys: bigint[] = []
 
@@ -49,17 +49,17 @@ export async function processNewChallenge_V1(
         try {
             let isPool = sentryKey.assignedPool != "0x";
             const keyOwner = isPool ? sentryKey.assignedPool : sentryKey.owner;
-            if (!operatorState.cachedBoostFactor[keyOwner]) {
+            if (!cachedBoostFactor[keyOwner]) {
                 if (mappedPools && refereeConfig && sentryWalletMap) {
-                    operatorState.cachedBoostFactor[keyOwner] = calculateBoostFactor_V1(sentryKey, sentryWalletMap[sentryKey.owner], mappedPools, refereeConfig);
-                    operatorState.cachedLogger(`Found chance boost of ${Number(operatorState.cachedBoostFactor[keyOwner]) / 100}% for ${isPool ? `pool: ${mappedPools[keyOwner].metadata[0]} (${keyOwner})` : `owner: ${keyOwner}`}`);
+                    cachedBoostFactor[keyOwner] = calculateBoostFactor_V1(sentryKey, sentryWalletMap[sentryKey.owner], mappedPools, refereeConfig);
+                    operatorState.cachedLogger(`Found chance boost of ${Number(cachedBoostFactor[keyOwner]) / 100}% for ${isPool ? `pool: ${mappedPools[keyOwner].metadata[0]} (${keyOwner})` : `owner: ${keyOwner}`}`);
                 } else {
-                    operatorState.cachedBoostFactor[keyOwner] = await getBoostFactorRPC(keyOwner);
-                    operatorState.cachedLogger(`Found chance boost of ${Number(operatorState.cachedBoostFactor[keyOwner]) / 100}% for ${isPool ? `pool:` : `owner:`} ${keyOwner}`);
+                    cachedBoostFactor[keyOwner] = await getBoostFactorRPC(keyOwner);
+                    operatorState.cachedLogger(`Found chance boost of ${Number(cachedBoostFactor[keyOwner]) / 100}% for ${isPool ? `pool:` : `owner:`} ${keyOwner}`);
                 }
             }
 
-            const [payoutEligible] = createAssertionHashAndCheckPayout_V1(nodeLicenseId, challengeNumber, operatorState.cachedBoostFactor[keyOwner], challenge.assertionStateRootOrConfirmData, challenge.challengerSignedHash);
+            const [payoutEligible] = createAssertionHashAndCheckPayout_V1(nodeLicenseId, challengeNumber, cachedBoostFactor[keyOwner], challenge.assertionStateRootOrConfirmData, challenge.challengerSignedHash);
 
             if (!payoutEligible) {
                 nonWinnerKeysCount++;

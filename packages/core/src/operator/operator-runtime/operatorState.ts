@@ -11,7 +11,6 @@ type OperatorState = {
     cachedLogger: (log: string) => void;
     safeStatusCallback: () => void;
     onAssertionMissMatchCb: (publicNodeData: PublicNodeBucketInformation | undefined, challenge: Challenge, message: string) => void;
-    cachedBoostFactor: { [ownerAddress: string]: bigint };
     operatorAddress: string;
     cachedOperatorWallets: string[];
     mintTimestamps: { [nodeLicenseId: string]: bigint };
@@ -29,7 +28,6 @@ export const operatorState: OperatorState = {
     cachedLogger: (log: string) => {},
     safeStatusCallback: () => {},
     onAssertionMissMatchCb: () => {},
-    cachedBoostFactor: {},
     operatorAddress: '',
     cachedOperatorWallets: [],
     mintTimestamps: {},
