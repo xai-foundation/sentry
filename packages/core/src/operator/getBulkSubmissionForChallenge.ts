@@ -7,7 +7,7 @@ import { retry } from "../index.js";
 /**
  * Submission structure returned by the Referee function.
  */
-export interface BulkSubmission {
+export interface BulkSubmissionRPC {
     submitted: boolean;
     claimed: boolean;
     keyCount: bigint;
@@ -20,12 +20,12 @@ export interface BulkSubmission {
  * Fetches the submissions of a given challenge Id.
  * @param challengeId - The challenge Id.
  * @param bulkAddress - The address of the submission.
- * @returns {BulkSubmission} The submissions.
+ * @returns {BulkSubmissionRPC} The submissions.
  */
 export async function getBulkSubmissionForChallenge(
     challengeId: bigint,
     bulkAddress: string,
-): Promise<BulkSubmission> {
+): Promise<BulkSubmissionRPC> {
     const provider = getProvider();
     const refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, provider);
 
