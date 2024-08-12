@@ -91,7 +91,7 @@ export async function processNewChallenge(
 
             try {
                 //Try to submit once, if we get error 54 we don't need to try again. Any other error, we should give it 2 more tries.
-                await submitBulkAssertion(ownerOrPool.address, challengeId, challenge.assertionStateRootOrConfirmData, operatorState.cachedSigner, operatorState.cachedLogger);
+                await submitBulkAssertion(ownerOrPool.address, challengeId, challenge.assertionStateRootOrConfirmData, operatorState.cachedSigner);
             } catch (error: any) {
                 if (error && error.message && error.message.includes('execution reverted: "54"')) {
                     // If error code is 54, we don't need to log the error, it just means for this pool we already submitted
@@ -100,7 +100,7 @@ export async function processNewChallenge(
                     continue;
                 }
 
-                await retry(() => submitBulkAssertion(ownerOrPool.address, challengeId, challenge.assertionStateRootOrConfirmData, operatorState.cachedSigner, operatorState.cachedLogger), 2);
+                await retry(() => submitBulkAssertion(ownerOrPool.address, challengeId, challenge.assertionStateRootOrConfirmData, operatorState.cachedSigner), 2);
             }
 
             operatorState.cachedLogger(`Successfully submitted assertion for ${ownerOrPool.address}`);

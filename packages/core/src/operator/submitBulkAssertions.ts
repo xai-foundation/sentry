@@ -50,14 +50,12 @@ export async function submitBulkAssertions(
  * @param challengeNumber - The challenge number.
  * @param successorConfirmData - The successor confirm data.
  * @param signer - The signer to interact with the contract.
- * @param logger - A logger function to log progress.
  */
 export async function submitBulkAssertion(
     bulkAddress: string,
     challengeNumber: bigint,
     successorConfirmData: string,
-    signer: ethers.Signer,
-    logger: (log: string) => void
+    signer: ethers.Signer
 ): Promise<void> {
 
     // Create an instance of the Referee contract
