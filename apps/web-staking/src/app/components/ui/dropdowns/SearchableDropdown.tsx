@@ -78,19 +78,28 @@ export const SearchableDropdown = ({setIsOpen, isOpen, isInvalid, dropdownOption
 
     return (
         <div className="relative z-30" ref={dropdownRef}>
-            <div
-                onClick={() => setIsOpen(!isOpen)}
-                className={`relative h-[48px] px-[15px] group z-[20] text-lg font-medium text-americanSilver transition-bg duration-300 ease-in-out ${isOpen ? "bg-velvetBlack" : "bg-nulnOil"} flex items-center justify-between w-[538px] dropdown-clip-path dropdown ${extraClasses?.dropdown}`}
-            >
-                <div className="flex items-center gap-[10px]">
-                    {isInvalid && <WarningIcon width={18} height={16} fill={"#F76808"} />}
-                    <input type="text" placeholder="Select your country" className={`w-full ${isOpen ? "bg-velvetBlack" : "bg-nulnOil"} transition-bg duration-300 ease-in-out outline-none placeholder-americanSilver`} value={selectedValueRender!} onChange={handleInput} />
-                </div>
-                <DropdownArrow
-                    className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
-                />
-
-            </div>
+<div
+    className={`relative h-[48px] px-[15px] group z-[20] text-lg font-medium text-americanSilver transition-bg duration-300 ease-in-out ${isOpen ? "bg-velvetBlack" : "bg-nulnOil"} flex items-center justify-between w-[538px] dropdown-clip-path dropdown ${extraClasses?.dropdown}`}
+>
+    <div className="flex items-center gap-[10px] flex-grow">
+        {isInvalid && <WarningIcon width={18} height={16} fill={"#F76808"} />}
+        <input 
+            type="text" 
+            placeholder="Select your country" 
+            className={`w-full ${isOpen ? "bg-velvetBlack" : "bg-nulnOil"} transition-bg duration-300 ease-in-out outline-none placeholder-americanSilver`} 
+            value={selectedValueRender!} 
+            onChange={handleInput} 
+        />
+    </div>
+    <div 
+        onClick={() => setIsOpen(!isOpen)}
+        className="cursor-pointer p-2"
+    >
+        <DropdownArrow
+            className={`h-[15px] transform ${isOpen ? "rotate-180 transition-transform ease-in-out duration-300" : "transition-transform ease-in-out duration-300"}`}
+        />
+    </div>
+</div>
             <span
                 className={`bg-foggyLondon transition-bg ease-in-out duration-300 absolute left-[-2px] top-[-2px] z-10 w-[calc(100%+4px)] h-[calc(100%+4px)] ${isInvalid && "!bg-blazeOrange hover:!bg-blazeOrange"} dropdown-clip-path dropdown-border`}></span>
 
