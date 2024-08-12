@@ -161,7 +161,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const getApproveButtonText = (): string => {
         const total = calculateTotalPrice();
 
-        if (approve.isPending || xaiMintTx.isPending) {
+        if (approve.isPending || xaiMintTx.isLoading) {
             return "WAITING FOR CONFIRMATION...";
         }
 
@@ -178,7 +178,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
 
     const getEthButtonText = (): string => {        
         if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
-        if (mintWithEth.isPending || ethMintTx.isPending) {
+        if (mintWithEth.isPending || ethMintTx.isLoading) {
             return "WAITING FOR CONFIRMATION...";
         }
 
