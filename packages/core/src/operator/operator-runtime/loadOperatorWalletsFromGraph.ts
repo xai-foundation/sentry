@@ -59,20 +59,33 @@ export const loadOperatorWalletsFromGraph = async (
                 status: NodeLicenseStatus.WAITING_IN_QUEUE,
             });
         });
-        operatorState.cachedLogger(`Found ${pools.length} pools. The addresses are: ${Object.keys(mappedPools).join(', ')}`);
+        operatorState.cachedLogger(`Found ${pools.length} owned/delegated pools. The addresses are: ${Object.keys(mappedPools).join(', ')}`);
     }
 
     //Load pools our operators have keys staked in
     const stakedPools = await retry(async () => getUserStakedPools(wallets.map(w => w.address), pools.map(p => p.address), true, { winningKeyCount: true, claimed: false, latestChallengeNumber }))
+
+    const mappedPoolsInteractedPools: { [key: string]: BulkOwnerOrPool } = {}
     stakedPools.forEach(p => {
         if (!mappedPools[p.address]) {
+            if (
+                operatorState.passedInOwnersAndPools && operatorState.passedInOwnersAndPools.length &&
+                !operatorState.passedInOwnersAndPools.includes(p.address.toLowerCase())
+            ) {
+                return;
+            }
+
+            mappedPoolsInteractedPools[p.address.toLowerCase()] = p;
             bulkOwnerAndPools.push(p)
             operatorState.sentryAddressStatusMap.set(p.address.toLowerCase(), {
                 ownerPublicKey: p.address,
                 status: NodeLicenseStatus.WAITING_IN_QUEUE,
             });
+
         }
     })
+
+    operatorState.cachedLogger(`Found ${Object.keys(mappedPoolsInteractedPools).length} pools with stakedKeys. The addresses are: ${Object.keys(mappedPoolsInteractedPools).join(', ')}`);
 
     //Cleanup removed keys from nodeLicenseStatusMap
     for (const [key] of operatorState.sentryAddressStatusMap.entries()) {

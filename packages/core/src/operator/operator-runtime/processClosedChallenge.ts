@@ -14,6 +14,7 @@ export async function processClosedChallenge(
     bulkOwnerAndPools: BulkOwnerOrPool[],
 ) {
     const beforeStatus: { [key: string]: string | undefined } = {}
+    operatorState.cachedLogger(`Process closed challenge ${challengeId.toString()} for ${bulkOwnerAndPools.length} addresses...`);
 
     for (const ownerOrPool of bulkOwnerAndPools) {
 

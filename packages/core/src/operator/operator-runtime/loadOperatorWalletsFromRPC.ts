@@ -1,7 +1,8 @@
 import { operatorState } from "./operatorState.js";
-import { BulkOwnerOrPool, getMultipleUsersInteractedPoolsRpc, getOwnerOrDelegatePools, getPoolInfo, listOwnersForOperator, NodeLicenseStatus, retry } from "../../index.js";
+import { BulkOwnerOrPool, getMultipleUsersInteractedPoolsRpc, getOwnerOrDelegatePools, getPoolInfo, getUserInteractedPools, listOwnersForOperator, NodeLicenseStatus, retry } from "../../index.js";
 import { getUnStakedKeysOfUser } from "./getUnstakedKeyCountOfOwner.js";
 import { getUserV1StakeAmount } from "./getUserV1StakeAmount.js";
+import { getUserStakedKeyCount } from "../../node-license/getUserStakedKeyCount.js";
 
 /**
  * Load all the operator wallets and pools from the RPC.
@@ -18,7 +19,7 @@ export const loadOperatorWalletsFromRPC = async (
     let owners;
 
     //If we don't have the owners we fetch them from the RPC
-    if (!operatorState.cachedOperatorWallets) {
+    if (!operatorState.cachedOperatorWallets.length) {
         operatorState.cachedLogger(`Loading all wallets assigned to the operator.`);
         //We need to get all approved owners so we can filter against pools
         const ownersForOperator = (await retry(async () => await listOwnersForOperator(operator))).map(o => o.toLowerCase());
@@ -52,11 +53,14 @@ export const loadOperatorWalletsFromRPC = async (
     }
 
     const ownedAndDelegatePools = await reloadPoolsFromRPC(operator, operatorState.passedInOwnersAndPools);
-
     const mappedPools: { [key: string]: BulkOwnerOrPool } = {}
     ownedAndDelegatePools.forEach(p => mappedPools[p.address] = p);
+    operatorState.cachedLogger(`Found ${ownedAndDelegatePools.length} owned/delegated pools. The addresses are: ${Object.keys(mappedPools).join(', ')}`);
 
-    const interactedPools = await getInteractedPools(owners, ownedAndDelegatePools, operatorState.passedInOwnersAndPools);
+    const interactedPools = await getInteractedPools(owners, mappedPools, operatorState.passedInOwnersAndPools);
+    const mappedPoolsInteractedPools: { [key: string]: BulkOwnerOrPool } = {}
+    interactedPools.forEach(p => mappedPoolsInteractedPools[p.address] = p);
+    operatorState.cachedLogger(`Found ${interactedPools.length} pools with stakedKeys. The addresses are: ${Object.keys(mappedPoolsInteractedPools).join(', ')}`);
 
     bulkOwnerAndPools = bulkOwnerAndPools.concat(ownedAndDelegatePools).concat(interactedPools);
 
@@ -80,7 +84,7 @@ export const loadOperatorWalletsFromRPC = async (
 }
 
 //Load all the keys from pool our operator should operate
-//Exclude pool that are not in the whitelist
+//Exclude pool that are not in the allowList
 const reloadPoolsFromRPC = async (
     operator: string,
     operatorAllowList?: string[]
@@ -95,8 +99,6 @@ const reloadPoolsFromRPC = async (
     }
 
     if (operatorPoolAddresses.length) {
-
-        operatorState.cachedLogger(`Found ${operatorPoolAddresses.length} pools for operator.`);
 
         for (const pool of operatorPoolAddresses) {
 
@@ -116,6 +118,7 @@ const reloadPoolsFromRPC = async (
 }
 
 
+// Get all interacted pools for each owner where they have keys staked in, we want to operate these pools too
 async function getInteractedPools(
     owners: string[],
     alreadyFetchedPools: { [key: string]: any },
@@ -124,25 +127,31 @@ async function getInteractedPools(
 
     const bulkPools: BulkOwnerOrPool[] = [];
 
-    let ownerInteractedPools = await getMultipleUsersInteractedPoolsRpc(owners);
+    for (const owner of owners) {
+        let ownerInteractedPools = await getUserInteractedPools(owner);
 
-    if (operatorAllowList && operatorAllowList.length) {
-        ownerInteractedPools = ownerInteractedPools.filter(o => operatorAllowList.includes(o.toLowerCase()))
-    }
+        if (ownerInteractedPools.length) {
 
-    if (ownerInteractedPools.length) {
+            if (operatorAllowList && operatorAllowList.length) {
+                ownerInteractedPools = ownerInteractedPools.filter(o => operatorAllowList.includes(o.toLowerCase()))
+            }
 
-        for (const pool of ownerInteractedPools) {
+            for (const pool of ownerInteractedPools) {
 
-            if (!alreadyFetchedPools[pool]) {
-                const poolInfo = await getPoolInfo(pool);
-                bulkPools.push({
-                    address: pool,
-                    isPool: true,
-                    name: poolInfo._name,
-                    keyCount: Number(poolInfo.baseInfo.keyCount),
-                    stakedEsXaiAmount: poolInfo.baseInfo.totalStakedAmount as bigint
-                });
+                if (!alreadyFetchedPools[pool]) {
+                    const stakedKeyCount = await getUserStakedKeyCount(pool, owner);
+                    if (stakedKeyCount > 0) {
+                        const poolInfo = await getPoolInfo(pool);
+                        bulkPools.push({
+                            address: pool,
+                            isPool: true,
+                            name: poolInfo._name,
+                            keyCount: Number(poolInfo.baseInfo.keyCount),
+                            stakedEsXaiAmount: poolInfo.baseInfo.totalStakedAmount as bigint
+                        });
+                    }
+
+                }
             }
         }
     }

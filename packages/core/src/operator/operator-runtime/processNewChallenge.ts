@@ -103,6 +103,7 @@ export async function processNewChallenge(
                 await retry(() => submitBulkAssertion(ownerOrPool.address, challengeId, challenge.assertionStateRootOrConfirmData, operatorState.cachedSigner, operatorState.cachedLogger), 2);
             }
 
+            operatorState.cachedLogger(`Successfully submitted assertion for ${ownerOrPool.address}`);
             updateSentryAddressStatus(ownerOrPool.address, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
 
         } catch (error: any) {

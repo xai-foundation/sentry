@@ -29,7 +29,21 @@ export async function getBulkSubmissionForChallenge(
     const provider = getProvider();
     const refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, provider);
 
-    const submission = await retry(async () => await refereeContract.bulkSubmissions(challengeId, bulkAddress));
+    const result = await retry(async () => await refereeContract.bulkSubmissions(challengeId, bulkAddress));
+    const [
+        submitted,
+        claimed,
+        keyCount,
+        winningKeyCount,
+        assertionStateRootOrConfirmData,
+    ] = result;
 
-    return { ...submission, challengeId };
+    return {
+        submitted,
+        claimed,
+        keyCount,
+        winningKeyCount,
+        assertionStateRootOrConfirmData,
+        challengeId
+    };
 }
