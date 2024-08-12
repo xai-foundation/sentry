@@ -2,7 +2,7 @@ import { operatorState } from "./operatorState.js";
 import { BulkOwnerOrPool, getOwnerOrDelegatePools, getPoolInfo, getUserInteractedPools, listOwnersForOperator, NodeLicenseStatus, retry } from "../../index.js";
 import { getUserV1StakeAmount } from "./getUserV1StakeAmount.js";
 import { getStakedKeyCountOfUserInPool } from "../../node-license/getStakedKeyCountOfUserInPool.js";
-import { getUnStakedKeyCountOfUserFromRPC } from "./index.js";
+import { getUnStakedKeyCountOfUser } from "./index.js";
 
 /**
  * Load all the operator wallets and pools from the RPC.
@@ -41,7 +41,7 @@ export const loadOperatorWalletsFromRPC = async (
 
     for (const owner of owners) {
 
-        const unstakedCount = await getUnStakedKeyCountOfUserFromRPC(owner);
+        const unstakedCount = await getUnStakedKeyCountOfUser(owner);
         const stakedEsXaiAmount = await getUserV1StakeAmount(owner);
 
         bulkOwnerAndPools.push({
