@@ -62,7 +62,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
 
-        require(keyMultiplier > 0, "Key multiplier must be greater than 0");
+        require(_keyMultiplier > 0, "Key multiplier must be greater than 0");
 
         refereeAddress = _refereeAddress;
         nodeLicenseAddress = _nodeLicenseAddress;

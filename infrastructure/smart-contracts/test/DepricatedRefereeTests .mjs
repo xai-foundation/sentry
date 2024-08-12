@@ -18,7 +18,7 @@ function BulkSubmissionsStakeAndUnstake(deployInfrastructure) {
             const { poolFactory, addr1: poolOwner, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
 
             // Mint Node Licenses            
-            const addr1MintedKeyIds = await mintBatchedLicenses(100n, nodeLicense, poolOwner);
+            const addr1MintedKeyIds = await mintBatchedLicenses(100, nodeLicense, poolOwner);
 
             const challengeId = 0;
             const keys = [addr1MintedKeyIds[0]];
