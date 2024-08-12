@@ -38,6 +38,21 @@ export const getWinningKeyCount = (keyCount: number, boostFactor: number, bulkAd
         return randomThreshold < scaledExpectedWinningKeys ? 1 : 0;
     }
 
+    if(expectedWinningKeys > 0 && expectedWinningKeys < 4) {
+        const randomThreshold = generateRandomNumber(seed, "threshold") % BigInt(1000);
+        const randomFactor = generateRandomNumber(seed, "factor") % BigInt(2);
+        
+        if(randomThreshold < 300){
+            if(randomFactor === BigInt(0)){
+                return expectedWinningKeys + 1;
+            }else{
+                return expectedWinningKeys - 1;
+            }
+        }else{
+            return expectedWinningKeys;
+        }
+    }
+
     const baseVariability = 30 + Math.floor(1000 / boostFactor);
     const maxAdjustmentPercentage = Math.min(baseVariability, 50);
 
