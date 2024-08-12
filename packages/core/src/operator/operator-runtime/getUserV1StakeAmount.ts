@@ -17,7 +17,7 @@ export const getUserV1StakeAmount = async (walletAddress: string): Promise<bigin
     // Create an instance of the Referee contract
     const refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, provider);
 
-    // Claim the reward from the Referee contract
+    // Get the stakedAmount of a user from the Referee
     const stakedAmount = await refereeContract.stakedAmounts(walletAddress);
 
     // Return only the requested number of keys

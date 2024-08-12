@@ -20,7 +20,7 @@ export const getUnStakedKeyCountOfUser = async (walletAddress: string): Promise<
     // Create an instance of the Referee contract
     const refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, provider);
 
-    // Claim the reward from the Referee contract
+    // Get the count of staked keys for the user from the Referee contract
     const stakedKeysCount = await refereeContract.assignedKeysOfUserCount(walletAddress);
 
     // Return only the requested number of keys
