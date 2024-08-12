@@ -38,23 +38,23 @@ export const getWinningKeyCount = (keyCount: number, boostFactor: number, bulkAd
         return randomThreshold < scaledExpectedWinningKeys ? 1 : 0;
     }
 
-    if(expectedWinningKeys > 0 && expectedWinningKeys < 4) {
+    if (expectedWinningKeys > 0 && expectedWinningKeys < 4) {
         const randomThreshold = generateRandomNumber(seed, "threshold") % BigInt(1000);
         const randomFactor = generateRandomNumber(seed, "factor") % BigInt(2);
-        
-        if(randomThreshold < 300){
-            if(randomFactor === BigInt(0)){
+
+        if (randomThreshold < 300) {
+            if (randomFactor === BigInt(0)) {
                 return expectedWinningKeys + 1;
-            }else{
+            } else {
                 return expectedWinningKeys - 1;
             }
-        }else{
+        } else {
             return expectedWinningKeys;
         }
     }
 
     const baseVariability = 30 + Math.floor(1000 / boostFactor);
-    const maxAdjustmentPercentage = Math.min(baseVariability, 50);
+    const maxAdjustmentPercentage = Math.min(baseVariability, 30);
 
     const randomFactor1 = generateRandomNumber(seed, "factor1") % BigInt(1000);
     const randomFactor2 = generateRandomNumber(seed, "factor2") % BigInt(2);
