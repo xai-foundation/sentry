@@ -37,7 +37,7 @@ export async function processClosedChallenge(
 
             if (submission && !submission.claimed && submission.winningKeyCount > 0) {
                 updateSentryAddressStatus(ownerOrPool.address, `Claiming esXAI...`);
-                await retry(() => claimBulkSubmissionRewards([ownerOrPool.address], challengeId, operatorState.cachedSigner, operatorState.cachedLogger), 3);
+                await claimBulkSubmissionRewards([ownerOrPool.address], challengeId, operatorState.cachedSigner, operatorState.cachedLogger);
                 operatorState.cachedLogger(`Bulk claim successful for address ${ownerOrPool.address} and challenge ${challengeId.toString()}`);
             } else {
                 updateSentryAddressStatus(ownerOrPool.address, beforeStatus[ownerOrPool.address] || "Waiting for next challenge");
