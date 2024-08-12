@@ -60,6 +60,7 @@ export async function getUserStakedPools(
           address
           metadata
           totalStakedKeyAmount
+          totalStakedEsXaiAmount
           ${submissionQuery}
         }
       }

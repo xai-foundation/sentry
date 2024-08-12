@@ -1,5 +1,5 @@
 import { RefereeConfig } from "@sentry/sentry-subgraph-client";
-import { BulkOwnerOrPool, getBoostFactor as getBoostFactorRPC, NodeLicenseStatus, ProcessChallenge, submitBulkAssertions } from "../index.js";
+import { BulkOwnerOrPool, getBoostFactor as getBoostFactorRPC, NodeLicenseStatus, ProcessChallenge, submitBulkAssertion } from "../index.js";
 import { operatorState } from "./operatorState.js";
 import { retry } from "../../index.js";
 import { updateSentryAddressStatus } from "./updateSentryAddressStatus.js";
@@ -33,8 +33,8 @@ export async function processNewChallenge(
 
                 boostFactor = getBoostFactor(
                     BigInt(ownerOrPool.stakedEsXaiAmount),
-                    refereeConfig.stakeAmountTierThresholds,
-                    refereeConfig.stakeAmountBoostFactors
+                    ownerOrPool.keyCount,
+                    refereeConfig
                 );
 
             } else {
@@ -89,7 +89,20 @@ export async function processNewChallenge(
                 continue;
             }
 
-            await retry(() => submitBulkAssertions([ownerOrPool.address], challengeId, challenge.assertionStateRootOrConfirmData, operatorState.cachedSigner, operatorState.cachedLogger), 3);
+            try {
+                //Try to submit once, if we get error 54 we don't need to try again. Any other error, we should give it 2 more tries.
+                await submitBulkAssertion(ownerOrPool.address, challengeId, challenge.assertionStateRootOrConfirmData, operatorState.cachedSigner, operatorState.cachedLogger);
+            } catch (error: any) {
+                if (error && error.message && error.message.includes('execution reverted: "54"')) {
+                    // If error code is 54, we don't need to log the error, it just means for this pool we already submitted
+                    operatorState.cachedLogger(`Address ${ownerOrPool.address} has submitted for challenge ${challengeId} by another node. If multiple nodes are running, this message can be ignored.`);
+                    updateSentryAddressStatus(ownerOrPool.address, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
+                    continue;
+                }
+
+                await retry(() => submitBulkAssertion(ownerOrPool.address, challengeId, challenge.assertionStateRootOrConfirmData, operatorState.cachedSigner, operatorState.cachedLogger), 2);
+            }
+
             updateSentryAddressStatus(ownerOrPool.address, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
 
         } catch (error: any) {
@@ -100,24 +113,33 @@ export async function processNewChallenge(
 }
 
 /**
- * Helper function to calculate the boost factor off-chain. This requires the current Referee config 
- * @return The payout chance boostFactor. 200 for double the chance.
+ * Helper function to calculate the boost factor off-chain. This requires the current Referee config from the subgraph
+ * 
+ * @param stakedEsXAIAmount amount of staked esXAI
+ * @param keyCount amount of staked keys in a pool / amount of unstaked keys for an owner, used to calculate the maxStakeAmount
+ * @param {RefereeConfig} refereeConfig the Referee config from the subgraph
+ * @return {bigint} The payout chance boostFactor. 200 for double the chance.
  */
 const getBoostFactor = (
-    stakedAmount: bigint,
-    stakeAmountTierThresholds: bigint[],
-    stakeAmountBoostFactors: bigint[]
+    stakedEsXAIAmount: bigint,
+    keyCount: number,
+    refereeConfig: RefereeConfig
 ): bigint => {
 
-    if (stakedAmount < stakeAmountTierThresholds[0]) {
+    const maxStakeAmount = BigInt(keyCount) * BigInt(refereeConfig.maxStakeAmountPerLicense);
+    if (stakedEsXAIAmount > maxStakeAmount) {
+        stakedEsXAIAmount = maxStakeAmount;
+    }
+
+    if (stakedEsXAIAmount < refereeConfig.stakeAmountTierThresholds[0]) {
         return BigInt(100)
     }
 
-    for (let tier = 1; tier < stakeAmountTierThresholds.length; tier++) {
-        if (stakedAmount < stakeAmountTierThresholds[tier]) {
-            return stakeAmountBoostFactors[tier - 1];
+    for (let tier = 1; tier < refereeConfig.stakeAmountTierThresholds.length; tier++) {
+        if (stakedEsXAIAmount < refereeConfig.stakeAmountTierThresholds[tier]) {
+            return refereeConfig.stakeAmountBoostFactors[tier - 1];
         }
     }
 
-    return stakeAmountBoostFactors[stakeAmountTierThresholds.length - 1];
+    return refereeConfig.stakeAmountBoostFactors[refereeConfig.stakeAmountTierThresholds.length - 1];
 }
