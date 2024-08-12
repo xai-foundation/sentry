@@ -27,7 +27,7 @@ export async function processClosedChallenge(
             if (ownerOrPool.bulkSubmissions) {
 
                 submission = ownerOrPool.bulkSubmissions.find(s => {
-                    Number(s.challengeId) == Number(challengeId)
+                    return Number(s.challengeId) == Number(challengeId)
                 });
 
             } else {

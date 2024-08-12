@@ -7,10 +7,10 @@ import { operatorState } from "./operatorState.js";
  * @param {NodeLicenseStatus | string} newStatus - The new status to display
  */
 export function updateSentryAddressStatus(address: string, newStatus: NodeLicenseStatus | string) {
-    const sentryAddressInfo = operatorState.sentryAddressStatusMap.get(address);
+    const sentryAddressInfo = operatorState.sentryAddressStatusMap.get(address.toLowerCase());
     if (sentryAddressInfo) {
         sentryAddressInfo.status = newStatus;
-        operatorState.sentryAddressStatusMap.set(address, sentryAddressInfo);
+        operatorState.sentryAddressStatusMap.set(address.toLowerCase(), sentryAddressInfo);
         operatorState.safeStatusCallback();
     } else {
         operatorState.cachedLogger(`SentryAddress ${address} not found in sentryAddressStatusMap.`);

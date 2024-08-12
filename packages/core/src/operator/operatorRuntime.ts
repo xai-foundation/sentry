@@ -62,6 +62,7 @@ export type BulkOwnerOrPool = {
     isPool: boolean,
     name?: string,
     keyCount: number, // only unstaked keys for owner, totalStakedKeys for pool
+    stakedEsXaiAmount: bigint, // used to calculate the boost factor
     bulkSubmissions?: BulkSubmission[]
 }
 

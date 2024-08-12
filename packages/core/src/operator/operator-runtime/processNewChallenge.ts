@@ -32,7 +32,7 @@ export async function processNewChallenge(
             if (refereeConfig) {
 
                 boostFactor = getBoostFactor(
-                    BigInt(ownerOrPool.keyCount),
+                    BigInt(ownerOrPool.stakedEsXaiAmount),
                     refereeConfig.stakeAmountTierThresholds,
                     refereeConfig.stakeAmountBoostFactors
                 );
@@ -54,7 +54,7 @@ export async function processNewChallenge(
                 challenge.challengerSignedHash
             );
 
-            operatorState.cachedLogger(`Address ${ownerOrPool.address} has ${winningKeyCount}/${ownerOrPool.keyCount} winning keys for challenge ${challengeId}`);
+            operatorState.cachedLogger(`${ownerOrPool.isPool ? "Pool" : "Wallet"} ${ownerOrPool.address} has ${winningKeyCount}/${ownerOrPool.keyCount} winning keys for challenge ${challengeId}`);
 
             if (winningKeyCount == 0) {
                 updateSentryAddressStatus(ownerOrPool.address, NodeLicenseStatus.WAITING_FOR_NEXT_CHALLENGE);
@@ -71,7 +71,7 @@ export async function processNewChallenge(
             let hasSubmission;
             if (ownerOrPool.bulkSubmissions) {
                 const foundSubmission = ownerOrPool.bulkSubmissions.find(s => {
-                    Number(s.challengeId) == Number(challengeId)
+                    return Number(s.challengeId) == Number(challengeId)
                 });
                 if (foundSubmission) {
                     hasSubmission = true;
