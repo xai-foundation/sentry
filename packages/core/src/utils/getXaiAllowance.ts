@@ -17,7 +17,7 @@ export async function getXaiAllowance(wallet: string, operator: string): Promise
 
     // Get the provider
     const providerUrls = [
-        "https://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
+        "https://arb-mainnet.g.alchemy.com/v2/oD4X3JXvJclnt36mDkqnp9CO2sZkNhYT",
         "https://arb1.arbitrum.io/rpc",
     ];
     const provider = getProvider(providerUrls[Math.floor(Math.random() * providerUrls.length)]);
