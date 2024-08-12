@@ -10,7 +10,7 @@ import { getUserNodeLicenseBalance } from '../../node-license/index.js';
  * @param {string} walletAddress - The Ethereum address of the user.
  * @returns {Promise<number>} The count of unstaked keys of the user
  */
-export const getUnStakedKeysOfUser = async (walletAddress: string): Promise<number> => {
+export const getUnStakedKeyCountOfUser = async (walletAddress: string): Promise<number> => {
     // Get the Ethereum provider
     const provider = getProvider();
 

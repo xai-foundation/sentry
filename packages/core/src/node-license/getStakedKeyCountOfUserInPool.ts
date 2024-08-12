@@ -1,5 +1,4 @@
 import { ethers } from 'ethers';
-import { config } from '../config.js';
 import { getProvider } from '../utils/getProvider.js';
 import { retry } from "../index.js";
 import { StakingPoolAbi } from '../abis/StakingPoolAbi.js';
@@ -10,7 +9,7 @@ import { StakingPoolAbi } from '../abis/StakingPoolAbi.js';
  * @param staker - The address of user that has keys staked.
  * @returns {number} - Count of staked keys
  */
-export async function getUserStakedKeyCount(
+export async function getStakedKeyCountOfUserInPool(
     poolAddress: string,
     staker: string
 ): Promise<number> {

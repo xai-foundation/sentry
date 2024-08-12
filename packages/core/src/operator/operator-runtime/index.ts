@@ -6,6 +6,7 @@ export * from "./processClosedChallenge.js";
 export * from "./processNewChallenge.js";
 export * from "./processPastChallenges.js";
 export * from "./updateSentryAddressStatus.js";
+export * from "./getUnStakedKeyCountOfUser.js";
 
 export * from "./operator-v1/updateNodeLicenseStatus.js";
 export * from "./operator-v1/bootOperatorRuntime.js";

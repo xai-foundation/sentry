@@ -1,8 +1,8 @@
 import { operatorState } from "./operatorState.js";
-import { BulkOwnerOrPool, getMultipleUsersInteractedPoolsRpc, getOwnerOrDelegatePools, getPoolInfo, getUserInteractedPools, listOwnersForOperator, NodeLicenseStatus, retry } from "../../index.js";
-import { getUnStakedKeysOfUser } from "./getUnstakedKeyCountOfOwner.js";
+import { BulkOwnerOrPool, getOwnerOrDelegatePools, getPoolInfo, getUserInteractedPools, listOwnersForOperator, NodeLicenseStatus, retry } from "../../index.js";
 import { getUserV1StakeAmount } from "./getUserV1StakeAmount.js";
-import { getUserStakedKeyCount } from "../../node-license/getUserStakedKeyCount.js";
+import { getStakedKeyCountOfUserInPool } from "../../node-license/getStakedKeyCountOfUserInPool.js";
+import { getUnStakedKeyCountOfUserFromRPC } from "./index.js";
 
 /**
  * Load all the operator wallets and pools from the RPC.
@@ -41,7 +41,7 @@ export const loadOperatorWalletsFromRPC = async (
 
     for (const owner of owners) {
 
-        const unstakedCount = await getUnStakedKeysOfUser(owner);
+        const unstakedCount = await getUnStakedKeyCountOfUserFromRPC(owner);
         const stakedEsXaiAmount = await getUserV1StakeAmount(owner);
 
         bulkOwnerAndPools.push({
@@ -139,7 +139,7 @@ async function getInteractedPools(
             for (const pool of ownerInteractedPools) {
 
                 if (!alreadyFetchedPools[pool]) {
-                    const stakedKeyCount = await getUserStakedKeyCount(pool, owner);
+                    const stakedKeyCount = await getStakedKeyCountOfUserInPool(pool, owner);
                     if (stakedKeyCount > 0) {
                         const poolInfo = await getPoolInfo(pool);
                         bulkPools.push({
