@@ -37,7 +37,7 @@ export function useBlockIp({blockUsa}: {blockUsa: boolean}) {
 			}
 
 			if (!!invalidIp || !!ofacSanction || (blockUsa && data.country === "US")) {
-				setBlocked(false);
+				setBlocked(true);
 				setLoading(false);
 			}
 		} catch (e: any) {
