@@ -32,8 +32,7 @@ export function getProvider(
         provider = new ethers.WebSocketProvider(memoKey);
     } else {
         console.log("Provisioning alchemy provider.");
-        const apiKey = 'p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ';
-        provider = new ethers.AlchemyProvider(alchemyNetwork, apiKey);
+        provider = new ethers.AlchemyProvider(alchemyNetwork, config.alchemyApiKey);
     }
 
     if (!ignoreMemo) {

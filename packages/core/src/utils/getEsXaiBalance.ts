@@ -16,8 +16,8 @@ export async function getEsXaiBalance(wallet: string): Promise<{ balance: bigint
 
     // Get the provider
     const providerUrls = [
-        "https://arb-mainnet.g.alchemy.com/v2/oD4X3JXvJclnt36mDkqnp9CO2sZkNhYT",
-        "https://arb1.arbitrum.io/rpc",
+        config.arbitrumOneJsonRpcUrl,
+        config.publicRPC,
     ];
     const provider = getProvider(providerUrls[Math.floor(Math.random() * providerUrls.length)]);
 
