@@ -43,8 +43,7 @@ export function getWinningKeyCountLocal(keyCount, boostFactor, bulkAddress, chal
         }
     }
 
-    const baseVariability = 30 + Math.floor(1000 / boostFactor);
-    const maxAdjustmentPercentage = Math.min(baseVariability, 50);
+    const maxAdjustmentPercentage = 30;
 
     const randomFactor1 = generateRandomNumber(seed, "factor1") % BigInt(1000);
     const randomFactor2 = generateRandomNumber(seed, "factor2") % BigInt(2);
