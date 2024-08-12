@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { NodeLicenseStatusMap, PublicNodeBucketInformation } from "../operatorRuntime.js";
+import { NodeLicenseStatusMap, PublicNodeBucketInformation, SentryAddressStatusMap } from "../operatorRuntime.js";
 import { Challenge } from "../../index.js";
 import { SentryKey } from "@sentry/sentry-subgraph-client";
 
@@ -11,13 +11,13 @@ type OperatorState = {
     cachedLogger: (log: string) => void;
     safeStatusCallback: () => void;
     onAssertionMissMatchCb: (publicNodeData: PublicNodeBucketInformation | undefined, challenge: Challenge, message: string) => void;
-    cachedBoostFactor: { [ownerAddress: string]: bigint };
     operatorAddress: string;
     cachedOperatorWallets: string[];
     mintTimestamps: { [nodeLicenseId: string]: bigint };
     cachedKeysOfOwner: { [keyId: string]: SentryKey };
     nodeLicenseStatusMap: NodeLicenseStatusMap;
     passedInOwnersAndPools: string[] | undefined;
+    sentryAddressStatusMap: SentryAddressStatusMap;
 };
 
 /**
@@ -28,11 +28,11 @@ export const operatorState: OperatorState = {
     cachedLogger: (log: string) => {},
     safeStatusCallback: () => {},
     onAssertionMissMatchCb: () => {},
-    cachedBoostFactor: {},
     operatorAddress: '',
     cachedOperatorWallets: [],
     mintTimestamps: {},
     cachedKeysOfOwner: {},
     nodeLicenseStatusMap: new Map(),
-    passedInOwnersAndPools: []
+    passedInOwnersAndPools: [],
+    sentryAddressStatusMap: new Map(),
 };

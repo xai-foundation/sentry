@@ -6,6 +6,7 @@ import {
 } from "../index.js";
 import { operatorState } from "./operator-runtime/operatorState.js";
 import { bootOperatorRuntime_V1 } from "./operator-runtime/operator-v1/bootOperatorRuntime.js";
+import { BulkSubmission } from "@sentry/sentry-subgraph-client";
 
 export enum NodeLicenseStatus {
     WAITING_IN_QUEUE = "Booting Operator For Key", // waiting to do an action, but in a queue
@@ -23,6 +24,17 @@ export interface NodeLicenseInformation {
 }
 
 export type NodeLicenseStatusMap = Map<bigint, NodeLicenseInformation>;
+
+
+export interface SentryAddressInformation {
+    address: string
+    keyCount: string
+    isPool: boolean
+    status: string | NodeLicenseStatus;
+}
+
+//New status map for status mapped to a wallet or a pool address
+export type SentryAddressStatusMap = Map<string, NodeLicenseInformation>;
 
 export type PublicNodeBucketInformation = {
     assertion: number,
@@ -43,6 +55,16 @@ export type ProcessChallenge = {
 //This is going to be deprecated with bulk submissions
 //Used for maximum keysIds in one batch tx
 export const KEYS_PER_BATCH = 100;
+
+//Type for shared object of either pool or owner, used for submitting bulk assertions (Referee does not differentiate between pool or owner when doing a bulk submission)
+export type BulkOwnerOrPool = {
+    address: string,
+    isPool: boolean,
+    name?: string,
+    keyCount: number, // only unstaked keys for owner, totalStakedKeys for pool
+    stakedEsXaiAmount: bigint, // used to calculate the boost factor
+    bulkSubmissions?: BulkSubmission[]
+}
 
 /**
  * Operator runtime function.
