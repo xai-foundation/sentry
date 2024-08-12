@@ -159,7 +159,6 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
      * @returns The approve button text as a string.
      */
     const getApproveButtonText = (): string => {
-        if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
         const total = calculateTotalPrice();
 
         if (approve.isPending || xaiMintTx.isLoading) {
