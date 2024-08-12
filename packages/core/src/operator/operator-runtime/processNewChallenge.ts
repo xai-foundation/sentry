@@ -31,7 +31,7 @@ export async function processNewChallenge(
 
             if (refereeConfig) {
 
-                boostFactor = getBoostFactor(
+                boostFactor = calculateBoostFactorLocally(
                     BigInt(ownerOrPool.stakedEsXaiAmount),
                     ownerOrPool.keyCount,
                     refereeConfig
@@ -121,7 +121,7 @@ export async function processNewChallenge(
  * @param {RefereeConfig} refereeConfig the Referee config from the subgraph
  * @return {bigint} The payout chance boostFactor. 200 for double the chance.
  */
-const getBoostFactor = (
+const calculateBoostFactorLocally = (
     stakedEsXAIAmount: bigint,
     keyCount: number,
     refereeConfig: RefereeConfig

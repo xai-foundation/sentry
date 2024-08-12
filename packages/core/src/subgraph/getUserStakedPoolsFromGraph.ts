@@ -12,7 +12,7 @@ import { BulkOwnerOrPool } from "../operator/operatorRuntime.js";
  * @param submissionsFilter - The filter for the submissions if submissions should be included
  * @returns List of sentry pool infos
  */
-export async function getUserStakedPools(
+export async function getUserStakedPoolsFromGraph(
   wallets: string[],
   excludePools: string[],
   includeSubmissions: boolean,

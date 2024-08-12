@@ -1,7 +1,7 @@
 import { SentryWallet, PoolInfo } from "@sentry/sentry-subgraph-client";
 import { operatorState } from "./operatorState.js";
 import { BulkOwnerOrPool, NodeLicenseStatus, retry } from "../../index.js";
-import { getUserStakedPools } from "../../subgraph/getUserStakedPools.js";
+import { getUserStakedPoolsFromGraph } from "../../subgraph/getUserStakedPoolsFromGraph.js";
 
 /**
  * Load all the wallets and pools we should operate from the subgraph.
@@ -63,7 +63,7 @@ export const loadOperatorWalletsFromGraph = async (
     }
 
     //Load pools our operators have keys staked in
-    const stakedPools = await retry(async () => getUserStakedPools(wallets.map(w => w.address), pools.map(p => p.address), true, { winningKeyCount: true, claimed: false, latestChallengeNumber }))
+    const stakedPools = await retry(async () => getUserStakedPoolsFromGraph(wallets.map(w => w.address), pools.map(p => p.address), true, { winningKeyCount: true, claimed: false, latestChallengeNumber }))
 
     const mappedPoolsInteractedPools: { [key: string]: BulkOwnerOrPool } = {}
     stakedPools.forEach(p => {
