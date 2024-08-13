@@ -53,8 +53,7 @@ export const getWinningKeyCount = (keyCount: number, boostFactor: number, bulkAd
         }
     }
 
-    const baseVariability = 30 + Math.floor(1000 / boostFactor);
-    const maxAdjustmentPercentage = Math.min(baseVariability, 30);
+    const maxAdjustmentPercentage = 30;
 
     const randomFactor1 = generateRandomNumber(seed, "factor1") % BigInt(1000);
     const randomFactor2 = generateRandomNumber(seed, "factor2") % BigInt(2);
