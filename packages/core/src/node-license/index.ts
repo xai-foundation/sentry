@@ -20,4 +20,5 @@ export * from "./getKeysOfPool.js";
 export * from "./getUserInteractedPools.js";
 export * from "./getUserStakedKeysOfPool.js";
 export * from "./getUnStakedKeysOfUser.js";
+export * from "./getStakedKeyCountOfUserInPool.js";
 export * from "./getUserNodeLicenseBalance.js";

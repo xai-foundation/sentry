@@ -20,7 +20,7 @@ export const loadOperatorKeysFromRPC_V1 = async (
     let owners;
 
     //If we don't have the owners we fetch them from the RPC
-    if (!operatorState.cachedOperatorWallets) {
+    if (!operatorState.cachedOperatorWallets.length) {
         operatorState.cachedLogger(`Loading all wallets assigned to the operator.`);
         //We need to get all approved owners so we can filter against pools
         const ownersForOperator = (await retry(async () => await listOwnersForOperator(operator))).map(o => o.toLowerCase());
