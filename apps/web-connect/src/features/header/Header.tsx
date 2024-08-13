@@ -1,5 +1,5 @@
 import {ConnectButton, ExternalLink} from "@sentry/ui";
-import {useWeb3Modal} from "@web3modal/wagmi/react";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 import {useAccount} from "wagmi";
 import {DiscordIcon, TelegramIcon, XaiLogo, XIcon} from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import Burger from "@/features/header/Burger";

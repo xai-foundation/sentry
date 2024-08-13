@@ -23,8 +23,8 @@ export async function getPriceForQuantity(quantity: number): Promise<{ price: bi
 
     // Get the provider
     const providerUrls = [
-        "https://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
-        "https://arb1.arbitrum.io/rpc",
+        config.arbitrumOneJsonRpcUrl,
+        config.publicRPC,
     ];
     const provider = getProvider(providerUrls[Math.floor(Math.random() * providerUrls.length)]);
 
@@ -85,8 +85,8 @@ export async function getPrice(quantity: number): Promise<{ price: bigint }> {
 
     // Get the provider
     const providerUrls = [
-        "https://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
-        "https://arb1.arbitrum.io/rpc",
+        config.arbitrumOneJsonRpcUrl,
+        config.publicRPC,
     ];
     const provider = getProvider(providerUrls[Math.floor(Math.random() * providerUrls.length)]);
 

@@ -55,7 +55,7 @@ export function Checkout() {
     return (
         <div>
             <div className="h-full xl:min-h-screen flex-1 flex flex-col justify-center items-center">
-                {mintWithEth.isLoading || mintWithXai.isLoading || approve.isLoading ? (
+                {mintWithEth.isPending || mintWithXai.isPending || approve.isPending ? (
                     <TransactionInProgress />
                 ) : mintWithEth.isSuccess || mintWithXai.isSuccess ? (
                     <PurchaseSuccessful returnToClient={returnToClient} />

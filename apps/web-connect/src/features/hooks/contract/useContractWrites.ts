@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useContractWrite, useWaitForTransaction, UseContractWriteConfig } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { ethers } from 'ethers';
 import { XaiAbi, NodeLicenseAbi, config } from "@sentry/core";
 import { Abi } from 'viem';
@@ -14,21 +14,18 @@ interface UseContractWritesProps {
 }
 
 export interface UseContractWritesReturn {
-  mintWithEth: ReturnType<typeof useContractWrite>;
-  approve: ReturnType<typeof useContractWrite>;
-  mintWithXai: ReturnType<typeof useContractWrite>;
-  approveTx: ReturnType<typeof useWaitForTransaction>;
-  ethMintTx: ReturnType<typeof useWaitForTransaction>;
-  xaiMintTx: ReturnType<typeof useWaitForTransaction>;
+  mintWithEth: ReturnType<typeof useWriteContract>;
+  approve: ReturnType<typeof useWriteContract>;
+  mintWithXai: ReturnType<typeof useWriteContract>;
+  approveTx: ReturnType<typeof useWaitForTransactionReceipt>;
+  ethMintTx: ReturnType<typeof useWaitForTransactionReceipt>;
+  xaiMintTx: ReturnType<typeof useWaitForTransactionReceipt>;
   clearErrors: () => void;
   resetTransactions: () => void;
   mintWithEthError: Error | null;
-}
-
-interface ExtendedUseContractWriteConfig extends UseContractWriteConfig {
-  onProgress?: () => void;
-  onSuccess?: (data: { hash: string }) => void;
-  onError?: (error: Error) => void;
+  handleMintWithEthClicked: () => void;
+  handleApproveClicked: () => void;
+  handleMintWithXaiClicked: () => void;
 }
 
 export function useContractWrites({
@@ -45,64 +42,78 @@ export function useContractWrites({
   const [approveHash, setApproveHash] = useState<`0x${string}` | undefined>(undefined);
   const [mintWithXaiHash, setMintWithXaiHash] = useState<`0x${string}` | undefined>(undefined);
   const [mintWithEthError, setMintWithEthError] = useState<Error | null>(null);
-  const mintWithEthConfig: ExtendedUseContractWriteConfig = {
+
+
+  const mintWithEthConfig = {
     address: config.nodeLicenseAddress as `0x${string}`,
     abi: NodeLicenseAbi as Abi,
     functionName: "mint",
     args: [quantity, promoCode],
     value: calculateTotalPrice(),
-    onSuccess: (data) => {
-      setMintWithEthHash(data.hash as `0x${string}`);
+
+    onSuccess: (data: `0x${string}`) => {
+      setMintWithEthHash(data);
       setMintWithEthError(null);
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       setMintWithEthHash(undefined);
       setMintWithEthError(error);
       console.error('Error minting with ETH:', error);
     },
   };
 
-  const approveConfig: ExtendedUseContractWriteConfig = {
+  const approveConfig = {
     address: tokenAddress as `0x${string}`,
     abi: XaiAbi as Abi,
     functionName: "approve",
     args: [spender, maxAllowanceAmount],
-    onSuccess: (data) => {
-      setApproveHash(data.hash as `0x${string}`);
+    onSuccess: (data: `0x${string}`) => {
+      setApproveHash(data);
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       setApproveHash(undefined);
       console.error('Error approving token:', error);
     },
   };
 
-  const mintWithXaiConfig: ExtendedUseContractWriteConfig = {
+  const mintWithXaiConfig = {
     address: config.nodeLicenseAddress as `0x${string}`,
     abi: NodeLicenseAbi as Abi,
     functionName: "mintWithXai",
     args: [quantity, promoCode, useEsXai, calculateTotalPrice()],
-    onSuccess: (data) => {
-      setMintWithXaiHash(data.hash as `0x${string}`);
+    onSuccess: (data: `0x${string}`) => {
+      setMintWithXaiHash(data);
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       setMintWithXaiHash(undefined);
       console.error('Error minting with XAI:', error);
     },
   };
 
-  const mintWithEth = useContractWrite(mintWithEthConfig);
-  const ethMintTx = useWaitForTransaction({
+  const handleMintWithEthClicked = async () => {
+    mintWithEth.writeContract(mintWithEthConfig);
+  };
+
+  const mintWithEth = useWriteContract();  
+  const ethMintTx = useWaitForTransactionReceipt({
     hash: mintWithEthHash
   });
 
-  const approve = useContractWrite(approveConfig);
-  const approveTx = useWaitForTransaction({
+  const handleApproveClicked = async () => {
+    approve.writeContract(approveConfig);
+  };
+
+  const approve = useWriteContract();
+  const approveTx = useWaitForTransactionReceipt({
      hash: approveHash,
   });
 
+  const handleMintWithXaiClicked = async () => {
+    mintWithXai.writeContract(mintWithXaiConfig);
+  };
 
-  const mintWithXai = useContractWrite(mintWithXaiConfig);
-  const xaiMintTx = useWaitForTransaction({
+  const mintWithXai = useWriteContract();
+  const xaiMintTx = useWaitForTransactionReceipt({
     hash: mintWithXaiHash,
   });
 
@@ -135,5 +146,8 @@ export function useContractWrites({
     clearErrors,
     mintWithEthError,
     resetTransactions,
+    handleMintWithEthClicked,
+    handleApproveClicked,
+    handleMintWithXaiClicked,
   };
 }

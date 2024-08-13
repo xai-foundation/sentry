@@ -17,8 +17,8 @@ export async function getEsXaiAllowance(wallet: string, operator: string): Promi
 
     // Get the provider
     const providerUrls = [
-        "https://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
-        "https://arb1.arbitrum.io/rpc",
+        config.arbitrumOneJsonRpcUrl,
+        config.publicRPC,
     ];
     const provider = getProvider(providerUrls[Math.floor(Math.random() * providerUrls.length)]);
 

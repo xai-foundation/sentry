@@ -385,7 +385,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
      * @return uint256 The challenge emission.
      * @return uint256 The emission tier.
      */
-     function calculateChallengeEmissionAndTier() public view returns (uint256, uint256) {
+    function calculateChallengeEmissionAndTier() public view returns (uint256, uint256) {
         uint256 totalSupply = getCombinedTotalSupply();  
         uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
         return RefereeCalculations(refereeCalculationsAddress).calculateChallengeEmissionAndTier(totalSupply, maxSupply);

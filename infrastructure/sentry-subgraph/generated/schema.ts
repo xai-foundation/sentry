@@ -1112,6 +1112,14 @@ export class Challenge extends Entity {
       "submissions",
     );
   }
+
+  get bulkSubmissions(): BulkSubmissionLoader {
+    return new BulkSubmissionLoader(
+      "Challenge",
+      this.get("id")!.toString(),
+      "bulkSubmissions",
+    );
+  }
 }
 
 export class Submission extends Entity {
@@ -1483,6 +1491,14 @@ export class SentryWallet extends Entity {
       "poolStakes",
     );
   }
+
+  get bulkSubmissions(): BulkSubmissionLoader {
+    return new BulkSubmissionLoader(
+      "SentryWallet",
+      this.get("id")!.toString(),
+      "bulkSubmissions",
+    );
+  }
 }
 
 export class RefereeConfig extends Entity {
@@ -1672,17 +1688,21 @@ export class BulkSubmission extends Entity {
     this.set("challenge", Value.fromString(value));
   }
 
-  get poolInfo(): string {
+  get poolInfo(): string | null {
     let value = this.get("poolInfo");
     if (!value || value.kind == ValueKind.NULL) {
-      throw new Error("Cannot return null for a required field.");
+      return null;
     } else {
       return value.toString();
     }
   }
 
-  set poolInfo(value: string) {
-    this.set("poolInfo", Value.fromString(value));
+  set poolInfo(value: string | null) {
+    if (!value) {
+      this.unset("poolInfo");
+    } else {
+      this.set("poolInfo", Value.fromString(<string>value));
+    }
   }
 
   get keyCount(): BigInt {
@@ -1787,6 +1807,36 @@ export class BulkSubmission extends Entity {
 
   set claimed(value: boolean) {
     this.set("claimed", Value.fromBoolean(value));
+  }
+
+  get sentryWallet(): string | null {
+    let value = this.get("sentryWallet");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set sentryWallet(value: string | null) {
+    if (!value) {
+      this.unset("sentryWallet");
+    } else {
+      this.set("sentryWallet", Value.fromString(<string>value));
+    }
+  }
+
+  get isPool(): boolean {
+    let value = this.get("isPool");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set isPool(value: boolean) {
+    this.set("isPool", Value.fromBoolean(value));
   }
 }
 

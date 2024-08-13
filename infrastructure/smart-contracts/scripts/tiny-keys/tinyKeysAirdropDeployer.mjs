@@ -1,8 +1,9 @@
 import { safeVerify } from "../utils/safeVerify";
 import {config} from "@sentry/core";
 
-const NODE_LICENSE_CONTRACT = config.nodeLicenseContract;
-const REFEREE_CONTRACT = config.refereeContract;
+const NODE_LICENSE_CONTRACT = config.nodeLicenseAddress;
+const REFEREE_CONTRACT = config.refereeAddress;
+const POOL_FACTORY_CONTRACT = config.poolFactoryAddress;
 const KEY_MULTIPLIER = 99 // qty of keys to be air dropped per 1 node license TODO Set This
 
 async function main() {
@@ -14,7 +15,7 @@ async function main() {
     // deploy tiny keys airdrop contract
     console.log("Deploying Tiny Keys Airdrop...");
     const TinyKeysAirdrop = await ethers.getContractFactory("TinyKeysAirdrop");
-    const tinyKeysAirdrop = await upgrades.deployProxy(TinyKeysAirdrop, [NODE_LICENSE_CONTRACT, REFEREE_CONTRACT, KEY_MULTIPLIER], { kind: "transparent", deployer });
+    const tinyKeysAirdrop = await upgrades.deployProxy(TinyKeysAirdrop, [NODE_LICENSE_CONTRACT, REFEREE_CONTRACT, POOL_FACTORY_CONTRACT, KEY_MULTIPLIER], { kind: "transparent", deployer });
     await tinyKeysAirdrop.deploymentTransaction();
     const tinyKeysAirdropAddress = await tinyKeysAirdrop.getAddress();
     console.log("Tiny Keys Airdrop deployed to:", tinyKeysAirdropAddress);    

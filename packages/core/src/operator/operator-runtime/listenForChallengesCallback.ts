@@ -41,26 +41,22 @@ export async function listenForChallengesCallback(challengeNumber: bigint, chall
     try {
         const graphStatus = await getSubgraphHealthStatus();
         if (graphStatus.healthy) {
-            const { sentryWalletMap, sentryKeysMap, nodeLicenseIds, mappedPools, refereeConfig } =
-                await loadOperatorKeysFromGraph_V1(operatorState.operatorAddress, challengeNumber - 1n);
-
-            await processNewChallenge_V1(challengeNumber, challenge, nodeLicenseIds, sentryKeysMap, sentryWalletMap, mappedPools, refereeConfig);
-            // check the previous challenge, that should be closed now
-            if (challengeNumber > BigInt(1)) {
-                await processClosedChallenges_V1(challengeNumber - BigInt(1), nodeLicenseIds, sentryKeysMap, sentryWalletMap);
-            }
-
+                const { sentryWalletMap, sentryKeysMap, nodeLicenseIds, mappedPools, refereeConfig } = await loadOperatorKeysFromGraph_V1(operatorState.operatorAddress, challengeNumber - 1n);
+                await processNewChallenge_V1(challengeNumber, challenge, nodeLicenseIds, sentryKeysMap, sentryWalletMap, mappedPools, refereeConfig);
+                // check the previous challenge, that should be closed now
+                if (challengeNumber > BigInt(1)) {
+                    await processClosedChallenges_V1(challengeNumber - BigInt(1), nodeLicenseIds, sentryKeysMap, sentryWalletMap);
+                }
 
         } else {
             operatorState.cachedLogger(`Revert to RPC call instead of using subgraph. Subgraph status error: ${graphStatus.error}`)
-
-            const { sentryKeysMap, nodeLicenseIds } = await loadOperatorKeysFromRPC_V1(operatorState.operatorAddress);
-
-            await processNewChallenge_V1(challengeNumber, challenge, nodeLicenseIds, sentryKeysMap);
-            // check the previous challenge, that should be closed now
-            if (challengeNumber > BigInt(1)) {
-                await processClosedChallenges_V1(challengeNumber - BigInt(1), nodeLicenseIds, sentryKeysMap);
-            }
+                const { sentryKeysMap, nodeLicenseIds } = await loadOperatorKeysFromRPC_V1(operatorState.operatorAddress);
+    
+                await processNewChallenge_V1(challengeNumber, challenge, nodeLicenseIds, sentryKeysMap);
+                // check the previous challenge, that should be closed now
+                if (challengeNumber > BigInt(1)) {
+                    await processClosedChallenges_V1(challengeNumber - BigInt(1), nodeLicenseIds, sentryKeysMap);
+                }
         }
     } catch (error: any) {
         operatorState.cachedLogger(`Error processing new challenge in listener callback: - ${error && error.message ? error.message : error}`);

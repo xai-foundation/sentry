@@ -1,6 +1,5 @@
 import hardhat from "hardhat";
 const { ethers, upgrades } = hardhat;
-import { safeVerify } from "../utils/safeVerify.mjs";
 import { esXaiAbi, config } from "@sentry/core";
 
 /**
@@ -75,7 +74,7 @@ async function main() {
     const EsXai3 = await ethers.getContractFactory("esXai3");
     console.log("Got esXai factory");
 
-    const esXaiUpgradeParams = [config.refereeAddress, config.nodeLicenseAddress, maxKeysNonKyc];
+    const esXaiUpgradeParams = [config.refereeAddress, config.nodeLicenseAddress, config.poolFactoryAddress, maxKeysNonKyc];
     await upgrades.upgradeProxy(config.esXaiAddress, EsXai3, { call: {fn: "initialize", args: esXaiUpgradeParams } });
     console.log("Upgraded esXai3");
     
