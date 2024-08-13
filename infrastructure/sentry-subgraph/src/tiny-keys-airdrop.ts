@@ -93,7 +93,7 @@ export function handleAirdropStakeSegmentComplete(event: AirdropSegmentStakeComp
         }
 
         // Update the Pool Stake entity with the new details
-        poolStake.keyStakeAmount = poolStake.keyStakeAmount.plus(BigInt.fromI32(99));
+        poolStake.keyStakeAmount = poolStake.keyStakeAmount.plus(airdropQty);
         poolStake.save();
 
         return;
