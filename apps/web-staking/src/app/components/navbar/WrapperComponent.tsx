@@ -4,6 +4,7 @@ import { useTheme } from "next-themes";
 import NavbarComponent from "./NavbarComponent";
 import SidebarComponent from "./SidebarComponent";
 import { useEffect } from "react";
+import AnnouncementBanner from "@/app/components/AnnouncementBanner";
 
 export default function WrapperComponent({ children }: { children: React.ReactNode }) {
 
@@ -15,6 +16,13 @@ export default function WrapperComponent({ children }: { children: React.ReactNo
 
 	return (
 		<>
+			<AnnouncementBanner
+				activateBanner={true}
+				bannerVersion="tk"
+				title={"Announcement title."}
+				text={"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc non porttitor urna."}
+				href={"https://xai-foundation.gitbook.io/xai-network"}
+			/>
 			<div className="flex">
 				<div className="hidden lg:block">
 					<SidebarComponent />
