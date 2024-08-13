@@ -49,6 +49,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
     // Events for various actions within the contract
     event AirdropStarted(uint256 totalSupplyAtStart, uint256 keyMultiplier);
     event AirdropSegmentComplete(uint256 startingKeyId, uint256 endingKeyId);
+    event AirdropSegmentStakeComplete(address indexed owner, address indexed poolAddress, uint256 startingKeyId, uint256 endingKeyId);
     event AirdropEnded();
 
     /**
@@ -161,6 +162,9 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
                 
                 // Stake the keys
                 PoolFactory2(poolFactoryAddress).stakeKeysAdmin(poolAddress, stakeKeyIds, owner);
+
+                // Emit the event
+                emit AirdropSegmentStakeComplete(owner, poolAddress, startingKeyId, endingKeyId);
             }
         }
 
