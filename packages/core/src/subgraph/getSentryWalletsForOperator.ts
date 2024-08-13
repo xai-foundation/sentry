@@ -12,7 +12,6 @@ export async function getSentryWalletsForOperator(
   operator: string,
   submissionsFilter: { eligibleForPayout?: boolean, claimed?: boolean, latestChallengeNumber?: bigint },
   whitelist?: string[],
-  
 ): Promise<{ wallets: SentryWallet[], pools: PoolInfo[], refereeConfig: RefereeConfig }> {
 
   const client = new GraphQLClient(config.subgraphEndpoint);

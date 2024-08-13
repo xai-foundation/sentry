@@ -33,7 +33,7 @@ export const loadOperatorKeysFromGraph_V1 = async (
 
     // Load all operator addresses and pool addresses, pass in the whitelist to get them filtered
     // refereeConfig will be used to locally calculate the boos factor (hold tier thresholds and boostFactors as well as max staking capacity per key)
-    const submissionQueryFilter = {eligibleForPayout: true, claimed: false, latestChallengeNumber: latestChallengeNumber};
+    const submissionQueryFilter = { eligibleForPayout: true, claimed: false, latestChallengeNumber: latestChallengeNumber };
     const { wallets, pools, refereeConfig } = await retry(() => getSentryWalletsForOperator(operator, submissionQueryFilter, operatorState.passedInOwnersAndPools));
 
     if (wallets.length == 0 && pools.length == 0) {
