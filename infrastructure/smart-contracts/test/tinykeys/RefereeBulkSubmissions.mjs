@@ -567,7 +567,7 @@ function BulkSubmissionsRewardRate(deployInfrastructure) {
 
     it("Confirm the amount of winning keys for pools falls within acceptable tolerances for simulated runs.", async function () {
         const { refereeCalculations, addr1 } = await loadFixture(deployInfrastructure);
-        const stakingBoostFactors = [100, 200, 300];
+        const stakingBoostFactors = [100, 150, 200, 300, 700];
         const keyAmountTests = [100, 200, 300, 1000]; // Test cases for staked key amounts
         const iterations = 1000;  // Number of times to run each test case
 
