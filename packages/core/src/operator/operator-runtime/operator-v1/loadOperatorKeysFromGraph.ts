@@ -10,7 +10,6 @@ import { getPoolInfosFromGraph, getSentryKeysFromGraph, getSentryWalletsForOpera
  *  
  * @param operator - The public key of the operator wallet
  * @param latestChallengeNumber - The latest challenge number we should attach submissions to the sentry keys for
- * @param submissionsFilter - The filter for the submissions if submissions should be included
  * @returns mapped sentry key objects, pool objects, owner information and Referee config (this will be used to locally calculate the boost Factor)
  */
 export const loadOperatorKeysFromGraph_V1 = async (

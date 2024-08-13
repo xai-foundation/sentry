@@ -1,5 +1,6 @@
 import { resilientEventListener, config, RefereeAbi } from '@sentry/core';
-import Vorpal, { Args } from 'vorpal';
+import Vorpal, {Args} from 'vorpal';
+
 
 export function eventListener(cli: Vorpal) {
     cli

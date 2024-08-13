@@ -40,6 +40,30 @@ export async function submitBulkAssertions(
             logger(`Failed to submit assertion for ${bulkAddresses.length} addresses, Error: ${error}`);
         }
     }
-    
+
     return successfulSubmissions;
+}
+
+/**
+ * Submits one assertion for a bulkAddress, this will not catch any RPC errors
+ * @param bulkAddress - the bulkAddress to submit for
+ * @param challengeNumber - The challenge number.
+ * @param successorConfirmData - The successor confirm data.
+ * @param signer - The signer to interact with the contract.
+ */
+export async function submitBulkAssertion(
+    bulkAddress: string,
+    challengeNumber: bigint,
+    successorConfirmData: string,
+    signer: ethers.Signer
+): Promise<void> {
+
+    // Create an instance of the Referee contract
+    const refereeContract = new ethers.Contract(config.refereeAddress, RefereeAbi, signer);
+
+    await refereeContract.submitBulkAssertion(
+        bulkAddress,
+        challengeNumber,
+        successorConfirmData
+    );
 }

@@ -26,6 +26,9 @@ export function ActionSection(): JSX.Element {
         mintWithEthError,
         approve,
         getApproveButtonText,
+        handleApproveClicked,
+        handleMintWithEthClicked,
+        handleMintWithXaiClicked,
         getEthButtonText,
     } = useWebBuyKeysContext();
 
@@ -35,16 +38,16 @@ export function ActionSection(): JSX.Element {
      * @returns {string} The button text
      */
     const getTokenButtonText = useCallback(() => {
-        if (mintWithEth.isLoading || mintWithXai.isLoading || approve.isLoading) return "WAITING FOR CONFIRMATION..";
+        if (mintWithEth.isPending || mintWithXai.isPending || approve.isPending) return "WAITING FOR CONFIRMATION..";
         if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
         return getApproveButtonText();
-    }, [mintWithEth.isLoading, mintWithXai.isLoading, approve.isLoading, chain, getApproveButtonText]);
+    }, [mintWithEth.isPending, mintWithXai.isPending, approve.isPending, chain, getApproveButtonText]);
 
     const handleBuyWithXaiClicked = async () => { 
         if (getTokenButtonText().startsWith("Approve")) {
-            approve.write?.();
+            handleApproveClicked();
         } else {
-            mintWithXai.write?.();
+            handleMintWithXaiClicked();
         }
     };
 
@@ -54,9 +57,9 @@ export function ActionSection(): JSX.Element {
                 {/* Render different buttons based on the currency */}
                 {currency === 'AETH' ? (
                     <PrimaryButton
-                        onClick={() => mintWithEth.write?.()}
+                        onClick={() => handleMintWithEthClicked()}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || chain?.id === 42161}
+                        isDisabled={!ready || chain?.id === 42161 || getEthButtonText().startsWith("Insufficient")}
                         btnText={getEthButtonText()}
                     />
                 ) : (

@@ -8,3 +8,5 @@ export * from "./getPoolAddressesFromGraph.js";
 export * from "./getRewardRatesFromGraph.js";
 export * from "./getPoolRewardRate.js";
 export * from "./getSentryKeysFromGraphByPool.js";
+export * from "./getUserStakedPoolsFromGraph.js";
+export * from "./getCurrentRefereeVersionFromGraph.js";

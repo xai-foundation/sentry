@@ -71,6 +71,7 @@ import "../../RefereeCalculations.sol";
 // 55: Cannot stake mixed keys. All keys must be same status (submitted or not submitted) for the current challenge.
 // 56: Only NodeLicense contract can call this function.
 // 57: You do not have any keys available to submit for.
+// 58: Invalid Bulksubmission claim
 
 contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -384,7 +385,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
      * @return uint256 The challenge emission.
      * @return uint256 The emission tier.
      */
-     function calculateChallengeEmissionAndTier() public view returns (uint256, uint256) {
+    function calculateChallengeEmissionAndTier() public view returns (uint256, uint256) {
         uint256 totalSupply = getCombinedTotalSupply();  
         uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
         return RefereeCalculations(refereeCalculationsAddress).calculateChallengeEmissionAndTier(totalSupply, maxSupply);
@@ -994,28 +995,27 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         BulkSubmission storage bulkSubmission = bulkSubmissions[_challengeId][_bulkAddress];
 
         // Check if the bulk submission is elegible for a payout
-        if (bulkSubmission.submitted && !bulkSubmission.claimed && bulkSubmission.winningKeyCount > 0) {
+        require(bulkSubmission.submitted && !bulkSubmission.claimed && bulkSubmission.winningKeyCount > 0, "58");
 
-            uint256 reward = challengeToClaimFor.rewardAmountForClaimers / challengeToClaimFor.numberOfEligibleClaimers;
-            uint256 rewardMintAmount = 0;
+        uint256 reward = challengeToClaimFor.rewardAmountForClaimers / challengeToClaimFor.numberOfEligibleClaimers;
+        uint256 rewardMintAmount = 0;
 
-            // Calculate the amount to mint to the reward address
-            rewardMintAmount = (reward * bulkSubmission.winningKeyCount);     
+        // Calculate the amount to mint to the reward address
+        rewardMintAmount = (reward * bulkSubmission.winningKeyCount);     
 
-            // mark the submission as claimed
-            bulkSubmission.claimed = true;
-            // increment the amount claimed on the challenge
-            challenges[_challengeId].amountClaimedByClaimers += rewardMintAmount;    
-		
-            esXai(esXaiAddress).mint(_bulkAddress, rewardMintAmount);
+        // mark the submission as claimed
+        bulkSubmission.claimed = true;
+        // increment the amount claimed on the challenge
+        challenges[_challengeId].amountClaimedByClaimers += rewardMintAmount;    
+    
+        esXai(esXaiAddress).mint(_bulkAddress, rewardMintAmount);
 
-            // Increment the total claims of this address
-            _lifetimeClaims[_bulkAddress] += rewardMintAmount;
+        // Increment the total claims of this address
+        _lifetimeClaims[_bulkAddress] += rewardMintAmount;
 
-            // unallocate the tokens that have now been converted to esXai
-            _allocatedTokens -= rewardMintAmount;
-            emit BulkRewardsClaimed(_challengeId, _bulkAddress, rewardMintAmount, bulkSubmission.winningKeyCount);
-        }
+        // unallocate the tokens that have now been converted to esXai
+        _allocatedTokens -= rewardMintAmount;
+        emit BulkRewardsClaimed(_challengeId, _bulkAddress, rewardMintAmount, bulkSubmission.winningKeyCount);
     }
 
     /**

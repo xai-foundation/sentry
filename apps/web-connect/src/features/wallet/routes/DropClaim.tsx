@@ -1,4 +1,5 @@
-import {useAccount, useContractWrite, useNetwork} from "wagmi";
+import {useAccount, useWriteContract } from "wagmi";
+import {wagmiConfig, chains} from "../../../main";
 import {ConnectButton, PrimaryButton, XaiCheckbox} from "@sentry/ui";
 import {useState} from "react";
 import {BiLoaderAlt} from "react-icons/bi";
@@ -9,13 +10,15 @@ import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
 import { KYCTooltip } from "@/features/checkout/components/KYCTooltip";
 import { useListClaimableAmount } from "@/features/hooks";
+import { getAccount } from '@wagmi/core'
 
 export function DropClaim() {
 	const {blocked, loading} = useBlockIp({blockUsa: true});
 
 	const {address} = useAccount();
 	const {open} = useWeb3Modal()
-	const {chain} = useNetwork();
+	const { chainId } = getAccount(wagmiConfig);
+	const chain = chains.find(chain => chain.id === chainId)
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
 	const [checkboxTwo, setCheckboxTwo] = useState<boolean>(false);
 	const [checkboxThree, setCheckboxThree] = useState<boolean>(false);
@@ -23,14 +26,20 @@ export function DropClaim() {
 
 	const {data: claimableAmount, isLoading: isClaimableAmountLoading} = useListClaimableAmount(address);
 
-	const {isLoading: isRedeemFromWhitelistLoading, write, error, isSuccess} = useContractWrite({
+	const txData = {
 		address: config.nodeLicenseAddress as `0x${string}`,
 		abi: NodeLicenseAbi,
 		functionName: "redeemFromWhitelist",
-		onError(error) {
-			console.warn("Error", error);
+		args: [],
+		onSuccess(data : any) {
+			window.location = `xai-sentry://unassigned-wallet?txHash=${data.hash}` as unknown as Location;
 		},
-	});
+		onError(error: any) {
+			console.warn("Error", error);
+		}
+	};
+
+	const {isPending: isRedeemFromWhitelistLoading, writeContract, error, isSuccess} = useWriteContract();
 
 	if (loading) {
 		return (
@@ -137,7 +146,7 @@ export function DropClaim() {
 
 														<div>
 															<button
-																onClick={() => write()}
+																onClick={() => writeContract(txData)}
 																className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 																disabled={!ready || isRedeemFromWhitelistLoading}
 															>

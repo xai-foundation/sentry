@@ -1,6 +1,6 @@
-import {config, TinyKeysAirdropAbi, NodeLicenseAbi} from "@sentry/core";
+import {config, TinyKeysAirdropAbi} from "@sentry/core";
 
-const TINY_KEYS_AIRDROP_ADDRESS = config.tinyKeysAirdropAddress; // Needs to be set after tiny key airdrop contract deployment
+const TINY_KEYS_AIRDROP_ADDRESS = config.tinyKeysAirdropAddress; //TODO Needs to be set after tiny key airdrop contract deployment
 
 async function main() {
 
@@ -23,7 +23,7 @@ async function main() {
             await TinyKeysAirdrop.processAirdropSegmentOnlyMint(qtyPerSegment);
             //TODO we should be running this from multiple wallets so we don't get errors for tx nonce or tx queue then remove that timeout
             await new Promise((resolve)=> setTimeout(resolve, 100));
-            await TinyKeysAirdrop.processAirdropSegmentOnlyStake([nextIndex, nextIndex + 1]);
+            await TinyKeysAirdrop.processAirdropSegmentOnlyStake(qtyPerSegment);
             nextIndex += qtyPerSegment
         } catch (error) {
             console.error("Tiny Keys Airdrop error", error);
