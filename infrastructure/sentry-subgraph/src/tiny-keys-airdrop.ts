@@ -22,8 +22,6 @@ export function handleAirdropSegmentComplete(event: AirdropSegmentComplete): voi
 
 export function handleAirdropStakeSegmentComplete(event: AirdropSegmentStakeComplete): void {
 
-    if (event) {
-
         // Extract the data from the event
         const ownerAddress = event.params.owner.toHexString();
         const poolAddress = event.params.poolAddress.toHexString();
@@ -97,8 +95,6 @@ export function handleAirdropStakeSegmentComplete(event: AirdropSegmentStakeComp
         poolStake.save();
 
         return;
-    }
-    return;
 }
 
 

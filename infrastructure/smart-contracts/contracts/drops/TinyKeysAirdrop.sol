@@ -164,7 +164,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
                 PoolFactory2(poolFactoryAddress).stakeKeysAdmin(poolAddress, stakeKeyIds, owner);
 
                 // Emit the event
-                emit AirdropSegmentStakeComplete(owner, poolAddress, startingKeyId, endingKeyId);
+                emit AirdropSegmentStakeComplete(owner, poolAddress, stakeKeyIds[0], stakeKeyIds[stakeKeyIds.length-1]);
             }
         }
 
