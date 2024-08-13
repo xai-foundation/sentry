@@ -10,7 +10,9 @@ import { config } from "../config.js";
  */
 export async function getSentryWalletsForOperator(
   operator: string,
+  submissionsFilter: { eligibleForPayout?: boolean, claimed?: boolean, latestChallengeNumber?: bigint },
   whitelist?: string[],
+  
 ): Promise<{ wallets: SentryWallet[], pools: PoolInfo[], refereeConfig: RefereeConfig }> {
 
   const client = new GraphQLClient(config.subgraphEndpoint);
@@ -18,13 +20,17 @@ export async function getSentryWalletsForOperator(
   let submissionQueryFilter: string[] = [];
   const { eligibleForPayout, claimed, latestChallengeNumber } = submissionsFilter;
   if (eligibleForPayout != undefined) {
-    submissionQueryFilter.push(`eligibleForPayout: ${eligibleForPayout}`)
+    if (eligibleForPayout) {
+      submissionQueryFilter.push('winningKeyCount_gt: 0');
+    } else {
+      submissionQueryFilter.push('winningKeyCount: 0');
+    }
   }
   if (claimed != undefined) {
     submissionQueryFilter.push(`claimed: ${claimed}`)
   }
   if (latestChallengeNumber != undefined) {
-    submissionQueryFilter.push(`challengeNumber_gte: ${latestChallengeNumber.toString()}`)
+    submissionQueryFilter.push(`challengeId_gte: ${latestChallengeNumber.toString()}`)
   }
 
   const query = gql`
@@ -49,7 +55,7 @@ export async function getSentryWalletsForOperator(
         totalStakedEsXaiAmount
         totalStakedKeyAmount
         metadata
-        bulkSubmissions(first: 10000, orderBy: challengeNumber, orderDirection: desc, where: {${submissionQueryFilter.join(",")}})
+        submissions(first: 10000, orderBy: challengeNumber, orderDirection: desc, where: {${submissionQueryFilter.join(",")}})
       }
       refereeConfig(id: "RefereeConfig") {
         maxKeysPerPool

@@ -2,6 +2,10 @@ import { getLatestChallenge, getLatestChallengeFromGraph, getSubgraphHealthStatu
 import { listenForChallengesCallback } from "./listenForChallengesCallback.js";
 import { findSubmissionOnSentryKey } from "./findSubmissionOnSentryKey.js";
 import { operatorState } from "./operatorState.js";
+import { loadOperatorKeysFromGraph_V1 } from "./operator-v1/loadOperatorKeysFromGraph.js";
+import { processNewChallenge_V1 } from "./operator-v1/processNewChallenge.js";
+import { processPastChallenges_V1 } from "./operator-v1/processPastChallenges.js";
+import { loadOperatorKeysFromRPC_V1 } from "./operator-v1/loadOperatorKeysFromRPC.js";
 
 /**
  * Startup the operatorRuntime challenger listener as well as process previous challenges
