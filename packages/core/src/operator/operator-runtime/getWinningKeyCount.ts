@@ -26,11 +26,11 @@ export const getWinningKeyCount = (keyCount: number, boostFactor: number, bulkAd
     );
     const seed = BigInt(seedHash);
 
-    const expectedWinningKeys = Math.floor((keyCount * probability) / 10000);
+    const expectedWinningKeys = Math.floor((keyCount * probability) / 1_000_000);
 
     if (expectedWinningKeys === 0) {
-        const scaleFactor = 1000000;
-        const scaledProbability = Math.floor((probability * scaleFactor) / 10000);
+        const scaleFactor = 1_000_000;
+        const scaledProbability = Math.floor((probability * scaleFactor) / 1_000_000);
         const scaledExpectedWinningKeys = BigInt(keyCount) * BigInt(scaledProbability);
 
         const randomThreshold = generateRandomNumber(seed, "threshold") % BigInt(scaleFactor);

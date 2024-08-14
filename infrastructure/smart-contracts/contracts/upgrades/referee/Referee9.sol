@@ -234,9 +234,14 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     function initialize(address _refereeCalculationsAddress) public reinitializer(7) {
         refereeCalculationsAddress = _refereeCalculationsAddress;
 
-        //TODO update with correct values on deploy
-        // maxStakeAmountPerLicense = 2_000_000 * 10 ** 18;
-        // maxKeysPerPool = 100_000;
+        maxStakeAmountPerLicense = 200 * 10 ** 18;
+        maxKeysPerPool = 100_000;
+
+        // Updated base chance to 0.01
+        stakeAmountBoostFactors[0] = 150; // 0.015
+        stakeAmountBoostFactors[1] = 200; // 0.02
+        stakeAmountBoostFactors[2] = 300; // 0.03
+        stakeAmountBoostFactors[3] = 700; // 0.07
     }
 
     modifier onlyPoolFactory() {
@@ -631,9 +636,15 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     /**
-     * @dev Looks up payout boostFactor based on the staking tier.
+     * @dev Looks up payout boostFactor based on the staking tier. 
+     * Boostfactor is based with 4 decimals:
+     *      1     => 0.0001%
+     *      100   => 0.01%
+     *      10000 => 1%
+     *      20000 => 2%
+     * The current base chance for no stae is 100 => 0.01%
      * @param stakedAmount The staked amount.
-     * @return The payout chance boostFactor. 200 for double the chance.
+     * @return The payout chance boostFactor.
      */
     function _getBoostFactor(uint256 stakedAmount) internal view returns (uint256) {
         if (stakedAmount < stakeAmountTierThresholds[0]) {
@@ -829,7 +840,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 winningKeyCount = 0;
 
         if(numberOfKeys > 0){
-            // Set the boost factor intially to 100
+            // Set the boost factor intially to 100 (0.01%)
             uint256 boostFactor = 100;
 
             // If the bulk address is a pool, determine the boost factor
@@ -943,7 +954,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 winningKeyCount = 0;
 
         if(numberOfKeys > 0){
-            // Set the boost factor intially to 100
+            // Set the boost factor intially to 100 (0.01%)
             uint256 boostFactor = 100;
 
             // If the bulk address is a pool, determine the boost factor
