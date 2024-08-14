@@ -1,15 +1,6 @@
 import { BigInt, log } from "@graphprotocol/graph-ts";
-import { AirdropSegmentComplete, AirdropSegmentStakeComplete } from "../generated/TinyKeysAirdrop/TinyKeysAirdrop"
+import { AirdropSegmentStakeComplete } from "../generated/TinyKeysAirdrop/TinyKeysAirdrop"
 import { PoolInfo, SentryWallet, SentryKey, PoolStake } from "../generated/schema"
-
-export function handleAirdropSegmentComplete(event: AirdropSegmentComplete): void {
-    // Nothing to handle here
-    if (event) {
-        return;
-    }
-    return;
-}
-
 /**
  * Handles the completion of an airdrop segment staking event. This function updates the relevant 
  * entities such as PoolInfo, SentryWallet, SentryKey, and PoolStake based on the event details.

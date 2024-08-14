@@ -152,8 +152,6 @@ dataSources:
         - name: TinyKeysAirdrop
           file: ./abis/TinyKeysAirdrop.json
       eventHandlers:
-        - event: AirdropSegmentComplete(uint256,uint256)
-          handler: handleAirdropSegmentComplete
         - event: AirdropSegmentStakeComplete(indexed address,indexed address,uint256,uint256)
           handler: handleAirdropStakeSegmentComplete
       file: ./src/tiny-keys-airdrop.ts
