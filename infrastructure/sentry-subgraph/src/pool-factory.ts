@@ -86,8 +86,8 @@ export function handleStakeKeys(event: StakeKeys): void {
   const signature = getTxSignatureFromEvent(event);
 
   // Check if this is triggered from the tiny keys airdrop admin stake 
-  // processAirdropSegmentOnlyStake(uint256) => 0xb0fdb4e0
-  if (signature == "0xb0fdb4e0") {
+  // processAirdropSegmentOnlyStake(uint256) => 0x3ada44c1
+  if (signature == "0x3ada44c1") {
 
     // If the event was triggered by the airdrop admin stake, we ignore as that event is handled separately
     return;  
