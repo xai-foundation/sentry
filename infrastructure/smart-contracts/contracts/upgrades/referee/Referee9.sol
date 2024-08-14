@@ -5,7 +5,6 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@openzeppelin/contracts/utils/math/Math.sol";
 import "../../nitro-contracts/rollup/IRollupCore.sol";
 import "../../NodeLicense.sol";
 import "../../Xai.sol";
@@ -838,27 +837,29 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             numberOfKeys = NodeLicense(nodeLicenseAddress).balanceOf(_bulkAddress) - assignedKeysOfUserCount[_bulkAddress];
         }
 
-        require(numberOfKeys > 0, "57");
+        uint256 winningKeyCount = 0;
 
-        // Set the boost factor intially to 100 (0.01%)
-        uint256 boostFactor = 100;
+        if(numberOfKeys > 0){
+            // Set the boost factor intially to 100 (0.01%)
+            uint256 boostFactor = 100;
 
-        // If the bulk address is a pool, determine the boost factor
-        if(isPool){
-            // Get the stakedAmount of _poolAddress for determining boostFactor
-            uint256 stakedAmount = getMaxStakedAmount(_bulkAddress, address(0));
-            // Determine the boostFactor
-            boostFactor = _getBoostFactor(stakedAmount);
+            // If the bulk address is a pool, determine the boost factor
+            if(isPool){
+                // Get the stakedAmount of _poolAddress for determining boostFactor
+                uint256 stakedAmount = getMaxStakedAmount(_bulkAddress, address(0));
+                // Determine the boostFactor
+                boostFactor = _getBoostFactor(stakedAmount);
+            }
+
+            // Determine the number of winning keys
+            winningKeyCount = getWinningKeyCount(numberOfKeys, boostFactor, _bulkAddress, _challengeId, bulkSubmissions[_challengeId][_bulkAddress].assertionStateRootOrConfirmData, challenges[_challengeId].challengerSignedHash);
         }
-
-        // Determine the number of winning keys
-        uint256 winningKeyCount = getWinningKeyCount(numberOfKeys, boostFactor, _bulkAddress, _challengeId, bulkSubmissions[_challengeId][_bulkAddress].assertionStateRootOrConfirmData, challenges[_challengeId].challengerSignedHash);
-
-        uint256 prevWinningCount = bulkSubmissions[_challengeId][_bulkAddress].winningKeyCount;
 
         // Determine the winning key count increase or decrease amounts
         uint256 winningKeysIncreaseAmount = 0;
         uint256 winningKeysDecreaseAmount = 0;
+
+        uint256 prevWinningCount = bulkSubmissions[_challengeId][_bulkAddress].winningKeyCount;
 
         // If winning key count has increased, add the difference to the total number of eligible claimers
         if(winningKeyCount > prevWinningCount){
@@ -947,26 +948,27 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             require(PoolFactory2(poolFactoryAddress).validateSubmitPoolAssertion(_bulkAddress, msg.sender), "17");
         }
 
-        // Confirm there are keys to submit
-        require(numberOfKeys > 0, "57");    
-
         // Confirm not already submitted
         require(!bulkSubmissions[_challengeId][_bulkAddress].submitted, "54");
+        
+        uint256 winningKeyCount = 0;
 
-        // Set the boost factor intially to 100 (0.01%)
-        uint256 boostFactor = 100;
+        if(numberOfKeys > 0){
+            // Set the boost factor intially to 100 (0.01%)
+            uint256 boostFactor = 100;
 
-        // If the bulk address is a pool, determine the boost factor
-        if(isPool){
-            // Get the stakedAmount of _poolAddress for determining boostFactor
-            uint256 stakedAmount = getMaxStakedAmount(_bulkAddress, address(0));
+            // If the bulk address is a pool, determine the boost factor
+            if(isPool){
+                // Get the stakedAmount of _poolAddress for determining boostFactor
+                uint256 stakedAmount = getMaxStakedAmount(_bulkAddress, address(0));
 
-            // Determine the boost factor
-            boostFactor = _getBoostFactor(stakedAmount);
+                // Determine the boost factor
+                boostFactor = _getBoostFactor(stakedAmount);
+            }
+
+            // Determine the number of winning keys
+            winningKeyCount = getWinningKeyCount(numberOfKeys, boostFactor, _bulkAddress, _challengeId, _confirmData, challenges[_challengeId].challengerSignedHash);
         }
-
-        // Determine the number of winning keys
-        uint256 winningKeyCount = getWinningKeyCount(numberOfKeys, boostFactor, _bulkAddress, _challengeId, _confirmData, challenges[_challengeId].challengerSignedHash);
 
         // Update the challenge by adding the winning key count to the total winning keys
         challenges[_challengeId].numberOfEligibleClaimers += winningKeyCount;

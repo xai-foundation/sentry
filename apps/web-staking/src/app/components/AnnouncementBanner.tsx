@@ -29,7 +29,7 @@ const AnnouncementBanner = ({ title, text, href, activateBanner, bannerVersion }
 
     return (
         <>
-            {(activateBanner && isShow) && <div
+            {(activateBanner && isShow) ? <div
                 className="w-full announcementBannerGradient flex flex-col md:flex-row md:justify-center md:items-center justify-start items-start h-[132px] md:h-[54px] text-lg relative">
                 <div
                     className="flex flex-col md:flex-row md:justify-center md:items-center justify-start items-start md:gap-[5px] gap-0 text-lg mt-[14px] ml-[17px] md:my-0 md:mx-0">
@@ -46,7 +46,7 @@ const AnnouncementBanner = ({ title, text, href, activateBanner, bannerVersion }
                     className="block cursor-pointer absolute right-[23px] md:top-1/2 top-[20px] md:-translate-y-[50%]">
                     <CloseIcon fill={"#181818"} height={13} width={13} />
                 </span>
-            </div>}
+            </div> : ""}
         </>);
 };
 

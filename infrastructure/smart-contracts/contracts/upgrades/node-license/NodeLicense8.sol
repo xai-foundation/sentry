@@ -246,7 +246,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         uint256 finalPrice = ethToXai(finalEthPrice);
 
         // Confirm the final price does not exceed the expected cost
-        require(_expectedCost <= finalPrice, "Price Exceeds Expected Cost");
+        require(finalPrice <= _expectedCost, "Price Exceeds Expected Cost");
 
         uint256 averageCost = finalEthPrice / _amount;
 
