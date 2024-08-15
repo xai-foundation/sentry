@@ -712,8 +712,11 @@ export const updateRequestClaimed = (network: NetworkKey, walletAddress: `0x${st
 		throw new Error('Invalid requestIndex');
 	}
 
-	cachedUnstakes[requestIndex].open = false;
-	cachedUnstakes[requestIndex].completeTime = Date.now();
+	if (cachedUnstakes[requestIndex]) {
+		cachedUnstakes[requestIndex].open = false;
+		cachedUnstakes[requestIndex].completeTime = Date.now();
+	}
+	
 	localStorage.setItem(storageKey, JSON.stringify(cachedUnstakes));
 }
 
