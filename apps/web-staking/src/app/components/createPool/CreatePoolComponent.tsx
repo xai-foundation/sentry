@@ -18,7 +18,11 @@ import DelegateAddressComponent from "./DelegateAddressComponent";
 import { Id } from "react-toastify";
 import { PrimaryButton } from "../ui";
 
+import { usePathname } from 'next/navigation';
+
+
 const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
+  const pathname = usePathname();
   const router = useRouter();
   const [errorValidationDetails, setErrorValidationDetails] = useState({
     name: true,
@@ -40,8 +44,8 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
 
   // Substitute Timeouts with useWaitForTransaction
   const { isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
-      hash: receipt,
-    });
+    hash: receipt,
+  });
 
   const [poolDetailsValues, setPoolDetailsValues] = useState({
     name: "",
@@ -74,34 +78,34 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
     toastId.current = loadingNotification("Transaction pending...");
 
     try {
-      
+
       const keyIds = await getUnstakedKeysOfUser(getNetwork(chainId), address as string, numKeys);
       // setCurrentPoolCount(await getPoolsOfUserCount(getNetwork(chainId), address as string));
       setReceipt(await executeContractWrite(
-          WriteFunctions.createPool,
+        WriteFunctions.createPool,
+        [
+          delegateAddress || ZERO_ADDRESS,
+          keyIds,
           [
-            delegateAddress || ZERO_ADDRESS,
-            keyIds,
-            [
-              BigInt((Number(rewardsValues.owner) * POOL_SHARES_BASE).toFixed(0)),
-              BigInt((Number(rewardsValues.keyholder) * POOL_SHARES_BASE).toFixed(0)),
-              BigInt((Number(rewardsValues.staker) * POOL_SHARES_BASE).toFixed(0))
-            ],
-            [
-              poolDetailsValues.name,
-              poolDetailsValues.description,
-              poolDetailsValues.logoUrl
-            ],
-            [socialLinks.website, socialLinks.discord, socialLinks.telegram, socialLinks.twitter, socialLinks.instagram, socialLinks.youTube, socialLinks.tiktok],
-            [
-              [poolDetailsValues.trackerName, poolDetailsValues.trackerTicker + "-K",],
-              [poolDetailsValues.trackerName, poolDetailsValues.trackerTicker + "-X"]
-            ],
+            BigInt((Number(rewardsValues.owner) * POOL_SHARES_BASE).toFixed(0)),
+            BigInt((Number(rewardsValues.keyholder) * POOL_SHARES_BASE).toFixed(0)),
+            BigInt((Number(rewardsValues.staker) * POOL_SHARES_BASE).toFixed(0))
           ],
-          chainId,
-          writeContractAsync,
-          switchChain
-        ) as `0x${string}`);
+          [
+            poolDetailsValues.name,
+            poolDetailsValues.description,
+            poolDetailsValues.logoUrl
+          ],
+          [socialLinks.website, socialLinks.discord, socialLinks.telegram, socialLinks.twitter, socialLinks.instagram, socialLinks.youTube, socialLinks.tiktok],
+          [
+            [poolDetailsValues.trackerName, poolDetailsValues.trackerTicker + "-K",],
+            [poolDetailsValues.trackerName, poolDetailsValues.trackerTicker + "-X"]
+          ],
+        ],
+        chainId,
+        writeContractAsync,
+        switchChain
+      ) as `0x${string}`);
 
     } catch (ex: any) {
       const error = mapWeb3Error(ex);
@@ -115,8 +119,8 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
 
   const handleClick = () => {
     setShowErrors(true);
-    if (errorValidationAddress || searchDetailsErrors() ||errorValidationRewards
-    ) { window && window.scrollTo(0, ref.current?.offsetTop!);}
+    if (errorValidationAddress || searchDetailsErrors() || errorValidationRewards
+    ) { window && window.scrollTo(0, ref.current?.offsetTop!); }
 
     if (!errorValidationAddress && !searchDetailsErrors() && !errorValidationRewards) {
       setShowStakePoolKey(true);
@@ -127,7 +131,9 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
     try {
       // const newPoolAddress = await getPoolAddressOfUserAtIndex(getNetwork(chainId), address as string, currentPoolCount as number);
       updateNotification("Pool created", toastId.current as Id, false, receipt, chainId);
-      router.push(`/pool`);
+      const pathSegments = pathname.split('/').filter(Boolean);
+      const poolAddress = pathSegments[1];
+      router.push(`/pool/${poolAddress}/summary`);
     } catch (ex: any) {
       console.error('Error getting new Pool Address', ex);
     }
@@ -202,7 +208,7 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
 
             <div
               className="flex sm:flex-col-reverse lg:flex-row justify-between xl:gap-0 lg:gap-[5px] gal-0 w-full py-5 px-6 bg-nulnOilBackground shadow-default">
-              <PrimaryButton btnText="Cancel" onClick={() => router.back()} colorStyle="outline" className="sm:w-full lg:w-[205px] uppercase" wrapperClassName=""  />
+              <PrimaryButton btnText="Cancel" onClick={() => router.back()} colorStyle="outline" className="sm:w-full lg:w-[205px] uppercase" wrapperClassName="" />
               <PrimaryButton
                 btnText="Save and continue"
                 onClick={handleClick}
