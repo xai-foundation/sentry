@@ -1,7 +1,6 @@
 import Vorpal from "vorpal";
 import Logger from "../../utils/Logger.js"
-import { getSignerFromPrivateKey, operatorRuntime, Challenge, PublicNodeBucketInformation, getSentryWalletsForOperator, getSubgraphHealthStatus } from "@sentry/core";
-import { loadOperatorWalletsFromRPC } from "@sentry/core/src/operator/operator-runtime/loadOperatorWalletsFromRPC.js";
+import { getSignerFromPrivateKey, operatorRuntime, Challenge, PublicNodeBucketInformation, getSentryWalletsForOperator, getSubgraphHealthStatus, loadOperatorWalletsFromRPC } from "@sentry/core";
 
 /**
  * Starts a runtime of the operator.

@@ -11,3 +11,4 @@ export * from "./submitBulkAssertions.js";
 export * from "./claimBulkSubmissionRewards.js";
 export * from "./operatorRuntime.js";
 export * from "./checkRefereeBulkSubmissionCompatible.js";
+export * from "./operator-runtime/index.js";
