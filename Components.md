@@ -146,6 +146,7 @@ Here is a list of the shared components:
   * **MainCheckbox.tsx:**
     * **Description:** Checkbox.
     * **Defined in:** [File](./packages/ui/src/rebrand/checkboxes/MainCheckbox.tsx)
+    
   **Props** 
    * **onChange:** () => void
   * **children:** React.ReactNode
