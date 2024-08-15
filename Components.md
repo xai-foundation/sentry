@@ -154,8 +154,11 @@ Here is a list of the shared components:
   * **isChecked?:** boolean
   * **labelStyle?:** string
   * **extraClasses?:** 
+
   {  // Some additional notes on how to use extra classes
+
       input?: string   // What should be considered here? Width? Colors etc? When would I want to use this?
+      
       wrapper?: string // Same, what should be considered here? When would I want to use this?
 
   }
