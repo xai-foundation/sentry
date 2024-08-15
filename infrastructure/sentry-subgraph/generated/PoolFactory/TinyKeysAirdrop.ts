@@ -46,6 +46,36 @@ export class AirdropSegmentComplete__Params {
   }
 }
 
+export class AirdropSegmentStakeComplete extends ethereum.Event {
+  get params(): AirdropSegmentStakeComplete__Params {
+    return new AirdropSegmentStakeComplete__Params(this);
+  }
+}
+
+export class AirdropSegmentStakeComplete__Params {
+  _event: AirdropSegmentStakeComplete;
+
+  constructor(event: AirdropSegmentStakeComplete) {
+    this._event = event;
+  }
+
+  get owner(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get poolAddress(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get startingKeyId(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+
+  get endingKeyId(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+}
+
 export class AirdropStarted extends ethereum.Event {
   get params(): AirdropStarted__Params {
     return new AirdropStarted__Params(this);
@@ -211,6 +241,21 @@ export class TinyKeysAirdrop extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
+  airdropEnded(): boolean {
+    let result = super.call("airdropEnded", "airdropEnded():(bool)", []);
+
+    return result[0].toBoolean();
+  }
+
+  try_airdropEnded(): ethereum.CallResult<boolean> {
+    let result = super.tryCall("airdropEnded", "airdropEnded():(bool)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
   airdropStarted(): boolean {
     let result = super.call("airdropStarted", "airdropStarted():(bool)", []);
 
@@ -287,38 +332,6 @@ export class TinyKeysAirdrop extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBigInt());
   }
 
-  keyToStartEnd(param0: BigInt, param1: BigInt): BigInt {
-    let result = super.call(
-      "keyToStartEnd",
-      "keyToStartEnd(uint256,uint256):(uint256)",
-      [
-        ethereum.Value.fromUnsignedBigInt(param0),
-        ethereum.Value.fromUnsignedBigInt(param1),
-      ],
-    );
-
-    return result[0].toBigInt();
-  }
-
-  try_keyToStartEnd(
-    param0: BigInt,
-    param1: BigInt,
-  ): ethereum.CallResult<BigInt> {
-    let result = super.tryCall(
-      "keyToStartEnd",
-      "keyToStartEnd(uint256,uint256):(uint256)",
-      [
-        ethereum.Value.fromUnsignedBigInt(param0),
-        ethereum.Value.fromUnsignedBigInt(param1),
-      ],
-    );
-    if (result.reverted) {
-      return new ethereum.CallResult();
-    }
-    let value = result.value;
-    return ethereum.CallResult.fromValue(value[0].toBigInt());
-  }
-
   nodeLicenseAddress(): Address {
     let result = super.call(
       "nodeLicenseAddress",
@@ -384,6 +397,21 @@ export class TinyKeysAirdrop extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
+  stakeCounter(): BigInt {
+    let result = super.call("stakeCounter", "stakeCounter():(uint256)", []);
+
+    return result[0].toBigInt();
+  }
+
+  try_stakeCounter(): ethereum.CallResult<BigInt> {
+    let result = super.tryCall("stakeCounter", "stakeCounter():(uint256)", []);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
   supportsInterface(interfaceId: Bytes): boolean {
     let result = super.call(
       "supportsInterface",
@@ -431,28 +459,28 @@ export class TinyKeysAirdrop extends ethereum.SmartContract {
   }
 }
 
-export class EndAirdropCall extends ethereum.Call {
-  get inputs(): EndAirdropCall__Inputs {
-    return new EndAirdropCall__Inputs(this);
+export class CompleteAirDropCall extends ethereum.Call {
+  get inputs(): CompleteAirDropCall__Inputs {
+    return new CompleteAirDropCall__Inputs(this);
   }
 
-  get outputs(): EndAirdropCall__Outputs {
-    return new EndAirdropCall__Outputs(this);
+  get outputs(): CompleteAirDropCall__Outputs {
+    return new CompleteAirDropCall__Outputs(this);
   }
 }
 
-export class EndAirdropCall__Inputs {
-  _call: EndAirdropCall;
+export class CompleteAirDropCall__Inputs {
+  _call: CompleteAirDropCall;
 
-  constructor(call: EndAirdropCall) {
+  constructor(call: CompleteAirDropCall) {
     this._call = call;
   }
 }
 
-export class EndAirdropCall__Outputs {
-  _call: EndAirdropCall;
+export class CompleteAirDropCall__Outputs {
+  _call: CompleteAirDropCall;
 
-  constructor(call: EndAirdropCall) {
+  constructor(call: CompleteAirDropCall) {
     this._call = call;
   }
 }
@@ -491,32 +519,44 @@ export class GrantRoleCall__Outputs {
   }
 }
 
-export class ProcessAirdropSegmentCall extends ethereum.Call {
-  get inputs(): ProcessAirdropSegmentCall__Inputs {
-    return new ProcessAirdropSegmentCall__Inputs(this);
+export class InitializeCall extends ethereum.Call {
+  get inputs(): InitializeCall__Inputs {
+    return new InitializeCall__Inputs(this);
   }
 
-  get outputs(): ProcessAirdropSegmentCall__Outputs {
-    return new ProcessAirdropSegmentCall__Outputs(this);
+  get outputs(): InitializeCall__Outputs {
+    return new InitializeCall__Outputs(this);
   }
 }
 
-export class ProcessAirdropSegmentCall__Inputs {
-  _call: ProcessAirdropSegmentCall;
+export class InitializeCall__Inputs {
+  _call: InitializeCall;
 
-  constructor(call: ProcessAirdropSegmentCall) {
+  constructor(call: InitializeCall) {
     this._call = call;
   }
 
-  get _qtyToProcess(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
+  get _nodeLicenseAddress(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get _refereeAddress(): Address {
+    return this._call.inputValues[1].value.toAddress();
+  }
+
+  get _poolFactoryAddress(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+
+  get _keyMultiplier(): BigInt {
+    return this._call.inputValues[3].value.toBigInt();
   }
 }
 
-export class ProcessAirdropSegmentCall__Outputs {
-  _call: ProcessAirdropSegmentCall;
+export class InitializeCall__Outputs {
+  _call: InitializeCall;
 
-  constructor(call: ProcessAirdropSegmentCall) {
+  constructor(call: InitializeCall) {
     this._call = call;
   }
 }
@@ -568,8 +608,8 @@ export class ProcessAirdropSegmentOnlyStakeCall__Inputs {
     this._call = call;
   }
 
-  get keyIds(): Array<BigInt> {
-    return this._call.inputValues[0].value.toBigIntArray();
+  get _qtyToProcess(): BigInt {
+    return this._call.inputValues[0].value.toBigInt();
   }
 }
 
@@ -671,104 +711,6 @@ export class StartAirdropCall__Outputs {
   _call: StartAirdropCall;
 
   constructor(call: StartAirdropCall) {
-    this._call = call;
-  }
-}
-
-export class UpdateAidropCountCall extends ethereum.Call {
-  get inputs(): UpdateAidropCountCall__Inputs {
-    return new UpdateAidropCountCall__Inputs(this);
-  }
-
-  get outputs(): UpdateAidropCountCall__Outputs {
-    return new UpdateAidropCountCall__Outputs(this);
-  }
-}
-
-export class UpdateAidropCountCall__Inputs {
-  _call: UpdateAidropCountCall;
-
-  constructor(call: UpdateAidropCountCall) {
-    this._call = call;
-  }
-
-  get _airdropCounter(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-}
-
-export class UpdateAidropCountCall__Outputs {
-  _call: UpdateAidropCountCall;
-
-  constructor(call: UpdateAidropCountCall) {
-    this._call = call;
-  }
-}
-
-export class UpdateMultiplierCall extends ethereum.Call {
-  get inputs(): UpdateMultiplierCall__Inputs {
-    return new UpdateMultiplierCall__Inputs(this);
-  }
-
-  get outputs(): UpdateMultiplierCall__Outputs {
-    return new UpdateMultiplierCall__Outputs(this);
-  }
-}
-
-export class UpdateMultiplierCall__Inputs {
-  _call: UpdateMultiplierCall;
-
-  constructor(call: UpdateMultiplierCall) {
-    this._call = call;
-  }
-
-  get _keyMultiplier(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-}
-
-export class UpdateMultiplierCall__Outputs {
-  _call: UpdateMultiplierCall;
-
-  constructor(call: UpdateMultiplierCall) {
-    this._call = call;
-  }
-}
-
-export class UpdateStartEndCall extends ethereum.Call {
-  get inputs(): UpdateStartEndCall__Inputs {
-    return new UpdateStartEndCall__Inputs(this);
-  }
-
-  get outputs(): UpdateStartEndCall__Outputs {
-    return new UpdateStartEndCall__Outputs(this);
-  }
-}
-
-export class UpdateStartEndCall__Inputs {
-  _call: UpdateStartEndCall;
-
-  constructor(call: UpdateStartEndCall) {
-    this._call = call;
-  }
-
-  get keyId(): BigInt {
-    return this._call.inputValues[0].value.toBigInt();
-  }
-
-  get start(): BigInt {
-    return this._call.inputValues[1].value.toBigInt();
-  }
-
-  get end(): BigInt {
-    return this._call.inputValues[2].value.toBigInt();
-  }
-}
-
-export class UpdateStartEndCall__Outputs {
-  _call: UpdateStartEndCall;
-
-  constructor(call: UpdateStartEndCall) {
     this._call = call;
   }
 }

@@ -1,4 +1,4 @@
-import { Address, bigInt, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
+import { Address, BigInt, ethereum, log } from "@graphprotocol/graph-ts";
 import {
   StakeKeys,
   UnstakeKeys,
@@ -24,7 +24,6 @@ import {
 } from "../generated/schema"
 import { getInputFromEvent } from "./utils/getInputFromEvent";
 import { getTxSignatureFromEvent } from "./utils/getTxSignatureFromEvent";
-import { TinyKeysAirdrop } from "../generated/TinyKeysAirdrop/TinyKeysAirdrop"
 
 function handlePoolBreakdown(pool: PoolInfo, currentTime: BigInt): void {
   if (pool.updateSharesTimestamp.gt(BigInt.fromI32(0)) && currentTime.gt(pool.updateSharesTimestamp)) {
@@ -86,47 +85,13 @@ export function handleStakeKeys(event: StakeKeys): void {
 
   const signature = getTxSignatureFromEvent(event);
 
-  //Check if this is triggered from the tiny keys aidrop admin stake 
-  // processAirdropSegmentOnlyStake (0xd65f202a)
-  if (signature == "0xd65f202a") {
+  // Check if this is triggered from the tiny keys airdrop admin stake 
+  // processAirdropSegmentOnlyStake(uint256) => 0x3ada44c1
+  if (signature == "0x3ada44c1") {
 
-    const dataToDecode = getInputFromEvent(event, true)
-    const decoded = ethereum.decode('(uint256[])', dataToDecode)
-    let autoStakeKeyIds: BigInt[];
-
-    if (decoded) {
-      autoStakeKeyIds = decoded.toTuple()[0].toBigIntArray();
-    } else {
-      log.warning("Failed to decode handleStakeKeys, processAirdropSegmentOnlyStake TX: " + event.transaction.hash.toHexString(), [])
-      return;
-    }
-
-    const airdropContract = TinyKeysAirdrop.bind(event.transaction.to!)
-
-    nodeLicenseIds = [];
-
-    for (let i = 0; i < autoStakeKeyIds.length; i++) {
-      let sentryKey = SentryKey.load(autoStakeKeyIds[i].toString())
-      if(!sentryKey){
-        log.warning("Failed to find sentryKey on handleStakeKeys, processAirdropSegmentOnlyStake: TX: " + event.transaction.hash.toHexString() + ", keyId: " + autoStakeKeyIds[i].toString(), []);
-        continue;
-      }
-      
-      //Only process the keys mintend from the key id staked in the pool of the event.
-      //On process could have multiple keys in different pools, we don't need to reprocess them for each stake event.
-      if (sentryKey.assignedPool == event.params.pool) {
-
-        const start = airdropContract.keyToStartEnd(autoStakeKeyIds[i], BigInt.fromI32(0));
-        const end = airdropContract.keyToStartEnd(autoStakeKeyIds[i], BigInt.fromI32(1));
-
-        const keyLength = end.minus(start).toI32();
-
-        for (let j = 0; j < keyLength; j++) {
-          nodeLicenseIds.push(start.plus(BigInt.fromI32(j)))
-        }
-      }
-    }
-
+    // If the event was triggered by the airdrop admin stake, we ignore as that event is handled separately
+    return;  
+  
   } else {
     const dataToDecode = getInputFromEvent(event, true)
     const decoded = ethereum.decode('(address,uint256[])', dataToDecode);

@@ -89,8 +89,6 @@ dataSources:
       abis:
         - name: PoolFactory
           file: ./abis/PoolFactory.json
-        - name: TinyKeysAirdrop
-          file: ./abis/TinyKeysAirdrop.json
       eventHandlers:
         - event: Initialized(uint8)
           handler: handleInitialized
@@ -141,9 +139,9 @@ dataSources:
   #   name: TinyKeysAirdrop
   #   network: arbitrum-one
   #   source:
-  #     address: "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66"
+  #     address: TODO ADD ADDRESS
   #     abi: TinyKeysAirdrop
-  #     startBlock: 1
+  #     startBlock: TODO ADD BLOCK
   #   mapping:
   #     kind: ethereum/events
   #     apiVersion: 0.0.7
@@ -154,6 +152,6 @@ dataSources:
   #       - name: TinyKeysAirdrop
   #         file: ./abis/TinyKeysAirdrop.json
   #     eventHandlers:
-  #       - event: AirdropSegmentComplete(uint256,uint256)
-  #         handler: handleAirdropSegmentComplete
+  #       - event: AirdropSegmentStakeComplete(indexed address,indexed address,uint256,uint256)
+  #         handler: handleAirdropStakeSegmentComplete
   #     file: ./src/tiny-keys-airdrop.ts
