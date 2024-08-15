@@ -146,16 +146,18 @@ Here is a list of the shared components:
   * **MainCheckbox.tsx:**
     * **Description:** Checkbox.
     * **Defined in:** [File](./packages/ui/src/rebrand/checkboxes/MainCheckbox.tsx)
-    
-  **Props** 
+
+    **Props** 
    * **onChange:** () => void
   * **children:** React.ReactNode
   * **disabled?:** boolean
   * **isChecked?:** boolean
   * **labelStyle?:** string
-  * **extraClasses?:** {  // Some additional notes on how to use extra classes
-  *  **input?:** string   // What should be considered here? Width? Colors etc? When would I want to use this?
-  *  **wrapper?:** string // Same, what should be considered here? When would I want to use this?
+  * **extraClasses?:** 
+  {  // Some additional notes on how to use extra classes
+      input?: string   // What should be considered here? Width? Colors etc? When would I want to use this?
+      wrapper?: string // Same, what should be considered here? When would I want to use this?
+
   }
 
 **[Dropdowns](./packages/ui/src/rebrand/dropdown)**
