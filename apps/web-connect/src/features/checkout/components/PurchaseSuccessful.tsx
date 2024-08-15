@@ -7,12 +7,16 @@ import { Tooltip } from "@sentry/ui";
 import { useAccount } from "wagmi";
 import { useState } from "react";
 import BackArrow from "@sentry/ui/src/rebrand/icons/BackArrow";
+import { stakingPageURL } from "../Checkout";
 
 let timeoutId: number;
 
 interface IPurchaseSuccessful {
 	returnToClient: (hash: string) => void;
 }
+
+const salePageBaseURL = "https://sentry.xai.games";
+const operatorDownloadLink = "https://github.com/xai-foundation/sentry/releases/latest"
 
 const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) => {
 	const { mintWithEth, mintWithXai, blockExplorer } = useWebBuyKeysContext();
@@ -35,7 +39,7 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 	const copyReferralCode = () => {
 		if (address) {
 
-			navigator.clipboard.writeText(`https://app.xai.games/${address}/`);
+			navigator.clipboard.writeText(`${salePageBaseURL}/${address}/`);
 			setIsTooltipAllowedToOpen(true);
 
 			if (timeoutId) {
@@ -89,7 +93,7 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 										<div
 											className={`relative items-center lg:w-[400px] w-full bg-optophobia h-fit flex justify-between text-americanSilver p-2 overflow-hidden text-lg font-medium global-clip-btn`}
 										>
-											<p className="select-none lg:max-w-[300px] sx:max-w-[210px] sm:max-w-[190px] overflow-x-hidden">{`https://app.xai.games/${address}`}</p>
+											<p className="select-none lg:max-w-[300px] sx:max-w-[210px] sm:max-w-[190px] overflow-x-hidden">{`${salePageBaseURL}/${address}`}</p>
 
 										</div>
 									</div>
@@ -104,9 +108,9 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 				</div>
 				<p className="text-elementalGrey my-3 font-bold">Stake key in a pool to start earning rewards</p>
 				<div className="px-[20px] w-full">
-					<PrimaryButton onClick={() => window.open("https://app.xai.games/staking")} btnText={"Stake key"} colorStyle="primary" className="w-full text-xl font-bold uppercase text-brandyWine" />
+					<PrimaryButton onClick={() => window.open(stakingPageURL)} btnText={"Stake key"} colorStyle="primary" className="w-full text-xl font-bold uppercase text-brandyWine" />
 				</div>
-				<a className="text-elementalGrey font-bold underline mb-5 mt-3" href={"https://xai.games/sentrynodes/"} target={"_blank"}>Download operator</a>
+				<a className="text-elementalGrey font-bold underline mb-5 mt-3" href={operatorDownloadLink} target={"_blank"}>Download operator</a>
 			</div>
 		</div>
 	);

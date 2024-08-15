@@ -12,6 +12,8 @@ import { BiLoaderAlt } from "react-icons/bi";
 import PurchaseSuccessful from "./components/PurchaseSuccessful";
 import { useWebBuyKeysContext } from './contexts/useWebBuyKeysContext';
 
+export const stakingPageURL = "https://app.xai.games/staking?modal=true&page=1&showKeys=true&hideFull=true&sort=tierIndex&sortOrder=-1";
+
 const LoadingState = () => (
     <div className="w-full h-[365px] flex flex-col justify-center items-center gap-2">
         <BiLoaderAlt className="animate-spin" color={"#FF0030"} size={32} />
@@ -48,7 +50,7 @@ export function Checkout() {
 	useEffect(() => {
 		if (!stakingTabOpened && (mintWithEth.isSuccess || mintWithXai.isSuccess)) {	
             setStakingTabOpened(true);
-			window.open("https://app.xai.games/staking?modal=true&page=1&showKeys=true&hideFull=true&sort=tierIndex&sortOrder=-1", '_blank');
+			window.open(stakingPageURL, '_blank');
 		}
 	}, [mintWithEth.isSuccess, mintWithXai.isSuccess]);
 
