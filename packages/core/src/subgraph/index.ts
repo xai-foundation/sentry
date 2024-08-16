@@ -10,3 +10,4 @@ export * from "./getPoolRewardRate.js";
 export * from "./getSentryKeysFromGraphByPool.js";
 export * from "./getUserStakedPoolsFromGraph.js";
 export * from "./getCurrentRefereeVersionFromGraph.js";
+export * from "./getSentryKeysForUnclaimedFromGraph.js";
