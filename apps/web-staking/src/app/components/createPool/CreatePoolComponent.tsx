@@ -12,17 +12,14 @@ import { useRouter } from "next/navigation";
 import { useAccount, useSwitchChain, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { loadingNotification, updateNotification } from "../notifications/NotificationsComponent";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
-import { POOL_SHARES_BASE, getNetwork, getUnstakedKeysOfUser, mapWeb3Error, ZERO_ADDRESS } from "@/services/web3.service";
+import { POOL_SHARES_BASE, getNetwork, getUnstakedKeysOfUser, mapWeb3Error, ZERO_ADDRESS, getPoolAddressOfUserAtIndex, getPoolsOfUserCount } from "@/services/web3.service";
 import StakePoolKeyComponent from "./StakePoolKeyComponent";
 import DelegateAddressComponent from "./DelegateAddressComponent";
 import { Id } from "react-toastify";
 import { PrimaryButton } from "../ui";
 
-import { usePathname } from 'next/navigation';
-
 
 const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
-  const pathname = usePathname();
   const router = useRouter();
   const [errorValidationDetails, setErrorValidationDetails] = useState({
     name: true,
@@ -36,6 +33,7 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
   const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
   const [showStakePoolKey, setShowStakePoolKey] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
+  const [currentPoolCount, setCurrentPoolCount] = useState(0);
 
   const { address, chainId } = useAccount();
 
@@ -80,7 +78,7 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
     try {
 
       const keyIds = await getUnstakedKeysOfUser(getNetwork(chainId), address as string, numKeys);
-      // setCurrentPoolCount(await getPoolsOfUserCount(getNetwork(chainId), address as string));
+      setCurrentPoolCount(await getPoolsOfUserCount(getNetwork(chainId), address as string));
       setReceipt(await executeContractWrite(
         WriteFunctions.createPool,
         [
@@ -129,11 +127,9 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
 
   const updateOnSuccess = useCallback(async () => {
     try {
-      // const newPoolAddress = await getPoolAddressOfUserAtIndex(getNetwork(chainId), address as string, currentPoolCount as number);
+      const newPoolAddress = await getPoolAddressOfUserAtIndex(getNetwork(chainId), address as string, currentPoolCount as number);
       updateNotification("Pool created", toastId.current as Id, false, receipt, chainId);
-      const pathSegments = pathname.split('/').filter(Boolean);
-      const poolAddress = pathSegments[1];
-      router.push(`/pool/${poolAddress}/summary`);
+      router.push(`/pool/${newPoolAddress}/summary`);
     } catch (ex: any) {
       console.error('Error getting new Pool Address', ex);
     }
