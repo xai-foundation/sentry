@@ -21,32 +21,55 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
     }
 
     /**
-     * @notice Calculate the emission and tier for a challenge.
+     * @notice Calculate the emission and tier for a challenge based on the time elapsed.
      * @dev This function uses a halving formula to determine the emission tier and challenge emission.
      * The formula is as follows:
      * 1. Start with the max supply divided by 2 as the initial emission tier.
-     * 2. The challenge emission is the emission tier divided by 17520.
-     * 3. While the total supply is less than the emission tier, halve the emission tier and challenge emission.
-     * 4. The function returns the challenge emission and the emission tier.
+     * 2. The challenge emission is the emission tier divided by 17520 (assuming 24/7 operation over a year).
+     * 3. Calculate the time difference between challengeStart and challengeEnd in fractional hours.
+     * 4. Multiply the emissions per hour by the time passed to get the total emissions for the challenge.
+     * 5. Return the total emissions and the emission tier.
      *
      * @param totalSupply The current total supply of tokens.
      * @param maxSupply The maximum supply of tokens.
-     * @return uint256 The challenge emission.
-     * @return uint256 The emission tier.
+     * @param challengeStart The start time of the challenge in Unix timestamp format.
+     * @param challengeEnd The end time of the challenge in Unix timestamp format.
+     * @return uint256 The total challenge emission based on the time passed.
+     * @return uint256 The emission tier for the current challenge.
      */
     function calculateChallengeEmissionAndTier(
         uint256 totalSupply,
-        uint256 maxSupply
+        uint256 maxSupply,
+        uint256 challengeStart,
+        uint256 challengeEnd
     ) public pure returns (uint256, uint256) {
         require(maxSupply > totalSupply, "5");
+        require(challengeEnd >= challengeStart, "7"); // Ensure that end time is not before start time
 
-        uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply)); // calculate which tier we are in starting from 0
-        require(tier <= 23, "6");
+        // 1. Calculate the time difference in seconds
+        uint256 timePassedInSeconds = challengeEnd - challengeStart;
 
-        uint256 emissionTier = maxSupply / (2 ** (tier + 1)); // equal to the amount of tokens that are emitted during this tier
+        // 2. Convert the time difference to fractional hours for precision
+        // We use 1e18 to maintain precision during division
+        uint256 timePassedInHours = (timePassedInSeconds * 1e18) / 3600;
 
-        // determine what the size of the emission is based on each challenge having an estimated static length
-        return (emissionTier / 17520, emissionTier);
+        // 3. Determine the current emission tier using a logarithmic approach
+        // The tier is calculated as the logarithm base 2 of the proportion of total supply to the remaining supply
+        uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply));
+        require(tier <= 23, "6"); // Limiting tier to a maximum value
+
+        // 4. Calculate the emission tier, which is the maximum supply divided by 2^(tier + 1)
+        uint256 emissionTier = maxSupply / (2 ** (tier + 1)); // Equal to the amount of tokens emitted during this tier
+
+        // 5. Calculate the emission rate per hour, based on the emission tier
+        uint256 emissionPerHour = emissionTier / 17520; // 17520 is the number of hours in a non-leap year
+
+        // 6. Calculate the total emissions based on the time passed, including fractional hours
+        // Multiply the emissions per hour by the time passed in fractional hours
+        uint256 totalEmissions = (emissionPerHour * timePassedInHours) / 1e18;
+
+        // 7. Return the total emissions and the emission tier
+        return (totalEmissions, emissionTier);
     }
 
     /**
@@ -150,10 +173,12 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
                 // If the randomFactor is 1, we subtract 1 from the expected number of winning keys.
                 // This reduction ensures that there is a balanced chance for the outcome to swing in either direction.
                 // The goal is to prevent deterministic results and keep the game engaging and fair.
-                return randomFactor == 0 ? expectedWinningKeys + 1 : expectedWinningKeys - 1;
+                return
+                    randomFactor == 0
+                        ? expectedWinningKeys + 1
+                        : expectedWinningKeys - 1;
             }
         }
-
 
         // If we didn't enter the above block or if randomThreshold >= 300,
         // we continue with the rest of the function to determine the winning key count.
