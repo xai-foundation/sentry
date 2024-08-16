@@ -1,0 +1,32 @@
+{
+  "name": "xai-tdd",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "dockerode": "^4.0.2",
+    "ethers": "^6.13.1",
+    "jszip": "^3.10.1",
+    "next": "14.2.4",
+    "react": "^18",
+    "react-dom": "^18",
+    "unzipper": "^0.12.1"
+  },
+  "devDependencies": {
+    "@types/archiver": "^6.0.2",
+    "@types/dockerode": "^3.3.29",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/unzipper": "^0.10.9",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.4",
+    "typescript": "^5"
+  }
+}
