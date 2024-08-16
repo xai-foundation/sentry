@@ -66,7 +66,7 @@ export function AgreementCheckboxes(): JSX.Element {
                 >
                     <div className="flex w-full sm:w-[300px] justify-between md:w-auto sm:flex-col lg:flex-row items-start">
                         <span className="sm:text-base text-elementalGrey lg:mr-2">
-                            I understand that I cannot claim rewards until I pass KYC
+                            I understand that I cannot redeem esXAI for XAI until I pass KYC
                         </span>
                         {/* Tooltip for blocked countries information */}
                         <KYCTooltip width={850}>
