@@ -21,6 +21,17 @@ export function PromoCodeRow() {
 
     const [promo, setPromo] = useState(false);
 
+    //pull promo code from 
+    const queryString = window.location.search;
+    const queryParams = new URLSearchParams(queryString);
+    const prefilledPromoCode = queryParams.get("promoCode");
+
+    //set and aplly promo code if exists
+    if (prefilledPromoCode) {
+        setPromoCode(`${prefilledPromoCode}`);
+        handleApplyPromoCode();
+    }
+
     return (
         <div>
             {discount.applied && (
