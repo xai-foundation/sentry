@@ -22,7 +22,7 @@ const queryClient = new QueryClient()
 const metadata = {
 	name: 'Xai Sentry Node',
 	description: 'Connect your wallet to the Xai Sentry Node',
-    url: 'https://app.xai.games/',
+    url: 'https://sentry.xai.games/',
     icons: ['https://xai.games/images/delta%20med.svg']
 }
 

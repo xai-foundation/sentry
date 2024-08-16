@@ -245,11 +245,11 @@ export const SuccessIcon = ({ width = 17, height = 17 }) => {
   </svg>;
 };
 
-export const CopyIcon = ({ fill = "#D0CFCF" }) => {
-  return <svg xmlns="http://www.w3.org/2000/svg" width="16" height="17.778" viewBox="0 0 16 17.778">
+export const CopyIcon = ({ extraClasses = "fill-[#D0CFCF]" , width = 16 }) => {
+  return <svg className={extraClasses} xmlns="http://www.w3.org/2000/svg" width={width} height="17.778" viewBox="0 0 16 17.778">
     <path id="Path_3606" data-name="Path 3606"
           d="M6.555,5.556V2.889A.889.889,0,0,1,7.444,2H18.111A.889.889,0,0,1,19,2.889V15.333a.889.889,0,0,1-.889.889H15.444v2.666a.892.892,0,0,1-.895.89H3.895A.89.89,0,0,1,3,18.888L3,6.445a.892.892,0,0,1,.895-.89ZM4.78,7.333,4.778,18h8.889V7.333ZM8.333,5.556h7.111v8.889h1.778V3.778H8.333Z"
-          transform="translate(-3 -2)" fill={fill} />
+          transform="translate(-3 -2)" />
   </svg>;
 };
 export const BlackPyramidIcon = ({ width = 17, height = 17 }) => {
