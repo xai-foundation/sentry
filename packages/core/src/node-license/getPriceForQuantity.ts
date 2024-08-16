@@ -4,6 +4,8 @@ import {config} from '../config.js';
 import {getProvider} from '../utils/getProvider.js';
 import {Tier} from './index.js';
 import tierData from './tiers.json' assert { type: "json" };
+import tkTierData from './tk_tiers.json' assert { type: "json" };
+import { checkRefereeBulkSubmissionCompatible } from '../operator/checkRefereeBulkSubmissionCompatible.js';
 
 /**
  * Pricing tier structure.
@@ -37,10 +39,25 @@ export async function getPriceForQuantity(quantity: number): Promise<{ price: bi
     // Get the total supply of NodeLicenses
     let totalSupply = await nodeLicenseContract.totalSupply();
 
-    // Get the pricing tiers from json file
-    const tiers: Tier[] = tierData.map(tier => {
-        return { price: BigInt(tier.price), quantity: BigInt(tier.quantity) };
-    });
+    let tiers: Tier[];
+
+    // Check if the referee has been upgraded to tiny keys
+    const isTinyKeys = await checkRefereeBulkSubmissionCompatible();
+
+    if(isTinyKeys) {
+
+        // Get the pricing tiers from tiny keys tiers json file
+        tiers = tkTierData.map(tier => {
+            return { price: BigInt(tier.price), quantity: BigInt(tier.quantity) };
+        });
+
+    }else{ 
+        
+        // Get the pricing tiers from tiers json file
+        tiers = tierData.map(tier => {
+            return { price: BigInt(tier.price), quantity: BigInt(tier.quantity) };
+        });
+    }
 
     // Initialize the price
     let price: bigint = 0n;
