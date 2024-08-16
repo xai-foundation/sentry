@@ -44,7 +44,7 @@ export function ChooseQuantityRow(): JSX.Element {
                 </p>     
             </div>
             {/* Quantity input section */}
-            <div className="flex w-full justify-end flex-row items-start gap-4 sm:mt-4 lg:mt-0">
+            <div className="flex w-full justify-end flex-row items-start gap-4 sm:mt-4 lg:mt-10">
                 <div className="flex sm:w-full lg:w-[175px] sm:px-2 lg:px-0">
                     {/* Custom number input component for selecting quantity */}
                     <XaiNumberInput
@@ -59,8 +59,8 @@ export function ChooseQuantityRow(): JSX.Element {
                     <div className="flex md:gap-[21px] gap-[10px]">
                         <span className="block mt-2"><WarningIcon /></span>
                         <div>
-                            <span className="block font-bold text-lg">175 Maximum Per Transaction</span>
-                            <span className="block font-medium text-lg">A maximum of 175 NodeLicenses can be purchased in a single transaction.</span>
+                            <span className="block font-bold text-lg">100 Maximum Per Transaction</span>
+                            <span className="block font-medium text-lg">A maximum of 100 NodeLicenses can be purchased in a single transaction.</span>
                         </div>
                     </div>
                 </BaseCallout>}
