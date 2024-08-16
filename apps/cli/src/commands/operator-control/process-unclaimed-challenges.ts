@@ -1,5 +1,4 @@
 import Vorpal from "vorpal";
-import Logger from "../../utils/Logger.js"
 import { getSignerFromPrivateKey, getSentryWalletsForOperator, processUnclaimedChallenges as processUnclaimedChallengesCore } from "@sentry/core";
 
 /**
@@ -10,6 +9,9 @@ export function processUnclaimedChallenges(cli: Vorpal) {
     cli
         .command('process-unclaimed-challenges', 'Starts a runtime of the operator.')
         .action(async function (this: Vorpal.CommandInstance) {
+
+            const cmdInstance = this;
+
             const walletKeyPrompt: Vorpal.PromptObject = {
                 type: 'password',
                 name: 'walletKey',
@@ -70,15 +72,13 @@ export function processUnclaimedChallenges(cli: Vorpal) {
                     const result = await this.prompt(ownerPrompt);
                     selectedOwners = result.selectedOwners;
 
-                    Logger.log("selectedOwners", selectedOwners);
+                    cmdInstance.log("selectedOwners", selectedOwners);
 
                     if (!selectedOwners || selectedOwners.length < 1) {
                         throw new Error("No owners selected. Please select at least one owner.")
                     }
                 }
             }
-
-            const cmdInstance = this;
 
             await processUnclaimedChallengesCore(
                 signer,

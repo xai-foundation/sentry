@@ -4,13 +4,12 @@ import {
     getLatestChallengeFromGraph,
     getPoolInfosFromGraph,
     getSentryKeysForUnclaimedFromGraph,
-    getSentryKeysFromGraph,
     getSentryWalletsForOperator,
     KEYS_PER_BATCH,
     MAX_CHALLENGE_CLAIM_AMOUNT,
     retry
 } from "../index.js";
-import { PoolInfo, SentryKey, SentryWallet } from "@sentry/sentry-subgraph-client";
+import { PoolInfo, SentryKey } from "@sentry/sentry-subgraph-client";
 import { findSubmissionOnSentryKey } from "./operator-runtime/index.js";
 
 // Set this to the last key ID before the TK Airdrop
