@@ -1,6 +1,6 @@
 import Vorpal from "vorpal";
 import Logger from "../../utils/Logger.js"
-import { getSignerFromPrivateKey, operatorRuntime, Challenge, PublicNodeBucketInformation, getSentryWalletsForOperator } from "@sentry/core";
+import { getSignerFromPrivateKey, operatorRuntime, Challenge, PublicNodeBucketInformation, getSentryWalletsForOperator, getSubgraphHealthStatus, loadOperatorWalletsFromRPC } from "@sentry/core";
 
 /**
  * Starts a runtime of the operator.
@@ -41,23 +41,39 @@ export function bootOperator(cli: Vorpal) {
             if (useWhitelist) {
 
                 const operatorAddress = await signer.getAddress();
-                const { wallets, pools } = await getSentryWalletsForOperator(operatorAddress);
-
                 const choices: Array<{ name: string, value: string }> = [];
 
-                wallets.forEach(w => {
-                    choices.push({
-                        name: `Owner: ${w.address}${operatorAddress.toLowerCase() == w.address.toLowerCase() ? " (your wallet)" : ""}`,
-                        value: w.address
+                const graphStatus = await getSubgraphHealthStatus();
+                if (graphStatus.healthy) { //fetch from subgraph
+                    const { wallets, pools } = await getSentryWalletsForOperator(operatorAddress);
+                    wallets.forEach(w => {
+                        choices.push({
+                            name: `Owner: ${w.address}${operatorAddress.toLowerCase() == w.address.toLowerCase() ? " (your wallet)" : ""}`,
+                            value: w.address
+                        })
                     })
-                })
-
-                pools.forEach(p => {
-                    choices.push({
-                        name: `Pool: ${p.metadata[0]} (${p.address})`,
-                        value: p.address
+                    pools.forEach(p => {
+                        choices.push({
+                            name: `Pool: ${p.metadata[0]} (${p.address})`,
+                            value: p.address
+                        })
                     })
-                })
+                } else { //fetch from RPC
+                    const res = await loadOperatorWalletsFromRPC(operatorAddress);
+                    res.forEach(a => {
+                        if (a.isPool) {
+                            choices.push({
+                                name: `Pool: (${a.address})`,
+                                value: a.address
+                            })
+                        } else {
+                            choices.push({
+                                name: `Owner: ${a.address}${operatorAddress.toLowerCase() == a.address.toLowerCase() ? " (your wallet)" : ""}`,
+                                value: a.address
+                            })
+                        }
+                    })
+                }
 
                 const ownerPrompt: Vorpal.PromptObject = {
                     type: 'checkbox',
