@@ -4,6 +4,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
+import "./upgrades/referee/Referee9.sol";
 
 contract RefereeCalculations is Initializable, AccessControlUpgradeable {
     using Math for uint256;
@@ -13,11 +14,15 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
+
+    address public refereeAddress;
+
     uint256[500] private __gap;
 
-    function initialize() public initializer {
+    function initialize(address _refereeAddress) public initializer {
         __AccessControl_init();
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        refereeAddress = _refereeAddress;
     }
 
     /**
@@ -150,10 +155,12 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
                 // If the randomFactor is 1, we subtract 1 from the expected number of winning keys.
                 // This reduction ensures that there is a balanced chance for the outcome to swing in either direction.
                 // The goal is to prevent deterministic results and keep the game engaging and fair.
-                return randomFactor == 0 ? expectedWinningKeys + 1 : expectedWinningKeys - 1;
+                return
+                    randomFactor == 0
+                        ? expectedWinningKeys + 1
+                        : expectedWinningKeys - 1;
             }
         }
-
 
         // If we didn't enter the above block or if randomThreshold >= 300,
         // we continue with the rest of the function to determine the winning key count.
@@ -226,5 +233,62 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
          */
 
         return winningKeyCount;
+    }
+
+    /**
+     * @notice Retrieves the confirm data for multiple assertions based on their IDs.
+     * @param _assertionIds An array of assertion IDs for which the confirm data is to be retrieved.
+     * @return confirmData An array of `bytes32` values representing the confirm data for each assertion ID provided.
+     *
+     * @dev This function interacts with the `Referee9` contract to retrieve the confirm data for multiple assertions.
+     * It first checks that each assertion ID is valid (i.e., it is less than or equal to the current challenge ID).
+     * Then, it retrieves the `assertionStateRootOrConfirmData` from the corresponding challenge and stores it in the `confirmData` array.
+     *
+     * Note: Ensure that the `refereeAddress` is correctly set before calling this function.
+     */
+    function getConfirmDataMultipleAssertions(
+        uint256[] memory _assertionIds
+    ) public view returns (bytes32[] memory confirmData) {
+        // Create an instance of the Referee9 contract
+        Referee9 referee = Referee9(refereeAddress);
+
+        // Get the current challenge ID by subtracting 1 from the total challenge count
+        uint256 currentChallengeId = referee.challengeCounter() - 1;
+
+        // Initialize the memory array to store confirm data for each assertion
+        confirmData = new bytes32[](_assertionIds.length);
+
+        // Loop through each assertion ID provided
+        for (uint256 i = 0; i < _assertionIds.length; i++) {
+            // Validate that the assertion ID is within the valid range
+            require(
+                _assertionIds[i] <= currentChallengeId,
+                "Assertion ID is invalid"
+            );
+
+            // Retrieve the challenge data from the Referee9 contract
+            (
+                ,
+                ,
+                ,
+                bytes32 assertionStateRootOrConfirmData,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+                ,
+
+            ) = referee.challenges(_assertionIds[i]);
+
+            // Store the assertionStateRootOrConfirmData in the confirmData array
+            confirmData[i] = assertionStateRootOrConfirmData;
+        }
+
+        // Return the populated confirmData array
+        return confirmData;
     }
 }
