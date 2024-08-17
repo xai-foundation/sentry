@@ -11,7 +11,7 @@ import { getProvider } from "../index.js";
  * @returns {Promise<boolean>} - Returns `true` if the referee contract is compatible with bulk submission, otherwise `false`.
  */
 export async function checkRefereeBulkSubmissionCompatible(
-    refereeConfig: RefereeConfig | undefined,
+    refereeConfig?: RefereeConfig | undefined,
 ): Promise<boolean> {
 
     // If a refereeConfig is provided, check its version
