@@ -112,7 +112,6 @@ const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean,
   };
 
   const completeKeyRequest = async (requestIndex: number, numKeys: number) => {
-    setUnstakeRequestIndex(requestIndex);
     const keyIds = poolInfo?.userStakedKeyIds
       .slice(0, numKeys)
       .map((k) => BigInt(k));
