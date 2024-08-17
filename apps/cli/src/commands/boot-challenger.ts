@@ -169,7 +169,7 @@ const checkTimeSinceLastAssertion = async (lastAssertionTime: number, commandIns
 const sendNotification = async (message: string, commandInstance: Vorpal.CommandInstance) => {
     if (cachedWebhookUrl) {
         try {
-            await axios.post(cachedWebhookUrl, { text: `<!channel> [Instance ${CHALLENGER_INSTANCE}]: ${message}` });
+            await axios.post(cachedWebhookUrl, { text: `<!channel> [Instance ${CHALLENGER_INSTANCE}]: ${message}`, unfurl_links: false, });
         } catch (error) {
             commandInstance.log(`[${new Date().toISOString()}] Failed to send notification request ${error && (error as Error).message ? (error as Error).message : error}`);
         }
