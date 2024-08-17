@@ -25,9 +25,9 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
      * @dev This function uses a halving formula to determine the emission tier and challenge emission.
      * The formula is as follows:
      * 1. Start with the max supply divided by 2 as the initial emission tier.
-     * 2. The challenge emission is the emission tier divided by 17520 (assuming 24/7 operation over a year).
-     * 3. Calculate the time difference between challengeStart and challengeEnd in fractional hours.
-     * 4. Multiply the emissions per hour by the time passed to get the total emissions for the challenge.
+     * 2. The challenge emission is the emission tier divided by the total number of seconds in a year.
+     * 3. Calculate the time difference between challengeStart and challengeEnd in seconds.
+     * 4. Multiply the emissions per second by the time passed to get the total emissions for the challenge.
      * 5. Return the total emissions and the emission tier.
      *
      * @param totalSupply The current total supply of tokens.
@@ -49,26 +49,21 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
         // 1. Calculate the time difference in seconds
         uint256 timePassedInSeconds = challengeEnd - challengeStart;
 
-        // 2. Convert the time difference to fractional hours for precision
-        // We use 1e18 to maintain precision during division
-        uint256 timePassedInHours = (timePassedInSeconds * 1e18) / 3600;
-
-        // 3. Determine the current emission tier using a logarithmic approach
+        // 2. Determine the current emission tier using a logarithmic approach
         // The tier is calculated as the logarithm base 2 of the proportion of total supply to the remaining supply
         uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply));
         require(tier <= 23, "6"); // Limiting tier to a maximum value
 
-        // 4. Calculate the emission tier, which is the maximum supply divided by 2^(tier + 1)
+        // 3. Calculate the emission tier, which is the maximum supply divided by 2^(tier + 1)
         uint256 emissionTier = maxSupply / (2 ** (tier + 1)); // Equal to the amount of tokens emitted during this tier
 
-        // 5. Calculate the emission rate per hour, based on the emission tier
-        uint256 emissionPerHour = emissionTier / 17520; // 17520 is the number of hours in a non-leap year
+        // 4. Calculate the emission rate per second, based on the emission tier
+        uint256 emissionPerSecond = emissionTier / 31536000; // 31536000 is the number of seconds in a non-leap year
 
-        // 6. Calculate the total emissions based on the time passed, including fractional hours
-        // Multiply the emissions per hour by the time passed in fractional hours
-        uint256 totalEmissions = (emissionPerHour * timePassedInHours) / 1e18;
+        // 5. Calculate the total emissions based on the time passed
+        uint256 totalEmissions = emissionPerSecond * timePassedInSeconds;
 
-        // 7. Return the total emissions and the emission tier
+        // 6. Return the total emissions and the emission tier
         return (totalEmissions, emissionTier);
     }
 
