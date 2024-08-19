@@ -458,7 +458,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             
             // Verify Batch ConfirmData
             (, bytes32 confirmHash) = RefereeCalculations(refereeCalculationsAddress).getConfirmDataMultipleAssertions(assertionIds, rollupAddress);
-            require(currentNode.confirmData == confirmHash, "11");
+            require(_confirmData == confirmHash, "11");
        
             // emit the batch challenge event
             emit BatchChallenge(challengeCounter, assertionIds);
