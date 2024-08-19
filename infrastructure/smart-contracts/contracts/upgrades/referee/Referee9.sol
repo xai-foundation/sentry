@@ -425,6 +425,14 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         bytes32 comboHash = keccak256(abi.encodePacked(_assertionId, rollupAddress));
         require(!rollupAssertionTracker[comboHash], "9");
         rollupAssertionTracker[comboHash] = true;
+        
+        // Connect to the rollup contract
+        IRollupCore rollup = IRollupCore(rollupAddress);
+
+        // get the node information from the rollup.
+        Node memory currentNode = rollup.getNode(_assertionId);
+
+
 
         // If the gap is more than 1 assertion, we need to handle as a batch challenge
         if(_assertionId - _predecessorAssertionId > 1){
@@ -448,6 +456,13 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
                 assertionIds[i - _predecessorAssertionId - 1] = i;
             }
 
+            
+            // Verify Batch ConfirmData
+            if(_assertionId - _predecessorAssertionId == 1){
+                (, bytes32 confirmHash) = RefereeCalculations(refereeCalculationsAddress).getConfirmDataMultipleAssertions(assertionIds, rollupAddress);
+                require(currentNode.confirmData == confirmHash, "11");
+            }       
+            
             // emit the batch challenge event
             emit BatchChallenge(challengeCounter, assertionIds);
         }
@@ -455,20 +470,20 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         // verify the data inside the hash matched the data pulled from the rollup contract
         if (isCheckingAssertions) {
 
-            // Connect to the rollup contract
-            IRollupCore rollup = IRollupCore(rollupAddress);
 
             // Last challenge assertionId submitted
             uint64 lastChallengeAssertionId = challenges[challengeCounter - 1].assertionId;
 
             // get the node information from the rollup.
             Node memory previousNode = rollup.getNode(lastChallengeAssertionId);
-            // get the node information from the rollup.
-            Node memory currentNode = rollup.getNode(_assertionId);
 
             require(previousNode.prevNum == _predecessorAssertionId, "10");
-            require(currentNode.confirmData == _confirmData, "11");
             require(currentNode.createdAtBlock == _assertionTimestamp, "12");
+
+            // Verify Individual ConfirmData
+            if(_assertionId - _predecessorAssertionId == 1){
+                require(currentNode.confirmData == _confirmData, "11");
+            }            
         }
         
         // we need to determine how much token will be emitted
