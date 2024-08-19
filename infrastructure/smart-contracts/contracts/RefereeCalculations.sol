@@ -239,7 +239,7 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
     function getConfirmDataMultipleAssertions(
         uint64[] memory _assertionIds,
         address rollupAddress
-    ) public view returns (bytes32[] memory confirmData) {
+    ) public view returns (bytes32[] memory confirmData, bytes32 confirmHash) {
 
         // Initialize a memory array to store the confirm data for each assertion
         confirmData = new bytes32[](_assertionIds.length);
@@ -253,8 +253,7 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
             confirmData[i] = node.confirmData;
         }
 
-        // Return the populated confirmData array to the caller
-        return confirmData;
+        confirmHash = keccak256(abi.encodePacked(confirmData));
     }
 
 }
