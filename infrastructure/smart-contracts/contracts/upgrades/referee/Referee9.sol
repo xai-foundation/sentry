@@ -458,7 +458,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
             
             // Verify Batch ConfirmData
-            if(_assertionId - _predecessorAssertionId == 1){
+            if(_assertionId - _predecessorAssertionId > 1){
                 (, bytes32 confirmHash) = RefereeCalculations(refereeCalculationsAddress).getConfirmDataMultipleAssertions(assertionIds, rollupAddress);
                 require(currentNode.confirmData == confirmHash, "11");
             }       
