@@ -230,6 +230,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     event UnstakeV1(address indexed user, uint256 amount, uint256 totalStaked);
     event NewBulkSubmission(uint256 indexed challengeId, address indexed bulkAddress, uint256 stakedKeys, uint256 winningKeys);
     event UpdateBulkSubmission(uint256 indexed challengeId, address indexed bulkAddress, uint256 stakedKeys, uint256 winningKeys, uint256 increase, uint256 decrease);
+    event BatchChallenge(uint256 indexed challengeId, uint64[] assertionIds);
 
     function initialize(address _refereeCalculationsAddress) public reinitializer(7) {
         refereeCalculationsAddress = _refereeCalculationsAddress;
@@ -425,15 +426,49 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         require(!rollupAssertionTracker[comboHash], "9");
         rollupAssertionTracker[comboHash] = true;
 
+        // If the gap is more than 1 assertion, we need to handle as a batch challenge
+        if(_assertionId - _predecessorAssertionId > 1){
+
+            // Initialize the array to store the assertionIds
+            uint64 [] memory assertionIds = new uint64[](_assertionId - _predecessorAssertionId);
+
+            // Loop through the assertions and check if they have been submitted
+            for(uint64 i = _predecessorAssertionId + 1; i < _assertionId; i++){
+
+                // create the comboHash for the assertionId and rollupAddress
+                bytes32 comboHashBatch = keccak256(abi.encodePacked(i, rollupAddress));
+
+                // check the assertionId and rollupAddress combo haven't been submitted yet
+                require(!rollupAssertionTracker[comboHashBatch], "15");
+
+                // set the comboHash to true to indicate it has been submitted
+                rollupAssertionTracker[comboHashBatch] = true;
+
+                // add the assertionId to the array
+                assertionIds[i - _predecessorAssertionId - 1] = i;
+            }
+
+            // emit the batch challenge event
+            emit BatchChallenge(challengeCounter, assertionIds);
+        }
+
         // verify the data inside the hash matched the data pulled from the rollup contract
         if (isCheckingAssertions) {
 
-            // get the node information from the rollup.
-            Node memory node = IRollupCore(rollupAddress).getNode(_assertionId);
+            // Connect to the rollup contract
+            IRollupCore rollup = IRollupCore(rollupAddress);
 
-            require(node.prevNum == _predecessorAssertionId, "10");
-            require(node.confirmData == _confirmData, "11");
-            require(node.createdAtBlock == _assertionTimestamp, "12");
+            // Last challenge assertionId submitted
+            uint64 lastChallengeAssertionId = challenges[challengeCounter - 1].assertionId;
+
+            // get the node information from the rollup.
+            Node memory previousNode = rollup.getNode(lastChallengeAssertionId);
+            // get the node information from the rollup.
+            Node memory currentNode = rollup.getNode(_assertionId);
+
+            require(previousNode.prevNum == _predecessorAssertionId, "10");
+            require(currentNode.confirmData == _confirmData, "11");
+            require(currentNode.createdAtBlock == _assertionTimestamp, "12");
         }
         
         // we need to determine how much token will be emitted
