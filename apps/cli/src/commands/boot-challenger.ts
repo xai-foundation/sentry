@@ -45,11 +45,13 @@ let cachedSigner: {
 let cachedWebhookUrl: string | undefined;
 let cachedSecretKey: string;
 let lastAssertionTime: number;
+let lastSubmittedAssertionId: number | null = null;
 
 let currentNumberOfRetries = 0;
 
 let CHALLENGER_INSTANCE = 1;
 const BACKUP_SUBMISSION_DELAY = 300_000; // For every instance we wait 5 minutes + instance number;
+const MINIMUM_TIME_BETWEEN_ASSERTIONS = 60 * 60 * 1000; // 1 hour
 
 let isProcessingMissedAssertions = false;
 
@@ -114,26 +116,44 @@ const onAssertionConfirmedCb = async (nodeNum: any, commandInstance: Vorpal.Comm
         }
     }
 
-    const assertionNode = await getAssertion(nodeNum);
-    commandInstance.log(`[${new Date().toISOString()}] Assertion data retrieved. Starting the submission process...`);
-    try {
-        await submitAssertionToReferee(
-            cachedSecretKey,
-            nodeNum,
-            assertionNode,
-            cachedSigner!.signer,
-        );
-        commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${nodeNum}`);
-        lastAssertionTime = Date.now();
-    } catch (error) {
-        if (error && (error as Error).message && (error as Error).message.includes('execution reverted: "9"')) {
-            commandInstance.log(`[${new Date().toISOString()}] Could not submit challenge because it was already submitted`);
-            lastAssertionTime = Date.now();
-            return;
+    const minimumTimeToSubmit = lastAssertionTime + MINIMUM_TIME_BETWEEN_ASSERTIONS;
+
+    if(Date.now() > minimumTimeToSubmit) {
+        const assertionNode = await getAssertion(nodeNum);
+        commandInstance.log(`[${new Date().toISOString()}] Assertion data retrieved. Starting the submission process...`);
+
+        // Determine if we are submitting for one assertion or multiple
+        if(lastSubmittedAssertionId && lastSubmittedAssertionId + 1 !== nodeNum) {
+            // We have multiple assertions to submit for
+            // TODO Get all of the confirm data for the assertions
+            // TODO Submit a Batched Assertion
+
+        }else{
+
+            // Submit for a single node event same as before
+            try {
+                await submitAssertionToReferee(
+                    cachedSecretKey,
+                    nodeNum,
+                    assertionNode,
+                    cachedSigner!.signer,
+                );
+                commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${nodeNum}`);
+                lastAssertionTime = Date.now();
+            } catch (error) {
+                if (error && (error as Error).message && (error as Error).message.includes('execution reverted: "9"')) {
+                    commandInstance.log(`[${new Date().toISOString()}] Could not submit challenge because it was already submitted`);
+                    lastAssertionTime = Date.now();
+                    return;
+                }
+                commandInstance.log(`[${new Date().toISOString()}] Submit Assertion Error: ${(error as Error).message}`);
+                sendNotification(`Submit Assertion Error: ${(error as Error).message}`, commandInstance);
+                throw error;
+            }
         }
-        commandInstance.log(`[${new Date().toISOString()}] Submit Assertion Error: ${(error as Error).message}`);
-        sendNotification(`Submit Assertion Error: ${(error as Error).message}`, commandInstance);
-        throw error;
+
+    }else{
+        commandInstance.log(`[${new Date().toISOString()}] Assertion ${nodeNum} not submitted because it has not been ${MINIMUM_TIME_BETWEEN_ASSERTIONS / (60 * 1000)} minutes since the last assertion.`);
     }
 };
 
