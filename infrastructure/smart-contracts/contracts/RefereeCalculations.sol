@@ -4,6 +4,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
+import "./nitro-contracts/rollup/IRollupCore.sol";
 
 contract RefereeCalculations is Initializable, AccessControlUpgradeable {
     using Math for uint256;
@@ -227,4 +228,33 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
 
         return winningKeyCount;
     }
+
+    /**
+    * @notice Retrieves the confirm data for multiple assertions from a Rollup contract.
+    * @dev This function interacts with a Rollup contract to fetch confirm data for a given list of assertion IDs.
+    * @param _assertionIds An array of assertion IDs for which confirm data is being requested.
+    * @param rollupAddress The address of the Rollup contract that stores the assertions.
+    * @return confirmData An array of bytes32 values containing the confirm data for each assertion ID.
+    */
+    function getConfirmDataMultipleAssertions(
+        uint64[] memory _assertionIds,
+        address rollupAddress
+    ) public view returns (bytes32[] memory confirmData) {
+
+        // Initialize a memory array to store the confirm data for each assertion
+        confirmData = new bytes32[](_assertionIds.length);
+
+        // Loop through each assertion ID provided in the input array
+        for (uint256 i = 0; i < _assertionIds.length; i++) {
+            // Retrieve the node information associated with the current assertion ID from the Rollup contract
+            Node memory node = IRollupCore(rollupAddress).getNode(_assertionIds[i]);
+
+            // Store the assertion's confirmData (or state root) in the confirmData array
+            confirmData[i] = node.confirmData;
+        }
+
+        // Return the populated confirmData array to the caller
+        return confirmData;
+    }
+
 }
