@@ -16,6 +16,14 @@ export function ChooseQuantityRow(): JSX.Element {
     // Destructure necessary values from the WebBuyKeysContext
     const { quantity, setQuantity, maxSupply } = useWebBuyKeysContext();
 
+    function calculateMaxPurchase():number {
+        if(maxSupply >= 175) {
+            return 175;
+        }else{
+            return maxSupply;
+        }
+    }
+
     return (
         <div>
         <div className="flex sm:flex-col lg:flex-row justify-between lg:items-start sm:items-center">
@@ -50,7 +58,7 @@ export function ChooseQuantityRow(): JSX.Element {
                     <XaiNumberInput
                         quantity={quantity}
                         setQuantity={setQuantity}
-                        maxSupply={maxSupply}
+                        maxSupply={calculateMaxPurchase()}
                     />
                 </div>
             </div>
@@ -59,8 +67,8 @@ export function ChooseQuantityRow(): JSX.Element {
                     <div className="flex md:gap-[21px] gap-[10px]">
                         <span className="block mt-2"><WarningIcon /></span>
                         <div>
-                            <span className="block font-bold text-lg">100 Maximum Per Transaction</span>
-                            <span className="block font-medium text-lg">A maximum of 100 NodeLicenses can be purchased in a single transaction.</span>
+                            <span className="block font-bold text-lg">175 Maximum Per Transaction</span>
+                            <span className="block font-medium text-lg">A maximum of 175 NodeLicenses can be purchased in a single transaction.</span>
                         </div>
                     </div>
                 </BaseCallout>}
