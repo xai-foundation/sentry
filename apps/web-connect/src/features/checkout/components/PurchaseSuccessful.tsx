@@ -39,7 +39,7 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 	const copyReferralCode = () => {
 		if (address) {
 
-			navigator.clipboard.writeText(`${salePageBaseURL}/${address}/`);
+			navigator.clipboard.writeText(`${salePageBaseURL}?promoCode=${address}`);
 			setIsTooltipAllowedToOpen(true);
 
 			if (timeoutId) {
