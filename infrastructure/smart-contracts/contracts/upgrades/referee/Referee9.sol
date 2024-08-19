@@ -455,20 +455,17 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
                 // add the assertionId to the array
                 assertionIds[i - _predecessorAssertionId - 1] = i;
             }
-
             
             // Verify Batch ConfirmData
             (, bytes32 confirmHash) = RefereeCalculations(refereeCalculationsAddress).getConfirmDataMultipleAssertions(assertionIds, rollupAddress);
             require(currentNode.confirmData == confirmHash, "11");
        
-            
             // emit the batch challenge event
             emit BatchChallenge(challengeCounter, assertionIds);
         }
 
         // verify the data inside the hash matched the data pulled from the rollup contract
         if (isCheckingAssertions) {
-
 
             // Last challenge assertionId submitted
             uint64 lastChallengeAssertionId = challenges[challengeCounter - 1].assertionId;
