@@ -43,7 +43,9 @@ export function manuallyChallengeAssertion(cli: Vorpal) {
             await submitAssertionToReferee(
                 secretKey,
                 assertionId,
-                assertionNode,
+                assertionId - 1,
+                assertionNode.confirmData,
+                assertionNode.createdAtBlock,
                 signer,
             );
 
