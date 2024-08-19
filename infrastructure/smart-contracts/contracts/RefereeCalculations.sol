@@ -56,10 +56,10 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
         uint256 emissionTier = maxSupply / (2 ** (tier + 1)); // Equal to the amount of tokens emitted during this tier
 
         // TODO: not sure if this is the correct way to calculate the emissions
-        uint256 emissionsPer2Years = emissionTier / 17520; // 17520 is the number of hours in 2 years
+        uint256 emissionsPerHour = emissionTier / 17520; // 17520 is the number of hours in a year
         
         // 4. Calculate the emission rate per second, based on the emission tier
-        uint256 emissionPerSecond = emissionsPer2Years / 63072000; // 63072000 is the number of seconds in 2 years 
+        uint256 emissionPerSecond = emissionsPerHour / 3600; // 3600 is the number of seconds in an hour
 
         // 5. Calculate the total emissions for the challenge based on the time passed
         uint256 totalEmissions = emissionPerSecond * timePassedInSeconds;
