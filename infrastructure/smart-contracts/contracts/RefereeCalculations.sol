@@ -43,25 +43,22 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
         require(maxSupply > totalSupply, "5");
         require(challengeEnd >= challengeStart, "7"); // Ensure that end time is not before start time
 
-        // 1. Calculate the time difference in seconds
-        uint256 timePassedInSeconds = challengeEnd - challengeStart;
-        
-        // 2. Determine the current emission tier using a logarithmic approach
-        // The tier is calculated as the logarithm base 2 of the proportion of total supply to the remaining supply
         uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply));
         require(tier <= 23, "6");
 
-        
-        // 3. Calculate the emission tier, which is the maximum supply divided by 2^(tier + 1)
+        // Calculate the emission tier
         uint256 emissionTier = maxSupply / (2 ** (tier + 1)); // Equal to the amount of tokens emitted during this tier
 
         // TODO: not sure if this is the correct way to calculate the emissions
-        uint256 emissionsPerHour = emissionTier / 17520; // 17520 is the number of hours in a year
+        uint256 emissionsPerHour = emissionTier / 17520; // 17520 is the number of hours in a year        
         
-        // 4. Calculate the emission rate per second, based on the emission tier
+        // Calculate the time difference in seconds
+        uint256 timePassedInSeconds = challengeEnd - challengeStart;
+        
+        // Calculate the emission rate per second, based on the emission tier
         uint256 emissionPerSecond = emissionsPerHour / 3600; // 3600 is the number of seconds in an hour
 
-        // 5. Calculate the total emissions for the challenge based on the time passed
+        // Calculate the total emissions for the challenge based on the time passed
         uint256 totalEmissions = emissionPerSecond * timePassedInSeconds;
 
         // determine what the size of the emission is based on each challenge having an estimated static length
