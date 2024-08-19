@@ -36,17 +36,36 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
      */
     function calculateChallengeEmissionAndTier(
         uint256 totalSupply,
-        uint256 maxSupply
+        uint256 maxSupply,
+        uint256 challengeStart,
+        uint256 challengeEnd
     ) public pure returns (uint256, uint256) {
         require(maxSupply > totalSupply, "5");
+        require(challengeEnd >= challengeStart, "7"); // Ensure that end time is not before start time
 
-        uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply)); // calculate which tier we are in starting from 0
+        // 1. Calculate the time difference in seconds
+        uint256 timePassedInSeconds = challengeEnd - challengeStart;
+        
+        // 2. Determine the current emission tier using a logarithmic approach
+        // The tier is calculated as the logarithm base 2 of the proportion of total supply to the remaining supply
+        uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply));
         require(tier <= 23, "6");
 
-        uint256 emissionTier = maxSupply / (2 ** (tier + 1)); // equal to the amount of tokens that are emitted during this tier
+        
+        // 3. Calculate the emission tier, which is the maximum supply divided by 2^(tier + 1)
+        uint256 emissionTier = maxSupply / (2 ** (tier + 1)); // Equal to the amount of tokens emitted during this tier
+
+        // TODO: not sure if this is the correct way to calculate the emissions
+        uint256 emissionsPer2Years = emissionTier / 17520; // 17520 is the number of hours in 2 years
+        
+        // 4. Calculate the emission rate per second, based on the emission tier
+        uint256 emissionPerSecond = emissionsPer2Years / 63072000; // 63072000 is the number of seconds in 2 years 
+
+        // 5. Calculate the total emissions for the challenge based on the time passed
+        uint256 totalEmissions = emissionPerSecond * timePassedInSeconds;
 
         // determine what the size of the emission is based on each challenge having an estimated static length
-        return (emissionTier / 17520, emissionTier);
+        return (totalEmissions, emissionTier);
     }
 
     /**

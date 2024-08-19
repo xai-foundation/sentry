@@ -392,7 +392,11 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     function calculateChallengeEmissionAndTier() public view returns (uint256, uint256) {
         uint256 totalSupply = getCombinedTotalSupply();  
         uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
-        return RefereeCalculations(refereeCalculationsAddress).calculateChallengeEmissionAndTier(totalSupply, maxSupply);
+
+        // Get the timestamp of the start of the current challenge
+        uint256 startTs = challenges[challengeCounter - 1].assertionTimestamp;
+
+        return RefereeCalculations(refereeCalculationsAddress).calculateChallengeEmissionAndTier(totalSupply, maxSupply, startTs, block.timestamp);
     }
 
     /**
