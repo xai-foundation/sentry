@@ -117,6 +117,7 @@ const onAssertionConfirmedCb = async (nodeNum: any, commandInstance: Vorpal.Comm
     }
 
     // Calculate the minimum time to submit an assertion
+    lastAssertionTime = lastAssertionTime || 0;
     const minimumTimeToSubmit = lastAssertionTime + MINIMUM_TIME_BETWEEN_ASSERTIONS;
 
     // Check if we can submit the assertion
