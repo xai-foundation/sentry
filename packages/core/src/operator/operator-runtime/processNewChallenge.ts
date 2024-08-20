@@ -1,10 +1,11 @@
 import { RefereeConfig } from "@sentry/sentry-subgraph-client";
-import { BulkOwnerOrPool, getBoostFactor as getBoostFactorRPC, NodeLicenseStatus, ProcessChallenge, submitBulkAssertion, getSubgraphHealthStatus } from "../index.js";
+import { BulkOwnerOrPool, getBoostFactor as getBoostFactorRPC, NodeLicenseStatus, ProcessChallenge, submitBulkAssertion } from "../index.js";
 import { operatorState } from "./operatorState.js";
-import { retry } from "../../index.js";
+import { retry, getSubgraphHealthStatus } from "../../index.js";
 import { updateSentryAddressStatus } from "./updateSentryAddressStatus.js";
 import { getWinningKeyCount } from "./getWinningKeyCount.js";
 import { getBulkSubmissionForChallenge } from "../getBulkSubmissionForChallenge.js";
+import { ethers } from 'ethers';
 import { getLastSubmittedAssertionIdAndTime } from "../../index.js";
 
 /**
@@ -24,6 +25,7 @@ export async function processNewChallenge(
     operatorState.cachedLogger(`Checking eligibility for ${bulkOwnerAndPools.length} owners and pools.`);
 
     for (const ownerOrPool of bulkOwnerAndPools) {
+        let confirmData = challenge.assertionStateRootOrConfirmData;
 
         updateSentryAddressStatus(ownerOrPool.address, NodeLicenseStatus.CHECKING_IF_ELIGIBLE_FOR_PAYOUT);
 
@@ -91,7 +93,6 @@ export async function processNewChallenge(
             }
 
             try {
-                let confirmData = challenge.assertionStateRootOrConfirmData;
                 let lastSubmittedAssertion;
 
                 const graphStatus = await getSubgraphHealthStatus();
@@ -127,14 +128,26 @@ export async function processNewChallenge(
                         // Get the confirm data from the RPC
                         listOfConfirmData = ["0xConfirmData1", "0xConfirmData2", "0xConfirmData3"];
                     }
-                    
 
 
-                    
-                    //TODO Implement
-                    //3. Hash the list of confirm data
-                    //4. Submit the batch assertion using the hashed confirm data
-                    confirmData = "0xHashedConfirmData";
+                    // Encode the array of confirm data
+                    const encodedData = listOfConfirmData.map(data => ethers.encodeBytes32String(data)).join('');
+
+                    // Compute the Keccak-256 hash of the encoded data
+                    const localHash = ethers.keccak256(encodedData);
+
+                    // TODO Find the Challenger's public key
+                    const challengerPublicKey = "0xChallengerPublicKey"; //TODO Set this to the challenger's public key
+                    const isValid = verifyChallengerSignedHash(challengerPublicKey, localHash, challenge.challengerSignedHash);
+
+                    if(!isValid){
+                        operatorState.cachedLogger(`Challenger's signature is invalid for address ${ownerOrPool.address} to challenge ${challengeId}`);
+                        // TODO How do we handle this?
+                        // Notifications?
+                        // Throw error?
+                        // Break?
+                    }
+                    confirmData = localHash;
                 }
 
                 //Try to submit once, if we get error 54 we don't need to try again. Any other error, we should give it 2 more tries.
@@ -147,7 +160,7 @@ export async function processNewChallenge(
                     continue;
                 }
 
-                await retry(() => submitBulkAssertion(ownerOrPool.address, challengeId, challenge.assertionStateRootOrConfirmData, operatorState.cachedSigner), 2);
+                await retry(() => submitBulkAssertion(ownerOrPool.address, challengeId, confirmData, operatorState.cachedSigner), 2);
             }
 
             operatorState.cachedLogger(`Successfully submitted assertion for ${ownerOrPool.address}`);
@@ -191,3 +204,15 @@ const calculateBoostFactorLocally = (
 
     return refereeConfig.stakeAmountBoostFactors[refereeConfig.stakeAmountTierThresholds.length - 1];
 }
+
+
+const verifyChallengerSignedHash = (challengerPublicKey: string, confirmData: string, challengerSignedHash: string): boolean => {
+
+    // Verify the signature
+    const recoveredAddress = ethers.verifyMessage(confirmData, challengerSignedHash);
+
+    // Verify the signature
+    const isValid = recoveredAddress.toLowerCase() === challengerPublicKey.toLowerCase();
+
+    return isValid;
+};
