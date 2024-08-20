@@ -76,7 +76,7 @@ export const Dropdown = ({setIsOpen, isOpen, isInvalid, dropdownOptionsCount, se
             {isOpen && (
                 <>
                     <div
-                        className={`absolute top-[55px] left-[-1px] flex flex-col w-[538px] bg-black text-americanSilver z-30 text-lg max-h-[528px] ${extraClasses?.dropdownOptions} ${dropdownOptionsCount > DROPDOWN_ITEMS_WITHOUT_SCROLL && "overflow-y-scroll overflow-x-hidden"} dropdown-options`}>
+                        className={`absolute top-[55px] left-[-1px] flex flex-col bg-black text-americanSilver z-30 text-lg max-h-[528px] ${extraClasses?.dropdownOptions} ${dropdownOptionsCount > DROPDOWN_ITEMS_WITHOUT_SCROLL && "overflow-y-scroll overflow-x-hidden"} dropdown-options`}>
                         {defaultValue && <p
                             onClick={() => {
                                 setSelectedValue(null);

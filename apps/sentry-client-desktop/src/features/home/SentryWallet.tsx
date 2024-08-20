@@ -414,7 +414,7 @@ export function SentryWallet() {
 													}
 													setSelectedValue={setSelectedWallet}
 													getDropdownItems={getDropdownItems}
-													extraClasses={{dropdown: "!w-[330px] !h-[44px]"}}
+													extraClasses={{dropdown: "!w-[330px] !h-[44px]", dropdownOptions: "w-[538px]"}}
 													dropdownOptionsCount={data.whitelistedWallets.length}
 												/>
 											}
