@@ -1,6 +1,6 @@
-import { getProvider } from '../../utils/getProvider.js';
-import { RefereeCalculationsAbi } from '../../abis/index.js';
-import { config } from '../../config.js';
+import { getProvider } from '../utils/getProvider.js';
+import { RefereeCalculationsAbi } from '../abis/index.js';
+import { config } from '../config.js';
 import { ethers } from 'ethers';
 
 /**
@@ -10,6 +10,7 @@ import { ethers } from 'ethers';
  * @returns {Promise<[string[], string]>} A promise that resolves to a tuple containing an array of `bytes32` confirmation data and a `bytes32` confirmation hash.
  */
 export const getMultipleChallengeConfirmData = async (assertionIds: number[]): Promise<[string[], string]> => {
+    
     // Get the Ethereum provider
     const provider = getProvider();
 

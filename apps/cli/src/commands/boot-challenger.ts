@@ -127,8 +127,10 @@ const onAssertionConfirmedCb = async (nodeNum: any, commandInstance: Vorpal.Comm
         const assertionNode = await getAssertion(nodeNum);
         commandInstance.log(`[${new Date().toISOString()}] Assertion data retrieved. Starting the submission process...`);
 
-        // Determine if we are submitting for one assertion or multiple
-        if(lastAssertionId + 1 !== nodeNum) {
+        // Determine if we need to submit a batch challenge
+        const isBatchChallenge = lastAssertionId + 1 !== nodeNum;
+
+        if(isBatchChallenge) {
 
             // If we are submitting for multiple assertions, get all of the assertion ids
             const assertionIds = Array.from({ length: nodeNum - lastAssertionId }, (_, i) => lastAssertionId + i + 1);    
