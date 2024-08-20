@@ -19,3 +19,4 @@ export * from "./getXaiAllowance.js";
 export * from "./getXaiBalance.js";
 export * from "./formatWeiToEther.js";
 export * from "./getLastSubmittedAssertionIdAndTime.js";
+export * from "./getMultipleChallengeConfirmData.js";
