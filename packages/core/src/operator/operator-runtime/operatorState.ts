@@ -18,6 +18,7 @@ type OperatorState = {
     nodeLicenseStatusMap: NodeLicenseStatusMap;
     passedInOwnersAndPools: string[] | undefined;
     sentryAddressStatusMap: SentryAddressStatusMap;
+    challengerPublicKey: string;
 };
 
 /**
@@ -35,4 +36,5 @@ export const operatorState: OperatorState = {
     nodeLicenseStatusMap: new Map(),
     passedInOwnersAndPools: [],
     sentryAddressStatusMap: new Map(),
+    challengerPublicKey: ''
 };

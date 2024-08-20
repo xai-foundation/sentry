@@ -12,6 +12,7 @@ import { operatorState } from "./operatorState.js";
 import { processClosedChallenge } from "./processClosedChallenge.js";
 import { processNewChallenge } from "./processNewChallenge.js";
 import { processPastChallenges } from "./processPastChallenges.js";
+import { getChallengerPublicKey } from "../../utils/getChallengerPublicKey.js";
 
 
 /**
@@ -22,6 +23,8 @@ export const bootOperatorRuntime = async (
 ): Promise<() => void> => {
     let closeChallengeListener: () => void;
     logFunction(`Started listener for new challenges.`);
+
+    operatorState.challengerPublicKey = await getChallengerPublicKey();
 
     const graphStatus = await getSubgraphHealthStatus();
     if (graphStatus.healthy) {
@@ -36,7 +39,7 @@ export const bootOperatorRuntime = async (
         
         const bulkOwnersAndPools = await loadOperatorWalletsFromGraph(operatorState.operatorAddress, { wallets, pools }, BigInt(latestClaimableChallenge));
         
-        await processNewChallenge(openChallenge.challengeNumber, openChallenge, bulkOwnersAndPools, refereeConfig);
+        await processNewChallenge(openChallenge.challengeNumber, openChallenge, bulkOwnersAndPools, operatorState.challengerPublicKey, refereeConfig);
 
         logFunction(`Processing open challenges.`);
 
@@ -65,7 +68,7 @@ export const bootOperatorRuntime = async (
 
         const [latestChallengeNumber, latestChallenge] = await getLatestChallenge();
 
-        await processNewChallenge(latestChallengeNumber, latestChallenge, bulkOwnersAndPools);
+        await processNewChallenge(latestChallengeNumber, latestChallenge, bulkOwnersAndPools, operatorState.challengerPublicKey);
         await processClosedChallenge(latestChallengeNumber - 1n, bulkOwnersAndPools);
 
         closeChallengeListener = listenForChallenges(listenForChallengesCallback)

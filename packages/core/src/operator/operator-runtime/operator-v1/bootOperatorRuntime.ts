@@ -5,6 +5,7 @@ import { findSubmissionOnSentryKey } from "../findSubmissionOnSentryKey.js";
 import { operatorState } from "../operatorState.js";
 import { loadOperatorKeysFromGraph_V1, processPastChallenges_V1 } from "../index.js";
 import { loadOperatorKeysFromRPC_V1 } from "./loadOperatorKeysFromRPC.js";
+import { getChallengerPublicKey } from "../../../utils/getChallengerPublicKey.js";
 
 /**
  * Startup the operatorRuntime challenger listener as well as process previous challenges
@@ -14,6 +15,8 @@ export const bootOperatorRuntime_V1 = async (
 ): Promise<() => void> => {
     let closeChallengeListener: () => void;
     logFunction(`Started listener for new challenges.`);
+    
+    operatorState.challengerPublicKey = await getChallengerPublicKey();
 
     const graphStatus = await getSubgraphHealthStatus();
     if (graphStatus.healthy) {

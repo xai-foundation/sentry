@@ -19,6 +19,7 @@ export async function processNewChallenge(
     challengeId: bigint,
     challenge: ProcessChallenge,
     bulkOwnerAndPools: BulkOwnerOrPool[],
+    challengerPublicKey: string,
     refereeConfig?: RefereeConfig
 ) {
     operatorState.cachedLogger(`Processing new challenge with number: ${challengeId}.`);
@@ -69,8 +70,6 @@ export async function processNewChallenge(
         // Compute the Keccak-256 hash of the encoded data
         const localHash = ethers.keccak256(encodedData);
 
-        // TODO Find the Challenger's public key
-        const challengerPublicKey = "0xChallengerPublicKey"; //TODO Set this to the challenger's public key
         const isValid = verifyChallengerSignedHash(challengerPublicKey, localHash, challenge.challengerSignedHash);
 
         if(!isValid){
