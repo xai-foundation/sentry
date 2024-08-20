@@ -24,9 +24,67 @@ export async function processNewChallenge(
     operatorState.cachedLogger(`Processing new challenge with number: ${challengeId}.`);
     operatorState.cachedLogger(`Checking eligibility for ${bulkOwnerAndPools.length} owners and pools.`);
 
-    for (const ownerOrPool of bulkOwnerAndPools) {
-        let confirmData = challenge.assertionStateRootOrConfirmData;
 
+    let lastSubmittedAssertion: number;
+    let confirmData = challenge.assertionStateRootOrConfirmData;
+
+    const graphStatus = await getSubgraphHealthStatus();
+
+    // Get the last submitted assertion Id from the subgraph or RPC
+    if(graphStatus.healthy){                
+        // TODO Implement
+        // 1. Get the last submitted assertion from the subgraph
+        const lastSubmittedAssertionId = 0; // TODO Get last submitted assertion from the subgraph
+        lastSubmittedAssertion = lastSubmittedAssertionId;                
+    }else{
+        // Get Last Submitted Assertion Id from RPC
+        const { lastSubmittedAssertionId } = await getLastSubmittedAssertionIdAndTime();
+        lastSubmittedAssertion = lastSubmittedAssertionId;
+    }
+    
+    // Check if the submission should be a batch submission
+    const isBatchSubmission = Number(challengeId) - Number(lastSubmittedAssertion) > 1
+
+    // If we have multiple un-submitted assertions, we should submit them as a batch
+    if(isBatchSubmission){
+
+        // Assemble an array of all un-submitted assertion Ids
+        const assertionIds = Array.from({ length: Number(challengeId) - lastSubmittedAssertion }, (_, i) => lastSubmittedAssertion + i + 1);    
+
+        // Use those Ids to retrieve the confirm data for each assertion
+        let listOfConfirmData: string[]; //TODO Implement getting these from the subgraph
+        if(graphStatus.healthy){
+            //TODO Implement
+            //2. Get the confirm data for each assertion from the subgraph
+            listOfConfirmData = ["0xConfirmData1", "0xConfirmData2", "0xConfirmData3"]; //TODO Get confirm data from the subgraph
+        }else{
+            //TODO  Get the confirm data from the RPC
+            listOfConfirmData = ["0xConfirmData1", "0xConfirmData2", "0xConfirmData3"];
+        }
+
+
+        // Encode the array of confirm data
+        const encodedData = listOfConfirmData.map(data => ethers.encodeBytes32String(data)).join('');
+
+        // Compute the Keccak-256 hash of the encoded data
+        const localHash = ethers.keccak256(encodedData);
+
+        // TODO Find the Challenger's public key
+        const challengerPublicKey = "0xChallengerPublicKey"; //TODO Set this to the challenger's public key
+        const isValid = verifyChallengerSignedHash(challengerPublicKey, localHash, challenge.challengerSignedHash);
+
+        if(!isValid){
+            operatorState.cachedLogger(`Challenger's signature is invalid for challenge ${challengeId}`);
+            // TODO How do we handle this?
+            // Notifications?
+            // Throw error?
+            // Break?
+        }
+        confirmData = localHash;
+    }
+
+
+    for (const ownerOrPool of bulkOwnerAndPools) {
         updateSentryAddressStatus(ownerOrPool.address, NodeLicenseStatus.CHECKING_IF_ELIGIBLE_FOR_PAYOUT);
 
         try {
@@ -93,63 +151,6 @@ export async function processNewChallenge(
             }
 
             try {
-                let lastSubmittedAssertion: number;
-
-                const graphStatus = await getSubgraphHealthStatus();
-
-                // Get the last submitted assertion Id from the subgraph or RPC
-                if(graphStatus.healthy){                
-                    // TODO Implement
-                    // 1. Get the last submitted assertion from the subgraph
-                    const lastSubmittedAssertionId = 0; // TODO Get last submitted assertion from the subgraph
-                    lastSubmittedAssertion = lastSubmittedAssertionId;                
-                }else{
-                    // Get Last Submitted Assertion Id from RPC
-                    const { lastSubmittedAssertionId } = await getLastSubmittedAssertionIdAndTime();
-                    lastSubmittedAssertion = lastSubmittedAssertionId;
-                }
-                
-                // Check if the submission should be a batch submission
-                const isBatchSubmission = Number(challengeId) - Number(lastSubmittedAssertion) > 1
-
-                // If we have multiple un-submitted assertions, we should submit them as a batch
-                if(isBatchSubmission){
-
-                    // Assemble an array of all un-submitted assertion Ids
-                    const assertionIds = Array.from({ length: Number(challengeId) - lastSubmittedAssertion }, (_, i) => lastSubmittedAssertion + i + 1);    
-
-                    // Use those Ids to retrieve the confirm data for each assertion
-                    let listOfConfirmData: string[]; //TODO Implement getting these from the subgraph
-                    if(graphStatus.healthy){
-                        //TODO Implement
-                        //2. Get the confirm data for each assertion from the subgraph
-                        listOfConfirmData = ["0xConfirmData1", "0xConfirmData2", "0xConfirmData3"]; //TODO Get confirm data from the subgraph
-                    }else{
-                        //TODO  Get the confirm data from the RPC
-                        listOfConfirmData = ["0xConfirmData1", "0xConfirmData2", "0xConfirmData3"];
-                    }
-
-
-                    // Encode the array of confirm data
-                    const encodedData = listOfConfirmData.map(data => ethers.encodeBytes32String(data)).join('');
-
-                    // Compute the Keccak-256 hash of the encoded data
-                    const localHash = ethers.keccak256(encodedData);
-
-                    // TODO Find the Challenger's public key
-                    const challengerPublicKey = "0xChallengerPublicKey"; //TODO Set this to the challenger's public key
-                    const isValid = verifyChallengerSignedHash(challengerPublicKey, localHash, challenge.challengerSignedHash);
-
-                    if(!isValid){
-                        operatorState.cachedLogger(`Challenger's signature is invalid for address ${ownerOrPool.address} to challenge ${challengeId}`);
-                        // TODO How do we handle this?
-                        // Notifications?
-                        // Throw error?
-                        // Break?
-                    }
-                    confirmData = localHash;
-                }
-
                 //Try to submit once, if we get error 54 we don't need to try again. Any other error, we should give it 2 more tries.
                 await submitBulkAssertion(ownerOrPool.address, challengeId, confirmData, operatorState.cachedSigner);
             } catch (error: any) {
