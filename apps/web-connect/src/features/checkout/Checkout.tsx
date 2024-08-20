@@ -44,7 +44,7 @@ export function Checkout() {
             setPromoCode(prefilledPromoCode);
             handleApplyPromoCode();
         }
-    }, [promoCode, setPromoCode]);
+    }, [prefilledPromoCode, promoCode, setPromoCode]);
 
     function returnToClient() {
         resetTransactions();
