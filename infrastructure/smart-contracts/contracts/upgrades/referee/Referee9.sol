@@ -422,6 +422,8 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         require(challengerPublicKey.length != 0, "8");
 
         // check the assertionId and rollupAddress combo haven't been submitted yet
+        // checking the last assertion id here as it will always need to be checked
+        // regardless of if it is a single or batched challenge
         bytes32 comboHash = keccak256(abi.encodePacked(_assertionId, rollupAddress));
         require(!rollupAssertionTracker[comboHash], "9");
         rollupAssertionTracker[comboHash] = true;
@@ -441,13 +443,15 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             uint64 [] memory assertionIds = new uint64[](_assertionId - _predecessorAssertionId);
 
             // Loop through the assertions and check if they have been submitted
-            for(uint64 i = _predecessorAssertionId + 1; i <= _assertionId; i++){
+            // We do not need to check the assertionId as it has already been checked
+            // earlier in the function
+            for(uint64 i = _predecessorAssertionId + 1; i < _assertionId; i++){
 
                 // create the comboHash for the assertionId and rollupAddress
                 bytes32 comboHashBatch = keccak256(abi.encodePacked(i, rollupAddress));
 
                 // check the assertionId and rollupAddress combo haven't been submitted yet
-                require(!rollupAssertionTracker[comboHashBatch], "15");
+                require(!rollupAssertionTracker[comboHashBatch], "9");
 
                 // set the comboHash to true to indicate it has been submitted
                 rollupAssertionTracker[comboHashBatch] = true;
@@ -455,7 +459,10 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
                 // add the assertionId to the array
                 assertionIds[i - _predecessorAssertionId - 1] = i;
             }
-            
+
+            // add the last assertionId to the array sicne it was not included in the loop
+            assertionIds[_assertionId - _predecessorAssertionId - 1] = _assertionId;
+
             // Verify Batch ConfirmData
             (, bytes32 confirmHash) = RefereeCalculations(refereeCalculationsAddress).getConfirmDataMultipleAssertions(assertionIds, rollupAddress);
             require(_confirmData == confirmHash, "11");
