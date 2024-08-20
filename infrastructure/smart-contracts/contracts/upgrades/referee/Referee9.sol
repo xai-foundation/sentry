@@ -525,11 +525,10 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             amountClaimedByClaimers: 0
         });
 
-        // Only emit the challenge event if the challenge is not a batch challenge
-        if(_assertionId - _predecessorAssertionId == 1){
-            // emit the event
-            emit ChallengeSubmitted(challengeCounter);
-        } 
+
+        // emit the event
+        emit ChallengeSubmitted(challengeCounter);
+
 
         // increment the challenge counter
         challengeCounter++;
