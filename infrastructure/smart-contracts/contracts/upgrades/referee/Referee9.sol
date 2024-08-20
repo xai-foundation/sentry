@@ -433,9 +433,12 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
         // get the node information from the rollup.
         Node memory currentNode = rollup.getNode(_assertionId);
+        require(currentNode.createdAtBlock == _assertionTimestamp, "12");
 
         // If the gap is more than 1 assertion, we need to handle as a batch challenge
-        if(_assertionId - _predecessorAssertionId > 1){
+        bool isBatch = _assertionId - _predecessorAssertionId > 1;
+
+        if(isBatch){
 
             // Initialize the array to store the assertionIds
             uint64 [] memory assertionIds = new uint64[](_assertionId - _predecessorAssertionId);
@@ -450,6 +453,16 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
                 // check the assertionId and rollupAddress combo haven't been submitted yet
                 require(!rollupAssertionTracker[comboHashBatch], "9");
+
+                // get the node information from the rollup.
+                Node memory node = rollup.getNode(i);
+
+                if (isCheckingAssertions) {
+
+                    // check the _predecessorAssertionId is correct
+                    require(node.prevNum == i - 1, "10");   
+
+                }      
 
                 // set the comboHash to true to indicate it has been submitted
                 rollupAssertionTracker[comboHashBatch] = true;
@@ -470,18 +483,9 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         }
 
         // verify the data inside the hash matched the data pulled from the rollup contract
-        if (isCheckingAssertions) {
-
-            // get the node information from the rollup.
-            Node memory previousNode = rollup.getNode(_predecessorAssertionId);
-
-            require(previousNode.prevNum == _predecessorAssertionId, "10");
-            require(currentNode.createdAtBlock == _assertionTimestamp, "12");
-
-            // Verify Individual ConfirmData
-            if(_assertionId - _predecessorAssertionId == 1){
-                require(currentNode.confirmData == _confirmData, "11");
-            }            
+        if (isCheckingAssertions && !isBatch) {
+            require(currentNode.prevNum == _predecessorAssertionId, "10");
+            require(currentNode.confirmData == _confirmData, "11");    
         }
         
         // we need to determine how much token will be emitted
