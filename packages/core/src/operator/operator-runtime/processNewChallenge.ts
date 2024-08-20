@@ -93,7 +93,7 @@ export async function processNewChallenge(
             }
 
             try {
-                let lastSubmittedAssertion;
+                let lastSubmittedAssertion: number;
 
                 const graphStatus = await getSubgraphHealthStatus();
 
