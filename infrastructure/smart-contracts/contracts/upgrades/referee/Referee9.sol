@@ -441,7 +441,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             uint64 [] memory assertionIds = new uint64[](_assertionId - _predecessorAssertionId);
 
             // Loop through the assertions and check if they have been submitted
-            for(uint64 i = _predecessorAssertionId + 1; i < _assertionId; i++){
+            for(uint64 i = _predecessorAssertionId + 1; i <= _assertionId; i++){
 
                 // create the comboHash for the assertionId and rollupAddress
                 bytes32 comboHashBatch = keccak256(abi.encodePacked(i, rollupAddress));
