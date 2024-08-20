@@ -1,10 +1,11 @@
 import { RefereeConfig } from "@sentry/sentry-subgraph-client";
-import { BulkOwnerOrPool, getBoostFactor as getBoostFactorRPC, NodeLicenseStatus, ProcessChallenge, submitBulkAssertion } from "../index.js";
+import { BulkOwnerOrPool, getBoostFactor as getBoostFactorRPC, NodeLicenseStatus, ProcessChallenge, submitBulkAssertion, getSubgraphHealthStatus } from "../index.js";
 import { operatorState } from "./operatorState.js";
 import { retry } from "../../index.js";
 import { updateSentryAddressStatus } from "./updateSentryAddressStatus.js";
 import { getWinningKeyCount } from "./getWinningKeyCount.js";
 import { getBulkSubmissionForChallenge } from "../getBulkSubmissionForChallenge.js";
+import { getLastSubmittedAssertionIdAndTime } from "../../index.js";
 
 /**
  * Processes a new challenge for all owners and pools, submit assertion if we have winning keys
@@ -90,18 +91,47 @@ export async function processNewChallenge(
             }
 
             try {
-
-                //TODO Implement
-                //1. Get the last submitted assertion
-                //2. Check if the current assertion Id minus the last submitted assertion Id is greater than 1
-                //3. If it is, we need to submit as a batch, if not we can submit as a single assertion
-                let isBatchSubmission = false;
                 let confirmData = challenge.assertionStateRootOrConfirmData;
+                let lastSubmittedAssertion;
 
+                const graphStatus = await getSubgraphHealthStatus();
+
+                // Get the last submitted assertion Id from the subgraph or RPC
+                if(graphStatus.healthy){                
+                    // TODO Implement
+                    // 1. Get the last submitted assertion from the subgraph
+                    const lastSubmittedAssertionId = 0; // TODO Get last submitted assertion from the subgraph
+                    lastSubmittedAssertion = lastSubmittedAssertionId;                
+                }else{
+                    // Get Last Submitted Assertion Id from RPC
+                    const { lastSubmittedAssertionId } = await getLastSubmittedAssertionIdAndTime();
+                    lastSubmittedAssertion = lastSubmittedAssertionId;
+                }
+                
+                // Check if the submission should be a batch submission
+                const isBatchSubmission = Number(challengeId) - Number(lastSubmittedAssertion) > 1
+
+                // If we have multiple un-submitted assertions, we should submit them as a batch
                 if(isBatchSubmission){
+
+                    // Assemble an array of all un-submitted assertion Ids
+                    const assertionIds = Array.from({ length: Number(challengeId) - lastSubmittedAssertion }, (_, i) => lastSubmittedAssertion + i + 1);    
+
+                    // Use those Ids to retrieve the confirm data for each assertion
+                    let listOfConfirmData: string[]; //TODO Implement getting these from the subgraph
+                    if(graphStatus.healthy){
+                        //TODO Implement
+                        //2. Get the confirm data for each assertion from the subgraph
+                        listOfConfirmData = ["0xConfirmData1", "0xConfirmData2", "0xConfirmData3"]; //TODO Get confirm data from the subgraph
+                    }else{
+                        // Get the confirm data from the RPC
+                        listOfConfirmData = ["0xConfirmData1", "0xConfirmData2", "0xConfirmData3"];
+                    }
+                    
+
+
+                    
                     //TODO Implement
-                    //1. Assemble an array of all un-submitted assertion Ids
-                    //2. Use those Ids to retrieve the confirm data for each assertion
                     //3. Hash the list of confirm data
                     //4. Submit the batch assertion using the hashed confirm data
                     confirmData = "0xHashedConfirmData";
