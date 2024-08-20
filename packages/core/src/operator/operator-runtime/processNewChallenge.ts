@@ -125,7 +125,7 @@ export async function processNewChallenge(
                         //2. Get the confirm data for each assertion from the subgraph
                         listOfConfirmData = ["0xConfirmData1", "0xConfirmData2", "0xConfirmData3"]; //TODO Get confirm data from the subgraph
                     }else{
-                        // Get the confirm data from the RPC
+                        //TODO  Get the confirm data from the RPC
                         listOfConfirmData = ["0xConfirmData1", "0xConfirmData2", "0xConfirmData3"];
                     }
 
