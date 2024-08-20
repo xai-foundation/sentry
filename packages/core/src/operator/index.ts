@@ -13,4 +13,3 @@ export * from "./operatorRuntime.js";
 export * from "./checkRefereeBulkSubmissionCompatible.js";
 export * from "./operator-runtime/index.js";
 export * from "./processUnclaimedChallenges.js";
-export * from "./getLastSubmittedAssertionIdAndTime.js";
