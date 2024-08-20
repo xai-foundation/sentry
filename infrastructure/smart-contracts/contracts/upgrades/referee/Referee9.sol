@@ -454,18 +454,17 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
                 // check the assertionId and rollupAddress combo haven't been submitted yet
                 require(!rollupAssertionTracker[comboHashBatch], "9");
 
-                // get the node information from the rollup.
-                Node memory node = rollup.getNode(i);
+                // set the comboHash to true to indicate it has been submitted
+                rollupAssertionTracker[comboHashBatch] = true;
 
                 if (isCheckingAssertions) {
 
+                    // get the node information for this assertion from the rollup.
+                    Node memory node = rollup.getNode(i);
+
                     // check the _predecessorAssertionId is correct
                     require(node.prevNum == i - 1, "10");   
-
                 }      
-
-                // set the comboHash to true to indicate it has been submitted
-                rollupAssertionTracker[comboHashBatch] = true;
 
                 // add the assertionId to the array
                 assertionIds[i - _predecessorAssertionId - 1] = i;
@@ -482,7 +481,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             emit BatchChallenge(challengeCounter, assertionIds);
         }
 
-        // verify the data inside the hash matched the data pulled from the rollup contract
+        // If not a batch verify the data inside the hash matched the data pulled from the rollup contract
         if (isCheckingAssertions && !isBatch) {
             require(currentNode.prevNum == _predecessorAssertionId, "10");
             require(currentNode.confirmData == _confirmData, "11");    
