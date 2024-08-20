@@ -465,8 +465,8 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
             // Verify Batch ConfirmData
             (, bytes32 confirmHash) = RefereeCalculations(refereeCalculationsAddress).getConfirmDataMultipleAssertions(assertionIds, rollupAddress);
+            
             require(_confirmData == confirmHash, "11");
-       
             // emit the batch challenge event
             emit BatchChallenge(challengeCounter, assertionIds);
         }
@@ -474,11 +474,8 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         // verify the data inside the hash matched the data pulled from the rollup contract
         if (isCheckingAssertions) {
 
-            // Last challenge assertionId submitted
-            uint64 lastChallengeAssertionId = challenges[challengeCounter - 1].assertionId;
-
             // get the node information from the rollup.
-            Node memory previousNode = rollup.getNode(lastChallengeAssertionId);
+            Node memory previousNode = rollup.getNode(_predecessorAssertionId);
 
             require(previousNode.prevNum == _predecessorAssertionId, "10");
             require(currentNode.createdAtBlock == _assertionTimestamp, "12");
