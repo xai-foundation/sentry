@@ -434,8 +434,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         // get the node information from the rollup.
         Node memory currentNode = rollup.getNode(_assertionId);
 
-
-
         // If the gap is more than 1 assertion, we need to handle as a batch challenge
         if(_assertionId - _predecessorAssertionId > 1){
 
