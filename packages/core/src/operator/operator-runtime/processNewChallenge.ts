@@ -90,8 +90,25 @@ export async function processNewChallenge(
             }
 
             try {
+
+                //TODO Implement
+                //1. Get the last submitted assertion
+                //2. Check if the current assertion Id minus the last submitted assertion Id is greater than 1
+                //3. If it is, we need to submit as a batch, if not we can submit as a single assertion
+                let isBatchSubmission = false;
+                let confirmData = challenge.assertionStateRootOrConfirmData;
+
+                if(isBatchSubmission){
+                    //TODO Implement
+                    //1. Assemble an array of all un-submitted assertion Ids
+                    //2. Use those Ids to retrieve the confirm data for each assertion
+                    //3. Hash the list of confirm data
+                    //4. Submit the batch assertion using the hashed confirm data
+                    confirmData = "0xHashedConfirmData";
+                }
+
                 //Try to submit once, if we get error 54 we don't need to try again. Any other error, we should give it 2 more tries.
-                await submitBulkAssertion(ownerOrPool.address, challengeId, challenge.assertionStateRootOrConfirmData, operatorState.cachedSigner);
+                await submitBulkAssertion(ownerOrPool.address, challengeId, confirmData, operatorState.cachedSigner);
             } catch (error: any) {
                 if (error && error.message && error.message.includes('execution reverted: "54"')) {
                     // If error code is 54, we don't need to log the error, it just means for this pool we already submitted
