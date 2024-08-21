@@ -35,15 +35,15 @@ In order to run the tests you must ensure everything has been installed and buil
 7. Open a second terminal/command prompt and CD into `infrastructure/smart-contacts`
 8. Run `pnpm test` to run the test suite.
 
-# Adding New Tests
+## Adding New Tests
 
 Tests for new functionality should have new files/folders created and then those test functions should be called from the main Fixture.mjs file.
 
-# Adding Contracts
+## Adding Contracts
 
 When a contract is added , you will need to update the Fixture.mjs file to include the deployment of your new contract. You should also add it to the return object at the end of the file so that it may be consumed in other test files.
 
-# Upgrading Contracts
+## Upgrading Contracts
 
 When a contract is upgraded, you will need to update the Fixture.mjs file to include the upgrade of your new contract. You should also update the return object at the end of the file for the new upgraded contract so that it may be consumed in the other test files.
 
@@ -69,6 +69,16 @@ Tests that require challenge submissions/assertions/claims have a few special co
     - Address 3 Has
       - 1 Node License
       - HAS NOT Passed KYC
+
+
+### Time Considerations
+
+If you need to account for time/delays in your tests, use the following format:
+```javascript
+	// Wait 45 days
+	await ethers.provider.send("evm_increaseTime", [86400 * 45]);
+	await ethers.provider.send("evm_mine");
+```
 
 ### Util Functions
 
