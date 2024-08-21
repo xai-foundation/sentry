@@ -39,7 +39,6 @@ In order to run the tests you must ensure everything has been installed and buil
 
 Tests for new functionality should have new files/folders created and then those test functions should be called from the main Fixture.mjs file.
 
-
 ## Test Considerations
 
 Tests that require challenge submissions/assertions/claims have a few special considerations that need to be accounted for.
