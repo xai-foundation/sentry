@@ -39,6 +39,14 @@ In order to run the tests you must ensure everything has been installed and buil
 
 Tests for new functionality should have new files/folders created and then those test functions should be called from the main Fixture.mjs file.
 
+# Adding Contracts
+
+When a contract is added , you will need to update the Fixture.mjs file to include the deployment of your new contract. You should also add it to the return object at the end of the file so that it may be consumed in other test files.
+
+# Upgrading Contracts
+
+When a contract is upgraded, you will need to update the Fixture.mjs file to include the upgrade of your new contract. You should also update the return object at the end of the file for the new upgraded contract so that it may be consumed in the other test files.
+
 ## Test Considerations
 
 Tests that require challenge submissions/assertions/claims have a few special considerations that need to be accounted for.
@@ -49,6 +57,18 @@ Tests that require challenge submissions/assertions/claims have a few special co
    - Summary is, if your test expects "winning keys" you need to ensure you provide a high enough probability to ensure a winner.
    - Probability is determined by the total number of keys being submitted for multiplied by the percentage chance of each key winning(Boost Factor 100=1% etc..)
 3. If you want to test "claiming" you need to submit a second challenge to close the first challenge making it "claimable".
+4. State at the end of the fixture:
+    - Address 1 Has
+      - 1 Node License
+      - Passed KYC
+
+    - Address 2 Has
+      - 10 Node Licenses
+      - Passed KYC
+
+    - Address 3 Has
+      - 1 Node License
+      - HAS NOT Passed KYC
 
 ### Util Functions
 
