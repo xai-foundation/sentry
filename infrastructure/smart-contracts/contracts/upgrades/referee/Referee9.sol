@@ -459,11 +459,12 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         }
 
         if(isBatch){
+            if(isCheckingAssertions){
+                // Verify Batch ConfirmData
+                (, bytes32 confirmHash) = RefereeCalculations(refereeCalculationsAddress).getConfirmDataMultipleAssertions(assertionIds, rollupAddress);
 
-            // Verify Batch ConfirmData
-            (, bytes32 confirmHash) = RefereeCalculations(refereeCalculationsAddress).getConfirmDataMultipleAssertions(assertionIds, rollupAddress);
-
-            require(_confirmData == confirmHash, "11");
+                require(_confirmData == confirmHash, "11");
+            }
             // emit the batch challenge event
             emit BatchChallenge(challengeCounter, assertionIds);
         }else{
