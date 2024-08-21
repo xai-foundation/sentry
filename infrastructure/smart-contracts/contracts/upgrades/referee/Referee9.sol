@@ -426,13 +426,18 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
         // get the node information from the rollup.
         Node memory currentNode = rollup.getNode(_assertionId);
-        require(currentNode.createdAtBlock == _assertionTimestamp, "12");
+
+        if(isCheckingAssertions){
+            // check the _assertionTimestamp is correct
+            require(currentNode.createdAtBlock == _assertionTimestamp, "12");
+        }
 
         // If the gap is more than 1 assertion, we need to handle as a batch challenge
         bool isBatch = _assertionId - _predecessorAssertionId > 1;
 
         // Initialize the array to store the assertionIds
         uint64 [] memory assertionIds = new uint64[](_assertionId - _predecessorAssertionId);
+        bytes32 [] memory batchConfirmData = new bytes32[](_assertionId - _predecessorAssertionId);
 
         // Loop through the assertions and check if they have been submitted
         // We do not need to check the assertionId as it has already been checked
@@ -449,29 +454,37 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             rollupAssertionTracker[comboHashBatch] = true;
 
             if (isCheckingAssertions) {
-                
                 // get the node information for this assertion from the rollup.
                 Node memory node = rollup.getNode(i);
 
                 // check the _predecessorAssertionId is correct
                 require(node.prevNum == i - 1, "10");   
+
+
+                // Check the confirmData for the assertion
+                if(!isBatch){
+                    // Verify ConfirmData
+                    require(currentNode.confirmData == _confirmData, "11");
+                }else{
+                    // Store the assertionIds and confirmData for the batch challenge
+                    assertionIds[i - _predecessorAssertionId - 1] = i;
+                    batchConfirmData[i - _predecessorAssertionId - 1] = currentNode.confirmData;
+                }
+                
             }
         }
 
+        // If we are doing a batch challenge, we need to check the confirmData for all assertions
         if(isBatch){
             if(isCheckingAssertions){
-                // Verify Batch ConfirmData
-                (, bytes32 confirmHash) = RefereeCalculations(refereeCalculationsAddress).getConfirmDataMultipleAssertions(assertionIds, rollupAddress);
+                // Hash all of the confirmData for the batch challenge
+                bytes32 confirmHash  = keccak256(abi.encodePacked(batchConfirmData));
 
+                // Confirm the hash matches what was submitted
                 require(_confirmData == confirmHash, "11");
             }
             // emit the batch challenge event
             emit BatchChallenge(challengeCounter, assertionIds);
-        }else{
-            // If not a batch verify the data inside the hash matched the data pulled from the rollup contract
-            if (isCheckingAssertions) {
-                require(currentNode.confirmData == _confirmData, "11");    
-            }
         }
                 
         // we need to determine how much token will be emitted
