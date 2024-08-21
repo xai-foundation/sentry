@@ -14,6 +14,41 @@ This includes deploying all contracts, and following up with all upgrades that h
 
 At the end of the fixture file an object is returned with all of the objects/contracts/signers etc that are needed to run the tests.
 
+```javascript
+
+        // Note the contracts that have been upgraded are referencing the upgraded version(s)
+        return {
+            deployer,
+            challenger,
+            fundsReceiver,
+            refereeDefaultAdmin,
+            kycAdmin,
+            xaiDefaultAdmin,
+            xaiMinter,
+            esXaiDefaultAdmin,
+            esXaiMinter,
+            gasSubsidyDefaultAdmin,
+            gasSubsidyTransferAdmin,
+            nodeLicenseDefaultAdmin,
+            addr1,
+            addr2,
+            addr3,
+            addr4,
+            operator,
+            rollupController,
+            tiers,
+            secretKeyHex,
+            publicKeyHex: "0x" + publicKeyHex,
+            referee: referee9,
+            nodeLicense: nodeLicense8,
+			      poolFactory: poolFactory2,
+            gasSubsidy,
+            esXai: esXai2,
+            xai,
+            rollupContract
+        }
+```
+
 Below that, you'll see the individual tests that reference all of the different test files. Each test receives the "deployInfrastructure" as a param. The deployInfrastructure object makes all of the objects/contracts/signers available in the test files.
 
 ``` javascript
