@@ -59,3 +59,12 @@ There are some functions in the utils folder to help simplify required repetitiv
 3. *Mint Licenses* - this has two functions to either mint a single license or mint batched licenses. Both return the key Ids minted.
 4. *Submit Test Challenge* - this can be used to submit test challenges. 
   - For test challenges, typically a generic state root may be used `0x0000000000000000000000000000000000000000000000000000000000000000` **UNLESS** you are actually testing the confirm data.
+
+
+### Deprecated Tests
+
+There are some tests in the Referee that are commented out because they are no longer compatible with the new referee. 
+They are:
+
+- `The Referee should allow users to stake in V1`
+- `Check that reward chance increases with higher staking amount`
