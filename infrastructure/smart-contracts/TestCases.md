@@ -41,7 +41,7 @@ At the end of the fixture file an object is returned with all of the objects/con
             publicKeyHex: "0x" + publicKeyHex,
             referee: referee9,
             nodeLicense: nodeLicense8,
-      poolFactory: poolFactory2,
+        poolFactory: poolFactory2,
             gasSubsidy,
             esXai: esXai2,
             xai,
