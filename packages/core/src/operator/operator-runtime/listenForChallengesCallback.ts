@@ -1,15 +1,6 @@
 import axios from "axios";
-import { checkRefereeBulkSubmissionCompatible, PublicNodeBucketInformation } from "../index.js";
-import { operatorState } from "./operatorState.js";
+import { checkRefereeBulkSubmissionCompatible, loadOperatorKeysFromGraph_V1, loadOperatorKeysFromRPC_V1, loadOperatorWalletsFromGraph, loadOperatorWalletsFromRPC, operatorState, processClosedChallenge, processClosedChallenges_V1, processNewChallenge, processNewChallenge_V1, PublicNodeBucketInformation } from "../index.js";
 import { Challenge, config, getSentryWalletsForOperator, getSubgraphHealthStatus, retry } from "../../index.js";
-import { processNewChallenge_V1 } from "./operator-v1/processNewChallenge.js";
-import { loadOperatorKeysFromGraph_V1 } from "./operator-v1/loadOperatorKeysFromGraph.js";
-import { loadOperatorKeysFromRPC_V1 } from "./operator-v1/loadOperatorKeysFromRPC.js";
-import { processClosedChallenges_V1 } from "./operator-v1/processClosedChallenges.js";
-import { processNewChallenge } from "./processNewChallenge.js";
-import { loadOperatorWalletsFromGraph } from "./loadOperatorWalletsFromGraph.js";
-import { loadOperatorWalletsFromRPC } from "./loadOperatorWalletsFromRPC.js";
-import { processClosedChallenge } from "./processClosedChallenge.js";
 
 /**
  * Update the status message for display in the operator desktop app key list
@@ -60,6 +51,8 @@ export async function listenForChallengesCallback(challengeNumber: bigint, chall
                 // process the new challenge using bulk submissions
                 await processNewChallenge(challengeNumber, challenge, ownerWalletsAndPools, refereeConfigFromGraph);
 
+                await processClosedChallenge(challengeNumber - BigInt(1), ownerWalletsAndPools);
+
             } else {
                 // If the referee has not been upgraded to V2, we need to process the new challenge using individual submissions
                 // get the keys from the subgraph
@@ -90,7 +83,7 @@ export async function listenForChallengesCallback(challengeNumber: bigint, chall
                 await processNewChallenge(challengeNumber, challenge, ownerWalletsAndPools);
 
                 // Claim the previous challenge, that should be closed now and available for claiming
-                await processClosedChallenge(challengeNumber - BigInt(1), ownerWalletsAndPools);                
+                await processClosedChallenge(challengeNumber - BigInt(1), ownerWalletsAndPools);
 
             } else {
 
