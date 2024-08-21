@@ -60,6 +60,7 @@ Tests that require challenge submissions/assertions/claims have a few special co
 
 ## Starting State
 The state at the end of the fixture/beginning of the tests:
+
     - Address 1 Has
       - 1 Node License
       - Passed KYC
