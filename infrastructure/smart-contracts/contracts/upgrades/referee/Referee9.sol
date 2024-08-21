@@ -427,13 +427,11 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         // If the gap is more than 1 assertion, we need to handle as a batch challenge
         bool isBatch = _assertionId - _predecessorAssertionId > 1;
 
-        // Initialize the array to store the assertionIds
+        // Initialize the array to store the assertionIds and confirmData for the batch challenge
         uint64 [] memory assertionIds = new uint64[](_assertionId - _predecessorAssertionId);
         bytes32 [] memory batchConfirmData = new bytes32[](_assertionId - _predecessorAssertionId);
 
         // Loop through the assertions and check if they have been submitted
-        // We do not need to check the assertionId as it has already been checked
-        // earlier in the function
         for(uint64 i = _predecessorAssertionId + 1; i <= _assertionId; i++){
 
             // create the comboHash for the assertionId and rollupAddress
@@ -445,7 +443,11 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             // set the comboHash to true to indicate it has been submitted
             rollupAssertionTracker[comboHashBatch] = true;
 
+            // If assertion checking is active, we need to verify the assertions
+            // Assertion checking would only be disabled if for some reason
+            // the Rollup contract is not available on the network
             if (isCheckingAssertions) {
+
                 // get the node information for this assertion from the rollup.
                 Node memory node = rollup.getNode(i);
 
@@ -454,16 +456,18 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
                 // Check the confirmData & timestamp for the assertion
                 if(!isBatch){
-                    // Verify ConfirmData
+
+                    // Verify individual confirmData
                     require(node.createdAtBlock == _assertionTimestamp, "12");
                     require(node.confirmData == _confirmData, "11");
                 }else{
+
                     // Store the assertionIds and confirmData for the batch challenge
                     assertionIds[i - _predecessorAssertionId - 1] = i;
                     batchConfirmData[i - _predecessorAssertionId - 1] = node.confirmData;
 
-                    // If not a batch challenge, we need to verify the timestamp
-                    // but only for the assertionId
+                    // If not a batch challenge, we need to verify the
+                    //  timestamp but only for the assertionId
                     if(i == _assertionId){
                         // Verify Timestamp
                         require(node.createdAtBlock == _assertionTimestamp, "12");
