@@ -11,3 +11,4 @@ export * from "./xai-token/index.js";
 export * from "./operator/index.js";
 export * from "./data-centralization/index.js";
 export * from "./subgraph/index.js";
+export * from "./event-monitor/nodeCreatedMonitor.js";

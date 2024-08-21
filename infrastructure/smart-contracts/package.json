@@ -27,6 +27,7 @@
     "update-beacon-impl": "hardhat run scripts/updateBeaconImp.mjs",
     "deploy-staking-v2": "hardhat run scripts/deployStakingV2.mjs",
     "enable-staking-v2": "hardhat run scripts/enableStakingV2.mjs",
+    "deploy-forwarder": "hardhat run scripts/xai-deploy/deployForwarder.mjs",
     "local": "hardhat node",
     "test": "hardhat test --network localhost",
     "coverage": "hardhat coverage --network localhost --solcoverjs ./.solcover.cjs --temp artifacts --testfiles \"./test/**/*.mjs\"",
