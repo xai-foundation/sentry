@@ -459,7 +459,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         }
 
         if(isBatch){
-            
+
             // Verify Batch ConfirmData
             (, bytes32 confirmHash) = RefereeCalculations(refereeCalculationsAddress).getConfirmDataMultipleAssertions(assertionIds, rollupAddress);
 
@@ -469,7 +469,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         }else{
             // If not a batch verify the data inside the hash matched the data pulled from the rollup contract
             if (isCheckingAssertions) {
-                require(currentNode.prevNum == _predecessorAssertionId, "10");
                 require(currentNode.confirmData == _confirmData, "11");    
             }
         }
