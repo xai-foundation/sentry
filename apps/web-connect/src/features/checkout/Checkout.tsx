@@ -30,7 +30,9 @@ export function Checkout() {
         isTotalLoading,
         isPriceLoading,
         isExchangeRateLoading,
+        promoCode,
         setPromoCode,
+        handleApplyPromoCode,
         mintWithEth,
         mintWithXai,
         approve,
@@ -40,8 +42,9 @@ export function Checkout() {
     useEffect(() => {
         if (prefilledPromoCode) {
             setPromoCode(prefilledPromoCode);
+            handleApplyPromoCode();
         }
-    }, [prefilledPromoCode, setPromoCode]);
+    }, [prefilledPromoCode, promoCode, setPromoCode]);
 
     function returnToClient() {
         resetTransactions();
