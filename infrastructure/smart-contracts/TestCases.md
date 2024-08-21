@@ -57,7 +57,9 @@ Tests that require challenge submissions/assertions/claims have a few special co
    - Summary is, if your test expects "winning keys" you need to ensure you provide a high enough probability to ensure a winner.
    - Probability is determined by the total number of keys being submitted for multiplied by the percentage chance of each key winning(Boost Factor 100=1% etc..)
 3. If you want to test "claiming" you need to submit a second challenge to close the first challenge making it "claimable".
-4. State at the end of the fixture:
+
+## Starting State
+The state at the end of the fixture/beginning of the tests:
     - Address 1 Has
       - 1 Node License
       - Passed KYC
