@@ -15,7 +15,8 @@ export let config = {
   "nodeLicenseAddress": "0xbc14d8563b248B79689ECbc43bBa53290e0b6b66",
   "nodeLicenseDeployedBlockNumber": 157193743,
   "nodeLicenseImplementationAddress": "0xf765452e587ad0ae785dc984963897c05d4c8c71",
-  "refereeAddress": "0xfD41041180571C5D371BEA3D9550E55653671198",
+  "refereeAddress": "0xfD41041180571C5D371BEA3D9550E55653671198",  
+  "refereeCalculationsAddress": "", // TODO Add RefereeCalculations address
   "refereeDeployedBlockNumber": 157193676,
   "refereeImplementationAddress": "0x29a7b907fdf4a9235f46d891b7aa1e7d3d35a3b6",
   "rollupAddress": "0xC47DacFbAa80Bd9D8112F4e8069482c2A3221336",

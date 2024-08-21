@@ -1,7 +1,8 @@
 import Vorpal from "vorpal";
 import axios from "axios";
 import { ethers } from 'ethers';
-import { config, createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee, EventListenerError, findMissedAssertion, isAssertionSubmitted } from "@sentry/core";
+import { Challenge } from "@sentry/core";
+import { config, createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee, EventListenerError, findMissedAssertion, isAssertionSubmitted, getMultipleChallengeConfirmData, getLatestChallenge } from "@sentry/core";
 
 type PromptBodyKey = "secretKeyPrompt" | "walletKeyPrompt" | "webhookUrlPrompt" | "instancePrompt";
 
@@ -50,6 +51,7 @@ let currentNumberOfRetries = 0;
 
 let CHALLENGER_INSTANCE = 1;
 const BACKUP_SUBMISSION_DELAY = 300_000; // For every instance we wait 5 minutes + instance number;
+const MINIMUM_TIME_BETWEEN_ASSERTIONS = 60 * 60 * 1000; // 1 hour
 
 let isProcessingMissedAssertions = false;
 
@@ -87,7 +89,6 @@ const initCli = async (commandInstance: Vorpal.CommandInstance) => {
 
     sendNotification(`Challenger instance ${CHALLENGER_INSTANCE} has started.`, commandInstance);
     lastAssertionTime = Date.now();
-
 }
 
 const onAssertionConfirmedCb = async (nodeNum: any, commandInstance: Vorpal.CommandInstance) => {
@@ -114,26 +115,78 @@ const onAssertionConfirmedCb = async (nodeNum: any, commandInstance: Vorpal.Comm
         }
     }
 
-    const assertionNode = await getAssertion(nodeNum);
-    commandInstance.log(`[${new Date().toISOString()}] Assertion data retrieved. Starting the submission process...`);
-    try {
-        await submitAssertionToReferee(
-            cachedSecretKey,
-            nodeNum,
-            assertionNode,
-            cachedSigner!.signer,
-        );
-        commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${nodeNum}`);
-        lastAssertionTime = Date.now();
-    } catch (error) {
-        if (error && (error as Error).message && (error as Error).message.includes('execution reverted: "9"')) {
-            commandInstance.log(`[${new Date().toISOString()}] Could not submit challenge because it was already submitted`);
-            lastAssertionTime = Date.now();
-            return;
+    // Get Last Submitted Assertion Id & Time from Chain
+    const challengeData = await getLatestChallenge();
+    const lastChallenge = challengeData[1];
+
+    const lastAssertionId = Number(lastChallenge.assertionId);
+    const time = Number(lastChallenge.assertionTimestamp);
+
+    // Calculate the minimum time to submit an assertion
+    const minimumTimeToSubmit = time + MINIMUM_TIME_BETWEEN_ASSERTIONS;
+
+    // Check if enough time has passed that we can submit an assertion
+    if(Date.now() > minimumTimeToSubmit) {
+        let confirmDataToSubmit: string;
+
+        const assertionNode = await getAssertion(nodeNum);
+        commandInstance.log(`[${new Date().toISOString()}] Assertion data retrieved. Starting the submission process...`);
+
+        // Determine if we need to submit a batch challenge
+        const isBatchChallenge = lastAssertionId + 1 !== nodeNum;
+
+        if(isBatchChallenge) {
+
+            // If we are submitting for multiple assertions, get all of the assertion ids
+            const assertionIds = Array.from({ length: nodeNum - lastAssertionId }, (_, i) => lastAssertionId + i + 1);    
+            commandInstance.log(`[${new Date().toISOString()}] Submitting a batch challenge for assertion ids ${assertionIds}.`);
+
+            try {
+                // Get the confirm data for all of the assertions
+                const [confirmData, confirmDataHash] = await getMultipleChallengeConfirmData(assertionIds);
+
+                // Set the confirm data to submit for a batch challenge
+                confirmDataToSubmit = confirmDataHash;
+
+            } catch (error) {
+                commandInstance.log(`[${new Date().toISOString()}] Error Getting Batch Confirm Data Error: Assertion Ids => ${assertionIds} ${(error as Error).message}`);
+                sendNotification(`Get Batch Confirm Data Error: Assertion Ids => ${assertionIds} ${(error as Error).message}`, commandInstance);
+                throw error;
+            }
+        }else{
+            commandInstance.log(`[${new Date().toISOString()}] Submitting a challenge for assertion id ${nodeNum}.`);
+
+            // Set the confirm data to submit for a single challenge
+            confirmDataToSubmit = assertionNode.confirmData;
         }
-        commandInstance.log(`[${new Date().toISOString()}] Submit Assertion Error: ${(error as Error).message}`);
-        sendNotification(`Submit Assertion Error: ${(error as Error).message}`, commandInstance);
-        throw error;
+
+        try {
+            // Submit a Batched Challenge
+            await submitAssertionToReferee(
+                cachedSecretKey,
+                nodeNum,
+                lastAssertionId,
+                confirmDataToSubmit,
+                assertionNode.createdAtBlock,
+                cachedSigner!.signer,
+            );
+
+            // Update the last submitted assertion time
+            lastAssertionTime = Date.now();
+
+            commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${nodeNum}`);
+            } catch (error) {
+                if (error && (error as Error).message && (error as Error).message.includes('execution reverted: "9"')) {
+                    commandInstance.log(`[${new Date().toISOString()}] Could not submit challenge because it was already submitted`);
+                    lastAssertionTime = Date.now();
+                    return;
+                }
+                commandInstance.log(`[${new Date().toISOString()}] Submit Assertion Error: ${(error as Error).message}`);
+                sendNotification(`Submit Assertion Error: ${(error as Error).message}`, commandInstance);
+            }
+    }else{
+        // Log that the assertion was not submitted because it has not been enough time since the last assertion
+        commandInstance.log(`[${new Date().toISOString()}] Assertion ${nodeNum} not submitted because it has not been ${MINIMUM_TIME_BETWEEN_ASSERTIONS / (60 * 1000)} minutes since the last assertion.`);
     }
 };
 
@@ -258,7 +311,9 @@ async function processMissedAssertions(commandInstance: Vorpal.CommandInstance) 
             await submitAssertionToReferee(
                 cachedSecretKey,
                 missedAssertionNodeNum,
-                assertionNode,
+                missedAssertionNodeNum - 1,
+                assertionNode.confirmData,
+                assertionNode.createdAtBlock,
                 cachedSigner!.signer,
             );
             commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${missedAssertionNodeNum}`);
