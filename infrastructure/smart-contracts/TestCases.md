@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The smart contract test suite details are outline below:
+The smart contract test suite details are outlined below:
 
 The entry point for the test cases is the Fixture.mjs file located in the test directory. All tests begin with this file.
 
@@ -54,8 +54,8 @@ Tests that require challenge submissions/assertions/claims have a few special co
 
 There are some functions in the utils folder to help simplify required repetitive tasks.
 
-1. Create Pool - can be used to create a stake pool.
-2. Get Winning Key Count Local - this is a local implementation of the Referee getWinningKeyCountFunction. We use this in lieu of calling the referee contract as it is much faster.
-3. Mint Licenses - this has two functions to either mint a single license or mint batched licenses. Both return the key Ids minted.
-4. Submit Test Challenge - this can be used to submit test challenges. 
+1. *Create Pool* - can be used to create a stake pool.
+2. *Get Winning Key Count Local* - this is a local implementation of the Referee getWinningKeyCountFunction. We use this in lieu of calling the referee contract as it is much faster.
+3. *Mint Licenses* - this has two functions to either mint a single license or mint batched licenses. Both return the key Ids minted.
+4. *Submit Test Challenge* - this can be used to submit test challenges. 
   - For test challenges, typically a generic state root may be used `0x0000000000000000000000000000000000000000000000000000000000000000` **UNLESS** you are actually testing the confirm data.
