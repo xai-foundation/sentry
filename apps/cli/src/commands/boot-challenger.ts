@@ -115,7 +115,7 @@ const onAssertionConfirmedCb = async (nodeNum: any, commandInstance: Vorpal.Comm
         }
     }
 
-    // Get Last Submitted Assertion Id & Time from Chain
+    // Get Last Challenge Data
     const challengeData = await getLatestChallenge();
     const lastChallenge = challengeData[1];
 
