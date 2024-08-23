@@ -32,6 +32,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     uint256 public maxKeysNonKyc;
     address public poolFactoryAddress;
 
+    bool private _notEntered;
     mapping(address => uint256) public _totalPendingRedemptions;
 
     /**
@@ -69,6 +70,23 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
 
     function initialize () public reinitializer(4) {
         _redemptionActive = false;
+        _notEntered = true;
+    }
+
+    /** @dev Prevents a contract from calling itself, directly or indirectly.
+     */
+    modifier nonReentrant() {
+        // On the first call to nonReentrant, _notEntered will be true
+        require(_notEntered, "ReentrancyGuard: reentrant call");
+
+        // Any calls to nonReentrant after this point will fail
+        _notEntered = false;
+
+        _;
+
+        // By storing the original value once again, a refund is triggered (see
+        // https://eips.ethereum.org/EIPS/eip-2200)
+        _notEntered = true;
     }
 
     /**
@@ -224,7 +242,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      * @dev Function to complete the redemption process
      * @param index The index of the redemption request to complete.
      */
-    function completeRedemption(uint256 index) public {
+    function completeRedemption(uint256 index)nonReentrant public {
         // TODO Add Reentrancy guard in the claims story.
         require(_redemptionActive, "Redemption is currently inactive");
         RedemptionRequestExt storage request = _extRedemptionRequests[msg.sender][index];
@@ -350,7 +368,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     * Will throw an error if redemptions are active or if the lengths of `accounts` and `indices` do not match.
     * @dev Only callable by an account with the `DEFAULT_ADMIN_ROLE`.
     */
-    function convertRedemptionsInProcess(address[] calldata accounts, uint256[][] calldata indices) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function convertRedemptionsInProcess(address[] calldata accounts, uint256[][] calldata indices) nonReentrant external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(!_redemptionActive, "Redemptions must be paused to convert");
         require(accounts.length == indices.length, "Invalid input");
         for(uint256 i = 0; i < accounts.length; i++) {
