@@ -340,27 +340,29 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     * Converts redemptions in process to vouchers for a given list of accounts and indices.
     * 
     * This function processes redemptions that are currently in process and converts them into vouchers. 
-    * It requires that redemptions be paused, and validates that the length of `accounts` matches the length of `indicies`.
+    * It requires that redemptions be paused, and validates that the length of `accounts` matches the length of `indices`.
     * For each redemption request, it checks if the request is not completed and if the voucher has not been issued.
     * If both conditions are met, it marks the voucher as issued, updates the total pending redemptions, 
     * and transfers the corresponding amount to the account.
     * 
     * @param accounts - The list of account addresses for which redemptions are to be converted.
-    * @param indicies - The list of indices corresponding to redemption requests for each account.
-    * Will throw an error if redemptions are active or if the lengths of `accounts` and `indicies` do not match.
+    * @param indices - The list of indices corresponding to redemption requests for each account.
+    * Will throw an error if redemptions are active or if the lengths of `accounts` and `indices` do not match.
     * @dev Only callable by an account with the `DEFAULT_ADMIN_ROLE`.
     */
-    function convertRedemptionsInProcess(address[] calldata accounts, uint256[][] calldata indicies) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function convertRedemptionsInProcess(address[] calldata accounts, uint256[][] calldata indices) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(!_redemptionActive, "Redemptions must be paused to convert");
-        require(accounts.length == indicies.length, "Invalid input");
+        require(accounts.length == indices.length, "Invalid input");
         for(uint256 i = 0; i < accounts.length; i++) {
-            for(uint256 j = 0; j < indicies[i].length; j++) {
-                RedemptionRequestExt storage request = _extRedemptionRequests[accounts[i]][indicies[i][j]];
+            address account = accounts[i];
+            uint256[] memory accountIndices = indices[i];
+            for(uint256 j = 0; j < accountIndices.length; j++) {
+                RedemptionRequestExt storage request = _extRedemptionRequests[account][accountIndices[j]];
                 // If the request is not completed and the voucher has not been issued
                 // Send the esXai back and issue the voucher
                 if(!request.completed && !request.voucherIssued) {
                     request.voucherIssued = true;
-                    _totalPendingRedemptions[accounts[i]] += request.amount;
+                    _totalPendingRedemptions[account] += request.amount;
                     transfer(accounts[i], request.amount);
                 }
             }
