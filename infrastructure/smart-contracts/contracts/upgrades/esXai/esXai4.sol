@@ -444,6 +444,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     * pending redemptions each account has and the number of pools that the account is staked in.
     */
     function convertExistingRedemptionsToVouchers(address[] memory accounts) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(!_redemptionActive, "Redemptions must be paused to convert existing redemptions to vouchers");
         for (uint256 i = 0; i < accounts.length; i++) {
             address account = accounts[i];
             for (uint j = 0; j < _extRedemptionRequests[account].length; j++) {
@@ -484,6 +485,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     * - Caller must have the DEFAULT_ADMIN_ROLE.
     */
     function convertSpecificRedemptionsToVouchers(address account, uint256[] memory indexes) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(!_redemptionActive, "Redemptions must be paused to convert existing redemptions to vouchers");
         for (uint256 i = 0; i < indexes.length; i++) {
             RedemptionRequestExt storage request = _extRedemptionRequests[account][indexes[i]];
             if (!request.completed && !request.voucherIssued) {
