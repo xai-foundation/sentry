@@ -68,7 +68,6 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     event FoundationBasepointsUpdated(uint256 newBasepoints);
 
     function initialize () public reinitializer(4) {
-        // TODO - create story to re-enable redemptions after conversion of the existing redemption requests to vouchers
         _redemptionActive = false;
     }
 
