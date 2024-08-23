@@ -196,12 +196,12 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
 
         // Confirm the user has the appropriate amount of esXai available
         uint256 currentBalance = balanceOf(msg.sender);        
-        uint256 totalEsXaiStaked = getTotalStakedEsXaiByUser(msg.sender);
-        uint256 totalEsXaiPendingRedemption = getTotalEsXaiPendingRedemptions(msg.sender);
+        uint256 totalesXaiStaked = getTotalStakedesXaiByUser(msg.sender);
+        uint256 totalesXaiPendingRedemption = getTotalesXaiPendingRedemptions(msg.sender);
 
-        uint256 availableEsXai = currentBalance + totalEsXaiStaked - totalEsXaiPendingRedemption;
+        uint256 availableesXai = currentBalance + totalesXaiStaked - totalesXaiPendingRedemption;
 
-        require(availableEsXai >= amount, "Insufficient esXai balance");
+        require(availableesXai >= amount, "Insufficient esXai balance");
 
         // Update the pending redemptions to include the new redemption request index
         pendingRedemptionIds[msg.sender].push(_extRedemptionRequests[msg.sender].length);
@@ -371,7 +371,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     * @param account The address of the account to calculate the total for.
     * @return total The total amount of pending redemptions.
     */
-    function getTotalEsXaiPendingRedemptions(address account) public view returns (uint256 total) {
+    function getTotalesXaiPendingRedemptions(address account) public view returns (uint256 total) {
         for (uint256 i = 0; i < pendingRedemptionIds[account].length; i++) {
             total += _extRedemptionRequests[account][pendingRedemptionIds[account][i]].amount;
         }
@@ -416,17 +416,17 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     *      contract to get the list of all pools in which the user has staked. It then sums the staked amounts
     *      from each pool.
     * @param account The address of the account for which to calculate the total staked `esXai`.
-    * @return totalEsXaiStaked The total amount of `esXai` tokens staked by the account across all pools.
+    * @return totalesXaiStaked The total amount of `esXai` tokens staked by the account across all pools.
     */
-    function getTotalStakedEsXaiByUser(address account) public view returns (uint256) {
+    function getTotalStakedesXaiByUser(address account) public view returns (uint256) {
         PoolFactory2 poolFactory = PoolFactory2(poolFactoryAddress);
         address[] memory pools = poolFactory.getPoolIndicesOfUser(account);
-        uint256 totalEsXaiStaked;
+        uint256 totalesXaiStaked;
         for (uint256 i = 0; i < pools.length; i++) {
-            totalEsXaiStaked += StakingPool(pools[i]).getStakedAmounts(account);
+            totalesXaiStaked += StakingPool(pools[i]).getStakedAmounts(account);
         }
 
-        return totalEsXaiStaked;
+        return totalesXaiStaked;
     }
 
     /**
