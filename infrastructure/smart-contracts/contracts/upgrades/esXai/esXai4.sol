@@ -9,7 +9,7 @@ import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeab
 import "../../Xai.sol";
 import "../../upgrades/referee/Referee9.sol";
 import "../../upgrades/node-license/NodeLicense8.sol";
-import "../../upgrades/pool-factory/PoolFactory2.sol";
+import "../../upgrades/pool-factory/PoolFactory3.sol";
 
 /**
  * @title esXai
@@ -194,7 +194,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         require(duration == 15 days || duration == 90 days || duration == 180 days, "Invalid duration");
         
         // Check if the sender failed KYC
-        bool failedKyc = PoolFactory2(poolFactoryAddress).failedKyc(msg.sender);
+        bool failedKyc = PoolFactory3(poolFactoryAddress).failedKyc(msg.sender);
         require(!failedKyc, "KYC failed, cannot redeem");
         
         // No longer transferring esXai from the sender's account to this contract
@@ -202,7 +202,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
 
         // Confirm the user has the appropriate amount of esXai available
         uint256 currentBalance = balanceOf(msg.sender);        
-        uint256 totalesXaiStaked = getTotalStakedesXaiByUser(msg.sender);
+        uint256 totalesXaiStaked = PoolFactory3(poolFactoryAddress).getTotalesXaiStakedByUser(msg.sender);
         uint256 totalesXaiPendingRedemption = _totalPendingRedemptions[msg.sender];
 
         uint256 availableesXai = currentBalance + totalesXaiStaked - totalesXaiPendingRedemption;
@@ -250,7 +250,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         require(block.timestamp >= request.startTime + request.duration, "Redemption period not yet over");
 
         // Check if the sender failed KYC
-        bool failedKyc = PoolFactory2(poolFactoryAddress).failedKyc(msg.sender);
+        bool failedKyc = PoolFactory3(poolFactoryAddress).failedKyc(msg.sender);
         require(!failedKyc, "KYC failed, cannot redeem");
 
         // Retrieve the number of licenses owned from the nodeLicense contract
@@ -332,25 +332,6 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      */
     function setMaxKeysNonKyc(uint256 newMax) public onlyRole(DEFAULT_ADMIN_ROLE) {
         maxKeysNonKyc = newMax;
-    }
-
-    /**
-    * @notice Retrieves the total amount of `esXai` tokens staked by a specific account across all pools.
-    * @dev This function calculates the total `esXai` staked by an account by interacting with the `PoolFactory2`
-    *      contract to get the list of all pools in which the user has staked. It then sums the staked amounts
-    *      from each pool.
-    * @param account The address of the account for which to calculate the total staked `esXai`.
-    * @return totalesXaiStaked The total amount of `esXai` tokens staked by the account across all pools.
-    */
-    function getTotalStakedesXaiByUser(address account) public view returns (uint256) {
-        PoolFactory2 poolFactory = PoolFactory2(poolFactoryAddress);
-        address[] memory pools = poolFactory.getPoolIndicesOfUser(account);
-        uint256 totalesXaiStaked;
-        for (uint256 i = 0; i < pools.length; i++) {
-            totalesXaiStaked += StakingPool(pools[i]).getStakedAmounts(account);
-        }
-
-        return totalesXaiStaked;
     }
 
     /**
