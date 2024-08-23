@@ -220,9 +220,6 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         require(request.amount > 0, "Invalid request");
         require(!request.completed, "Redemption already completed");
 
-        // Transfer back the esXai tokens to the sender's account
-        _transfer(address(this), msg.sender, request.amount);
-
         // Mark the redemption request as completed
         request.completed = true;
         request.cancelled = true;
