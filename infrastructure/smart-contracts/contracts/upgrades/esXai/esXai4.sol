@@ -430,4 +430,79 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         return totalEsXaiStaked;
     }
 
+    /**
+    * @notice This function iterates through the provided accounts and their redemption requests.
+    * For each uncompleted request without a voucher:
+    * 1. Transfers esXai tokens back to the account.
+    * 2. Marks the request as having a voucher issued.
+    * 3. Adds the redemption index to pendingRedemptionIds.
+    * For completed requests, it adds the redemption index to completedRedemptionIds.
+    * @param accounts - The addresses of the accounts whose redemption requests are being processed.
+    *
+    * @dev This function modifies the state of _extRedemptionRequests, pendingRedemptionIds, 
+    * and completedRedemptionIds. It also transfers tokens using the _transfer function.
+    *
+    * @dev this function will fail if the number of accounts is too large to process in a single transaction.
+    * the maximum number of accounts that can be processed in a single transaction will vay based on how many
+    * pending redemptions each account has and the number of pools that the account is staked in.
+    */
+    function convertExistingRedemptionsToVouchers(address[] memory accounts) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        for (uint256 i = 0; i < accounts.length; i++) {
+            address account = accounts[i];
+            for (uint j = 0; j < _extRedemptionRequests[account].length; j++) {
+                RedemptionRequestExt storage request = _extRedemptionRequests[account][j];
+                if (!request.completed && !request.voucherIssued) {
+                    // Transfer back the esXai tokens to the sender's account
+                    _transfer(address(this), account, request.amount);
+                    
+                    // Update the redemption request to indicate that a voucher has been issued
+                    request.voucherIssued = true;
+
+                    // Add the redemption index to the pending redemptionIds
+                    pendingRedemptionIds[account].push(j);
+                }
+                if (request.completed) {
+                    // Add the redemption index to the completed redemptionIds
+                    completedRedemptionIds[account].push(j);
+                }
+            }
+        }
+    }
+    
+    /**
+    * @dev Converts specific redemption requests into vouchers for a specified account.
+    * 
+    * This function allows the conversion of specific redemption requests identified by their indexes,
+    * avoiding the potential issue of looping through too many redemptions in a single transaction,
+    * which could cause the script to fail.
+    * 
+    * This is particularly useful in cases where a user has a large number of redemption requests, 
+    * as processing them all at once may exceed gas limits or cause other issues. By specifying
+    * the exact indexes to process, this function enables finer control over the conversion process.
+    * 
+    * @param account - The address of the account whose redemption requests are being processed.
+    * @param indexes - An array of indexes corresponding to specific redemption requests for the account.
+    * 
+    * Requirements:
+    * - Caller must have the DEFAULT_ADMIN_ROLE.
+    */
+    function convertSpecificRedemptionsToVouchers(address account, uint256[] memory indexes) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        for (uint256 i = 0; i < indexes.length; i++) {
+            RedemptionRequestExt storage request = _extRedemptionRequests[account][indexes[i]];
+            if (!request.completed && !request.voucherIssued) {
+                // Transfer back the esXai tokens to the sender's account
+                _transfer(address(this), account, request.amount);
+                
+                // Update the redemption request to indicate that a voucher has been issued
+                request.voucherIssued = true;
+
+                // Add the redemption index to the pending redemptionIds
+                pendingRedemptionIds[account].push(indexes[i]);
+            }
+            if (request.completed) {
+                // Add the redemption index to the completed redemptionIds
+                completedRedemptionIds[account].push(indexes[i]);
+            }
+        }
+    }
 }
