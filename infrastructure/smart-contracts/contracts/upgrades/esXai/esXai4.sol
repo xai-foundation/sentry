@@ -437,6 +437,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     * 3. Adds the redemption index to pendingRedemptionIds.
     * For completed requests, it adds the redemption index to completedRedemptionIds.
     * @param accounts - The addresses of the accounts whose redemption requests are being processed.
+    * @param indicies - The indicies of the redemption requests to process for each account.
     *
     * @dev This function modifies the state of _extRedemptionRequests, pendingRedemptionIds, 
     * and completedRedemptionIds. It also transfers tokens using the _transfer function.
