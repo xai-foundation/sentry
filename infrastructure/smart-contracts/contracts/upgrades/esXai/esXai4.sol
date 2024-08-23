@@ -190,7 +190,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         require(!failedKyc, "KYC failed, cannot redeem");
         
         // No longer transferring esXai from the sender's account to this contract
-        // Stoing redemption claim as voucherIssued instead
+        // Storing redemption claim as voucherIssued instead
 
         // Confirm the user has the appropriate amount of esXai available
         uint256 currentBalance = balanceOf(msg.sender);        
