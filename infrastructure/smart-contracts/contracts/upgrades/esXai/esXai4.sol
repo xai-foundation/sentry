@@ -243,7 +243,6 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      * @param index The index of the redemption request to complete.
      */
     function completeRedemption(uint256 index)nonReentrant public {
-        // TODO Add Reentrancy guard in the claims story.
         require(_redemptionActive, "Redemption is currently inactive");
         RedemptionRequestExt storage request = _extRedemptionRequests[msg.sender][index];
         require(request.amount > 0, "Invalid request");
