@@ -384,7 +384,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     * @param account The address of the user whose pending redemption requests are to be retrieved.
     * @return requests An array of `RedemptionRequestExt` structs representing the pending redemption requests.
     */
-    function getPendingRedemptionsByUser(address account) public view returns (RedemptionRequestExt[] memory requests) {
+    function getPendingRedemptionsByUser(address account) external view returns (RedemptionRequestExt[] memory requests) {
         uint256[] memory pendingIds = pendingRedemptionIds[account];
         requests = new RedemptionRequestExt[](pendingIds.length);
         for (uint256 i = 0; i < pendingIds.length; i++) {
@@ -398,7 +398,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     * @param maxQty The maximum number of completed redemption requests to return.
     * @return requests An array of `RedemptionRequestExt` structs representing the most recent completed redemptions.
     */
-    function getRecentlyCompletedRedemptionsByUser(address account, uint256 maxQty) public view returns (RedemptionRequestExt[] memory requests) {
+    function getRecentlyCompletedRedemptionsByUser(address account, uint256 maxQty) external view returns (RedemptionRequestExt[] memory requests) {
         uint256[] memory completedIds = completedRedemptionIds[account];
         uint256 count = completedIds.length > maxQty ? maxQty : completedIds.length;
         requests = new RedemptionRequestExt[](count);
@@ -445,7 +445,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     * the maximum number of accounts that can be processed in a single transaction will vay based on how many
     * pending redemptions each account has and the number of pools that the account is staked in.
     */
-    function convertExistingRedemptionsToVouchers(address[] calldata accounts, uint256[][] calldata indicies) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function convertExistingRedemptionsToVouchers(address[] calldata accounts, uint256[][] calldata indicies) external onlyRole(DEFAULT_ADMIN_ROLE) {
         require(!_redemptionActive, "Redemptions must be paused to convert existing redemptions to vouchers");
 
         // Iterate through the accounts
