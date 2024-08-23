@@ -107,7 +107,12 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
     bytes32 public constant STAKE_KEYS_ADMIN_ROLE = keccak256("STAKE_KEYS_ADMIN_ROLE");
 
     mapping(address => bool) public totalStakeCalculated;
-    mapping(address => uint256) public totalStake;
+
+    // =================> VERY IMPORTANT <============================================
+    // Making this variable private as it SHOULD NOT BE USED as the source of truth for total stake
+    // The getTotalesXaiStakedByUser function should be used instead
+    // This mapping will only be accurate AFTER a user has interacted with a pool
+    mapping(address => uint256) private totalStakeByUser;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
@@ -590,10 +595,10 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
 
         // Update total stake
         if(!totalStakeCalculated[msg.sender]) {
-            totalStake[msg.sender] = getTotalesXaiSTakedByUser(msg.sender);
+            totalStakeByUser[msg.sender] = getTotalesXaiStakedByUser(msg.sender);
             totalStakeCalculated[msg.sender] = true;
         } else {
-            totalStake[msg.sender] += amount;
+            totalStakeByUser[msg.sender] += amount;
         }
 
         emit StakeEsXai(
@@ -629,10 +634,10 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
 
         // Update total stake
         if(!totalStakeCalculated[msg.sender]) {
-            totalStake[msg.sender] = getTotalesXaiSTakedByUser(msg.sender);
+            totalStakeByUser[msg.sender] = getTotalesXaiStakedByUser(msg.sender);
             totalStakeCalculated[msg.sender] = true;
         } else {
-            totalStake[msg.sender] -= amount;
+            totalStakeByUser[msg.sender] -= amount;
         }
 
         emit UnstakeEsXai(
@@ -841,9 +846,9 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
         failedKyc[user] = failed;
     }
 
-    function getTotalesXaiSTakedByUser(address user) public view returns (uint256) {
+    function getTotalesXaiStakedByUser(address user) public view returns (uint256) {
         if(totalStakeCalculated[user]) {
-            return totalStake[user];
+            return totalStakeByUser[user];
         }
     
         uint256 totalStakeAmount = 0;
