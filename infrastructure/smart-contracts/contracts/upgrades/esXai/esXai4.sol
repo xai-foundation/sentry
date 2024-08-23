@@ -177,6 +177,8 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         require(amount > 0, "Invalid Amount");
         require(balanceOf(msg.sender) >= amount, "Insufficient esXai balance");
         require(duration == 15 days || duration == 90 days || duration == 180 days, "Invalid duration");
+        // TODO - Discuss with Mark the limit of pending redemptions per user
+        require(pendingRedemptionIds[msg.sender].length <= 200, "User has too many pending redemptions");
 
         // Connect to the pool factory contract
         PoolFactory2 poolFactory = PoolFactory2(poolFactoryAddress);
