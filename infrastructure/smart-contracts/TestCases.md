@@ -65,7 +65,7 @@ In order to run the tests you must ensure everything has been installed and buil
 1. Confirm that you have a .env with a valid MNEMONIC.
 2. From the root directory run `pnpm install`
 3. Tests will use core, so core has to be built locally with `pnpm -filter @sentry/core run build`.
-5. Update the `hardhat.config.cjs` file. Change the default network on line 14 to use `hardhat` instead of the current `arbitrumOne`.
+5. Update the `hardhat.config.cjs` file. Change the default network to use `hardhat` instead of the current `arbitrumOne`.
 6. Inside of `infrastructure/smart-contacts`, run `pnpm local` to start a local hardhat node.
 7. Open a second terminal/command prompt and CD into `infrastructure/smart-contacts`
 8. Run `pnpm test` to run the test suite.
