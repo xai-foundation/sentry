@@ -41,7 +41,6 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    // TODO - determine in testing if the gap needs to be reduced more
     uint256[491] private __gap;
 
     struct RedemptionRequest {
@@ -58,7 +57,6 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         uint256 endTime;
         bool completed;
         bool cancelled;
-        // TODO - determine in testing if the gap needs to be reduced
         bool voucherIssued;
         uint256[5] __gap;
     }
@@ -185,8 +183,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
 
         // Confirm the tx won't fail due to too many pools
         uint256 poolCount = poolFactory.getPoolsOfUserCount(msg.sender);
-        // TODO at testing, determine the correct limit
-        require(poolCount <= 250, "User has too many pools. Unstake from some pools to redeem.");
+        require(poolCount <= 200, "User has too many pools. Unstake from some pools to redeem.");
         
         // Check if the sender failed KYC
         bool failedKyc = PoolFactory2(poolFactoryAddress).failedKyc(msg.sender);
