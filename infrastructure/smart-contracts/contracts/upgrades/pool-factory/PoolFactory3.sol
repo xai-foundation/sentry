@@ -845,12 +845,19 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
     function setFailedKyc(address user, bool failed) external onlyRole(DEFAULT_ADMIN_ROLE) {
         failedKyc[user] = failed;
     }
-
+    
+    /**
+    * @notice Retrieves the total amount of XAI staked by a specific user across all interacted staking pools.
+    * @dev If the user's total stake has already been calculated and cached, the cached value is returned.
+    *      Otherwise, it calculates the total staked amount by iterating over all staking pools the user has interacted with.
+    * @param user The address of the user whose total staked amount is to be retrieved.
+    * @return The total amount of XAI staked by the user across all pools.
+    */
     function getTotalesXaiStakedByUser(address user) public view returns (uint256) {
-        if(totalStakeCalculated[user]) {
+        if (totalStakeCalculated[user]) {
             return totalStakeByUser[user];
         }
-    
+
         uint256 totalStakeAmount = 0;
         address[] memory userPools = interactedPoolsOfUser[user];
         for (uint256 i = 0; i < userPools.length; i++) {
@@ -858,4 +865,5 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
         }
         return totalStakeAmount;
     }
+
 }
