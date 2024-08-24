@@ -634,8 +634,13 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
 
         // Update total stake
         if(!totalStakeCalculated[msg.sender]) {
-            totalStakeByUser[msg.sender] = getTotalesXaiStakedByUser(msg.sender);
-            totalStakeCalculated[msg.sender] = true;
+            uint256 totalPools = interactedPoolsOfUser[msg.sender].length;
+            // We check the total pools interacted with by the user to avoid running out of gas
+            // This ensures we do not run this one time calculation until we are sure that it will not run out of gas
+            if(totalPools < 150) {
+                totalStakeByUser[msg.sender] = getTotalesXaiStakedByUser(msg.sender);
+                totalStakeCalculated[msg.sender] = true;
+            }
         } else {
             totalStakeByUser[msg.sender] -= amount;
         }
