@@ -23,8 +23,10 @@ export async function splitSentryWalletsIntoBatches(sentryWallets, maxIndicesPer
             currentBatchCount = 0;
         } else {
             // If it does not exceed, add the current wallet to the batch and update the redemption count.
-            currentBatch.push(sentryWallet);
-            currentBatchCount += sentryWallet.redemptions.length;
+            if (sentryWallet.redemptions.length > 0) {
+                currentBatch.push(sentryWallet);
+                currentBatchCount += sentryWallet.redemptions.length;
+            }
         }
     }
 
