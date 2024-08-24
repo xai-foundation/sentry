@@ -242,7 +242,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      * @dev Function to complete the redemption process
      * @param index The index of the redemption request to complete.
      */
-    function completeRedemption(uint256 index)nonReentrant public {
+    function completeRedemption(uint256 index) nonReentrant public {
         require(_redemptionActive, "Redemption is currently inactive");
         RedemptionRequestExt storage request = _extRedemptionRequests[msg.sender][index];
         require(request.amount > 0, "Invalid request");
@@ -279,6 +279,17 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         request.completed = true;
         request.endTime = block.timestamp;
 
+        // Adding this just in case a conversion was some how missed.
+        // This would allow the user to still redeem the esXai while keeping the state correct.
+        if(request.voucherIssued) {     
+
+            // Update the user's totalPendingRedemptions
+            _totalPendingRedemptions[msg.sender] -= request.amount;
+
+            // Transfer the esXai tokens from the sender's account to this contract
+            _transfer(msg.sender, address(this), request.amount);
+        }
+
         // Burn the esXai tokens
         _burn(address(this), request.amount);
 
@@ -290,8 +301,6 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
             uint256 foundationXaiAmount = (request.amount - xaiAmount) * esXaiBurnFoundationBasePoints / 1000;
             Xai(xai).mint(esXaiBurnFoundationRecipient, foundationXaiAmount);
         }
-
-        // TODO Update the totalPendingRedemptions in the claims story.
 
         // emit event of the redemption
         emit RedemptionCompleted(msg.sender, index);
