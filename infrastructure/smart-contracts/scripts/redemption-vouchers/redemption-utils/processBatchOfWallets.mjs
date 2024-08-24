@@ -9,11 +9,11 @@
  * @returns {Promise<void>} - A promise that resolves when the batch processing is complete.
  */
 export async function processBatchOfWallets(batchToProcess, esXaiContract) {
-    
+
     // Extract addresses and indices from the batch of wallets
     const { addresses, indices } = extractAddressesAndIndices(batchToProcess);
 
-    const MAX_RETRIES = 3;
+    const MAX_RETRIES = 2;
     let retries = 0;
 
     // Retry the contract call up to MAX_RETRIES times
