@@ -5,7 +5,6 @@ async function main() {
 
     // get the deployer
     const [deployer] = (await ethers.getSigners());
-    const deployerAddress = await deployer.getAddress();
 
     console.log("Starting redemption migration...");
     const esXai = await ethers.getContractFactory("esXai4");
