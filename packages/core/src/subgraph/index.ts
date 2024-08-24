@@ -11,4 +11,3 @@ export * from "./getSentryKeysFromGraphByPool.js";
 export * from "./getUserStakedPoolsFromGraph.js";
 export * from "./getCurrentRefereeVersionFromGraph.js";
 export * from "./getSentryKeysForUnclaimedFromGraph.js";
-export * from "./getUnConvertedRedemptionsFromGraph.js";
