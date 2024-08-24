@@ -154,12 +154,12 @@ dataSources:
       eventHandlers:
         - event: RedemptionStarted(indexed address,indexed uint256)
           handler: handleRedemptionStarted
-        - event: RedemptionStartedV2(indexed address,indexed uint256,uint256,uint256)
-          handler: handleRedemptionStartedV2
         - event: RedemptionCancelled(indexed address,indexed uint256)
           handler: handleRedemptionCancelled
         - event: RedemptionCompleted(indexed address,indexed uint256)
           handler: handleRedemptionCompleted
+        - event: VoucherIssued(indexed address,uint256[])
+          handler: handleVoucherIssued
       file: ./src/esXai.ts
 
 # - kind: ethereum

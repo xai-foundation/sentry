@@ -138,36 +138,6 @@ export class RedemptionStarted__Params {
   }
 }
 
-export class RedemptionStartedV2 extends ethereum.Event {
-  get params(): RedemptionStartedV2__Params {
-    return new RedemptionStartedV2__Params(this);
-  }
-}
-
-export class RedemptionStartedV2__Params {
-  _event: RedemptionStartedV2;
-
-  constructor(event: RedemptionStartedV2) {
-    this._event = event;
-  }
-
-  get user(): Address {
-    return this._event.parameters[0].value.toAddress();
-  }
-
-  get index(): BigInt {
-    return this._event.parameters[1].value.toBigInt();
-  }
-
-  get amount(): BigInt {
-    return this._event.parameters[2].value.toBigInt();
-  }
-
-  get duration(): BigInt {
-    return this._event.parameters[3].value.toBigInt();
-  }
-}
-
 export class RedemptionStatusChanged extends ethereum.Event {
   get params(): RedemptionStatusChanged__Params {
     return new RedemptionStatusChanged__Params(this);
@@ -287,6 +257,28 @@ export class Transfer__Params {
 
   get value(): BigInt {
     return this._event.parameters[2].value.toBigInt();
+  }
+}
+
+export class VoucherIssued extends ethereum.Event {
+  get params(): VoucherIssued__Params {
+    return new VoucherIssued__Params(this);
+  }
+}
+
+export class VoucherIssued__Params {
+  _event: VoucherIssued;
+
+  constructor(event: VoucherIssued) {
+    this._event = event;
+  }
+
+  get user(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get indices(): Array<BigInt> {
+    return this._event.parameters[1].value.toBigIntArray();
   }
 }
 
