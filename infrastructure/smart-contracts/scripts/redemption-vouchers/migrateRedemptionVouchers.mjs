@@ -6,27 +6,24 @@ async function main() {
     // get the deployer
     const [deployer] = (await ethers.getSigners());
     const deployerAddress = await deployer.getAddress();
-    console.log("deployerAddress", deployerAddress);
 
     console.log("Starting redemption migration...");
     const esXai = await ethers.getContractFactory("esXai4");
     const esXaiInstance = await new ethers.Contract(config.esXaiAddress, esXai.interface, deployer);
 
     let lastUserIndex = 0;
-    let isProcessingUsers = true;
 
     // Determine How Many Redemptions Can be Processed in a Single Transaction
     const USER_BLOCK_SIZE = 5000;
     const REDEMPTIONS_PER_TX = 100;
 
-    while(isProcessingUsers) {
+    while(true) {
 
         // Retrieve a large block of users from the subgraph
         const sentryWallets = await getBlockOfSentryWalletsFromSubgraph(USER_BLOCK_SIZE, lastUserIndex);
 
         // If there are no users left, break the loop
         if(sentryWallets.length === 0) {
-            isProcessingUsers = false;
             break;
         }
         
@@ -34,6 +31,7 @@ async function main() {
 
         for (let i = 0; i < walletBatches.length; i++) {
             const walletBatch = walletBatches[i];
+            console.log(`Processing batch ${i + 1} of ${walletBatches.length}`);
             await processBatchOfWallets(walletBatch, esXaiInstance);
         }
 

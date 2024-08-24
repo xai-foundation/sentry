@@ -9,15 +9,26 @@
  * @returns {Promise<void>} - A promise that resolves when the batch processing is complete.
  */
 export async function processBatchOfWallets(batchToProcess, esXaiContract) {
+    const MAX_RETRIES = 3;
+    let retries = 0;
     // Extract addresses and indices from the batch of wallets
     const { addresses, indices } = extractAddressesAndIndices(batchToProcess);
-    
-    try {
-        // Call the contract method to process redemptions
-        await esXaiContract.convertRedemptionsInProcess(addresses, indices);
-    } catch (error) {
-        // Log any errors that occur during the contract call
-        console.error("Error processing batch of wallets: ", error);
+
+    // Retry the contract call up to MAX_RETRIES times
+    while (retries < MAX_RETRIES) {    
+        try {
+            // Call the contract method to process redemptions
+            await esXaiContract.convertRedemptionsInProcess(addresses, indices);
+        } catch (error) {
+            // Log any errors that occur during the contract call
+            console.error(`Error processing batch of wallets on attempt ${retries + 1} starting with address ${addresses[0]}: `, error);
+            retries++;
+            if (retries === MAX_RETRIES) {
+                console.error("Max retries reached. Skipping this batch.");
+                console.error("Failed addresses: ", addresses);
+            }
+            await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retries)));  // Exponential backoff
+        }
     }
 }
 
