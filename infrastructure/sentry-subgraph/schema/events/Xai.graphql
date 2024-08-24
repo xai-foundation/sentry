@@ -4,3 +4,16 @@ type ConvertedToEsXaiEvent @entity(immutable: true) {
     amount: BigInt!
     timestamp: BigInt!
 }
+
+type RedemptionRequest @entity(immutable: false) {
+    id: Bytes!
+    user: Bytes! @index # User address, must match the address field in SentryWallet
+    index: BigInt!
+    amount: BigInt!
+    startTime: BigInt!
+    endTime: BigInt
+    duration: BigInt!
+    completed: Boolean!
+    cancelled: Boolean!
+    voucherIssued: Boolean!
+}

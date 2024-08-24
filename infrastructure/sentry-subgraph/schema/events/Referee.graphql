@@ -58,7 +58,7 @@ type Submission @entity(immutable: false) {
 type SentryWallet @entity(immutable: false) {
   id: String!
   isKYCApproved: Boolean!
-  address: Bytes! @index
+  address: Bytes! @index # Wallet address that RedemptionRequest's user field references
   approvedOperators: [Bytes!]!
   v1EsXaiStakeAmount: BigInt!
   esXaiStakeAmount: BigInt!
@@ -67,6 +67,7 @@ type SentryWallet @entity(immutable: false) {
   sentryKeys: [SentryKey!]! @derivedFrom(field: "sentryWallet")
   poolStakes: [PoolStake!]! @derivedFrom(field: "wallet")
   bulkSubmissions: [BulkSubmission!]! @derivedFrom(field: "sentryWallet")
+  redemptions: [RedemptionRequest!]! @derivedFrom(field: "user") # Derived from user in RedemptionRequest
 }
 
 type RefereeConfig @entity(immutable: false) {
