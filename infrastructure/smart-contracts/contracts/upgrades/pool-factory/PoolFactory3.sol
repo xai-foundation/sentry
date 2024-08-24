@@ -637,6 +637,7 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
             uint256 totalPools = interactedPoolsOfUser[msg.sender].length;
             // We check the total pools interacted with by the user to avoid running out of gas
             // This ensures we do not run this one time calculation until we are sure that it will not run out of gas
+            // This ensures a user can always unstake their esXai
             if(totalPools < 150) {
                 totalStakeByUser[msg.sender] = getTotalesXaiStakedByUser(msg.sender);
                 totalStakeCalculated[msg.sender] = true;
@@ -852,11 +853,11 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
     }
     
     /**
-    * @notice Retrieves the total amount of XAI staked by a specific user across all interacted staking pools.
+    * @notice Retrieves the total amount of esXAI staked by a specific user across all interacted staking pools.
     * @dev If the user's total stake has already been calculated and cached, the cached value is returned.
     *      Otherwise, it calculates the total staked amount by iterating over all staking pools the user has interacted with.
     * @param user The address of the user whose total staked amount is to be retrieved.
-    * @return The total amount of XAI staked by the user across all pools.
+    * @return The total amount of esXAI staked by the user across all pools.
     */
     function getTotalesXaiStakedByUser(address user) public view returns (uint256) {
         if (totalStakeCalculated[user]) {
