@@ -67,7 +67,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     event RedemptionStatusChanged(bool isActive);
     event XaiAddressChanged(address indexed newXaiAddress);
     event FoundationBasepointsUpdated(uint256 newBasepoints);
-    event VoucherIssued(address indexed user, uint256[] indicies, uint256[] amounts, uint256[] durations);
+    event VoucherIssued(address indexed user, uint256[] indicies);
 
     function initialize () public reinitializer(4) {
         _redemptionActive = false;
@@ -374,6 +374,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
                     transfer(accounts[i], request.amount);
                 }
             }
+            emit VoucherIssued(account, accountIndices);
         }
     }
 }
