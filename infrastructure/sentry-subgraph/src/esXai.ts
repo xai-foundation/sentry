@@ -27,10 +27,8 @@ export function handleRedemptionStarted(event: RedemptionStartedEvent): void {
     }
     request.sentryWallet = event.params.user.toHexString();
     request.index = event.params.index;
-    request.amount = BigInt.fromI32(0);
     request.startTime = event.block.timestamp;
     request.endTime = BigInt.fromI32(0);
-    request.duration = BigInt.fromI32(0);
     request.cancelled = false;
     request.completed = false;
     request.voucherIssued = false;
