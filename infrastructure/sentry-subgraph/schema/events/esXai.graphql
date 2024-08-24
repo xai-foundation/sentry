@@ -1,0 +1,13 @@
+
+type RedemptionRequest @entity(immutable: false) {
+    id: String!
+    sentryWallet: SentryWallet! @index # User address, must match the address field in SentryWallet
+    index: BigInt!
+    amount: BigInt!
+    startTime: BigInt!
+    endTime: BigInt
+    duration: BigInt!
+    completed: Boolean!
+    cancelled: Boolean!
+    voucherIssued: Boolean!
+}
