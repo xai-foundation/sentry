@@ -1,4 +1,4 @@
-import {  BigInt, ethereum, log } from "@graphprotocol/graph-ts"
+import {  BigInt, Bytes, ethereum, log } from "@graphprotocol/graph-ts"
 import { 
     RedemptionStarted as RedemptionStartedEvent,
     RedemptionCancelled as RedemptionCancelledEvent,
@@ -6,7 +6,6 @@ import {
     VoucherIssued as VoucherIssuedEvent
 } from "../generated/esXai/esXai";
 import { RedemptionRequest } from "../generated/schema";
-import { getInputFromEvent } from "./utils/getInputFromEvent";
 
 export function handleRedemptionStarted(event: RedemptionStartedEvent): void {
 
@@ -14,16 +13,16 @@ export function handleRedemptionStarted(event: RedemptionStartedEvent): void {
     const request = new RedemptionRequest(event.params.user.toHexString() + "_"  + event.params.index.toString());
     
     // Decode the transaction input data to get the redemption amount and duration
-    const dataToDecode = getInputFromEvent(event, true)
-    const decoded = ethereum.decode('(uint256,uint256)', dataToDecode);
+    const inputData = event.transaction.input.toHexString().slice(10); // Remove function selector
+    const decoded = ethereum.decode('(uint256,uint256)', Bytes.fromHexString(inputData) as Bytes);
 
-    if (decoded) {
-        // Extract the amount and duration from the decoded data
-        request.amount = decoded.toTuple()[0].toBigInt();
-        request.duration = decoded.toTuple()[1].toBigInt();
+    if (decoded) {      
+        const decodedTuple = decoded.toTuple();
+            request.amount = decodedTuple[0].toBigInt();
+            request.duration = decodedTuple[1].toBigInt();
     } else {
-      log.warning("Failed to decode startRedemption TX: " + event.transaction.hash.toHexString(), [])
-      return;
+        log.warning("Failed to decode startRedemption TX: {}", [event.transaction.hash.toHexString()]);
+        return;
     }
     request.sentryWallet = event.params.user.toHexString();
     request.index = event.params.index;

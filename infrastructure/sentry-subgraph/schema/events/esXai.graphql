@@ -5,7 +5,7 @@ type RedemptionRequest @entity(immutable: false) {
     index: BigInt!
     amount: BigInt!
     startTime: BigInt!
-    endTime: BigInt
+    endTime: BigInt!
     duration: BigInt!
     completed: Boolean!
     cancelled: Boolean!
