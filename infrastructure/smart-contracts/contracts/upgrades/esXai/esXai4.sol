@@ -61,7 +61,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     }
 
     event WhitelistUpdated(address account, bool isAdded);
-    event RedemptionStarted(address indexed user, uint256 indexed index);
+    event RedemptionStarted(address indexed user, uint256 indexed index, uint256 amount, uint256 duration);
     event RedemptionCancelled(address indexed user, uint256 indexed index);
     event RedemptionCompleted(address indexed user, uint256 indexed index);
     event RedemptionStatusChanged(bool isActive);
@@ -214,7 +214,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
 
         // Store the redemption request
         _extRedemptionRequests[msg.sender].push(RedemptionRequestExt(amount, block.timestamp, duration, 0, false, false, true, [uint256(0),0,0,0,0]));
-        emit RedemptionStarted(msg.sender, _extRedemptionRequests[msg.sender].length - 1);
+        emit RedemptionStarted(msg.sender, _extRedemptionRequests[msg.sender].length - 1, amount, duration);
     }
 
     /**
