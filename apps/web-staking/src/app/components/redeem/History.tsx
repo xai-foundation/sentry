@@ -16,7 +16,7 @@ import { MODAL_BODY_TEXT } from "./Constants";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import { BaseModal, PrimaryButton } from "@/app/components/ui";
 import { TextButton } from "@/app/components/ui/buttons";
-import { useBlockIp, useGetKYCApproved } from "@/app/hooks";
+import { useBlockIp, useGetEsXaiBalanceHooks, useGetKYCApproved } from "@/app/hooks";
 import { listOfCountries } from "../constants/constants";
 
 interface HistoryCardProps {
@@ -154,6 +154,7 @@ export default function History({ redemptions, reloadRedemptions }: {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 	const { isApproved } = useGetKYCApproved();
 	const {blocked, loading} = useBlockIp();
+	const { esXaiBalance } = useGetEsXaiBalanceHooks();
 	
 
 	const { switchChain } = useSwitchChain();
@@ -264,7 +265,7 @@ export default function History({ redemptions, reloadRedemptions }: {
 									onClaim={() => onClaim(r)}
 									onCancel={(onClose) => onCancel(r, onClose)}
 									claimable={true}
-									claimDisabled={isLoading}
+									claimDisabled={isLoading || r.redeemAmount > esXaiBalance} // Disable button if the user has less esXAI than the redeem amount}
 									receivedAmount={r.receiveAmount}
 									redeemedAmount={r.redeemAmount}
 									receivedCurrency="XAI"
