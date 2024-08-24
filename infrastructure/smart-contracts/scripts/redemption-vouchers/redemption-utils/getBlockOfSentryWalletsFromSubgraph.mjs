@@ -14,7 +14,7 @@ export async function getBlockOfSentryWalletsFromSubgraph(maxQty, offset) {
         query SentryWallets($maxQty: Int, $offset: Int) {
             sentryWallets(first: $maxQty, skip: $offset) {
                 address
-                redemptions(where: { voucherIssued: false }) {
+                redemptions(where: { voucherIssued: false, completed: false }) {
                     id
                     index
                     completed
