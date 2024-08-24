@@ -30,7 +30,7 @@ async function main() {
             break;
         }
         
-        const walletBatches = await splitSentryWalletsIntoBatches(sentryWallets, REDEMPTIONS_PER_TX);
+        const walletBatches = splitSentryWalletsIntoBatches(sentryWallets, REDEMPTIONS_PER_TX);
 
         for (let i = 0; i < walletBatches.length; i++) {
             const walletBatch = walletBatches[i];

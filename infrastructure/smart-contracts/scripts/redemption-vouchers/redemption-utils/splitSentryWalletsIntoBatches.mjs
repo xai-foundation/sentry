@@ -5,7 +5,7 @@
  * @param {number} maxIndicesPerBatch - The maximum number of redemption indices allowed in each batch.
  * @returns {Array<Array>} - An array of batches, each containing a sub-array of sentry wallet objects.
  */
-export async function splitSentryWalletsIntoBatches(sentryWallets, maxIndicesPerBatch) {
+export function splitSentryWalletsIntoBatches(sentryWallets, maxIndicesPerBatch) {
     const sentryWalletBatches = [];  // This will store the final array of batches.
 
     let currentBatch = [];           // Temporary storage for the current batch of sentry wallets.
@@ -17,16 +17,17 @@ export async function splitSentryWalletsIntoBatches(sentryWallets, maxIndicesPer
 
         // Check if adding the current wallet's redemptions will exceed the max allowed indices per batch.
         if (currentBatchCount + sentryWallet.redemptions.length > maxIndicesPerBatch) {
-            // If it exceeds, push the current batch to the batches array and reset for a new batch.
+            // If it exceeds, push the current batch to the batches array.
             sentryWalletBatches.push(currentBatch);
+            // Reset for a new batch.
             currentBatch = [];
             currentBatchCount = 0;
-        } else {
-            // If it does not exceed, add the current wallet to the batch and update the redemption count.
-            if (sentryWallet.redemptions.length > 0) {
-                currentBatch.push(sentryWallet);
-                currentBatchCount += sentryWallet.redemptions.length;
-            }
+        }
+
+        // Add the current wallet to the new batch and update the redemption count.
+        if (sentryWallet.redemptions.length > 0) {
+            currentBatch.push(sentryWallet);
+            currentBatchCount += sentryWallet.redemptions.length;
         }
     }
 
