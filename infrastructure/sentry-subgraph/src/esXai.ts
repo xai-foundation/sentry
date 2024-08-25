@@ -3,9 +3,10 @@ import {
     RedemptionStarted as RedemptionStartedEvent,
     RedemptionCancelled as RedemptionCancelledEvent,
     RedemptionCompleted as RedemptionCompletedEvent,
-    VoucherIssued as VoucherIssuedEvent
+    VoucherIssued as VoucherIssuedEvent,
+    Transfer as esXaiTransferEvent
 } from "../generated/esXai/esXai";
-import { RedemptionRequest } from "../generated/schema";
+import { RedemptionRequest, SentryWallet } from "../generated/schema";
 
 export function handleRedemptionStarted(event: RedemptionStartedEvent): void {
 
@@ -82,5 +83,41 @@ export function handleVoucherIssued(event: VoucherIssuedEvent): void {
         request.voucherIssued = true;
         request.save();
     }
+
+}
+
+export function handleesXaiTransfer(event:esXaiTransferEvent): void {
+    // Load the receiving wallet
+    let receivingSentryWallet = SentryWallet.load(event.params.to.toHexString())
+
+    // If the wallet does not exist, create a new one
+    if (!receivingSentryWallet) {
+        receivingSentryWallet = new SentryWallet(event.params.to.toHexString())
+        receivingSentryWallet.address = event.params.to
+        receivingSentryWallet.approvedOperators = []
+        receivingSentryWallet.isKYCApproved = false
+        receivingSentryWallet.v1EsXaiStakeAmount = BigInt.fromI32(0)
+        receivingSentryWallet.esXaiStakeAmount = BigInt.fromI32(0)
+        receivingSentryWallet.keyCount = BigInt.fromI32(0)
+        receivingSentryWallet.stakedKeyCount = BigInt.fromI32(0)
+        receivingSentryWallet.esXaiBalance = event.params.value
+    } else {
+        receivingSentryWallet.esXaiBalance = receivingSentryWallet.esXaiBalance.plus(event.params.value)
+    }
+    receivingSentryWallet.save();
+
+    // Load the sending wallet    
+    const sendingSentryWallet = SentryWallet.load(event.params.from.toHexString())
+
+    // If the wallet does not exist, log a warning and return
+    // This should never happen as the wallet should be created when it receives its first esXai
+    if (!sendingSentryWallet) {
+        log.warning("Failed to find sending wallet on handleesXaiTransfer: TX: " + event.transaction.hash.toHexString() + ", user: " + event.params.from.toHexString(), []);
+        return;
+    }
+
+    // Update the sending wallet esXai balance
+    sendingSentryWallet.esXaiBalance = sendingSentryWallet.esXaiBalance.minus(event.params.value)
+    sendingSentryWallet.save();
 
 }

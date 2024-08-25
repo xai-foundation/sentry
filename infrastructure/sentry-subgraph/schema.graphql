@@ -28,7 +28,7 @@ type RedemptionRequest @entity(immutable: false) {
     index: BigInt!
     amount: BigInt!
     startTime: BigInt!
-    endTime: BigInt
+    endTime: BigInt!
     duration: BigInt!
     completed: Boolean!
     cancelled: Boolean!
@@ -187,6 +187,7 @@ type SentryWallet @entity(immutable: false) {
   esXaiStakeAmount: BigInt!
   keyCount: BigInt!
   stakedKeyCount: BigInt!
+  esXaiBalance: BigInt!
   sentryKeys: [SentryKey!]! @derivedFrom(field: "sentryWallet")
   poolStakes: [PoolStake!]! @derivedFrom(field: "wallet")
   bulkSubmissions: [BulkSubmission!]! @derivedFrom(field: "sentryWallet")

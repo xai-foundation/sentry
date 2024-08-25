@@ -282,6 +282,7 @@ export function handleStakeEsXai(event: StakeEsXai): void {
     sentryWallet.keyCount = BigInt.fromI32(0)
     sentryWallet.stakedKeyCount = BigInt.fromI32(0)
     sentryWallet.keyCount = BigInt.fromI32(0)
+    sentryWallet.esXaiBalance = BigInt.fromI32(0)
   }
 
   sentryWallet.esXaiStakeAmount = sentryWallet.esXaiStakeAmount.plus(event.params.amount)
