@@ -595,10 +595,10 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
 
         // Update total stake
         if(!totalStakeCalculated[msg.sender]) {
-            totalStakeByUser[msg.sender] = getTotalesXaiStakedByUser(msg.sender);
+            _totalStakeByUser[msg.sender] = getTotalesXaiStakedByUser(msg.sender);
             totalStakeCalculated[msg.sender] = true;
         } else {
-            totalStakeByUser[msg.sender] += amount;
+            _totalStakeByUser[msg.sender] += amount;
         }
 
         emit StakeEsXai(
@@ -860,7 +860,7 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
     */
     function getTotalesXaiStakedByUser(address user) public view returns (uint256) {
         if (totalStakeCalculated[user]) {
-            return totalStakeByUser[user];
+            return _totalStakeByUser[user];
         }
 
         uint256 totalStakeAmount = 0;
