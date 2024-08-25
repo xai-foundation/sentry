@@ -18,7 +18,7 @@ export function IpLocationChecker({ children }: PropsWithChildren) {
 
 	if (blocked) {
 		return (
-			<pre className="p-2 text-sm">You are in a country restricted from using this application.</pre>
+			<pre className="p-2 text-sm">You are unable to access this website.</pre>
 		);
 	}
 

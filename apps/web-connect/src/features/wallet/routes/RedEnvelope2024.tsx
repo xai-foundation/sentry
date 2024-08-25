@@ -80,7 +80,7 @@ export function RedEnvelope2024() {
 	if (blocked) {
 		return (
 			<div className='w-full h-screen flex justify-center items-center'>
-				<p className="p-2 text-md text-white">You are in a country restricted from using this application.</p>
+				<p className="p-2 text-md text-white">You are unable to access this website.</p>
 			</div>
 		);
 	}
