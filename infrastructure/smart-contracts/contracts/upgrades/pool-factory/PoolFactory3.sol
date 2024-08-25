@@ -112,7 +112,7 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
     // Making this variable private as it SHOULD NOT BE USED as the source of truth for total stake
     // The getTotalesXaiStakedByUser function should be used instead
     // This mapping will only be accurate AFTER a user has interacted with a pool
-    mapping(address => uint256) private totalStakeByUser;
+    mapping(address => uint256) private _totalStakeByUser;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
