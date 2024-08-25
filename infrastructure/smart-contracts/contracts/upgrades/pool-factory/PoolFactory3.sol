@@ -112,7 +112,7 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
     // Making this variable private as it SHOULD NOT BE USED as the source of truth for total stake
     // The getTotalesXaiStakedByUser function should be used instead
     // This mapping will only be accurate AFTER a user has interacted with a pool
-    mapping(address => uint256) private totalStakeByUser;
+    mapping(address => uint256) private _totalStakeByUser;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
@@ -595,10 +595,10 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
 
         // Update total stake
         if(!totalStakeCalculated[msg.sender]) {
-            totalStakeByUser[msg.sender] = getTotalesXaiStakedByUser(msg.sender);
+            _totalStakeByUser[msg.sender] = getTotalesXaiStakedByUser(msg.sender);
             totalStakeCalculated[msg.sender] = true;
         } else {
-            totalStakeByUser[msg.sender] += amount;
+            _totalStakeByUser[msg.sender] += amount;
         }
 
         emit StakeEsXai(
@@ -639,11 +639,11 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
             // This ensures we do not run this one time calculation until we are sure that it will not run out of gas
             // This ensures a user can always unstake their esXai
             if(totalPools < 150) {
-                totalStakeByUser[msg.sender] = getTotalesXaiStakedByUser(msg.sender);
+                _totalStakeByUser[msg.sender] = getTotalesXaiStakedByUser(msg.sender);
                 totalStakeCalculated[msg.sender] = true;
             }
         } else {
-            totalStakeByUser[msg.sender] -= amount;
+            _totalStakeByUser[msg.sender] -= amount;
         }
 
         emit UnstakeEsXai(
@@ -861,7 +861,7 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
     */
     function getTotalesXaiStakedByUser(address user) public view returns (uint256) {
         if (totalStakeCalculated[user]) {
-            return totalStakeByUser[user];
+            return _totalStakeByUser[user];
         }
 
         uint256 totalStakeAmount = 0;
