@@ -106,6 +106,9 @@ export function handleesXaiTransfer(event:esXaiTransferEvent): void {
     }
     receivingSentryWallet.save();
 
+    // If the sender is the zero address, this is a mint operation, so return    
+    if(event.params.from.toHexString() == "0x0000000000000000000000000000000000000000") return;
+
     // Load the sending wallet    
     const sendingSentryWallet = SentryWallet.load(event.params.from.toHexString())
 
@@ -114,10 +117,9 @@ export function handleesXaiTransfer(event:esXaiTransferEvent): void {
     if (!sendingSentryWallet) {
         log.warning("Failed to find sending wallet on handleesXaiTransfer: TX: " + event.transaction.hash.toHexString() + ", user: " + event.params.from.toHexString(), []);
         return;
-    }
-
+    }else{
     // Update the sending wallet esXai balance
     sendingSentryWallet.esXaiBalance = sendingSentryWallet.esXaiBalance.minus(event.params.value)
     sendingSentryWallet.save();
-
+    }
 }
