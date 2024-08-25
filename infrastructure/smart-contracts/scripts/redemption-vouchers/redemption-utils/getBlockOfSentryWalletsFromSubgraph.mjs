@@ -17,8 +17,6 @@ export async function getBlockOfSentryWalletsFromSubgraph(maxQty, offset) {
                 redemptions(where: { voucherIssued: false, completed: false }) {
                     id
                     index
-                    completed
-                    cancelled
                 }
             }
         }
