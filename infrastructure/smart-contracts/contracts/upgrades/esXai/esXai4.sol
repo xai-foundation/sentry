@@ -237,7 +237,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
             // If the voucher was not issued, decrement the totalPendingRedemptions
             _totalPendingRedemptions[msg.sender] -= request.amount;
         }else{
-            
+
             // Transfer the esXai tokens from the sender's account to this contract
             _transfer(msg.sender, address(this), request.amount);
         }
@@ -374,7 +374,7 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
                 RedemptionRequestExt storage request = _extRedemptionRequests[account][accountIndices[j]];
                 // If the request is not completed and the voucher has not been issued
                 // Send the esXai back and issue the voucher
-                if(!request.completed && !request.voucherIssued) {
+                if(request.amount > 0 && !request.completed && !request.voucherIssued) {
                     request.voucherIssued = true;
                     _totalPendingRedemptions[account] += request.amount;
                     transfer(accounts[i], request.amount);
