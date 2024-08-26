@@ -1,7 +1,7 @@
 import Vorpal from "vorpal";
 import axios from "axios";
 import { ethers } from 'ethers';
-import { config, createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee, EventListenerError, findMissedAssertion, isAssertionSubmitted } from "@sentry/core";
+import { config, createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee, EventListenerError, findMissedAssertion, isAssertionSubmitted, getLatestChallenge } from "@sentry/core";
 
 type PromptBodyKey = "secretKeyPrompt" | "walletKeyPrompt" | "webhookUrlPrompt" | "instancePrompt";
 
@@ -50,6 +50,7 @@ let currentNumberOfRetries = 0;
 
 let CHALLENGER_INSTANCE = 1;
 const BACKUP_SUBMISSION_DELAY = 300_000; // For every instance we wait 5 minutes + instance number;
+const MINIMUM_TIME_BETWEEN_ASSERTIONS = 60 * 60; // 1 hour
 
 let isProcessingMissedAssertions = false;
 
@@ -93,48 +94,68 @@ const initCli = async (commandInstance: Vorpal.CommandInstance) => {
 const onAssertionConfirmedCb = async (nodeNum: any, commandInstance: Vorpal.CommandInstance) => {
     commandInstance.log(`[${new Date().toISOString()}] Assertion confirmed ${nodeNum}. Looking up the assertion information...`);
 
-    if (CHALLENGER_INSTANCE != 1) {
-        commandInstance.log(`[${new Date().toISOString()}] Backup challenger waiting for delay ${(CHALLENGER_INSTANCE) + (BACKUP_SUBMISSION_DELAY / (60 * 1000))} minutes..`);
-        const currentTime = Date.now();
-        await new Promise((resolve) => {
-            setTimeout(resolve, (CHALLENGER_INSTANCE * 60 * 1000) + BACKUP_SUBMISSION_DELAY)
-        });
+    
+    // Get Last Challenge Data
+    const challengeData = await getLatestChallenge();
+    const lastChallenge = challengeData[1];
+    const lastChallengeTime = Number(lastChallenge.assertionTimestamp);
 
+    // Calculate the minimum time to submit an assertion
+    const minimumTimeToSubmit = lastChallengeTime + MINIMUM_TIME_BETWEEN_ASSERTIONS;
+    
+    commandInstance.log(`[${new Date().toISOString()}] Last challenge was submitted at ${lastChallengeTime}...`);
+
+    // Check if enough time has passed that we can submit an assertion
+    if(Math.floor(Date.now() / 1000) > minimumTimeToSubmit) {
+        commandInstance.log(`[${new Date().toISOString()}] Minimum time between challenges has passed, beginning new challenge...`);
+
+        if (CHALLENGER_INSTANCE != 1) {
+            commandInstance.log(`[${new Date().toISOString()}] Backup challenger waiting for delay ${(CHALLENGER_INSTANCE) + (BACKUP_SUBMISSION_DELAY / (60 * 1000))} minutes..`);
+            const currentTime = Date.now();
+            await new Promise((resolve) => {
+                setTimeout(resolve, (CHALLENGER_INSTANCE * 60 * 1000) + BACKUP_SUBMISSION_DELAY)
+            });
+
+            try {
+                const hasSubmitted = await isAssertionSubmitted(nodeNum);
+                if (hasSubmitted) {
+                    commandInstance.log(`[${new Date().toISOString()}] Assertion already submitted by other instance.`);
+                    lastAssertionTime = currentTime; //So our health check does not spam errors
+                    return;
+                }
+                commandInstance.log(`[${new Date().toISOString()}] Backup challenger found assertion not submitted and has to step in.`);
+            } catch (error) {
+                commandInstance.log(`[${new Date().toISOString()}] ERROR: Backup challenger isAssertionSubmitted: ${error}`);
+                sendNotification(`Error Backup challenger instance ${CHALLENGER_INSTANCE} isAssertionSubmitted failed: ${error}`, commandInstance);
+            }
+        }
+
+        const assertionNode = await getAssertion(nodeNum);
+        commandInstance.log(`[${new Date().toISOString()}] Assertion data retrieved. Starting the submission process...`);
         try {
-            const hasSubmitted = await isAssertionSubmitted(nodeNum);
-            if (hasSubmitted) {
-                commandInstance.log(`[${new Date().toISOString()}] Assertion already submitted by other instance.`);
-                lastAssertionTime = currentTime; //So our health check does not spam errors
+            await submitAssertionToReferee(
+                cachedSecretKey,
+                nodeNum,
+                assertionNode,
+                cachedSigner!.signer,
+            );
+            commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${nodeNum}`);
+            lastAssertionTime = Date.now();
+        } catch (error) {
+            if (error && (error as Error).message && (error as Error).message.includes('execution reverted: "9"')) {
+                commandInstance.log(`[${new Date().toISOString()}] Could not submit challenge because it was already submitted`);
+                lastAssertionTime = Date.now();
                 return;
             }
-            commandInstance.log(`[${new Date().toISOString()}] Backup challenger found assertion not submitted and has to step in.`);
-        } catch (error) {
-            commandInstance.log(`[${new Date().toISOString()}] ERROR: Backup challenger isAssertionSubmitted: ${error}`);
-            sendNotification(`Error Backup challenger instance ${CHALLENGER_INSTANCE} isAssertionSubmitted failed: ${error}`, commandInstance);
+            commandInstance.log(`[${new Date().toISOString()}] Submit Assertion Error: ${(error as Error).message}`);
+            sendNotification(`Submit Assertion Error: ${(error as Error).message}`, commandInstance);
+            throw error;
         }
+        return;
     }
 
-    const assertionNode = await getAssertion(nodeNum);
-    commandInstance.log(`[${new Date().toISOString()}] Assertion data retrieved. Starting the submission process...`);
-    try {
-        await submitAssertionToReferee(
-            cachedSecretKey,
-            nodeNum,
-            assertionNode,
-            cachedSigner!.signer,
-        );
-        commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${nodeNum}`);
-        lastAssertionTime = Date.now();
-    } catch (error) {
-        if (error && (error as Error).message && (error as Error).message.includes('execution reverted: "9"')) {
-            commandInstance.log(`[${new Date().toISOString()}] Could not submit challenge because it was already submitted`);
-            lastAssertionTime = Date.now();
-            return;
-        }
-        commandInstance.log(`[${new Date().toISOString()}] Submit Assertion Error: ${(error as Error).message}`);
-        sendNotification(`Submit Assertion Error: ${(error as Error).message}`, commandInstance);
-        throw error;
-    }
+    // Log that the assertion was not submitted because it has not been enough time since the last assertion
+    commandInstance.log(`[${new Date().toISOString()}] Assertion ${nodeNum} not submitted because it has not been ${MINIMUM_TIME_BETWEEN_ASSERTIONS / (60 * 1000)} minutes since the last assertion.`);
 };
 
 const checkTimeSinceLastAssertion = async (lastAssertionTime: number, commandInstance: Vorpal.CommandInstance) => {
