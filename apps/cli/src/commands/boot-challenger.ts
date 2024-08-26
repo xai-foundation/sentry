@@ -51,7 +51,7 @@ let currentNumberOfRetries = 0;
 
 let CHALLENGER_INSTANCE = 1;
 const BACKUP_SUBMISSION_DELAY = 300_000; // For every instance we wait 5 minutes + instance number;
-const MINIMUM_TIME_BETWEEN_ASSERTIONS = 60 * 60 * 1000; // 1 hour
+const MINIMUM_TIME_BETWEEN_ASSERTIONS = 60 * 60; // 1 hour
 
 let isProcessingMissedAssertions = false;
 
