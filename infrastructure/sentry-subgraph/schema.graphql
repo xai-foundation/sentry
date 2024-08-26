@@ -36,6 +36,15 @@ type RedemptionRequest @entity(immutable: false) {
     voucherIssued: Boolean!
 }
 
+########################################################################
+# globalTotals.graphql                                                 #
+# schema\events\globalTotals.graphql                                   #
+########################################################################
+type GlobalTotals @entity(immutable: false) {
+    id: String!
+    totalEsXaiPendingRedemption: BigInt!
+}
+
 ######################################################################
 # NodeLicense.graphql                                                #
 # schema\events\NodeLicense.graphql                                  #
@@ -189,6 +198,7 @@ type SentryWallet @entity(immutable: false) {
   keyCount: BigInt!
   stakedKeyCount: BigInt!
   esXaiBalance: BigInt!
+  totalEsXaiPendingRedemption: BigInt!
   sentryKeys: [SentryKey!]! @derivedFrom(field: "sentryWallet")
   poolStakes: [PoolStake!]! @derivedFrom(field: "wallet")
   bulkSubmissions: [BulkSubmission!]! @derivedFrom(field: "sentryWallet")

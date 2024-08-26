@@ -6,7 +6,7 @@ import {
     VoucherIssued as VoucherIssuedEvent,
     Transfer as esXaiTransferEvent
 } from "../generated/esXai/esXai";
-import { RedemptionRequest, SentryWallet } from "../generated/schema";
+import { RedemptionRequest, SentryWallet, GlobalTotals } from "../generated/schema";
 
 export function handleRedemptionStarted(event: RedemptionStartedEvent): void {
 
@@ -34,6 +34,28 @@ export function handleRedemptionStarted(event: RedemptionStartedEvent): void {
     request.completed = false;
     request.voucherIssued = false;
     request.save();
+
+    // Update the global totals
+    let globalTotals = GlobalTotals.load("GlobalTotals");
+
+    if (!globalTotals) {
+        globalTotals = new GlobalTotals("GlobalTotals");
+        globalTotals.totalEsXaiPendingRedemption = BigInt.fromI32(0);
+    }
+
+    globalTotals.totalEsXaiPendingRedemption = globalTotals.totalEsXaiPendingRedemption.plus(request.amount);
+    globalTotals.save();
+
+    // Update the user's SentryWallet with the total pending redemption amount
+    const sentryWallet = SentryWallet.load(event.params.user.toHexString());
+    if (!sentryWallet) {
+        log.warning("Failed to find SentryWallet on handleRedemptionStarted: TX: " + event.transaction.hash.toHexString() + ", user: " + event.params.user.toHexString(), []);
+        return;
+    }
+
+    sentryWallet.totalEsXaiPendingRedemption = sentryWallet.totalEsXaiPendingRedemption.plus(request.amount);
+    sentryWallet.save();
+
 }
 
 export function handleRedemptionCancelled(event: RedemptionCancelledEvent): void {
@@ -43,13 +65,32 @@ export function handleRedemptionCancelled(event: RedemptionCancelledEvent): void
         log.warning("Failed to find redemption request on handleRedemptionCancelled: TX: " + event.transaction.hash.toHexString() + ", user: " + event.params.user.toHexString() + ", index: " + event.params.index.toString(), []);
         return;
     }
-
     request.cancelled = true;
     request.endTime = event.block.timestamp;
     request.completed = true;
     request.save();
 
+    // Update the global totals
+    let globalTotals = GlobalTotals.load("GlobalTotals");
+    if (!globalTotals) {
+        globalTotals = new GlobalTotals("GlobalTotals");
+        globalTotals.totalEsXaiPendingRedemption = BigInt.fromI32(0);
+    }
+    globalTotals.totalEsXaiPendingRedemption = globalTotals.totalEsXaiPendingRedemption.minus(request.amount);
+    globalTotals.save();
+
+    
+    // Update the user's SentryWallet with the total pending redemption amount
+    const sentryWallet = SentryWallet.load(event.params.user.toHexString());
+    if (!sentryWallet) {
+        log.warning("Failed to find SentryWallet on handleRedemptionCancelled: TX: " + event.transaction.hash.toHexString() + ", user: " + event.params.user.toHexString(), []);
+        return;
+    }
+
+    sentryWallet.totalEsXaiPendingRedemption = sentryWallet.totalEsXaiPendingRedemption.minus(request.amount);
+    sentryWallet.save();
 }
+
 export function handleRedemptionCompleted(event: RedemptionCompletedEvent): void {
     const request = RedemptionRequest.load(event.params.user.toHexString() + "_" + event.params.index.toString());
 
@@ -61,6 +102,25 @@ export function handleRedemptionCompleted(event: RedemptionCompletedEvent): void
     request.endTime = event.block.timestamp;
     request.completed = true;
     request.save();
+
+    // Update the global totals
+    let globalTotals = GlobalTotals.load("GlobalTotals");
+    if (!globalTotals) {
+        globalTotals = new GlobalTotals("GlobalTotals");
+        globalTotals.totalEsXaiPendingRedemption = BigInt.fromI32(0);
+    }
+    globalTotals.totalEsXaiPendingRedemption = globalTotals.totalEsXaiPendingRedemption.minus(request.amount);
+    globalTotals.save();
+
+    // Update the user's SentryWallet with the total pending redemption amount
+    const sentryWallet = SentryWallet.load(event.params.user.toHexString());
+    if (!sentryWallet) {
+        log.warning("Failed to find SentryWallet on handleRedemptionCompleted: TX: " + event.transaction.hash.toHexString() + ", user: " + event.params.user.toHexString(), []);
+        return;
+    }
+
+    sentryWallet.totalEsXaiPendingRedemption = sentryWallet.totalEsXaiPendingRedemption.minus(request.amount);
+    sentryWallet.save();
 }
 
 export function handleVoucherIssued(event: VoucherIssuedEvent): void {
@@ -102,6 +162,7 @@ export function handleEsXaiTransfer(event: esXaiTransferEvent): void {
         receivingSentryWallet.keyCount = BigInt.fromI32(0)
         receivingSentryWallet.stakedKeyCount = BigInt.fromI32(0)
         receivingSentryWallet.esXaiBalance = BigInt.fromI32(0)
+        receivingSentryWallet.totalEsXaiPendingRedemption = BigInt.fromI32(0)
     } 
 
     receivingSentryWallet.esXaiBalance = receivingSentryWallet.esXaiBalance.plus(event.params.value)
