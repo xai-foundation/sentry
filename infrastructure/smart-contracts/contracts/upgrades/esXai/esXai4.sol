@@ -203,12 +203,11 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
 
         // Confirm the user has the appropriate amount of esXai available
         uint256 currentBalance = balanceOf(msg.sender);        
-        uint256 totalesXaiStaked = PoolFactory3(poolFactoryAddress).getTotalesXaiStakedByUser(msg.sender);
-        uint256 totalesXaiPendingRedemption = _totalPendingRedemptions[msg.sender];
+        uint256 totalEsXaiStaked = PoolFactory3(poolFactoryAddress).getTotalesXaiStakedByUser(msg.sender);
 
-        uint256 availableesXai = currentBalance + totalesXaiStaked - totalesXaiPendingRedemption;
+        uint256 availableEsXai = currentBalance + totalEsXaiStaked - _totalPendingRedemptions[msg.sender];
 
-        require(availableesXai >= amount, "Insufficient esXai balance");
+        require(availableEsXai >= amount, "Insufficient esXai balance");
         
         // Increment the total pending redemptions
         _totalPendingRedemptions[msg.sender] += amount;
