@@ -15,6 +15,9 @@ import {
   UpdateBulkSubmission as UpdateBulkSubmissionEvent,
   BulkRewardsClaimed as BulkRewardsClaimedEvent,
 } from "../generated/Referee/Referee"
+import { 
+  NodeConfirmed as NodeConfirmedEvent
+} from "../generated/Rollup/Rollup"
 import {
   Challenge,
   SentryWallet,
@@ -23,7 +26,8 @@ import {
   RefereeConfig,
   PoolInfo,
   PoolChallenge,
-  BulkSubmission
+  BulkSubmission,
+  NodeConfirmed
 } from "../generated/schema"
 import { checkIfSubmissionEligible } from "./utils/checkIfSubmissionEligible"
 import { getBoostFactor } from "./utils/getBoostFactor"
@@ -32,7 +36,7 @@ import { getMaxStakeAmount } from "./utils/getMaxStakeAmount"
 import { getTxSignatureFromEvent } from "./utils/getTxSignatureFromEvent"
 import { updateChallenge } from "./utils/updateChallenge"
 
-import { ethereum, BigInt, Bytes, Address, log } from "@graphprotocol/graph-ts"
+import { ethereum, BigInt, Bytes, Address, log, ByteArray, crypto } from "@graphprotocol/graph-ts"
 import { updatePoolChallengeOnClaim } from "./utils/updatePoolChallengeOnClaim"
 
 export function handleInitialized(event: Initialized): void {
@@ -668,4 +672,37 @@ export function handleBulkRewardsClaimed(event: BulkRewardsClaimedEvent): void {
     challenge.save();
   }
 
+}
+
+export function handleNodeConfirmed(event: NodeConfirmedEvent): void {
+  
+  const nodeConfirmedEvent = new NodeConfirmed(
+    event.params.nodeNum.toString() + "_" + event.params.blockHash.toHexString()
+  )
+  nodeConfirmedEvent.nodeNum = event.params.nodeNum
+  nodeConfirmedEvent.blockHash = event.params.blockHash
+  nodeConfirmedEvent.sendRoot = event.params.sendRoot
+
+  //constructing confirmHash exactly how its built in the smart contract (RollupLib.confirmHash)
+
+  // Concatenate the two bytes32 values
+  let blockHashBytes = nodeConfirmedEvent.blockHash;
+  let sendRootBytes = nodeConfirmedEvent.sendRoot;
+
+  if (!blockHashBytes || !sendRootBytes) {
+    log.warning("Failed to assign null event value to variable", []);
+    return;
+  }
+
+  // Compute and return the Keccak-256 hash
+  let concatenatedHexStr = blockHashBytes.concat(sendRootBytes).toHexString();
+  let concatenatedByteArray = ByteArray.fromHexString(concatenatedHexStr);
+  let confirmHashByteArray = crypto.keccak256(concatenatedByteArray);
+  let confirmHashHexStr = confirmHashByteArray.toHexString();
+
+  nodeConfirmedEvent.confirmData = confirmHashHexStr;
+  
+  log.debug("confirmHash: ", [confirmHashHexStr]);
+
+  nodeConfirmedEvent.save()
 }

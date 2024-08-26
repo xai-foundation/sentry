@@ -127,6 +127,7 @@ type Challenge @entity(immutable: false) {
   amountClaimedByClaimers: BigInt! # uint256
   submissions: [Submission!]! @derivedFrom(field: "challenge")
   bulkSubmissions: [BulkSubmission!]! @derivedFrom(field: "challenge")
+  nodeConfirmed: [NodeConfirmed!]!
 }
 
 enum SubmittedFrom {
@@ -199,6 +200,14 @@ type BulkSubmission @entity(immutable: false) {
   claimed: Boolean! @index
   sentryWallet: SentryWallet
   isPool: Boolean! @index
+}
+
+type NodeConfirmed @entity(immutable: false) {
+  id: String!
+  nodeNum: BigInt # aka assertionId
+  blockHash: Bytes
+  sendRoot: Bytes
+  confirmData: String
 }
 
 
