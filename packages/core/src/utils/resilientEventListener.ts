@@ -16,7 +16,7 @@ export interface EventListenerError {
 }
 
 const EXPECTED_PONG_BACK = 15000;
-const KEEP_ALIVE_CHECK_INTERVAL = 60 * 15 * 1000; //every 15 mins
+const KEEP_ALIVE_CHECK_INTERVAL = 60 * 1000; //every 1 min
 
 /**
  * This function creates a resilient event listener for a given contract on an EVM-based network.
