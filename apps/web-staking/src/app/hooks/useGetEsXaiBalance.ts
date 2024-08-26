@@ -9,6 +9,7 @@ import { useAccount } from "wagmi";
 export const useGetEsXaiBalanceHooks = () => {
   const [esXaiBalance, setEsXaiBalance] = useState(0);
   const { address, chainId } = useAccount();
+  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
     if (!address || !chainId) return;
@@ -17,7 +18,9 @@ export const useGetEsXaiBalanceHooks = () => {
     });
   }, [address, chainId]);
 
-  return { esXaiBalance };
+  const refreshEsXaiBalance = () => setRefresh((refresh) => !refresh);
+
+  return { esXaiBalance, refreshEsXaiBalance };
 };
 
 

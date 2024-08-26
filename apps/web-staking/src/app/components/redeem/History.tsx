@@ -154,7 +154,7 @@ export default function History({ redemptions, reloadRedemptions }: {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 	const { isApproved } = useGetKYCApproved();
 	const {blocked, loading} = useBlockIp();
-	const { esXaiBalance } = useGetEsXaiBalanceHooks();
+	const { esXaiBalance, refreshEsXaiBalance } = useGetEsXaiBalanceHooks();
 	
 
 	const { switchChain } = useSwitchChain();
@@ -188,6 +188,7 @@ export default function History({ redemptions, reloadRedemptions }: {
 		if (isError) {
 			updateOnError()
 		}
+		refreshEsXaiBalance();
 	}, [isSuccess, isError, updateOnSuccess, updateOnError]);
 
 	const onClaim = async (redemption: RedemptionRequest) => {
