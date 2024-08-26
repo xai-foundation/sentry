@@ -26,42 +26,9 @@ async function main() {
     const deployerAddress = await deployer.getAddress();
     console.log("Deployer address", deployerAddress);
 
-    /**
-     * Deploy RefereeCalculations Contract
-     * @description Deploys the RefereeCalculations contract as an upgradeable proxy
-     */
-    console.log("Deploying RefereeCalculations Upgradable...");
-    const RefereeCalculations = await ethers.getContractFactory("RefereeCalculations");
-    console.log("Got RefereeCalculations factory");
 
-    const refereeCalculations = await upgrades.deployProxy(RefereeCalculations, [], { kind: "transparent", deployer });
-    const txRefereeCalc = await refereeCalculations.deploymentTransaction();
-
-    await txRefereeCalc.wait(BLOCKS_TO_WAIT);
-
-    const refereeCalculationsAddress = await refereeCalculations.getAddress();
-    console.log("RefereeCalculations deployed to:", refereeCalculationsAddress);
-
-    /**
-     * Deploy TinyKeysAirdrop Contract
-     * @description Deploys the TinyKeysAirdrop contract as an upgradeable proxy
-     * @param {string} nodeLicenseAddress - Address of the NodeLicense contract
-     * @param {string} refereeAddress - Address of the Referee contract
-     * @param {string} poolFactoryAddress - Address of the PoolFactory contract
-     * @param {number} airDropKeyMultiplier - Number of new NodeLicense received per 1 NodeLicense currently owned
-     */
-    console.log("Deploying Airdrop Upgradable...");
-    const TinyKeysAirdrop = await ethers.getContractFactory("TinyKeysAirdrop");        
-    console.log("Got TinyKeysAirdrop factory");
-    
-    const tinyKeysAirdropParams = [config.nodeLicenseAddress, config.refereeAddress, config.poolFactoryAddress, airDropKeyMultiplier];
-    const tinyKeysAirdrop = await upgrades.deployProxy(TinyKeysAirdrop, tinyKeysAirdropParams, { kind: "transparent", deployer });
-
-    const txAirdrop = await tinyKeysAirdrop.deploymentTransaction();
-    await txAirdrop.wait(BLOCKS_TO_WAIT);
-
-    const tinyKeysAirdropAddress = await tinyKeysAirdrop.getAddress();
-    console.log("TinyKeysAirdrop deployed to:", tinyKeysAirdropAddress);
+    const refereeCalculationsAddress = config.refereeCalculationsAddress
+    const tinyKeysAirdropAddress = config.tinyKeysAirdropAddress
 
     /**
      * Upgrade esXai3 Contract
