@@ -872,4 +872,28 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
         return totalStakeAmount;
     }
 
+    /**
+    * @notice Calculates the total stake amount for a list of users across all pools they have interacted with.
+    * @dev Iterates over each user provided in the `users` calldata array. For each user, it checks if the total stake has already been calculated.
+    *      If not, it sums the staked amounts from all staking pools the user has interacted with and stores the result.
+    *      Uses storage for interacting pools array to optimize gas usage. Only processes users whose total stake hasn't been calculated yet.
+    * @param users An array of user addresses for which the total stake needs to be calculated.
+    */
+    function calculateUserTotalStake(address[] calldata users) external {
+        for (uint256 i = 0; i < users.length; i++) {
+            address user = users[i];
+            if(totalStakeCalculated[user]) {
+                continue;
+            }
+            uint256 totalStakeAmount = 0;
+            address[] storage userPools = interactedPoolsOfUser[user]; // Use storage instead of memory
+            uint256 poolCount = userPools.length; // Cache length for gas optimization
+            for (uint256 j = 0; j < poolCount; j++) {
+                totalStakeAmount += StakingPool(userPools[j]).getStakedAmounts(user);
+            }
+            _totalEsXaiStakeByUser[user] = totalStakeAmount;
+            totalStakeCalculated[user] = true;
+        }
+    }
+
 }
