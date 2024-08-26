@@ -10,6 +10,7 @@ async function main() {
 
     // get the deployer
     const [deployer] = (await ethers.getSigners());
+    console.log("Deploying contracts with the account:", deployer.address);
   
     // deploy tiny keys airdrop contract
     console.log("Deploying Tiny Keys Airdrop...");
