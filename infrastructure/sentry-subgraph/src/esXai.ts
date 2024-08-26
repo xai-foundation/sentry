@@ -87,7 +87,7 @@ export function handleVoucherIssued(event: VoucherIssuedEvent): void {
 
 }
 
-export function handleesXaiTransfer(event: esXaiTransferEvent): void {
+export function handleEsXaiTransfer(event: esXaiTransferEvent): void {
     // Load the receiving wallet
     let receivingSentryWallet = SentryWallet.load(event.params.to.toHexString())
 

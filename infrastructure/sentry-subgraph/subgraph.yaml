@@ -161,7 +161,7 @@ dataSources:
         - event: VoucherIssued(indexed address,uint256[])
           handler: handleVoucherIssued
         - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleesXaiTransfer
+          handler: handleEsXaiTransfer
       file: ./src/esXai.ts
 
 # - kind: ethereum
