@@ -232,8 +232,15 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         request.cancelled = true;
         request.endTime = block.timestamp;
 
-        // Decrement the total pending redemptions
-        _totalPendingRedemptions[msg.sender] -= request.amount;
+        if(request.voucherIssued) {
+
+            // If the voucher was not issued, decrement the totalPendingRedemptions
+            _totalPendingRedemptions[msg.sender] -= request.amount;
+        }else{
+            
+            // Transfer the esXai tokens from the sender's account to this contract
+            _transfer(msg.sender, address(this), request.amount);
+        }
 
         emit RedemptionCancelled(msg.sender, index);
     }
