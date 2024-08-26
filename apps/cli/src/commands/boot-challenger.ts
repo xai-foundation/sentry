@@ -276,6 +276,18 @@ async function processMissedAssertions(commandInstance: Vorpal.CommandInstance) 
             const assertionNode = await getAssertion(missedAssertionNodeNum);
             commandInstance.log(`[${new Date().toISOString()}] Missed assertion data retrieved. Starting the submission process...`);
 
+            // Check if enough time has passed that we can submit an assertion
+            // Get Last Challenge Data
+            const challengeData = await getLatestChallenge();
+            const lastChallenge = challengeData[1];            
+            const lastChallengeTime = Number(lastChallenge.assertionTimestamp);
+
+            // Calculate the minimum time to submit an assertion
+            const minimumTimeToSubmit = lastChallengeTime + MINIMUM_TIME_BETWEEN_ASSERTIONS;
+
+            // Check if enough time has passed that we can submit an assertion
+            if(Math.floor(Date.now() / 1000) > minimumTimeToSubmit) {
+
             await submitAssertionToReferee(
                 cachedSecretKey,
                 missedAssertionNodeNum,
@@ -283,6 +295,12 @@ async function processMissedAssertions(commandInstance: Vorpal.CommandInstance) 
                 cachedSigner!.signer,
             );
             commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${missedAssertionNodeNum}`);
+            lastAssertionTime = Date.now();
+            return;
+        }
+
+        // Log that the assertion was not submitted because it has not been enough time since the last assertion
+        commandInstance.log(`[${new Date().toISOString()}] Assertion ${missedAssertionNodeNum} not submitted because it has not been ${MINIMUM_TIME_BETWEEN_ASSERTIONS / (60 * 1000)} minutes since the last assertion.`);
 
         } catch (error) {
             isProcessingMissedAssertions = false;
