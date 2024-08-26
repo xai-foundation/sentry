@@ -136,6 +136,32 @@ dataSources:
           handler: handleConvertedToEsXai
       file: ./src/xai.ts
   - kind: ethereum
+    name: esXai
+    network: arbitrum-sepolia
+    source:
+      address: "0x5776784c2012887d1f2fa17281e406643cba5330"
+      abi: esXai
+      startBlock: 15609833
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - RedemptionRequest
+      abis:
+        - name: esXai
+          file: ./abis/esXai.json
+      eventHandlers:
+        - event: RedemptionStarted(indexed address,indexed uint256)
+          handler: handleRedemptionStarted
+        - event: RedemptionCancelled(indexed address,indexed uint256)
+          handler: handleRedemptionCancelled
+        - event: RedemptionCompleted(indexed address,indexed uint256)
+          handler: handleRedemptionCompleted
+        - event: VoucherIssued(indexed address,uint256[])
+          handler: handleVoucherIssued        
+      file: ./src/esXai.ts
+  - kind: ethereum
     name: TinyKeysAirdrop
     network: arbitrum-sepolia
     source:
