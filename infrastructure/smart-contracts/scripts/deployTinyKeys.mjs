@@ -7,20 +7,16 @@ import { esXaiAbi, config } from "@sentry/core";
  * @async
  * @function main
  * @description This function deploys new contracts and upgrades existing ones in the following order:
- * 1. Deploy RefereeCalculations
- * 2. Deploy TinyKeysAirdrop
- * 3. Upgrade esXai3
- * 4. Upgrade NodeLicense8
- * 5. Upgrade PoolFactory2
- * 6. Upgrade Referee9
- * 7. Add NodeLicense to esXai transfer whitelist
- * 8. Verify all deployed and upgraded contracts
+ * 1. Upgrade esXai3
+ * 2. Upgrade NodeLicense8
+ * 3. Upgrade PoolFactory2
+ * 4. Upgrade Referee9
+ * 5. Add NodeLicense to esXai transfer whitelist
+ * 6. Verify all deployed and upgraded contracts
  */
 async function main() {
     const BLOCKS_TO_WAIT = 3;
-
-    const airDropKeyMultiplier = 99; // Number of new NodeLicense received per 1 NodeLicense currently owned 
-    const maxKeysNonKyc = 100;//Maximum number of keys that a non-KYC user can own and still complete esXai redemptions
+    const maxKeysNonKyc = 1;//Maximum number of keys that a non-KYC user can own and still complete esXai redemptions
 
     const [deployer] = (await ethers.getSigners());
     const deployerAddress = await deployer.getAddress();
