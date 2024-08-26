@@ -184,10 +184,10 @@ const onAssertionConfirmedCb = async (nodeNum: any, commandInstance: Vorpal.Comm
                 commandInstance.log(`[${new Date().toISOString()}] Submit Assertion Error: ${(error as Error).message}`);
                 sendNotification(`Submit Assertion Error: ${(error as Error).message}`, commandInstance);
             }
-    }else{
-        // Log that the assertion was not submitted because it has not been enough time since the last assertion
-        commandInstance.log(`[${new Date().toISOString()}] Assertion ${nodeNum} not submitted because it has not been ${MINIMUM_TIME_BETWEEN_ASSERTIONS / (60 * 1000)} minutes since the last assertion.`);
+            return;
     }
+    // Log that the assertion was not submitted because it has not been enough time since the last assertion
+    commandInstance.log(`[${new Date().toISOString()}] Assertion ${nodeNum} not submitted because it has not been ${MINIMUM_TIME_BETWEEN_ASSERTIONS / (60 * 1000)} minutes since the last assertion.`);
 };
 
 const checkTimeSinceLastAssertion = async (lastAssertionTime: number, commandInstance: Vorpal.CommandInstance) => {
