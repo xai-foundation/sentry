@@ -595,10 +595,10 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
 
         // Update total stake
         if(!totalStakeCalculated[msg.sender]) {
-            _totalStakeByUser[msg.sender] = getTotalesXaiStakedByUser(msg.sender);
+            _totalEsXaiStakeByUser[msg.sender] = getTotalesXaiStakedByUser(msg.sender);
             totalStakeCalculated[msg.sender] = true;
         } else {
-            _totalStakeByUser[msg.sender] += amount;
+            _totalEsXaiStakeByUser[msg.sender] += amount;
         }
 
         emit StakeEsXai(
@@ -639,11 +639,11 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
             // This ensures we do not run this one time calculation until we are sure that it will not run out of gas
             // This ensures a user can always unstake their esXai
             if(totalPools < 150) {
-                _totalStakeByUser[msg.sender] = getTotalesXaiStakedByUser(msg.sender);
+                _totalEsXaiStakeByUser[msg.sender] = getTotalesXaiStakedByUser(msg.sender);
                 totalStakeCalculated[msg.sender] = true;
             }
         } else {
-            _totalStakeByUser[msg.sender] -= amount;
+            _totalEsXaiStakeByUser[msg.sender] -= amount;
         }
 
         emit UnstakeEsXai(
@@ -861,7 +861,7 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
     */
     function getTotalesXaiStakedByUser(address user) public view returns (uint256) {
         if (totalStakeCalculated[user]) {
-            return _totalStakeByUser[user];
+            return _totalEsXaiStakeByUser[user];
         }
 
         uint256 totalStakeAmount = 0;
