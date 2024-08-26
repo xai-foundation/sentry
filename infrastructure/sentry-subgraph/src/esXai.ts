@@ -101,11 +101,10 @@ export function handleesXaiTransfer(event: esXaiTransferEvent): void {
         receivingSentryWallet.esXaiStakeAmount = BigInt.fromI32(0)
         receivingSentryWallet.keyCount = BigInt.fromI32(0)
         receivingSentryWallet.stakedKeyCount = BigInt.fromI32(0)
-        receivingSentryWallet.esXaiBalance = event.params.value
-    } else {
-        receivingSentryWallet.esXaiBalance = receivingSentryWallet.esXaiBalance.plus(event.params.value)
-    }
+        receivingSentryWallet.esXaiBalance = BigInt.fromI32(0)
+    } 
 
+    receivingSentryWallet.esXaiBalance = receivingSentryWallet.esXaiBalance.plus(event.params.value)
     receivingSentryWallet.save();
 
     // If the sender is the zero address, this is a mint operation, so return    
