@@ -1,8 +1,10 @@
 import { challengerHashAssertion } from './challengerHashAssertion.js';
 import { ethers } from 'ethers';
-import { AssertionNode } from '../utils/getAssertion.js';
+import { AssertionNode, getAssertion } from '../utils/getAssertion.js';
 import { RefereeAbi } from '../abis/index.js';
 import { config } from '../config.js';
+import { Challenge } from './index.js';
+import { getMultipleChallengeConfirmData } from '../utils/getMultipleChallengeConfirmData.js';
 
 /**
  * Submits an assertion to the Referee contract.
@@ -16,15 +18,39 @@ export async function submitAssertionToReferee(
     challengerBlsSecretKey: string,
     assertionId: number,
     assertionNode: AssertionNode,
-    signer: ethers.Signer
+    signer: ethers.Signer,
+    currentChallenge: Challenge
 ): Promise<void> {
+
+    // Get the assertion node for the current challenge
+    const lastSubmittedAssertionId = currentChallenge.assertionId;
+    const assertionIdGap = assertionId -  Number(lastSubmittedAssertionId);
+
+    const isBatch = assertionIdGap > 1;
+
+    let finalConfirmData: string;    
+    
+    if(isBatch) {
+
+        // Get the assertion IDs for the batch
+        const assertionIds = [...Array(assertionIdGap).keys()].map(i => i + Number(lastSubmittedAssertionId) + 1);
+
+        // Get the confirm data for all of the assertions
+        const [_, confirmDataHash] = await getMultipleChallengeConfirmData(assertionIds);
+
+        finalConfirmData = confirmDataHash;
+    }else{
+
+        finalConfirmData = assertionNode.confirmData;
+        
+    }
 
     // Hash the assertion
     const assertionHash: string = await challengerHashAssertion(
         challengerBlsSecretKey,
         BigInt(assertionId),
-        assertionNode.prevNum,
-        assertionNode.confirmData,
+        lastSubmittedAssertionId,
+        finalConfirmData,
         assertionNode.createdAtBlock
     );
 
@@ -34,8 +60,8 @@ export async function submitAssertionToReferee(
     // Submit the challenge to the Referee contract
     await refereeContract.submitChallenge(
         assertionId,
-        assertionNode.prevNum,
-        assertionNode.confirmData,
+        lastSubmittedAssertionId,
+        finalConfirmData,
         Number(assertionNode.createdAtBlock),
         assertionHash
     );

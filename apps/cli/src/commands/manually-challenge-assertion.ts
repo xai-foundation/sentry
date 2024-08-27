@@ -1,4 +1,5 @@
-import Vorpal from "vorpal";import { getAssertion, getSignerFromPrivateKey, submitAssertionToReferee } from "@sentry/core";
+import Vorpal from "vorpal";import { getAssertion, getLatestChallenge, getSignerFromPrivateKey, submitAssertionToReferee } from "@sentry/core";
+import { MINIMUM_TIME_BETWEEN_ASSERTIONS } from "./constants/index.js";
 
 export function manuallyChallengeAssertion(cli: Vorpal) {
     cli
@@ -34,19 +35,32 @@ export function manuallyChallengeAssertion(cli: Vorpal) {
                 const assertionKey = key as keyof typeof assertionNode;
                 this.log(`${assertionKey} (${typeof (assertionNode[assertionKey])}): ${assertionNode[assertionKey]}`);
             });
+            
+            // Get Last Challenge Data
+            const challengeData = await getLatestChallenge();
+            const currentChallenge = challengeData[1];
+            const lastChallengeTime = Number(currentChallenge.assertionTimestamp);
 
-            this.log(`Submitting Hash to chain for assertion '${assertionId}'.`);
+            // Calculate the minimum time to submit an assertion
+            const minimumTimeToSubmit = lastChallengeTime + MINIMUM_TIME_BETWEEN_ASSERTIONS;
+            if(Math.floor(Date.now() / 1000) > minimumTimeToSubmit) {
 
-            // get a signer of the private key
-            const {signer} = getSignerFromPrivateKey(privateKey);
+                this.log(`Submitting Hash to chain for assertion '${assertionId}'.`);
 
-            await submitAssertionToReferee(
-                secretKey,
-                assertionId,
-                assertionNode,
-                signer,
-            );
+                // get a signer of the private key
+                const {signer} = getSignerFromPrivateKey(privateKey);
 
-            this.log(`Assertion successfuly submitted.`);
+                await submitAssertionToReferee(
+                    secretKey,
+                    assertionId,
+                    assertionNode,
+                    signer,
+                    currentChallenge
+                );
+
+                this.log(`Assertion successfully submitted.`);
+                return
+            }
+            this.log(`Minimum time between assertions has not passed. Please wait ${minimumTimeToSubmit - Math.floor(Date.now() / 1000)} seconds before submitting another assertion.`);
         });
 }

@@ -14,3 +14,4 @@ export * from "./XaiAbi.js";
 export * from "./XaiGaslessClaimAbi.js";
 export * from "./XaiRedEnvelopeAbi.js";
 export * from "./esXaiAbi.js";
+export * from "./RefereeCalculationsAbi.js";

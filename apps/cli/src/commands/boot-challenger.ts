@@ -1,7 +1,8 @@
 import Vorpal from "vorpal";
 import axios from "axios";
 import { ethers } from 'ethers';
-import { config, createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee, EventListenerError, findMissedAssertion, isAssertionSubmitted, getLatestChallenge } from "@sentry/core";
+import { config, createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee, EventListenerError, findMissedAssertion, isAssertionSubmitted, getLatestChallenge, Challenge } from "@sentry/core";
+import { MINIMUM_TIME_BETWEEN_ASSERTIONS } from "./constants/index.js";
 
 type PromptBodyKey = "secretKeyPrompt" | "walletKeyPrompt" | "webhookUrlPrompt" | "instancePrompt";
 
@@ -50,7 +51,7 @@ let currentNumberOfRetries = 0;
 
 let CHALLENGER_INSTANCE = 1;
 const BACKUP_SUBMISSION_DELAY = 300_000; // For every instance we wait 5 minutes + instance number;
-const MINIMUM_TIME_BETWEEN_ASSERTIONS = 60 * 60; // 1 hour
+
 
 let isProcessingMissedAssertions = false;
 
@@ -97,8 +98,8 @@ const onAssertionConfirmedCb = async (nodeNum: any, commandInstance: Vorpal.Comm
     
     // Get Last Challenge Data
     const challengeData = await getLatestChallenge();
-    const lastChallenge = challengeData[1];
-    const lastChallengeTime = Number(lastChallenge.assertionTimestamp);
+    const currentChallenge = challengeData[1];
+    const lastChallengeTime = Number(currentChallenge.assertionTimestamp);
 
     // Calculate the minimum time to submit an assertion
     const minimumTimeToSubmit = lastChallengeTime + MINIMUM_TIME_BETWEEN_ASSERTIONS;
@@ -138,6 +139,7 @@ const onAssertionConfirmedCb = async (nodeNum: any, commandInstance: Vorpal.Comm
                 nodeNum,
                 assertionNode,
                 cachedSigner!.signer,
+                currentChallenge
             );
             commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${nodeNum}`);
             lastAssertionTime = Date.now();
@@ -279,8 +281,8 @@ async function processMissedAssertions(commandInstance: Vorpal.CommandInstance) 
             // Check if enough time has passed that we can submit an assertion
             // Get Last Challenge Data
             const challengeData = await getLatestChallenge();
-            const lastChallenge = challengeData[1];            
-            const lastChallengeTime = Number(lastChallenge.assertionTimestamp);
+            const currentChallenge = challengeData[1] as Challenge;            
+            const lastChallengeTime = Number(currentChallenge.assertionTimestamp);
 
             // Calculate the minimum time to submit an assertion
             const minimumTimeToSubmit = lastChallengeTime + MINIMUM_TIME_BETWEEN_ASSERTIONS;
@@ -293,6 +295,7 @@ async function processMissedAssertions(commandInstance: Vorpal.CommandInstance) 
                 missedAssertionNodeNum,
                 assertionNode,
                 cachedSigner!.signer,
+                currentChallenge
             );
             commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${missedAssertionNodeNum}`);
             lastAssertionTime = Date.now();
