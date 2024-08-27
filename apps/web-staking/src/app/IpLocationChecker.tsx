@@ -19,7 +19,7 @@ export function IpLocationChecker({ children }: PropsWithChildren) {
 	if (blocked) {
 		return (
 			<div className="w-full h-screen flex justify-center items-center">
-				<h3 className="md:text-3xl text-2xl text-white font-bold text-center">You are in a country restricted from using this application.</h3>
+				<h3 className="md:text-3xl text-2xl text-white font-bold text-center">You are unable to access this website.</h3>
 			</div>
 		);
 	}
