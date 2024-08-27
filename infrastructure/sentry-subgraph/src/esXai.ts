@@ -6,24 +6,36 @@ import {
     VoucherIssued as VoucherIssuedEvent
 } from "../generated/esXai/esXai";
 import { RedemptionRequest } from "../generated/schema";
+import { esXai } from "../generated/esXai/esXai";
 
 export function handleRedemptionStarted(event: RedemptionStartedEvent): void {
 
     // Create a new redemption request entity 
     const request = new RedemptionRequest(event.params.user.toHexString() + "_"  + event.params.index.toString());
-    
-    // Decode the transaction input data to get the redemption amount and duration
-    const inputData = event.transaction.input.toHexString().slice(10); // Remove function selector
-    const decoded = ethereum.decode('(uint256,uint256)', Bytes.fromHexString(inputData) as Bytes);
 
-    if (decoded) {      
-        const decodedTuple = decoded.toTuple();
-            request.amount = decodedTuple[0].toBigInt();
-            request.duration = decodedTuple[1].toBigInt();
-    } else {
-        log.warning("Failed to decode startRedemption TX: {}", [event.transaction.hash.toHexString()]);
+    // Extract the user and index from the event parameters
+    const index = event.params.index;
+    const user = event.params.user;
+    
+    // Get the contract instance
+    const contract = esXai.bind(event.address);
+    
+    // Get the redemption amount and duration from the contract
+    const redemptionRequestResult  = contract.getRedemptionRequest(user, index);
+
+    if (!redemptionRequestResult.amount) {
+        log.error("Failed to get redemption request amount on handleRedemptionStarted: TX: {}", [event.transaction.hash.toHexString()]);
+        return;
+    }   
+
+    if (!redemptionRequestResult.duration) {
+        log.error("Failed to get redemption request duration on handleRedemptionStarted: TX: {}", [event.transaction.hash.toHexString()]);
         return;
     }
+
+
+    request.amount = redemptionRequestResult.amount;
+    request.duration = redemptionRequestResult.duration;
     request.sentryWallet = event.params.user.toHexString();
     request.index = event.params.index;
     request.startTime = event.block.timestamp;
