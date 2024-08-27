@@ -1,8 +1,7 @@
 import Vorpal from "vorpal";
 import axios from "axios";
 import { ethers } from 'ethers';
-import { config, createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee, EventListenerError, findMissedAssertion, isAssertionSubmitted, getLatestChallenge, Challenge } from "@sentry/core";
-import { MINIMUM_TIME_BETWEEN_ASSERTIONS } from "./constants/index.js";
+import { config, createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee, EventListenerError, findMissedAssertion, isAssertionSubmitted, getLatestChallenge, Challenge, MINIMUM_TIME_BETWEEN_ASSERTIONS, isChallengeSubmitTime } from "@sentry/core";
 
 type PromptBodyKey = "secretKeyPrompt" | "walletKeyPrompt" | "webhookUrlPrompt" | "instancePrompt";
 
@@ -96,18 +95,13 @@ const onAssertionConfirmedCb = async (nodeNum: any, commandInstance: Vorpal.Comm
     commandInstance.log(`[${new Date().toISOString()}] Assertion confirmed ${nodeNum}. Looking up the assertion information...`);
 
     
-    // Get Last Challenge Data
-    const challengeData = await getLatestChallenge();
-    const currentChallenge = challengeData[1];
+    const {isSubmitTime, currentChallenge} = await isChallengeSubmitTime();
     const lastChallengeTime = Number(currentChallenge.assertionTimestamp);
 
-    // Calculate the minimum time to submit an assertion
-    const minimumTimeToSubmit = lastChallengeTime + MINIMUM_TIME_BETWEEN_ASSERTIONS;
-    
     commandInstance.log(`[${new Date().toISOString()}] Last challenge was submitted at ${lastChallengeTime}...`);
 
     // Check if enough time has passed that we can submit an assertion
-    if(Math.floor(Date.now() / 1000) > minimumTimeToSubmit) {
+    if(isSubmitTime) {
         commandInstance.log(`[${new Date().toISOString()}] Minimum time between challenges has passed, beginning new challenge...`);
 
         if (CHALLENGER_INSTANCE != 1) {
@@ -157,7 +151,7 @@ const onAssertionConfirmedCb = async (nodeNum: any, commandInstance: Vorpal.Comm
     }
 
     // Log that the assertion was not submitted because it has not been enough time since the last assertion
-    commandInstance.log(`[${new Date().toISOString()}] Assertion ${nodeNum} not submitted because it has not been ${MINIMUM_TIME_BETWEEN_ASSERTIONS / (60 * 1000)} minutes since the last assertion.`);
+    commandInstance.log(`[${new Date().toISOString()}] Assertion ${nodeNum} not submitted because it has not been ${MINIMUM_TIME_BETWEEN_ASSERTIONS / 60 } minutes since the last assertion.`);
 };
 
 const checkTimeSinceLastAssertion = async (lastAssertionTime: number, commandInstance: Vorpal.CommandInstance) => {
@@ -279,16 +273,9 @@ async function processMissedAssertions(commandInstance: Vorpal.CommandInstance) 
             commandInstance.log(`[${new Date().toISOString()}] Missed assertion data retrieved. Starting the submission process...`);
 
             // Check if enough time has passed that we can submit an assertion
-            // Get Last Challenge Data
-            const challengeData = await getLatestChallenge();
-            const currentChallenge = challengeData[1] as Challenge;            
-            const lastChallengeTime = Number(currentChallenge.assertionTimestamp);
-
-            // Calculate the minimum time to submit an assertion
-            const minimumTimeToSubmit = lastChallengeTime + MINIMUM_TIME_BETWEEN_ASSERTIONS;
-
-            // Check if enough time has passed that we can submit an assertion
-            if(Math.floor(Date.now() / 1000) > minimumTimeToSubmit) {
+            const {isSubmitTime, currentChallenge} = await isChallengeSubmitTime();
+            
+            if(isSubmitTime) {
 
             await submitAssertionToReferee(
                 cachedSecretKey,
@@ -303,7 +290,7 @@ async function processMissedAssertions(commandInstance: Vorpal.CommandInstance) 
         }
 
         // Log that the assertion was not submitted because it has not been enough time since the last assertion
-        commandInstance.log(`[${new Date().toISOString()}] Assertion ${missedAssertionNodeNum} not submitted because it has not been ${MINIMUM_TIME_BETWEEN_ASSERTIONS / (60 * 1000)} minutes since the last assertion.`);
+        commandInstance.log(`[${new Date().toISOString()}] Assertion ${missedAssertionNodeNum} not submitted because it has not been ${MINIMUM_TIME_BETWEEN_ASSERTIONS / 60} minutes since the last assertion.`);
 
         } catch (error) {
             isProcessingMissedAssertions = false;

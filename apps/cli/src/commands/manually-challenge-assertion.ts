@@ -1,5 +1,6 @@
-import Vorpal from "vorpal";import { getAssertion, getLatestChallenge, getSignerFromPrivateKey, submitAssertionToReferee } from "@sentry/core";
-import { MINIMUM_TIME_BETWEEN_ASSERTIONS } from "./constants/index.js";
+import Vorpal from "vorpal";import { getAssertion, getLatestChallenge, getSignerFromPrivateKey, MINIMUM_TIME_BETWEEN_ASSERTIONS, submitAssertionToReferee } from "@sentry/core";
+import { isChallengeSubmitTime } from "@sentry/core";
+
 
 export function manuallyChallengeAssertion(cli: Vorpal) {
     cli
@@ -37,13 +38,10 @@ export function manuallyChallengeAssertion(cli: Vorpal) {
             });
             
             // Get Last Challenge Data
-            const challengeData = await getLatestChallenge();
-            const currentChallenge = challengeData[1];
-            const lastChallengeTime = Number(currentChallenge.assertionTimestamp);
-
-            // Calculate the minimum time to submit an assertion
-            const minimumTimeToSubmit = lastChallengeTime + MINIMUM_TIME_BETWEEN_ASSERTIONS;
-            if(Math.floor(Date.now() / 1000) > minimumTimeToSubmit) {
+            // Check if enough time has passed that we can submit an assertion
+            const {isSubmitTime, currentChallenge} = await isChallengeSubmitTime();
+            
+            if(isSubmitTime) {
 
                 this.log(`Submitting Hash to chain for assertion '${assertionId}'.`);
 
@@ -61,6 +59,6 @@ export function manuallyChallengeAssertion(cli: Vorpal) {
                 this.log(`Assertion successfully submitted.`);
                 return
             }
-            this.log(`Minimum time between assertions has not passed. Please wait ${minimumTimeToSubmit - Math.floor(Date.now() / 1000)} seconds before submitting another assertion.`);
+            this.log(`Minimum time between assertions has not passed. The last challenge was submitted at ${currentChallenge.assertionTimestamp} Please wait before submitting another assertion.`);
         });
 }
