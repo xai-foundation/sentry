@@ -32,12 +32,14 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     uint256 public maxKeysNonKyc;
     address public poolFactoryAddress;
 
+    mapping(address => uint256) public _totalPendingRedemptions;
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[493] private __gap;
+    uint256[492] private __gap;
 
     struct RedemptionRequest {
         uint256 amount;
@@ -53,6 +55,7 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         uint256 endTime;
         bool completed;
         bool cancelled;
+        bool voucherIssued;
         uint256[5] __gap;
     }
 
@@ -63,6 +66,7 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     event RedemptionStatusChanged(bool isActive);
     event XaiAddressChanged(address indexed newXaiAddress);
     event FoundationBasepointsUpdated(uint256 newBasepoints);
+    event VoucherIssued(address indexed user, uint256[] indices);
 
     function initialize (address _refereeAddress, address _nodeLicenseAddress, address _poolFactoryAddress, uint256 _maxKeys) public reinitializer(3) {
         require(_refereeAddress != address(0), "Invalid referee address");
@@ -180,12 +184,22 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         // Check if the sender failed KYC
         bool failedKyc = PoolFactory2(poolFactoryAddress).failedKyc(msg.sender);
         require(!failedKyc, "KYC failed, cannot redeem");
+        
+        // No longer transferring esXai from the sender's account to this contract
+        // Stoing redemption claim as voucherIssued instead
 
-        // Transfer the esXai tokens from the sender's account to this contract
-        _transfer(msg.sender, address(this), amount);
+        // Confirm the user has the appropriate amount of esXai available
+        uint256 currentBalance = balanceOf(msg.sender);        
+        uint256 totalEsXaiStaked = PoolFactory2(poolFactoryAddress).getTotalesXaiStakedByUser(msg.sender);
+        uint256 availableEsXai = currentBalance + totalEsXaiStaked - _totalPendingRedemptions[msg.sender];
+
+        require(availableEsXai >= amount, "Insufficient esXai balance");
+        
+        // Increment the total pending redemptions
+        _totalPendingRedemptions[msg.sender] += amount;
 
         // Store the redemption request
-        _extRedemptionRequests[msg.sender].push(RedemptionRequestExt(amount, block.timestamp, duration, 0, false, false, [uint256(0),0,0,0,0]));
+        _extRedemptionRequests[msg.sender].push(RedemptionRequestExt(amount, block.timestamp, duration, 0, false, false, true,[uint256(0),0,0,0,0]));
         emit RedemptionStarted(msg.sender, _extRedemptionRequests[msg.sender].length - 1);
     }
 
@@ -199,13 +213,21 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         require(request.amount > 0, "Invalid request");
         require(!request.completed, "Redemption already completed");
 
-        // Transfer back the esXai tokens to the sender's account
-        _transfer(address(this), msg.sender, request.amount);
-
         // Mark the redemption request as completed
         request.completed = true;
         request.cancelled = true;
         request.endTime = block.timestamp;
+
+        if(request.voucherIssued) {
+
+            // If the voucher was issued, decrement the totalPendingRedemptions
+            _totalPendingRedemptions[msg.sender] -= request.amount;
+        }else{
+            // If the voucher was not issued
+            // Transfer the esXai tokens back to the sender's account
+            _transfer(msg.sender, address(this), request.amount);
+        }
+
         emit RedemptionCancelled(msg.sender, index);
     }
 
@@ -249,6 +271,17 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         // mark the request as completed
         request.completed = true;
         request.endTime = block.timestamp;
+
+        // Adding this just in case a conversion was some how missed.
+        // This would allow the user to still redeem the esXai while keeping the state correct.
+        if(request.voucherIssued) {     
+
+            // Update the user's totalPendingRedemptions
+            _totalPendingRedemptions[msg.sender] -= request.amount;
+
+            // Transfer the esXai tokens from the sender's account to this contract
+            _transfer(msg.sender, address(this), request.amount);
+        }
 
         // Burn the esXai tokens
         _burn(address(this), request.amount);
@@ -303,4 +336,37 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         maxKeysNonKyc = newMax;
     }
 
+    /**
+    * Converts redemptions in process to vouchers for a given list of accounts and indices.
+    * 
+    * This function processes redemptions that are currently in process and converts them into vouchers. 
+    * It requires that redemptions be paused, and validates that the length of `accounts` matches the length of `indices`.
+    * For each redemption request, it checks if the request is not completed and if the voucher has not been issued.
+    * If both conditions are met, it marks the voucher as issued, updates the total pending redemptions, 
+    * and transfers the corresponding amount to the account.
+    * 
+    * @param accounts - The list of account addresses for which redemptions are to be converted.
+    * @param indices - The list of indices corresponding to redemption requests for each account.
+    * Will throw an error if redemptions are active or if the lengths of `accounts` and `indices` do not match.
+    * @dev Only callable by an account with the `DEFAULT_ADMIN_ROLE`.
+    */
+    function convertRedemptionsInProcess(address[] calldata accounts, uint256[][] calldata indices) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        require(!_redemptionActive, "Redemptions must be paused to convert");
+        require(accounts.length == indices.length, "Invalid input");
+        for(uint256 i = 0; i < accounts.length; i++) {
+            address account = accounts[i];
+            uint256[] memory accountIndices = indices[i];
+            for(uint256 j = 0; j < accountIndices.length; j++) {
+                RedemptionRequestExt storage request = _extRedemptionRequests[account][accountIndices[j]];
+                // If the request is not completed and the voucher has not been issued
+                // Send the esXai back and issue the voucher
+                if(request.amount > 0 && !request.completed && !request.voucherIssued) {
+                    request.voucherIssued = true;
+                    _totalPendingRedemptions[account] += request.amount;
+                    transfer(accounts[i], request.amount);
+                }
+            }
+            emit VoucherIssued(account, accountIndices);
+        }
+    }
 }
