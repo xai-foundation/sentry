@@ -455,29 +455,30 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
                 require(node.prevNum == i - 1, "10");   
 
                 // Check the confirmData & timestamp for the assertion
-                if(!isBatch){
-
-                    // Verify individual confirmData
-                    require(node.createdAtBlock == _assertionTimestamp, "12");
-                    require(node.confirmData == _confirmData, "11");
-                }else{
+                if(isBatch){
 
                     // Store the assertionIds and confirmData for the batch challenge
                     assertionIds[i - _predecessorAssertionId - 1] = i;
                     batchConfirmData[i - _predecessorAssertionId - 1] = node.confirmData;
 
-                    // If not a batch challenge, we need to verify the
-                    //  timestamp but only for the assertionId
+                    // If it is a batch challenge, we need to verify the
+                    // timestamp but only for the last assertionId
                     if(i == _assertionId){
                         // Verify Timestamp
                         require(node.createdAtBlock == _assertionTimestamp, "12");
                     }
+
+                }else{
+
+                    // Verify individual confirmData
+                    require(node.createdAtBlock == _assertionTimestamp, "12");
+                    require(node.confirmData == _confirmData, "11");
                 }
                 
             }
         }
 
-        // If we are doing a batch challenge, we need to check the confirmData for all assertions
+        // If we are handling as a batch challenge, we need to check the confirmData for all assertions
         if(isBatch){
             if(isCheckingAssertions){
                 // Hash all of the confirmData for the batch challenge
