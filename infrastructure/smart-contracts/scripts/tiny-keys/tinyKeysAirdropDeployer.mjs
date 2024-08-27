@@ -1,4 +1,4 @@
-//import { safeVerify } from "../utils/safeVerify";
+import {safeVerify} from "../../utils/safeVerify.mjs";
 import {config} from "@sentry/core";
 
 const NODE_LICENSE_CONTRACT = config.nodeLicenseAddress;
@@ -28,16 +28,12 @@ async function main() {
     console.log("Referee Calculations deployed to:", refereeCalculationsAddress);
 
     
-    // Verify Contracts
-    await run("verify:verify", {
-        address: tinyKeysAirdropAddress,
-        constructorArguments: [NODE_LICENSE_CONTRACT, REFEREE_CONTRACT, POOL_FACTORY_CONTRACT, KEY_MULTIPLIER],
-    });
+	// verify contract
+	await safeVerify({ contract: tinyKeysAirdrop });
 
-    await run("verify:verify", {
-        address: refereeCalculationsAddress,
-        constructorArguments: [],
-    });
+	// verify contract
+	await safeVerify({ contract: refereeCalculations });
+    
 }
 
 // We recommend this pattern to be able to use async/await everywhere
