@@ -225,7 +225,7 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         }else{
             // If the voucher was not issued
             // Transfer the esXai tokens back to the sender's account
-            _transfer(msg.sender, address(this), request.amount);
+            _transfer(address(this), msg.sender, request.amount);
         }
 
         emit RedemptionCancelled(msg.sender, index);
