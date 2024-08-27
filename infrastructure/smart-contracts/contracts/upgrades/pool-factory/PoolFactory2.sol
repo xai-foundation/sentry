@@ -881,18 +881,17 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     */
     function calculateUserTotalStake(address[] calldata users) external {
         for (uint256 i = 0; i < users.length; i++) {
-            address user = users[i];
-            if(totalStakeCalculated[user]) {
+            if(totalStakeCalculated[users[i]]) {
                 continue;
             }
             uint256 totalStakeAmount = 0;
-            address[] storage userPools = interactedPoolsOfUser[user]; // Use storage instead of memory
+            address[] storage userPools = interactedPoolsOfUser[users[i]]; // Use storage instead of memory
             uint256 poolCount = userPools.length; // Cache length for gas optimization
             for (uint256 j = 0; j < poolCount; j++) {
-                totalStakeAmount += StakingPool(userPools[j]).getStakedAmounts(user);
+                totalStakeAmount += StakingPool(userPools[j]).getStakedAmounts(users[i]);
             }
-            _totalEsXaiStakeByUser[user] = totalStakeAmount;
-            totalStakeCalculated[user] = true;
+            _totalEsXaiStakeByUser[users[i]] = totalStakeAmount;
+            totalStakeCalculated[users[i]] = true;
         }
     }
 }
