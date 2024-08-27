@@ -351,7 +351,6 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     * @dev Only callable by an account with the `DEFAULT_ADMIN_ROLE`.
     */
     function convertRedemptionsInProcess(address[] calldata accounts, uint256[][] calldata indices) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(!_redemptionActive, "Redemptions must be paused to convert");
         require(accounts.length == indices.length, "Invalid input");
         for(uint256 i = 0; i < accounts.length; i++) {
             address account = accounts[i];
