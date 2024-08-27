@@ -3,7 +3,7 @@ import {wagmiConfig, chains} from "../../../main";
 import {ConnectButton, PrimaryButton, XaiCheckbox} from "@sentry/ui";
 import {useState} from "react";
 import {BiLoaderAlt} from "react-icons/bi";
-import {config, NodeLicenseAbi} from "@sentry/core";
+import {config, IP_BLOCK_TEXT, NodeLicenseAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
@@ -52,7 +52,7 @@ export function DropClaim() {
 	if (blocked) {
 		return (
 			<div className='w-full h-screen flex justify-center items-center'>
-				<p className="p-2 text-md text-white">You are in a country restricted from using this application.</p>
+				<p className="p-2 text-md text-white">{IP_BLOCK_TEXT}</p>
 			</div>
 		);
 	}

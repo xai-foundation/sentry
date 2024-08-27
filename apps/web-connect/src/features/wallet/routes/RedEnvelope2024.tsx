@@ -3,7 +3,7 @@ import {wagmiConfig, chains} from "../../../main";
 import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
 import {BiLoaderAlt} from "react-icons/bi";
 import {useEffect, useState} from "react";
-import {checkKycStatus, xaiRedEnvelopeAbi} from "@sentry/core";
+import {checkKycStatus, IP_BLOCK_TEXT, xaiRedEnvelopeAbi} from "@sentry/core";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import {FaCircleCheck, FaCircleXmark} from "react-icons/fa6";
 import {Link} from "react-router-dom";
@@ -80,7 +80,7 @@ export function RedEnvelope2024() {
 	if (blocked) {
 		return (
 			<div className='w-full h-screen flex justify-center items-center'>
-				<p className="p-2 text-md text-white">You are in a country restricted from using this application.</p>
+				<p className="p-2 text-md text-white">{IP_BLOCK_TEXT}</p>
 			</div>
 		);
 	}

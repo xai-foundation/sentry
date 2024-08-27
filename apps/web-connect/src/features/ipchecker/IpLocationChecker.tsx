@@ -3,6 +3,7 @@
 import { useBlockIp } from "@/hooks/useBlockIp";
 import { PropsWithChildren } from "react";
 import { BiLoaderAlt } from "react-icons/bi";
+import {IP_BLOCK_TEXT} from "@sentry/core";
 
 export function IpLocationChecker({ children }: PropsWithChildren) {
 
@@ -21,7 +22,7 @@ export function IpLocationChecker({ children }: PropsWithChildren) {
 	if (blocked) {
 		return (
 			<div className='w-full h-screen flex justify-center items-center'>
-				<p className="p-2 text-md text-white">You are in a country restricted from using this application.</p>
+				<p className="p-2 text-md text-white">{IP_BLOCK_TEXT}</p>
 			</div>
 		);
 	}
