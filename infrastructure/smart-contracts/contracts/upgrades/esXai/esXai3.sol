@@ -272,8 +272,8 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         request.completed = true;
         request.endTime = block.timestamp;
 
-        // Adding this just in case a conversion was some how missed.
-        // This would allow the user to still redeem the esXai while keeping the state correct.
+        // If the voucher was issued decrement the totalPendingRedemptions
+        // and transfer the esXai tokens from the sender's account to this contract
         if(request.voucherIssued) {     
 
             // Update the user's totalPendingRedemptions
