@@ -362,7 +362,7 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
                 if(request.amount > 0 && !request.completed && !request.voucherIssued) {
                     request.voucherIssued = true;
                     _totalPendingRedemptions[account] += request.amount;
-                    transfer(accounts[i], request.amount);
+                    _transfer(address(this), account, request.amount);
                 }
             }
             emit VoucherIssued(account, accountIndices);
