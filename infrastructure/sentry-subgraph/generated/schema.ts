@@ -185,6 +185,61 @@ export class RedemptionRequest extends Entity {
   }
 }
 
+export class GlobalTotals extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save GlobalTotals entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type GlobalTotals must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("GlobalTotals", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): GlobalTotals | null {
+    return changetype<GlobalTotals | null>(
+      store.get_in_block("GlobalTotals", id),
+    );
+  }
+
+  static load(id: string): GlobalTotals | null {
+    return changetype<GlobalTotals | null>(store.get("GlobalTotals", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get totalEsXaiPendingRedemption(): BigInt {
+    let value = this.get("totalEsXaiPendingRedemption");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalEsXaiPendingRedemption(value: BigInt) {
+    this.set("totalEsXaiPendingRedemption", Value.fromBigInt(value));
+  }
+}
+
 export class SentryKey extends Entity {
   constructor(id: string) {
     super();
@@ -1648,6 +1703,32 @@ export class SentryWallet extends Entity {
 
   set stakedKeyCount(value: BigInt) {
     this.set("stakedKeyCount", Value.fromBigInt(value));
+  }
+
+  get esXaiBalance(): BigInt {
+    let value = this.get("esXaiBalance");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set esXaiBalance(value: BigInt) {
+    this.set("esXaiBalance", Value.fromBigInt(value));
+  }
+
+  get totalEsXaiPendingRedemption(): BigInt {
+    let value = this.get("totalEsXaiPendingRedemption");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalEsXaiPendingRedemption(value: BigInt) {
+    this.set("totalEsXaiPendingRedemption", Value.fromBigInt(value));
   }
 
   get sentryKeys(): SentryKeyLoader {

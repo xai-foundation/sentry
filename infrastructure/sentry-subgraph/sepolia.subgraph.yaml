@@ -159,7 +159,9 @@ dataSources:
         - event: RedemptionCompleted(indexed address,indexed uint256)
           handler: handleRedemptionCompleted
         - event: VoucherIssued(indexed address,uint256[])
-          handler: handleVoucherIssued        
+          handler: handleVoucherIssued
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleEsXaiTransfer
       file: ./src/esXai.ts
   - kind: ethereum
     name: TinyKeysAirdrop
