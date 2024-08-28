@@ -36,4 +36,4 @@ pnpm cli
 boot-operator
 ```
 
-To test the operator you need a challenger running on sepolia and a set up testing wallet. We will an interactive Test UI (TDD) that can assert a new Challenge through an interval or on click. Please check the documentation for TDD, else if this should not be available yet, use the fake challenger from the branch `sepolia-fake-challenger`.
+For testing the operatorRuntime on sepolia challenges with incrementing assertionIds can be submitted to the [sepolia Referee](https://sepolia.arbiscan.io/address/0xF84D76755a68bE9DFdab9a0b6d934896Ceab957b#writeProxyContract) `submitChallenge()`. Additionally there should be an option to submit a sepolia test challenge from the [end-to-end testing framework](https://github.com/xai-foundation/sentry-e2e).
