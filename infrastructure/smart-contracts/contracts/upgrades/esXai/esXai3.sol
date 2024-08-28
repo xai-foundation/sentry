@@ -303,4 +303,35 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         maxKeysNonKyc = newMax;
     }
 
+    /**
+    * @notice Retrieves a list of redemption requests for a specific user, starting from the highest index.
+    * @dev This function returns an array of `RedemptionRequestExt` structs for a given user, 
+    *      starting from the highest index available down to the maximum quantity requested.
+    * @param account The address of the user whose redemption requests are to be fetched.
+    * @param maxQty The maximum number of redemption requests to return.
+    * @param offset The offset from the highest index from which to fetch the redemption requests.
+    * @return An array of `RedemptionRequestExt` structs containing the user's redemption requests in descending order.
+    */
+    function getRedemptionsByUser(address account, uint256 maxQty, uint256 offset) external view returns (RedemptionRequestExt[] memory) {
+        // Get the total number of redemption requests for the user.
+        uint256 totalRedemptions = _extRedemptionRequests[account].length;
+        
+        // Calculate the actual number of redemption requests to return, ensuring it does not exceed the array bounds.
+        uint256 qtyToReturn = maxQty > totalRedemptions ? totalRedemptions : maxQty;
+
+        // Create a dynamic array to hold the redemption requests to be returned.
+        RedemptionRequestExt[] memory redemptions = new RedemptionRequestExt[](qtyToReturn);
+
+        // Loop to fill the redemptions array starting from the highest index.
+        uint256 startIndex = totalRedemptions - offset - 1;
+        for (uint256 i = 0; i < qtyToReturn; i++) {
+            uint256 currentIndex = startIndex - i;
+            redemptions[i] = _extRedemptionRequests[account][currentIndex];
+        }
+
+        // Return the array of redemption requests in descending order of their indices.
+        return redemptions;
+    }
+
+
 }
