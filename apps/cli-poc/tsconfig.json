@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es2018",
-    "module": "commonjs",
-    "outDir": "./dist",  // This is the line we'll change
+    "target": "es2020",
+    "module": "es2022",
+    "moduleResolution": "node",
+    "outDir": "./dist",
     "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
