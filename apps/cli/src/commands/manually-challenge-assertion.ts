@@ -53,7 +53,7 @@ export function manuallyChallengeAssertion(cli: Vorpal) {
                     assertionId,
                     assertionNode,
                     signer,
-                    currentChallenge
+                    currentChallenge.assertionId
                 );
 
                 this.log(`Assertion successfully submitted.`);

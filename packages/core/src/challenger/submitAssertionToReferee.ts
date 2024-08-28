@@ -19,11 +19,10 @@ export async function submitAssertionToReferee(
     assertionId: number,
     assertionNode: AssertionNode,
     signer: ethers.Signer,
-    currentChallenge: Challenge
+    lastSubmittedAssertionId: BigInt
 ): Promise<void> {
 
     // Get the assertion node for the current challenge
-    const lastSubmittedAssertionId = currentChallenge.assertionId;
     const assertionIdGap = assertionId -  Number(lastSubmittedAssertionId);
 
     const isBatch = assertionIdGap > 1;

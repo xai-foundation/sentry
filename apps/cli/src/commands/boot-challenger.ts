@@ -133,7 +133,7 @@ const onAssertionConfirmedCb = async (nodeNum: any, commandInstance: Vorpal.Comm
                 nodeNum,
                 assertionNode,
                 cachedSigner!.signer,
-                currentChallenge
+                currentChallenge.assertionId
             );
             commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${nodeNum}`);
             lastAssertionTime = Date.now();
@@ -282,7 +282,7 @@ async function processMissedAssertions(commandInstance: Vorpal.CommandInstance) 
                 missedAssertionNodeNum,
                 assertionNode,
                 cachedSigner!.signer,
-                currentChallenge
+                currentChallenge.assertionId
             );
             commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${missedAssertionNodeNum}`);
             lastAssertionTime = Date.now();
