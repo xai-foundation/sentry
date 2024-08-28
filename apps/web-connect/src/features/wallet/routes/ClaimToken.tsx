@@ -5,7 +5,7 @@ import {ConnectButton, XaiCheckbox} from "@sentry/ui";
 import {useNavigate} from "react-router-dom";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import {BiLoaderAlt} from "react-icons/bi";
-import {XaiGaslessClaimAbi, config} from "@sentry/core";
+import {BLOCKED_IP_COPY, XaiGaslessClaimAbi, config} from "@sentry/core";
 import {ethers} from "ethers";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
@@ -62,7 +62,7 @@ export function ClaimToken() {
 	if (blocked) {
 		return (
 			<div className='w-full h-screen flex justify-center items-center'>
-				<p className="p-2 text-md text-white">You are in a country restricted from using this application.</p>
+				<p className="p-2 text-md text-white">{BLOCKED_IP_COPY}</p>
 			</div>
 		)
 	}
