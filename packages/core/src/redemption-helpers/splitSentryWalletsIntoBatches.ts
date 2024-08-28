@@ -1,11 +1,13 @@
+import { SentryWallet } from "@sentry/sentry-subgraph-client";
+
 /**
- * Splits an array of sentry wallets into batches based on a maximum number of redemption indices per batch.
+ * Splits an array of sentry wallets into batches based on the maximum allowed redemptions per batch.
  *
- * @param {Array} sentryWallets - The array of sentry wallet objects to be split into batches.
- * @param {number} maxIndicesPerBatch - The maximum number of redemption indices allowed in each batch.
- * @returns {Array<Array>} - An array of batches, each containing a sub-array of sentry wallet objects.
+ * @param {SentryWallet[]} sentryWallets - The array of sentry wallets to split into batches.
+ * @param {number} maxIndicesPerBatch - The maximum number of redemptions allowed per batch.
+ * @returns {SentryWallet[][]} An array of batches, where each batch is an array of sentry wallets.
  */
-export function splitSentryWalletsIntoBatches(sentryWallets, maxIndicesPerBatch) {
+export function splitSentryWalletsIntoBatches(sentryWallets:SentryWallet[], maxIndicesPerBatch: number) {
     const sentryWalletBatches = [];  // This will store the final array of batches.
 
     let currentBatch = [];           // Temporary storage for the current batch of sentry wallets.

@@ -1,14 +1,18 @@
+import { SentryWallet } from "@sentry/sentry-subgraph-client";
+import { ethers } from "ethers";
+import { config } from "../index.js";
+import { esXaiAbi } from "../abis/index.js";
+
 /**
- * Processes a batch of wallets by extracting their addresses and redemption indices
- * and calling the contract method to convert redemptions in process.
+ * Processes a batch of wallets by calling the contract method to convert redemptions.
  *
- * @async
- * @function processBatchOfWallets
- * @param {Object[]} batchToProcess - Array of Sentry wallet objects to be processed.
- * @param {Object} esXaiContract - The contract instance used to convert redemptions.
- * @returns {Promise<void>} - A promise that resolves when the batch processing is complete.
+ * @param {SentryWallet[]} batchToProcess - An array of sentry wallet objects to process.
+ * @param {ethers.Signer} signer - The signer used to sign transactions and interact with the contract.
+ * @returns {Promise<void>} A promise that resolves when the batch has been processed or after the maximum retries are reached.
  */
-export async function processBatchOfWallets(batchToProcess, esXaiContract) {
+export async function processBatchOfWallets(batchToProcess:SentryWallet[], signer:ethers.Signer): Promise<void> {
+    // Initialize the contract with the provided signer
+    const esXaiContract = new ethers.Contract(config.esXaiAddress, esXaiAbi, signer);
 
     // Extract addresses and indices from the batch of wallets
     const { addresses, indices } = extractAddressesAndIndices(batchToProcess);
@@ -34,19 +38,16 @@ export async function processBatchOfWallets(batchToProcess, esXaiContract) {
     }
 }
 
+
 /**
  * Extracts wallet addresses and redemption indices from a batch of wallets.
  *
- * @function extractAddressesAndIndices
- * @param {Object[]} batchToProcess - Array of Sentry wallet objects to extract data from.
- * @param {string} batchToProcess[].address - The address of the wallet.
- * @param {Object[]} batchToProcess[].redemptions - Array of redemption objects for the wallet.
- * @param {number} batchToProcess[].redemptions[].index - The index of the redemption.
- * @returns {Object} - An object containing arrays of addresses and indices.
+ * @param {SentryWallet[]} batchToProcess - An array of sentry wallet objects to process.
+ * @returns {{addresses: string[], indices: number[][]}} An object containing an array of wallet addresses and an array of arrays of redemption indices for each wallet.
  */
-function extractAddressesAndIndices(batchToProcess) {
-    const addresses = [];  // Array to hold wallet addresses
-    const indices = [];    // Array to hold arrays of redemption indices for each wallet
+function extractAddressesAndIndices(batchToProcess:SentryWallet[]) {
+    const addresses: string[] = [];  // Array to hold wallet addresses
+    const indices: number[][] = [];    // Array to hold arrays of redemption indices for each wallet
     
     // Iterate through each wallet in the batch
     for (let i = 0; i < batchToProcess.length; i++) {

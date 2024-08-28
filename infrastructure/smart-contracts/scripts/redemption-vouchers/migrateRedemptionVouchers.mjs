@@ -1,5 +1,4 @@
-import { config } from "@sentry/core";
-import {getBlockOfSentryWalletsFromSubgraph} from "./redemption-utils/getBlockOfSentryWalletsFromSubgraph.mjs";
+import { config, getBlockOfSentryWalletsFromSubgraph, splitSentryWalletsIntoBatches, processBatchOfWallets} from "@sentry/core";
 
 async function main() {
 
@@ -7,7 +6,7 @@ async function main() {
     const [deployer] = (await ethers.getSigners());
 
     console.log("Starting redemption migration...");
-    const esXai = await ethers.getContractFactory("esXai4");
+    const esXai = await ethers.getContractFactory("esXai3");
     const esXaiInstance = await new ethers.Contract(config.esXaiAddress, esXai.interface, deployer);
 
     let lastUserIndex = 0;
