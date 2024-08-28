@@ -29,7 +29,7 @@ export async function listenForChallengesCallback(challengeNumber: bigint, chall
             });
     }
 
-    operatorState.cachedLogger(`Received new challenge with number: ${challengeNumber}.`);
+    operatorState.cachedLogger(`Received new challenge with number: ${challengeNumber}. Delayed challenges will still accrue rewards.`);
     operatorState.cachedLogger(`Processing challenge...`);
 
     // Add a delay of 1 -300 seconds to the new challenge process so not all operators request the subgraph at the same time
