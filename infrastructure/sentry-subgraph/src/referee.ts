@@ -27,7 +27,7 @@ import {
   PoolInfo,
   PoolChallenge,
   BulkSubmission,
-  NodeConfirmed
+  NodeConfirmation
 } from "../generated/schema"
 import { checkIfSubmissionEligible } from "./utils/checkIfSubmissionEligible"
 import { getBoostFactor } from "./utils/getBoostFactor"
@@ -675,7 +675,7 @@ export function handleBulkRewardsClaimed(event: BulkRewardsClaimedEvent): void {
 
 export function handleNodeConfirmed(event: NodeConfirmedEvent): void {
   //subgraph entity id is nodeNum since its already unique
-  const nodeConfirmedEvent = new NodeConfirmed(
+  const nodeConfirmedEvent = new NodeConfirmation(
     event.params.nodeNum.toString()
   )
   nodeConfirmedEvent.nodeNum = event.params.nodeNum;

@@ -1,4 +1,4 @@
-import { Challenge, NodeConfirmed } from "../../generated/schema";
+import { Challenge, NodeConfirmation } from "../../generated/schema";
 import { Referee } from "../../generated/Referee/Referee"
 import { BigInt, log } from "@graphprotocol/graph-ts";
 
