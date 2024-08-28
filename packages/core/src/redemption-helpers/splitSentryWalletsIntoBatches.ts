@@ -10,7 +10,7 @@ import { SentryWallet } from "@sentry/sentry-subgraph-client";
 export function splitSentryWalletsIntoBatches(sentryWallets:SentryWallet[], maxIndicesPerBatch: number) {
     const sentryWalletBatches = [];  // This will store the final array of batches.
 
-    let currentBatch = [];           // Temporary storage for the current batch of sentry wallets.
+    let currentBatch:SentryWallet[] = [];           // Temporary storage for the current batch of sentry wallets.
     let currentBatchCount = 0;       // Counter to track the total number of redemptions in the current batch.
 
     // Iterate through each sentry wallet in the input array.
