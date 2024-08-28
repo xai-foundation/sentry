@@ -18,6 +18,8 @@ export function handleTransfer(event: TransferEvent): void {
     sentryWallet.esXaiStakeAmount = BigInt.fromI32(0)
     sentryWallet.keyCount = BigInt.fromI32(0)
     sentryWallet.stakedKeyCount = BigInt.fromI32(0)
+    sentryWallet.esXaiBalance = BigInt.fromI32(0)
+    sentryWallet.totalEsXaiPendingRedemption = BigInt.fromI32(0)
   }
   
   sentryWallet.keyCount = sentryWallet.keyCount.plus(BigInt.fromI32(1))

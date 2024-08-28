@@ -1,0 +1,4 @@
+type GlobalTotals @entity(immutable: false) {
+    id: String!
+    totalEsXaiPendingRedemption: BigInt!
+}
