@@ -85,7 +85,6 @@ export function handleInitialized(event: Initialized): void {
   refereeConfig.save();
 }
 
-
 export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
   // Load current referee config from the graph
   const refereeConfig = RefereeConfig.load("RefereeConfig");
@@ -675,17 +674,15 @@ export function handleBulkRewardsClaimed(event: BulkRewardsClaimedEvent): void {
 }
 
 export function handleNodeConfirmed(event: NodeConfirmedEvent): void {
-  
+  //subgraph entity id is nodeNum since its already unique
   const nodeConfirmedEvent = new NodeConfirmed(
-    event.params.nodeNum.toString() + "_" + event.params.blockHash.toHexString()
+    event.params.nodeNum.toString()
   )
-  nodeConfirmedEvent.nodeNum = event.params.nodeNum
-  nodeConfirmedEvent.blockHash = event.params.blockHash
-  nodeConfirmedEvent.sendRoot = event.params.sendRoot
+  nodeConfirmedEvent.nodeNum = event.params.nodeNum;
+  nodeConfirmedEvent.blockHash = event.params.blockHash;
+  nodeConfirmedEvent.sendRoot = event.params.sendRoot;
 
   //constructing confirmHash exactly how its built in the smart contract (RollupLib.confirmHash)
-
-  // Concatenate the two bytes32 values
   let blockHashBytes = nodeConfirmedEvent.blockHash;
   let sendRootBytes = nodeConfirmedEvent.sendRoot;
 
@@ -694,15 +691,14 @@ export function handleNodeConfirmed(event: NodeConfirmedEvent): void {
     return;
   }
 
-  // Compute and return the Keccak-256 hash
+  //confirmData = keccak256(blockHash + sendRoot)
   let concatenatedHexStr = blockHashBytes.concat(sendRootBytes).toHexString();
   let concatenatedByteArray = ByteArray.fromHexString(concatenatedHexStr);
   let confirmHashByteArray = crypto.keccak256(concatenatedByteArray);
   let confirmHashHexStr = confirmHashByteArray.toHexString();
 
+  //assign confirm data
   nodeConfirmedEvent.confirmData = confirmHashHexStr;
   
-  log.debug("confirmHash: ", [confirmHashHexStr]);
-
-  nodeConfirmedEvent.save()
+  nodeConfirmedEvent.save();
 }
