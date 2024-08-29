@@ -6,32 +6,40 @@ export function syncStakingPools(program: Command) {
     program
         .command('sync-staking-pools')
         .description('Sync the staking pool db data with the current blockchain configs')
-        .action(async () => {
-            const mongoUriPrompt = {
-                type: 'password',
-                name: 'mongoUri',
-                message: 'Enter the mongodb connection URI:',
-                mask: '*',
-            };
+        .option('-u, --uri <uri>', 'MongoDB connection URI')
+        .action(async (options) => {
+            let mongoUri = options.uri;
 
-            const { mongoUri } = await inquirer.prompt([mongoUriPrompt]);
+            if (!mongoUri) {
+                const mongoUriPrompt = {
+                    type: 'password',
+                    name: 'mongoUri',
+                    message: 'Enter the MongoDB connection URI:',
+                    mask: '*',
+                };
 
-            // Listen for process termination and call the handler
-            process.on('SIGINT', async () => {
-                console.log(`[${new Date().toISOString()}] The CentralizationRuntime has been terminated manually.`);
-                process.exit();
-            });
+                ({ mongoUri } = await inquirer.prompt([mongoUriPrompt]));
+            }
 
-            await poolDataSync({
-                mongoUri,
-                logFunction: (message: string) => {
-                    console.log(message);
-                },
-            });
+            console.log('Starting staking pool sync...');
 
-            // Simulate a long-running process to keep the CLI running
-            setInterval(() => {
-                console.log("Running..."); // Placeholder for actual long-running logic
-            }, 5000);
+            try {
+                await poolDataSync({
+                    mongoUri,
+                    logFunction: (message: string) => {
+                        console.log(`[${new Date().toISOString()}] ${message}`);
+                    },
+                });
+                console.log('Staking pool sync completed successfully.');
+            } catch (error) {
+                console.error('Error during staking pool sync:', error);
+                process.exit(1);
+            }
         });
 }
+
+// Listen for process termination globally
+process.on('SIGINT', () => {
+    console.log(`\n[${new Date().toISOString()}] Process terminated manually.`);
+    process.exit(0);
+});
