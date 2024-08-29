@@ -5,8 +5,7 @@ import { Challenge } from "./index.js";
 export async function isChallengeSubmitTime(): Promise<{isSubmitTime:boolean, currentChallenge: Challenge}> {
 
 	    // Get Last Challenge Data
-		const challengeData = await getLatestChallenge();
-		const currentChallenge = challengeData[1];
+		const [_, currentChallenge] = await getLatestChallenge();
 		const lastChallengeTime = Number(currentChallenge.assertionTimestamp);
 	
 		// Calculate the minimum time to submit an assertion
