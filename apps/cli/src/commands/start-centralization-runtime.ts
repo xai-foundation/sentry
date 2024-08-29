@@ -135,11 +135,11 @@ async function handleRuntimeError(
     await sendSlackNotification(slackWebHookUrl, logMessage, (log: string) => commandInstance.log(log));
 }
 
-/**
- * Simulates an error after a specified number of seconds.
- * @param {number} seconds - Number of seconds after which to simulate an error.
- * @returns {Promise<never>} - A promise that rejects with the simulated error.
- */
+// /**
+//  * Simulates an error after a specified number of seconds.
+//  * @param {number} seconds - Number of seconds after which to simulate an error.
+//  * @returns {Promise<never>} - A promise that rejects with the simulated error.
+//  */
 // function simulateError(seconds: number): Promise<never> {
 //     return new Promise((_, reject) => {
 //         setTimeout(() => {
