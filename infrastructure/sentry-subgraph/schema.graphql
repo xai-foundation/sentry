@@ -204,7 +204,7 @@ type BulkSubmission @entity(immutable: false) {
 
 type NodeConfirmation @entity(immutable: false) {
   id: String!
-  nodeNum: BigInt! # aka assertionId
+  nodeNum: BigInt! @index # aka assertionId
   blockHash: Bytes!
   sendRoot: Bytes!
   confirmData: String!

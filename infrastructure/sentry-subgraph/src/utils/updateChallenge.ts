@@ -39,14 +39,47 @@ export function updateChallenge(referee: Referee, challenge: Challenge): Challen
     challenge.numberOfEligibleClaimers = challengeStruct.numberOfEligibleClaimers;
     challenge.amountClaimedByClaimers = challengeStruct.amountClaimedByClaimers;
 
-    //set challenge field in NodeConfirmed event to challenge id and save
-    let nodeConfirmation = NodeConfirmation.load(challenge.assertionId.toString());
-    if (!nodeConfirmation) {
-        log.warning(`Failed to load nodeConfirmation entity with id: ${challenge.assertionId}`, []);
+    //set challenge id range and load previous challenge entity
+    const currentChallengeId = challenge.challengeNumber;
+    const previousChallengeId = currentChallengeId.minus(BigInt.fromI32(1));
+    const previousChallenge = Challenge.load(previousChallengeId.toString());
+
+    //previous challenge not found, therefore on the first challenge
+    if (!previousChallenge) {
+        //set challenge field in NodeConfirmed event to challenge id and save
+        let nodeConfirmation = NodeConfirmation.load(challenge.assertionId.toString());
+        if (!nodeConfirmation) {
+            log.warning(`Failed to load nodeConfirmation entity with id: ${challenge.assertionId}`, []);
+            return challenge;
+        }
+        nodeConfirmation.challenge = challenge.id.toString();
+        nodeConfirmation.save();
         return challenge;
     }
-    nodeConfirmation.challenge = challenge.id.toString();
-    nodeConfirmation.save();
+
+    //execute based on gap between previous and current assertion id
+    const assertionIdGapSize = challenge.assertionId.minus(previousChallenge.assertionId);
+    if (assertionIdGapSize.equals(BigInt.fromI32(1))) { //gap size == 1 (no gap)
+        //set challenge field in this NodeConfirmed event
+        let nodeConfirmation = NodeConfirmation.load(challenge.assertionId.toString());
+        if (!nodeConfirmation) {
+            log.warning(`Failed to load nodeConfirmation entity with id: ${challenge.assertionId}`, []);
+            return challenge;
+        }
+        nodeConfirmation.challenge = challenge.id.toString();
+        nodeConfirmation.save();
+    } else if (assertionIdGapSize.gt(BigInt.fromI32(1))) { //gap size > 1
+        //set challenge field in each NodeConfirmed event in gap
+        for (let i = previousChallenge.assertionId; i < challenge.assertionId; i = i.plus(BigInt.fromI32(1))) {
+            let nodeConfirmation = NodeConfirmation.load(i.toString());
+            if (!nodeConfirmation) {
+                log.warning(`Failed to load nodeConfirmation entity with id: ${i.toString()}`, []);
+                return challenge;
+            }
+            nodeConfirmation.challenge = challenge.id.toString();
+            nodeConfirmation.save();
+        }
+    }
 
     return challenge;
 }
