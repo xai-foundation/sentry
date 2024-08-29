@@ -3,12 +3,13 @@ import {wagmiConfig, chains} from "../../../main";
 import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
 import {BiLoaderAlt} from "react-icons/bi";
 import {useEffect, useState} from "react";
-import {BLOCKED_IP_COPY, checkKycStatus, xaiRedEnvelopeAbi} from "@sentry/core";
+import {checkKycStatus, xaiRedEnvelopeAbi} from "@sentry/core";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import {FaCircleCheck, FaCircleXmark} from "react-icons/fa6";
 import {Link} from "react-router-dom";
 import { config } from "@sentry/core";
 import { getAccount } from '@wagmi/core'
+import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
 
 export function RedEnvelope2024() {
 	const {blocked, loading: loadingGeo} = useBlockIp({blockUsa: true});
@@ -80,7 +81,7 @@ export function RedEnvelope2024() {
 	if (blocked) {
 		return (
 			<div className='w-full h-screen flex justify-center items-center'>
-				<p className="p-2 text-md text-white">{BLOCKED_IP_COPY}</p>
+				<IpBlockText classNames="p-2 text-md text-white" />
 			</div>
 		);
 	}

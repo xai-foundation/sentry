@@ -14,7 +14,7 @@ import {RedEnvelope2024} from "@/features/wallet/routes/RedEnvelope2024";
 import {ClaimRedEnvelope2024} from "@/features/wallet/routes/ClaimRedEnvelope2024";
 import { ReactCookieConsent } from '../footer/ReactCookieConsent';
 import UrlVerification from "@/features/UrlVerification";
-import {BLOCKED_IP_COPY} from "@sentry/core";
+import IpBlockText from '@sentry/ui/src/rebrand/text/IpBlockText';
 
 export function AppRoutes() {
 	const {blocked, loading} = useBlockIp({blockUsa: true});
@@ -31,7 +31,7 @@ export function AppRoutes() {
 	if (blocked) {
 		return (
 			<div className='w-full h-screen flex justify-center items-center'>
-				<p className="p-2 text-md text-white">{BLOCKED_IP_COPY}</p>
+				<IpBlockText classNames="p-2 text-md text-white" />
 			</div>
 		)
 	}

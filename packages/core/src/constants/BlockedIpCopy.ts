@@ -1,1 +1,0 @@
-export const BLOCKED_IP_COPY = "You are unable to access this website"

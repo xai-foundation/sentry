@@ -1,7 +1,7 @@
 "use client";
 
 import { useBlockIp } from "@/hooks/useBlockIp";
-import { BLOCKED_IP_COPY } from "@sentry/core";
+import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
 import { PropsWithChildren } from "react";
 import { BiLoaderAlt } from "react-icons/bi";
 
@@ -22,7 +22,7 @@ export function IpLocationChecker({ children }: PropsWithChildren) {
 	if (blocked) {
 		return (
 			<div className='w-full h-screen flex justify-center items-center'>
-				<p className="p-2 text-md text-white">{BLOCKED_IP_COPY}</p>
+				<IpBlockText classNames="p-2 text-md text-white" />
 			</div>
 		);
 	}

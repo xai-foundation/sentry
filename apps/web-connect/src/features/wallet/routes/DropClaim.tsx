@@ -3,7 +3,7 @@ import {wagmiConfig, chains} from "../../../main";
 import {ConnectButton, PrimaryButton, XaiCheckbox} from "@sentry/ui";
 import {useState} from "react";
 import {BiLoaderAlt} from "react-icons/bi";
-import {BLOCKED_IP_COPY, config, NodeLicenseAbi} from "@sentry/core";
+import {config, NodeLicenseAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
@@ -11,6 +11,7 @@ import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
 import { KYCTooltip } from "@/features/checkout/components/KYCTooltip";
 import { useListClaimableAmount } from "@/features/hooks";
 import { getAccount } from '@wagmi/core'
+import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
 
 export function DropClaim() {
 	const {blocked, loading} = useBlockIp({blockUsa: true});
@@ -52,7 +53,7 @@ export function DropClaim() {
 	if (blocked) {
 		return (
 			<div className='w-full h-screen flex justify-center items-center'>
-				<p className="p-2 text-md text-white">{BLOCKED_IP_COPY}</p>
+				<IpBlockText classNames="p-2 text-md text-white" />
 			</div>
 		);
 	}

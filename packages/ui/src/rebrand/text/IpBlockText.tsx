@@ -15,7 +15,7 @@ interface IpBlockTextProps {
 const IpBlockText = ({ classNames }: IpBlockTextProps): JSX.Element => {
     // Return a paragraph element with optional class names applied
     return (
-        <p className={classNames}>You are unable to access this website</p>
+        <p className={classNames}>You are unable to access this website.</p>
     );
 };
 
