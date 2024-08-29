@@ -154,7 +154,7 @@ dataSources:
       eventHandlers:
         - event: NodeConfirmed(indexed uint64,bytes32,bytes32)
           handler: handleNodeConfirmed
-      file: ./src/referee.ts #TODO: refactor this into a separate rollup.ts file later
+      file: ./src/referee.ts
   # - kind: ethereum
   #   name: TinyKeysAirdrop
   #   network: arbitrum-one
