@@ -286,6 +286,8 @@ async function processMissedAssertions(commandInstance: Vorpal.CommandInstance) 
             );
             commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${missedAssertionNodeNum}`);
             lastAssertionTime = Date.now();
+            isProcessingMissedAssertions = false;
+
             return;
         }
 
