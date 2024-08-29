@@ -1,1 +1,1 @@
-export  const MINIMUM_TIME_BETWEEN_ASSERTIONS = 60 * 60; // 1 hour
+export  const MINIMUM_SECONDS_BETWEEN_ASSERTIONS = 60 * 60; // 1 hour

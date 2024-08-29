@@ -1,4 +1,4 @@
-import Vorpal from "vorpal";import { getAssertion, getLatestChallenge, getSignerFromPrivateKey, MINIMUM_TIME_BETWEEN_ASSERTIONS, submitAssertionToReferee } from "@sentry/core";
+import Vorpal from "vorpal";import { getAssertion, getSignerFromPrivateKey, submitAssertionToReferee } from "@sentry/core";
 import { isChallengeSubmitTime } from "@sentry/core";
 
 
