@@ -297,11 +297,9 @@ describe("Fixture Tests", function () {
             addr4,
             operator,
             rollupController,
-
             tiers,
             secretKeyHex,
             publicKeyHex: "0x" + publicKeyHex,
-
             referee: referee8,
             nodeLicense,
 			poolFactory,
