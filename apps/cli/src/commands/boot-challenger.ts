@@ -130,7 +130,7 @@ const onAssertionConfirmedCb = async (nodeNum: any, commandInstance: Vorpal.Comm
         try {
             await submitAssertionToReferee(
                 cachedSecretKey,
-                nodeNum,
+                Number(nodeNum),
                 assertionNode,
                 cachedSigner!.signer,
                 currentChallenge.assertionId
