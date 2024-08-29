@@ -338,7 +338,7 @@ export function bootChallenger(cli: Vorpal) {
 
             }
 
-            clearInterval(assertionCheckInterval);
+            //clearInterval(assertionCheckInterval);
             commandInstance.log(`[${new Date().toISOString()}] Challenger has stopped after ${NUM_ASSERTION_LISTENER_RETRIES} attempts.`);
             sendNotification(`Challenger has stopped after ${NUM_ASSERTION_LISTENER_RETRIES} attempts.`, commandInstance);
 
