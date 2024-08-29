@@ -13,13 +13,13 @@ interface DropdownProps {
     dropdownOptionsCount: number; // just put here arr.length
     isInvalid?: boolean;
     defaultValue?: string;
-    extraClasses?: {
-        dropdownContainer?: string;
-        dropdown?: string;
-        dropdownOptions?: string;
-    }
-}
-
+    extraClasses?: {                  // This is a good example of a location where it would be valuable to have 
+        dropdownContainer?: string;   // some guidance on what each of these classes is used for.
+        dropdown?: string;            // It's not clear what the difference is between dropdownContainer and dropdown.
+        dropdownOptions?: string;     // Is this used to style the items? The container? The dropdown itself?
+    }                                 // What should be used to change width, height, padding, etc.?
+}                                     // These may be trivial to a CSS Dev, but for someone who is not as familiar
+                                      // with CSS, it would be helpful to have some direction to be able to use these efficiently.
 interface DropdownItemProps {
     onClick: () => void;
     extraClasses?: string;
