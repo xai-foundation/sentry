@@ -6,7 +6,7 @@ export async function isChallengeSubmitTime(): Promise<{isSubmitTime:boolean, cu
 
 	    // Get Last Challenge Data
 		const [_, currentChallenge] = await getLatestChallenge();
-		const lastChallengeTime = Number(currentChallenge.assertionTimestamp);
+		const lastChallengeTime = Number(currentChallenge.createdTimestamp);
 	
 		// Calculate the minimum time to submit an assertion
 		const minimumTimeToSubmit = lastChallengeTime + MINIMUM_SECONDS_BETWEEN_ASSERTIONS;

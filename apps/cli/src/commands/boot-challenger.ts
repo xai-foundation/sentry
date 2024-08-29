@@ -96,7 +96,7 @@ const onAssertionConfirmedCb = async (nodeNum: any, commandInstance: Vorpal.Comm
 
     
     const {isSubmitTime, currentChallenge} = await isChallengeSubmitTime();
-    const lastChallengeTime = Number(currentChallenge.assertionTimestamp);
+    const lastChallengeTime = Number(currentChallenge.createdTimestamp);
 
     commandInstance.log(`[${new Date().toISOString()}] Last challenge was submitted at ${lastChallengeTime}...`);
 
