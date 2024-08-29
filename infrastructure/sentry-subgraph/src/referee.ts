@@ -699,6 +699,9 @@ export function handleNodeConfirmed(event: NodeConfirmedEvent): void {
 
   //assign confirm data
   nodeConfirmedEvent.confirmData = confirmHashHexStr;
+
+  //temporarily set challenge to placeholder value, set correct value in challenge handler
+  nodeConfirmedEvent.challenge = null;
   
   nodeConfirmedEvent.save();
 }

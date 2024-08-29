@@ -22,7 +22,7 @@ type Challenge @entity(immutable: false) {
   amountClaimedByClaimers: BigInt! # uint256
   submissions: [Submission!]! @derivedFrom(field: "challenge")
   bulkSubmissions: [BulkSubmission!]! @derivedFrom(field: "challenge")
-  nodeConfirmations: [NodeConfirmation!]!
+  nodeConfirmations: [NodeConfirmation!]! @derivedFrom(field: "challenge")
 }
 
 enum SubmittedFrom {
@@ -103,4 +103,5 @@ type NodeConfirmation @entity(immutable: false) {
   blockHash: Bytes
   sendRoot: Bytes
   confirmData: String
+  challenge: Challenge
 }

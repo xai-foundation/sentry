@@ -39,33 +39,14 @@ export function updateChallenge(referee: Referee, challenge: Challenge): Challen
     challenge.numberOfEligibleClaimers = challengeStruct.numberOfEligibleClaimers;
     challenge.amountClaimedByClaimers = challengeStruct.amountClaimedByClaimers;
 
-    //initialize nodeConfirmations field
-    challenge.nodeConfirmations = [];
-
-    //set challenge id range and load previous challenge entity
-    const currentChallengeId = challenge.challengeNumber;
-    const previousChallengeId = currentChallengeId.minus(BigInt.fromI32(1));
-    const previousChallenge = Challenge.load(previousChallengeId.toString());
-
-    //previous challenge not found, therefore on the first challenge
-    if (!previousChallenge) {
-        challenge.nodeConfirmations = [challenge.assertionId.toString()];
+    //set challenge field in NodeConfirmed event to challenge id and save
+    let nodeConfirmation = NodeConfirmation.load(challenge.assertionId.toString());
+    if (!nodeConfirmation) {
+        log.warning(`Failed to load nodeConfirmation entity with id: ${challenge.assertionId}`, []);
         return challenge;
     }
-
-    //execute based on gap between previous and current assertion id
-    const assertionIdGapSize = challenge.assertionId.minus(previousChallenge.assertionId);
-    if (assertionIdGapSize.equals(BigInt.fromI32(1))) { //gap == 1 (no gap)
-        //push single nodeConfirmed event into array
-        challenge.nodeConfirmations = [challenge.assertionId.toString()];
-    } else if (assertionIdGapSize.gt(BigInt.fromI32(1))) { //gap > 1
-        //push multiple nodeConfirmed events into array
-        let tempArray: string[] = [];
-        for (let i = previousChallenge.assertionId; i < challenge.assertionId; i = i.plus(BigInt.fromI32(1))) {
-            tempArray.push(i.toString());
-        }
-        challenge.nodeConfirmations = tempArray;
-    }
+    nodeConfirmation.challenge = challenge.id.toString();
+    nodeConfirmation.save();
 
     return challenge;
 }
