@@ -64,9 +64,12 @@ type SentryWallet @entity(immutable: false) {
   esXaiStakeAmount: BigInt!
   keyCount: BigInt!
   stakedKeyCount: BigInt!
+  esXaiBalance: BigInt!
+  totalEsXaiPendingRedemption: BigInt!
   sentryKeys: [SentryKey!]! @derivedFrom(field: "sentryWallet")
   poolStakes: [PoolStake!]! @derivedFrom(field: "wallet")
   bulkSubmissions: [BulkSubmission!]! @derivedFrom(field: "sentryWallet")
+  redemptions: [RedemptionRequest!]! @derivedFrom(field: "sentryWallet")
 }
 
 type RefereeConfig @entity(immutable: false) {
