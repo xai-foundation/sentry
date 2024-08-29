@@ -1,9 +1,8 @@
 import { challengerHashAssertion } from './challengerHashAssertion.js';
 import { ethers } from 'ethers';
-import { AssertionNode, getAssertion } from '../utils/getAssertion.js';
+import { AssertionNode } from '../utils/getAssertion.js';
 import { RefereeAbi } from '../abis/index.js';
 import { config } from '../config.js';
-import { Challenge } from './index.js';
 import { getMultipleChallengeConfirmData } from '../utils/getMultipleChallengeConfirmData.js';
 
 /**
@@ -27,7 +26,7 @@ export async function submitAssertionToReferee(
 
     const isBatch = assertionIdGap > 1;
 
-    let finalConfirmData: string;    
+    let finalConfirmData = assertionNode.confirmData;  
     
     if(isBatch) {
 
@@ -38,10 +37,6 @@ export async function submitAssertionToReferee(
         const [_, confirmDataHash] = await getMultipleChallengeConfirmData(assertionIds);
 
         finalConfirmData = confirmDataHash;
-    }else{
-
-        finalConfirmData = assertionNode.confirmData;
-        
     }
 
     // Hash the assertion
