@@ -251,7 +251,7 @@ export function handleChallengeSubmitted(event: ChallengeSubmittedEvent): void {
   challenge.challengeNumber = event.params.challengeNumber
   challenge.status = "OpenForSubmissions"
 
-  challenge = updateChallenge(contract, challenge)
+  challenge = updateChallenge(contract, challenge, event)
 
   challenge.save()
 }
