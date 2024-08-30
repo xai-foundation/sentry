@@ -230,6 +230,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     event UnstakeV1(address indexed user, uint256 amount, uint256 totalStaked);
     event NewBulkSubmission(uint256 indexed challengeId, address indexed bulkAddress, uint256 stakedKeys, uint256 winningKeys);
     event UpdateBulkSubmission(uint256 indexed challengeId, address indexed bulkAddress, uint256 stakedKeys, uint256 winningKeys, uint256 increase, uint256 decrease);
+    event BatchChallenge(uint256 indexed challengeId, uint64[] assertionIds);
 
     function initialize(address _refereeCalculationsAddress) public reinitializer(7) {
         refereeCalculationsAddress = _refereeCalculationsAddress;
@@ -424,22 +425,76 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         // check the challengerPublicKey is set
         require(challengerPublicKey.length != 0, "8");
 
-        // check the assertionId and rollupAddress combo haven't been submitted yet
-        bytes32 comboHash = keccak256(abi.encodePacked(_assertionId, rollupAddress));
-        require(!rollupAssertionTracker[comboHash], "9");
-        rollupAssertionTracker[comboHash] = true;
+        // Connect to the rollup contract
+        IRollupCore rollup = IRollupCore(rollupAddress);
 
-        // verify the data inside the hash matched the data pulled from the rollup contract
-        if (isCheckingAssertions) {
+        // If the gap is more than 1 assertion, we need to handle as a batch challenge
+        bool isBatch = _assertionId - _predecessorAssertionId > 1;
 
-            // get the node information from the rollup.
-            Node memory node = IRollupCore(rollupAddress).getNode(_assertionId);
+        // Initialize the array to store the assertionIds and confirmData for the batch challenge
+        uint64 [] memory assertionIds = new uint64[](_assertionId - _predecessorAssertionId);
+        bytes32 [] memory batchConfirmData = new bytes32[](_assertionId - _predecessorAssertionId);
 
-            require(node.prevNum == _predecessorAssertionId, "10");
-            require(node.confirmData == _confirmData, "11");
-            require(node.createdAtBlock == _assertionTimestamp, "12");
+        // Loop through the assertions and check if they have been submitted
+        for(uint64 i = _predecessorAssertionId + 1; i <= _assertionId; i++){
+
+            // create the comboHash for the assertionId and rollupAddress
+            bytes32 comboHashBatch = keccak256(abi.encodePacked(i, rollupAddress));
+
+            // check the assertionId and rollupAddress combo haven't been submitted yet
+            require(!rollupAssertionTracker[comboHashBatch], "9");
+
+            // set the comboHash to true to indicate it has been submitted
+            rollupAssertionTracker[comboHashBatch] = true;
+
+            // If assertion checking is active, we need to verify the assertions
+            // Assertion checking would only be disabled if for some reason
+            // the Rollup contract is not available on the network
+            if (isCheckingAssertions) {
+
+                // get the node information for this assertion from the rollup.
+                Node memory node = rollup.getNode(i);
+
+                // check the _predecessorAssertionId is correct
+                require(node.prevNum == i - 1, "10");   
+
+                // Check the confirmData & timestamp for the assertion
+                if(isBatch){
+
+                    // Store the assertionIds and confirmData for the batch challenge
+                    assertionIds[i - _predecessorAssertionId - 1] = i;
+                    batchConfirmData[i - _predecessorAssertionId - 1] = node.confirmData;
+
+                    // If it is a batch challenge, we need to verify the
+                    // timestamp but only for the last assertionId
+                    if(i == _assertionId){
+                        // Verify Timestamp
+                        require(node.createdAtBlock == _assertionTimestamp, "12");
+                    }
+
+                }else{
+
+                    // Verify individual confirmData
+                    require(node.createdAtBlock == _assertionTimestamp, "12");
+                    require(node.confirmData == _confirmData, "11");
+                }
+                
+            }
         }
-        
+
+        // If we are handling as a batch challenge, we need to check the confirmData for all assertions
+        if(isBatch){
+            if(isCheckingAssertions){
+                // Hash all of the confirmData for the batch challenge
+                bytes32 confirmHash  = keccak256(abi.encodePacked(batchConfirmData));
+
+                // Confirm the hash matches what was submitted
+                require(_confirmData == confirmHash, "11");
+            }
+            // emit the batch challenge event
+            emit BatchChallenge(challengeCounter, assertionIds);
+        }
+                
         // we need to determine how much token will be emitted
         (uint256 challengeEmission,) = calculateChallengeEmissionAndTier();
 
@@ -479,8 +534,10 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             amountClaimedByClaimers: 0
         });
 
-        // emit the events
-        emit ChallengeSubmitted(challengeCounter);   
+
+        // emit the event
+        emit ChallengeSubmitted(challengeCounter);
+
 
         // increment the challenge counter
         challengeCounter++;

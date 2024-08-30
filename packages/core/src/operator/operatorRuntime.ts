@@ -117,7 +117,7 @@ export async function operatorRuntime(
         }
     };
     fetchBlockNumber();
-    const intervalId = setInterval(fetchBlockNumber, 300000); // 300,000 milliseconds = 5 minutes
+    const intervalId = setInterval(fetchBlockNumber, 900000); // 900,000 milliseconds = 15 minutes
 
     async function stop() {
         clearInterval(intervalId);

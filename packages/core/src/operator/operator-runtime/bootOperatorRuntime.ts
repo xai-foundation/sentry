@@ -38,7 +38,7 @@ export const bootOperatorRuntime = async (
         
         await processNewChallenge(openChallenge.challengeNumber, openChallenge, bulkOwnersAndPools, refereeConfig);
 
-        logFunction(`Processing open challenges.`);
+        logFunction(`Processing open challenges. Challenges should occur roughly once per hour. Rewards will still accrue even if challenges are delayed.`);
 
         //Remove submissions for current challenge so we don't process it again
         bulkOwnersAndPools.forEach(b => {
