@@ -11,7 +11,7 @@ import { resilientEventListener } from "../utils/resilientEventListener.js";
  * @param callback - The callback function to be triggered when ChallengeSubmitted event is emitted.
  * @returns A function that can be called to stop listening for the event.
  */
-export function listenForChallenges(callback: (challengeNumber: bigint, challenge: Challenge, event: any) => void, simulateError: boolean = false): () => void {
+export function listenForChallenges(callback: (challengeNumber: bigint, challenge: Challenge, event: any) => void, simulateError: boolean = true): () => void {
     const challengeNumberMap: { [challengeNumber: string]: boolean } = {};
 
     const listener = resilientEventListener({

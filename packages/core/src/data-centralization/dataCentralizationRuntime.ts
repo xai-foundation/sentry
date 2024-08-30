@@ -98,7 +98,7 @@ export async function dataCentralizationRuntime({
 
 	let closeChallengeListener: any;
 	try {
-		closeChallengeListener = listenForChallenges(async (challengeNumber: bigint, challenge: Challenge, event?) => {
+		closeChallengeListener = listenForChallenges(async (challengeNumber: bigint, challenge: Challenge, event?, simulateError: boolean = true) => {
 			try {
 				const startTime = new Date().getTime();
 				const PoolModel = mongoose.models.Pool || mongoose.model<IPool>('Pool', PoolSchema);
