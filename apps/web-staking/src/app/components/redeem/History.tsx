@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Id } from "react-toastify";
 import { useDisclosure } from "@nextui-org/react"
 
-import { OrderedRedemptions, RedemptionRequest, mapWeb3Error } from "@/services/web3.service";
+import { OrderedRedemptions, RedemptionRequest, getNetwork, getRedemptions, mapWeb3Error } from "@/services/web3.service";
 
 import MainTitle from "../titles/MainTitle";
 import { loadingNotification, updateNotification } from "../notifications/NotificationsComponent";
@@ -65,7 +65,7 @@ function HistoryCard({
 	loadingIndex,
 	redemptionIndex,
 	isCancelled = false,
-											 isCancelling,
+	isCancelling,
 	isPending = false
 }: HistoryCardProps) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -142,11 +142,7 @@ function HistoryCard({
 	)
 };
 
-export default function History({ redemptions, reloadRedemptions }: {
-	redemptions: OrderedRedemptions,
-	reloadRedemptions: () => void,
-}) {
-	const { chainId } = useAccount();
+export default function History() {
 	const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
 	const [isCancel, setIsCancel] = useState(false);
 	const [showKYCModal, setShowKYCModal] = useState(false);
@@ -154,13 +150,20 @@ export default function History({ redemptions, reloadRedemptions }: {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 	const { isApproved } = useGetKYCApproved();
 	const {blocked, loading} = useBlockIp();
+	const [redemptionHistory, setRedemptionHistory] = useState<OrderedRedemptions>({ open: [], closed: [], claimable: [] });
+	const { address, chainId } = useAccount();
+	const [currentOffset, setCurrentOffset] = useState(0);
+	const [foundAll, setFoundAll] = useState(false);
+	const [redemptionsLoading, setRedemptionsLoading] = useState(false);
+	const QTY_PER_QUERY = 2; // Number of redemptions to fetch per query
+	const AUTO_SCROLL_AMOUNT = 5; // Pixels to scroll up after triggering infinite scroll
 	
 
 	const { switchChain } = useSwitchChain();
 	const { writeContractAsync } = useWriteContract();
 
 	// Substitute Timeouts with useWaitForTransaction
-	const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
+	const { isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
 		hash: receipt,
 	});
 
@@ -168,11 +171,45 @@ export default function History({ redemptions, reloadRedemptions }: {
 
 	const toastId = useRef<Id>();
 
+	const sortLists = (list1: RedemptionRequest[], list2: RedemptionRequest[], sortOrder: 'asc' | 'desc' = 'asc'): RedemptionRequest[] => {
+		// Combine lists and remove duplicates based on index
+		const combinedSet = new Set([...list1, ...list2].map(item => JSON.stringify(item)));
+		const combinedList = Array.from(combinedSet).map(item => JSON.parse(item));
+	  
+		// Sort the combined list
+		return combinedList.sort((a: RedemptionRequest, b: RedemptionRequest) => {
+		  return sortOrder === 'asc' ? a.endTime - b.endTime : b.endTime - a.endTime;
+		});
+	  };
+
+	const reloadRedemptions = useCallback((count = 0) => {
+		if (redemptionsLoading) return;
+		if (!address || !chainId || foundAll) return;
+		if (count > 1) return;
+		getRedemptions(getNetwork(chainId), address!, QTY_PER_QUERY, currentOffset)
+			.then(orderedRedemptions => {
+				if(orderedRedemptions.claimable.length === 0 && orderedRedemptions.open.length === 0 && orderedRedemptions.closed.length === 0) {
+					setFoundAll(true);
+					return;
+				}
+				const newClaimableSortedList = sortLists(redemptionHistory.claimable, orderedRedemptions.claimable);
+				const newOpenSortedList = sortLists(redemptionHistory.open, orderedRedemptions.open);
+				const newClosedSortedList = sortLists(redemptionHistory.closed, orderedRedemptions.closed, 'desc');
+
+				setRedemptionHistory({
+					claimable: newClaimableSortedList,
+					open: newOpenSortedList,
+					closed: newClosedSortedList,
+				});
+			})
+	}, [currentOffset, address, chainId, redemptionHistory, setRedemptionHistory]);
+
 	const updateOnSuccess = useCallback(() => {
+		setFoundAll(false);
 		updateNotification(isCancel ? 'Cancel successful' : `Claim successful`, toastId.current as Id, false, receipt, chainId);
 		reloadRedemptions();
 		isCancel && setIsCancel(false);
-	}, [receipt, chainId, reloadRedemptions])
+	}, [receipt, chainId]);
 
 	const updateOnError = useCallback(() => {
 		const error = mapWeb3Error(status);
@@ -232,6 +269,47 @@ export default function History({ redemptions, reloadRedemptions }: {
 		}
 	}
 
+	const handleScroll = useCallback(() => {
+		if (redemptionsLoading) return;
+		// If we're not at the bottom, return
+		if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight) return;
+
+		setRedemptionsLoading(true);
+
+		try {		
+			// If we're at the bottom, trigger a reload
+			reloadRedemptions();
+
+			// Increase the offset for the next reload		
+			const newOffset = currentOffset + QTY_PER_QUERY;
+			setCurrentOffset(newOffset);
+
+			// Scroll up a little to make the reload more visible and give the user space to scroll down for another reload
+			const { scrollTop } = document.documentElement;
+			window.scrollTo({
+				top: scrollTop - AUTO_SCROLL_AMOUNT,
+				behavior: 'smooth'
+			});
+			setRedemptionsLoading(false);
+
+		} catch (error) {
+			console.error(error);
+			setRedemptionsLoading(false);
+		}
+
+		setRedemptionsLoading(false);
+	}, [currentOffset, reloadRedemptions]);
+
+	useEffect(() => {
+		window.addEventListener('scroll', handleScroll);
+		return () => window.removeEventListener('scroll', handleScroll);
+	}, [handleScroll]);
+
+	useEffect(() => {
+		// Load redemptions on initial render
+		reloadRedemptions();
+	}, []);
+
 	return (
 		<>
 			<div className="group flex flex-col w-xl">
@@ -250,14 +328,14 @@ export default function History({ redemptions, reloadRedemptions }: {
 				  isError={selectedCountry === "United States"}
 				  errorMessage="KYC is not available for the selected country"
 		  />
-				{(redemptions.claimable.length > 0 || redemptions.open.length > 0) &&
+				{(redemptionHistory.claimable.length > 0 || redemptionHistory.open.length > 0) &&
 					<div className="bg-nulnOil/85 box-shadow-default mb-[53px]">
 						<MainTitle
 							isSubHeader
 							classNames="!text-3xl capitalize border-b-1 border-chromaphobicBlack py-6 md:px-8 px-[17px] !mb-0"
 							title="Pending"
 						/>
-						{redemptions.claimable.map((r, index) => {
+						{redemptionHistory.claimable.map((r:RedemptionRequest, index: number) => {
 							return (
 								<HistoryCard
 									key={r.index}
@@ -266,7 +344,7 @@ export default function History({ redemptions, reloadRedemptions }: {
 									claimable={true}
 									claimDisabled={isLoading}
 									receivedAmount={r.receiveAmount}
-									redeemedAmount={r.redeemAmount}
+									redeemedAmount={r.amount}
 									receivedCurrency="XAI"
 									redeemedCurrency="esXAI"
 									durationMillis={0}
@@ -274,13 +352,13 @@ export default function History({ redemptions, reloadRedemptions }: {
 									isLoading={isLoading}
 									redemptionIndex={r.index}
 									loadingIndex={loadingIndex}
-									lastIndex={(redemptions.claimable.length - 1 === index) && !redemptions.open.length}
+									lastIndex={(redemptionHistory.claimable.length - 1 === index) && !redemptionHistory.open.length}
 									isPending={true}
 								/>
 							)
 						})}
 
-						{redemptions.open.map((r, index) => {
+						{redemptionHistory.open.map((r:RedemptionRequest, index: number) => {
 							return (
 								<HistoryCard
 									key={r.index}
@@ -288,14 +366,14 @@ export default function History({ redemptions, reloadRedemptions }: {
 									onCancel={(onClose) => onCancel(r, onClose)}
 									claimable={false}
 									receivedAmount={r.receiveAmount}
-									redeemedAmount={r.redeemAmount}
+									redeemedAmount={r.amount}
 									receivedCurrency="XAI"
 									redeemedCurrency="esXAI"
 									isLoading={isLoading}
 									loadingIndex={loadingIndex}
 									redemptionIndex={r.index}
 									durationMillis={r.startTime + r.duration - Date.now()}
-									lastIndex={redemptions.open.length - 1 === index}
+									lastIndex={redemptionHistory.open.length - 1 === index}
 									isPending={true}
 								/>
 							)
@@ -303,28 +381,28 @@ export default function History({ redemptions, reloadRedemptions }: {
 					</div>
 				}
 
-				{(redemptions.closed.length > 0) &&
+				{(redemptionHistory.closed.length > 0) &&
 					<div className="bg-nulnOil/75 shadow-default mb-[53px]">
 						<MainTitle
 							isSubHeader
 							classNames="!text-3xl capitalize border-b-1 border-chromaphobicBlack py-6 md:px-8 px-[17px] !mb-0"
 							title="History" />
 
-						{redemptions.closed.map((r, index) => {
+						{redemptionHistory.closed.map((r:RedemptionRequest, index: number) => {
 							return (
 								<HistoryCard
 									key={r.index}
 									onClaim={() => onClaim(r)}
 									claimable={false}
 									receivedAmount={r.receiveAmount}
-									redeemedAmount={r.redeemAmount}
+									redeemedAmount={r.amount}
 									receivedCurrency="XAI"
 									redeemedCurrency="esXAI"
 									isLoading={isLoading}
 									loadingIndex={loadingIndex}
 									redemptionIndex={r.index}
 									durationMillis={r.endTime - Date.now()}
-									lastIndex={redemptions.closed.length - 1 === index}
+									lastIndex={redemptionHistory.closed.length - 1 === index}
 									isCancelled={r.cancelled}
 									isPending={false}
 								/>
