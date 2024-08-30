@@ -11,6 +11,235 @@ import {
   BigDecimal,
 } from "@graphprotocol/graph-ts";
 
+export class RedemptionRequest extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save RedemptionRequest entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type RedemptionRequest must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("RedemptionRequest", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): RedemptionRequest | null {
+    return changetype<RedemptionRequest | null>(
+      store.get_in_block("RedemptionRequest", id),
+    );
+  }
+
+  static load(id: string): RedemptionRequest | null {
+    return changetype<RedemptionRequest | null>(
+      store.get("RedemptionRequest", id),
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get sentryWallet(): string {
+    let value = this.get("sentryWallet");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set sentryWallet(value: string) {
+    this.set("sentryWallet", Value.fromString(value));
+  }
+
+  get index(): BigInt {
+    let value = this.get("index");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set index(value: BigInt) {
+    this.set("index", Value.fromBigInt(value));
+  }
+
+  get amount(): BigInt {
+    let value = this.get("amount");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set amount(value: BigInt) {
+    this.set("amount", Value.fromBigInt(value));
+  }
+
+  get startTime(): BigInt {
+    let value = this.get("startTime");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set startTime(value: BigInt) {
+    this.set("startTime", Value.fromBigInt(value));
+  }
+
+  get endTime(): BigInt {
+    let value = this.get("endTime");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set endTime(value: BigInt) {
+    this.set("endTime", Value.fromBigInt(value));
+  }
+
+  get claimableTime(): BigInt {
+    let value = this.get("claimableTime");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set claimableTime(value: BigInt) {
+    this.set("claimableTime", Value.fromBigInt(value));
+  }
+
+  get duration(): BigInt {
+    let value = this.get("duration");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set duration(value: BigInt) {
+    this.set("duration", Value.fromBigInt(value));
+  }
+
+  get completed(): boolean {
+    let value = this.get("completed");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set completed(value: boolean) {
+    this.set("completed", Value.fromBoolean(value));
+  }
+
+  get cancelled(): boolean {
+    let value = this.get("cancelled");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set cancelled(value: boolean) {
+    this.set("cancelled", Value.fromBoolean(value));
+  }
+
+  get voucherIssued(): boolean {
+    let value = this.get("voucherIssued");
+    if (!value || value.kind == ValueKind.NULL) {
+      return false;
+    } else {
+      return value.toBoolean();
+    }
+  }
+
+  set voucherIssued(value: boolean) {
+    this.set("voucherIssued", Value.fromBoolean(value));
+  }
+}
+
+export class GlobalTotals extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save GlobalTotals entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type GlobalTotals must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("GlobalTotals", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): GlobalTotals | null {
+    return changetype<GlobalTotals | null>(
+      store.get_in_block("GlobalTotals", id),
+    );
+  }
+
+  static load(id: string): GlobalTotals | null {
+    return changetype<GlobalTotals | null>(store.get("GlobalTotals", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get totalEsXaiPendingRedemption(): BigInt {
+    let value = this.get("totalEsXaiPendingRedemption");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalEsXaiPendingRedemption(value: BigInt) {
+    this.set("totalEsXaiPendingRedemption", Value.fromBigInt(value));
+  }
+}
+
 export class SentryKey extends Entity {
   constructor(id: string) {
     super();
@@ -1476,6 +1705,32 @@ export class SentryWallet extends Entity {
     this.set("stakedKeyCount", Value.fromBigInt(value));
   }
 
+  get esXaiBalance(): BigInt {
+    let value = this.get("esXaiBalance");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set esXaiBalance(value: BigInt) {
+    this.set("esXaiBalance", Value.fromBigInt(value));
+  }
+
+  get totalEsXaiPendingRedemption(): BigInt {
+    let value = this.get("totalEsXaiPendingRedemption");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalEsXaiPendingRedemption(value: BigInt) {
+    this.set("totalEsXaiPendingRedemption", Value.fromBigInt(value));
+  }
+
   get sentryKeys(): SentryKeyLoader {
     return new SentryKeyLoader(
       "SentryWallet",
@@ -1497,6 +1752,14 @@ export class SentryWallet extends Entity {
       "SentryWallet",
       this.get("id")!.toString(),
       "bulkSubmissions",
+    );
+  }
+
+  get redemptions(): RedemptionRequestLoader {
+    return new RedemptionRequestLoader(
+      "SentryWallet",
+      this.get("id")!.toString(),
+      "redemptions",
     );
   }
 }
@@ -2013,5 +2276,23 @@ export class PoolStakeLoader extends Entity {
   load(): PoolStake[] {
     let value = store.loadRelated(this._entity, this._id, this._field);
     return changetype<PoolStake[]>(value);
+  }
+}
+
+export class RedemptionRequestLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): RedemptionRequest[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<RedemptionRequest[]>(value);
   }
 }
