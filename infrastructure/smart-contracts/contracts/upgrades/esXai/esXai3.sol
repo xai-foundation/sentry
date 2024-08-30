@@ -317,9 +317,8 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
 
         totalRedemptions = _extRedemptionRequests[account].length;
 
-        // Ensure offset is not greater than totalRedemptions to prevent underflow
+        // Ensure we have redemptions to return and that the offset is within bounds.
         if (offset >= totalRedemptions || totalRedemptions == 0 || maxQty == 0) {
-            // If offset is too big, no items can be returned.
             redemptions = new RedemptionRequestExt[](0);
             return (redemptions, totalRedemptions);
         }
