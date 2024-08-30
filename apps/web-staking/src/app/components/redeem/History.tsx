@@ -155,7 +155,7 @@ export default function History() {
 	const [currentOffset, setCurrentOffset] = useState(0);
 	const [foundAll, setFoundAll] = useState(false);
 	const [redemptionsLoading, setRedemptionsLoading] = useState(false);
-	const QTY_PER_QUERY = 2; // Number of redemptions to fetch per query
+	const QTY_PER_QUERY = 5; // Number of redemptions to fetch per query
 	const AUTO_SCROLL_AMOUNT = 5; // Pixels to scroll up after triggering infinite scroll
 	
 
@@ -297,7 +297,6 @@ export default function History() {
 			setRedemptionsLoading(false);
 		}
 
-		setRedemptionsLoading(false);
 	}, [currentOffset, reloadRedemptions]);
 
 	useEffect(() => {
