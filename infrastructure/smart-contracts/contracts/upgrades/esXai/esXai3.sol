@@ -317,24 +317,29 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
 
         totalRedemptions = _extRedemptionRequests[account].length;
 
-        // Ensure we have redemptions to return and that the offset is within bounds.
-        if (offset >= totalRedemptions || totalRedemptions == 0 || maxQty == 0) {
+        // Early return if maxQty is zero or offset is out of bounds.
+        if (maxQty == 0 || offset >= totalRedemptions) {
             redemptions = new RedemptionRequestExt[](0);
             return (redemptions, totalRedemptions);
         }
 
-        // Calculate the starting index for retrieval, considering the offset.
-        uint256 startIndex = totalRedemptions - offset;
+        // Step 1: Calculate the starting index.
+        uint256 startIndex = totalRedemptions - 1 - offset;
 
-        // Determine the actual number of items to return.
-        uint256 qtyToReturn = maxQty > startIndex ? startIndex : maxQty;
+        // Step 2: Determine the number of redemption requests to return.
+        uint256 qtyToReturn = (maxQty < (totalRedemptions - offset)) ? maxQty : (totalRedemptions - offset);
+
+        // Step 3: Initialize the result array.
         redemptions = new RedemptionRequestExt[](qtyToReturn);
-        
-        for (uint256 i = 0; i < qtyToReturn; i++) {
-            // Populate the redemptions array starting from the most recent.
-            redemptions[i] = _extRedemptionRequests[account][startIndex - i - 1];
+
+        // Step 4: Fetch redemption requests in reverse order using i--.
+        for (uint256 i = qtyToReturn; i > 0; i--) {
+            redemptions[qtyToReturn - i] = _extRedemptionRequests[account][startIndex--];
         }
         
         return (redemptions, totalRedemptions);
     }
+
+
+
 }
