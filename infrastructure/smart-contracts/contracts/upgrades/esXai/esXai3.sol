@@ -314,21 +314,28 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     * @return totalRedemptions The total number of redemption requests for the user.
     */
     function getRedemptionsByUser(address account, uint256 maxQty, uint256 offset) external view returns (RedemptionRequestExt[] memory redemptions, uint256 totalRedemptions) {
-        // Get the total number of redemption requests for the user.
+
         totalRedemptions = _extRedemptionRequests[account].length;
         
-        // Calculate the actual number of redemption requests to return, ensuring it does not exceed the array bounds.
-        uint256 qtyToReturn = maxQty > totalRedemptions ? totalRedemptions : maxQty;
+        // Calculate the starting index for retrieval, considering the offset.
+        uint256 startIndex = totalRedemptions > offset ? totalRedemptions - offset : 0;
 
-        // Create a dynamic array to hold the redemption requests to be returned.
-        redemptions = new RedemptionRequestExt[](qtyToReturn);
-
-        // Loop to fill the redemptions array starting from the highest index.
-        uint256 startIndex = totalRedemptions - offset - 1;
-        for (uint256 i = 0; i < qtyToReturn; i++) {
-            uint256 currentIndex = startIndex - i;
-            redemptions[i] = _extRedemptionRequests[account][currentIndex];
+        if (totalRedemptions == 0 || maxQty == 0) {
+            // No redemptions to return if no totalRedemptions or requested quantity is zero.
+            redemptions = new RedemptionRequestExt[](0);
+            return (redemptions, totalRedemptions);
         }
+
+        // Determine the actual number of items to return.
+        uint256 qtyToReturn = maxQty > startIndex ? startIndex : maxQty;
+        redemptions = new RedemptionRequestExt[](qtyToReturn);
+        
+        for (uint256 i = 0; i < qtyToReturn; i++) {
+            // Populate the redemptions array starting from the most recent.
+            redemptions[i] = _extRedemptionRequests[account][startIndex - i - 1];
+        }
+
+        return (redemptions, totalRedemptions);
     }
 
 
