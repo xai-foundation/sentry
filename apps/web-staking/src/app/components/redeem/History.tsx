@@ -209,7 +209,7 @@ export default function History() {
 		updateNotification(isCancel ? 'Cancel successful' : `Claim successful`, toastId.current as Id, false, receipt, chainId);
 		reloadRedemptions();
 		isCancel && setIsCancel(false);
-	}, [receipt, chainId]);
+	}, [receipt, chainId, reloadRedemptions]);
 
 	const updateOnError = useCallback(() => {
 		const error = mapWeb3Error(status);
