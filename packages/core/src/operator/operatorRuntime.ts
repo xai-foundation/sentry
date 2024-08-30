@@ -441,7 +441,7 @@ async function processClosedChallenges(
 }
 
 // start a listener for new challenges
-async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: any) {
+async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: any) {		
 
     if (event && challenge.rollupUsed === config.rollupAddress) {
         compareWithCDN(challenge)
@@ -453,8 +453,10 @@ async function listenForChallengesCallback(challengeNumber: bigint, challenge: C
                 cachedLogger(`Comparison between PublicNode and Challenger was successful.`);
             })
             .catch(error => {
-                cachedLogger(`Error on CND check for challenge ${Number(challenge.assertionId)}.`);
+                cachedLogger(`Error on CDN check for challenge ${Number(challenge.assertionId)}.`);
                 cachedLogger(`${error.message}.`);
+                // Throw an error here to propagate from this catch block.
+                throw error;
             });
     }
 
@@ -481,7 +483,7 @@ async function listenForChallengesCallback(challengeNumber: bigint, challenge: C
 
 
         } else {
-            cachedLogger(`Revert to RPC call instead of using subgraph. Subgraph status error: ${graphStatus.error}`)
+            cachedLogger(`Revert to RPC call instead of using subgraph. Subgraph status error: ${graphStatus.error}`);
 
             const { sentryKeysMap, nodeLicenseIds } = await loadOperatorKeysFromRPC(operatorAddress);
 
@@ -493,9 +495,9 @@ async function listenForChallengesCallback(challengeNumber: bigint, challenge: C
         }
     } catch (error: any) {
         cachedLogger(`Error processing new challenge in listener callback: - ${error && error.message ? error.message : error}`);
+        // Propagate the error up by throwing it
+        throw error;
     }
-
-
 }
 
 

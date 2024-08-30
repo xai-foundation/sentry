@@ -11,12 +11,9 @@ import { resilientEventListener } from "../utils/resilientEventListener.js";
  * @param callback - The callback function to be triggered when ChallengeSubmitted event is emitted.
  * @returns A function that can be called to stop listening for the event.
  */
-export function listenForChallenges(callback: (challengeNumber: bigint, challenge: Challenge, event: any) => void): () => void {
-
-    // create a map to keep track of challengeNumbers that have called the callback
+export function listenForChallenges(callback: (challengeNumber: bigint, challenge: Challenge, event: any) => void, simulateError: boolean = false): () => void {
     const challengeNumberMap: { [challengeNumber: string]: boolean } = {};
 
-    // listen for the ChallengeSubmitted event
     const listener = resilientEventListener({
         rpcUrl: config.arbitrumOneWebSocketUrl,
         contractAddress: config.refereeAddress,
@@ -24,27 +21,32 @@ export function listenForChallenges(callback: (challengeNumber: bigint, challeng
         eventName: "ChallengeSubmitted",
         log: console.info,
         callback: async (log, error) => {
-
-            if(error){
-                //TODO hanlde on error
+            if (error) {
+                console.error(`Error listening for ChallengeSubmitted event: ${error.message}`);
                 return;
             }
 
             const challengeNumber = BigInt(log?.args[0]);
 
-            // if the challengeNumber has not been seen before, call the callback and add it to the map
-            if (!challengeNumberMap[challengeNumber.toString()]) {
-                challengeNumberMap[challengeNumber.toString()] = true;
+            // Conditionally simulate an error for testing
+            try {
+                if (simulateError) {
+                    throw new Error('Simulated error for testing purposes');
+                }
 
-                // lookup the challenge
-                const challenge = await getChallenge(challengeNumber);
+                if (!challengeNumberMap[challengeNumber.toString()]) {
+                    challengeNumberMap[challengeNumber.toString()] = true;
 
-                void callback(challengeNumber, challenge, log);
+                    const challenge = await getChallenge(challengeNumber);
+                    void callback(challengeNumber, challenge, log);
+                }
+            } catch (error) {
+                console.error(`Error caught in listenForChallenges callback`);
+                throw error; // Propagate the error up the call stack
             }
         }
     });
 
-    // return a function that can be used to stop listening for the event
     return () => {
         listener.stop();
     };

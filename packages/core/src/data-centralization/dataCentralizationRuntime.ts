@@ -96,54 +96,59 @@ export async function dataCentralizationRuntime({
 		},
 	}).stop;
 
-	const closeChallengeListener = listenForChallenges(async (challengeNumber: bigint, challenge: Challenge, event?: any) => {
-		const startTime = new Date().getTime();
-		const PoolModel = mongoose.models.Pool || mongoose.model<IPool>('Pool', PoolSchema);
+	let closeChallengeListener: any;
+	try {
+		closeChallengeListener = listenForChallenges(async (challengeNumber: bigint, challenge: Challenge, event?) => {
+			try {
+				const startTime = new Date().getTime();
+				const PoolModel = mongoose.models.Pool || mongoose.model<IPool>('Pool', PoolSchema);
 
-		const slackStartMessage = `Starting pool sync update for challenge ${challengeNumber}`;
-		sendSlackNotification(slackWebHookUrl, slackStartMessage, logFunction);
+				const slackStartMessage = `Starting pool sync update for challenge ${challengeNumber}`;
+				sendSlackNotification(slackWebHookUrl, slackStartMessage, logFunction);
 
-		const graphUpdateStartTime = new Date().getTime();
+				const graphUpdateStartTime = new Date().getTime();
 
-		const updatedPools = await retry(() => getRewardRatesFromGraph([]));
+				const updatedPools = await retry(() => getRewardRatesFromGraph([]));
 
-		const graphUpdateEndTime = new Date().getTime();
+				const graphUpdateEndTime = new Date().getTime();
 
-		const mongoInsertStartTime = new Date().getTime();
+				const mongoInsertStartTime = new Date().getTime();
 
-		for (const updatedPool of updatedPools) {
-			const checksumAddress = getAddress(updatedPool.poolAddress);
+				for (const updatedPool of updatedPools) {
+					const checksumAddress = getAddress(updatedPool.poolAddress);
 
-			await PoolModel.updateOne(
-				{ poolAddress: checksumAddress },
-				{
-					$set: {
-						esXaiRewardRate: updatedPool.averageDailyEsXaiReward,
-						keyRewardRate: updatedPool.averageDailyKeyReward,
-						totalEsXaiClaimed: updatedPool.totalEsXaiClaimed
-					}
-				},
-			);
-		}
-		const mongoInsertEndTime = new Date().getTime();
-		const totalSeconds = mongoInsertEndTime - startTime;
-		const totalGraphSeconds = graphUpdateEndTime - graphUpdateStartTime;
-		const totalMongoSeconds = mongoInsertEndTime - mongoInsertStartTime;
-		const slackMessage = `Finished pool sync update for ${updatedPools.length} pools in ${totalSeconds}ms. Graph update took ${totalGraphSeconds}ms. Mongo insert took ${totalMongoSeconds}ms.`;
+					await PoolModel.updateOne(
+						{ poolAddress: checksumAddress },
+						{
+							$set: {
+								esXaiRewardRate: updatedPool.averageDailyEsXaiReward,
+								keyRewardRate: updatedPool.averageDailyKeyReward,
+								totalEsXaiClaimed: updatedPool.totalEsXaiClaimed
+							}
+						},
+					);
+				}
+				const mongoInsertEndTime = new Date().getTime();
+				const totalSeconds = mongoInsertEndTime - startTime;
+				const totalGraphSeconds = graphUpdateEndTime - graphUpdateStartTime;
+				const totalMongoSeconds = mongoInsertEndTime - mongoInsertStartTime;
+				const slackMessage = `Finished pool sync update for ${updatedPools.length} pools in ${totalSeconds}ms. Graph update took ${totalGraphSeconds}ms. Mongo insert took ${totalMongoSeconds}ms.`;
 
-		sendSlackNotification(slackWebHookUrl, slackMessage, logFunction);
-	});
+				sendSlackNotification(slackWebHookUrl, slackMessage, logFunction);
+			} catch (error) {
+				logFunction(`Error during challenge processing: ${error}`);
+				throw error; // Propagate the error up the call stack
+			}
+		});
+	} catch (error) {
+		logFunction(`Error initializing challenge listener: ${error}`);
+		throw error; // Propagate error to ensure it can be caught for auto-restart
+	}
 
-	/**
-	 * Stops the data centralization runtime.
-	 * @returns {Promise<void>} A promise that resolves when the runtime is successfully stopped.
-	 */
 	return async () => {
-		// Disconnect from MongoDB.
 		await mongoose.disconnect();
 		logFunction('Disconnected from MongoDB.');
 		closeChallengeListener();
-		// Remove event listener listener.
 		stopListener();
 		logFunction('Event listener removed.');
 	};
