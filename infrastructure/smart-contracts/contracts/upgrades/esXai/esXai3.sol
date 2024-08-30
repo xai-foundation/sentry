@@ -324,7 +324,7 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         }
 
         // Step 1: Calculate the starting index.
-        uint256 startIndex = totalRedemptions - 1 - offset;
+        int256 startIndex = int256(totalRedemptions) - 1 - int256(offset);
 
         // Step 2: Determine the number of redemption requests to return.
         uint256 remainingItems = totalRedemptions - offset; // Using a local variable for readability since this will be used for offchain pagination and gas efficiency is not an issue.
@@ -335,9 +335,10 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
 
         // Step 4: Fetch redemption requests in reverse order using i--.
         for (uint256 i = qtyToReturn; i > 0; i--) {
-            redemptions[qtyToReturn - i] = _extRedemptionRequests[account][startIndex--];
+            if (startIndex < 0) break;  // Avoid underflow with signed index
+            redemptions[qtyToReturn - i] = _extRedemptionRequests[account][uint256(startIndex)];
+            startIndex--;
         }
-        
         return (redemptions, totalRedemptions);
     }
 
