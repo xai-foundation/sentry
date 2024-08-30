@@ -334,11 +334,7 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
             // Populate the redemptions array starting from the most recent.
             redemptions[i] = _extRedemptionRequests[account][startIndex - i - 1];
         }
-
+        
         return (redemptions, totalRedemptions);
     }
-
-
-
-
 }
