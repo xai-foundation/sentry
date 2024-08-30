@@ -316,15 +316,16 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     function getRedemptionsByUser(address account, uint256 maxQty, uint256 offset) external view returns (RedemptionRequestExt[] memory redemptions, uint256 totalRedemptions) {
 
         totalRedemptions = _extRedemptionRequests[account].length;
-        
-        // Calculate the starting index for retrieval, considering the offset.
-        uint256 startIndex = totalRedemptions > offset ? totalRedemptions - offset : 0;
 
-        if (totalRedemptions == 0 || maxQty == 0) {
-            // No redemptions to return if no totalRedemptions or requested quantity is zero.
+        // Ensure offset is not greater than totalRedemptions to prevent underflow
+        if (offset >= totalRedemptions || totalRedemptions == 0 || maxQty == 0) {
+            // If offset is too big, no items can be returned.
             redemptions = new RedemptionRequestExt[](0);
             return (redemptions, totalRedemptions);
         }
+
+        // Calculate the starting index for retrieval, considering the offset.
+        uint256 startIndex = totalRedemptions - offset;
 
         // Determine the actual number of items to return.
         uint256 qtyToReturn = maxQty > startIndex ? startIndex : maxQty;
@@ -337,6 +338,7 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
 
         return (redemptions, totalRedemptions);
     }
+
 
 
 
