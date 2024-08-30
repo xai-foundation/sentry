@@ -1,4 +1,6 @@
 import Vorpal from "vorpal";import { getAssertion, getSignerFromPrivateKey, submitAssertionToReferee } from "@sentry/core";
+import { isChallengeSubmitTime } from "@sentry/core";
+
 
 export function manuallyChallengeAssertion(cli: Vorpal) {
     cli
@@ -34,19 +36,29 @@ export function manuallyChallengeAssertion(cli: Vorpal) {
                 const assertionKey = key as keyof typeof assertionNode;
                 this.log(`${assertionKey} (${typeof (assertionNode[assertionKey])}): ${assertionNode[assertionKey]}`);
             });
+            
+            // Get Last Challenge Data
+            // Check if enough time has passed that we can submit an assertion
+            const {isSubmitTime, currentChallenge} = await isChallengeSubmitTime();
+            
+            if(isSubmitTime) {
 
-            this.log(`Submitting Hash to chain for assertion '${assertionId}'.`);
+                this.log(`Submitting Hash to chain for assertion '${assertionId}'.`);
 
-            // get a signer of the private key
-            const {signer} = getSignerFromPrivateKey(privateKey);
+                // get a signer of the private key
+                const {signer} = getSignerFromPrivateKey(privateKey);
 
-            await submitAssertionToReferee(
-                secretKey,
-                assertionId,
-                assertionNode,
-                signer,
-            );
+                await submitAssertionToReferee(
+                    secretKey,
+                    assertionId,
+                    assertionNode,
+                    signer,
+                    currentChallenge.assertionId
+                );
 
-            this.log(`Assertion successfuly submitted.`);
+                this.log(`Assertion successfully submitted.`);
+                return
+            }
+            this.log(`Minimum time between assertions has not passed. The last challenge was submitted at ${currentChallenge.assertionTimestamp} Please wait before submitting another assertion.`);
         });
 }
