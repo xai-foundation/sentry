@@ -327,7 +327,8 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         uint256 startIndex = totalRedemptions - 1 - offset;
 
         // Step 2: Determine the number of redemption requests to return.
-        uint256 qtyToReturn = (maxQty < (totalRedemptions - offset)) ? maxQty : (totalRedemptions - offset);
+        uint256 remainingItems = totalRedemptions - offset; // Using a local variable for readability since this will be used for offchain pagination and gas efficiency is not an issue.
+        uint256 qtyToReturn = maxQty > remainingItems ? remainingItems : maxQty;
 
         // Step 3: Initialize the result array.
         redemptions = new RedemptionRequestExt[](qtyToReturn);
