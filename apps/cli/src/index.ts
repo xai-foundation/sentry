@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import inquirer from 'inquirer';
 import { addAdmin } from './commands/access-control/add-admin.js';
 import { syncStakingPools } from './commands/sync-staking-pools.js';
+import { bootChallenger } from './commands/boot-challenger.js';
 import { version } from "@sentry/core";
 
 const program = new Command();
@@ -13,6 +14,7 @@ program
 
 // Register commands
 addAdmin(program);
+bootChallenger(program);
 syncStakingPools(program);
 
 // Default action if no command is specified
