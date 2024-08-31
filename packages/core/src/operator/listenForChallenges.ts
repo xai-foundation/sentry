@@ -1,6 +1,4 @@
-import { ethers } from "ethers";
 import { RefereeAbi } from "../abis/RefereeAbi.js";
-import { getProvider } from "../utils/getProvider.js";
 import { config } from "../config.js";
 import { Challenge, getChallenge } from "../index.js";
 import { resilientEventListener } from "../utils/resilientEventListener.js";

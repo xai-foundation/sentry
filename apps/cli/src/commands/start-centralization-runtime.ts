@@ -42,10 +42,8 @@ export function startCentralizationRuntime(cli: Vorpal) {
                         process.exit();
                     });
 
-                    // Hold the process open
-                    return new Promise((resolve) => {
-                        // Remove the reject function
-                    });
+                    // Keep the command alive
+                    return new Promise((resolve, reject) => { });
                 } catch (error: unknown) {
                     let errorMessage = "An unknown error occurred";
                     if (error instanceof Error) {
