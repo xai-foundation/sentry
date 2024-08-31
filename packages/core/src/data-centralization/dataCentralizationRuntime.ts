@@ -138,14 +138,12 @@ export async function dataCentralizationRuntime({
 				const errorMessage = error instanceof Error ? error.message : String(error);
 				await sendSlackNotification(slackWebHookUrl, `Error in challenge listener: ${errorMessage}`, logFunction);
 				logFunction(`Error in challenge listener: ${errorMessage}`);
-				// Log the error but do not re-throw here
 			}
 		},
 		async (error: Error) => {
 			const errorMessage = `Error in listenForChallenges: ${error.message}`;
 			await sendSlackNotification(slackWebHookUrl, errorMessage, logFunction);
 			logFunction(errorMessage);
-			// Log the error but do not re-throw here
 		}
 	);
 
