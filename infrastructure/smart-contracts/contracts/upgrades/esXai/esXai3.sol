@@ -304,44 +304,72 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     }
 
     /**
-    * @notice Retrieves a list of redemption requests for a specific user, starting from the highest index.
-    * @dev This function returns an array of `RedemptionRequestExt` structs for a given user,
-    *      starting from the highest index available and returning up to the maximum quantity requested.
-    * @param account The address of the user whose redemption requests are to be fetched.
+    * @notice Retrieves a list of redemption requests for a given user, supporting pagination and filtering.
+    * @param account The address of the user whose redemption requests are being queried.
     * @param maxQty The maximum number of redemption requests to return.
-    * @param offset The offset from the highest index from which to start fetching the redemption requests.
-    * @return redemptions An array of `RedemptionRequestExt` structs containing the user's redemption requests in descending order by index.
-    * @return totalRedemptions The total number of redemption requests for the user.
+    * @param offset The offset for pagination, representing the number of requests to skip.
+    * @param pendingOnly If true, only return pending (non-completed) redemption requests.
+    * @return redemptions An array of redemption requests matching the query.
+    * @return totalRedemptions The total number of redemption requests matching the criteria (pending or all).
+    * @return indexes An array of indexes corresponding to the returned redemption requests.
     */
-    function getRedemptionsByUser(address account, uint256 maxQty, uint256 offset) external view returns (RedemptionRequestExt[] memory redemptions, uint256 totalRedemptions) {
-
-        totalRedemptions = _extRedemptionRequests[account].length;
+    function getRedemptionsByUser(
+        address account,
+        uint256 maxQty,
+        uint256 offset,
+        bool pendingOnly
+    ) external view returns (RedemptionRequestExt[] memory redemptions, uint256 totalRedemptions, uint256[] memory indexes) {
+        
+        totalRedemptions = _extRedemptionRequests[account].length; // Get the total number of redemption requests for the user.
 
         // Early return if maxQty is zero or offset is out of bounds.
         if (maxQty == 0 || offset >= totalRedemptions) {
-            redemptions = new RedemptionRequestExt[](0);
-            return (redemptions, totalRedemptions);
+            return (redemptions, totalRedemptions, indexes);
         }
 
-        // Step 1: Calculate the starting index.
-        int256 startIndex = int256(totalRedemptions) - 1 - int256(offset);
+        // Determine the number of redemption requests to return.
+        uint256 remainingItems = totalRedemptions - offset; // Number of items left after applying the offset.
 
-        // Step 2: Determine the number of redemption requests to return.
-        uint256 remainingItems = totalRedemptions - offset; // Using a local variable for readability since this will be used for offchain pagination and gas efficiency is not an issue.
+        // Calculate the quantity of items to return, considering the remaining items and maxQty.
         uint256 qtyToReturn = maxQty > remainingItems ? remainingItems : maxQty;
 
-        // Step 3: Initialize the result array.
+        // Initialize arrays with the maximum possible size based on qtyToReturn.
         redemptions = new RedemptionRequestExt[](qtyToReturn);
+        indexes = new uint256[](qtyToReturn);
 
-        // Step 4: Fetch redemption requests in reverse order using i--.
-        for (uint256 i = qtyToReturn; i > 0; i--) {
-            if (startIndex < 0) break;  // Avoid underflow with signed index
-            redemptions[qtyToReturn - i] = _extRedemptionRequests[account][uint256(startIndex)];
-            startIndex--;
+        uint256 count = 0; // Counter for the number of items added to the return arrays.
+        uint256 matchingCount = 0; // Counter for the number of matching items based on the pendingOnly filter.
+
+        // Safely iterate through the array in reverse order to avoid underflow.
+        for (int256 i = int256(totalRedemptions) - 1; i >= 0 && count < maxQty; i--) {
+            uint256 index = uint256(i); // Safely cast int256 to uint256 after checking bounds.
+            RedemptionRequestExt memory request = _extRedemptionRequests[account][index];
+            
+            // Determine if the current request matches the pendingOnly criteria.
+            bool matches = pendingOnly ? !request.completed : true;
+            
+            if (matches) {
+                // Skip requests until the offset is reached.
+                if (matchingCount >= offset) {
+                    // Add the request to the return arrays once offset is met.
+                    redemptions[count] = request;
+                    indexes[count] = index;
+                    count++;
+                }
+                matchingCount++;
+            }
         }
-        return (redemptions, totalRedemptions);
+
+        // Set totalRedemptions to the number of items matching the filter criteria.
+        totalRedemptions = matchingCount;
+            
+        // Resize the arrays to match the actual number of items being returned.
+        assembly {
+            mstore(redemptions, count)
+            mstore(indexes, count)
+        }
+
+        return (redemptions, totalRedemptions, indexes);
     }
-
-
 
 }
