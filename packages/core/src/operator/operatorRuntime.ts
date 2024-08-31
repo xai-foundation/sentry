@@ -919,9 +919,16 @@ export async function operatorRuntime(
     let closeChallengeListener: () => void;
     logFunction(`Started listener for new challenges.`);
 
+    // Define the error handler
+    const handleError = (error: Error) => {
+        logFunction(`Error in challenge listener: ${error.message}`);
+        // TODO Additional error handling
+    };
+
     const graphStatus = await getSubgraphHealthStatus();
     if (graphStatus.healthy) {
-        closeChallengeListener = listenForChallenges(listenForChallengesCallback)
+        closeChallengeListener = listenForChallenges(listenForChallengesCallback, handleError)
+
 
         const openChallenge = await retry(() => getLatestChallengeFromGraph());
         // Calculate the latest challenge we should load from the graph
@@ -961,7 +968,7 @@ export async function operatorRuntime(
         const [latestChallengeNumber, latestChallenge] = await getLatestChallenge();
         await processNewChallenge(latestChallengeNumber, latestChallenge, nodeLicenseIds, sentryKeysMap);
 
-        closeChallengeListener = listenForChallenges(listenForChallengesCallback)
+        closeChallengeListener = listenForChallenges(listenForChallengesCallback, handleError)
 
         logFunction(`The operator has finished booting. The operator is running successfully. esXAI will accrue every few days.`);
     }

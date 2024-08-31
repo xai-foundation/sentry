@@ -11,7 +11,7 @@ import { resilientEventListener } from "../utils/resilientEventListener.js";
  * @param callback - The callback function to be triggered when ChallengeSubmitted event is emitted.
  * @returns A function that can be called to stop listening for the event.
  */
-export function listenForChallenges(callback: (challengeNumber: bigint, challenge: Challenge, event: any) => void, simulateError: boolean = true): () => void {
+export function listenForChallenges(callback: (challengeNumber: bigint, challenge: Challenge, event: any) => void, onError: (error: Error) => void): () => void {
     const challengeNumberMap: { [challengeNumber: string]: boolean } = {};
 
     const listener = resilientEventListener({
@@ -22,27 +22,27 @@ export function listenForChallenges(callback: (challengeNumber: bigint, challeng
         log: console.info,
         callback: async (log, error) => {
             if (error) {
-                console.error(`Error listening for ChallengeSubmitted event: ${error.message}`);
+                // Call the onError function with the caught error
+                onError(error instanceof Error ? error : new Error(String(error)));
                 return;
             }
-
-            const challengeNumber = BigInt(log?.args[0]);
-
-            // Conditionally simulate an error for testing
             try {
-                if (simulateError) {
-                    throw new Error('Simulated error for testing purposes');
-                }
+                // Uncomment the following line to test the onError function
+                // throw new Error("Test Error: Simulating a failure in getChallenge");
+                const challengeNumber = BigInt(log?.args[0]);
 
+                // if the challengeNumber has not been seen before, call the callback and add it to the map
                 if (!challengeNumberMap[challengeNumber.toString()]) {
                     challengeNumberMap[challengeNumber.toString()] = true;
 
+                    // lookup the challenge
                     const challenge = await getChallenge(challengeNumber);
+
                     void callback(challengeNumber, challenge, log);
                 }
-            } catch (error) {
-                console.error(`Error caught in listenForChallenges callback`);
-                throw error; // Propagate the error up the call stack
+            } catch (err) {
+                // Call the onError function with the caught error
+                onError(err instanceof Error ? err : new Error(String(err)));
             }
         }
     });
@@ -51,3 +51,36 @@ export function listenForChallenges(callback: (challengeNumber: bigint, challeng
         listener.stop();
     };
 }
+
+
+//// Below only used to mock callback for testing error handler
+//// Define the type for the parameters of resilientEventListener
+// interface ResilientEventListenerParams {
+//     rpcUrl: string;
+//     contractAddress: string;
+//     abi: any[]; // Adjust the type as needed for your ABI
+//     eventName: string;
+//     log: (message: string) => void;
+//     callback: (log: LogDescription | null, error?: Error) => void;
+//   }
+  
+//   // Mock implementation of resilientEventListener
+//   const mockResilientEventListener = ({
+//     rpcUrl,
+//     contractAddress,
+//     abi,
+//     eventName,
+//     log,
+//     callback
+//   }: ResilientEventListenerParams): { stop: () => void } => {
+//     // Mock the stop function
+//     const stop = () => log("Mock listener stopped");
+  
+//     // Simulate an event being triggered
+//     setTimeout(() => {
+//       const mockLog: LogDescription = { name: 'MockEvent', args: ['arg1', 'arg2'] } as LogDescription; // Example log, cast as LogDescription
+//       callback(mockLog, undefined); // No error
+//     }, 2500); // 1-second delay for simulation
+  
+//     return { stop };
+//   };
