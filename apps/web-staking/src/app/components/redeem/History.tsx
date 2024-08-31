@@ -150,12 +150,16 @@ export default function History() {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 	const { isApproved } = useGetKYCApproved();
 	const {blocked, loading} = useBlockIp();
-	const [redemptionHistory, setRedemptionHistory] = useState<OrderedRedemptions>({ open: [], closed: [], claimable: [] });
+	const [fullRedemptionHistory, setFullRedemptionHistory] = useState<OrderedRedemptions>({ open: [], closed: [], claimable: [] });
+	const [visibleRedemptionHistory, setVisibleRedemptionHistory] = useState<OrderedRedemptions>({ open: [], closed: [], claimable: [] });
 	const { address, chainId } = useAccount();
+	const [fetchOffset, setFetchOffset] = useState(0); // Offset for fetching from the server
+	const [revealOffset, setRevealOffset] = useState(0); // Offset for revealing to the user
 	const [currentOffset, setCurrentOffset] = useState(0);
 	const [foundAll, setFoundAll] = useState(false);
 	const [redemptionsLoading, setRedemptionsLoading] = useState(false);
-	const QTY_PER_QUERY = 5; // Number of redemptions to fetch per query
+	const FETCH_QTY = 200; // Number of redemptions to fetch per query
+	const REVEAL_QTY = 5; // Number of redemptions to reveal per scroll
 	const AUTO_SCROLL_AMOUNT = 5; // Pixels to scroll up after triggering infinite scroll
 	
 
@@ -186,23 +190,36 @@ export default function History() {
 		if (redemptionsLoading) return;
 		if (!address || !chainId || foundAll) return;
 		if (count > 1) return;
-		getRedemptions(getNetwork(chainId), address!, QTY_PER_QUERY, currentOffset)
+
+		try {
+			getRedemptions(getNetwork(chainId), address!, FETCH_QTY, fetchOffset)
 			.then(orderedRedemptions => {
 				if(orderedRedemptions.claimable.length === 0 && orderedRedemptions.open.length === 0 && orderedRedemptions.closed.length === 0) {
 					setFoundAll(true);
+					setRedemptionsLoading(false);
 					return;
 				}
-				const newClaimableSortedList = sortLists(redemptionHistory.claimable, orderedRedemptions.claimable);
-				const newOpenSortedList = sortLists(redemptionHistory.open, orderedRedemptions.open);
-				const newClosedSortedList = sortLists(redemptionHistory.closed, orderedRedemptions.closed, 'desc');
+				console.log("ORD", orderedRedemptions);
+				console.log("FULL", fullRedemptionHistory);
+				console.log("VISIBLE", visibleRedemptionHistory);
 
-				setRedemptionHistory({
+				const newClaimableSortedList = sortLists(fullRedemptionHistory.claimable, orderedRedemptions.claimable);
+				const newOpenSortedList = sortLists(fullRedemptionHistory.open, orderedRedemptions.open);
+				const newClosedSortedList = sortLists(fullRedemptionHistory.closed, orderedRedemptions.closed, 'desc');
+
+				setFullRedemptionHistory({
 					claimable: newClaimableSortedList,
 					open: newOpenSortedList,
 					closed: newClosedSortedList,
 				});
+				setFetchOffset(fetchOffset + FETCH_QTY);		
 			})
-	}, [currentOffset, address, chainId, redemptionHistory, setRedemptionHistory]);
+		} catch (error) {
+			console.error(error);
+			setRedemptionsLoading(false);
+			
+		}
+	}, [currentOffset, address, chainId, visibleRedemptionHistory, fullRedemptionHistory, setFullRedemptionHistory, setVisibleRedemptionHistory]);
 
 	const updateOnSuccess = useCallback(() => {
 		setFoundAll(false);
@@ -270,19 +287,46 @@ export default function History() {
 	}
 
 	const handleScroll = useCallback(() => {
+		console.log("Visible1: ", visibleRedemptionHistory);
 		if (redemptionsLoading) return;
+		console.log("Visible2: ", visibleRedemptionHistory);
 		// If we're not at the bottom, return
 		if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight) return;
+		console.log("Visible3: ", visibleRedemptionHistory);
 
-		setRedemptionsLoading(true);
+		// If we're at the bottom
+		// Reveal more redemptions if available
+		setRevealOffset(prev => prev + REVEAL_QTY);
+		console.log("Visible4: ", visibleRedemptionHistory);
 
-		try {		
-			// If we're at the bottom, trigger a reload
+		// If we have revealed all currently fetched redemptions, fetch more
+		if (revealOffset + REVEAL_QTY >= fullRedemptionHistory.claimable.length + fullRedemptionHistory.open.length + fullRedemptionHistory.closed.length) {
+			
+			console.log("Visible5: ", visibleRedemptionHistory);
 			reloadRedemptions();
+		}
+				
 
-			// Increase the offset for the next reload		
-			const newOffset = currentOffset + QTY_PER_QUERY;
-			setCurrentOffset(newOffset);
+		// Determine the next set of redemptions to reveal
+		const nextRevealOffset = revealOffset + REVEAL_QTY;
+		const claimableList = fullRedemptionHistory.claimable.slice(0, nextRevealOffset);
+		const openList = fullRedemptionHistory.open.slice(0, nextRevealOffset);
+		const closedList = fullRedemptionHistory.closed.slice(0, nextRevealOffset);
+
+		console.log("CLAIMABLE", claimableList);
+		console.log("OPEN", openList);
+		console.log("CLOSED", closedList);
+	
+		setVisibleRedemptionHistory({
+			claimable: claimableList,
+			open: openList,
+			closed: closedList,
+		});
+
+		console.log("Visible6: ", visibleRedemptionHistory);
+			// // Increase the offset for the next reload		
+			// const newOffset = currentOffset + QTY_PER_QUERY;
+			// setCurrentOffset(newOffset);
 
 			// Scroll up a little to make the reload more visible and give the user space to scroll down for another reload
 			const { scrollTop } = document.documentElement;
@@ -290,14 +334,11 @@ export default function History() {
 				top: scrollTop - AUTO_SCROLL_AMOUNT,
 				behavior: 'smooth'
 			});
-			setRedemptionsLoading(false);
 
-		} catch (error) {
-			console.error(error);
-			setRedemptionsLoading(false);
-		}
+			console.log("Visible: ", visibleRedemptionHistory);
 
-	}, [currentOffset, reloadRedemptions]);
+
+	}, [revealOffset, fetchOffset, reloadRedemptions]);
 
 	useEffect(() => {
 		window.addEventListener('scroll', handleScroll);
@@ -327,14 +368,14 @@ export default function History() {
 				  isError={selectedCountry === "United States"}
 				  errorMessage="KYC is not available for the selected country"
 		  />
-				{(redemptionHistory.claimable.length > 0 || redemptionHistory.open.length > 0) &&
+				{(fullRedemptionHistory.claimable.length > 0 || fullRedemptionHistory.open.length > 0) &&
 					<div className="bg-nulnOil/85 box-shadow-default mb-[53px]">
 						<MainTitle
 							isSubHeader
 							classNames="!text-3xl capitalize border-b-1 border-chromaphobicBlack py-6 md:px-8 px-[17px] !mb-0"
 							title="Pending"
 						/>
-						{redemptionHistory.claimable.map((r:RedemptionRequest, index: number) => {
+						{fullRedemptionHistory.claimable.map((r:RedemptionRequest, index: number) => {
 							return (
 								<HistoryCard
 									key={r.index}
@@ -351,13 +392,13 @@ export default function History() {
 									isLoading={isLoading}
 									redemptionIndex={r.index}
 									loadingIndex={loadingIndex}
-									lastIndex={(redemptionHistory.claimable.length - 1 === index) && !redemptionHistory.open.length}
+									lastIndex={(fullRedemptionHistory.claimable.length - 1 === index) && !fullRedemptionHistory.open.length}
 									isPending={true}
 								/>
 							)
 						})}
 
-						{redemptionHistory.open.map((r:RedemptionRequest, index: number) => {
+						{fullRedemptionHistory.open.map((r:RedemptionRequest, index: number) => {
 							return (
 								<HistoryCard
 									key={r.index}
@@ -372,7 +413,7 @@ export default function History() {
 									loadingIndex={loadingIndex}
 									redemptionIndex={r.index}
 									durationMillis={r.startTime + r.duration - Date.now()}
-									lastIndex={redemptionHistory.open.length - 1 === index}
+									lastIndex={fullRedemptionHistory.open.length - 1 === index}
 									isPending={true}
 								/>
 							)
@@ -380,14 +421,14 @@ export default function History() {
 					</div>
 				}
 
-				{(redemptionHistory.closed.length > 0) &&
+				{(fullRedemptionHistory.closed.length > 0) &&
 					<div className="bg-nulnOil/75 shadow-default mb-[53px]">
 						<MainTitle
 							isSubHeader
 							classNames="!text-3xl capitalize border-b-1 border-chromaphobicBlack py-6 md:px-8 px-[17px] !mb-0"
 							title="History" />
 
-						{redemptionHistory.closed.map((r:RedemptionRequest, index: number) => {
+						{fullRedemptionHistory.closed.map((r:RedemptionRequest, index: number) => {
 							return (
 								<HistoryCard
 									key={r.index}
@@ -401,7 +442,7 @@ export default function History() {
 									loadingIndex={loadingIndex}
 									redemptionIndex={r.index}
 									durationMillis={r.endTime - Date.now()}
-									lastIndex={redemptionHistory.closed.length - 1 === index}
+									lastIndex={fullRedemptionHistory.closed.length - 1 === index}
 									isCancelled={r.cancelled}
 									isPending={false}
 								/>
