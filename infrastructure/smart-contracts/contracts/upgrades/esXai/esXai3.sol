@@ -381,29 +381,36 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     function getRedemptionsByUserIndex(address account, uint256[] memory indices) 
         external 
         view 
-        returns (RedemptionRequestExt[] memory redemptions) 
+        returns (RedemptionRequestExt[] memory redemptions, uint256 totalRedemptions) 
     {
         // Get the total number of redemption requests for the given account
-        uint256 totalRedemptions = _extRedemptionRequests[account].length;
+        totalRedemptions = _extRedemptionRequests[account].length;
         
         // Ensure that the indices array is not empty
         require(indices.length > 0, "Invalid indices");
-        
-        // Ensure that the number of requested indices does not exceed the total number of redemptions
-        require(indices.length <= totalRedemptions, "Invalid indices");
-        
-        // Initialize the array to hold the redemption requests to be returned
-        redemptions = new RedemptionRequestExt[](indices.length);
 
+        // Initialize an array with a length equal to the maximum possible number of valid redemptions
+        redemptions = new RedemptionRequestExt[](indices.length);
+        uint256 count = 0;
+        
         // Iterate through the provided indices array
         for (uint256 i = 0; i < indices.length; i++) {
             uint256 index = indices[i];
-
-            // Ensure that each index is within the bounds of the redemption requests array
-            require(index >= 0 && index < totalRedemptions, "Index out of bounds");
             
-            // Assign the redemption request at the specified index to the output array
-            redemptions[i] = _extRedemptionRequests[account][index];
+            // Check if the index is within the bounds of the redemption requests array
+            if (index < totalRedemptions) {
+                // Retrieve the redemption request at the specified index
+                RedemptionRequestExt memory request = _extRedemptionRequests[account][index];
+                
+                // Add the valid redemption request to the redemptions array
+                redemptions[count] = request;
+                count++;
+            }
+        }
+        
+        // Resize the array to match the actual number of valid redemptions
+        assembly {
+            mstore(redemptions, count)
         }
     }
 
