@@ -376,43 +376,57 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     * @notice Returns a list of redemption requests for a given user at specified indices.
     * @param account The address of the user whose redemption requests are to be fetched.
     * @param indices An array of indices representing the specific redemption requests to retrieve.
+    * @param previousTotalRedemptions The previous total number of redemption requests for the user, used to check for new additions.
     * @return redemptions An array of `RedemptionRequestExt` structs corresponding to the specified indices.
+    * @return totalRedemptions The current total number of redemption requests for the user.
     */
-    function getRedemptionsByUserIndex(address account, uint256[] memory indices) 
+    function refreshUserRedemptionsByIndex(
+        address account, 
+        uint256[] memory indices, 
+        uint256 previousTotalRedemptions
+    ) 
         external 
         view 
         returns (RedemptionRequestExt[] memory redemptions, uint256 totalRedemptions) 
     {
         // Get the total number of redemption requests for the given account
         totalRedemptions = _extRedemptionRequests[account].length;
-        
-        // Ensure that the indices array is not empty
-        require(indices.length > 0, "Invalid indices");
 
-        // Initialize an array with a length equal to the maximum possible number of valid redemptions
-        redemptions = new RedemptionRequestExt[](indices.length);
-        uint256 count = 0;
-        
-        // Iterate through the provided indices array
-        for (uint256 i = 0; i < indices.length; i++) {
-            uint256 index = indices[i];
-            
-            // Check if the index is within the bounds of the redemption requests array
+        // Determine if any new redemptions have been added since the last query
+        uint256 totalMissing = totalRedemptions > previousTotalRedemptions ? totalRedemptions - previousTotalRedemptions : 0;
+
+        // If no indices provided and no new redemptions, return empty
+        if (indices.length == 0 && totalMissing == 0) {
+            return (redemptions, totalRedemptions);
+        }
+
+        // Calculate the total length of indices needed to accommodate new and existing indices
+        uint256 combinedIndicesLength = indices.length + totalMissing;
+
+        // Initialize an array for the redemption requests with the final required size
+        redemptions = new RedemptionRequestExt[](combinedIndicesLength);
+
+        // Single loop to handle both copying old indices and adding new indices, and fetching redemption requests
+        for (uint256 i = 0; i < combinedIndicesLength; i++) {
+            uint256 index;
+
+            if (i < indices.length) {
+                // Copy existing indices
+                index = indices[i];
+            } else {
+                // Add new indices based on totalMissing
+                index = previousTotalRedemptions + (i - indices.length);
+            }
+
+            // Ensure index is within bounds before fetching redemption
             if (index < totalRedemptions) {
-                // Retrieve the redemption request at the specified index
-                RedemptionRequestExt memory request = _extRedemptionRequests[account][index];
-                
-                // Add the valid redemption request to the redemptions array
-                redemptions[count] = request;
-                count++;
+                redemptions[i] = _extRedemptionRequests[account][index];
             }
         }
-        
-        // Resize the array to match the actual number of valid redemptions
-        assembly {
-            mstore(redemptions, count)
-        }
+
+        return (redemptions, totalRedemptions);
     }
+
 
 
 }
