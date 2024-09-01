@@ -372,4 +372,40 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         return (redemptions, totalRedemptions, indexes);
     }
 
+    /**
+    * @notice Returns a list of redemption requests for a given user at specified indices.
+    * @param account The address of the user whose redemption requests are to be fetched.
+    * @param indices An array of indices representing the specific redemption requests to retrieve.
+    * @return redemptions An array of `RedemptionRequestExt` structs corresponding to the specified indices.
+    */
+    function getRedemptionsByUserIndex(address account, uint256[] memory indices) 
+        external 
+        view 
+        returns (RedemptionRequestExt[] memory redemptions) 
+    {
+        // Get the total number of redemption requests for the given account
+        uint256 totalRedemptions = _extRedemptionRequests[account].length;
+        
+        // Ensure that the indices array is not empty
+        require(indices.length > 0, "Invalid indices");
+        
+        // Ensure that the number of requested indices does not exceed the total number of redemptions
+        require(indices.length <= totalRedemptions, "Invalid indices");
+        
+        // Initialize the array to hold the redemption requests to be returned
+        redemptions = new RedemptionRequestExt[](indices.length);
+
+        // Iterate through the provided indices array
+        for (uint256 i = 0; i < indices.length; i++) {
+            uint256 index = indices[i];
+
+            // Ensure that each index is within the bounds of the redemption requests array
+            require(index >= 0 && index < totalRedemptions, "Index out of bounds");
+            
+            // Assign the redemption request at the specified index to the output array
+            redemptions[i] = _extRedemptionRequests[account][index];
+        }
+    }
+
+
 }
