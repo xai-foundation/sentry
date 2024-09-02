@@ -21,6 +21,7 @@ export function useGetAccruedEsXaiBulk() {
 		return () => clearTimeout(timeout);
 	}, [combinedLicensesList]);
 
+	//TODO this needs to be reworked, this sends to many RPC requests and get called multiple times throughout rerendering the app!
 	async function getBalances() {
 		setLoading(true);
 		setBalances({});

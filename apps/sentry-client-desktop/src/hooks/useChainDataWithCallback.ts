@@ -6,6 +6,7 @@ import {StatusMap, useKycStatusesWithCallback} from "@/hooks/useKycStatusesWithC
 import {getLicensesList, LicenseList, LicenseMap, useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
 import {useCombinedOwners} from "@/hooks/useCombinedOwners";
 import { useGetOwnerOrDelegatePools } from "./useGetOwnerOrDelegatepools";
+import { useGetIsBeforeBulkUpgrade } from "./useGetIsBeforeBulkUpgrade";
 
 interface ChainState {
 	anyLoading: boolean;
@@ -20,6 +21,7 @@ interface ChainState {
 	combinedLicensesMap: LicenseMap;
 	licensesList: LicenseList;
 	combinedLicensesList: LicenseList;
+	isBulkCompatible: boolean
 }
 
 const defaultChainState: ChainState = {
@@ -35,6 +37,7 @@ const defaultChainState: ChainState = {
 	combinedLicensesMap: {},
 	licensesList: [],
 	combinedLicensesList: [],
+	isBulkCompatible: false
 }
 
 export const chainStateAtom = atom<ChainState>(defaultChainState);
@@ -54,6 +57,7 @@ export function useChainDataWithCallback() {
 	const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey, false, chainStateRefresh);
 	const {combinedOwners} = useCombinedOwners(owners);
 	const {pools} = useGetOwnerOrDelegatePools(publicKey);
+	const {isBulkCompatible} = useGetIsBeforeBulkUpgrade();
 	const {isLoading: ownersKycLoading, statusMap: combinedWalletsKycMap} = useKycStatusesWithCallback(combinedOwners, chainStateRefresh);
 	const {isLoading: licensesLoading, licensesMap: combinedLicensesMap} = useListNodeLicensesWithCallback(combinedOwners, chainStateRefresh);
 
@@ -94,6 +98,16 @@ export function useChainDataWithCallback() {
 			}
 		});
 	}, [pools]);
+
+	
+	useEffect(() => {
+		setChainState((_chainState) => {
+			return {
+				..._chainState,
+				isBulkCompatible,
+			}
+		});
+	}, [isBulkCompatible]);
 
 	// return ownersKycMap & combinedWalletsKycMap
 	useEffect(() => {

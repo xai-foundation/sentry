@@ -28,13 +28,15 @@ export type NodeLicenseStatusMap = Map<bigint, NodeLicenseInformation>;
 
 export interface SentryAddressInformation {
     address: string
-    keyCount: string
+    keyCount: number
     isPool: boolean
-    status: string | NodeLicenseStatus;
+    status: string | NodeLicenseStatus
+    name?: string
+    logoUri?: string
 }
 
 //New status map for status mapped to a wallet or a pool address
-export type SentryAddressStatusMap = Map<string, NodeLicenseInformation>;
+export type SentryAddressStatusMap = Map<string, SentryAddressInformation>;
 
 export type PublicNodeBucketInformation = {
     assertion: number,
@@ -64,6 +66,7 @@ export type BulkOwnerOrPool = {
     keyCount: number, // only unstaked keys for owner, totalStakedKeys for pool
     stakedEsXaiAmount: bigint, // used to calculate the boost factor
     bulkSubmissions?: BulkSubmission[]
+    logoUri?: string
 }
 
 /**
@@ -76,7 +79,7 @@ export type BulkOwnerOrPool = {
  */
 export async function operatorRuntime(
     signer: ethers.Signer,
-    statusCallback: (status: NodeLicenseStatusMap) => void = (_) => { },
+    statusCallback: (status: NodeLicenseStatusMap | SentryAddressStatusMap) => void = (_) => { },
     logFunction: (log: string) => void = (_) => { },
     operatorOwners?: string[],
     onAssertionMissMatch: (publicNodeData: PublicNodeBucketInformation | undefined, challenge: Challenge, message: string) => void = (_) => { }
@@ -95,7 +98,15 @@ export async function operatorRuntime(
     // Create a wrapper for the statusCallback to always send back a fresh copy of the map, so the other side doesn't mutate the map
     operatorState.safeStatusCallback = () => {
         // Create a fresh copy of the map
-        const statusCopy: NodeLicenseStatusMap = new Map(operatorState.nodeLicenseStatusMap);
+        let statusCopy: NodeLicenseStatusMap | SentryAddressStatusMap = new Map(operatorState.nodeLicenseStatusMap);
+
+        if (operatorState.nodeLicenseStatusMap.size == 0) {
+            if (operatorState.sentryAddressStatusMap.size == 0) {
+                logFunction(`Status update empty list`);
+            } else {
+                statusCopy = new Map(operatorState.sentryAddressStatusMap);
+            }
+        }
 
         // Call the original statusCallback with the copy
         statusCallback(statusCopy);

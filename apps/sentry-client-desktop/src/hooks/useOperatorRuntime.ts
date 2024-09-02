@@ -1,4 +1,4 @@
-import {Challenge, NodeLicenseInformation, NodeLicenseStatusMap, operatorRuntime, PublicNodeBucketInformation} from "@sentry/core";
+import {Challenge, NodeLicenseInformation, NodeLicenseStatusMap, operatorRuntime, PublicNodeBucketInformation, SentryAddressStatusMap} from "@sentry/core";
 import {useOperator} from "@/features/operator";
 import {atom, useAtom} from "jotai";
 import {useEffect, useRef, useState} from "react";
@@ -19,13 +19,13 @@ function onAssertionMissMatch(publicNodeData: PublicNodeBucketInformation, chall
 
 let stop: (() => Promise<void>) | undefined;
 export const sentryRunningAtom = atom(stop != null);
-export const nodeLicenseStatusMapAtom = atom<NodeLicenseStatusMap>(new Map<bigint, NodeLicenseInformation>());
+export const nodeLicenseStatusMapAtom = atom<NodeLicenseStatusMap | SentryAddressStatusMap>(new Map<bigint, NodeLicenseInformation>());
 export const runtimeLogsAtom = atom<string[]>([]);
 
 export function useOperatorRuntime() {
 	const {signer} = useOperator();
 	const [sentryRunning, setSentryRunning] = useAtom(sentryRunningAtom);
-	const [nodeLicenseStatusMap, setNodeLicenseStatusMap] = useAtom(nodeLicenseStatusMapAtom);
+	const [nodeLicenseStatusMap, setNodeLicenseStatusMap] = useAtom<NodeLicenseStatusMap | SentryAddressStatusMap>(nodeLicenseStatusMapAtom);
 	const [runtimeLogs, setRuntimeLogs] = useAtom(runtimeLogsAtom);
 	const [, setRerender] = useState(0);
 	const {data, setData} = useStorage();
