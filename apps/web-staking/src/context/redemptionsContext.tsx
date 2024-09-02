@@ -25,7 +25,7 @@ export const RedemptionProvider = ({ children }: { children: ReactNode }) => {
         closed: [],
     });
     const [redemptionsLoaded, setRedemptionsLoaded] = useSessionStorage<boolean>('redemptionsLoaded', false);
-    const lastLoadedRef = useRef<number>(Date.now() - 10000);
+    const lastLoadedRef = useRef<number>(Date.now() - 5000);
 
     const updateUserRedemptions = useCallback(async () => {
         try {
@@ -54,8 +54,8 @@ export const RedemptionProvider = ({ children }: { children: ReactNode }) => {
 
     const loadRedemptions = useCallback(async () => {
         const now = Date.now();
-        // Don't load redemptions more than once every 5 seconds
-        if (now - lastLoadedRef.current < 5000) {
+        // Don't load redemptions more than once a second
+        if (now - lastLoadedRef.current < 1000) {
             //console.log('Skipping load, last loaded', now - lastLoadedRef.current, 'ms ago');
             return;
         }
