@@ -5,7 +5,7 @@ const { ethers } = hardhat;
 async function main() {
     
     const ESXAI_SEPOLIA_ADDRESS = "0x5776784c2012887d1f2fa17281e406643cba5330";
-    const REDEMPTIONS_QTY = 50;
+    const REDEMPTIONS_QTY = 100;
     const BLOCKS_TO_WAIT = 1;
 
     const privateKey = process.env.PRIVATE_KEY;

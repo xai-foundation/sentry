@@ -4,7 +4,7 @@ import { getWeb3Instance, NetworkKey } from "./web3.service";
 import { Web3Instance } from "./web3.service";
 
 
-const REDEMPTION_BATCH_SIZE = 250;
+const REDEMPTION_BATCH_SIZE = 500;
 export type RedemptionFactor = 25 | 62.5 | 100;
 const RedemptionPeriodsByNetwork: { [key in NetworkKey]: { [key in RedemptionFactor]: { seconds: number, label: string } } } = {
 	'arbitrum': {
@@ -67,7 +67,7 @@ export const getAllRedemptions = async (network: NetworkKey, walletAddress: stri
 			claimable.push(redemption);
 		} else if(!redemption.completed) {
 			redemption.endTime = redemption.startTime + redemption.duration;
-			console.log("Redemption", redemption);
+			//console.log("Redemption", redemption);
 			open.push(redemption);
 		}
 	}
@@ -149,6 +149,7 @@ async function getAllUserRedemptionsFromChain(web3Instance: Web3Instance, wallet
 		offset += REDEMPTION_BATCH_SIZE;
 		totalUserRedemptions = totalRedemptions;
 	}
+	console.log("All redemptions", allRedemptions.length);
 	return allRedemptions;
 }
 
@@ -211,13 +212,21 @@ function formatRedemptionRequestEntity(web3Instance: Web3Instance, redemptionReq
 }
 
 const sortLists = (list1: RedemptionRequest[], sortOrder: 'asc' | 'desc' = 'asc'): RedemptionRequest[] => {
-    // Combine lists and remove duplicates based on index
-    const combinedSet = new Set([...list1].map(item => JSON.stringify(item)));
-    const combinedList = Array.from(combinedSet).map(item => JSON.parse(item));
+    // Use a Map to remove duplicates based on the 'index' property
+    const uniqueMap = new Map<number, RedemptionRequest>();
+    list1.forEach(item => {
+        if (!uniqueMap.has(item.index)) {
+            uniqueMap.set(item.index, item);
+        }
+    });
+
+    // Convert the Map values back to an array
+    const combinedList = Array.from(uniqueMap.values());
 
     // Sort the combined list
-    return combinedList.sort((a: RedemptionRequest, b: RedemptionRequest) => {
+    return combinedList.sort((a, b) => {
         return sortOrder === 'asc' ? a.endTime - b.endTime : b.endTime - a.endTime;
     });
 };
+
 
