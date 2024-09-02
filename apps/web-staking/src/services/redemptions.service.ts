@@ -96,9 +96,9 @@ export const refreshRedemptions = async (network: NetworkKey, walletAddress: str
 		const { redemptions, totalRedemptions } = await callRefreshRedemptionsFunctionOnContract(web3Instance, walletAddress, batch);
 		newTotal = totalRedemptions;
 
-		for (let i = 0; i < redemptions.length; i++) {
-			const index = batch[i];
-			const redemption = formatRedemptionRequestEntity(web3Instance, redemptions[i], index);
+		for (let j = 0; j < redemptions.length; j++) {
+			const index = batch[j];
+			const redemption = formatRedemptionRequestEntity(web3Instance, redemptions[j], index);
 
 			redemption.completed && closed.push(redemption);
 			redemption.cancelled && closed.push(redemption);
