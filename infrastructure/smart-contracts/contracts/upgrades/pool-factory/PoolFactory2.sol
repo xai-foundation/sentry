@@ -598,9 +598,9 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         associateUserWithPool(msg.sender, pool);
 
         // Update total stake
-        if(!totalStakeCalculated[msg.sender]) {
+        if(!totalEsXaiStakeCalculated[msg.sender]) {
             _totalEsXaiStakeByUser[msg.sender] = getTotalesXaiStakedByUser(msg.sender);
-            totalStakeCalculated[msg.sender] = true;
+            totalEsXaiStakeCalculated[msg.sender] = true;
         } else {
             _totalEsXaiStakeByUser[msg.sender] += amount;
         }
@@ -635,14 +635,14 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         }
 
         // Update total stake
-        if(!totalStakeCalculated[msg.sender]) {
+        if(!totalEsXaiStakeCalculated[msg.sender]) {
             uint256 totalPools = interactedPoolsOfUser[msg.sender].length;
             // We check the total pools interacted with by the user to avoid running out of gas
             // This ensures we do not run this one time calculation until we are sure that it will not run out of gas
             // This ensures a user can always unstake their esXai
             if(totalPools < 150) {
                 _totalEsXaiStakeByUser[msg.sender] = getTotalesXaiStakedByUser(msg.sender);
-                totalStakeCalculated[msg.sender] = true;
+                totalEsXaiStakeCalculated[msg.sender] = true;
             }
         } else {
             _totalEsXaiStakeByUser[msg.sender] -= amount;
@@ -866,7 +866,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     * @return The total amount of esXAI staked by the user across all pools.
     */
     function getTotalesXaiStakedByUser(address user) public view returns (uint256) {
-        if (totalStakeCalculated[user]) {
+        if (totalEsXaiStakeCalculated[user]) {
             return _totalEsXaiStakeByUser[user];
         }
 
@@ -887,7 +887,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     */
     function calculateUserTotalStake(address[] calldata users) external {
         for (uint256 i = 0; i < users.length; i++) {
-            if(totalStakeCalculated[users[i]]) {
+            if(totalEsXaiStakeCalculated[users[i]]) {
                 continue;
             }
             uint256 totalStakeAmount = 0;
@@ -897,7 +897,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
                 totalStakeAmount += StakingPool(userPools[j]).getStakedAmounts(users[i]);
             }
             _totalEsXaiStakeByUser[users[i]] = totalStakeAmount;
-            totalStakeCalculated[users[i]] = true;
+            totalEsXaiStakeCalculated[users[i]] = true;
         }
     }
 }
