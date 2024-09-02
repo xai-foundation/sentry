@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
 function useSessionStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
-  // Move readValue inside useEffect and make it a useCallback
   const readValue = useCallback((): T => {
     if (typeof window === 'undefined') {
       return initialValue;
@@ -32,7 +31,6 @@ function useSessionStorage<T>(key: string, initialValue: T): [T, (value: T) => v
       console.warn(`Error setting sessionStorage key "${key}":`, error);
     }
   };
-
   useEffect(() => {
     setStoredValue(readValue());
   }, []);
