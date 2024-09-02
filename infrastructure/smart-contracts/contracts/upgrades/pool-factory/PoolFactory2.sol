@@ -107,7 +107,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     bytes32 public constant STAKE_KEYS_ADMIN_ROLE = keccak256("STAKE_KEYS_ADMIN_ROLE");
 
     // Determines if a user's total stake has been calculated
-    mapping(address => bool) public totalStakeCalculated;
+    mapping(address => bool) public totalEsXaiStakeCalculated;
 
     // =================> VERY IMPORTANT <============================================
     // FUTURE DEVELOPERS: DO NOT USE THIS VARIABLE AS THE SOURCE OF TRUTH FOR TOTAL STAKE
