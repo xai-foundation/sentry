@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useCallback, useRef, ReactNode, useState } from 'react';
 import { getNetwork } from "@/services/web3.service";
 import { useAccount } from 'wagmi';
-import { getAllRedemptions, OrderedRedemptions, RedemptionRequest, refreshRedemptions } from '@/services/redemptions.service';
+import { getAllRedemptions, OrderedRedemptions, refreshRedemptions } from '@/services/redemptions.service';
 import useSessionStorage from '../app/hooks/useSessionStorage';
 
 type RedemptionContextType = {

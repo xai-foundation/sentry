@@ -1,7 +1,5 @@
 import {
   ACTIVE_NETWORK_IDS,
-  OrderedRedemptions,
-  RedemptionRequest,
   mapWeb3Error,
 } from "@/services/web3.service";
 import { BorderWrapperComponent } from "../borderWrapper/BorderWrapperComponent";
@@ -17,6 +15,7 @@ import { Id } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useSwitchChain } from "wagmi";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
+import { OrderedRedemptions, RedemptionRequest } from "@/services/redemptions.service";
 
 interface OverviewCardProps {
   title: string;

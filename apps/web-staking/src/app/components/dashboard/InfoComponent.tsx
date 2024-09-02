@@ -1,4 +1,5 @@
-import { OrderedRedemptions } from "@/services/web3.service";
+import { OrderedRedemptions } from "@/services/redemptions.service";
+
 
 interface InfoComponentProps {
   title: string;
