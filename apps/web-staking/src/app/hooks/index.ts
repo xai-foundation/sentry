@@ -10,7 +10,6 @@ export *  from './useGetMaxStakePerLicense';
 export *  from './useGetMaxTotalStaked';
 export *  from './useGetNodeLicenses';
 export *  from './useGetPoolInfo';
-export *  from './useGetRedemptions';
 export *  from './useGetRewardBreakdownUpdateDelay';
 export *  from './useGetTiers';
 export *  from './useGetTotalStaked';

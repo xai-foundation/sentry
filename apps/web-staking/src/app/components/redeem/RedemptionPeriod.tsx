@@ -3,7 +3,8 @@ import { ChangeEventHandler } from "react";
 import { useAccount } from "wagmi";
 import { BaseCallout, Radio, RadioGroup } from "@/app/components/ui";
 import { LABEL_RIGHT_SUFFIX, REDEMPTION_PERIODS } from "@/app/components/redeem/Constants";
-import { getNetwork, getRedemptionPeriod } from "@/services/web3.service";
+import { getNetwork } from "@/services/web3.service";
+import { getRedemptionPeriod } from "@/services/redemptions.service";
 
 
 export default function RedemptionPeriod ({ onChange, value }: { onChange: ChangeEventHandler | undefined; value: string }) {

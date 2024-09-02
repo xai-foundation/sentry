@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Id } from "react-toastify";
 import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 
@@ -9,18 +9,18 @@ import {
   updateNotification,
 } from "@/app/components/notifications/NotificationsComponent";
 import {
-  useGetRedemptionsHooks,
   useGetUserTotalStakedKeysCount,
 } from "@/app/hooks";
 import {
   ACTIVE_NETWORK_IDS,
   mapWeb3Error,
-  RedemptionRequest,
 } from "@/services/web3.service";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import ClaimableRewardsComponent from "@/app/components/staking/ClaimableRewardsComponent";
 import { formatCurrencyWithDecimals } from "@/app/utils/formatCurrency";
 import { PrimaryButton } from "@/app/components/ui";
+import { RedemptionContext } from "@/context/redemptionsContext";
+import { RedemptionRequest } from '../../../services/redemptions.service';
 
 interface DashboardStakingInfoProps {
   totalStaked: number;
@@ -35,10 +35,9 @@ const DashboardStakingInfo = ({
   onClaimRewards,
   rewardsTransactionLoading
 }: DashboardStakingInfoProps) => {
+	const context = useContext(RedemptionContext);
   const { stakedKeysAmount } = useGetUserTotalStakedKeysCount();
-  const {
-    redemptions: { claimable },
-  } = useGetRedemptionsHooks();
+  const { redemptions: {claimable}, loadRedemptions } = context!;
   const calculatedClaimableRedemptions = claimable.reduce((acc, redemption) => {
     return (acc += redemption.receiveAmount);
   }, 0);
@@ -52,7 +51,7 @@ const DashboardStakingInfo = ({
   const router = useRouter();
 
   // Substitute Timeouts with useWaitForTransaction
-  const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
+  const { isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
     hash: receipt,
   });
 
@@ -115,6 +114,9 @@ const DashboardStakingInfo = ({
     }
   }, [isSuccess, isError, updateOnSuccess, updateOnError]);
 
+  useEffect(() => {
+      loadRedemptions();
+  }, [loadRedemptions]);
 
   return (
     <section className="mt-10 mb-14 w-full">

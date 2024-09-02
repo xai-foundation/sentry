@@ -1,7 +1,6 @@
 "use client";
 import {
-	getWeiAmountFromTextInput,
-	RedemptionFactor
+	getWeiAmountFromTextInput
 } from "@/services/web3.service";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
@@ -17,6 +16,7 @@ import AgreeModalComponent from "../modal/AgreeModalComponents";
 import RedeemWarning from "@/app/components/redeem/RedeemWarning";
 import { PrimaryButton, StakingInput } from "@/app/components/ui";
 import { ConnectButton } from "@/app/components/ui/buttons";
+import { RedemptionFactor } from "@/services/redemptions.service";
 
 export default function RedeemComponent() {
 	const { open } = useWeb3Modal();
