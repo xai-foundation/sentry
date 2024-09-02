@@ -633,6 +633,10 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         if (!stakingPool.isUserEngagedWithPool(msg.sender)) {
             removeUserFromPool(msg.sender, pool);
         }
+        
+        // Reordered to avoid reentrancy
+        Referee9(refereeAddress).unstakeEsXai(pool, amount);
+        esXai(esXaiAddress).transfer(msg.sender, amount);
 
         // Update total stake
         if(!totalEsXaiStakeCalculated[msg.sender]) {
@@ -647,10 +651,6 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         } else {
             _totalEsXaiStakeByUser[msg.sender] -= amount;
         }
-
-        // Reordered to avoid reentrancy
-        Referee9(refereeAddress).unstakeEsXai(pool, amount);
-        esXai(esXaiAddress).transfer(msg.sender, amount);
 
         emit UnstakeEsXai(
             msg.sender,
