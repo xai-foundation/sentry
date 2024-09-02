@@ -90,7 +90,6 @@ export const refreshRedemptions = async (network: NetworkKey, walletAddress: str
 	let open: RedemptionRequest[] = [], claimable: RedemptionRequest[] = [];
 	let closed: RedemptionRequest[] = currentRedemptions.closed;
 
-
 	for (let i = 0; i < batchesToRefresh.length; i++) {
 		const batch = batchesToRefresh[i];
 		const { redemptions, totalRedemptions } = await callRefreshRedemptionsFunctionOnContract(web3Instance, walletAddress, batch);
