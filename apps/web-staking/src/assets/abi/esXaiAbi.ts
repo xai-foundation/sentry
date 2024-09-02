@@ -550,9 +550,14 @@ export const esXaiAbi = [
             "internalType": "bool",
             "name": "cancelled",
             "type": "bool"
+          },
+          {
+            "internalType": "uint256[5]",
+            "name": "__gap",
+            "type": "uint256[5]"
           }
         ],
-        "internalType": "struct esXai6.RedemptionRequestExt",
+        "internalType": "struct esXai3.RedemptionRequestExt",
         "name": "",
         "type": "tuple"
       }
@@ -630,9 +635,14 @@ export const esXaiAbi = [
             "internalType": "bool",
             "name": "cancelled",
             "type": "bool"
+          },
+          {
+            "internalType": "uint256[5]",
+            "name": "__gap",
+            "type": "uint256[5]"
           }
         ],
-        "internalType": "struct esXai6.RedemptionRequestExt[]",
+        "internalType": "struct esXai3.RedemptionRequestExt[]",
         "name": "redemptions",
         "type": "tuple[]"
       },
@@ -766,6 +776,34 @@ export const esXaiAbi = [
     "inputs": [
       {
         "internalType": "address",
+        "name": "_refereeAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_nodeLicenseAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_poolFactoryAddress",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_maxKeys",
+        "type": "uint256"
+      }
+    ],
+    "name": "initialize",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
         "name": "account",
         "type": "address"
       }
@@ -840,6 +878,19 @@ export const esXaiAbi = [
   },
   {
     "inputs": [],
+    "name": "poolFactoryAddress",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "refereeAddress",
     "outputs": [
       {
@@ -897,9 +948,14 @@ export const esXaiAbi = [
             "internalType": "bool",
             "name": "cancelled",
             "type": "bool"
+          },
+          {
+            "internalType": "uint256[5]",
+            "name": "__gap",
+            "type": "uint256[5]"
           }
         ],
-        "internalType": "struct esXai6.RedemptionRequestExt[]",
+        "internalType": "struct esXai3.RedemptionRequestExt[]",
         "name": "redemptions",
         "type": "tuple[]"
       },
