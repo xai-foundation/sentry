@@ -50,10 +50,6 @@ export default function RedeemComponent() {
 		setReceiveValue((Number(value) * (redeemFactor / 100)).toString());
 	}
 
-	useEffect(() => {
-		setBalance(currency === CURRENCY.XAI ? xaiBalance : esXaiBalance);
-	}, [currency, xaiBalance, esXaiBalance]);
-
 	const onToggleClick = useCallback(() => {
 		if (currency === CURRENCY.XAI) {
 			setCurrency(CURRENCY.ES_XAI);
@@ -66,6 +62,11 @@ export default function RedeemComponent() {
 		}
 
 	}, [currency, redeemValue]);
+
+	useEffect(() => {
+		setBalance(currency === CURRENCY.XAI ? xaiBalance : esXaiBalance);
+	}, [currency, xaiBalance, esXaiBalance]);
+
 
 	const onSelectMaxAmount = () => {
 		const amount = currency === CURRENCY.XAI ? xaiBalance : esXaiBalance
