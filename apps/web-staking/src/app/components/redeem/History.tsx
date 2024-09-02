@@ -159,7 +159,7 @@ export default function History() {
 		throw new Error('RedemptionComponent must be used within a RedemptionProvider');
 	}
 	
-	const { redemptions, loadRedemptions } = context;
+	const { redemptions, loadRedemptions, redemptionsLoading } = context;
 
 	const { switchChain } = useSwitchChain();
 	const { writeContractAsync } = useWriteContract();
@@ -259,7 +259,7 @@ export default function History() {
 				  isError={selectedCountry === "United States"}
 				  errorMessage="KYC is not available for the selected country"
 		/>
-				{(redemptions.claimable.length > 0 || redemptions.open.length > 0) &&
+				{(redemptions.claimable.length > 0 || redemptions.open.length > 0) && !redemptionsLoading &&
 					<div className="bg-nulnOil/85 box-shadow-default mb-[53px]">
 						<MainTitle
 							isSubHeader
@@ -311,8 +311,13 @@ export default function History() {
 						})}
 					</div>
 				}
+				{redemptionsLoading && <div className="bg-nulnOil/75 shadow-default mb-[53px]">
+					<MainTitle isSubHeader classNames="!text-3xl capitalize border-b-1 border-chromaphobicBlack py-6 md:px-8 px-[17px] !mb-0" title="Loading Redemptions..." />
+				</div>
+					
+				}
 
-				{(redemptions.closed.length > 0) &&
+				{(redemptions.closed.length > 0)  && !redemptionsLoading &&
 					<div className="bg-nulnOil/75 shadow-default mb-[53px]">
 						<MainTitle
 							isSubHeader

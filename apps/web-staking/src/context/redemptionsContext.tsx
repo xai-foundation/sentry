@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useCallback, useRef, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useCallback, useRef, ReactNode, useState } from 'react';
 import { getNetwork } from "@/services/web3.service";
 import { useAccount } from 'wagmi';
 import { getAllRedemptions, OrderedRedemptions, RedemptionRequest, refreshRedemptions } from '@/services/redemptions.service';
@@ -7,6 +7,7 @@ import useSessionStorage from '../app/hooks/useSessionStorage';
 type RedemptionContextType = {
     redemptions: OrderedRedemptions;
     loadRedemptions: () => Promise<void>;
+    redemptionsLoading: boolean;
 };
 
 // Create the context
@@ -17,6 +18,7 @@ export { RedemptionContext };
 
 export const RedemptionProvider = ({ children }: { children: ReactNode }) => {
     const { address, chainId } = useAccount();
+    const [redemptionsLoading, setRedemptionsLoading] = useState<boolean>(false);
     const [redemptions, setRedemptions] = useSessionStorage<OrderedRedemptions>('userRedemptions', {
         claimable: [],
         open: [],
@@ -32,6 +34,7 @@ export const RedemptionProvider = ({ children }: { children: ReactNode }) => {
             const refreshedRedemptions = await refreshRedemptions(getNetwork(chainId), address, redemptions);
             setRedemptions(refreshedRedemptions);
         } catch (error) {
+            setRedemptionsLoading(false);
             console.error('Failed to update user redemptions:', error);
         }
     }, [address, chainId, redemptions, setRedemptions]);
@@ -44,6 +47,7 @@ export const RedemptionProvider = ({ children }: { children: ReactNode }) => {
             setRedemptions(redemptionsFromChain);
             setRedemptionsLoaded(true);
         } catch (error) {
+            setRedemptionsLoading(false);
             console.error('Failed to load user redemptions:', error);
         }
     }, [address, chainId, setRedemptions, setRedemptionsLoaded]);
@@ -55,6 +59,7 @@ export const RedemptionProvider = ({ children }: { children: ReactNode }) => {
             //console.log('Skipping load, last loaded', now - lastLoadedRef.current, 'ms ago');
             return;
         }
+        setRedemptionsLoading(true);
         lastLoadedRef.current = now;
         //console.log('Loading redemptions'); // Temporarily here to confirm no re-renders
         if (redemptionsLoaded) {
@@ -62,6 +67,7 @@ export const RedemptionProvider = ({ children }: { children: ReactNode }) => {
         } else {
             await loadAllUserRedemptions();
         }
+        setRedemptionsLoading(false);
     }, [redemptionsLoaded, updateUserRedemptions, loadAllUserRedemptions]);
 
     useEffect(() => {
@@ -72,7 +78,8 @@ export const RedemptionProvider = ({ children }: { children: ReactNode }) => {
 
     const contextValue = {
         redemptions,
-        loadRedemptions
+        loadRedemptions,
+        redemptionsLoading,
     };
 
     return (
