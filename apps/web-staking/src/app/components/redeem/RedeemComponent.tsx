@@ -39,6 +39,10 @@ export default function RedeemComponent() {
 		setReceiveValue((Number(redeemValue) * newFactor / 100).toString());
 	};
 
+	useEffect(() => {
+		setBalance(currency === CURRENCY.XAI ? xaiBalance : esXaiBalance);
+	}, [currency, xaiBalance, esXaiBalance]);
+
 	const onRedeemValueChange = (event: ChangeEvent) => {
 		event.preventDefault();
 		const { value } = event.target as HTMLInputElement
