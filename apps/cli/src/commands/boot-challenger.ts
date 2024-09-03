@@ -135,16 +135,21 @@ async function checkTimeSinceLastAssertion() {
     }
 
     if (currentTime - lastAssertionTime > criticalAmount) {
+        let missedAssertion;
         try {
-            const missedAssertion = await findMissedAssertion();
-            if (!missedAssertion) return;
-
-            const timeSinceLastAssertion = Math.round((currentTime - lastAssertionTime) / 60000);
-            console.log(`It has been ${timeSinceLastAssertion} minutes since the last assertion.`);
-            await sendNotification(`It has been ${timeSinceLastAssertion} minutes since the last assertion.`);
+            missedAssertion = await findMissedAssertion();
         } catch (error) {
-            console.error(`Failed to find missed assertions (${error}).`);
-            sendNotification(`Error: Failed to find missed assertions (${error})`);
+            commandInstance.log(`[${new Date().toISOString()}] Failed to findMissedAssertion (${error}).`);
+            sendNotification(`Error: Challenger instance ${CHALLENGER_INSTANCE} failed to findMissedAssertion`, commandInstance);
+        }
+
+        const timeSinceLastAssertion = Math.round((currentTime - lastAssertionTime) / 60000);
+        commandInstance.log(`[${new Date().toISOString()}] It has been ${timeSinceLastAssertion} minutes since the last assertion. Please check the Rollup Protocol (https://arbiscan.io/address/${config.rollupAddress}).`);
+        if (missedAssertion !== null) {
+            commandInstance.log(`[${new Date().toISOString()}] Found NodeConfirm event that has not been posted: AssertionId: ${missedAssertion}`);
+            sendNotification(`It has been ${timeSinceLastAssertion} minutes since the last assertion - **A NODE CONFIRM EVENT HAS NOT BEEN SUBMITTED FOR CHALLENGE (Assertion: ${missedAssertion}) !**. Please check the challenger runtime and the RPC (${config.arbitrumOneWebSocketUrl})`, commandInstance);
+        } else {
+            sendNotification(`It has been ${timeSinceLastAssertion} minutes since the last assertion - No NodeConfirm events have been missed. Please check the Rollup Protocol (https://arbiscan.io/address/${config.rollupAddress}).`, commandInstance);
         }
     }
 }
@@ -152,7 +157,9 @@ async function checkTimeSinceLastAssertion() {
 async function sendNotification(message: string) {
     if (cachedWebhookUrl) {
         try {
-            await axios.post(cachedWebhookUrl, { text: message });
+          
+            await axios.post(cachedWebhookUrl, { text: `<!channel> [Instance ${CHALLENGER_INSTANCE}]: ${message}`, unfurl_links: false, });
+
         } catch (error) {
             console.error(`Failed to send notification: ${(error as Error).message}`);
         }
@@ -200,11 +207,26 @@ async function processMissedAssertions() {
     isProcessingMissedAssertions = true;
 
     try {
-        const missedAssertionNodeNum = await findMissedAssertion();
-        if (!missedAssertionNodeNum) {
-            console.log(`No missed assertions found.`);
-            return;
-        }
+        missedAssertionNodeNum = await findMissedAssertion();
+    } catch (error: any) {
+        commandInstance.log(`[${new Date().toISOString()}] Error looking for missed assertion: ${error}`);
+        sendNotification(`Error looking for missed assertion ${error && error.message ? error.message : error}`, commandInstance);
+    }
+
+    if (missedAssertionNodeNum) {
+        try {
+            commandInstance.log(`[${new Date().toISOString()}] Found missed assertion with nodeNum: ${missedAssertionNodeNum}. Looking up the assertion information...`);
+            const assertionNode = await getAssertion(missedAssertionNodeNum);
+            commandInstance.log(`[${new Date().toISOString()}] Missed assertion data retrieved. Starting the submission process...`);
+
+            await submitAssertionToReferee(
+                cachedSecretKey,
+                missedAssertionNodeNum,
+                assertionNode,
+                cachedSigner!.signer,
+            );
+            commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${missedAssertionNodeNum}`);
+            lastAssertionTime = Date.now();
 
         console.log(`Found missed assertion: ${missedAssertionNodeNum}. Retrieving data...`);
         const assertionNode = await getAssertion(missedAssertionNodeNum);

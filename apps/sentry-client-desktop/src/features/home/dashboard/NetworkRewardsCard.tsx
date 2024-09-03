@@ -32,7 +32,7 @@ export function NetworkRewardsCard() {
 	};
 
 	useEffect(() => {
-		const interval = setInterval(() => {
+		const interval = window.setInterval(() => {
 			setCurrentTime(new Date());
 		}, 60000);
 		return () => clearInterval(interval);

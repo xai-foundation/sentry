@@ -4,6 +4,8 @@ import { addAdmin } from './commands/access-control/add-admin.js';
 import { syncStakingPools } from './commands/sync-staking-pools.js';
 import { bootChallenger } from './commands/boot-challenger.js';
 import { version } from "@sentry/core";
+import { processUnclaimedChallenges } from './commands/operator-control/process-unclaimed-challenges.js';
+import { monitorNodeCreated } from './commands/monitor-node-created.js';
 
 const program = new Command();
 
@@ -48,6 +50,7 @@ program.action(async () => {
         }
     }
 });
+
 
 console.log(`Starting Sentry CLI version ${version}`);
 console.log(`Stake and redeem esXAI at https://app.xai.games`);
