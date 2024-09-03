@@ -453,7 +453,7 @@ async function listenForChallengesCallback(challengeNumber: bigint, challenge: C
                 cachedLogger(`Comparison between PublicNode and Challenger was successful.`);
             })
             .catch(error => {
-                cachedLogger(`Error on CDN check for challenge ${Number(challenge.assertionId)}.`);
+                cachedLogger(`Error on CND check for challenge ${Number(challenge.assertionId)}.`);
                 cachedLogger(`${error.message}.`);
             });
     }
@@ -494,6 +494,8 @@ async function listenForChallengesCallback(challengeNumber: bigint, challenge: C
     } catch (error: any) {
         cachedLogger(`Error processing new challenge in listener callback: - ${error && error.message ? error.message : error}`);
     }
+
+
 }
 
 
