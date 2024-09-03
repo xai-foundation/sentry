@@ -568,12 +568,18 @@ export const isKYCApprovedForRedemption = async (network: NetworkKey, walletAddr
 
 	const ownedKeyCount = await getNodeLicenses(network, walletAddress);
 	const esXaiContract = new web3Instance.web3.eth.Contract(esXaiAbi, web3Instance.esXaiAddress);
-	const maxKeysNonKyc = await esXaiContract.methods.maxKeysNonKyc().call() as BigInt;
-		
-	if(ownedKeyCount <= Number(maxKeysNonKyc)){
+	let maxKeysNonKyc;
+	try {
+		maxKeysNonKyc = await esXaiContract.methods.maxKeysNonKyc().call() as BigInt;
+	} catch {
+		//If this function does not exists yet we will assume the max keys is more than any user holds.
+		maxKeysNonKyc = BigInt(50_000);
+	}
+
+	if (ownedKeyCount <= Number(maxKeysNonKyc)) {
 		return true;
 	}
-	
+
 	const refereeContract = new web3Instance.web3.eth.Contract(RefereeAbi, web3Instance.refereeAddress);
 	try {
 		const isApproved = await refereeContract.methods.isKycApproved(walletAddress).call() as boolean;
@@ -724,6 +730,7 @@ export const updateRequestClaimed = (network: NetworkKey, walletAddress: `0x${st
 
 	cachedUnstakes[requestIndex].open = false;
 	cachedUnstakes[requestIndex].completeTime = Date.now();
+
 	localStorage.setItem(storageKey, JSON.stringify(cachedUnstakes));
 }
 

@@ -147,29 +147,29 @@ const checkTimeSinceLastAssertion = async (lastAssertionTime: number, commandIns
     }
 
     if (currentTime - lastAssertionTime > criticalAmount) {
-
+        let missedAssertion;
         try {
-            const missedAssertion = await findMissedAssertion();
-            if (missedAssertion == null) {
-                const passedSinceLastChallenge = currentTime - lastAssertionTime;
-                lastAssertionTime = Date.now() - (passedSinceLastChallenge - 60 * 1000); //expect that the challenge got submitted at the correct time and resume with the correct health check warning
-                return;
-            }
+            missedAssertion = await findMissedAssertion();
         } catch (error) {
             commandInstance.log(`[${new Date().toISOString()}] Failed to findMissedAssertion (${error}).`);
-            sendNotification(`Error: Backup Challenger instance ${CHALLENGER_INSTANCE} failed to findMissedAssertion`, commandInstance);
+            sendNotification(`Error: Challenger instance ${CHALLENGER_INSTANCE} failed to findMissedAssertion`, commandInstance);
         }
 
         const timeSinceLastAssertion = Math.round((currentTime - lastAssertionTime) / 60000);
-        commandInstance.log(`[${new Date().toISOString()}] It has been ${timeSinceLastAssertion} minutes since the last assertion. Please check the Rollup Protocol (${config.rollupAddress}).`);
-        sendNotification(`It has been ${timeSinceLastAssertion} minutes since the last assertion. Please check the Rollup Protocol (${config.rollupAddress}).`, commandInstance);
+        commandInstance.log(`[${new Date().toISOString()}] It has been ${timeSinceLastAssertion} minutes since the last assertion. Please check the Rollup Protocol (https://arbiscan.io/address/${config.rollupAddress}).`);
+        if (missedAssertion !== null) {
+            commandInstance.log(`[${new Date().toISOString()}] Found NodeConfirm event that has not been posted: AssertionId: ${missedAssertion}`);
+            sendNotification(`It has been ${timeSinceLastAssertion} minutes since the last assertion - **A NODE CONFIRM EVENT HAS NOT BEEN SUBMITTED FOR CHALLENGE (Assertion: ${missedAssertion}) !**. Please check the challenger runtime and the RPC (${config.arbitrumOneWebSocketUrl})`, commandInstance);
+        } else {
+            sendNotification(`It has been ${timeSinceLastAssertion} minutes since the last assertion - No NodeConfirm events have been missed. Please check the Rollup Protocol (https://arbiscan.io/address/${config.rollupAddress}).`, commandInstance);
+        }
     }
 };
 
 const sendNotification = async (message: string, commandInstance: Vorpal.CommandInstance) => {
     if (cachedWebhookUrl) {
         try {
-            await axios.post(cachedWebhookUrl, { text: `<!channel> [Instance ${CHALLENGER_INSTANCE}]: ${message}` });
+            await axios.post(cachedWebhookUrl, { text: `<!channel> [Instance ${CHALLENGER_INSTANCE}]: ${message}`, unfurl_links: false, });
         } catch (error) {
             commandInstance.log(`[${new Date().toISOString()}] Failed to send notification request ${error && (error as Error).message ? (error as Error).message : error}`);
         }
@@ -262,6 +262,7 @@ async function processMissedAssertions(commandInstance: Vorpal.CommandInstance) 
                 cachedSigner!.signer,
             );
             commandInstance.log(`[${new Date().toISOString()}] Submitted assertion: ${missedAssertionNodeNum}`);
+            lastAssertionTime = Date.now();
 
         } catch (error) {
             isProcessingMissedAssertions = false;
