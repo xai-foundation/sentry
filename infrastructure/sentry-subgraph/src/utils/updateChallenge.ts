@@ -51,6 +51,7 @@ export function updateChallenge(referee: Referee, challenge: Challenge, event: C
     const previousChallenge = Challenge.load(previousChallengeId.toString());
 
     //previous challenge not found, therefore on the first challenge
+    //also doubles as a null guard
     if (!previousChallenge) {
         //set challenge field in NodeConfirmed event to challenge id and save
         let nodeConfirmation = NodeConfirmation.load(challenge.assertionId.toString());
@@ -87,7 +88,7 @@ export function updateChallenge(referee: Referee, challenge: Challenge, event: C
             nodeConfirmation.save();
             return challenge;
         }
-        if (refereeConfig.version.gt(BigInt.fromI32(6))) {
+        if (refereeConfig.version.lt(BigInt.fromI32(6))) {
             let nodeConfirmation = NodeConfirmation.load(challenge.assertionId.toString());
             if (!nodeConfirmation) {
                 log.warning(`Failed to load nodeConfirmation entity with id: ${challenge.assertionId}`, []);
