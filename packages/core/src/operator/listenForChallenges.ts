@@ -9,7 +9,7 @@ import { resilientEventListener } from "../utils/resilientEventListener.js";
  * @param callback - The callback function to be triggered when ChallengeSubmitted event is emitted.
  * @returns A function that can be called to stop listening for the event.
  */
-export function listenForChallenges(callback: (challengeNumber: bigint, challenge: Challenge, event: any) => void, onError: (error: Error) => void): () => void {
+export function listenForChallenges(callback: (challengeNumber: bigint, challenge: Challenge, event: any) => void, onError?: (error: Error) => void): () => void {
     const challengeNumberMap: { [challengeNumber: string]: boolean } = {};
 
     const listener = resilientEventListener({
@@ -20,13 +20,14 @@ export function listenForChallenges(callback: (challengeNumber: bigint, challeng
         log: console.info,
         callback: async (log, error) => {
             if (error) {
+                console.error(error);
+                if(!onError) return;
                 // Call the onError function with the caught error
                 onError(error instanceof Error ? error : new Error(String(error)));
                 return;
             }
             try {
                 // Uncomment the following line to test the onError function
-                // throw new Error("Test Error: Simulating a failure in getChallenge");
                 const challengeNumber = BigInt(log?.args[0]);
 
                 // if the challengeNumber has not been seen before, call the callback and add it to the map
@@ -39,6 +40,8 @@ export function listenForChallenges(callback: (challengeNumber: bigint, challeng
                     void callback(challengeNumber, challenge, log);
                 }
             } catch (err) {
+                console.error(err);
+                if(!onError) return;
                 // Call the onError function with the caught error
                 onError(err instanceof Error ? err : new Error(String(err)));
             }
@@ -49,36 +52,3 @@ export function listenForChallenges(callback: (challengeNumber: bigint, challeng
         listener.stop();
     };
 }
-
-
-//// Below only used to mock callback for testing error handler
-//// Define the type for the parameters of resilientEventListener
-// interface ResilientEventListenerParams {
-//     rpcUrl: string;
-//     contractAddress: string;
-//     abi: any[]; // Adjust the type as needed for your ABI
-//     eventName: string;
-//     log: (message: string) => void;
-//     callback: (log: LogDescription | null, error?: Error) => void;
-//   }
-  
-//   // Mock implementation of resilientEventListener
-//   const mockResilientEventListener = ({
-//     rpcUrl,
-//     contractAddress,
-//     abi,
-//     eventName,
-//     log,
-//     callback
-//   }: ResilientEventListenerParams): { stop: () => void } => {
-//     // Mock the stop function
-//     const stop = () => log("Mock listener stopped");
-  
-//     // Simulate an event being triggered
-//     setTimeout(() => {
-//       const mockLog: LogDescription = { name: 'MockEvent', args: ['arg1', 'arg2'] } as LogDescription; // Example log, cast as LogDescription
-//       callback(mockLog, undefined); // No error
-//     }, 2500); // 1-second delay for simulation
-  
-//     return { stop };
-//   };

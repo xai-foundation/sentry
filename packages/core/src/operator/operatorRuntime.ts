@@ -455,8 +455,6 @@ async function listenForChallengesCallback(challengeNumber: bigint, challenge: C
             .catch(error => {
                 cachedLogger(`Error on CDN check for challenge ${Number(challenge.assertionId)}.`);
                 cachedLogger(`${error.message}.`);
-                // Throw an error here to propagate from this catch block.
-                throw error;
             });
     }
 
@@ -495,8 +493,6 @@ async function listenForChallengesCallback(challengeNumber: bigint, challenge: C
         }
     } catch (error: any) {
         cachedLogger(`Error processing new challenge in listener callback: - ${error && error.message ? error.message : error}`);
-        // Propagate the error up by throwing it
-        throw error;
     }
 }
 
@@ -919,15 +915,9 @@ export async function operatorRuntime(
     let closeChallengeListener: () => void;
     logFunction(`Started listener for new challenges.`);
 
-    // Define the error handler
-    const handleError = (error: Error) => {
-        logFunction(`Error in challenge listener: ${error.message}`);
-        // TODO Additional error handling
-    };
-
     const graphStatus = await getSubgraphHealthStatus();
     if (graphStatus.healthy) {
-        closeChallengeListener = listenForChallenges(listenForChallengesCallback, handleError)
+        closeChallengeListener = listenForChallenges(listenForChallengesCallback)
 
 
         const openChallenge = await retry(() => getLatestChallengeFromGraph());
@@ -968,7 +958,7 @@ export async function operatorRuntime(
         const [latestChallengeNumber, latestChallenge] = await getLatestChallenge();
         await processNewChallenge(latestChallengeNumber, latestChallenge, nodeLicenseIds, sentryKeysMap);
 
-        closeChallengeListener = listenForChallenges(listenForChallengesCallback, handleError)
+        closeChallengeListener = listenForChallenges(listenForChallengesCallback)
 
         logFunction(`The operator has finished booting. The operator is running successfully. esXAI will accrue every few days.`);
     }
