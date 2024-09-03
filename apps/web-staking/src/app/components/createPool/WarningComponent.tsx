@@ -38,8 +38,8 @@ const WarningComponent = ({
           <WarningIcon className="mr-2 min-w-[27px]" />
         </div>
         <div className="flex flex-col">
-          <span className="text-bananaBoatText font-bold mb-2">{title}</span>
-          <span className="text-bananaBoatText">{description}</span>
+          <span className="font-bold mb-2">{title}</span>
+          <span>{description}</span>
         </div>
       </BaseCallout>
 

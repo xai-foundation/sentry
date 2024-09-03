@@ -13,7 +13,10 @@ import { getPoolInfosFromGraph, getSentryKeysFromGraph, getSentryWalletsForOpera
  * @returns mapped sentry key objects, pool objects, owner information and Referee config (this will be used to locally calculate the boost Factor)
  */
 export const loadOperatorKeysFromGraph_V1 = async (
-    operator: string,
+    operator: string,    
+    wallets: SentryWallet[],
+    pools: PoolInfo[],
+    refereeConfig: RefereeConfig,
     latestChallengeNumber?: bigint
 ): Promise<{
     wallets: SentryWallet[],
@@ -24,16 +27,13 @@ export const loadOperatorKeysFromGraph_V1 = async (
     mappedPools: { [poolAddress: string]: PoolInfo },
     refereeConfig: RefereeConfig
 }> => {
+    
     operatorState.cachedLogger(`Loading all wallets assigned to the operator.`);
     if (operatorState.passedInOwnersAndPools && operatorState.passedInOwnersAndPools.length) {
         operatorState.cachedLogger(`Operator owners were passed in.`);
     } else {
         operatorState.cachedLogger(`No operator owners were passed in.`);
     }
-
-    // Load all operator addresses and pool addresses, pass in the whitelist to get them filtered
-    // refereeConfig will be used to locally calculate the boos factor (hold tier thresholds and boostFactors as well as max staking capacity per key)
-    const { wallets, pools, refereeConfig } = await retry(() => getSentryWalletsForOperator(operator, {}, operatorState.passedInOwnersAndPools));
 
     if (wallets.length == 0 && pools.length == 0) {
         operatorState.cachedLogger(`No operatorWallets found, approve your wallet for operating keys or delegate it to a staking pool to operate for it.`);

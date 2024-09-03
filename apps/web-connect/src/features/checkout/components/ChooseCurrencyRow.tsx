@@ -65,7 +65,7 @@ export function ChooseCurrencyRow(): JSX.Element {
                                     }
                                     setSelectedValue={(e) => handleChange(e as Currency)}
                                     getDropdownItems={getDropdownItems}
-                                    extraClasses={{ dropdown: "max-w-[170px] bg-black text-white" }}
+                                    extraClasses={{ dropdown: "max-w-[170px] bg-black text-white", dropdownOptions: "w-[168px]" }}
                                     dropdownOptionsCount={Object.values(CURRENCIES).length}
                                 />
                             </form>

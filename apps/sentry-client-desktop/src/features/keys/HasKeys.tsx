@@ -245,7 +245,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 							}
 							setSelectedValue={setSelectedWallet}
 							getDropdownItems={getDropdownItems}
-							extraClasses={{dropdown: "max-w-[456px]"}}
+							extraClasses={{dropdown: "max-w-[456px]", dropdownOptions: "w-[450px]"}}
 							dropdownOptionsCount={Object.values(combinedOwners).length}
 						/>
 						</div>

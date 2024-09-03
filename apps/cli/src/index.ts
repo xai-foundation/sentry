@@ -49,6 +49,7 @@ import { startCentralizationRuntime } from './commands/start-centralization-runt
 import { exportChallengeInfo } from './commands/export-challenge-info.js';
 import { syncStakingPools } from './commands/sync-staking-pools.js';
 import { processUnclaimedChallenges } from './commands/operator-control/process-unclaimed-challenges.js';
+import { monitorNodeCreated } from './commands/monitor-node-created.js';
 
 import {version} from "@sentry/core";
 
@@ -105,6 +106,7 @@ startCentralizationRuntime(cli);
 exportChallengeInfo(cli);
 syncStakingPools(cli);
 processUnclaimedChallenges(cli);
+monitorNodeCreated(cli);
 
 console.log(`Starting Sentry cli version ${version}`);
 console.log(`Stake and redeem esXAI at https://app.xai.games`);
