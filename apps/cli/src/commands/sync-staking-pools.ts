@@ -2,8 +2,8 @@ import { Command } from 'commander';
 import inquirer from 'inquirer';
 import { poolDataSync } from '@sentry/core';
 
-export function syncStakingPools(program: Command) {
-    program
+export function syncStakingPools(cli: Command) {
+    cli
         .command('sync-staking-pools')
         .description('Sync the staking pool db data with the current blockchain configs')
         .option('-u, --uri <uri>', 'MongoDB connection URI')

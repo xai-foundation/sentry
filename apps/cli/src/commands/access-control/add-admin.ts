@@ -4,10 +4,10 @@ import { addAddressToRole, getSignerFromPrivateKey } from '@sentry/core';
 
 /**
  * Function to add an admin to the Referee contract.
- * @param program - Commander instance
+ * @param cli - Commander instance
  */
-export function addAdmin(program: Command) {
-    program
+export function addAdmin(cli: Command) {
+    cli
         .command('add-admin')
         .description('Adds an address to the DEFAULT_ADMIN_ROLE in the Referee contract.')
         .action(async () => {

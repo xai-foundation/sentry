@@ -29,10 +29,10 @@ let isProcessingMissedAssertions = false;
 
 /**
  * Function to boot the challenger and listen for assertions.
- * @param program - Commander instance
+ * @param cli - Commander instance
  */
-export function bootChallenger(program: Command) {
-    program
+export function bootChallenger(cli: Command) {
+    cli
         .command('boot-challenger')
         .description('Starts a runtime of the challenger.')
         .action(async () => {
