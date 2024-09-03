@@ -149,7 +149,6 @@ async function getAllUserRedemptionsFromChain(web3Instance: Web3Instance, wallet
 		offset += REDEMPTION_BATCH_SIZE;
 		totalUserRedemptions = totalRedemptions;
 	}
-	console.log("All redemptions", allRedemptions.length);
 	return allRedemptions;
 }
 
