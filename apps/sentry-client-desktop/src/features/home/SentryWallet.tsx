@@ -24,8 +24,8 @@ import {useStorage} from "@/features/storage";
 import log from "electron-log";
 import {GreenPulse, GreyPulse, YellowPulse} from "@/features/keys/StatusPulse";
 import BaseCallout from "@sentry/ui/dist/src/rebrand/callout/BaseCallout";
-import { CopyIcon, HelpIcon, KeyIcon } from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
-import { NodeLicenseInformation, NodeLicenseStatus, SentryAddressInformation } from "@sentry/core";
+import {CopyIcon, HelpIcon, KeyIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
+import {SentryAddressInformation} from "@sentry/core";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
@@ -33,7 +33,7 @@ export const recommendedFundingBalance = ethers.parseEther("0.005");
 export function SentryWallet() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
-	const { ownersLoading, owners, licensesLoading, licensesList, isBulkCompatible } = useAtomValue(chainStateAtom);
+	const {ownersLoading, owners, licensesLoading} = useAtomValue(chainStateAtom);
 	const queryClient = useQueryClient();
 	const {hasAssignedKeys, funded} = useAtomValue(accruingStateAtom);
 
@@ -50,7 +50,7 @@ export function SentryWallet() {
 	});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
-	const {startRuntime, stopRuntime, sentryRunning, nodeLicenseStatusMap} = useOperatorRuntime();
+	const {startRuntime, stopRuntime, sentryRunning, sentryAddressStatusMap} = useOperatorRuntime();
 	const {data} = useStorage();
 
 	const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -140,7 +140,7 @@ export function SentryWallet() {
 	}
 
 	function getAddresses() {
-		if (nodeLicenseStatusMap.size === 0) {
+		if (sentryAddressStatusMap.size === 0) {
 			return (
 				<tr className="flex pr-8 py-[15px] bg-nulnOil text-sm">
 					<td colSpan={3} className="w-full text-center text-lg text-medium text-americanSilver">No addresses found.</td>
@@ -150,7 +150,7 @@ export function SentryWallet() {
 
 		const element: Array<ReactNode> = [];
 
-		nodeLicenseStatusMap.forEach((status: SentryAddressInformation, key: string) => {
+		sentryAddressStatusMap.forEach((status: SentryAddressInformation, key: string) => {
 			if (selectedWallet === null || status.address === selectedWallet) {
 				element.push(
 					<tr className={`bg-nulnOil flex pl-[25px] pr-8 text-sm border-b border-chromaphobicBlack`} key={`address-${key.toString()}`}>
@@ -164,67 +164,30 @@ export function SentryWallet() {
 					</tr>
 				);
 			}
-		})
-		return element;
-	}
+		});
 
-	function getKeys() {
-		if (nodeLicenseStatusMap.size === 0) {
-			return (
-				<tr className="flex pr-8 py-[15px] bg-nulnOil text-sm">
-					<td colSpan={3} className="w-full text-center text-lg text-medium text-americanSilver">No keys found.</td>
-				</tr>
-			);
-		}
-
-		// let i = 0;
-		const element: Array<ReactNode> = [];
-		nodeLicenseStatusMap.forEach((status: NodeLicenseInformation, key: bigint) => {
-			//const isEven = i++ % 2 === 0;
-			if (selectedWallet === null || status.ownerPublicKey === selectedWallet) {
-				element.push(
-					<tr className={`bg-nulnOil flex pl-[25px] pr-8 text-sm border-b border-chromaphobicBlack`} key={`license-${key.toString()}`}>
-						<td className="w-full max-w-[65px] pr-4 py-4 text-lg font-medium text-elementalGrey">{key.toString()}</td>
-						<td className="w-full max-w-[400px] pr-4 py-4 text-lg font-medium text-elementalGrey">{status.ownerPublicKey}</td>
-						<td className="w-full max-w-[400px] px-4 py-4 text-lg font-medium text-elementalGrey">
-							{status.status}
-						</td>
-					</tr>
-				);
-			}
-		})
 		return element;
 	}
 
 	function getWalletCounter() {
 
-		if (isBulkCompatible) {
-
-			if(data?.whitelistedWallets && data?.whitelistedWallets.length){
-				return `${nodeLicenseStatusMap.size} of ${data?.whitelistedWallets?.length} wallets/pools`;
-			}
-
-			return `${nodeLicenseStatusMap.size} of ${owners.length} wallets/pools`;
-			
-		} else {
-			/**
-			 * By default, use the assignedWallets values.
-			 * If the user has whitelisted wallets, update the counter to populate with their whitelistedWallets values.
-			 */
-			const keysCounter = data?.whitelistedWallets
-				? `${nodeLicenseStatusMap.size} key${nodeLicenseStatusMap.size === 1 ? '' : 's'} in ${data?.whitelistedWallets?.length} wallet${data?.whitelistedWallets?.length === 1 ? '' : 's'}`
-				: `${licensesList.length} key${licensesList.length === 1 ? '' : 's'} in ${owners.length} wallet${owners.length === 1 ? '' : 's'}`
-
-			return (
-				<>
-					{nodeLicenseStatusMap.size > 0
-						? (loading ? ("Loading...") : (`${keysCounter}`))
-						: ("No keys")}
-				</>
-			);
-
+		if (loading) {
+			return <>Loading...</>
+		} else if (sentryAddressStatusMap.size == 0) {
+			return <>No wallets...</>
 		}
 
+		let walletCounter = `${sentryAddressStatusMap.size} of ${owners.length} wallets/pools`;
+
+		/**
+		 * By default, use the assignedWallets values.
+		 * If the user has allowlist wallets, update the counter to populate with their "whitelistedWallets" values.
+		 */
+		if (data?.whitelistedWallets && data?.whitelistedWallets.length) {
+			walletCounter = `${sentryAddressStatusMap.size} of ${data?.whitelistedWallets?.length} wallets/pools`;
+		}
+
+		return <>{walletCounter}</>
 	}
 
 	function onCloseWalletConnectedModal() {
@@ -236,46 +199,24 @@ export function SentryWallet() {
 	}
 
 	function TableComponent(): ReactNode {
-
-		if (isBulkCompatible) {
-			return (<table className="w-full">
-				<thead className="text-[#A3A3A3] sticky top-0 bg-white">
-					<tr className="flex text-left text-base font-semibold text-elementalGrey uppercase px-[25px] py-[15px] bg-dynamicBlack">
-						<th className="w-full max-w-[200px] whitespace-nowrap">Wallet or pool</th>
-						<th className="w-full max-w-[108px] px-4">Keys</th>
-						<th className="w-full max-w-[200px] px-[31px]">Status</th>
+		return (<table className="w-full">
+			<thead className="text-[#A3A3A3] sticky top-0 bg-white">
+				<tr className="flex text-left text-base font-semibold text-elementalGrey uppercase px-[25px] py-[15px] bg-dynamicBlack">
+					<th className="w-full max-w-[200px] whitespace-nowrap">Wallet or pool</th>
+					<th className="w-full max-w-[108px] px-4">Keys</th>
+					<th className="w-full max-w-[200px] px-[31px]">Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loading ? (
+					<tr className="text-[#A3A3A3] text-sm flex px-8 bg-nulnOil py-4">
+						<td colSpan={3}
+							className="w-full text-center text-lg font-medium text-elementalGrey">Loading...
+						</td>
 					</tr>
-				</thead>
-				<tbody>
-					{loading ? (
-						<tr className="text-[#A3A3A3] text-sm flex px-8 bg-nulnOil py-4">
-							<td colSpan={3}
-								className="w-full text-center text-lg font-medium text-elementalGrey">Loading...
-							</td>
-						</tr>
-					) : getAddresses()}
-				</tbody>
-			</table>)
-		} else {
-			return (<table className="w-full">
-				<thead className="text-[#A3A3A3] sticky top-0 bg-white">
-					<tr className="flex text-left text-base font-semibold text-elementalGrey uppercase px-[25px] py-[15px] bg-dynamicBlack">
-						<th className="w-full max-w-[50px] !text-nowrap">Key Id</th>
-						<th className="w-full max-w-[400px] px-4">Owner Address</th>
-						<th className="w-full max-w-[400px] px-[31px]">Claim Status</th>
-					</tr>
-				</thead>
-				<tbody>
-					{loading ? (
-						<tr className="text-[#A3A3A3] text-sm flex px-8 bg-nulnOil py-4">
-							<td colSpan={3}
-								className="w-full text-center text-lg font-medium text-elementalGrey">Loading...
-							</td>
-						</tr>
-					) : getKeys()}
-				</tbody>
-			</table>)
-		}
+				) : getAddresses()}
+			</tbody>
+		</table>)
 	}
 
 	return (
@@ -433,7 +374,7 @@ export function SentryWallet() {
 					<div
 						className=" w-full py-[22px] pl-[24px]  bg-nulnOil">
 						<div className="flex flex-row items-center gap-[20px]">
-							<h2 className="font-bold text-white text-2xl uppercase">{isBulkCompatible ? "Assigned Addresses" : "Assigned Keys"}</h2>
+							<h2 className="font-bold text-white text-2xl uppercase">Assigned Addresses</h2>
 							<div className="flex gap-[5px] items-center">
 								<p className="text-elementalGrey text-lg font-medium">
 									{getWalletCounter()}

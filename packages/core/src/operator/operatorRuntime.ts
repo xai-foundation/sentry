@@ -72,14 +72,14 @@ export type BulkOwnerOrPool = {
 /**
  * Operator runtime function.
  * @param {ethers.Signer} signer - The signer.
- * @param {((status: NodeLicenseStatusMap) => void)} [statusCallback] - Optional function to monitor the status of the runtime.
+ * @param {((status: SentryAddressStatusMap) => void)} [statusCallback] - Optional function to monitor the status of the runtime.
  * @param {((log: string) => void)} [logFunction] - Optional function to log the process.
  * @param {string[]} [operatorOwners] - Optional array of addresses that should replace "owners" if passed in.
  * @returns {Promise<() => Promise<void>>} The stop function.
  */
 export async function operatorRuntime(
     signer: ethers.Signer,
-    statusCallback: (status: NodeLicenseStatusMap | SentryAddressStatusMap) => void = (_) => { },
+    statusCallback: (status: SentryAddressStatusMap) => void = (_) => { },
     logFunction: (log: string) => void = (_) => { },
     operatorOwners?: string[],
     onAssertionMissMatch: (publicNodeData: PublicNodeBucketInformation | undefined, challenge: Challenge, message: string) => void = (_) => { }
@@ -98,16 +98,7 @@ export async function operatorRuntime(
     // Create a wrapper for the statusCallback to always send back a fresh copy of the map, so the other side doesn't mutate the map
     operatorState.safeStatusCallback = () => {
         // Create a fresh copy of the map
-        let statusCopy: NodeLicenseStatusMap | SentryAddressStatusMap = new Map(operatorState.nodeLicenseStatusMap);
-
-        if (operatorState.nodeLicenseStatusMap.size == 0) {
-            if (operatorState.sentryAddressStatusMap.size == 0) {
-                logFunction(`Status update empty list`);
-            } else {
-                statusCopy = new Map(operatorState.sentryAddressStatusMap);
-            }
-        }
-
+        let statusCopy: SentryAddressStatusMap = new Map(operatorState.sentryAddressStatusMap);
         // Call the original statusCallback with the copy
         statusCallback(statusCopy);
     };

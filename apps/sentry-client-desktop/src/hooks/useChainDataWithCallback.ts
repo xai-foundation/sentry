@@ -6,7 +6,8 @@ import {StatusMap, useKycStatusesWithCallback} from "@/hooks/useKycStatusesWithC
 import {getLicensesList, LicenseList, LicenseMap, useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
 import {useCombinedOwners} from "@/hooks/useCombinedOwners";
 import { useGetOwnerOrDelegatePools } from "./useGetOwnerOrDelegatepools";
-import { useGetIsBeforeBulkUpgrade } from "./useGetIsBeforeBulkUpgrade";
+import { useGetOperatorAddresses } from "./useGetOperatorAddresses";
+import { BulkOwnerOrPool } from "@sentry/core";
 
 interface ChainState {
 	anyLoading: boolean;
@@ -21,7 +22,7 @@ interface ChainState {
 	combinedLicensesMap: LicenseMap;
 	licensesList: LicenseList;
 	combinedLicensesList: LicenseList;
-	isBulkCompatible: boolean
+	operatorWalletData: BulkOwnerOrPool[];
 }
 
 const defaultChainState: ChainState = {
@@ -37,7 +38,7 @@ const defaultChainState: ChainState = {
 	combinedLicensesMap: {},
 	licensesList: [],
 	combinedLicensesList: [],
-	isBulkCompatible: false
+	operatorWalletData: []
 }
 
 export const chainStateAtom = atom<ChainState>(defaultChainState);
@@ -54,12 +55,17 @@ export function useChainDataWithCallback() {
 	const [chainState, setChainState] = useAtom(chainStateAtom);
 	const chainStateRefresh = useAtomValue(chainStateRefreshAtom);
 	const {publicKey} = useOperator();
-	const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey, false, chainStateRefresh);
-	const {combinedOwners} = useCombinedOwners(owners);
-	const {pools} = useGetOwnerOrDelegatePools(publicKey);
-	const {isBulkCompatible} = useGetIsBeforeBulkUpgrade();
-	const {isLoading: ownersKycLoading, statusMap: combinedWalletsKycMap} = useKycStatusesWithCallback(combinedOwners, chainStateRefresh);
-	const {isLoading: licensesLoading, licensesMap: combinedLicensesMap} = useListNodeLicensesWithCallback(combinedOwners, chainStateRefresh);
+
+	// const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey, false, chainStateRefresh);
+	// const {combinedOwners} = useCombinedOwners(owners);
+	// const {pools} = useGetOwnerOrDelegatePools(publicKey);
+	// const {isLoading: ownersKycLoading, statusMap: combinedWalletsKycMap} = useKycStatusesWithCallback(combinedOwners, chainStateRefresh);
+	// const {isLoading: licensesLoading, licensesMap: combinedLicensesMap} = useListNodeLicensesWithCallback(combinedOwners, chainStateRefresh);
+
+	//TODO update table view:
+	//combinedWalletsKycMap does not seem to be used anywhere and should be removed ?
+	//combinedLicensesMap should be removed once removed from Keys view.
+	const { owners, pools, isLoadingOperatorAddresses: ownersLoading, operatorWalletData } = useGetOperatorAddresses(publicKey, chainStateRefresh);
 
 	// set default state
 	useEffect(() => {
@@ -72,12 +78,10 @@ export function useChainDataWithCallback() {
 			return {
 				..._chainState,
 				ownersLoading,
-				ownersKycLoading,
-				licensesLoading,
-				anyLoading: ownersLoading || ownersKycLoading || licensesLoading,
+				anyLoading: ownersLoading,
 			}
 		});
-	}, [ownersLoading, ownersKycLoading, licensesLoading]);
+	}, [ownersLoading]);
 
 	// return owners
 	useEffect(() => {
@@ -99,53 +103,53 @@ export function useChainDataWithCallback() {
 		});
 	}, [pools]);
 
+	// return ownersKycMap & combinedWalletsKycMap
+	// useEffect(() => {
+	// 	setChainState((_chainState) => {
+	// 		const ownersKycMap = Object.keys(combinedWalletsKycMap).reduce((result, wallet) => {
+	// 			if (owners.includes(wallet)) {
+	// 				result[wallet] = combinedWalletsKycMap[wallet];
+	// 			}
+	// 			return result;
+	// 		}, {});
+
+	// 		return {
+	// 			..._chainState,
+	// 			ownersKycMap,
+	// 			combinedWalletsKycMap,
+	// 		};
+	// 	});
+	// }, [JSON.stringify(combinedWalletsKycMap), owners]);
+
+	// return licensesMap & combinedLicensesMap
+	// useEffect(() => {
+	// 	setChainState((_chainState) => {
+	// 		const licensesMap = Object.keys(combinedLicensesMap).reduce((result, wallet) => {
+	// 			if (owners.includes(wallet)) {
+	// 				result[wallet] = combinedLicensesMap[wallet];
+	// 			}
+	// 			return result;
+	// 		}, {});
+
+	// 		return {
+	// 			..._chainState,
+	// 			licensesMap,
+	// 			combinedLicensesMap,
+	// 			licensesList: getLicensesList(licensesMap),
+	// 			combinedLicensesList: getLicensesList(combinedLicensesMap)
+	// 		}
+	// 	});
+	// }, [combinedLicensesMap]);
+
 	
 	useEffect(() => {
 		setChainState((_chainState) => {
 			return {
 				..._chainState,
-				isBulkCompatible,
+				operatorWalletData,
 			}
 		});
-	}, [isBulkCompatible]);
-
-	// return ownersKycMap & combinedWalletsKycMap
-	useEffect(() => {
-		setChainState((_chainState) => {
-			const ownersKycMap = Object.keys(combinedWalletsKycMap).reduce((result, wallet) => {
-				if (owners.includes(wallet)) {
-					result[wallet] = combinedWalletsKycMap[wallet];
-				}
-				return result;
-			}, {});
-
-			return {
-				..._chainState,
-				ownersKycMap,
-				combinedWalletsKycMap,
-			};
-		});
-	}, [JSON.stringify(combinedWalletsKycMap), owners]);
-
-	// return licensesMap & combinedLicensesMap
-	useEffect(() => {
-		setChainState((_chainState) => {
-			const licensesMap = Object.keys(combinedLicensesMap).reduce((result, wallet) => {
-				if (owners.includes(wallet)) {
-					result[wallet] = combinedLicensesMap[wallet];
-				}
-				return result;
-			}, {});
-
-			return {
-				..._chainState,
-				licensesMap,
-				combinedLicensesMap,
-				licensesList: getLicensesList(licensesMap),
-				combinedLicensesList: getLicensesList(combinedLicensesMap)
-			}
-		});
-	}, [combinedLicensesMap]);
+	}, [operatorWalletData]);
 
 	return {
 		...chainState,

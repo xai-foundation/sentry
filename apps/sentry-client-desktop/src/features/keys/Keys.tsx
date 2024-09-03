@@ -21,6 +21,7 @@ export function Keys() {
 		licensesLoading,
 		combinedLicensesMap,
 		combinedLicensesList,
+		operatorWalletData
 	} = useAtomValue(chainStateAtom);
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const {combinedOwners, walletAssignedMap} = useCombinedOwners(owners);
@@ -81,11 +82,11 @@ export function Keys() {
 				)}
 			</div>
 
-			{!ownersLoading && !ownersKycLoading && !licensesLoading && keyCount === 0 ? (
+			{!ownersLoading && !ownersKycLoading && !licensesLoading && operatorWalletData.length === 0 ? (
 				<NoKeys/>
 			) : (
 				<>
-					{Object.keys(combinedLicensesMap).length === 0 || keyCount === 0 ? (
+					{operatorWalletData.length === 0 ? (
 						<div className="w-full h-full flex-1 flex flex-col justify-center items-center">
 							<h3 className="text-center text-lg text-white">Loading...</h3>
 						</div>
@@ -95,6 +96,7 @@ export function Keys() {
 							combinedLicensesMap={combinedLicensesMap}
 							statusMap={ownersKycMap}
 							isWalletAssignedMap={walletAssignedMap}
+							operatorWalletData={operatorWalletData}
 						/>
 					)}
 				</>
