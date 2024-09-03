@@ -368,7 +368,7 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
 
         uint256 totalIndicies = indices.length;
 
-        // If no indices provided and no new redemptions, return empty
+        // If no indices provided, return empty
         if (totalIndicies == 0) {
             return (redemptions, totalRedemptions);
         }
@@ -376,7 +376,6 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         // Initialize an array for the redemption requests with the final required size
         redemptions = new RedemptionRequestExt[](totalIndicies);
 
-        // Single loop to handle both copying old indices and adding new indices, and fetching redemption requests
         for (uint256 i = 0; i < totalIndicies; i++) {
             uint256 index;
             index = indices[i];
