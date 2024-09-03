@@ -54,7 +54,8 @@ export function startCentralizationRuntime(cli: Vorpal) {
 
                     if (restartOnCrash) {
                         commandInstance.log(`[${new Date().toISOString()}] Restarting the CentralizationRuntime due to crash.`);
-                        await sendSlackNotification(slackWebHookUrl, `Restarting the CentralizationRuntime due to crash.`, (log: string) => commandInstance.log(log));
+                        const slackMessage = `<!channel>> Restarting the CentralizationRuntime due to crash @ ${new Date().toISOString()}.`;
+                        await sendSlackNotification(slackWebHookUrl, slackMessage, (log: string) => commandInstance.log(log));
                         setTimeout(startRuntime, 5000); // Delay before restarting
                     } else {
                         process.exit(1); // Explicitly exit if restart is not desired

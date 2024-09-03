@@ -136,13 +136,15 @@ export async function dataCentralizationRuntime({
 				await sendSlackNotification(slackWebHookUrl, slackMessage, logFunction);
 			} catch (error) {
 				const errorMessage = error instanceof Error ? error.message : String(error);
-				await sendSlackNotification(slackWebHookUrl, `Error in challenge listener: ${errorMessage}`, logFunction);
+				const slackMessage = `<!channel>> Error in challenge listener: ${errorMessage}`;
+				await sendSlackNotification(slackWebHookUrl, slackMessage, logFunction);
 				logFunction(`Error in challenge listener: ${errorMessage}`);
 			}
 		},
 		async (error: Error) => {
 			const errorMessage = `Error in listenForChallenges: ${error.message}`;
-			await sendSlackNotification(slackWebHookUrl, errorMessage, logFunction);
+			const slackMessage = `<!channel>> Error in challenge listener: ${errorMessage}`;
+			await sendSlackNotification(slackWebHookUrl, slackMessage, logFunction);
 			logFunction(errorMessage);
 		}
 	);
@@ -162,7 +164,6 @@ export async function dataCentralizationRuntime({
 			logFunction('Event listener removed.');
 		} catch (error) {
 			logFunction(`Error stopping the data centralization runtime: ${error}`);
-			throw error; // This re-throws the error to ensure it is handled by the caller.
 		}
 	};
 }
