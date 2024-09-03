@@ -19,8 +19,8 @@ import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import ClaimableRewardsComponent from "@/app/components/staking/ClaimableRewardsComponent";
 import { formatCurrencyWithDecimals } from "@/app/utils/formatCurrency";
 import { PrimaryButton } from "@/app/components/ui";
-import { RedemptionContext } from "@/context/redemptionsContext";
 import { RedemptionRequest } from '../../../services/redemptions.service';
+import useGetRedemptions from "@/app/hooks/useGetRedemptions";
 
 interface DashboardStakingInfoProps {
   totalStaked: number;
@@ -35,9 +35,8 @@ const DashboardStakingInfo = ({
   onClaimRewards,
   rewardsTransactionLoading
 }: DashboardStakingInfoProps) => {
-  const context = useContext(RedemptionContext);
   const { stakedKeysAmount } = useGetUserTotalStakedKeysCount();
-  const { redemptions: {claimable}, loadRedemptions } = context!;
+	const { redemptions: {claimable}, loadRedemptions } = useGetRedemptions();
   const calculatedClaimableRedemptions = claimable.reduce((acc, redemption) => {
     return (acc += redemption.receiveAmount);
   }, 0);

@@ -21,3 +21,4 @@ export *  from './useGetUserInteractedPools';
 export *  from './useGetUserPoolInfo';
 export *  from './useGetUserTotalStakedKeysCount';
 export *  from './useSessionStorage';
+export *  from './useGetRedemptions';

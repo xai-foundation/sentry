@@ -1,6 +1,6 @@
 'use client';
 
-import { RedemptionProvider } from '@/context/redemptionsContext';
+
 import { NextUIProvider } from '@nextui-org/react';
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { ToastContainer } from "react-toastify";
@@ -11,9 +11,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <NextUIProvider>
       <NextThemesProvider attribute="class">
         <ToastContainer className="toast-container" />
-        <RedemptionProvider>
           {children}
-        </RedemptionProvider>
       </NextThemesProvider>
     </NextUIProvider>
   );

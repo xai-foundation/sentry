@@ -18,8 +18,8 @@ import { BaseModal, PrimaryButton } from "@/app/components/ui";
 import { TextButton } from "@/app/components/ui/buttons";
 import { useBlockIp, useGetKYCApproved } from "@/app/hooks";
 import { listOfCountries } from "../constants/constants";
-import { RedemptionContext } from "@/context/redemptionsContext";
 import { RedemptionRequest } from "@/services/redemptions.service";
+import useGetRedemptions from "@/app/hooks/useGetRedemptions";
 
 interface HistoryCardProps {
 	receivedAmount: number,
@@ -152,14 +152,8 @@ export default function History() {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 	const { isApproved } = useGetKYCApproved();
 	const {blocked, loading} = useBlockIp();
-	const { chainId } = useAccount();
-	const context = useContext(RedemptionContext);
-
-	if (!context) {
-		throw new Error('RedemptionComponent must be used within a RedemptionProvider');
-	}
-	
-	const { redemptions, loadRedemptions, redemptionsLoading } = context;
+	const { chainId } = useAccount();	
+	const { redemptions, loadRedemptions, redemptionsLoading } = useGetRedemptions();
 
 	const { switchChain } = useSwitchChain();
 	const { writeContractAsync } = useWriteContract();
