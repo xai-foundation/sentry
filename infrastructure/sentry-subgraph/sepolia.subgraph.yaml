@@ -136,6 +136,26 @@ dataSources:
           handler: handleConvertedToEsXai
       file: ./src/xai.ts
   - kind: ethereum
+    name: Rollup
+    network: arbitrum-sepolia
+    source:
+      address: "0xC47DacFbAa80Bd9D8112F4e8069482c2A3221336" #TODO: change to sepolia rollup address when deployed in a later ticket
+      abi: Rollup
+      startBlock: 169689813 #TODO: change to deploy block number when rollup contract is deployed in a later ticket
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - NodeConfirmation
+      abis:
+        - name: Rollup
+          file: ./abis/Rollup.json
+      eventHandlers:
+        - event: NodeConfirmed(indexed uint64,bytes32,bytes32)
+          handler: handleNodeConfirmed
+      file: ./src/referee.ts
+  - kind: ethereum
     name: TinyKeysAirdrop
     network: arbitrum-sepolia
     source:
