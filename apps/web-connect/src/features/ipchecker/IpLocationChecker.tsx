@@ -1,6 +1,7 @@
 "use client";
 
 import { useBlockIp } from "@/hooks/useBlockIp";
+import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
 import { PropsWithChildren } from "react";
 import { BiLoaderAlt } from "react-icons/bi";
 
@@ -21,7 +22,7 @@ export function IpLocationChecker({ children }: PropsWithChildren) {
 	if (blocked) {
 		return (
 			<div className='w-full h-screen flex justify-center items-center'>
-				<p className="p-2 text-md text-white">You are in a country restricted from using this application.</p>
+				<IpBlockText classNames="p-2 text-md text-white" />
 			</div>
 		);
 	}

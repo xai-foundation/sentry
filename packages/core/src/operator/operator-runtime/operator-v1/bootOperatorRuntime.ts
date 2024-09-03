@@ -1,4 +1,4 @@
-import { getLatestChallenge, getLatestChallengeFromGraph, getSubgraphHealthStatus, listenForChallenges, MAX_CHALLENGE_CLAIM_AMOUNT, retry } from "../../../index.js";
+import { getLatestChallenge, getLatestChallengeFromGraph, getSentryWalletsForOperator, getSubgraphHealthStatus, listenForChallenges, MAX_CHALLENGE_CLAIM_AMOUNT, retry } from "../../../index.js";
 import { listenForChallengesCallback } from "../listenForChallengesCallback.js";
 import { processNewChallenge_V1 } from "./processNewChallenge.js";
 import { findSubmissionOnSentryKey } from "../findSubmissionOnSentryKey.js";
@@ -22,10 +22,12 @@ export const bootOperatorRuntime_V1 = async (
         const openChallenge = await retry(() => getLatestChallengeFromGraph());
         // Calculate the latest challenge we should load from the graph
         const latestClaimableChallenge = Number(openChallenge.challengeNumber) <= MAX_CHALLENGE_CLAIM_AMOUNT ? 1 : Number(openChallenge.challengeNumber) - MAX_CHALLENGE_CLAIM_AMOUNT;
+    
+        const { wallets, pools, refereeConfig:refereeConfigFromGraph } = await retry(() => getSentryWalletsForOperator(operatorState.operatorAddress, { latestChallengeNumber: BigInt(latestClaimableChallenge), winningKeyCount: true, claimed: false }, operatorState.passedInOwnersAndPools));
 
         // Load all sentryKey objects including all winning and unclaimed submissions up until latestClaimableChallenge
         const { sentryWalletMap, sentryKeysMap, nodeLicenseIds, mappedPools, refereeConfig } =
-            await retry(() => loadOperatorKeysFromGraph_V1(operatorState.operatorAddress, BigInt(latestClaimableChallenge)));
+            await retry(() => loadOperatorKeysFromGraph_V1(operatorState.operatorAddress, wallets, pools, refereeConfigFromGraph, BigInt(latestClaimableChallenge)));
 
         await processNewChallenge_V1(BigInt(openChallenge.challengeNumber), openChallenge, nodeLicenseIds, sentryKeysMap, sentryWalletMap, mappedPools, refereeConfig);
         logFunction(`Processing open challenges.`);

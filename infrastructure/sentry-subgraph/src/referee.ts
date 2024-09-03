@@ -91,11 +91,6 @@ export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
     log.warning("Failed to find refereeConfig handleAssertionSubmitted TX: " + event.transaction.hash.toHexString(), [])
     return;
   }
-  if (refereeConfig.version.gt(BigInt.fromI32(6))) {
-    // Event replaced in newer versions of the Referee for simpler event handlers
-    return;
-  }
-
 
   const challenge = Challenge.load(event.params.challengeId.toString())
   if (!challenge) {
@@ -255,16 +250,17 @@ export function handleChallengeSubmitted(event: ChallengeSubmittedEvent): void {
 
 export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
 
+  if (getTxSignatureFromEvent(event) == "0xb4d6b7df") {
+    //If this event was triggered from calling "claimMultipleRewards" we don't need to process as it will be handled in the batchClaim handler
+    return;
+  }
+
   // Load current referee config from the graph
   const refereeConfig = RefereeConfig.load("RefereeConfig");
 
   // If the referee config is not found, log a warning and skip the claim
   if (!refereeConfig) {
     log.warning("Failed to find refereeConfig handleRewardsClaimed TX: " + event.transaction.hash.toHexString(), [])
-    return;
-  }
-  if (refereeConfig.version.gt(BigInt.fromI32(6))) {
-    // Event replaced in newer versions of the Referee for simpler event handlers
     return;
   }
 
@@ -367,16 +363,18 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
 }
 
 export function handleBatchRewardsClaimed(event: BatchRewardsClaimedEvent): void {
+
+  if (getTxSignatureFromEvent(event) == "0x86bb8f37") {
+    //If this event was triggered from calling "claimReward" we don't need to process as it will be handled in the claim handler
+    return;
+  }
+
   // Load current referee config from the graph
   const refereeConfig = RefereeConfig.load("RefereeConfig");
 
   // If the referee config is not found, log a warning and skip the claim
   if (!refereeConfig) {
     log.warning("Failed to find refereeConfig handleBatchRewardsClaimed TX: " + event.transaction.hash.toHexString(), [])
-    return;
-  }
-  if (refereeConfig.version.gt(BigInt.fromI32(6))) {
-    // Event replaced in newer versions of the Referee for simpler event handlers
     return;
   }
 

@@ -59,7 +59,8 @@ export async function getSentryKeysForUnclaimedFromGraph(
             keyCount
             stakedKeyCount
           }
-          submissions(first: 10000, orderBy: challengeNumber, orderDirection: desc, where: {eligibleForPayout: true, claimed: false, challengeNumber_gte: ${latestChallengeNumber.toString()}}) { 
+          submissions(first: 10000, orderBy: challengeNumber, orderDirection: desc, 
+            where: { eligibleForPayout: true, claimed: false, challengeNumber_gte: ${latestChallengeNumber.toString()}, challenge_: {status: OpenForClaims} }) { 
             challengeNumber
             nodeLicenseId
             claimAmount 

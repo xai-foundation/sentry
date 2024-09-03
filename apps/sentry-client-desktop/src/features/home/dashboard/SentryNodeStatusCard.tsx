@@ -37,7 +37,7 @@ export function SentryNodeStatusCard() {
 
 		void fetchData(); // Initial fetch
 
-		const intervalId = setInterval(() => {
+		const intervalId = window.setInterval(() => {
 			void fetchData();
 		}, 60000);
 
