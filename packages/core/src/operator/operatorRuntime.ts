@@ -441,7 +441,7 @@ async function processClosedChallenges(
 }
 
 // start a listener for new challenges
-async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: any) {		
+async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: any) {
 
     if (event && challenge.rollupUsed === config.rollupAddress) {
         compareWithCDN(challenge)
@@ -481,7 +481,7 @@ async function listenForChallengesCallback(challengeNumber: bigint, challenge: C
 
 
         } else {
-            cachedLogger(`Revert to RPC call instead of using subgraph. Subgraph status error: ${graphStatus.error}`);
+            cachedLogger(`Revert to RPC call instead of using subgraph. Subgraph status error: ${graphStatus.error}`)
 
             const { sentryKeysMap, nodeLicenseIds } = await loadOperatorKeysFromRPC(operatorAddress);
 
@@ -918,7 +918,6 @@ export async function operatorRuntime(
     const graphStatus = await getSubgraphHealthStatus();
     if (graphStatus.healthy) {
         closeChallengeListener = listenForChallenges(listenForChallengesCallback)
-
 
         const openChallenge = await retry(() => getLatestChallengeFromGraph());
         // Calculate the latest challenge we should load from the graph
