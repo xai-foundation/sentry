@@ -113,10 +113,6 @@ const DashboardStakingInfo = ({
     }
   }, [isSuccess, isError, updateOnSuccess, updateOnError]);
 
-  useEffect(() => {
-      loadRedemptions();
-  }, [claimable, loadRedemptions]);
-
   return (
     <section className="mt-10 mb-14 w-full">
       <div

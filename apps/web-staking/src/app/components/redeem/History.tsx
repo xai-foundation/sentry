@@ -230,11 +230,7 @@ export default function History() {
 			updateNotification(error, toastId.current as Id, true);
 		}
 	}
-
-	useEffect(() => {
-		loadRedemptions();
-	}, [loadRedemptions]);
-
+	
 	return (
 		<>
 			<div className="group flex flex-col w-xl">
