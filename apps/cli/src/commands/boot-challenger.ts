@@ -190,6 +190,7 @@ const startListener = async () => {
             async (nodeNum: any, blockHash: any, sendRoot: any, event: any, error?: EventListenerError) => {
                 if (error) {
                     if (isStopping) {
+                        // If we stopped manually we don't want to process the error from the closing event.
                         return;
                     }
 
@@ -286,6 +287,7 @@ export function bootChallenger(cli: Command) {
                 await initCli();
             }
 
+            // Listen for process termination and call the handler
             process.on('SIGINT', async () => {
                 console.log(`[${new Date().toISOString()}] The challenger has been terminated manually.`);
                 await sendNotification(`The challenger has been terminated manually.`);
