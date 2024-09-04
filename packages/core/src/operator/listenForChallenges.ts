@@ -44,6 +44,7 @@ export function listenForChallenges(callback: (challengeNumber: bigint, challeng
                     message: err instanceof Error ? err.message : String(err),
                     stack: err instanceof Error ? err.stack : "No stack available",
                     context: {
+                        eventName: "ChallengeSubmitted",
                         functionName: "listenForChallenges",
                     },
                     timestamp: new Date().toISOString()
