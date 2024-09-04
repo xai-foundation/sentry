@@ -28,6 +28,7 @@
     "winston-daily-rotate-file": "^4.7.1"
   },
   "devDependencies": {
+    "@types/commander": "^2.12.2",
     "@types/inquirer": "9.0.7",
     "@types/inquirer-autocomplete-prompt": "3.0.3",
     "@types/vorpal": "^1.12.2",

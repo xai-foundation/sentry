@@ -95,6 +95,9 @@ importers:
         specifier: ^4.7.1
         version: 4.7.1(winston@3.13.1)
     devDependencies:
+      '@types/commander':
+        specifier: ^2.12.2
+        version: 2.12.2
       '@types/inquirer':
         specifier: 9.0.7
         version: 9.0.7
@@ -5791,6 +5794,10 @@ packages:
 
   '@types/cli-progress@3.11.6':
     resolution: {integrity: sha512-cE3+jb9WRlu+uOSAugewNpITJDt1VF8dHOopPO4IABFc3SXYL5WE/+PTz/FCdZRRfIujiWW3n3aMbv1eIGVRWA==}
+
+  '@types/commander@2.12.2':
+    resolution: {integrity: sha512-0QEFiR8ljcHp9bAbWxecjVRuAMr16ivPiGOw6KFQBVrVd0RQIcM3xKdRisH2EDWgVWujiYtHwhSkSUoAAGzH7Q==}
+    deprecated: This is a stub types definition for commander (https://github.com/tj/commander.js). commander provides its own type definitions, so you don't need @types/commander installed!
 
   '@types/concat-stream@1.6.1':
     resolution: {integrity: sha512-eHE4cQPoj6ngxBZMvVf6Hw7Mh4jMW4U9lpGmS5GBPB9RYxlFg+CHaVN7ErNY4W9XfLIEn20b4VDYaIrbq0q4uA==}
@@ -23662,6 +23669,10 @@ snapshots:
   '@types/cli-progress@3.11.6':
     dependencies:
       '@types/node': 20.14.15
+
+  '@types/commander@2.12.2':
+    dependencies:
+      commander: 12.1.0
 
   '@types/concat-stream@1.6.1':
     dependencies:
