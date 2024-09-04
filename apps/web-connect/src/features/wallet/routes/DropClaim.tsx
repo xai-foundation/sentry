@@ -11,6 +11,7 @@ import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
 import { KYCTooltip } from "@/features/checkout/components/KYCTooltip";
 import { useListClaimableAmount } from "@/features/hooks";
 import { getAccount } from '@wagmi/core'
+import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
 
 export function DropClaim() {
 	const {blocked, loading} = useBlockIp({blockUsa: true});
@@ -52,7 +53,7 @@ export function DropClaim() {
 	if (blocked) {
 		return (
 			<div className='w-full h-screen flex justify-center items-center'>
-				<p className="p-2 text-md text-white">You are in a country restricted from using this application.</p>
+				<IpBlockText classNames="p-2 text-md text-white" />
 			</div>
 		);
 	}

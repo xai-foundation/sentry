@@ -43,8 +43,7 @@ export const loadOperatorKeysFromRPC_V1 = async (
     let sentryKeysMap: { [keyId: string]: SentryKey } = {}
 
     //If we don't have cached keys from owner we fetch them and the metadata from the RPC
-    if (!operatorState.cachedKeysOfOwner) {
-        operatorState.cachedKeysOfOwner = {};
+    if (Object.keys(operatorState.cachedKeysOfOwner).length == 0) {
 
         for (const owner of owners) {
             operatorState.cachedLogger(`Fetching node licenses for owner ${owner}.`);
@@ -106,7 +105,7 @@ export const loadOperatorKeysFromRPC_V1 = async (
 
     operatorState.cachedLogger(`Total Sentry Keys fetched: ${nodeLicenseIds.length}.`);
     operatorState.cachedLogger(`Fetched ${keysOfOwnersCount} keys of owners.`);
-    operatorState.cachedLogger(`Fetched ${Object.keys(sentryKeysMap).length - keysOfOwnersCount} keys of pools.`);
+    operatorState.cachedLogger(`Fetched ${Object.keys(sentryKeysMap).length - keysOfOwnersCount} additional keys of pools.`);
 
     return { sentryKeysMap, nodeLicenseIds }
 }
