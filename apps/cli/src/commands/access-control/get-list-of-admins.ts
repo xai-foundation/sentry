@@ -1,14 +1,16 @@
-import Vorpal from "vorpal";import { listAddressesForRole } from "@sentry/core";
+import { Command } from 'commander';
+import { listAddressesForRole } from "@sentry/core";
 
-export function getListOfAdmins(cli: Vorpal) {
+export function getListOfAdmins(cli: Command) {
     cli
-        .command('get-list-of-admins', 'Lists all addresses that have the admin role.')
-        .action(async function (this: Vorpal.CommandInstance) {
-            this.log(`Fetching all addresses with the admin role...`);
+        .command('get-list-of-admins')
+        .description('Lists all addresses that have the admin role.')
+        .action(async () => {
+            console.log(`Fetching all addresses with the admin role...`);
             const addresses = await listAddressesForRole('DEFAULT_ADMIN_ROLE');
-            this.log(`Addresses retrieved. Here are the details:`);
+            console.log(`Addresses retrieved. Here are the details:`);
             addresses.forEach((address: string, index: number) => {
-                this.log(`Address ${index + 1}: ${address}`);
+                console.log(`Address ${index + 1}: ${address}`);
             });
         });
 }
