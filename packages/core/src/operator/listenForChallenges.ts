@@ -20,7 +20,6 @@ export function listenForChallenges(callback: (challengeNumber: bigint, challeng
         log: console.info,
         callback: async (log, error) => {
             if (error) {
-                console.error(error);
                 if(!onError) return;
                 // Call the onError function with the caught error
                 onError(error instanceof Error ? error : new Error(String(error)));
@@ -40,7 +39,6 @@ export function listenForChallenges(callback: (challengeNumber: bigint, challeng
                     void callback(challengeNumber, challenge, log);
                 }
             } catch (err) {
-                console.error(err);
                 if(!onError) return;
                 // Call the onError function with the caught error
                 onError(err instanceof Error ? err : new Error(String(err)));
