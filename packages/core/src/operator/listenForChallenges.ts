@@ -26,7 +26,6 @@ export function listenForChallenges(callback: (challengeNumber: bigint, challeng
                 return;
             }
             try {
-                // Uncomment the following line to test the onError function
                 const challengeNumber = BigInt(log?.args[0]);
 
                 // if the challengeNumber has not been seen before, call the callback and add it to the map
@@ -39,9 +38,21 @@ export function listenForChallenges(callback: (challengeNumber: bigint, challeng
                     void callback(challengeNumber, challenge, log);
                 }
             } catch (err) {
-                if(!onError) return;
-                // Call the onError function with the caught error
-                onError(err instanceof Error ? err : new Error(String(err)));
+                if (!onError) return;
+            
+                const errorContext = {
+                    message: err instanceof Error ? err.message : String(err),
+                    stack: err instanceof Error ? err.stack : "No stack available",
+                    context: {
+                        functionName: "listenForChallenges",
+                    },
+                    timestamp: new Date().toISOString()
+                };
+            
+                // Log the error with additional context
+                console.error("An error occurred:", errorContext);
+            
+                onError(new Error(JSON.stringify(errorContext)));
             }
         }
     });
