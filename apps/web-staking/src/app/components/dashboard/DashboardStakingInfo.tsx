@@ -36,7 +36,7 @@ const DashboardStakingInfo = ({
   rewardsTransactionLoading
 }: DashboardStakingInfoProps) => {
   const { stakedKeysAmount } = useGetUserTotalStakedKeysCount();
-	const { redemptions: {claimable}, loadRedemptions } = useGetRedemptions();
+	const { redemptions: {claimable} } = useGetRedemptions();
   const calculatedClaimableRedemptions = claimable.reduce((acc, redemption) => {
     return (acc += redemption.receiveAmount);
   }, 0);
