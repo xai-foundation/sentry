@@ -32,10 +32,12 @@ const INIT_PROMPTS: { [key in PromptBodyKey]: QuestionCollection  } = {
     }
 }
 
-const NUM_ASSERTION_LISTENER_RETRIES: number = 3 as const;
-const NUM_CON_WS_ALLOWED_ERRORS: number = 10;
-const ASSERTION_LISTENER_RETRY_DELAYS: [number, number, number] = [30_000, 180_000, 600_000];
+const NUM_ASSERTION_LISTENER_RETRIES: number = 3 as const; //The number of restart attempts if the listener errors
+const NUM_CON_WS_ALLOWED_ERRORS: number = 10; //The number of consecutive WS error we allow before restarting the listener
+//@dev This has to match NUM_ASSERTION_LISTENER_RETRIES
+const ASSERTION_LISTENER_RETRY_DELAYS: [number, number, number] = [30_000, 180_000, 600_000]; //Delays for auto restart the challenger, on the first error it will wait 30 seconds, then 3 minutes then 10 minutes before trying to restart.
 
+// Prompt input cache
 let cachedSigner: {
     address: string,
     signer: ethers.Signer
@@ -47,7 +49,7 @@ let lastAssertionTime: number;
 let currentNumberOfRetries = 0;
 
 let CHALLENGER_INSTANCE = 1;
-const BACKUP_SUBMISSION_DELAY = 300_000;
+const BACKUP_SUBMISSION_DELAY = 300_000; // For every instance we wait 5 minutes + instance number;
 
 let isProcessingMissedAssertions = false;
 
@@ -100,7 +102,7 @@ const onAssertionConfirmedCb = async (nodeNum: any) => {
             const hasSubmitted = await isAssertionSubmitted(nodeNum);
             if (hasSubmitted) {
                 console.log(`[${new Date().toISOString()}] Assertion already submitted by other instance.`);
-                lastAssertionTime = currentTime;
+                lastAssertionTime = currentTime; //So our health check does not spam errors
                 return;
             }
             console.log(`[${new Date().toISOString()}] Backup challenger found assertion not submitted and has to step in.`);
@@ -192,12 +194,16 @@ const startListener = async () => {
                     }
 
                     errorCount++;
+                    // We should allow a defined number of consecutive WS errors before restarting the websocket at all
                     if (errorCount > NUM_CON_WS_ALLOWED_ERRORS) {
                         stopListener(listener);
                         resolve(error);
                         return;
                     }
 
+                    // If the error is an automatic reconnect after close it takes 1 second for the listener to restart, 
+                    // it can happen, that we miss an assertion in that second,
+                    // for that we wait 1 second before checking if we missed an assertion in between, after that the websocket should be back running
                     await new Promise((resolve) => {
                         setTimeout(resolve, 1000);
                     });
@@ -295,6 +301,7 @@ export function bootChallenger(cli: Command) {
                     isProcessingMissedAssertions = false;
                     await processMissedAssertions();
                 } catch (error) {
+                    //TODO what should we do if this fails, restarting the cmd won't help, it will most probably fail again
                     console.log(`[${new Date().toISOString()}] Failed to handle missed assertions - ${(error as Error).message}`);
                     await sendNotification(`Failed to handle missed assertions - ${(error as Error).message}`);
                 }
@@ -306,7 +313,8 @@ export function bootChallenger(cli: Command) {
                     const delayPerRetry = ASSERTION_LISTENER_RETRY_DELAYS[currentNumberOfRetries];
                     console.log(`[${new Date().toISOString()}] Challenger restarting after ${delayPerRetry / 1000} seconds`);
                     sendNotification(`Challenger restarting after ${delayPerRetry / 1000} seconds`);
-
+                    
+                    //Wait for delay per retry
                     await new Promise((resolve) => {
                         setTimeout(resolve, delayPerRetry);
                     });
