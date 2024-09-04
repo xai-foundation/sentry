@@ -39,7 +39,7 @@ export function usePromoCodeHandler(address:`0x${string}` | undefined) {
         error: !validatePromoCode.active,
         errorMessage: !validatePromoCode.active ? "Promo code is invalid or inactive." : undefined,
       });
-      if (!validatePromoCode.active) setPromoCode("");
+      // if (!validatePromoCode.active) setPromoCode("");
     } catch (error) {
       console.error("Error validating promo code:", error);
       setDiscount({ applied: false, error: true, errorMessage: "An error occurred while validating the promo code." });
