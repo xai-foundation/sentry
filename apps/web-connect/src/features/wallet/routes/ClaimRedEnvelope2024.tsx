@@ -9,6 +9,7 @@ import {XaiGaslessClaimAbi, config} from "@sentry/core";
 import {ethers} from "ethers";
 import { XaiBanner } from "@/features/checkout/components/XaiBanner";
 import { getAccount } from '@wagmi/core'
+import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
 
 export function ClaimRedEnvelope2024() {
 	// TODO update all to new contract
@@ -59,8 +60,8 @@ export function ClaimRedEnvelope2024() {
 
 	if (blocked) {
 		return (
-			<div className='w-full h-screen flex justify-center items-center'>
-				<p className="p-2 text-md text-white">You are in a country restricted from using this application.</p>
+			<div className='w-full h-screen flex justify-center items-center'>				
+				<IpBlockText classNames="p-2 text-md text-white" />
 			</div>
 		)
 	}
