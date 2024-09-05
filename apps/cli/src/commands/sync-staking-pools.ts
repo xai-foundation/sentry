@@ -16,6 +16,7 @@ export function syncStakingPools(cli: Command) {
                     name: 'mongoUri',
                     message: 'Enter the MongoDB connection URI:',
                     mask: '*',
+                    optional: false
                 };
 
                 ({ mongoUri } = await inquirer.prompt([mongoUriPrompt]));
