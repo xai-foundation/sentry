@@ -25,9 +25,9 @@ export function listenForChallenges(callback: (challengeNumber: bigint, challeng
                 onError(error instanceof Error ? error : new Error(String(error)));
                 return;
             }
-            try {
-                const challengeNumber = BigInt(log?.args[0]);
+            const challengeNumber = BigInt(log?.args[0]);
 
+            try {
                 // if the challengeNumber has not been seen before, call the callback and add it to the map
                 if (!challengeNumberMap[challengeNumber.toString()]) {
                     challengeNumberMap[challengeNumber.toString()] = true;
@@ -38,22 +38,12 @@ export function listenForChallenges(callback: (challengeNumber: bigint, challeng
                     void callback(challengeNumber, challenge, log);
                 }
             } catch (err) {
-                if (!onError) return;
-            
-                const errorContext = {
-                    message: err instanceof Error ? err.message : String(err),
-                    stack: err instanceof Error ? err.stack : "No stack available",
-                    context: {
-                        eventName: "ChallengeSubmitted",
-                        functionName: "listenForChallenges",
-                    },
-                    timestamp: new Date().toISOString()
-                };
-            
-                // Log the error with additional context
-                console.error("An error occurred:", errorContext);
-            
-                onError(new Error(JSON.stringify(errorContext)));
+                const errorMessage = err instanceof Error ? err.message : String(err);
+                if(onError){
+                    onError(new Error(errorMessage));
+                    return;
+                }
+                console.error(`There was an error trying to read the current challenge (${challengeNumber}) - Error: ${errorMessage}`);
             }
         }
     });
