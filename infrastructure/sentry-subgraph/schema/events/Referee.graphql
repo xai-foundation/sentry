@@ -67,6 +67,7 @@ type SentryWallet @entity(immutable: false) {
   sentryKeys: [SentryKey!]! @derivedFrom(field: "sentryWallet")
   poolStakes: [PoolStake!]! @derivedFrom(field: "wallet")
   bulkSubmissions: [BulkSubmission!]! @derivedFrom(field: "sentryWallet")
+  totalAccruedAssertionRewards: BigInt!
 }
 
 type RefereeConfig @entity(immutable: false) {
