@@ -50,6 +50,8 @@ import { removeChallenger } from './commands/access-control/remove-challenger.js
 import { removeOperator } from './commands/operator-control/remove-operator.js';
 import { removePromoCode } from './commands/licenses/remove-promo-code.js';
 import { displayNodeAgreement } from './commands/display-node-agreement.js';
+import { exportChallengeInfo } from './commands/export-challenge-info.js';
+import { startKycProcess } from './commands/kyc/start-kyc-process.js';
 
 const cli = new Command();
 
@@ -70,7 +72,6 @@ checkKycStatus(cli);
 checkWhitelist(cli);
 createBlsKeyPair(cli);
 createMnemonic(cli);
-displayNodeAgreement(cli);
 eventListener(cli);
 getAllContractAddresses(cli);
 getAssertionCheckingStatus(cli);
@@ -100,13 +101,16 @@ setKycStatus(cli);
 setOrAddPricingTiersCommand(cli);
 setReferralDiscountAndRewardPercentages(cli);
 setRollupAddress(cli);
-startCentralizationRuntime(cli);
-syncStakingPools(cli);
 toggleAssertionChecking(cli);
 totalSupply(cli);
 generateRevenueReport(cli);
+displayNodeAgreement(cli);
+startCentralizationRuntime(cli);
+exportChallengeInfo(cli);
+syncStakingPools(cli);
 monitorNodeCreated(cli);
 processUnclaimedChallenges(cli);
+startKycProcess(cli);
 
 // Default action if no command is specified
 cli.action(async () => {
