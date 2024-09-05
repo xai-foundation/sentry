@@ -13,11 +13,13 @@ export function startCentralizationRuntime(cli: Command) {
                     name: 'mongoUri',
                     message: 'Enter the mongodb connection URI:',
                     mask: '*',
+                    optional: false
                 },
                 {
                     type: 'input',
                     name: 'slackWebHookUrl',
                     message: 'Enter the Slack Webhook Notifications URL:',
+                    optional: false
                 },
                 {
                     type: 'confirm',
