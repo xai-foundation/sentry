@@ -24,7 +24,8 @@ import {useStorage} from "@/features/storage";
 import log from "electron-log";
 import {GreenPulse, GreyPulse, YellowPulse} from "@/features/keys/StatusPulse";
 import BaseCallout from "@sentry/ui/dist/src/rebrand/callout/BaseCallout";
-import {CopyIcon, HelpIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
+import {CopyIcon, HelpIcon, KeyIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
+import {SentryAddressInformation} from "@sentry/core";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
@@ -32,7 +33,7 @@ export const recommendedFundingBalance = ethers.parseEther("0.005");
 export function SentryWallet() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
-	const {ownersLoading, owners, licensesLoading, licensesList} = useAtomValue(chainStateAtom);
+	const {ownersLoading, owners, licensesLoading} = useAtomValue(chainStateAtom);
 	const queryClient = useQueryClient();
 	const {hasAssignedKeys, funded} = useAtomValue(accruingStateAtom);
 
@@ -49,7 +50,7 @@ export function SentryWallet() {
 	});
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
-	const {startRuntime, stopRuntime, sentryRunning, nodeLicenseStatusMap} = useOperatorRuntime();
+	const {startRuntime, stopRuntime, sentryRunning, sentryAddressStatusMap} = useOperatorRuntime();
 	const {data} = useStorage();
 
 	const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -138,56 +139,55 @@ export function SentryWallet() {
 		}
 	}
 
-	function getKeys() {
-		if (nodeLicenseStatusMap.size === 0) {
+	function getAddresses() {
+		if (sentryAddressStatusMap.size === 0) {
 			return (
 				<tr className="flex pr-8 py-[15px] bg-nulnOil text-sm">
-					<td colSpan={3} className="w-full text-center text-lg text-medium text-americanSilver">No keys found.</td>
+					<td colSpan={3} className="w-full text-center text-lg text-medium text-americanSilver">No addresses found.</td>
 				</tr>
 			);
 		}
 
-		let i = 0;
 		const element: Array<ReactNode> = [];
 
-		new Map([...nodeLicenseStatusMap].filter(([, status]) => {
-			if (selectedWallet === null) {
-				return true;
-			}
-			return status.ownerPublicKey === selectedWallet;
-		}))
-			.forEach((status, key) => {
-				//const isEven = i++ % 2 === 0;
-
+		sentryAddressStatusMap.forEach((status: SentryAddressInformation, key: string) => {
+			if (selectedWallet === null || status.address === selectedWallet) {
 				element.push(
-					<tr className={`bg-nulnOil flex pl-[25px] pr-8 text-sm border-b border-chromaphobicBlack`} key={`license-${i}`}>
-						<td className="w-full max-w-[65px] pr-4 py-4 text-lg font-medium text-elementalGrey">{key.toString()}</td>
-						<td className="w-full max-w-[400px] pr-4 py-4 text-lg font-medium text-elementalGrey">{status.ownerPublicKey}</td>
+					<tr className={`bg-nulnOil flex pl-[25px] pr-8 text-sm border-b border-chromaphobicBlack`} key={`address-${key.toString()}`}>
+						<td className="w-full max-w-[215px] pr-4 py-4 text-lg font-medium text-elementalGrey whitespace-nowrap">
+							{status.isPool ? <><img className="w-[20px] h-[20px] inline rounded-full mr-1" src={status.logoUri}></img> {status.name}</> : `${key.slice(0, 6)}...${key.slice(-6)}`}
+						</td>
+						<td className="w-full max-w-[108px] pr-4 py-4 text-lg font-medium text-elementalGrey"><KeyIcon extraClasses="inline fill-[#A19F9F]" /> {status.keyCount}</td>
 						<td className="w-full max-w-[400px] px-4 py-4 text-lg font-medium text-elementalGrey">
 							{status.status}
 						</td>
 					</tr>
 				);
-			})
+			}
+		});
+
 		return element;
 	}
 
 	function getWalletCounter() {
+
+		if (loading) {
+			return <>Loading...</>
+		} else if (sentryAddressStatusMap.size == 0) {
+			return <>No wallets...</>
+		}
+
+		let walletCounter = `${sentryAddressStatusMap.size} of ${owners.length} wallets/pools`;
+
 		/**
 		 * By default, use the assignedWallets values.
-		 * If the user has whitelisted wallets, update the counter to populate with their whitelistedWallets values.
+		 * If the user has allowlist wallets, update the counter to populate with their "whitelistedWallets" values.
 		 */
-		const keysCounter = data?.whitelistedWallets
-			? `${nodeLicenseStatusMap.size} key${nodeLicenseStatusMap.size === 1 ? '' : 's'} in ${data?.whitelistedWallets?.length} wallet${data?.whitelistedWallets?.length === 1 ? '' : 's'}`
-			: `${licensesList.length} key${licensesList.length === 1 ? '' : 's'} in ${owners.length} wallet${owners.length === 1 ? '' : 's'}`
-		
-		return (
-			<>
-				{nodeLicenseStatusMap.size > 0
-					? (loading ? ("Loading...") : (`${keysCounter}`))
-					: ("No keys")}
-			</>
-		);
+		if (data?.whitelistedWallets && data?.whitelistedWallets.length) {
+			walletCounter = `${sentryAddressStatusMap.size} of ${data?.whitelistedWallets?.length} wallets/pools`;
+		}
+
+		return <>{walletCounter}</>
 	}
 
 	function onCloseWalletConnectedModal() {
@@ -198,8 +198,26 @@ export function SentryWallet() {
 		void queryClient.invalidateQueries({queryKey: ["ownersForOperator", operatorAddress]});
 	}
 
-	console.log('funded', funded)
-	console.log('hasAssignedKeys', hasAssignedKeys)
+	function TableComponent(): ReactNode {
+		return (<table className="w-full">
+			<thead className="text-[#A3A3A3] sticky top-0 bg-white">
+				<tr className="flex text-left text-base font-semibold text-elementalGrey uppercase px-[25px] py-[15px] bg-dynamicBlack">
+					<th className="w-full max-w-[200px] whitespace-nowrap">Wallet or pool</th>
+					<th className="w-full max-w-[108px] px-4">Keys</th>
+					<th className="w-full max-w-[200px] px-[31px]">Status</th>
+				</tr>
+			</thead>
+			<tbody>
+				{loading ? (
+					<tr className="text-[#A3A3A3] text-sm flex px-8 bg-nulnOil py-4">
+						<td colSpan={3}
+							className="w-full text-center text-lg font-medium text-elementalGrey">Loading...
+						</td>
+					</tr>
+				) : getAddresses()}
+			</tbody>
+		</table>)
+	}
 
 	return (
 		<>
@@ -356,7 +374,7 @@ export function SentryWallet() {
 					<div
 						className=" w-full py-[22px] pl-[24px]  bg-nulnOil">
 						<div className="flex flex-row items-center gap-[20px]">
-							<h2 className="font-bold text-white text-2xl uppercase">Assigned Keys</h2>
+							<h2 className="font-bold text-white text-2xl uppercase">Assigned Addresses</h2>
 							<div className="flex gap-[5px] items-center">
 								<p className="text-elementalGrey text-lg font-medium">
 									{getWalletCounter()}
@@ -471,24 +489,7 @@ export function SentryWallet() {
 					</div>
 					<div className="flex flex-col max-h-[70vh] w-full">
 						<div className="w-full overflow-y-auto ">
-							<table className="w-full">
-								<thead className="text-[#A3A3A3] sticky top-0 bg-white">
-								<tr className="flex text-left text-base font-semibold text-elementalGrey uppercase px-[25px] py-[15px] bg-dynamicBlack">
-									<th className="w-full max-w-[50px] !text-nowrap">Key Id</th>
-									<th className="w-full max-w-[400px] px-4">Owner Address</th>
-									<th className="w-full max-w-[400px] px-[31px]">Claim Status</th>
-								</tr>
-								</thead>
-								<tbody>
-								{loading ? (
-									<tr className="text-[#A3A3A3] text-sm flex px-8 bg-nulnOil py-4">
-										<td colSpan={3}
-											className="w-full text-center text-lg font-medium text-elementalGrey">Loading...
-										</td>
-									</tr>
-								) : getKeys()}
-								</tbody>
-							</table>
+							{TableComponent()}
 						</div>
 					</div>
 				</div>

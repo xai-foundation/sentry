@@ -2,7 +2,7 @@ import {AiFillCheckCircle, AiOutlineCheck, AiOutlineMinus, AiOutlinePlus} from "
 import {useState} from "react";
 import {BlockPassKYC} from "@/components/blockpass/Blockpass";
 import {getLicensesList, LicenseList, LicenseMap} from "@/hooks/useListNodeLicensesWithCallback";
-import {config} from "@sentry/core";
+import {BulkOwnerOrPool, config, GetAccruedEsXaiResponse} from "@sentry/core";
 import {StatusMap} from "@/hooks/useKycStatusesWithCallback";
 import {CustomTooltip, Dropdown, DropdownItem, PrimaryButton} from "@sentry/ui";
 import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
@@ -27,12 +27,15 @@ interface HasKeysProps {
 	combinedLicensesMap: LicenseMap,
 	statusMap: StatusMap,
 	isWalletAssignedMap: WalletAssignedMap,
+	operatorWalletData: BulkOwnerOrPool[]
 }
 
-export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalletAssignedMap}: HasKeysProps) {
+export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalletAssignedMap, operatorWalletData}: HasKeysProps) {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
 	const {data, setData} = useStorage();
+
+	//TODO this should be attached to operatorWalletData from the subgraph when the accrued / claimed fields have been added to the graph with #188210182
 	const {balances, isBalancesLoading, balancesFetchedLast} = useAtomValue(accruingStateAtom);
 
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
@@ -41,6 +44,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 	const [isRemoveWalletOpen, setIsRemoveWalletOpen] = useState<boolean>(false);
 	const {isLoading: isOperatorLoading, publicKey: operatorAddress} = useOperator();
 	const {startRuntime, sentryRunning} = useOperatorRuntime();
+
 	const {data: earnedEsxaiBalance} = useGetWalletBalance(combinedOwners);
 	const {data: singleWalletBalance} = useGetSingleWalletBalance(selectedWallet);
 	const [mouseOverTooltip, setMouseOverTooltip] = useState(false);
@@ -349,7 +353,7 @@ export function HasKeys({combinedOwners, combinedLicensesMap, statusMap, isWalle
 										?
 										<div className={`flex gap-1 items-end`}>
 											<p className="text-4xl text-white">
-												{ethers.formatEther(Object.values(balances).reduce((acc, value) => acc + value.totalAccruedEsXai, BigInt(0)))} esXAI
+												{ethers.formatEther(Object.values(balances).reduce((acc: bigint, value) => acc + (value as GetAccruedEsXaiResponse).totalAccruedEsXai, BigInt(0)))} esXAI
 											</p>
 										</div>
 										: "Loading..."

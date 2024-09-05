@@ -152,42 +152,6 @@ app.on('activate', () => {
 	}
 })
 
-// When the app is ready, we are going to start a local web server to deploy the web-connect project
-app.on('ready', async () => {
-	const isPortOpen = async (port: number): Promise<boolean> => {
-		return new Promise((resolve) => {
-			const s = net.createServer();
-			s.once('error', (err) => {
-				s.close();
-				if (err["code"] == "EADDRINUSE") {
-					resolve(false);
-				} else {
-					resolve(false); // or throw error!!
-					// reject(err);
-				}
-			});
-			s.once('listening', () => {
-				resolve(true);
-				s.close();
-			});
-			s.listen(port);
-		});
-	}
-
-	// on windows, the server gets started multiple times when it shouldn't
-	if (!(await isPortOpen(8080))) {
-		return;
-	}
-
-	const server = express();
-	const publicWebPath = path.join(process.env.VITE_PUBLIC, '/web');
-	server.use(express.static(publicWebPath)); // takes dir, makes root
-	server.get("/*", (_, res) => {
-		res.sendFile(path.join(publicWebPath, "index.html")) // force web to load index.html
-	})
-	server.listen(8080);
-});
-
 app.on('ready', function()  {
 	autoUpdater.checkForUpdatesAndNotify();
 });
