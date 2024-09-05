@@ -49,16 +49,20 @@ import { removeAdmin } from './commands/access-control/remove-admin.js';
 import { removeChallenger } from './commands/access-control/remove-challenger.js';
 import { removeOperator } from './commands/operator-control/remove-operator.js';
 import { removePromoCode } from './commands/licenses/remove-promo-code.js';
+import { displayNodeAgreement } from './commands/display-node-agreement.js';
 
 const cli = new Command();
 
+// entrypoints to each of the commands
 cli
     .name('sentry-node')
     .description('CLI for managing the Sentry Node ecosystem')
     .version(version);
-
-// Register commands
 addAdmin(cli);
+addChallenger(cli);
+addKycAdmin(cli);
+addOperator(cli);
+addPromoCode(cli);
 bootChallenger(cli);
 bootOperator(cli);
 changeWhitelistStatus(cli);
@@ -66,6 +70,7 @@ checkKycStatus(cli);
 checkWhitelist(cli);
 createBlsKeyPair(cli);
 createMnemonic(cli);
+displayNodeAgreement(cli);
 eventListener(cli);
 getAllContractAddresses(cli);
 getAssertionCheckingStatus(cli);

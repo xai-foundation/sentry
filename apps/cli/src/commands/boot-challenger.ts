@@ -48,7 +48,7 @@ let lastAssertionTime: number;
 let currentNumberOfRetries = 0;
 
 let CHALLENGER_INSTANCE = 1;
-const BACKUP_SUBMISSION_DELAY = 300_000;
+const BACKUP_SUBMISSION_DELAY = 300_000; // For every instance we wait 5 minutes + instance number;
 
 let isProcessingMissedAssertions = false;
 
@@ -188,16 +188,22 @@ const startListener = async () => {
         const listener = listenForAssertions(
             async (nodeNum: any, blockHash: any, sendRoot: any, event: any, error?: EventListenerError) => {
                 if (error) {
-                    if (isStopping) {
+                    if (isStopping) {                        
+                        // If we stopped manually we don't want to process the error from the closing event.
                         return;
                     }
 
                     errorCount++;
+                    // We should allow a defined number of consecutive WS errors before restarting the websocket at all
                     if (errorCount > NUM_CON_WS_ALLOWED_ERRORS) {
                         stopListener(listener);
                         resolve(error);
                         return;
                     }
+
+                    // If the error is an automatic reconnect after close it takes 1 second for the listener to restart, 
+                    // it can happen, that we miss an assertion in that second,
+                    // for that we wait 1 second before checking if we missed an assertion in between, after that the websocket should be back running
 
                     await new Promise((resolve) => {
                         setTimeout(resolve, 1000);
@@ -280,7 +286,8 @@ export function bootChallenger(cli: Command) {
             if (!cachedSigner || !cachedSecretKey) {
                 await initCli();
             }
-
+            
+            // Listen for process termination and call the handler
             process.on('SIGINT', async () => {
                 console.log(`[${new Date().toISOString()}] The challenger has been terminated manually.`);
                 await sendNotification(`The challenger has been terminated manually.`);
