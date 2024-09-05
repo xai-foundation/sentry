@@ -110,7 +110,6 @@ processUnclaimedChallenges(cli);
 // Default action if no command is specified
 cli.action(async () => {
     console.log("No command specified. Use --help to see available commands.");
-    cli.outputHelp(); // Display help
 
     // Interactive prompt loop
     while (true) {
@@ -125,6 +124,12 @@ cli.action(async () => {
         if (command === 'exit' || command === 'quit') {
             console.log('Exiting...');
             process.exit(0);
+        }
+
+        // Show help message if the user asks for it
+        if (command === 'help' || command === '--help') {
+            cli.outputHelp();
+            continue;
         }
 
         // Find the command object from Commander
