@@ -59,10 +59,6 @@ cli
 
 // Register commands
 addAdmin(cli);
-addChallenger(cli);
-addKycAdmin(cli);
-addOperator(cli);
-addPromoCode(cli);
 bootChallenger(cli);
 bootOperator(cli);
 changeWhitelistStatus(cli);
