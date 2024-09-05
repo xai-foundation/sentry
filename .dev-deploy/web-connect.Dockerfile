@@ -1,5 +1,5 @@
 # Stage 1: Build Stage
-FROM node:20.11.0 AS build
+FROM node:20.11.0-alpine AS build
 
 # Install pnpm globally
 RUN npm i -g pnpm@9.7.0 nx@18.3.3
