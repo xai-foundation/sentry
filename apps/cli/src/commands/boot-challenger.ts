@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import inquirer, { QuestionCollection } from 'inquirer';
 import axios from "axios";
-import { ethers } from 'ethers';
+import { ethers, Signer } from 'ethers';
 import { config, createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee, EventListenerError, findMissedAssertion, isAssertionSubmitted } from "@sentry/core";
 
 type PromptBodyKey = "secretKeyPrompt" | "walletKeyPrompt" | "webhookUrlPrompt" | "instancePrompt";
@@ -70,7 +70,18 @@ const initCli = async () => {
         throw new Error("No private key passed in. Please provide a valid private key.")
     }
 
-    const { address, signer } = getSignerFromPrivateKey(walletKey);
+    let address: string;
+    let signer: Signer;
+    
+    try {
+        const signerResponse = getSignerFromPrivateKey(walletKey).signer;
+        address = await signerResponse.getAddress();
+        signer = signerResponse;
+    } catch (error) {
+        console.error(`Error getting signer from private key: ${(error as Error).message}`);
+        return;
+    }
+
     if (!address || !signer) {
         throw new Error(`Missing address: ${address} or signer ${signer}`);
     }

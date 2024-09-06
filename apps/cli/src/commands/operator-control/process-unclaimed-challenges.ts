@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import inquirer from 'inquirer';
 import { getSignerFromPrivateKey, getSentryWalletsForOperator, processUnclaimedChallenges as processUnclaimedChallengesCore } from "@sentry/core";
+import { Signer } from 'ethers';
 
 /**
  * Function to start processing unclaimed challenges.
@@ -22,9 +23,14 @@ export function processUnclaimedChallenges(cli: Command): void {
             if (!walletKey || walletKey.length < 1) {
                 throw new Error("No private key passed in. Please provide a valid private key.");
             }
-
-            const { signer } = getSignerFromPrivateKey(walletKey);
-
+            
+            let signer: Signer;
+            try {
+                signer = getSignerFromPrivateKey(walletKey).signer;
+            } catch (error) {
+                console.error(`Error getting signer from private key: ${(error as Error).message}`);
+                return;
+            }
             // Prompt user for whitelist confirmation
             const { useWhitelist } = await inquirer.prompt({
                 type: 'confirm',
@@ -36,42 +42,47 @@ export function processUnclaimedChallenges(cli: Command): void {
             // If useWhitelist is false, selectedOwners will be undefined
             let selectedOwners: string[] | undefined;
             if (useWhitelist) {
-                const operatorAddress = await signer.getAddress();
-                const { wallets, pools } = await getSentryWalletsForOperator(operatorAddress);
+                try{
+                    const operatorAddress = await signer.getAddress();
 
-                const choices: Array<{ name: string; value: string }> = [];
+                    const { wallets, pools } = await getSentryWalletsForOperator(operatorAddress);
 
-                wallets.forEach(w => {
-                    choices.push({
-                        name: `Owner: ${w.address}${operatorAddress.toLowerCase() === w.address.toLowerCase() ? " (your wallet)" : ""}`,
-                        value: w.address
-                    });
-                });
+                    const choices: Array<{ name: string; value: string }> = [];
 
-                pools.forEach(p => {
-                    choices.push({
-                        name: `Pool: ${p.metadata[0]} (${p.address})`,
-                        value: p.address
-                    });
-                });
-
-                if (!choices.length) {
-                    throw new Error(`No operator wallets found for publicKey: ${operatorAddress}. Approve your wallet for operating keys or delegate it to a staking pool to operate for it.`);
-                } else {
-                    const { selectedOwners: resultSelectedOwners } = await inquirer.prompt({
-                        type: 'checkbox',
-                        name: 'selectedOwners',
-                        message: 'Select the owners/pools for the operator to run for:',
-                        choices
+                    wallets.forEach(w => {
+                        choices.push({
+                            name: `Owner: ${w.address}${operatorAddress.toLowerCase() === w.address.toLowerCase() ? " (your wallet)" : ""}`,
+                            value: w.address
+                        });
                     });
 
-                    selectedOwners = resultSelectedOwners;
+                    pools.forEach(p => {
+                        choices.push({
+                            name: `Pool: ${p.metadata[0]} (${p.address})`,
+                            value: p.address
+                        });
+                    });
 
-                    console.log("selectedOwners:", selectedOwners);
+                    if (!choices.length) {
+                        throw new Error(`No operator wallets found for publicKey: ${operatorAddress}. Approve your wallet for operating keys or delegate it to a staking pool to operate for it.`);
+                    } else {
+                        const { selectedOwners: resultSelectedOwners } = await inquirer.prompt({
+                            type: 'checkbox',
+                            name: 'selectedOwners',
+                            message: 'Select the owners/pools for the operator to run for:',
+                            choices
+                        });
 
-                    if (!selectedOwners || selectedOwners.length < 1) {
-                        throw new Error("No owners selected. Please select at least one owner.");
+                        selectedOwners = resultSelectedOwners;
+
+                        console.log("selectedOwners:", selectedOwners);
+
+                        if (!selectedOwners || selectedOwners.length < 1) {
+                            throw new Error("No owners selected. Please select at least one owner.");
+                        }
                     }
+                } catch (error) {
+                    console.error(`Error fetching wallets for operator: ${(error as Error).message}`);
                 }
             }
 
