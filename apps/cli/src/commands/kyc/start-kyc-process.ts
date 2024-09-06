@@ -268,39 +268,43 @@ export function startKycProcess(cli: Command): void {
         .command('kyc')
         .description('Starts the KYC process for a user. The user should provide their country.')
         .action(async () => {
-            const countryPrompt = [
-                {
-                    type: 'autocomplete',
-                    name: 'country',
-                    message: 'Enter your country:',
-                    source: async (_: any, input: string) => {
-                        input = input || '';
-                        const fuzzyResult = listOfCountries.filter(country =>
-                            country.toLowerCase().includes(input.toLowerCase())
-                        );
-                        return fuzzyResult;
-                    }
-                }
-            ];
+            try {
+				const countryPrompt = [
+					{
+						type: 'autocomplete',
+						name: 'country',
+						message: 'Enter your country:',
+						source: async (_: any, input: string) => {
+							input = input || '';
+							const fuzzyResult = listOfCountries.filter(country =>
+								country.toLowerCase().includes(input.toLowerCase())
+							);
+							return fuzzyResult;
+						}
+					}
+				];
 
-            const { country } = await inquirer.prompt(countryPrompt);
+				const { country } = await inquirer.prompt(countryPrompt);
 
-            if (country) {
-                let url = '';
-                if (
-                    country === "china" || // China
-                    country === "hong kong" || // Hong Kong
-                    country === "republic of north macedonia" || // Macedonia
-                    country === "turkey" || // Turkey
-                    country === "ukraine"   // Ukraine
-                ) {
-                    url = 'https://verify-with.blockpass.org/?clientId=xai_sentry_node__edd_60145';
-                } else {
-                    url = 'https://verify-with.blockpass.org/?clientId=xai_node_007da';
-                }
-                console.log(`Please visit the following URL to start the KYC process: ${url}`);
-            } else {
-                console.log("Invalid country. Please try again.");
-            }
+				if (country) {
+					let url = '';
+					if (
+						country === "china" || // China
+						country === "hong kong" || // Hong Kong
+						country === "republic of north macedonia" || // Macedonia
+						country === "turkey" || // Turkey
+						country === "ukraine"   // Ukraine
+					) {
+						url = 'https://verify-with.blockpass.org/?clientId=xai_sentry_node__edd_60145';
+					} else {
+						url = 'https://verify-with.blockpass.org/?clientId=xai_node_007da';
+					}
+					console.log(`Please visit the following URL to start the KYC process: ${url}`);
+				} else {
+					console.log("Invalid country. Please try again.");
+				}
+			} catch (error) {
+				console.error('An error occurred during the KYC process:', error instanceof Error ? error.message : error);
+			}
         });
 }
