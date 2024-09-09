@@ -30,7 +30,7 @@ export const ACTIVE_NETWORK_IDS = process.env.NEXT_PUBLIC_APP_ENV === "developme
 
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-const web3Instances: { [key in NetworkKey]: Web3Instance } = {
+export const web3Instances: { [key in NetworkKey]: Web3Instance } = {
 	'arbitrum': {
 		name: 'Arbitrum Nova',
 		web3: new Web3('https://arb1.arbitrum.io/rpc'),
@@ -58,34 +58,6 @@ const web3Instances: { [key in NetworkKey]: Web3Instance } = {
 		explorer: 'https://sepolia.arbiscan.io/'
 	}
 } as const;
-
-export type RedemptionFactor = 25 | 62.5 | 100;
-const RedemptionPeriodsByNetwork: { [key in NetworkKey]: { [key in RedemptionFactor]: { seconds: number, label: string } } } = {
-	'arbitrum': {
-		25: { seconds: 1296000, label: "15 days" },	// 15 days
-		62.5: { seconds: 7776000, label: "90 days" },	// 90 days
-		100: { seconds: 15552000, label: "180 days" },	// 180 days
-	},
-	'arbitrumSepolia': {
-		25: { seconds: 60, label: "1 min" },			// 1 min
-		62.5: { seconds: 300, label: "5 min" },		// 5 min
-		100: { seconds: 600, label: "10 min" },		// 10 min
-	}
-} as const;
-
-const getBurnFeeFromDuration = (duration: number) => {
-	if (duration == 1296000 || duration == 60) {
-		return 25;
-	} else if (duration == 7776000 || duration == 300) {
-		return 62.5;
-	} else {
-		return 100;
-	}
-}
-
-export const getRedemptionPeriod = (network: NetworkKey, factor: RedemptionFactor) => {
-	return RedemptionPeriodsByNetwork[network][factor];
-}
 
 
 export type MappedWeb3Error =
@@ -244,97 +216,6 @@ export const getNodeLicenses = async (network: NetworkKey, walletAddress: string
 	const nlContract = new web3Instance.web3.eth.Contract(NodeLicenseAbi, web3Instance.nodeLicenseAddress);
 	const numLicenses = await nlContract.methods.balanceOf(walletAddress).call();
 	return Number(numLicenses);
-}
-
-export type RedemptionRequest = {
-	redeemAmount: number;
-	receiveAmount: number;
-	startTime: number;
-	endTime: number;
-	duration: number;
-	completed: boolean;
-	cancelled: boolean;
-	index: number;	// index of redemption by user wallet address
-};
-
-export type OrderedRedemptions = {
-	claimable: RedemptionRequest[];
-	open: RedemptionRequest[];
-	closed: RedemptionRequest[];
-};
-
-export const getRedemptions = async (network: NetworkKey, walletAddress: string): Promise<OrderedRedemptions> => {
-	const storageKey = "redemptionRequests" + network + walletAddress;
-	const storage = localStorage.getItem(storageKey);
-	const cachedRedemptions = JSON.parse(storage || "[]");
-
-	const web3Instance = getWeb3Instance(network);
-	const esXaiContract = new web3Instance.web3.eth.Contract(esXaiAbi, web3Instance.esXaiAddress);
-	const numRedemptions = Number(await esXaiContract.methods.getRedemptionRequestCount(walletAddress).call());
-
-	const numCachedRedemption = cachedRedemptions.length;
-
-	if (numRedemptions != numCachedRedemption) {
-		for (let i = numCachedRedemption; i < numRedemptions; i++) {
-			const res = await esXaiContract.methods.getRedemptionRequest(walletAddress, i).call();
-			const redemption: RedemptionRequest = {
-				receiveAmount: Number(web3Instance.web3.utils.fromWei(res.amount, "ether")) * getBurnFeeFromDuration(Number(res.duration)) / 100, //TODO calculate by duration
-				duration: Number(res.duration) * 1000,		// contract works with seconds
-				startTime: Number(res.startTime) * 1000,	// convert to milliseconds for convenient use with js APIs
-				endTime: Number(res.endTime) * 1000,	// convert to milliseconds for convenient use with js APIs
-				redeemAmount: Number(web3Instance.web3.utils.fromWei(res.amount, "ether")),
-				completed: res.completed,
-				cancelled: res.cancelled,
-				index: i
-			};
-			cachedRedemptions.push(redemption);
-		}
-	}
-
-	let open = [], closed = [], claimable = [];
-	for (let i = 0; i < cachedRedemptions.length; i++) {
-		const redemption = cachedRedemptions[i];
-
-		if (!redemption.completed) {
-
-			if (i < numCachedRedemption) {
-				//Check if cancelled
-				const res = await esXaiContract.methods.getRedemptionRequest(walletAddress, i).call();
-
-				if (res.completed) {
-					cachedRedemptions[i].completed = res.completed;
-					cachedRedemptions[i].cancelled = res.cancelled;
-					cachedRedemptions[i].endTime = Number(res.endTime) * 1000;
-					closed.push(redemption);
-					continue;
-				}
-			}
-
-			const elapsedSeconds = Date.now() - redemption.startTime;
-			if (elapsedSeconds >= redemption.duration) {
-				claimable.push(redemption);
-			} else {
-				redemption.endTime = redemption.startTime + redemption.duration;
-				open.push(redemption);
-			}
-		} else {
-			closed.push(redemption);
-		}
-	}
-
-	localStorage.setItem(storageKey, JSON.stringify(cachedRedemptions));
-
-	return {
-		claimable,
-
-		open: open.sort((a: RedemptionRequest, b: RedemptionRequest) => {
-			return a.endTime - b.endTime;
-		}),
-
-		closed: closed.sort((a: RedemptionRequest, b: RedemptionRequest) => {
-			return b.endTime - a.endTime;
-		}),
-	};
 }
 
 export const getEsXaiAllowance = async (network: NetworkKey, owner: string): Promise<number> => {

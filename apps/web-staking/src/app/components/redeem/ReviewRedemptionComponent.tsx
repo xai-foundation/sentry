@@ -4,7 +4,7 @@ import { useAccount, useSwitchChain, useWaitForTransactionReceipt, useWriteContr
 import { useCallback, useEffect, useRef, useState } from "react";
 // import { useRouter } from "next/navigation";
 
-import { ACTIVE_NETWORK_IDS, RedemptionFactor, getNetwork, getRedemptionPeriod, getWeb3Instance, getWeiAmountFromTextInput, mapWeb3Error } from "@/services/web3.service";
+import { ACTIVE_NETWORK_IDS, getNetwork, getWeb3Instance, mapWeb3Error } from "@/services/web3.service";
 import { CURRENCY } from "./Constants";
 
 import MainTitle from "../titles/MainTitle";
@@ -14,6 +14,7 @@ import { esXaiAbi } from "@/assets/abi/esXaiAbi";
 import { loadingNotification, updateNotification } from "../notifications/NotificationsComponent";
 import { Id } from "react-toastify";
 import { ButtonBack, PrimaryButton } from "@/app/components/ui/buttons";
+import { getRedemptionPeriod, RedemptionFactor } from "@/services/redemptions.service";
 
 
 export default function ReviewRedemptionComponent({ onReturn, onRefresh, receiveValue, amount, amountWei, factor, fromCurrency }: {
@@ -26,7 +27,7 @@ export default function ReviewRedemptionComponent({ onReturn, onRefresh, receive
 	fromCurrency: CURRENCY
 }) {
 
-	const { address, chainId } = useAccount();
+	const { chainId } = useAccount();
 
 	const [insufficientGas, setInsufficientGas] = useState(false);
 

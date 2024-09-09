@@ -1,10 +1,6 @@
 "use client";
 import {
-	getNetwork,
-	getRedemptions,
-	getWeiAmountFromTextInput,
-	OrderedRedemptions,
-	RedemptionFactor
+	getWeiAmountFromTextInput
 } from "@/services/web3.service";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
@@ -20,13 +16,13 @@ import AgreeModalComponent from "../modal/AgreeModalComponents";
 import RedeemWarning from "@/app/components/redeem/RedeemWarning";
 import { PrimaryButton, StakingInput } from "@/app/components/ui";
 import { ConnectButton } from "@/app/components/ui/buttons";
+import { RedemptionFactor } from "@/services/redemptions.service";
 
 export default function RedeemComponent() {
-	const { open, close } = useWeb3Modal();
-	const { address, chainId } = useAccount();
+	const { open } = useWeb3Modal();
+	const { address } = useAccount();
 	const [redeemFactor, setRedeemFactor] = useState<RedemptionFactor>(100);
 	const [balance, setBalance] = useState<number | undefined>();
-	const [redemptionHistory, setRedemptionHistory] = useState<OrderedRedemptions>({ open: [], closed: [], claimable: [] });
 	const [review, setReview] = useState<boolean>();
 	const [redeemValue, setRedeemValue] = useState<string>('');
 	const [redeemValueWei, setRedeemValueWei] = useState<string>('');
@@ -67,6 +63,11 @@ export default function RedeemComponent() {
 
 	}, [currency, redeemValue]);
 
+	useEffect(() => {
+		setBalance(currency === CURRENCY.XAI ? xaiBalance : esXaiBalance);
+	}, [currency, xaiBalance, esXaiBalance]);
+
+
 	const onSelectMaxAmount = () => {
 		const amount = currency === CURRENCY.XAI ? xaiBalance : esXaiBalance
 		const amountWei = currency === CURRENCY.XAI ? xaiBalanceWei : esXaiBalanceWei
@@ -74,43 +75,6 @@ export default function RedeemComponent() {
 		setRedeemValueWei(amountWei);
 		setReceiveValue((amount * (redeemFactor / 100)).toString());
 	}
-
-	useEffect(() => {
-		setBalance(currency === CURRENCY.XAI ? xaiBalance : esXaiBalance);
-	}, [currency, xaiBalance, esXaiBalance]);
-
-	// TODO need to work on history data conversion based on some realtime data
-	useEffect(() => {
-		if (!address || !chainId) return;
-		getRedemptions(getNetwork(chainId), address)
-			.then(orderedRedemptions => {
-				setRedemptionHistory(orderedRedemptions);
-			});
-	}, [address, chainId]);
-
-
-	useEffect(() => {
-		if (review === true || review === undefined) return;
-		getRedemptions(getNetwork(chainId), address!)
-			.then(orderedRedemptions => {
-				setRedemptionHistory(orderedRedemptions);
-			});
-	}, [address, chainId, review]);
-
-	const reloadRedemptions = useCallback((count = 0) => {
-		if (!address || !chainId) return;
-		if (count > 1) return;
-
-		getRedemptions(getNetwork(chainId), address!)
-			.then(orderedRedemptions => {
-				setRedemptionHistory(orderedRedemptions);
-				reloadRedemptions(++count);
-			});
-	}, [address, chainId]);
-
-	// useEffect(() => {
-	// 	setBalance(currency === CURRENCY.XAI ? xaiBalance : esXaiBalance);
-	// }, [xaiBalance, esXaiBalance]);
 
 	const isInvalid = () => {
 		if (Number(redeemValue) > (currency === CURRENCY.XAI ? xaiBalance : esXaiBalance)) {
@@ -235,10 +199,7 @@ export default function RedeemComponent() {
 								/>
 							)}
 						</div>
-						{<History
-							redemptions={redemptionHistory}
-							reloadRedemptions={reloadRedemptions}
-						/>}
+						{<History/>}
 					</div>
 				</div>
 			</main>
