@@ -5,18 +5,22 @@ import {AiFillCheckCircle} from "react-icons/ai";
 import {useOperator} from "@/features/operator";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {useAtomValue, useSetAtom} from "jotai";
-import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {PrimaryButton, SideBarTooltip} from "@sentry/ui";
 import { HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { config } from "@sentry/core";
+import { chainStateAtom } from "@/hooks/useChainDataWithCallback";
 
 export function AssignedKeysCard() {
 	const setModalState = useSetAtom(modalStateAtom);
 	const {publicKey: operatorAddress} = useOperator();
-	const {hasAssignedKeys} = useAtomValue(accruingStateAtom);
+
+	const { totalAssignedKeys } = useAtomValue(chainStateAtom);
+
+	const hasAssignedKeys = totalAssignedKeys > 0;
 
 	function onSetKeys() {
 		setModalState(ModalView.TransactionInProgress);
-		window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`);
+		window.electron.openExternal(`${config.sentryKeySaleURI}/#/assign-wallet/${operatorAddress}`);
 	}
 
 	return (

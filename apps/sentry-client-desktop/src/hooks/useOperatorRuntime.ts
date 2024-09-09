@@ -19,7 +19,7 @@ function onAssertionMissMatch(publicNodeData: PublicNodeBucketInformation, chall
 
 let stop: (() => Promise<void>) | undefined;
 export const sentryRunningAtom = atom(stop != null);
-export const sentryAddressStatusMapAtom = atom<SentryAddressStatusMap>(new Map<bigint, SentryAddressInformation>());
+export const sentryAddressStatusMapAtom = atom<SentryAddressStatusMap>(new Map<string, SentryAddressInformation>());
 export const runtimeLogsAtom = atom<string[]>([]);
 
 export function useOperatorRuntime() {
@@ -77,7 +77,7 @@ export function useOperatorRuntime() {
 			stop = undefined;
 
 			await _stop();
-			setSentryAddressStatusMap(new Map<bigint, SentryAddressInformation>());
+			setSentryAddressStatusMap(new Map<string, SentryAddressInformation>());
 			setSentryRunning(false);
 			if (passedData) {
 				await setData(passedData);

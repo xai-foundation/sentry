@@ -61,6 +61,7 @@ export async function getUserStakedPoolsFromGraph(
           metadata
           totalStakedKeyAmount
           totalStakedEsXaiAmount
+          totalAccruedAssertionRewards
           ${submissionQuery}
         }
       }

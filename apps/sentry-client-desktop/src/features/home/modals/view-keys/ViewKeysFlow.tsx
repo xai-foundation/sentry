@@ -10,6 +10,8 @@ import {useOperator} from "@/features/operator";
 import { PrimaryButton } from "@sentry/ui";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { getAddress } from "ethers";
+import { config } from "@sentry/core";
 
 export function ViewKeysFlow() {
 	const [ownerAddress, setOwnerAddress] = useState('');
@@ -63,7 +65,7 @@ export function ViewKeysFlow() {
 		}
 
 		const userWallets = data?.addedWallets || [];
-		userWallets.push(ownerAddress);
+		userWallets.push(getAddress(ownerAddress));
 
 		setData({
 			...data,
@@ -76,7 +78,7 @@ export function ViewKeysFlow() {
 
 	function startAssignment() {
 		setModalState(ModalView.TransactionInProgress);
-		window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`);
+		window.electron.openExternal(`${config.sentryKeySaleURI}/#/assign-wallet/${operatorAddress}`);
 	}
 
 	// Load State

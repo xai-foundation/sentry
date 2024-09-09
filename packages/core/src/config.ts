@@ -30,7 +30,8 @@ export let config = {
   "defaultNetworkName": "arbitrum",
   "subgraphEndpoint": "https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry/api",
   "publicRPC": "https://arb1.arbitrum.io/rpc",
-  "alchemyApiKey": "oD4X3JXvJclnt36mDkqnp9CO2sZkNhYT",
+  "alchemyApiKey": "8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B",
+  "sentryKeySaleURI": "https://sentry.xai.games"
 };
 
 export function setConfig(_config: any) { config = _config; }

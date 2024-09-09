@@ -1,11 +1,8 @@
-import {useOperator} from "@/features/operator";
-import {useListOwnersForOperatorWithCallback} from "@/hooks/useListOwnersForOperatorWithCallback";
-import {atom, useAtom, useAtomValue, useSetAtom} from "jotai";
-import {useEffect} from "react";
-import {StatusMap, useKycStatusesWithCallback} from "@/hooks/useKycStatusesWithCallback";
-import {getLicensesList, LicenseList, LicenseMap, useListNodeLicensesWithCallback} from "@/hooks/useListNodeLicensesWithCallback";
-import {useCombinedOwners} from "@/hooks/useCombinedOwners";
-import { useGetOwnerOrDelegatePools } from "./useGetOwnerOrDelegatepools";
+import { useOperator } from "@/features/operator";
+import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useEffect } from "react";
+import { StatusMap } from "@/hooks/useKycStatusesWithCallback";
+import { LicenseList, LicenseMap } from "@/hooks/useListNodeLicensesWithCallback";
 import { useGetOperatorAddresses } from "./useGetOperatorAddresses";
 import { BulkOwnerOrPool } from "@sentry/core";
 
@@ -23,6 +20,8 @@ interface ChainState {
 	licensesList: LicenseList;
 	combinedLicensesList: LicenseList;
 	operatorWalletData: BulkOwnerOrPool[];
+	totalKeys: number;
+	totalAssignedKeys: number;
 }
 
 const defaultChainState: ChainState = {
@@ -38,13 +37,14 @@ const defaultChainState: ChainState = {
 	combinedLicensesMap: {},
 	licensesList: [],
 	combinedLicensesList: [],
-	operatorWalletData: []
+	operatorWalletData: [],
+	totalKeys: 0,
+	totalAssignedKeys: 0
 }
 
 export const chainStateAtom = atom<ChainState>(defaultChainState);
 export const chainStateRefreshAtom = atom(0);
 
-// todo implement refreshing
 
 /**
  * This hook is implemented in the ChainDataManager component, which is rendered at the top level of the app.
@@ -54,18 +54,9 @@ export const chainStateRefreshAtom = atom(0);
 export function useChainDataWithCallback() {
 	const [chainState, setChainState] = useAtom(chainStateAtom);
 	const chainStateRefresh = useAtomValue(chainStateRefreshAtom);
-	const {publicKey} = useOperator();
+	const { publicKey } = useOperator();
 
-	// const {isLoading: ownersLoading, owners} = useListOwnersForOperatorWithCallback(publicKey, false, chainStateRefresh);
-	// const {combinedOwners} = useCombinedOwners(owners);
-	// const {pools} = useGetOwnerOrDelegatePools(publicKey);
-	// const {isLoading: ownersKycLoading, statusMap: combinedWalletsKycMap} = useKycStatusesWithCallback(combinedOwners, chainStateRefresh);
-	// const {isLoading: licensesLoading, licensesMap: combinedLicensesMap} = useListNodeLicensesWithCallback(combinedOwners, chainStateRefresh);
-
-	//TODO update table view:
-	//combinedWalletsKycMap does not seem to be used anywhere and should be removed ?
-	//combinedLicensesMap should be removed once removed from Keys view.
-	const { owners, pools, isLoadingOperatorAddresses: ownersLoading, operatorWalletData } = useGetOperatorAddresses(publicKey, chainStateRefresh);
+	const { owners, pools, isLoadingOperatorAddresses: ownersLoading, operatorWalletData, totalKeys, totalAssignedKeys } = useGetOperatorAddresses(publicKey, chainStateRefresh);
 
 	// set default state
 	useEffect(() => {
@@ -79,77 +70,14 @@ export function useChainDataWithCallback() {
 				..._chainState,
 				ownersLoading,
 				anyLoading: ownersLoading,
+				pools,
+				owners,
+				operatorWalletData,
+				totalKeys,
+				totalAssignedKeys
 			}
 		});
 	}, [ownersLoading]);
-
-	// return owners
-	useEffect(() => {
-		setChainState((_chainState) => {
-			return {
-				..._chainState,
-				owners,
-			}
-		});
-	}, [owners]);
-
-	// return pools
-	useEffect(() => {
-		setChainState((_chainState) => {
-			return {
-				..._chainState,
-				pools,
-			}
-		});
-	}, [pools]);
-
-	// return ownersKycMap & combinedWalletsKycMap
-	// useEffect(() => {
-	// 	setChainState((_chainState) => {
-	// 		const ownersKycMap = Object.keys(combinedWalletsKycMap).reduce((result, wallet) => {
-	// 			if (owners.includes(wallet)) {
-	// 				result[wallet] = combinedWalletsKycMap[wallet];
-	// 			}
-	// 			return result;
-	// 		}, {});
-
-	// 		return {
-	// 			..._chainState,
-	// 			ownersKycMap,
-	// 			combinedWalletsKycMap,
-	// 		};
-	// 	});
-	// }, [JSON.stringify(combinedWalletsKycMap), owners]);
-
-	// return licensesMap & combinedLicensesMap
-	// useEffect(() => {
-	// 	setChainState((_chainState) => {
-	// 		const licensesMap = Object.keys(combinedLicensesMap).reduce((result, wallet) => {
-	// 			if (owners.includes(wallet)) {
-	// 				result[wallet] = combinedLicensesMap[wallet];
-	// 			}
-	// 			return result;
-	// 		}, {});
-
-	// 		return {
-	// 			..._chainState,
-	// 			licensesMap,
-	// 			combinedLicensesMap,
-	// 			licensesList: getLicensesList(licensesMap),
-	// 			combinedLicensesList: getLicensesList(combinedLicensesMap)
-	// 		}
-	// 	});
-	// }, [combinedLicensesMap]);
-
-	
-	useEffect(() => {
-		setChainState((_chainState) => {
-			return {
-				..._chainState,
-				operatorWalletData,
-			}
-		});
-	}, [operatorWalletData]);
 
 	return {
 		...chainState,

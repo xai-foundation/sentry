@@ -24,7 +24,7 @@ const defaultAccruingState: AccruingState = {
 	isBalancesLoading: false,
 	balancesFetchedLast: null,
 	hasAssignedKeys: false,
-	kycRequired: true,
+	kycRequired: false,
 }
 
 export const accruingStateAtom = atom<AccruingState>(defaultAccruingState);
@@ -36,12 +36,13 @@ export function useAccruingInfo() {
 	const {publicKey: operatorAddress} = useOperator();
 	const {data: balance} = useBalance(operatorAddress);
 
-	const {owners, licensesMap, ownersKycMap} = useAtomValue(chainStateAtom);
+	const {totalAssignedKeys} = useAtomValue(chainStateAtom);
 	const {balances, isLoading: isBalancesLoading} = useGetAccruedEsXaiBulk();
-	const kycRequired = owners?.length > 0 && ownersKycMap && Object.values(ownersKycMap).filter((status) => !status).length > 0;
+	// const kycRequired = owners?.length > 0 && ownersKycMap && Object.values(ownersKycMap).filter((status) => !status).length > 0;
+	const kycRequired = false; //With the TK upgrade KYC is not needed to run the operator anymore.
 
 	const funded = balance && balance.wei !== undefined && balance.wei >= recommendedFundingBalance;
-	const accruing = sentryRunning && funded && Object.keys(licensesMap).length > 0;
+	const accruing = sentryRunning && funded && totalAssignedKeys > 0;
 	const [balancesFetchedLast, setBalancesFetchedLast] = useState<null | Date>(null);
 
 	// set default state
@@ -65,6 +66,8 @@ export function useAccruingInfo() {
 			return {
 				..._accruingState,
 				balances,
+				hasAssignedKeys: totalAssignedKeys > 0,
+				funded
 			}
 		});
 	}, [balances]);
@@ -77,6 +80,8 @@ export function useAccruingInfo() {
 			return {
 				..._accruingState,
 				balancesFetchedLast,
+				hasAssignedKeys: totalAssignedKeys > 0,
+				funded
 			}
 		});
 	}, [isBalancesLoading]);
@@ -86,10 +91,11 @@ export function useAccruingInfo() {
 		setAccruingState((_accruingState) => {
 			return {
 				..._accruingState,
-				funded,
+				hasAssignedKeys: totalAssignedKeys > 0,
+				funded
 			}
 		});
-	}, [funded]);
+	}, [balance]);
 
 	// return accruing
 	useEffect(() => {
@@ -97,6 +103,8 @@ export function useAccruingInfo() {
 			return {
 				..._accruingState,
 				accruing,
+				hasAssignedKeys: totalAssignedKeys > 0,
+				funded
 			}
 		});
 	}, [accruing]);
@@ -107,6 +115,8 @@ export function useAccruingInfo() {
 			return {
 				..._accruingState,
 				kycRequired,
+				hasAssignedKeys: totalAssignedKeys > 0,
+				funded
 			}
 		});
 	}, [kycRequired]);
@@ -116,10 +126,11 @@ export function useAccruingInfo() {
 		setAccruingState((_accruingState) => {
 			return {
 				..._accruingState,
-				hasAssignedKeys: Object.keys(licensesMap).length > 0,
+				hasAssignedKeys: totalAssignedKeys > 0,
+				funded
 			}
 		});
-	}, [licensesMap]);
+	}, [totalAssignedKeys]);
 
 	return {
 		...accruingState,
