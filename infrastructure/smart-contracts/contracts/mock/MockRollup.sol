@@ -51,8 +51,8 @@ contract MockRollup {
 
     /**
      * @notice Creates a new node with provided block hash and send root.
-     * @param blockHash The hash of the block to associate with this node.
-     * @param sendRoot The root hash of the send data to associate with this node.
+     * @param blockHash The simulated block hash to associate with this node.
+     * @param sendRoot The simulated send root to associate with this node.
      */
     function createNode(
         bytes32 blockHash,
@@ -62,19 +62,17 @@ contract MockRollup {
         require(blockHash != bytes32(0), "Block hash cannot be zero");
         require(sendRoot != bytes32(0), "Send root cannot be zero");
 
-        // Generating various hashes based on the current block information and sender address
-        // These are typically derived from real blockchain data for validation, but here it's simulated for example purposes
+        // Generating various hashes to simulate node creation
         bytes32 parentNodeHash = keccak256(abi.encodePacked(blockhash(block.number - 1), block.timestamp, msg.sender));
         bytes32 nodeHash = keccak256(abi.encodePacked(blockhash(block.number - 2), block.timestamp, msg.sender));
         bytes32 executionHash = keccak256(abi.encodePacked(blockhash(block.number - 3), block.timestamp, msg.sender));
         bytes32 afterInboxBatchAcc = keccak256(abi.encodePacked(blockhash(block.number - 4), block.timestamp, msg.sender));
         bytes32 wasmModuleRoot = keccak256(abi.encodePacked(blockhash(block.number - 5), block.timestamp, msg.sender));
         
-        // Compute the confirmData hash using the provided blockHash and sendRoot
-        // This hash represents the data to be confirmed and is stored for future verification
+        // Compute the simulated confirmData hash using the provided blockHash and sendRoot
         bytes32 confirmData = keccak256(abi.encodePacked(blockHash, sendRoot));
         
-        // Initialize an assertion structure with dummy data (replace with actual logic as needed)
+        // Initialize an assertion structure with dummy data this data will not be used in this mock contract
         Assertion memory assertion = Assertion(
             GlobalState({bytes32Vals: bytes32(0), u64Vals: [uint64(0), uint64(0)]}),
             GlobalState({bytes32Vals: bytes32(0), u64Vals: [uint64(0), uint64(0)]}),
@@ -116,8 +114,8 @@ contract MockRollup {
     /**
      * @notice Confirms a node by its number, validating against provided block hash and send root.
      * @param nodeNum The number of the node to confirm.
-     * @param blockHash The hash of the block to validate against the stored confirm data.
-     * @param sendRoot The root hash of the send data to validate against the stored confirm data.
+     * @param blockHash The simulated block hash to validate against the node's confirmData.
+     * @param sendRoot The simulated send root to validate against the node's confirmData.
      */
     function confirmNode(uint64 nodeNum, bytes32 blockHash, bytes32 sendRoot) external {
         // Check that the node number is within the valid range of created nodes
@@ -125,7 +123,6 @@ contract MockRollup {
         Node storage node = _nodes[nodeNum]; // Fetch the node data from storage
 
         // Validate that the provided blockHash and sendRoot match the stored confirmData hash
-        // This ensures the node is confirmed only if the hashes match, protecting against tampering
         require(node.confirmData == keccak256(abi.encodePacked(blockHash, sendRoot)), "CONFIRM_DATA");
 
         // Update the latest confirmed node number after successful validation
