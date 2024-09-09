@@ -1,13 +1,14 @@
-import Vorpal from "vorpal";
+import { Command } from 'commander';
 
 /**
- * Function to set the rollup address in the Referee contract.
- * @param {Vorpal} cli - The Vorpal instance to attach the command to.
+ * Function to display the Sentry Node Agreement.
+ * @param cli - Commander instance
  */
-export function displayNodeAgreement(cli: Vorpal) {
+export function displayNodeAgreement(cli: Command): void {
     cli
-        .command('display-node-agreement', 'Display the Sentry Node Agreement')
-        .action(async function (this: Vorpal.CommandInstance) {
-            this.log(`View the Sentry Node Agreement here https://xai.games/sentry-node-agreement/`);
+        .command('display-node-agreement')
+        .description('Display the Sentry Node Agreement')
+        .action(() => {
+            console.log('View the Sentry Node Agreement here: https://xai.games/sentry-node-agreement/');
         });
 }

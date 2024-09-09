@@ -1,33 +1,43 @@
-import Vorpal from "vorpal";import { config, getSignerFromPrivateKey, RefereeAbi, setChallengerPublicKey as coreSetChallengerPublicKey } from "@sentry/core";
+import { Command } from 'commander';
+import inquirer from 'inquirer';
+import { getSignerFromPrivateKey, setChallengerPublicKey as coreSetChallengerPublicKey } from "@sentry/core";
 
 /**
  * Function to set the challenger public key in the Referee contract.
- * @param {Vorpal} cli - The Vorpal instance to attach the command to.
+ * @param cli - Commander instance
  */
-export function setChallengerPublicKey(cli: Vorpal) {
+export function setChallengerPublicKey(cli: Command): void {
     cli
-        .command('set-challenger-public-key', 'Sets the challenger public key.')
-        .action(async function (this: Vorpal.CommandInstance) {
-            const privateKeyPrompt = {
-                type: 'password',
-                name: 'privateKey',
-                message: 'Enter the private key of an admin:'
-            };
-            const publicKeyPrompt = {
-                type: 'input',
-                name: 'publicKey',
-                message: 'Enter the new challenger public key:'
-            };
-            const { privateKey, publicKey } = await this.prompt([privateKeyPrompt, publicKeyPrompt]);
+        .command('set-challenger-public-key')
+        .description('Sets the challenger public key.')
+        .action(async () => {
+            try {
+                // Prompt user for the private key of an admin
+                const { privateKey } = await inquirer.prompt({
+                    type: 'password',
+                    name: 'privateKey',
+                    message: 'Enter the private key of an admin:',
+                    mask: '*',
+                    validate: input => input.trim() === '' ? 'Private key is required' : true
+                });
 
-            // Get the signer from the private key
-            const { signer } = getSignerFromPrivateKey(privateKey);
+                // Prompt user for the new challenger public key
+                const { publicKey } = await inquirer.prompt({
+                    type: 'input',
+                    name: 'publicKey',
+                    message: 'Enter the new challenger public key:',
+                    validate: input => input.trim() === '' ? 'Public key is required' : true
+                });
 
-            // Call the setChallengerPublicKey function
-            await coreSetChallengerPublicKey(signer, publicKey);
+                // Get the signer from the private key
+                const { signer } = getSignerFromPrivateKey(privateKey);
 
-            this.log(`Challenger public key set to: ${publicKey}`);
+                // Call the setChallengerPublicKey function
+                await coreSetChallengerPublicKey(signer, publicKey);
+
+                console.log(`Challenger public key set to: ${publicKey}`);
+            } catch (error) {
+                console.error(`Error setting challenger public key: ${(error as Error).message}`);
+            }
         });
 }
-
-

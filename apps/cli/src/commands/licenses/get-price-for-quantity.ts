@@ -1,25 +1,35 @@
-import Vorpal from "vorpal";
+import { Command } from 'commander';
+import inquirer from 'inquirer';
 import { getPriceForQuantity as getPriceForQuantityCore } from "@sentry/core";
-import {ethers} from "ethers";
+import { ethers } from "ethers";
 
 /**
  * Function to estimate the price of a node purchase.
- * @param cli - Vorpal instance
+ * @param cli - Commander instance
  */
-export function getPriceForQuantity(cli: Vorpal) {
+export function getPriceForQuantity(cli: Command): void {
     cli
-        .command('estimate-node-purchase-price', 'Estimates the price of a node purchase.')
-        .action(async function (this: Vorpal.CommandInstance) {
-            const {quantity} = await this.prompt({
+        .command('estimate-node-purchase-price')
+        .description('Estimates the price of a node purchase.')
+        .action(async () => {
+            // Prompt user for the quantity of nodes to purchase
+            const { quantity } = await inquirer.prompt({
                 type: 'input',
                 name: 'quantity',
                 message: 'Please enter the quantity of nodes to purchase:'
             });
-            this.log(`Estimating price for ${quantity} nodes...`);
-            const { price, nodesAtEachPrice } = await getPriceForQuantityCore(Number(quantity));
-            this.log(`Estimated Total Price: ${ethers.formatEther(price)} eth`);
-            nodesAtEachPrice.forEach((tier) => {
-                this.log(`Price Per License: ${ethers.formatEther(tier.pricePer)} eth, Quantity: ${tier.quantity.toString()}, Total Price for Tier: ${ethers.formatEther(tier.totalPriceForTier)} eth`);
-            });
+
+            console.log(`Estimating price for ${quantity} nodes...`);
+
+            try {
+                const { price, nodesAtEachPrice } = await getPriceForQuantityCore(Number(quantity));
+
+                console.log(`Estimated Total Price: ${ethers.formatEther(price)} ETH`);
+                nodesAtEachPrice.forEach((tier) => {
+                    console.log(`Price Per License: ${ethers.formatEther(tier.pricePer)} ETH, Quantity: ${tier.quantity.toString()}, Total Price for Tier: ${ethers.formatEther(tier.totalPriceForTier)} ETH`);
+                });
+            } catch (error) {
+                console.error(`Error estimating price: ${(error as Error).message}`);
+            }
         });
 }
