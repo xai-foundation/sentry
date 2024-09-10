@@ -7,15 +7,15 @@ import {
 /**
  * Fetches the confirmData and confirmHash of a given array of assertion Ids.
  * @param assertionIds - The array of assertion IDs.
- * @returns The submissions.
+ * @returns The confirmData and confirmHashS.
  */
 export async function getConfirmDataAndHash(
     assertionIds: number[],
 ): Promise<{confirmData: string[], confirmHash: string}> {
 
-    //initialize
-    let confirmData: string[]
-    let confirmHash: string
+    //declare return variables
+    let confirmData: string[];
+    let confirmHash: string;
     
     //determine whether to hit subgraph or rpc
     const graphStatus = await getSubgraphHealthStatus();
