@@ -1,8 +1,7 @@
 import { PropsWithChildren } from "react";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 import { AiOutlineClose } from "react-icons/ai";
-import { Link } from "react-router-dom";
-import { atom, useAtom, useAtomValue } from "jotai";
+import { atom, useAtom } from "jotai";
 
 interface InfoBannerProps extends PropsWithChildren {
 	heading: string,

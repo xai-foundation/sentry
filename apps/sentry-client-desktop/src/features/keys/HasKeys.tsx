@@ -31,7 +31,7 @@ export function HasKeys({ combinedOwners, isWalletAssignedMap, operatorWalletDat
 
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isRemoveWalletOpen, setIsRemoveWalletOpen] = useState<boolean>(false);
-	const { isLoading: isOperatorLoading, publicKey: operatorAddress } = useOperator();
+	const { isLoading: isOperatorLoading } = useOperator();
 
 	const { data: earnedEsxaiBalance } = useGetWalletBalance(combinedOwners);
 	const { data: singleWalletBalance } = useGetSingleWalletBalance(selectedWallet);
@@ -50,6 +50,11 @@ export function HasKeys({ combinedOwners, isWalletAssignedMap, operatorWalletDat
 
 	function onRemoveWallet(wallet: string) {
 		setSelectedWallet(wallet);
+		if(isWalletAssignedMap[wallet]){
+			setModalState(ModalView.TransactionInProgress)
+			window.electron.openExternal(`${config.sentryKeySaleURI}/#/unassign-wallet/${wallet}`);
+			return;
+		}
 		setIsRemoveWalletOpen(true);
 	}
 
@@ -164,7 +169,7 @@ export function HasKeys({ combinedOwners, isWalletAssignedMap, operatorWalletDat
 
 					<div className="w-full h-auto flex py-3 px-6 justify-between items-end">
 						<p className="text-lg text-[#A3A3A3]">
-							11 connected wallets
+							{operatorWalletData.length} connected wallets & pools
 						</p>
 						<div className="relative">
 							<div>

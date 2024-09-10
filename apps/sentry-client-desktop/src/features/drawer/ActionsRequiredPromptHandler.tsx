@@ -13,7 +13,7 @@ export function ActionsRequiredPromptHandler() {
 	const {accruing, kycRequired} = useAtomValue(accruingStateAtom);
 	const {data} = useStorage();
 
-	const {ownersLoading, ownersKycLoading, licensesLoading, combinedLicensesList, totalKeys} = useAtomValue(chainStateAtom);
+	const {ownersLoading, ownersKycLoading, licensesLoading, totalKeys} = useAtomValue(chainStateAtom);
 
 	if (!ownersLoading && !ownersKycLoading && !licensesLoading && totalKeys === 0) {
 		return (

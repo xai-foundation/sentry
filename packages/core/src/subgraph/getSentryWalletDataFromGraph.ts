@@ -7,7 +7,7 @@ import { config } from "../config.js";
  * @param wallets - List of wallets to find on the graph
  * @returns The SentryWallets entities from the graph
  */
-export async function getSentryWalletData(
+export async function getSentryWalletDataFromGraph(
   wallets: string[]
 ): Promise<SentryWallet[]> {
 

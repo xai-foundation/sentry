@@ -1,4 +1,4 @@
-import {Challenge, NodeLicenseInformation, operatorRuntime, PublicNodeBucketInformation, SentryAddressInformation, SentryAddressStatusMap} from "@sentry/core";
+import {Challenge, operatorRuntime, PublicNodeBucketInformation, SentryAddressInformation, SentryAddressStatusMap} from "@sentry/core";
 import {useOperator} from "@/features/operator";
 import {atom, useAtom} from "jotai";
 import {useEffect, useRef, useState} from "react";
