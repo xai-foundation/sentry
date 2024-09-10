@@ -5,7 +5,7 @@ import { getAddress } from "ethers";
 
 export function useGetOperatorAddresses(operatorPublicKey: string | undefined, refresh = 0) {
 	const [isLoadingOperatorAddresses, setIsLoading] = useState(false);
-	const [operatorWalletData, setOperatorWalletData] = useState<Array<BulkOwnerOrPool & {}>>([]);
+	const [operatorWalletData, setOperatorWalletData] = useState<BulkOwnerOrPool[]>([]);
 	const [owners, setOwners] = useState<string[]>([]);
 	const [pools, setPools] = useState<string[]>([]);
 	const [totalKeys, setTotalKeys] = useState<number>(0);

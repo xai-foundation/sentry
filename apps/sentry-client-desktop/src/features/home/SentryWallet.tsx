@@ -56,7 +56,7 @@ export function SentryWallet() {
 	const { refresh } = useChainDataRefresh();
 
 	const { publicKey } = useOperator();
-	const { isFetching: isBalanceLoading, data: balance } = useBalance(publicKey);
+	const { isFetching: isBalanceLoading } = useBalance(publicKey);
 
 	function onRefreshEthBalance() {
 		void queryClient.invalidateQueries({ queryKey: ["balance", publicKey] });

@@ -31,7 +31,7 @@ export function HasKeys({ combinedOwners, isWalletAssignedMap, operatorWalletDat
 
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isRemoveWalletOpen, setIsRemoveWalletOpen] = useState<boolean>(false);
-	const { isLoading: isOperatorLoading, publicKey: operatorAddress } = useOperator();
+	const { isLoading: isOperatorLoading } = useOperator();
 
 	const { data: earnedEsxaiBalance } = useGetWalletBalance(combinedOwners);
 	const { data: singleWalletBalance } = useGetSingleWalletBalance(selectedWallet);

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BulkOwnerOrPool, NodeLicenseStatus, SentryAddressInformation } from "@sentry/core";
+import { BulkOwnerOrPool, SentryAddressInformation } from "@sentry/core";
 import { CopyIcon, DefaultPollIcon, KeyIcon, Wallet } from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
 import { WarningIcon } from "@sentry/ui/dist/src/rebrand/icons/WarningIcon";
 import { AiFillCheckCircle } from "react-icons/ai";

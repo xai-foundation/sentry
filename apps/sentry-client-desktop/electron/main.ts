@@ -2,8 +2,6 @@ import {app, BrowserWindow, dialog, ipcMain, safeStorage, shell} from 'electron'
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
-import express from 'express';
-import net from "net";
 import log from "electron-log";
 import {autoUpdater} from 'electron-updater';
 
