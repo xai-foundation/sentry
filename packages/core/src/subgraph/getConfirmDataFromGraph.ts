@@ -37,8 +37,7 @@ export async function getConfirmDatafromGraph(assertionIds: number[]): Promise<{
 
     //null guard
     if (!result.nodeConfirmations) {
-        console.log(`Error: nodeConfirmations field is null for subgraph query`);
-        return {confirmData: [], confirmHash: ""};
+        throw new Error("Error: nodeConfirmations field is null for subgraph query");
     }
 
     //calculate confirmHash from array of confirmData
