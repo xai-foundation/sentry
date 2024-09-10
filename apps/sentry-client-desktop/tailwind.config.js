@@ -57,7 +57,11 @@ module.exports = {
       blazeOrange: "#F76808",
       greyBorders: "#524D4F",
       abaddonBlack: "#231D1F",
-      drunkenDragonFly: "#3DD68C"//rebranding colors end
+      drunkenDragonFly: "#3DD68C",
+      potBlack: "#191515",
+      sunnySide: "#F9CB14",
+      cascadingWhite: "#F7F6F6"
+      //rebranding colors end
     },
     extend: {},
   },

@@ -19,7 +19,7 @@ export const loadOperatorWalletsFromGraph = async (
 ): Promise<BulkOwnerOrPool[]> => {
     operatorState.cachedLogger(`Loading all wallets assigned to the operator.`);
     if (operatorState.passedInOwnersAndPools && operatorState.passedInOwnersAndPools.length) {
-        operatorState.cachedLogger(`Operator owners were passed in.`);
+        operatorState.cachedLogger(`Operator owners were passed in: ` + operatorState.passedInOwnersAndPools.join(", "));
     } else {
         operatorState.cachedLogger(`No operator owners were passed in.`);
     }
@@ -39,11 +39,11 @@ export const loadOperatorWalletsFromGraph = async (
         operatorState.cachedLogger(`Found ${wallets.length} operatorWallets. The addresses are: ${wallets.map(w => w.address).join(', ')}`);
         wallets.forEach(w => {
             operatorState.cachedOperatorWallets.push(w.address.toLowerCase());
-            bulkOwnerAndPools.push({ ...w, keyCount: w.keyCount - w.stakedKeyCount, isPool: false, stakedEsXaiAmount: w.v1EsXaiStakeAmount })
+            bulkOwnerAndPools.push({ ...w, keyCount: Number(w.keyCount) - Number(w.stakedKeyCount), isPool: false, stakedEsXaiAmount: w.v1EsXaiStakeAmount })
             operatorState.sentryAddressStatusMap.set(w.address.toLowerCase(), {
                 address: w.address,
                 status: NodeLicenseStatus.WAITING_IN_QUEUE,
-                keyCount: w.keyCount,
+                keyCount: Number(w.keyCount) - Number(w.stakedKeyCount),
                 isPool: false
             });
         });

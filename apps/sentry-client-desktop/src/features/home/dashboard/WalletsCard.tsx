@@ -13,6 +13,7 @@ import { RiKey2Line } from "react-icons/ri";
 import { useState } from "react";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 import {TextButton} from "@sentry/ui/dist/src/rebrand/buttons/TextButton";
+import { config } from "@sentry/core";
 
 export function WalletsCard() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -41,7 +42,7 @@ export function WalletsCard() {
 				</div>
 				<div className="flex flex-row justify-between items-center gap-1">
 					<TextButton
-						onClick={() => window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`)}
+						onClick={() => window.electron.openExternal(`${config.sentryKeySaleURI}/#/assign-wallet/${operatorAddress}`)}
 						buttonText={"Assign Wallet"}
 						className="text-lg uppercase !px-0 !py-0 max-h-[28px]"
 					/>

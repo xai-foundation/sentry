@@ -17,7 +17,7 @@ export function RemoveWalletModal({onClose, selectedWallet, isWalletAssignedMap}
 	const userWallets = data?.addedWallets || [];
 	const indexToRemove = userWallets.findIndex(wallet => wallet === selectedWallet);
 	const [success, setSuccess] = useState<boolean>(false);
-	let isAssigned;
+	let isAssigned: boolean = true;
 
 	if (selectedWallet) {
 		isAssigned = isWalletAssignedMap[selectedWallet];

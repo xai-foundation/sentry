@@ -67,6 +67,7 @@ export type BulkOwnerOrPool = {
     stakedEsXaiAmount: bigint, // used to calculate the boost factor
     bulkSubmissions?: BulkSubmission[]
     logoUri?: string
+    totalAccruedAssertionRewards?: string
 }
 
 /**

@@ -13,10 +13,9 @@ export function ActionsRequiredPromptHandler() {
 	const {accruing, kycRequired} = useAtomValue(accruingStateAtom);
 	const {data} = useStorage();
 
-	const {ownersLoading, ownersKycLoading, licensesLoading, combinedLicensesList} = useAtomValue(chainStateAtom);
-	const keyCount = combinedLicensesList.length;
+	const {ownersLoading, ownersKycLoading, licensesLoading, totalKeys} = useAtomValue(chainStateAtom);
 
-	if (!ownersLoading && !ownersKycLoading && !licensesLoading && keyCount === 0) {
+	if (!ownersLoading && !ownersKycLoading && !licensesLoading && totalKeys === 0) {
 		return (
 			<BaseCallout extraClasses={{calloutWrapper: "h-[60px] w-[308px]"}} isWarning>
 				<div className="flex flex-row gap-2 items-center mr-3">
