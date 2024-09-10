@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BulkOwnerOrPool, getSentryWalletData, getSentryWalletsForOperator, getUserStakedPoolsFromGraph } from "@sentry/core";
+import { BulkOwnerOrPool, getSentryWalletDataFromGraph, getSentryWalletsForOperator, getUserStakedPoolsFromGraph } from "@sentry/core";
 import { useStorage } from "@/features/storage";
 import { getAddress } from "ethers";
 
@@ -82,7 +82,7 @@ export function useGetOperatorAddresses(operatorPublicKey: string | undefined, r
 
 			const filteredAddresses = data.addedWallets.filter(a => mappedAddresses[getAddress(a)] !== true);
 			if (filteredAddresses.length) {
-				const addedWalletData = await getSentryWalletData(filteredAddresses.map(a => a.toLowerCase()));
+				const addedWalletData = await getSentryWalletDataFromGraph(filteredAddresses.map(a => a.toLowerCase()));
 				addedWalletData.forEach(w => {
 					const address = getAddress(w.address);
 					const keyCount = Number(w.keyCount) - Number(w.stakedKeyCount);
