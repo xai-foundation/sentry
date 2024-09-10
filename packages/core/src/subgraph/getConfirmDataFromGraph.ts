@@ -24,7 +24,6 @@ export async function getConfirmDatafromGraph(assertionIds: number[]): Promise<{
             }
         }
     `
-    console.log(`query: ${query}`);
 
     //send query
     const result = await client.request(query) as {
