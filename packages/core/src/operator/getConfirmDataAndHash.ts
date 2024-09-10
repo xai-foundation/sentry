@@ -1,6 +1,5 @@
 import { 
-    getConfirmDatafromGraph, 
-    getSubgraphHealthStatus, 
+    getConfirmDatafromGraph,
     getMultipleChallengeConfirmData,
 } from "../index.js";
 
@@ -11,6 +10,7 @@ import {
  */
 export async function getConfirmDataAndHash(
     assertionIds: number[],
+    isSubgraphHealthy: boolean
 ): Promise<{confirmData: string[], confirmHash: string}> {
 
     //declare return variables
@@ -18,8 +18,7 @@ export async function getConfirmDataAndHash(
     let confirmHash: string;
     
     //determine whether to hit subgraph or rpc
-    const graphStatus = await getSubgraphHealthStatus();
-    if (graphStatus.healthy) {
+    if (isSubgraphHealthy) {
         const res = await getConfirmDatafromGraph(assertionIds);
         confirmData = res.confirmData;
         confirmHash = res.confirmHash;
