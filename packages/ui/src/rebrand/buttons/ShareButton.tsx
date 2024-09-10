@@ -5,14 +5,10 @@ import { ShareIcon } from '../icons/IconsComponents';
  * Interface for ShareButton props
  */
 interface ShareButtonProps {
-    /** Title to be shared */
-    buttonTitle: string;
-    /** Text content to be shared */
-    buttonText: string;
-    /** URL to be shared */
-    shareUrl: string;
-    /** Custom CSS class for styling if needed */
-    shareButtonClasses?: string;
+    buttonTitle: string;            // The title to be shared.
+    buttonText: string;             // The text to be shared.
+    shareUrl: string;               // The URL to be shared.
+    shareButtonClasses?: string;    // Custom CSS classes for the share button.
 }
 
 /**
@@ -45,7 +41,6 @@ const ShareButton: React.FC<ShareButtonProps> = ({ buttonText, buttonTitle, shar
                     text: buttonText,
                     url: shareUrl,
                 });
-                console.log('Shared successfully');
             } catch (error) {
                 console.error('Error sharing:', error);
             }
