@@ -44,7 +44,7 @@ export function Keys() {
 						</div>
 					) : (
 						<p className="flex min-w-[128px] justify-center items-center text-lg text-elementalGrey pl-2">
-							{totalKeys} key{totalKeys === 1 ? "" : "s"} in {combinedOwners.length} wallet{combinedOwners.length === 1 ? "" : "s"}
+							{totalKeys} key{totalKeys === 1 ? "" : "s"} in {operatorWalletData.length} wallet{operatorWalletData.length === 1 ? "" : "s"}
 						</p>
 					)}
 

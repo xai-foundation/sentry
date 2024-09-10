@@ -28,10 +28,14 @@ export function WhitelistDrawer() {
 	}, []);
 
 	const toggleSelected = (wallet: string) => {
-		setSelected((prevSelected) => prevSelected.includes(wallet)
-			? prevSelected.filter((item) => item !== wallet)
-			: [...prevSelected, wallet]
-		);
+		const _selected = [...selected];
+		const indexInSelected = _selected.indexOf(wallet);
+		if (indexInSelected > -1) {
+			_selected.splice(indexInSelected, 1);
+		} else {
+			_selected.push(wallet);
+		}
+		setSelected(_selected);
 	};
 
 	const getOperatorItem = () => {
@@ -57,7 +61,7 @@ export function WhitelistDrawer() {
 
 	const getDropdownItems = () => (
 		<div>
-			{owners.map((wallet) => (
+			{owners.filter(o => o != operatorAddress).map((wallet) => (
 				<div
 					className="py-2 cursor-pointer hover:bg-gray-100"
 					key={`whitelist-item-${wallet}`}

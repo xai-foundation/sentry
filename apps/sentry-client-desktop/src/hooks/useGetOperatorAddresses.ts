@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { BulkOwnerOrPool, getSentryWalletData, getSentryWalletsForOperator } from "@sentry/core";
+import { BulkOwnerOrPool, getSentryWalletData, getSentryWalletsForOperator, getUserStakedPoolsFromGraph } from "@sentry/core";
 import { useStorage } from "@/features/storage";
 import { getAddress } from "ethers";
 
@@ -35,19 +35,21 @@ export function useGetOperatorAddresses(operatorPublicKey: string | undefined, r
 		const { wallets, pools } = await getSentryWalletsForOperator(operator, {});
 
 		const filteredOwners: string[] = [];
+		const filteredPools: string[] = [];
 
 		if (wallets.length > 0) {
 			wallets.forEach(w => {
 				const address = getAddress(w.address);
-				if (address === getAddress(operator) && Number(w.keyCount) == 0) {
+				const keyCount = Number(w.keyCount) - Number(w.stakedKeyCount);
+				if (keyCount == 0) {
 					return;
 				}
 
 				filteredOwners.push(address);
 				mappedAddresses[address] = true;
-				_totalKeys += Number(w.keyCount);
-				_totalAssignedKeys += Number(w.keyCount);
-				operatorWalletData.push({ ...w, address, keyCount: Number(w.keyCount), isPool: false, stakedEsXaiAmount: w.v1EsXaiStakeAmount })
+				_totalKeys += keyCount;
+				_totalAssignedKeys += keyCount;
+				operatorWalletData.push({ ...w, address, keyCount, isPool: false, stakedEsXaiAmount: w.v1EsXaiStakeAmount })
 			});
 		}
 
@@ -55,11 +57,26 @@ export function useGetOperatorAddresses(operatorPublicKey: string | undefined, r
 			pools.forEach(p => {
 				const address = getAddress(p.address);
 				mappedAddresses[address] = true;
+				filteredPools.push(address);
 				_totalKeys += Number(p.totalStakedKeyAmount);
 				_totalAssignedKeys += Number(p.totalStakedKeyAmount);
 				operatorWalletData.push({ ...p, address, keyCount: Number(p.totalStakedKeyAmount), isPool: true, name: p.metadata[0], bulkSubmissions: p.submissions, stakedEsXaiAmount: p.totalStakedEsXaiAmount })
 			});
 		}
+
+		//Load pools our operators have keys staked in
+		const stakedPools = await getUserStakedPoolsFromGraph(filteredOwners, pools.map(p => p.address), false, {});
+
+		stakedPools.forEach(p => {
+			const address = getAddress(p.address);
+			if (!mappedAddresses[address]) {
+				mappedAddresses[address] = true;
+				filteredPools.push(address);
+				_totalKeys += Number(p.keyCount);
+				_totalAssignedKeys += Number(p.keyCount);
+				operatorWalletData.push({...p, address});
+			}
+		})
 
 		if (data?.addedWallets) {
 
@@ -68,15 +85,19 @@ export function useGetOperatorAddresses(operatorPublicKey: string | undefined, r
 				const addedWalletData = await getSentryWalletData(filteredAddresses.map(a => a.toLowerCase()));
 				addedWalletData.forEach(w => {
 					const address = getAddress(w.address);
+					const keyCount = Number(w.keyCount) - Number(w.stakedKeyCount);
+					if (keyCount == 0) {
+						return;
+					}
 					mappedAddresses[address] = true;
-					_totalKeys += Number(w.keyCount);
-					operatorWalletData.push({ ...w, address, keyCount: Number(w.keyCount), isPool: false, stakedEsXaiAmount: w.v1EsXaiStakeAmount })
+					_totalKeys += Number(keyCount);
+					operatorWalletData.push({ ...w, address, keyCount, isPool: false, stakedEsXaiAmount: w.v1EsXaiStakeAmount })
 				});
 			}
 		}
 
 		setOwners(filteredOwners);
-		setPools(pools.map(p => getAddress(p.address)));
+		setPools(filteredPools);
 		setOperatorWalletData(operatorWalletData);
 		setTotalKeys(_totalKeys);
 		setTotalAssignedKeys(_totalAssignedKeys);

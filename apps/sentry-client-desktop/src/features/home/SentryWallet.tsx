@@ -13,19 +13,17 @@ import { WalletDisconnectedModal } from "@/features/home/modals/WalletDisconnect
 import { useQueryClient } from "react-query";
 import { ethers } from "ethers";
 import { useOperatorRuntime } from "@/hooks/useOperatorRuntime";
-import { CustomTooltip, DropdownItem } from "@sentry/ui";
+import { CustomTooltip } from "@sentry/ui";
 import { modalStateAtom } from "@/features/modal/ModalManager";
 import { ActionsRequiredPromptHandler } from "@/features/drawer/ActionsRequiredPromptHandler";
 import { SentryWalletHeader } from "@/features/home/SentryWalletHeader";
 import { chainStateAtom, useChainDataRefresh } from "@/hooks/useChainDataWithCallback";
 import { accruingStateAtom } from "@/hooks/useAccruingInfo";
 import { AssignKeysSentryNotRunning } from "@/components/AssignKeysSentryNotRunning";
-import { useStorage } from "@/features/storage";
 import log from "electron-log";
 import { GreenPulse, GreyPulse, YellowPulse } from "@/features/keys/StatusPulse";
 import BaseCallout from "@sentry/ui/dist/src/rebrand/callout/BaseCallout";
-import { CopyIcon, HelpIcon, KeyIcon } from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
-import { SentryAddressInformation } from "@sentry/core";
+import { CopyIcon, HelpIcon } from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
 import { SentryWalletTableBody } from "@/features/home/SentryWalletTableBody";
 import { useBalance } from "@/hooks/useBalance";
 import { InfoBanner } from "@/components/InfoBanner";
@@ -36,7 +34,8 @@ export const recommendedFundingBalance = ethers.parseEther("0.005");
 export function SentryWallet() {
 	const [drawerState, setDrawerState] = useAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
-	const { ownersLoading, owners, licensesLoading } = useAtomValue(chainStateAtom);
+	const { ownersLoading, owners, pools, licensesLoading, operatorWalletData, totalAssignedKeys } = useAtomValue(chainStateAtom);
+
 	const queryClient = useQueryClient();
 	const { hasAssignedKeys, funded } = useAtomValue(accruingStateAtom);
 
@@ -51,12 +50,9 @@ export function SentryWallet() {
 		show: false,
 		txHash: ""
 	});
-	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isMoreOptionsOpen, setIsMoreOptionsOpen] = useState<boolean>(false); // dropdown state
 	const { startRuntime, stopRuntime, sentryRunning, sentryAddressStatusMap } = useOperatorRuntime();
-	const { data } = useStorage();
 
-	const [isOpen, setIsOpen] = useState<boolean>(false);
 	const { refresh } = useChainDataRefresh();
 
 	const { publicKey } = useOperator();
@@ -75,14 +71,8 @@ export function SentryWallet() {
 	// un-assign wallet
 	(window as any).deeplinks?.unassignedWallet((_event, txHash) => {
 		setModalState(null)
-		setSelectedWallet(null);
 		setUnassignedWallet({ show: true, txHash });
 	});
-
-	function onRefreshTable() {
-		queryClient.invalidateQueries({ queryKey: ["ownersForOperator", operatorAddress] });
-		refresh();
-	}
 
 	function copyPublicKey() {
 		if (operatorAddress && navigator.clipboard) {
@@ -101,111 +91,41 @@ export function SentryWallet() {
 		}
 	}
 
-	function copySelectedWallet() {
-		if (selectedWallet && navigator.clipboard) {
-			navigator.clipboard.writeText(selectedWallet)
-				.then(() => {
-					setCopied(true);
-					setTimeout(() => {
-						setCopied(false);
-					}, 2000);
-				})
-				.catch(err => {
-					log.error('Unable to copy to clipboard: ', err);
-				});
-		} else {
-			log.error('Clipboard API not available, unable to copy to clipboard');
-		}
-	}
+	function getAssignedWalletCount() {
+		let operatorWalletCount = 0;
 
-	function getDropdownItems() {
-		// If the user has whitelisted wallets, update the dropdown to populate with their whitelistedWallets.
-		if (data?.whitelistedWallets) {
-			return data?.whitelistedWallets.map((wallet, i) => (
-				<DropdownItem
-					dropdownOptionsCount={data.whitelistedWallets!.length}
-					onClick={() => {
-						setSelectedWallet(wallet.toLowerCase());
-						setIsOpen(false);
-					}}
-					key={`sentry-item-${i}`}
-				>
-					{wallet.toLowerCase()}
-				</DropdownItem>
-			));
-		} else {
-			return owners.map((wallet, i) => (
-				<p
-					onClick={() => {
-						setSelectedWallet(wallet.toLowerCase());
-						setIsOpen(false);
-					}}
-					className="py-2 px-[15px] cursor-pointer hover:bg-abaddonBlack"
-					key={`sentry-item-${i}`}
-				>
-					{wallet.toLowerCase()}
-				</p>
-			));
-		}
-	}
-
-	function getAddresses() {
-		if (sentryAddressStatusMap.size === 0) {
-			return (
-				<tr className="flex pr-8 py-[15px] bg-nulnOil text-sm">
-					<td colSpan={3} className="w-full text-center text-lg text-medium text-americanSilver">No addresses found.</td>
-				</tr>
-			);
-		}
-
-		const element: Array<ReactNode> = [];
-
-		sentryAddressStatusMap.forEach((status: SentryAddressInformation, key: string) => {
-			if (selectedWallet === null || status.address === selectedWallet) {
-				element.push(
-					<tr className={`bg-nulnOil flex pl-[16px] pr-8 text-sm border-b border-chromaphobicBlack`} key={`address-${key.toString()}`}>
-						<td className="w-full max-w-[215px] pr-4 py-4 text-lg font-medium text-elementalGrey whitespace-nowrap">
-							{status.isPool ? <><img className="w-[20px] h-[20px] inline rounded-full mr-1" src={status.logoUri}></img> {status.name}</> : `${key.slice(0, 6)}...${key.slice(-6)}`}
-						</td>
-						<td className="w-full max-w-[108px] pr-4 py-4 text-lg font-medium text-elementalGrey"><KeyIcon extraClasses="inline fill-[#A19F9F]" /> {status.keyCount}</td>
-						<td className="w-full max-w-[400px] px-4 py-4 text-lg font-medium text-elementalGrey">
-							{status.status}
-						</td>
-					</tr>
-				);
+		sentryAddressStatusMap.forEach(sentryStatus => {
+			if(sentryStatus.keyCount > 0){
+				operatorWalletCount++;
 			}
 		});
 
-		return element;
+		return operatorWalletCount;
 	}
 
-	function getWalletCounter() {
+	function getAssignedKeysCount() {
+		let operatorKeyCount = 0;
 
-		if (loading) {
-			return <>Loading...</>
-		} else if (sentryAddressStatusMap.size == 0) {
-			return <>No wallets...</>
-		}
+		sentryAddressStatusMap.forEach(sentryStatus => {
+			operatorKeyCount += Number(sentryStatus.keyCount);
+		})
 
-		let walletCounter = `${sentryAddressStatusMap.size} of ${owners.length} wallets/pools`;
-
-		/**
-		 * By default, use the assignedWallets values.
-		 * If the user has allowlist wallets, update the counter to populate with their "whitelistedWallets" values.
-		 */
-		if (data?.whitelistedWallets && data?.whitelistedWallets.length) {
-			walletCounter = `${sentryAddressStatusMap.size} of ${data?.whitelistedWallets?.length} wallets/pools`;
-		}
-
-		return <>{walletCounter}</>
+		return operatorKeyCount;
 	}
 
 	function onCloseWalletConnectedModal() {
 		setAssignedWallet({ show: false, txHash: "" });
 		setUnassignedWallet({ show: false, txHash: "" });
-		setSelectedWallet(null);
 		refresh();
 		void queryClient.invalidateQueries({ queryKey: ["ownersForOperator", operatorAddress] });
+	}
+
+	function getOperatorWallets() {
+		const operatorWallets: string[] = pools.concat(owners);
+		if(operatorAddress){
+			operatorWallets.push(operatorAddress);
+		}
+		return operatorWallets;
 	}
 
 	function TableComponent(): ReactNode {
@@ -220,7 +140,11 @@ export function SentryWallet() {
 				</tr>
 			</thead>
 			<tbody className="relative">
-				<SentryWalletTableBody sentryAddressStatusMap={sentryAddressStatusMap} />
+				<SentryWalletTableBody
+					sentryAddressStatusMap={sentryAddressStatusMap}
+					operatorWalletData={operatorWalletData}
+					operatorAssignedWallets={getOperatorWallets()}
+				/>
 			</tbody>
 		</table>)
 	}
@@ -266,20 +190,6 @@ export function SentryWallet() {
 								No Keys
 							</p>
 							}
-
-							{/*{sentryRunning && balance?.wei === 0n && (*/}
-							{/*	<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">*/}
-							{/*		No AETH*/}
-							{/*	</p>*/}
-							{/*)}*/}
-
-							{/*{sentryRunning && !hasAssignedKeys && (*/}
-							{/*	<>*/}
-							{/*		<p className="border border-[#D9771F] bg-[#FEFCE8] text-[#D9771F] text-xs font-semibold uppercase rounded-full px-2">*/}
-							{/*			No Keys Assigned*/}
-							{/*		</p>*/}
-							{/*	</>*/}
-							{/*)}*/}
 
 							<div className="relative w-full max-w-[185px]">
 								<BaseCallout extraClasses={{
@@ -375,7 +285,12 @@ export function SentryWallet() {
 						)}
 					</div>
 
-					<SentryWalletHeader />
+					<SentryWalletHeader
+						totalWallets={owners.length + pools.length} //add one for the operator wallet itself
+						assignedWallets={getAssignedWalletCount()}
+						totalKeys={totalAssignedKeys}
+						assignedKeys={getAssignedKeysCount()}
+					/>
 
 					<div className="px-5 pt-4 w-full bg-nulnOil pb-[16px]">
 						<InfoBanner
@@ -386,7 +301,7 @@ export function SentryWallet() {
 					</div>
 
 					<div className="bg-nulnOil w-full py-[8px] pl-[24px] flex items-center">
-						<p className="text-elementalGrey">11 connected wallets</p>
+						<p className="text-elementalGrey">{owners.length + pools.length} connected wallets</p>
 						{isBalanceLoading ? (
 							<p className="flex items-center text-lg text-pelati select-none ml-[18px]">
 								Refreshing
