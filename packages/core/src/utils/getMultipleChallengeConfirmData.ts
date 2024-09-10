@@ -18,7 +18,7 @@ export const getMultipleChallengeConfirmData = async (assertionIds: number[]): P
     const refereeCalculationsContract = new ethers.Contract(config.refereeCalculationsAddress, RefereeCalculationsAbi, provider);
     
     // Call the contract to retrieve confirmation data and hash for the provided assertion IDs
-    const [confirmData, confirmHash]: [string[], string] = await refereeCalculationsContract.getConfirmDataMultipleAssertions(assertionIds);
+    const [confirmData, confirmHash]: [string[], string] = await refereeCalculationsContract.getConfirmDataMultipleAssertions(assertionIds, config.rollupAddress);
 
     // Return the fetched confirmation data and hash
     return [confirmData, confirmHash];
