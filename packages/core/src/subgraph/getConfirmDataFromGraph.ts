@@ -12,48 +12,49 @@ export async function getConfirmDatafromGraph(assertionIds: number[]): Promise<{
     
     //initialize graph client
     const client = new GraphQLClient(config.subgraphEndpoint);
-
-    //query for each assertion id (aka nodeNum)
-    let confirmDataArray: string[] = [];
-    for (let i = 0; i < assertionIds.length; i++) {
         
-        //craft query
-        const query = gql`
-            query NodeConfirmationQuery {
-                nodeConfirmation(id: ${assertionIds[i]}) {
-                    id
-                    confirmData
-                }
+    //craft query
+    const assertionIdsStrArray: string[] = assertionIds.map(num => num.toString());
+    const assertionIdsStrArrayFormatted = JSON.stringify(assertionIdsStrArray);
+    const query = gql`
+        query NodeConfirmationQuery {
+            nodeConfirmations(where: {id_in: ${assertionIdsStrArrayFormatted}}) {
+                id
+                confirmData
             }
-        `
+        }
+    `
+    console.log(`query: ${query}`);
 
-        //send query
-        const result = await client.request(query) as {
-            nodeConfirmation: {
+    //send query
+    const result = await client.request(query) as {
+        nodeConfirmations: [ 
+            {
                 id: string;
                 confirmData: string;
-            } | null;
-        };
+            }
+        ];
+    };
 
-        //null guard
-        if (!result.nodeConfirmation) {
-            console.log(`Error: nodeConfirmation field is null for assertion id: ${assertionIds[i]}`);
-            continue;
-        }
-
-        confirmDataArray.push(result.nodeConfirmation.confirmData);
+    //null guard
+    if (!result.nodeConfirmations) {
+        console.log(`Error: nodeConfirmations field is null for subgraph query`);
+        return {confirmData: [], confirmHash: ""};
     }
 
     //calculate confirmHash from array of confirmData
     //NOTE: same as contract logic in RefereeCalculations.getConfirmDataMultipleAssertions
+    let confirmDataArray: string[] = [];
     let concatenatedHexStr: string = "0x"; //start with 0x so final result is BytesLike
-    confirmDataArray.forEach((confirmData) => {
+    result.nodeConfirmations.forEach((nodeConfirmation) => {
         //trim leading 0x, if exists
-        let tempConfirmData = confirmData;
+        let tempConfirmData = nodeConfirmation.confirmData;
         if (tempConfirmData.startsWith('0x')) {
             tempConfirmData = tempConfirmData.slice(2);
         }
         concatenatedHexStr += tempConfirmData;
+        //add to confirm data array for return obj
+        confirmDataArray.push(nodeConfirmation.confirmData);
     });
     const concatenatedByteArray = ethers.getBytes(concatenatedHexStr);
     const confirmHashHexStr = ethers.keccak256(concatenatedByteArray);
