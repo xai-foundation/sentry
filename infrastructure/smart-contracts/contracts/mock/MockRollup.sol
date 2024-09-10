@@ -55,6 +55,7 @@ contract MockRollup {
      * @param sendRoot The simulated send root to associate with this node.
      */
     function createNode(
+        uint64 nodeNum,
         bytes32 blockHash,
         bytes32 sendRoot
     ) external {
@@ -79,15 +80,12 @@ contract MockRollup {
             uint64(0)
         );
 
-        // Increment the latest node counter to track node creation
-        latestNodeCreated++;
-
         // Store the newly created node in the mapping with all its attributes
         _nodes[latestNodeCreated] = Node({
             stateHash: bytes32(0),             // Placeholder: In practice, this should represent the state of the node
             challengeHash: bytes32(0),         // Placeholder: Represents data that can be challenged
             confirmData: confirmData,          // Store the computed confirmData hash for validation during confirmation
-            prevNum: latestNodeCreated - 1,    // Set previous node index to the latest node created before this one
+            prevNum: latestNodeCreated,        // Set previous node index to the latest node created before this one
             deadlineBlock: 0,                  // Placeholder: Not used here
             noChildConfirmedBeforeBlock: 0,    // Placeholder: Not used here
             stakerCount: 0,                    // Placeholder: Not used here
@@ -97,6 +95,8 @@ contract MockRollup {
             createdAtBlock: uint64(block.number),      // Record the block number at creation time for reference
             nodeHash: nodeHash                 // Placeholder: Not used here
         });
+
+        latestNodeCreated = nodeNum;
 
         // Emit an event to notify that a new node has been created with all relevant details
         emit NodeCreated(
