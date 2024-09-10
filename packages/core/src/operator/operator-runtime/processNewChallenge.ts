@@ -42,7 +42,7 @@ export async function processNewChallenge(
             }
 
             operatorState.cachedLogger(
-                `Found chance boost of ${Number(boostFactor) / 100}% for ${ownerOrPool.isPool ? `pool:` : `owner:`} ${ownerOrPool.name ? `${ownerOrPool.name} (${ownerOrPool.address})` : ownerOrPool.address}`
+                `Found chance boost of ${Number(boostFactor) / 10000}% for ${ownerOrPool.isPool ? `pool:` : `owner:`} ${ownerOrPool.name ? `${ownerOrPool.name} (${ownerOrPool.address})` : ownerOrPool.address}`
             );
 
             const winningKeyCount = getWinningKeyCount(
