@@ -15,6 +15,18 @@ const config = {
   solidity: {
     compilers: [
       {
+        version: "0.8.22",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+            details: {
+              yul: true
+            }
+          }
+        }
+      },
+      {
         version: "0.8.9",
         settings: {
           optimizer: {
