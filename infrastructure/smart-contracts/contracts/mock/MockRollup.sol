@@ -81,7 +81,7 @@ contract MockRollup {
         );
 
         // Store the newly created node in the mapping with all its attributes
-        _nodes[latestNodeCreated] = Node({
+        _nodes[nodeNum] = Node({
             stateHash: bytes32(0),             // Placeholder: In practice, this should represent the state of the node
             challengeHash: bytes32(0),         // Placeholder: Represents data that can be challenged
             confirmData: confirmData,          // Store the computed confirmData hash for validation during confirmation
@@ -119,7 +119,6 @@ contract MockRollup {
      */
     function confirmNode(uint64 nodeNum, bytes32 blockHash, bytes32 sendRoot) external {
         // Check that the node number is within the valid range of created nodes
-        require(nodeNum <= latestNodeCreated, "Invalid node number");
         Node storage node = _nodes[nodeNum]; // Fetch the node data from storage
 
         // Validate that the provided blockHash and sendRoot match the stored confirmData hash
