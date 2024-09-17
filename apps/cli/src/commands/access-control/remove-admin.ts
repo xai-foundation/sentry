@@ -1,20 +1,23 @@
-import Vorpal from "vorpal";import { removeAddressFromRole, getSignerFromPrivateKey } from "@sentry/core";
+import { Command } from 'commander';
+import inquirer from 'inquirer';
+import { removeAddressFromRole, getSignerFromPrivateKey } from "@sentry/core";
 
 /**
  * Function to remove an admin from the Referee contract.
- * @param cli - Vorpal instance
+ * @param cli - Commander instance
  */
-export function removeAdmin(cli: Vorpal) {
+export function removeAdmin(cli: Command): void {
     cli
-        .command('remove-admin', 'Removes an address from the DEFAULT_ADMIN_ROLE in the Referee contract.')
-        .action(async function (this: Vorpal.CommandInstance) {
-            const {address} = await this.prompt({
+        .command('remove-admin')
+        .description('Removes an address from the DEFAULT_ADMIN_ROLE in the Referee contract.')
+        .action(async () => {
+            const { address } = await inquirer.prompt({
                 type: 'input',
                 name: 'address',
-                message: 'Address to be removed from the DEFAULT_ADMIN_ROLE:' 
+                message: 'Address to be removed from the DEFAULT_ADMIN_ROLE:'
             });
 
-            const {privateKey} = await this.prompt({
+            const { privateKey } = await inquirer.prompt({
                 type: 'password',
                 name: 'privateKey',
                 message: 'Private key of the current admin address. Must have DEFAULT_ADMIN_ROLE. Check by calling get-list-of-admins:',
@@ -22,18 +25,22 @@ export function removeAdmin(cli: Vorpal) {
             });
 
             if (!address || !privateKey) {
-                this.log('Both address and private key are required.');
+                console.log('Both address and private key are required.');
                 return;
             }
 
-            this.log(`Removing address ${address} from the DEFAULT_ADMIN_ROLE...`);
+            console.log(`Removing address ${address} from the DEFAULT_ADMIN_ROLE...`);
 
-            // Create a signer with the private key
-            const { signer } = getSignerFromPrivateKey(privateKey);
+            try {
+                // Create a signer with the private key
+                const { signer } = getSignerFromPrivateKey(privateKey);
 
-            // Call the removeAddressFromRole function to remove the address from the DEFAULT_ADMIN_ROLE
-            await removeAddressFromRole(signer, 'DEFAULT_ADMIN_ROLE', address);
+                // Call the removeAddressFromRole function to remove the address from the DEFAULT_ADMIN_ROLE
+                await removeAddressFromRole(signer, 'DEFAULT_ADMIN_ROLE', address);
 
-            this.log(`Address ${address} has been removed from the DEFAULT_ADMIN_ROLE.`);
+                console.log(`Address ${address} has been removed from the DEFAULT_ADMIN_ROLE.`);
+            } catch (error) {
+                console.error(`Failed to remove address: ${(error as Error).message}`);
+            }
         });
 }

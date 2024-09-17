@@ -1,50 +1,52 @@
-import Vorpal from "vorpal";
+import { Command } from 'commander';
+import inquirer from 'inquirer';
 import { getSignerFromPrivateKey, addPromoCode as coreAddPromoCode } from "@sentry/core";
 
-export function addPromoCode(cli: Vorpal) {
+/**
+ * Function to add a promo code if the signer has the DEFAULT_ADMIN_ROLE.
+ * @param cli - Commander instance
+ */
+export function addPromoCode(cli: Command): void {
     cli
-        .command('add-promo-code', 'Adds a promo code if the signer has the DEFAULT_ADMIN_ROLE.')
-        .action(async function (this: Vorpal.CommandInstance) {
-            const promoCodePrompt: Vorpal.PromptObject = {
+        .command('add-promo-code')
+        .description('Adds a promo code if the signer has the DEFAULT_ADMIN_ROLE.')
+        .action(async () => {
+            // Prompt user for the promo code to add
+            const { promoCode } = await inquirer.prompt({
                 type: 'input',
                 name: 'promoCode',
                 message: 'Enter the promo code to add:',
-            };
-            const { promoCode } = await this.prompt(promoCodePrompt);
+            });
 
-            const recipientPrompt: Vorpal.PromptObject = {
+            // Prompt user for the recipient address
+            const { recipient } = await inquirer.prompt({
                 type: 'input',
                 name: 'recipient',
                 message: 'Enter the recipient address:',
-            };
-            const { recipient } = await this.prompt(recipientPrompt);
+            });
 
-            const privateKeyPrompt: Vorpal.PromptObject = {
+            // Prompt user for the private key of the admin wallet
+            const { privateKey } = await inquirer.prompt({
                 type: 'password',
                 name: 'privateKey',
                 message: 'Enter the private key of the admin wallet that will add the promo code:',
-                mask: '*'
-            };
-            const { privateKey } = await this.prompt(privateKeyPrompt);
+                mask: '*',
+            });
 
-            this.log(`Adding promo code ${promoCode}...`);
-
-            // get a signer of the private key
-            const {signer} = getSignerFromPrivateKey(privateKey);
+            console.log(`Adding promo code ${promoCode}...`);
 
             try {
-                const txReceipt = await coreAddPromoCode(
-                    promoCode,
-                    recipient,
-                    signer,
-                );
+                // Get a signer using the private key
+                const { signer } = getSignerFromPrivateKey(privateKey);
 
-                this.log(`Promo code successfully added. Here is the transaction receipt:`);
-                this.log(`Transaction Receipt: ${txReceipt}`);
+                // Call the core function to add the promo code
+                const txReceipt = await coreAddPromoCode(promoCode, recipient, signer);
+
+                console.log('Promo code successfully added. Here is the transaction receipt:');
+                console.log(`Transaction Receipt: ${JSON.stringify(txReceipt, null, 2)}`);
                 
-
             } catch (error) {
-                this.log(`Error adding promo code: ${(error as Error).message}`);
+                console.error(`Error adding promo code: ${(error as Error).message}`);
             }
         });
 }

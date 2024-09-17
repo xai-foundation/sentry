@@ -1,52 +1,67 @@
-import Vorpal from "vorpal";import { getAssertion, getSignerFromPrivateKey, submitAssertionToReferee } from "@sentry/core";
+import { Command } from 'commander';
+import inquirer from 'inquirer';
+import { getAssertion, getSignerFromPrivateKey, submitAssertionToReferee } from "@sentry/core";
 
-export function manuallyChallengeAssertion(cli: Vorpal) {
+/**
+ * Function to manually challenge an assertion.
+ * @param cli - Commander instance
+ */
+export function manuallyChallengeAssertion(cli: Command): void {
     cli
-        .command('manually-challenge-assertion', 'Takes in the BLS secret key and an assertion ID, looks up that assertion and spits out all the data (nicely formatted) from the assertion, including what JS type each of the fields are. Then it hashes the data using challengerHashAssertion and returns the hash. After it will attempt to submit the assertion to the referee.')
-        .action(async function (this: Vorpal.CommandInstance) {
-            const secretKeyPrompt: Vorpal.PromptObject = {
-                type: 'password',
-                name: 'secretKey',
-                message: 'Enter the BLS secret key of the challenger:',
-                mask: '*'
-            };
-            const { secretKey } = await this.prompt(secretKeyPrompt);
+        .command('manually-challenge-assertion')
+        .description('Takes in the BLS secret key and an assertion ID, looks up that assertion and spits out all the data (nicely formatted) from the assertion, including what JS type each of the fields are. Then it hashes the data using challengerHashAssertion and returns the hash. After it will attempt to submit the assertion to the referee.')
+        .action(async () => {
+            try {
+                // Prompt user for the BLS secret key
+                const { secretKey } = await inquirer.prompt({
+                    type: 'password',
+                    name: 'secretKey',
+                    message: 'Enter the BLS secret key of the challenger:',
+                    mask: '*',
+                    validate: input => input.trim() === '' ? 'BLS secret key is required' : true
+                });
 
-            const assertionIdPrompt: Vorpal.PromptObject = {
-                type: 'input',
-                name: 'assertionId',
-                message: 'Enter the ID of the assertion:',
-            };
-            const { assertionId } = await this.prompt(assertionIdPrompt);
+                // Prompt user for the assertion ID
+                const { assertionId } = await inquirer.prompt({
+                    type: 'input',
+                    name: 'assertionId',
+                    message: 'Enter the ID of the assertion:',
+                    validate: input => input.trim() === '' ? 'Assertion ID is required' : true
+                });
 
-            const challengerPrivateKeyPrompt = {
-                type: 'password',
-                name: 'privateKey',
-                message: 'Enter the private key of an challenger wallet:',
-                mask: '*'
-            };
-            const {privateKey} = await this.prompt(challengerPrivateKeyPrompt);
+                // Prompt user for the private key of the challenger wallet
+                const { privateKey } = await inquirer.prompt({
+                    type: 'password',
+                    name: 'privateKey',
+                    message: 'Enter the private key of a challenger wallet:',
+                    mask: '*',
+                    validate: input => input.trim() === '' ? 'Private key is required' : true
+                });
 
-            this.log(`Looking up the assertion information for ID: ${assertionId}...`);
-            const assertionNode = await getAssertion(assertionId);
-            this.log(`Assertion data retrieved. Here are the details:`);
-            Object.keys(assertionNode).forEach((key: string) => {
-                const assertionKey = key as keyof typeof assertionNode;
-                this.log(`${assertionKey} (${typeof (assertionNode[assertionKey])}): ${assertionNode[assertionKey]}`);
-            });
+                console.log(`Looking up the assertion information for ID: ${assertionId}...`);
+                const assertionNode = await getAssertion(assertionId);
+                console.log(`Assertion data retrieved. Here are the details:`);
 
-            this.log(`Submitting Hash to chain for assertion '${assertionId}'.`);
+                Object.keys(assertionNode).forEach((key: string) => {
+                    const assertionKey = key as keyof typeof assertionNode;
+                    console.log(`${assertionKey} (${typeof assertionNode[assertionKey]}): ${assertionNode[assertionKey]}`);
+                });
 
-            // get a signer of the private key
-            const {signer} = getSignerFromPrivateKey(privateKey);
+                console.log(`Submitting Hash to chain for assertion '${assertionId}'.`);
 
-            await submitAssertionToReferee(
-                secretKey,
-                assertionId,
-                assertionNode,
-                signer,
-            );
+                // Get a signer for the private key
+                const { signer } = getSignerFromPrivateKey(privateKey);
 
-            this.log(`Assertion successfuly submitted.`);
+                await submitAssertionToReferee(
+                    secretKey,
+                    assertionId,
+                    assertionNode,
+                    signer
+                );
+
+                console.log(`Assertion successfully submitted.`);
+            } catch (error) {
+                console.error(`Error processing assertion: ${(error as Error).message}`);
+            }
         });
 }
