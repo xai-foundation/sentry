@@ -1,6 +1,8 @@
 import axios from "axios";
 import { checkRefereeBulkSubmissionCompatible, compareWithCDN, loadOperatorKeysFromGraph_V1, loadOperatorKeysFromRPC_V1, loadOperatorWalletsFromGraph, loadOperatorWalletsFromRPC, operatorState, processClosedChallenge, processClosedChallenges_V1, processNewChallenge, processNewChallenge_V1, PublicNodeBucketInformation } from "../index.js";
 import { Challenge, config, getSentryWalletsForOperator, getSubgraphHealthStatus, retry } from "../../index.js";
+import { checkRefereeBulkSubmissionCompatible, getConfirmDataAndHash, loadOperatorKeysFromGraph_V1, loadOperatorKeysFromRPC_V1, loadOperatorWalletsFromGraph, loadOperatorWalletsFromRPC, operatorState, processClosedChallenge, processClosedChallenges_V1, processNewChallenge, processNewChallenge_V1, PublicNodeBucketInformation } from "../index.js";
+import { Challenge, config, getChallenge, getSentryWalletsForOperator, getSubgraphHealthStatus, retry } from "../../index.js";
 
 /**
  * Update the status message for display in the operator desktop app key list
@@ -9,23 +11,64 @@ import { Challenge, config, getSentryWalletsForOperator, getSubgraphHealthStatus
  */
 export async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: any) {
 
-    if (event && challenge.rollupUsed === config.rollupAddress) {
-        
-        const assertionId = Number(challenge.assertionId);
-        const confirmData = challenge.assertionStateRootOrConfirmData;
+    const graphStatus = await getSubgraphHealthStatus();
 
-        compareWithCDN(assertionId, confirmData)
-            .then(({ publicNodeBucket, error }) => {
-                if (error) {
-                    operatorState.onAssertionMissMatchCb(publicNodeBucket, challenge, error);
-                    return;
-                }
-                operatorState.cachedLogger(`Comparison between PublicNode and Challenger was successful.`);
-            })
-            .catch(error => {
-                operatorState.cachedLogger(`Error on CND check for challenge ${Number(challenge.assertionId)}.`);
-                operatorState.cachedLogger(`${error.message}.`);
-            });
+    // Validate Confirm Data
+
+    if (event && challenge.rollupUsed === config.rollupAddress) {
+
+        const previousChallengeNumber = challengeNumber - BigInt(1);                    // Get Previous Challenge Number
+        const previousChallenge = await getChallenge(previousChallengeNumber);          // Get Previous Challenge From the chain     
+
+        const previousAssertionId = Number(previousChallenge.assertionId);              // Destructure Previous Assertion ID
+        const currentAssertionId = Number(challenge.assertionId);                       // Destructure Current Assertion ID
+
+        const isBatch = currentAssertionId - previousAssertionId > 1;                   // Check if the challenge is a batch or single
+
+        let confirmDataToCheck: string[] = [challenge.assertionStateRootOrConfirmData]; // Set the initial confirm data assuming a single challenge
+        let assertionIds = [currentAssertionId];                                      // Create an array to store the assertion IDs and add the current assertion ID
+
+        let batchConfirmHash: string | undefined;
+
+        if (isBatch) {
+            assertionIds = []; // Reset the assertion IDs array
+            // If the challenge is a batch, add the missing assertion IDs to the array
+            for (let id = previousAssertionId + 1; id <= currentAssertionId; id++) {
+                assertionIds.push(id);
+            }
+
+            // Get the confirm data for the batch of assertions
+            const {confirmData, confirmHash:batchConfirmHashFromChain} = await getConfirmDataAndHash(assertionIds, graphStatus.healthy);
+
+            // Set the batch confirm hash
+            batchConfirmHash = batchConfirmHashFromChain;
+
+            // Set the confirm data to check
+            confirmDataToCheck = confirmData;
+
+            // TODO Verify challenger signed hash
+            challenge.challengerSignedHash
+
+        }
+        // Continue with comparison
+
+        for (let i = 0; i < confirmDataToCheck.length; i++) {
+            const confirmData = confirmDataToCheck[i];
+            const assertionId = assertionIds[i];
+
+            compareWithCDN(assertionId, confirmData)
+                .then(({ publicNodeBucket, error }) => {
+                    if (error) {
+                        operatorState.onAssertionMissMatchCb(publicNodeBucket, challenge, error);
+                        return;
+                    }
+                    operatorState.cachedLogger(`Comparison between PublicNode and Challenger was successful.`);
+                })
+                .catch(error => {
+                    operatorState.cachedLogger(`Error on CND check for challenge ${Number(challenge.assertionId)}.`);
+                    operatorState.cachedLogger(`${error.message}.`);
+                });
+        }
     }
 
     operatorState.cachedLogger(`Received new challenge with number: ${challengeNumber}. Delayed challenges will still accrue rewards.`);
@@ -38,7 +81,6 @@ export async function listenForChallengesCallback(challengeNumber: bigint, chall
     })
 
     try {
-        const graphStatus = await getSubgraphHealthStatus();
         if (graphStatus.healthy) {
             // get the wallets, pools and referee config from the subgraph
             const submissionFilter = {};
