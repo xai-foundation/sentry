@@ -19,10 +19,12 @@ export async function listenForChallengesCallback(challengeNumber: bigint, chall
 
     const {error} = await validateConfirmData(challenge, graphStatus.healthy, event);
 
+    operatorState.previousChallengeAssertionId = challenge.assertionId;
+
     if (error) {
         return;
     }
-    
+
     operatorState.cachedLogger(`Comparison between PublicNode and Challenger was successful.`);
 
     operatorState.cachedLogger(`Received new challenge with number: ${challengeNumber}. Delayed challenges will still accrue rewards.`);
