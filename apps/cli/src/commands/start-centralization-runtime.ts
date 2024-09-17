@@ -58,8 +58,11 @@ export function startCentralizationRuntime(cli: Command) {
 
                     if (restartOnCrash) {
                         console.log(`[${new Date().toISOString()}] Restarting the CentralizationRuntime due to crash.`);
-                        await sendSlackNotification(slackWebHookUrl, `Restarting the CentralizationRuntime due to crash.`, (log: string) => console.log(log));
+                        const slackMessage = `<!channel> Restarting the CentralizationRuntime due to crash @ ${new Date().toISOString()}.`;
+                        await sendSlackNotification(slackWebHookUrl, slackMessage, (log: string) => console.log(log));
                         setTimeout(startRuntime, 5000); // Delay before restarting
+                    } else {
+                        process.exit(1); // Explicitly exit if restart is not desired
                     }
                 }
             }
