@@ -10,7 +10,11 @@ import { Challenge, config, getSentryWalletsForOperator, getSubgraphHealthStatus
 export async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: any) {
 
     if (event && challenge.rollupUsed === config.rollupAddress) {
-        compareWithCDN(challenge)
+        
+        const assertionId = Number(challenge.assertionId);
+        const confirmData = challenge.assertionStateRootOrConfirmData;
+
+        compareWithCDN(assertionId, confirmData)
             .then(({ publicNodeBucket, error }) => {
                 if (error) {
                     operatorState.onAssertionMissMatchCb(publicNodeBucket, challenge, error);
@@ -120,11 +124,20 @@ async function getPublicNodeFromBucket(confirmHash: string) {
 }
 
 /**
- * Compare a challenge with an assertion posted to the public CDN by the public Xai node.
- * @param {Challenge} challenge - The challenge from the Referee contract.
- * @returns {Promise<() => Promise<{ publicNodeBucket: PublicNodeBucketInformation, error?: string }>>} Returns the assertion data from the CDN or an error on miss match.
+ * Compares a challenge assertion with the data fetched from the public CDN by the public Xai node.
+ * This function attempts to retrieve the assertion data up to 3 times, with a delay between attempts.
+ * If successful, it checks if the assertion ID matches the challenge's expected value.
+ * 
+ * @param {number} assertionId - The expected assertion ID from the challenge (provided by the Referee contract).
+ * @param {string} confirmData - The identifier used to fetch assertion data from the CDN.
+ * @returns {Promise<{ publicNodeBucket: PublicNodeBucketInformation, error?: string }>} 
+ * A promise that resolves with the public node bucket information. 
+ * If the assertion ID does not match, an error message is included in the result. 
+ * Throws an error if the data could not be retrieved after multiple attempts.
+ * 
+ * @throws {Error} If the CDN request fails after 3 attempts or if an unexpected error occurs during fetching.
  */
-async function compareWithCDN(challenge: Challenge): Promise<{ publicNodeBucket: PublicNodeBucketInformation, error?: string }> {
+async function compareWithCDN(assertionId: number, confirmData: string): Promise<{ publicNodeBucket: PublicNodeBucketInformation, error?: string }> {
 
     let attempt = 1;
     let publicNodeBucket: PublicNodeBucketInformation | undefined;
@@ -132,22 +145,22 @@ async function compareWithCDN(challenge: Challenge): Promise<{ publicNodeBucket:
 
     while (attempt <= 3) {
         try {
-            publicNodeBucket = await getPublicNodeFromBucket(challenge.assertionStateRootOrConfirmData);
+            publicNodeBucket = await getPublicNodeFromBucket(confirmData);
             break;
         } catch (error) {
-            operatorState.cachedLogger(`Error loading assertion data from CDN for ${challenge.assertionStateRootOrConfirmData} with attempt ${attempt}.\n${error}`);
+            operatorState.cachedLogger(`Error loading assertion data from CDN for ${confirmData} with attempt ${attempt}.\n${error}`);
             lastError = error;
         }
         attempt++;
-        await new Promise(resolve => setTimeout(resolve, 20000));
+        await new Promise(resolve => setTimeout(resolve, 20000)); // Wait 20 seconds before retrying
     }
 
     if (!publicNodeBucket) {
-        throw new Error(`Failed to retrieve assertion data from CDN for ${challenge.assertionStateRootOrConfirmData} after ${attempt} attempts.\n${lastError}`);
+        throw new Error(`Failed to retrieve assertion data from CDN for ${confirmData} after ${attempt} attempts.\n${lastError}`);
     }
 
-    if (publicNodeBucket.assertion !== Number(challenge.assertionId)) {
-        return { publicNodeBucket, error: `Miss match between PublicNode and Challenge assertion number '${challenge.assertionId}'!` };
+    if (publicNodeBucket.assertion !== assertionId) {
+        return { publicNodeBucket, error: `Mismatch between PublicNode and Challenge assertion number '${assertionId}'!` };
     }
 
     return { publicNodeBucket }
