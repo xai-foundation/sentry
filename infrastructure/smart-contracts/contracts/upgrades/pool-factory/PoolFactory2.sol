@@ -106,12 +106,24 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     // Role definition for stake keys admin
     bytes32 public constant STAKE_KEYS_ADMIN_ROLE = keccak256("STAKE_KEYS_ADMIN_ROLE");
 
+    // Determines if a user's total stake has been calculated
+    mapping(address => bool) public totalEsXaiStakeCalculated;
+
+    // =================> VERY IMPORTANT <============================================
+    // FUTURE DEVELOPERS: DO NOT USE THIS VARIABLE AS THE SOURCE OF TRUTH FOR TOTAL STAKE
+    // Making this variable private as it SHOULD NOT BE USED as the source of truth for total stake
+    // The getTotalesXaiStakedByUser function should be used instead
+    // This mapping will only be accurate AFTER a user has interacted with a pool
+    mapping(address => uint256) private _totalEsXaiStakeByUser;
+
+
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[499] private __gap;
+    uint256[497] private __gap;
 
     // Events for various actions within the contract
     event StakingEnabled();
@@ -585,6 +597,14 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
 
         associateUserWithPool(msg.sender, pool);
 
+        // Update total stake
+        if(!totalEsXaiStakeCalculated[msg.sender]) {
+            _totalEsXaiStakeByUser[msg.sender] = getTotalesXaiStakedByUser(msg.sender);
+            totalEsXaiStakeCalculated[msg.sender] = true;
+        } else {
+            _totalEsXaiStakeByUser[msg.sender] += amount;
+        }
+
         emit StakeEsXai(
             msg.sender,
             pool,
@@ -607,13 +627,29 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     ) external {
         require(poolsCreatedViaFactory[pool], "28"); // Pool must be created via factory
 
-        esXai(esXaiAddress).transfer(msg.sender, amount);
-        Referee9(refereeAddress).unstakeEsXai(pool, amount);
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.unstakeEsXai(msg.sender, unstakeRequestIndex, amount);
 
         if (!stakingPool.isUserEngagedWithPool(msg.sender)) {
             removeUserFromPool(msg.sender, pool);
+        }
+        
+        // Reordered to avoid reentrancy
+        Referee9(refereeAddress).unstakeEsXai(pool, amount);
+        esXai(esXaiAddress).transfer(msg.sender, amount);
+
+        // Update total stake
+        if(!totalEsXaiStakeCalculated[msg.sender]) {
+            uint256 totalPools = interactedPoolsOfUser[msg.sender].length;
+            // We check the total pools interacted with by the user to avoid running out of gas
+            // This ensures we do not run this one time calculation until we are sure that it will not run out of gas
+            // This ensures a user can always unstake their esXai
+            if(totalPools < 150) {
+                _totalEsXaiStakeByUser[msg.sender] = getTotalesXaiStakedByUser(msg.sender);
+                totalEsXaiStakeCalculated[msg.sender] = true;
+            }
+        } else {
+            _totalEsXaiStakeByUser[msg.sender] -= amount;
         }
 
         emit UnstakeEsXai(
@@ -820,5 +856,48 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
 
     function setFailedKyc(address user, bool failed) external onlyRole(DEFAULT_ADMIN_ROLE) {
         failedKyc[user] = failed;
+    }    
+    
+    /**
+    * @notice Retrieves the total amount of esXAI staked by a specific user across all interacted staking pools.
+    * @dev If the user's total stake has already been calculated and cached, the cached value is returned.
+    *      Otherwise, it calculates the total staked amount by iterating over all staking pools the user has interacted with.
+    * @param user The address of the user whose total staked amount is to be retrieved.
+    * @return The total amount of esXAI staked by the user across all pools.
+    */
+    function getTotalesXaiStakedByUser(address user) public view returns (uint256) {
+        if (totalEsXaiStakeCalculated[user]) {
+            return _totalEsXaiStakeByUser[user];
+        }
+
+        uint256 totalStakeAmount = 0;
+        address[] memory userPools = interactedPoolsOfUser[user];
+        for (uint256 i = 0; i < userPools.length; i++) {
+            totalStakeAmount += StakingPool(userPools[i]).getStakedAmounts(user);
+        }
+        return totalStakeAmount;
+    }
+
+    /**
+    * @notice Calculates the total stake amount for a list of users across all pools they have interacted with.
+    * @dev Iterates over each user provided in the `users` calldata array. For each user, it checks if the total stake has already been calculated.
+    *      If not, it sums the staked amounts from all staking pools the user has interacted with and stores the result.
+    *      Uses storage for interacting pools array to optimize gas usage. Only processes users whose total stake hasn't been calculated yet.
+    * @param users An array of user addresses for which the total stake needs to be calculated.
+    */
+    function calculateUserTotalStake(address[] calldata users) external {
+        for (uint256 i = 0; i < users.length; i++) {
+            if(totalEsXaiStakeCalculated[users[i]]) {
+                continue;
+            }
+            uint256 totalStakeAmount = 0;
+            address[] storage userPools = interactedPoolsOfUser[users[i]]; // Use storage instead of memory
+            uint256 poolCount = userPools.length; // Cache length for gas optimization
+            for (uint256 j = 0; j < poolCount; j++) {
+                totalStakeAmount += StakingPool(userPools[j]).getStakedAmounts(users[i]);
+            }
+            _totalEsXaiStakeByUser[users[i]] = totalStakeAmount;
+            totalEsXaiStakeCalculated[users[i]] = true;
+        }
     }
 }

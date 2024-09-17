@@ -1,39 +1,45 @@
-import Vorpal from "vorpal";import { addOperatorToReferee, getSignerFromPrivateKey } from "@sentry/core";
+import { Command } from 'commander';
+import inquirer from 'inquirer';
+import { addOperatorToReferee, getSignerFromPrivateKey } from "@sentry/core";
 
 /**
  * Function to add an operator to the Referee contract.
- * @param cli - Vorpal instance
+ * @param cli - Commander instance
  */
-export function addOperator(cli: Vorpal) {
+export function addOperator(cli: Command): void {
     cli
-        .command('add-operator', 'Adds an operator to the Referee contract.')
-        .action(async function (this: Vorpal.CommandInstance) {
-            const {operatorAddress} = await this.prompt({
+        .command('add-operator')
+        .description('Adds an operator to the Referee contract.')
+        .action(async () => {
+            // Prompt user for the operator address to add
+            const { operatorAddress } = await inquirer.prompt({
                 type: 'input',
                 name: 'operatorAddress',
-                message: 'Operator address to be added:' 
+                message: 'Operator address to be added:',
+                validate: input => input.trim() === '' ? 'Operator address is required' : true
             });
 
-            const {privateKey} = await this.prompt({
+            // Prompt user for the private key of the current address
+            const { privateKey } = await inquirer.prompt({
                 type: 'password',
                 name: 'privateKey',
                 message: 'Private key of the current address that you want to add the operator to:',
                 mask: '*',
+                validate: input => input.trim() === '' ? 'Private key is required' : true
             });
 
-            if (!operatorAddress || !privateKey) {
-                this.log('Both operator address and private key are required.');
-                return;
+            console.log(`Adding operator ${operatorAddress} to the Referee contract...`);
+
+            try {
+                // Create a signer with the private key
+                const { signer } = getSignerFromPrivateKey(privateKey);
+
+                // Call the addOperatorToReferee function to add the operator to the Referee contract
+                await addOperatorToReferee(operatorAddress, true, signer);
+
+                console.log(`Operator ${operatorAddress} has been added to the Referee contract.`);
+            } catch (error) {
+                console.error(`Error adding operator: ${(error as Error).message}`);
             }
-
-            this.log(`Adding operator ${operatorAddress} to the Referee contract...`);
-
-            // Create a signer with the private key
-            const { signer } = getSignerFromPrivateKey(privateKey);
-
-            // Call the addOperatorToReferee function to add the operator to the Referee contract
-            await addOperatorToReferee(operatorAddress, true, signer);
-
-            this.log(`Operator ${operatorAddress} has been added to the Referee contract.`);
         });
 }

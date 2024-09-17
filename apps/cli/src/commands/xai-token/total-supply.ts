@@ -1,10 +1,20 @@
-import Vorpal from "vorpal";import { getTotalSupply } from "@sentry/core";
+import { Command } from 'commander';
+import { getTotalSupply } from "@sentry/core";
 
-export function totalSupply(cli: Vorpal) {
+/**
+ * Function to return the total supply of tokens in circulation.
+ * @param cli - Commander instance
+ */
+export function totalSupply(cli: Command): void {
     cli
-        .command('total-supply', 'Returns the total supply of tokens in circulation.')
-        .action(async function (this: Vorpal.CommandInstance) {
-            const { esXaiTotalSupply, xaiTotalSupply, totalSupply } = await getTotalSupply();
-            this.log(`esXai Total Supply: ${esXaiTotalSupply}\nXai Total Supply: ${xaiTotalSupply}\nTotal Supply: ${totalSupply}`);
+        .command('total-supply')
+        .description('Returns the total supply of tokens in circulation.')
+        .action(async () => {
+            try {
+                const { esXaiTotalSupply, xaiTotalSupply, totalSupply } = await getTotalSupply();
+                console.log(`esXai Total Supply: ${esXaiTotalSupply}\nXai Total Supply: ${xaiTotalSupply}\nTotal Supply: ${totalSupply}`);
+            } catch (error) {
+                console.error(`Error fetching total supply: ${(error as Error).message}`);
+            }
         });
 }
