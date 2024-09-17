@@ -34,6 +34,7 @@ import { updateChallenge } from "./utils/updateChallenge"
 
 import { ethereum, BigInt, Bytes, Address, log } from "@graphprotocol/graph-ts"
 import { updatePoolChallengeOnClaim } from "./utils/updatePoolChallengeOnClaim"
+import { updateTotalAccruedRewards } from "./utils/updateTotalAccruedRewards"
 
 export function handleInitialized(event: Initialized): void {
 
@@ -316,6 +317,7 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
             return;
           }
           updatePoolChallengeOnClaim(event.params.challengeId, sentryKey, event.params.amount, event.transaction.hash);
+          updateTotalAccruedRewards(sentryKey, event.params.amount, event)
         }
       }
     }
@@ -358,6 +360,7 @@ export function handleRewardsClaimed(event: RewardsClaimedEvent): void {
       }
 
       updatePoolChallengeOnClaim(event.params.challengeId, sentryKey, event.params.amount, event.transaction.hash);
+      updateTotalAccruedRewards(sentryKey, event.params.amount, event)
     }
   }
 }
@@ -437,37 +440,32 @@ export function handleBatchRewardsClaimed(event: BatchRewardsClaimedEvent): void
       continue;
     }
 
-    // Load current referee config from the graph
-    const refereeConfig = RefereeConfig.load("RefereeConfig");
-
-    // If the referee config is not found, log a warning and skip the claim
-    if (!refereeConfig) {
-      log.warning("Failed to find refereeConfig handleBatchRewardsClaimed TX: " + event.transaction.hash.toHexString(), [])
+    const ownerWallet = SentryWallet.load(sentryKey.sentryWallet)
+    if (!ownerWallet) {
+      log.warning("Failed to find ownerWallet in handleBatchRewardsClaimed TX: " + event.transaction.hash.toHexString() + ", challenge: " + event.params.challengeId.toString() + ", nodeLicenseId: " + nodeLicenseIds[i].toString(), [])
       return;
     }
 
-    const ownerWallet = SentryWallet.load(sentryKey.sentryWallet)
-    if (ownerWallet) {
-      if (
-        ownerWallet.isKYCApproved &&
-        sentryKey.mintTimeStamp.lt(challenge.createdTimestamp) &&
-        !submission.claimed &&
-        submission.eligibleForPayout
-      ) {
+    if (
+      (refereeConfig.version.gt(BigInt.fromI32(6)) || ownerWallet.isKYCApproved) &&
+      sentryKey.mintTimeStamp.lt(challenge.createdTimestamp) &&
+      !submission.claimed &&
+      submission.eligibleForPayout
+    ) {
 
-        challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(reward)
-        challenge.save()
+      challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(reward)
+      challenge.save()
 
-        submission.claimed = true
-        submission.claimAmount = reward
+      submission.claimed = true
+      submission.claimAmount = reward
 
-        submission.claimTimestamp = event.block.timestamp
-        submission.claimTxHash = event.transaction.hash
-        submission.claimedFrom = "claimMultipleRewards"
-        submission.save()
+      submission.claimTimestamp = event.block.timestamp
+      submission.claimTxHash = event.transaction.hash
+      submission.claimedFrom = "claimMultipleRewards"
+      submission.save()
 
-        updatePoolChallengeOnClaim(event.params.challengeId, sentryKey, reward, event.transaction.hash)
-      }
+      updatePoolChallengeOnClaim(event.params.challengeId, sentryKey, reward, event.transaction.hash)
+      updateTotalAccruedRewards(sentryKey, reward, event)
     }
   }
 }
@@ -483,6 +481,7 @@ export function handleKycStatusChanged(event: KycStatusChangedEvent): void {
     sentryWallet.keyCount = BigInt.fromI32(0)
     sentryWallet.stakedKeyCount = BigInt.fromI32(0)
     sentryWallet.keyCount = BigInt.fromI32(0)
+    sentryWallet.totalAccruedAssertionRewards = BigInt.fromI32(0)
   }
 
   sentryWallet.isKYCApproved = event.params.isKycApproved
@@ -503,6 +502,7 @@ export function handleApproval(event: ApprovalEvent): void {
     sentryWallet.keyCount = BigInt.fromI32(0)
     sentryWallet.stakedKeyCount = BigInt.fromI32(0)
     sentryWallet.keyCount = BigInt.fromI32(0)
+    sentryWallet.totalAccruedAssertionRewards = BigInt.fromI32(0)
   }
 
   const addApprovedOperators = sentryWallet.approvedOperators
@@ -657,13 +657,30 @@ export function handleBulkRewardsClaimed(event: BulkRewardsClaimedEvent): void {
       log.warning("Failed to find poolChallenges in handleBulkRewardsClaimed for challenge " + event.params.challengeId.toHexString() + " and poolAdress: " + event.params.bulkAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), [])
       return
     }
-  
+
     poolChallenges.claimKeyCount = event.params.winningKeys;
     poolChallenges.totalClaimedEsXaiAmount = event.params.totalReward;
     poolChallenges.save()
-  
+
     challenge.amountClaimedByClaimers = challenge.amountClaimedByClaimers.plus(event.params.totalReward);
     challenge.save();
+
+    const pool = PoolInfo.load(event.params.bulkAddress.toHexString());
+    if (!pool) {
+      log.warning("Failed to find pool handleBulkRewardsClaimed: pool: " + event.params.bulkAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), []);
+      return;
+    }
+    pool.totalAccruedAssertionRewards = pool.totalAccruedAssertionRewards.plus(event.params.totalReward)
+    pool.save()
+
+  } else {
+    const sentryWallet = SentryWallet.load(event.params.bulkAddress.toHexString());
+    if (!sentryWallet) {
+      log.warning("Failed to find sentryWallet handleBulkRewardsClaimed: wallet: " + event.params.bulkAddress.toHexString() + ", TX: " + event.transaction.hash.toHexString(), []);
+      return;
+    }
+    sentryWallet.totalAccruedAssertionRewards = sentryWallet.totalAccruedAssertionRewards.plus(event.params.totalReward)
+    sentryWallet.save()
   }
 
 }

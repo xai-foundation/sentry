@@ -1,7 +1,8 @@
-import Vorpal from "vorpal";
+import { Command } from 'commander';
 import inquirer from 'inquirer';
 import inquirerAutocompletePrompt from 'inquirer-autocomplete-prompt';
 
+// Register the autocomplete prompt for Inquirer
 inquirer.registerPrompt('autocomplete', inquirerAutocompletePrompt);
 
 export const listOfCountries = [
@@ -257,44 +258,53 @@ export const listOfCountries = [
 	"zimbabwe",
 ]
 
+
 /**
  * Function to start the KYC process for a user.
- * @param cli - Vorpal instance
+ * @param cli - Commander instance
  */
-export function startKycProcess(cli: Vorpal) {
+export function startKycProcess(cli: Command): void {
     cli
-        .command('kyc', 'Starts the KYC process for a user. The user should provide their country.')
-        .action(async function (this: Vorpal.CommandInstance) {
-            const countryPrompt = [{
-                type: 'autocomplete',
-                name: 'country',
-                message: 'Enter your country:',
-                source: (_: any, input: string) => {
-                    input = input || '';
-                    return new Promise((resolve) => {
-                        const fuzzyResult = listOfCountries.filter(country => country.toLowerCase().includes(input.toLowerCase()));
-                        resolve(fuzzyResult);
-                    });
-                }
-            }];
-            const {country} = await inquirer.prompt(countryPrompt);
+        .command('kyc')
+        .description('Starts the KYC process for a user. The user should provide their country.')
+        .action(async () => {
+            try {
+				const countryPrompt = [
+					{
+						type: 'autocomplete',
+						name: 'country',
+						message: 'Enter your country:',
+						source: async (_: any, input: string) => {
+							input = input || '';
+							const fuzzyResult = listOfCountries.filter(country =>
+								country.toLowerCase().includes(input.toLowerCase())
+							);
+							return fuzzyResult;
+						}
+					}
+				];
 
-            if (country) {
-                let url = '';
-                if (
-                    country === "china" || //China
-                    country === "hong kong" || //Hong Kong
-                    country === "republic of north macedonia" || //Macedonia
-                    country === "turkey" || //Turkey
-                    country === "ukraine"   //Ukraine
-                ) {
-                    url = 'https://verify-with.blockpass.org/?clientId=xai_sentry_node__edd_60145';
-                } else {
-                    url = 'https://verify-with.blockpass.org/?clientId=xai_node_007da';
-                }
-                this.log(`Please visit the following URL to start the KYC process: ${url}`);
-            } else {
-                this.log("Invalid country. Please try again.");
-            }
+				const { country } = await inquirer.prompt(countryPrompt);
+
+				if (country) {
+					let url = '';
+					if (
+						country === "china" || // China
+						country === "hong kong" || // Hong Kong
+						country === "republic of north macedonia" || // Macedonia
+						country === "turkey" || // Turkey
+						country === "ukraine"   // Ukraine
+					) {
+						url = 'https://verify-with.blockpass.org/?clientId=xai_sentry_node__edd_60145';
+					} else {
+						url = 'https://verify-with.blockpass.org/?clientId=xai_node_007da';
+					}
+					console.log(`Please visit the following URL to start the KYC process: ${url}`);
+				} else {
+					console.log("Invalid country. Please try again.");
+				}
+			} catch (error) {
+				console.error('An error occurred during the KYC process:', error instanceof Error ? error.message : error);
+			}
         });
 }

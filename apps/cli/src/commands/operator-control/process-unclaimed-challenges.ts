@@ -1,89 +1,100 @@
-import Vorpal from "vorpal";
+import { Command } from 'commander';
+import inquirer from 'inquirer';
 import { getSignerFromPrivateKey, getSentryWalletsForOperator, processUnclaimedChallenges as processUnclaimedChallengesCore } from "@sentry/core";
+import { Signer } from 'ethers';
 
 /**
- * Starts a runtime of the operator.
- * @param {Vorpal} cli - The Vorpal instance to attach the command to.
+ * Function to start processing unclaimed challenges.
+ * @param cli - Commander instance
  */
-export function processUnclaimedChallenges(cli: Vorpal) {
+export function processUnclaimedChallenges(cli: Command): void {
     cli
-        .command('process-unclaimed-challenges', 'Starts a runtime of the operator.')
-        .action(async function (this: Vorpal.CommandInstance) {
-
-            const cmdInstance = this;
-
-            const walletKeyPrompt: Vorpal.PromptObject = {
+        .command('process-unclaimed-challenges')
+        .description('Starts processing unclaimed challenges for the operator.')
+        .action(async () => {
+            // Prompt user for the private key of the operator
+            const { walletKey } = await inquirer.prompt({
                 type: 'password',
                 name: 'walletKey',
                 message: 'Enter the private key of the operator:',
                 mask: '*'
-            };
-
-            const { walletKey } = await this.prompt(walletKeyPrompt);
+            });
 
             if (!walletKey || walletKey.length < 1) {
-                throw new Error("No private key passed in. Please provide a valid private key.")
+                throw new Error("No private key passed in. Please provide a valid private key.");
             }
-
-            const { signer } = getSignerFromPrivateKey(walletKey);
-
-            const whitelistPrompt: Vorpal.PromptObject = {
+            
+            let signer: Signer;
+            try {
+                signer = getSignerFromPrivateKey(walletKey).signer;
+            } catch (error) {
+                console.error(`Error getting signer from private key: ${(error as Error).message}`);
+                return;
+            }
+            // Prompt user for whitelist confirmation
+            const { useWhitelist } = await inquirer.prompt({
                 type: 'confirm',
                 name: 'useWhitelist',
-                message: 'Do you want to use a allowList for claiming past challenges?',
+                message: 'Do you want to use an allowList for claiming past challenges?',
                 default: false
-            };
-
-            const { useWhitelist } = await this.prompt(whitelistPrompt);
+            });
 
             // If useWhitelist is false, selectedOwners will be undefined
-            let selectedOwners;
+            let selectedOwners: string[] | undefined;
             if (useWhitelist) {
+                try{
+                    const operatorAddress = await signer.getAddress();
 
-                const operatorAddress = await signer.getAddress();
-                const { wallets, pools } = await getSentryWalletsForOperator(operatorAddress);
+                    const { wallets, pools } = await getSentryWalletsForOperator(operatorAddress);
 
-                const choices: Array<{ name: string, value: string }> = [];
+                    const choices: Array<{ name: string; value: string }> = [];
 
-                wallets.forEach(w => {
-                    choices.push({
-                        name: `Owner: ${w.address}${operatorAddress.toLowerCase() == w.address.toLowerCase() ? " (your wallet)" : ""}`,
-                        value: w.address
-                    })
-                })
+                    wallets.forEach(w => {
+                        choices.push({
+                            name: `Owner: ${w.address}${operatorAddress.toLowerCase() === w.address.toLowerCase() ? " (your wallet)" : ""}`,
+                            value: w.address
+                        });
+                    });
 
-                pools.forEach(p => {
-                    choices.push({
-                        name: `Pool: ${p.metadata[0]} (${p.address})`,
-                        value: p.address
-                    })
-                })
+                    pools.forEach(p => {
+                        choices.push({
+                            name: `Pool: ${p.metadata[0]} (${p.address})`,
+                            value: p.address
+                        });
+                    });
 
-                const ownerPrompt: Vorpal.PromptObject = {
-                    type: 'checkbox',
-                    name: 'selectedOwners',
-                    message: 'Select the owners/pools for the operator to run for:',
-                    choices,
-                };
+                    if (!choices.length) {
+                        throw new Error(`No operator wallets found for publicKey: ${operatorAddress}. Approve your wallet for operating keys or delegate it to a staking pool to operate for it.`);
+                    } else {
+                        const { selectedOwners: resultSelectedOwners } = await inquirer.prompt({
+                            type: 'checkbox',
+                            name: 'selectedOwners',
+                            message: 'Select the owners/pools for the operator to run for:',
+                            choices
+                        });
 
-                if (!choices.length) {
-                    throw new Error(`No operatorWallets found for publicKey: ${operatorAddress}, approve your wallet for operating keys or delegate it to a staking pool to operate for it.`)
-                } else {
-                    const result = await this.prompt(ownerPrompt);
-                    selectedOwners = result.selectedOwners;
+                        selectedOwners = resultSelectedOwners;
 
-                    cmdInstance.log("selectedOwners", selectedOwners);
+                        console.log("selectedOwners:", selectedOwners);
 
-                    if (!selectedOwners || selectedOwners.length < 1) {
-                        throw new Error("No owners selected. Please select at least one owner.")
+                        if (!selectedOwners || selectedOwners.length < 1) {
+                            throw new Error("No owners selected. Please select at least one owner.");
+                        }
                     }
+                } catch (error) {
+                    console.error(`Error fetching wallets for operator: ${(error as Error).message}`);
                 }
             }
 
-            await processUnclaimedChallengesCore(
-                signer,
-                (log: string) => { cmdInstance.log(log) },
-                selectedOwners
-            );
-        })
+            try {
+                await processUnclaimedChallengesCore(
+                    signer,
+                    (log: string) => { console.log(log); },
+                    selectedOwners
+                );
+                console.log('Processing of unclaimed challenges started successfully.');
+            } catch (error) {
+                console.error(`Error processing unclaimed challenges: ${(error as Error).message}`);
+            }
+        });
 }

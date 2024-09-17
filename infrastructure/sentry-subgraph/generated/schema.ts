@@ -389,6 +389,19 @@ export class PoolInfo extends Entity {
       "submissions",
     );
   }
+
+  get totalAccruedAssertionRewards(): BigInt {
+    let value = this.get("totalAccruedAssertionRewards");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalAccruedAssertionRewards(value: BigInt) {
+    this.set("totalAccruedAssertionRewards", Value.fromBigInt(value));
+  }
 }
 
 export class UnstakeRequest extends Entity {
@@ -1498,6 +1511,19 @@ export class SentryWallet extends Entity {
       this.get("id")!.toString(),
       "bulkSubmissions",
     );
+  }
+
+  get totalAccruedAssertionRewards(): BigInt {
+    let value = this.get("totalAccruedAssertionRewards");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set totalAccruedAssertionRewards(value: BigInt) {
+    this.set("totalAccruedAssertionRewards", Value.fromBigInt(value));
   }
 }
 

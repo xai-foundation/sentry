@@ -1,21 +1,30 @@
-import Vorpal from "vorpal";import { getSignerFromPrivateKey } from "@sentry/core";
+import { Command } from 'commander';
+import inquirer from 'inquirer';
+import { getSignerFromPrivateKey } from "@sentry/core";
 
 /**
- * Takes in a private key and returns the public key associated with that.
- * @param cli - The Vorpal instance.
+ * Function to get the public key from a private key.
+ * @param cli - Commander instance
  */
-export function getPublicKeyFromPrivateKey(cli: Vorpal) {
+export function getPublicKeyFromPrivateKey(cli: Command): void {
     cli
-        .command('get-public-key-from-private-key', 'Takes in a private key and returns the public key associated with that.')
-        .action(async function (this: Vorpal.CommandInstance) {
-            const { privateKey } = await this.prompt({
-                type: 'input',
+        .command('get-public-key-from-private-key')
+        .description('Takes in a private key and returns the public key associated with that.')
+        .action(async () => {
+            // Prompt user for the private key
+            const { privateKey } = await inquirer.prompt({
+                type: 'password',
                 name: 'privateKey',
                 message: 'Please enter your private key:',
                 mask: '*',
+                validate: input => input.trim() === '' ? 'Private key is required' : true
             });
-            const { address } = getSignerFromPrivateKey(privateKey);
-            this.log(`Address: ${address}`);
+
+            try {
+                const { address } = getSignerFromPrivateKey(privateKey);
+                console.log(`Address: ${address}`);
+            } catch (error) {
+                console.error(`Error retrieving public key: ${(error as Error).message}`);
+            }
         });
 }
-
