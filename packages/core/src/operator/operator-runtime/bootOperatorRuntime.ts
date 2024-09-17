@@ -1,5 +1,6 @@
 import { getChallenge } from "../../challenger/getChallenge.js";
 import { getLatestChallenge } from "../../challenger/getLatestChallenge.js";
+import { getLatestChallengeFromGraph } from "../../index.js";
 import { getChallengesFromGraph } from "../../subgraph/getChallengesFromGraph.js";
 import { getSentryWalletsForOperator } from "../../subgraph/getSentryWalletsForOperator.js";
 import { getSubgraphHealthStatus } from "../../subgraph/getSubgraphHealthStatus.js";
@@ -37,11 +38,9 @@ export const bootOperatorRuntime = async (
     if (graphStatus.healthy) {
         closeChallengeListener = listenForChallenges(listenForChallengesCallback)
 
-        const challenges = await retry(() => getChallengesFromGraph(2));
-        const openChallenge = challenges[0];
-        const previousChallenge = challenges[1];
+        const openChallenge = await retry(() => getLatestChallengeFromGraph());
         
-        operatorState.previousChallengeAssertionId = previousChallenge.assertionId;
+        operatorState.previousChallengeAssertionId = openChallenge.assertionId;
 
         // Calculate the latest challenge we should load from the graph
         const latestClaimableChallenge = Number(openChallenge.challengeNumber) <= MAX_CHALLENGE_CLAIM_AMOUNT ? 1 : Number(openChallenge.challengeNumber) - MAX_CHALLENGE_CLAIM_AMOUNT;
@@ -122,12 +121,8 @@ export const bootOperatorRuntime = async (
 
         // Get the latest challenge from the RPC
         const [latestChallengeNumber, latestChallenge] = await getLatestChallenge();
-
-        const previousChallengeNumber = latestChallengeNumber - 1n;
-        const previousChallenge = await getChallenge(previousChallengeNumber);
         
-        operatorState.previousChallengeAssertionId = previousChallenge.assertionId;
-
+        operatorState.previousChallengeAssertionId = latestChallenge.assertionId;
         
         logFunction(`Processing open challenges. Challenges should occur roughly once per hour. Rewards will still accrue even if challenges are delayed.`);
 
