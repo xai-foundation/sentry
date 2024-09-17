@@ -1,7 +1,5 @@
-import { getChallenge } from "../../challenger/getChallenge.js";
 import { getLatestChallenge } from "../../challenger/getLatestChallenge.js";
 import { getLatestChallengeFromGraph } from "../../index.js";
-import { getChallengesFromGraph } from "../../subgraph/getChallengesFromGraph.js";
 import { getSentryWalletsForOperator } from "../../subgraph/getSentryWalletsForOperator.js";
 import { getSubgraphHealthStatus } from "../../subgraph/getSubgraphHealthStatus.js";
 import { retry } from "../../utils/retry.js";

@@ -4,7 +4,7 @@ import axios from "axios";
 import { ethers } from "ethers";
 
 
-export async function validateConfirmData(currentChallenge: Challenge, subgraphIsHealthy:boolean, event?: ethers.EventLog): Promise<{ error?: string }> {
+export async function validateConfirmData(currentChallenge: Challenge, subgraphIsHealthy: boolean, event?: ethers.EventLog): Promise<{ error?: string }> {
     try {
         
             if (event && currentChallenge.rollupUsed === config.rollupAddress) { 
