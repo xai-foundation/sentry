@@ -12,5 +12,6 @@ export * from "./bootOperatorRuntime.js";
 export * from "./getUserV1StakeAmount.js";
 export * from "./loadOperatorWalletsFromGraph.js";
 export * from "./loadOperatorWalletsFromRPC.js";
+export * from "./validateConfirmData.js";
 
 export * from "./operator-v1/index.js";
