@@ -1,14 +1,15 @@
-import Vorpal from "vorpal";
+import { Command } from 'commander';
 import { config } from "@sentry/core";
 
 /**
  * Function to get all contract addresses from the config and log them in the console.
- * @param {Vorpal} cli - The Vorpal instance to attach the command to.
+ * @param cli - Commander instance
  */
-export function getAllContractAddresses(cli: Vorpal) {
+export function getAllContractAddresses(cli: Command): void {
     cli
-        .command('get-all-contract-addresses', 'Fetches all the contract addresses.')
-        .action(async function (this: Vorpal.CommandInstance) {
+        .command('get-all-contract-addresses')
+        .description('Fetches all the contract addresses.')
+        .action(async () => {
             const addresses = {
                 "ES XAI Address": config.esXaiAddress,
                 "Node License Address": config.nodeLicenseAddress,
@@ -17,8 +18,10 @@ export function getAllContractAddresses(cli: Vorpal) {
                 "XAI Address": config.xaiAddress,
                 "Gas Subsidy Contract": config.gasSubsidyAddress
             };
+
+            console.log("Fetching all contract addresses...");
             for (const [name, address] of Object.entries(addresses)) {
-                this.log(`${name}: ${address}`);
+                console.log(`${name}: ${address}`);
             }
         });
 }

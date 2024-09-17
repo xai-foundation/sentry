@@ -18,6 +18,7 @@ type PoolInfo @entity(immutable: false) {
   createdTimestamp: BigInt!
   poolChallenges: [PoolChallenge!]! @derivedFrom(field: "pool")
   submissions: [BulkSubmission!]! @derivedFrom(field: "poolInfo")
+  totalAccruedAssertionRewards: BigInt!
 }
 
 type UnstakeRequest @entity(immutable: false) {
@@ -32,7 +33,6 @@ type UnstakeRequest @entity(immutable: false) {
   completeTime: BigInt!
 }
 
-# global delayperiods in entity might be problematic as event is not on initialize and therefore might not be created at all
 type PoolFactoryConfig @entity(immutable: false) {
   id: String!
   version: BigInt!

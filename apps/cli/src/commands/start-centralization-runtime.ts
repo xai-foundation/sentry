@@ -1,11 +1,13 @@
-import Vorpal from "vorpal";
+import { Command } from 'commander';
+import inquirer from 'inquirer';
 import { dataCentralizationRuntime, sendSlackNotification } from "@sentry/core";
 
-export function startCentralizationRuntime(cli: Vorpal) {
+export function startCentralizationRuntime(cli: Command) {
     cli
-        .command('start-centralization-runtime', 'Start the data centralization runtime')
-        .action(async function (this: Vorpal.CommandInstance) {
-            const prompts: Vorpal.PromptObject[] = [
+        .command('start-centralization-runtime')
+        .description('Start the data centralization runtime')
+        .action(async () => {
+            const prompts = [
                 {
                     type: 'password',
                     name: 'mongoUri',
@@ -26,36 +28,41 @@ export function startCentralizationRuntime(cli: Vorpal) {
                     default: false
                 }
             ];
-            const { mongoUri, slackWebHookUrl, restartOnCrash } = await this.prompt(prompts);
-
-            const commandInstance = this;
+            const { mongoUri, slackWebHookUrl, restartOnCrash } = await inquirer.prompt(prompts);
 
             async function startRuntime() {
                 try {
-                    const stopRuntime = await dataCentralizationRuntime({ mongoUri, slackWebHookUrl, logFunction: (log: string) => commandInstance.log(log) });
+                    const stopRuntime = await dataCentralizationRuntime({ 
+                        mongoUri, 
+                        slackWebHookUrl, 
+                        logFunction: (log: string) => console.log(log) 
+                    });
 
                     // Listen for process termination and call the handler
                     process.on('SIGINT', async () => {
-                        await sendSlackNotification(slackWebHookUrl, `The CentralizationRuntime has been terminated manually @ ${new Date().toISOString()}.`, (log: string) => commandInstance.log(log) );
-                        commandInstance.log(`[${new Date().toISOString()}] The CentralizationRuntime has been terminated manually.`);
+                        await sendSlackNotification(slackWebHookUrl, `The CentralizationRuntime has been terminated manually @ ${new Date().toISOString()}.`, (log: string) => console.log(log));
+                        console.log(`[${new Date().toISOString()}] The CentralizationRuntime has been terminated manually.`);
                         stopRuntime();
                         process.exit();
                     });
 
                     // Keep the command alive
-                    return new Promise((resolve, reject) => { });
+                    return new Promise<void>(() => {});
                 } catch (error: unknown) {
                     let errorMessage = "An unknown error occurred";
                     if (error instanceof Error) {
                         errorMessage = error.message;
                     }
-                    commandInstance.log(`[${new Date().toISOString()}] The CentralizationRuntime encountered an error: ${errorMessage}`);
-                    await sendSlackNotification(slackWebHookUrl, `The CentralizationRuntime encountered an error: ${errorMessage}`, (log: string) => commandInstance.log(log));
+                    console.log(`[${new Date().toISOString()}] The CentralizationRuntime encountered an error: ${errorMessage}`);
+                    await sendSlackNotification(slackWebHookUrl, `The CentralizationRuntime encountered an error: ${errorMessage}`, (log: string) => console.log(log));
 
                     if (restartOnCrash) {
-                        commandInstance.log(`[${new Date().toISOString()}] Restarting the CentralizationRuntime due to crash.`);
-                        await sendSlackNotification(slackWebHookUrl, `Restarting the CentralizationRuntime due to crash.`, (log: string) => commandInstance.log(log));
+                        console.log(`[${new Date().toISOString()}] Restarting the CentralizationRuntime due to crash.`);
+                        const slackMessage = `<!channel> Restarting the CentralizationRuntime due to crash @ ${new Date().toISOString()}.`;
+                        await sendSlackNotification(slackWebHookUrl, slackMessage, (log: string) => console.log(log));
                         setTimeout(startRuntime, 5000); // Delay before restarting
+                    } else {
+                        process.exit(1); // Explicitly exit if restart is not desired
                     }
                 }
             }
