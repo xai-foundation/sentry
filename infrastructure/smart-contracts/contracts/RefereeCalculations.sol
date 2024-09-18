@@ -32,6 +32,8 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
      *
      * @param totalSupply The current total supply of tokens.
      * @param maxSupply The maximum supply of tokens.
+     * @param challengeStart The timestamp of the last challenge submitted.
+     * @param challengeEnd  The current timestamp for this challenge.
      * @return uint256 The challenge emission.
      * @return uint256 The emission tier.
      */

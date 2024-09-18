@@ -395,7 +395,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
 
         // Get the timestamp of the start of the current challenge
-        uint256 startTs = challenges[challengeCounter - 1].assertionTimestamp;
+        uint256 startTs = challenges[challengeCounter - 1].createdTimestamp;
 
         return RefereeCalculations(refereeCalculationsAddress).calculateChallengeEmissionAndTier(totalSupply, maxSupply, startTs, block.timestamp);
     }
@@ -424,6 +424,8 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
         // check the challengerPublicKey is set
         require(challengerPublicKey.length != 0, "8");
+
+        require(_assertionId > _predecessorAssertionId, "9");
 
         // Connect to the rollup contract
         IRollupCore rollup = IRollupCore(rollupAddress);

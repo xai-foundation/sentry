@@ -228,6 +228,7 @@ export function handlePoolCreated(event: PoolCreated): void {
   pool.ownerRequestedUnstakeKeyAmount = BigInt.fromI32(0)
   pool.ownerLatestUnstakeRequestCompletionTime = BigInt.fromI32(0)
   pool.createdTimestamp = event.block.timestamp
+  pool.totalAccruedAssertionRewards = BigInt.fromI32(0)
   pool.save()
 
 
@@ -282,6 +283,7 @@ export function handleStakeEsXai(event: StakeEsXai): void {
     sentryWallet.keyCount = BigInt.fromI32(0)
     sentryWallet.stakedKeyCount = BigInt.fromI32(0)
     sentryWallet.keyCount = BigInt.fromI32(0)
+    sentryWallet.totalAccruedAssertionRewards = BigInt.fromI32(0)
   }
 
   sentryWallet.esXaiStakeAmount = sentryWallet.esXaiStakeAmount.plus(event.params.amount)

@@ -5,9 +5,10 @@ import { CopyIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import ExternalLinkIcon from "@sentry/ui/src/rebrand/icons/ExternalLinkIcon";
 import { Tooltip } from "@sentry/ui";
 import { useAccount } from "wagmi";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BackArrow from "@sentry/ui/src/rebrand/icons/BackArrow";
 import { stakingPageURL } from "../Checkout";
+import ShareButton from "@sentry/ui/src/rebrand/buttons/ShareButton";
 
 let timeoutId: number;
 
@@ -23,6 +24,11 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 
 	const { address } = useAccount();
 	const [isTooltipAllowedToOpen, setIsTooltipAllowedToOpen] = useState(false);
+	const [canShare, setCanShare] = useState(false);
+
+	useEffect(() => {
+		setCanShare(navigator.share !== undefined);
+	}, []);
 
 	const getHash = () => {
 		const hash = mintWithEth.data ?? mintWithXai.data;
@@ -96,12 +102,20 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 											<p className="select-none lg:max-w-[300px] sx:max-w-[210px] sm:max-w-[190px] overflow-x-hidden">{`${salePageBaseURL}/${address}`}</p>
 
 										</div>
-									</div>
+									</div>			
+									{canShare ? <div className="mr-3 cursor-pointer absolute right-[10px] sx:top-[73px] sm:top-[96px] z-60">
+										<ShareButton
+										buttonText={"Mint a key on the Xai to stake and start earning rewards and qualify for airdrops."}
+										buttonTitle={"5% Off Sentry Node Key Purchase"}
+										shareUrl={`${salePageBaseURL}?promoCode=${address}`}
+										shareButtonClasses={"w-full"}
+									/></div> : 
 									<div className="mr-3 cursor-pointer absolute right-[10px] sx:top-[73px] sm:top-[96px] z-60" onClick={copyReferralCode}>
 										<Tooltip body="Copied!" open={isTooltipAllowedToOpen} extraClasses={{ content: " max-w-[75px]", body: "!text-black !font-bold" }}>
 											<CopyIcon />
 										</Tooltip>
 									</div>
+									}
 								</div>}
 						</div>
 					</div>
