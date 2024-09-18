@@ -24,24 +24,22 @@ export function verifyChallengerSignedHash(
   signature: string
 ): boolean {
   try {
+
     // Compose and encode the message
     const message = ethers.AbiCoder.defaultAbiCoder().encode(
       ['uint64', 'uint64', 'bytes32', 'uint64'],
       [assertionId, predecessorAssertionId, confirmData, assertionTimestamp]
     );
 
-    // Hash the encoded message
-    const messageHash = ethers.keccak256(message);
-    const validMessageHash = messageHash.startsWith('0x') ? messageHash.slice(2) : messageHash;
+    const messageHash = ethers.keccak256(message);                                                                            // Hash the message  
+    const validMessageHash = messageHash.startsWith('0x') ? messageHash.slice(2) : messageHash;                               // Remove the '0x' prefix
 
-    // Convert the signature from hex to Uint8Array
-    const signatureBytes = Uint8Array.from(Buffer.from(signature.startsWith('0x') ? signature.slice(2) : signature, 'hex'));
+    const signatureBytes = Uint8Array.from(Buffer.from(signature.startsWith('0x') ? signature.slice(2) : signature, 'hex'));  // Convert the signature from hex to Uint8Array
+    const publicKeyBytes = Uint8Array.from(Buffer.from(publicKey.startsWith('0x') ? publicKey.slice(2) : publicKey, 'hex'));  // Convert the public key from hex to Uint8Array
 
-    // Convert the public key from hex to Uint8Array
-    const publicKeyBytes = Uint8Array.from(Buffer.from(publicKey.startsWith('0x') ? publicKey.slice(2) : publicKey, 'hex'));
+    const isValid = bls.verify(signatureBytes, validMessageHash, publicKeyBytes);                                                 // Verify the signature
 
-    // Verify the signature
-    return bls.verify(signatureBytes, validMessageHash, publicKeyBytes);
+    return isValid;
   } catch (error) {
     console.error('Error verifying BLS signature:', error);
     throw error;
