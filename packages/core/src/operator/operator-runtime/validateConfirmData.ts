@@ -7,7 +7,7 @@ import { ethers } from "ethers";
 export async function validateConfirmData(currentChallenge: Challenge, subgraphIsHealthy: boolean, event?: ethers.EventLog): Promise<boolean> {
 
     try {
-        if (currentChallenge.rollupUsed === config.rollupAddress) {
+        if (event && currentChallenge.rollupUsed === config.rollupAddress) {
 
             const currentAssertionId = Number(currentChallenge.assertionId);                // Destructure Current Assertion ID     
             let assertionIds: number[] = [];                                                // Create an array to store the assertion IDs  
