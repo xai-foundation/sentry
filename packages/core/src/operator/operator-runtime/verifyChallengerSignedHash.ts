@@ -42,6 +42,6 @@ export function verifyChallengerSignedHash(
     return isValid;
   } catch (error) {
     console.error('Error verifying BLS signature:', error);
-    throw error;
+    return false;
   }
 }

@@ -4,10 +4,10 @@ import axios from "axios";
 import { ethers } from "ethers";
 
 
-export async function validateConfirmData(currentChallenge: Challenge, subgraphIsHealthy: boolean, event?: ethers.EventLog): Promise<{ error?: string }> {
+export async function validateConfirmData(currentChallenge: Challenge, subgraphIsHealthy: boolean, event?: ethers.EventLog): Promise<boolean> {
 
     try {
-        if (event && currentChallenge.rollupUsed === config.rollupAddress) {
+        if (currentChallenge.rollupUsed === config.rollupAddress) {
 
             const currentAssertionId = Number(currentChallenge.assertionId);                // Destructure Current Assertion ID     
             let assertionIds: number[] = [];                                                // Create an array to store the assertion IDs  
@@ -27,6 +27,8 @@ export async function validateConfirmData(currentChallenge: Challenge, subgraphI
                 confirmDataList = [currentChallenge.assertionStateRootOrConfirmData];       // Set the initial confirm data assuming a single challenge
             }
 
+            const errors = [];
+
             // Validate the confirm data for each assertionId
             for (let i = 0; i < confirmDataList.length; i++) {
                 const confirmData = confirmDataList[i];
@@ -36,17 +38,23 @@ export async function validateConfirmData(currentChallenge: Challenge, subgraphI
                     const { publicNodeBucket, error } = await compareWithCDN(assertionId, confirmData);
 
                     if (error) {
+                        errors.push({ assertionId, error });
                         operatorState.onAssertionMissMatchCb(publicNodeBucket, currentChallenge, error);
-                        return { error };
+                    }else{
+                        operatorState.cachedLogger(`Comparison between PublicNode and Challenger was successful for assertion ${assertionId}.`);
                     }
 
-                    operatorState.cachedLogger(`Comparison between PublicNode and Challenger was successful for assertion ${assertionId}.`);
                 } catch (error) {
                     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-                    operatorState.cachedLogger(`Error on CDN check for challenge ${assertionId}: ${errorMessage}`);
+                    errors.push({ assertionId, error: errorMessage });
                     operatorState.onAssertionMissMatchCb(undefined, currentChallenge, errorMessage);
-                    return { error: errorMessage };
                 }
+            }
+
+            // Log all errors together
+            if (errors.length > 0) {
+                const errorLog = errors.map(e => `Assertion ${e.assertionId}: ${e.error}`).join('\n');
+                operatorState.cachedLogger(`Encountered errors during validation:\n${errorLog}`);
             }
 
             // Verify the Challenger Signed Hash
@@ -61,21 +69,19 @@ export async function validateConfirmData(currentChallenge: Challenge, subgraphI
 
             if (!signatureIsValid) {
                 operatorState.onAssertionMissMatchCb(undefined, currentChallenge, "Challenger signature verification failed.");
-                return { error: "Challenger signature verification failed." };
             }
 
-            return {};
+            return signatureIsValid;
         }
 
-        return {};
-
+        return true;
     } catch (error: unknown) {
 
         operatorState.cachedLogger(`Error validating confirm data for challenge ${Number(currentChallenge.assertionId)}.`);
         const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
         operatorState.cachedLogger(errorMessage);
 
-        return { error: errorMessage };
+        return false;
     }
 }
 

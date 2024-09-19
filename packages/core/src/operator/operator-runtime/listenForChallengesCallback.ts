@@ -19,13 +19,14 @@ export async function listenForChallengesCallback(challengeNumber: bigint, chall
     const graphStatus = await getSubgraphHealthStatus();
 
     operatorState.cachedLogger(`Validating confirm data...`);
-    const {error} = await validateConfirmData(challenge, graphStatus.healthy, event);
+
+    const signatureValid = await validateConfirmData(challenge, graphStatus.healthy, event);
+
+    if (!signatureValid) {
+        throw new Error(`Invalid signature for challenge ${challengeNumber}`);
+    }
 
     operatorState.previousChallengeAssertionId = challenge.assertionId;
-
-    if (error) {
-        return;
-    }
 
     operatorState.cachedLogger(`Comparison between PublicNode and Challenger was successful.`);
 
