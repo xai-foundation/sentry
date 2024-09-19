@@ -395,7 +395,12 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
 
         // Get the timestamp of the start of the current challenge
-        uint256 startTs = challenges[challengeCounter - 1].createdTimestamp;
+        uint256 startTs;
+        if (challengeCounter == 0) {
+            startTs = block.timestamp - 3600; //1 hour
+        } else {
+            startTs = challenges[challengeCounter - 1].createdTimestamp;
+        }
 
         return RefereeCalculations(refereeCalculationsAddress).calculateChallengeEmissionAndTier(totalSupply, maxSupply, startTs, block.timestamp);
     }
