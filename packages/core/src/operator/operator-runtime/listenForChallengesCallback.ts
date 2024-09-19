@@ -11,12 +11,15 @@ export async function listenForChallengesCallback(challengeNumber: bigint, chall
 
     // Add a delay of 1 -300 seconds to the new challenge process so not all operators request the subgraph at the same time
     const delay = Math.floor(Math.random() * 301);
+    operatorState.cachedLogger(`New challenge received. Processing in ${delay} seconds.`);
+
     await new Promise((resolve) => {
         setTimeout(resolve, delay * 1000);
     })
 
     const graphStatus = await getSubgraphHealthStatus();
 
+    operatorState.cachedLogger(`Validating confirm data...`);
     const {error} = await validateConfirmData(challenge, graphStatus.healthy, event);
 
     operatorState.previousChallengeAssertionId = challenge.assertionId;
