@@ -35,8 +35,8 @@ jobs:
       
       - name: Create and unlock keychain
         run: |
-          security create-keychain -p ${{ secrets.KEYCHAIN_PASSWORD }} build.keychain
-          security unlock-keychain -p ${{ secrets.KEYCHAIN_PASSWORD }} build.keychain
+          security create-keychain -p ${{ secrets.MAC_KEYCHAIN_PASSWORD }} build.keychain
+          security unlock-keychain -p ${{ secrets.MAC_KEYCHAIN_PASSWORD }} build.keychain
           security set-keychain-settings -t 3600 -l build.keychain
           security list-keychains -d user -s build.keychain login.keychain
           security default-keychain -s build.keychain
@@ -44,17 +44,17 @@ jobs:
 
       - name: Import certificate into keychain
         run: |
-          echo "$CERTIFICATE_P12_BASE64" | base64 --decode > certificate.p12
-          security import certificate.p12 -k build.keychain -P ${{ secrets.CERTIFICATE_PASSWORD }} -T /usr/bin/codesign
-          security set-key-partition-list -S apple-tool:,apple: -s -k ${{ secrets.KEYCHAIN_PASSWORD }} build.keychain
+          echo "$MAC_CERTIFICATE_P12_BASE64" | base64 --decode > certificate.p12
+          security import certificate.p12 -k build.keychain -P ${{ secrets.MAC_CERTIFICATE_PASSWORD }} -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k ${{ secrets.MAC_KEYCHAIN_PASSWORD }} build.keychain
         if: matrix.os == 'macos-latest'
 
       - name: Build monorepo
         run: npx nx run-many --target=build --all
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CSC_LINK: ${{ secrets.CERTIFICATE_P12_BASE64 }}
-          CSC_KEY_PASSWORD: ${{ secrets.CERTIFICATE_PASSWORD }}
+          CSC_LINK: ${{ secrets.MAC_CERTIFICATE_P12_BASE64 }}
+          CSC_KEY_PASSWORD: ${{ secrets.MAC_CERTIFICATE_PASSWORD }}
 
       - name: Cleanup keychain
         run: |

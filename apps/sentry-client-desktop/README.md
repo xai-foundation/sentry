@@ -37,11 +37,14 @@ For signing a macOS release a Apple Developer Application ID Certificate is requ
 
 For integrating the electron-builder signing the certificate has to be added to the mac key-chain, for this specific environment variables need to be set during the release build process:
 
-- `KEYCHAIN_PASSWORD` an arbitrary password for the tmp keychain used for storing the certificate
-- `CERTIFICATE_P12_BASE64` the base64 encoded certificate and private key
-- `CERTIFICATE_PASSWORD` the certificate encryption password
-- `CSC_LINK` same as `CERTIFICATE_P12_BASE64`, important for electron-builder finding the identity
-- `CSC_KEY_PASSWORD` same as `CERTIFICATE_PASSWORD`, important for electron-builder finding the identity from the cert above
+- `MAC_KEYCHAIN_PASSWORD` an arbitrary password for the tmp keychain used for storing the certificate
+- `MAC_CERTIFICATE_P12_BASE64` the base64 encoded certificate and private key
+- `MAC_CERTIFICATE_PASSWORD` the certificate encryption password
+
+Electron builder signing env: 
+
+- `CSC_LINK` same as `MAC_CERTIFICATE_P12_BASE64`, important for electron-builder finding the identity
+- `CSC_KEY_PASSWORD` same as `MAC_CERTIFICATE_PASSWORD`, important for electron-builder finding the identity from the cert above
 
 
 #### Create an Apple Developer Application ID Certificate
