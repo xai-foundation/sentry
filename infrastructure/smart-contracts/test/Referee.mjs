@@ -549,6 +549,16 @@ export function RefereeTests(deployInfrastructure) {
 			assert.equal(submission[0], false, "Submission was created with invalid successorRoot");
 		});
 
+		it("Check ...", async function () {
+			const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
+			
+			await referee.connect(refereeDefaultAdmin).setApprovalForOperator(kycAdmin.address, true);
+			
+			const owner = await referee.getOwnerForOperatorAtIndex(kycAdmin.address, 0);
+			
+			assert.equal(owner, refereeDefaultAdmin.address, "The owner at index does not match");
+		})
+
 		// describe("The Referee should allow users to stake in V1", function () {
 
 		//     it("Check that staked/unstaked amount is taken/given from user's esXai balance", async function () {
