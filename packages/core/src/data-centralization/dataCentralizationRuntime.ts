@@ -96,55 +96,74 @@ export async function dataCentralizationRuntime({
 		},
 	}).stop;
 
-	const closeChallengeListener = listenForChallenges(async (challengeNumber: bigint, challenge: Challenge, event?: any) => {
-		const startTime = new Date().getTime();
-		const PoolModel = mongoose.models.Pool || mongoose.model<IPool>('Pool', PoolSchema);
+	const closeChallengeListener = listenForChallenges(
+		async (challengeNumber: bigint, challenge: Challenge, event?: any) => {
+			try {
+				const startTime = new Date().getTime();
+				const PoolModel = mongoose.models.Pool || mongoose.model<IPool>('Pool', PoolSchema);
 
-		const slackStartMessage = `Starting pool sync update for challenge ${challengeNumber}`;
-		sendSlackNotification(slackWebHookUrl, slackStartMessage, logFunction);
+				const slackStartMessage = `Starting pool sync update for challenge ${challengeNumber}`;
+				await sendSlackNotification(slackWebHookUrl, slackStartMessage, logFunction);
 
-		const graphUpdateStartTime = new Date().getTime();
+				const graphUpdateStartTime = new Date().getTime();
 
-		const updatedPools = await retry(() => getRewardRatesFromGraph([]));
+				const updatedPools = await retry(() => getRewardRatesFromGraph([]));
 
-		const graphUpdateEndTime = new Date().getTime();
+				const graphUpdateEndTime = new Date().getTime();
 
-		const mongoInsertStartTime = new Date().getTime();
+				const mongoInsertStartTime = new Date().getTime();
 
-		for (const updatedPool of updatedPools) {
-			const checksumAddress = getAddress(updatedPool.poolAddress);
+				for (const updatedPool of updatedPools) {
+					const checksumAddress = getAddress(updatedPool.poolAddress);
 
-			await PoolModel.updateOne(
-				{ poolAddress: checksumAddress },
-				{
-					$set: {
-						esXaiRewardRate: updatedPool.averageDailyEsXaiReward,
-						keyRewardRate: updatedPool.averageDailyKeyReward,
-						totalEsXaiClaimed: updatedPool.totalEsXaiClaimed
-					}
-				},
-			);
+					await PoolModel.updateOne(
+						{ poolAddress: checksumAddress },
+						{
+							$set: {
+								esXaiRewardRate: updatedPool.averageDailyEsXaiReward,
+								keyRewardRate: updatedPool.averageDailyKeyReward,
+								totalEsXaiClaimed: updatedPool.totalEsXaiClaimed
+							}
+						},
+					);
+				}
+				const mongoInsertEndTime = new Date().getTime();
+				const totalSeconds = mongoInsertEndTime - startTime;
+				const totalGraphSeconds = graphUpdateEndTime - graphUpdateStartTime;
+				const totalMongoSeconds = mongoInsertEndTime - mongoInsertStartTime;
+				const slackMessage = `Finished pool sync update for ${updatedPools.length} pools in ${totalSeconds}ms. Graph update took ${totalGraphSeconds}ms. Mongo insert took ${totalMongoSeconds}ms.`;
+
+				await sendSlackNotification(slackWebHookUrl, slackMessage, logFunction);
+			} catch (error) {
+				const errorMessage = error instanceof Error ? error.message : String(error);
+				const slackMessage = `<!channel> Error in challenge listener: ${errorMessage}`;
+				await sendSlackNotification(slackWebHookUrl, slackMessage, logFunction);
+				logFunction(`Error in challenge listener: ${errorMessage}`);
+			}
+		},
+		async (error: Error) => {
+			const errorMessage = `Error in listenForChallenges: ${error.message}`;
+			const slackMessage = `<!channel> Error in challenge listener: ${errorMessage}`;
+			await sendSlackNotification(slackWebHookUrl, slackMessage, logFunction);
+			logFunction(errorMessage);
 		}
-		const mongoInsertEndTime = new Date().getTime();
-		const totalSeconds = mongoInsertEndTime - startTime;
-		const totalGraphSeconds = graphUpdateEndTime - graphUpdateStartTime;
-		const totalMongoSeconds = mongoInsertEndTime - mongoInsertStartTime;
-		const slackMessage = `Finished pool sync update for ${updatedPools.length} pools in ${totalSeconds}ms. Graph update took ${totalGraphSeconds}ms. Mongo insert took ${totalMongoSeconds}ms.`;
-
-		sendSlackNotification(slackWebHookUrl, slackMessage, logFunction);
-	});
+	);
 
 	/**
 	 * Stops the data centralization runtime.
 	 * @returns {Promise<void>} A promise that resolves when the runtime is successfully stopped.
 	 */
 	return async () => {
-		// Disconnect from MongoDB.
-		await mongoose.disconnect();
-		logFunction('Disconnected from MongoDB.');
-		closeChallengeListener();
-		// Remove event listener listener.
-		stopListener();
-		logFunction('Event listener removed.');
+		try {
+			// Disconnect from MongoDB.
+			await mongoose.disconnect();
+			logFunction('Disconnected from MongoDB.');
+			closeChallengeListener();
+			// Remove event listener listener.
+			stopListener();
+			logFunction('Event listener removed.');
+		} catch (error) {
+			logFunction(`Error stopping the data centralization runtime: ${error}`);
+		}
 	};
 }

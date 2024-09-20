@@ -1,29 +1,46 @@
-import Vorpal from "vorpal";
-import { poolDataSync } from "@sentry/core";
+import { Command } from 'commander';
+import inquirer from 'inquirer';
+import { poolDataSync } from '@sentry/core';
 
-export function syncStakingPools(cli: Vorpal) {
+export function syncStakingPools(cli: Command) {
     cli
-        .command('sync-staking-pools', 'Sync the staking pool db data with the current blockchain configs')
-        .action(async function (this: Vorpal.CommandInstance) {
+        .command('sync-staking-pools')
+        .description('Sync the staking pool db data with the current blockchain configs')
+        .option('-u, --uri <uri>', 'MongoDB connection URI')
+        .action(async (options) => {
+            let mongoUri = options.uri;
 
-            const commandInstance = this;
+            if (!mongoUri) {
+                const mongoUriPrompt = {
+                    type: 'password',
+                    name: 'mongoUri',
+                    message: 'Enter the MongoDB connection URI:',
+                    mask: '*',
+                    optional: false
+                };
 
-            const mongoUriPrompt: Vorpal.PromptObject = {
-                type: 'password',
-                name: 'mongoUri',
-                message: 'Enter the mongodb connection URI:',
-                mask: '*',
-                optional: false
-            };
-            const { mongoUri } = await this.prompt(mongoUriPrompt);
+                ({ mongoUri } = await inquirer.prompt([mongoUriPrompt]));
+            }
 
-            // Listen for process termination and call the handler
-            process.on('SIGINT', async () => {
-                commandInstance.log(`[${new Date().toISOString()}] The CentralizationRuntime has been terminated manually.`);
-                process.exit();
-            });
+            console.log('Starting staking pool sync...');
 
-            await poolDataSync({ mongoUri, logFunction: (message: string) => { commandInstance.log(message) } });
-
+            try {
+                await poolDataSync({
+                    mongoUri,
+                    logFunction: (message: string) => {
+                        console.log(`[${new Date().toISOString()}] ${message}`);
+                    },
+                });
+                console.log('Staking pool sync completed successfully.');
+            } catch (error) {
+                console.error('Error during staking pool sync:', error);
+                process.exit(1);
+            }
         });
 }
+
+// Listen for process termination globally
+process.on('SIGINT', () => {
+    console.log(`\n[${new Date().toISOString()}] Process terminated manually.`);
+    process.exit(0);
+});

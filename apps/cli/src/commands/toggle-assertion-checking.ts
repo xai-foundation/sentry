@@ -1,26 +1,35 @@
-import Vorpal from "vorpal";import { getSignerFromPrivateKey, toggleAssertionChecking as coreToggleAssertionChecking } from "@sentry/core";
+import { Command } from 'commander';
+import inquirer from 'inquirer';
+import { getSignerFromPrivateKey, toggleAssertionChecking as coreToggleAssertionChecking } from "@sentry/core";
 
 /**
  * Function to toggle the assertion checking in the Referee contract.
- * @param {Vorpal} cli - The Vorpal instance to attach the command to.
+ * @param cli - Commander instance
  */
-export function toggleAssertionChecking(cli: Vorpal) {
+export function toggleAssertionChecking(cli: Command): void {
     cli
-        .command('toggle-assertion-checking', 'Toggles the assertion checking.')
-        .action(async function (this: Vorpal.CommandInstance) {
-            const privateKeyPrompt = {
-                type: 'password',
-                name: 'privateKey',
-                message: 'Enter the private key of an admin:',
-            };
-            const { privateKey } = await this.prompt([privateKeyPrompt]);
+        .command('toggle-assertion-checking')
+        .description('Toggles the assertion checking.')
+        .action(async () => {
+            try {
+                // Prompt user for the private key of an admin
+                const { privateKey } = await inquirer.prompt({
+                    type: 'password',
+                    name: 'privateKey',
+                    message: 'Enter the private key of an admin:',
+                    mask: '*',
+                    validate: input => input.trim() === '' ? 'Private key is required' : true
+                });
 
-            // Get the signer from the private key
-            const { signer } = getSignerFromPrivateKey(privateKey);
+                // Get the signer from the private key
+                const { signer } = getSignerFromPrivateKey(privateKey);
 
-            // Call the toggleAssertionChecking function
-            await coreToggleAssertionChecking(signer);
+                // Call the toggleAssertionChecking function
+                await coreToggleAssertionChecking(signer);
 
-            this.log(`Assertion checking toggled.`);
+                console.log(`Assertion checking toggled.`);
+            } catch (error) {
+                console.error(`Error toggling assertion checking: ${(error as Error).message}`);
+            }
         });
 }

@@ -1,6 +1,6 @@
 import { SentryKey, SentryWallet, PoolInfo, RefereeConfig } from "@sentry/sentry-subgraph-client";
 import { operatorState } from "../operatorState.js";
-import { getPoolInfosFromGraph, getSentryKeysFromGraph, getSentryWalletsForOperator, NodeLicenseStatus, retry } from "../../../index.js";
+import { getPoolInfosFromGraph, getSentryKeysFromGraph, NodeLicenseStatus, retry } from "../../../index.js";
 
 
 /**

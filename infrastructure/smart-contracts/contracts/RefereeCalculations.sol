@@ -32,6 +32,8 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
      *
      * @param totalSupply The current total supply of tokens.
      * @param maxSupply The maximum supply of tokens.
+     * @param challengeStart The timestamp of the last challenge submitted.
+     * @param challengeEnd  The current timestamp for this challenge.
      * @return uint256 The challenge emission.
      * @return uint256 The emission tier.
      */
@@ -55,12 +57,9 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
         
         // Calculate the time difference in seconds
         uint256 timePassedInSeconds = challengeEnd - challengeStart;
-        
-        // Calculate the emission rate per second, based on the emission tier
-        uint256 emissionPerSecond = emissionsPerHour / 3600; // 3600 is the number of seconds in an hour
 
         // Calculate the total emissions for the challenge based on the time passed
-        uint256 totalEmissions = emissionPerSecond * timePassedInSeconds;
+        uint256 totalEmissions = emissionsPerHour * timePassedInSeconds / 3600;
 
         // determine what the size of the emission is based on each challenge having an estimated static length
         return (totalEmissions, emissionTier);
