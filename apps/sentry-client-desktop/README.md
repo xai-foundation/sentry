@@ -22,6 +22,13 @@ The desktop client is build using [`electron-builder`](https://www.electron.buil
 
 Windows signing is done with SSL.com in the release workflow using the [EV Code signing certificate](https://www.electron.build/code-signing.html#windows)
 
+Required build environment variables for signing:
+
+
+- `SSL_USERNAME` SSL.com login username
+- `SSL_PASSWORD` SSL.com login password
+- `SSL_TOTP_SECRET` Certificate secret to pull the actual EV certificate from the SSL.com identity
+
 
 ### MacOS
 
