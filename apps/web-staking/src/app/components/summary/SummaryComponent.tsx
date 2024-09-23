@@ -75,6 +75,7 @@ const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean,
       );
       setRefreshUnstakeRequests(r => { return !r });
     }
+    setReceipt(undefined); 
   }, [address, chainId, poolAddress, isClaimRequest, receipt, unstakeRequestIndex]);
 
   const updateOnError = useCallback(() => {
