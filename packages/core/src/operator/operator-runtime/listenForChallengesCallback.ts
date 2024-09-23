@@ -20,10 +20,17 @@ export async function listenForChallengesCallback(challengeNumber: bigint, chall
 
     operatorState.cachedLogger(`Validating confirm data...`);
 
-    const signatureValid = await validateConfirmData(challenge, graphStatus.healthy, event);
+    const stateToPass = { 
+        previousChallengeAssertionId: operatorState.previousChallengeAssertionId,
+        challengerPublicKey: operatorState.challengerPublicKey,
+        onAssertionMissMatchCb: operatorState.onAssertionMissMatchCb,
+        cachedLogger: operatorState.cachedLogger
+    };
+
+    const signatureValid = await validateConfirmData(challenge, graphStatus.healthy, stateToPass, event);
 
     if (!signatureValid) {
-        throw new Error(`Invalid signature for challenge ${challengeNumber}`);
+        operatorState.cachedLogger(`Comparison between PublicNode and Challenger failed.`);
     }
 
     operatorState.previousChallengeAssertionId = challenge.assertionId;

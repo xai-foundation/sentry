@@ -1,12 +1,21 @@
-import { operatorState } from "./operatorState.js";
 import { Challenge, config, getConfirmDataAndHash, PublicNodeBucketInformation, verifyChallengerSignedHash } from "../../index.js";
 import axios from "axios";
 import { ethers } from "ethers";
 
 
-export async function validateConfirmData(currentChallenge: Challenge, subgraphIsHealthy: boolean, event?: ethers.EventLog): Promise<boolean> {
+export async function validateConfirmData(
+    currentChallenge: Challenge, 
+    subgraphIsHealthy: boolean,
+    operatorState: {
+        previousChallengeAssertionId: BigInt;
+        challengerPublicKey: string;
+        onAssertionMissMatchCb?: (publicNodeBucket: PublicNodeBucketInformation | undefined, currentChallenge: Challenge, error: string) => void;
+        cachedLogger?: (message: string) => void;
+    }, 
+    event?: ethers.EventLog,
+): Promise<boolean> {
+    const logger = operatorState.cachedLogger || console.log;
 
-    try {
         if (event && currentChallenge.rollupUsed === config.rollupAddress) {
 
             const currentAssertionId = Number(currentChallenge.assertionId);                // Destructure Current Assertion ID     
@@ -18,13 +27,23 @@ export async function validateConfirmData(currentChallenge: Challenge, subgraphI
             }
 
             const isBatch = assertionIds.length > 1;                                        // Check if the challenge is a batch or single challenge        
-            let confirmDataList: string[] = [];                                             // Create an array to store the confirm data for each assertionId                          
+            let confirmDataList: string[] = [];                                             // Create an array to store the confirm data for each assertionId   
+            let finalConfirmHash: string = '';                                                   // Create a variable to store the confirm hash                       
 
-            if (isBatch) {
-                const { confirmData } = await getConfirmDataAndHash(assertionIds, subgraphIsHealthy);
-                confirmDataList = confirmData;                                              // Set the confirm data list        
+            if (isBatch) {   
+                try {
+                    const { confirmData, confirmHash } = await getConfirmDataAndHash(assertionIds, subgraphIsHealthy);
+                    confirmDataList = confirmData;
+                    finalConfirmHash = confirmHash                                              // Set the confirm data list  
+                } catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
+                    operatorState.onAssertionMissMatchCb?.(undefined, currentChallenge, errorMessage);  
+                    logger(`Error fetching confirm data for batch challenge assertion Id: ${currentAssertionId}. ${errorMessage}`);
+                    return false;
+                }                                                    
             } else {
-                confirmDataList = [currentChallenge.assertionStateRootOrConfirmData];       // Set the initial confirm data assuming a single challenge
+                finalConfirmHash = currentChallenge.assertionStateRootOrConfirmData;            // Set the final confirm hash assuming a single challenge
+                confirmDataList = [currentChallenge.assertionStateRootOrConfirmData];           // Set the initial confirm data assuming a single challenge
             }
 
             const errors = [];
@@ -35,54 +54,45 @@ export async function validateConfirmData(currentChallenge: Challenge, subgraphI
                 const assertionId = assertionIds[i];
 
                 try {
-                    const { publicNodeBucket, error } = await compareWithCDN(assertionId, confirmData);
+                    const { publicNodeBucket, error } = await compareWithCDN(assertionId, confirmData, logger);
 
                     if (error) {
-                        errors.push({ assertionId, error });
-                        operatorState.onAssertionMissMatchCb(publicNodeBucket, currentChallenge, error);
+                        errors.push({ assertionId, publicNodeBucket, error });
                     }else{
-                        operatorState.cachedLogger(`Comparison between PublicNode and Challenger was successful for assertion ${assertionId}.`);
+                        logger(`Comparison between PublicNode and Challenger was successful for assertion ${assertionId}.`);
                     }
 
                 } catch (error) {
                     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
-                    errors.push({ assertionId, error: errorMessage });
-                    operatorState.onAssertionMissMatchCb(undefined, currentChallenge, errorMessage);
+                    errors.push({ assertionId, publicNodeBucket: undefined, error: errorMessage });
                 }
             }
 
             // Log all errors together
             if (errors.length > 0) {
                 const errorLog = errors.map(e => `Assertion ${e.assertionId}: ${e.error}`).join('\n');
-                operatorState.cachedLogger(`Encountered errors during validation:\n${errorLog}`);
+                operatorState.onAssertionMissMatchCb?.(undefined, currentChallenge, errorLog);
+                logger(`Encountered errors during validation:\n${errorLog}`);
             }
 
             // Verify the Challenger Signed Hash
             const publicKey = operatorState.challengerPublicKey;
             const assertionId = currentChallenge.assertionId;
             const prevAssertionId = operatorState.previousChallengeAssertionId;
-            const confirmData = currentChallenge.assertionStateRootOrConfirmData;
+            const confirmData = finalConfirmHash;
             const timestamp = currentChallenge.assertionTimestamp;
             const signature = currentChallenge.challengerSignedHash;
 
             const signatureIsValid = verifyChallengerSignedHash(publicKey, assertionId, prevAssertionId, confirmData, timestamp, signature);
 
             if (!signatureIsValid) {
-                operatorState.onAssertionMissMatchCb(undefined, currentChallenge, "Challenger signature verification failed.");
+                operatorState.onAssertionMissMatchCb?.(undefined, currentChallenge, "Challenger signature verification failed.");
             }
 
             return signatureIsValid;
         }
 
         return true;
-    } catch (error: unknown) {
-
-        operatorState.cachedLogger(`Error validating confirm data for challenge ${Number(currentChallenge.assertionId)}.`);
-        const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
-        operatorState.cachedLogger(errorMessage);
-
-        return false;
-    }
 }
 
 
@@ -101,7 +111,11 @@ export async function validateConfirmData(currentChallenge: Challenge, subgraphI
 * 
 * @throws {Error} If the CDN request fails after 3 attempts or if an unexpected error occurs during fetching.
 */
-async function compareWithCDN(assertionId: number, confirmData: string): Promise<{ publicNodeBucket: PublicNodeBucketInformation, error?: string }> {
+async function compareWithCDN(
+    assertionId: number,
+    confirmData: string,
+    logger: (message: string) => void
+): Promise<{ publicNodeBucket: PublicNodeBucketInformation, error?: string }> {
 
     let attempt = 1;
     let publicNodeBucket: PublicNodeBucketInformation | undefined;
@@ -112,7 +126,7 @@ async function compareWithCDN(assertionId: number, confirmData: string): Promise
             publicNodeBucket = await getPublicNodeFromBucket(confirmData);
             break;
         } catch (error) {
-            operatorState.cachedLogger(`Error loading assertion data from CDN for ${confirmData} with attempt ${attempt}.\n${error}`);
+            logger(`Error loading assertion data from CDN for ${confirmData} with attempt ${attempt}.\n${error}`);
             lastError = error;
         }
         attempt++;
