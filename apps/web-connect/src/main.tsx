@@ -10,7 +10,8 @@ import { arbitrum } from 'wagmi/chains'
 import './index.css'
 import { IpLocationChecker } from './features/ipchecker/IpLocationChecker'
 
-const projectId = '8f5121741edc292ac7e4203b648d61e2'
+// TODO This needs to be updated to a project  id for the Sentry page
+const projectId = '7b8edd4521f6f7e5ab27d84d931ddf9b'
 
 export const chains: [Chain, ...Chain[]] = [
 	arbitrum as Chain,

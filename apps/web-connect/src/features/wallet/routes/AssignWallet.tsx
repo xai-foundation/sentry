@@ -1,5 +1,5 @@
 import {useNavigate, useParams} from "react-router-dom";
-import {useAccount, useWriteContract } from "wagmi";
+import {useAccount, useDisconnect, useWriteContract } from "wagmi";
 import {wagmiConfig, chains} from "../../../main";
 import {config, RefereeAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
@@ -10,6 +10,7 @@ import { getAccount } from '@wagmi/core'
 export function AssignWallet() {
 	const navigate = useNavigate();
 	const {open} = useWeb3Modal()
+	const { disconnect } = useDisconnect()
 	const params = useParams<{operatorAddress: string}>();
 	const {isConnected, address} = useAccount();
 	const { chainId } = getAccount(wagmiConfig);
@@ -38,6 +39,25 @@ export function AssignWallet() {
 
 	function returnToClient() {
 		window.location = `xai-sentry://assigned-wallet?txHash=${data}` as unknown as Location;
+	}
+	
+	async function handleConnectClick() {
+		if (isConnected) {
+			try {
+				await disconnect();
+			} catch (error) {
+				console.error("Failed to disconnect:", error);
+			}
+		}
+		handleOpen();
+	}
+
+	function handleOpen() {
+		try {
+			open();
+		} catch (_e) {
+			open();
+		}
 	}
 
 	return (
@@ -83,7 +103,7 @@ export function AssignWallet() {
 								/>
 							) : (
 								<div className="mt-6 w-full">
-									<ConnectButton  address={address} onOpen={open} isFullWidth />
+									<ConnectButton  address={address} onOpen={handleConnectClick} isFullWidth />
 								</div>
 							)}
 

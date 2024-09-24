@@ -1,4 +1,4 @@
-import {useAccount, useWriteContract } from "wagmi";
+import {useAccount,  useDisconnect, useWriteContract } from "wagmi";
 import {wagmiConfig, chains} from "../../../main";
 import {useState, useEffect} from "react";
 import {ConnectButton, XaiCheckbox} from "@sentry/ui";
@@ -15,8 +15,9 @@ import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
 
 export function ClaimToken() {
 	const {open} = useWeb3Modal()
+	const { disconnect } = useDisconnect()
 	const {blocked, loading} = useBlockIp({blockUsa: true});
-	const {address: _address} = useAccount();
+	const {isConnected, address: _address} = useAccount();
 	const address = _address?.toLowerCase();
 	const navigate = useNavigate();
 	const { chainId } = getAccount(wagmiConfig);
@@ -82,6 +83,25 @@ export function ClaimToken() {
 				<p className="text-3xl font-bold text-white">Claim successful!</p>
 			</div>
 		)
+	}
+	
+	async function handleConnectClick() {
+		if (isConnected) {
+			try {
+				await disconnect();
+			} catch (error) {
+				console.error("Failed to disconnect:", error);
+			}
+		}
+		handleOpen();
+	}
+
+	function handleOpen() {
+		try {
+			open();
+		} catch (_e) {
+			open();
+		}
 	}
 
 	return (
@@ -151,7 +171,7 @@ export function ClaimToken() {
 							</>
 						) : (
 							<div className="m-8 w-full">
-								<ConnectButton onOpen={open} address={address} isFullWidth/>
+								<ConnectButton onOpen={handleConnectClick} address={address} isFullWidth/>
 							</div>
 						)}
 					</div>
