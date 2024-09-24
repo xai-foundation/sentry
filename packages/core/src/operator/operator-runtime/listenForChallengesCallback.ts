@@ -30,7 +30,7 @@ export async function listenForChallengesCallback(challengeNumber: bigint, chall
     const signatureValid = await validateConfirmData(challenge, graphStatus.healthy, stateToPass, event);
 
     if (!signatureValid) {
-        operatorState.cachedLogger(`Comparison between PublicNode and Challenger failed.`);
+        operatorState.cachedLogger(`Challenger signed hash is invalid.`);
     }
 
     operatorState.previousChallengeAssertionId = challenge.assertionId;

@@ -82,10 +82,6 @@ export async function validateConfirmData(
 
             const signatureIsValid = verifyChallengerSignedHash(publicKey, assertionId, prevAssertionId, confirmData, timestamp, signature);
 
-            if (!signatureIsValid) {
-                operatorState.onAssertionMissMatchCb?.(undefined, currentChallenge, "Challenger signature verification failed.");
-            }
-
             return signatureIsValid;
         }
 
