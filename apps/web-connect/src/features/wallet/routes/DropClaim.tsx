@@ -1,4 +1,4 @@
-import {useAccount,  useDisconnect, useWriteContract } from "wagmi";
+import {useAccount,  useWriteContract } from "wagmi";
 import {wagmiConfig, chains} from "../../../main";
 import {ConnectButton, PrimaryButton, XaiCheckbox} from "@sentry/ui";
 import {useState} from "react";
@@ -16,9 +16,8 @@ import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
 export function DropClaim() {
 	const {blocked, loading} = useBlockIp({blockUsa: true});
 
-	const {isConnected, address} = useAccount();
+	const {address} = useAccount();
 	const {open} = useWeb3Modal()
-	const { disconnect } = useDisconnect()
 	const { chainId } = getAccount(wagmiConfig);
 	const chain = chains.find(chain => chain.id === chainId)
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
@@ -58,24 +57,9 @@ export function DropClaim() {
 			</div>
 		);
 	}
-	
-	async function handleConnectClick() {
-		if (isConnected) {
-			try {
-				await disconnect();
-			} catch (error) {
-				console.error("Failed to disconnect:", error);
-			}
-		}
-		handleOpen();
-	}
 
-	function handleOpen() {
-		try {
-			open();
-		} catch (_e) {
-			open();
-		}
+	function handleConnectClick() {
+		open();
 	}
 
 	return (

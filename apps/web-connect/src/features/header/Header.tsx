@@ -1,6 +1,6 @@
 import {ConnectButton, ExternalLink} from "@sentry/ui";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
-import {useAccount, useDisconnect} from "wagmi";
+import {useAccount} from "wagmi";
 import {DiscordIcon, TelegramIcon, XaiLogo, XIcon} from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import Burger from "@/features/header/Burger";
 import MobileNavbar from "@/features/header/MobileNavbar";
@@ -8,27 +8,11 @@ import { useState} from "react";
 
 export function Header() {
 	const {open} = useWeb3Modal();
-	const {address, isConnected} = useAccount()
-	const { disconnect } = useDisconnect()
+	const {address} = useAccount()
 	const [isNavbarOpened, setIsNavbarOpened] = useState(false)
 	
-	async function handleConnectClick() {
-		if (isConnected) {
-			try {
-				await disconnect();
-			} catch (error) {
-				console.error("Failed to disconnect:", error);
-			}
-		}
-		handleOpen();
-	}
-		
-	function handleOpen() {
-			try {
-				open();
-			} catch (_e) {
-				open();
-			}
+	function handleConnectClick() {
+		open();
 	}
 
 	return (
