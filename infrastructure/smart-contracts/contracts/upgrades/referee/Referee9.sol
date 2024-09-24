@@ -250,6 +250,18 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         _;
     }
 
+    //TEST FUNCTION
+    function toggleAssertionChecking() public {
+        isCheckingAssertions = !isCheckingAssertions;
+        emit AssertionCheckingToggled(isCheckingAssertions);
+    }
+
+    //TEST FUNCTION
+    function setRollupAddress(address newRollupAddress) public {
+        rollupAddress = newRollupAddress;
+        emit RollupAddressChanged(newRollupAddress);
+    }
+
     /**
      * @notice Returns the combined total supply of esXai Xai, and the unminted allocated tokens.
      * @dev This function fetches the total supply of esXai, Xai, and unminted allocated tokens and returns their sum.
@@ -728,7 +740,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         return stakeAmountBoostFactors[length - 1];
     }
 
-
     /**
      * @dev Looks up payout boostFactor based on the staking tier for a staker wallet.
      * @param staker The address of the staker or pool.
@@ -952,13 +963,13 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         // Emit the Updated Pool Submission event
         emit UpdateBulkSubmission(_challengeId, _bulkAddress, numberOfKeys, winningKeyCount, winningKeysIncreaseAmount, winningKeysDecreaseAmount);	
 	}
+
     /** 
     * @notice Function to check if challenge rewards are expired
     * @dev This function is called internally from the claimReward function.
     * @param _challengeId The ID of the challenge.
     * @return A boolean indicating if the challenge rewards are expired.
     */
-
     function _checkChallengeRewardsExpired(uint256 _challengeId) internal returns (bool) {
         // Check if the challenge rewards have expired
         bool expired = block.timestamp >= challenges[_challengeId].createdTimestamp + 270 days;

@@ -3,6 +3,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {winningHashForNodeLicense0} from "./AssertionData.mjs";
 import {Contract} from "ethers";
 import {submitTestChallenge} from "./utils/submitTestChallenge.mjs";
+import {submitMockRollupChallenge} from "./utils/submitMockRollupChallenge.mjs";
 import {mintBatchedLicenses, mintSingleLicense} from "./utils/mintLicenses.mjs";
 import {createPool} from "./utils/createPool.mjs";
 
@@ -547,6 +548,27 @@ export function RefereeTests(deployInfrastructure) {
 			// Check that no submission was created
 			const submission = await referee.bulkSubmissions(0, await addr1.getAddress());			
 			assert.equal(submission[0], false, "Submission was created with invalid successorRoot");
+		});
+
+		it("Check submitting a test challenge to mock rollup contract", async function () {
+			//NOTE: this test requires the following functions to exist on the Referee contract:
+			//toggleAssertionChecking()
+			//setRollupAddress(address newRollupAddress)
+			
+			const {referee, challenger, mockRollup, refereeCalculations} = await loadFixture(deployInfrastructure);
+			let currentAssertion = 2;
+			let previousAssertion = 0;
+			const res = await submitMockRollupChallenge(
+				referee, 
+				challenger, 
+				mockRollup, 
+				refereeCalculations, 
+				currentAssertion,
+				previousAssertion
+			);
+			for (let i = 0; i < res.confirmData.length; i++) {
+				assert.equal(res.confirmData[i], res.nodes[i][2], "confirmData mismatch");
+			}
 		});
 
 		it("Check ...", async function () {
