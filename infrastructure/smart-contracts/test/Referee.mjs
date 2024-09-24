@@ -551,6 +551,10 @@ export function RefereeTests(deployInfrastructure) {
 		});
 
 		it("Check submitting a test challenge to mock rollup contract", async function () {
+			//NOTE: this test requires the following functions to exist on the Referee contract:
+			//toggleAssertionChecking()
+			//setRollupAddress(address newRollupAddress)
+			
 			const {referee, challenger, mockRollup, refereeCalculations} = await loadFixture(deployInfrastructure);
 			let currentAssertion = 2;
 			let previousAssertion = 0;
