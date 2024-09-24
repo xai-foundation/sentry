@@ -27,14 +27,12 @@ export async function validateConfirmData(
             }
 
             const isBatch = assertionIds.length > 1;                                        // Check if the challenge is a batch or single challenge        
-            let confirmDataList: string[] = [];                                             // Create an array to store the confirm data for each assertionId   
-            let finalConfirmHash: string = '';                                                   // Create a variable to store the confirm hash                       
+            let confirmDataList: string[] = [];                                             // Create an array to store the confirm data for each assertionId                  
 
             if (isBatch) {   
                 try {
                     const { confirmData, confirmHash } = await getConfirmDataAndHash(assertionIds, subgraphIsHealthy);
-                    confirmDataList = confirmData;
-                    finalConfirmHash = confirmHash                                              // Set the confirm data list  
+                    confirmDataList = confirmData;                                            // Set the confirm data list  
                 } catch (error) {
                     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
                     operatorState.onAssertionMissMatchCb?.(undefined, currentChallenge, errorMessage);  
@@ -42,7 +40,6 @@ export async function validateConfirmData(
                     return false;
                 }                                                    
             } else {
-                finalConfirmHash = currentChallenge.assertionStateRootOrConfirmData;            // Set the final confirm hash assuming a single challenge
                 confirmDataList = [currentChallenge.assertionStateRootOrConfirmData];           // Set the initial confirm data assuming a single challenge
             }
 
@@ -79,7 +76,7 @@ export async function validateConfirmData(
             const publicKey = operatorState.challengerPublicKey;
             const assertionId = currentChallenge.assertionId;
             const prevAssertionId = operatorState.previousChallengeAssertionId;
-            const confirmData = finalConfirmHash;
+            const confirmData = currentChallenge.assertionStateRootOrConfirmData;
             const timestamp = currentChallenge.assertionTimestamp;
             const signature = currentChallenge.challengerSignedHash;
 
