@@ -13,7 +13,7 @@ export async function validateConfirmData(
         cachedLogger?: (message: string) => void;
     }, 
     event?: ethers.EventLog,
-): Promise<boolean> {
+): Promise<void> {
     const logger = operatorState.cachedLogger || console.log;
 
         if (event && currentChallenge.rollupUsed === config.rollupAddress) {
@@ -27,23 +27,26 @@ export async function validateConfirmData(
             }
 
             const isBatch = assertionIds.length > 1;                                        // Check if the challenge is a batch or single challenge        
-            let confirmDataList: string[] = [];                                             // Create an array to store the confirm data for each assertionId                  
+            let confirmDataList: string[] = [];                                             // Create an array to store the confirm data for each assertionId    
+            
+            const errors = [];              
 
             if (isBatch) {   
                 try {
                     const { confirmData, confirmHash } = await getConfirmDataAndHash(assertionIds, subgraphIsHealthy);
-                    confirmDataList = confirmData;                                            // Set the confirm data list  
+                    confirmDataList = confirmData;                                                                      // Set the confirm data list  
+                    if(confirmHash !== currentChallenge.assertionStateRootOrConfirmData){
+                        const errorMessage = `Mismatch between PublicNode and Challenge assertion number '${currentAssertionId}'!`;
+                        errors.push({ assertionId: currentAssertionId, publicNodeBucket: undefined, error: errorMessage });
+                    }
                 } catch (error) {
                     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
-                    operatorState.onAssertionMissMatchCb?.(undefined, currentChallenge, errorMessage);  
-                    logger(`Error fetching confirm data for batch challenge assertion Id: ${currentAssertionId}. ${errorMessage}`);
-                    return false;
+                    errors.push({ assertionId: currentAssertionId, publicNodeBucket: undefined, error: errorMessage });
                 }                                                    
             } else {
                 confirmDataList = [currentChallenge.assertionStateRootOrConfirmData];           // Set the initial confirm data assuming a single challenge
             }
 
-            const errors = [];
 
             // Validate the confirm data for each assertionId
             for (let i = 0; i < confirmDataList.length; i++) {
@@ -65,13 +68,6 @@ export async function validateConfirmData(
                 }
             }
 
-            // Log all errors together
-            if (errors.length > 0) {
-                const errorLog = errors.map(e => `Assertion ${e.assertionId}: ${e.error}`).join('\n');
-                operatorState.onAssertionMissMatchCb?.(undefined, currentChallenge, errorLog);
-                logger(`Encountered errors during validation:\n${errorLog}`);
-            }
-
             // Verify the Challenger Signed Hash
             const publicKey = operatorState.challengerPublicKey;
             const assertionId = currentChallenge.assertionId;
@@ -80,12 +76,19 @@ export async function validateConfirmData(
             const timestamp = currentChallenge.assertionTimestamp;
             const signature = currentChallenge.challengerSignedHash;
 
-            const signatureIsValid = verifyChallengerSignedHash(publicKey, assertionId, prevAssertionId, confirmData, timestamp, signature);
+            const signatureIsValid = verifyChallengerSignedHash(publicKey, assertionId, prevAssertionId, confirmData, timestamp, signature);   
+            
+            if (!signatureIsValid) {
+                errors.push({ assertionId: currentAssertionId, publicNodeBucket: undefined, error: 'Challenger signature verification failed.' });
+            }
 
-            return signatureIsValid;
+            // Log all errors together
+            if (errors.length > 0) {
+                const errorLog = errors.map(e => `Assertion ${e.assertionId}: ${e.error}, ${e.publicNodeBucket}`).join('\n');
+                operatorState.onAssertionMissMatchCb?.(undefined, currentChallenge, errorLog);
+                logger(`Encountered errors during validation:\n${errorLog}`);
+            }
         }
-
-        return true;
 }
 
 
