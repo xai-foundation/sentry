@@ -15,7 +15,7 @@
     "dist-electron"
   ],
   "dmg": {
-    "sign": true
+    "sign": false
   },
   "mac": {
     "target": [
@@ -27,7 +27,8 @@
     "hardenedRuntime": true,
     "entitlements": "build-config/entitlements.mac.plist",
     "entitlementsInherit": "build-config/entitlements.mac.plist",
-    "gatekeeperAssess": false
+    "gatekeeperAssess": false,
+    "notarize": true
   },
   "win": {
     "target": [
