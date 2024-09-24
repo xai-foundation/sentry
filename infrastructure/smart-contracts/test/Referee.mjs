@@ -566,20 +566,75 @@ export function RefereeTests(deployInfrastructure) {
 				currentAssertion,
 				previousAssertion
 			);
+
 			for (let i = 0; i < res.confirmData.length; i++) {
 				assert.equal(res.confirmData[i], res.nodes[i][2], "confirmData mismatch");
 			}
 		});
 
-		it("Check ...", async function () {
-			const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
+		it("Check confirming a node on mock rollup", async function () {
+			const {referee, challenger, mockRollup, refereeCalculations} = await loadFixture(deployInfrastructure);
 			
-			await referee.connect(refereeDefaultAdmin).setApprovalForOperator(kycAdmin.address, true);
+			//submit mock rollup challenge
+			let currentAssertion = 2;
+			let previousAssertion = 0;
+			await submitMockRollupChallenge(
+				referee, 
+				challenger, 
+				mockRollup, 
+				refereeCalculations, 
+				currentAssertion,
+				previousAssertion
+			);
+
+			//confirm nodes
+			for (let i = previousAssertion + 1; i <= currentAssertion; i++) {
+				let hexStr = "0x" + BigInt(i).toString(16).padStart(64, "0");
+				const trx = await mockRollup.confirmNode(
+					i,
+					hexStr,
+					hexStr
+				);
+
+				//get trx reciept
+				let rec = await trx.wait();
+				console.log(rec.logs);
+
+				//assert NodeConfirmed event data
+				assert.equal(rec.logs[0].fragment.name, "NodeConfirmed", "NodeConfirmed event not found");
+				assert.equal(rec.logs[0].args[0], i, "nodeNum event param mismatch");
+				assert.equal(rec.logs[0].args[1], hexStr, "blockHash event param mismatch");
+				assert.equal(rec.logs[0].args[2], hexStr, "sendRoot event param mismatch");
+			}
+		});
+
+		it("Check failure to confirm node with wrong blockhash and sendroot", async function () {
+			const {referee, challenger, mockRollup, refereeCalculations} = await loadFixture(deployInfrastructure);
 			
-			const owner = await referee.getOwnerForOperatorAtIndex(kycAdmin.address, 0);
-			
-			assert.equal(owner, refereeDefaultAdmin.address, "The owner at index does not match");
-		})
+			//submit mock rollup challenge
+			let currentAssertion = 2;
+			let previousAssertion = 0;
+			await submitMockRollupChallenge(
+				referee, 
+				challenger, 
+				mockRollup, 
+				refereeCalculations, 
+				currentAssertion,
+				previousAssertion
+			);
+
+			//attempt to confirm nodes
+			for (let i = previousAssertion + 1; i <= currentAssertion; i++) {
+				let badHexStr = "0x" + BigInt(i + 1).toString(16).padStart(64, "0");
+				await expect(
+				    mockRollup.confirmNode(
+					    i,
+						badHexStr,
+						badHexStr
+				    )
+			    ).to.be.revertedWith("CONFIRM_DATA");
+			}
+		});
 
 		// describe("The Referee should allow users to stake in V1", function () {
 
