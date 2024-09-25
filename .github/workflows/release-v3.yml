@@ -8,7 +8,7 @@ jobs:
   dryrun:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.get_version.outputs.version }} # Pass version to the next jobs
+      version: ${{ steps.get_version.outputs.new_release_version }} # Pass version to the next jobs
 
     steps:
       - name: Checkout code
@@ -34,25 +34,33 @@ jobs:
         run: |
           pnpm add -D -w semantic-release @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/git @semantic-release/github @semantic-release/changelog 
 
-      # Run semantic-release dry-run and get the version
-      - name: Semantic Release Dry Run
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v4
         id: get_version
-        run: |
-          npx semantic-release --dry-run 2>&1 > release.txt
-          grep "The next release version is" release.txt
-          
-          #cat release.txt | grep "The next release version is"
-          #cat release.txt | grep "The next release version is" | awk '{print $NF}'
-          
-          VERSION=$(cat release.txt | grep "The next release version is" | awk '{print $NF}' | xargs)
-          
-          #VERSION=$(npx semantic-release --dry-run 2>&1 | grep "The next release version is" | awk '{print $NF}' | xargs)          
-          echo $VERSION
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "version=$VERSION" >> $GITHUB_ENV
-          echo "test 123"
+        with:
+          dry_run: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Run semantic-release dry-run and get the version
+#      - name: Semantic Release Dry Run
+#        id: get_version
+#        run: |
+#          npx semantic-release --dry-run 2>&1 > release.txt
+#          grep "The next release version is" release.txt
+#
+#          #cat release.txt | grep "The next release version is"
+#          #cat release.txt | grep "The next release version is" | awk '{print $NF}'
+#
+#          VERSION=$(cat release.txt | grep "The next release version is" | awk '{print $NF}' | xargs)
+#
+#          #VERSION=$(npx semantic-release --dry-run 2>&1 | grep "The next release version is" | awk '{print $NF}' | xargs)
+#          echo $VERSION
+#          echo "version=$VERSION" >> $GITHUB_OUTPUT
+#          echo "version=$VERSION" >> $GITHUB_ENV
+#          echo "test 123"
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Matrix build jobs that depend on the dryrun job
   release:
@@ -133,9 +141,11 @@ jobs:
           sed -i '' -e "s#^    sha512:.*#    sha512: $CHECKSUM#" "release-desktop-windows-latest/latest.yml"
 
       # Run semantic-release after the build is completed to publish the release
-      - name: Semantic Release Final
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v4
         id: semantic
-        run: npx semantic-release
+        with:
+          dry_run: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
