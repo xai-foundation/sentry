@@ -38,7 +38,14 @@ jobs:
       - name: Semantic Release Dry Run
         id: get_version
         run: |
-          VERSION=$(npx semantic-release --dry-run 2>&1 | grep "The next release version is" | awk '{print $NF}' | xargs)          
+          npx semantic-release --dry-run 2>&1 > release.txt
+          cat release.txt
+          cat release.txt | grep "The next release version is"
+          cat release.txt | grep "The next release version is" | awk '{print $NF}'
+          
+          VERSION=$(cat release.txt | grep "The next release version is" | awk '{print $NF}' | xargs)
+          
+          #VERSION=$(npx semantic-release --dry-run 2>&1 | grep "The next release version is" | awk '{print $NF}' | xargs)          
           echo $VERSION
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_ENV
