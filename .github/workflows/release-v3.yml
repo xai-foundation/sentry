@@ -39,8 +39,8 @@ jobs:
         id: get_version
         run: |
           VERSION=$(npx semantic-release --dry-run 2>&1 | grep "The next release version is" | awk '{print $NF}' | xargs)          
-          echo "::set-output name=version::$VERSION" # Set output for the next jobs
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo $VERSION
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
