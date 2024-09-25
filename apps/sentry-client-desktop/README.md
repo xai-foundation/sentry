@@ -32,7 +32,7 @@ Required build environment variables for signing:
 
 ### MacOS
 
-Signing the mac build can be done by the `electron-builder`. Currently the configuration is setup to sign the app and the .dmg bundle.
+Signing the mac build can be done by the `electron-builder`. Currently the configuration is setup to sign and notarize the app.
 For signing a macOS release a Apple Developer Application ID Certificate is required, detailed steps in the section below.
 
 For integrating the electron-builder signing the certificate has to be added to the mac key-chain, for this specific environment variables need to be set during the release build process:
@@ -40,18 +40,24 @@ For integrating the electron-builder signing the certificate has to be added to 
 - `MAC_CERTIFICATE_P12_BASE64` the base64 encoded certificate and private key
 - `MAC_CERTIFICATE_PASSWORD` the certificate encryption password
 
-Electron builder signing env: 
+Electron builder signing and notarizing env: 
 
 - `CSC_LINK` same as `MAC_CERTIFICATE_P12_BASE64`, important for electron-builder finding the identity
 - `CSC_KEY_PASSWORD` same as `MAC_CERTIFICATE_PASSWORD`, important for electron-builder finding the identity from the cert above
+- `APPLE_ID` The apple ID used for the Developer certificate for notarizing the app
+- `APPLE_APP_SPECIFIC_PASSWORD` [App specific password](https://support.apple.com/en-us/102654) for notarizing the app
+- `APPLE_TEAM_ID` The apple team id used for the account that created the certificate used for notarizing the app
 
 #### Verify Mac Signing:
 
 - Verify the app’s signature
-  - `codesign --verify --deep --verbose --strict /path/to/sentry-client-macos.dmg`
+  - `codesign --verify --deep --verbose --strict /path/to/sentry-client-macos.app`
 
-- Check if Gatekeeper accepts the app (Requires notarized app - this is currently not implemented)
-  - `spctl --assess --type exec --verbose /path/to/sentry-client-macos.dmg`
+- Check if Gatekeeper accepts the app after notarizing
+  - `spctl --assess --type exec --verbose /path/to/sentry-client-macos.app`
+
+- Check notarization status
+  - `xcrun notarytool history --apple-id APPLE_ID --password APPLE_APP_SPECIFIC_PASSWORD --team-id APPLE_TEAM_ID`
 
 
 #### Create an Apple Developer Application ID Certificate
