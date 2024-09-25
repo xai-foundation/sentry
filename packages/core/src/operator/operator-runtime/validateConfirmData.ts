@@ -40,8 +40,10 @@ export async function validateConfirmData(
                         errors.push({ assertionId: currentAssertionId, publicNodeBucket: undefined, error: errorMessage });
                     }
                 } catch (error) {
-                    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
-                    errors.push({ assertionId: currentAssertionId, publicNodeBucket: undefined, error: errorMessage });
+                    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';               
+                    operatorState.onAssertionMissMatchCb?.(undefined, currentChallenge, errorMessage);
+                    logger(`Error loading assertion data from CDN for ${currentChallenge.assertionStateRootOrConfirmData}.\n${errorMessage}`);
+                    return;
                 }                                                    
             } else {
                 confirmDataList = [currentChallenge.assertionStateRootOrConfirmData];           // Set the initial confirm data assuming a single challenge
