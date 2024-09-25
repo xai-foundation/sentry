@@ -21,15 +21,21 @@
     "ethers": "6.8.1"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^13.0.0",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^11.0.0",
+    "@semantic-release/release-notes-generator": "^14.0.1",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
     "@typescript-eslint/parser": "^6.6.0",
     "concurrently": "8.2.1",
     "copyfiles": "2.4.1",
     "eslint": "^8.48.0",
     "eslint-plugin-only-warn": "^1.1.0",
+    "nx": "18.1.2",
     "rimraf": "5.0.1",
+    "semantic-release": "^24.1.1",
     "typescript": "^5.2.2",
-    "unzipper": "0.10.14",
-    "nx": "18.1.2"
+    "unzipper": "0.10.14"
   }
 }
