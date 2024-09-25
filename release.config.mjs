@@ -9,6 +9,10 @@ export default {
                 releaseRules: [
                     { type: 'feat', scope: 'operator', release: 'minor' },
                     { type: 'fix', scope: 'operator', release: 'patch' },
+                    { type: 'feat', scope: 'cli', release: 'minor' },
+                    { type: 'fix', scope: 'cli', release: 'patch' },
+                    { type: 'feat', scope: 'desktop', release: 'minor' },
+                    { type: 'fix', scope: 'desktop', release: 'patch' },
                 ],
             },
         ],
@@ -17,13 +21,22 @@ export default {
             {
                 preset: 'angular',
                 writerOpts: {
-                    transform: (commit, context) => {
-                        // Exclude commits from release notes if they don't match certain scopes
-                        const scopesToInclude = ['operator'];
+                    finalizeContext (context) {
+                        const scopesToInclude = ['cli', 'desktop', 'operator'];
 
-                         if (commit.scope && scopesToInclude.includes(commit.scope)) {
-                             return commit;
-                         }
+                        for (const commitGroup of context.commitGroups) {
+                            const filteredCommits = []
+
+                            for (const commit of commitGroup.commits) {
+                                if (commit.scope && scopesToInclude.includes(commit.scope)) {
+                                    filteredCommits.push(commit)
+                                }
+                            }
+
+                            commitGroup.commits = filteredCommits
+                        }
+
+                        return context
                     },
                 },
             },
