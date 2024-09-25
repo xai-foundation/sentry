@@ -32,7 +32,7 @@ jobs:
       # Inline install of semantic-release packages (as per your new configuration)
       - name: Install semantic-release and plugins
         run: |
-          pnpm add -g semantic-release @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/git @semantic-release/github @semantic-release/changelog @semantic-release/npm semantic-release-monorepo
+          pnpm add semantic-release @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/git @semantic-release/github @semantic-release/changelog @semantic-release/npm semantic-release-monorepo
 
       # Run semantic-release in dry-run mode to get the version number
       - name: Semantic Release Dry Run
