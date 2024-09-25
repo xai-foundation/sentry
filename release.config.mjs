@@ -6,14 +6,6 @@ export default {
             '@semantic-release/commit-analyzer',
             {
                 preset: 'angular',
-                releaseRules: [
-                    { type: 'feat', scope: 'operator', release: 'minor' },
-                    { type: 'fix', scope: 'operator', release: 'patch' },
-                    { type: 'feat', scope: 'cli', release: 'minor' },
-                    { type: 'fix', scope: 'cli', release: 'patch' },
-                    { type: 'feat', scope: 'desktop', release: 'minor' },
-                    { type: 'fix', scope: 'desktop', release: 'patch' },
-                ],
             },
         ],
         [
@@ -28,7 +20,7 @@ export default {
                             const filteredCommits = []
 
                             for (const commit of commitGroup.commits) {
-                                if (commit.scope && scopesToInclude.includes(commit.scope)) {
+                                if (commit.scope && commit.scope.split(',').some(scope => scopesToInclude.includes(scope))) {
                                     filteredCommits.push(commit)
                                 }
                             }
