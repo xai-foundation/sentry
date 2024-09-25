@@ -38,7 +38,7 @@ jobs:
       - name: Semantic Release Dry Run
         id: get_version
         run: |
-          VERSION=$(npx semantic-release --dry-run | grep "next release version" | cut -d' ' -f5)
+          VERSION=$(npx semantic-release --dry-run 2>&1 | grep "The next release version is" | awk '{print $NF}' | xargs)          
           echo "::set-output name=version::$VERSION" # Set output for the next jobs
           echo "VERSION=$VERSION" >> $GITHUB_ENV
         env:
