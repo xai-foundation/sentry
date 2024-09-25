@@ -42,6 +42,7 @@ jobs:
           echo $VERSION
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_ENV
+          echo "test 123"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
