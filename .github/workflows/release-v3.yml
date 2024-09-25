@@ -39,8 +39,10 @@ jobs:
         id: get_version
         run: |
           npx semantic-release --dry-run 2>&1 > release.txt
-          cat release.txt | grep "The next release version is"
-          cat release.txt | grep "The next release version is" | awk '{print $NF}'
+          grep "The next release version is" release.txt
+          
+          #cat release.txt | grep "The next release version is"
+          #cat release.txt | grep "The next release version is" | awk '{print $NF}'
           
           VERSION=$(cat release.txt | grep "The next release version is" | awk '{print $NF}' | xargs)
           
