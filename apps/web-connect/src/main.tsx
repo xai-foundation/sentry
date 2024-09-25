@@ -10,7 +10,6 @@ import { arbitrum } from 'wagmi/chains'
 import './index.css'
 import { IpLocationChecker } from './features/ipchecker/IpLocationChecker'
 
-// TODO This needs to be updated to a project  id for the Sentry page
 const projectId = '79e38b4593d43c78d7e9ee38f0cdf4ee'
 
 export const chains: [Chain, ...Chain[]] = [
@@ -32,18 +31,10 @@ export const wagmiConfig = defaultWagmiConfig({
 	projectId, // required
 	metadata, // required
 	ssr: true,
-	// storage: createStorage({
-	//     storage: cookieStorage
-	// }),
-	// transports: {
-	// 	[arbitrum.id]: http(),
-	// 	[arbitrumSepolia.id]: http(),
-	// },
 	enableWalletConnect: true, // Optional - true by default
 	enableInjected: true, // Optional - true by default
 	enableEIP6963: true, // Optional - true by default
 	enableCoinbase: true, // Optional - true by default
-	// ...wagmiOptions // Optional - Override createConfig parameters
 })
 
 createWeb3Modal({
