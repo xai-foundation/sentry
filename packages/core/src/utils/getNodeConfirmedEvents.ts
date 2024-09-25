@@ -20,5 +20,5 @@ export async function getNodeConfirmedEvents(rpc: string, rollupAddress: string,
     const filter = rollupCore.filters.NodeConfirmed(nodeNum);
     const events = await rollupCore.queryFilter(filter, fromBlock, toBlock);
 
-    return events;    
+    return events;
 }

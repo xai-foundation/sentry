@@ -10,17 +10,17 @@ async function main() {
     const BLOCKS_TO_WAIT = 1;
     const mainnetRPC = "https://arb1.arbitrum.io/rpc";
     const mainnetRollupAddress = "0xC47DacFbAa80Bd9D8112F4e8069482c2A3221336";
-    
-const MOCK_ROLLUP_ABI = [
-    "function createNode(uint64 nodeNum, bytes32 blockHash, bytes32 sendRoot)",
-    "function confirmNode(uint64 nodeNum, bytes32 blockHash, bytes32 sendRoot)"
-];
 
-const mockRollupAddress = `0xb3b08bE5041d3F94C9fD43c91434515a184a43af`;
-const mockRollup = new ethers.Contract(mockRollupAddress, MOCK_ROLLUP_ABI, deployer);
+    const MOCK_ROLLUP_ABI = [
+        "function createNode(uint64 nodeNum, bytes32 blockHash, bytes32 sendRoot)",
+        "function confirmNode(uint64 nodeNum, bytes32 blockHash, bytes32 sendRoot)"
+    ];
+
+    const mockRollupAddress = `0xb3b08bE5041d3F94C9fD43c91434515a184a43af`;
+    const mockRollup = new ethers.Contract(mockRollupAddress, MOCK_ROLLUP_ABI, deployer);
 
     // Need to update these values for each run
-	const assertionId1 = 5860;
+    const assertionId1 = 5860;
     const assertionBlock1 = 255338885;
 
     const assertionId2 = 5861;
@@ -31,9 +31,9 @@ const mockRollup = new ethers.Contract(mockRollupAddress, MOCK_ROLLUP_ABI, deplo
 
     const assertionId4 = 5863;
     const assertionBlock4 = 255382168;
-    
+
     // Submit Assertion 1 to Mock Rollup to trigger the initial challenge
-    
+
     console.log(`Getting main net confirm data for assertion ${assertionId1} at block ${assertionBlock1}`);
     const events1 = await getNodeConfirmedEvents(mainnetRPC, mainnetRollupAddress, assertionId1, assertionBlock1, assertionBlock1);
 
@@ -43,7 +43,7 @@ const mockRollup = new ethers.Contract(mockRollupAddress, MOCK_ROLLUP_ABI, deplo
     console.log(`Creating assertion ${assertionId1} in Mock Rollup`);
     console.log(`Block Hash: ${blockHash1}`);
     console.log(`Send Root: ${sendRoot1}`);
-    
+
     const createTx1 = await mockRollup.createNode(assertionId1, blockHash1, sendRoot1);
     await createTx1.wait(BLOCKS_TO_WAIT);
     console.log(`Assertion ${assertionId1} created in Mock Rollup`);
@@ -59,7 +59,7 @@ const mockRollup = new ethers.Contract(mockRollupAddress, MOCK_ROLLUP_ABI, deplo
 
     // Submit Assertion 2 to Mock Rollup
     // This will not trigger a challenge because not enough time has passed
-    
+
     console.log(`Getting main net confirm data for assertion ${assertionId2} at block ${assertionBlock2}`);
     const events2 = await getNodeConfirmedEvents(mainnetRPC, mainnetRollupAddress, assertionId2, assertionBlock2, assertionBlock2);
 
@@ -69,7 +69,7 @@ const mockRollup = new ethers.Contract(mockRollupAddress, MOCK_ROLLUP_ABI, deplo
     console.log(`Creating assertion ${assertionId2} in Mock Rollup`);
     console.log(`Block Hash: ${blockHash2}`);
     console.log(`Send Root: ${sendRoot2}`);
-    
+
     const createTx2 = await mockRollup.createNode(assertionId2, blockHash2, sendRoot2);
     await createTx2.wait(BLOCKS_TO_WAIT);
     console.log(`Assertion ${assertionId2} created in Mock Rollup`);
@@ -78,7 +78,7 @@ const mockRollup = new ethers.Contract(mockRollupAddress, MOCK_ROLLUP_ABI, deplo
     console.log(`Assertion ${assertionId2} confirmed in Mock Rollup`);
 
     // Wait two minutes and submit a new assertion to Mock Rollup
-    
+
     console.log("Waiting 2 minutes before submitting the next assertion");
     console.log(`It should then trigger a batch challenge of assertions ${assertionId2} and ${assertionId3}`);
     await new Promise(r => setTimeout(r, 120000));
@@ -119,7 +119,7 @@ const mockRollup = new ethers.Contract(mockRollupAddress, MOCK_ROLLUP_ABI, deplo
     const blockHash4 = events4[0].args.blockHash;
     const sendRoot4 = events4[0].args.sendRoot;
 
-    console.log(`Creating assertion ${assertionId4} in Mock Rollup`);   
+    console.log(`Creating assertion ${assertionId4} in Mock Rollup`);
     console.log(`Block Hash: ${blockHash4}`);
     console.log(`Send Root: ${sendRoot4}`);
 
@@ -137,8 +137,8 @@ const mockRollup = new ethers.Contract(mockRollupAddress, MOCK_ROLLUP_ABI, deplo
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
 main().catch((error) => {
-	console.error(error);
-	process.exitCode = 1;
+    console.error(error);
+    process.exitCode = 1;
 });
 
 
