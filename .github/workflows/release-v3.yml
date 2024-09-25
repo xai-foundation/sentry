@@ -8,7 +8,7 @@ jobs:
   dryrun:
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.get_version.outputs.version }}
+      version: ${{ steps.get_version.outputs.version }} # Pass version to the next jobs
 
     steps:
       - name: Checkout code
@@ -49,9 +49,9 @@ jobs:
     needs: dryrun
     strategy:
       matrix:
-        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
-    environment:
+    env: # Pass the version as an environment variable to each matrix job
       VERSION: ${{ needs.dryrun.outputs.version }}
 
     steps:
@@ -106,7 +106,7 @@ jobs:
   checksum-and-release:
     needs: release
     runs-on: macos-latest
-    environment:
+    env: # Pass the version to the final job as well
       VERSION: ${{ needs.dryrun.outputs.version }}
 
     steps:
