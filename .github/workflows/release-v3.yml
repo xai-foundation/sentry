@@ -4,11 +4,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  release:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+  # Run semantic-release dry run before the matrix
+  dryrun:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
 
     steps:
       - name: Checkout code
@@ -29,25 +29,51 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # Inline install of semantic-release packages (as per your new configuration)
+      # Inline install of semantic-release packages
       - name: Install semantic-release and plugins
         run: |
-          pnpm add semantic-release @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/git @semantic-release/github @semantic-release/changelog @semantic-release/npm semantic-release-monorepo
+          pnpm add -w semantic-release @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/git @semantic-release/github @semantic-release/changelog @semantic-release/npm semantic-release-monorepo
 
-      # Run semantic-release in dry-run mode to get the version number
+      # Run semantic-release dry-run and get the version
       - name: Semantic Release Dry Run
-        id: semantic_dry_run
+        id: get_version
         run: |
           VERSION=$(npx semantic-release --dry-run | grep "next release version" | cut -d' ' -f5)
+          echo "::set-output name=version::$VERSION" # Set output for the next jobs
           echo "VERSION=$VERSION" >> $GITHUB_ENV
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # Output the new release version for visibility
-      - name: Output new release version
-        run: echo "New version is ${{ env.VERSION }}"
+  # Matrix build jobs that depend on the dryrun job
+  release:
+    needs: dryrun
+    strategy:
+      matrix:
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+    environment:
+      VERSION: ${{ needs.dryrun.outputs.version }}
 
-      # Build related steps using the new version
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 9
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      # Use the version generated from dry-run in the build process
       - name: Set desktop app package version
         run: pnpm pkg set version=${{ env.VERSION }} --prefix apps/sentry-client-desktop
 
@@ -80,6 +106,8 @@ jobs:
   checksum-and-release:
     needs: release
     runs-on: macos-latest
+    environment:
+      VERSION: ${{ needs.dryrun.outputs.version }}
 
     steps:
       - name: Download artifacts
