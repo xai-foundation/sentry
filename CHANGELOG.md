@@ -1,3 +1,8 @@
+## [1.1.16](https://github.com/Ex-Populus/sentry-clay-temp/compare/1.1.15...1.1.16) (2024-09-26)
+
+
+### Bug Fixes
+
 ## [1.1.15](https://github.com/Ex-Populus/sentry-clay-temp/compare/1.1.14...1.1.15) (2024-09-25)
 
 
