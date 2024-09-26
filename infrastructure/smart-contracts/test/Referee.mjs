@@ -3,11 +3,10 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {winningHashForNodeLicense0} from "./AssertionData.mjs";
 import {Contract} from "ethers";
 import {submitTestChallenge} from "./utils/submitTestChallenge.mjs";
-import {createMockRollupNodes} from "./utils/createMockRollupNodes.mjs";
+import { createMockRollupNodes, confirmMockRollupNodes } from "./utils/mockRollupHelpers.mjs";
 import {submitMockRollupChallenge} from "./utils/submitMockRollupChallenge.mjs";
 import {mintBatchedLicenses, mintSingleLicense} from "./utils/mintLicenses.mjs";
 import {createPool} from "./utils/createPool.mjs";
-import { confirmMockRollupNodes } from "./utils/confirmMockRollupNodes.mjs";
 
 export 	async function getStateRoots(count) {
 	let results = [];
@@ -80,477 +79,477 @@ export function RefereeTests(deployInfrastructure) {
 		// 	await expect(referee.connect(challenger).setChallengerPublicKey(newPublicKey)).to.be.revertedWith(expectedRevertMessageChallenger);
 		// })
 
-		// it("Check isApprovedForOperator function", async function () {
-		// 	const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
-		// 	await referee.connect(refereeDefaultAdmin).setApprovalForOperator(kycAdmin.address, true);
-		// 	const isApproved = await referee.isApprovedForOperator(refereeDefaultAdmin.address, kycAdmin.address);
-		// 	assert.equal(isApproved, true, "The operator is not approved");
-		// })
-
-		// it("Check setApprovalForOperator function", async function () {
-		// 	const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
-		// 	await referee.connect(refereeDefaultAdmin).setApprovalForOperator(kycAdmin.address, true);
-		// 	let isApproved = await referee.isApprovedForOperator(refereeDefaultAdmin.address, kycAdmin.address);
-		// 	assert.equal(isApproved, true, "The operator is not approved");
-		// 	await referee.connect(refereeDefaultAdmin).setApprovalForOperator(kycAdmin.address, false);
-		// 	isApproved = await referee.isApprovedForOperator(refereeDefaultAdmin.address, kycAdmin.address);
-		// 	assert.equal(isApproved, false, "The operator is still approved");
-		// })
-
-		// it("Check getOperatorAtIndex function", async function () {
-		// 	const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
-		// 	await referee.connect(refereeDefaultAdmin).setApprovalForOperator(kycAdmin.address, true);
-		// 	const operator = await referee.getOperatorAtIndex(refereeDefaultAdmin.address, 0);
-		// 	assert.equal(operator, kycAdmin.address, "The operator at index does not match");
-		// })
-
-		// it("Check getOperatorCount function", async function () {
-		// 	const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
-		// 	await referee.connect(refereeDefaultAdmin).setApprovalForOperator(kycAdmin.address, true);
-		// 	const count = await referee.getOperatorCount(refereeDefaultAdmin.address);
-		// 	assert.equal(count, BigInt(1), "The operator count does not match");
-		// })
-
-		// it("Check getOwnerForOperatorAtIndex function", async function () {
-		// 	const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
-		// 	await referee.connect(refereeDefaultAdmin).setApprovalForOperator(kycAdmin.address, true);
-		// 	const owner = await referee.getOwnerForOperatorAtIndex(kycAdmin.address, 0);
-		// 	assert.equal(owner, refereeDefaultAdmin.address, "The owner at index does not match");
-		// })
-
-		// it("Check getOwnerCountForOperator function", async function () {
-		// 	const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
-		// 	await referee.connect(refereeDefaultAdmin).setApprovalForOperator(kycAdmin.address, true);
-		// 	const count = await referee.getOwnerCountForOperator(kycAdmin.address);
-		// 	assert.equal(count, BigInt(1), "The owner count does not match");
-		// })
-
-		// it("Check addKycWallet function", async function () {
-		// 	const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
-		// 	await referee.connect(kycAdmin).addKycWallet(kycAdmin.address);
-		// 	const isApproved = await referee.isKycApproved(kycAdmin.address);
-		// 	assert.equal(isApproved, true, "The wallet is not KYC approved");
-		// })
-
-		// it("Check removeKycWallet function", async function () {
-		// 	const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
-		// 	await referee.connect(kycAdmin).addKycWallet(kycAdmin.address);
-		// 	await referee.connect(kycAdmin).removeKycWallet(kycAdmin.address);
-		// 	const isApproved = await referee.isKycApproved(kycAdmin.address);
-		// 	assert.equal(isApproved, false, "The wallet is still KYC approved");
-		// })
-
-		// it("Check isKycApproved function", async function () {
-		// 	const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
-		// 	await referee.connect(kycAdmin).addKycWallet(kycAdmin.address);
-		// 	const isApproved = await referee.isKycApproved(kycAdmin.address);
-		// 	assert.equal(isApproved, true, "The wallet is not KYC approved");
-		// })
-
-		// it("Check getKycWalletAtIndex function", async function () {
-		// 	const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
-		// 	await referee.connect(kycAdmin).addKycWallet(kycAdmin.address);
-		// 	const count = await referee.getKycWalletCount();
-		// 	const wallet = await referee.getKycWalletAtIndex(count - BigInt(1));
-		// 	assert.equal(wallet, kycAdmin.address, "The wallet at index does not match");
-		// })
-
-		// it("Check getKycWalletCount function", async function () {
-		// 	const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
-		// 	const initialCount = await referee.getKycWalletCount();
-		// 	await referee.connect(kycAdmin).addKycWallet(kycAdmin.address);
-		// 	const finalCount = await referee.getKycWalletCount();
-		// 	assert.equal(finalCount, BigInt(initialCount + BigInt(1)), "The KYC wallet count does not match");
-		// })
-
-		// it("Check calculateChallengeEmissionAndTier function with increased total supply", async function() {
-		//     const {referee, xai, xaiMinter} = await loadFixture(deployInfrastructure);
-		//     const maxSupply = await xai.MAX_SUPPLY();
-
-
-		//     let previousEmissionAndTier = await referee.calculateChallengeEmissionAndTier();
-		//     let currentSupply = await referee.getCombinedTotalSupply();
-		//     let currentTier = maxSupply / BigInt(2);
-		//     let iterationCount = 0;
-
-		//     while(currentSupply < maxSupply && iterationCount < 23) {
-		//         // Calculate the amount to mint to reach the next tier
-		//         let mintAmount = currentTier - currentSupply;
-
-		//         // Break out of the loop if mint amount is 0
-		//         if (mintAmount === BigInt(0)) {
-		//             break;
-		//         }
+		it("Check isApprovedForOperator function", async function () {
+			const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
+			await referee.connect(refereeDefaultAdmin).setApprovalForOperator(kycAdmin.address, true);
+			const isApproved = await referee.isApprovedForOperator(refereeDefaultAdmin.address, kycAdmin.address);
+			assert.equal(isApproved, true, "The operator is not approved");
+		})
+
+		it("Check setApprovalForOperator function", async function () {
+			const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
+			await referee.connect(refereeDefaultAdmin).setApprovalForOperator(kycAdmin.address, true);
+			let isApproved = await referee.isApprovedForOperator(refereeDefaultAdmin.address, kycAdmin.address);
+			assert.equal(isApproved, true, "The operator is not approved");
+			await referee.connect(refereeDefaultAdmin).setApprovalForOperator(kycAdmin.address, false);
+			isApproved = await referee.isApprovedForOperator(refereeDefaultAdmin.address, kycAdmin.address);
+			assert.equal(isApproved, false, "The operator is still approved");
+		})
+
+		it("Check getOperatorAtIndex function", async function () {
+			const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
+			await referee.connect(refereeDefaultAdmin).setApprovalForOperator(kycAdmin.address, true);
+			const operator = await referee.getOperatorAtIndex(refereeDefaultAdmin.address, 0);
+			assert.equal(operator, kycAdmin.address, "The operator at index does not match");
+		})
+
+		it("Check getOperatorCount function", async function () {
+			const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
+			await referee.connect(refereeDefaultAdmin).setApprovalForOperator(kycAdmin.address, true);
+			const count = await referee.getOperatorCount(refereeDefaultAdmin.address);
+			assert.equal(count, BigInt(1), "The operator count does not match");
+		})
+
+		it("Check getOwnerForOperatorAtIndex function", async function () {
+			const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
+			await referee.connect(refereeDefaultAdmin).setApprovalForOperator(kycAdmin.address, true);
+			const owner = await referee.getOwnerForOperatorAtIndex(kycAdmin.address, 0);
+			assert.equal(owner, refereeDefaultAdmin.address, "The owner at index does not match");
+		})
+
+		it("Check getOwnerCountForOperator function", async function () {
+			const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
+			await referee.connect(refereeDefaultAdmin).setApprovalForOperator(kycAdmin.address, true);
+			const count = await referee.getOwnerCountForOperator(kycAdmin.address);
+			assert.equal(count, BigInt(1), "The owner count does not match");
+		})
+
+		it("Check addKycWallet function", async function () {
+			const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
+			await referee.connect(kycAdmin).addKycWallet(kycAdmin.address);
+			const isApproved = await referee.isKycApproved(kycAdmin.address);
+			assert.equal(isApproved, true, "The wallet is not KYC approved");
+		})
+
+		it("Check removeKycWallet function", async function () {
+			const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
+			await referee.connect(kycAdmin).addKycWallet(kycAdmin.address);
+			await referee.connect(kycAdmin).removeKycWallet(kycAdmin.address);
+			const isApproved = await referee.isKycApproved(kycAdmin.address);
+			assert.equal(isApproved, false, "The wallet is still KYC approved");
+		})
+
+		it("Check isKycApproved function", async function () {
+			const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
+			await referee.connect(kycAdmin).addKycWallet(kycAdmin.address);
+			const isApproved = await referee.isKycApproved(kycAdmin.address);
+			assert.equal(isApproved, true, "The wallet is not KYC approved");
+		})
+
+		it("Check getKycWalletAtIndex function", async function () {
+			const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
+			await referee.connect(kycAdmin).addKycWallet(kycAdmin.address);
+			const count = await referee.getKycWalletCount();
+			const wallet = await referee.getKycWalletAtIndex(count - BigInt(1));
+			assert.equal(wallet, kycAdmin.address, "The wallet at index does not match");
+		})
+
+		it("Check getKycWalletCount function", async function () {
+			const {referee, refereeDefaultAdmin, kycAdmin} = await loadFixture(deployInfrastructure);
+			const initialCount = await referee.getKycWalletCount();
+			await referee.connect(kycAdmin).addKycWallet(kycAdmin.address);
+			const finalCount = await referee.getKycWalletCount();
+			assert.equal(finalCount, BigInt(initialCount + BigInt(1)), "The KYC wallet count does not match");
+		})
+
+		it("Check calculateChallengeEmissionAndTier function with increased total supply", async function() {
+		    const {referee, xai, xaiMinter} = await loadFixture(deployInfrastructure);
+		    const maxSupply = await xai.MAX_SUPPLY();
+
+
+		    let previousEmissionAndTier = await referee.calculateChallengeEmissionAndTier();
+		    let currentSupply = await referee.getCombinedTotalSupply();
+		    let currentTier = maxSupply / BigInt(2);
+		    let iterationCount = 0;
+
+		    while(currentSupply < maxSupply && iterationCount < 23) {
+		        // Calculate the amount to mint to reach the next tier
+		        let mintAmount = currentTier - currentSupply;
+
+		        // Break out of the loop if mint amount is 0
+		        if (mintAmount === BigInt(0)) {
+		            break;
+		        }
 
-		//         // Mint the calculated amount
-		//         await xai.connect(xaiMinter).mint(xaiMinter.address, mintAmount);
+		        // Mint the calculated amount
+		        await xai.connect(xaiMinter).mint(xaiMinter.address, mintAmount);
 
-		//         // Update the current supply
-		//         currentSupply = await referee.getCombinedTotalSupply();
-
-		//         // Check that the emission and tier have changed
-		//         const currentEmissionAndTier = await referee.calculateChallengeEmissionAndTier();
-		//         assert.notDeepEqual(previousEmissionAndTier, currentEmissionAndTier, "The emission and tier did not change after increasing total supply");
-		//         previousEmissionAndTier = currentEmissionAndTier;
-
-		//         // Calculate the next tier
-		//         currentTier = currentSupply + (mintAmount / BigInt(2));
-
-		//         // Increase iteration count
-		//         iterationCount++;
-		//     }
-		// })
-
-		// it("Check calculateChallengeEmissionAndTier", async function () {
-		// 	const {referee, xai, xaiMinter} = await loadFixture(deployInfrastructure);
-		// 	const maxSupply = await xai.MAX_SUPPLY();
-
-		// 	let tokensToMint = [ethers.parseEther('1250000000')];
-		// 	for (let i = 0; i < 22; i++) {
-		// 		tokensToMint.push(tokensToMint[i] / BigInt(2));
-		// 	}
-
-		// 	let challengeAllocations = [BigInt('71347031963470319634703')];
-		// 	for (let i = 0; i < 22; i++) {
-		// 		challengeAllocations.push(challengeAllocations[i] / BigInt(2));
-		// 	}
-
-		// 	let calculatedChallengeAllocations = [];
-		// 	let calculatedThresholds = [];
-		// 	let totalSupplies = [];
-		// 	await xai.connect(xaiMinter).mint(xaiMinter.address, 1);
-		// 	for (let i = 0; i < tokensToMint.length; i++) {
-
-		// 		// calculate the ChallengeEmissionAndTier
-		// 		const [_challengeAllocation, threshold] = await referee.calculateChallengeEmissionAndTier();
-		// 		const totalSupply = await referee.getCombinedTotalSupply();
-		// 		calculatedChallengeAllocations.push(_challengeAllocation);
-		// 		calculatedThresholds.push(threshold);
-		// 		totalSupplies.push(totalSupply);
-
-
-		// 		// mint the tokens to get to the next tier
-		// 		await xai.connect(xaiMinter).mint(xaiMinter.address, tokensToMint[i]);
-		// 	}
-
-		// 	// for (let i = 0; i < calculatedChallengeAllocations.length; i++) {
-		// 	// 	console.log(i, totalSupplies[i], calculatedThresholds[i], calculatedChallengeAllocations[i]);
-		// 	// }
-
-		// 	// compare the entire arrays
-		// 	expect(calculatedChallengeAllocations).to.deep.equal(challengeAllocations);
-		// 	expect(calculatedThresholds).to.deep.equal(tokensToMint);
-		// })
-
-		// it("Check calculateChallengeEmissionAndTier with a variance", async function () {
-		// 	const {referee, xai, xaiMinter} = await loadFixture(deployInfrastructure);
-		// 	this.timeout(1000 * 60 * 20);
-		// 	const maxSupply = await xai.MAX_SUPPLY();
-
-		// 	let tokensToMint = [ethers.parseEther('1250000000')];
-		// 	for (let i = 0; i < 22; i++) {
-		// 		tokensToMint.push(tokensToMint[i] / BigInt(2));
-		// 	}
-
-		// 	let challengeAllocations = [BigInt('71347031963470319634703')];
-		// 	for (let i = 0; i < 22; i++) {
-		// 		challengeAllocations.push(challengeAllocations[i] / BigInt(2));
-		// 	}
-
-		// 	for (let i = 0; i < tokensToMint.length; i++) {
-
-		// 		const amountInTier = tokensToMint[i];
-		// 		const challengeAllocation = challengeAllocations[i];
-		// 		const variance = BigInt(200);
-		// 		const mintAmount = amountInTier / variance;
-
-		// 		for (let k = 0; k < variance; k++) {
-
-		// 			// console.log(i, k, mintAmount * (variance - BigInt(k)))
-
-		// 			// check the current variance
-		// 			const [_challengeAllocation, threshold] = await referee.calculateChallengeEmissionAndTier();
-		// 			expect(_challengeAllocation).to.be.eq(challengeAllocation);
-		// 			expect(threshold).to.be.eq(amountInTier);
-
-		// 			// mint the tokens to get to the next tier
-		// 			await xai.connect(xaiMinter).mint(xaiMinter.address, mintAmount);
-
-		// 		}
-
-		// 	}
-		// })
-
-		// it("Check submitChallenge function", async function () {
-		// 	const {referee, challenger, xai, esXai, publicKeyHex} = await loadFixture(deployInfrastructure);
-		// 	const maxSupply = await xai.MAX_SUPPLY();
-		// 	const initialChallengeCounter = await referee.challengeCounter();
-		// 	const initialTotalSupply = await referee.getCombinedTotalSupply();
-		// 	const initialAllocatedTokens = initialTotalSupply - (await xai.totalSupply() + await esXai.totalSupply());
-		// 	const initialGasSubsidyRecipientBalance = await xai.balanceOf(referee.gasSubsidyRecipient());
-		// 	const [challengeMintAmount] = await referee.calculateChallengeEmissionAndTier();
-
-		// 	// Submit a challenge
-		// 	await referee.connect(challenger).submitChallenge(
-		// 		100,
-		// 		99,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000000",
-		// 		0,
-		// 		publicKeyHex
-		// 	);
-
-		// 	const finalChallengeCounter = await referee.challengeCounter();
-		// 	const finalTotalSupply = await referee.getCombinedTotalSupply();
-		// 	const finalAllocatedTokens = finalTotalSupply - (await xai.totalSupply() + await esXai.totalSupply());
-		// 	const finalGasSubsidyRecipientBalance = await xai.balanceOf(referee.gasSubsidyRecipient());
-
-		// 	// Check that the challenge counter has increased
-		// 	assert.equal(finalChallengeCounter, initialChallengeCounter + BigInt(1), "The challenge counter did not increase");
-
-		// 	// Check that the total supply has increased
-		// 	assert.equal(finalTotalSupply, initialTotalSupply + challengeMintAmount, "The total supply did not increase");
-
-		// 	// Check that the allocated tokens have increased
-		// 	assert.equal(finalAllocatedTokens, initialAllocatedTokens + challengeMintAmount - (challengeMintAmount * BigInt(15) / BigInt(100)), "The allocated tokens did not increase");
-
-		// 	// Check that the gas subsidy recipient's balance has increased
-		// 	assert.equal(finalGasSubsidyRecipientBalance, initialGasSubsidyRecipientBalance + (challengeMintAmount * BigInt(15) / BigInt(100)), "The gas subsidy recipient's balance did not increase");
-		// })
-
-		// it("Check that submitting a second challenge will close the previous challenge", async function () {
-		// 	const {referee, challenger, publicKeyHex} = await loadFixture(deployInfrastructure);
-		// 	const initialChallengeCounter = await referee.challengeCounter();
-
-		// 	// Submit the first challenge
-		// 	await referee.connect(challenger).submitChallenge(
-		// 		100,
-		// 		99,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000000",
-		// 		0,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000000"
-		// 	);
-
-		// 	// Submit the second challenge
-		// 	await referee.connect(challenger).submitChallenge(
-		// 		101,
-		// 		100,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000001",
-		// 		0,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000000"
-		// 	);
-
-		// 	const finalChallengeCounter = await referee.challengeCounter();
-		// 	const previousChallenge = await referee.getChallenge(initialChallengeCounter);
-
-		// 	// Check that the challenge counter has increased by 2
-		// 	assert.equal(finalChallengeCounter, initialChallengeCounter + BigInt(2), "The challenge counter did not increase correctly");
-
-		// 	// Check that the previous challenge is closed
-		// 	assert.equal(previousChallenge.openForSubmissions, false, "The previous challenge did not close after submitting a new challenge");
-		// });
-
-		// it("Check that addr1 submitting a winning hash receives the allocated reward", async function () {
-		// 	const {referee, operator, challenger, esXai, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
-
-		// 	// Mint 200 licenses so that a reward will be most likely guaranteed
-		// 	await mintBatchedLicenses(2000, nodeLicense, addr1);
-
-		// 	// Submit a challenge
-		// 	await referee.connect(challenger).submitChallenge(
-		// 		100,
-		// 		99,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000000",
-		// 		0,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000000"
-		// 	);
-
-		// 	// check to see the challenge is open for submissions
-		// 	const {openForSubmissions} = await referee.getChallenge(0);
-		// 	expect(openForSubmissions).to.be.eq(true);
-
-		// 	// Submit a bulk assertion
-		// 	await referee.connect(operator).submitBulkAssertion(addr1.address, 0, "0x0000000000000000000000000000000000000000000000000000000000000000");
-
-		// 	// Check the submission
-		// 	const submission = await referee.bulkSubmissions(0, await addr1.getAddress());
-		// 	assert.equal(submission[0], true, "The submission was not submitted");
-		// 	assert.equal(submission[1], false, "The submission was already claimed");
-		// 	const winningKeyCount = submission[3];
-		// 	expect(winningKeyCount).to.be.gt(0);
-
-		// 	// submit another assertion to end the previous challenge
-		// 	await referee.connect(challenger).submitChallenge(
-		// 		101,
-		// 		100,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000001",
-		// 		0,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000000"
-		// 	);
-
-		// 	// check to see the previous challenge closed
-		// 	const {
-		// 		openForSubmissions: openForSubmissionsAfter,
-		// 		numberOfEligibleClaimers,
-		// 		rewardAmountForClaimers
-		// 	} = await referee.getChallenge(0);
-		// 	expect(openForSubmissionsAfter).to.be.eq(false);
-		// 	expect(numberOfEligibleClaimers).to.be.gt(BigInt(0));
-
-		// 	// get the esXai balance of the addr1 prior to claiming
-		// 	const balanceBefore = await esXai.balanceOf(await addr1.getAddress());
-
-		// 	// Claim the reward
-		// 	await referee.connect(operator).claimBulkRewards(await addr1.getAddress(), 0);
-
-		// 	// Check the submission again to see its now claimed
-		// 	const claimedSubmission = await referee.bulkSubmissions(0, await addr1.getAddress());
-		// 	assert.equal(claimedSubmission[1], true, "The reward was not claimed");
-
-		// 	// check to see we got all the rewards from the claim
-		// 	const balanceAfter = await esXai.balanceOf(await addr1.getAddress());
-		// 	assert.equal(balanceAfter, balanceBefore + rewardAmountForClaimers, "The amount of esXai minted was wrong")
-
-		// 	// check the esxai balance is equal to the total claims for the node owner
-		// 	const totalClaimsForAddr1 = await referee._lifetimeClaims(await addr1.getAddress());
-		// 	assert.equal(totalClaimsForAddr1, balanceAfter, "total claims does not match the esXai value")
-
-		// 	// check getChallenge is able to iterate over both challenges
-		// 	const firstChallenge = await referee.getChallenge(0);
-		// 	const secondChallenge = await referee.getChallenge(1);
-		// 	assert.equal(firstChallenge.openForSubmissions, false, "First challenge is still open for submissions");
-		// 	assert.equal(secondChallenge.openForSubmissions, true, "Second challenge is not open for submissions");
-		// });
-
-		// it("Check that an assertion for a challenge, can't be submitted more than once", async function () {
-		// 	const {referee, challenger} = await loadFixture(deployInfrastructure);
-
-		// 	// Submit the same challenge twice
-		// 	await referee.connect(challenger).submitChallenge(
-		// 		101,
-		// 		100,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000001",
-		// 		0,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000000"
-		// 	);
-
-		// 	await expect(
-		// 		referee.connect(challenger).submitChallenge(
-		// 			101,
-		// 			100,
-		// 			"0x0000000000000000000000000000000000000000000000000000000000000001",
-		// 			0,
-		// 			"0x0000000000000000000000000000000000000000000000000000000000000000"
-		// 		)
-		// 	).to.be.revertedWith("9");
-		// })
-
-		// it("Check that only a challenger can can submit a challenge", async function () {
-		// 	const {referee, operator, challenger} = await loadFixture(deployInfrastructure);
-		// 	const expectedRevertMessageChallenger = `AccessControl: account ${operator.address.toLowerCase()} is missing role ${await referee.CHALLENGER_ROLE()}`;
-
-		// 	// Attempt to submit a challenge as an operator, which should fail
-		// 	await expect(
-		// 		referee.connect(operator).submitChallenge(
-		// 			101,
-		// 			100,
-		// 			"0x0000000000000000000000000000000000000000000000000000000000000001",
-		// 			0,
-		// 			"0x0000000000000000000000000000000000000000000000000000000000000000"
-		// 		)
-		// 	).to.be.revertedWith(expectedRevertMessageChallenger);
-
-		// 	// Submit a challenge as a challenger, which should succeed
-		// 	await referee.connect(challenger).submitChallenge(
-		// 		101,
-		// 		100,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000001",
-		// 		0,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000000"
-		// 	);
-		// })
-
-		// it("Check that rewards for a challenge can be expired", async function () {
-		// 	const {referee, operator, challenger} = await loadFixture(deployInfrastructure);
-
-		// 	// Submit a challenge
-		// 	await referee.connect(challenger).submitChallenge(
-		// 		101,
-		// 		100,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000001",
-		// 		0,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000000"
-		// 	);
-
-		// 	// Attempt to expire the challenge rewards early
-		// 	await expect(
-		// 		referee.connect(operator).expireChallengeRewards(0)
-		// 	).to.be.revertedWith("29");
-
-		// 	// Fast forward time by 270 days
-		// 	await ethers.provider.send("evm_increaseTime", [23328000]);
-		// 	await ethers.provider.send("evm_mine");
-
-		// 	// Attempt to expire the challenge rewards
-		// 	await referee.connect(operator).expireChallengeRewards(0);
-
-		// 	// Check that the challenge is marked as expired
-		// 	const challenge = await referee.challenges(0);
-		// 	assert.equal(challenge.expiredForRewarding, true, "Challenge rewards were not expired");
-		// });
-
-		// it("Check that rewards for a challenge can be expired via claimReward", async function () {
-		// 	const {referee, operator, challenger} = await loadFixture(deployInfrastructure);
-
-		// 	// Submit a challenge
-		// 	await referee.connect(challenger).submitChallenge(
-		// 		101,
-		// 		100,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000001",
-		// 		0,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000000"
-		// 	);
-
-		// 	// Close the challenge to allow claims by submitting the next challenge
-		// 	await referee.connect(challenger).submitChallenge(
-		// 		102,
-		// 		101,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000002",
-		// 		0,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000000"
-		// 	);
-
-		// 	// Fast forward time by 270 days
-		// 	await ethers.provider.send("evm_increaseTime", [23328000]);
-		// 	await ethers.provider.send("evm_mine");
-
-		// 	// Attempt to claim reward, which should expire the challenge rewards
-		// 	await referee.connect(operator).claimReward(0, 0);
-
-		// 	// Check that the challenge is marked as expired
-		// 	const challenge = await referee.challenges(0);
-		// 	assert.equal(challenge.expiredForRewarding, true, "Challenge rewards were not expired via claimReward");
-		// });
-
-		// it("Check that submitting an invalid successorRoot does not create a submission", async function () {
-		// 	const {referee, operator, challenger, addr1} = await loadFixture(deployInfrastructure);
-
-		// 	// Submit a challenge
-		// 	await referee.connect(challenger).submitChallenge(
-		// 		101,
-		// 		100,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000001",
-		// 		0,
-		// 		"0x0000000000000000000000000000000000000000000000000000000000000000"
-		// 	);
+		        // Update the current supply
+		        currentSupply = await referee.getCombinedTotalSupply();
+
+		        // Check that the emission and tier have changed
+		        const currentEmissionAndTier = await referee.calculateChallengeEmissionAndTier();
+		        assert.notDeepEqual(previousEmissionAndTier, currentEmissionAndTier, "The emission and tier did not change after increasing total supply");
+		        previousEmissionAndTier = currentEmissionAndTier;
+
+		        // Calculate the next tier
+		        currentTier = currentSupply + (mintAmount / BigInt(2));
+
+		        // Increase iteration count
+		        iterationCount++;
+		    }
+		})
+
+		it("Check calculateChallengeEmissionAndTier", async function () {
+			const {referee, xai, xaiMinter} = await loadFixture(deployInfrastructure);
+			const maxSupply = await xai.MAX_SUPPLY();
+
+			let tokensToMint = [ethers.parseEther('1250000000')];
+			for (let i = 0; i < 22; i++) {
+				tokensToMint.push(tokensToMint[i] / BigInt(2));
+			}
+
+			let challengeAllocations = [BigInt('71347031963470319634703')];
+			for (let i = 0; i < 22; i++) {
+				challengeAllocations.push(challengeAllocations[i] / BigInt(2));
+			}
+
+			let calculatedChallengeAllocations = [];
+			let calculatedThresholds = [];
+			let totalSupplies = [];
+			await xai.connect(xaiMinter).mint(xaiMinter.address, 1);
+			for (let i = 0; i < tokensToMint.length; i++) {
+
+				// calculate the ChallengeEmissionAndTier
+				const [_challengeAllocation, threshold] = await referee.calculateChallengeEmissionAndTier();
+				const totalSupply = await referee.getCombinedTotalSupply();
+				calculatedChallengeAllocations.push(_challengeAllocation);
+				calculatedThresholds.push(threshold);
+				totalSupplies.push(totalSupply);
+
+
+				// mint the tokens to get to the next tier
+				await xai.connect(xaiMinter).mint(xaiMinter.address, tokensToMint[i]);
+			}
+
+			// for (let i = 0; i < calculatedChallengeAllocations.length; i++) {
+			// 	console.log(i, totalSupplies[i], calculatedThresholds[i], calculatedChallengeAllocations[i]);
+			// }
+
+			// compare the entire arrays
+			expect(calculatedChallengeAllocations).to.deep.equal(challengeAllocations);
+			expect(calculatedThresholds).to.deep.equal(tokensToMint);
+		})
+
+		it("Check calculateChallengeEmissionAndTier with a variance", async function () {
+			const {referee, xai, xaiMinter} = await loadFixture(deployInfrastructure);
+			this.timeout(1000 * 60 * 20);
+			const maxSupply = await xai.MAX_SUPPLY();
+
+			let tokensToMint = [ethers.parseEther('1250000000')];
+			for (let i = 0; i < 22; i++) {
+				tokensToMint.push(tokensToMint[i] / BigInt(2));
+			}
+
+			let challengeAllocations = [BigInt('71347031963470319634703')];
+			for (let i = 0; i < 22; i++) {
+				challengeAllocations.push(challengeAllocations[i] / BigInt(2));
+			}
+
+			for (let i = 0; i < tokensToMint.length; i++) {
+
+				const amountInTier = tokensToMint[i];
+				const challengeAllocation = challengeAllocations[i];
+				const variance = BigInt(200);
+				const mintAmount = amountInTier / variance;
+
+				for (let k = 0; k < variance; k++) {
+
+					// console.log(i, k, mintAmount * (variance - BigInt(k)))
+
+					// check the current variance
+					const [_challengeAllocation, threshold] = await referee.calculateChallengeEmissionAndTier();
+					expect(_challengeAllocation).to.be.eq(challengeAllocation);
+					expect(threshold).to.be.eq(amountInTier);
+
+					// mint the tokens to get to the next tier
+					await xai.connect(xaiMinter).mint(xaiMinter.address, mintAmount);
+
+				}
+
+			}
+		})
+
+		it("Check submitChallenge function", async function () {
+			const {referee, challenger, xai, esXai, publicKeyHex} = await loadFixture(deployInfrastructure);
+			const maxSupply = await xai.MAX_SUPPLY();
+			const initialChallengeCounter = await referee.challengeCounter();
+			const initialTotalSupply = await referee.getCombinedTotalSupply();
+			const initialAllocatedTokens = initialTotalSupply - (await xai.totalSupply() + await esXai.totalSupply());
+			const initialGasSubsidyRecipientBalance = await xai.balanceOf(referee.gasSubsidyRecipient());
+			const [challengeMintAmount] = await referee.calculateChallengeEmissionAndTier();
+
+			// Submit a challenge
+			await referee.connect(challenger).submitChallenge(
+				100,
+				99,
+				"0x0000000000000000000000000000000000000000000000000000000000000000",
+				0,
+				publicKeyHex
+			);
+
+			const finalChallengeCounter = await referee.challengeCounter();
+			const finalTotalSupply = await referee.getCombinedTotalSupply();
+			const finalAllocatedTokens = finalTotalSupply - (await xai.totalSupply() + await esXai.totalSupply());
+			const finalGasSubsidyRecipientBalance = await xai.balanceOf(referee.gasSubsidyRecipient());
+
+			// Check that the challenge counter has increased
+			assert.equal(finalChallengeCounter, initialChallengeCounter + BigInt(1), "The challenge counter did not increase");
+
+			// Check that the total supply has increased
+			assert.equal(finalTotalSupply, initialTotalSupply + challengeMintAmount, "The total supply did not increase");
+
+			// Check that the allocated tokens have increased
+			assert.equal(finalAllocatedTokens, initialAllocatedTokens + challengeMintAmount - (challengeMintAmount * BigInt(15) / BigInt(100)), "The allocated tokens did not increase");
+
+			// Check that the gas subsidy recipient's balance has increased
+			assert.equal(finalGasSubsidyRecipientBalance, initialGasSubsidyRecipientBalance + (challengeMintAmount * BigInt(15) / BigInt(100)), "The gas subsidy recipient's balance did not increase");
+		})
+
+		it("Check that submitting a second challenge will close the previous challenge", async function () {
+			const {referee, challenger, publicKeyHex} = await loadFixture(deployInfrastructure);
+			const initialChallengeCounter = await referee.challengeCounter();
+
+			// Submit the first challenge
+			await referee.connect(challenger).submitChallenge(
+				100,
+				99,
+				"0x0000000000000000000000000000000000000000000000000000000000000000",
+				0,
+				"0x0000000000000000000000000000000000000000000000000000000000000000"
+			);
+
+			// Submit the second challenge
+			await referee.connect(challenger).submitChallenge(
+				101,
+				100,
+				"0x0000000000000000000000000000000000000000000000000000000000000001",
+				0,
+				"0x0000000000000000000000000000000000000000000000000000000000000000"
+			);
+
+			const finalChallengeCounter = await referee.challengeCounter();
+			const previousChallenge = await referee.getChallenge(initialChallengeCounter);
+
+			// Check that the challenge counter has increased by 2
+			assert.equal(finalChallengeCounter, initialChallengeCounter + BigInt(2), "The challenge counter did not increase correctly");
+
+			// Check that the previous challenge is closed
+			assert.equal(previousChallenge.openForSubmissions, false, "The previous challenge did not close after submitting a new challenge");
+		});
+
+		it("Check that addr1 submitting a winning hash receives the allocated reward", async function () {
+			const {referee, operator, challenger, esXai, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+
+			// Mint 200 licenses so that a reward will be most likely guaranteed
+			await mintBatchedLicenses(2000, nodeLicense, addr1);
+
+			// Submit a challenge
+			await referee.connect(challenger).submitChallenge(
+				100,
+				99,
+				"0x0000000000000000000000000000000000000000000000000000000000000000",
+				0,
+				"0x0000000000000000000000000000000000000000000000000000000000000000"
+			);
+
+			// check to see the challenge is open for submissions
+			const {openForSubmissions} = await referee.getChallenge(0);
+			expect(openForSubmissions).to.be.eq(true);
+
+			// Submit a bulk assertion
+			await referee.connect(operator).submitBulkAssertion(addr1.address, 0, "0x0000000000000000000000000000000000000000000000000000000000000000");
+
+			// Check the submission
+			const submission = await referee.bulkSubmissions(0, await addr1.getAddress());
+			assert.equal(submission[0], true, "The submission was not submitted");
+			assert.equal(submission[1], false, "The submission was already claimed");
+			const winningKeyCount = submission[3];
+			expect(winningKeyCount).to.be.gt(0);
+
+			// submit another assertion to end the previous challenge
+			await referee.connect(challenger).submitChallenge(
+				101,
+				100,
+				"0x0000000000000000000000000000000000000000000000000000000000000001",
+				0,
+				"0x0000000000000000000000000000000000000000000000000000000000000000"
+			);
+
+			// check to see the previous challenge closed
+			const {
+				openForSubmissions: openForSubmissionsAfter,
+				numberOfEligibleClaimers,
+				rewardAmountForClaimers
+			} = await referee.getChallenge(0);
+			expect(openForSubmissionsAfter).to.be.eq(false);
+			expect(numberOfEligibleClaimers).to.be.gt(BigInt(0));
+
+			// get the esXai balance of the addr1 prior to claiming
+			const balanceBefore = await esXai.balanceOf(await addr1.getAddress());
+
+			// Claim the reward
+			await referee.connect(operator).claimBulkRewards(await addr1.getAddress(), 0);
+
+			// Check the submission again to see its now claimed
+			const claimedSubmission = await referee.bulkSubmissions(0, await addr1.getAddress());
+			assert.equal(claimedSubmission[1], true, "The reward was not claimed");
+
+			// check to see we got all the rewards from the claim
+			const balanceAfter = await esXai.balanceOf(await addr1.getAddress());
+			assert.equal(balanceAfter, balanceBefore + rewardAmountForClaimers, "The amount of esXai minted was wrong")
+
+			// check the esxai balance is equal to the total claims for the node owner
+			const totalClaimsForAddr1 = await referee._lifetimeClaims(await addr1.getAddress());
+			assert.equal(totalClaimsForAddr1, balanceAfter, "total claims does not match the esXai value")
+
+			// check getChallenge is able to iterate over both challenges
+			const firstChallenge = await referee.getChallenge(0);
+			const secondChallenge = await referee.getChallenge(1);
+			assert.equal(firstChallenge.openForSubmissions, false, "First challenge is still open for submissions");
+			assert.equal(secondChallenge.openForSubmissions, true, "Second challenge is not open for submissions");
+		});
+
+		it("Check that an assertion for a challenge, can't be submitted more than once", async function () {
+			const {referee, challenger} = await loadFixture(deployInfrastructure);
+
+			// Submit the same challenge twice
+			await referee.connect(challenger).submitChallenge(
+				101,
+				100,
+				"0x0000000000000000000000000000000000000000000000000000000000000001",
+				0,
+				"0x0000000000000000000000000000000000000000000000000000000000000000"
+			);
+
+			await expect(
+				referee.connect(challenger).submitChallenge(
+					101,
+					100,
+					"0x0000000000000000000000000000000000000000000000000000000000000001",
+					0,
+					"0x0000000000000000000000000000000000000000000000000000000000000000"
+				)
+			).to.be.revertedWith("9");
+		})
+
+		it("Check that only a challenger can can submit a challenge", async function () {
+			const {referee, operator, challenger} = await loadFixture(deployInfrastructure);
+			const expectedRevertMessageChallenger = `AccessControl: account ${operator.address.toLowerCase()} is missing role ${await referee.CHALLENGER_ROLE()}`;
+
+			// Attempt to submit a challenge as an operator, which should fail
+			await expect(
+				referee.connect(operator).submitChallenge(
+					101,
+					100,
+					"0x0000000000000000000000000000000000000000000000000000000000000001",
+					0,
+					"0x0000000000000000000000000000000000000000000000000000000000000000"
+				)
+			).to.be.revertedWith(expectedRevertMessageChallenger);
+
+			// Submit a challenge as a challenger, which should succeed
+			await referee.connect(challenger).submitChallenge(
+				101,
+				100,
+				"0x0000000000000000000000000000000000000000000000000000000000000001",
+				0,
+				"0x0000000000000000000000000000000000000000000000000000000000000000"
+			);
+		})
+
+		it("Check that rewards for a challenge can be expired", async function () {
+			const {referee, operator, challenger} = await loadFixture(deployInfrastructure);
+
+			// Submit a challenge
+			await referee.connect(challenger).submitChallenge(
+				101,
+				100,
+				"0x0000000000000000000000000000000000000000000000000000000000000001",
+				0,
+				"0x0000000000000000000000000000000000000000000000000000000000000000"
+			);
+
+			// Attempt to expire the challenge rewards early
+			await expect(
+				referee.connect(operator).expireChallengeRewards(0)
+			).to.be.revertedWith("29");
+
+			// Fast forward time by 270 days
+			await ethers.provider.send("evm_increaseTime", [23328000]);
+			await ethers.provider.send("evm_mine");
+
+			// Attempt to expire the challenge rewards
+			await referee.connect(operator).expireChallengeRewards(0);
+
+			// Check that the challenge is marked as expired
+			const challenge = await referee.challenges(0);
+			assert.equal(challenge.expiredForRewarding, true, "Challenge rewards were not expired");
+		});
+
+		it("Check that rewards for a challenge can be expired via claimReward", async function () {
+			const {referee, operator, challenger} = await loadFixture(deployInfrastructure);
+
+			// Submit a challenge
+			await referee.connect(challenger).submitChallenge(
+				101,
+				100,
+				"0x0000000000000000000000000000000000000000000000000000000000000001",
+				0,
+				"0x0000000000000000000000000000000000000000000000000000000000000000"
+			);
+
+			// Close the challenge to allow claims by submitting the next challenge
+			await referee.connect(challenger).submitChallenge(
+				102,
+				101,
+				"0x0000000000000000000000000000000000000000000000000000000000000002",
+				0,
+				"0x0000000000000000000000000000000000000000000000000000000000000000"
+			);
+
+			// Fast forward time by 270 days
+			await ethers.provider.send("evm_increaseTime", [23328000]);
+			await ethers.provider.send("evm_mine");
+
+			// Attempt to claim reward, which should expire the challenge rewards
+			await referee.connect(operator).claimReward(0, 0);
+
+			// Check that the challenge is marked as expired
+			const challenge = await referee.challenges(0);
+			assert.equal(challenge.expiredForRewarding, true, "Challenge rewards were not expired via claimReward");
+		});
+
+		it("Check that submitting an invalid successorRoot does not create a submission", async function () {
+			const {referee, operator, challenger, addr1} = await loadFixture(deployInfrastructure);
+
+			// Submit a challenge
+			await referee.connect(challenger).submitChallenge(
+				101,
+				100,
+				"0x0000000000000000000000000000000000000000000000000000000000000001",
+				0,
+				"0x0000000000000000000000000000000000000000000000000000000000000000"
+			);
 
 			
-		// 	// Submit a bulk assertion
-		// 	await referee.connect(operator).submitBulkAssertion(addr1.address, 0, "0x0000000000000000000000000000000000000000000000000000000000000002");
+			// Submit a bulk assertion
+			await referee.connect(operator).submitBulkAssertion(addr1.address, 0, "0x0000000000000000000000000000000000000000000000000000000000000002");
 			
-		// 	// Check that no submission was created
-		// 	const submission = await referee.bulkSubmissions(0, await addr1.getAddress());			
-		// 	assert.equal(submission[0], false, "Submission was created with invalid successorRoot");
-		// });
+			// Check that no submission was created
+			const submission = await referee.bulkSubmissions(0, await addr1.getAddress());			
+			assert.equal(submission[0], false, "Submission was created with invalid successorRoot");
+		});
 
 		it("Check creating a node on mock rollup", async function () {
 			const {referee, mockRollup} = await loadFixture(deployInfrastructure);
