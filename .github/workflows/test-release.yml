@@ -13,7 +13,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     env: # Pass the version as an environment variable to each matrix job
-      VERSION: PR-${{ github.event.pull_request.number }}
+      VERSION: 1.0.0-pr-${{ github.event.pull_request.number }}
 
     steps:
       - name: Checkout code
