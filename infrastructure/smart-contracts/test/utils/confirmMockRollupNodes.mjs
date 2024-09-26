@@ -10,11 +10,10 @@
  * @param {BigInt} previousAssertion - The previous assertion id.
  * @returns {Object} - An object containing the nodes, assertions, confirmData, and confirmHash.
  */
-export const submitMockRollupChallenge = async (
+export const confirmMockRollupNodes = async (
     referee, 
-    challengerWallet, 
     mockRollup, 
-    refereeCalculations, 
+    refereeCalculations,
     currentAssertion,
     previousAssertion
 ) => {
@@ -28,61 +27,39 @@ export const submitMockRollupChallenge = async (
     const prevRollupAddress = await referee.rollupAddress();
     const mockRollupAddress = await mockRollup.getAddress();
     await referee.setRollupAddress(mockRollupAddress);
-    
-    // Create a Node on the MockRollup
-    let nodeArray = [];
+
+    //confirm nodes
     let assertionArray = [];
-    let lastNodeBlockNumber = 0;
+    let trxArray = [];
     for (let i = previousAssertion + 1; i <= currentAssertion; i++) {
-        //create new node on mock rollup
-        let hexStr = "0x" + BigInt(i).toString(16).padStart(64, "0"); //make unique hex string
-        await mockRollup.createNode(
+        let hexStr = "0x" + BigInt(i).toString(16).padStart(64, "0");
+        let trx = await mockRollup.confirmNode(
             i,
             hexStr,
             hexStr
         );
-        
-        //read the Node from the MockRollup to get Node data
-        const node = await mockRollup.getNode(i);
-        
-        //push node into array
-        nodeArray.push(node);
         assertionArray.push(i);
-        
-        //update last block number
-        lastNodeBlockNumber = node.createdAtBlock;
+        trxArray.push(trx);
     }
-    
+
     //get confirm data and hash from contract
     const [confirmData, confirmHash] = await refereeCalculations.getConfirmDataMultipleAssertions(
         assertionArray, 
         mockRollupAddress
     );
     
-    // Submit a challenge pointing to the MockRollup Node(s)
-    let trx = await referee.connect(challengerWallet).submitChallenge(
-        currentAssertion,
-        previousAssertion,
-        confirmHash, 
-        lastNodeBlockNumber, 
-        "0x0000000000000000000000000000000000000000000000000000000000000000"
-    );
-    
-    // set isCheckingAssertions to false in the Referee
+    //set isCheckingAssertions to false in the Referee
     isAssertionChecking = await referee.isCheckingAssertions();
     if (isAssertionChecking) {
         await referee.toggleAssertionChecking();
     }
 
-    // set rollup address back to previous rollup address
+    //set rollup address back to previous rollup address
     await referee.setRollupAddress(prevRollupAddress);
 
-    // Return all Node and Challenge data for further use in the testcase
     return {
-        nodes: nodeArray,
-        assertions: assertionArray,
         confirmData: confirmData,
         confirmHash: confirmHash,
-        challengeTrxHash: trx
+        transactions: trxArray
     }
 };
