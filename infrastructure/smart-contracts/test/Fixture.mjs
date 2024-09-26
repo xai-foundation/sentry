@@ -343,6 +343,9 @@ describe("Fixture Tests", function () {
         const referee9 = await upgrades.upgradeProxy((await referee.getAddress()), Referee9, { call: { fn: "initialize", args: [await refereeCalculations.getAddress()] } });
         await referee9.waitForDeployment();
 
+        // MockRollup
+        const MockRollupContractFactory = await ethers.getContractFactory("MockRollup");
+        const mockRollup = await MockRollupContractFactory.deploy();
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
@@ -389,7 +392,8 @@ describe("Fixture Tests", function () {
             chainlinkXaiUsdPriceFeed,
             tinyKeysAirDrop,
             airdropMultiplier,
-            refereeCalculations
+            refereeCalculations,
+            mockRollup
         };
     }
 
