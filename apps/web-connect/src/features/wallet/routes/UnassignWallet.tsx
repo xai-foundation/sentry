@@ -1,6 +1,6 @@
 import {useNavigate, useParams} from "react-router-dom";
 import {wagmiConfig, chains} from "../../../main";
-import {useAccount, useWriteContract } from "wagmi";
+import {useAccount,  useWriteContract } from "wagmi";
 import {config, RefereeAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {ConnectButton, PrimaryButton} from "@sentry/ui";
@@ -41,6 +41,11 @@ export function UnassignWallet() {
 	function returnToClient() {
 		window.location = `xai-sentry://unassigned-wallet?txHash=${data}` as unknown as Location;
 	}
+	
+	function handleConnectClick() {
+		open();
+	}
+
 
 	return (
 		<div>
@@ -85,7 +90,7 @@ export function UnassignWallet() {
 								/>
 							) : (
 								<div className="mt-6 w-full">
-									<ConnectButton address={address} onOpen={open} isFullWidth/>
+									<ConnectButton address={address} onOpen={handleConnectClick} isFullWidth/>
 								</div>
 							)}
 
