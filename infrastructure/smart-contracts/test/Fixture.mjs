@@ -397,7 +397,7 @@ describe("Fixture Tests", function () {
     //describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
     //describe("Xai", XaiTests(deployInfrastructure).bind(this));
     //describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
-    //describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
+    describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
     //describe("Referee", RefereeTests(deployInfrastructure).bind(this));
     //describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
     //describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
