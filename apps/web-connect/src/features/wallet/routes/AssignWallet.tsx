@@ -39,6 +39,11 @@ export function AssignWallet() {
 	function returnToClient() {
 		window.location = `xai-sentry://assigned-wallet?txHash=${data}` as unknown as Location;
 	}
+	
+	function handleConnectClick() {
+		open();
+	}
+
 
 	return (
 		<div className={"bg-background-image"}>
@@ -83,7 +88,7 @@ export function AssignWallet() {
 								/>
 							) : (
 								<div className="mt-6 w-full">
-									<ConnectButton  address={address} onOpen={open} isFullWidth />
+									<ConnectButton  address={address} onOpen={handleConnectClick} isFullWidth />
 								</div>
 							)}
 
