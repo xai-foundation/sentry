@@ -98,7 +98,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             await xai.connect(addr1).approve(await nodeLicense.getAddress(), priceInXai);
 
             // Mint an NFT
-            await nodeLicense.connect(addr1).mintWithXai(1, "", false, priceInEther);
+            await nodeLicense.connect(addr1).mintWithXai(1, "", false, priceInXai);
 
             // Check the NFT was received
             const owner = await nodeLicense.ownerOf(totalSupplyBeforeMint + BigInt(1));
@@ -429,14 +429,36 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             await xai.connect(addr1).approve(await nodeLicense.getAddress(), xaiPrice);
 
             // Mint the remaining licenses
-            const tx = await nodeLicense.connect(addr1).mintWithXai(BATCH_SIZE, "", false, ethPrice);
+            const tx = await nodeLicense.connect(addr1).mintWithXai(BATCH_SIZE, "", false, xaiPrice);
             console.log("Gas limit: ", tx.gasLimit.toString());
             const txWait = await tx.wait(1);
             console.log("Gas used: ", txWait.gasUsed.toString());
 
-
             const balanceAfter = await nodeLicense.balanceOf(addr1.address);
             expect(balanceAfter).to.eq(BATCH_SIZE + 1);
+        });
+
+        
+        it("Check minting an NFT and receiving it with ETH using the MintTo Function", async function() {
+            const {nodeLicense, addr1, addr2, fundsReceiver} = await loadFixture(deployInfrastructure);
+            const initialBalance = await ethers.provider.getBalance(fundsReceiver.address);
+            const price = await nodeLicense.price(1, "");
+            const totalSupplyBeforeMint = await nodeLicense.totalSupply();
+
+            // Mint an NFT
+            await nodeLicense.connect(addr2).mintTo(addr1.address, 1, "", { value: price });
+
+            // Check the NFT was received
+            const owner = await nodeLicense.ownerOf(totalSupplyBeforeMint + BigInt(1));
+            expect(owner).to.equal(addr1.address);
+
+            // Check the fundsReceiver received the funds
+            const finalBalance = await ethers.provider.getBalance(fundsReceiver.address);
+            expect(finalBalance).to.eq(initialBalance + price);
+
+            // Check the total supply increased
+            const totalSupplyAfterMint = await nodeLicense.totalSupply();
+            expect(totalSupplyAfterMint).to.eq(totalSupplyBeforeMint + BigInt(1));
         });
     }
 }
