@@ -26,7 +26,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Matrix build jobs that depend on the dryrun job
-  release:
+  build:
     needs: dryrun
     strategy:
       matrix:
@@ -116,7 +116,7 @@ jobs:
           path: release-desktop-windows-latest
 
   checksum-and-release:
-    needs: release
+    needs: sign
     runs-on: macos-latest
 
     steps:
