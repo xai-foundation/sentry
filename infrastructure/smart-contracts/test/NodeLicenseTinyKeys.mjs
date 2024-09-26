@@ -445,10 +445,10 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             const price = await nodeLicense.price(1, "");
             const totalSupplyBeforeMint = await nodeLicense.totalSupply();
 
-            // Mint an NFT
+            // Mint an NFT to addr1 from addr2
             await nodeLicense.connect(addr2).mintTo(addr1.address, 1, "", { value: price });
 
-            // Check the NFT was received
+            // Check the NFT was received by addr1
             const owner = await nodeLicense.ownerOf(totalSupplyBeforeMint + BigInt(1));
             expect(owner).to.equal(addr1.address);
 
