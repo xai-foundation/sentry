@@ -558,14 +558,18 @@ export function RefereeTests(deployInfrastructure) {
 			//create mock rollup nodes
 			let currentAssertion = 2;
 			let previousAssertion = 0;
-			const res = await createMockRollupNodes(
+			const createRes = await createMockRollupNodes(
 				referee, 
 				mockRollup,
 				currentAssertion,
 				previousAssertion
 			);
 
-			//TODO: assert trxs contain NodeCreated event
+			//assert trxs contain NodeCreated event
+			for (let i = 0; i < createRes.transactions.length; i++) {
+				let trxReceipt = await createRes.transactions[i].wait();
+				assert.equal(trxReceipt.logs[0].fragment.name, "NodeCreated", "NodeCreated event not found");
+			}
 		});
 
 		it("Check confirming a node on mock rollup", async function () {
@@ -590,12 +594,14 @@ export function RefereeTests(deployInfrastructure) {
 				previousAssertion
 			);
 
+			//assert transactions contain NodeConfirmed event
 			for (let i = 0; i < confirmRes.transactions.length; i++) {
 				let trxReceipt = await confirmRes.transactions[i].wait();
+				let hexStr = "0x" + BigInt(i + 1).toString(16).padStart(64, "0");
 				assert.equal(trxReceipt.logs[0].fragment.name, "NodeConfirmed", "NodeConfirmed event not found");
 			    assert.equal(trxReceipt.logs[0].args[0], createRes.assertions[i], "nodeNum event param mismatch");
-				// assert.equal(trxReceipt.logs[0].args[1], hexStr, "blockHash event param mismatch");
-			    // assert.equal(trxReceipt.logs[0].args[2], hexStr, "sendRoot event param mismatch");
+				assert.equal(trxReceipt.logs[0].args[1], hexStr, "blockHash event param mismatch");
+			    assert.equal(trxReceipt.logs[0].args[2], hexStr, "sendRoot event param mismatch");
 			}
 		});
 
