@@ -6,53 +6,12 @@ on:
       - '**'
 
 jobs:
-  # Run semantic-release dry run before the matrix
-  dryrun:
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.get_version.outputs.new_release_version }} # Pass version to the next jobs
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          version: 9
-          run_install: false
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install
-
-      # Inline install of semantic-release packages
-      - name: Install semantic-release and plugins
-        run: |
-          pnpm add -D -w semantic-release @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/git @semantic-release/github @semantic-release/changelog 
-
-      - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@v4
-        id: get_version
-        with:
-          dry_run: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
   # Matrix build jobs that depend on the dryrun job
   release:
-    needs: dryrun
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
-    env: # Pass the version as an environment variable to each matrix job
-      VERSION: ${{ needs.dryrun.outputs.version }}
 
     steps:
       - name: Checkout code
@@ -72,13 +31,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
-
-      # Use the version generated from dry-run in the build process
-      - name: Set desktop app package version
-        run: pnpm pkg set version=${{ env.VERSION }} --prefix apps/sentry-client-desktop
-
-      - name: Set CLI version
-        run: sed -i'' -e 's/VERSION_NUMBER/${{ env.VERSION }}/g' packages/core/src/utils/version.ts
 
       - name: Build monorepo
         run: npx nx run-many --target=build --all
