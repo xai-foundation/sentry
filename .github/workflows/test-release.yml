@@ -1,7 +1,9 @@
-name: Operator - Semantic Release and Build
+name: Pull Request
 
 on:
-  workflow_dispatch:
+  pull_request:
+    branches:
+      - '**'
 
 jobs:
   # Run semantic-release dry run before the matrix
@@ -134,23 +136,3 @@ jobs:
           cat release-signed-desktop-windows-latest/latest.yml
           sed -i '' -e "s#^sha512:.*#sha512: $CHECKSUM#" "release-signed-desktop-windows-latest/latest.yml"
           sed -i '' -e "s#^    sha512:.*#    sha512: $CHECKSUM#" "release-signed-desktop-windows-latest/latest.yml"
-
-      # Run semantic-release after the build is completed to publish the release
-      - name: Semantic Release
-        uses: cycjimmy/semantic-release-action@v4
-        id: semantic
-        with:
-          dry_run: false
-          extra_plugins: |
-            @semantic-release/changelog@6.0.0
-            @semantic-release/git
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Output new release information
-        if: steps.semantic.outputs.new_release_published == 'true'
-        run: |
-          echo "New release version: ${{ steps.semantic.outputs.new_release_version }}"
-          echo "Major: ${{ steps.semantic.outputs.new_release_major_version }}"
-          echo "Minor: ${{ steps.semantic.outputs.new_release_minor_version }}"
-          echo "Patch: ${{ steps.semantic.outputs.new_release_patch_version }}"
