@@ -126,18 +126,6 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-
-      - name: Generate checksum
-        run: |
-          CHECKSUM=$(shasum -a 512 release-desktop-windows-latest/sentry-client-windows.exe | cut -f1 -d\ | xxd -r -p | base64)
-          CHECKSUM=$(echo "$CHECKSUM" | tr -d '\r\n')
-          echo "SHA512 Checksum: $CHECKSUM"
-          cat release-desktop-windows-latest/latest.yml
-          sed -i '' -e "s#^sha512:.*#sha512: $CHECKSUM#" "release-desktop-windows-latest/latest.yml"
-          sed -i '' -e "s#^    sha512:.*#    sha512: $CHECKSUM#" "release-desktop-windows-latest/latest.yml"
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -160,6 +148,18 @@ jobs:
       - name: Install semantic-release and plugins
         run: |
           pnpm add -D -w semantic-release @semantic-release/commit-analyzer @semantic-release/release-notes-generator @semantic-release/git @semantic-release/github @semantic-release/changelog
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Generate checksum
+        run: |
+          CHECKSUM=$(shasum -a 512 release-desktop-windows-latest/sentry-client-windows.exe | cut -f1 -d\ | xxd -r -p | base64)
+          CHECKSUM=$(echo "$CHECKSUM" | tr -d '\r\n')
+          echo "SHA512 Checksum: $CHECKSUM"
+          cat release-desktop-windows-latest/latest.yml
+          sed -i '' -e "s#^sha512:.*#sha512: $CHECKSUM#" "release-desktop-windows-latest/latest.yml"
+          sed -i '' -e "s#^    sha512:.*#    sha512: $CHECKSUM#" "release-desktop-windows-latest/latest.yml"
 
       # Run semantic-release after the build is completed to publish the release
       - name: Semantic Release
