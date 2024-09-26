@@ -250,18 +250,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         _;
     }
 
-    //TEST FUNCTION
-    function toggleAssertionChecking() public {
-        isCheckingAssertions = !isCheckingAssertions;
-        emit AssertionCheckingToggled(isCheckingAssertions);
-    }
-
-    //TEST FUNCTION
-    function setRollupAddress(address newRollupAddress) public {
-        rollupAddress = newRollupAddress;
-        emit RollupAddressChanged(newRollupAddress);
-    }
-
     /**
      * @notice Returns the combined total supply of esXai Xai, and the unminted allocated tokens.
      * @dev This function fetches the total supply of esXai, Xai, and unminted allocated tokens and returns their sum.
@@ -1130,4 +1118,16 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 			}
 		}
     }
+
+    //TEST FUNCTION this is used only for test coverage
+    // function toggleAssertionChecking() public {
+    //     isCheckingAssertions = !isCheckingAssertions;
+    //     emit AssertionCheckingToggled(isCheckingAssertions);
+    // }
+
+    //TEST FUNCTION this is used only for test coverage
+    // function setRollupAddress(address newRollupAddress) public {
+    //     rollupAddress = newRollupAddress;
+    //     emit RollupAddressChanged(newRollupAddress);
+    // }
 }
