@@ -1,4 +1,4 @@
-name: Manual Semantic Release and Build
+name: Operator - Semantic Release and Build
 
 on:
   workflow_dispatch:
@@ -41,26 +41,6 @@ jobs:
           dry_run: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Run semantic-release dry-run and get the version
-#      - name: Semantic Release Dry Run
-#        id: get_version
-#        run: |
-#          npx semantic-release --dry-run 2>&1 > release.txt
-#          grep "The next release version is" release.txt
-#
-#          #cat release.txt | grep "The next release version is"
-#          #cat release.txt | grep "The next release version is" | awk '{print $NF}'
-#
-#          VERSION=$(cat release.txt | grep "The next release version is" | awk '{print $NF}' | xargs)
-#
-#          #VERSION=$(npx semantic-release --dry-run 2>&1 | grep "The next release version is" | awk '{print $NF}' | xargs)
-#          echo $VERSION
-#          echo "version=$VERSION" >> $GITHUB_OUTPUT
-#          echo "version=$VERSION" >> $GITHUB_ENV
-#          echo "test 123"
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Matrix build jobs that depend on the dryrun job
   release:
