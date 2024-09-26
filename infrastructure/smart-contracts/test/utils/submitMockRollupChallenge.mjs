@@ -63,7 +63,7 @@ export const submitMockRollupChallenge = async (
     let trx = await referee.connect(challengerWallet).submitChallenge(
         currentAssertion,
         previousAssertion,
-        confirmHash, 
+        nodeArray.length > 1 ? confirmHash : nodeArray[nodeArray.length - 1].confirmData, 
         lastNodeBlockNumber, 
         "0x0000000000000000000000000000000000000000000000000000000000000000"
     );
