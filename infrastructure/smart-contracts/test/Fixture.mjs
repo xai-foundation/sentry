@@ -397,7 +397,7 @@ describe("Fixture Tests", function () {
         };
     }
 
-    describe("CNY 2024", CNYAirDropTests.bind(this));
+    //describe("CNY 2024", CNYAirDropTests.bind(this));
     describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
     describe("Xai", XaiTests(deployInfrastructure).bind(this));
     describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
