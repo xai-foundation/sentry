@@ -69,7 +69,7 @@ export function ActionSection(): JSX.Element {
                     <PrimaryButton
                         onClick={() => handleMintWithEthClicked()}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || chain?.id === 42161 || getEthButtonText().startsWith("Insufficient")}
+                        isDisabled={!ready || chain?.id === 42161 || getEthButtonText().startsWith("Insufficient") || !isConnected}
                         btnText={getEthButtonText()}
                     />
                     <br />
@@ -83,7 +83,7 @@ export function ActionSection(): JSX.Element {
                     <PrimaryButton
                         onClick={handleBuyWithXaiClicked}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || chain?.id === 42161 || !userHasTokenBalance}
+                        isDisabled={!ready || chain?.id === 42161 || !userHasTokenBalance || !isConnected}
                         btnText={getTokenButtonText()}
                     />
                 )}
