@@ -6,6 +6,7 @@ import { mapWeb3Error } from "@/utils/errors";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 import CrossmintModal from './CrossmintModal';
 import { formatWeiToEther } from '@sentry/core';
+import { useAccount } from 'wagmi';
 
 /**
  * ActionSection Component
@@ -18,6 +19,7 @@ import { formatWeiToEther } from '@sentry/core';
  */
 export function ActionSection(): JSX.Element {
     const [creditCardOpen, setCreditCardOpen] = useState(false);
+	const {isConnected} = useAccount();
 
     // Destructure values and functions from the context
     const {
@@ -74,7 +76,7 @@ export function ActionSection(): JSX.Element {
                     <PrimaryButton
                         onClick={() => setCreditCardOpen(true)}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready}
+                        isDisabled={!ready || !isConnected}
                         btnText={"Purchase with USD"}
                     /></>
                 ) : (
