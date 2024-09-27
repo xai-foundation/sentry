@@ -71,11 +71,10 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalP
                                 onEvent={(event) => {
                                     switch (event.type) {
                                         case "payment:process.succeeded":
-                                            console.log(event);
                                             setOrderIdentifier(event.payload.orderIdentifier);
                                             break;
                                         default:
-                                            console.log(event);
+                                            //console.log(event);
                                             break;
                                     }
                                 }}

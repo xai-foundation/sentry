@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useCrossmintEvents } from "@crossmint/client-sdk-react-ui";
 
 interface MintingProps {
@@ -29,11 +29,6 @@ const Minting: React.FC<MintingProps> = ({ orderIdentifier }) => {
       console.log(event.type, ":", event);
     });
   }
-
-  useEffect(() => {
-    console.log("status", status);
-    console.log("result", result);
-  }, [status, result]);
 
   return (
     <>
