@@ -1,9 +1,11 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { PrimaryButton } from "@sentry/ui";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import { mapWeb3Error } from "@/utils/errors";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
+import CrossmintModal from './CrossmintModal';
+import { formatWeiToEther } from '@sentry/core';
 
 /**
  * ActionSection Component
@@ -15,6 +17,8 @@ import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
  * @returns {JSX.Element} The rendered ActionSection component
  */
 export function ActionSection(): JSX.Element {
+    const [creditCardOpen, setCreditCardOpen] = useState(false);
+
     // Destructure values and functions from the context
     const {
         currency,
@@ -25,11 +29,14 @@ export function ActionSection(): JSX.Element {
         mintWithXai,
         mintWithEthError,
         approve,
+        quantity,
+        promoCode,
         getApproveButtonText,
         handleApproveClicked,
         handleMintWithEthClicked,
         handleMintWithXaiClicked,
         getEthButtonText,
+        calculateTotalPrice,
     } = useWebBuyKeysContext();
 
     /**
@@ -56,12 +63,20 @@ export function ActionSection(): JSX.Element {
             <div>
                 {/* Render different buttons based on the currency */}
                 {currency === 'AETH' ? (
+                    <>
                     <PrimaryButton
                         onClick={() => handleMintWithEthClicked()}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
                         isDisabled={!ready || chain?.id === 42161 || getEthButtonText().startsWith("Insufficient")}
                         btnText={getEthButtonText()}
                     />
+                    <br />
+                    <PrimaryButton
+                        onClick={() => setCreditCardOpen(true)}
+                        className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
+                        isDisabled={!ready}
+                        btnText={"Purchase with USD"}
+                    /></>
                 ) : (
                     <PrimaryButton
                         onClick={handleBuyWithXaiClicked}
@@ -133,6 +148,13 @@ export function ActionSection(): JSX.Element {
                     </div>
                 )}
             </div>
+            <CrossmintModal 
+            totalPriceInEth={formatWeiToEther(calculateTotalPrice(), 18).toString()} 
+            isOpen={creditCardOpen} 
+            onClose={() => setCreditCardOpen(false)}
+            totalQty={quantity}
+            promoCode={promoCode}
+            />
         </div>
     );
 }
