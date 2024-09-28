@@ -31,6 +31,9 @@ export let config = {
   "subgraphEndpoint": "https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry/api",
   "publicRPC": "https://arb1.arbitrum.io/rpc",
   "alchemyApiKey": "oD4X3JXvJclnt36mDkqnp9CO2sZkNhYT",
+  "crossmintProjectId": "", //TODO Add Production Values
+  "crossmintCollectionId": "", //TODO Add Production Values
+  "crossmintEnvironment": "production", //staging/production
 };
 
 export function setConfig(_config: any) { config = _config; }

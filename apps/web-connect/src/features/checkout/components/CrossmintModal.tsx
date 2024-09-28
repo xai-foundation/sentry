@@ -2,6 +2,7 @@ import { CrossmintPaymentElement } from '@crossmint/client-sdk-react-ui';
 import React, { useState } from 'react';
 import { useAccount } from 'wagmi';
 import Minting from './Minting';
+import {config} from "@sentry/core";
 
 interface CrossmintModalProps {
     isOpen: boolean;
@@ -19,9 +20,9 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalP
     }
     if (!isOpen) return null;
 
-    const projectId = "e1bec541-a95d-4caa-8d1e-6163ab26d754";
-    const collectionId = "eb7239a4-5816-479d-a065-54684543df8f";
-    const environment = "staging";
+    const projectId = config.crossmintProjectId;
+    const collectionId = config.crossmintCollectionId;
+    const environment = config.crossmintEnvironment;
 
     const styles = {
       fontSizeBase: "0.91rem",
@@ -66,7 +67,6 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalP
                                     _mintToAddress: address,
                                     _amount: totalQty.toString(),
                                     _promoCode: promoCode
-
                                 }}
                                 onEvent={(event) => {
                                     switch (event.type) {
