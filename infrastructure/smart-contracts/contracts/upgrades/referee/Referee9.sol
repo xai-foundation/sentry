@@ -403,15 +403,11 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         }
 
         (uint256 emissionsPerHour, uint256 emissionTier)  = RefereeCalculations(refereeCalculationsAddress).calculateChallengeEmissionAndTier(totalSupply, maxSupply);
+        
+        uint256 timePassedInSeconds = block.timestamp - startTs; // Calculate the time difference in seconds
+        uint256 challengeEmissions = emissionsPerHour * timePassedInSeconds / 3600; // Calculate the total emissions for the challenge based on the time passed
 
-        // Calculate the time difference in seconds
-        uint256 timePassedInSeconds = block.timestamp - startTs;
-
-        // Calculate the total emissions for the challenge based on the time passed
-        uint256 challengeEmissions = emissionsPerHour * timePassedInSeconds / 3600;
-
-        // determine what the size of the emission is based on each challenge having an estimated static length
-        return (challengeEmissions, emissionTier);
+        return (challengeEmissions, emissionTier); // determine what the size of the emission is based on each challenge having an estimated static length
     }
 
     /**
