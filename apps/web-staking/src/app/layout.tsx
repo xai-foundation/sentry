@@ -32,14 +32,14 @@ export default function xRootLayout({
       <head>
         <meta name="title" property="og:title" content="Xai Staking App"/>
         <meta name="description" property="og:description" content="Stake keys & esXai to earn rewards"/>
-        <meta name="image" property="og:image" content="/images/sentry-share.jpg"/>
+        <meta name="image" property="og:image" content="https://develop.app.xai.games/images/sentry-share.jpg"/>
         <meta name="url" property="og:url" content="https://app.xai.games"/>
         <meta name="type" property="og:type" content="website"/>    
         <meta name="twitter:card" content="summary_large_image"/>
         <meta name="twitter:site" content="@xai_games"/>
         <meta name="twitter:title" content="Xai Staking App"/>
         <meta name="twitter:description" content="Stake keys & esXai to earn rewards"/>
-        <meta name="twitter:image" content="/images/sentry-share.jpg"/>
+        <meta name="twitter:image" content="https://develop.app.xai.games/images/sentry-share.jpg"/>
         <meta name="twitter:creator" content="@xai_games"/>
       </head>
       <body className="bg-background-image overflow-y-scroll bg-cover bg-fixed bg-center bg-no-repeat">
