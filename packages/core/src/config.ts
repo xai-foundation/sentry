@@ -33,7 +33,7 @@ export let config = {
   "alchemyApiKey": "oD4X3JXvJclnt36mDkqnp9CO2sZkNhYT",
   "crossmintProjectId": "", //TODO Add Production Values
   "crossmintCollectionId": "", //TODO Add Production Values
-  "crossmintEnvironment": "production", //staging/production
+  "appEnvironment": "production", //development/production
 };
 
 export function setConfig(_config: any) { config = _config; }
