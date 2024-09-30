@@ -22,7 +22,7 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalP
 
     const projectId = config.crossmintProjectId;
     const collectionId = config.crossmintCollectionId;
-    const environment = config.appEnvironment  === 'production' ? 'production' : 'staging';
+    const environment = process.env.VITE_APP_ENV  === 'production' ? 'production' : 'staging';
 
     const styles = {
       fontSizeBase: "0.91rem",
