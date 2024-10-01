@@ -490,7 +490,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             expect(contractBalance).to.eq(referralReward);
         });
 
-        it("Check minting an multiple keys and receiving them using the MintTo Function", async function() {
+        it("Check minting multiple keys and receiving them using the mintTo Function", async function() {
             const {nodeLicense, addr1: receiver, addr2: minter, fundsReceiver} = await loadFixture(deployInfrastructure);
             const initialBalance = await ethers.provider.getBalance(fundsReceiver.address);
             const qtyToMint = 5;
