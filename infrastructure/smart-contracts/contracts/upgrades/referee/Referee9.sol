@@ -425,7 +425,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         require(_assertionId > _predecessorAssertionId, "9");
 
         // Connect to the rollup contract
-        IRollupCore rollup = IRollupCore(rollupAddress);
+        //IRollupCore rollup = IRollupCore(rollupAddress);
 
         // If the gap is more than 1 assertion, we need to handle as a batch challenge
         bool isBatch = _assertionId - _predecessorAssertionId > 1;
@@ -452,7 +452,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             if (isCheckingAssertions) {
 
                 // get the node information for this assertion from the rollup.
-                Node memory node = rollup.getNode(i);
+                Node memory node = IRollupCore(rollupAddress).getNode(i);
 
                 // check the _predecessorAssertionId is correct
                 require(node.prevNum == i - 1, "10");   
@@ -504,9 +504,8 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         } else {
             startTs = challenges[challengeCounter - 1].createdTimestamp;
         }
-        
-        uint256 timePassedInSeconds = block.timestamp - startTs; // Calculate the time difference in seconds
-        uint256 challengeEmissions = emissionsPerHour * timePassedInSeconds / 3600; // Calculate the total emissions for the challenge based on the time passed
+
+        uint256 challengeEmissions = emissionsPerHour * (block.timestamp - startTs) / 3600; // Calculate the total emissions for the challenge based on the time passed
 
         // mint part of this for the gas subsidy contract
         uint256 amountForGasSubsidy = (challengeEmissions * _gasSubsidyPercentage) / 100;
