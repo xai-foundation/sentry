@@ -10,7 +10,7 @@ import { arbitrum } from 'wagmi/chains'
 import './index.css'
 import { IpLocationChecker } from './features/ipchecker/IpLocationChecker'
 
-const projectId = '8f5121741edc292ac7e4203b648d61e2'
+const projectId = '79e38b4593d43c78d7e9ee38f0cdf4ee'
 
 export const chains: [Chain, ...Chain[]] = [
 	arbitrum as Chain,
@@ -31,18 +31,10 @@ export const wagmiConfig = defaultWagmiConfig({
 	projectId, // required
 	metadata, // required
 	ssr: true,
-	// storage: createStorage({
-	//     storage: cookieStorage
-	// }),
-	// transports: {
-	// 	[arbitrum.id]: http(),
-	// 	[arbitrumSepolia.id]: http(),
-	// },
 	enableWalletConnect: true, // Optional - true by default
 	enableInjected: true, // Optional - true by default
 	enableEIP6963: true, // Optional - true by default
 	enableCoinbase: true, // Optional - true by default
-	// ...wagmiOptions // Optional - Override createConfig parameters
 })
 
 createWeb3Modal({
