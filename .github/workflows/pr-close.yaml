@@ -1,0 +1,31 @@
+name: PR close cleanup
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - "*"
+
+jobs:
+  build:
+    runs-on: self-hosted
+
+    steps:
+      - name: Set container names
+        run: |
+          echo "WEB_CONNECT_CONTAINER_NAME=web-connect-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          echo "WEB_STAKING_CONTAINER_NAME=web-staking-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
+          
+      - name: Check if containers exist and remove them
+        run: |
+          # Check if the web-connect container exists, and remove it if it does
+          if [ "$(docker ps -a -q -f name=${{ env.WEB_CONNECT_CONTAINER_NAME }})" ]; then
+            docker stop ${{ env.WEB_CONNECT_CONTAINER_NAME }} || true
+            docker rm ${{ env.WEB_CONNECT_CONTAINER_NAME }} || true
+          fi
+
+          # Check if the web-staking container exists, and remove it if it does
+          if [ "$(docker ps -a -q -f name=${{ env.WEB_STAKING_CONTAINER_NAME }})" ]; then
+            docker stop ${{ env.WEB_STAKING_CONTAINER_NAME }} || true
+            docker rm ${{ env.WEB_STAKING_CONTAINER_NAME }} || true
+          fi
