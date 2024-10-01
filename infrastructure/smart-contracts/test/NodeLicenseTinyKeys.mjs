@@ -488,8 +488,36 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             // Check the contract balance is the referral reward
             const contractBalance = await ethers.provider.getBalance(await nodeLicense.getAddress());
             expect(contractBalance).to.eq(referralReward);
-
         });
+
+        it("Check minting an multiple keys and receiving them using the MintTo Function", async function() {
+            const {nodeLicense, addr1: receiver, addr2: minter, fundsReceiver} = await loadFixture(deployInfrastructure);
+            const initialBalance = await ethers.provider.getBalance(fundsReceiver.address);
+            const qtyToMint = 5;
+            const price = await nodeLicense.price(qtyToMint, "");
+            const totalSupplyBeforeMint = await nodeLicense.totalSupply();
+            const keyBalanceBefore = await nodeLicense.balanceOf(receiver.address);
+
+            // Mint a key from minter to receiver
+            await nodeLicense.connect(minter).mintTo(receiver.address, qtyToMint, "", { value: price });
+
+            // Check the last key was received
+            const owner = await nodeLicense.ownerOf(totalSupplyBeforeMint + BigInt(qtyToMint));
+            expect(owner).to.equal(receiver.address);
+
+            // Check the key balance after minting
+            const keyBalanceAfter = await nodeLicense.balanceOf(receiver.address);
+            expect(keyBalanceAfter).to.eq(keyBalanceBefore + BigInt(qtyToMint));
+
+            // Check the fundsReceiver received the funds
+            const finalBalance = await ethers.provider.getBalance(fundsReceiver.address);
+            expect(finalBalance).to.eq(initialBalance + price);
+
+            // Check the total supply increased
+            const totalSupplyAfterMint = await nodeLicense.totalSupply();
+            expect(totalSupplyAfterMint).to.eq(totalSupplyBeforeMint + BigInt(qtyToMint));
+        });
+        
 
     }
 }
