@@ -1,5 +1,5 @@
 /**
- * @see https://www.electron.build/configuration/configuration
+ * @see https://www.electron.build/configuration
  */
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
@@ -8,19 +8,27 @@
   "asar": true,
   "productName": "Xai Sentry Node",
   "directories": {
-    "output": "release",
+    "output": "release"
   },
   "files": [
     "dist",
     "dist-electron"
   ],
+  "dmg": {
+    "sign": false
+  },
   "mac": {
     "target": [
       "dmg",
       "zip"
     ],
     "artifactName": "sentry-client-macos.${ext}",
-    "icon": "public/xai.png"
+    "icon": "public/xai.png",
+    "hardenedRuntime": true,
+    "entitlements": "build-config/entitlements.mac.plist",
+    "entitlementsInherit": "build-config/entitlements.mac.plist",
+    "gatekeeperAssess": false,
+    "notarize": true
   },
   "win": {
     "target": [

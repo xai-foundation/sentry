@@ -5,9 +5,21 @@ on:
     branches:
       - '**'
 
+on:
+  pull_request:
+    types: [review_requested]
+    branches:
+      - "*"
+
+  pull_request_review:
+    types: [submitted]
+    branches:
+        - '*'
+
 jobs:
   # Matrix build jobs that depend on the dryrun job
   build:
+    if: github.event_name == 'pull_request' || github.event.review.state == 'approved'
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
@@ -34,6 +46,13 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Import mac certificate to keychain
+        uses: apple-actions/import-codesign-certs@v3
+        with: 
+          p12-file-base64: ${{ secrets.MAC_CERTIFICATE_P12_BASE64 }}
+          p12-password: ${{ secrets.MAC_CERTIFICATE_PASSWORD }}
+        if: matrix.os == 'macos-latest'
+
       # Use the version generated from dry-run in the build process
       - name: Set desktop app package version
         run: pnpm pkg set version=${{ env.VERSION }} --prefix apps/sentry-client-desktop
@@ -43,6 +62,12 @@ jobs:
 
       - name: Build monorepo
         run: npx nx run-many --target=build --all
+        env:
+          CSC_LINK: ${{ secrets.MAC_CERTIFICATE_P12_BASE64 }}
+          CSC_KEY_PASSWORD: ${{ secrets.MAC_CERTIFICATE_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
 
       - name: Upload sentry-client-desktop artifacts
         uses: actions/upload-artifact@v4
@@ -65,6 +90,7 @@ jobs:
           path: apps/cli/release
 
   sign:
+    if: github.event_name == 'pull_request' || github.event.review.state == 'approved'
     needs: build
     runs-on: ubuntu-latest
 
@@ -97,6 +123,7 @@ jobs:
           path: release-desktop-windows-latest
 
   checksum-and-release:
+    if: github.event_name == 'pull_request' || github.event.review.state == 'approved'
     needs: sign
     runs-on: macos-latest
 
