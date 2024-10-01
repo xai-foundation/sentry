@@ -1,4 +1,4 @@
-import {useAccount, useWriteContract } from "wagmi";
+import {useAccount,  useWriteContract } from "wagmi";
 import {wagmiConfig, chains} from "../../../main";
 import {useState, useEffect} from "react";
 import {ConnectButton, XaiCheckbox} from "@sentry/ui";
@@ -84,6 +84,10 @@ export function ClaimToken() {
 		)
 	}
 
+	function handleConnectClick() {
+		open();
+	}
+
 	return (
 		<div>
 			<div className="h-full min-h-screen flex-1 flex flex-col justify-center items-center">
@@ -151,7 +155,7 @@ export function ClaimToken() {
 							</>
 						) : (
 							<div className="m-8 w-full">
-								<ConnectButton onOpen={open} address={address} isFullWidth/>
+								<ConnectButton onOpen={handleConnectClick} address={address} isFullWidth/>
 							</div>
 						)}
 					</div>
