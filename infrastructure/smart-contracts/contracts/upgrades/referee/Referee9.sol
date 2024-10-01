@@ -393,21 +393,8 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     function calculateChallengeEmissionAndTier() public view returns (uint256, uint256) {
         uint256 totalSupply = getCombinedTotalSupply();  
         uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
-
-        // Get the timestamp of the start of the current challenge
-        uint256 startTs;
-        if (challengeCounter == 0) {
-            startTs = block.timestamp - 3600; //1 hour
-        } else {
-            startTs = challenges[challengeCounter - 1].createdTimestamp;
-        }
-
-        (uint256 emissionsPerHour, uint256 emissionTier)  = RefereeCalculations(refereeCalculationsAddress).calculateChallengeEmissionAndTier(totalSupply, maxSupply);
         
-        uint256 timePassedInSeconds = block.timestamp - startTs; // Calculate the time difference in seconds
-        uint256 challengeEmissions = emissionsPerHour * timePassedInSeconds / 3600; // Calculate the total emissions for the challenge based on the time passed
-
-        return (challengeEmissions, emissionTier); // determine what the size of the emission is based on each challenge having an estimated static length
+        return RefereeCalculations(refereeCalculationsAddress).calculateChallengeEmissionAndTier(totalSupply, maxSupply);
     }
 
     /**
@@ -508,16 +495,27 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         }
                 
         // we need to determine how much token will be emitted
-        (uint256 challengeEmission,) = calculateChallengeEmissionAndTier();
+        (uint256 emissionsPerHour, ) = calculateChallengeEmissionAndTier();
+
+        // Get the timestamp of the start of the current challenge
+        uint256 startTs;
+        if (challengeCounter == 0) {
+            startTs = block.timestamp - 3600; //1 hour
+        } else {
+            startTs = challenges[challengeCounter - 1].createdTimestamp;
+        }
+        
+        uint256 timePassedInSeconds = block.timestamp - startTs; // Calculate the time difference in seconds
+        uint256 challengeEmissions = emissionsPerHour * timePassedInSeconds / 3600; // Calculate the total emissions for the challenge based on the time passed
 
         // mint part of this for the gas subsidy contract
-        uint256 amountForGasSubsidy = (challengeEmission * _gasSubsidyPercentage) / 100;
+        uint256 amountForGasSubsidy = (challengeEmissions * _gasSubsidyPercentage) / 100;
 
         // mint xai for the gas subsidy
         Xai(xaiAddress).mint(gasSubsidyRecipient, amountForGasSubsidy);
 
         // the remaining part of the emission should be tracked and later allocated when claimed
-        uint256 rewardAmountForClaimers = challengeEmission - amountForGasSubsidy;
+        uint256 rewardAmountForClaimers = challengeEmissions - amountForGasSubsidy;
 
         // add the amount that will be given to claimers to the allocated field variable amount, so we can track how much esXai is owed
         _allocatedTokens += rewardAmountForClaimers;
