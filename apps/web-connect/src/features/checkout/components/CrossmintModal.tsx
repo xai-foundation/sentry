@@ -22,7 +22,7 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalP
 
     const projectId = config.crossmintProjectId;
     const collectionId = config.crossmintCollectionId;
-    const environment = process.env.VITE_APP_ENV  === 'production' ? 'production' : 'staging';
+    const environment = process.env.VITE_APP_ENV  === 'development' ? 'staging' : 'production';
 
     const styles = {
       fontSizeBase: "0.91rem",
@@ -72,9 +72,6 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalP
                                     switch (event.type) {
                                         case "payment:process.succeeded":
                                             setOrderIdentifier(event.payload.orderIdentifier);
-                                            break;
-                                        default:
-                                            //console.log(event);
                                             break;
                                     }
                                 }}
