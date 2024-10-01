@@ -3,6 +3,8 @@ name: PR close cleanup
 on:
   pull_request:
     types: [closed]
+    branches:
+      - "*"
 
 jobs:
   build:
