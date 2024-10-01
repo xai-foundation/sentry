@@ -5,9 +5,21 @@ on:
     branches:
       - '**'
 
+on:
+  pull_request:
+    types: [review_requested]
+    branches:
+      - "*"
+
+  pull_request_review:
+    types: [submitted]
+    branches:
+        - '*'
+
 jobs:
   # Matrix build jobs that depend on the dryrun job
   build:
+    if: github.event_name == 'pull_request' || github.event.review.state == 'approved'
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
@@ -78,6 +90,7 @@ jobs:
           path: apps/cli/release
 
   sign:
+    if: github.event_name == 'pull_request' || github.event.review.state == 'approved'
     needs: build
     runs-on: ubuntu-latest
 
@@ -110,6 +123,7 @@ jobs:
           path: release-desktop-windows-latest
 
   checksum-and-release:
+    if: github.event_name == 'pull_request' || github.event.review.state == 'approved'
     needs: sign
     runs-on: macos-latest
 
