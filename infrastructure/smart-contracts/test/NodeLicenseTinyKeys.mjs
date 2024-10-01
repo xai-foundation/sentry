@@ -498,7 +498,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             const totalSupplyBeforeMint = await nodeLicense.totalSupply();
             const keyBalanceBefore = await nodeLicense.balanceOf(receiver.address);
 
-            // Mint a key from minter to receiver
+            // Mint multiple keys from minter to receiver
             await nodeLicense.connect(minter).mintTo(receiver.address, qtyToMint, "", { value: price });
 
             // Check the last key was received
