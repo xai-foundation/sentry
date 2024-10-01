@@ -1,4 +1,4 @@
-ARG NEXT_PUBLIC_APP_ENV=production
+ARG NEXT_PUBLIC_APP_ENV=development
 
 # Base stage
 FROM node:20.11.0 AS release
@@ -6,7 +6,7 @@ ARG NEXT_PUBLIC_APP_ENV
 
 # Set environment variables
 ENV NEXT_TELEMETRY_DISABLED=1
-ENV NEXT_PUBLIC_APP_ENV=$NEXT_PUBLIC_APP_ENV
+ENV NEXT_PUBLIC_APP_ENV=development
 
 # Install pnpm globally
 RUN npm i -g pnpm@9.7.0 nx@18.3.3

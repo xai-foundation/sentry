@@ -1,4 +1,4 @@
-import {useAccount, useWriteContract } from "wagmi";
+import {useAccount,  useWriteContract } from "wagmi";
 import {wagmiConfig, chains} from "../../../main";
 import {ConnectButton, PrimaryButton, XaiCheckbox} from "@sentry/ui";
 import {useState} from "react";
@@ -56,6 +56,10 @@ export function DropClaim() {
 				<IpBlockText classNames="p-2 text-md text-white" />
 			</div>
 		);
+	}
+
+	function handleConnectClick() {
+		open();
 	}
 
 	return (
@@ -171,7 +175,7 @@ export function DropClaim() {
 										</>
 									) : (
 										<div className="m-8 w-full">
-											<ConnectButton onOpen={open} address={address} isFullWidth/>
+											<ConnectButton onOpen={handleConnectClick} address={address} isFullWidth/>
 										</div>
 									)}
 								</>
