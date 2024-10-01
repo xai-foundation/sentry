@@ -505,16 +505,16 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             startTs = challenges[challengeCounter - 1].createdTimestamp;
         }
 
-        uint256 challengeEmissions = emissionsPerHour * (block.timestamp - startTs) / 3600; // Calculate the total emissions for the challenge based on the time passed
+        uint256 challengeEmission = emissionsPerHour * (block.timestamp - startTs) / 3600; // Calculate the total emissions for the challenge based on the time passed
 
         // mint part of this for the gas subsidy contract
-        uint256 amountForGasSubsidy = (challengeEmissions * _gasSubsidyPercentage) / 100;
+        uint256 amountForGasSubsidy = (challengeEmission * _gasSubsidyPercentage) / 100;
 
         // mint xai for the gas subsidy
         Xai(xaiAddress).mint(gasSubsidyRecipient, amountForGasSubsidy);
 
         // the remaining part of the emission should be tracked and later allocated when claimed
-        uint256 rewardAmountForClaimers = challengeEmissions - amountForGasSubsidy;
+        uint256 rewardAmountForClaimers = challengeEmission - amountForGasSubsidy;
 
         // add the amount that will be given to claimers to the allocated field variable amount, so we can track how much esXai is owed
         _allocatedTokens += rewardAmountForClaimers;
