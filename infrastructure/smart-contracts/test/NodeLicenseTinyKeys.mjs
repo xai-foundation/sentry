@@ -98,7 +98,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             await xai.connect(addr1).approve(await nodeLicense.getAddress(), priceInXai);
 
             // Mint an NFT
-            await nodeLicense.connect(addr1).mintWithXai(1, "", false, priceInEther);
+            await nodeLicense.connect(addr1).mintWithXai(1, "", false, priceInXai);
 
             // Check the NFT was received
             const owner = await nodeLicense.ownerOf(totalSupplyBeforeMint + BigInt(1));
@@ -429,7 +429,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             await xai.connect(addr1).approve(await nodeLicense.getAddress(), xaiPrice);
 
             // Mint the remaining licenses
-            const tx = await nodeLicense.connect(addr1).mintWithXai(BATCH_SIZE, "", false, ethPrice);
+            const tx = await nodeLicense.connect(addr1).mintWithXai(BATCH_SIZE, "", false, xaiPrice);
             console.log("Gas limit: ", tx.gasLimit.toString());
             const txWait = await tx.wait(1);
             console.log("Gas used: ", txWait.gasUsed.toString());
