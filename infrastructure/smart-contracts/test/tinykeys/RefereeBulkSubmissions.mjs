@@ -721,8 +721,8 @@ function BulkSubmissionsRewardRate(deployInfrastructure) {
 
 export function RefereeBulkSubmissions(deployInfrastructure) {
 	return function () {
-        // describe("Check edge cases for pool submissions", BulkSubmissionsStakeAndUnstake(deployInfrastructure).bind(this));
-        // describe("Check pool submission reward", BulkSubmissionsRewardRate(deployInfrastructure).bind(this));
+        describe("Check edge cases for pool submissions", BulkSubmissionsStakeAndUnstake(deployInfrastructure).bind(this));
+        describe("Check pool submission reward", BulkSubmissionsRewardRate(deployInfrastructure).bind(this));
         describe("Check pool submission permissions", BulkSubmissionPermissions(deployInfrastructure).bind(this));
 	}
 }
