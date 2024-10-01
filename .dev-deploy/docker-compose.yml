@@ -1,0 +1,28 @@
+services:
+  web-connect:
+    build:
+      context: ..
+      dockerfile: .dev-deploy/web-connect.Dockerfile
+      # args: //TODO make it so the webconnect app builds so it suppots testnet and testnet config
+      #   VITE_PUBLIC_ENVIRONMENT: development
+    container_name: ${WEB_CONNECT_CONTAINER_NAME}
+    restart: always
+    networks:
+      - cicd_github_deploy_network
+
+  web-staking:
+    build:
+      context: ..
+      dockerfile: .dev-deploy/web-staking.Dockerfile
+    container_name: ${WEB_STAKING_CONTAINER_NAME}
+    restart: always
+    environment:
+      NEXT_PUBLIC_APP_ENV: development
+      MONGODB_URL: ${MONGODB_URL}
+    networks:
+      - cicd_github_deploy_network
+
+
+networks:
+  cicd_github_deploy_network:
+    external: true
