@@ -186,7 +186,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
             return "Insufficient ETH balance";
         }
 
-        return "PURCHASE NOW";
+        return "MINT NOW";
     };
 
     /**
