@@ -51,7 +51,7 @@ const Minting: React.FC<MintingProps> = ({ orderIdentifier }) => {
               <a
                 target="_blank"
                 className="block bg-[#81feab] rounded-lg mt-3 p-3 text-black"
-                href={`https://staging.crossmint.com/user/collection/arbitrum-sepolia:${result?.contractAddress}:${result?.tokenIds[0]}`}
+                href={`https://staging.crossmint.com/user/collection/arbitrum:${result?.contractAddress}:${result?.tokenIds[0]}`}
               >
                 View in Crossmint
               </a>
