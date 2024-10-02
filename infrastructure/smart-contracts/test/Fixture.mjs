@@ -397,16 +397,16 @@ describe("Fixture Tests", function () {
     //describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
     //describe("Xai", XaiTests(deployInfrastructure).bind(this));
     //describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
-    //describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
+    describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
     //describe("Referee", RefereeTests(deployInfrastructure).bind(this));
     //describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
     //describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
     //describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
     //describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
     //describe("BulkSubmissions", RefereeBulkSubmissions(deployInfrastructure).bind(this));
-    //describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
+    describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
     //describe("Failed KYC Tests", FailedKycTests(deployInfrastructure).bind(this));
-    describe("Winning Key Count Simulations", RefereeWinningKeyCountSimulations(deployInfrastructure).bind(this));
+    //describe("Winning Key Count Simulations", RefereeWinningKeyCountSimulations(deployInfrastructure).bind(this));
 
     // This doesn't work when running coverage
     //describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));
