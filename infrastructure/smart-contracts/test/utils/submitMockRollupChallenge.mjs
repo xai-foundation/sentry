@@ -82,7 +82,7 @@ export const submitMockRollupChallenge = async (
         nodes: nodeArray,
         assertions: assertionArray,
         confirmData: confirmData,
-        confirmHash: confirmHash,
+        confirmHash: nodeArray.length > 1 ? nodeArray[nodeArray.length - 1].confirmData : confirmHash,
         challengeTrxHash: trx
     }
 };
