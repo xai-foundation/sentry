@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: "Dashboard | Xai",
   description: "Xai App Dashboard"
-  };
+};
 
 export default async function Home({ searchParams }: {
   searchParams: { chainId: number | undefined }
