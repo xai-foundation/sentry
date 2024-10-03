@@ -32,23 +32,37 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
      *
      * @param totalSupply The current total supply of tokens.
      * @param maxSupply The maximum supply of tokens.
+     * @param challengeStart The timestamp of the last challenge submitted.
+     * @param challengeEnd  The current timestamp for this challenge.
      * @return uint256 The challenge emission.
      * @return uint256 The emission tier.
      */
     function calculateChallengeEmissionAndTier(
         uint256 totalSupply,
-        uint256 maxSupply
+        uint256 maxSupply,
+        uint256 challengeStart,
+        uint256 challengeEnd
     ) public pure returns (uint256, uint256) {
         require(maxSupply > totalSupply, "5");
+        require(challengeEnd >= challengeStart, "7"); // Ensure that end time is not before start time
 
         uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply)); // calculate which tier we are in starting from 0
         require(tier <= 23, "6");
 
         // Calculate the emission tier
-        uint256 emissionTier = maxSupply / (2**(tier + 1)); // equal to the amount of tokens that are emitted during this tier
+        uint256 emissionTier = maxSupply / (2 ** (tier + 1)); // equal to the amount of tokens that are emitted during this tier
+
+        // Determine the emissions per hour
+        uint256 emissionsPerHour = emissionTier / 17520;       
+        
+        // Calculate the time difference in seconds
+        uint256 timePassedInSeconds = challengeEnd - challengeStart;
+
+        // Calculate the total emissions for the challenge based on the time passed
+        uint256 totalEmissions = emissionsPerHour * timePassedInSeconds / 3600;
 
         // determine what the size of the emission is based on each challenge having an estimated static length
-        return (emissionTier / 17520, emissionTier);
+        return (totalEmissions, emissionTier);
     }
 
     /**

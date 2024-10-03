@@ -393,8 +393,8 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     function calculateChallengeEmissionAndTier() public view returns (uint256, uint256) {
         uint256 totalSupply = getCombinedTotalSupply();  
         uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
-        
-        return RefereeCalculations(refereeCalculationsAddress).calculateChallengeEmissionAndTier(totalSupply, maxSupply);
+        uint256 startTs = block.timestamp - 3600; //1 hour
+        return RefereeCalculations(refereeCalculationsAddress).calculateChallengeEmissionAndTier(totalSupply, maxSupply, startTs, block.timestamp);
     }
 
     /**
@@ -493,9 +493,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             // emit the batch challenge event
             emit BatchChallenge(challengeCounter, assertionIds);
         }
-                
-        // we need to determine how much token will be emitted
-        (uint256 emissionsPerHour, ) = calculateChallengeEmissionAndTier();
 
         // Get the timestamp of the start of the current challenge
         uint256 startTs;
@@ -505,8 +502,8 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             startTs = challenges[challengeCounter - 1].createdTimestamp;
         }
 
-        uint256 challengeEmission = emissionsPerHour * (block.timestamp - startTs) / 3600; // Calculate the total emissions for the challenge based on the time passed
-
+        (uint256 challengeEmission, ) = RefereeCalculations(refereeCalculationsAddress).calculateChallengeEmissionAndTier(getCombinedTotalSupply(), Xai(xaiAddress).MAX_SUPPLY(), startTs, block.timestamp);
+    
         // mint part of this for the gas subsidy contract
         uint256 amountForGasSubsidy = (challengeEmission * _gasSubsidyPercentage) / 100;
 
