@@ -680,7 +680,7 @@ export function RefereeTests(deployInfrastructure) {
 			}
 		});
 
-		it("Check failure to submit a challenge with an invalid previous assertion id", async function () {
+		it("Check failure to submit a challenge with a skipped previous assertion id", async function () {
 			//NOTE: this test requires the following functions to exist on the Referee contract:
 			//toggleAssertionChecking()
 			//setRollupAddress(address newRollupAddress)
