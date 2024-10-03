@@ -618,12 +618,36 @@ export function RefereeTests(deployInfrastructure) {
 				mockRollup, 
 				refereeCalculations, 
 				currentAssertion,
-				previousAssertion
+				previousAssertion,
+				null,
+				null
 			);
 
 			for (let i = 0; i < res.confirmData.length; i++) {
 				assert.equal(res.confirmData[i], res.nodes[i][2], "confirmData mismatch");
 			}
+		});
+
+		it("Check submitting a challenge with an invalid assertion block timestamp", async function () {
+			//NOTE: this test requires the following functions to exist on the Referee contract:
+			//toggleAssertionChecking()
+			//setRollupAddress(address newRollupAddress)
+			
+			const {referee, challenger, mockRollup, refereeCalculations} = await loadFixture(deployInfrastructure);
+			let currentAssertion = 2;
+			let previousAssertion = 0;
+			await expect(
+				submitMockRollupChallenge(
+					referee, 
+					challenger, 
+					mockRollup, 
+					refereeCalculations, 
+					currentAssertion,
+					previousAssertion,
+					null,
+					10
+				)
+			).to.be.revertedWith("12");
 		});
 
 		it("Check failure to confirm node with wrong blockhash and sendroot", async function () {
@@ -638,7 +662,9 @@ export function RefereeTests(deployInfrastructure) {
 				mockRollup, 
 				refereeCalculations, 
 				currentAssertion,
-				previousAssertion
+				previousAssertion,
+				null,
+				null
 			);
 
 			//attempt to confirm nodes
@@ -652,6 +678,28 @@ export function RefereeTests(deployInfrastructure) {
 				    )
 			    ).to.be.revertedWith("CONFIRM_DATA");
 			}
+		});
+
+		it("Check failure to submit a challenge with an invalid previous assertion id", async function () {
+			//NOTE: this test requires the following functions to exist on the Referee contract:
+			//toggleAssertionChecking()
+			//setRollupAddress(address newRollupAddress)
+			
+			const {referee, challenger, mockRollup, refereeCalculations} = await loadFixture(deployInfrastructure);
+			let currentAssertion = 2;
+			let previousAssertion = 1;
+			await expect(
+				submitMockRollupChallenge(
+					referee, 
+					challenger, 
+					mockRollup, 
+					refereeCalculations, 
+					currentAssertion,
+					previousAssertion,
+					"0x0000000000000000000000000000000000000000000000000000000000000020",
+					null
+				)
+			).to.be.revertedWith("10");
 		});
 
 		// describe("The Referee should allow users to stake in V1", function () {

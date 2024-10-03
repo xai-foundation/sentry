@@ -16,7 +16,9 @@ export const submitMockRollupChallenge = async (
     mockRollup, 
     refereeCalculations, 
     currentAssertion,
-    previousAssertion
+    previousAssertion,
+    confirmDataOrHash,
+    latestNodeBlockNumber
 ) => {
     //set isCheckingAssertions to true in referee
     let isAssertionChecking = await referee.isCheckingAssertions();
@@ -53,11 +55,22 @@ export const submitMockRollupChallenge = async (
         lastNodeBlockNumber = node.createdAtBlock;
     }
     
-    //get confirm data and hash from contract
-    const [confirmData, confirmHash] = await refereeCalculations.getConfirmDataMultipleAssertions(
-        assertionArray, 
-        mockRollupAddress
-    );
+    //get confirm data and hash from param or directly from contract if null
+    let confirmData, confirmHash;
+    if (confirmDataOrHash != null) {
+        confirmData = confirmDataOrHash;
+        confirmHash = confirmDataOrHash;
+    } else {
+        [confirmData, confirmHash] = await refereeCalculations.getConfirmDataMultipleAssertions(
+            assertionArray, 
+            mockRollupAddress
+        );
+    }
+
+    //get last node block number from param or use calculated one if null
+    if (latestNodeBlockNumber != null) {
+        lastNodeBlockNumber = latestNodeBlockNumber;
+    }
     
     // Submit a challenge pointing to the MockRollup Node(s)
     let trx = await referee.connect(challengerWallet).submitChallenge(
