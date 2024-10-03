@@ -352,7 +352,8 @@ export function RefereeTests(deployInfrastructure) {
 			const {referee, operator, challenger, esXai, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
 
 			// Mint 200 licenses so that a reward will be most likely guaranteed
-			await mintBatchedLicenses(2000, nodeLicense, addr1);
+			let keysToMint = 20000;
+			await mintBatchedLicenses(keysToMint, nodeLicense, addr1);
 
 			// Submit a challenge
 			await referee.connect(challenger).submitChallenge(
