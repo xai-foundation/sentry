@@ -424,9 +424,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
         require(_assertionId > _predecessorAssertionId, "9");
 
-        // Connect to the rollup contract
-        //IRollupCore rollup = IRollupCore(rollupAddress);
-
         // If the gap is more than 1 assertion, we need to handle as a batch challenge
         bool isBatch = _assertionId - _predecessorAssertionId > 1;
 
