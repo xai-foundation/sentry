@@ -702,6 +702,28 @@ export function RefereeTests(deployInfrastructure) {
 			).to.be.revertedWith("10");
 		});
 
+		it("Check failure to submit a challenge with invalid confirmData", async function () {
+			//NOTE: this test requires the following functions to exist on the Referee contract:
+			//toggleAssertionChecking()
+			//setRollupAddress(address newRollupAddress)
+			
+			const {referee, challenger, mockRollup, refereeCalculations} = await loadFixture(deployInfrastructure);
+			let currentAssertion = 2;
+			let previousAssertion = 0;
+			await expect(
+				submitMockRollupChallenge(
+					referee, 
+					challenger, 
+					mockRollup, 
+					refereeCalculations, 
+					currentAssertion,
+					previousAssertion,
+					"0x0000000000000000000000000000000000000000000000000000000000000020",
+					null
+				)
+			).to.be.revertedWith("11");
+		});
+
 		// describe("The Referee should allow users to stake in V1", function () {
 
 		//     it("Check that staked/unstaked amount is taken/given from user's esXai balance", async function () {
