@@ -8,7 +8,8 @@ interface MintingProps {
 const Minting: React.FC<MintingProps> = ({ orderIdentifier }) => {
   const [status, setStatus] = React.useState<string>("pending"); // ["pending", "success", "failure"]
   const [result, setResult] = React.useState<any>(null);
-  const environment = "staging";
+  const environment = process.env.VITE_APP_ENV  === 'development' ? 'staging' : 'production';
+  const network = process.env.VITE_APP_ENV  === 'development' ? 'arbitrum-sepolia' : 'arbitrum';
   const { listenToMintingEvents } = useCrossmintEvents({
     environment: environment,
   });
@@ -51,7 +52,7 @@ const Minting: React.FC<MintingProps> = ({ orderIdentifier }) => {
               <a
                 target="_blank"
                 className="block bg-[#81feab] rounded-lg mt-3 p-3 text-black"
-                href={`https://staging.crossmint.com/user/collection/arbitrum:${result?.contractAddress}:${result?.tokenIds[0]}`}
+                href={`https://staging.crossmint.com/user/collection/${network}:${result?.contractAddress}:${result?.tokenIds[0]}`}
               >
                 View in Crossmint
               </a>
