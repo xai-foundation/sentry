@@ -16,7 +16,29 @@ export const metadata: Metadata = {
     default: `Xai`,
     template: `%s | Xai`,
   },
-  description: "Xai App"
+  description: "Xai App",
+  openGraph: {
+      title: "Xai App",
+      description: "Stake keys & esXai to earn rewards",
+      url: "https://app.xai.games",
+      siteName: "Xai Games",
+      images: [
+        {
+          url: '/images/xai-preview.jpg',
+          width: 1200,
+          height: 630,
+        },
+      ],
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'Xai App',
+      description: 'Stake keys & esXai to earn rewards',
+      siteId: '@xai_games',
+      creator: '@xai_games',
+      images: ['/images/xai-preview.jpg'],
+    },
 };
 
 const gaId = (process.env.NEXT_PUBLIC_APP_ENV === "development" || process.env.NODE_ENV === "development") ? "G-HCMYTPJ8K0" as const : "G-P3K185SNJR" as const;

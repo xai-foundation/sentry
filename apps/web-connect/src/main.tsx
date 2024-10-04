@@ -9,6 +9,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { arbitrum } from 'wagmi/chains'
 import './index.css'
 import { IpLocationChecker } from './features/ipchecker/IpLocationChecker'
+import  xaiThumbnail  from './assets/images/xai-preview.jpg'
+import { Helmet, HelmetProvider } from 'react-helmet-async';
+
+const helmetContext = {};
 
 const projectId = '79e38b4593d43c78d7e9ee38f0cdf4ee'
 
@@ -43,13 +47,30 @@ createWeb3Modal({
 })
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-	<WagmiProvider config={wagmiConfig as Config}>
-		<QueryClientProvider client={queryClient}>
-			<React.StrictMode>
-				<IpLocationChecker>
-					<AppRoutes />
-				</IpLocationChecker>
-			</React.StrictMode>
-		</QueryClientProvider>
-	</WagmiProvider>
+	
+	<HelmetProvider context={helmetContext}>
+		<WagmiProvider config={wagmiConfig as Config}>
+			<Helmet>		
+				<meta name="title" property="og:title" content="Xai Sentry Node"/>
+				<meta name="description" property="og:description" content="Xai Sentry Node Key Sale Page"/>
+				<meta name="image" property="og:image" content={xaiThumbnail}/>
+				<meta name="url" property="og:url" content="https://sentry.xai.games"/>
+				<meta name="type" property="og:type" content="website"/>
+			
+				<meta name="twitter:card" content="summary_large_image"/>
+				<meta name="twitter:site" content="https://sentry.xai.games"/>
+				<meta name="twitter:title" content="Xai Sentry Node"/>
+				<meta name="twitter:description" content="Xai Sentry Node Key Sale Page"/>
+				<meta name="twitter:image" content={xaiThumbnail}/>
+				<meta name="twitter:creator" content="@xai_games"/>
+			</Helmet>
+			<QueryClientProvider client={queryClient}>
+				<React.StrictMode>
+					<IpLocationChecker>
+						<AppRoutes />
+					</IpLocationChecker>
+				</React.StrictMode>
+			</QueryClientProvider>
+		</WagmiProvider>
+	</HelmetProvider>
 )
