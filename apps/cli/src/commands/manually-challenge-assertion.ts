@@ -1,7 +1,6 @@
 import { Command } from 'commander';
 import inquirer from 'inquirer';
-import { getAssertion, getSignerFromPrivateKey, submitAssertionToReferee, isChallengeSubmitTime, getRefereeCalculationsAddress } from "@sentry/core";
-import { get } from 'node_modules/axios/index.cjs';
+import { getAssertion, getSignerFromPrivateKey, submitAssertionToReferee, isChallengeSubmitTime } from "@sentry/core";
 
 /**
  * Function to manually challenge an assertion.
