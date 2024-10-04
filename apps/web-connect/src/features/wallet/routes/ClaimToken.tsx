@@ -1,16 +1,16 @@
 import {useAccount,  useWriteContract } from "wagmi";
-import {wagmiConfig, chains} from "../../../main";
+import {chains} from "../../../main";
 import {useState, useEffect} from "react";
 import {ConnectButton, XaiCheckbox} from "@sentry/ui";
 import {useNavigate} from "react-router-dom";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import {BiLoaderAlt} from "react-icons/bi";
-import {XaiGaslessClaimAbi, config} from "@sentry/core";
+import {XaiGaslessClaimAbi} from "@sentry/core";
 import {ethers} from "ethers";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
-import { getAccount } from '@wagmi/core'
 import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
+import { useNetworkConfig } from '../../../hooks/useNetworkConfig';
 
 
 export function ClaimToken() {
@@ -19,7 +19,7 @@ export function ClaimToken() {
 	const {address: _address} = useAccount();
 	const address = _address?.toLowerCase();
 	const navigate = useNavigate();
-	const { chainId } = getAccount(wagmiConfig);
+	const { chainId, xaiGaslessClaimAddress} = useNetworkConfig();
 	const chain = chains.find(chain => chain.id === chainId)
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
 	const ready = checkboxOne && chain?.id === 42_161;
@@ -27,14 +27,14 @@ export function ClaimToken() {
 	const [permits, setPermits] = useState<{[key: string]: {r: string, s: string, v: number, amount: string}}>();
 
 	const txData = {
-		address: config.xaiGaslessClaimAddress as `0x${string}`,
+		address: xaiGaslessClaimAddress as `0x${string}`,
 		abi: XaiGaslessClaimAbi,
 		functionName: "claimRewards",
 		args: [permits && address ? permits[address]?.amount : "0", permits && address ? permits[address]?.v : "0", permits && address ? permits[address]?.r : "0", permits && address ? permits[address]?.s : "0"],
-		onSuccess(data : any) {
+		onSuccess(data : Record<string, unknown>) {
 			window.location = `xai-sentry://unassigned-wallet?txHash=${data.hash}` as unknown as Location;
 		},
-		onError(error: any) {
+		onError(error: Record<string, unknown>) {
 			console.warn("Error", error);
 		}
 	};

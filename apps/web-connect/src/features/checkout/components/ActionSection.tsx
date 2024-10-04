@@ -6,7 +6,6 @@ import { mapWeb3Error } from "@/utils/errors";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 import CrossmintModal from './CrossmintModal';
 import { formatWeiToEther } from '@sentry/core';
-import { useAccount } from 'wagmi';
 
 /**
  * ActionSection Component
@@ -19,7 +18,6 @@ import { useAccount } from 'wagmi';
  */
 export function ActionSection(): JSX.Element {
     const [creditCardOpen, setCreditCardOpen] = useState(false);
-	const {isConnected} = useAccount();
 
     // Destructure values and functions from the context
     const {
@@ -33,6 +31,7 @@ export function ActionSection(): JSX.Element {
         approve,
         quantity,
         promoCode,
+        isConnected,
         getApproveButtonText,
         handleApproveClicked,
         handleMintWithEthClicked,
@@ -47,10 +46,11 @@ export function ActionSection(): JSX.Element {
      * @returns {string} The button text
      */
     const getTokenButtonText = useCallback(() => {
+        if(!isConnected) return "Please Connect Wallet";
+        if (chain?.id !== 42161 && chain?.id !== 421614) return "Please Switch to Arbitrum";
         if (mintWithEth.isPending || mintWithXai.isPending || approve.isPending) return "WAITING FOR CONFIRMATION..";
-        if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
         return getApproveButtonText();
-    }, [mintWithEth.isPending, mintWithXai.isPending, approve.isPending, chain, getApproveButtonText]);
+    }, [mintWithEth.isPending, mintWithXai.isPending, approve.isPending, chain, getApproveButtonText, isConnected]);
 
     const handleBuyWithXaiClicked = async () => { 
         if (getTokenButtonText().startsWith("Approve")) {

@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useAccount } from 'wagmi';
-import { getEsXaiBalance, getXaiBalance, getWalletBalance } from "@sentry/core";
+import { getWalletBalance, getTokenBalance } from "@sentry/core";
 import { CURRENCIES, Currency } from '..';
+import { useNetworkConfig } from '@/hooks/useNetworkConfig';
 
 /**
  * Custom hook to fetch and manage user balances.
@@ -12,6 +13,7 @@ export function useUserBalances(currency: Currency) {
   const { address } = useAccount();
   const [tokenBalance, setTokenBalance] = useState<bigint>(0n);
   const [ethBalance, setEthBalance] = useState<bigint>(0n);
+	const { esXaiAddress, xaiAddress, rpcUrl } = useNetworkConfig();
 
   /**
    * Function to fetch the user's ETH and token balances.
@@ -22,23 +24,23 @@ export function useUserBalances(currency: Currency) {
     if (!address) return;
 
     try {
-      const ethBalance = await getWalletBalance(address);
+      const ethBalance = await getWalletBalance(address, rpcUrl);
       setEthBalance(ethBalance);
 
       let tokenBalance = 0n;
       switch (currency) {
         case CURRENCIES.XAI:
-          tokenBalance = (await getXaiBalance(address)).balance;
+          tokenBalance = (await getTokenBalance(address, xaiAddress, rpcUrl)).balance;
           break;
         case CURRENCIES.ES_XAI:
-          tokenBalance = (await getEsXaiBalance(address)).balance;
+          tokenBalance = (await getTokenBalance(address, esXaiAddress, rpcUrl)).balance;
           break;
       }
       setTokenBalance(tokenBalance);
     } catch (error) {
       console.error('Failed to fetch balances:', error);
     }
-  }, [currency, address]);
+  }, [currency, address, rpcUrl, esXaiAddress, xaiAddress]);
 
   // Fetch balances whenever address or currency changes
   useEffect(() => {

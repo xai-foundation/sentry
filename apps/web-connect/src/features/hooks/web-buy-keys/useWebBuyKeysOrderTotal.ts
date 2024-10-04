@@ -55,6 +55,7 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
     quantity: number;
     maxSupply: number;
     address: `0x${string}` | undefined;
+    isConnected: boolean;
     setQuantity: React.Dispatch<React.SetStateAction<number>>;
     handleApplyPromoCode: () => Promise<void>;
     approve: UseContractWritesReturn['approve'];
@@ -81,7 +82,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
 	const { chainId } = getAccount(wagmiConfig);
 	const chain = chains.find(chain => chain.id === chainId)
 
-    const { address } = useAccount();
+    const { address, isConnected } = useAccount();
     const { data: providerData } = useProvider();
 
     const maxSupply = getTotalData?.cap && getTotalData?.totalSupply
@@ -177,7 +178,8 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     };
 
     const getEthButtonText = (): string => {        
-        if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
+        if(!isConnected) return "Please Connect Wallet";
+        if (chain?.id !== 42161 && chain?.id !== 421614) return "Please Switch to Arbitrum";
         if (mintWithEth.isPending || ethMintTx.isLoading) {
             return "WAITING FOR CONFIRMATION...";
         }
@@ -246,6 +248,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         xaiMintTx,
         approveTx,
         address,
+        isConnected,
         clearErrors,
         resetTransactions,
         mintWithEthError,

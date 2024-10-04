@@ -1,31 +1,31 @@
 import {useNavigate, useParams} from "react-router-dom";
-import {wagmiConfig, chains} from "../../../main";
+import {chains} from "../../../main";
 import {useAccount,  useWriteContract } from "wagmi";
-import {config, RefereeAbi} from "@sentry/core";
+import {RefereeAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {ConnectButton, PrimaryButton} from "@sentry/ui";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
-import { getAccount } from '@wagmi/core'
+import { useNetworkConfig } from '../../../hooks/useNetworkConfig';
 
 export function UnassignWallet() {
 	const {open} = useWeb3Modal()
 	const navigate = useNavigate();
 	const params = useParams<{ operatorAddress: string }>();
 	const {isConnected, address} = useAccount();
-	const { chainId } = getAccount(wagmiConfig);
+	const { chainId, refereeAddress} = useNetworkConfig();
 	const chain = chains.find(chain => chain.id === chainId)
 	
 	const { data, isSuccess, error, isPending, writeContract } = useWriteContract();
 
 	const txData = {
-		address: config.refereeAddress as `0x${string}`,
+		address: refereeAddress as `0x${string}`,
 		abi: RefereeAbi,
 		functionName: "setApprovalForOperator",
 		args: [params.operatorAddress, false],
-		onSuccess(data : any) {
+		onSuccess(data : Record<string, unknown>) {
 			window.location = `xai-sentry://unassigned-wallet?txHash=${data.hash}` as unknown as Location;
 		},
-		onError(error: any) {
+		onError(error: Record<string, unknown>) {
 			console.warn("Error", error);
 		}
 	};

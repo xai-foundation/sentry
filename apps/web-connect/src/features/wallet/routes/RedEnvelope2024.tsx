@@ -1,5 +1,5 @@
 import {useAccount, useReadContract } from "wagmi";
-import {wagmiConfig, chains} from "../../../main";
+import {chains} from "../../../main";
 import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
 import {BiLoaderAlt} from "react-icons/bi";
 import {useEffect, useState} from "react";
@@ -7,19 +7,16 @@ import {checkKycStatus, xaiRedEnvelopeAbi} from "@sentry/core";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import {FaCircleCheck, FaCircleXmark} from "react-icons/fa6";
 import {Link} from "react-router-dom";
-import { config } from "@sentry/core";
-import { getAccount } from '@wagmi/core'
 import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
+import { useNetworkConfig } from '../../../hooks/useNetworkConfig';
 
 export function RedEnvelope2024() {
 	const {blocked, loading: loadingGeo} = useBlockIp({blockUsa: true});
 
 	const {address} = useAccount();
-	console.log("address:", address);
 
-	const { chainId } = getAccount(wagmiConfig);
+	const { chainId, xaiRedEnvelope2024Address} = useNetworkConfig();
 	const chain = chains.find(chain => chain.id === chainId)
-	console.log("chain:", chain);
 
 	// check license balance
 	const {isLoading: licenseBalanceLoading, data} = useListNodeLicenses(address ? [address] : undefined);
@@ -52,7 +49,7 @@ export function RedEnvelope2024() {
 	}
 
 	const {data: isTwitterPostSubmittedData} = useReadContract ({
-		address: config.xaiRedEnvelope2024Address as `0x${string}`,
+		address: xaiRedEnvelope2024Address as `0x${string}`,
 		abi: xaiRedEnvelopeAbi,
 		functionName: "userXPostVerifications",
 		args: [address]	

@@ -1,24 +1,24 @@
 import {useAccount,  useWriteContract } from "wagmi";
-import {wagmiConfig, chains} from "../../../main";
+import {chains} from "../../../main";
 import {ConnectButton, PrimaryButton, XaiCheckbox} from "@sentry/ui";
 import {useState} from "react";
 import {BiLoaderAlt} from "react-icons/bi";
-import {config, NodeLicenseAbi} from "@sentry/core";
+import {NodeLicenseAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
 import { KYCTooltip } from "@/features/checkout/components/KYCTooltip";
 import { useListClaimableAmount } from "@/features/hooks";
-import { getAccount } from '@wagmi/core'
 import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
+import { useNetworkConfig } from '../../../hooks/useNetworkConfig';
 
 export function DropClaim() {
 	const {blocked, loading} = useBlockIp({blockUsa: true});
 
 	const {address} = useAccount();
 	const {open} = useWeb3Modal()
-	const { chainId } = getAccount(wagmiConfig);
+	const { chainId, nodeLicenseAddress} = useNetworkConfig();
 	const chain = chains.find(chain => chain.id === chainId)
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
 	const [checkboxTwo, setCheckboxTwo] = useState<boolean>(false);
@@ -28,14 +28,14 @@ export function DropClaim() {
 	const {data: claimableAmount, isLoading: isClaimableAmountLoading} = useListClaimableAmount(address);
 
 	const txData = {
-		address: config.nodeLicenseAddress as `0x${string}`,
+		address: nodeLicenseAddress as `0x${string}`,
 		abi: NodeLicenseAbi,
 		functionName: "redeemFromWhitelist",
 		args: [],
-		onSuccess(data : any) {
+		onSuccess(data : Record<string, unknown>) {
 			window.location = `xai-sentry://unassigned-wallet?txHash=${data.hash}` as unknown as Location;
 		},
-		onError(error: any) {
+		onError(error: Record<string, unknown>) {
 			console.warn("Error", error);
 		}
 	};

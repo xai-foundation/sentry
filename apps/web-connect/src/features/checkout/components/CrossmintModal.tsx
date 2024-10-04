@@ -2,7 +2,7 @@ import { CrossmintPaymentElement } from '@crossmint/client-sdk-react-ui';
 import React, { useState } from 'react';
 import { useAccount } from 'wagmi';
 import Minting from './Minting';
-import {config} from "@sentry/core";
+import { useNetworkConfig } from '@/hooks/useNetworkConfig';
 
 interface CrossmintModalProps {
     isOpen: boolean;
@@ -13,17 +13,17 @@ interface CrossmintModalProps {
 }
 
 const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalPriceInEth, totalQty, promoCode }) => {
-	const { VITE_APP_ENV } = import.meta.env
     const [orderIdentifier, setOrderIdentifier] = useState<string | null>(null);
     const { address } = useAccount();
+	const { crossmintProjectId, crossmintCollectionId, isDevelopment} = useNetworkConfig();
     const recipient = {
         wallet: address
     }
     if (!isOpen) return null;
 
-    const projectId = config.crossmintProjectId;
-    const collectionId = config.crossmintCollectionId;
-    const environment = VITE_APP_ENV  === 'development' ? 'staging' : 'production';
+    const projectId = crossmintProjectId;
+    const collectionId = crossmintCollectionId;
+    const environment = isDevelopment ? "staging" : "production";
 
     const styles = {
       fontSizeBase: "0.91rem",

@@ -20,3 +20,5 @@ export * from "./getXaiBalance.js";
 export * from "./formatWeiToEther.js";
 export * from "./getMultipleChallengeConfirmData.js";
 export * from "./getNodeConfirmedEvents.js";
+export * from "./getTokenBalance.js";
+export * from "./getTokenAllowance.js";

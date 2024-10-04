@@ -1,22 +1,22 @@
 import {useNavigate, useParams} from "react-router-dom";
 import {useAccount, useWriteContract } from "wagmi";
-import {wagmiConfig, chains} from "../../../main";
-import {config, RefereeAbi} from "@sentry/core";
+import {chains} from "../../../main";
+import {RefereeAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {ConnectButton, PrimaryButton} from "@sentry/ui";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
-import { getAccount } from '@wagmi/core'
+import { useNetworkConfig } from '../../../hooks/useNetworkConfig';
 
 export function AssignWallet() {
 	const navigate = useNavigate();
 	const {open} = useWeb3Modal()
 	const params = useParams<{operatorAddress: string}>();
 	const {isConnected, address} = useAccount();
-	const { chainId } = getAccount(wagmiConfig);
+	const { chainId, refereeAddress} = useNetworkConfig();
 	const chain = chains.find(chain => chain.id === chainId)
 
 	const txData = {
-		address: config.refereeAddress as `0x${string}`,
+		address: refereeAddress as `0x${string}`,
 		abi: RefereeAbi,
 		functionName: "setApprovalForOperator",
 		args: [params.operatorAddress, true],
