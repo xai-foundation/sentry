@@ -11,16 +11,14 @@ import { getMultipleChallengeConfirmData } from '../utils/getMultipleChallengeCo
  * @param assertionId - The ID of the assertion.
  * @param assertionNode - The assertion node.
  * @param signer - The signer object.
- * @param lastSubmittedAssertionId - The ID of the last assertion submitted by the challenger.
- * @param refereeCalculationsAddress - The address of the Referee calculations contract.
+ * @param lastSubmittedAssertionId - The ID of the last assertion submitted by the challenger
  */
 export async function submitAssertionToReferee(
     challengerBlsSecretKey: string,
     assertionId: number,
     assertionNode: AssertionNode,
     signer: ethers.Signer,
-    lastSubmittedAssertionId: BigInt,
-    refereeCalculationsAddress: string
+    lastSubmittedAssertionId: BigInt
 ): Promise<void> {
 
     // Get the assertion node for the current challenge
@@ -36,7 +34,7 @@ export async function submitAssertionToReferee(
         const assertionIds = [...Array(assertionIdGap).keys()].map(i => i + Number(lastSubmittedAssertionId) + 1);
 
         // Get the confirm data for all of the assertions
-        const [_, confirmDataHash] = await getMultipleChallengeConfirmData(refereeCalculationsAddress, assertionIds);
+        const [_, confirmDataHash] = await getMultipleChallengeConfirmData(config.refereeCalculationsAddress, assertionIds);
 
         finalConfirmData = confirmDataHash;
     }

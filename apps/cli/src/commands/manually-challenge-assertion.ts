@@ -54,23 +54,16 @@ export function manuallyChallengeAssertion(cli: Command): void {
                 if (isSubmitTime) {
 
                     console.log(`Submitting Hash to chain for assertion '${assertionId}'.`);
-                    let refereeCalculationsAddress = "";
+                    
                     // get a signer of the private key
                     const { signer } = getSignerFromPrivateKey(privateKey);
-                    try {
-                        refereeCalculationsAddress = await getRefereeCalculationsAddress();
-                        
-                    } catch (error) {
-                        // Ignoring error as the address will not exist until the upgrade is complete
-                    }
 
                     await submitAssertionToReferee(
                         secretKey,
                         assertionId,
                         assertionNode,
                         signer,
-                        currentChallenge.assertionId,
-                        refereeCalculationsAddress
+                        currentChallenge.assertionId
                     );
 
                     console.log(`Assertion successfully submitted.`);

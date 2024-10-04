@@ -136,21 +136,12 @@ const onAssertionConfirmedCb = async (nodeNum: any) => {
         const assertionNode = await getAssertion(nodeNum);
         console.log(`[${new Date().toISOString()}] Assertion data retrieved. Starting the submission process...`);
         try {
-            if(operatorState.refereeCalculationsAddress === ""){
-                try {
-                    operatorState.refereeCalculationsAddress = await getRefereeCalculationsAddress();
-                } catch (error) {
-                    // Ignoring error as the address will not exist until the upgrade is complete
-                }
-            }
-
             await submitAssertionToReferee(
                 cachedSecretKey,
                 Number(nodeNum),
                 assertionNode,
                 cachedSigner!.signer,
-                currentChallenge.assertionId,
-                operatorState.refereeCalculationsAddress
+                currentChallenge.assertionId
             );
             console.log(`[${new Date().toISOString()}] Submitted assertion: ${nodeNum}`);
             lastAssertionTime = Date.now();
@@ -291,27 +282,19 @@ async function processMissedAssertions() {
             const {isSubmitTime, currentChallenge} = await isChallengeSubmitTime();
             
             if(isSubmitTime) {
-                if(operatorState.refereeCalculationsAddress === ""){
-                    try {
-                        operatorState.refereeCalculationsAddress = await getRefereeCalculationsAddress();
-                    } catch (error) {
-                        // Ignoring error as the address will not exist until the upgrade is complete
-                    }
-                }
 
-            await submitAssertionToReferee(
-                cachedSecretKey,
-                missedAssertionNodeNum,
-                assertionNode,
-                cachedSigner!.signer,
-                currentChallenge.assertionId,
-                operatorState.refereeCalculationsAddress
-            );
-            console.log(`[${new Date().toISOString()}] Submitted assertion: ${missedAssertionNodeNum}`);
-            lastAssertionTime = Date.now();
-            isProcessingMissedAssertions = false;
+                await submitAssertionToReferee(
+                    cachedSecretKey,
+                    missedAssertionNodeNum,
+                    assertionNode,
+                    cachedSigner!.signer,
+                    currentChallenge.assertionId
+                );
+                console.log(`[${new Date().toISOString()}] Submitted assertion: ${missedAssertionNodeNum}`);
+                lastAssertionTime = Date.now();
+                isProcessingMissedAssertions = false;
 
-            return;
+                return;
         }
 
         // Log that the assertion was not submitted because it has not been enough time since the last assertion
