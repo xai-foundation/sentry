@@ -78,7 +78,7 @@ function RunWinningKeyCountSimulations(deployInfrastructure) {
                 // Calculate the average winning key count for the test case
                 const averageWinningKeys = Number(totalWinningKeys) / iterations;
                 // Calculate the expected winning key count based on the staked key amount and boost factor
-                const expectedWinningKeys = (keyCount * boostFactor) / 10000;
+                const expectedWinningKeys = (keyCount * boostFactor) / 1000000;
                 // Calculate the maximum allowable tolerance for variance of expectations
                 const tolerance = Math.max(1, expectedWinningKeys * 0.25);  // 10% tolerance or at least 1
 

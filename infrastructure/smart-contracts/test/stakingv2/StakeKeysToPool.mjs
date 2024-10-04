@@ -287,6 +287,10 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
 		});
 
 		it("Cannot stake more keys than maxKeysPerPool", async function () {
+			// NOTE: these vars need to replace the exising vars in Referee9 for this test to pass
+            // maxStakeAmountPerLicense = 20000 * 10 ** 18;
+            // maxKeysPerPool = 1000;
+			
 			const { poolFactory, referee, addr1, nodeLicense, challenger } = await loadFixture(deployInfrastructure);
 
 			//mint max supply + 1 keys
