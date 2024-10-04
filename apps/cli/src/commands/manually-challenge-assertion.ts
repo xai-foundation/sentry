@@ -54,7 +54,7 @@ export function manuallyChallengeAssertion(cli: Command): void {
                 if (isSubmitTime) {
 
                     console.log(`Submitting Hash to chain for assertion '${assertionId}'.`);
-                    
+
                     // get a signer of the private key
                     const { signer } = getSignerFromPrivateKey(privateKey);
 

@@ -283,19 +283,19 @@ async function processMissedAssertions() {
             
             if(isSubmitTime) {
 
-                await submitAssertionToReferee(
-                    cachedSecretKey,
-                    missedAssertionNodeNum,
-                    assertionNode,
-                    cachedSigner!.signer,
-                    currentChallenge.assertionId
-                );
-                console.log(`[${new Date().toISOString()}] Submitted assertion: ${missedAssertionNodeNum}`);
-                lastAssertionTime = Date.now();
-                isProcessingMissedAssertions = false;
+            await submitAssertionToReferee(
+                cachedSecretKey,
+                missedAssertionNodeNum,
+                assertionNode,
+                cachedSigner!.signer,
+                currentChallenge.assertionId
+            );
+            console.log(`[${new Date().toISOString()}] Submitted assertion: ${missedAssertionNodeNum}`);
+            lastAssertionTime = Date.now();
+            isProcessingMissedAssertions = false;
 
-                return;
-        }
+            return;
+    }
 
         // Log that the assertion was not submitted because it has not been enough time since the last assertion
         console.log(`[${new Date().toISOString()}] Assertion ${missedAssertionNodeNum} not submitted because it has not been ${MINIMUM_SECONDS_BETWEEN_ASSERTIONS / 60} minutes since the last assertion.`);
