@@ -33,7 +33,6 @@ export const bootOperatorRuntime = async (
     logFunction(`Started listener for new challenges.`);
 
     operatorState.challengerPublicKey = await getChallengerPublicKey();
-    operatorState.refereeCalculationsAddress = await getRefereeCalculationsAddress();
 
     const graphStatus = await getSubgraphHealthStatus();
     if (graphStatus.healthy) {
@@ -56,7 +55,7 @@ export const bootOperatorRuntime = async (
         // If the referee is V2
         if (refereeIsV2) {
             // If referee calculations address is not set, set it
-            if(operatorState.refereeCalculationsAddress === ethers.ZeroAddress){
+            if(operatorState.refereeCalculationsAddress === ""){
                 try {
                     operatorState.refereeCalculationsAddress = await getRefereeCalculationsAddress();
                 } catch (error) {
@@ -138,6 +137,15 @@ export const bootOperatorRuntime = async (
 
         // If the referee is V2
         if (refereeIsV2) {
+            // If referee calculations address is not set, set it
+            if(operatorState.refereeCalculationsAddress === ""){
+                try {
+                    operatorState.refereeCalculationsAddress = await getRefereeCalculationsAddress();
+                } catch (error) {
+                    // TODO confirm if we should throw an error here
+                    logFunction(`Error fetching referee calculations address: ${(error as Error).message}`);
+                }
+            }
 
             // Load the operator wallets from the RPC
             const bulkOwnersAndPools = await loadOperatorWalletsFromRPC(operatorState.operatorAddress);
