@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import inquirer, { QuestionCollection } from 'inquirer';
 import axios from "axios";
 import { ethers, Signer } from 'ethers';
-import { config, createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee, EventListenerError, findMissedAssertion, isAssertionSubmitted, MINIMUM_SECONDS_BETWEEN_ASSERTIONS, isChallengeSubmitTime } from "@sentry/core";
+import { config, createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee, EventListenerError, findMissedAssertion, isAssertionSubmitted, MINIMUM_SECONDS_BETWEEN_ASSERTIONS, isChallengeSubmitTime, getRefereeCalculationsAddress, operatorState } from "@sentry/core";
 
 type PromptBodyKey = "secretKeyPrompt" | "walletKeyPrompt" | "webhookUrlPrompt" | "instancePrompt";
 
@@ -136,12 +136,21 @@ const onAssertionConfirmedCb = async (nodeNum: any) => {
         const assertionNode = await getAssertion(nodeNum);
         console.log(`[${new Date().toISOString()}] Assertion data retrieved. Starting the submission process...`);
         try {
+            if(operatorState.refereeCalculationsAddress === ""){
+                try {
+                    operatorState.refereeCalculationsAddress = await getRefereeCalculationsAddress();
+                } catch (error) {
+                    // Ignoring error as the address will not exist until the upgrade is complete
+                }
+            }
+
             await submitAssertionToReferee(
                 cachedSecretKey,
                 Number(nodeNum),
                 assertionNode,
                 cachedSigner!.signer,
-                currentChallenge.assertionId
+                currentChallenge.assertionId,
+                operatorState.refereeCalculationsAddress
             );
             console.log(`[${new Date().toISOString()}] Submitted assertion: ${nodeNum}`);
             lastAssertionTime = Date.now();
@@ -282,13 +291,21 @@ async function processMissedAssertions() {
             const {isSubmitTime, currentChallenge} = await isChallengeSubmitTime();
             
             if(isSubmitTime) {
+                if(operatorState.refereeCalculationsAddress === ""){
+                    try {
+                        operatorState.refereeCalculationsAddress = await getRefereeCalculationsAddress();
+                    } catch (error) {
+                        // Ignoring error as the address will not exist until the upgrade is complete
+                    }
+                }
 
             await submitAssertionToReferee(
                 cachedSecretKey,
                 missedAssertionNodeNum,
                 assertionNode,
                 cachedSigner!.signer,
-                currentChallenge.assertionId
+                currentChallenge.assertionId,
+                operatorState.refereeCalculationsAddress
             );
             console.log(`[${new Date().toISOString()}] Submitted assertion: ${missedAssertionNodeNum}`);
             lastAssertionTime = Date.now();

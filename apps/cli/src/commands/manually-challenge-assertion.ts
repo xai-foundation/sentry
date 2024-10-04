@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 import inquirer from 'inquirer';
-import { getAssertion, getSignerFromPrivateKey, submitAssertionToReferee, isChallengeSubmitTime } from "@sentry/core";
+import { getAssertion, getSignerFromPrivateKey, submitAssertionToReferee, isChallengeSubmitTime, getRefereeCalculationsAddress } from "@sentry/core";
+import { get } from 'node_modules/axios/index.cjs';
 
 /**
  * Function to manually challenge an assertion.
@@ -53,16 +54,23 @@ export function manuallyChallengeAssertion(cli: Command): void {
                 if (isSubmitTime) {
 
                     console.log(`Submitting Hash to chain for assertion '${assertionId}'.`);
-
+                    let refereeCalculationsAddress = "";
                     // get a signer of the private key
                     const { signer } = getSignerFromPrivateKey(privateKey);
+                    try {
+                        refereeCalculationsAddress = await getRefereeCalculationsAddress();
+                        
+                    } catch (error) {
+                        // Ignoring error as the address will not exist until the upgrade is complete
+                    }
 
                     await submitAssertionToReferee(
                         secretKey,
                         assertionId,
                         assertionNode,
                         signer,
-                        currentChallenge.assertionId
+                        currentChallenge.assertionId,
+                        refereeCalculationsAddress
                     );
 
                     console.log(`Assertion successfully submitted.`);
