@@ -20,6 +20,7 @@ type OperatorState = {
     sentryAddressStatusMap: SentryAddressStatusMap;
     previousChallengeAssertionId: bigint;
     challengerPublicKey: string;
+    refereeCalculationsAddress: string;
 };
 
 /**
@@ -39,4 +40,5 @@ export const operatorState: OperatorState = {
     sentryAddressStatusMap: new Map(),
     previousChallengeAssertionId: -1n,
     challengerPublicKey: '',
+    refereeCalculationsAddress: '',
 };

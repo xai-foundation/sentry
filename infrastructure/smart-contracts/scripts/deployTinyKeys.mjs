@@ -23,7 +23,7 @@ async function main() {
     console.log("Deployer address", deployerAddress);
 
 
-    const refereeCalculationsAddress = config.refereeCalculationsAddress;
+    const refereeCalculationsAddress = ""; // TODO - Add the address of the RefereeCalculations contract
     const tinyKeysAirdropAddress = config.tinyKeysAirdropAddress
 
     /**

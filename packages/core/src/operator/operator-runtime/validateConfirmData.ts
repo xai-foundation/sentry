@@ -11,6 +11,7 @@ export async function validateConfirmData(
         challengerPublicKey: string;
         onAssertionMissMatchCb?: (publicNodeBucket: PublicNodeBucketInformation | undefined, currentChallenge: Challenge, error: string) => void;
         cachedLogger?: (message: string) => void;
+        refereeCalculationsAddress: string;
     }, 
     event?: ethers.EventLog,
 ): Promise<void> {
@@ -33,7 +34,7 @@ export async function validateConfirmData(
 
             if (isBatch) {   
                 try {
-                    const { confirmData, confirmHash } = await getConfirmDataAndHash(assertionIds, subgraphIsHealthy);
+                    const { confirmData, confirmHash } = await getConfirmDataAndHash(assertionIds, subgraphIsHealthy, operatorState.refereeCalculationsAddress);
                     confirmDataList = confirmData;                                                                      // Set the confirm data list  
                     if(confirmHash !== currentChallenge.assertionStateRootOrConfirmData){
                         const errorMessage = `Mismatch between PublicNode and Challenge assertion number '${currentAssertionId}'!`;

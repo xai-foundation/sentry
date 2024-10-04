@@ -9,16 +9,18 @@ import { getMultipleChallengeConfirmData } from '../utils/getMultipleChallengeCo
  * Submits an assertion to the Referee contract.
  * @param challengerBlsSecretKey - The BLS secret key of the challenger in hexadecimal format.
  * @param assertionId - The ID of the assertion.
- * @param predecessorAssertionId - The ID of the predecessor assertion.
- * @param refereeContractAddress - The address of the Referee contract.
- * @param signer - The signer to interact with the contract.
+ * @param assertionNode - The assertion node.
+ * @param signer - The signer object.
+ * @param lastSubmittedAssertionId - The ID of the last assertion submitted by the challenger.
+ * @param refereeCalculationsAddress - The address of the Referee calculations contract.
  */
 export async function submitAssertionToReferee(
     challengerBlsSecretKey: string,
     assertionId: number,
     assertionNode: AssertionNode,
     signer: ethers.Signer,
-    lastSubmittedAssertionId: BigInt
+    lastSubmittedAssertionId: BigInt,
+    refereeCalculationsAddress: string
 ): Promise<void> {
 
     // Get the assertion node for the current challenge
@@ -34,7 +36,7 @@ export async function submitAssertionToReferee(
         const assertionIds = [...Array(assertionIdGap).keys()].map(i => i + Number(lastSubmittedAssertionId) + 1);
 
         // Get the confirm data for all of the assertions
-        const [_, confirmDataHash] = await getMultipleChallengeConfirmData(assertionIds);
+        const [_, confirmDataHash] = await getMultipleChallengeConfirmData(refereeCalculationsAddress, assertionIds);
 
         finalConfirmData = confirmDataHash;
     }

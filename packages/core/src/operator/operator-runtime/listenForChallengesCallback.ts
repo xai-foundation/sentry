@@ -1,5 +1,5 @@
 import { checkRefereeBulkSubmissionCompatible, loadOperatorKeysFromGraph_V1, loadOperatorKeysFromRPC_V1, loadOperatorWalletsFromGraph, loadOperatorWalletsFromRPC, operatorState, processClosedChallenge, processClosedChallenges_V1, processNewChallenge, processNewChallenge_V1, PublicNodeBucketInformation, validateConfirmData } from "../index.js";
-import { Challenge, config, getSentryWalletsForOperator, getSubgraphHealthStatus, retry } from "../../index.js";
+import { Challenge, getSentryWalletsForOperator, getSubgraphHealthStatus, retry } from "../../index.js";
 import { ethers } from "ethers";
 
 /**
@@ -24,7 +24,8 @@ export async function listenForChallengesCallback(challengeNumber: bigint, chall
         previousChallengeAssertionId: operatorState.previousChallengeAssertionId,
         challengerPublicKey: operatorState.challengerPublicKey,
         onAssertionMissMatchCb: operatorState.onAssertionMissMatchCb,
-        cachedLogger: operatorState.cachedLogger
+        cachedLogger: operatorState.cachedLogger,
+        refereeCalculationsAddress: operatorState.refereeCalculationsAddress
     };
 
     await validateConfirmData(challenge, graphStatus.healthy, stateToPass, event);
