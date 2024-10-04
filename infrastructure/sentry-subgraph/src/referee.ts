@@ -15,6 +15,9 @@ import {
   UpdateBulkSubmission as UpdateBulkSubmissionEvent,
   BulkRewardsClaimed as BulkRewardsClaimedEvent,
 } from "../generated/Referee/Referee"
+import { 
+  NodeConfirmed as NodeConfirmedEvent
+} from "../generated/Rollup/Rollup"
 import {
   Challenge,
   SentryWallet,
@@ -23,7 +26,8 @@ import {
   RefereeConfig,
   PoolInfo,
   PoolChallenge,
-  BulkSubmission
+  BulkSubmission,
+  NodeConfirmation
 } from "../generated/schema"
 import { checkIfSubmissionEligible } from "./utils/checkIfSubmissionEligible"
 import { getBoostFactor } from "./utils/getBoostFactor"
@@ -32,7 +36,7 @@ import { getMaxStakeAmount } from "./utils/getMaxStakeAmount"
 import { getTxSignatureFromEvent } from "./utils/getTxSignatureFromEvent"
 import { updateChallenge } from "./utils/updateChallenge"
 
-import { ethereum, BigInt, Bytes, Address, log } from "@graphprotocol/graph-ts"
+import { ethereum, BigInt, Bytes, Address, log, ByteArray, crypto } from "@graphprotocol/graph-ts"
 import { updatePoolChallengeOnClaim } from "./utils/updatePoolChallengeOnClaim"
 import { updateTotalAccruedRewards } from "./utils/updateTotalAccruedRewards"
 
@@ -81,7 +85,6 @@ export function handleInitialized(event: Initialized): void {
 
   refereeConfig.save();
 }
-
 
 export function handleAssertionSubmitted(event: AssertionSubmittedEvent): void {
   // Load current referee config from the graph
@@ -244,7 +247,7 @@ export function handleChallengeSubmitted(event: ChallengeSubmittedEvent): void {
   challenge.challengeNumber = event.params.challengeNumber
   challenge.status = "OpenForSubmissions"
 
-  challenge = updateChallenge(contract, challenge)
+  challenge = updateChallenge(contract, challenge, event)
 
   challenge.save()
 }
@@ -683,4 +686,37 @@ export function handleBulkRewardsClaimed(event: BulkRewardsClaimedEvent): void {
     sentryWallet.save()
   }
 
+}
+
+export function handleNodeConfirmed(event: NodeConfirmedEvent): void {
+  //subgraph entity id is nodeNum since its already unique
+  const nodeConfirmedEvent = new NodeConfirmation(
+    event.params.nodeNum.toString()
+  )
+  nodeConfirmedEvent.nodeNum = event.params.nodeNum;
+  nodeConfirmedEvent.blockHash = event.params.blockHash;
+  nodeConfirmedEvent.sendRoot = event.params.sendRoot;
+
+  //constructing confirmHash exactly how its built in the smart contract (RollupLib.confirmHash)
+  let blockHashBytes = nodeConfirmedEvent.blockHash;
+  let sendRootBytes = nodeConfirmedEvent.sendRoot;
+
+  if (!blockHashBytes || !sendRootBytes) {
+    log.warning("Failed to assign null event value to variable", []);
+    return;
+  }
+
+  //confirmData = keccak256(blockHash + sendRoot)
+  let concatenatedHexStr = blockHashBytes.concat(sendRootBytes).toHexString();
+  let concatenatedByteArray = ByteArray.fromHexString(concatenatedHexStr);
+  let confirmHashByteArray = crypto.keccak256(concatenatedByteArray);
+  let confirmHashHexStr = confirmHashByteArray.toHexString();
+
+  //assign confirm data
+  nodeConfirmedEvent.confirmData = confirmHashHexStr;
+
+  //temporarily set challenge to placeholder value, set correct value in challenge handler
+  nodeConfirmedEvent.challenge = null;
+  
+  nodeConfirmedEvent.save();
 }

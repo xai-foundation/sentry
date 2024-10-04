@@ -4,6 +4,7 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/utils/math/Math.sol";
+import "./nitro-contracts/rollup/IRollupCore.sol";
 
 contract RefereeCalculations is Initializable, AccessControlUpgradeable {
     using Math for uint256;
@@ -31,22 +32,37 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
      *
      * @param totalSupply The current total supply of tokens.
      * @param maxSupply The maximum supply of tokens.
+     * @param challengeStart The timestamp of the last challenge submitted.
+     * @param challengeEnd  The current timestamp for this challenge.
      * @return uint256 The challenge emission.
      * @return uint256 The emission tier.
      */
     function calculateChallengeEmissionAndTier(
         uint256 totalSupply,
-        uint256 maxSupply
+        uint256 maxSupply,
+        uint256 challengeStart,
+        uint256 challengeEnd
     ) public pure returns (uint256, uint256) {
         require(maxSupply > totalSupply, "5");
+        require(challengeEnd >= challengeStart, "7"); // Ensure that end time is not before start time
 
         uint256 tier = Math.log2(maxSupply / (maxSupply - totalSupply)); // calculate which tier we are in starting from 0
         require(tier <= 23, "6");
 
+        // Calculate the emission tier
         uint256 emissionTier = maxSupply / (2 ** (tier + 1)); // equal to the amount of tokens that are emitted during this tier
 
+        // Determine the emissions per hour
+        uint256 emissionsPerHour = emissionTier / 17520;       
+        
+        // Calculate the time difference in seconds
+        uint256 timePassedInSeconds = challengeEnd - challengeStart;
+
+        // Calculate the total emissions for the challenge based on the time passed
+        uint256 totalEmissions = emissionsPerHour * timePassedInSeconds / 3600;
+
         // determine what the size of the emission is based on each challenge having an estimated static length
-        return (emissionTier / 17520, emissionTier);
+        return (totalEmissions, emissionTier);
     }
 
     /**
@@ -227,4 +243,32 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
 
         return winningKeyCount;
     }
+
+    /**
+    * @notice Retrieves the confirm data for multiple assertions from a Rollup contract.
+    * @dev This function interacts with a Rollup contract to fetch confirm data for a given list of assertion IDs.
+    * @param _assertionIds An array of assertion IDs for which confirm data is being requested.
+    * @param rollupAddress The address of the Rollup contract that stores the assertions.
+    * @return confirmData An array of bytes32 values containing the confirm data for each assertion ID.
+    */
+    function getConfirmDataMultipleAssertions(
+        uint64[] memory _assertionIds,
+        address rollupAddress
+    ) public view returns (bytes32[] memory confirmData, bytes32 confirmHash) {
+
+        // Initialize a memory array to store the confirm data for each assertion
+        confirmData = new bytes32[](_assertionIds.length);
+
+        // Loop through each assertion ID provided in the input array
+        for (uint256 i = 0; i < _assertionIds.length; i++) {
+            // Retrieve the node information associated with the current assertion ID from the Rollup contract
+            Node memory node = IRollupCore(rollupAddress).getNode(_assertionIds[i]);
+
+            // Store the assertion's confirmData (or state root) in the confirmData array
+            confirmData[i] = node.confirmData;
+        }
+
+        confirmHash = keccak256(abi.encodePacked(confirmData));
+    }
+
 }

@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import inquirer from 'inquirer';
-import { getAssertion, getSignerFromPrivateKey, submitAssertionToReferee } from "@sentry/core";
+import { getAssertion, getSignerFromPrivateKey, submitAssertionToReferee, isChallengeSubmitTime } from "@sentry/core";
 
 /**
  * Function to manually challenge an assertion.
@@ -41,25 +41,34 @@ export function manuallyChallengeAssertion(cli: Command): void {
                 console.log(`Looking up the assertion information for ID: ${assertionId}...`);
                 const assertionNode = await getAssertion(assertionId);
                 console.log(`Assertion data retrieved. Here are the details:`);
-
                 Object.keys(assertionNode).forEach((key: string) => {
                     const assertionKey = key as keyof typeof assertionNode;
-                    console.log(`${assertionKey} (${typeof assertionNode[assertionKey]}): ${assertionNode[assertionKey]}`);
+                    console.log(`${assertionKey} (${typeof (assertionNode[assertionKey])}): ${assertionNode[assertionKey]}`);
                 });
 
-                console.log(`Submitting Hash to chain for assertion '${assertionId}'.`);
+                // Get Last Challenge Data
+                // Check if enough time has passed that we can submit an assertion
+                const { isSubmitTime, currentChallenge } = await isChallengeSubmitTime();
 
-                // Get a signer for the private key
-                const { signer } = getSignerFromPrivateKey(privateKey);
+                if (isSubmitTime) {
 
-                await submitAssertionToReferee(
-                    secretKey,
-                    assertionId,
-                    assertionNode,
-                    signer
-                );
+                    console.log(`Submitting Hash to chain for assertion '${assertionId}'.`);
 
-                console.log(`Assertion successfully submitted.`);
+                    // get a signer of the private key
+                    const { signer } = getSignerFromPrivateKey(privateKey);
+
+                    await submitAssertionToReferee(
+                        secretKey,
+                        assertionId,
+                        assertionNode,
+                        signer,
+                        currentChallenge.assertionId
+                    );
+
+                    console.log(`Assertion successfully submitted.`);
+                    return
+                }
+                console.log(`Minimum time between assertions has not passed. The last challenge was submitted at ${currentChallenge.assertionTimestamp} Please wait before submitting another assertion.`);
             } catch (error) {
                 console.error(`Error processing assertion: ${(error as Error).message}`);
             }

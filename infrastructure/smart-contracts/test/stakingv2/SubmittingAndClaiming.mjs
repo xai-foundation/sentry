@@ -47,17 +47,28 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			const stakingPoolAddress = await poolFactory.connect(addr2).getPoolAddress(0);
 			console.log("stakingPoolAddress", stakingPoolAddress);
 
-			// Mint 100 keys to addr2 & stake
-			// Changed to 100 as 2 keys would not generate a reward thus causing a divide by zero error for number of eligible claimers
-			const keysToMintForAddr2 = 100n;
-			const addr2KeyMintPrice = await nodeLicense.price(keysToMintForAddr2, "");
-			await nodeLicense.connect(addr2).mint(keysToMintForAddr2, "", {value: addr2KeyMintPrice});
-			const addr2MintedKeyIds = [];
+			// Mint in batches of 100 keys to addr2 & stake
+			// Changed to 10_000 to have a high enough chance to get a winning key
+			const keysToMintForAddr2 = 10_000n;
+			const mintsPerLoop = 100n;
+			for (let i = keysToMintForAddr2; i > 0; i -= mintsPerLoop) {
+				let mintQuantity = mintsPerLoop;
+				if (i < mintsPerLoop) {
+					mintQuantity = i;
+				}
+				const addr2KeyMintPrice = await nodeLicense.price(mintQuantity, "");
+				await nodeLicense.connect(addr2).mint(mintQuantity, "", {value: addr2KeyMintPrice});
+			}
+			
+			let addr2MintedKeyIds = [];
 			for (let i = addr1MintedKeyId; i < addr1MintedKeyId + keysToMintForAddr2; i++) {
 				addr2MintedKeyIds.push(i + 1n);
+				if (i % 100n == 0n) {
+					await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, addr2MintedKeyIds);
+					addr2MintedKeyIds = [];
+				}
 			}
-			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, addr2MintedKeyIds);
-
+			
 			// Make winning state root for both of addr2's keys
 			const challengeId = 0;
 			//const winningStateRoot = await findWinningStateRoot(referee, addr2MintedKeyIds, challengeId);
@@ -133,17 +144,27 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			// Save the new pool's address
 			const stakingPoolAddress = await poolFactory.connect(addr2).getPoolAddress(0);
 
-			// Mint 100 keys to addr2 & stake
-			// Changed to 100 as 2 keys would not generate a reward thus causing a divide by zero error for number of eligible claimers
-			const keysToMintForAddr2 = 100n;
-			const addr2KeyMintPrice = await nodeLicense.price(keysToMintForAddr2, "");
-			await nodeLicense.connect(addr2).mint(keysToMintForAddr2, "", {value: addr2KeyMintPrice});
-			const addr2MintedKeyIds = [];
+			// Mint in batches of 100 keys to addr2 & stake
+			// Changed to 10_000 to have a high enough chance to get a winning key
+			const keysToMintForAddr2 = 10_000n;
+			const mintsPerLoop = 100n;
+			for (let i = keysToMintForAddr2; i > 0; i -= mintsPerLoop) {
+				let mintQuantity = mintsPerLoop;
+				if (i < mintsPerLoop) {
+					mintQuantity = i;
+				}
+				const addr2KeyMintPrice = await nodeLicense.price(mintQuantity, "");
+				await nodeLicense.connect(addr2).mint(mintQuantity, "", {value: addr2KeyMintPrice});
+			}
+			
+			let addr2MintedKeyIds = [];
 			for (let i = addr1MintedKeyId; i < addr1MintedKeyId + keysToMintForAddr2; i++) {
 				addr2MintedKeyIds.push(i + 1n);
+				if (i % 100n == 0n) {
+					await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, addr2MintedKeyIds);
+					addr2MintedKeyIds = [];
+				}
 			}
-
-			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, addr2MintedKeyIds);
 
 			// Mint a key to addr3 & stake
 			const addr3KeyMintPrice = await nodeLicense.price(1, "");
