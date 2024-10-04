@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useCrossmintEvents } from "@crossmint/client-sdk-react-ui";
 
 interface MintingProps {
@@ -15,20 +15,28 @@ const Minting: React.FC<MintingProps> = ({ orderIdentifier }) => {
     environment: environment,
   });
 
-  if (status === "pending") {
-    listenToMintingEvents({ orderIdentifier }, (event) => {
-      switch (event.type) {
-        case "transaction:fulfillment.succeeded":
-          setStatus("success");
-          setResult(event.payload);
-          break;
-        case "transaction:fulfillment.failed":
-          setStatus("failure");
-          break;
-      }
-      console.log(event.type, ":", event);
-    });
-  }
+  useEffect(() => {
+    if (status === "pending") {
+      const eventListener = listenToMintingEvents({ orderIdentifier }, (event) => {
+        switch (event.type) {
+          case "transaction:fulfillment.succeeded":
+            setStatus("success");
+            setResult(event.payload);
+            break;
+          case "transaction:fulfillment.failed":
+            setStatus("failure");
+            break;
+        }
+      });
+
+      // Clean up the event listener when the component unmounts or status changes
+      return () => {
+        if (eventListener && typeof eventListener.cleanup === 'function') {
+          eventListener.cleanup();
+        }
+      };
+    }
+  }, [status, orderIdentifier, listenToMintingEvents]);
 
   return (
     <>
