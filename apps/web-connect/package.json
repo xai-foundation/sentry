@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@crossmint/client-sdk-react-ui": "^1.4.1",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@sentry/core": "workspace:*",
     "@sentry/ui": "workspace:*",
