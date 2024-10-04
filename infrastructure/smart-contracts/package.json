@@ -34,7 +34,8 @@
     "test": "hardhat test --network localhost",
     "coverage": "hardhat coverage --network localhost --solcoverjs ./.solcover.cjs --temp artifacts --testfiles \"./test/**/*.mjs\"",
     "clean": "rimraf artifacts && rimraf cache",
-    "size": "hardhat size-contracts"
+    "size": "hardhat size-contracts",
+    "compile": "hardhat compile"
   },
   "dependencies": {
     "@sentry/core": "workspace:*",

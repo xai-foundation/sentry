@@ -393,15 +393,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     function calculateChallengeEmissionAndTier() public view returns (uint256, uint256) {
         uint256 totalSupply = getCombinedTotalSupply();  
         uint256 maxSupply = Xai(xaiAddress).MAX_SUPPLY();
-
-        // Get the timestamp of the start of the current challenge
-        uint256 startTs;
-        if (challengeCounter == 0) {
-            startTs = block.timestamp - 3600; //1 hour
-        } else {
-            startTs = challenges[challengeCounter - 1].createdTimestamp;
-        }
-
+        uint256 startTs = block.timestamp - 3600; //1 hour
         return RefereeCalculations(refereeCalculationsAddress).calculateChallengeEmissionAndTier(totalSupply, maxSupply, startTs, block.timestamp);
     }
 
@@ -432,9 +424,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
         require(_assertionId > _predecessorAssertionId, "9");
 
-        // Connect to the rollup contract
-        IRollupCore rollup = IRollupCore(rollupAddress);
-
         // If the gap is more than 1 assertion, we need to handle as a batch challenge
         bool isBatch = _assertionId - _predecessorAssertionId > 1;
 
@@ -460,7 +449,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             if (isCheckingAssertions) {
 
                 // get the node information for this assertion from the rollup.
-                Node memory node = rollup.getNode(i);
+                Node memory node = IRollupCore(rollupAddress).getNode(i);
 
                 // check the _predecessorAssertionId is correct
                 require(node.prevNum == i - 1, "10");   
@@ -501,10 +490,17 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
             // emit the batch challenge event
             emit BatchChallenge(challengeCounter, assertionIds);
         }
-                
-        // we need to determine how much token will be emitted
-        (uint256 challengeEmission,) = calculateChallengeEmissionAndTier();
 
+        // Get the timestamp of the start of the current challenge
+        uint256 startTs;
+        if (challengeCounter == 0) {
+            startTs = block.timestamp - 3600; //1 hour
+        } else {
+            startTs = challenges[challengeCounter - 1].createdTimestamp;
+        }
+
+        (uint256 challengeEmission, ) = RefereeCalculations(refereeCalculationsAddress).calculateChallengeEmissionAndTier(getCombinedTotalSupply(), Xai(xaiAddress).MAX_SUPPLY(), startTs, block.timestamp);
+    
         // mint part of this for the gas subsidy contract
         uint256 amountForGasSubsidy = (challengeEmission * _gasSubsidyPercentage) / 100;
 
