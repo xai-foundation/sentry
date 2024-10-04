@@ -1,0 +1,149 @@
+name: Create Signed Test Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  dryrun:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.new_release_version }} # Pass version to the next jobs
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Semantic Release
+        uses: cycjimmy/semantic-release-action@v4
+        id: get_version
+        with:
+          dry_run: true
+          extra_plugins: |
+            @semantic-release/changelog@6.0.0
+            @semantic-release/git
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Matrix build jobs that depend on the dryrun job
+  build:
+    needs: dryrun
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    env: # Pass the version as an environment variable to each matrix job
+      VERSION: ${{ needs.dryrun.outputs.version }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          version: 9
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Import mac certificate to keychain
+        uses: apple-actions/import-codesign-certs@v3
+        with: 
+          p12-file-base64: ${{ secrets.MAC_CERTIFICATE_P12_BASE64 }}
+          p12-password: ${{ secrets.MAC_CERTIFICATE_PASSWORD }}
+        if: matrix.os == 'macos-latest'
+
+      # Use the version generated from dry-run in the build process
+      - name: Set desktop app package version
+        run: pnpm pkg set version=${{ env.VERSION }} --prefix apps/sentry-client-desktop
+
+      - name: Set CLI version
+        run: sed -i'' -e 's/VERSION_NUMBER/${{ env.VERSION }}/g' packages/core/src/utils/version.ts
+
+      - name: Build monorepo
+        run: npx nx run-many --target=build --all
+        env:
+          CSC_LINK: ${{ secrets.MAC_CERTIFICATE_P12_BASE64 }}
+          CSC_KEY_PASSWORD: ${{ secrets.MAC_CERTIFICATE_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      - name: Upload sentry-client-desktop artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-desktop-${{ matrix.os }}
+          path: apps/sentry-client-desktop/release
+
+      - name: Zip CLI artifacts
+        run: |
+          cd apps/cli/release
+          zip sentry-node-cli-macos.zip sentry-node-cli-macos
+          zip sentry-node-cli-linux.zip sentry-node-cli-linux
+          zip sentry-node-cli-windows.zip sentry-node-cli-win.exe
+        if: matrix.os == 'ubuntu-latest'
+
+      - name: Upload CLI artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-cli-${{ matrix.os }}
+          path: apps/cli/release
+
+  sign:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-desktop-windows-latest
+          path: release-desktop-windows-latest
+
+      - name: Create directory for signed builds
+        shell: bash
+        run: mkdir release-desktop-windows-latest/signed-builds
+
+      - name: Sign build Windows exe
+        uses: sslcom/esigner-codesign@develop
+        with:
+          command: sign
+          username: ${{ secrets.SSL_USERNAME }}
+          password: ${{ secrets.SSL_PASSWORD }}
+          totp_secret: ${{ secrets.SSL_TOTP_SECRET }}
+          credential_id: ${{secrets.SSL_CREDENTIAL_ID}}
+          file_path: release-desktop-windows-latest/sentry-client-windows.exe
+          output_path: release-desktop-windows-latest/signed-builds
+      
+      - name: Upload signed artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-signed-desktop-windows-latest
+          path: release-desktop-windows-latest
+
+  checksum-and-release:
+    needs: sign
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Generate checksum
+        run: |
+          CHECKSUM=$(shasum -a 512 release-signed-desktop-windows-latest/signed-builds/sentry-client-windows.exe | cut -f1 -d\ | xxd -r -p | base64)
+          CHECKSUM=$(echo "$CHECKSUM" | tr -d '\r\n')
+          echo "SHA512 Checksum: $CHECKSUM"
+          cat release-signed-desktop-windows-latest/latest.yml
+          sed -i '' -e "s#^sha512:.*#sha512: $CHECKSUM#" "release-signed-desktop-windows-latest/latest.yml"
+          sed -i '' -e "s#^    sha512:.*#    sha512: $CHECKSUM#" "release-signed-desktop-windows-latest/latest.yml"
