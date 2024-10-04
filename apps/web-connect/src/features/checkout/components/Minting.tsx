@@ -6,10 +6,11 @@ interface MintingProps {
 }
 
 const Minting: React.FC<MintingProps> = ({ orderIdentifier }) => {
+	const { VITE_APP_ENV } = import.meta.env
   const [status, setStatus] = React.useState<string>("pending"); // ["pending", "success", "failure"]
   const [result, setResult] = React.useState<any>(null);
-  const environment = process.env.VITE_APP_ENV  === 'development' ? 'staging' : 'production';
-  const network = process.env.VITE_APP_ENV  === 'development' ? 'arbitrum-sepolia' : 'arbitrum';
+  const environment = VITE_APP_ENV  === 'development' ? 'staging' : 'production';
+  const network = VITE_APP_ENV  === 'development' ? 'arbitrum-sepolia' : 'arbitrum';
   const { listenToMintingEvents } = useCrossmintEvents({
     environment: environment,
   });

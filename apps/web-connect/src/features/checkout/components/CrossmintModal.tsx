@@ -13,6 +13,7 @@ interface CrossmintModalProps {
 }
 
 const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalPriceInEth, totalQty, promoCode }) => {
+	const { VITE_APP_ENV } = import.meta.env
     const [orderIdentifier, setOrderIdentifier] = useState<string | null>(null);
     const { address } = useAccount();
     const recipient = {
@@ -22,7 +23,7 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalP
 
     const projectId = config.crossmintProjectId;
     const collectionId = config.crossmintCollectionId;
-    const environment = process.env.VITE_APP_ENV  === 'development' ? 'staging' : 'production';
+    const environment = VITE_APP_ENV  === 'development' ? 'staging' : 'production';
 
     const styles = {
       fontSizeBase: "0.91rem",
