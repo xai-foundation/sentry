@@ -6,7 +6,7 @@ interface PrimaryButtonProps {
     wrapperClassName?: string;
     isDisabled?: boolean;
     size?: "sm" | "md" | "lg";
-    colorStyle?: "primary" | "secondary" | "outline";
+    colorStyle?: "primary" | "secondary" | "outline" | "outline-2";
     hoverClassName?: string;
     icon?: React.ReactNode;
 }
@@ -46,13 +46,15 @@ export const PrimaryButton = ({
                 return "bg-white text-hornetSting hover:bg-hornetSting hover:text-whisperWhite";
             case "outline":
                 return "bg-nulnOil text-hornetSting hover:bg-hornetSting hover:text-whisperWhite";
+            case "outline-2":
+                return "bg-nulnOil text-hornetSting hover:bg-white hover:text-hornetSting";
             default:
                 return "bg-hornetSting text-whisperWhite hover:bg-white hover:text-hornetSting";
         }
     };
 
     return (
-        <div className={`w-full ${colorStyle === "outline" && !isDisabled && "p-[1px] bg-hornetSting global-clip-btn border-t-hornetSting"} ${wrapperClassName}`}>
+        <div className={`w-full ${(colorStyle === "outline" || colorStyle==='outline-2') && !isDisabled && "p-[1px] bg-hornetSting global-clip-primary-btn border-t-hornetSting"} ${wrapperClassName}`}>
             <button
                 className={`rounded-none font-bold ${getSizeStyles()} ${getColorStyles()} duration-200 ease-in global-clip-primary-btn ${className} ${disabledStyles}`}
                 type="submit"

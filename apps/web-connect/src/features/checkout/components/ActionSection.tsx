@@ -73,12 +73,15 @@ export function ActionSection(): JSX.Element {
                         btnText={getEthButtonText()}
                     />
                     <br />
-                    <PrimaryButton
+                    { isConnected && <PrimaryButton
                         onClick={() => setCreditCardOpen(true)}
-                        className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
+                        className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-hornetSting p-2 uppercase font-bold `}
                         isDisabled={!ready || !isConnected}
-                        btnText={"Purchase with USD"}
-                    /></>
+                        colorStyle="outline-2"
+                        btnText={"MINT WITH CREDIT/DEBIT"}
+                    />}
+                    
+                    </>
                 ) : (
                     <PrimaryButton
                         onClick={handleBuyWithXaiClicked}
