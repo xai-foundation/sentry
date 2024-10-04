@@ -7,13 +7,14 @@
   "author": "",
   "main": "index.js",
   "scripts": {
-    "build": "pnpm -filter @sentry/sentry-subgraph-client run build && pnpm -r -filter !web-staking -filter !@sentry/sentry-subgraph-client -filter !@sentry/sentry-subgraph run build",
+    "build": "pnpm -filter @sentry/sentry-subgraph-client run build && pnpm -r -filter !@sentry/sentry-subgraph-client -filter !@sentry/sentry-subgraph run build",
     "clean": "pnpm recursive -filter !@sentry/sentry-subgraph-client run clean",
     "cli": "pnpm -filter @sentry/core run build && pnpm -r -filter @sentry/sentry-node-cli run compile && pnpm -r -filter @sentry/sentry-node-cli run start",
     "deploy-smart-contracts": "pnpm -r -filter @sentry/core run build && pnpm -r -filter @sentry/smart-contracts run deploy",
     "desktop": "pnpm -filter @sentry/web-connect run build && pnpm -r -filter @sentry/sentry-client-desktop run dev",
     "docs": "pnpm -filter @sentry/docs run start",
     "lint": "pnpm recursive run lint",
+    "staking": "pnpm -filter @sentry/web-staking run dev",
     "web": "pnpm -filter @sentry/web-connect run dev",
     "postinstall": "node ./postinstall"
   },
@@ -21,15 +22,39 @@
     "ethers": "6.8.1"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.6.0",
-    "@typescript-eslint/parser": "^6.6.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "concurrently": "8.2.1",
     "copyfiles": "2.4.1",
-    "eslint": "^8.48.0",
+    "eslint": "^8.57.0",
     "eslint-plugin-only-warn": "^1.1.0",
+    "nx": "18.1.2",
     "rimraf": "5.0.1",
-    "typescript": "^5.2.2",
-    "unzipper": "0.10.14",
-    "nx": "18.1.2"
+    "typescript": "^5.5.4",
+    "unzipper": "0.10.14"
+  },
+  "pnpm": {
+    "overrides": {
+      "lodash@<4.17.11": ">=4.17.11",
+      "lodash@<4.17.21": ">=4.17.21",
+      "lodash@>=3.7.0 <4.17.19": ">=4.17.19",
+      "crypto-js@<4.2.0": ">=4.2.0",
+      "lodash@<4.17.5": ">=4.17.5",
+      "lodash@<4.17.12": ">=4.17.12",
+      "tar@<6.2.1": ">=6.2.1",
+      "axios@>=0.8.1 <0.28.0": ">=0.28.0",
+      "tough-cookie@<4.1.3": ">=4.1.3",
+      "ejs@<3.1.10": ">=3.1.10",
+      "ws@>=8.0.0 <8.17.1": ">=8.17.1",
+      "ws@>=7.0.0 <7.5.10": ">=7.5.10",
+      "ws@>=2.1.0 <5.2.4": ">=5.2.4",
+      "electron-updater@<=6.3.0-alpha.5": ">=6.3.0-alpha.6",
+      "semver@>=7.0.0 <7.5.2": ">=7.5.2",
+      "semver@<5.7.2": ">=5.7.2",
+      "axios@>=1.3.2 <=1.7.3": ">=1.7.4",
+      "elliptic@>=4.0.0 <=6.5.6": ">=6.5.7",
+      "elliptic@>=2.0.0 <=6.5.6": ">=6.5.7",
+      "elliptic@>=5.2.1 <=6.5.6": ">=6.5.7"
+    }
   }
 }

@@ -1,5 +1,7 @@
 import {Dispatch, MutableRefObject, ReactNode, SetStateAction, useEffect, useRef} from "react";
-import {DropdownArrow, WarningIcon} from "../../rebrand/icons/IconsComponents";
+import { DropdownArrow } from "../icons/DropArrowIcon";
+import { WarningIcon } from "../icons/WarningIcon";
+
 
 const DROPDOWN_ITEMS_WITHOUT_SCROLL = 11;
 interface DropdownProps {
@@ -38,7 +40,7 @@ export const Dropdown = ({setIsOpen, isOpen, isInvalid, dropdownOptionsCount, se
 
     useEffect(() => {
         const handleKeyDown = (e: MouseEvent) => {
-            if(!dropdownRef.current.contains(e.target as Node) && !scrollbarRef.current.contains(e.target as Node)) {
+            if(!dropdownRef.current.contains(e.target as Node) && !scrollbarRef?.current?.contains(e.target as Node)) {
                 setIsOpen(false);
             }
         };
@@ -55,6 +57,7 @@ export const Dropdown = ({setIsOpen, isOpen, isInvalid, dropdownOptionsCount, se
             <div
                 onClick={() => setIsOpen(!isOpen)}
                 className={`relative h-[48px] px-[15px] group z-[20] text-lg font-medium text-americanSilver transition-bg duration-300 ease-in-out ${isOpen ? "bg-velvetBlack" : "bg-nulnOil"} flex items-center justify-between w-[538px] dropdown-clip-path dropdown ${extraClasses?.dropdown}`}
+                style={{clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px)"}}
             >
                 <div className="flex items-center gap-[10px]">
                     {isInvalid && <WarningIcon width={18} height={16} fill={"#F76808"}/>}
@@ -66,12 +69,14 @@ export const Dropdown = ({setIsOpen, isOpen, isInvalid, dropdownOptionsCount, se
 
             </div>
             <span
-                className={`bg-foggyLondon transition-bg ease-in-out duration-300 absolute left-[-2px] top-[-2px] z-10 w-[calc(100%+4px)] h-[calc(100%+4px)] ${isInvalid && "!bg-blazeOrange hover:!bg-blazeOrange"} dropdown-clip-path dropdown-border`}></span>
+                className={`bg-foggyLondon transition-bg ease-in-out duration-300 absolute left-[-2px] top-[-2px] z-10 w-[calc(100%+4px)] h-[calc(100%+4px)] ${isInvalid && "!bg-blazeOrange hover:!bg-blazeOrange"} dropdown-clip-path dropdown-border`}
+                style={{clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px)"}}
+            ></span>
 
             {isOpen && (
                 <>
                     <div
-                        className={`absolute top-[55px] left-[-1px] flex flex-col w-[538px] bg-black text-americanSilver z-30 text-lg max-h-[528px] ${extraClasses?.dropdownOptions} ${dropdownOptionsCount > DROPDOWN_ITEMS_WITHOUT_SCROLL && "overflow-y-scroll overflow-x-hidden"} dropdown-options`}>
+                        className={`absolute top-[55px] left-[-1px] flex flex-col bg-black text-americanSilver z-30 text-lg max-h-[528px] ${extraClasses?.dropdownOptions} ${dropdownOptionsCount > DROPDOWN_ITEMS_WITHOUT_SCROLL && "overflow-y-scroll overflow-x-hidden"} dropdown-options`}>
                         {defaultValue && <p
                             onClick={() => {
                                 setSelectedValue(null);

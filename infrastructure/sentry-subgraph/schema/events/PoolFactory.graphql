@@ -1,9 +1,9 @@
 type PoolInfo @entity(immutable: false) {
   id: String!
-  address: Bytes!
+  address: Bytes! @index
   owner: Bytes!
   delegateAddress: Bytes!
-  totalStakedEsXaiAmount: BigInt!
+  totalStakedEsXaiAmount: BigInt! @index
   totalStakedKeyAmount: BigInt!
   ownerShare: BigInt!
   keyBucketShare: BigInt!
@@ -17,6 +17,8 @@ type PoolInfo @entity(immutable: false) {
   ownerLatestUnstakeRequestCompletionTime: BigInt!
   createdTimestamp: BigInt!
   poolChallenges: [PoolChallenge!]! @derivedFrom(field: "pool")
+  submissions: [BulkSubmission!]! @derivedFrom(field: "poolInfo")
+  totalAccruedAssertionRewards: BigInt!
 }
 
 type UnstakeRequest @entity(immutable: false) {
@@ -31,7 +33,6 @@ type UnstakeRequest @entity(immutable: false) {
   completeTime: BigInt!
 }
 
-# global delayperiods in entity might be problematic as event is not on initialize and therefore might not be created at all
 type PoolFactoryConfig @entity(immutable: false) {
   id: String!
   version: BigInt!
@@ -44,11 +45,19 @@ type PoolFactoryConfig @entity(immutable: false) {
 type PoolChallenge @entity(immutable: false) {
   id: String!
   pool: PoolInfo!
-  challenge: Challenge!
+  challenge: Challenge! @index
   submittedKeyCount: BigInt!
   claimKeyCount: BigInt!
   totalStakedEsXaiAmount: BigInt!
   totalStakedKeyAmount: BigInt!
   totalClaimedEsXaiAmount: BigInt!
   eligibleSubmissionsCount: BigInt!
+}
+
+type PoolStake @entity(immutable: false) {
+  id: String!
+  pool: PoolInfo!
+  wallet: SentryWallet! @index
+  keyStakeAmount: BigInt!
+  esXaiStakeAmount: BigInt!
 }

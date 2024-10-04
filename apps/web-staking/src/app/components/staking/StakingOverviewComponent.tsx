@@ -164,7 +164,7 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
         { scroll: false }
     );
   };
-
+  
   return (
       <div className="relative flex sm:flex-col items-start lg:px-6 sm:px-0 sm:w-full">
         <AgreeModalComponent address={address} />
@@ -179,7 +179,6 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
         />
         <div className="flex justify-between w-full flex-col xl:flex-row sm:mb-[70px] lg:mb-6 xl:mb-3">
           <MainTitle title={"Staking"} classNames="sm:indent-4 lg:indent-0" />
-
 
           {address && <div
               className="sm:w-[91%] absolute sm:right-[17px] sm:top-[85px] lg:right-[55px] lg:top-6 lg:w-[450px] shadow-light">

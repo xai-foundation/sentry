@@ -6,14 +6,16 @@ module.exports = {
   ],
   theme: {
     colors: {
+      black: "#000",
+      abaddonBlack: "#231D1F",
+      blazeOrange: "#F76808",
       white: "#fff",
       hornetSting: "#FF0030",
       potBlack: "#181415",
       elementalGrey: "#A19F9F",
       americanSilver: "#D0CFCF",
       darkLicorice: "#181415BF",
-      bananaBoat: "#FFC53D1A",
-      bananaBoatText: "#FFC53D",
+      bananaBoat: "#FFC53D",
       nulnOil: "#140F0F",
       velvetBlack: "#272123",
       vividRed: "#F30919",
@@ -21,7 +23,10 @@ module.exports = {
       chromaphobicBlack: "#2A2828",
       dynamicBlack: "#201C1C",
       bloodThirstyWarlock: "#F1183D",
-      drunkenDragonfly: "#3DD68C"
+      drunkenDragonfly: "#3DD68C",
+      brandyWine: "#4D0207",
+      knightRider: "#0C0606",
+      optophobia: "#130E0E"
     },
     extend: {
       backgroundImage: {
@@ -52,6 +57,7 @@ module.exports = {
       },
       screens: {
         sm: "320px",
+        sx: "375px"
       },
     },
   },

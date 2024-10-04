@@ -1,15 +1,20 @@
 import {ConnectButton, ExternalLink} from "@sentry/ui";
-import {useWeb3Modal} from "@web3modal/wagmi/react";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
 import {useAccount} from "wagmi";
 import {DiscordIcon, TelegramIcon, XaiLogo, XIcon} from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import Burger from "@/features/header/Burger";
 import MobileNavbar from "@/features/header/MobileNavbar";
-import {useState} from "react";
+import { useState} from "react";
 
 export function Header() {
 	const {open} = useWeb3Modal();
 	const {address} = useAccount()
 	const [isNavbarOpened, setIsNavbarOpened] = useState(false)
+	
+	function handleConnectClick() {
+		open();
+	}
+
 	return (
 		<div className="w-full">
 			<div className="fixed top-0 flex w-full justify-between items-center bg-transparent z-[10]">
@@ -57,10 +62,15 @@ export function Header() {
 
 					</div>
 
-					<ConnectButton onOpen={open} address={address}/>
+					<ConnectButton onOpen={handleConnectClick} address={address}/>
 				</div>
 				{/* Burger menu for mobile */}
-				<Burger openNavbar={() => setIsNavbarOpened(true)} />
+				<div className="md:hidden flex items-center">
+					<div className="pr-4">
+						<ConnectButton onOpen={handleConnectClick} address={address} />
+					</div>
+					<Burger openNavbar={() => setIsNavbarOpened(true)} />
+				</div>
 				<MobileNavbar isOpened={isNavbarOpened} closeNavbar={() => setIsNavbarOpened(false)} />
 			</div>
 		</div>

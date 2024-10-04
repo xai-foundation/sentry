@@ -1,36 +1,46 @@
-import {useAccount, useContractWrite, useNetwork} from "wagmi";
+import {useAccount,  useWriteContract } from "wagmi";
+import {wagmiConfig, chains} from "../../../main";
 import {ConnectButton, PrimaryButton, XaiCheckbox} from "@sentry/ui";
-import {KYCTooltip} from "@/features/checkout/KYCTooltip";
 import {useState} from "react";
-import {useListClaimableAmount} from "@/features/checkout/hooks/useListClaimableAmount";
 import {BiLoaderAlt} from "react-icons/bi";
 import {config, NodeLicenseAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
+import { KYCTooltip } from "@/features/checkout/components/KYCTooltip";
+import { useListClaimableAmount } from "@/features/hooks";
+import { getAccount } from '@wagmi/core'
+import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
 
 export function DropClaim() {
 	const {blocked, loading} = useBlockIp({blockUsa: true});
 
 	const {address} = useAccount();
 	const {open} = useWeb3Modal()
-	const {chain} = useNetwork();
+	const { chainId } = getAccount(wagmiConfig);
+	const chain = chains.find(chain => chain.id === chainId)
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
 	const [checkboxTwo, setCheckboxTwo] = useState<boolean>(false);
 	const [checkboxThree, setCheckboxThree] = useState<boolean>(false);
 	const ready = checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161;
 
-	const {data: listClaimableAmountData, isLoading: isClaimableAmountLoading} = useListClaimableAmount(address);
+	const {data: claimableAmount, isLoading: isClaimableAmountLoading} = useListClaimableAmount(address);
 
-	const {isLoading: isRedeemFromWhitelistLoading, write, error, isSuccess} = useContractWrite({
+	const txData = {
 		address: config.nodeLicenseAddress as `0x${string}`,
 		abi: NodeLicenseAbi,
 		functionName: "redeemFromWhitelist",
-		onError(error) {
-			console.warn("Error", error);
+		args: [],
+		onSuccess(data : any) {
+			window.location = `xai-sentry://unassigned-wallet?txHash=${data.hash}` as unknown as Location;
 		},
-	});
+		onError(error: any) {
+			console.warn("Error", error);
+		}
+	};
+
+	const {isPending: isRedeemFromWhitelistLoading, writeContract, error, isSuccess} = useWriteContract();
 
 	if (loading) {
 		return (
@@ -43,9 +53,13 @@ export function DropClaim() {
 	if (blocked) {
 		return (
 			<div className='w-full h-screen flex justify-center items-center'>
-				<p className="p-2 text-md text-white">You are in a country restricted from using this application.</p>
+				<IpBlockText classNames="p-2 text-md text-white" />
 			</div>
 		);
+	}
+
+	function handleConnectClick() {
+		open();
 	}
 
 	return (
@@ -88,11 +102,11 @@ export function DropClaim() {
 
 									{address ? (
 										<>
-											{listClaimableAmountData && Number(listClaimableAmountData?.claimableAmount) !== 0 ? (
+											{claimableAmount && Number(claimableAmount) !== 0 ? (
 												<>
 													<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
 														This wallet ({address}) is eligible to claim <span
-														className="font-semibold">{BigInt(listClaimableAmountData.claimableAmount).toString()}</span> {Number(listClaimableAmountData.claimableAmount) === 1 ? "Key" : "Keys"}.
+														className="font-semibold">{BigInt(claimableAmount).toString()}</span> {Number(claimableAmount) === 1 ? "Key" : "Keys"}.
 													</p>
 													<p className="text-lg text-[#525252] max-w-[590px] text-center mt-2">
 														You will be able to claim up to 50 Keys per transaction until
@@ -137,7 +151,7 @@ export function DropClaim() {
 
 														<div>
 															<button
-																onClick={() => write()}
+																onClick={() => writeContract(txData)}
 																className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 																disabled={!ready || isRedeemFromWhitelistLoading}
 															>
@@ -161,7 +175,7 @@ export function DropClaim() {
 										</>
 									) : (
 										<div className="m-8 w-full">
-											<ConnectButton onOpen={open} address={address} isFullWidth/>
+											<ConnectButton onOpen={handleConnectClick} address={address} isFullWidth/>
 										</div>
 									)}
 								</>

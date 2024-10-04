@@ -1,18 +1,21 @@
-import Vorpal from "vorpal";
+import { Command } from 'commander';
+import inquirer from 'inquirer';
 import { getReferralRewards as getReferralRewardsCore, ReferralReward } from "@sentry/core";
 import Table from 'cli-table3';
-import { ethers } from "ethers";
+import { BlockTag, ethers, Log } from "ethers";
 import datePrompt from "date-prompt";
 
 /**
  * Function to get all referral rewards for node licenses.
- * @param cli - Vorpal instance
+ * @param cli - Commander instance
  */
-export function getReferralRewards(cli: Vorpal) {
+export function getReferralRewards(cli: Command): void {
     cli
-        .command('get-referral-rewards', 'Gets all referral rewards for node licenses.')
-        .action(async function (this: Vorpal.CommandInstance) {
-            const includeTimeRange = await this.prompt({
+        .command('get-referral-rewards')
+        .description('Gets all referral rewards for node licenses.')
+        .action(async () => {
+            // Prompt user to include a time range
+            const { timeRange } = await inquirer.prompt({
                 type: 'confirm',
                 name: 'timeRange',
                 message: 'Do you want to include a time range? This can help speed up large requests.',
@@ -22,14 +25,15 @@ export function getReferralRewards(cli: Vorpal) {
             let fromTimestamp: number | undefined;
             let toTimestamp: number | undefined;
 
-            if (includeTimeRange.timeRange) {
+            if (timeRange) {
                 const fromIsoString = await datePrompt('When do you want to search from?');
                 const toIsoString = await datePrompt('When do you want to search to?');
                 fromTimestamp = Date.parse(fromIsoString) / 1000;
                 toTimestamp = Date.parse(toIsoString) / 1000;
             }
 
-            const includeBuyerAddress = await this.prompt({
+            // Prompt user to include a specific buyer address
+            const { buyerAddress: includeBuyerAddress } = await inquirer.prompt({
                 type: 'confirm',
                 name: 'buyerAddress',
                 message: 'Do you want to include a specific buyer address?',
@@ -38,16 +42,17 @@ export function getReferralRewards(cli: Vorpal) {
 
             let buyerAddress: string | undefined;
 
-            if (includeBuyerAddress.buyerAddress) {
-                const {buyerAddress: _buyerAddress} = await this.prompt({
+            if (includeBuyerAddress) {
+                const { buyerAddress: _buyerAddress } = await inquirer.prompt({
                     type: 'input',
                     name: 'buyerAddress',
                     message: 'Please enter the buyer address:',
                 });
-                buyerAddress = _buyerAddress
+                buyerAddress = _buyerAddress;
             }
 
-            const includeReferralAddress = await this.prompt({
+            // Prompt user to include a specific referral address
+            const { referralAddress: includeReferralAddress } = await inquirer.prompt({
                 type: 'confirm',
                 name: 'referralAddress',
                 message: 'Do you want to include a specific referral address?',
@@ -56,30 +61,46 @@ export function getReferralRewards(cli: Vorpal) {
 
             let referralAddress: string | undefined;
 
-            if (includeReferralAddress.referralAddress) {
-                const {referralAddress: _referallAddress} = await this.prompt({
+            if (includeReferralAddress) {
+                const { referralAddress: _referralAddress } = await inquirer.prompt({
                     type: 'input',
                     name: 'referralAddress',
                     message: 'Please enter the referral address:',
                 });
-                referralAddress = _referallAddress;
+                referralAddress = _referralAddress;
             }
 
-            this.log(`Fetching all referral rewards for node licenses...`);
-            const rewards = await getReferralRewardsCore(fromTimestamp, toTimestamp, buyerAddress, referralAddress, (logs, from, to) => {
-                this.log(`Fetched ${from} -> ${to} logs. ${logs?.length} referrals found.`);
-            });
-            for (const address in rewards) {
-                const reward = rewards[address];
-                this.log(`Address: ${reward.address}, Total Received: ${ethers.formatEther(reward.totalReceived)} eth`);
-                const table = new Table({
-                    head: ['Transaction Hash', 'Buyer', 'Amount'],
-                });
-                for (const transaction of reward.transactions) {
-                    table.push([transaction.transactionHash, transaction.buyer, ethers.formatEther(transaction.amount) + " eth"]);
+            console.log(`Fetching all referral rewards for node licenses...`);
+
+            try {
+                const rewards = await getReferralRewardsCore(
+                    fromTimestamp,
+                    toTimestamp,
+                    buyerAddress,
+                    referralAddress,
+                    (logs?: Log[], from?: BlockTag, to?: BlockTag) => {
+                        console.log(`Fetched ${from} -> ${to} logs. ${logs?.length || 0} referrals found.`);
+                    }
+                );
+
+                for (const address in rewards) {
+                    const reward: ReferralReward = rewards[address];
+                    console.log(`Address: ${reward.address}, Total Received: ${ethers.formatEther(reward.totalReceived)} ETH`);
+                    const table = new Table({
+                        head: ['Transaction Hash', 'Buyer', 'Amount'],
+                    });
+                    for (const transaction of reward.transactions) {
+                        table.push([
+                            transaction.transactionHash,
+                            transaction.buyer,
+                            ethers.formatEther(transaction.amount) + " ETH"
+                        ]);
+                    }
+                    console.log(table.toString());
                 }
-                this.log(table.toString());
+                console.log(`Referral rewards retrieved.`);
+            } catch (error) {
+                console.error(`Error fetching referral rewards: ${(error as Error).message}`);
             }
-            this.log(`Referral rewards retrieved.`);
         });
 }

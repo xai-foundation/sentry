@@ -1,6 +1,6 @@
 import {HashRouter as Router, Navigate, Route, Routes} from 'react-router-dom';
 import {QueryClient, QueryClientProvider} from "react-query";
-import {Checkout} from "../checkout";
+import {CheckoutWrapper} from "../checkout";
 import {AssignWallet} from "../wallet/routes/AssignWallet.js";
 import {UnassignWallet} from "@/features/wallet/routes/UnassignWallet";
 import {Header} from "@/features/header/Header";
@@ -14,6 +14,7 @@ import {RedEnvelope2024} from "@/features/wallet/routes/RedEnvelope2024";
 import {ClaimRedEnvelope2024} from "@/features/wallet/routes/ClaimRedEnvelope2024";
 import { ReactCookieConsent } from '../footer/ReactCookieConsent';
 import UrlVerification from "@/features/UrlVerification";
+import IpBlockText from '@sentry/ui/src/rebrand/text/IpBlockText';
 
 export function AppRoutes() {
 	const {blocked, loading} = useBlockIp({blockUsa: true});
@@ -30,7 +31,7 @@ export function AppRoutes() {
 	if (blocked) {
 		return (
 			<div className='w-full h-screen flex justify-center items-center'>
-				<p className="p-2 text-md text-white">You are in a country restricted from using this application.</p>
+				<IpBlockText classNames="p-2 text-md text-white" />
 			</div>
 		)
 	}
@@ -48,7 +49,7 @@ export function AppRoutes() {
 					<Route path="/unassign-wallet/:operatorAddress" element={<UnassignWallet/>}/>
 					<Route path="/CNY-claim" element={<RedEnvelope2024/>}/>
 					<Route path="/CNY-claim-temp" element={<ClaimRedEnvelope2024/>}/>
-					<Route path="/" element={<Checkout/>}/>
+					<Route path="/" element={<CheckoutWrapper/>}/>
 					<Route path="*" element={<Navigate to="/" replace={true}/>}/>
 				</Routes>
 				<Footer/>

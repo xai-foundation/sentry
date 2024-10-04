@@ -1,9 +1,11 @@
 export let config = {
   "arbitrumBlockExplorer": "https://arbiscan.io",
   "arbitrumGoerliBlockExplorer": "https://goerli.arbiscan.io",
-  "arbitrumOneJsonRpcUrl": (typeof process !== 'undefined' && process.env && process.env.ARB_ONE_RPC) || "https://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
-  "arbitrumOneWebSocketUrl": (typeof process !== 'undefined' && process.env && process.env.ARB_ONE_WEBSOCKET) || "wss://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
-  "defaultRpcUrl": "https://arb-mainnet.g.alchemy.com/v2/p_LSgTIj_JtEt3JPM7IZIZFL1a70yvQJ",
+  "arbitrumOneJsonRpcUrl": (typeof process !== 'undefined' && process.env && process.env.ARB_ONE_RPC) || "https://arb-mainnet.g.alchemy.com/v2/oD4X3JXvJclnt36mDkqnp9CO2sZkNhYT",
+  "arbitrumOneWebSocketUrl": (typeof process !== 'undefined' && process.env && process.env.ARB_ONE_WEBSOCKET) || "wss://arb-mainnet.g.alchemy.com/v2/oD4X3JXvJclnt36mDkqnp9CO2sZkNhYT",
+  "defaultRpcUrl": "https://arb-mainnet.g.alchemy.com/v2/oD4X3JXvJclnt36mDkqnp9CO2sZkNhYT",
+  "chainlinkEthUsdPriceFeed": "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612",
+  "chainlinkXaiUsdPriceFeed": "0x806c532D543352e7C344ba6C7F3F00Bfbd309Af1",
   "esXaiAddress": "0x4C749d097832DE2FEcc989ce18fDc5f1BD76700c",
   "esXaiDeployedBlockNumber": 157193630,
   "esXaiImplementationAddress": "0x8d6c063656b00e5c37ce007c0f99848d58f19d6b",
@@ -26,7 +28,11 @@ export let config = {
   "poolFactoryAddress": "0xF9E08660223E2dbb1c0b28c82942aB6B5E38b8E5",
   "poolFactoryAddressImplementationAddress": "0x21EEC6626f15d02A8896ebB7EDD68ff3CB61e89E",
   "defaultNetworkName": "arbitrum",
-  "subgraphEndpoint": "https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry/api"
+  "subgraphEndpoint": "https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry/api",
+  "publicRPC": "https://arb1.arbitrum.io/rpc",
+  "alchemyApiKey": "oD4X3JXvJclnt36mDkqnp9CO2sZkNhYT",
+  "crossmintProjectId": "", //TODO Add Production Values
+  "crossmintCollectionId": "", //TODO Add Production Values
 };
 
 export function setConfig(_config: any) { config = _config; }

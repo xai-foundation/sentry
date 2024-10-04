@@ -1,0 +1,21 @@
+**/dist
+**/node_modules
+**/build
+
+.idea
+
+# Logs
+**/logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+**/tsconfig.tsbuildinfo
+
+**/*.DS_Store
+*.tsbuildinfo
+infrastructure/CodeSignTool-*
+infrastructure/CodeSignTool-*
+
+.nx/cache

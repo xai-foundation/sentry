@@ -1,82 +1,117 @@
-import Vorpal from "vorpal";
-import Logger from "../../utils/Logger.js"
-import { getSignerFromPrivateKey, operatorRuntime, Challenge, PublicNodeBucketInformation, getSentryWalletsForOperator } from "@sentry/core";
+import { Command } from 'commander';
+import inquirer from 'inquirer';
+import Logger from "../../utils/Logger.js";
+import {
+    getSignerFromPrivateKey,
+    operatorRuntime,
+    Challenge,
+    PublicNodeBucketInformation,
+    getSentryWalletsForOperator,
+    getSubgraphHealthStatus,
+    loadOperatorWalletsFromRPC
+} from "@sentry/core";
+import { Signer } from 'ethers';
 
 /**
  * Starts a runtime of the operator.
- * @param {Vorpal} cli - The Vorpal instance to attach the command to.
+ * @param cli - Commander instance
  */
-export function bootOperator(cli: Vorpal) {
+export function bootOperator(cli: Command): void {
     let stopFunction: () => Promise<void>;
 
     cli
-        .command('boot-operator', 'Starts a runtime of the operator.')
-        .action(async function (this: Vorpal.CommandInstance) {
-            const walletKeyPrompt: Vorpal.PromptObject = {
+        .command('boot-operator')
+        .description('Starts a runtime of the operator.')
+        .action(async () => {
+            // Prompt user for the private key of the operator
+            const { walletKey } = await inquirer.prompt({
                 type: 'password',
                 name: 'walletKey',
                 message: 'Enter the private key of the operator:',
-                mask: '*'
-            };
-
-            const { walletKey } = await this.prompt(walletKeyPrompt);
+                mask: '*',
+                validate: input => input.trim() === '' ? 'Private key is required' : true
+            });
 
             if (!walletKey || walletKey.length < 1) {
-                throw new Error("No private key passed in. Please provide a valid private key.")
+                throw new Error("No private key passed in. Please provide a valid private key.");
+            }
+            
+            let signer: Signer;
+            try {
+                signer = getSignerFromPrivateKey(walletKey).signer;
+            } catch (error) {
+                console.error(`Error getting signer from private key: ${(error as Error).message}`);
+                return;
             }
 
-            const { signer } = getSignerFromPrivateKey(walletKey);
-
-            const whitelistPrompt: Vorpal.PromptObject = {
+            // Prompt user whether to use a whitelist for the operator runtime
+            const { useWhitelist } = await inquirer.prompt({
                 type: 'confirm',
                 name: 'useWhitelist',
                 message: 'Do you want to use a whitelist for the operator runtime?',
                 default: false
-            };
-
-            const { useWhitelist } = await this.prompt(whitelistPrompt);
+            });
 
             // If useWhitelist is false, selectedOwners will be undefined
             let selectedOwners;
             if (useWhitelist) {
+                try {
+                    const operatorAddress = await signer.getAddress();
+                    const choices: Array<{ name: string, value: string }> = [];
 
-                const operatorAddress = await signer.getAddress();
-                const { wallets, pools } = await getSentryWalletsForOperator(operatorAddress);
-
-                const choices: Array<{ name: string, value: string }> = [];
-
-                wallets.forEach(w => {
-                    choices.push({
-                        name: `Owner: ${w.address}${operatorAddress.toLowerCase() == w.address.toLowerCase() ? " (your wallet)" : ""}`,
-                        value: w.address
-                    })
-                })
-
-                pools.forEach(p => {
-                    choices.push({
-                        name: `Pool: ${p.metadata[0]} (${p.address})`,
-                        value: p.address
-                    })
-                })
-
-                const ownerPrompt: Vorpal.PromptObject = {
-                    type: 'checkbox',
-                    name: 'selectedOwners',
-                    message: 'Select the owners/pools for the operator to run for:',
-                    choices,
-                };
-
-                if (!choices.length) {
-                    throw new Error(`No operatorWallets found for publicKey: ${operatorAddress}, approve your wallet for operating keys or delegate it to a staking pool to operate for it.`)
-                } else {
-                    const result = await this.prompt(ownerPrompt);
-                    selectedOwners = result.selectedOwners;
-
-                    Logger.log("selectedOwners", selectedOwners);
-
-                    if (!selectedOwners || selectedOwners.length < 1) {
-                        throw new Error("No owners selected. Please select at least one owner.")
+                    const graphStatus = await getSubgraphHealthStatus();
+                    if (graphStatus.healthy) { // Fetch from subgraph
+                        const { wallets, pools } = await getSentryWalletsForOperator(operatorAddress);
+                        wallets.forEach(w => {
+                            choices.push({
+                                name: `Owner: ${w.address}${operatorAddress.toLowerCase() === w.address.toLowerCase() ? " (your wallet)" : ""}`,
+                                value: w.address
+                            });
+                        });
+                        pools.forEach(p => {
+                            choices.push({
+                                name: `Pool: ${p.metadata[0]} (${p.address})`,
+                                value: p.address
+                            });
+                        });
+                    } else { // Fetch from RPC
+                        const res = await loadOperatorWalletsFromRPC(operatorAddress);
+                        res.forEach(a => {
+                            if (a.isPool) {
+                                choices.push({
+                                    name: `Pool: (${a.address})`,
+                                    value: a.address
+                                });
+                            } else {
+                                choices.push({
+                                    name: `Owner: ${a.address}${operatorAddress.toLowerCase() === a.address.toLowerCase() ? " (your wallet)" : ""}`,
+                                    value: a.address
+                                });
+                            }
+                        });
                     }
+
+                    if (!choices.length) {
+                        throw new Error(`No operatorWallets found for publicKey: ${operatorAddress}, approve your wallet for operating keys or delegate it to a staking pool to operate for it.`);
+                    } else {
+                        const { selectedOwners: ownerSelection } = await inquirer.prompt({
+                            type: 'checkbox',
+                            name: 'selectedOwners',
+                            message: 'Select the owners/pools for the operator to run for:',
+                            choices,
+                        });
+
+                        selectedOwners = ownerSelection;
+                        Logger.log("selectedOwners", selectedOwners);
+
+                        if (!selectedOwners || selectedOwners.length < 1) {
+                            throw new Error("No owners selected. Please select at least one owner.");
+                        }
+                    }
+                } catch (error) {
+                    console.error(`Error getting operator wallets: ${(error as Error).message}`);
+                    return;
+                    
                 }
             }
 
@@ -86,9 +121,9 @@ export function bootOperator(cli: Vorpal) {
                 (log: string) => {
                     if (log.startsWith("Error")) {
                         Logger.error(log);
-                        return;
+                    } else {
+                        Logger.log(log);
                     }
-                    Logger.log(log)
                 },
                 selectedOwners,
                 (publicNodeData: PublicNodeBucketInformation | undefined, challenge: Challenge, message: string) => {
@@ -99,25 +134,20 @@ export function bootOperator(cli: Vorpal) {
                         `Challenge data:\n` +
                         `${JSON.stringify(challenge, null, 2)}\n`;
 
-                    this.log(errorMessage)
+                    console.error(errorMessage);
                 }
             );
-
 
             // Listen for process termination and call the handler
             process.on('SIGINT', async () => {
                 if (stopFunction) {
-                    stopFunction();
+                    await stopFunction();
                 }
                 Logger.log(`The operator has been terminated manually.`);
                 process.exit();
             });
 
-            return new Promise((resolve, reject) => { }); // Keep the command alive
-        })
-        .cancel(() => {
-            if (stopFunction) {
-                stopFunction();
-            }
+            // Keep the command running
+            await new Promise(resolve => {});
         });
 }

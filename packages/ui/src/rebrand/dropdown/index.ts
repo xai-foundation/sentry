@@ -1,3 +1,3 @@
-import {Dropdown, DropdownItem} from "./Dropdown";
+import { Dropdown, DropdownItem } from "./Dropdown";
 
 export {Dropdown, DropdownItem}
