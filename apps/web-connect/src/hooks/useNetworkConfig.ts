@@ -64,16 +64,12 @@ export function useNetworkConfig() {
 		void loadConfigs();
 
         async function loadConfigs() {
-            try {
-                if(chainId === MAINNET_ID){
-                    setConfigs(MAINNET_CONFIGS);
-                } else if(chainId === TESTNET_ID){
-                    setConfigs(TESTNET_CONFIGS);
-                }
-                setIsDevelopment(VITE_APP_ENV === 'development');
-            } catch (e) {
-                console.error(e);
+            if(chainId === MAINNET_ID){
+                setConfigs(MAINNET_CONFIGS);
+            } else if(chainId === TESTNET_ID){
+                setConfigs(TESTNET_CONFIGS);
             }
+            setIsDevelopment(VITE_APP_ENV === 'development');
         }
 
 	}, [chainId, VITE_APP_ENV]);
