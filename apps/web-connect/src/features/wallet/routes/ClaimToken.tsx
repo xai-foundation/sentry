@@ -11,6 +11,7 @@ import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
 import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
 import { useNetworkConfig } from '../../../hooks/useNetworkConfig';
+import { MAINNET_ID } from '@/hooks/useNetworkConfig';
 
 
 export function ClaimToken() {
@@ -22,8 +23,7 @@ export function ClaimToken() {
 	const { chainId, xaiGaslessClaimAddress} = useNetworkConfig();
 	const chain = chains.find(chain => chain.id === chainId)
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
-	const ready = checkboxOne && chain?.id === 42_161;
-	// const ready = checkboxOne && chain?.id === 421614;
+	const ready = checkboxOne && chain?.id === MAINNET_ID;
 	const [permits, setPermits] = useState<{[key: string]: {r: string, s: string, v: number, amount: string}}>();
 
 	const txData = {

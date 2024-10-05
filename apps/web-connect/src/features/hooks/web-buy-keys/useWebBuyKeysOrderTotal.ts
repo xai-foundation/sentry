@@ -6,6 +6,7 @@ import { CheckoutTierSummary, formatWeiToEther } from '@sentry/core';
 import { CURRENCIES, Currency, useContractWrites, UseContractWritesReturn, useCurrencyHandler, useGetExchangeRate, useGetPriceForQuantity, useGetTotalSupplyAndCap, usePromoCodeHandler, useUserBalances } from '..';
 import {useProvider} from "../provider/useProvider";
 import { getAccount } from '@wagmi/core'
+import { MAINNET_ID, TESTNET_ID } from '@/hooks/useNetworkConfig';
 
 export interface PriceDataInterface {
     price: bigint;
@@ -179,7 +180,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
 
     const getEthButtonText = (): string => {        
         if(!isConnected) return "Please Connect Wallet";
-        if (chain?.id !== 42161 && chain?.id !== 421614) return "Please Switch to Arbitrum";
+        if (chain?.id !== MAINNET_ID && chain?.id !== TESTNET_ID) return "Please Switch to Arbitrum";
         if (mintWithEth.isPending || ethMintTx.isLoading) {
             return "WAITING FOR CONFIRMATION...";
         }

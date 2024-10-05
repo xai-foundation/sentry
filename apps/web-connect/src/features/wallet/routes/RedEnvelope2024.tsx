@@ -8,7 +8,7 @@ import {useBlockIp} from "@/hooks/useBlockIp";
 import {FaCircleCheck, FaCircleXmark} from "react-icons/fa6";
 import {Link} from "react-router-dom";
 import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
-import { useNetworkConfig } from '../../../hooks/useNetworkConfig';
+import { MAINNET_ID, useNetworkConfig } from '../../../hooks/useNetworkConfig';
 
 export function RedEnvelope2024() {
 	const {blocked, loading: loadingGeo} = useBlockIp({blockUsa: true});
@@ -132,7 +132,7 @@ export function RedEnvelope2024() {
 					</p>
 				)}
 
-				{address && data && chain?.id !== 42161 && (
+				{address && data && chain?.id !== MAINNET_ID && (
 				// {address && data && chain.id !== 42170 && (
 					<>
 						<p className="text-lg text-[#525252] max-w-[590px] text-center mt-6">
@@ -144,7 +144,7 @@ export function RedEnvelope2024() {
 					</>
 				)}
 
-				{address && data && chain?.id === 42161 && (
+				{address && data && chain?.id === MAINNET_ID && (
 				// {address && data && chain.id === 42170 &&(
 					<>
 						{licenseBalanceLoading && (

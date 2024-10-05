@@ -6,6 +6,7 @@ import { mapWeb3Error } from "@/utils/errors";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 import CrossmintModal from './CrossmintModal';
 import { formatWeiToEther } from '@sentry/core';
+import { MAINNET_ID, TESTNET_ID } from '@/hooks/useNetworkConfig';
 
 /**
  * ActionSection Component
@@ -47,7 +48,7 @@ export function ActionSection(): JSX.Element {
      */
     const getTokenButtonText = useCallback(() => {
         if(!isConnected) return "Please Connect Wallet";
-        if (chain?.id !== 42161 && chain?.id !== 421614) return "Please Switch to Arbitrum";
+        if (chain?.id !== MAINNET_ID && chain?.id !== TESTNET_ID) return "Please Switch to Arbitrum";
         if (mintWithEth.isPending || mintWithXai.isPending || approve.isPending) return "WAITING FOR CONFIRMATION..";
         return getApproveButtonText();
     }, [mintWithEth.isPending, mintWithXai.isPending, approve.isPending, chain, getApproveButtonText, isConnected]);
@@ -69,7 +70,7 @@ export function ActionSection(): JSX.Element {
                     <PrimaryButton
                         onClick={() => handleMintWithEthClicked()}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || chain?.id === 42161 || getEthButtonText().startsWith("Insufficient") || !isConnected}
+                        isDisabled={!ready || (chain?.id !== MAINNET_ID && chain?.id !== TESTNET_ID) || getEthButtonText().startsWith("Insufficient") || !isConnected}
                         btnText={getEthButtonText()}
                     />
                     <br />
@@ -86,7 +87,7 @@ export function ActionSection(): JSX.Element {
                     <PrimaryButton
                         onClick={handleBuyWithXaiClicked}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || chain?.id === 42161 || !userHasTokenBalance || !isConnected}
+                        isDisabled={!ready || (chain?.id !== MAINNET_ID && chain?.id !== TESTNET_ID) || !userHasTokenBalance || !isConnected}
                         btnText={getTokenButtonText()}
                     />
                 )}

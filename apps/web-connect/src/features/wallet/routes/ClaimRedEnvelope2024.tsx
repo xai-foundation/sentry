@@ -10,6 +10,7 @@ import {ethers} from "ethers";
 import { XaiBanner } from "@/features/checkout/components/XaiBanner";
 import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
 import { useNetworkConfig } from '../../../hooks/useNetworkConfig';
+import { MAINNET_ID } from '@/hooks/useNetworkConfig';
 
 export function ClaimRedEnvelope2024() {
 	// TODO update all to new contract
@@ -20,8 +21,7 @@ export function ClaimRedEnvelope2024() {
 	const { chainId, xaiGaslessClaimAddress} = useNetworkConfig();
 	const chain = chains.find(chain => chain.id === chainId)
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
-	const ready = checkboxOne && chain?.id === 42_161;
-	// const ready = checkboxOne && chain?.id === 421614;
+	const ready = checkboxOne && chain?.id === MAINNET_ID;
 	const [permits, setPermits] = useState<{[key: string]: {r: string, s: string, v: number, amount: string}}>();
 
 	const txData = {
