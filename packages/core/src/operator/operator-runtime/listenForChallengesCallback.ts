@@ -22,7 +22,7 @@ export async function listenForChallengesCallback(challengeNumber: bigint, chall
 
     operatorState.cachedLogger(`Validating confirm data...`);
 
-    const stateToPass = { 
+    const stateToPass = {
         previousChallengeAssertionId: operatorState.previousChallengeAssertionId,
         challengerPublicKey: operatorState.challengerPublicKey,
         onAssertionMissMatchCb: operatorState.onAssertionMissMatchCb,
@@ -30,7 +30,16 @@ export async function listenForChallengesCallback(challengeNumber: bigint, chall
         refereeCalculationsAddress: operatorState.refereeCalculationsAddress
     };
 
-    await validateConfirmData(challenge, graphStatus.healthy, stateToPass, event);
+    validateConfirmData(challenge, graphStatus.healthy, stateToPass, event)
+        .then(validateSuccess => {
+            if (validateSuccess) {
+                operatorState.cachedLogger(`Validation finished successfully.`);
+            } else {
+                operatorState.cachedLogger(`===============================================`);
+                operatorState.cachedLogger(`Validation finished with errors!`);
+                operatorState.cachedLogger(`===============================================`);
+            }
+        });
 
     operatorState.previousChallengeAssertionId = challenge.assertionId;
 
