@@ -22,3 +22,4 @@ export * from "./getMultipleChallengeConfirmData.js";
 export * from "./getNodeConfirmedEvents.js";
 export * from "./getTokenBalance.js";
 export * from "./getTokenAllowance.js";
+export * from "./getRefereeCalculationsAddress.js";

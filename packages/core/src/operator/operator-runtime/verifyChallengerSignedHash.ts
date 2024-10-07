@@ -40,8 +40,8 @@ export function verifyChallengerSignedHash(
     const isValid = bls.verify(signatureBytes, validMessageHash, publicKeyBytes);                                                 // Verify the signature
 
     return isValid;
-  } catch (error) {
-    console.error('Error verifying BLS signature:', error);
+  } catch (error: any) {
+    console.error('Error verifying BLS signature:', (error && error.message ? error.message : error));
     return false;
   }
 }

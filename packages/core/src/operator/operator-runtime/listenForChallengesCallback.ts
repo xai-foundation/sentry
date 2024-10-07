@@ -1,5 +1,5 @@
 import { checkRefereeBulkSubmissionCompatible, loadOperatorKeysFromGraph_V1, loadOperatorKeysFromRPC_V1, loadOperatorWalletsFromGraph, loadOperatorWalletsFromRPC, operatorState, processClosedChallenge, processClosedChallenges_V1, processNewChallenge, processNewChallenge_V1, PublicNodeBucketInformation, validateConfirmData } from "../index.js";
-import { Challenge, config, getSentryWalletsForOperator, getSubgraphHealthStatus, retry } from "../../index.js";
+import { Challenge, getSentryWalletsForOperator, getSubgraphHealthStatus, retry } from "../../index.js";
 import { ethers } from "ethers";
 
 /**
@@ -16,24 +16,33 @@ export async function listenForChallengesCallback(challengeNumber: bigint, chall
         setTimeout(resolve, delay * 1000);
     })
 
+    operatorState.cachedLogger(`Received new challenge with number: ${challengeNumber}. Delayed challenges will still accrue rewards.`);
+
     const graphStatus = await getSubgraphHealthStatus();
 
     operatorState.cachedLogger(`Validating confirm data...`);
 
-    const stateToPass = { 
+    const stateToPass = {
         previousChallengeAssertionId: operatorState.previousChallengeAssertionId,
         challengerPublicKey: operatorState.challengerPublicKey,
         onAssertionMissMatchCb: operatorState.onAssertionMissMatchCb,
-        cachedLogger: operatorState.cachedLogger
+        cachedLogger: operatorState.cachedLogger,
+        refereeCalculationsAddress: operatorState.refereeCalculationsAddress
     };
 
-    await validateConfirmData(challenge, graphStatus.healthy, stateToPass, event);
+    validateConfirmData(challenge, graphStatus.healthy, stateToPass, event)
+        .then(validateSuccess => {
+            if (validateSuccess) {
+                operatorState.cachedLogger(`Validation finished successfully.`);
+            } else {
+                operatorState.cachedLogger(`===============================================`);
+                operatorState.cachedLogger(`Validation finished with errors!`);
+                operatorState.cachedLogger(`===============================================`);
+            }
+        });
 
     operatorState.previousChallengeAssertionId = challenge.assertionId;
 
-    operatorState.cachedLogger(`Comparison between PublicNode and Challenger was successful.`);
-
-    operatorState.cachedLogger(`Received new challenge with number: ${challengeNumber}. Delayed challenges will still accrue rewards.`);
     operatorState.cachedLogger(`Processing challenge...`);
 
     try {
