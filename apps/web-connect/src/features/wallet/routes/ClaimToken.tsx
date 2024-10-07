@@ -1,29 +1,27 @@
-import {useAccount,  useWriteContract } from "wagmi";
-import {wagmiConfig, chains} from "../../../main";
+import {useWriteContract } from "wagmi";
+import {chains} from "../../../main";
 import {useState, useEffect} from "react";
 import {ConnectButton, XaiCheckbox} from "@sentry/ui";
 import {useNavigate} from "react-router-dom";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import {BiLoaderAlt} from "react-icons/bi";
-import {XaiGaslessClaimAbi, config} from "@sentry/core";
+import {MAINNET_ID, TESTNET_ID, XaiGaslessClaimAbi, config} from "@sentry/core";
 import {ethers} from "ethers";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
-import { getAccount } from '@wagmi/core'
 import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
+import { useNetworkConfig } from "@/hooks/useNetworkConfig";
 
 
 export function ClaimToken() {
 	const {open} = useWeb3Modal()
 	const {blocked, loading} = useBlockIp({blockUsa: true});
-	const {address: _address} = useAccount();
+    const { chainId, address:_address} = useNetworkConfig();
 	const address = _address?.toLowerCase();
 	const navigate = useNavigate();
-	const { chainId } = getAccount(wagmiConfig);
 	const chain = chains.find(chain => chain.id === chainId)
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
-	const ready = checkboxOne && chain?.id === 42_161;
-	// const ready = checkboxOne && chain?.id === 421614;
+	const ready = checkboxOne && (chain?.id === MAINNET_ID || chain?.id === TESTNET_ID);
 	const [permits, setPermits] = useState<{[key: string]: {r: string, s: string, v: number, amount: string}}>();
 
 	const txData = {
@@ -134,7 +132,7 @@ export function ClaimToken() {
 													className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 													disabled={!ready}
 												>
-													{chain?.id === 42_161 ? "Claim" : "Please Switch to Arbitrum One"}
+													{(chain?.id === MAINNET_ID || chain?.id === TESTNET_ID) ? "Claim" : "Please Switch to Arbitrum One"}
 												</button>
 											</div>
 											{error && (

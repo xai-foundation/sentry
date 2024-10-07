@@ -5,8 +5,7 @@ import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import { mapWeb3Error } from "@/utils/errors";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 import CrossmintModal from './CrossmintModal';
-import { formatWeiToEther } from '@sentry/core';
-import { useAccount } from 'wagmi';
+import { formatWeiToEther, MAINNET_ID, TESTNET_ID } from '@sentry/core';
 
 /**
  * ActionSection Component
@@ -19,7 +18,6 @@ import { useAccount } from 'wagmi';
  */
 export function ActionSection(): JSX.Element {
     const [creditCardOpen, setCreditCardOpen] = useState(false);
-	const {isConnected} = useAccount();
 
     // Destructure values and functions from the context
     const {
@@ -33,6 +31,7 @@ export function ActionSection(): JSX.Element {
         approve,
         quantity,
         promoCode,
+        isConnected,
         getApproveButtonText,
         handleApproveClicked,
         handleMintWithEthClicked,
@@ -48,7 +47,7 @@ export function ActionSection(): JSX.Element {
      */
     const getTokenButtonText = useCallback(() => {
         if (mintWithEth.isPending || mintWithXai.isPending || approve.isPending) return "WAITING FOR CONFIRMATION..";
-        if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
+        if (chain?.id !== MAINNET_ID && chain?.id !== TESTNET_ID) return "Please Switch to Arbitrum";
         return getApproveButtonText();
     }, [mintWithEth.isPending, mintWithXai.isPending, approve.isPending, chain, getApproveButtonText]);
 
@@ -69,7 +68,7 @@ export function ActionSection(): JSX.Element {
                     <PrimaryButton
                         onClick={() => handleMintWithEthClicked()}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || chain?.id === 42161 || getEthButtonText().startsWith("Insufficient") || !isConnected}
+                        isDisabled={!ready || (chain?.id !== MAINNET_ID && chain?.id !== TESTNET_ID) || getEthButtonText().startsWith("Insufficient") || !isConnected}
                         btnText={getEthButtonText()}
                     />
                     <br />
@@ -86,7 +85,7 @@ export function ActionSection(): JSX.Element {
                     <PrimaryButton
                         onClick={handleBuyWithXaiClicked}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || chain?.id === 42161 || !userHasTokenBalance || !isConnected}
+                        isDisabled={!ready || (chain?.id !== MAINNET_ID && chain?.id !== TESTNET_ID) || !userHasTokenBalance || !isConnected}
                         btnText={getTokenButtonText()}
                     />
                 )}
