@@ -131,8 +131,3 @@ export function setConfig(chainId: number): void {
       config = mainnetConfig;
   }
 }
-
-export function getConfig(chainId: number): Config {
-  setConfig(chainId);
-  return config;
-}
