@@ -81,7 +81,7 @@ export function AssignWallet() {
 								<PrimaryButton
 									onClick={() => writeContract(txData)}
 									isDisabled={isLoading || isSuccess || (chain?.id !== MAINNET_ID && chain?.id !== TESTNET_ID)}
-									btnText={(chain?.id === MAINNET_ID || chain?.id === TESTNET_ID) ? `Assign wallet to Sentry (${getShortenedWallet(address)})` : "Please Switch to Arbitrum One"}
+									btnText={(chain?.id === MAINNET_ID || chain?.id === TESTNET_ID) ? `Assign wallet to Sentry (${getShortenedWallet(address)})` : "Please Switch to Arbitrum"}
 									colorStyle={"primary"}
 									className={"w-full bg-[#F30919] max-w-[700px] text-white mt-3 text-xl uppercase font-bold disabled:bg-slate-400 h-full global-clip-primary-btn"}
 								/>

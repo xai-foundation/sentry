@@ -19,7 +19,7 @@ export function ClaimRedEnvelope2024() {
 	const navigate = useNavigate();
 	const chain = chains.find(chain => chain.id === chainId)
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
-	const ready = checkboxOne && chain?.id === MAINNET_ID;
+	const ready = checkboxOne && (chain?.id === MAINNET_ID || chain?.id === TESTNET_ID);
 	const [permits, setPermits] = useState<{[key: string]: {r: string, s: string, v: number, amount: string}}>();
 
 	const txData = {
@@ -131,7 +131,7 @@ export function ClaimRedEnvelope2024() {
 													className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 													disabled={!ready}
 												>
-													{(chain?.id === MAINNET_ID || chain?.id === TESTNET_ID) ? "Claim" : "Please Switch to Arbitrum One"}
+													{(chain?.id === MAINNET_ID || chain?.id === TESTNET_ID) ? "Claim" : "Please Switch to Arbitrum"}
 												</button>
 											</div>
 											{error && (
