@@ -100,7 +100,7 @@ const testnetConfig: Config = {
   refereeDeployedBlockNumber: 157193676,
   refereeImplementationAddress: "0x29a7b907fdf4a9235f46d891b7aa1e7d3d35a3b6",
   refereeCalculationsAddress: "0x86Ca7fF8F3450672E6e7404dfce147CC9DBCaF51",
-  rollupAddress: "0xC47DacFbAa80Bd9D8112F4e8069482c2A3221336",
+  rollupAddress: "0xb3b08bE5041d3F94C9fD43c91434515a184a43af",
   xaiAddress: "0x724E98F16aC707130664bb00F4397406F74732D0",
   xaiDeployedBlockNumber: 157193610,
   xaiImplementationAddress: "0x3fb787101dc6be47cfe18aeee15404dcc842e6af",
@@ -110,7 +110,7 @@ const testnetConfig: Config = {
   poolFactoryAddress: "0x87Ae2373007C01FBCED0dCCe4a23CA3f17D1fA9A",
   poolFactoryAddressImplementationAddress: "0x87Ae2373007C01FBCED0dCCe4a23CA3f17D1fA9A",
   defaultNetworkName: "arbitrumSepolia",
-  subgraphEndpoint: "https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry-sepolia/version/0.0.25-sepolia-mock-103/api",
+  subgraphEndpoint: "https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry-sepolia/version/0.0.25-sepolia-mock-103/api", // TODO Update to point to live
   publicRPC: "https://arb-sepolia.g.alchemy.com/v2/8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B",
   alchemyApiKey: "8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B",
   crossmintProjectId: "cc616c84-6479-4981-a24e-adb4278df212",
