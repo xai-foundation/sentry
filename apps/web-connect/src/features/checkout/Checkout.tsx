@@ -66,7 +66,9 @@ export function Checkout() {
                     <PurchaseSuccessful returnToClient={returnToClient} />
                 ) : (
                     <div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-darkLicorice shadow-main md:my-0 my-[24px]">
-                        <LogoColumn />
+                        <div className="hidden lg:block">
+                            <LogoColumn />
+                        </div>
                         <div className="h-auto xl:p-12 sm:px-2 sm:py-10">
                             <ChooseQuantityRow />
                             <div className="min-h-[545px]">

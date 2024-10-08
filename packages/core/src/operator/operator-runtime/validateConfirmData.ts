@@ -1,4 +1,4 @@
-import { Challenge, config, getConfirmDataAndHash, PublicNodeBucketInformation, verifyChallengerSignedHash } from "../../index.js";
+import { Challenge, config, getConfirmDataAndHash, PublicNodeBucketInformation, retry, verifyChallengerSignedHash } from "../../index.js";
 import axios from "axios";
 import { ethers } from "ethers";
 
@@ -11,10 +11,13 @@ export async function validateConfirmData(
         challengerPublicKey: string;
         onAssertionMissMatchCb?: (publicNodeBucket: PublicNodeBucketInformation | undefined, currentChallenge: Challenge, error: string) => void;
         cachedLogger?: (message: string) => void;
+        refereeCalculationsAddress: string;
     }, 
     event?: ethers.EventLog,
-): Promise<void> {
+): Promise<boolean> {
     const logger = operatorState.cachedLogger || console.log;
+    
+    const errors = [];
 
         if (event && currentChallenge.rollupUsed === config.rollupAddress) {
 
@@ -27,23 +30,26 @@ export async function validateConfirmData(
             }
 
             const isBatch = assertionIds.length > 1;                                        // Check if the challenge is a batch or single challenge        
-            let confirmDataList: string[] = [];                                             // Create an array to store the confirm data for each assertionId    
-            
-            const errors = [];              
+            let confirmDataList: string[] = [];                                             // Create an array to store the confirm data for each assertionId             
 
             if (isBatch) {   
                 try {
-                    const { confirmData, confirmHash } = await getConfirmDataAndHash(assertionIds, subgraphIsHealthy);
+                    const { confirmData, confirmHash } = await retry(() => getConfirmDataAndHash(assertionIds, subgraphIsHealthy, operatorState.refereeCalculationsAddress), 3);
                     confirmDataList = confirmData;                                                                      // Set the confirm data list  
                     if(confirmHash !== currentChallenge.assertionStateRootOrConfirmData){
-                        const errorMessage = `Mismatch between PublicNode and Challenge assertion number '${currentAssertionId}'!`;
+                        const errorMessage = `Mismatch of challenge confirmData detected please check the confirmData between Rollup and Referee - ${currentChallenge.assertionStateRootOrConfirmData}!`;
                         errors.push({ assertionId: currentAssertionId, publicNodeBucket: undefined, error: errorMessage });
+                        logger(`ERROR: Mismatch of challenge confirmData detected please check the confirmData between Rollup and Referee:\n 
+                            Challenge confirmData: ${currentChallenge.assertionStateRootOrConfirmData}\n
+                            Rollup ConfirmHash: ${confirmHash}`);
+                    }else{
+                        logger("Comparison of bundled confirmData successful")
                     }
                 } catch (error) {
                     const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';               
                     operatorState.onAssertionMissMatchCb?.(undefined, currentChallenge, errorMessage);
-                    logger(`Error loading assertion data from CDN for ${currentChallenge.assertionStateRootOrConfirmData}.\n${errorMessage}`);
-                    return;
+                    logger(`ERROR: Checking confirmData for challenge failed, please check the confirmData between Rollup and Referee - ${currentChallenge.assertionStateRootOrConfirmData}.\n${errorMessage}`);
+                    return false;
                 }                                                    
             } else {
                 confirmDataList = [currentChallenge.assertionStateRootOrConfirmData];           // Set the initial confirm data assuming a single challenge
@@ -60,6 +66,7 @@ export async function validateConfirmData(
 
                     if (error) {
                         errors.push({ assertionId, publicNodeBucket, error });
+                        logger(`ERROR: Comparison between PublicNode and Challenger failed for assertion ${assertionId}.`);
                     }else{
                         logger(`Comparison between PublicNode and Challenger was successful for assertion ${assertionId}.`);
                     }
@@ -82,15 +89,18 @@ export async function validateConfirmData(
             
             if (!signatureIsValid) {
                 errors.push({ assertionId: currentAssertionId, publicNodeBucket: undefined, error: 'Challenger signature verification failed.' });
+                logger(`ERROR: Challenger signature verification failed for assertion ${currentAssertionId}.`);
             }
 
             // Log all errors together
             if (errors.length > 0) {
                 const errorLog = errors.map(e => `Assertion ${e.assertionId}: ${e.error}, ${e.publicNodeBucket}`).join('\n');
                 operatorState.onAssertionMissMatchCb?.(undefined, currentChallenge, errorLog);
-                logger(`Encountered errors during validation:\n${errorLog}`);
+                logger(`ERROR: Encountered errors during validation:\n${errorLog}`);
             }
         }
+
+        return errors.length == 0;
 }
 
 
@@ -153,4 +163,3 @@ async function getPublicNodeFromBucket(confirmHash: string) {
         throw new Error("Invalid response status " + response.status);
     }
 }
-

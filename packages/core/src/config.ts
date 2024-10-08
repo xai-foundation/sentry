@@ -18,7 +18,7 @@ export let config = {
   "refereeAddress": "0xfD41041180571C5D371BEA3D9550E55653671198",
   "refereeDeployedBlockNumber": 157193676,
   "refereeImplementationAddress": "0x29a7b907fdf4a9235f46d891b7aa1e7d3d35a3b6",
-  "refereeCalculationsAddress": "", // TODO Add RefereeCalculations address
+  "refereeCalculationsAddress": "", // TODO Add Production Values,
   "rollupAddress": "0xC47DacFbAa80Bd9D8112F4e8069482c2A3221336",
   "xaiAddress": "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66",
   "xaiDeployedBlockNumber": 157193610,
@@ -32,6 +32,8 @@ export let config = {
   "subgraphEndpoint": "https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry/api",
   "publicRPC": "https://arb1.arbitrum.io/rpc",
   "alchemyApiKey": "oD4X3JXvJclnt36mDkqnp9CO2sZkNhYT",
+  "crossmintProjectId": "", //TODO Add Production Values
+  "crossmintCollectionId": "", //TODO Add Production Values
 };
 
 export function setConfig(_config: any) { config = _config; }
