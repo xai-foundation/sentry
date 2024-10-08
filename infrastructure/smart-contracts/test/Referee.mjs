@@ -725,6 +725,85 @@ export function RefereeTests(deployInfrastructure) {
 			).to.be.revertedWith("11");
 		});
 
+		it("Check rewards calculations are correct over time", async function () {
+			const {
+				referee, 
+				challenger, 
+				mockRollup, 
+				refereeCalculations, 
+				xai, 
+				xaiMinter, 
+				addr1
+			} = await loadFixture(deployInfrastructure);
+
+			const tier1 = 1_250_000_000_000000000000000000n;
+			const tier1Emission = tier1 / 17520n; //71347031963472194634703n
+			const tier2 = 625_000_000_000000000000000000n;
+			const tier2Emission = tier1Emission / 2n; //35673515981735159817351n
+			
+			//get combined total supply of xai and esXai
+			let combinedTotalSupply = await referee.getCombinedTotalSupply();
+			assert.equal(combinedTotalSupply, 0n, "Unexpected starting supply");
+			
+			//mint Xai to establish emission tiers
+			const xaiToMint = 1_240_000_000_000000000000000000n; //slightly less so we're still in tier 1
+			await xai.connect(xaiMinter).mint(addr1, xaiToMint);
+
+			//check emissions and tier again
+			combinedTotalSupply = await referee.getCombinedTotalSupply();
+			assert.equal(combinedTotalSupply, xaiToMint, "Unexpected supply");
+		    
+			// Submit a challenge
+			let currentAssertion = 2;
+			let previousAssertion = 0;
+			const challengeRes = await submitMockRollupChallenge(
+				referee, 
+				challenger, 
+				mockRollup, 
+				refereeCalculations, 
+				currentAssertion,
+				previousAssertion,
+				null,
+				null
+			);
+			
+			// Call calculateChallengeEmissionAndTier function and it will return the expected emission for the time passed since the last challenge
+			const calculateRes = await referee.calculateChallengeEmissionAndTier();
+			assert.equal(calculateRes[0], tier1Emission, "Unexpected Emissions calculation");
+			assert.equal(calculateRes[1], tier1, "Unexpected Tier calculation");
+
+			// Wait some time
+			await ethers.provider.send("evm_increaseTime", [3600]); //3600 seconds = 1 hour
+			await ethers.provider.send("evm_mine"); //mine block to apply new time
+
+			//mint more xai to cross into next tier
+			const xaiToMintTier2 = 625_000_000_000000000000000000n;
+			await xai.connect(xaiMinter).mint(addr1, xaiToMintTier2);
+			
+			// Submit another challenge
+			currentAssertion = 4;
+			previousAssertion = 2;
+			await submitMockRollupChallenge(
+				referee, 
+				challenger, 
+				mockRollup, 
+				refereeCalculations, 
+				currentAssertion,
+				previousAssertion,
+				null,
+				null
+			);
+
+			// Wait some time
+			await ethers.provider.send("evm_increaseTime", [3600]); //3600 seconds = 1 hour
+			await ethers.provider.send("evm_mine"); //mine block to apply new time
+			
+			// Check the emission values based off of the time and emission values formula
+			const calculateRes2 = await referee.calculateChallengeEmissionAndTier();
+			assert.equal(calculateRes2[0], tier2Emission, "Unexpected Emissions calculation");
+			assert.equal(calculateRes2[1], tier2, "Unexpected Tier calculation");
+		});
+		
 		// describe("The Referee should allow users to stake in V1", function () {
 
 		//     it("Check that staked/unstaked amount is taken/given from user's esXai balance", async function () {
