@@ -18,8 +18,6 @@ export function useNetworkConfig():NetworkConfig {
 	useEffect(() => {
 		void loadConfigs();
 
-        console.log("VITE_APP_ENV:", VITE_APP_ENV);
-
         async function loadConfigs() {
             if(chainId){
                 setConfig(chainId);
