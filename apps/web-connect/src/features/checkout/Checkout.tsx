@@ -51,7 +51,7 @@ export function Checkout() {
     }
 
 	useEffect(() => {
-		if (!stakingTabOpened && (mintWithEth.isSuccess || mintWithXai.isSuccess)) {	
+		if (!stakingTabOpened && (mintWithEth.isSuccess || mintWithXai.isSuccess)) {
             setStakingTabOpened(true);
 			window.open(stakingPageURL, '_blank');
 		}
@@ -65,11 +65,11 @@ export function Checkout() {
                 ) : mintWithEth.isSuccess || mintWithXai.isSuccess ? (
                     <PurchaseSuccessful returnToClient={returnToClient} />
                 ) : (
-                    <div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-darkLicorice shadow-main md:my-0 my-[24px]">
+                    <div className="h-auto w-[90%] lg:w-auto flex flex-col lg:flex-row justify-center bg-darkLicorice shadow-main md:my-0 my-[24px]">
                         <div className="hidden lg:block">
                             <LogoColumn />
                         </div>
-                        <div className="h-auto xl:p-12 sm:px-2 sm:py-10">
+                        <div className="h-auto xl:p-12 px-2 py-10">
                             <ChooseQuantityRow />
                             <div className="min-h-[545px]">
                                 {isTotalLoading || isExchangeRateLoading || isPriceLoading ? (

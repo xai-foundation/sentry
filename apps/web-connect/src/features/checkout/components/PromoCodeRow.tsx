@@ -69,8 +69,8 @@ export function PromoCodeRow() {
                 <>
                     {promo ? (
                         <div className="w-full flex flex-col items-center py-2 ">
-                            <div className="w-full h-auto flex sm:flex-col lg:flex-row sm:justify-center lg:justify-start items-center text-[15px] text-elementalGrey mt-2 sm:mb-2 lg:mb-0">
-                                <div className="w-[300px] h-auto flex flex-row sm:justify-center lg:justify-start items-center text-[15px] text-elementalGrey mt-2 sm:mb-2 lg:mb-0">
+                            <div className="w-full h-auto flex flex-col lg:flex-row justify-center lg:justify-start items-center text-[15px] text-elementalGrey mt-2 mb-2 lg:mb-0">
+                                <div className="w-[300px] h-auto flex flex-row justify-center lg:justify-start items-center text-[15px] text-elementalGrey mt-2 mb-2 lg:mb-0">
                                     <span className="text-[#F30919] text-base">+ Add promo code</span>
                                     <div
                                         className="cursor-pointer z-10"
@@ -81,7 +81,7 @@ export function PromoCodeRow() {
                                     >
                                     </div>
                                 </div>
-                                <div className="flex w-full items-center sm:justify-center">
+                                <div className="flex w-full items-center justify-center">
                                     <input
                                         type="text"
                                         value={promoCode}
@@ -94,7 +94,7 @@ export function PromoCodeRow() {
                                         }}
                                         className={`text-white lg:w-full border-r-0 p-2 bg-darkLicorice border ${discount.error ? "border-[#AB0914]" : "border-[#525252]"}`}
                                     />
-                                    <div className="lg:hidden sm:block">
+                                    <div className="lg:hidden block">
                                         <PrimaryButton
                                             onClick={() => handleApplyPromoCode()}
                                             btnText="APPLY"
@@ -102,7 +102,7 @@ export function PromoCodeRow() {
                                         />
                                     </div>
                                 </div>
-                                <div className="lg:block sm:hidden">
+                                <div className="lg:block hidden">
                                     <PrimaryButton
                                         onClick={() => handleApplyPromoCode()}
                                         btnText="APPLY"
@@ -120,7 +120,7 @@ export function PromoCodeRow() {
                             )}
                         </div>
                     ) : (
-                        <p className="flex sm:justify-center lg:justify-start text-[15px] py-2">
+                        <p className="flex justify-center lg:justify-start text-[15px] py-2">
                             <a onClick={() => setPromo(true)} className="text-[#F30919] text-base ml-1 cursor-pointer">
                                 + Add promo code
                             </a>

@@ -26,9 +26,9 @@ export function TotalCostRow(): JSX.Element {
 
     return (
         <div className="mt-1">
-            <div className="flex sm:flex-col lg:flex-row items-center justify-between py-2">
+            <div className="flex flex-col lg:flex-row items-center justify-between py-2">
                 {/* Display the "You pay" text and the available balance */}
-                <div className="flex flex-col items-left gap-2 sm:text-xl lg:text-2xl">
+                <div className="flex flex-col items-center gap-2 text-xl lg:text-2xl">
                     <span className="text-white font-bold text-2xl">You pay</span>
                     <span className="text-base text-elementalGrey">Available balance: {formatWeiToEther(balance, decimalPlaces)} {currency}</span>
                 </div>

@@ -48,8 +48,8 @@ export function ChooseCurrencyRow(): JSX.Element {
         <div className="w-full flex flex-col gap-4">
             <div className="mt-4">
                 <hr className="my-2 border-[#525252]" />
-                <div className="flex sm:flex-col lg:flex-row items-center justify-between py-2">
-                    <div className="flex flex-row items-center gap-2 sm:text-xl lg:text-2xl">
+                <div className="flex flex-col lg:flex-row items-center justify-between py-2">
+                    <div className="flex flex-row items-center gap-2 text-xl lg:text-2xl">
                         <span className="text-[18px] text-elementalGrey font-medium">Choose payment currency</span>
                     </div>
                     <div className="flex flex-row items-center gap-1 bg-black">

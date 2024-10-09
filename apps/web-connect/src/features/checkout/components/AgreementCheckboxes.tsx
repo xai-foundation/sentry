@@ -34,8 +34,8 @@ export function AgreementCheckboxes(): JSX.Element {
                     isChecked={checkboxes.one}
                     labelStyle="!items-start"
                 >
-                    <div className="sm:w-[200px] md:w-[300px] lg:w-auto">
-                        <span className="sm:text-base text-elementalGrey sm:mr-2">I agree with the</span>
+                    <div className="w-[200px] md:w-[300px] lg:w-auto">
+                        <span className="text-base text-elementalGrey mr-2">I agree with the</span>
                         <a
                             className="cursor-pointer text-[#F30919] text-base"
                             onClick={() => window.open("https://xai.games/sentrynodeagreement/")}
@@ -51,8 +51,8 @@ export function AgreementCheckboxes(): JSX.Element {
                     isChecked={checkboxes.two}
                     labelStyle="!items-start"
                 >
-                    <div className="sm:w-[300px] md:w-auto">
-                        <span className="sm:text-base text-elementalGrey">
+                    <div className="w-[300px] md:w-auto">
+                        <span className="text-base text-elementalGrey">
                             I understand Sentry Node Keys are not transferable
                         </span>
                     </div>
@@ -64,8 +64,8 @@ export function AgreementCheckboxes(): JSX.Element {
                     isChecked={checkboxes.three}
                     labelStyle="!items-start"
                 >
-                    <div className="flex w-full sm:w-[300px] justify-between md:w-auto sm:flex-col lg:flex-row items-start">
-                        <span className="sm:text-base text-elementalGrey lg:mr-2">
+                    <div className="flex w-full w-[300px] justify-between md:w-auto flex-col lg:flex-row items-start">
+                        <span className="text-base text-elementalGrey lg:mr-2">
                             I understand that I cannot redeem esXAI for XAI until I pass KYC
                         </span>
                         {/* Tooltip for blocked countries information */}

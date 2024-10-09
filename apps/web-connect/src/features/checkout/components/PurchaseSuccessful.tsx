@@ -60,7 +60,7 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 
 
 	return (
-		<div className="flex flex-col justify-center sm:max-w-[90%] lg:w-[450px] lg:py-[20px]sm:py-[35px] bg-knightRider m-4 shadow-main">
+		<div className="flex flex-col justify-center max-w-[90%] lg:w-[450px] lg:py-[20px] py-[35px] bg-knightRider m-4 shadow-main">
 			<div className="px-[20px] pt-[30px] mb-[30px]">
 				<button
 					onClick={handleReturnToClient}
@@ -76,10 +76,10 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 				<span className="block text-foggyLondon font-bold text-base max-w-[260px] text-center my-[10px]">You have successfully purchased a Xai Sentry Node Key</span>
 				<div className="bg-optophobia w-full ">
 					<div className="flex justify-between border-t border-chromaphobicBlack px-[20px] py-[15px]">
-						<span className="text-[18px] sm:text-center text-elementalGrey ">Transaction ID:</span>
+						<span className="text-[18px] text-center text-elementalGrey ">Transaction ID:</span>
 						<a
 							onClick={() => window.open(`${blockExplorer}/tx/${getHash()}`)}
-							className="group hover:text-hornetSting duration-300 text-wrap text-elementalGrey text-center underline ml-1 cursor-pointer text-[18px] sm:max-w-[260px] lg:max-w-full"
+							className="group hover:text-hornetSting duration-300 text-wrap text-elementalGrey text-center underline ml-1 cursor-pointer text-[18px] max-w-[260px] lg:max-w-full"
 						>
 							<div className="flex items-center gap-[10px]">
 								{getHash().slice(0, 6)}...{getHash().slice(-4)}
@@ -99,18 +99,18 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 										<div
 											className={`relative items-center lg:w-[400px] w-full bg-optophobia h-fit flex justify-between text-americanSilver p-2 overflow-hidden text-lg font-medium global-clip-btn`}
 										>
-											<p className="select-none lg:max-w-[300px] sx:max-w-[210px] sm:max-w-[190px] overflow-x-hidden">{`${salePageBaseURL}/${address}`}</p>
+											<p className="select-none lg:max-w-[300px] sx:max-w-[210px] max-w-[190px] overflow-x-hidden">{`${salePageBaseURL}/${address}`}</p>
 
 										</div>
-									</div>			
-									{canShare ? <div className="mr-3 cursor-pointer absolute right-[10px] sx:top-[73px] sm:top-[96px] z-60">
+									</div>
+									{canShare ? <div className="mr-3 cursor-pointer absolute right-[10px] sx:top-[73px] top-[96px] z-60">
 										<ShareButton
 										buttonText={"Mint a key on the Xai to stake and start earning rewards and qualify for airdrops."}
 										buttonTitle={"5% Off Sentry Node Key Purchase"}
 										shareUrl={`${salePageBaseURL}?promoCode=${address}`}
 										shareButtonClasses={"w-full"}
-									/></div> : 
-									<div className="mr-3 cursor-pointer absolute right-[10px] sx:top-[73px] sm:top-[96px] z-60" onClick={copyReferralCode}>
+									/></div> :
+									<div className="mr-3 cursor-pointer absolute right-[10px] sx:top-[73px] top-[96px] z-60" onClick={copyReferralCode}>
 										<Tooltip body="Copied!" open={isTooltipAllowedToOpen} extraClasses={{ content: " max-w-[75px]", body: "!text-black !font-bold" }}>
 											<CopyIcon />
 										</Tooltip>

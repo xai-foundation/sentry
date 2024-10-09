@@ -9,10 +9,10 @@ import { bls12_381 as bls } from '@noble/curves/bls12-381';
  * const { secretKeyHex, publicKeyHex } = await createBlsKeyPair('yourSecretKeyString');
  */
 export async function createBlsKeyPair(secretKeyString?: string): Promise<{ secretKeyHex: string, publicKeyHex: string }> {
-    const secretKey = secretKeyString || secretKeyString?.length ? Buffer.from(secretKeyString, 'hex') : bls.utils.randomPrivateKey();
+    const secretKey = secretKeyString || secretKeyString?.length ? Uint8Array.from(Buffer.from(secretKeyString, 'hex')) : bls.utils.randomPrivateKey();
     const secretKeyHex = Buffer.from(secretKey).toString('hex');
     const publicKey = bls.getPublicKey(secretKey);
     const publicKeyHex = Buffer.from(publicKey).toString('hex');
-    
+
     return { secretKeyHex, publicKeyHex };
 }

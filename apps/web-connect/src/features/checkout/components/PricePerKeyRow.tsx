@@ -30,13 +30,13 @@ export function PricePerKeyRow(): JSX.Element | null {
                 .filter(item => Number(item.quantity) !== 0)
                 .map((item, i) => (
                     <div key={`get-keys-${i}`}>
-                        <div className="flex sm:flex-col lg:flex-row items-center justify-between text-xl">
+                        <div className="flex flex-col lg:flex-row items-center justify-between text-xl">
                             {/* Quantity display */}
                             <div className="flex flex-row items-center gap-2 text-elementalGrey font-semibold">
                                 <span className="">{item.quantity.toString()} x Xai Sentry Node Key</span>
                             </div>
                             {/* Price per key (mobile view) */}
-                            <p className="text-base text-elementalGrey mb-4 sm:block lg:hidden">
+                            <p className="text-base text-elementalGrey mb-4 block lg:hidden">
                                 {formatItemPricePer(item)} {currency} per key
                             </p>
                             {/* Total price display */}
@@ -47,7 +47,7 @@ export function PricePerKeyRow(): JSX.Element | null {
                             </div>
                         </div>
                         {/* Price per key (desktop view) */}
-                        <p className="text-base text-elementalGrey sm:hidden lg:block">
+                        <p className="text-base text-elementalGrey hidden lg:block">
                             {formatItemPricePer(item)} {currency} per key
                         </p>
                     </div>
