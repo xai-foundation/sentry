@@ -736,9 +736,9 @@ export function RefereeTests(deployInfrastructure) {
 				addr1
 			} = await loadFixture(deployInfrastructure);
 
-			const tier1 = 1_250_000_000_000000000000000000n;
+			const tier1 = ethers.parseEther("1250000000");
 			const tier1Emission = tier1 / 17520n; //71347031963472194634703n
-			const tier2 = 625_000_000_000000000000000000n;
+			const tier2 = ethers.parseEther("625000000");
 			const tier2Emission = tier1Emission / 2n; //35673515981735159817351n
 			
 			//get combined total supply of xai and esXai
@@ -746,7 +746,7 @@ export function RefereeTests(deployInfrastructure) {
 			assert.equal(combinedTotalSupply, 0n, "Unexpected starting supply");
 			
 			//mint Xai to establish emission tiers
-			const xaiToMint = 1_240_000_000_000000000000000000n; //slightly less so we're still in tier 1
+			const xaiToMint = ethers.parseEther("1240000000"); //slightly less so we're still in tier 1
 			await xai.connect(xaiMinter).mint(addr1, xaiToMint);
 
 			//check emissions and tier again
@@ -777,7 +777,7 @@ export function RefereeTests(deployInfrastructure) {
 			await ethers.provider.send("evm_mine"); //mine block to apply new time
 
 			//mint more xai to cross into next tier
-			const xaiToMintTier2 = 625_000_000_000000000000000000n;
+			const xaiToMintTier2 = ethers.parseEther("625000000");
 			await xai.connect(xaiMinter).mint(addr1, xaiToMintTier2);
 			
 			// Submit another challenge
