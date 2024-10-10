@@ -1,31 +1,43 @@
-import Vorpal from "vorpal";import { getSignerFromPrivateKey, setRollupAddress as coreSetRollupAddress } from "@sentry/core";
+import { Command } from 'commander';
+import inquirer from 'inquirer';
+import { getSignerFromPrivateKey, setRollupAddress as coreSetRollupAddress } from "@sentry/core";
 
 /**
  * Function to set the rollup address in the Referee contract.
- * @param {Vorpal} cli - The Vorpal instance to attach the command to.
+ * @param cli - Commander instance
  */
-export function setRollupAddress(cli: Vorpal) {
+export function setRollupAddress(cli: Command): void {
     cli
-        .command('set-rollup-address', 'Sets the rollup address.')
-        .action(async function (this: Vorpal.CommandInstance) {
-            const privateKeyPrompt = {
-                type: 'password',
-                name: 'key',
-                message: 'Enter the private key of an admin:'
-            };
-            const rollupAddressPrompt = {
-                type: 'input',
-                name: 'rollupAddress',
-                message: 'Enter the new rollup address:'
-            };
-            const { key: privateKey, rollupAddress } = await this.prompt([privateKeyPrompt, rollupAddressPrompt]);
+        .command('set-rollup-address')
+        .description('Sets the rollup address.')
+        .action(async () => {
+            try {
+                // Prompt user for the admin private key
+                const { privateKey } = await inquirer.prompt({
+                    type: 'password',
+                    name: 'privateKey',
+                    message: 'Enter the private key of an admin:',
+                    mask: '*',
+                    validate: input => input.trim() === '' ? 'Private key is required' : true
+                });
 
-            // Get the signer from the private key
-            const { signer } = getSignerFromPrivateKey(privateKey);
+                // Prompt user for the new rollup address
+                const { rollupAddress } = await inquirer.prompt({
+                    type: 'input',
+                    name: 'rollupAddress',
+                    message: 'Enter the new rollup address:',
+                    validate: input => input.trim() === '' ? 'Rollup address is required' : true
+                });
 
-            // Call the setRollupAddress function
-            await coreSetRollupAddress(signer, rollupAddress);
+                // Get the signer from the private key
+                const { signer } = getSignerFromPrivateKey(privateKey);
 
-            this.log(`Rollup address set to: ${rollupAddress}`);
+                // Call the setRollupAddress function
+                await coreSetRollupAddress(signer, rollupAddress);
+
+                console.log(`Rollup address set to: ${rollupAddress}`);
+            } catch (error) {
+                console.error(`Error setting rollup address: ${(error as Error).message}`);
+            }
         });
 }

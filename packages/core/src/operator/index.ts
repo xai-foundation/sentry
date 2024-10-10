@@ -1,4 +1,3 @@
-export * from "./operatorRuntime.js";
 export * from "./listenForChallenges.js";
 export * from "./getSubmissionsForChallenges.js";
 export * from "./submitAssertionToChallenge.js";
@@ -8,3 +7,11 @@ export * from "./claimReward.js";
 export * from "./getBoostFactor.js";
 export * from "./submitMultipleAssertions.js";
 export * from "./claimRewardBulk.js";
+export * from "./submitBulkAssertions.js";
+export * from "./claimBulkSubmissionRewards.js";
+export * from "./operatorRuntime.js";
+export * from "./checkRefereeBulkSubmissionCompatible.js";
+export * from "./operator-runtime/index.js";
+export * from "./processUnclaimedChallenges.js";
+export * from "./getConfirmDataAndHash.js";
+export * from "./getChallengerPublicKey.js";

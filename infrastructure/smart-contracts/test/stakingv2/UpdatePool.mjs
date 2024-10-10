@@ -1,4 +1,5 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
+import {findWinningStateRoot} from "../Referee.mjs";
 import {Contract} from "ethers";
 import {StakingPoolAbi} from "@sentry/core";
 import {expect} from "chai";
@@ -17,7 +18,7 @@ export function UpdatePool(deployInfrastructure, poolConfigurations) {
 
 	return function () {
 		it("Check that the Pool shares are updated", async function () {
-			const {poolFactory, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+			const {poolFactory, addr1, nodeLicense, referee, challenger} = await loadFixture(deployInfrastructure);
 
 			// Mint 2 node keys & save the ids
 			const price1 = await nodeLicense.price(1, "");
@@ -26,6 +27,18 @@ export function UpdatePool(deployInfrastructure, poolConfigurations) {
 			const price2 = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr1).mint(1, "", {value: price2});
 			const mintedKeyId2 = await nodeLicense.totalSupply();
+			
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                stateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
 
 			// Create a pool
 			await poolFactory.connect(addr1).createPool(
@@ -82,12 +95,24 @@ export function UpdatePool(deployInfrastructure, poolConfigurations) {
 		});
 
 		it("Check that the shares cannot go over the max values (bucketshareMaxValues = ordered owner, keys, esXaiStaker)", async function () {
-			const {poolFactory, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+			const {poolFactory, addr1, nodeLicense, referee, challenger} = await loadFixture(deployInfrastructure);
 
 			// Mint a node key & save the id
 			const price = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr1).mint(1, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
+
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                stateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
 
 			// Create a pool
 			await poolFactory.connect(addr1).createPool(
@@ -153,12 +178,24 @@ export function UpdatePool(deployInfrastructure, poolConfigurations) {
 		});
 
 		it("Check that the metadata gets returned from the poolInfo", async function () {
-			const {poolFactory, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+			const {poolFactory, addr1, nodeLicense, referee, challenger} = await loadFixture(deployInfrastructure);
 
 			// Mint a node key & save the id
 			const price = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr1).mint(1, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
+			
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                stateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
 
 			// Create a pool
 			await poolFactory.connect(addr1).createPool(

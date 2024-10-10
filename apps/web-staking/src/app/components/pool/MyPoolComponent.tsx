@@ -1,7 +1,6 @@
 "use client";
 
 import MainTitle from "../titles/MainTitle";
-import NewPoolComponent from "./NewPoolComponent";
 import PoolOverviewComponent from "@/app/components/dashboard/PoolOverviewComponent";
 import PoolOverViewCard from "./PoolOverViewCard";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
@@ -18,6 +17,7 @@ import React from "react";
 import { PrimaryButton } from "@/app/components/ui";
 import { PlusIcon } from "@/app/components/icons/IconsComponent";
 import MyPoolsSkeleton from "@/app/components/skeletons/MyPoolsSkeleton";
+import PoolPanelComponent from "./PoolPanelComponent";
 
 const PoolComponent = () => {
   const router = useRouter();
@@ -101,7 +101,7 @@ const PoolComponent = () => {
         ) :
         (
           <>
-            <NewPoolComponent
+            <PoolPanelComponent
               onOpen={open}
               address={address}
               isApproved={isApproved}

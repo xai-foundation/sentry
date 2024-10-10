@@ -45,6 +45,13 @@ dataSources:
           handler: handleStakedV1
         - event: UnstakeV1(indexed address,uint256,uint256)
           handler: handleUnstakeV1
+        - event: NewBulkSubmission(indexed uint256,indexed address,uint256,uint256)
+          handler: handleNewBulkSubmission
+        - event: UpdateBulkSubmission(indexed uint256,indexed address,uint256,uint256,uint256,uint256)
+          handler: handleUpdateBulkSubmission
+        - event: BulkRewardsClaimed(indexed uint256,indexed address,uint256,uint256)
+          handler: handleBulkRewardsClaimed
+          
       file: ./src/referee.ts
   - kind: ethereum
     name: NodeLicense
@@ -128,3 +135,43 @@ dataSources:
         - event: ConvertedToEsXai(indexed address,uint256)
           handler: handleConvertedToEsXai
       file: ./src/xai.ts
+  - kind: ethereum
+    name: Rollup
+    network: arbitrum-one
+    source:
+      address: "0xC47DacFbAa80Bd9D8112F4e8069482c2A3221336"
+      abi: Rollup
+      startBlock: 169689813
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - NodeConfirmation
+      abis:
+        - name: Rollup
+          file: ./abis/Rollup.json
+      eventHandlers:
+        - event: NodeConfirmed(indexed uint64,bytes32,bytes32)
+          handler: handleNodeConfirmed
+      file: ./src/referee.ts
+  # - kind: ethereum
+  #   name: TinyKeysAirdrop
+  #   network: arbitrum-one
+  #   source:
+  #     address: TODO ADD ADDRESS
+  #     abi: TinyKeysAirdrop
+  #     startBlock: TODO ADD BLOCK
+  #   mapping:
+  #     kind: ethereum/events
+  #     apiVersion: 0.0.7
+  #     language: wasm/assemblyscript
+  #     entities:
+  #       - AirdropSegmentCompleteEvent
+  #     abis:
+  #       - name: TinyKeysAirdrop
+  #         file: ./abis/TinyKeysAirdrop.json
+  #     eventHandlers:
+  #       - event: AirdropSegmentStakeComplete(indexed address,indexed address,uint256,uint256)
+  #         handler: handleAirdropStakeSegmentComplete
+  #     file: ./src/tiny-keys-airdrop.ts

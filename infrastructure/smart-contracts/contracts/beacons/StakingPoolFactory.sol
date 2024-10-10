@@ -5,8 +5,6 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "./StakingPoolBeacon.sol";
 import "./StakingPoolImplementationV1.sol";
-import "hardhat/console.sol";
-
 contract StakingPoolFactory {
 	address[] public pools;
 	StakingPoolBeacon immutable public beacon;
@@ -24,8 +22,6 @@ contract StakingPoolFactory {
 //	}
 
 	function createPool(bytes memory data) public {
-		console.log("createPool");
-		console.logBytes(data);
 
 		BeaconProxy pool = new BeaconProxy(
 			address(beacon),

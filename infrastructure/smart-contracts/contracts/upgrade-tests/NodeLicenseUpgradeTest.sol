@@ -8,26 +8,92 @@ import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/Base64Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
+interface IAggregatorV3Interface {
+    function latestAnswer() external view returns (int256);
+}
+
 /**
  * @title NodeLicenseUpgradeTest
  * @dev Implementation of the NodeLicenseUpgradeTest
  */
-contract NodeLicenseUpgradeTest is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
-
+contract NodeLicenseUpgradeTest is
+    ERC721EnumerableUpgradeable,
+    AccessControlUpgradeable
+{
     using StringsUpgradeable for uint256;
     using CountersUpgradeable for CountersUpgradeable.Counter;
     CountersUpgradeable.Counter private _tokenIds;
 
     address payable public fundsReceiver;
+
     uint256 public maxSupply; // Maximum number of licenses that can be minted
+
+    // Define the pricing table
     Tier[] private pricingTiers;
+
     uint256 public referralDiscountPercentage;
     uint256 public referralRewardPercentage;
+
+    // Boolean to control whether referral rewards can be claimed
     bool public claimable;
-    mapping (uint256 => uint256) private _mintTimestamps;
-    mapping (string => PromoCode) private _promoCodes;
-    mapping (address => uint256) private _referralRewards;
-    mapping (uint256 => uint256) private _averageCost;
+
+    // Mapping from token ID to minting timestamp
+    mapping(uint256 => uint256) private _mintTimestamps;
+
+    // Mapping from promo code to PromoCode struct
+    mapping(string => PromoCode) private _promoCodes;
+
+    // Mapping from referral address to referral reward
+    mapping(address => uint256) private _referralRewards;
+
+    // Mapping from token ID to average cost, this is used for refunds over multiple tiers
+    mapping(uint256 => uint256) private _averageCost;
+
+    // Mapping for whitelist to claim NFTs without a price
+    mapping(address => uint16) public whitelistAmounts;
+
+    /**
+     *  @dev New promo code mappings are ONLY used for
+     *  reward tracking of XAI and esXAI rewards
+     *  The original promo code mapping is used for promo
+     *  code creation, removal, activation and recipient tracking
+     *
+     *  @notice The new mappings should not be checked for
+     *  promo code existence or activation, they simply track
+     *  the referral rewards for XAI and esXAI
+     */
+
+    // Mapping from promo code to PromoCode struct for Xai
+    mapping(string => PromoCode) private _promoCodesXai;
+
+    // Mapping from promo code to PromoCode struct for esXai
+    mapping(string => PromoCode) private _promoCodesEsXai;
+
+    // Mapping from referral address to referral reward
+    mapping(address => uint256) private _referralRewardsXai;
+
+    // Mapping from referral address to referral reward
+    mapping(address => uint256) private _referralRewardsEsXai;
+
+    // Chainlink Eth/USD price feed
+    IAggregatorV3Interface internal ethPriceFeed;
+
+    //Chainlink XAI/USD price feed
+    IAggregatorV3Interface internal xaiPriceFeed;
+
+    // Token Addresses
+    address public xaiAddress;
+    address public esXaiAddress;
+
+    // Pause Minting
+    bool public mintingPaused;
+    
+    // Reentrancy guard boolean
+    bool private _reentrancyGuardClaimReferralReward;
+
+
+    bytes32 public constant AIRDROP_ADMIN_ROLE =
+        keccak256("AIRDROP_ADMIN_ROLE");
 
     uint256 private _count;
 
@@ -36,7 +102,7 @@ contract NodeLicenseUpgradeTest is ERC721EnumerableUpgradeable, AccessControlUpg
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[499] private __gap;
+    uint256[490] private __gap;
 
     // Define the pricing tiers
     struct Tier {
@@ -73,7 +139,12 @@ contract NodeLicenseUpgradeTest is ERC721EnumerableUpgradeable, AccessControlUpg
      */
     function supportsInterface(
         bytes4 interfaceId
-    ) public view override(ERC721EnumerableUpgradeable, AccessControlUpgradeable) returns (bool) {
+    )
+        public
+        view
+        override(ERC721EnumerableUpgradeable, AccessControlUpgradeable)
+        returns (bool)
+    {
         return super.supportsInterface(interfaceId);
     }
 }

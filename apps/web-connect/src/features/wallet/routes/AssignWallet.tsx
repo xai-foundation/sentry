@@ -1,29 +1,34 @@
 import {useNavigate, useParams} from "react-router-dom";
-import {useAccount, useContractWrite, useNetwork} from "wagmi";
+import {useAccount, useWriteContract } from "wagmi";
+import {wagmiConfig, chains} from "../../../main";
 import {config, RefereeAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {ConnectButton, PrimaryButton} from "@sentry/ui";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
+import { getAccount } from '@wagmi/core'
 
 export function AssignWallet() {
 	const navigate = useNavigate();
 	const {open} = useWeb3Modal()
 	const params = useParams<{operatorAddress: string}>();
 	const {isConnected, address} = useAccount();
-	const {chain} = useNetwork();
+	const { chainId } = getAccount(wagmiConfig);
+	const chain = chains.find(chain => chain.id === chainId)
 
-	const {isLoading, isSuccess, write, error, data} = useContractWrite({
+	const txData = {
 		address: config.refereeAddress as `0x${string}`,
 		abi: RefereeAbi,
 		functionName: "setApprovalForOperator",
 		args: [params.operatorAddress, true],
-		onSuccess(data) {
-			window.location = `xai-sentry://assigned-wallet?txHash=${data.hash}` as unknown as Location;
+		onSuccess(data : `0x${string}`) {
+			window.location = `xai-sentry://assigned-wallet?txHash=${data}` as unknown as Location;
 		},
-		onError(error) {
+		onError(error: Error) {
 			console.warn("Error", error);
-		},
-	});
+		}
+	};
+
+	const {isPending:isLoading, isSuccess, writeContract, error, data} = useWriteContract();
 
 	function getShortenedWallet(address: string) {
 		const firstFiveChars = address.slice(0, 5);
@@ -32,8 +37,13 @@ export function AssignWallet() {
 	}
 
 	function returnToClient() {
-		window.location = `xai-sentry://assigned-wallet?txHash=${data?.hash}` as unknown as Location;
+		window.location = `xai-sentry://assigned-wallet?txHash=${data}` as unknown as Location;
 	}
+	
+	function handleConnectClick() {
+		open();
+	}
+
 
 	return (
 		<div className={"bg-background-image"}>
@@ -70,7 +80,7 @@ export function AssignWallet() {
 							)}
 							{isConnected && address ? (
 								<PrimaryButton
-									onClick={() => write()}
+									onClick={() => writeContract(txData)}
 									isDisabled={isLoading || isSuccess || chain?.id !== 42_161}
 									btnText={chain?.id === 42_161 ? `Assign wallet to Sentry (${getShortenedWallet(address)})` : "Please Switch to Arbitrum One"}
 									colorStyle={"primary"}
@@ -78,7 +88,7 @@ export function AssignWallet() {
 								/>
 							) : (
 								<div className="mt-6 w-full">
-									<ConnectButton  address={address} onOpen={open} isFullWidth />
+									<ConnectButton  address={address} onOpen={handleConnectClick} isFullWidth />
 								</div>
 							)}
 

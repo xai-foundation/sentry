@@ -1,12 +1,13 @@
 {
   "name": "@sentry/sentry-client-desktop",
   "author": "Xai Foundation",
+  "description": "Cross platform desktop client for the Xai Sentry Node",
   "version": "1.0.0",
   "private": true,
   "main": "dist-electron/main.js",
   "repository": "https://github.com/xai-foundation/sentry",
   "scripts": {
-    "build": "tsc --build && vite build && electron-builder -p never",
+    "build": "tsc --build && vite build && electron-builder -p never -c electron-builder-config.js",
     "clean": "rimraf dist && rimraf dist-electron && rimraf release && rimraf public/web && rimraf tsconfig.tsbuildinfo && rimraf vite.config.js && rimraf vite.config.d.ts",
     "dev": "vite",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -23,7 +24,7 @@
     "@sentry/web-connect": "workspace:*",
     "classnames": "^2.3.2",
     "clsx": "^1.2.1",
-    "crypto-js": "4.1.1",
+    "crypto-js": "4.2.0",
     "electron-log": "^5.0.1",
     "electron-updater": "^6.1.7",
     "express": "^4.18.2",
@@ -35,7 +36,7 @@
     "react-query": "^3.39.3",
     "react-router-dom": "^6.16.0",
     "tailwindcss": "^3.3.3",
-    "viem": "^1.15.1"
+    "viem": "^2.18.4"
   },
   "devDependencies": {
     "@electron/notarize": "^2.2.0",
@@ -47,7 +48,7 @@
     "@vitejs/plugin-react": "^4.0.4",
     "autoprefixer": "^10.4.15",
     "electron": "^27.1.3",
-    "electron-builder": "^24.9.1",
+    "electron-builder": "^24.13.3",
     "eslint": "^8.48.0",
     "eslint-plugin-only-warn": "^1.1.0",
     "eslint-plugin-react-hooks": "^4.6.0",

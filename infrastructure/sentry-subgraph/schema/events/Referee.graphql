@@ -6,11 +6,11 @@ enum ChallengeStatus {
 
 type Challenge @entity(immutable: false) {
   id: String!
-  challengeNumber: BigInt! # uint256
+  challengeNumber: BigInt! @index # uint256
   status: ChallengeStatus!
   assertionId: BigInt! # uint256
   assertionStateRootOrConfirmData: Bytes! # bytes
-  assertionTimestamp: BigInt! # uint64
+  assertionTimestamp: BigInt! @index # uint64
   challengerSignedHash: Bytes! # bytes
   activeChallengerPublicKey: Bytes! # bytes
   rollupUsed: Bytes! # address
@@ -21,6 +21,8 @@ type Challenge @entity(immutable: false) {
   numberOfEligibleClaimers: BigInt! # uint256
   amountClaimedByClaimers: BigInt! # uint256
   submissions: [Submission!]! @derivedFrom(field: "challenge")
+  bulkSubmissions: [BulkSubmission!]! @derivedFrom(field: "challenge")
+  nodeConfirmations: [NodeConfirmation!]! @derivedFrom(field: "challenge")
 }
 
 enum SubmittedFrom {
@@ -33,14 +35,15 @@ enum ClaimedFrom {
   claimRewards
   claimMultipleRewards
   unclaimed
+  unknown
 }
 
 type Submission @entity(immutable: false) {
   id: String!
-  challengeNumber: BigInt!
+  challengeNumber: BigInt! @index
   claimed: Boolean!
   eligibleForPayout: Boolean!
-  nodeLicenseId: BigInt! 
+  nodeLicenseId: BigInt! @index
   assertionsStateRootOrConfirmData: String!
   claimAmount: BigInt!
   createdTimestamp: BigInt!
@@ -56,13 +59,16 @@ type Submission @entity(immutable: false) {
 type SentryWallet @entity(immutable: false) {
   id: String!
   isKYCApproved: Boolean!
-  address: Bytes!
+  address: Bytes! @index
   approvedOperators: [Bytes!]!
   v1EsXaiStakeAmount: BigInt!
   esXaiStakeAmount: BigInt!
   keyCount: BigInt!
   stakedKeyCount: BigInt!
   sentryKeys: [SentryKey!]! @derivedFrom(field: "sentryWallet")
+  poolStakes: [PoolStake!]! @derivedFrom(field: "wallet")
+  bulkSubmissions: [BulkSubmission!]! @derivedFrom(field: "sentryWallet")
+  totalAccruedAssertionRewards: BigInt!
 }
 
 type RefereeConfig @entity(immutable: false) {
@@ -72,4 +78,31 @@ type RefereeConfig @entity(immutable: false) {
   maxKeysPerPool: BigInt!
   stakeAmountTierThresholds: [BigInt!]!
   stakeAmountBoostFactors: [BigInt!]!
+}
+
+type BulkSubmission @entity(immutable: false) {
+  id: String!
+  challengeId: BigInt! @index
+  bulkAddress: Bytes! @index
+  challenge: Challenge!
+  poolInfo: PoolInfo
+  keyCount: BigInt!
+  winningKeyCount: BigInt!
+  claimedRewardsAmount: BigInt!
+  createdTimestamp: BigInt! @index
+  createdTxHash: Bytes!
+  claimTimestamp: BigInt!
+  claimTxHash: Bytes!
+  claimed: Boolean! @index
+  sentryWallet: SentryWallet
+  isPool: Boolean! @index
+}
+
+type NodeConfirmation @entity(immutable: false) {
+  id: String!
+  nodeNum: BigInt! @index # aka assertionId
+  blockHash: Bytes!
+  sendRoot: Bytes!
+  confirmData: String!
+  challenge: Challenge
 }

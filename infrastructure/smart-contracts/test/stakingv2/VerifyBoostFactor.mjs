@@ -1,5 +1,6 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { assert, expect } from "chai";
+import {findWinningStateRoot} from "../Referee.mjs";
 import { findHighestStakeTier } from "../StakingV2.mjs";
 import { getStateRoots } from "../Referee.mjs";
 
@@ -39,13 +40,27 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 				referee,
 				refereeDefaultAdmin,
 				esXai,
-				esXaiMinter
+				esXaiMinter, 
+				challenger
 			} = await loadFixture(deployInfrastructure);
 
 			// Mint key to make basic pool
 			const price = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr1).mint(1, "", { value: price });
 			const mintedKeyId = await nodeLicense.totalSupply();
+			
+			const winningStateRoot = await findWinningStateRoot(referee, [mintedKeyId], 0);
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                winningStateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
 
 			await poolFactory.connect(addr1).createPool(
 				noDelegateOwner,
@@ -75,6 +90,14 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 			expect(poolBoostFactor2).to.equal(minBoostFactor);
 		});
 
+
+		/**
+		 * TODO Update Levels in Referee temporarily to test the following tests
+		 * The tests below are commented out as it would require 40k keys to be minted and staked to a pool to reach the highest tier.
+		 * Updating the tiers temporarily in the initializer will work, however, it will break other tests around max staked amounts.
+		 *  
+		 */
+
 		it("Verify that a pool with enough esXai is in a higher tier", async function () {
 			const {
 				poolFactory,
@@ -83,7 +106,8 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 				referee,
 				refereeDefaultAdmin,
 				esXai,
-				esXaiMinter
+				esXaiMinter, 
+				challenger
 			} = await loadFixture(deployInfrastructure);
 
 			// Manually find the highest stake tier thresholds as we have no way to check the array lengths (no functions to get length, and public array's cannot be length-queried)
@@ -94,15 +118,29 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 			const keysForHighestTier = highestFoundStakeAmountTierThreshold / maxStakeAmountPerLicense;
 			const startingSupply = await nodeLicense.totalSupply();
 			await mitBatchedLicenses(keysForHighestTier, nodeLicense.connect(addr1));
+
 			// const price = await nodeLicense.price(keysForHighestTier, "");
 			// await nodeLicense.connect(addr1).mint(keysForHighestTier, "", { value: price });
 			const endingSupply = await nodeLicense.totalSupply();
-
 			// Save the key ids we minted to an array for pool creation
 			const keyIds = [];
+
 			for (let i = startingSupply; i < endingSupply; i++) {
 				keyIds.push(i + 1n);
 			}
+			
+			const winningStateRoot = await findWinningStateRoot(referee, [1], 0);
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                winningStateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
 
 			// Creat a pool with $keysForHighestTier keys to get the highest tier esXai stake allowance
 			if (keyIds.length > 200) {
@@ -132,7 +170,6 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 				);
 			}
 
-
 			// Save the new pool's address
 			const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
 
@@ -147,6 +184,7 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 			expect(poolBoostFactor2).to.equal(maxBoostFactor);
 		});
 
+		//TODO this test needs to be reworked, the pool with 1000 keys staked in diamond will now win more on the pool basis, it does not really make sense to compare to an unstaked key that submits for itself
 		it("Verify that keys in a pool with esXai staked wins more challenges", async function () {
 			const { poolFactory, addr1, addr2, nodeLicense, referee, refereeDefaultAdmin, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
 
@@ -154,6 +192,19 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 			const singlePrice = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr1).mint(1, "", { value: singlePrice });
 			const addr1MintedKeyId = await nodeLicense.totalSupply();
+			
+			const winningStateRoot = await findWinningStateRoot(referee, [addr1MintedKeyId], 0);
+
+            // Submit two challenges so that the contract tests will run successfully
+            let startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                winningStateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
 
 			// Manually find the highest stake tier thresholds as we have no way to check the array lengths (no functions to get length, and public array's cannot be length-queried)
 			const [highestFoundStakeAmountTierThreshold, highestFoundTier] = await findHighestStakeTier(referee, refereeDefaultAdmin);
@@ -212,23 +263,24 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 
 			// Prepare for the submissions loop
 			const numSubmissions = 1000;
-			const stateRoots = await getStateRoots(numSubmissions * 2);
+			const stateRoots = await getStateRoots(numSubmissions);
 
 			let numSoloKeyPayouts = 0;
 			let numBoostedPoolPayouts = 0;
-
-			for (let i = 0; i < numSubmissions; i++) {
+			
+			for (let i = 1; i < numSubmissions; i++) {
 				const stateRoot = stateRoots[i];
+
+				startingAssertion++;
 
 				// Submit a challenge
 				await referee.connect(challenger).submitChallenge(
-					i + 1,
-					i,
+					startingAssertion,
+					startingAssertion - 1,
 					stateRoot,
 					0,
 					"0x0000000000000000000000000000000000000000000000000000000000000000"
 				);
-
 				// Check to see the challenge is open for submissions
 				const { openForSubmissions } = await referee.getChallenge(i);
 				expect(openForSubmissions).to.be.eq(true);
@@ -238,17 +290,16 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 				await referee.connect(addr2).submitAssertionToChallenge(keyIds[0], i, stateRoot);
 
 				// Check submissions, count payouts
-				const submission1 = await referee.getSubmissionsForChallenges([i], addr1MintedKeyId);
-				assert.equal(submission1[0].submitted, true, "The submission was not submitted");
-				if (submission1[0].eligibleForPayout) {
+
+				const submission1 = await referee.submissions(i, addr1MintedKeyId);
+				assert.equal(submission1.submitted, true, "The submission was not submitted");
+				if (submission1.eligibleForPayout) {
 					numSoloKeyPayouts++;
 				}
 
-				const submission2 = await referee.getSubmissionsForChallenges([i], keyIds[0]);
-				assert.equal(submission2[0].submitted, true, "The submission was not submitted");
-				if (submission2[0].eligibleForPayout) {
-					numBoostedPoolPayouts++;
-				}
+				const submission2 = await referee.bulkSubmissions(i, stakingPoolAddress);
+				assert.equal(submission2.submitted, true, "The bulkSubmission was not submitted");
+				numBoostedPoolPayouts += submission2.winningKeyCount;
 			}
 
 			expect(numBoostedPoolPayouts).to.be.greaterThan(numSoloKeyPayouts);

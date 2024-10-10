@@ -4,4 +4,5 @@ export * from "./callout";
 export * from "./tooltip";
 export * from "./inputs";
 export * from "./dropdown";
+export * from "./text";
 

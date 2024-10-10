@@ -2,6 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {Contract} from "ethers";
 import {StakingPoolAbi} from "@sentry/core";
+import {findWinningStateRoot} from "../Referee.mjs";
 
 export function CreatePool(deployInfrastructure, poolConfigurations) {
 	const {
@@ -30,6 +31,26 @@ export function CreatePool(deployInfrastructure, poolConfigurations) {
 					poolTrackerDetails
 				)
 			).to.be.revertedWith("2");
+		});
+
+		it("Check not kyc approved owner cannot create a pool", async function () {
+			const {poolFactory, addr3, nodeLicense} = await loadFixture(deployInfrastructure);
+			// Mint a node key & save the id
+			const price = await nodeLicense.price(1, "");
+			await nodeLicense.connect(addr3).mint(1, "", {value: price});
+			const mintedKeyId = await nodeLicense.totalSupply();
+
+			// Fail to create a pool
+			await expect(
+				poolFactory.connect(addr3).createPool(
+					noDelegateOwner,
+					[mintedKeyId],
+					validShareValues,
+					poolMetaData,
+					poolSocials,
+					poolTrackerDetails
+				)
+			).to.be.revertedWith("37");
 		});
 
 		it("Check that the shares cannot go over the max values (bucketshareMaxValues = ordered owner, keys, esXaiStaker)", async function () {
@@ -65,7 +86,7 @@ export function CreatePool(deployInfrastructure, poolConfigurations) {
 		})
 
 		it("Check that Pool exists (stakingPoolsCount, stakingPools[])", async function () {
-			const {poolFactory, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+			const {poolFactory, addr1, nodeLicense, referee, challenger} = await loadFixture(deployInfrastructure);
 
 			// Verify that there are no pools yet
 			const stakingPoolsCount1 = await poolFactory.connect(addr1).getPoolsCount();
@@ -74,7 +95,19 @@ export function CreatePool(deployInfrastructure, poolConfigurations) {
 			// Mint a node key & save the id
 			const price = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr1).mint(1, "", {value: price});
-			const mintedKeyId = await nodeLicense.totalSupply();
+			const mintedKeyId = await nodeLicense.totalSupply();            
+			
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                stateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
 
 			// Create a pool
 			await poolFactory.connect(addr1).createPool(
@@ -102,12 +135,24 @@ export function CreatePool(deployInfrastructure, poolConfigurations) {
 		});
 
 		it("Check that the Pool is created & the share values are correct", async function () {
-			const {poolFactory, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+			const {poolFactory, addr1, nodeLicense, referee, challenger} = await loadFixture(deployInfrastructure);
 
 			// Mint a node key & save the id
 			const price = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr1).mint(1, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
+
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                stateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
 
 			// Create a pool
 			await poolFactory.connect(addr1).createPool(
@@ -134,12 +179,24 @@ export function CreatePool(deployInfrastructure, poolConfigurations) {
 		});
 
 		it("Check that it has 1 key assigned and the Pool Info returns the expected values", async function () {
-			const {poolFactory, addr1, esXai, nodeLicense, referee} = await loadFixture(deployInfrastructure);
+			const {poolFactory, addr1, esXai, nodeLicense, referee, challenger} = await loadFixture(deployInfrastructure);
 
 			// Mint a node key & save the id
 			const price = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr1).mint(1, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
+			
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                stateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
 
 			// Create a pool
 			await poolFactory.connect(addr1).createPool(
@@ -171,12 +228,24 @@ export function CreatePool(deployInfrastructure, poolConfigurations) {
 		});
 
 		it("Check that the metadata gets returned from the Pool info", async function () {
-			const {poolFactory, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
+			const {poolFactory, addr1, nodeLicense, referee, challenger} = await loadFixture(deployInfrastructure);
 
 			// Mint a node key & save the id
 			const price = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr1).mint(1, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
+			
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                stateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
 
 			// Create a pool
 			await poolFactory.connect(addr1).createPool(
@@ -226,7 +295,7 @@ export function CreatePool(deployInfrastructure, poolConfigurations) {
 		});
 
 		it("Verify that the owner can un-stake keys so long as they have more than 1 in the Pool", async function () {
-			const {poolFactory, addr1, nodeLicense, referee} = await loadFixture(deployInfrastructure);
+			const {poolFactory, addr1, nodeLicense, referee, challenger} = await loadFixture(deployInfrastructure);
 
 			// Mint 2 node keys & save the ids
 			const price = await nodeLicense.price(1, "");
@@ -234,6 +303,18 @@ export function CreatePool(deployInfrastructure, poolConfigurations) {
 			const mintedKeyId1 = await nodeLicense.totalSupply();
 			await nodeLicense.connect(addr1).mint(1, "", {value: price});
 			const mintedKeyId2 = await nodeLicense.totalSupply();
+			
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                stateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
 
 			// Create a pool
 			await poolFactory.connect(addr1).createPool(
@@ -272,12 +353,24 @@ export function CreatePool(deployInfrastructure, poolConfigurations) {
 		});
 
 		it("Verify that the owner cannot un-stake all of their staked keys (there has to be at least 1 key of the pool owner staked into the Pool)", async function () {
-			const {poolFactory, addr1, nodeLicense, referee} = await loadFixture(deployInfrastructure);
+			const {poolFactory, addr1, nodeLicense, referee, challenger} = await loadFixture(deployInfrastructure);
 
 			// Mint a node key & save the id
 			const price = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr1).mint(1, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
+			
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                stateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
 
 			// Create a pool
 			await poolFactory.connect(addr1).createPool(

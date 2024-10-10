@@ -1,40 +1,50 @@
-import Vorpal from "vorpal";
+import { Command } from 'commander';
+import inquirer from 'inquirer';
 import { addAddressToRole, getSignerFromPrivateKey } from "@sentry/core";
 
 /**
  * Function to add an admin to the Referee contract.
- * @param cli - Vorpal instance
+ * @param cli - Command instance
  */
-export function addAdmin(cli: Vorpal) {
+export function addAdmin(cli: Command) {
     cli
-        .command('add-admin', 'Adds an address to the DEFAULT_ADMIN_ROLE in the Referee contract.')
-        .action(async function (this: Vorpal.CommandInstance) {
-            const {address} = await this.prompt({
-                type: 'input',
-                name: 'address',
-                message: 'Address to be added to the DEFAULT_ADMIN_ROLE:' 
-            });
+        .command('add-admin')
+        .description('Adds an address to the DEFAULT_ADMIN_ROLE in the Referee contract.')
+        .action(async () => {
+            try {
+                const { address } = await inquirer.prompt({
+                    type: 'input',
+                    name: 'address',
+                    message: 'Address to be added to the DEFAULT_ADMIN_ROLE:'
+                });
 
-            const {privateKey} = await this.prompt({
-                type: 'password',
-                name: 'privateKey',
-                message: 'Private key of the current admin address. Must have DEFAULT_ADMIN_ROLE. Check by calling get-list-of-admins:',
-                mask: '*',
-            });
+                const { privateKey } = await inquirer.prompt({
+                    type: 'password',
+                    name: 'privateKey',
+                    message: 'Private key of the current admin address. Must have DEFAULT_ADMIN_ROLE. Check by calling get-list-of-admins:',
+                    mask: '*',
+                });
 
-            if (!address || !privateKey) {
-                this.log('Both address and private key are required.');
-                return;
+                if (!address || !privateKey) {
+                    console.log('Both address and private key are required.');
+                    return;
+                }
+
+                console.log(`Adding address ${address} to the DEFAULT_ADMIN_ROLE...`);
+
+                // Create a signer with the private key
+                const { signer } = getSignerFromPrivateKey(privateKey);
+
+                // Call the addAddressToRole function to add the address to the DEFAULT_ADMIN_ROLE
+                await addAddressToRole(signer, 'DEFAULT_ADMIN_ROLE', address);
+
+                console.log(`Address ${address} has been added to the DEFAULT_ADMIN_ROLE.`);
+            } catch (error) {
+                if (error instanceof Error) {
+                    console.error('An error occurred:', error.message);
+                } else {
+                    console.error('An unknown error occurred:', error);
+                }
             }
-
-            this.log(`Adding address ${address} to the DEFAULT_ADMIN_ROLE...`);
-
-            // Create a signer with the private key
-            const { signer } = getSignerFromPrivateKey(privateKey);
-
-            // Call the addAddressToRole function to add the address to the DEFAULT_ADMIN_ROLE
-            await addAddressToRole(signer, 'DEFAULT_ADMIN_ROLE', address);
-
-            this.log(`Address ${address} has been added to the DEFAULT_ADMIN_ROLE.`);
         });
 }

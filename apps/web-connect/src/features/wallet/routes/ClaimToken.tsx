@@ -1,4 +1,5 @@
-import {useAccount, useNetwork, useContractWrite} from "wagmi";
+import {useAccount,  useWriteContract } from "wagmi";
+import {wagmiConfig, chains} from "../../../main";
 import {useState, useEffect} from "react";
 import {ConnectButton, XaiCheckbox} from "@sentry/ui";
 import {useNavigate} from "react-router-dom";
@@ -8,6 +9,9 @@ import {XaiGaslessClaimAbi, config} from "@sentry/core";
 import {ethers} from "ethers";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
+import { getAccount } from '@wagmi/core'
+import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
+
 
 export function ClaimToken() {
 	const {open} = useWeb3Modal()
@@ -15,21 +19,27 @@ export function ClaimToken() {
 	const {address: _address} = useAccount();
 	const address = _address?.toLowerCase();
 	const navigate = useNavigate();
-	const {chain} = useNetwork();
+	const { chainId } = getAccount(wagmiConfig);
+	const chain = chains.find(chain => chain.id === chainId)
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
 	const ready = checkboxOne && chain?.id === 42_161;
 	// const ready = checkboxOne && chain?.id === 421614;
 	const [permits, setPermits] = useState<{[key: string]: {r: string, s: string, v: number, amount: string}}>();
 
-	const {isLoading, isSuccess, write, error} = useContractWrite({
+	const txData = {
 		address: config.xaiGaslessClaimAddress as `0x${string}`,
 		abi: XaiGaslessClaimAbi,
 		functionName: "claimRewards",
 		args: [permits && address ? permits[address]?.amount : "0", permits && address ? permits[address]?.v : "0", permits && address ? permits[address]?.r : "0", permits && address ? permits[address]?.s : "0"],
-		onError(error) {
-			console.warn("Error", error);
+		onSuccess(data : any) {
+			window.location = `xai-sentry://unassigned-wallet?txHash=${data.hash}` as unknown as Location;
 		},
-	});
+		onError(error: any) {
+			console.warn("Error", error);
+		}
+	};
+
+	const {isPending: isLoading, isSuccess, writeContract, error} = useWriteContract();
 
 	useEffect(() => {
 		fetch('https://cdn.xai.games/airdrop/xai-drop-permits.JSON', {
@@ -53,7 +63,7 @@ export function ClaimToken() {
 	if (blocked) {
 		return (
 			<div className='w-full h-screen flex justify-center items-center'>
-				<p className="p-2 text-md text-white">You are in a country restricted from using this application.</p>
+				<IpBlockText classNames="p-2 text-md text-white" />
 			</div>
 		)
 	}
@@ -72,6 +82,10 @@ export function ClaimToken() {
 				<p className="text-3xl font-bold text-white">Claim successful!</p>
 			</div>
 		)
+	}
+
+	function handleConnectClick() {
+		open();
 	}
 
 	return (
@@ -116,7 +130,7 @@ export function ClaimToken() {
 
 											<div className="w-full">
 												<button
-													onClick={() => write()}
+													onClick={() => writeContract(txData)}
 													className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 													disabled={!ready}
 												>
@@ -141,7 +155,7 @@ export function ClaimToken() {
 							</>
 						) : (
 							<div className="m-8 w-full">
-								<ConnectButton onOpen={open} address={address} isFullWidth/>
+								<ConnectButton onOpen={handleConnectClick} address={address} isFullWidth/>
 							</div>
 						)}
 					</div>

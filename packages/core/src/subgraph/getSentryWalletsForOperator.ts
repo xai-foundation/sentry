@@ -5,14 +5,47 @@ import { config } from "../config.js";
 /**
  * 
  * @param operator - The public key of the wallet running the operator
+ * @param whitelist - Optional array of whitelisted addresses
  * @returns The SentryWallet entity from the graph
  */
 export async function getSentryWalletsForOperator(
   operator: string,
-  whitelist?: string[]
+  submissionsFilter?: { winningKeyCount?: boolean, claimed?: boolean, latestChallengeNumber?: bigint },
+  whitelist?: string[],
 ): Promise<{ wallets: SentryWallet[], pools: PoolInfo[], refereeConfig: RefereeConfig }> {
 
   const client = new GraphQLClient(config.subgraphEndpoint);
+
+  let submissionQueryFilter: string[] = [];
+  if (submissionsFilter) {
+    const { winningKeyCount, claimed, latestChallengeNumber } = submissionsFilter;
+    if (winningKeyCount != undefined) {
+      if (winningKeyCount) {
+        submissionQueryFilter.push('winningKeyCount_gt: 0');
+      } else {
+        submissionQueryFilter.push('winningKeyCount: 0');
+      }
+    }
+    if (claimed != undefined) {
+      submissionQueryFilter.push(`claimed: ${claimed}`)
+    }
+    if (latestChallengeNumber != undefined) {
+      submissionQueryFilter.push(`challengeId_gte: ${latestChallengeNumber.toString()}`)
+    }
+  }
+
+  const bulkSubmissionsFields = `bulkSubmissions(first: 10000, orderBy: challengeId, orderDirection: desc, where: {${submissionQueryFilter.join(",")}}) {
+    challengeId
+    winningKeyCount
+    claimed 
+  }`
+
+  //NOTE: needed because of inconsistent field names
+  const submissionsFields = `submissions(first: 10000, orderBy: challengeId, orderDirection: desc, where: {${submissionQueryFilter.join(",")}}) {
+    challengeId
+    winningKeyCount
+    claimed 
+  }`
 
   const query = gql`
     query OperatorAddresses {
@@ -27,6 +60,7 @@ export async function getSentryWalletsForOperator(
         v1EsXaiStakeAmount
         stakedKeyCount
         keyCount
+        ${submissionQueryFilter.length ? bulkSubmissionsFields : ""}
       }
       poolInfos(first: 1000, where: {or: [{owner: "${operator.toLowerCase()}"}, {delegateAddress: "${operator.toLowerCase()}"}]}) {
         address
@@ -35,6 +69,7 @@ export async function getSentryWalletsForOperator(
         totalStakedEsXaiAmount
         totalStakedKeyAmount
         metadata
+        ${submissionQueryFilter.length ? submissionsFields : ""}
       }
       refereeConfig(id: "RefereeConfig") {
         maxKeysPerPool
@@ -45,7 +80,7 @@ export async function getSentryWalletsForOperator(
       }
     }
   `
-
+  
   const result = await client.request(query) as any;
 
   let wallets: SentryWallet[] = result.sentryWallets;

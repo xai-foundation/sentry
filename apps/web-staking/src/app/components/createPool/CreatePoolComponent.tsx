@@ -12,11 +12,12 @@ import { useRouter } from "next/navigation";
 import { useAccount, useSwitchChain, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { loadingNotification, updateNotification } from "../notifications/NotificationsComponent";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
-import { POOL_SHARES_BASE, getNetwork, getUnstakedKeysOfUser, mapWeb3Error, ZERO_ADDRESS } from "@/services/web3.service";
+import { POOL_SHARES_BASE, getNetwork, getUnstakedKeysOfUser, mapWeb3Error, ZERO_ADDRESS, getPoolAddressOfUserAtIndex, getPoolsOfUserCount } from "@/services/web3.service";
 import StakePoolKeyComponent from "./StakePoolKeyComponent";
 import DelegateAddressComponent from "./DelegateAddressComponent";
 import { Id } from "react-toastify";
 import { PrimaryButton } from "../ui";
+
 
 const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
   const router = useRouter();
@@ -32,6 +33,7 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
   const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
   const [showStakePoolKey, setShowStakePoolKey] = useState(false);
   const [showErrors, setShowErrors] = useState(false);
+  const [currentPoolCount, setCurrentPoolCount] = useState(0);
 
   const { address, chainId } = useAccount();
 
@@ -40,8 +42,8 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
 
   // Substitute Timeouts with useWaitForTransaction
   const { isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
-      hash: receipt,
-    });
+    hash: receipt,
+  });
 
   const [poolDetailsValues, setPoolDetailsValues] = useState({
     name: "",
@@ -74,34 +76,34 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
     toastId.current = loadingNotification("Transaction pending...");
 
     try {
-      
+
       const keyIds = await getUnstakedKeysOfUser(getNetwork(chainId), address as string, numKeys);
-      // setCurrentPoolCount(await getPoolsOfUserCount(getNetwork(chainId), address as string));
+      setCurrentPoolCount(await getPoolsOfUserCount(getNetwork(chainId), address as string));
       setReceipt(await executeContractWrite(
-          WriteFunctions.createPool,
+        WriteFunctions.createPool,
+        [
+          delegateAddress || ZERO_ADDRESS,
+          keyIds,
           [
-            delegateAddress || ZERO_ADDRESS,
-            keyIds,
-            [
-              BigInt((Number(rewardsValues.owner) * POOL_SHARES_BASE).toFixed(0)),
-              BigInt((Number(rewardsValues.keyholder) * POOL_SHARES_BASE).toFixed(0)),
-              BigInt((Number(rewardsValues.staker) * POOL_SHARES_BASE).toFixed(0))
-            ],
-            [
-              poolDetailsValues.name,
-              poolDetailsValues.description,
-              poolDetailsValues.logoUrl
-            ],
-            [socialLinks.website, socialLinks.discord, socialLinks.telegram, socialLinks.twitter, socialLinks.instagram, socialLinks.youTube, socialLinks.tiktok],
-            [
-              [poolDetailsValues.trackerName, poolDetailsValues.trackerTicker + "-K",],
-              [poolDetailsValues.trackerName, poolDetailsValues.trackerTicker + "-X"]
-            ],
+            BigInt((Number(rewardsValues.owner) * POOL_SHARES_BASE).toFixed(0)),
+            BigInt((Number(rewardsValues.keyholder) * POOL_SHARES_BASE).toFixed(0)),
+            BigInt((Number(rewardsValues.staker) * POOL_SHARES_BASE).toFixed(0))
           ],
-          chainId,
-          writeContractAsync,
-          switchChain
-        ) as `0x${string}`);
+          [
+            poolDetailsValues.name,
+            poolDetailsValues.description,
+            poolDetailsValues.logoUrl
+          ],
+          [socialLinks.website, socialLinks.discord, socialLinks.telegram, socialLinks.twitter, socialLinks.instagram, socialLinks.youTube, socialLinks.tiktok],
+          [
+            [poolDetailsValues.trackerName, poolDetailsValues.trackerTicker + "-K",],
+            [poolDetailsValues.trackerName, poolDetailsValues.trackerTicker + "-X"]
+          ],
+        ],
+        chainId,
+        writeContractAsync,
+        switchChain
+      ) as `0x${string}`);
 
     } catch (ex: any) {
       const error = mapWeb3Error(ex);
@@ -115,8 +117,8 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
 
   const handleClick = () => {
     setShowErrors(true);
-    if (errorValidationAddress || searchDetailsErrors() ||errorValidationRewards
-    ) { window && window.scrollTo(0, ref.current?.offsetTop!);}
+    if (errorValidationAddress || searchDetailsErrors() || errorValidationRewards
+    ) { window && window.scrollTo(0, ref.current?.offsetTop!); }
 
     if (!errorValidationAddress && !searchDetailsErrors() && !errorValidationRewards) {
       setShowStakePoolKey(true);
@@ -125,9 +127,9 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
 
   const updateOnSuccess = useCallback(async () => {
     try {
-      // const newPoolAddress = await getPoolAddressOfUserAtIndex(getNetwork(chainId), address as string, currentPoolCount as number);
+      const newPoolAddress = await getPoolAddressOfUserAtIndex(getNetwork(chainId), address as string, currentPoolCount as number);
       updateNotification("Pool created", toastId.current as Id, false, receipt, chainId);
-      router.push(`/pool`);
+      router.push(`/pool/${newPoolAddress}/summary`);
     } catch (ex: any) {
       console.error('Error getting new Pool Address', ex);
     }
@@ -202,7 +204,7 @@ const CreatePoolComponent = ({ bannedWords }: { bannedWords: string[] }) => {
 
             <div
               className="flex sm:flex-col-reverse lg:flex-row justify-between xl:gap-0 lg:gap-[5px] gal-0 w-full py-5 px-6 bg-nulnOilBackground shadow-default">
-              <PrimaryButton btnText="Cancel" onClick={() => router.back()} colorStyle="outline" className="sm:w-full lg:w-[205px] uppercase" wrapperClassName=""  />
+              <PrimaryButton btnText="Cancel" onClick={() => router.back()} colorStyle="outline" className="sm:w-full lg:w-[205px] uppercase" wrapperClassName="" />
               <PrimaryButton
                 btnText="Save and continue"
                 onClick={handleClick}

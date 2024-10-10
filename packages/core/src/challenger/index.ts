@@ -7,3 +7,4 @@ export * from "./getChallenge.js";
 export * from "./getLatestChallenge.js";
 export * from "./findMissedAssertion.js";
 export * from "./isAssertionSubmitted.js";
+export * from "./isChallengeSubmitTime.js";

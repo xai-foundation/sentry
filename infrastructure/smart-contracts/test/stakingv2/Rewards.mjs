@@ -1,6 +1,7 @@
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {Contract} from "ethers";
+import {findWinningStateRoot} from "../Referee.mjs";
 import {BucketTrackerAbi, StakingPoolAbi} from "@sentry/core";
 
 export function Rewards(deployInfrastructure, poolConfigurations) {
@@ -16,13 +17,26 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 
 	return function () {
 		it("Verify the rewards are correct", async function () {
-			const {poolFactory, addr1, addr2, addr3, nodeLicense, kycAdmin, referee, esXai, esXaiMinter} = await loadFixture(deployInfrastructure);
+			const {poolFactory, addr1, addr2, addr3, nodeLicense, kycAdmin, esXai, esXaiMinter, referee, challenger} = await loadFixture(deployInfrastructure);
 
 			// Mint key to make basic pool
 			const addr1KeyQuantity = 1;
 			const price = await nodeLicense.price(addr1KeyQuantity, "");
 			await nodeLicense.connect(addr1).mint(addr1KeyQuantity, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
+			
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                stateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
 
 			const ownerShare = 20_000; // 2 %
 			const keyBucketShare = 843_750; // 84.375 %
@@ -158,13 +172,26 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 		});
 
 		it("Change reward breakdown does not effect reward value before 45 days are up", async function () {
-			const {poolFactory, addr1, addr2, nodeLicense, esXai, esXaiMinter} = await loadFixture(deployInfrastructure);
+			const {poolFactory, addr1, addr2, nodeLicense, esXai, esXaiMinter, referee, challenger} = await loadFixture(deployInfrastructure);
 
 			// Mint key to make basic pool
 			const addr1KeyQuantity = 1;
 			const price = await nodeLicense.price(addr1KeyQuantity, "");
 			await nodeLicense.connect(addr1).mint(addr1KeyQuantity, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
+			
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                stateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
 
 			const ownerShare1 = 50_000; // 5 %
 			const keyBucketShare1 = 800_000; // 80 %
@@ -247,13 +274,26 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 		});
 
 		it("Change reward breakdown changes reward value after 45 days", async function () {
-			const {poolFactory, addr1, addr2, nodeLicense, esXai, esXaiMinter} = await loadFixture(deployInfrastructure);
+			const {poolFactory, addr1, addr2, nodeLicense, esXai, esXaiMinter, referee, challenger} = await loadFixture(deployInfrastructure);
 
 			// Mint key to make basic pool
 			const addr1KeyQuantity = 1;
 			const price = await nodeLicense.price(addr1KeyQuantity, "");
 			await nodeLicense.connect(addr1).mint(addr1KeyQuantity, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
+			
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                stateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
 
 			const ownerShare1 = 50_000; // 5 %
 			const keyBucketShare1 = 800_000; // 80 %
@@ -353,7 +393,7 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 		});
 
 		it("Check reward distribution is correct if staking into pool after pool gets", async function () {
-			const {poolFactory, addr1, addr2, addr3, addr4, nodeLicense, esXai, esXaiMinter, referee, kycAdmin} = await loadFixture(deployInfrastructure);
+			const {poolFactory, addr1, addr2, addr3, addr4, nodeLicense, esXai, esXaiMinter, referee, kycAdmin, challenger} = await loadFixture(deployInfrastructure);
 
 			const ownerShare = 20_000; // 2 %
 			const keyBucketShare = 843_750; // 84.375 %
@@ -364,6 +404,19 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const price = await nodeLicense.price(addr1KeyQuantity, "");
 			await nodeLicense.connect(addr1).mint(addr1KeyQuantity, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
+
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                stateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
 
 			await poolFactory.connect(addr1).createPool(
 				noDelegateOwner,
@@ -553,7 +606,7 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 		});
 
 		it("Test reward breakdown with greatly varying degrees of staked esXai amounts", async function () {
-			const {poolFactory, addr1, addr2, addr3, addr4, nodeLicense, esXai, esXaiMinter, referee, kycAdmin} = await loadFixture(deployInfrastructure);
+			const {poolFactory, addr1, addr2, addr3, addr4, nodeLicense, esXai, esXaiMinter, referee, kycAdmin, challenger} = await loadFixture(deployInfrastructure);
 
 			const ownerShare = 20_000; // 2 %
 			const keyBucketShare = 843_750; // 84.375 %
@@ -564,6 +617,18 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const price = await nodeLicense.price(addr1KeyQuantity, "");
 			await nodeLicense.connect(addr1).mint(addr1KeyQuantity, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
+
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                stateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
 
 			await poolFactory.connect(addr1).createPool(
 				noDelegateOwner,
@@ -646,7 +711,7 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 		});
 
 		it("Verify outcome when not enough esXai in pool to distribute to holders", async function () {
-			const {poolFactory, addr1, addr2, addr3, addr4, nodeLicense, esXai, esXaiMinter, referee, kycAdmin} = await loadFixture(deployInfrastructure);
+			const {poolFactory, addr1, addr2, addr3, addr4, nodeLicense, esXai, esXaiMinter, referee, kycAdmin, challenger} = await loadFixture(deployInfrastructure);
 
 			const ownerShare = 20_000; // 2 %
 			const keyBucketShare = 843_750; // 84.375 %
@@ -657,6 +722,19 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const price = await nodeLicense.price(addr1KeyQuantity, "");
 			await nodeLicense.connect(addr1).mint(addr1KeyQuantity, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
+
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+            // Submit two challenges so that the contract tests will run successfully
+            const startingAssertion = 100;
+            await referee.connect(challenger).submitChallenge(
+                startingAssertion,
+                startingAssertion - 1,
+                stateRoot,
+                0,
+                "0x0000000000000000000000000000000000000000000000000000000000000000"
+            );
+
 
 			await poolFactory.connect(addr1).createPool(
 				noDelegateOwner,

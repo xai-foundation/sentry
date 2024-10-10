@@ -25,6 +25,12 @@ const SummaryUnstakingItem = ({
   const [transactionPending, setTransactionPending] = useState(false);
   const formattedAmount = formatCurrencyWithDecimals.format(amount);
 
+  // Note: button state remains disabled on a cancel transaction. There was discussion about
+  // refactoring the transaction pending state to be handled by the parent component or handling
+  // the tx initialization through this component. This would allow the button state to be re-enabled upon cancellation.
+  // Noting here in case we decide to implement in the future.
+  // https://github.com/xai-foundation/sentry/pull/425
+
   const sendClaimRequest = () => {
     setTransactionPending(true);
     onClaimRequest(request);
