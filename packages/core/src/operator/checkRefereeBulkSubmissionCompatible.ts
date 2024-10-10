@@ -34,8 +34,8 @@ export async function checkRefereeBulkSubmissionCompatible(
         // Try to access a new storage variable in the referee contract to determine its version
 
         try {
-        // Attempt to read the refereeCalculationsAddress, which only exists in new versions of the contract
-        const maxSupply = await retry(await nodeLicense.maxSupply()) as bigint;
+        // Read the current maxSupply, should be 50K for pre bulk submission
+        const maxSupply = await retry(() => nodeLicense.maxSupply()) as bigint;
         isCompatible = maxSupply > 50000n;
 
         } catch (error) {
