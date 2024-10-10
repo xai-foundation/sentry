@@ -725,7 +725,7 @@ export function RefereeTests(deployInfrastructure) {
 			).to.be.revertedWith("11");
 		});
 
-		it("Check rewards calculations are correct over time", async function () {
+		it("Check rewards calculations are correct for 1 hour periods", async function () {
 			const {
 				referee, 
 				challenger, 
@@ -738,7 +738,7 @@ export function RefereeTests(deployInfrastructure) {
 
 			const tier1 = ethers.parseEther("1250000000");
 			const tier1Emission = tier1 / 17520n; //71347031963472194634703n
-			const tier2 = ethers.parseEther("625000000");
+			const tier2 = tier1 / 2n;
 			const tier2Emission = tier1Emission / 2n; //35673515981735159817351n
 			
 			//get combined total supply of xai and esXai
@@ -817,7 +817,7 @@ export function RefereeTests(deployInfrastructure) {
 
 			const tier1 = ethers.parseEther("1250000000");
 			const tier1Emission = tier1 / 17520n; //71347031963472194634703n
-			const tier2 = ethers.parseEther("625000000");
+			const tier2 = tier1 / 2n;
 			const tier2Emission = tier1Emission / 2n; //35673515981735159817351n
 			
 			//get combined total supply of xai and esXai
