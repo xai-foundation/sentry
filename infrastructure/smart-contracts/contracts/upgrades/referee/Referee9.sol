@@ -71,6 +71,7 @@ import "../../RefereeCalculations.sol";
 // 56: Only NodeLicense contract can call this function.
 // 57: You do not have any keys available to submit for.
 // 58: Invalid Bulksubmission claim
+// 59: Cannot close the challenge until 50 minutes have passed since the last challenge was submitted.
 
 contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -1116,7 +1117,9 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function closeCurrentChallenge() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        challenges[challengeCounter - 1].openForSubmissions = false;
+        Challenge storage currentChallenge = challenges[challengeCounter - 1];
+        require(block.timestamp >= currentChallenge.createdTimestamp + 50 minutes, "59");
+        currentChallenge.openForSubmissions = false;
         // Not emitting an event as it will be emitted when the next challenge is submitted
     }
 
