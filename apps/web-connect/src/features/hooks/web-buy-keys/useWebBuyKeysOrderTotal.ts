@@ -79,7 +79,7 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
 export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysOrderTotalReturn {
     const { isLoading: isTotalLoading, data: getTotalData } = useGetTotalSupplyAndCap();
     const { data: exchangeRateData, isLoading: isExchangeRateLoading } = useGetExchangeRate();
-    const { chainId, isConnected, address} = useNetworkConfig();
+    const { chainId, isConnected, address, isDevelopment} = useNetworkConfig();
 
 	const chain = chains.find(chain => chain.id === chainId)
 
@@ -179,7 +179,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
 
     const getEthButtonText = (): string => {        
         if(!isConnected) return "Please Connect Wallet";
-        if (!isValidNetwork(chain?.id)) return "Please Switch to Arbitrum";
+        if (!isValidNetwork(chain?.id, isDevelopment)) return "Please Switch to Arbitrum";
         if (mintWithEth.isPending || ethMintTx.isLoading) {
             return "WAITING FOR CONFIRMATION...";
         }

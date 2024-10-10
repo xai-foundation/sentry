@@ -14,12 +14,12 @@ import { useNetworkConfig } from "@/hooks/useNetworkConfig";
 export function ClaimRedEnvelope2024() {
 	// TODO update all to new contract
 	const {blocked, loading} = useBlockIp({blockUsa: true});
-    const { chainId, address:_address} = useNetworkConfig();
+    const { chainId, address:_address, isDevelopment} = useNetworkConfig();
 	const address = _address?.toLowerCase();
 	const navigate = useNavigate();
 	const chain = chains.find(chain => chain.id === chainId)
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
-	const ready = checkboxOne && isValidNetwork(chain?.id);
+	const ready = checkboxOne && isValidNetwork(chain?.id, isDevelopment);
 	const [permits, setPermits] = useState<{[key: string]: {r: string, s: string, v: number, amount: string}}>();
 
 	const txData = {
@@ -131,7 +131,7 @@ export function ClaimRedEnvelope2024() {
 													className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 													disabled={!ready}
 												>
-													{isValidNetwork(chain?.id) ? "Claim" : "Please Switch to Arbitrum"}
+													{isValidNetwork(chain?.id, isDevelopment) ? "Claim" : "Please Switch to Arbitrum"}
 												</button>
 											</div>
 											{error && (
