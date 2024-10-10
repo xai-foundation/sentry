@@ -725,6 +725,64 @@ export function RefereeTests(deployInfrastructure) {
 			).to.be.revertedWith("11");
 		});
 
+		// Check that a challenge can be closed with the closeCurrentChallenge function and the next challenge can be submitted
+
+		it("Check that a challenge can be closed with the closeCurrentChallenge function and the next challenge can be submitted.", async function () {
+			const {referee, challenger, refereeDefaultAdmin} = await loadFixture(deployInfrastructure);
+
+			// Submit a challenge
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+			const challengeCounter = await referee.challengeCounter();			
+
+            // Submit First challenge
+            const startingAssertion = 100;
+            await submitTestChallenge(referee, challenger, startingAssertion, stateRoot);
+			
+			// Confirm the challenge exists and is open
+			const challenge = await referee.getChallenge(challengeCounter);
+			expect(challenge.openForSubmissions).to.be.eq(true);
+
+			// Close the challenge
+			await referee.connect(refereeDefaultAdmin).closeCurrentChallenge();
+
+			// Confirm the challenge is closed
+			const challengeAfterClose = await referee.getChallenge(challengeCounter);
+			expect(challengeAfterClose.openForSubmissions).to.be.eq(false);
+
+			// Submit a new challenge
+			const newStartingAssertion = 101;
+			await submitTestChallenge(referee, challenger, newStartingAssertion, stateRoot);
+			const newChallenge = await referee.getChallenge(challengeCounter + 1n);
+
+			// Confirm the new challenge exists and is open
+			expect(newChallenge.openForSubmissions).to.be.eq(true);
+			
+		});
+
+		it("Check that trying to close a challenge without default admin role will fail.", async function () {
+			const {referee, challenger, operator} = await loadFixture(deployInfrastructure);
+
+			// Submit a challenge
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+			const challengeCounter = await referee.challengeCounter();
+
+            // Submit First challenge
+            const startingAssertion = 100;
+            await submitTestChallenge(referee, challenger, startingAssertion, stateRoot);
+			
+			// Confirm the challenge exists and is open
+			const challenge = await referee.getChallenge(challengeCounter);
+			expect(challenge.openForSubmissions).to.be.eq(true);
+
+			const defaultAdminRole = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+			// Close the challenge
+			await expect(referee.connect(operator).closeCurrentChallenge()).to.be.revertedWith(`AccessControl: account ${operator.address.toLowerCase()} is missing role ${defaultAdminRole}`);
+			
+		});
+
 		// describe("The Referee should allow users to stake in V1", function () {
 
 		//     it("Check that staked/unstaked amount is taken/given from user's esXai balance", async function () {
