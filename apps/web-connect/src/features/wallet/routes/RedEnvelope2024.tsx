@@ -3,7 +3,7 @@ import {chains} from "../../../main";
 import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
 import {BiLoaderAlt} from "react-icons/bi";
 import {useEffect, useState} from "react";
-import {checkKycStatus, MAINNET_ID, TESTNET_ID, xaiRedEnvelopeAbi} from "@sentry/core";
+import {checkKycStatus, isValidNetwork, xaiRedEnvelopeAbi} from "@sentry/core";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import {FaCircleCheck, FaCircleXmark} from "react-icons/fa6";
 import {Link} from "react-router-dom";
@@ -131,7 +131,7 @@ export function RedEnvelope2024() {
 					</p>
 				)}
 
-				{address && data && chain?.id !== MAINNET_ID && chain?.id !== TESTNET_ID  && (
+				{address && data && !isValidNetwork(chain?.id)  && (
 				// {address && data && chain.id !== 42170 && (
 					<>
 						<p className="text-lg text-[#525252] max-w-[590px] text-center mt-6">
@@ -143,7 +143,7 @@ export function RedEnvelope2024() {
 					</>
 				)}
 
-				{address && data && (chain?.id === MAINNET_ID || chain?.id === TESTNET_ID ) && (
+				{address && data && isValidNetwork(chain?.id) && (
 				// {address && data && chain.id === 42170 &&(
 					<>
 						{licenseBalanceLoading && (

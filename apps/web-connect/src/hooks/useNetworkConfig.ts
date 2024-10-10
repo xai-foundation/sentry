@@ -1,7 +1,7 @@
 import { wagmiConfig } from "@/main";
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import { getAccount} from '@wagmi/core'
-import { setConfig } from "@sentry/core"
+import { setConfigByChainId } from "@sentry/core"
 
 interface NetworkConfig {
     chainId: number | undefined;
@@ -13,19 +13,19 @@ interface NetworkConfig {
 export function useNetworkConfig():NetworkConfig {
 	const {VITE_APP_ENV} = import.meta.env;
 	const {chainId, address, isConnected} = getAccount(wagmiConfig);
-    const [isDevelopment, setIsDevelopment] = useState(VITE_APP_ENV === 'development');
+    const isDevelopment = VITE_APP_ENV === 'development';
 
 	useEffect(() => {
-		void loadConfigs();
 
         async function loadConfigs() {
             if(chainId){
-                setConfig(chainId);
+                setConfigByChainId(chainId);
             }
-            setIsDevelopment(VITE_APP_ENV === 'development');
         }
+        
+		void loadConfigs();
 
-	}, [chainId, VITE_APP_ENV]);
+	}, [chainId]);
 
 	return {
 		chainId,

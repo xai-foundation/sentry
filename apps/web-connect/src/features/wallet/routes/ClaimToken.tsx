@@ -5,7 +5,7 @@ import {ConnectButton, XaiCheckbox} from "@sentry/ui";
 import {useNavigate} from "react-router-dom";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import {BiLoaderAlt} from "react-icons/bi";
-import {MAINNET_ID, TESTNET_ID, XaiGaslessClaimAbi, config} from "@sentry/core";
+import { XaiGaslessClaimAbi, config, isValidNetwork} from "@sentry/core";
 import {ethers} from "ethers";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
 import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
@@ -21,7 +21,7 @@ export function ClaimToken() {
 	const navigate = useNavigate();
 	const chain = chains.find(chain => chain.id === chainId)
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
-	const ready = checkboxOne && (chain?.id === MAINNET_ID || chain?.id === TESTNET_ID);
+	const ready = checkboxOne && isValidNetwork(chain?.id);
 	const [permits, setPermits] = useState<{[key: string]: {r: string, s: string, v: number, amount: string}}>();
 
 	const txData = {
@@ -132,7 +132,7 @@ export function ClaimToken() {
 													className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 													disabled={!ready}
 												>
-													{(chain?.id === MAINNET_ID || chain?.id === TESTNET_ID) ? "Claim" : "Please Switch to Arbitrum"}
+													{(isValidNetwork(chain?.id)) ? "Claim" : "Please Switch to Arbitrum"}
 												</button>
 											</div>
 											{error && (

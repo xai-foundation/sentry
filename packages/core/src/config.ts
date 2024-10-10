@@ -119,7 +119,7 @@ const testnetConfig: Config = {
 
 export let config: Config = mainnetConfig;
 
-export function setConfig(chainId: number): void {
+export function setConfigByChainId(chainId: number): void {
   switch (chainId) {
     case MAINNET_ID:
       config = mainnetConfig;
@@ -130,4 +130,8 @@ export function setConfig(chainId: number): void {
     default:
       config = mainnetConfig;
   }
+}
+
+export function setConfig(newConfig: Config): void {
+  config = newConfig;
 }

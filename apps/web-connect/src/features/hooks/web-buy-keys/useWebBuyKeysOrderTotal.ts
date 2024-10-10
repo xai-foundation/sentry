@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { chains} from "../../../main";
 import { useWaitForTransactionReceipt } from 'wagmi';
 import { Chain } from 'viem';
-import { CheckoutTierSummary, formatWeiToEther, MAINNET_ID, TESTNET_ID } from '@sentry/core';
+import { CheckoutTierSummary, formatWeiToEther, isValidNetwork } from '@sentry/core';
 import { CURRENCIES, Currency, useContractWrites, UseContractWritesReturn, useCurrencyHandler, useGetExchangeRate, useGetPriceForQuantity, useGetTotalSupplyAndCap, usePromoCodeHandler, useUserBalances } from '..';
 import {useProvider} from "../provider/useProvider";
 import { useNetworkConfig } from '@/hooks/useNetworkConfig';
@@ -179,7 +179,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
 
     const getEthButtonText = (): string => {        
         if(!isConnected) return "Please Connect Wallet";
-        if (chain?.id !== MAINNET_ID && chain?.id !== TESTNET_ID) return "Please Switch to Arbitrum";
+        if (!isValidNetwork(chain?.id)) return "Please Switch to Arbitrum";
         if (mintWithEth.isPending || ethMintTx.isLoading) {
             return "WAITING FOR CONFIRMATION...";
         }

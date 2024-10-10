@@ -3,7 +3,7 @@ import {chains} from "../../../main";
 import {ConnectButton, PrimaryButton, XaiCheckbox} from "@sentry/ui";
 import {useState} from "react";
 import {BiLoaderAlt} from "react-icons/bi";
-import {config, MAINNET_ID, NodeLicenseAbi, TESTNET_ID} from "@sentry/core";
+import {config, isValidNetwork, NodeLicenseAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import { useWeb3Modal } from "@web3modal/wagmi/react";
@@ -22,7 +22,7 @@ export function DropClaim() {
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
 	const [checkboxTwo, setCheckboxTwo] = useState<boolean>(false);
 	const [checkboxThree, setCheckboxThree] = useState<boolean>(false);
-	const ready = checkboxOne && checkboxTwo && checkboxThree && (chain?.id === MAINNET_ID || chain?.id === TESTNET_ID);
+	const ready = checkboxOne && checkboxTwo && checkboxThree && isValidNetwork(chain?.id);
 
 	const {data: claimableAmount, isLoading: isClaimableAmountLoading} = useListClaimableAmount(address);
 
@@ -154,7 +154,7 @@ export function DropClaim() {
 																className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 																disabled={!ready || isRedeemFromWhitelistLoading}
 															>
-																{(chain?.id === MAINNET_ID || chain?.id === TESTNET_ID) ? "Claim" : "Please Switch to Arbitrum"}
+																{(isValidNetwork(chain?.id)) ? "Claim" : "Please Switch to Arbitrum"}
 															</button>
 														</div>
 

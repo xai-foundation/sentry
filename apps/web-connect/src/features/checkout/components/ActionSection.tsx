@@ -5,7 +5,7 @@ import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import { mapWeb3Error } from "@/utils/errors";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 import CrossmintModal from './CrossmintModal';
-import { formatWeiToEther, MAINNET_ID, TESTNET_ID } from '@sentry/core';
+import { formatWeiToEther, isValidNetwork } from '@sentry/core';
 
 /**
  * ActionSection Component
@@ -47,7 +47,7 @@ export function ActionSection(): JSX.Element {
      */
     const getTokenButtonText = useCallback(() => {
         if (mintWithEth.isPending || mintWithXai.isPending || approve.isPending) return "WAITING FOR CONFIRMATION..";
-        if (chain?.id !== MAINNET_ID && chain?.id !== TESTNET_ID) return "Please Switch to Arbitrum";
+        if (!isValidNetwork(chain?.id)) return "Please Switch to Arbitrum";
         return getApproveButtonText();
     }, [mintWithEth.isPending, mintWithXai.isPending, approve.isPending, chain, getApproveButtonText]);
 
@@ -68,7 +68,7 @@ export function ActionSection(): JSX.Element {
                     <PrimaryButton
                         onClick={() => handleMintWithEthClicked()}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || (chain?.id !== MAINNET_ID && chain?.id !== TESTNET_ID) || getEthButtonText().startsWith("Insufficient") || !isConnected}
+                        isDisabled={!ready || !isValidNetwork(chain?.id) || getEthButtonText().startsWith("Insufficient") || !isConnected}
                         btnText={getEthButtonText()}
                     />
                     <br />
@@ -85,7 +85,7 @@ export function ActionSection(): JSX.Element {
                     <PrimaryButton
                         onClick={handleBuyWithXaiClicked}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || (chain?.id !== MAINNET_ID && chain?.id !== TESTNET_ID) || !userHasTokenBalance || !isConnected}
+                        isDisabled={!ready || !isValidNetwork(chain?.id) || !userHasTokenBalance || !isConnected}
                         btnText={getTokenButtonText()}
                     />
                 )}

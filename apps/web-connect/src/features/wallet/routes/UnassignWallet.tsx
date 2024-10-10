@@ -1,7 +1,7 @@
 import {useNavigate, useParams} from "react-router-dom";
 import {chains} from "../../../main";
 import {useWriteContract } from "wagmi";
-import {config, MAINNET_ID, RefereeAbi, TESTNET_ID} from "@sentry/core";
+import {config, isValidNetwork, RefereeAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {ConnectButton, PrimaryButton} from "@sentry/ui";
 import {useWeb3Modal} from "@web3modal/wagmi/react";
@@ -82,8 +82,8 @@ export function UnassignWallet() {
 							{isConnected && address ? (
 								<PrimaryButton
 									onClick={() => writeContract(txData)}
-									isDisabled={isPending || isSuccess || (chain?.id !== MAINNET_ID && chain?.id !== TESTNET_ID)}
-									btnText={(chain?.id === MAINNET_ID || chain?.id === TESTNET_ID) ? `Unassign wallet to Sentry (${getShortenedWallet(address)})` : "Please Switch to Arbitrum"}
+									isDisabled={isPending || isSuccess || !isValidNetwork(chain?.id)}
+									btnText={isValidNetwork(chain?.id) ? `Unassign wallet to Sentry (${getShortenedWallet(address)})` : "Please Switch to Arbitrum"}
 									colorStyle={"primary"}
 									className={"w-full bg-[#F30919] max-w-[700px] text-white mt-3 text-xl uppercase font-bold disabled:bg-slate-400 h-full global-clip-primary-btn"}
 								/>
