@@ -725,60 +725,46 @@ export function RefereeTests(deployInfrastructure) {
 			).to.be.revertedWith("11");
 		});
 
-		// Check that a challenge can be closed with the closeCurrentChallenge function and the next challenge can be submitted
-
 		it("Check that a challenge can be closed with the closeCurrentChallenge function and the next challenge can be submitted.", async function () {
 			const {referee, challenger, refereeDefaultAdmin} = await loadFixture(deployInfrastructure);
 
-			// Submit a challenge
-			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
-
-			const challengeCounter = await referee.challengeCounter();			
-
-            // Submit First challenge
-            const startingAssertion = 100;
-            await submitTestChallenge(referee, challenger, startingAssertion, stateRoot);
+			const challengeCounter = await referee.challengeCounter();		
 			
-			// Confirm the challenge exists and is open
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+            const startingAssertion = 100;
+            await submitTestChallenge(referee, challenger, startingAssertion, stateRoot);			// Submit First challenge
+			
 			const challenge = await referee.getChallenge(challengeCounter);
-			expect(challenge.openForSubmissions).to.be.eq(true);
+			expect(challenge.openForSubmissions).to.be.eq(true);									// Confirm the challenge exists and is open
 
-			// Close the challenge
-			await referee.connect(refereeDefaultAdmin).closeCurrentChallenge();
+			await referee.connect(refereeDefaultAdmin).closeCurrentChallenge();						// Close the challenge
 
-			// Confirm the challenge is closed
 			const challengeAfterClose = await referee.getChallenge(challengeCounter);
-			expect(challengeAfterClose.openForSubmissions).to.be.eq(false);
-
-			// Submit a new challenge
-			const newStartingAssertion = 101;
-			await submitTestChallenge(referee, challenger, newStartingAssertion, stateRoot);
+			expect(challengeAfterClose.openForSubmissions).to.be.eq(false);							// Confirm the challenge is closed
+			
+			const nextAssertion = startingAssertion + 1;
+			await submitTestChallenge(referee, challenger, nextAssertion, stateRoot);				// Submit a new challenge
 			const newChallenge = await referee.getChallenge(challengeCounter + 1n);
-
-			// Confirm the new challenge exists and is open
-			expect(newChallenge.openForSubmissions).to.be.eq(true);
+			
+			expect(newChallenge.openForSubmissions).to.be.eq(true);									// Confirm the new challenge exists and is open
 			
 		});
 
 		it("Check that trying to close a challenge without default admin role will fail.", async function () {
 			const {referee, challenger, operator} = await loadFixture(deployInfrastructure);
 
-			// Submit a challenge
-			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
-
 			const challengeCounter = await referee.challengeCounter();
-
-            // Submit First challenge
-            const startingAssertion = 100;
-            await submitTestChallenge(referee, challenger, startingAssertion, stateRoot);
 			
-			// Confirm the challenge exists and is open
+			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";            
+            const startingAssertion = 100;
+            await submitTestChallenge(referee, challenger, startingAssertion, stateRoot);  			// Submit First challenge
+			
 			const challenge = await referee.getChallenge(challengeCounter);
-			expect(challenge.openForSubmissions).to.be.eq(true);
+			expect(challenge.openForSubmissions).to.be.eq(true);									// Confirm the challenge exists and is open
 
 			const defaultAdminRole = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
-			// Close the challenge
+			// Confirm that closing the challenge without the default admin role will revert
 			await expect(referee.connect(operator).closeCurrentChallenge()).to.be.revertedWith(`AccessControl: account ${operator.address.toLowerCase()} is missing role ${defaultAdminRole}`);
 			
 		});
