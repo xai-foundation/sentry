@@ -2,17 +2,20 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+// import "@openzeppelin/contracts/access/AccessControl.sol";
 
 /**
  * @title Achievements Contract
  * @dev An ERC1155 contract that represents game achievements.
  */
-contract Achievements is ERC1155 {
+contract Achievements is ERC1155, Ownable {
 
     uint256 public tokenIdCount;
 
-    constructor(uint256 _tokenIdCount, string memory _uri) ERC1155(_uri) {
+    constructor(uint256 _tokenIdCount, address initialOwner, string memory _uri) ERC1155(_uri) {
         setTokenIdCount(_tokenIdCount);
+        _transferOwnership(initialOwner);
     }
 
     function setTokenIdCount(uint256 newCount) public {
@@ -60,6 +63,21 @@ contract Achievements is ERC1155 {
         bytes memory data
     ) internal override {
         require(false, "not batch transferrable");
+    }
+
+    function _afterTokenTransfer(
+        address operator,
+        address from,
+        address to,
+        uint256[] memory ids,
+        uint256[] memory amounts,
+        bytes memory data
+    ) internal override {
+        if (ids.length > 1) {
+            for (uint256 i = 0; i < ids.length; i++) {
+                require(balanceOf(to, ids[i]) == 1, "address has non-zero token balance");
+            }
+        }
     }
 
 }

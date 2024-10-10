@@ -2,6 +2,7 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+// import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 // import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "./Achievements.sol";
 
@@ -32,8 +33,8 @@ contract AchievementsFactory {
      * @param uri URI representing a link to the token's metadata.
      * @return address Address of the newly produced token contract.
      */
-    function produceContract(uint256 achievementCount, string memory uri) public returns (address) {
-        Achievements newContract = new Achievements(achievementCount, uri);
+    function produceContract(uint256 achievementCount, address initialOwner, string memory uri) public returns (address) {
+        Achievements newContract = new Achievements(achievementCount, initialOwner, uri);
         productionCount += 1;
         emit ContractProduced(address(newContract), msg.sender);
         return address(newContract);

@@ -26,16 +26,18 @@ export function AchievementsFactoryTests(deployInfrastructure) {
 
             //produce new token contract
             const achievementCount = 5;
-            const trx = await achievementsFactory.connect(addr1).produceContract(achievementCount, baseURI);
+            const initialOwner = await addr1.getAddress();
+            const trx = await achievementsFactory.connect(addr1).produceContract(achievementCount, initialOwner, baseURI);
             const rec = await trx.wait();
-            const tokenContractAddress = rec.logs[0].args[0];
+            const tokenContractAddress = rec.logs[2].args[0];
             const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
             const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
 
             //assert contract state and events
-            expect(rec.logs[0].fragment.name).to.equal("ContractProduced");
-            expect(rec.logs[0].args[1]).to.equal(await addr1.getAddress());
+            expect(rec.logs[2].fragment.name).to.equal("ContractProduced");
+            expect(rec.logs[2].args[1]).to.equal(await addr1.getAddress());
             expect(achievementCount).to.equal(await tokenContract.tokenIdCount());
+            expect(initialOwner).to.equal(await tokenContract.owner());
             expect(baseURI).to.equal(await tokenContract.uri(0));
         });
 
@@ -47,9 +49,10 @@ export function AchievementsFactoryTests(deployInfrastructure) {
 
             //produce new token contract
             const achievementCount = 5;
-            const trx = await achievementsFactory.connect(addr1).produceContract(achievementCount, baseURI);
+            const initialOwner = await addr1.getAddress();
+            const trx = await achievementsFactory.connect(addr1).produceContract(achievementCount, initialOwner, baseURI);
             const rec = await trx.wait();
-            const tokenContractAddress = rec.logs[0].args[0];
+            const tokenContractAddress = rec.logs[2].args[0];
             const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
             const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
             
@@ -79,9 +82,10 @@ export function AchievementsFactoryTests(deployInfrastructure) {
 
             //produce new token contract
             const achievementCount = 5;
-            const trx = await achievementsFactory.connect(addr1).produceContract(achievementCount, baseURI);
+            const initialOwner = await addr1.getAddress();
+            const trx = await achievementsFactory.connect(addr1).produceContract(achievementCount, initialOwner, baseURI);
             const rec = await trx.wait();
-            const tokenContractAddress = rec.logs[0].args[0];
+            const tokenContractAddress = rec.logs[2].args[0];
             const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
             const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
             
@@ -113,9 +117,10 @@ export function AchievementsFactoryTests(deployInfrastructure) {
 
             //produce new token contract
             const achievementCount = 5;
-            const trx = await achievementsFactory.connect(addr1).produceContract(achievementCount, baseURI);
+            const initialOwner = await addr1.getAddress();
+            const trx = await achievementsFactory.connect(addr1).produceContract(achievementCount, initialOwner, baseURI);
             const rec = await trx.wait();
-            const tokenContractAddress = rec.logs[0].args[0];
+            const tokenContractAddress = rec.logs[2].args[0];
             const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
             const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
             
@@ -146,6 +151,46 @@ export function AchievementsFactoryTests(deployInfrastructure) {
                     data
                 )
 			).to.be.revertedWith("not batch transferrable");
+        });
+
+        it("should fail to mint more than one token of token id to account", async function() {
+            const {
+                achievementsFactory, 
+                addr1
+            } = await loadFixture(deployInfrastructure);
+
+            //produce new token contract
+            const achievementCount = 5;
+            const initialOwner = await addr1.getAddress();
+            const trx = await achievementsFactory.connect(addr1).produceContract(achievementCount, initialOwner, baseURI);
+            const rec = await trx.wait();
+            const tokenContractAddress = rec.logs[2].args[0];
+            const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
+            const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
+            
+            //mint initial token
+            const toAddress = await addr1.getAddress();
+            const tokenId = 0;
+            const data = "0x";
+            await tokenContract.connect(addr1).mint(toAddress, tokenId, data);
+
+            //attempt to mint another token with same tokenid to same address
+            await expect(
+				tokenContract.connect(addr1).mint(toAddress, tokenId, data)
+			).to.be.revertedWith("address has non-zero token balance");
+
+            //attempt to batch mint another token with same tokenid to same address
+            const tokenIds = [tokenId];
+            await expect(
+				tokenContract.connect(addr1).mintBatch(toAddress, tokenIds, data)
+			).to.be.revertedWith("address has non-zero token balance");
+
+            //attempt to batch mint another token with same tokenid to same address
+            const unmintedTokenId = 1
+            const duplicateTokenIds = [unmintedTokenId, unmintedTokenId];
+            await expect(
+				tokenContract.connect(addr1).mintBatch(toAddress, duplicateTokenIds, data)
+			).to.be.revertedWith("address has non-zero token balance");
         });
 
         //TODO: test upgrading
