@@ -1116,10 +1116,8 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function closeCurrentChallenge() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        if (challengeCounter > 0) {
-            challenges[challengeCounter - 1].openForSubmissions = false;
-            // Not emitting an event as it will be emitted when the next challenge is submitted
-        }
+        challenges[challengeCounter - 1].openForSubmissions = false;
+        // Not emitting an event as it will be emitted when the next challenge is submitted
     }
 
     //TEST FUNCTION this is used only for test coverage
