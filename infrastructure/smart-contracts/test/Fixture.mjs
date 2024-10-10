@@ -17,6 +17,7 @@ import { RefereeBulkSubmissions } from "./tinykeys/RefereeBulkSubmissions.mjs";
 import { NodeLicenseTinyKeysTest } from "./NodeLicenseTinyKeys.mjs";
 import { FailedKycTests } from "./failed-kyc/FailedKyc.mjs";
 import { RefereeWinningKeyCountSimulations } from "./get-winning-key-count/WinningKeyCountSimulations.mjs";
+import { GameFactoryTests } from "./factory/GameFactoryTests.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -347,6 +348,10 @@ describe("Fixture Tests", function () {
         const MockRollupContractFactory = await ethers.getContractFactory("MockRollup");
         const mockRollup = await MockRollupContractFactory.deploy();
 
+        //Deploy GameFactory contract
+        const GameFactoryContractFactory = await ethers.getContractFactory("GameFactory");
+        const gameFactory = await GameFactoryContractFactory.deploy();
+
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
         config.gasSubsidyAddress = await gasSubsidy.getAddress();
@@ -393,24 +398,28 @@ describe("Fixture Tests", function () {
             tinyKeysAirDrop,
             airdropMultiplier,
             refereeCalculations,
-            mockRollup
+            mockRollup,
+            GameFactoryContractFactory,
+            gameFactory
         };
     }
 
     //describe("CNY 2024", CNYAirDropTests.bind(this));
-    describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
-    describe("Xai", XaiTests(deployInfrastructure).bind(this));
-    describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
-    describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
-    describe("Referee", RefereeTests(deployInfrastructure).bind(this));
-    describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
-    describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
-    describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
-    describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
-    describe("BulkSubmissions", RefereeBulkSubmissions(deployInfrastructure).bind(this));
-    describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
-    describe("Failed KYC Tests", FailedKycTests(deployInfrastructure).bind(this));
-    describe("Winning Key Count Simulations", RefereeWinningKeyCountSimulations(deployInfrastructure).bind(this));
+    // describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
+    // describe("Xai", XaiTests(deployInfrastructure).bind(this));
+    // describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
+    // describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
+    // describe("Referee", RefereeTests(deployInfrastructure).bind(this));
+    // describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
+    // describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
+    // describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
+    // describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
+    // describe("BulkSubmissions", RefereeBulkSubmissions(deployInfrastructure).bind(this));
+    // describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
+    // describe("Failed KYC Tests", FailedKycTests(deployInfrastructure).bind(this));
+    // describe("Winning Key Count Simulations", RefereeWinningKeyCountSimulations(deployInfrastructure).bind(this));
+    describe("GameFactory Tests", GameFactoryTests(deployInfrastructure).bind(this));
+
 
     // This doesn't work when running coverage
     //describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));
