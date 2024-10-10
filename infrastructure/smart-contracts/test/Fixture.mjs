@@ -17,7 +17,7 @@ import { RefereeBulkSubmissions } from "./tinykeys/RefereeBulkSubmissions.mjs";
 import { NodeLicenseTinyKeysTest } from "./NodeLicenseTinyKeys.mjs";
 import { FailedKycTests } from "./failed-kyc/FailedKyc.mjs";
 import { RefereeWinningKeyCountSimulations } from "./get-winning-key-count/WinningKeyCountSimulations.mjs";
-import { GameFactoryTests } from "./factory/GameFactoryTests.mjs";
+import { AchievementsFactoryTests } from "./factory/AchievementsFactoryTests.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -349,8 +349,8 @@ describe("Fixture Tests", function () {
         const mockRollup = await MockRollupContractFactory.deploy();
 
         //Deploy GameFactory contract
-        const GameFactoryContractFactory = await ethers.getContractFactory("GameFactory");
-        const gameFactory = await GameFactoryContractFactory.deploy();
+        const AchievementsFactoryContractFactory = await ethers.getContractFactory("AchievementsFactory");
+        const achievementsFactory = await AchievementsFactoryContractFactory.deploy();
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
@@ -399,8 +399,8 @@ describe("Fixture Tests", function () {
             airdropMultiplier,
             refereeCalculations,
             mockRollup,
-            GameFactoryContractFactory,
-            gameFactory
+            AchievementsFactoryContractFactory,
+            achievementsFactory
         };
     }
 
@@ -418,7 +418,7 @@ describe("Fixture Tests", function () {
     // describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
     // describe("Failed KYC Tests", FailedKycTests(deployInfrastructure).bind(this));
     // describe("Winning Key Count Simulations", RefereeWinningKeyCountSimulations(deployInfrastructure).bind(this));
-    describe("GameFactory Tests", GameFactoryTests(deployInfrastructure).bind(this));
+    describe("AchievementsFactory Tests", AchievementsFactoryTests(deployInfrastructure).bind(this));
 
 
     // This doesn't work when running coverage

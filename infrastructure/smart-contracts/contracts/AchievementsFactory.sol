@@ -3,14 +3,15 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 // import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "./Achievements.sol";
 
 /**
- * @title GameFactory
+ * @title AchievementsFactory
  * @dev A factory contract that produces ERC1155 token contracts.
  */
-contract GameFactory {
+contract AchievementsFactory {
     
-    bytes32 public constant MINT_ROLE = keccak256("MINT_ROLE");
+    // bytes32 public constant MINT_ROLE = keccak256("MINT_ROLE");
 
     uint256 public productionCount;
 
@@ -32,7 +33,7 @@ contract GameFactory {
      * @return address Address of the newly produced token contract.
      */
     function produceContract(string memory uri) public returns (address) {
-        ERC1155 newContract = new ERC1155(uri);
+        Achievements newContract = new Achievements(uri);
         productionCount += 1;
         emit ContractProduced(address(newContract), msg.sender);
         return address(newContract);
