@@ -399,7 +399,6 @@ describe("Fixture Tests", function () {
             airdropMultiplier,
             refereeCalculations,
             mockRollup,
-            AchievementsFactoryContractFactory,
             achievementsFactory
         };
     }

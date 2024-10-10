@@ -18,38 +18,24 @@ export function AchievementsFactoryTests(deployInfrastructure) {
         });
 
         it("should produce a new ERC1155 token contract from the AchievementsFactory", async function() {
-            const {achievementsFactory, addr1} = await loadFixture(deployInfrastructure);
-
-            const trx = await achievementsFactory.connect(addr1).produceContract(baseURI);
-            const rec = await trx.wait();
-
-            expect(rec.logs[0].fragment.name).to.equal("ContractProduced");
-            expect(rec.logs[0].args[1]).to.equal(await addr1.getAddress());
-        });
-
-        it("should create a new token type on contract produced by the AchievementsFactory", async function() {
             const {
-                AchievementsFactoryContractFactory, 
                 achievementsFactory, 
                 addr1
             } = await loadFixture(deployInfrastructure);
 
-            //produce new token contract
             const trx = await achievementsFactory.connect(addr1).produceContract(baseURI);
             const rec = await trx.wait();
-
-            //create new token type on token contract
             const tokenContractAddress = rec.logs[0].args[0];
-            const tokenContract = await AchievementsFactoryContractFactory.attach(tokenContractAddress);
-            // let trx2 = await tokenContract.defineToken();
-            // let rec2 = await trx2.wait()
+            const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
+            const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
 
-            //TODO: assert contract state and events
+            expect(rec.logs[0].fragment.name).to.equal("ContractProduced");
+            expect(rec.logs[0].args[1]).to.equal(await addr1.getAddress());
+            expect(baseURI).to.equal(await tokenContract.uri(0));
         });
 
         it("should mint a new token on contract produced by the AchievementsFactory", async function() {
             const {
-                AchievementsFactoryContractFactory, 
                 achievementsFactory, 
                 addr1
             } = await loadFixture(deployInfrastructure);
@@ -57,16 +43,25 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             //produce new token contract
             const trx = await achievementsFactory.connect(addr1).produceContract(baseURI);
             const rec = await trx.wait();
-
-            //create new token type on token contract
             const tokenContractAddress = rec.logs[0].args[0];
-            const tokenContract = await AchievementsFactoryContractFactory.attach(tokenContractAddress);
-            // let trx2 = await tokenContract.defineToken();
-            // let rec2 = await trx2.wait()
+            const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
+            const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
+            
+            //mint tokens of the newly created token type
+            const toAddress = await addr1.getAddress();
+            const tokenId = 0;
+            const amount = 1;
+            const data = "0x";
+            let trx2 = await tokenContract.connect(addr1).mint(toAddress, tokenId, amount, data);
+            let rec2 = await trx2.wait()
 
-            //TODO: mint tokens of the newly created token type
-
-            //TODO: assert contract state and events
+            //assert contract state and events
+            expect(rec2.logs[0].fragment.name).to.equal("TransferSingle");
+            expect(rec2.logs[0].args[0]).to.equal(toAddress);
+            expect(rec2.logs[0].args[1]).to.equal(ethers.ZeroAddress);
+            expect(rec2.logs[0].args[2]).to.equal(toAddress);
+            expect(rec2.logs[0].args[3]).to.equal(tokenId);
+            expect(rec2.logs[0].args[4]).to.equal(amount);
         });
 
         //TODO: test upgrading
