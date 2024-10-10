@@ -17,7 +17,7 @@ export async function checkRefereeBulkSubmissionCompatible(
     // If a refereeConfig is provided, check its version
     if (refereeConfig) {
         // If the version is greater than 6, it is compatible with bulk submission
-        if (refereeConfig.version > 6) {
+        if (refereeConfig.version > 7) {
             return true;
         }
     } else {
