@@ -32,12 +32,11 @@ contract AchievementsFactory {
      * @param uri URI representing a link to the token's metadata.
      * @return address Address of the newly produced token contract.
      */
-    function produceContract(string memory uri) public returns (address) {
-        Achievements newContract = new Achievements(uri);
+    function produceContract(uint256 achievementCount, string memory uri) public returns (address) {
+        Achievements newContract = new Achievements(achievementCount, uri);
         productionCount += 1;
         emit ContractProduced(address(newContract), msg.sender);
         return address(newContract);
     }
-
 
 }
