@@ -8,6 +8,7 @@ export function AchievementsFactoryTests(deployInfrastructure) {
 
     const baseURI = "https://metadata.xai.com/";
     const mintRoleHash = "0x154c00819833dac601ee5ddded6fda79d9d8b506b911b3dbd54cdb95fe6c3686";
+    const adminRoleHash = "0xa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775";
 
     return function() {
     
@@ -27,6 +28,9 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             expect(productionCount).to.equal(0);
             expect(await achievementsFactory.hasRole(mintRoleHash, minter)).to.equal(true);
             expect(await achievementsFactory.hasRole(mintRoleHash, notMinter)).to.equal(false);
+            expect(await achievementsFactory.hasRole(adminRoleHash, minter)).to.equal(true);
+            expect(await achievementsFactory.hasRole(adminRoleHash, notMinter)).to.equal(false);
+            expect(await achievementsFactory.getRoleAdmin(mintRoleHash)).to.equal(adminRoleHash);
         });
 
         it("should produce a new ERC1155 token contract from the AchievementsFactory", async function() {
@@ -48,6 +52,7 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             expect(rec.logs[0].args[1]).to.equal(gameId);
             expect(rec.logs[0].args[2]).to.equal(await addr1.getAddress());
             expect(baseURI).to.equal(await tokenContract.uri(0));
+            expect(await tokenContract.factoryAddress()).to.equal(await achievementsFactory.getAddress());
             expect(await achievementsFactory.productionCount()).to.equal(1);
             expect(await achievementsFactory.contractsById(gameId)).to.equal(await tokenContract.getAddress());
         });
@@ -97,6 +102,9 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             expect(rec2.logs[0].args[3]).to.equal(tokenId);
             expect(rec2.logs[0].args[4]).to.equal(1);
             expect(await tokenContract.balanceOf(toAddress, tokenId)).to.equal(1);
+            expect(await tokenContract.tokenIdCount()).to.equal(1);
+            expect(await tokenContract.totalSupply()).to.equal(1);
+            expect(await tokenContract.totalSupplyById(tokenId)).to.equal(1);
         });
 
         it("should batch mint new tokens on contract produced by the AchievementsFactory", async function() {
@@ -125,10 +133,13 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             expect(rec2.logs[0].args[0]).to.equal(toAddress);
             expect(rec2.logs[0].args[1]).to.equal(ethers.ZeroAddress);
             expect(rec2.logs[0].args[2]).to.equal(toAddress);
+            expect(await tokenContract.tokenIdCount()).to.equal(tokenIds.length);
+            expect(await tokenContract.totalSupply()).to.equal(tokenIds.length);
             for (let  i = 0; i < tokenIds.length; i++) {
                 expect(rec2.logs[0].args[3][i]).to.equal(tokenIds[i].toString());
                 expect(rec2.logs[0].args[4][i]).to.equal("1");
                 expect(await tokenContract.balanceOf(toAddress, tokenIds[i])).to.equal(1);
+                expect(await tokenContract.totalSupplyById(tokenIds[i])).to.equal(1);
             }
         });
 

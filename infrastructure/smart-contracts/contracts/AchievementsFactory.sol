@@ -13,11 +13,13 @@ import "./Achievements.sol";
  */
 contract AchievementsFactory is AccessControl {
     
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-    bytes32 public constant MINT_ROLE = keccak256("MINT_ROLE");
+    //constants
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE"); //0xa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775
+    bytes32 public constant MINT_ROLE = keccak256("MINT_ROLE"); //0x154c00819833dac601ee5ddded6fda79d9d8b506b911b3dbd54cdb95fe6c3686
 
-    uint256 public productionCount;
-    mapping(string => address) public contractsById;
+    //state
+    uint256 public productionCount; //number of contracts produced by this factory
+    mapping(string => address) public contractsById; //gameId => tokenContract
 
     /**
      * @dev Logs a successful contract production from the factory.
@@ -27,10 +29,14 @@ contract AchievementsFactory is AccessControl {
      */
     event ContractProduced(address contractAddress, string gameId, address producedBy);
 
-    constructor(address initialMintAuth) {
+    /**
+     * @dev AchievementsFactory constructor. Sets up AccessControl roles.
+     * @param _initialMintAdmin Address that will initially hold the MINT_ROLE and ADMIN_ROLE.
+     */
+    constructor(address _initialMintAdmin) {
         _setRoleAdmin(MINT_ROLE, ADMIN_ROLE);
-        _setupRole(ADMIN_ROLE, initialMintAuth);
-        _setupRole(MINT_ROLE, initialMintAuth);
+        _setupRole(ADMIN_ROLE, _initialMintAdmin);
+        _setupRole(MINT_ROLE, _initialMintAdmin);
     }
 
     /**
