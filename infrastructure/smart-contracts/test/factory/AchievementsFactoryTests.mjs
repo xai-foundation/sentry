@@ -36,7 +36,9 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             expect(rec.logs[2].fragment.name).to.equal("ContractProduced");
             expect(rec.logs[2].args[1]).to.equal(gameId);
             expect(rec.logs[2].args[2]).to.equal(await addr1.getAddress());
-            expect(await achievementsFactory.getAddress()).to.equal(await tokenContract.owner());
+            expect(baseURI).to.equal(await tokenContract.uri(0));
+            expect(await achievementsFactory.productionCount()).to.equal(1);
+            expect(await achievementsFactory.contractsById(gameId)).to.equal(await tokenContract.getAddress());
             expect(baseURI).to.equal(await tokenContract.uri(0));
         });
 
@@ -117,6 +119,42 @@ export function AchievementsFactoryTests(deployInfrastructure) {
                 expect(rec2.logs[0].args[3][i]).to.equal(tokenIds[i].toString());
                 expect(rec2.logs[0].args[4][i]).to.equal("1");
                 expect(await tokenContract.balanceOf(toAddress, tokenIds[i])).to.equal(1);
+            }
+        });
+
+        it("should get all defined token ids on contract produced by AchievementsFactory", async function() {
+            const {
+                achievementsFactory, 
+                addr1
+            } = await loadFixture(deployInfrastructure);
+
+            //produce new token contract
+            const gameId = "test-game-id";
+            const trx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
+            const rec = await trx.wait();
+            const tokenContractAddress = rec.logs[2].args[0];
+            const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
+            const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
+            
+            //batch mint tokens
+            const toAddress = await addr1.getAddress();
+            const tokenIds = [1n, 2n, 3n, 4n, 5n];
+            const data = "0x";
+            await tokenContract.connect(addr1).mintBatch(toAddress, tokenIds, data);
+
+            //get defined token ids
+            const tokenIdList = await tokenContract.getDefinedTokens();
+            const pageStart = 1;
+            const pageEnd = 3;
+            const tokenIdPage = await tokenContract.getDefinedTokens(pageStart, pageEnd);
+            console.log(tokenIdPage);
+
+            //assert contract state and events
+            for (let i = 0; i < tokenIds.length; i++) {
+                expect(tokenIdList[i]).to.equal(tokenIds[i]);
+            }
+            for (let i = 0; i < tokenIdPage.length; i++) {
+                expect(tokenIdPage[i]).to.equal(tokenIds[i + pageStart]);
             }
         });
 
