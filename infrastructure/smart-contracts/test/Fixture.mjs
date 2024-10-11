@@ -348,9 +348,9 @@ describe("Fixture Tests", function () {
         const MockRollupContractFactory = await ethers.getContractFactory("MockRollup");
         const mockRollup = await MockRollupContractFactory.deploy();
 
-        //Deploy GameFactory contract
+        //Deploy AchievementsFactory contract
         const AchievementsFactoryContractFactory = await ethers.getContractFactory("AchievementsFactory");
-        const achievementsFactory = await AchievementsFactoryContractFactory.deploy();
+        const achievementsFactory = await AchievementsFactoryContractFactory.deploy(await addr1.getAddress());
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;

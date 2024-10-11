@@ -3,7 +3,8 @@ pragma solidity ^0.8.9;
 
 // import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/IAccessControl.sol";
+// import "@openzeppelin/contracts/access/Ownable.sol";
 // import "@openzeppelin/contracts/access/AccessControl.sol";
 
 //TODO: make sure to call _update() so Supply extension works
@@ -12,16 +13,24 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * @title Achievements Contract
  * @dev An ERC1155 contract that represents game achievements.
  */
-contract Achievements is ERC1155Supply, Ownable {
+contract Achievements is ERC1155Supply {
 
+    bytes32 public constant MINT_ROLE = keccak256("MINT_ROLE");
+    
+    IAccessControl public achievementFactory;
     mapping(uint256 => bool) public definedTokens;
     uint256[] private _tokenIdList;
 
-    constructor(address initialOwner, string memory _uri) ERC1155(_uri) {
-        _transferOwnership(initialOwner);
+    constructor(address factoryAddress, string memory _uri) ERC1155(_uri) {
+        achievementFactory = IAccessControl(factoryAddress);
     }
 
-    function mint(address to, uint256 id, bytes memory data) public {
+    modifier onlyMintRole() {
+        require(achievementFactory.hasRole(MINT_ROLE, address(msg.sender)), "caller does not have MINT_ROLE");
+        _;
+    }
+
+    function mint(address to, uint256 id, bytes memory data) public onlyMintRole {
         require(to != address(0x0), "invalid to param");
         require(balanceOf(to, id) == 0, "address has non-zero token balance");
 
@@ -32,7 +41,7 @@ contract Achievements is ERC1155Supply, Ownable {
         _mint(to, id, 1, data);
     }
 
-    function mintBatch(address to, uint256[] calldata ids, bytes memory data) public {
+    function mintBatch(address to, uint256[] calldata ids, bytes memory data) public onlyMintRole {
         require(to != address(0x0), "invalid to param");
         uint256[] memory amounts = new uint256[](ids.length);
         for (uint256 i = 0; i < ids.length; i++) {

@@ -2,6 +2,7 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 // import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 // import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "./Achievements.sol";
@@ -10,12 +11,11 @@ import "./Achievements.sol";
  * @title AchievementsFactory
  * @dev A factory contract that produces ERC1155 token contracts.
  */
-contract AchievementsFactory {
+contract AchievementsFactory is AccessControl {
     
-    // bytes32 public constant MINT_ROLE = keccak256("MINT_ROLE");
+    bytes32 public constant MINT_ROLE = keccak256("MINT_ROLE");
 
     uint256 public productionCount;
-
     mapping(string => address) public contractsById;
 
     /**
@@ -26,7 +26,9 @@ contract AchievementsFactory {
      */
     event ContractProduced(address contractAddress, string gameId, address producedBy);
 
-    constructor() {}
+    constructor(address initialMintAuth) {
+        _setupRole(MINT_ROLE, initialMintAuth);
+    }
 
     /**
      * @dev Produces a new ERC1155 token contract from the factory.
