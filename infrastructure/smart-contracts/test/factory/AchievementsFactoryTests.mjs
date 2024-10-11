@@ -242,7 +242,7 @@ export function AchievementsFactoryTests(deployInfrastructure) {
 				tokenContract.connect(addr1).mintBatch(toAddress, tokenIds, data)
 			).to.be.revertedWith("address has non-zero token balance");
 
-            //attempt to batch mint another token with same tokenid to same address
+            //attempt to batch mint multiple tokens with same tokenid
             const unmintedTokenId = 1;
             const duplicateTokenIds = [unmintedTokenId, unmintedTokenId];
             await expect(

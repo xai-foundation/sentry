@@ -41,6 +41,7 @@ contract AchievementsFactory is AccessControl {
 
     /**
      * @dev Produces a new ERC1155 token contract from the factory.
+     * @param gameId Unique string representing the ID for a game title.
      * @param uri URI representing a link to the token's metadata.
      * @return address Address of the newly produced token contract.
      */
