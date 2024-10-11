@@ -25,9 +25,8 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             } = await loadFixture(deployInfrastructure);
 
             //produce new token contract
-            const achievementCount = 5;
-            const initialOwner = await addr1.getAddress();
-            const trx = await achievementsFactory.connect(addr1).produceContract(achievementCount, initialOwner, baseURI);
+            const gameId = "test-game-id";
+            const trx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
             const rec = await trx.wait();
             const tokenContractAddress = rec.logs[2].args[0];
             const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
@@ -35,9 +34,9 @@ export function AchievementsFactoryTests(deployInfrastructure) {
 
             //assert contract state and events
             expect(rec.logs[2].fragment.name).to.equal("ContractProduced");
-            expect(rec.logs[2].args[1]).to.equal(await addr1.getAddress());
-            expect(achievementCount).to.equal(await tokenContract.tokenIdCount());
-            expect(initialOwner).to.equal(await tokenContract.owner());
+            expect(rec.logs[2].args[1]).to.equal(gameId);
+            expect(rec.logs[2].args[2]).to.equal(await addr1.getAddress());
+            expect(await achievementsFactory.getAddress()).to.equal(await tokenContract.owner());
             expect(baseURI).to.equal(await tokenContract.uri(0));
         });
 
@@ -48,9 +47,8 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             } = await loadFixture(deployInfrastructure);
 
             //produce new token contract
-            const achievementCount = 5;
-            const initialOwner = await addr1.getAddress();
-            const trx = await achievementsFactory.connect(addr1).produceContract(achievementCount, initialOwner, baseURI);
+            const gameId = "test-game-id";
+            const trx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
             const rec = await trx.wait();
             const tokenContractAddress = rec.logs[2].args[0];
             const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
@@ -59,7 +57,6 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             //mint tokens
             const toAddress = await addr1.getAddress();
             const tokenId = 0;
-            const amount = 1;
             const data = "0x";
             let trx2 = await tokenContract.connect(addr1).mint(toAddress, tokenId, data);
             let rec2 = await trx2.wait();
@@ -70,8 +67,8 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             expect(rec2.logs[0].args[1]).to.equal(ethers.ZeroAddress);
             expect(rec2.logs[0].args[2]).to.equal(toAddress);
             expect(rec2.logs[0].args[3]).to.equal(tokenId);
-            expect(rec2.logs[0].args[4]).to.equal(amount);
-            expect(await tokenContract.balanceOf(toAddress, tokenId)).to.equal(amount);
+            expect(rec2.logs[0].args[4]).to.equal(1);
+            expect(await tokenContract.balanceOf(toAddress, tokenId)).to.equal(1);
         });
 
         it("should batch mint new tokens on contract produced by the AchievementsFactory", async function() {
@@ -81,9 +78,8 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             } = await loadFixture(deployInfrastructure);
 
             //produce new token contract
-            const achievementCount = 5;
-            const initialOwner = await addr1.getAddress();
-            const trx = await achievementsFactory.connect(addr1).produceContract(achievementCount, initialOwner, baseURI);
+            const gameId = "test-game-id";
+            const trx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
             const rec = await trx.wait();
             const tokenContractAddress = rec.logs[2].args[0];
             const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
@@ -116,9 +112,8 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             } = await loadFixture(deployInfrastructure);
 
             //produce new token contract
-            const achievementCount = 5;
-            const initialOwner = await addr1.getAddress();
-            const trx = await achievementsFactory.connect(addr1).produceContract(achievementCount, initialOwner, baseURI);
+            const gameId = "test-game-id";
+            const trx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
             const rec = await trx.wait();
             const tokenContractAddress = rec.logs[2].args[0];
             const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
@@ -127,7 +122,6 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             //mint tokens of the newly created token type
             const toAddress = await addr1.getAddress();
             const tokenId = 0;
-            const amount = 1;
             const data = "0x";
             await tokenContract.connect(addr1).mint(toAddress, tokenId, data);
 
@@ -137,7 +131,7 @@ export function AchievementsFactoryTests(deployInfrastructure) {
                     await addr1.getAddress(),
                     await addr2.getAddress(), 
                     tokenId, 
-                    amount, 
+                    1, 
                     data
                 )
 			).to.be.revertedWith("not transferrable");
@@ -147,7 +141,7 @@ export function AchievementsFactoryTests(deployInfrastructure) {
                     await addr1.getAddress(),
                     await addr2.getAddress(), 
                     [tokenId], 
-                    [amount], 
+                    [1], 
                     data
                 )
 			).to.be.revertedWith("not batch transferrable");
@@ -160,9 +154,8 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             } = await loadFixture(deployInfrastructure);
 
             //produce new token contract
-            const achievementCount = 5;
-            const initialOwner = await addr1.getAddress();
-            const trx = await achievementsFactory.connect(addr1).produceContract(achievementCount, initialOwner, baseURI);
+            const gameId = "test-game-id";
+            const trx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
             const rec = await trx.wait();
             const tokenContractAddress = rec.logs[2].args[0];
             const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
@@ -186,7 +179,7 @@ export function AchievementsFactoryTests(deployInfrastructure) {
 			).to.be.revertedWith("address has non-zero token balance");
 
             //attempt to batch mint another token with same tokenid to same address
-            const unmintedTokenId = 1
+            const unmintedTokenId = 1;
             const duplicateTokenIds = [unmintedTokenId, unmintedTokenId];
             await expect(
 				tokenContract.connect(addr1).mintBatch(toAddress, duplicateTokenIds, data)

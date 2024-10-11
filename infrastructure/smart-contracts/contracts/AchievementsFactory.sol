@@ -16,15 +16,15 @@ contract AchievementsFactory {
 
     uint256 public productionCount;
 
-    // mapping(string => address) public contractsByName;
-    // mapping(uint256 => address) public contractsById;
+    mapping(string => address) public contractsById;
 
     /**
      * @dev Logs a successful contract production from the factory.
      * @param contractAddress Address of newly produced contract.
+     * @param gameId GameID that was assigned to newly produced contract.
      * @param producedBy Address that initiated production.
      */
-    event ContractProduced(address contractAddress, address producedBy);
+    event ContractProduced(address contractAddress, string gameId, address producedBy);
 
     constructor() {}
 
@@ -33,10 +33,15 @@ contract AchievementsFactory {
      * @param uri URI representing a link to the token's metadata.
      * @return address Address of the newly produced token contract.
      */
-    function produceContract(uint256 achievementCount, address initialOwner, string memory uri) public returns (address) {
-        Achievements newContract = new Achievements(achievementCount, initialOwner, uri);
+    function produceContract(string memory gameId, string memory uri) public returns (address) {
+        require(contractsById[gameId] == address(0x0), "game id already exists");
+
+        Achievements newContract = new Achievements(address(this), uri);
+        contractsById[gameId] = address(newContract);
         productionCount += 1;
-        emit ContractProduced(address(newContract), msg.sender);
+
+        emit ContractProduced(address(newContract), gameId, msg.sender);
+
         return address(newContract);
     }
 

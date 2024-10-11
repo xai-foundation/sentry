@@ -11,23 +11,12 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  */
 contract Achievements is ERC1155, Ownable {
 
-    uint256 public tokenIdCount;
-
-    constructor(uint256 _tokenIdCount, address initialOwner, string memory _uri) ERC1155(_uri) {
-        setTokenIdCount(_tokenIdCount);
+    constructor(address initialOwner, string memory _uri) ERC1155(_uri) {
         _transferOwnership(initialOwner);
-    }
-
-    function setTokenIdCount(uint256 newCount) public {
-        require(newCount != 0, "invalid count param");
-        require(newCount > tokenIdCount, "can only increase count");
-
-        tokenIdCount = newCount;
     }
 
     function mint(address to, uint256 id, bytes memory data) public {
         require(to != address(0x0), "invalid to param");
-        require(id <= tokenIdCount, "invalid id param");
         require(balanceOf(to, id) == 0, "address has non-zero token balance");
 
         _mint(to, id, 1, data);
@@ -37,7 +26,6 @@ contract Achievements is ERC1155, Ownable {
         require(to != address(0x0), "invalid to param");
         uint256[] memory amounts = new uint256[](ids.length);
         for (uint256 i = 0; i < ids.length; i++) {
-            require(ids[i] <= tokenIdCount, "invalid ids param");
             require(balanceOf(to, ids[i]) == 0, "address has non-zero token balance");
             amounts[i] = 1;
         }
