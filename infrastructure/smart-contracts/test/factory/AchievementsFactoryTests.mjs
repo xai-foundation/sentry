@@ -40,6 +40,22 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             expect(baseURI).to.equal(await tokenContract.uri(0));
         });
 
+        it("should fail to produce multiple token contracts with the same gameId", async function() {
+            const {
+                achievementsFactory, 
+                addr1
+            } = await loadFixture(deployInfrastructure);
+
+            //produce new token contract
+            const gameId = "test-game-id";
+            await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
+
+            //attempt to transfer newly minted token to another address
+            await expect(
+				achievementsFactory.connect(addr1).produceContract(gameId, baseURI)
+			).to.be.revertedWith("game id already exists");
+        });
+
         it("should mint a new token on contract produced by the AchievementsFactory", async function() {
             const {
                 achievementsFactory, 
