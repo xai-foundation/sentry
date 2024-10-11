@@ -13,6 +13,7 @@ import "./Achievements.sol";
  */
 contract AchievementsFactory is AccessControl {
     
+    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
     bytes32 public constant MINT_ROLE = keccak256("MINT_ROLE");
 
     uint256 public productionCount;
@@ -27,6 +28,8 @@ contract AchievementsFactory is AccessControl {
     event ContractProduced(address contractAddress, string gameId, address producedBy);
 
     constructor(address initialMintAuth) {
+        _setRoleAdmin(MINT_ROLE, ADMIN_ROLE);
+        _setupRole(ADMIN_ROLE, initialMintAuth);
         _setupRole(MINT_ROLE, initialMintAuth);
     }
 

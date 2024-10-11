@@ -132,7 +132,7 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             }
         });
 
-        it("should fail to mint tokens without MINT_ROLE", async function() {
+        it("should fail to mint tokens from address without MINT_ROLE", async function() {
             const {
                 achievementsFactory, 
                 addr1,
@@ -162,6 +162,42 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             await expect(
 				tokenContract.connect(addr2).mintBatch(toAddress, tokenIds, data)
 			).to.be.revertedWith("caller does not have MINT_ROLE");
+        });
+
+        it("should assign MINT_ROLE to new address and successfully mint", async function() {
+            const {
+                achievementsFactory, 
+                addr1,
+                addr2
+            } = await loadFixture(deployInfrastructure);
+
+            //produce new token contract
+            const gameId = "test-game-id";
+            const trx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
+            const rec = await trx.wait();
+            const tokenContractAddress = rec.logs[0].args[0];
+            const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
+            const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
+
+            //assign MINT_ROLE to new account
+            const newMinterAddress = await addr2.getAddress();
+            await achievementsFactory.connect(addr1).grantRole(mintRoleHash, newMinterAddress);
+            
+            //mint tokens as new minter account
+            const toAddress = await addr1.getAddress();
+            const tokenId = 0;
+            const data = "0x";
+            let trx2 = await tokenContract.connect(addr2).mint(toAddress, tokenId, data);
+            let rec2 = await trx2.wait();
+
+            //assert contract state and events
+            expect(rec2.logs[0].fragment.name).to.equal("TransferSingle");
+            expect(rec2.logs[0].args[0]).to.equal(newMinterAddress);
+            expect(rec2.logs[0].args[1]).to.equal(ethers.ZeroAddress);
+            expect(rec2.logs[0].args[2]).to.equal(toAddress);
+            expect(rec2.logs[0].args[3]).to.equal(tokenId);
+            expect(rec2.logs[0].args[4]).to.equal(1);
+            expect(await tokenContract.balanceOf(toAddress, tokenId)).to.equal(1);
         });
 
         it("should fail to mint more than one token of token id to account", async function() {
@@ -282,10 +318,6 @@ export function AchievementsFactoryTests(deployInfrastructure) {
         });
 
         //TODO: test upgrading
-
-        // it("should ...", async function() {
-        //     const {erc1155Factory} = await loadFixture(deployInfrastructure);s
-        // });
 
     }
 }
