@@ -30,7 +30,7 @@ export const bootOperatorRuntime_V1 = async (
             await retry(() => loadOperatorKeysFromGraph_V1(operatorState.operatorAddress, wallets, pools, refereeConfigFromGraph, BigInt(latestClaimableChallenge)));
 
         await processNewChallenge_V1(BigInt(openChallenge.challengeNumber), openChallenge, nodeLicenseIds, sentryKeysMap, sentryWalletMap, mappedPools, refereeConfig);
-        logFunction(`Processing open challenges.`);
+        logFunction(`Processing open challenges. Challenges should occur roughly once per hour. Rewards will still accrue even if challenges are delayed.`);
 
         //Remove submissions for current challenge so we don't process it again
         nodeLicenseIds.forEach(n => {

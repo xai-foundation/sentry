@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import inquirer, { QuestionCollection } from 'inquirer';
 import axios from "axios";
 import { ethers, Signer } from 'ethers';
-import { config, createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee, EventListenerError, findMissedAssertion, isAssertionSubmitted } from "@sentry/core";
+import { config, createBlsKeyPair, getAssertion, getSignerFromPrivateKey, listenForAssertions, submitAssertionToReferee, EventListenerError, findMissedAssertion, isAssertionSubmitted, MINIMUM_SECONDS_BETWEEN_ASSERTIONS, isChallengeSubmitTime } from "@sentry/core";
 
 type PromptBodyKey = "secretKeyPrompt" | "walletKeyPrompt" | "webhookUrlPrompt" | "instancePrompt";
 
@@ -49,6 +49,7 @@ let currentNumberOfRetries = 0;
 
 let CHALLENGER_INSTANCE = 1;
 const BACKUP_SUBMISSION_DELAY = 300_000; // For every instance we wait 5 minutes + instance number;
+
 
 let isProcessingMissedAssertions = false;
 
@@ -101,48 +102,64 @@ const initCli = async () => {
 const onAssertionConfirmedCb = async (nodeNum: any) => {
     console.log(`[${new Date().toISOString()}] Assertion confirmed ${nodeNum}. Looking up the assertion information...`);
 
-    if (CHALLENGER_INSTANCE != 1) {
-        console.log(`[${new Date().toISOString()}] Backup challenger waiting for delay ${(CHALLENGER_INSTANCE) + (BACKUP_SUBMISSION_DELAY / (60 * 1000))} minutes..`);
-        const currentTime = Date.now();
-        await new Promise((resolve) => {
-            setTimeout(resolve, (CHALLENGER_INSTANCE * 60 * 1000) + BACKUP_SUBMISSION_DELAY)
-        });
+    
+    const {isSubmitTime, currentChallenge} = await isChallengeSubmitTime();
+    const lastChallengeTime = Number(currentChallenge.createdTimestamp);
 
+    console.log(`[${new Date().toISOString()}] Last challenge was submitted at ${lastChallengeTime}...`);
+
+    // Check if enough time has passed that we can submit an assertion
+    if(isSubmitTime) {
+        console.log(`[${new Date().toISOString()}] Minimum time between challenges has passed, beginning new challenge...`);
+
+        if (CHALLENGER_INSTANCE != 1) {
+            console.log(`[${new Date().toISOString()}] Backup challenger waiting for delay ${(CHALLENGER_INSTANCE) + (BACKUP_SUBMISSION_DELAY / (60 * 1000))} minutes..`);
+            const currentTime = Date.now();
+            await new Promise((resolve) => {
+                setTimeout(resolve, (CHALLENGER_INSTANCE * 60 * 1000) + BACKUP_SUBMISSION_DELAY)
+            });
+
+            try {
+                const hasSubmitted = await isAssertionSubmitted(nodeNum);
+                if (hasSubmitted) {
+                    console.log(`[${new Date().toISOString()}] Assertion already submitted by other instance.`);
+                    lastAssertionTime = currentTime; //So our health check does not spam errors
+                    return;
+                }
+                console.log(`[${new Date().toISOString()}] Backup challenger found assertion not submitted and has to step in.`);
+            } catch (error) {
+                console.log(`[${new Date().toISOString()}] ERROR: Backup challenger isAssertionSubmitted: ${error}`);
+                sendNotification(`Error Backup challenger instance ${CHALLENGER_INSTANCE} isAssertionSubmitted failed: ${error}`);
+            }
+        }
+
+        const assertionNode = await getAssertion(nodeNum);
+        console.log(`[${new Date().toISOString()}] Assertion data retrieved. Starting the submission process...`);
         try {
-            const hasSubmitted = await isAssertionSubmitted(nodeNum);
-            if (hasSubmitted) {
-                console.log(`[${new Date().toISOString()}] Assertion already submitted by other instance.`);
-                lastAssertionTime = currentTime; //So our health check does not spam errors
+            await submitAssertionToReferee(
+                cachedSecretKey,
+                Number(nodeNum),
+                assertionNode,
+                cachedSigner!.signer,
+                currentChallenge.assertionId
+            );
+            console.log(`[${new Date().toISOString()}] Submitted assertion: ${nodeNum}`);
+            lastAssertionTime = Date.now();
+        } catch (error) {
+            if (error && (error as Error).message && (error as Error).message.includes('execution reverted: "9"')) {
+                console.log(`[${new Date().toISOString()}] Could not submit challenge because it was already submitted`);
+                lastAssertionTime = Date.now();
                 return;
             }
-            console.log(`[${new Date().toISOString()}] Backup challenger found assertion not submitted and has to step in.`);
-        } catch (error) {
-            console.log(`[${new Date().toISOString()}] ERROR: Backup challenger isAssertionSubmitted: ${error}`);
-            sendNotification(`Error Backup challenger instance ${CHALLENGER_INSTANCE} isAssertionSubmitted failed: ${error}`);
+            console.log(`[${new Date().toISOString()}] Submit Assertion Error: ${(error as Error).message}`);
+            sendNotification(`Submit Assertion Error: ${(error as Error).message}`);
+            throw error;
         }
+        return;
     }
 
-    const assertionNode = await getAssertion(nodeNum);
-    console.log(`[${new Date().toISOString()}] Assertion data retrieved. Starting the submission process...`);
-    try {
-        await submitAssertionToReferee(
-            cachedSecretKey,
-            nodeNum,
-            assertionNode,
-            cachedSigner!.signer,
-        );
-        console.log(`[${new Date().toISOString()}] Submitted assertion: ${nodeNum}`);
-        lastAssertionTime = Date.now();
-    } catch (error) {
-        if (error && (error as Error).message && (error as Error).message.includes('execution reverted: "9"')) {
-            console.log(`[${new Date().toISOString()}] Could not submit challenge because it was already submitted`);
-            lastAssertionTime = Date.now();
-            return;
-        }
-        console.log(`[${new Date().toISOString()}] Submit Assertion Error: ${(error as Error).message}`);
-        sendNotification(`Submit Assertion Error: ${(error as Error).message}`);
-        throw error;
-    }
+    // Log that the assertion was not submitted because it has not been enough time since the last assertion
+    console.log(`[${new Date().toISOString()}] Assertion ${nodeNum} not submitted because it has not been ${MINIMUM_SECONDS_BETWEEN_ASSERTIONS / 60 } minutes since the last assertion.`);
 };
 
 const checkTimeSinceLastAssertion = async (lastAssertionTime: number) => {
@@ -261,14 +278,27 @@ async function processMissedAssertions() {
             const assertionNode = await getAssertion(missedAssertionNodeNum);
             console.log(`[${new Date().toISOString()}] Missed assertion data retrieved. Starting the submission process...`);
 
+            // Check if enough time has passed that we can submit an assertion
+            const {isSubmitTime, currentChallenge} = await isChallengeSubmitTime();
+            
+            if(isSubmitTime) {
+
             await submitAssertionToReferee(
                 cachedSecretKey,
                 missedAssertionNodeNum,
                 assertionNode,
                 cachedSigner!.signer,
+                currentChallenge.assertionId
             );
             console.log(`[${new Date().toISOString()}] Submitted assertion: ${missedAssertionNodeNum}`);
             lastAssertionTime = Date.now();
+            isProcessingMissedAssertions = false;
+
+            return;
+        }
+
+        // Log that the assertion was not submitted because it has not been enough time since the last assertion
+        console.log(`[${new Date().toISOString()}] Assertion ${missedAssertionNodeNum} not submitted because it has not been ${MINIMUM_SECONDS_BETWEEN_ASSERTIONS / 60} minutes since the last assertion.`);
 
         } catch (error) {
             isProcessingMissedAssertions = false;

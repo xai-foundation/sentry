@@ -3,6 +3,8 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {winningHashForNodeLicense0} from "./AssertionData.mjs";
 import {Contract} from "ethers";
 import {submitTestChallenge} from "./utils/submitTestChallenge.mjs";
+import { createMockRollupNodes, confirmMockRollupNodes } from "./utils/mockRollupHelpers.mjs";
+import {submitMockRollupChallenge} from "./utils/submitMockRollupChallenge.mjs";
 import {mintBatchedLicenses, mintSingleLicense} from "./utils/mintLicenses.mjs";
 import {createPool} from "./utils/createPool.mjs";
 
@@ -350,7 +352,8 @@ export function RefereeTests(deployInfrastructure) {
 			const {referee, operator, challenger, esXai, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
 
 			// Mint 200 licenses so that a reward will be most likely guaranteed
-			 await mintBatchedLicenses(200, nodeLicense, addr1);
+			let keysToMint = 20000;
+			await mintBatchedLicenses(keysToMint, nodeLicense, addr1);
 
 			// Submit a challenge
 			await referee.connect(challenger).submitChallenge(
@@ -547,6 +550,179 @@ export function RefereeTests(deployInfrastructure) {
 			// Check that no submission was created
 			const submission = await referee.bulkSubmissions(0, await addr1.getAddress());			
 			assert.equal(submission[0], false, "Submission was created with invalid successorRoot");
+		});
+
+		it("Check creating a node on mock rollup", async function () {
+			const {referee, mockRollup} = await loadFixture(deployInfrastructure);
+			
+			//create mock rollup nodes
+			let currentAssertion = 2;
+			let previousAssertion = 0;
+			const createRes = await createMockRollupNodes(
+				referee, 
+				mockRollup,
+				currentAssertion,
+				previousAssertion
+			);
+
+			//assert trxs contain NodeCreated event
+			for (let i = 0; i < createRes.transactions.length; i++) {
+				let trxReceipt = await createRes.transactions[i].wait();
+				assert.equal(trxReceipt.logs[0].fragment.name, "NodeCreated", "NodeCreated event not found");
+			}
+		});
+
+		it("Check confirming a node on mock rollup", async function () {
+			const {referee, mockRollup, refereeCalculations} = await loadFixture(deployInfrastructure);
+			
+			//create mock rollup nodes
+			let currentAssertion = 2;
+			let previousAssertion = 0;
+			const createRes = await createMockRollupNodes(
+				referee, 
+				mockRollup,
+				currentAssertion,
+				previousAssertion
+			);
+
+			//confirm mock rollup nodes
+			let confirmRes = await confirmMockRollupNodes(
+				referee,
+				mockRollup,
+				refereeCalculations,
+				currentAssertion,
+				previousAssertion
+			);
+
+			//assert transactions contain NodeConfirmed event
+			for (let i = 0; i < confirmRes.transactions.length; i++) {
+				let trxReceipt = await confirmRes.transactions[i].wait();
+				let hexStr = "0x" + BigInt(i + 1).toString(16).padStart(64, "0");
+				assert.equal(trxReceipt.logs[0].fragment.name, "NodeConfirmed", "NodeConfirmed event not found");
+			    assert.equal(trxReceipt.logs[0].args[0], createRes.assertions[i], "nodeNum event param mismatch");
+				assert.equal(trxReceipt.logs[0].args[1], hexStr, "blockHash event param mismatch");
+			    assert.equal(trxReceipt.logs[0].args[2], hexStr, "sendRoot event param mismatch");
+			}
+		});
+
+		it("Check submitting a test challenge to mock rollup contract", async function () {
+			//NOTE: this test requires the following functions to exist on the Referee contract:
+			//toggleAssertionChecking()
+			//setRollupAddress(address newRollupAddress)
+			
+			const {referee, challenger, mockRollup, refereeCalculations} = await loadFixture(deployInfrastructure);
+			let currentAssertion = 2;
+			let previousAssertion = 0;
+			const res = await submitMockRollupChallenge(
+				referee, 
+				challenger, 
+				mockRollup, 
+				refereeCalculations, 
+				currentAssertion,
+				previousAssertion,
+				null,
+				null
+			);
+
+			for (let i = 0; i < res.confirmData.length; i++) {
+				assert.equal(res.confirmData[i], res.nodes[i][2], "confirmData mismatch");
+			}
+		});
+
+		it("Check submitting a challenge with an invalid assertion block timestamp", async function () {
+			//NOTE: this test requires the following functions to exist on the Referee contract:
+			//toggleAssertionChecking()
+			//setRollupAddress(address newRollupAddress)
+			
+			const {referee, challenger, mockRollup, refereeCalculations} = await loadFixture(deployInfrastructure);
+			let currentAssertion = 2;
+			let previousAssertion = 0;
+			await expect(
+				submitMockRollupChallenge(
+					referee, 
+					challenger, 
+					mockRollup, 
+					refereeCalculations, 
+					currentAssertion,
+					previousAssertion,
+					null,
+					10
+				)
+			).to.be.revertedWith("12");
+		});
+
+		it("Check failure to confirm node with wrong blockhash and sendroot", async function () {
+			const {referee, challenger, mockRollup, refereeCalculations} = await loadFixture(deployInfrastructure);
+			
+			//submit mock rollup challenge
+			let currentAssertion = 2;
+			let previousAssertion = 0;
+			await submitMockRollupChallenge(
+				referee, 
+				challenger, 
+				mockRollup, 
+				refereeCalculations, 
+				currentAssertion,
+				previousAssertion,
+				null,
+				null
+			);
+
+			//attempt to confirm nodes
+			for (let i = previousAssertion + 1; i <= currentAssertion; i++) {
+				let badHexStr = "0x" + BigInt(i + 1).toString(16).padStart(64, "0");
+				await expect(
+				    mockRollup.confirmNode(
+					    i,
+						badHexStr,
+						badHexStr
+				    )
+			    ).to.be.revertedWith("CONFIRM_DATA");
+			}
+		});
+
+		it("Check failure to submit a challenge with a skipped previous assertion id", async function () {
+			//NOTE: this test requires the following functions to exist on the Referee contract:
+			//toggleAssertionChecking()
+			//setRollupAddress(address newRollupAddress)
+			
+			const {referee, challenger, mockRollup, refereeCalculations} = await loadFixture(deployInfrastructure);
+			let currentAssertion = 2;
+			let previousAssertion = 1;
+			await expect(
+				submitMockRollupChallenge(
+					referee, 
+					challenger, 
+					mockRollup, 
+					refereeCalculations, 
+					currentAssertion,
+					previousAssertion,
+					"0x0000000000000000000000000000000000000000000000000000000000000020",
+					null
+				)
+			).to.be.revertedWith("10");
+		});
+
+		it("Check failure to submit a challenge with invalid confirmData", async function () {
+			//NOTE: this test requires the following functions to exist on the Referee contract:
+			//toggleAssertionChecking()
+			//setRollupAddress(address newRollupAddress)
+			
+			const {referee, challenger, mockRollup, refereeCalculations} = await loadFixture(deployInfrastructure);
+			let currentAssertion = 2;
+			let previousAssertion = 0;
+			await expect(
+				submitMockRollupChallenge(
+					referee, 
+					challenger, 
+					mockRollup, 
+					refereeCalculations, 
+					currentAssertion,
+					previousAssertion,
+					"0x0000000000000000000000000000000000000000000000000000000000000020",
+					null
+				)
+			).to.be.revertedWith("11");
 		});
 
 		// describe("The Referee should allow users to stake in V1", function () {

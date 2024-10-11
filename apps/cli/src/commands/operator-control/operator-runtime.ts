@@ -127,12 +127,19 @@ export function bootOperator(cli: Command): void {
                 },
                 selectedOwners,
                 (publicNodeData: PublicNodeBucketInformation | undefined, challenge: Challenge, message: string) => {
+                    const toObject = (obj: any) => {
+                        return JSON.parse(JSON.stringify(obj, (key, value) =>
+                            typeof value === 'bigint'
+                                ? value.toString()
+                                : value
+                        ));
+                    }
                     const errorMessage = `The comparison between public node and challenge failed:\n` +
                         `${message}\n\n` +
                         `Public node data:\n` +
                         `${JSON.stringify(publicNodeData, null, 2)}\n\n` +
                         `Challenge data:\n` +
-                        `${JSON.stringify(challenge, null, 2)}\n`;
+                        `${JSON.stringify(toObject(challenge), null, 2)}\n`;
 
                     console.error(errorMessage);
                 }

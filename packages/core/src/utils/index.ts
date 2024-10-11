@@ -18,3 +18,6 @@ export * from "./getEsXaiBalance.js";
 export * from "./getXaiAllowance.js";
 export * from "./getXaiBalance.js";
 export * from "./formatWeiToEther.js";
+export * from "./getMultipleChallengeConfirmData.js";
+export * from "./getNodeConfirmedEvents.js";
+export * from "./getRefereeCalculationsAddress.js";

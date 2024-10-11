@@ -1,40 +1,51 @@
-import axios from "axios";
-import { checkRefereeBulkSubmissionCompatible, loadOperatorKeysFromGraph_V1, loadOperatorKeysFromRPC_V1, loadOperatorWalletsFromGraph, loadOperatorWalletsFromRPC, operatorState, processClosedChallenge, processClosedChallenges_V1, processNewChallenge, processNewChallenge_V1, PublicNodeBucketInformation } from "../index.js";
-import { Challenge, config, getSentryWalletsForOperator, getSubgraphHealthStatus, retry } from "../../index.js";
+import { checkRefereeBulkSubmissionCompatible, loadOperatorKeysFromGraph_V1, loadOperatorKeysFromRPC_V1, loadOperatorWalletsFromGraph, loadOperatorWalletsFromRPC, operatorState, processClosedChallenge, processClosedChallenges_V1, processNewChallenge, processNewChallenge_V1, PublicNodeBucketInformation, validateConfirmData } from "../index.js";
+import { Challenge, getSentryWalletsForOperator, getSubgraphHealthStatus, retry } from "../../index.js";
+import { ethers } from "ethers";
 
 /**
  * Update the status message for display in the operator desktop app key list
  * @param {bigint} nodeLicenseId - The nodeLicense key id.
  * @param {NodeLicenseStatus | string} newStatus - The new status to display
  */
-export async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: any) {
-
-    if (event && challenge.rollupUsed === config.rollupAddress) {
-        compareWithCDN(challenge)
-            .then(({ publicNodeBucket, error }) => {
-                if (error) {
-                    operatorState.onAssertionMissMatchCb(publicNodeBucket, challenge, error);
-                    return;
-                }
-                operatorState.cachedLogger(`Comparison between PublicNode and Challenger was successful.`);
-            })
-            .catch(error => {
-                operatorState.cachedLogger(`Error on CND check for challenge ${Number(challenge.assertionId)}.`);
-                operatorState.cachedLogger(`${error.message}.`);
-            });
-    }
-
-    operatorState.cachedLogger(`Received new challenge with number: ${challengeNumber}.`);
-    operatorState.cachedLogger(`Processing challenge...`);
+export async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: ethers.EventLog) {
 
     // Add a delay of 1 -300 seconds to the new challenge process so not all operators request the subgraph at the same time
     const delay = Math.floor(Math.random() * 301);
+
     await new Promise((resolve) => {
         setTimeout(resolve, delay * 1000);
     })
 
+    operatorState.cachedLogger(`Received new challenge with number: ${challengeNumber}. Delayed challenges will still accrue rewards.`);
+
+    const graphStatus = await getSubgraphHealthStatus();
+
+    operatorState.cachedLogger(`Validating confirm data...`);
+
+    const stateToPass = {
+        previousChallengeAssertionId: operatorState.previousChallengeAssertionId,
+        challengerPublicKey: operatorState.challengerPublicKey,
+        onAssertionMissMatchCb: operatorState.onAssertionMissMatchCb,
+        cachedLogger: operatorState.cachedLogger,
+        refereeCalculationsAddress: operatorState.refereeCalculationsAddress
+    };
+
+    validateConfirmData(challenge, graphStatus.healthy, stateToPass, event)
+        .then(validateSuccess => {
+            if (validateSuccess) {
+                operatorState.cachedLogger(`Validation finished successfully.`);
+            } else {
+                operatorState.cachedLogger(`===============================================`);
+                operatorState.cachedLogger(`Validation finished with errors!`);
+                operatorState.cachedLogger(`===============================================`);
+            }
+        });
+
+    operatorState.previousChallengeAssertionId = challenge.assertionId;
+
+    operatorState.cachedLogger(`Processing challenge...`);
+
     try {
-        const graphStatus = await getSubgraphHealthStatus();
         if (graphStatus.healthy) {
             // get the wallets, pools and referee config from the subgraph
             const submissionFilter = {};
@@ -105,50 +116,4 @@ export async function listenForChallengesCallback(challengeNumber: bigint, chall
     } catch (error: any) {
         operatorState.cachedLogger(`Error processing new challenge in listener callback: - ${error && error.message ? error.message : error}`);
     }
-}
-
-// Helper function to request the assertion from the public node's CDN
-async function getPublicNodeFromBucket(confirmHash: string) {
-    const url = `https://sentry-public-node.xai.games/assertions/${confirmHash.toLowerCase()}.json`;
-    const response = await axios.get(url);
-
-    if (response.status === 200) {
-        return response.data;
-    } else {
-        throw new Error("Invalid response status " + response.status);
-    }
-}
-
-/**
- * Compare a challenge with an assertion posted to the public CDN by the public Xai node.
- * @param {Challenge} challenge - The challenge from the Referee contract.
- * @returns {Promise<() => Promise<{ publicNodeBucket: PublicNodeBucketInformation, error?: string }>>} Returns the assertion data from the CDN or an error on miss match.
- */
-async function compareWithCDN(challenge: Challenge): Promise<{ publicNodeBucket: PublicNodeBucketInformation, error?: string }> {
-
-    let attempt = 1;
-    let publicNodeBucket: PublicNodeBucketInformation | undefined;
-    let lastError;
-
-    while (attempt <= 3) {
-        try {
-            publicNodeBucket = await getPublicNodeFromBucket(challenge.assertionStateRootOrConfirmData);
-            break;
-        } catch (error) {
-            operatorState.cachedLogger(`Error loading assertion data from CDN for ${challenge.assertionStateRootOrConfirmData} with attempt ${attempt}.\n${error}`);
-            lastError = error;
-        }
-        attempt++;
-        await new Promise(resolve => setTimeout(resolve, 20000));
-    }
-
-    if (!publicNodeBucket) {
-        throw new Error(`Failed to retrieve assertion data from CDN for ${challenge.assertionStateRootOrConfirmData} after ${attempt} attempts.\n${lastError}`);
-    }
-
-    if (publicNodeBucket.assertion !== Number(challenge.assertionId)) {
-        return { publicNodeBucket, error: `Miss match between PublicNode and Challenge assertion number '${challenge.assertionId}'!` };
-    }
-
-    return { publicNodeBucket }
 }

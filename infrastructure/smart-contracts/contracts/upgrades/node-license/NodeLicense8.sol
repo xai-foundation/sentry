@@ -196,6 +196,19 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * @param _promoCode The promo code.
      */
     function mint(uint256 _amount, string calldata _promoCode) public payable {
+        _mintInternal(msg.sender, _amount, _promoCode);
+    }
+    /**
+     * @notice Mints new NodeLicense tokens.
+     * @param _mintToAddress The address to mint the tokens to.
+     * @param _amount The amount of tokens to mint.
+     * @param _promoCode The promo code.
+     */
+    function mintTo(address _mintToAddress, uint256 _amount, string calldata _promoCode) public payable {
+        _mintInternal(_mintToAddress, _amount, _promoCode);
+    }
+
+    function _mintInternal(address _mintToAddress, uint256 _amount, string calldata _promoCode) internal {
         // Validate the mint data
         _validateMint(_amount);
 
@@ -207,7 +220,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         require(msg.value >= finalPrice, "Ether value sent is not correct");
 
         // Mint the NodeLicense tokens
-        _mintNodeLicense(_amount, averageCost, msg.sender);
+        _mintNodeLicense(_amount, averageCost, _mintToAddress);
 
         // Calculate the referral reward and determine if the promo code is an address
         (uint256 referralReward, address recipientAddress)  = _calculateReferralReward(finalPrice, _promoCode);

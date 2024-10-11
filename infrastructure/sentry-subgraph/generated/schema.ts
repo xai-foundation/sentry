@@ -1133,6 +1133,14 @@ export class Challenge extends Entity {
       "bulkSubmissions",
     );
   }
+
+  get nodeConfirmations(): NodeConfirmationLoader {
+    return new NodeConfirmationLoader(
+      "Challenge",
+      this.get("id")!.toString(),
+      "nodeConfirmations",
+    );
+  }
 }
 
 export class Submission extends Entity {
@@ -1866,6 +1874,119 @@ export class BulkSubmission extends Entity {
   }
 }
 
+export class NodeConfirmation extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save NodeConfirmation entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        `Entities of type NodeConfirmation must have an ID of type String but the id '${id.displayData()}' is of type ${id.displayKind()}`,
+      );
+      store.set("NodeConfirmation", id.toString(), this);
+    }
+  }
+
+  static loadInBlock(id: string): NodeConfirmation | null {
+    return changetype<NodeConfirmation | null>(
+      store.get_in_block("NodeConfirmation", id),
+    );
+  }
+
+  static load(id: string): NodeConfirmation | null {
+    return changetype<NodeConfirmation | null>(
+      store.get("NodeConfirmation", id),
+    );
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get nodeNum(): BigInt {
+    let value = this.get("nodeNum");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBigInt();
+    }
+  }
+
+  set nodeNum(value: BigInt) {
+    this.set("nodeNum", Value.fromBigInt(value));
+  }
+
+  get blockHash(): Bytes {
+    let value = this.get("blockHash");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set blockHash(value: Bytes) {
+    this.set("blockHash", Value.fromBytes(value));
+  }
+
+  get sendRoot(): Bytes {
+    let value = this.get("sendRoot");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toBytes();
+    }
+  }
+
+  set sendRoot(value: Bytes) {
+    this.set("sendRoot", Value.fromBytes(value));
+  }
+
+  get confirmData(): string {
+    let value = this.get("confirmData");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set confirmData(value: string) {
+    this.set("confirmData", Value.fromString(value));
+  }
+
+  get challenge(): string | null {
+    let value = this.get("challenge");
+    if (!value || value.kind == ValueKind.NULL) {
+      return null;
+    } else {
+      return value.toString();
+    }
+  }
+
+  set challenge(value: string | null) {
+    if (!value) {
+      this.unset("challenge");
+    } else {
+      this.set("challenge", Value.fromString(<string>value));
+    }
+  }
+}
+
 export class ConvertedToEsXaiEvent extends Entity {
   constructor(id: Bytes) {
     super();
@@ -2003,6 +2124,24 @@ export class BulkSubmissionLoader extends Entity {
   load(): BulkSubmission[] {
     let value = store.loadRelated(this._entity, this._id, this._field);
     return changetype<BulkSubmission[]>(value);
+  }
+}
+
+export class NodeConfirmationLoader extends Entity {
+  _entity: string;
+  _field: string;
+  _id: string;
+
+  constructor(entity: string, id: string, field: string) {
+    super();
+    this._entity = entity;
+    this._id = id;
+    this._field = field;
+  }
+
+  load(): NodeConfirmation[] {
+    let value = store.loadRelated(this._entity, this._id, this._field);
+    return changetype<NodeConfirmation[]>(value);
   }
 }
 
