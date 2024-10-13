@@ -19,7 +19,7 @@ function BulkSubmissionsStakeAndUnstake(deployInfrastructure) {
 
 			// Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
 			// Referee10
-			// This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
+			
 			const Referee10 = await ethers.getContractFactory("Referee10");
 			// Upgrade the Referee
 			referee = await upgrades.upgradeProxy((await refereeFromFixture.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
@@ -122,7 +122,7 @@ function BulkSubmissionsStakeAndUnstake(deployInfrastructure) {
 
 			// Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
 			// Referee10
-			// This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
+			
 			const Referee10 = await ethers.getContractFactory("Referee10");
 			// Upgrade the Referee
 			referee = await upgrades.upgradeProxy((await refereeFromFixture.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
@@ -195,7 +195,7 @@ function BulkSubmissionsStakeAndUnstake(deployInfrastructure) {
 
 			// Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
 			// Referee10
-			// This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
+			
 			const Referee10 = await ethers.getContractFactory("Referee10");
 			// Upgrade the Referee
 			referee = await upgrades.upgradeProxy((await refereeFromFixture.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
@@ -367,7 +367,7 @@ function BulkSubmissionPermissions(deployInfrastructure) {
 
         // Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
         // Referee10
-        // This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
+        
         const Referee10 = await ethers.getContractFactory("Referee10");
         // Upgrade the Referee
         referee = await upgrades.upgradeProxy((await refereeFromFixture.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
@@ -465,7 +465,7 @@ function BulkSubmissionPermissions(deployInfrastructure) {
 
         // Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
         // Referee10
-        // This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
+        
         const Referee10 = await ethers.getContractFactory("Referee10");
         // Upgrade the Referee
         referee = await upgrades.upgradeProxy((await refereeFromFixture.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
@@ -549,7 +549,6 @@ function BulkSubmissionPermissions(deployInfrastructure) {
 
         // Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
         // Referee10
-        // This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
         const Referee10 = await ethers.getContractFactory("Referee10");
         // Upgrade the Referee
         referee = await upgrades.upgradeProxy((await refereeFromFixture.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
@@ -650,7 +649,7 @@ function BulkSubmissionPermissions(deployInfrastructure) {
 
         // Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
         // Referee10
-        // This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
+        
         const Referee10 = await ethers.getContractFactory("Referee10");
         // Upgrade the Referee
         referee = await upgrades.upgradeProxy((await refereeFromFixture.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
@@ -741,7 +740,7 @@ function BulkSubmissionPermissions(deployInfrastructure) {
 
         // Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
         // Referee10
-        // This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
+        
         const Referee10 = await ethers.getContractFactory("Referee10");
         // Upgrade the Referee
         referee = await upgrades.upgradeProxy((await refereeFromFixture.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });

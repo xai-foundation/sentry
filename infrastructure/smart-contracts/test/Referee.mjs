@@ -353,7 +353,6 @@ export function RefereeTests(deployInfrastructure) {
 
 			// Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
 			// Referee10
-			// This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
 			const Referee10 = await ethers.getContractFactory("Referee10");
 			// Upgrade the Referee
 			const referee10 = await upgrades.upgradeProxy((await referee.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
@@ -546,7 +545,6 @@ export function RefereeTests(deployInfrastructure) {
 
 			// Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
 			// Referee10
-			// This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
 			const Referee10 = await ethers.getContractFactory("Referee10");
 			// Upgrade the Referee
 			const referee10 = await upgrades.upgradeProxy((await referee.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
