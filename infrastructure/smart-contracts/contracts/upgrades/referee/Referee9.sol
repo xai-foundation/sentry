@@ -835,15 +835,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     /**
-     * @notice Get the total claims for a specific address.
-     * @param owner The address to query.
-     * @return The total claims for the address.
-     */
-    function getTotalClaims(address owner) public view returns (uint256) {
-        return _lifetimeClaims[owner];
-    }
-
-    /**
      * @dev Looks up payout boostFactor based on the staking tier.
      * @param stakedAmount The staked amount.
      * @return The payout chance boostFactor.
