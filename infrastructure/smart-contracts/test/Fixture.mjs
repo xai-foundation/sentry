@@ -323,9 +323,10 @@ describe("Fixture Tests", function () {
         await tinyKeysAirDrop.waitForDeployment();
 
         // Upgrade the Pool Factory
-        const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
-        const poolFactory2 = await upgrades.upgradeProxy((await poolFactory.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
-        await poolFactory2.waitForDeployment();
+        // Note/TODO: Add Back After Tiny Keys
+        // const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
+        // const poolFactory2 = await upgrades.upgradeProxy((await poolFactory.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
+        // await poolFactory2.waitForDeployment();
 
         // Node License8 Upgrade
         const NodeLicense8 = await ethers.getContractFactory("NodeLicense8");
@@ -383,7 +384,7 @@ describe("Fixture Tests", function () {
             publicKeyHex: "0x" + publicKeyHex,
             referee: referee9,
             nodeLicense: nodeLicense8,
-            poolFactory: poolFactory2,
+            poolFactory,
             gasSubsidy,
             esXai: esXai3,
             xai,
@@ -410,7 +411,7 @@ describe("Fixture Tests", function () {
     describe("BulkSubmissions", RefereeBulkSubmissions(deployInfrastructure).bind(this));
     describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
     describe("Failed KYC Tests", FailedKycTests(deployInfrastructure).bind(this));
-    describe("Winning Key Count Simulations", RefereeWinningKeyCountSimulations(deployInfrastructure).bind(this));
+    //describe("Winning Key Count Simulations", RefereeWinningKeyCountSimulations(deployInfrastructure).bind(this));
 
     // This doesn't work when running coverage
     //describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));

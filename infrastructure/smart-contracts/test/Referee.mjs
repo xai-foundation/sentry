@@ -351,12 +351,22 @@ export function RefereeTests(deployInfrastructure) {
 		it("Check that addr1 submitting a winning hash receives the allocated reward", async function () {
 			const {referee, operator, challenger, esXai, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
 
+			// Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
+			// Referee10
+			// This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
+			const Referee10 = await ethers.getContractFactory("Referee10");
+			// Upgrade the Referee
+			const referee10 = await upgrades.upgradeProxy((await referee.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
+			await referee10.waitForDeployment();
+
+			// End of upgrade to be removed/refactored
+
 			// Mint 200 licenses so that a reward will be most likely guaranteed
 			let keysToMint = 20000;
 			await mintBatchedLicenses(keysToMint, nodeLicense, addr1);
 
 			// Submit a challenge
-			await referee.connect(challenger).submitChallenge(
+			await referee10.connect(challenger).submitChallenge(
 				100,
 				99,
 				"0x0000000000000000000000000000000000000000000000000000000000000000",
@@ -365,21 +375,21 @@ export function RefereeTests(deployInfrastructure) {
 			);
 
 			// check to see the challenge is open for submissions
-			const {openForSubmissions} = await referee.getChallenge(0);
+			const {openForSubmissions} = await referee10.getChallenge(0);
 			expect(openForSubmissions).to.be.eq(true);
 
 			// Submit a bulk assertion
-			await referee.connect(operator).submitBulkAssertion(addr1.address, 0, "0x0000000000000000000000000000000000000000000000000000000000000000");
+			await referee10.connect(operator).submitBulkAssertion(addr1.address, 0, "0x0000000000000000000000000000000000000000000000000000000000000000");
 
 			// Check the submission
-			const submission = await referee.bulkSubmissions(0, await addr1.getAddress());
+			const submission = await referee10.bulkSubmissions(0, await addr1.getAddress());
 			assert.equal(submission[0], true, "The submission was not submitted");
 			assert.equal(submission[1], false, "The submission was already claimed");
 			const winningKeyCount = submission[3];
 			expect(winningKeyCount).to.be.gt(0);
 
 			// submit another assertion to end the previous challenge
-			await referee.connect(challenger).submitChallenge(
+			await referee10.connect(challenger).submitChallenge(
 				101,
 				100,
 				"0x0000000000000000000000000000000000000000000000000000000000000001",
@@ -392,7 +402,7 @@ export function RefereeTests(deployInfrastructure) {
 				openForSubmissions: openForSubmissionsAfter,
 				numberOfEligibleClaimers,
 				rewardAmountForClaimers
-			} = await referee.getChallenge(0);
+			} = await referee10.getChallenge(0);
 			expect(openForSubmissionsAfter).to.be.eq(false);
 			expect(numberOfEligibleClaimers).to.be.gt(BigInt(0));
 
@@ -400,10 +410,10 @@ export function RefereeTests(deployInfrastructure) {
 			const balanceBefore = await esXai.balanceOf(await addr1.getAddress());
 
 			// Claim the reward
-			await referee.connect(operator).claimBulkRewards(await addr1.getAddress(), 0);
+			await referee10.connect(operator).claimBulkRewards(await addr1.getAddress(), 0);
 
 			// Check the submission again to see its now claimed
-			const claimedSubmission = await referee.bulkSubmissions(0, await addr1.getAddress());
+			const claimedSubmission = await referee10.bulkSubmissions(0, await addr1.getAddress());
 			assert.equal(claimedSubmission[1], true, "The reward was not claimed");
 
 			// check to see we got all the rewards from the claim
@@ -411,12 +421,12 @@ export function RefereeTests(deployInfrastructure) {
 			assert.equal(balanceAfter, balanceBefore + rewardAmountForClaimers, "The amount of esXai minted was wrong")
 
 			// check the esxai balance is equal to the total claims for the node owner
-			const totalClaimsForAddr1 = await referee._lifetimeClaims(await addr1.getAddress());
+			const totalClaimsForAddr1 = await referee10._lifetimeClaims(await addr1.getAddress());
 			assert.equal(totalClaimsForAddr1, balanceAfter, "total claims does not match the esXai value")
 
 			// check getChallenge is able to iterate over both challenges
-			const firstChallenge = await referee.getChallenge(0);
-			const secondChallenge = await referee.getChallenge(1);
+			const firstChallenge = await referee10.getChallenge(0);
+			const secondChallenge = await referee10.getChallenge(1);
 			assert.equal(firstChallenge.openForSubmissions, false, "First challenge is still open for submissions");
 			assert.equal(secondChallenge.openForSubmissions, true, "Second challenge is not open for submissions");
 		});
@@ -534,8 +544,18 @@ export function RefereeTests(deployInfrastructure) {
 		it("Check that submitting an invalid successorRoot does not create a submission", async function () {
 			const {referee, operator, challenger, addr1} = await loadFixture(deployInfrastructure);
 
+			// Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
+			// Referee10
+			// This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
+			const Referee10 = await ethers.getContractFactory("Referee10");
+			// Upgrade the Referee
+			const referee10 = await upgrades.upgradeProxy((await referee.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
+			await referee10.waitForDeployment();
+
+			// End of upgrade to be removed/refactored
+
 			// Submit a challenge
-			await referee.connect(challenger).submitChallenge(
+			await referee10.connect(challenger).submitChallenge(
 				101,
 				100,
 				"0x0000000000000000000000000000000000000000000000000000000000000001",
@@ -545,10 +565,10 @@ export function RefereeTests(deployInfrastructure) {
 
 			
 			// Submit a bulk assertion
-			await referee.connect(operator).submitBulkAssertion(addr1.address, 0, "0x0000000000000000000000000000000000000000000000000000000000000002");
+			await referee10.connect(operator).submitBulkAssertion(addr1.address, 0, "0x0000000000000000000000000000000000000000000000000000000000000002");
 			
 			// Check that no submission was created
-			const submission = await referee.bulkSubmissions(0, await addr1.getAddress());			
+			const submission = await referee10.bulkSubmissions(0, await addr1.getAddress());			
 			assert.equal(submission[0], false, "Submission was created with invalid successorRoot");
 		});
 

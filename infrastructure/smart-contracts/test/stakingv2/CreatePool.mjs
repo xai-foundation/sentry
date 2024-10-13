@@ -3,6 +3,7 @@ import {expect} from "chai";
 import {Contract} from "ethers";
 import {StakingPoolAbi} from "@sentry/core";
 import {findWinningStateRoot} from "../Referee.mjs";
+import {isPoolFactory2} from "../utils/isPoolFactory2.mjs";
 
 export function CreatePool(deployInfrastructure, poolConfigurations) {
 	const {
@@ -40,6 +41,10 @@ export function CreatePool(deployInfrastructure, poolConfigurations) {
 			await nodeLicense.connect(addr3).mint(1, "", {value: price});
 			const mintedKeyId = await nodeLicense.totalSupply();
 
+			const isPoolFactoryUpgraded = await isPoolFactory2(await poolFactory.getAddress());
+
+			const expectedError = isPoolFactoryUpgraded ? "37" : "42";
+
 			// Fail to create a pool
 			await expect(
 				poolFactory.connect(addr3).createPool(
@@ -50,7 +55,7 @@ export function CreatePool(deployInfrastructure, poolConfigurations) {
 					poolSocials,
 					poolTrackerDetails
 				)
-			).to.be.revertedWith("37");
+			).to.be.revertedWith(expectedError);
 		});
 
 		it("Check that the shares cannot go over the max values (bucketshareMaxValues = ordered owner, keys, esXaiStaker)", async function () {

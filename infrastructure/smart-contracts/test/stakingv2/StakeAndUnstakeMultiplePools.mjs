@@ -2,16 +2,34 @@ import {expect} from "chai";
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {submitTestChallenge} from "../utils/submitTestChallenge.mjs";
 import {mintSingleLicense} from "../utils/mintLicenses.mjs";
-import {findWinningStateRoot} from "../Referee.mjs";
 import {createPool} from "../utils/createPool.mjs";
+import {isPoolFactory2} from "../utils/isPoolFactory2.mjs";
 
 export function StakeAndUnstakeMultiplePools(deployInfrastructure) {
     
 
 	return function () {
 		it("Check that a staker can stake in multiple pools, un-stake and re-stake in same pool.", async function () {
-			const {poolFactory, addr1: pool1Owner, addr2: pool2Owner, addr3: staker, nodeLicense, referee, operator, esXai, esXaiMinter, challenger} = await loadFixture(deployInfrastructure);
+			const {poolFactory: poolFactoryFromFixture, addr1: pool1Owner, addr2: pool2Owner, addr3: staker, nodeLicense, referee: refereeFromFixture, operator, esXai, esXaiMinter, challenger, tinyKeysAirDrop} = await loadFixture(deployInfrastructure);
             
+            let referee = refereeFromFixture;
+			let poolFactory = poolFactoryFromFixture;
+
+			// Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
+			// Referee10
+			// This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
+			const Referee10 = await ethers.getContractFactory("Referee10");
+			// Upgrade the Referee
+			referee = await upgrades.upgradeProxy((await refereeFromFixture.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
+			await referee.waitForDeployment();
+
+            const isPoolFactoryUpgraded = await isPoolFactory2(await poolFactory.getAddress());
+            if(!isPoolFactoryUpgraded) {      
+                const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
+                poolFactory = await upgrades.upgradeProxy((await poolFactoryFromFixture.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
+                await poolFactory.waitForDeployment();
+            }
+			// End of upgrade to be removed/refactored
             // Mint licenses for pool1Owner, pool2Owner and staker
             const pool1OwnerKeyId = await mintSingleLicense(nodeLicense, pool1Owner);
             const pool2OwnerKeyId = await mintSingleLicense(nodeLicense, pool2Owner);
