@@ -328,7 +328,21 @@ export function AchievementsFactoryTests(deployInfrastructure) {
 			).to.be.revertedWith("not batch transferrable");
         });
 
-        //TODO: test upgrading
+        it("should upgrade AchievementsFactory contract to new version", async function() {
+            const {
+                achievementsFactory
+            } = await loadFixture(deployInfrastructure);
+
+            //upgrade the AchievementsFactory
+            const testNum = 55n;
+            const AchievementsFactory2Factory = await ethers.getContractFactory("AchievementsFactory2");
+            const achievementsFactory2 = await upgrades.upgradeProxy((await achievementsFactory.getAddress()), AchievementsFactory2Factory, { call: { fn: "initialize", args: [testNum] } });
+            await achievementsFactory2.waitForDeployment();
+
+            //test new upgrade
+            const res = await achievementsFactory2.test();
+            expect(res).to.equal(testNum);
+        });
 
     }
 }

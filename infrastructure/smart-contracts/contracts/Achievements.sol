@@ -115,7 +115,7 @@ contract Achievements is ERC1155 {
         uint256 id,
         uint256 amount,
         bytes memory data
-    ) internal override {
+    ) internal pure override {
         require(false, "not transferrable");
     }
 
@@ -125,7 +125,7 @@ contract Achievements is ERC1155 {
         uint256[] memory ids,
         uint256[] memory amounts,
         bytes memory data
-    ) internal override {
+    ) internal pure override {
         require(false, "not batch transferrable");
     }
 
@@ -136,7 +136,7 @@ contract Achievements is ERC1155 {
         uint256[] memory ids,
         uint256[] memory amounts,
         bytes memory data
-    ) internal override {
+    ) internal view override {
         if (ids.length > 1) {
             for (uint256 i = 0; i < ids.length; i++) {
                 require(balanceOf(to, ids[i]) == 1, "address has non-zero token balance");

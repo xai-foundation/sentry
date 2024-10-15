@@ -4,13 +4,13 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "./Achievements.sol";
+import "../Achievements.sol";
 
 /**
- * @title AchievementsFactory
+ * @title AchievementsFactory2
  * @dev A factory contract that produces ERC1155 token contracts.
  */
-contract AchievementsFactory is Initializable, AccessControlUpgradeable {
+contract AchievementsFactory2 is Initializable, AccessControlUpgradeable {
     
     //constants
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE"); //0xa49807205ce4d355092ef5a8a18f56e8913cf4a201fbe287825b095693c21775
@@ -19,13 +19,14 @@ contract AchievementsFactory is Initializable, AccessControlUpgradeable {
     //state
     uint256 public productionCount; //number of contracts produced by this factory
     mapping(string => address) public contractsById; //gameId => tokenContract
+    uint256 public test; //variable used for testing upgrades
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[500] private __gap;
+    uint256[499] private __gap;
 
     /**
      * @dev Logs a successful contract production from the factory.
@@ -37,13 +38,10 @@ contract AchievementsFactory is Initializable, AccessControlUpgradeable {
 
     /**
      * @dev AchievementsFactory initializer. Sets up AccessControl roles.
-     * @param _admin Address that will initially hold the MINT_ROLE and ADMIN_ROLE.
+     * @param _test Test value for checking successful upgrade.
      */
-    function initialize(address _admin) public initializer {
-        __AccessControl_init();
-        _setRoleAdmin(MINT_ROLE, ADMIN_ROLE);
-        _setupRole(ADMIN_ROLE, _admin);
-        _setupRole(MINT_ROLE, _admin);
+    function initialize(uint256 _test) public reinitializer(2) {
+        test = _test;
     }
 
     /**
