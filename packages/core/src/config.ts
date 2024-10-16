@@ -2,46 +2,7 @@
 export const MAINNET_ID = 42161;
 export const TESTNET_ID = 421614;
 
-export interface Config {
-  arbitrumBlockExplorer: string;
-  arbitrumGoerliBlockExplorer: string;
-  arbitrumOneJsonRpcUrl: string;
-  arbitrumOneWebSocketUrl: string;
-  defaultRpcUrl: string;
-  chainlinkEthUsdPriceFeed: string;
-  chainlinkXaiUsdPriceFeed: string;
-  esXaiAddress: string;
-  esXaiDeployedBlockNumber: number;
-  esXaiImplementationAddress: string;
-  gasSubsidyAddress: string;
-  gasSubsidyDeployedBlockNumber: number;
-  gasSubsidyImplementationAddress: string;
-  nodeLicenseAddress: string;
-  nodeLicenseDeployedBlockNumber: number;
-  nodeLicenseImplementationAddress: string;
-  refereeAddress: string;
-  refereeDeployedBlockNumber: number;
-  refereeImplementationAddress: string;
-  refereeCalculationsAddress: string;
-  rollupAddress: string;
-  xaiAddress: string;
-  xaiDeployedBlockNumber: number;
-  xaiImplementationAddress: string;
-  xaiGaslessClaimAddress: string;
-  xaiRedEnvelope2024Address: string;
-  xaiRedEnvelope2024ImplementationAddress: string;
-  poolFactoryAddress: string;
-  poolFactoryAddressImplementationAddress: string;
-  defaultNetworkName: string;
-  subgraphEndpoint: string;
-  publicRPC: string;
-  alchemyApiKey: string;
-  crossmintProjectId: string;
-  crossmintCollectionId: string;
-}
-
-
-const mainnetConfig: Config = {
+const mainnetConfig = {
   arbitrumBlockExplorer: "https://arbiscan.io",
   arbitrumGoerliBlockExplorer: "https://goerli.arbiscan.io",
   arbitrumOneJsonRpcUrl: (typeof process !== 'undefined' && process.env && process.env.ARB_ONE_RPC) || "https://arb-mainnet.g.alchemy.com/v2/oD4X3JXvJclnt36mDkqnp9CO2sZkNhYT",
@@ -135,3 +96,5 @@ export function setConfigByChainId(chainId: number): void {
 export function setConfig(newConfig: Config): void {
   config = newConfig;
 }
+
+export type Config = typeof mainnetConfig
