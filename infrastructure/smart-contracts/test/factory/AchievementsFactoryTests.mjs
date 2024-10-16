@@ -123,7 +123,7 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             
             //batch mint tokens
             const toAddress = await addr1.getAddress();
-            const tokenIds = [0, 1, 2];
+            const tokenIds = [0n, 1n, 2n];
             const data = "0x";
             let trx2 = await tokenContract.connect(addr1).mintBatch(toAddress, tokenIds, data);
             let rec2 = await trx2.wait();
@@ -140,6 +140,11 @@ export function AchievementsFactoryTests(deployInfrastructure) {
                 expect(rec2.logs[0].args[4][i]).to.equal("1");
                 expect(await tokenContract.balanceOf(toAddress, tokenIds[i])).to.equal(1);
                 expect(await tokenContract.totalSupplyById(tokenIds[i])).to.equal(1);
+            }
+            const addressArray = new Array(tokenIds.length).fill(toAddress);
+            const batchBalances = await tokenContract.balanceOfBatch(addressArray, tokenIds);
+            for (let i = 0; i < batchBalances.length; i++) {
+                expect(batchBalances[i]).to.equal(1);
             }
         });
 
