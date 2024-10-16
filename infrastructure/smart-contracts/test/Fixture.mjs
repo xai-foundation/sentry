@@ -14,6 +14,7 @@ import { getBasicPoolConfiguration, StakingV2 } from "./StakingV2.mjs";
 import { extractAbi } from "../utils/exportAbi.mjs";
 import { Beacons } from "./Beacons.mjs";
 import { RefereeBulkSubmissions } from "./tinykeys/RefereeBulkSubmissions.mjs";
+import { RefereeCloseChallengeTests } from "./referee/RefereeCloseChallengeTests.mjs";
 import { NodeLicenseTinyKeysTest } from "./NodeLicenseTinyKeys.mjs";
 import { FailedKycTests } from "./failed-kyc/FailedKyc.mjs";
 import { RefereeWinningKeyCountSimulations } from "./get-winning-key-count/WinningKeyCountSimulations.mjs";
@@ -403,6 +404,7 @@ describe("Fixture Tests", function () {
     describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
     describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
     describe("Referee", RefereeTests(deployInfrastructure).bind(this));
+    describe("Referee Close Challenge", RefereeCloseChallengeTests(deployInfrastructure).bind(this));    
     describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
     describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
     describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));

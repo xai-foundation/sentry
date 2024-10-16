@@ -1,5 +1,5 @@
 import { Networkish, ethers } from 'ethers';
-import { config } from '../index.js';
+import { config, MAINNET_ID } from '../index.js';
 
 // global storage of providers
 const providers: { [key: string]: ethers.JsonRpcProvider | ethers.WebSocketProvider | ethers.AlchemyProvider } = {};
@@ -14,7 +14,7 @@ const providers: { [key: string]: ethers.JsonRpcProvider | ethers.WebSocketProvi
 export function getProvider(
     rpcUrl: string | undefined = config.arbitrumOneJsonRpcUrl,
     ignoreMemo: boolean = false,
-    alchemyNetwork: Networkish = { name: "arbitrum", chainId: 42161 }
+    alchemyNetwork: Networkish = { name: "arbitrum", chainId: MAINNET_ID }
 ): ethers.JsonRpcProvider | ethers.WebSocketProvider | ethers.AlchemyProvider {
 
     const memoKey = rpcUrl != null ? rpcUrl : JSON.stringify(alchemyNetwork);

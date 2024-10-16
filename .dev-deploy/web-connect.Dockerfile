@@ -13,6 +13,9 @@ COPY . .
 # Install all dependencies for the monorepo
 RUN pnpm install
 
+# Set the VITE_APP_ENV environment variable
+ENV VITE_APP_ENV=development
+
 # Build the web-staking application
 RUN npx nx build @sentry/web-connect
 
