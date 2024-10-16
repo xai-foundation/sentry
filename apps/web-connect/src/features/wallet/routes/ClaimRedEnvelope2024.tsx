@@ -1,27 +1,25 @@
-import {useAccount, useWriteContract } from "wagmi";
-import {wagmiConfig, chains} from "../../../main";
+import {useWriteContract } from "wagmi";
+import {chains} from "../../../main";
 import {useState, useEffect} from "react";
 import {XaiCheckbox} from "@sentry/ui";
 import {useNavigate} from "react-router-dom";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import {BiLoaderAlt} from "react-icons/bi";
-import {XaiGaslessClaimAbi, config} from "@sentry/core";
+import {XaiGaslessClaimAbi, config, isValidNetwork} from "@sentry/core";
 import {ethers} from "ethers";
 import { XaiBanner } from "@/features/checkout/components/XaiBanner";
-import { getAccount } from '@wagmi/core'
 import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
+import { useNetworkConfig } from "@/hooks/useNetworkConfig";
 
 export function ClaimRedEnvelope2024() {
 	// TODO update all to new contract
 	const {blocked, loading} = useBlockIp({blockUsa: true});
-	const {address: _address} = useAccount();
+    const { chainId, address:_address, isDevelopment} = useNetworkConfig();
 	const address = _address?.toLowerCase();
 	const navigate = useNavigate();
-	const { chainId } = getAccount(wagmiConfig);
 	const chain = chains.find(chain => chain.id === chainId)
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
-	const ready = checkboxOne && chain?.id === 42_161;
-	// const ready = checkboxOne && chain?.id === 421614;
+	const ready = checkboxOne && isValidNetwork(chain?.id, isDevelopment);
 	const [permits, setPermits] = useState<{[key: string]: {r: string, s: string, v: number, amount: string}}>();
 
 	const txData = {
@@ -133,7 +131,7 @@ export function ClaimRedEnvelope2024() {
 													className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 													disabled={!ready}
 												>
-													{chain?.id === 42_161 ? "Claim" : "Please Switch to Arbitrum One"}
+													{isValidNetwork(chain?.id, isDevelopment) ? "Claim" : "Please Switch to Arbitrum"}
 												</button>
 											</div>
 											{error && (

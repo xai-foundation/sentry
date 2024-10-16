@@ -1,11 +1,11 @@
 import { useState, useMemo, useEffect } from 'react';
-import {wagmiConfig, chains} from "../../../main";
-import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
+import { chains} from "../../../main";
+import { useWaitForTransactionReceipt } from 'wagmi';
 import { Chain } from 'viem';
-import { CheckoutTierSummary, formatWeiToEther } from '@sentry/core';
+import { CheckoutTierSummary, formatWeiToEther, isValidNetwork } from '@sentry/core';
 import { CURRENCIES, Currency, useContractWrites, UseContractWritesReturn, useCurrencyHandler, useGetExchangeRate, useGetPriceForQuantity, useGetTotalSupplyAndCap, usePromoCodeHandler, useUserBalances } from '..';
 import {useProvider} from "../provider/useProvider";
-import { getAccount } from '@wagmi/core'
+import { useNetworkConfig } from '@/hooks/useNetworkConfig';
 
 export interface PriceDataInterface {
     price: bigint;
@@ -67,6 +67,8 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
     handleMintWithEthClicked: () => void;
     handleApproveClicked: () => void;
     handleMintWithXaiClicked: () => void;
+    chainId: number | undefined;
+    isConnected: boolean;
 }
 
 /**
@@ -77,11 +79,10 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
 export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysOrderTotalReturn {
     const { isLoading: isTotalLoading, data: getTotalData } = useGetTotalSupplyAndCap();
     const { data: exchangeRateData, isLoading: isExchangeRateLoading } = useGetExchangeRate();
+    const { chainId, isConnected, address, isDevelopment} = useNetworkConfig();
 
-	const { chainId } = getAccount(wagmiConfig);
 	const chain = chains.find(chain => chain.id === chainId)
 
-    const { address } = useAccount();
     const { data: providerData } = useProvider();
 
     const maxSupply = getTotalData?.cap && getTotalData?.totalSupply
@@ -177,7 +178,8 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     };
 
     const getEthButtonText = (): string => {        
-        if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
+        if(!isConnected) return "Please Connect Wallet";
+        if (!isValidNetwork(chain?.id, isDevelopment)) return "Please Switch to Arbitrum";
         if (mintWithEth.isPending || ethMintTx.isLoading) {
             return "WAITING FOR CONFIRMATION...";
         }
@@ -252,6 +254,8 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         blockExplorer: providerData?.blockExplorer ?? '',   
         handleMintWithEthClicked,
         handleApproveClicked,
-        handleMintWithXaiClicked,     
+        handleMintWithXaiClicked,
+        chainId,
+        isConnected
     };
 }
