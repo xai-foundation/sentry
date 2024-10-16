@@ -9,7 +9,7 @@ import {
 } from "./TableChunksComponents";
 import { getCurrentTierByStaking } from "./utils";
 import { iconType } from "@/app/components/dashboard/constants/constants";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAppKit } from '@reown/appkit/react';
 import { useAccount } from "wagmi";
 import { BasePagination } from "@/app/components/ui";
 import { formatDailyRewardRate, formatDailyRewardRatePercentage } from "@/app/utils/formatDailyRewardRate";
@@ -76,7 +76,7 @@ const AvailablePoolsTableComponent = ({
                                         setCurrentSortOrder,
                                         currentSortOrder
                                       }: AvailableTableProps) => {
-  const { open } = useWeb3Modal();
+  const { open } = useAppKit();
   const { isDisconnected } = useAccount();
 
   return (

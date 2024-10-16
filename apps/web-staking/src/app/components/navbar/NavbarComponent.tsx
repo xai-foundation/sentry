@@ -1,7 +1,7 @@
 "use client"
 
 import { Navbar, NavbarContent, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Link } from "@nextui-org/react";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAppKit } from '@reown/appkit/react';
 import { useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import { IoMdClose } from "react-icons/io";
@@ -14,7 +14,7 @@ import { usePathname } from "next/navigation";
 
 export default function NavbarComponent() {
 	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
-	const { open } = useWeb3Modal();
+	const { open } = useAppKit();
 	const { address, chainId } = useAccount();
 	const [isTestnet, setIsTestnet] = useState(false);
 	const url = usePathname();

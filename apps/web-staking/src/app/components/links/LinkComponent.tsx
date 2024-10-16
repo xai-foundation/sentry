@@ -17,7 +17,7 @@ export function LinkComponent({
   link,
   content,
   urlActivePath,
-                                activePage,
+  activePage,
   onClick,
   customClass,
   externalTab,
@@ -28,8 +28,8 @@ export function LinkComponent({
 
 
   // url === link.split("?")[0] || url.includes(urlActivePath!)
-    //   ? "bg-hornetSting border-palePearl border-1 global-clip-path"
-    //   : "";
+  //   ? "bg-hornetSting border-palePearl border-1 global-clip-path"
+  //   : "";
   return (
     <Link href={link} target={externalTab ? "_blank" : ""} onClick={onClick}>
       <div
@@ -44,7 +44,7 @@ export function LinkComponent({
 interface LinkLogoComponentProps {
   link: string;
   content?: string;
-  Icon: ElementType<any, keyof JSX.IntrinsicElements>;
+  Icon: ElementType<{ width?: number, height?: number, fill?: string }, keyof JSX.IntrinsicElements>;
   customClass?: string;
   externalTab?: boolean;
   color?: string;
