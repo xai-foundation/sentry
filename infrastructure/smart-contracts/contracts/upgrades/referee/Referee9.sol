@@ -861,66 +861,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         }
         return stakeAmountBoostFactors[length - 1];
     }
-    
-    /**
-     * @dev Admin update the maximum staking amount per NodeLicense
-     * @param newAmount The new maximum amount per NodeLicense
-     */
-    function updateMaxStakePerLicense(uint256 newAmount) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(newAmount != 0, "31");
-        uint256 prevAmount = maxStakeAmountPerLicense;
-        maxStakeAmountPerLicense = newAmount;
-        emit UpdateMaxStakeAmount(prevAmount, newAmount);
-    }
-    
-    /**
-     * @dev Admin update the maximum number of NodeLicense staked in a pool
-     * @param newAmount The new maximum amount per NodeLicense
-     */
-    function updateMaxKeysPerPool(uint256 newAmount) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(newAmount != 0, "32");
-        uint256 prevAmount = maxKeysPerPool;
-        maxKeysPerPool = newAmount;
-        emit UpdateMaxKeysPerPool(prevAmount, newAmount);
-    }
-
-    /**
-     * @dev Admin update the tier thresholds and the corresponding reward chance boost
-     * @param index The index if the tier to update
-     * @param newThreshold The new threshold of the tier
-     * @param newBoostFactor The new boost factor for the tier
-     */
-    function updateStakingTier(uint256 index, uint256 newThreshold, uint256 newBoostFactor) external onlyRole(DEFAULT_ADMIN_ROLE) {
-
-        require(newBoostFactor > 0 && newBoostFactor <= 10000, "33");
-
-        uint256 lastIndex = stakeAmountTierThresholds.length - 1;
-        if (index == 0) {
-            require(stakeAmountTierThresholds[1] > newThreshold, "34");
-        } else if (index == lastIndex) {
-            require(stakeAmountTierThresholds[lastIndex - 1] < newThreshold, "35");
-        } else {
-            require(stakeAmountTierThresholds[index + 1] > newThreshold && stakeAmountTierThresholds[index - 1] < newThreshold, "36");
-        }
-
-        stakeAmountTierThresholds[index] = newThreshold;
-        stakeAmountBoostFactors[index] = newBoostFactor;
-    }
-
-    /**
-     * @dev Admin add a new staking tier to the end of the tier array
-     * @param newThreshold The new threshold of the tier
-     * @param newBoostFactor The new boost factor for the tier
-     */
-    function addStakingTier(uint256 newThreshold, uint256 newBoostFactor) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(newBoostFactor > 0 && newBoostFactor <= 10000, "37");
-
-        uint256 lastIndex = stakeAmountTierThresholds.length - 1;
-        require(stakeAmountTierThresholds[lastIndex] < newThreshold, "38");
-
-        stakeAmountTierThresholds.push(newThreshold);
-        stakeAmountBoostFactors.push(newBoostFactor);
-    }
 
     /**
      * @dev Looks up payout boostFactor based on the staking tier for a staker wallet.
