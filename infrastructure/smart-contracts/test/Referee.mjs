@@ -896,6 +896,123 @@ export function RefereeTests(deployInfrastructure) {
 			assert.equal(calculateRes2[0], tier2Emission, "Unexpected Emissions calculation");
 			assert.equal(calculateRes2[1], tier2, "Unexpected Tier calculation");
 			assert.equal(totalEmission, tier2Emission * 2n, "Unexpected Challenge Emission");
+
+			// Wait some time
+			const blockOffset2 = 7;
+			const tenHoursSeconds = 36000; //10 hours
+			await ethers.provider.send("evm_increaseTime", [tenHoursSeconds - blockOffset2]);
+			await ethers.provider.send("evm_mine"); //mine block to apply new time
+			
+			// Submit another challenge
+			currentAssertion = 6;
+			previousAssertion = 4;
+			await submitMockRollupChallenge(
+				referee, 
+				challenger, 
+				mockRollup, 
+				refereeCalculations, 
+				currentAssertion,
+				previousAssertion,
+				null,
+				null
+			);
+
+			//get challenge data
+			challenge = await referee.challenges(2);
+			totalEmission = challenge[10] + challenge[11]; //reward + gas subsidy
+			
+			// Check the emission values based off of the time and emission values formula
+			const calculateRes3 = await referee.calculateChallengeEmissionAndTier();
+			assert.equal(calculateRes3[0], tier2Emission, "Unexpected Emissions calculation");
+			assert.equal(calculateRes3[1], tier2, "Unexpected Tier calculation");
+			assert.equal(totalEmission, tier2Emission * 10n, "Unexpected Challenge Emission");
+
+			// Wait some time
+			const thirtyMinsSeconds = 1800; //30 mins
+			await ethers.provider.send("evm_increaseTime", [thirtyMinsSeconds - blockOffset2]);
+			await ethers.provider.send("evm_mine"); //mine block to apply new time
+			
+			// Submit another challenge
+			currentAssertion = 8;
+			previousAssertion = 6;
+			await submitMockRollupChallenge(
+				referee, 
+				challenger, 
+				mockRollup, 
+				refereeCalculations, 
+				currentAssertion,
+				previousAssertion,
+				null,
+				null
+			);
+
+			//get challenge data
+			challenge = await referee.challenges(3);
+			totalEmission = challenge[10] + challenge[11]; //reward + gas subsidy
+			
+			// Check the emission values based off of the time and emission values formula
+			const calculateRes4 = await referee.calculateChallengeEmissionAndTier();
+			assert.equal(calculateRes4[0], tier2Emission, "Unexpected Emissions calculation");
+			assert.equal(calculateRes4[1], tier2, "Unexpected Tier calculation");
+			assert.equal(totalEmission, tier2Emission / 2n, "Unexpected Challenge Emission");
+
+			// Wait some time
+			const oneMinSeconds = 60; //1 minute
+			await ethers.provider.send("evm_increaseTime", [oneMinSeconds - blockOffset2]);
+			await ethers.provider.send("evm_mine"); //mine block to apply new time
+			
+			// Submit another challenge
+			currentAssertion = 10;
+			previousAssertion = 8;
+			await submitMockRollupChallenge(
+				referee, 
+				challenger, 
+				mockRollup, 
+				refereeCalculations, 
+				currentAssertion,
+				previousAssertion,
+				null,
+				null
+			);
+
+			//get challenge data
+			challenge = await referee.challenges(4);
+			totalEmission = challenge[10] + challenge[11]; //reward + gas subsidy
+			
+			// Check the emission values based off of the time and emission values formula
+			const calculateRes5 = await referee.calculateChallengeEmissionAndTier();
+			assert.equal(calculateRes5[0], tier2Emission, "Unexpected Emissions calculation");
+			assert.equal(calculateRes5[1], tier2, "Unexpected Tier calculation");
+			assert.equal(totalEmission, tier2Emission / 60n, "Unexpected Challenge Emission");
+
+			// Wait some time
+			const thirtySeconds = 30; //30 seconds
+			await ethers.provider.send("evm_increaseTime", [thirtySeconds - blockOffset2]);
+			await ethers.provider.send("evm_mine"); //mine block to apply new time
+			
+			// Submit another challenge
+			currentAssertion = 12;
+			previousAssertion = 10;
+			await submitMockRollupChallenge(
+				referee, 
+				challenger, 
+				mockRollup, 
+				refereeCalculations, 
+				currentAssertion,
+				previousAssertion,
+				null,
+				null
+			);
+
+			//get challenge data
+			challenge = await referee.challenges(5);
+			totalEmission = challenge[10] + challenge[11]; //reward + gas subsidy
+			
+			// Check the emission values based off of the time and emission values formula
+			const calculateRes6 = await referee.calculateChallengeEmissionAndTier();
+			assert.equal(calculateRes6[0], tier2Emission, "Unexpected Emissions calculation");
+			assert.equal(calculateRes6[1], tier2, "Unexpected Tier calculation");
+			assert.equal(totalEmission, tier2Emission / 120n, "Unexpected Challenge Emission");
 		});
 		
 		// describe("The Referee should allow users to stake in V1", function () {
