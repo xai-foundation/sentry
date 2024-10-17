@@ -1,6 +1,7 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { parse } from "csv/sync";
 import { expect } from "chai";
+import {findWinningStateRoot} from "./Referee.mjs";
 import fs from "fs";
 
 /**
@@ -283,8 +284,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
         });
 
         it("Process the tiny keys airdrop and confirm balances after", async function() {
-            const {nodeLicense, challenger, addr1, addr2, addr3, addr4, tinyKeysAirDrop, deployer, referee, poolFactory, airdropMultiplier, nodeLicenseDefaultAdmin} = await loadFixture(deployInfrastructure);
-
+            const {nodeLicense, challenger, addr1, addr2, addr3, addr4, tinyKeysAirDrop, deployer,referee, poolFactory, airdropMultiplier, nodeLicenseDefaultAdmin} = await loadFixture(deployInfrastructure);
             //Confirm initial total supply
             const maxSupplyBefore = await nodeLicense.maxSupply();
             const totalSupplyBefore = await nodeLicense.totalSupply();
