@@ -84,7 +84,6 @@ export function esXaiTests(deployInfrastructure) {
 
         it("Check redemption periods can't be claimed before time is complete", async function() {
             const {esXai, esXaiMinter, esXaiDefaultAdmin} = await loadFixture(deployInfrastructure);
-
             await esXai.connect(esXaiDefaultAdmin).changeRedemptionStatus(true);
             const redemptionAmount = BigInt(1000);
             await esXai.connect(esXaiMinter).mint(esXaiMinter.address, redemptionAmount * BigInt(3));
@@ -98,7 +97,7 @@ export function esXaiTests(deployInfrastructure) {
         })
 
         it("Check redemption request can be retrieved after creation", async function() {
-            const {esXai, esXaiMinter, addr1, esXaiDefaultAdmin, poolFactory} = await loadFixture(deployInfrastructure);
+            const {esXai, esXaiMinter, addr1, esXaiDefaultAdmin} = await loadFixture(deployInfrastructure);
 
             await esXai.connect(esXaiDefaultAdmin).changeRedemptionStatus(true);
             const redemptionAmount = BigInt(1000);
@@ -112,7 +111,7 @@ export function esXaiTests(deployInfrastructure) {
         })
 
         it("Check redemption can be cancelled and esXai returned, and cannot be cancelled or completed a second time", async function() {
-            const {esXai, esXaiMinter, addr1, esXaiDefaultAdmin, poolFactory} = await loadFixture(deployInfrastructure);
+            const {esXai, esXaiMinter, addr1, esXaiDefaultAdmin} = await loadFixture(deployInfrastructure);
 
             await esXai.connect(esXaiDefaultAdmin).changeRedemptionStatus(true);
             const redemptionAmount = BigInt(1000);
@@ -186,7 +185,7 @@ export function esXaiTests(deployInfrastructure) {
 
         
         it("Check redemption passes for kyc wallets if they hold more keys than the max allowed", async function() {
-            const {esXai, esXaiMinter, addr2, esXaiDefaultAdmin, poolFactory} = await loadFixture(deployInfrastructure);
+            const {esXai, esXaiMinter, addr2, esXaiDefaultAdmin} = await loadFixture(deployInfrastructure);
 
             await esXai.connect(esXaiDefaultAdmin).changeRedemptionStatus(true);            
             const redemptionAmount = BigInt(1000);            
@@ -206,7 +205,6 @@ export function esXaiTests(deployInfrastructure) {
 
         it("Check redemption fails for non-kyc wallets if they hold more keys than the max allowed", async function() {
             const {esXai, esXaiMinter, addr3, esXaiDefaultAdmin} = await loadFixture(deployInfrastructure);
-
             await esXai.connect(esXaiDefaultAdmin).changeRedemptionStatus(true);
             const redemptionAmount = BigInt(1000);
             await esXai.connect(esXaiMinter).mint(addr3.address, redemptionAmount * BigInt(3));            

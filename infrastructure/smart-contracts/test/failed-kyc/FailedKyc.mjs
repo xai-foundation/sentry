@@ -101,7 +101,7 @@ export function FailedKycTests(deployInfrastructure) {
 
         it("Check redemption cannot be completed for failed kyc wallets.", async function() {
             const {esXai, esXaiMinter, esXaiDefaultAdmin, addr4: failedKycWallet, poolFactory, refereeDefaultAdmin} = await loadFixture(deployInfrastructure);   
-
+            
             // Check that the failedKycWallet is not in the failed kyc list
             const kycFailBefore = await poolFactory.failedKyc(await failedKycWallet.getAddress());
             expect(kycFailBefore).to.equal(false);

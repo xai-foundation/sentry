@@ -283,7 +283,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
         });
 
         it("Process the tiny keys airdrop and confirm balances after", async function() {
-            const {nodeLicense, challenger, addr1, addr2, addr3, addr4, tinyKeysAirDrop, deployer, referee, poolFactory, airdropMultiplier} = await loadFixture(deployInfrastructure);
+            const {nodeLicense, challenger, addr1, addr2, addr3, addr4, tinyKeysAirDrop, deployer, referee, poolFactory, airdropMultiplier, nodeLicenseDefaultAdmin} = await loadFixture(deployInfrastructure);
 
             //Confirm initial total supply
             const maxSupplyBefore = await nodeLicense.maxSupply();

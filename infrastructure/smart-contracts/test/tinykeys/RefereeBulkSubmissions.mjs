@@ -11,7 +11,7 @@ function BulkSubmissionsStakeAndUnstake(deployInfrastructure) {
 
         it("Check that a previously submitted owner bulk submission should be canceled and added to the pool bulkSubmission submitted key count", async function () {
             const { poolFactory, addr1: poolOwner, addr2: keyOwner, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
-            
+
             // Mint Node Licenses
             const addr1MintedKeyId = await mintSingleLicense(nodeLicense, poolOwner);
             const addr2MintedKeyId = await mintSingleLicense(nodeLicense, keyOwner);
@@ -447,7 +447,7 @@ function BulkSubmissionPermissions(deployInfrastructure) {
     
     it("Check that a pool key staker can submit bulkAssertions, and claimBulkSubmission rewards successfully.", async function () {
         const { poolFactory, addr1:poolOwner, addr2: keyStaker, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
-  
+
         // Mint some esXai to increase the total supply for submitting the first challenge so that there is available reward
         await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 1_000_000);
 
