@@ -57,6 +57,21 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             expect(await achievementsFactory.contractsById(gameId)).to.equal(await tokenContract.getAddress());
         });
 
+        it("should fail to produce token contract without ADMIN_ROLE", async function() {
+            const {
+                achievementsFactory, 
+                addr2
+            } = await loadFixture(deployInfrastructure);
+            
+            //attempt to transfer newly minted token to another address
+            const gameId = "test-game-id";
+            let addr = await addr2.getAddress();
+            const errorMsg = `AccessControl: account ${addr.toLowerCase()} is missing role ${adminRoleHash}`;
+            await expect(
+				achievementsFactory.connect(addr2).produceContract(gameId, baseURI)
+			).to.be.revertedWith(errorMsg);
+        });
+
         it("should fail to produce multiple token contracts with the same gameId", async function() {
             const {
                 achievementsFactory, 
@@ -67,7 +82,7 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             const gameId = "test-game-id";
             await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
 
-            //attempt to transfer newly minted token to another address
+            //attempt to produce another contract with same game id
             await expect(
 				achievementsFactory.connect(addr1).produceContract(gameId, baseURI)
 			).to.be.revertedWith("game id already exists");

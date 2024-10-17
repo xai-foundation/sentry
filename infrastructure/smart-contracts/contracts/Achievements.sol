@@ -48,6 +48,7 @@ contract Achievements is ERC1155 {
         require(balanceOf(to, id) == 0, "address has non-zero token balance");
         
         if (!definedTokens[id]) {
+            definedTokens[id] = true;
             _tokenIdList.push(id);
             tokenIdCount += 1;
         }
@@ -71,6 +72,7 @@ contract Achievements is ERC1155 {
             require(balanceOf(to, ids[i]) == 0, "address has non-zero token balance");
             
             if (!definedTokens[ids[i]]) {
+                definedTokens[ids[i]] = true;
                 _tokenIdList.push(ids[i]);
                 tokenIdCount += 1;
             }
