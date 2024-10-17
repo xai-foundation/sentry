@@ -50,10 +50,12 @@ contract AchievementsFactory2 is Initializable, AccessControlUpgradeable {
      * @param uri URI representing a link to the token's metadata.
      * @return address Address of the newly produced token contract.
      */
-    function produceContract(string memory gameId, string memory uri) public returns (address) {
+    function produceContract(string memory gameId, string memory uri) public onlyRole(ADMIN_ROLE) returns (address) {
         require(contractsById[gameId] == address(0x0), "game id already exists");
 
-        Achievements newContract = new Achievements(address(this), uri);
+        Achievements newContract = new Achievements();
+        newContract.initialize(address(this), uri);
+        
         contractsById[gameId] = address(newContract);
         productionCount += 1;
 

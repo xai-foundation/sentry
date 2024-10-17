@@ -55,7 +55,9 @@ contract AchievementsFactory is Initializable, AccessControlUpgradeable {
     function produceContract(string memory gameId, string memory uri) public onlyRole(ADMIN_ROLE) returns (address) {
         require(contractsById[gameId] == address(0x0), "game id already exists");
 
-        Achievements newContract = new Achievements(address(this), uri);
+        Achievements newContract = new Achievements();
+        newContract.initialize(address(this), uri);
+        
         contractsById[gameId] = address(newContract);
         productionCount += 1;
 

@@ -1,19 +1,15 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.9;
 
-// import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import "@openzeppelin/contracts/access/IAccessControl.sol";
-
-//TODO: add ability to mint to multiple accounts in mintBatch
-//TODO: make upgradeable
 
 /**
  * @title Achievements Contract
  * @dev An ERC1155 contract that represents game achievements.
  */
-contract Achievements is Initializable, ERC1155Upgradeable {
+contract Achievements2 is Initializable, ERC1155Upgradeable {
 
     //constants
     bytes32 public constant MINT_ROLE = keccak256("MINT_ROLE");
@@ -25,15 +21,14 @@ contract Achievements is Initializable, ERC1155Upgradeable {
     uint256 public tokenIdCount; //counter for unique token ids that exist
     uint256 public totalSupply; //counter for total tokens minted on this contract
     mapping(uint256 => uint256) public totalSupplyById; //tokenId => tokenCount
+    uint256 public test; //variable used for testing upgrades
 
     /**
-     * @dev Achievements initializer.
-     * @param _factoryAddress Address of the factory contract that produced this contract.
-     * @param _uri URI string pointing to metadata (e.g. https://metadata.xai.games/id.json)
+     * @dev Achievements2 initializer.
+     * @param _test Test value for checking successful upgrade.
      */
-    function initialize(address _factoryAddress, string memory _uri) public initializer {
-        __ERC1155_init(_uri);
-        factoryAddress = IAccessControl(_factoryAddress);
+    function initialize(uint256 _test) public initializer {
+        test = _test;
     }
 
     /**
