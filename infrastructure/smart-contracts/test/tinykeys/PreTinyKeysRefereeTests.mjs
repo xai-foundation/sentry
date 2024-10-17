@@ -427,7 +427,7 @@ export function RefereeTestsPreTK(deployInfrastructure) {
             assert.equal(balanceAfter, balanceBefore + rewardAmountForClaimers, "The amount of esXai minted was wrong")
 
             // check the esxai balance is equal to the total claims for the node owner
-            const totalClaimsForAddr1 = await referee.getTotalClaims(await addr1.getAddress());
+            const totalClaimsForAddr1 = await referee._lifetimeClaims(await addr1.getAddress());
             assert.equal(totalClaimsForAddr1, balanceAfter, "total claims does not match the esXai value")
 
             // check getChallenge is able to iterate over both challenges
