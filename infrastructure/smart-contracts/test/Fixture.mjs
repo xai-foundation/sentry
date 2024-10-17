@@ -16,7 +16,11 @@ import { Beacons } from "./Beacons.mjs";
 import { RefereeBulkSubmissions } from "./tinykeys/RefereeBulkSubmissions.mjs";
 import { NodeLicenseTinyKeysTest } from "./NodeLicenseTinyKeys.mjs";
 import { FailedKycTests } from "./failed-kyc/FailedKyc.mjs";
+import { RefereeTestsPreTK } from "./tinykeys/PreTinyKeysRefereeTests.mjs";
 import { RefereeWinningKeyCountSimulations } from "./get-winning-key-count/WinningKeyCountSimulations.mjs";
+import { SubmittingAndClaimingPreTK } from "./tinykeys/SubmittingAndClaimingPreTK.mjs";
+import { esXaiTestsPreTK } from "./tinykeys/esXaiPreTK.mjs";
+import { NodeLicensePreTK } from "./tinykeys/NodeLicensePreTK.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -125,12 +129,6 @@ describe("Fixture Tests", function () {
         await poolFactory.waitForDeployment();
         await poolFactory.enableStaking();
         const poolFactoryAddress = await poolFactory.getAddress();
-
-        // Upgrade esXai3 upgrade - moved here due to needing referee and node license addresses as a parameters
-        const maxKeysNonKyc = BigInt(1);
-        const EsXai3 = await ethers.getContractFactory("esXai3");
-        const esXai3 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai3, { call: { fn: "initialize", args: [await referee.getAddress(), await nodeLicense.getAddress(), poolFactoryAddress, maxKeysNonKyc] } });
-        await esXai3.waitForDeployment();
 
 
         // Deploy the StakingPool's PoolBeacon
@@ -322,20 +320,28 @@ describe("Fixture Tests", function () {
         const tinyKeysAirDrop = await upgrades.deployProxy(TinyKeysAirdrop, [await nodeLicense.getAddress(), await referee.getAddress(), await poolFactory.getAddress(), airdropMultiplier]);
         await tinyKeysAirDrop.waitForDeployment();
 
-        // Upgrade the Pool Factory
-        // Note/TODO: Add Back After Tiny Keys
+        // PoolFactory2 Upgrade - Required For Tiny Keys
         const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
         const poolFactory2 = await upgrades.upgradeProxy((await poolFactory.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
         await poolFactory2.waitForDeployment();
 
-        // Node License8 Upgrade
+        // Node License8 Upgrade - Required For Tiny Keys
         const NodeLicense8 = await ethers.getContractFactory("NodeLicense8");
         const nodeLicense8 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense8, { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await tinyKeysAirDrop.getAddress()] } });
         await nodeLicense8.waitForDeployment();
         // Deploy the Referee Calculations contract
+
         const RefereeCalculations = await ethers.getContractFactory("RefereeCalculations");
         const refereeCalculations = await upgrades.deployProxy(RefereeCalculations, [], { deployer: deployer });
         await refereeCalculations.waitForDeployment();
+        
+
+        // Upgrade esXai3 upgrade - Required For Tiny Keys
+        const maxKeysNonKyc = BigInt(1);
+        const EsXai3 = await ethers.getContractFactory("esXai3");
+        const esXai3 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai3, { call: { fn: "initialize", args: [await referee.getAddress(), await nodeLicense.getAddress(), poolFactoryAddress, maxKeysNonKyc] } });
+        await esXai3.waitForDeployment();
+
         
         // Referee9
         // This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
@@ -344,7 +350,7 @@ describe("Fixture Tests", function () {
         const referee9 = await upgrades.upgradeProxy((await referee.getAddress()), Referee9, { call: { fn: "initialize", args: [await refereeCalculations.getAddress()] } });
         await referee9.waitForDeployment();
         
-        // Referee10
+        // Referee10 upgrade - Required For Tiny Keys
         // This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
         const Referee10 = await ethers.getContractFactory("Referee10");
         // Upgrade the Referee
@@ -391,7 +397,7 @@ describe("Fixture Tests", function () {
             publicKeyHex: "0x" + publicKeyHex,
             referee: referee10,
             nodeLicense: nodeLicense8,
-            poolFactory: poolFactory2,
+            poolFactory:poolFactory2,
             gasSubsidy,
             esXai: esXai3,
             xai,
@@ -405,19 +411,31 @@ describe("Fixture Tests", function () {
         };
     }
 
-    //describe("CNY 2024", CNYAirDropTests.bind(this));
+    // Tests That Always Work
+    describe("CNY 2024", CNYAirDropTests.bind(this));
     describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
     describe("Xai", XaiTests(deployInfrastructure).bind(this));
+    describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
+    describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
+    describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
+
+    // Tests That Only Work Pre-Tiny Keys
+    // You need to comment out the following contract upgrades to run these tests
+    // PoolFactory2, NodeLicense8, Referee10, esXai3
+    //describe("Referee Pre-TK", RefereeTestsPreTK(deployInfrastructure).bind(this));
+    //describe("Submitting And Claiming Pre Tiny Keys", SubmittingAndClaimingPreTK(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
+    //describe("EsXai Pre-Tiny Keys", esXaiTestsPreTK(deployInfrastructure).bind(this));
+    //describe("Node License Pre-Tiny Keys", NodeLicensePreTK(deployInfrastructure).bind(this));
+
+    // Tests That Only Work Post-Tiny Keys
     describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
     describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
     describe("Referee", RefereeTests(deployInfrastructure).bind(this));
     describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
-    describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
-    describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
-    describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
     describe("BulkSubmissions", RefereeBulkSubmissions(deployInfrastructure).bind(this));
     describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
     describe("Failed KYC Tests", FailedKycTests(deployInfrastructure).bind(this));
+    
     //describe("Winning Key Count Simulations", RefereeWinningKeyCountSimulations(deployInfrastructure).bind(this));
 
     // This doesn't work when running coverage
