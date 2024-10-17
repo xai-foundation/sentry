@@ -1,5 +1,6 @@
 import axios from "axios";
 import {useEffect, useState} from "react";
+import { useNetworkConfig } from "./useNetworkConfig";
 
 enum IpBanType {
 	INVALID_IP = "INVALID_IP",
@@ -20,6 +21,7 @@ interface checkIpProps {
 export function useBlockIp({blockUsa}: {blockUsa: boolean}) {
 	const [blocked, setBlocked] = useState(true);
 	const [loading, setLoading] = useState(true);
+    const { isDevelopment } = useNetworkConfig();
 
 	useEffect(() => {
 		void checkIp();
@@ -37,7 +39,7 @@ export function useBlockIp({blockUsa}: {blockUsa: boolean}) {
 			}
 
 			if (!!invalidIp || !!ofacSanction || (blockUsa && data.country === "US")) {
-				setBlocked(true);
+				!isDevelopment && setBlocked(true);
 				setLoading(false);
 			}
 		} catch (e: any) {
