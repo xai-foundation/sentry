@@ -929,6 +929,13 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         stakedAmounts[pool] -= amount;
     }
 
+    function closeCurrentChallenge() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        Challenge storage currentChallenge = challenges[challengeCounter - 1];
+        require(block.timestamp >= currentChallenge.createdTimestamp + 50 minutes, "59");
+        currentChallenge.openForSubmissions = false;
+        // Not emitting an event as it will be emitted when the next challenge is submitted
+    }
+
     //TEST FUNCTION this is used only for test coverage
     // Leaving these functions in the contract for test coverage purposes
     // In the future these can be removed if size becomes an issue
