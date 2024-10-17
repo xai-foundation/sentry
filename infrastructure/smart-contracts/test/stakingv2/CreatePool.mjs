@@ -2,6 +2,7 @@ import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {expect} from "chai";
 import {Contract} from "ethers";
 import {StakingPoolAbi} from "@sentry/core";
+import {findWinningStateRoot} from "../Referee.mjs";
 
 export function CreatePool(deployInfrastructure, poolConfigurations) {
 	const {
