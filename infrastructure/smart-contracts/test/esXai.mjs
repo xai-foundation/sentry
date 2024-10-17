@@ -1,6 +1,5 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
-import {isPoolFactory2} from "./utils/isPoolFactory2.mjs";
 
 /**
  * @title esXai Tests
@@ -84,20 +83,7 @@ export function esXaiTests(deployInfrastructure) {
         })
 
         it("Check redemption periods can't be claimed before time is complete", async function() {
-            const {esXai, esXaiMinter, esXaiDefaultAdmin, poolFactory: poolFactoryFromFixture, tinyKeysAirDrop} = await loadFixture(deployInfrastructure);
-
-            // Note/TODO: Remove After Tiny Keys
-            let poolFactory = poolFactoryFromFixture;
-
-            const isPoolFactoryUpgraded = await isPoolFactory2(await poolFactory.getAddress());
-            if(!isPoolFactoryUpgraded) {      
-                const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
-                poolFactory = await upgrades.upgradeProxy((await poolFactoryFromFixture.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
-                await poolFactory.waitForDeployment();
-            }
-
-            // End of upgrade to be removed/refactored
-
+            const {esXai, esXaiMinter, esXaiDefaultAdmin} = await loadFixture(deployInfrastructure);
 
             await esXai.connect(esXaiDefaultAdmin).changeRedemptionStatus(true);
             const redemptionAmount = BigInt(1000);
@@ -112,20 +98,7 @@ export function esXaiTests(deployInfrastructure) {
         })
 
         it("Check redemption request can be retrieved after creation", async function() {
-            const {esXai, esXaiMinter, addr1, esXaiDefaultAdmin, poolFactory: poolFactoryFromFixture, tinyKeysAirDrop} = await loadFixture(deployInfrastructure);
-
-            
-            // Note/TODO: Remove After Tiny Keys
-            let poolFactory = poolFactoryFromFixture;
-
-            const isPoolFactoryUpgraded = await isPoolFactory2(await poolFactory.getAddress());
-            if(!isPoolFactoryUpgraded) {      
-                const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
-                poolFactory = await upgrades.upgradeProxy((await poolFactoryFromFixture.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
-                await poolFactory.waitForDeployment();
-            }
-
-            // End of upgrade to be removed/refactored
+            const {esXai, esXaiMinter, addr1, esXaiDefaultAdmin, poolFactory} = await loadFixture(deployInfrastructure);
 
             await esXai.connect(esXaiDefaultAdmin).changeRedemptionStatus(true);
             const redemptionAmount = BigInt(1000);
@@ -139,20 +112,7 @@ export function esXaiTests(deployInfrastructure) {
         })
 
         it("Check redemption can be cancelled and esXai returned, and cannot be cancelled or completed a second time", async function() {
-            const {esXai, esXaiMinter, addr1, esXaiDefaultAdmin, poolFactory: poolFactoryFromFixture, tinyKeysAirDrop} = await loadFixture(deployInfrastructure);
-
-            
-            // Note/TODO: Remove After Tiny Keys
-            let poolFactory = poolFactoryFromFixture;
-
-            const isPoolFactoryUpgraded = await isPoolFactory2(await poolFactory.getAddress());
-            if(!isPoolFactoryUpgraded) {      
-                const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
-                poolFactory = await upgrades.upgradeProxy((await poolFactoryFromFixture.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
-                await poolFactory.waitForDeployment();
-            }
-
-            // End of upgrade to be removed/refactored
+            const {esXai, esXaiMinter, addr1, esXaiDefaultAdmin, poolFactory} = await loadFixture(deployInfrastructure);
 
             await esXai.connect(esXaiDefaultAdmin).changeRedemptionStatus(true);
             const redemptionAmount = BigInt(1000);
@@ -168,21 +128,7 @@ export function esXaiTests(deployInfrastructure) {
         })
 
         it("Check redemption can be completed and correct amount of xai is received, and total supply of esXai decreases", async function() {
-            const {esXai, xai, esXaiMinter, addr1, esXaiDefaultAdmin, poolFactory: poolFactoryFromFixture, tinyKeysAirDrop} = await loadFixture(deployInfrastructure);
-
-            
-            // Note/TODO: Remove After Tiny Keys
-            let poolFactory = poolFactoryFromFixture;
-
-            const isPoolFactoryUpgraded = await isPoolFactory2(await poolFactory.getAddress());
-            if(!isPoolFactoryUpgraded) {      
-                const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
-                poolFactory = await upgrades.upgradeProxy((await poolFactoryFromFixture.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
-                await poolFactory.waitForDeployment();
-            }
-
-            // End of upgrade to be removed/refactored
-
+            const {esXai, xai, esXaiMinter, addr1, esXaiDefaultAdmin} = await loadFixture(deployInfrastructure);
 
             await esXai.connect(esXaiDefaultAdmin).changeRedemptionStatus(true);
             const redemptionAmount = BigInt(1000);
@@ -224,24 +170,9 @@ export function esXaiTests(deployInfrastructure) {
         })
 
         it("Check whitelist addresses are added and retrieved correctly", async function() {
-            const {esXai, addr1, addr2, addr3, esXaiDefaultAdmin, poolFactory: poolFactoryFromFixture, tinyKeysAirDrop} = await loadFixture(deployInfrastructure);
+            const {esXai, addr1, addr2, esXaiDefaultAdmin} = await loadFixture(deployInfrastructure);
 
-            
-            // Note/TODO: Remove After Tiny Keys
-            let poolFactory = poolFactoryFromFixture;
-
-            const isPoolFactoryUpgraded = await isPoolFactory2(await poolFactory.getAddress());
-            if(!isPoolFactoryUpgraded) {      
-                const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
-                poolFactory = await upgrades.upgradeProxy((await poolFactoryFromFixture.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
-                await poolFactory.waitForDeployment();
-            }
-
-            // End of upgrade to be removed/refactored
-
-
-
-            const whitelistCount2 = await esXai.getWhitelistCount();
+            //const whitelistCount2 = await esXai.getWhitelistCount();
             //console.log("WL Count2: ", whitelistCount2);
             await esXai.connect(esXaiDefaultAdmin).addToWhitelist(addr1.address);
             await esXai.connect(esXaiDefaultAdmin).addToWhitelist(addr2.address);
@@ -255,19 +186,7 @@ export function esXaiTests(deployInfrastructure) {
 
         
         it("Check redemption passes for kyc wallets if they hold more keys than the max allowed", async function() {
-            const {esXai, esXaiMinter, addr2, esXaiDefaultAdmin, poolFactory: poolFactoryFromFixture, tinyKeysAirDrop} = await loadFixture(deployInfrastructure);
-
-            // Note/TODO: Remove After Tiny Keys
-            let poolFactory = poolFactoryFromFixture;
-
-            const isPoolFactoryUpgraded = await isPoolFactory2(await poolFactory.getAddress());
-            if(!isPoolFactoryUpgraded) {      
-                const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
-                poolFactory = await upgrades.upgradeProxy((await poolFactoryFromFixture.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
-                await poolFactory.waitForDeployment();
-            }
-
-            // End of upgrade to be removed/refactored
+            const {esXai, esXaiMinter, addr2, esXaiDefaultAdmin, poolFactory} = await loadFixture(deployInfrastructure);
 
             await esXai.connect(esXaiDefaultAdmin).changeRedemptionStatus(true);            
             const redemptionAmount = BigInt(1000);            
@@ -286,19 +205,7 @@ export function esXaiTests(deployInfrastructure) {
         })
 
         it("Check redemption fails for non-kyc wallets if they hold more keys than the max allowed", async function() {
-            const {esXai, esXaiMinter, addr3, esXaiDefaultAdmin, poolFactory: poolFactoryFromFixture, tinyKeysAirDrop} = await loadFixture(deployInfrastructure);
-            
-            // Note/TODO: Remove After Tiny Keys
-            let poolFactory = poolFactoryFromFixture;
-
-            const isPoolFactoryUpgraded = await isPoolFactory2(await poolFactory.getAddress());
-            if(!isPoolFactoryUpgraded) {      
-                const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
-                poolFactory = await upgrades.upgradeProxy((await poolFactoryFromFixture.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
-                await poolFactory.waitForDeployment();
-            }
-
-            // End of upgrade to be removed/refactored
+            const {esXai, esXaiMinter, addr3, esXaiDefaultAdmin} = await loadFixture(deployInfrastructure);
 
             await esXai.connect(esXaiDefaultAdmin).changeRedemptionStatus(true);
             const redemptionAmount = BigInt(1000);

@@ -3,7 +3,6 @@ import { expect } from "chai";
 import {submitTestChallenge} from "../utils/submitTestChallenge.mjs";
 import {mintSingleLicense} from "../utils/mintLicenses.mjs";
 import {createPool} from "../utils/createPool.mjs";
-import {isPoolFactory2} from "../utils/isPoolFactory2.mjs";
 
 /**
  * @title Failed KYC Tests
@@ -13,19 +12,7 @@ export function FailedKycTests(deployInfrastructure) {
     return function() {
     
         it("Check that admin can add and remove kyc fail successfully.", async function() {
-            const {refereeDefaultAdmin, addr4, poolFactory: poolFactoryFromFixture, tinyKeysAirDrop} = await loadFixture(deployInfrastructure);
-
-			let poolFactory = poolFactoryFromFixture;
-
-			// Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
-			// Referee10		
-            const isPoolFactoryUpgraded = await isPoolFactory2(await poolFactory.getAddress());
-            if(!isPoolFactoryUpgraded) {      
-                const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
-                poolFactory = await upgrades.upgradeProxy((await poolFactoryFromFixture.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
-                await poolFactory.waitForDeployment();
-            }
-			// End of upgrade to be removed/refactored
+            const {refereeDefaultAdmin, addr4, poolFactory} = await loadFixture(deployInfrastructure);
 
             // Check that the address is not in the failed kyc list
             const kycFailBefore = await poolFactory.failedKyc(await addr4.getAddress());
@@ -47,25 +34,7 @@ export function FailedKycTests(deployInfrastructure) {
         });
     
         it("Check that a failed kyc wallet cannot add stake to a pool.", async function() {
-            const {refereeDefaultAdmin, addr1: poolOwner, addr4: failedKycWallet, poolFactory: poolFactoryFromFixture, nodeLicense, referee: refereeFromFixture, esXai, esXaiMinter, challenger, tinyKeysAirDrop} = await loadFixture(deployInfrastructure);
-
-			let referee = refereeFromFixture;
-			let poolFactory = poolFactoryFromFixture;
-
-			// Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
-			// Referee10
-			const Referee10 = await ethers.getContractFactory("Referee10");
-			// Upgrade the Referee
-			referee = await upgrades.upgradeProxy((await refereeFromFixture.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
-			await referee.waitForDeployment();
-
-            const isPoolFactoryUpgraded = await isPoolFactory2(await poolFactory.getAddress());
-            if(!isPoolFactoryUpgraded) {      
-                const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
-                poolFactory = await upgrades.upgradeProxy((await poolFactoryFromFixture.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
-                await poolFactory.waitForDeployment();
-            }
-			// End of upgrade to be removed/refactored
+            const {refereeDefaultAdmin, addr1: poolOwner, addr4: failedKycWallet, poolFactory, nodeLicense, referee, esXai, esXaiMinter, challenger} = await loadFixture(deployInfrastructure);
 
             // Mint Node License to pool owner
             const poolOwnerKeyId = await mintSingleLicense(nodeLicense, poolOwner);
@@ -109,19 +78,7 @@ export function FailedKycTests(deployInfrastructure) {
         });
 
         it("Check redemption cannot be initiated for failed kyc wallets.", async function() {
-            const {esXai, esXaiMinter, addr3, esXaiDefaultAdmin, addr4: failedKycWallet, poolFactory: poolFactoryFromFixture, refereeDefaultAdmin, tinyKeysAirDrop} = await loadFixture(deployInfrastructure); 
-
-			//let referee = refereeFromFixture;
-			let poolFactory = poolFactoryFromFixture;
-
-			// Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.		
-            const isPoolFactoryUpgraded = await isPoolFactory2(await poolFactory.getAddress());
-            if(!isPoolFactoryUpgraded) {      
-                const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
-                poolFactory = await upgrades.upgradeProxy((await poolFactoryFromFixture.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
-                await poolFactory.waitForDeployment();
-            }
-			// End of upgrade to be removed/refactored           
+            const {esXai, esXaiMinter, esXaiDefaultAdmin, addr4: failedKycWallet, poolFactory, refereeDefaultAdmin} = await loadFixture(deployInfrastructure);      
             
             // Check that the failedKycWallet is not in the failed kyc list
             const kycFailBefore = await poolFactory.failedKyc(await failedKycWallet.getAddress());
@@ -143,20 +100,8 @@ export function FailedKycTests(deployInfrastructure) {
 
 
         it("Check redemption cannot be completed for failed kyc wallets.", async function() {
-            const {esXai, esXaiMinter, addr3, esXaiDefaultAdmin, addr4: failedKycWallet, poolFactory: poolFactoryFromFixture, refereeDefaultAdmin, tinyKeysAirDrop} = await loadFixture(deployInfrastructure);   
-            
-			let poolFactory = poolFactoryFromFixture;
+            const {esXai, esXaiMinter, esXaiDefaultAdmin, addr4: failedKycWallet, poolFactory, refereeDefaultAdmin} = await loadFixture(deployInfrastructure);   
 
-
-			// Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.		
-            const isPoolFactoryUpgraded = await isPoolFactory2(await poolFactory.getAddress());
-            if(!isPoolFactoryUpgraded) {      
-                const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
-                poolFactory = await upgrades.upgradeProxy((await poolFactoryFromFixture.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
-                await poolFactory.waitForDeployment();
-            }
-			// End of upgrade to be removed/refactored                
-            
             // Check that the failedKycWallet is not in the failed kyc list
             const kycFailBefore = await poolFactory.failedKyc(await failedKycWallet.getAddress());
             expect(kycFailBefore).to.equal(false);

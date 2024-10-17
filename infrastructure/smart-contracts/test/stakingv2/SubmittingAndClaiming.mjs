@@ -1,6 +1,5 @@
 import {expect} from "chai";
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
-import {isPoolFactory2} from "../utils/isPoolFactory2.mjs";
 
 export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) {
 	const {
@@ -13,26 +12,7 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 
 	return function () {
 		it("Pool owner should be able to submit pool assertions and & claim for a pool (single license holder)", async function () {
-			const {poolFactory: poolFactoryFromFixture, addr1, addr2, nodeLicense, referee: refereeFromFixture, operator, esXai, esXaiMinter, challenger, tinyKeysAirDrop} = await loadFixture(deployInfrastructure);
-
-			let referee = refereeFromFixture;
-			let poolFactory = poolFactoryFromFixture;
-
-			// Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
-			// Referee10
-			const Referee10 = await ethers.getContractFactory("Referee10");
-			// Upgrade the Referee
-			referee = await upgrades.upgradeProxy((await refereeFromFixture.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
-			await referee.waitForDeployment();
-
-            const isPoolFactoryUpgraded = await isPoolFactory2(await poolFactory.getAddress());
-            if(!isPoolFactoryUpgraded) {      
-                const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
-                poolFactory = await upgrades.upgradeProxy((await poolFactoryFromFixture.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
-                await poolFactory.waitForDeployment();
-            }
-
-			// End of upgrade to be removed/refactored
+			const {poolFactory, addr1, addr2, nodeLicense, referee, operator, esXai, esXaiMinter, challenger} = await loadFixture(deployInfrastructure);
 
 			// Get a single key for addr1
 			const singlePrice = await nodeLicense.price(1, "");
@@ -127,26 +107,7 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 		});
 
 		it("Pool delegate should be able to submit pool assertions and & claim for a pool (multiple license holders)", async function () {
-			const {poolFactory:poolFactoryFromFixture, addr1, addr2, addr3, nodeLicense, referee:refereeFromFixture, operator, esXai, esXaiMinter, challenger, kycAdmin, tinyKeysAirDrop} = await loadFixture(deployInfrastructure);
-
-			let referee = refereeFromFixture;
-			let poolFactory = poolFactoryFromFixture;
-
-			// Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
-			// Referee10
-			const Referee10 = await ethers.getContractFactory("Referee10");
-			// Upgrade the Referee
-			referee = await upgrades.upgradeProxy((await refereeFromFixture.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
-			await referee.waitForDeployment();
-
-            const isPoolFactoryUpgraded = await isPoolFactory2(await poolFactory.getAddress());
-            if(!isPoolFactoryUpgraded) {      
-                const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
-                poolFactory = await upgrades.upgradeProxy((await poolFactoryFromFixture.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
-                await poolFactory.waitForDeployment();
-            }
-			// End of upgrade to be removed/refactored
-
+			const {poolFactory, addr1, addr2, addr3, nodeLicense, referee, operator, esXai, esXaiMinter, challenger, kycAdmin} = await loadFixture(deployInfrastructure);
 
 			// Get a single key for addr1
 			const singlePrice = await nodeLicense.price(1, "");

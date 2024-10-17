@@ -349,18 +349,7 @@ export function RefereeTests(deployInfrastructure) {
 		});
 
 		it("Check that addr1 submitting a winning hash receives the allocated reward", async function () {
-			const {referee: refereeFromFixture, operator, challenger, esXai, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
-
-			let referee = refereeFromFixture;
-
-			// Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
-			// Referee10
-			const Referee10 = await ethers.getContractFactory("Referee10");
-			// Upgrade the Referee
-			referee = await upgrades.upgradeProxy((await referee.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
-			await referee.waitForDeployment();
-
-			// End of upgrade to be removed/refactored
+			const {referee, operator, challenger, esXai, addr1, nodeLicense} = await loadFixture(deployInfrastructure);
 
 			// Mint 200 licenses so that a reward will be most likely guaranteed
 			let keysToMint = 20000;
@@ -543,18 +532,7 @@ export function RefereeTests(deployInfrastructure) {
 		});
 
 		it("Check that submitting an invalid successorRoot does not create a submission", async function () {
-			const {referee: refereeFromFixture, operator, challenger, addr1} = await loadFixture(deployInfrastructure);
-
-			let referee = refereeFromFixture;
-
-			// Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
-			// Referee10
-			const Referee10 = await ethers.getContractFactory("Referee10");
-			// Upgrade the Referee
-			referee = await upgrades.upgradeProxy((await refereeFromFixture.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
-			await referee.waitForDeployment();
-
-			// End of upgrade to be removed/refactored
+			const {referee, operator, challenger, addr1} = await loadFixture(deployInfrastructure);
 
 			// Submit a challenge
 			await referee.connect(challenger).submitChallenge(

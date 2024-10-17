@@ -1,7 +1,6 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { parse } from "csv/sync";
 import { expect } from "chai";
-import { isPoolFactory2 } from "./utils/isPoolFactory2.mjs";
 import fs from "fs";
 
 /**
@@ -284,25 +283,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
         });
 
         it("Process the tiny keys airdrop and confirm balances after", async function() {
-            const {nodeLicense, challenger, addr1, addr2, addr3, addr4, tinyKeysAirDrop, deployer, referee:refereeFromFixture, poolFactory:poolFactoryFromFixture, airdropMultiplier, nodeLicenseDefaultAdmin} = await loadFixture(deployInfrastructure);
-
-            let referee = refereeFromFixture;
-            let poolFactory = poolFactoryFromFixture;
-    
-            // Note: the contract upgrade in this test will need to be removed/refactored after the tiny keys upgrade has gone live.			
-            // Referee10
-            const Referee10 = await ethers.getContractFactory("Referee10");
-            // Upgrade the Referee
-            referee = await upgrades.upgradeProxy((await refereeFromFixture.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
-            await referee.waitForDeployment();
-    
-            const isPoolFactoryUpgraded = await isPoolFactory2(await poolFactory.getAddress());
-            if(!isPoolFactoryUpgraded) {      
-                const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
-                poolFactory = await upgrades.upgradeProxy((await poolFactoryFromFixture.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
-                await poolFactory.waitForDeployment();
-            }
-            // End of upgrade to be removed/refactored
+            const {nodeLicense, challenger, addr1, addr2, addr3, addr4, tinyKeysAirDrop, deployer, referee, poolFactory, airdropMultiplier} = await loadFixture(deployInfrastructure);
 
             //Confirm initial total supply
             const maxSupplyBefore = await nodeLicense.maxSupply();
