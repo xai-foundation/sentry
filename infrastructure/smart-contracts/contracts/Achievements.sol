@@ -82,6 +82,12 @@ contract Achievements is ERC1155 {
         }
 
         _mintBatch(to, ids, amounts, data);
+
+        if (ids.length > 1) {
+            for (uint256 i = 0; i < ids.length; i++) {
+                require(balanceOf(to, ids[i]) == 1, "address has non-zero token balance");
+            }
+        }
     }
 
     /**
@@ -129,21 +135,6 @@ contract Achievements is ERC1155 {
         bytes memory data
     ) internal pure override {
         require(false, "not batch transferrable");
-    }
-
-    function _afterTokenTransfer(
-        address operator,
-        address from,
-        address to,
-        uint256[] memory ids,
-        uint256[] memory amounts,
-        bytes memory data
-    ) internal view override {
-        if (ids.length > 1) {
-            for (uint256 i = 0; i < ids.length; i++) {
-                require(balanceOf(to, ids[i]) == 1, "address has non-zero token balance");
-            }
-        }
     }
 
 }
