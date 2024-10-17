@@ -19,7 +19,6 @@ import { FailedKycTests } from "./failed-kyc/FailedKyc.mjs";
 import { RefereeWinningKeyCountSimulations } from "./get-winning-key-count/WinningKeyCountSimulations.mjs";
 import { PreTinyKeysTests } from "./tinykeys/PreTinyKeysTests.mjs";
 
-
 describe("Fixture Tests", function () {
 
     // We define a fixture to reuse the same setup in every test. We use
@@ -127,7 +126,6 @@ describe("Fixture Tests", function () {
         await poolFactory.waitForDeployment();
         await poolFactory.enableStaking();
         const poolFactoryAddress = await poolFactory.getAddress();
-
 
         // Deploy the StakingPool's PoolBeacon
         const StakingPoolPoolBeacon = await ethers.deployContract("PoolBeacon", [stakingPoolImplAddress]);
@@ -395,7 +393,7 @@ describe("Fixture Tests", function () {
             publicKeyHex: "0x" + publicKeyHex,
             referee: referee9,
             nodeLicense: nodeLicense7,
-            poolFactory:poolFactory,
+            poolFactory,
             gasSubsidy,
             esXai: esXai2,
             xai,

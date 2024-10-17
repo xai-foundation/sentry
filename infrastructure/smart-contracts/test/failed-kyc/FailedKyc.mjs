@@ -1,7 +1,7 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import {submitTestChallenge} from "../utils/submitTestChallenge.mjs";
-import {mintSingleLicense} from "../utils/mintLicenses.mjs";
+import {mintBatchedLicenses, mintSingleLicense} from "../utils/mintLicenses.mjs";
 import {createPool} from "../utils/createPool.mjs";
 
 /**
@@ -78,7 +78,7 @@ export function FailedKycTests(deployInfrastructure) {
         });
 
         it("Check redemption cannot be initiated for failed kyc wallets.", async function() {
-            const {esXai, esXaiMinter, esXaiDefaultAdmin, addr4: failedKycWallet, poolFactory, refereeDefaultAdmin} = await loadFixture(deployInfrastructure);      
+            const {esXai, esXaiMinter, addr3, esXaiDefaultAdmin, addr4: failedKycWallet, poolFactory, refereeDefaultAdmin} = await loadFixture(deployInfrastructure);                  
             
             // Check that the failedKycWallet is not in the failed kyc list
             const kycFailBefore = await poolFactory.failedKyc(await failedKycWallet.getAddress());

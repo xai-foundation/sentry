@@ -166,7 +166,9 @@ export function esXaiTests(deployInfrastructure) {
         })
 
         it("Check whitelist addresses are added and retrieved correctly", async function() {
-            const {esXai, addr1, addr2, esXaiDefaultAdmin} = await loadFixture(deployInfrastructure);
+            const {esXai, addr1, addr2, addr3, esXaiDefaultAdmin} = await loadFixture(deployInfrastructure);
+            const whitelistCount2 = await esXai.getWhitelistCount();
+            console.log("WL Count2: ", whitelistCount2);
             await esXai.connect(esXaiDefaultAdmin).addToWhitelist(addr1.address);
             await esXai.connect(esXaiDefaultAdmin).addToWhitelist(addr2.address);
             const whitelistCount = await esXai.getWhitelistCount();
