@@ -1,5 +1,6 @@
-import {expect} from "chai";
+import {expect, assert} from "chai";
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
+import {findWinningStateRoot} from "../Referee.mjs";
 
 export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) {
 	const {
@@ -44,6 +45,7 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 
 			// Save the new pool's address
 			const stakingPoolAddress = await poolFactory.connect(addr2).getPoolAddress(0);
+			console.log("stakingPoolAddress", stakingPoolAddress);
 
 			// Mint in batches of 100 keys to addr2 & stake
 			// Changed to 10_000 to have a high enough chance to get a winning key

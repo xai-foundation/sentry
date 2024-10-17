@@ -1,5 +1,6 @@
 import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
+import {findWinningStateRoot} from "../Referee.mjs";
 import {submitTestChallenge} from "../utils/submitTestChallenge.mjs";
 import {mintBatchedLicenses, mintSingleLicense} from "../utils/mintLicenses.mjs";
 import {createPool} from "../utils/createPool.mjs";
@@ -93,7 +94,7 @@ function BulkSubmissionsStakeAndUnstake(deployInfrastructure) {
         });
 
         it("Check that an existing pool submission's stakedKyCount increases when an un-submitted key is staked", async function () {
-            const { poolFactory, addr1, addr2, nodeLicense, referee, esXai, esXaiMinter, challenger, tinyKeysAirDrop } = await loadFixture(deployInfrastructure);
+            const { poolFactory, addr1, addr2, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
 
             // Mint Node Licenses
             const addr1MintedKeyIds = await mintBatchedLicenses(100, nodeLicense, addr1);
@@ -381,7 +382,7 @@ function BulkSubmissionPermissions(deployInfrastructure) {
 
     it("Check that a pool delegate can submit bulkAssertions, and claimBulkSubmission rewards successfully.", async function () {        
         const { poolFactory, addr1: poolOwner, addr2: poolDelegate, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
-
+        
         // Mint some esXai to increase the total supply for submitting the first challenge so that there is available reward
         await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 1_000_000);
 

@@ -2,6 +2,7 @@ import {expect} from "chai";
 import {loadFixture} from "@nomicfoundation/hardhat-network-helpers";
 import {submitTestChallenge} from "../utils/submitTestChallenge.mjs";
 import {mintSingleLicense} from "../utils/mintLicenses.mjs";
+import {findWinningStateRoot} from "../Referee.mjs";
 import {createPool} from "../utils/createPool.mjs";
 
 export function StakeAndUnstakeMultiplePools(deployInfrastructure) {
@@ -9,7 +10,7 @@ export function StakeAndUnstakeMultiplePools(deployInfrastructure) {
 
 	return function () {
 		it("Check that a staker can stake in multiple pools, un-stake and re-stake in same pool.", async function () {
-			const {poolFactory, addr1: pool1Owner, addr2: pool2Owner, addr3: staker, nodeLicense, referee, challenger} = await loadFixture(deployInfrastructure);
+			const {poolFactory, addr1: pool1Owner, addr2: pool2Owner, addr3: staker, nodeLicense, referee, operator, esXai, esXaiMinter, challenger} = await loadFixture(deployInfrastructure);
             
             // Mint licenses for pool1Owner, pool2Owner and staker
             const pool1OwnerKeyId = await mintSingleLicense(nodeLicense, pool1Owner);
