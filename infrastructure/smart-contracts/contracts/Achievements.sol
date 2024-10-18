@@ -31,6 +31,13 @@ contract Achievements is Initializable, ERC1155Upgradeable {
     mapping(uint256 => uint256) public totalSupplyById; //tokenId => tokenCount
 
     /**
+     * @dev This empty reserved space is put in place to allow future versions to add new
+     * variables without shifting down storage in the inheritance chain.
+     * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+     */
+    uint256[500] private __gap;
+
+    /**
      * @dev Achievements initializer.
      * @param _factoryAddress Address of the factory contract that produced this contract.
      * @param _uri URI string pointing to metadata (e.g. https://metadata.xai.games/id.json)
