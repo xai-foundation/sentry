@@ -105,8 +105,7 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             //mint tokens
             const toAddress = await addr1.getAddress();
             const tokenId = 0;
-            const data = "0x";
-            let trx2 = await tokenContract.connect(addr1).mint(toAddress, tokenId, data);
+            let trx2 = await tokenContract.connect(addr1).mint(toAddress, tokenId);
             let rec2 = await trx2.wait();
 
             //assert contract state and events
@@ -139,8 +138,7 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             //batch mint tokens
             const toAddress = await addr1.getAddress();
             const tokenIds = [0n, 1n, 2n];
-            const data = "0x";
-            let trx2 = await tokenContract.connect(addr1).mintBatch(toAddress, tokenIds, data);
+            let trx2 = await tokenContract.connect(addr1).mintBatch(toAddress, tokenIds);
             let rec2 = await trx2.wait();
 
             //assert contract state and events
@@ -163,6 +161,71 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             }
         });
 
+        it("should mint multiple batches of tokens to multiple recipients", async function() {
+            const {
+                achievementsFactory, 
+                addr1,
+                addr2,
+                addr3
+            } = await loadFixture(deployInfrastructure);
+
+            //produce new token contract
+            const gameId = "test-game-id";
+            const trx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
+            const rec = await trx.wait();
+            const tokenContractAddress = rec.logs[1].args[0];
+            const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
+            const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
+            
+            //mint multiple matches of tokens
+            const batches = [
+                {
+                    to: await addr1.getAddress(),
+                    ids: [0n, 1n, 2n]
+                },
+                {
+                    to: await addr2.getAddress(),
+                    ids: [0n, 1n, 2n]
+                },
+                {
+                    to: await addr3.getAddress(),
+                    ids: [0n, 1n, 2n]
+                },
+                {
+                    to: await addr3.getAddress(),
+                    ids: [3n, 4n, 5n]
+                }
+            ]
+            let trx2 = await tokenContract.connect(addr1).mintBatches(batches);
+            let rec2 = await trx2.wait();
+
+            for (let i = 0; i <= rec.logs.length; i++) {
+                expect(rec2.logs[i].fragment.name).to.equal("TransferBatch");
+                expect(rec2.logs[i].args[0]).to.equal(await addr1.getAddress());
+                expect(rec2.logs[i].args[1]).to.equal(ethers.ZeroAddress);
+                expect(rec2.logs[i].args[2]).to.equal(batches[i].to);
+                expect(await tokenContract.tokenIdCount()).to.equal(6);
+                expect(await tokenContract.totalSupply()).to.equal(12);
+                for (let j = 0; j < batches[0].ids.length; j++) {
+                    expect(rec2.logs[i].args[3][j]).to.equal(batches[i].ids[j].toString());
+                    expect(rec2.logs[i].args[4][j]).to.equal("1");
+                    expect(await tokenContract.balanceOf(batches[i].to, batches[i].ids[j])).to.equal(1);
+                }
+
+            }
+            const addressArray = batches.reduce((accumulator, value) => {
+                if (!accumulator.includes(value.to)) {
+                    accumulator.push(value.to);
+                }
+                return accumulator;
+            }, []);
+            const batchBalances = await tokenContract.balanceOfBatch(addressArray, batches[0].ids);
+            for (let i = 0; i < batchBalances.length; i++) {
+                expect(batchBalances[i]).to.equal(1);
+            }
+            
+        });
+
         it("should fail to mint tokens from address without MINT_ROLE", async function() {
             const {
                 achievementsFactory, 
@@ -181,17 +244,16 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             //mint initial token
             const toAddress = await addr1.getAddress();
             const tokenId = 0;
-            const data = "0x";
 
             //attempt to mint token without MINT_ROLE auth
             await expect(
-				tokenContract.connect(addr2).mint(toAddress, tokenId, data)
+				tokenContract.connect(addr2).mint(toAddress, tokenId)
 			).to.be.revertedWith("caller does not have MINT_ROLE");
 
             //attempt to batch mint token without MINT_ROLE auth
             const tokenIds = [tokenId];
             await expect(
-				tokenContract.connect(addr2).mintBatch(toAddress, tokenIds, data)
+				tokenContract.connect(addr2).mintBatch(toAddress, tokenIds)
 			).to.be.revertedWith("caller does not have MINT_ROLE");
         });
 
@@ -217,8 +279,7 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             //mint tokens as new minter account
             const toAddress = await addr1.getAddress();
             const tokenId = 0;
-            const data = "0x";
-            let trx2 = await tokenContract.connect(addr2).mint(toAddress, tokenId, data);
+            let trx2 = await tokenContract.connect(addr2).mint(toAddress, tokenId);
             let rec2 = await trx2.wait();
 
             //assert contract state and events
@@ -248,26 +309,25 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             //mint initial token
             const toAddress = await addr1.getAddress();
             const tokenId = 0;
-            const data = "0x";
-            await tokenContract.connect(addr1).mint(toAddress, tokenId, data);
+            await tokenContract.connect(addr1).mint(toAddress, tokenId);
 
             //attempt to mint another token with same tokenid to same address
             await expect(
-				tokenContract.connect(addr1).mint(toAddress, tokenId, data)
+				tokenContract.connect(addr1).mint(toAddress, tokenId)
 			).to.be.revertedWith("address has non-zero token balance");
 
             //attempt to batch mint another token with same tokenid to same address
             const tokenIds = [tokenId];
             await expect(
-				tokenContract.connect(addr1).mintBatch(toAddress, tokenIds, data)
+				tokenContract.connect(addr1).mintBatch(toAddress, tokenIds)
 			).to.be.revertedWith("address has non-zero token balance");
 
             //attempt to batch mint multiple tokens with same tokenid
             const unmintedTokenId = 1;
             const duplicateTokenIds = [unmintedTokenId, unmintedTokenId];
             await expect(
-				tokenContract.connect(addr1).mintBatch(toAddress, duplicateTokenIds, data)
-			).to.be.revertedWith("address has non-zero token balance");
+				tokenContract.connect(addr1).mintBatch(toAddress, duplicateTokenIds)
+			).to.be.revertedWith("address has invalid token balance");
         });
 
         it("should get all defined token ids on contract produced by AchievementsFactory", async function() {
@@ -287,8 +347,7 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             //batch mint tokens
             const toAddress = await addr1.getAddress();
             const tokenIds = [1n, 2n, 3n, 4n, 5n];
-            const data = "0x";
-            await tokenContract.connect(addr1).mintBatch(toAddress, tokenIds, data);
+            await tokenContract.connect(addr1).mintBatch(toAddress, tokenIds);
 
             //get defined token ids
             const tokenIdList = await tokenContract.getDefinedTokens();
@@ -324,7 +383,7 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             const toAddress = await addr1.getAddress();
             const tokenId = 0;
             const data = "0x";
-            await tokenContract.connect(addr1).mint(toAddress, tokenId, data);
+            await tokenContract.connect(addr1).mint(toAddress, tokenId);
 
             //attempt to transfer newly minted token to another address
             await expect(
