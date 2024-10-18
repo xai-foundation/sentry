@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { getCurrentRefereeVersionFromGraph, RefereeAbi } from '../index.js';
+import { getCurrentRefereeVersionFromGraph, NodeLicenseAbi, retry } from '../index.js';
 import { config } from '../config.js';
 import { RefereeConfig } from "@sentry/sentry-subgraph-client";
 import { getProvider } from "../index.js";
@@ -17,7 +17,7 @@ export async function checkRefereeBulkSubmissionCompatible(
     // If a refereeConfig is provided, check its version
     if (refereeConfig) {
         // If the version is greater than 6, it is compatible with bulk submission
-        if (refereeConfig.version > 6) {
+        if (refereeConfig.version > 7) {
             return true;
         }
     } else {
@@ -26,14 +26,18 @@ export async function checkRefereeBulkSubmissionCompatible(
 
         // Get the provider for the blockchain network
         const provider = getProvider();
+
         // Initialize a contract instance with the referee's ABI and address
-        const referee = new ethers.Contract(config.refereeAddress, RefereeAbi, provider);
+        const nodeLicense = new ethers.Contract(config.nodeLicenseAddress, NodeLicenseAbi, provider);
 
         let isCompatible = true;
         // Try to access a new storage variable in the referee contract to determine its version
+
         try {
-            // Attempt to read the refereeCalculationsAddress, which only exists in new versions of the contract
-            await referee.refereeCalculationsAddress();
+        // Read the current maxSupply, should be 50K for pre bulk submission
+        const maxSupply = await retry(() => nodeLicense.maxSupply()) as bigint;
+        isCompatible = maxSupply > 50000n;
+
         } catch (error) {
             // If an error occurs, it indicates the contract is an older version
             isCompatible = false;
