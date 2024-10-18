@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useCrossmintEvents } from "@crossmint/client-sdk-react-ui";
+import { useCrossmintEvents } from "@crossmint/client-sdk-base";
 
 interface MintingProps {
   orderIdentifier: string;

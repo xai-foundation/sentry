@@ -1,8 +1,8 @@
-import { CrossmintPaymentElement } from '@crossmint/client-sdk-react-ui';
 import React, { useState } from 'react';
 import { useAccount } from 'wagmi';
 import Minting from './Minting';
 import {config} from "@sentry/core";
+import FiatEmbeddedCheckoutIFrame from './FiatEmbeddedCheckoutIFrame.js';
 
 interface CrossmintModalProps {
     isOpen: boolean;
@@ -48,14 +48,14 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalP
             <div className="bg-black p-3 rounded-lg shadow-xl w-full max-w-3xl mx-4">
                 <div className="flex justify-between items-center p-4 border-b">
                     <h2 className="text-xl font-semibold text-white">Pay with Credit Card</h2>
-                    <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+                    <button onClick={onClose} className="text-white hover:text-gray-700">
                         X
                     </button>
                 </div>
                 <div className="p-4">
                     {orderIdentifier !== null ? <Minting orderIdentifier={orderIdentifier}/> :
                         <div>
-                            <CrossmintPaymentElement
+                            <FiatEmbeddedCheckoutIFrame
                                 projectId={projectId}
                                 collectionId={collectionId}
                                 environment={environment}
