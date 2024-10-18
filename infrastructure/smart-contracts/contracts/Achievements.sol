@@ -24,7 +24,7 @@ contract Achievements is ERC1155 {
     /**
      * @dev Achievements constructor.
      * @param _factoryAddress Address of the factory contract that produced this contract.
-     * @param _uri URI string pointing to metadata (e.g. https://metadata.xai.games/id.json)
+     * @param _uri URI string pointing to metadata (e.g. https://metadata.xai.games/{gameId}/id.json)
      */
     constructor(address _factoryAddress, string memory _uri) ERC1155(_uri) {
         factoryAddress = IAccessControl(_factoryAddress);
