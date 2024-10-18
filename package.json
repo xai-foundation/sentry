@@ -14,9 +14,10 @@
     "desktop": "pnpm -filter @sentry/web-connect run build && pnpm -r -filter @sentry/sentry-client-desktop run dev",
     "docs": "pnpm -filter @sentry/docs run start",
     "lint": "pnpm recursive run lint",
-    "staking": "pnpm -filter @sentry/web-staking run dev",
     "web": "pnpm -filter @sentry/web-connect run dev",
-    "postinstall": "node ./postinstall"
+    "web-preview": "pnpm -filter @sentry/web-connect build && pnpm -filter @sentry/web-connect preview",
+    "staking": "pnpm -filter @sentry/web-staking run dev",
+    "staking-preview": "pnpm -filter @sentry/web-staking build && pnpm -filter @sentry/web-staking start"
   },
   "dependencies": {
     "ethers": "6.8.1"
