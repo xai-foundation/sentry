@@ -40,7 +40,7 @@ contract Achievements is Initializable, ERC1155Upgradeable {
     /**
      * @dev Achievements initializer.
      * @param _factoryAddress Address of the factory contract that produced this contract.
-     * @param _uri URI string pointing to metadata (e.g. https://metadata.xai.games/id.json)
+     * @param _uri URI string pointing to metadata (e.g. https://metadata.xai.games/{gameId}/id.json)
      */
     function initialize(address _factoryAddress, string memory _uri) public initializer {
         __ERC1155_init(_uri);
