@@ -1,11 +1,12 @@
 import { useState, useMemo, useEffect } from 'react';
-import { chains} from "../../../main";
+import { chains } from "../../../main";
 import { useWaitForTransactionReceipt } from 'wagmi';
 import { Chain } from 'viem';
 import { CheckoutTierSummary, formatWeiToEther, isValidNetwork } from '@sentry/core';
 import { CURRENCIES, Currency, useContractWrites, UseContractWritesReturn, useCurrencyHandler, useGetExchangeRate, useGetPriceForQuantity, useGetTotalSupplyAndCap, usePromoCodeHandler, useUserBalances } from '..';
-import {useProvider} from "../provider/useProvider";
+import { useProvider } from "../provider/useProvider";
 import { useNetworkConfig } from '@/hooks/useNetworkConfig';
+import { useCrossmintEvents } from '@crossmint/client-sdk-base';
 
 export interface PriceDataInterface {
     price: bigint;
@@ -14,6 +15,13 @@ export interface PriceDataInterface {
 
 export interface UseWebBuyKeysOrderTotalProps {
     initialQuantity: number;
+}
+
+interface MintWithCrossmintStatus {
+    txHash: string,
+    error: string,
+    isPending: boolean,
+    orderIdentifier: string
 }
 
 export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
@@ -69,6 +77,8 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
     handleMintWithXaiClicked: () => void;
     chainId: number | undefined;
     isConnected: boolean;
+    mintWithCrossmint: MintWithCrossmintStatus
+    setMintWithCrossmint: React.Dispatch<React.SetStateAction<MintWithCrossmintStatus>>
 }
 
 /**
@@ -77,11 +87,17 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
  * @returns An object containing various properties and functions related to the order total.
  */
 export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysOrderTotalReturn {
+    const { VITE_APP_ENV } = import.meta.env
+    const environment = VITE_APP_ENV === 'development' ? 'staging' : 'production';
+    const { listenToMintingEvents } = useCrossmintEvents({
+        environment: environment,
+    });
+
     const { isLoading: isTotalLoading, data: getTotalData } = useGetTotalSupplyAndCap();
     const { data: exchangeRateData, isLoading: isExchangeRateLoading } = useGetExchangeRate();
-    const { chainId, isConnected, address, isDevelopment} = useNetworkConfig();
+    const { chainId, isConnected, address, isDevelopment } = useNetworkConfig();
 
-	const chain = chains.find(chain => chain.id === chainId)
+    const chain = chains.find(chain => chain.id === chainId)
 
     const { data: providerData } = useProvider();
 
@@ -96,6 +112,12 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     });
     const [currency, setCurrency] = useState<Currency>(CURRENCIES.AETH);
     const [quantity, setQuantity] = useState<number>(initialQuantity);
+    const [mintWithCrossmint, setMintWithCrossmint] = useState<MintWithCrossmintStatus>({
+        txHash: "",
+        error: "",
+        orderIdentifier: "",
+        isPending: false
+    });
 
     const { tokenBalance, ethBalance } = useUserBalances(currency);
     const { tokenAllowance, refetchAllowance } = useCurrencyHandler(currency, address);
@@ -103,9 +125,9 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
 
     const ready = checkboxes.one && checkboxes.two && checkboxes.three;
 
-    const  decimalPlaces: number = currency  === CURRENCIES.AETH ? 9 : 2;
+    const decimalPlaces: number = currency === CURRENCIES.AETH ? 9 : 2;
 
-    const { data: getPriceData, isLoading: isPriceLoading   } = useGetPriceForQuantity(quantity);
+    const { data: getPriceData, isLoading: isPriceLoading } = useGetPriceForQuantity(quantity);
     // Retrieve price data for the specified quantity
 
     /**
@@ -124,10 +146,10 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         };
     }, [getPriceData, discount, currency, exchangeRateData]);
 
-    const { 
-        mintWithEth, 
-        approve, 
-        mintWithXai, 
+    const {
+        mintWithEth,
+        approve,
+        mintWithXai,
         ethMintTx,
         xaiMintTx,
         approveTx,
@@ -177,8 +199,8 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         return "PURCHASE NOW";
     };
 
-    const getEthButtonText = (): string => {        
-        if(!isConnected) return "Please Connect Wallet";
+    const getEthButtonText = (): string => {
+        if (!isConnected) return "Please Connect Wallet";
         if (!isValidNetwork(chain?.id, isDevelopment)) return "Please Switch to Arbitrum";
         if (mintWithEth.isPending || ethMintTx.isLoading) {
             return "WAITING FOR CONFIRMATION...";
@@ -208,7 +230,30 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const userHasEthBalance = ethBalance >= calculateTotalPrice();
 
     const displayPricesMayVary = (getPriceData?.nodesAtEachPrice?.filter((node: CheckoutTierSummary) => node.quantity !== 0n) ?? []).length >= 2;
-    
+
+    useEffect(() => {
+        if (mintWithCrossmint.orderIdentifier != "") {
+            const eventListener = listenToMintingEvents({ orderIdentifier: mintWithCrossmint.orderIdentifier }, (event) => {
+                switch (event.type) {
+                    case "transaction:fulfillment.succeeded":
+                        setMintWithCrossmint({ isPending: false, txHash: event.payload.txId, error: "", orderIdentifier: "" });
+                        break;
+                    case "transaction:fulfillment.failed":
+                        console.error("Crossmint CC Error:", event.payload, event.payload.error.message)
+                        setMintWithCrossmint({ isPending: false, error: event.payload.error.message, txHash: "", orderIdentifier: "" });
+                        break;
+                }
+            });
+
+            // Clean up the event listener when the component unmounts or status changes
+            return () => {
+                if (eventListener && typeof eventListener.cleanup === 'function') {
+                    eventListener.cleanup();
+                }
+            };
+        }
+    }, [mintWithCrossmint.orderIdentifier, listenToMintingEvents]);
+
     return {
         isTotalLoading,
         isExchangeRateLoading,
@@ -251,11 +296,13 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         clearErrors,
         resetTransactions,
         mintWithEthError,
-        blockExplorer: providerData?.blockExplorer ?? '',   
+        blockExplorer: providerData?.blockExplorer ?? '',
         handleMintWithEthClicked,
         handleApproveClicked,
         handleMintWithXaiClicked,
         chainId,
-        isConnected
+        isConnected,
+        mintWithCrossmint,
+        setMintWithCrossmint
     };
 }
