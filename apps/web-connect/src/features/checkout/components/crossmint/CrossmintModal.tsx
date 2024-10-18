@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAccount } from 'wagmi';
 import { config } from "@sentry/core";
-import FiatEmbeddedCheckoutIFrame from './FiatEmbeddedCheckoutIFrame.js';
+import FiatEmbeddedCheckoutIFrame from './FiatEmbeddedCheckoutIFrame';
 import { useWebBuyKeysContext } from '../../contexts/useWebBuyKeysContext';
 
 interface CrossmintModalProps {

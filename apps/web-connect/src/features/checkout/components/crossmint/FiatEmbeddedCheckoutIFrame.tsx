@@ -5,7 +5,7 @@ import {
     embeddedCheckoutPropsToUpdatableParamsPayload,
 } from "@crossmint/client-sdk-base";
 
-import CrossmintEmbeddedCheckoutIFrame from "./EmbeddedCheckoutIFrame.js";
+import CrossmintEmbeddedCheckoutIFrame from "./EmbeddedCheckoutIFrame";
 import { type DependencyList, type EffectCallback, useEffect, useRef } from "react";
 
 function useDeepEffect(callback: EffectCallback, dependencies: DependencyList): void {
