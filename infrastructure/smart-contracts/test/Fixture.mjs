@@ -18,6 +18,7 @@ import { RefereeCloseChallengeTests } from "./referee/RefereeCloseChallengeTests
 import { NodeLicenseTinyKeysTest } from "./NodeLicenseTinyKeys.mjs";
 import { FailedKycTests } from "./failed-kyc/FailedKyc.mjs";
 import { RefereeWinningKeyCountSimulations } from "./get-winning-key-count/WinningKeyCountSimulations.mjs";
+import { AchievementsFactoryTests } from "./factory/AchievementsFactoryTests.mjs";
 
 describe("Fixture Tests", function () {
 
@@ -348,6 +349,10 @@ describe("Fixture Tests", function () {
         const MockRollupContractFactory = await ethers.getContractFactory("MockRollup");
         const mockRollup = await MockRollupContractFactory.deploy();
 
+        //Deploy AchievementsFactory contract
+        const AchievementsFactoryContractFactory = await ethers.getContractFactory("AchievementsFactory");
+        const achievementsFactory = await upgrades.deployProxy(AchievementsFactoryContractFactory, [await addr1.getAddress()], { deployer: deployer });
+
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
         config.gasSubsidyAddress = await gasSubsidy.getAddress();
@@ -394,7 +399,8 @@ describe("Fixture Tests", function () {
             tinyKeysAirDrop,
             airdropMultiplier,
             refereeCalculations,
-            mockRollup
+            mockRollup,
+            achievementsFactory
         };
     }
 
@@ -414,6 +420,7 @@ describe("Fixture Tests", function () {
     describe("Failed KYC Tests", FailedKycTests(deployInfrastructure).bind(this));
     //TODO: fix memory leak in simulation tests
     // describe("Winning Key Count Simulations", RefereeWinningKeyCountSimulations(deployInfrastructure).bind(this));
+    describe("AchievementsFactory Tests", AchievementsFactoryTests(deployInfrastructure).bind(this));
 
     // This doesn't work when running coverage
     //describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));
