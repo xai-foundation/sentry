@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useAccount } from 'wagmi';
-import Minting from './Minting';
-import {config} from "@sentry/core";
+import { config } from "@sentry/core";
 import FiatEmbeddedCheckoutIFrame from './FiatEmbeddedCheckoutIFrame.js';
+import { useWebBuyKeysContext } from '../../contexts/useWebBuyKeysContext';
 
 interface CrossmintModalProps {
     isOpen: boolean;
@@ -13,34 +13,40 @@ interface CrossmintModalProps {
 }
 
 const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalPriceInEth, totalQty, promoCode }) => {
-	const { VITE_APP_ENV } = import.meta.env
-    const [orderIdentifier, setOrderIdentifier] = useState<string | null>(null);
-    const { address } = useAccount();
-    const recipient = {
-        wallet: address
-    }
-    if (!isOpen) return null;
+    const { VITE_APP_ENV } = import.meta.env
 
     const projectId = config.crossmintProjectId;
     const collectionId = config.crossmintCollectionId;
-    const environment = VITE_APP_ENV  === 'development' ? 'staging' : 'production';
+    const environment = VITE_APP_ENV === 'development' ? 'staging' : 'production';
+
+    const { address } = useAccount();
+
+    const recipient = {
+        wallet: address
+    }
+
+    const {
+        setMintWithCrossmint
+    } = useWebBuyKeysContext();
+
+    if (!isOpen) return null;
 
     const styles = {
-      fontSizeBase: "0.91rem",
-      fontWeightPrimary: "400",
-      fontWeightSecondary: "500",
-      spacingUnit: "0.274rem",
-      borderRadius: "0px",
-      colors: {
-        background: "#140F0F",
-        backgroundSecondary: "#140F0F",
-        backgroundTertiary: "#FF0030",
-        textPrimary: "#A19F9F",
-        textSecondary: "#F7F6F6",
-        border: "#F7F6F6",
-        danger: "#F97316",
-        textLink: "#F7F6F6",
-      }
+        fontSizeBase: "0.91rem",
+        fontWeightPrimary: "400",
+        fontWeightSecondary: "500",
+        spacingUnit: "0.274rem",
+        borderRadius: "0px",
+        colors: {
+            background: "#140F0F",
+            backgroundSecondary: "#140F0F",
+            backgroundTertiary: "#FF0030",
+            textPrimary: "#A19F9F",
+            textSecondary: "#F7F6F6",
+            border: "#F7F6F6",
+            danger: "#F97316",
+            textLink: "#F7F6F6",
+        }
     }
 
     return (
@@ -53,31 +59,30 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalP
                     </button>
                 </div>
                 <div className="p-4">
-                    {orderIdentifier !== null ? <Minting orderIdentifier={orderIdentifier}/> :
-                        <div>
-                            <FiatEmbeddedCheckoutIFrame
-                                projectId={projectId}
-                                collectionId={collectionId}
-                                environment={environment}
-                                recipient={recipient}
-                                uiConfig={styles}
-                                mintConfig={{
-                                    type: "erc-721",
-                                    totalPrice: totalPriceInEth,
-                                    currency: "ETH",
-                                    _mintToAddress: address,
-                                    _amount: totalQty.toString(),
-                                    _promoCode: promoCode
-                                }}
-                                onEvent={(event) => {
-                                    switch (event.type) {
-                                        case "payment:process.succeeded":
-                                            setOrderIdentifier(event.payload.orderIdentifier);
-                                            break;
-                                    }
-                                }}
-                            />
-                        </div>}
+                    <div>
+                        <FiatEmbeddedCheckoutIFrame
+                            projectId={projectId}
+                            collectionId={collectionId}
+                            environment={environment}
+                            recipient={recipient}
+                            uiConfig={styles}
+                            mintConfig={{
+                                type: "erc-721",
+                                totalPrice: totalPriceInEth,
+                                currency: "ETH",
+                                _mintToAddress: address,
+                                _amount: totalQty.toString(),
+                                _promoCode: promoCode
+                            }}
+                            onEvent={(event) => {
+                                switch (event.type) {
+                                    case "payment:process.succeeded":
+                                        setMintWithCrossmint({ error: "", txHash: "", isPending: true, orderIdentifier: event.payload.orderIdentifier });
+                                        break;
+                                }
+                            }}
+                        />
+                    </div>
                 </div>
             </div>
         </div>

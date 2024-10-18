@@ -20,7 +20,7 @@ const salePageBaseURL = "https://sentry.xai.games";
 const operatorDownloadLink = "https://github.com/xai-foundation/sentry/releases/latest"
 
 const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) => {
-	const { mintWithEth, mintWithXai, blockExplorer } = useWebBuyKeysContext();
+	const { mintWithEth, mintWithXai, mintWithCrossmint, blockExplorer } = useWebBuyKeysContext();
 
 	const { address } = useAccount();
 	const [isTooltipAllowedToOpen, setIsTooltipAllowedToOpen] = useState(false);
@@ -31,7 +31,7 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 	}, []);
 
 	const getHash = () => {
-		const hash = mintWithEth.data ?? mintWithXai.data;
+		const hash = mintWithEth.data ?? mintWithXai.data ?? mintWithCrossmint.txHash;
 		if (!hash) {
 			throw new Error("No hash found");
 		}
