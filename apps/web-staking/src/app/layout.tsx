@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-// import { headers } from 'next/headers'
-// import { config } from '@/config'
+import { headers } from 'next/headers';
 import { ContextProvider } from "@/context";
 
 import "./globals.css";
@@ -9,7 +8,6 @@ import WrapperComponent from "./components/navbar/WrapperComponent";
 import { IpLocationChecker } from "@/app/IpLocationChecker";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { ReactCookieConsent } from "./components/ReactCookieConsent";
-// import { cookieToInitialState } from 'wagmi'
 
 export const metadata: Metadata = {
   title: {
@@ -48,11 +46,12 @@ export default function xRootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const initialState = cookieToInitialState(config, headers().get("cookie"));
+  const cookies = headers().get("cookie");
+
   return (
     <html lang="en">
       <body className="bg-background-image overflow-y-scroll bg-cover bg-fixed bg-center bg-no-repeat">
-        <ContextProvider>
+        <ContextProvider cookies={cookies}>
             <IpLocationChecker>
               <Providers>
                 {/* <ThemeSwitcher /> */}

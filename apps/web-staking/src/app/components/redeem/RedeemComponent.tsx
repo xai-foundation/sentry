@@ -6,7 +6,7 @@ import {
 	OrderedRedemptions,
 	RedemptionFactor
 } from "@/services/web3.service";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAppKit } from '@reown/appkit/react';
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useAccount } from "wagmi";
 import MainTitle from "../titles/MainTitle";
@@ -22,7 +22,7 @@ import { PrimaryButton, StakingInput } from "@/app/components/ui";
 import { ConnectButton } from "@/app/components/ui/buttons";
 
 export default function RedeemComponent() {
-	const { open, close } = useWeb3Modal();
+	const { open } = useAppKit();
 	const { address, chainId } = useAccount();
 	const [redeemFactor, setRedeemFactor] = useState<RedemptionFactor>(100);
 	const [balance, setBalance] = useState<number | undefined>();

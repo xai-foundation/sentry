@@ -1,12 +1,11 @@
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAppKit, useAppKitEvents, useAppKitState, useWalletInfo } from '@reown/appkit/react';
 import Image from "next/image";
-import React from "react";
+import React, { useEffect } from "react";
 
 import cardBackground from "@/assets/images/dashboard-card.png";
 import { formatCurrencyWithDecimals } from "@/app/utils/formatCurrency";
 import { ConnectButton } from "../ui/buttons";
 import { ExternalLinkComponent } from "@/app/components/links/LinkComponent";
-
 interface DashboardCardProps {
   esXaiBalance: number;
   xaiBalance: number;
@@ -18,9 +17,10 @@ const DashboardCard = ({
   esXaiBalance,
   xaiBalance,
   address,
-                         unstakedKeyCount
+  unstakedKeyCount
 }: DashboardCardProps) => {
-  const { open } = useWeb3Modal();
+  const { open } = useAppKit();
+  
   return (
     <>
 

@@ -17,7 +17,10 @@
     "@nextui-org/progress": "^2.0.33",
     "@nextui-org/radio": "^2.1.4",
     "@nextui-org/react": "^2.2.9",
-    "@tanstack/react-query": "^5.51.15",
+    "@reown/appkit": "^1.1.4",
+    "@reown/appkit-adapter-wagmi": "^1.1.4",
+    "@tanstack/react-query": "^5.51.21",
+    "@wagmi/core": "^2.13.1",
     "@web3modal/wagmi": "^5.0.11",
     "axios": "^1.6.8",
     "encoding": "^0.1.13",
@@ -32,7 +35,8 @@
     "react-icons": "^5.0.1",
     "react-toastify": "^10.0.4",
     "sharp": "^0.33.2",
-    "wagmi": "^2.12.1",
+    "viem": "^2.18.4",
+    "wagmi": "^2.12.2",
     "web3": "^4.4.0"
   },
   "devDependencies": {
