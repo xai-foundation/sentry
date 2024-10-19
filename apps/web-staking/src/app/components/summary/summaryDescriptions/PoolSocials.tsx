@@ -6,7 +6,7 @@ import {
   Website,
   X,
 } from "@/app/components/icons/IconsComponent";
-import { LinkLogoComponent } from "@/app/components/links/LinkComponent";
+import { IconComponent, LinkLogoComponent } from "@/app/components/links/LinkComponent";
 import { PoolInfo } from "@/types/Pool";
 
 const PoolSocialIconLink = ({ link, icon }: { link?: string, icon: ElementType<any, keyof JSX.IntrinsicElements> }) => {
@@ -28,7 +28,7 @@ const PoolSocialIconLink = ({ link, icon }: { link?: string, icon: ElementType<a
         <LinkLogoComponent
           externalTab
           link={link}
-          Icon={icon}
+          Icon={icon as IconComponent}
           customClass="!p-1 mr-4"
           color="#4A4A4A"
         />
