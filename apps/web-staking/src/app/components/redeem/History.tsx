@@ -152,8 +152,10 @@ export default function History({ redemptions, reloadRedemptions }: {
 	const [showKYCModal, setShowKYCModal] = useState(false);
 	const [selectedCountry, setSelectedCountry] = useState<string | null>('');
     const [isOpen, setIsOpen] = useState<boolean>(false);
-	const { isApproved } = useGetKYCApproved();
-	const {blocked, loading} = useBlockIp();
+	
+	// Comment out for #188413859 / #188457183, needs to go back in post contract upgrade (for reference search for story id)
+	// const { isApproved } = useGetKYCApproved();
+	const { loading } = useBlockIp();
 	
 
 	const { switchChain } = useSwitchChain();
@@ -190,10 +192,11 @@ export default function History({ redemptions, reloadRedemptions }: {
 	}, [isSuccess, isError, updateOnSuccess, updateOnError]);
 
 	const onClaim = async (redemption: RedemptionRequest) => {
-		if(!isApproved) {
-			setShowKYCModal(true);
-			return
-		}
+		// Comment out for #188413859 / #188457183, needs to go back in post contract upgrade (for reference search for story id)
+		// if(!isApproved) {
+		// 	setShowKYCModal(true);
+		// 	return
+		// }
 		setIsCancel(false);
 		setLoadingIndex(redemption.index);
 		toastId.current = loadingNotification("Transaction is pending...");
