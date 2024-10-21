@@ -1,16 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ElementType, ReactElement, SVGProps } from "react";
+import { ElementType } from "react";
 
-// Define a custom type for the Icon component
-type IconProps = {
-  width?: number;
-  height?: number;
-  fill?: string;
-};
-
-export type IconComponent = (props: IconProps) => ReactElement;
 
 interface LinkComponentProps {
   link: string;
@@ -53,7 +45,7 @@ export function LinkComponent({
 interface LinkLogoComponentProps {
   link: string;
   content?: string;
-  Icon: IconComponent;
+  Icon: ElementType<{ width?: number, height?: number, fill?: string }, keyof JSX.IntrinsicElements>;
   customClass?: string;
   externalTab?: boolean;
   color?: string;

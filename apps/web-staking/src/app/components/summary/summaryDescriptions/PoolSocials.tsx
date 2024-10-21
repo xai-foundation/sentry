@@ -6,11 +6,11 @@ import {
   Website,
   X,
 } from "@/app/components/icons/IconsComponent";
-import { IconComponent, LinkLogoComponent } from "@/app/components/links/LinkComponent";
+import { LinkLogoComponent } from "@/app/components/links/LinkComponent";
 import { PoolInfo } from "@/types/Pool";
 
-const PoolSocialIconLink = ({ link, icon }: { link?: string, icon: ElementType<any, keyof JSX.IntrinsicElements> }) => {
-
+const PoolSocialIconLink = ({ link, icon }: { link?: string, icon: ElementType<{ width?: number, height?: number, fill?: string }, keyof JSX.IntrinsicElements> }) => {
+  
   const isValidHttpUrl = (_link: string) => {
     let url;
     try {
@@ -28,7 +28,7 @@ const PoolSocialIconLink = ({ link, icon }: { link?: string, icon: ElementType<a
         <LinkLogoComponent
           externalTab
           link={link}
-          Icon={icon as IconComponent}
+          Icon={icon}
           customClass="!p-1 mr-4"
           color="#4A4A4A"
         />
