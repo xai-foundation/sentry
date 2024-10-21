@@ -1,4 +1,4 @@
-import { WarningIcon } from "@sentry/ui";
+import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import CookieConsent from "react-cookie-consent";
 
 export function ReactCookieConsent({ }) {
