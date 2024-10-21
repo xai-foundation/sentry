@@ -82,8 +82,11 @@ export const findPools = async ({
 		filter.totalStakedAmount = { $gte: esXaiMinStake };
 	}
 
+	// For context #188456707
+	// Only sorting by one field if duplicate across documents, mongoDB will not have a consistent order across pages
+	// https://www.mongodb.com/docs/manual/reference/method/cursor.sort/#sort-consistency
 	if (pagination.sort.length == 1) {
-		pagination.sort.push(['name', 1])
+		pagination.sort.push(['_id', -1])
 	}
 
 	try {
