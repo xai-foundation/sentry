@@ -16,7 +16,7 @@ import { MODAL_BODY_TEXT } from "./Constants";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import { BaseModal, PrimaryButton } from "@/app/components/ui";
 import { TextButton } from "@/app/components/ui/buttons";
-import { useBlockIp, useGetKYCApproved } from "@/app/hooks";
+import { useBlockIp, useGetKYCApprovedForRedemptionClaim } from "@/app/hooks";
 import { listOfCountries } from "../constants/constants";
 
 interface HistoryCardProps {
@@ -154,7 +154,7 @@ export default function History({ redemptions, reloadRedemptions }: {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 	
 	// Comment out for #188413859 / #188457183, needs to go back in post contract upgrade (for reference search for story id)
-	// const { isApproved } = useGetKYCApproved();
+	// const { isApproved } = useGetKYCApprovedForRedemptionClaim();
 	const { loading } = useBlockIp();
 	
 

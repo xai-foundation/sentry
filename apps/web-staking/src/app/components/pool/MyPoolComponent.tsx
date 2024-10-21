@@ -22,11 +22,7 @@ import PoolPanelComponent from "./PoolPanelComponent";
 const PoolComponent = () => {
   const router = useRouter();
   const { address } = useAccount();
-  // // Comment out for #188413859 / #188457183, needs to go back in post contract upgrade (for reference search for story id)
-  // // Additionally this will need to just check kycApproved on the Referee and possibly if failedKYC on the factory.
-  // // useGetKYCApproved will ONLY check when a specific key amount is owned !
-  // const { isApproved } = useGetKYCApproved(); 
-  const isApproved = true;
+  const { isApproved } = useGetKYCApproved(); 
   const { open } = useWeb3Modal();
   const { tiers } = useGetTiers();
 
