@@ -21,7 +21,7 @@ RUN pnpm --filter=@sentry/web-staking run build
 
 
 # Production image, copy all the files and run next
-FROM base AS runner
+FROM base AS release
 ARG NEXT_PUBLIC_APP_ENV
 WORKDIR /app
 
