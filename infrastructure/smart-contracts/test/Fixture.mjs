@@ -416,16 +416,19 @@ describe("Fixture Tests", function () {
     describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
     describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
 
-    // Tests That Only Work Pre-Tiny Keys
-    // You need to comment out the following contract upgrades to run these tests
-    // PoolFactory2, NodeLicense8, Referee10, esXai3
+    // Test Explanations, Expectations & Instructions
+    // https://docs.google.com/document/d/1V_3svypWL26wDr2RNvcIBcMlFwdSWYR6xcLuKXXuWf8
+
+    // Pre-Tiny Keys
     describe("Pre-Tiny Keys Tests", PreTinyKeysTests(deployInfrastructure).bind(this));
 
-    // Tests That Only Work Post-Tiny Keys
-    //describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
-    //describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
-    //describe("Referee", RefereeTests(deployInfrastructure).bind(this));
-    //describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
+    // Post-Tiny Keys
+    describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
+    describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
+    describe("Referee", RefereeTests(deployInfrastructure).bind(this));
+    describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
+
+    // Uncomment these tests for tiny keys
     //describe("BulkSubmissions", RefereeBulkSubmissions(deployInfrastructure).bind(this));
     //describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
     //describe("Failed KYC Tests", FailedKycTests(deployInfrastructure).bind(this));

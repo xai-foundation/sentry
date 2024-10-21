@@ -50,7 +50,7 @@ export function CreatePool(deployInfrastructure, poolConfigurations) {
 					poolSocials,
 					poolTrackerDetails
 				)
-			).to.be.revertedWith("37" || "42");
+			).to.be.revertedWith("37");
 		});
 
 		it("Check that the shares cannot go over the max values (bucketshareMaxValues = ordered owner, keys, esXaiStaker)", async function () {
