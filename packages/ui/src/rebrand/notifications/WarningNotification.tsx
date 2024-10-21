@@ -1,4 +1,4 @@
-import { WarningIcon } from "../icons/IconsComponents";
+import { WarningIcon } from "../icons/WarningIcon";
 
 interface WarningNotificationProps {
   text: string;

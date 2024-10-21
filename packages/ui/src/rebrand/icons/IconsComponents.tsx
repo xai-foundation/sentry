@@ -1,12 +1,3 @@
-export const WarningIcon = ({ width = 24, height = 24, className, fill = "#ffc53d" }: { width?: number, height?: number, fill?: string, className?: string }) => {
-
-  return (
-    <svg style={{ width: width, height: height }} className={className} xmlns="http://www.w3.org/2000/svg" width="27.789" height="24" viewBox="0 0 27.789 24">
-      <path id="warning_FILL1_wght400_GRAD0_opsz24_4_" data-name="warning_FILL1_wght400_GRAD0_opsz24 (4)" d="M40-856l13.895-24,13.895,24Zm13.895-3.789a1.222,1.222,0,0,0,.9-.363,1.222,1.222,0,0,0,.363-.9,1.222,1.222,0,0,0-.363-.9,1.222,1.222,0,0,0-.9-.363,1.222,1.222,0,0,0-.9.363,1.222,1.222,0,0,0-.363.9,1.222,1.222,0,0,0,.363.9A1.222,1.222,0,0,0,53.895-859.789Zm-1.263-3.789h2.526v-6.316H52.632Z" transform="translate(-40 880)" fill={fill}/>
-    </svg>
-  )
-};
-
 export const XaiLogoFooter = ({ width = 122, height = 97, svgClassName, wrapperClassName = "fill-white", logoClassName }: { width?: number, height?: number, fill?: string, wrapperClassName?: string, logoClassName?: string, svgClassName?: string }) => {
 
   return (
@@ -204,21 +195,6 @@ l799 -1385 -1076 -3 c-592 -1 -1078 0 -1080 2 -3 2 167 301 376 664 210 363
 </svg>
   );
 };
-
-export const DropdownArrow = ({width = 10, height = 3, className = ""}) => {
-    return <svg
-        width={width} height={height} className={className}
-        fill="#fff"
-        xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 4.8117635 3.2432653" version="1.1" id="svg1" >
-        <defs id="defs1"/>
-        <g  id="layer1"
-           transform="translate(-0.23995138,-1.0242006)"><path  d="M 2.6458332,2.6458333 V -2.3262066 8.1888758" id="path1"/>
-            <g id="g2" transform="translate(-4.1599448,-4.385214)"><rect id="rect2" width="1.2605684" height="3.478761" x="9.7083769" y="-2.1346393" ry="0.13058987" transform="rotate(45)"/>
-                <rect  id="rect2-2" width="1.2605684"
-                      height="3.478761" x="0.083553314" y="7.4901848" ry="0.13058987"
-                      transform="matrix(-0.70710678,0.70710678,0.70710678,0.70710678,0,0)"/></g></g></svg>
-}
 
 export const HelpIcon = ({ width = 20, height = 20, fill = "#D0CFCF" }) => {
     return <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height}

@@ -1,8 +1,6 @@
-import { InfoPointRed, RedSentryIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
-import { Tooltip, XaiNumberInput } from "@sentry/ui";
+import { Tooltip, XaiNumberInput, WarningIcon, InfoPointRed, RedSentryIcon } from "@sentry/ui";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
-import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 
 /**
  * ChooseQuantityRow Component
