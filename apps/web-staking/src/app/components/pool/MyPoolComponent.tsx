@@ -22,7 +22,7 @@ import PoolPanelComponent from "./PoolPanelComponent";
 const PoolComponent = () => {
   const router = useRouter();
   const { address } = useAccount();
-  const { isApproved } = useGetKYCApproved();
+  const { isApproved } = useGetKYCApproved(); 
   const { open } = useWeb3Modal();
   const { tiers } = useGetTiers();
 
