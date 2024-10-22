@@ -33,7 +33,7 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             expect(await achievementsFactory.getRoleAdmin(mintRoleHash)).to.equal(adminRoleHash);
         });
 
-        it("should produce a new ERC1155 token contract from the AchievementsFactory", async function() {
+        it("should produce a new ERC1155Upgradeable token contract from the AchievementsFactory", async function() {
             const {
                 achievementsFactory, 
                 addr1
@@ -43,14 +43,15 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             const gameId = "test-game-id";
             const trx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
             const rec = await trx.wait();
-            const tokenContractAddress = rec.logs[1].args[0];
+            const contractProducedEventLog = rec.logs[2];
+            const tokenContractAddress = contractProducedEventLog.args[0];
             const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
             const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
 
             //assert contract state and events
-            expect(rec.logs[1].fragment.name).to.equal("ContractProduced");
-            expect(rec.logs[1].args[1]).to.equal(gameId);
-            expect(rec.logs[1].args[2]).to.equal(await addr1.getAddress());
+            expect(contractProducedEventLog.fragment.name).to.equal("ContractProduced");
+            expect(contractProducedEventLog.args[1]).to.equal(gameId);
+            expect(contractProducedEventLog.args[2]).to.equal(await addr1.getAddress());
             expect(baseURI).to.equal(await tokenContract.uri(0));
             expect(await tokenContract.factoryAddress()).to.equal(await achievementsFactory.getAddress());
             expect(await achievementsFactory.productionCount()).to.equal(1);
@@ -98,7 +99,8 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             const gameId = "test-game-id";
             const trx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
             const rec = await trx.wait();
-            const tokenContractAddress = rec.logs[1].args[0];
+            const contractProducedEventLog = rec.logs[2];
+            const tokenContractAddress = contractProducedEventLog.args[0];
             const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
             const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
             
@@ -131,7 +133,8 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             const gameId = "test-game-id";
             const trx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
             const rec = await trx.wait();
-            const tokenContractAddress = rec.logs[1].args[0];
+            const contractProducedEventLog = rec.logs[2];
+            const tokenContractAddress = contractProducedEventLog.args[0];
             const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
             const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
             
@@ -173,7 +176,8 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             const gameId = "test-game-id";
             const trx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
             const rec = await trx.wait();
-            const tokenContractAddress = rec.logs[1].args[0];
+            const contractProducedEventLog = rec.logs[2];
+            const tokenContractAddress = contractProducedEventLog.args[0];
             const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
             const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
             
@@ -223,7 +227,6 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             for (let i = 0; i < batchBalances.length; i++) {
                 expect(batchBalances[i]).to.equal(1);
             }
-            
         });
 
         it("should fail to mint tokens from address without MINT_ROLE", async function() {
@@ -237,7 +240,8 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             const gameId = "test-game-id";
             const trx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
             const rec = await trx.wait();
-            const tokenContractAddress = rec.logs[1].args[0];
+            const contractProducedEventLog = rec.logs[2];
+            const tokenContractAddress = contractProducedEventLog.args[0];
             const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
             const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
             
@@ -268,7 +272,8 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             const gameId = "test-game-id";
             const trx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
             const rec = await trx.wait();
-            const tokenContractAddress = rec.logs[1].args[0];
+            const contractProducedEventLog = rec.logs[2];
+            const tokenContractAddress = contractProducedEventLog.args[0];
             const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
             const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
 
@@ -302,7 +307,8 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             const gameId = "test-game-id";
             const trx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
             const rec = await trx.wait();
-            const tokenContractAddress = rec.logs[1].args[0];
+            const contractProducedEventLog = rec.logs[2];
+            const tokenContractAddress = contractProducedEventLog.args[0];
             const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
             const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
             
@@ -340,7 +346,8 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             const gameId = "test-game-id";
             const trx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
             const rec = await trx.wait();
-            const tokenContractAddress = rec.logs[1].args[0];
+            const contractProducedEventLog = rec.logs[2];
+            const tokenContractAddress = contractProducedEventLog.args[0];
             const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
             const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
             
@@ -375,7 +382,8 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             const gameId = "test-game-id";
             const trx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
             const rec = await trx.wait();
-            const tokenContractAddress = rec.logs[1].args[0];
+            const contractProducedEventLog = rec.logs[2];
+            const tokenContractAddress = contractProducedEventLog.args[0];
             const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
             const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
             
@@ -409,7 +417,8 @@ export function AchievementsFactoryTests(deployInfrastructure) {
 
         it("should upgrade AchievementsFactory contract to new version", async function() {
             const {
-                achievementsFactory
+                achievementsFactory,
+                addr1
             } = await loadFixture(deployInfrastructure);
 
             //upgrade the AchievementsFactory
@@ -418,9 +427,24 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             const achievementsFactory2 = await upgrades.upgradeProxy((await achievementsFactory.getAddress()), AchievementsFactory2Factory, { call: { fn: "initialize", args: [testNum] } });
             await achievementsFactory2.waitForDeployment();
 
-            //test new upgrade
-            const res = await achievementsFactory2.test();
-            expect(res).to.equal(testNum);
+            //produce new token contract
+            const gameId = "test-game-id";
+            const trx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
+            const rec = await trx.wait();
+            const contractProducedEventLog = rec.logs[2];
+            const tokenContractAddress = contractProducedEventLog.args[0];
+            const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
+            const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
+
+            //assert contract state and events
+            expect(await achievementsFactory2.test()).to.equal(testNum);
+            expect(contractProducedEventLog.fragment.name).to.equal("ContractProduced");
+            expect(contractProducedEventLog.args[1]).to.equal(gameId);
+            expect(contractProducedEventLog.args[2]).to.equal(await addr1.getAddress());
+            expect(baseURI).to.equal(await tokenContract.uri(0));
+            expect(await tokenContract.factoryAddress()).to.equal(await achievementsFactory.getAddress());
+            expect(await achievementsFactory.productionCount()).to.equal(1);
+            expect(await achievementsFactory.contractsById(gameId)).to.equal(await tokenContract.getAddress());
         });
 
         // it("should upgrade Achievements contract to new version", async function() {

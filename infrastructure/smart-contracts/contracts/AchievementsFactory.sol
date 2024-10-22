@@ -4,7 +4,8 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-// import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
+import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
+import "./AchievementsBeacon.sol";
 import "./Achievements.sol";
 
 /**
@@ -18,6 +19,7 @@ contract AchievementsFactory is Initializable, AccessControlUpgradeable {
     bytes32 public constant MINT_ROLE = keccak256("MINT_ROLE"); //0x154c00819833dac601ee5ddded6fda79d9d8b506b911b3dbd54cdb95fe6c3686
 
     //state
+    address public achievementsBeacon;
     uint256 public productionCount; //number of contracts produced by this factory
     mapping(string => address) public contractsById; //gameId => tokenContract
 
@@ -48,6 +50,14 @@ contract AchievementsFactory is Initializable, AccessControlUpgradeable {
     }
 
     /**
+     * @dev Sets the achievements beacon to a new address.
+     * @param newBeacon New AchievementsBeacon address.
+     */
+    function setBeacon(address newBeacon) public onlyRole(ADMIN_ROLE) {
+        achievementsBeacon = newBeacon;
+    }
+
+    /**
      * @dev Produces a new ERC1155 token contract from the factory.
      * @param gameId Unique string representing the ID for a game title.
      * @param uri URI representing a link to the token's metadata.
@@ -56,9 +66,9 @@ contract AchievementsFactory is Initializable, AccessControlUpgradeable {
     function produceContract(string memory gameId, string memory uri) public onlyRole(ADMIN_ROLE) returns (address) {
         require(contractsById[gameId] == address(0x0), "game id already exists");
 
-        Achievements newContract = new Achievements();
-        newContract.initialize(address(this), uri);
-        
+        address newContract = address(new BeaconProxy(achievementsBeacon, ""));
+        Achievements(newContract).initialize(address(this), uri);
+
         contractsById[gameId] = address(newContract);
         productionCount += 1;
 
