@@ -579,6 +579,12 @@ export const isKYCApprovedForRedemption = async (network: NetworkKey, walletAddr
 	if (ownedKeyCount <= Number(maxKeysNonKyc)) {
 		return true;
 	}
+	
+	return await isKYCApproved(network, walletAddress);
+}
+
+export const isKYCApproved = async (network: NetworkKey, walletAddress: string): Promise<boolean> => {
+	const web3Instance = getWeb3Instance(network);
 
 	const refereeContract = new web3Instance.web3.eth.Contract(RefereeAbi, web3Instance.refereeAddress);
 	try {
@@ -588,7 +594,6 @@ export const isKYCApprovedForRedemption = async (network: NetworkKey, walletAddr
 		console.log("Error checking isKYCApproved", error);
 		return false;
 	}
-
 }
 
 export const POOL_SHARES_BASE = 10_000;

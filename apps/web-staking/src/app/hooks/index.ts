@@ -3,6 +3,7 @@ export *  from './useGetAvailableKeysForStaking';
 export *  from './useGetBalance';
 export *  from './useGetEsXaiAllowance';
 export *  from './useGetEsXaiBalance';
+export *  from './useGetKYCApprovedForRedemptionClaim';
 export *  from './useGetKYCApproved';
 export *  from './useGetMaxBucketShares';
 export *  from './useGetMaxKeyPerPool';
