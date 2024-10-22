@@ -7,14 +7,14 @@ import {useBlockIp} from "@/hooks/useBlockIp";
 import {BiLoaderAlt} from "react-icons/bi";
 import { XaiGaslessClaimAbi, config, isValidNetwork} from "@sentry/core";
 import {ethers} from "ethers";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAppKit } from '@reown/appkit/react';
 import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
 import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
 import { useNetworkConfig } from "@/hooks/useNetworkConfig";
 
 
 export function ClaimToken() {
-	const {open} = useWeb3Modal()
+	const {open} = useAppKit()
 	const {blocked, loading} = useBlockIp({blockUsa: true});
     const { chainId, address:_address, isDevelopment} = useNetworkConfig();
 	const address = _address?.toLowerCase();

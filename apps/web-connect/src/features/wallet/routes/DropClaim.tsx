@@ -6,7 +6,7 @@ import {BiLoaderAlt} from "react-icons/bi";
 import {config, isValidNetwork, NodeLicenseAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useBlockIp} from "@/hooks/useBlockIp";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAppKit } from '@reown/appkit/react';
 import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
 import { KYCTooltip } from "@/features/checkout/components/KYCTooltip";
 import { useListClaimableAmount } from "@/features/hooks";
@@ -16,7 +16,7 @@ import { useNetworkConfig } from "@/hooks/useNetworkConfig";
 export function DropClaim() {
 	const {blocked, loading} = useBlockIp({blockUsa: true});
 
-	const {open} = useWeb3Modal()
+	const {open} = useAppKit()
     const { chainId, address, isDevelopment} = useNetworkConfig();
 	const chain = chains.find(chain => chain.id === chainId)
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);

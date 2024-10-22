@@ -4,12 +4,12 @@ import {chains} from "../../../main";
 import {config, isValidNetwork, RefereeAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {ConnectButton, PrimaryButton} from "@sentry/ui";
-import {useWeb3Modal} from "@web3modal/wagmi/react";
+import { useAppKit } from '@reown/appkit/react';
 import { useNetworkConfig } from "@/hooks/useNetworkConfig";
 
 export function AssignWallet() {
 	const navigate = useNavigate();
-	const {open} = useWeb3Modal()
+	const {open} = useAppKit()
 	const params = useParams<{operatorAddress: string}>();
     const { chainId, isConnected, address, isDevelopment} = useNetworkConfig();
 	const chain = chains.find(chain => chain.id === chainId)
