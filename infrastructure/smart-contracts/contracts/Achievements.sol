@@ -5,8 +5,6 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol";
 import "@openzeppelin/contracts/access/IAccessControl.sol";
 
-//TODO: fix upgradeable
-
 /**
  * @title Achievements Contract
  * @dev An ERC1155 contract that represents game achievements.

@@ -447,29 +447,66 @@ export function AchievementsFactoryTests(deployInfrastructure) {
             expect(await achievementsFactory.contractsById(gameId)).to.equal(await tokenContract.getAddress());
         });
 
-        // it("should upgrade Achievements contract to new version", async function() {
-        //     const {
-        //         achievementsFactory,
-        //         addr1
-        //     } = await loadFixture(deployInfrastructure);
+        it("should upgrade all Achievements contracts to new version", async function() {
+            const {
+                achievementsFactory,
+                achievementsBeacon,
+                addr1,
+                addr2
+            } = await loadFixture(deployInfrastructure);
 
-        //     //produce new token contract
-        //     const gameId = "test-game-id";
-        //     const trx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
-        //     const rec = await trx.wait();
-        //     const tokenContractAddress = rec.logs[1].args[0];
-        //     const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
-        //     const tokenContract = await AchievementsContractFactory.attach(tokenContractAddress);
+            //produce new v1 token contract
+            const gameId = "test-game-id";
+            const produceContractTrx = await achievementsFactory.connect(addr1).produceContract(gameId, baseURI);
+            const produceContractRec = await produceContractTrx.wait();
+            const tokenContractAddress = produceContractRec.logs[2].args[0];
+            const AchievementsContractFactory = await ethers.getContractFactory("Achievements");
+            const tokenContractV1 = await AchievementsContractFactory.attach(tokenContractAddress);
 
-        //     //upgrade the Achievements contract
-        //     const testNum = 45n;
-        //     const Achievements2Factory = await ethers.getContractFactory("Achievements2");
-        //     const achievements2 = await upgrades.upgradeProxy((await tokenContract.getAddress()), Achievements2Factory, { call: { fn: "initialize", args: [testNum] } });
-        //     await achievements2.waitForDeployment();
+            //mint tokens on v1 contract
+            const toAddress = await addr1.getAddress();
+            const tokenId = 0;
+            await tokenContractV1.connect(addr1).mint(toAddress, tokenId);
 
-        //     //test new upgrade
-        //     const res = await achievements2.test();
-        //     expect(res).to.equal(testNum);
-        // });
+            //deploy token contract v2 implementation
+            const Achievements2Impl = await ethers.deployContract("Achievements2");
+            await Achievements2Impl.waitForDeployment();
+            const achievements2ImplAddress = await Achievements2Impl.getAddress();
+
+            //validate that v2 is upgrade safe
+            const Achievements2ContractFactory = await ethers.getContractFactory("Achievements2");
+            const achievementsImplReference = await upgrades.forceImport(tokenContractAddress, AchievementsContractFactory);
+            await upgrades.validateUpgrade(achievementsImplReference, Achievements2ContractFactory);
+
+            //upgrade the implementation address
+            await achievementsBeacon.update(achievements2ImplAddress);
+            const impl2 = await achievementsBeacon.implementation();
+            expect(impl2).to.equal(achievements2ImplAddress);
+
+            //initialize v2 token contract
+            const testNum = 55n;
+            const tokenContractV2 = await Achievements2ContractFactory.attach(tokenContractAddress);
+            await tokenContractV2.initialize(testNum);
+
+            //assert previous contract state remains
+            expect(await tokenContractV2.balanceOf(toAddress, tokenId)).to.equal(1);
+            expect(await tokenContractV2.tokenIdCount()).to.equal(1);
+            expect(await tokenContractV2.totalSupply()).to.equal(1);
+            expect(await tokenContractV2.totalSupplyById(tokenId)).to.equal(1);
+
+            //mint tokens on v2 contract
+            const toAddressV2 = await addr2.getAddress();
+            const tokenIdV2 = 1;
+            await tokenContractV2.connect(addr1).mint(toAddressV2, tokenIdV2);
+
+            //assert new state exists
+            expect(await tokenContractV2.balanceOf(toAddressV2, tokenIdV2)).to.equal(1);
+            expect(await tokenContractV2.tokenIdCount()).to.equal(2);
+            expect(await tokenContractV2.totalSupply()).to.equal(2);
+            expect(await tokenContractV2.totalSupplyById(tokenIdV2)).to.equal(1);
+
+            //assert new state and functions exist
+            expect(await tokenContractV2.test()).to.equal(testNum);
+        });
     }
 }

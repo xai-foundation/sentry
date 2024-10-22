@@ -6,10 +6,16 @@ import "@openzeppelin/contracts-upgradeable/token/ERC1155/ERC1155Upgradeable.sol
 import "@openzeppelin/contracts/access/IAccessControl.sol";
 
 /**
- * @title Achievements Contract
+ * @title Achievements2 Contract
  * @dev An ERC1155 contract that represents game achievements.
  */
 contract Achievements2 is Initializable, ERC1155Upgradeable {
+
+    //definitions
+    struct Batch {
+        address to;
+        uint256[] ids;
+    }
 
     //constants
     bytes32 public constant MINT_ROLE = keccak256("MINT_ROLE");
@@ -24,10 +30,17 @@ contract Achievements2 is Initializable, ERC1155Upgradeable {
     uint256 public test; //variable used for testing upgrades
 
     /**
+     * @dev This empty reserved space is put in place to allow future versions to add new
+     * variables without shifting down storage in the inheritance chain.
+     * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
+     */
+    uint256[499] private __gap;
+
+    /**
      * @dev Achievements2 initializer.
      * @param _test Test value for checking successful upgrade.
      */
-    function initialize(uint256 _test) public initializer {
+    function initialize(uint256 _test) public reinitializer(2) {
         test = _test;
     }
 
@@ -43,9 +56,8 @@ contract Achievements2 is Initializable, ERC1155Upgradeable {
      * @dev Mints a single token to the recipient address. Only callable by MINT_ROLE holder.
      * @param to Address to receive the newly minted token.
      * @param id Token ID of token to mint.
-     * @param data Arbitrary data field.
      */
-    function mint(address to, uint256 id, bytes memory data) public onlyMintRole {
+    function mint(address to, uint256 id) public onlyMintRole {
         require(balanceOf(to, id) == 0, "address has non-zero token balance");
         
         if (!definedTokens[id]) {
@@ -56,16 +68,15 @@ contract Achievements2 is Initializable, ERC1155Upgradeable {
         totalSupply += 1;
         totalSupplyById[id] += 1;
 
-        _mint(to, id, 1, data);
+        _mint(to, id, 1, "");
     }
 
     /**
      * @dev Mints a batch of tokens to the recipient address. Only callable by MINT_ROLE holder.
      * @param to Address to receive the newly minted tokens.
      * @param ids Array of token IDs of tokens to mint.
-     * @param data Arbitrary data field.
      */
-    function mintBatch(address to, uint256[] calldata ids, bytes memory data) public onlyMintRole {
+    function mintBatch(address to, uint256[] calldata ids) public onlyMintRole {
         require(ids.length > 0, "invalid ids param length");
         
         uint256[] memory amounts = new uint256[](ids.length);
@@ -82,12 +93,24 @@ contract Achievements2 is Initializable, ERC1155Upgradeable {
             amounts[i] = 1;
         }
 
-        _mintBatch(to, ids, amounts, data);
+        _mintBatch(to, ids, amounts, "");
 
         if (ids.length > 1) {
             for (uint256 i = 0; i < ids.length; i++) {
-                require(balanceOf(to, ids[i]) == 1, "address has non-zero token balance");
+                require(balanceOf(to, ids[i]) == 1, "address has invalid token balance");
             }
+        }
+    }
+
+    /**
+     * @dev Mint multiple batches of tokens.
+     * @param batches Array of Batch structs to mint.
+     */
+    function mintBatches(Batch[] calldata batches) public onlyMintRole {
+        require(batches.length > 0, "invalid array length");
+        
+        for (uint256 i = 0; i < batches.length; i++) {
+            mintBatch(batches[i].to, batches[i].ids);
         }
     }
 
