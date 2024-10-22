@@ -353,7 +353,7 @@ describe("Fixture Tests", function () {
         const AchievementsFactoryDeployer = await ethers.getContractFactory("AchievementsFactory");
         const achievementsFactory = await upgrades.deployProxy(AchievementsFactoryDeployer, [
             await addr1.getAddress()
-        ], { deployer: deployer });
+        ], { kind: "transparent", deployer: deployer });
 
         //Deploy Achievements (implementation only)
         const AchievementsImpl = await ethers.deployContract("Achievements");
