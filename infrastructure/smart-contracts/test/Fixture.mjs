@@ -350,8 +350,20 @@ describe("Fixture Tests", function () {
         const mockRollup = await MockRollupContractFactory.deploy();
 
         //Deploy AchievementsFactory contract
-        const AchievementsFactoryContractFactory = await ethers.getContractFactory("AchievementsFactory");
-        const achievementsFactory = await upgrades.deployProxy(AchievementsFactoryContractFactory, [await addr1.getAddress()], { deployer: deployer });
+        const AchievementsFactoryDeployer = await ethers.getContractFactory("AchievementsFactory");
+        const achievementsFactory = await upgrades.deployProxy(AchievementsFactoryDeployer, [
+            await addr1.getAddress()
+        ], { deployer: deployer });
+
+        //Deploy Achievements (implementation only)
+        const AchievementsImpl = await ethers.deployContract("Achievements");
+        await AchievementsImpl.waitForDeployment();
+        const achievementsImplAddress = await AchievementsImpl.getAddress();
+
+        //Deploy AchievementsBeacon
+        const achievementsBeacon = await ethers.deployContract("AchievementsBeacon", [achievementsImplAddress]);
+        await achievementsBeacon.waitForDeployment();
+        await achievementsFactory.connect(addr1).setBeacon(await achievementsBeacon.getAddress());
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
@@ -400,7 +412,8 @@ describe("Fixture Tests", function () {
             airdropMultiplier,
             refereeCalculations,
             mockRollup,
-            achievementsFactory
+            achievementsFactory,
+            achievementsBeacon
         };
     }
 
