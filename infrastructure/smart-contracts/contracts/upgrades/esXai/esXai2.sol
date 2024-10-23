@@ -57,11 +57,13 @@ contract esXai2 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
     event XaiAddressChanged(address indexed newXaiAddress);
     event FoundationBasepointsUpdated(uint256 newBasepoints);
 
-    function initialize (address _esXaiBurnFoundationRecipient, uint256 _esXaiBurnFoundationBasePoints) public reinitializer(2) {
-        require(_esXaiBurnFoundationRecipient != address(0) && _esXaiBurnFoundationBasePoints <= 1000, "Invalid initialize");
-        esXaiBurnFoundationRecipient = _esXaiBurnFoundationRecipient;
-        esXaiBurnFoundationBasePoints = _esXaiBurnFoundationBasePoints;
-    }
+    // Initializer commented out to allow for an upgrade without reinitializing the contract
+    // Leaving the commented out code here for reference to show the variables that were initialized in the previous version
+    // function initialize (address _esXaiBurnFoundationRecipient, uint256 _esXaiBurnFoundationBasePoints) public reinitializer(2) {
+    //     require(_esXaiBurnFoundationRecipient != address(0) && _esXaiBurnFoundationBasePoints <= 1000, "Invalid initialize");
+    //     esXaiBurnFoundationRecipient = _esXaiBurnFoundationRecipient;
+    //     esXaiBurnFoundationBasePoints = _esXaiBurnFoundationBasePoints;
+    // }
 
     /**
      * @dev Function to change the redemption status
