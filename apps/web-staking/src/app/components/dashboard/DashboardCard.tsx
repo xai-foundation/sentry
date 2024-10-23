@@ -1,6 +1,6 @@
-import { useAppKit, useAppKitEvents, useAppKitState, useWalletInfo } from '@reown/appkit/react';
+import { useAppKit } from '@reown/appkit/react';
 import Image from "next/image";
-import React, { useEffect } from "react";
+import React from "react";
 
 import cardBackground from "@/assets/images/dashboard-card.png";
 import { formatCurrencyWithDecimals } from "@/app/utils/formatCurrency";
