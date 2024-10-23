@@ -253,9 +253,7 @@ export const esXaiAbi = [
     "type": "event"
   },
   {
-    "inputs": [
-
-    ],
+    "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
     "outputs": [
       {
@@ -268,9 +266,7 @@ export const esXaiAbi = [
     "type": "function"
   },
   {
-    "inputs": [
-
-    ],
+    "inputs": [],
     "name": "MINTER_ROLE",
     "outputs": [
       {
@@ -291,9 +287,7 @@ export const esXaiAbi = [
       }
     ],
     "name": "addToWhitelist",
-    "outputs": [
-
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -373,9 +367,7 @@ export const esXaiAbi = [
       }
     ],
     "name": "burn",
-    "outputs": [
-
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -393,9 +385,7 @@ export const esXaiAbi = [
       }
     ],
     "name": "burnFrom",
-    "outputs": [
-
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -408,9 +398,7 @@ export const esXaiAbi = [
       }
     ],
     "name": "cancelRedemption",
-    "outputs": [
-
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -423,9 +411,7 @@ export const esXaiAbi = [
       }
     ],
     "name": "changeRedemptionStatus",
-    "outputs": [
-
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -438,9 +424,7 @@ export const esXaiAbi = [
       }
     ],
     "name": "changeXaiAddress",
-    "outputs": [
-
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -453,16 +437,12 @@ export const esXaiAbi = [
       }
     ],
     "name": "completeRedemption",
-    "outputs": [
-
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [
-
-    ],
+    "inputs": [],
     "name": "decimals",
     "outputs": [
       {
@@ -499,9 +479,7 @@ export const esXaiAbi = [
     "type": "function"
   },
   {
-    "inputs": [
-
-    ],
+    "inputs": [],
     "name": "esXaiBurnFoundationBasePoints",
     "outputs": [
       {
@@ -514,9 +492,7 @@ export const esXaiAbi = [
     "type": "function"
   },
   {
-    "inputs": [
-
-    ],
+    "inputs": [],
     "name": "esXaiBurnFoundationRecipient",
     "outputs": [
       {
@@ -689,9 +665,7 @@ export const esXaiAbi = [
     "type": "function"
   },
   {
-    "inputs": [
-
-    ],
+    "inputs": [],
     "name": "getWhitelistCount",
     "outputs": [
       {
@@ -736,9 +710,7 @@ export const esXaiAbi = [
       }
     ],
     "name": "grantRole",
-    "outputs": [
-
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -810,9 +782,7 @@ export const esXaiAbi = [
     "type": "function"
   },
   {
-    "inputs": [
-
-    ],
+    "inputs": [],
     "name": "maxKeysNonKyc",
     "outputs": [
       {
@@ -838,16 +808,12 @@ export const esXaiAbi = [
       }
     ],
     "name": "mint",
-    "outputs": [
-
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [
-
-    ],
+    "inputs": [],
     "name": "name",
     "outputs": [
       {
@@ -860,9 +826,7 @@ export const esXaiAbi = [
     "type": "function"
   },
   {
-    "inputs": [
-
-    ],
+    "inputs": [],
     "name": "nodeLicenseAddress",
     "outputs": [
       {
@@ -875,9 +839,7 @@ export const esXaiAbi = [
     "type": "function"
   },
   {
-    "inputs": [
-
-    ],
+    "inputs": [],
     "name": "refereeAddress",
     "outputs": [
       {
@@ -959,9 +921,7 @@ export const esXaiAbi = [
       }
     ],
     "name": "removeFromWhitelist",
-    "outputs": [
-
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -979,9 +939,7 @@ export const esXaiAbi = [
       }
     ],
     "name": "renounceRole",
-    "outputs": [
-
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -999,9 +957,7 @@ export const esXaiAbi = [
       }
     ],
     "name": "revokeRole",
-    "outputs": [
-
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1014,9 +970,7 @@ export const esXaiAbi = [
       }
     ],
     "name": "setMaxKeysNonKyc",
-    "outputs": [
-
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1034,9 +988,7 @@ export const esXaiAbi = [
       }
     ],
     "name": "startRedemption",
-    "outputs": [
-
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
@@ -1060,9 +1012,7 @@ export const esXaiAbi = [
     "type": "function"
   },
   {
-    "inputs": [
-
-    ],
+    "inputs": [],
     "name": "symbol",
     "outputs": [
       {
@@ -1075,9 +1025,7 @@ export const esXaiAbi = [
     "type": "function"
   },
   {
-    "inputs": [
-
-    ],
+    "inputs": [],
     "name": "totalSupply",
     "outputs": [
       {
@@ -1151,16 +1099,12 @@ export const esXaiAbi = [
       }
     ],
     "name": "updateFoundationBasepoints",
-    "outputs": [
-
-    ],
+    "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [
-
-    ],
+    "inputs": [],
     "name": "xai",
     "outputs": [
       {

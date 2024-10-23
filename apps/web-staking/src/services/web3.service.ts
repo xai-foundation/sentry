@@ -191,8 +191,8 @@ export const getXaiBalance = async (network: NetworkKey, walletAddress: string):
 
 const getEsXaiBalanceWei = async (web3Instance: Web3Instance, walletAddress: string): Promise<bigint> => {
 	const esXaiContract = new web3Instance.web3.eth.Contract(esXaiAbi, web3Instance.esXaiAddress);
-	const balance = await esXaiContract.methods.balanceOf(walletAddress).call();
-	return balance as bigint;
+	const balance = await esXaiContract.methods.balanceOf(walletAddress).call() as bigint;
+	return balance;
 }
 
 export const getEsXaiBalance = async (network: NetworkKey, walletAddress: string): Promise<{ balance: number, balanceWei: string }> => {
@@ -263,84 +263,10 @@ export type OrderedRedemptions = {
 	closed: RedemptionRequest[];
 };
 
-export const getRedemptions = async (network: NetworkKey, walletAddress: string): Promise<OrderedRedemptions> => {
-	const storageKey = "redemptionRequests" + network + walletAddress;
-	const storage = localStorage.getItem(storageKey);
-	const cachedRedemptions = JSON.parse(storage || "[]");
-
-	const web3Instance = getWeb3Instance(network);
-	const esXaiContract = new web3Instance.web3.eth.Contract(esXaiAbi, web3Instance.esXaiAddress);
-	const numRedemptions = Number(await esXaiContract.methods.getRedemptionRequestCount(walletAddress).call());
-
-	const numCachedRedemption = cachedRedemptions.length;
-
-	if (numRedemptions != numCachedRedemption) {
-		for (let i = numCachedRedemption; i < numRedemptions; i++) {
-			const res = await esXaiContract.methods.getRedemptionRequest(walletAddress, i).call();
-			const redemption: RedemptionRequest = {
-				receiveAmount: Number(web3Instance.web3.utils.fromWei(res.amount, "ether")) * getBurnFeeFromDuration(Number(res.duration)) / 100, //TODO calculate by duration
-				duration: Number(res.duration) * 1000,		// contract works with seconds
-				startTime: Number(res.startTime) * 1000,	// convert to milliseconds for convenient use with js APIs
-				endTime: Number(res.endTime) * 1000,	// convert to milliseconds for convenient use with js APIs
-				redeemAmount: Number(web3Instance.web3.utils.fromWei(res.amount, "ether")),
-				completed: res.completed,
-				cancelled: res.cancelled,
-				index: i
-			};
-			cachedRedemptions.push(redemption);
-		}
-	}
-
-	let open = [], closed = [], claimable = [];
-	for (let i = 0; i < cachedRedemptions.length; i++) {
-		const redemption = cachedRedemptions[i];
-
-		if (!redemption.completed) {
-
-			if (i < numCachedRedemption) {
-				//Check if cancelled
-				const res = await esXaiContract.methods.getRedemptionRequest(walletAddress, i).call();
-
-				if (res.completed) {
-					cachedRedemptions[i].completed = res.completed;
-					cachedRedemptions[i].cancelled = res.cancelled;
-					cachedRedemptions[i].endTime = Number(res.endTime) * 1000;
-					closed.push(redemption);
-					continue;
-				}
-			}
-
-			const elapsedSeconds = Date.now() - redemption.startTime;
-			if (elapsedSeconds >= redemption.duration) {
-				claimable.push(redemption);
-			} else {
-				redemption.endTime = redemption.startTime + redemption.duration;
-				open.push(redemption);
-			}
-		} else {
-			closed.push(redemption);
-		}
-	}
-
-	localStorage.setItem(storageKey, JSON.stringify(cachedRedemptions));
-
-	return {
-		claimable,
-
-		open: open.sort((a: RedemptionRequest, b: RedemptionRequest) => {
-			return a.endTime - b.endTime;
-		}),
-
-		closed: closed.sort((a: RedemptionRequest, b: RedemptionRequest) => {
-			return b.endTime - a.endTime;
-		}),
-	};
-}
-
 export const getEsXaiAllowance = async (network: NetworkKey, owner: string): Promise<number> => {
 	const web3Instance = getWeb3Instance(network);
 	const esXaiContract = new web3Instance.web3.eth.Contract(esXaiAbi, web3Instance.esXaiAddress);
-	const allowance = await esXaiContract.methods.allowance(owner, web3Instance.poolFactoryAddress).call();
+	const allowance = await esXaiContract.methods.allowance(owner, web3Instance.poolFactoryAddress).call() as bigint;
 	return Number(web3Instance.web3.utils.fromWei(allowance.toString(), 'ether'));
 }
 

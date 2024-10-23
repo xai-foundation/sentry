@@ -172,7 +172,7 @@ function extractIdsToBatches(redemptions: RedemptionRequest[]): number[][] {
 async function callRefreshRedemptionsFunctionOnContract(web3Instance: Web3Instance, walletAddress: string, indices: number[]): Promise<{ redemptions: RedemptionRequest[], totalRedemptions: number }> {
 	try {
 		const esXaiContract = new web3Instance.web3.eth.Contract(esXaiAbi, web3Instance.esXaiAddress);
-		const result = await esXaiContract.methods.refreshUserRedemptionsByIndex(walletAddress, indices).call();
+		const result = await esXaiContract.methods.refreshUserRedemptionsByIndex(walletAddress, indices).call() as unknown[];
 		const redemptions = result[0] as unknown[] as RedemptionRequest[];
 		const totalRedemptions = Number(result[1]);
 		return { redemptions, totalRedemptions };
@@ -185,7 +185,7 @@ async function callRefreshRedemptionsFunctionOnContract(web3Instance: Web3Instan
 async function callGetAllRedemptionsFunctionOnContract(web3Instance: Web3Instance, walletAddress: string, batchSize: number, offset: number): Promise<{ redemptions: RedemptionRequest[], totalRedemptions: number }> {
 	try {
 		const esXaiContract = new web3Instance.web3.eth.Contract(esXaiAbi, web3Instance.esXaiAddress);
-		const result = await esXaiContract.methods.getRedemptionsByUser(walletAddress, batchSize, offset).call();
+		const result = await esXaiContract.methods.getRedemptionsByUser(walletAddress, batchSize, offset).call() as unknown[];
 		const redemptions = result[0] as unknown[] as RedemptionRequest[];
 		const totalRedemptions = Number(result[1]);
 		return { redemptions, totalRedemptions };
