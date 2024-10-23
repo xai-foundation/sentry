@@ -266,7 +266,7 @@ export type OrderedRedemptions = {
 export const getEsXaiAllowance = async (network: NetworkKey, owner: string): Promise<number> => {
 	const web3Instance = getWeb3Instance(network);
 	const esXaiContract = new web3Instance.web3.eth.Contract(esXaiAbi, web3Instance.esXaiAddress);
-	const allowance = await esXaiContract.methods.allowance(owner, web3Instance.poolFactoryAddress).call() as bigint;
+	const allowance = await esXaiContract.methods.allowance(owner, web3Instance.poolFactoryAddress).call();
 	return Number(web3Instance.web3.utils.fromWei(allowance.toString(), 'ether'));
 }
 

@@ -19,7 +19,7 @@ import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import ClaimableRewardsComponent from "@/app/components/staking/ClaimableRewardsComponent";
 import { formatCurrencyWithDecimals } from "@/app/utils/formatCurrency";
 import { PrimaryButton } from "@/app/components/ui";
-import { RedemptionRequest } from '../../../services/redemptions.service';
+import { RedemptionRequest } from '@/services/redemptions.service';
 import useGetRedemptions from "@/app/hooks/useGetRedemptions";
 
 interface DashboardStakingInfoProps {

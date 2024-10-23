@@ -16,7 +16,7 @@ import { MODAL_BODY_TEXT } from "./Constants";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import { BaseModal, PrimaryButton } from "@/app/components/ui";
 import { TextButton } from "@/app/components/ui/buttons";
-import { useBlockIp, useGetKYCApproved, useGetKYCApprovedForRedemptionClaim } from "@/app/hooks";
+import { useBlockIp } from "@/app/hooks";
 import { listOfCountries } from "../constants/constants";
 import { RedemptionRequest } from "@/services/redemptions.service";
 import useGetRedemptions from "@/app/hooks/useGetRedemptions";
@@ -259,6 +259,11 @@ export default function History() {
 							classNames="!text-3xl capitalize border-b-1 border-chromaphobicBlack py-6 md:px-8 px-[17px] !mb-0"
 							title="Pending"
 						/>
+
+						{redemptionsLoading && <div className="bg-nulnOil/75 shadow-default mb-[53px]">
+							<MainTitle isSubHeader classNames="!text-3xl capitalize border-b-1 border-chromaphobicBlack py-6 md:px-8 px-[17px] !mb-0" title="Loading Redemptions..." />
+						</div>}
+						
 						{redemptions.claimable.map((r:RedemptionRequest, index: number) => {
 							return (
 								<HistoryCard
@@ -303,11 +308,6 @@ export default function History() {
 							)
 						})}
 					</div>
-				}
-				{redemptionsLoading && <div className="bg-nulnOil/75 shadow-default mb-[53px]">
-					<MainTitle isSubHeader classNames="!text-3xl capitalize border-b-1 border-chromaphobicBlack py-6 md:px-8 px-[17px] !mb-0" title="Loading Redemptions..." />
-				</div>
-					
 				}
 
 				{(redemptions.closed.length > 0)  && !redemptionsLoading &&
