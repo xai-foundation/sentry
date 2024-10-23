@@ -191,8 +191,8 @@ export const getXaiBalance = async (network: NetworkKey, walletAddress: string):
 
 const getEsXaiBalanceWei = async (web3Instance: Web3Instance, walletAddress: string): Promise<bigint> => {
 	const esXaiContract = new web3Instance.web3.eth.Contract(esXaiAbi, web3Instance.esXaiAddress);
-	const balance = await esXaiContract.methods.balanceOf(walletAddress).call() as bigint;
-	return balance;
+	const balance = await esXaiContract.methods.balanceOf(walletAddress).call();
+	return balance as bigint;
 }
 
 export const getEsXaiBalance = async (network: NetworkKey, walletAddress: string): Promise<{ balance: number, balanceWei: string }> => {
