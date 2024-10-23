@@ -1,5 +1,5 @@
 import {ConnectButton, ExternalLink} from "@sentry/ui";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAppKit } from '@reown/appkit/react';
 import {useAccount} from "wagmi";
 import {DiscordIcon, TelegramIcon, XaiLogo, XIcon} from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import Burger from "@/features/header/Burger";
@@ -7,7 +7,7 @@ import MobileNavbar from "@/features/header/MobileNavbar";
 import { useState} from "react";
 
 export function Header() {
-	const {open} = useWeb3Modal();
+	const {open} = useAppKit();
 	const {address} = useAccount()
 	const [isNavbarOpened, setIsNavbarOpened] = useState(false)
 	

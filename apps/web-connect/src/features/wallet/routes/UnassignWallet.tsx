@@ -4,11 +4,11 @@ import {useWriteContract } from "wagmi";
 import {config, isValidNetwork, RefereeAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {ConnectButton, PrimaryButton} from "@sentry/ui";
-import {useWeb3Modal} from "@web3modal/wagmi/react";
+import { useAppKit } from '@reown/appkit/react';
 import { useNetworkConfig } from "@/hooks/useNetworkConfig";
 
 export function UnassignWallet() {
-	const {open} = useWeb3Modal()
+	const {open} = useAppKit()
 	const navigate = useNavigate();
 	const params = useParams<{ operatorAddress: string }>();
     const { chainId, isConnected, address, isDevelopment} = useNetworkConfig();
