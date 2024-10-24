@@ -252,6 +252,12 @@ export default function History() {
 				  isError={selectedCountry === "United States"}
 				  errorMessage="KYC is not available for the selected country"
 		  />
+				{redemptionsLoading && <>
+					<div className="bg-nulnOil/75 shadow-default mb-[53px]">
+						<MainTitle isSubHeader classNames="!text-3xl capitalize border-b-1 border-chromaphobicBlack py-6 md:px-8 px-[17px] !mb-0" title="Loading Redemptions..." />
+					</div>
+				</>}
+				
 				{(redemptions.claimable.length > 0 || redemptions.open.length > 0) && !redemptionsLoading &&
 					<div className="bg-nulnOil/85 box-shadow-default mb-[53px]">
 						<MainTitle
@@ -260,9 +266,6 @@ export default function History() {
 							title="Pending"
 						/>
 
-						{redemptionsLoading && <div className="bg-nulnOil/75 shadow-default mb-[53px]">
-							<MainTitle isSubHeader classNames="!text-3xl capitalize border-b-1 border-chromaphobicBlack py-6 md:px-8 px-[17px] !mb-0" title="Loading Redemptions..." />
-						</div>}
 						
 						{redemptions.claimable.map((r:RedemptionRequest, index: number) => {
 							return (
