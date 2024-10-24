@@ -6,7 +6,7 @@ import ProgressComponent, { Sizes } from "@/app/components/progress/Progress";
 import { PrimaryButton } from "@/app/components/ui";
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@/app/components/ui/buttons";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAppKit } from '@reown/appkit/react';
 import { PoolInfo } from "@/types/Pool";
 
 export enum PoolStakingButtonVariant {
@@ -42,7 +42,7 @@ const PoolStakingInfo = ({
   const { userStakedEsXaiAmount: stakedEsXAI, userStakedKeyIds: stakedKeys } = poolInfo;
 
   const { address } = useAccount();
-  const { open } = useWeb3Modal();
+  const { open } = useAppKit();
   const formatPercentage = (value: number) => {
     if (value && String(value).includes(".")) {
       return String(value).slice(0, String(value).indexOf(".") + 2);

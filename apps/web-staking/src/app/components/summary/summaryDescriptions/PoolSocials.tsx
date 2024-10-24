@@ -9,8 +9,8 @@ import {
 import { LinkLogoComponent } from "@/app/components/links/LinkComponent";
 import { PoolInfo } from "@/types/Pool";
 
-const PoolSocialIconLink = ({ link, icon }: { link?: string, icon: ElementType<any, keyof JSX.IntrinsicElements> }) => {
-
+const PoolSocialIconLink = ({ link, icon }: { link?: string, icon: ElementType<{ width?: number, height?: number, fill?: string }, keyof JSX.IntrinsicElements> }) => {
+  
   const isValidHttpUrl = (_link: string) => {
     let url;
     try {

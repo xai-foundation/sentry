@@ -44,7 +44,7 @@ export function LinkComponent({
 interface LinkLogoComponentProps {
   link: string;
   content?: string;
-  Icon: ElementType<any, keyof JSX.IntrinsicElements>;
+  Icon: ElementType<{ width?: number, height?: number, fill?: string }, keyof JSX.IntrinsicElements>;
   customClass?: string;
   externalTab?: boolean;
   color?: string;
