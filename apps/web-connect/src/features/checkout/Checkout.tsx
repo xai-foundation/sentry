@@ -36,7 +36,6 @@ export function Checkout() {
         mintWithEth,
         mintWithXai,
         approve,
-        resetTransactions,
         mintWithCrossmint
     } = useWebBuyKeysContext();
 
@@ -48,7 +47,7 @@ export function Checkout() {
     }, [prefilledPromoCode, promoCode, setPromoCode]);
 
     function returnToClient() {
-        resetTransactions();
+        window.location.reload();
     }
 
 	useEffect(() => {
