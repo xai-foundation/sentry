@@ -9,18 +9,18 @@ import {
   updateNotification,
 } from "@/app/components/notifications/NotificationsComponent";
 import {
-  useGetRedemptionsHooks,
   useGetUserTotalStakedKeysCount,
 } from "@/app/hooks";
 import {
   ACTIVE_NETWORK_IDS,
   mapWeb3Error,
-  RedemptionRequest,
 } from "@/services/web3.service";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import ClaimableRewardsComponent from "@/app/components/staking/ClaimableRewardsComponent";
 import { formatCurrencyWithDecimals } from "@/app/utils/formatCurrency";
 import { PrimaryButton } from "@/app/components/ui";
+import { RedemptionRequest } from '@/services/redemptions.service';
+import useGetRedemptions from "@/app/hooks/useGetRedemptions";
 
 interface DashboardStakingInfoProps {
   totalStaked: number;
@@ -36,9 +36,7 @@ const DashboardStakingInfo = ({
   rewardsTransactionLoading
 }: DashboardStakingInfoProps) => {
   const { stakedKeysAmount } = useGetUserTotalStakedKeysCount();
-  const {
-    redemptions: { claimable },
-  } = useGetRedemptionsHooks();
+	const {redemptions: {claimable}} = useGetRedemptions();
   const calculatedClaimableRedemptions = claimable.reduce((acc, redemption) => {
     return (acc += redemption.receiveAmount);
   }, 0);
@@ -52,7 +50,7 @@ const DashboardStakingInfo = ({
   const router = useRouter();
 
   // Substitute Timeouts with useWaitForTransaction
-  const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
+  const { isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
     hash: receipt,
   });
 
