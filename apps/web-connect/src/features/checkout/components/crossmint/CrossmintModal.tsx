@@ -3,6 +3,7 @@ import { useAccount } from 'wagmi';
 import { config } from "@sentry/core";
 import FiatEmbeddedCheckoutIFrame from './FiatEmbeddedCheckoutIFrame';
 import { useWebBuyKeysContext } from '../../contexts/useWebBuyKeysContext';
+import { CloseIcon } from "@sentry/ui";
 
 interface CrossmintModalProps {
     isOpen: boolean;
@@ -50,12 +51,16 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalP
     }
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50">
-            <div className="bg-black p-3 rounded-lg shadow-xl w-full max-w-3xl mx-4">
-                <div className="flex justify-between items-center p-4 border-b">
+        <div className="fixed inset-0 bg-nulnOil bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50">
+            <div className="bg-nulnOil p-3 rounded-lg shadow-xl w-full max-w-3xl mx-4">
+                <div className="flex justify-between items-center p-4">
                     <h2 className="text-xl font-semibold text-white">Pay with Credit Card</h2>
                     <button onClick={onClose} className="text-white hover:text-gray-700">
-                        X
+                        <CloseIcon
+                            width={15}
+                            height={15}
+                            fill="#fff"
+                        />
                     </button>
                 </div>
                 <div className="p-4">
