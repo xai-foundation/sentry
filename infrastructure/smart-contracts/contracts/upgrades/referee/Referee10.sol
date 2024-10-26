@@ -557,7 +557,7 @@ contract Referee10 is Initializable, AccessControlEnumerableUpgradeable {
             isApprovedForOperator(licenseOwner, msg.sender) ||
             (
                 assignedPool != address(0) &&
-                PoolFactory(poolFactoryAddress).isDelegateOfPoolOrOwner(msg.sender, assignedPool)
+                PoolFactory2(poolFactoryAddress).isDelegateOfPoolOrOwner(msg.sender, assignedPool)
             );
     }
 
@@ -728,7 +728,7 @@ contract Referee10 is Initializable, AccessControlEnumerableUpgradeable {
 
         uint256 stakedAmount = stakedAmounts[staker];
 
-        if(PoolFactory(poolFactoryAddress).poolsCreatedViaFactory(staker)){
+        if(PoolFactory2(poolFactoryAddress).poolsCreatedViaFactory(staker)){
 			if (assignedKeysToPoolCount[staker] * maxStakeAmountPerLicense < stakedAmount) {
 				stakedAmount = assignedKeysToPoolCount[staker] * maxStakeAmountPerLicense;
 			}
@@ -879,7 +879,7 @@ contract Referee10 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 numberOfKeys = assignedKeysToPoolCount[_bulkAddress] + assignedKeysOfUserCount[_bulkAddress];
 
         // Check if the bulk address is a pool
-        bool isPool = PoolFactory(poolFactoryAddress).poolsCreatedViaFactory(_bulkAddress);
+        bool isPool = PoolFactory2(poolFactoryAddress).poolsCreatedViaFactory(_bulkAddress);
 
         // If bulk address is not a pool, this means it is a wallet owner with unstaked keys
         if(!isPool){
@@ -987,7 +987,7 @@ contract Referee10 is Initializable, AccessControlEnumerableUpgradeable {
 		}
 
         // Check if the bulk address is a pool
-        bool isPool = PoolFactory(poolFactoryAddress).poolsCreatedViaFactory(_bulkAddress);
+        bool isPool = PoolFactory2(poolFactoryAddress).poolsCreatedViaFactory(_bulkAddress);
 
         // If bulk address is not a pool, this means it is a wallet owner with unstaked keys
         if(!isPool){
