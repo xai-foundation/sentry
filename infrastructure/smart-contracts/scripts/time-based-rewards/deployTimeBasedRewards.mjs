@@ -1,6 +1,7 @@
 import hardhat from "hardhat";
 const { ethers, upgrades } = hardhat;
 import { config } from "@sentry/core";
+import { safeVerify } from "../../utils/safeVerify.mjs";
 
 /**
  * Main function to deploy and upgrade contracts for time-based rewards
@@ -34,7 +35,6 @@ async function main() {
 
     const refereeUpgradeParams = [refereeCalculationsAddress];
     const referee9 = await upgrades.upgradeProxy(config.refereeAddress, Referee9, { call: { fn: "initialize", args: refereeUpgradeParams } });
-    await referee9.wait(BLOCKS_TO_WAIT);
 
     // verify contract
     await safeVerify({ contract: referee9 });

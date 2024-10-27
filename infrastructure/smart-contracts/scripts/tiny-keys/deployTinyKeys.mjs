@@ -17,12 +17,16 @@ import { safeVerify } from "../../utils/safeVerify.mjs";
  * 7. Verify all deployed and upgraded contracts
  */
 async function main() {
-    const BLOCKS_TO_WAIT = 3;
     const maxKeysNonKyc = 1; //Maximum number of keys that a non-KYC user can own and still complete esXai redemptions
 
+    const NODE_LICENSE_CONTRACT = config.nodeLicenseAddress;
+    const REFEREE_CONTRACT = config.refereeAddress;
+    const POOL_FACTORY_CONTRACT = config.poolFactoryAddress;
+    const KEY_MULTIPLIER = 99;
+
+    // get the deployer
     const [deployer] = (await ethers.getSigners());
-    const deployerAddress = await deployer.getAddress();
-    console.log("Deployer address", deployerAddress);
+    console.log("Deploying contracts with the account:", deployer.address);
 
     /**
      * Upgrade esXai3 Contract
@@ -37,7 +41,6 @@ async function main() {
 
     const esXaiUpgradeParams = [config.refereeAddress, config.nodeLicenseAddress, config.poolFactoryAddress, maxKeysNonKyc];
     const esXai3 = await upgrades.upgradeProxy(config.esXaiAddress, EsXai3, { call: {fn: "initialize", args: esXaiUpgradeParams } });
-    await esXai3.wait(BLOCKS_TO_WAIT);
     console.log("Upgraded esXai3");
 
     // deploy tiny keys airdrop contract
@@ -62,8 +65,7 @@ async function main() {
     console.log("Got NodeLicense factory");
 
     const nodeLicenseUpgradeParams = [config.xaiAddress, config.esXaiAddress, config.chainlinkEthUsdPriceFeed, config.chainlinkXaiUsdPriceFeed, tinyKeysAirdropAddress];
-    const nodeLicense8 = await upgrades.upgradeProxy(config.nodeLicenseAddress, NodeLicense8, { call: {fn: "initialize", args: nodeLicenseUpgradeParams } });
-    await nodeLicense8.wait(BLOCKS_TO_WAIT);
+    await upgrades.upgradeProxy(config.nodeLicenseAddress, NodeLicense8, { call: {fn: "initialize", args: nodeLicenseUpgradeParams } });
 
     /**
      * Upgrade PoolFactory Contract
@@ -75,8 +77,7 @@ async function main() {
     console.log("Got PoolFactory factory");
     
     const poolFactoryUpgradeParams = [tinyKeysAirdropAddress];
-    const poolFactory2 = await upgrades.upgradeProxy(config.poolFactoryAddress, PoolFactory2, { call: {fn: "initialize", args: poolFactoryUpgradeParams } });
-    await poolFactory2.wait(BLOCKS_TO_WAIT);    
+    await upgrades.upgradeProxy(config.poolFactoryAddress, PoolFactory2, { call: {fn: "initialize", args: poolFactoryUpgradeParams } });
 
     /**
      * Upgrade Referee Contract
@@ -84,12 +85,11 @@ async function main() {
      * @param {string} refereeCalculationsAddress - Address of the RefereeCalculations contract
      */
     console.log("Upgrading Referee...");
-    const Referee10 = await ethers.getContractFactory("Referee10");
+    const Referee10 = await ethers.getContractFactory("Referee10", deployer);
     console.log("Got Referee factory");
 
     const refereeUpgradeParams = [];
-    const referee10 = await upgrades.upgradeProxy(config.refereeAddress, Referee10, { call: {fn: "initialize", args: refereeUpgradeParams } });
-    await referee10.wait(BLOCKS_TO_WAIT);
+    await upgrades.upgradeProxy(config.refereeAddress, Referee10, { call: {fn: "initialize", args: refereeUpgradeParams } });
 
     /**
      * Add NodeLicense to esXai transfer whitelist
@@ -98,9 +98,8 @@ async function main() {
      */
     console.log("Adding NodeLicense to esXai transfer whitelist...");
     const esXai = await new ethers.Contract(config.esXaiAddress, esXaiAbi, deployer);
-    const whiteListTx = await esXai.addToWhitelist(config.nodeLicenseAddress);
+    await esXai.addToWhitelist(config.nodeLicenseAddress);
     console.log("Successfully Added NodeLicense to esXai transfer whitelist");
-    await whiteListTx.wait(BLOCKS_TO_WAIT);
 
     console.log("Deployment complete.");
 
