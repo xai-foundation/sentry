@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { Id } from "react-toastify";
 import { useDisclosure } from "@nextui-org/react"
 
-import { OrderedRedemptions, RedemptionRequest, mapWeb3Error } from "@/services/web3.service";
+import { mapWeb3Error } from "@/services/web3.service";
 
 import MainTitle from "../titles/MainTitle";
 import { loadingNotification, updateNotification } from "../notifications/NotificationsComponent";
@@ -16,8 +16,10 @@ import { MODAL_BODY_TEXT } from "./Constants";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import { BaseModal, PrimaryButton } from "@/app/components/ui";
 import { TextButton } from "@/app/components/ui/buttons";
-import { useBlockIp, useGetKYCApprovedForRedemptionClaim } from "@/app/hooks";
+import { useBlockIp } from "@/app/hooks";
 import { listOfCountries } from "../constants/constants";
+import { RedemptionRequest } from "@/services/redemptions.service";
+import useGetRedemptions from "@/app/hooks/useGetRedemptions";
 
 interface HistoryCardProps {
 	receivedAmount: number,
@@ -65,7 +67,7 @@ function HistoryCard({
 	loadingIndex,
 	redemptionIndex,
 	isCancelled = false,
-											 isCancelling,
+	isCancelling,
 	isPending = false
 }: HistoryCardProps) {
 	const { isOpen, onOpen, onClose } = useDisclosure();
@@ -142,11 +144,7 @@ function HistoryCard({
 	)
 };
 
-export default function History({ redemptions, reloadRedemptions }: {
-	redemptions: OrderedRedemptions,
-	reloadRedemptions: () => void,
-}) {
-	const { chainId } = useAccount();
+export default function History() {
 	const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
 	const [isCancel, setIsCancel] = useState(false);
 	const [showKYCModal, setShowKYCModal] = useState(false);
@@ -156,13 +154,14 @@ export default function History({ redemptions, reloadRedemptions }: {
 	// Comment out for #188413859 / #188457183, needs to go back in post contract upgrade (for reference search for story id)
 	// const { isApproved } = useGetKYCApprovedForRedemptionClaim();
 	const { loading } = useBlockIp();
-	
+	const { chainId } = useAccount();	
+	const { redemptions, loadRedemptions, redemptionsLoading } = useGetRedemptions();
 
 	const { switchChain } = useSwitchChain();
 	const { writeContractAsync } = useWriteContract();
 
 	// Substitute Timeouts with useWaitForTransaction
-	const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
+	const { isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
 		hash: receipt,
 	});
 
@@ -172,9 +171,9 @@ export default function History({ redemptions, reloadRedemptions }: {
 
 	const updateOnSuccess = useCallback(() => {
 		updateNotification(isCancel ? 'Cancel successful' : `Claim successful`, toastId.current as Id, false, receipt, chainId);
-		reloadRedemptions();
+		loadRedemptions();
 		isCancel && setIsCancel(false);
-	}, [receipt, chainId, reloadRedemptions])
+	}, [receipt, chainId, loadRedemptions, isCancel]);
 
 	const updateOnError = useCallback(() => {
 		const error = mapWeb3Error(status);
@@ -253,14 +252,22 @@ export default function History({ redemptions, reloadRedemptions }: {
 				  isError={selectedCountry === "United States"}
 				  errorMessage="KYC is not available for the selected country"
 		  />
-				{(redemptions.claimable.length > 0 || redemptions.open.length > 0) &&
+				{redemptionsLoading && <>
+					<div className="bg-nulnOil/75 shadow-default mb-[53px]">
+						<MainTitle isSubHeader classNames="!text-3xl capitalize border-b-1 border-chromaphobicBlack py-6 md:px-8 px-[17px] !mb-0" title="Loading Redemptions..." />
+					</div>
+				</>}
+				
+				{(redemptions.claimable.length > 0 || redemptions.open.length > 0) && !redemptionsLoading &&
 					<div className="bg-nulnOil/85 box-shadow-default mb-[53px]">
 						<MainTitle
 							isSubHeader
 							classNames="!text-3xl capitalize border-b-1 border-chromaphobicBlack py-6 md:px-8 px-[17px] !mb-0"
 							title="Pending"
 						/>
-						{redemptions.claimable.map((r, index) => {
+
+						
+						{redemptions.claimable.map((r:RedemptionRequest, index: number) => {
 							return (
 								<HistoryCard
 									key={r.index}
@@ -269,7 +276,7 @@ export default function History({ redemptions, reloadRedemptions }: {
 									claimable={true}
 									claimDisabled={isLoading}
 									receivedAmount={r.receiveAmount}
-									redeemedAmount={r.redeemAmount}
+									redeemedAmount={r.amount}
 									receivedCurrency="XAI"
 									redeemedCurrency="esXAI"
 									durationMillis={0}
@@ -283,7 +290,7 @@ export default function History({ redemptions, reloadRedemptions }: {
 							)
 						})}
 
-						{redemptions.open.map((r, index) => {
+						{redemptions.open.map((r:RedemptionRequest, index: number) => {
 							return (
 								<HistoryCard
 									key={r.index}
@@ -291,7 +298,7 @@ export default function History({ redemptions, reloadRedemptions }: {
 									onCancel={(onClose) => onCancel(r, onClose)}
 									claimable={false}
 									receivedAmount={r.receiveAmount}
-									redeemedAmount={r.redeemAmount}
+									redeemedAmount={r.amount}
 									receivedCurrency="XAI"
 									redeemedCurrency="esXAI"
 									isLoading={isLoading}
@@ -306,21 +313,21 @@ export default function History({ redemptions, reloadRedemptions }: {
 					</div>
 				}
 
-				{(redemptions.closed.length > 0) &&
+				{(redemptions.closed.length > 0)  && !redemptionsLoading &&
 					<div className="bg-nulnOil/75 shadow-default mb-[53px]">
 						<MainTitle
 							isSubHeader
 							classNames="!text-3xl capitalize border-b-1 border-chromaphobicBlack py-6 md:px-8 px-[17px] !mb-0"
 							title="History" />
 
-						{redemptions.closed.map((r, index) => {
+						{redemptions.closed.map((r:RedemptionRequest, index: number) => {
 							return (
 								<HistoryCard
 									key={r.index}
 									onClaim={() => onClaim(r)}
 									claimable={false}
 									receivedAmount={r.receiveAmount}
-									redeemedAmount={r.redeemAmount}
+									redeemedAmount={r.amount}
 									receivedCurrency="XAI"
 									redeemedCurrency="esXAI"
 									isLoading={isLoading}
