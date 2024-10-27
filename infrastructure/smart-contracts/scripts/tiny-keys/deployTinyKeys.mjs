@@ -65,7 +65,7 @@ async function main() {
     console.log("Got NodeLicense factory");
 
     const nodeLicenseUpgradeParams = [config.xaiAddress, config.esXaiAddress, config.chainlinkEthUsdPriceFeed, config.chainlinkXaiUsdPriceFeed, tinyKeysAirdropAddress];
-    await upgrades.upgradeProxy(config.nodeLicenseAddress, NodeLicense8, { call: {fn: "initialize", args: nodeLicenseUpgradeParams } });
+    const nodeLicense8 = await upgrades.upgradeProxy(config.nodeLicenseAddress, NodeLicense8, { call: {fn: "initialize", args: nodeLicenseUpgradeParams } });
 
     /**
      * Upgrade PoolFactory Contract
@@ -77,7 +77,7 @@ async function main() {
     console.log("Got PoolFactory factory");
     
     const poolFactoryUpgradeParams = [tinyKeysAirdropAddress];
-    await upgrades.upgradeProxy(config.poolFactoryAddress, PoolFactory2, { call: {fn: "initialize", args: poolFactoryUpgradeParams } });
+    const poolFactory2 = await upgrades.upgradeProxy(config.poolFactoryAddress, PoolFactory2, { call: {fn: "initialize", args: poolFactoryUpgradeParams } });
 
     /**
      * Upgrade Referee Contract
@@ -89,7 +89,7 @@ async function main() {
     console.log("Got Referee factory");
 
     const refereeUpgradeParams = [];
-    await upgrades.upgradeProxy(config.refereeAddress, Referee10, { call: {fn: "initialize", args: refereeUpgradeParams } });
+    const referee10 = await upgrades.upgradeProxy(config.refereeAddress, Referee10, { call: {fn: "initialize", args: refereeUpgradeParams } });
 
     /**
      * Add NodeLicense to esXai transfer whitelist
