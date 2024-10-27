@@ -7,8 +7,6 @@ import { arbitrum, arbitrumSepolia } from '@reown/appkit/networks'
 // Get projectId at https://cloud.walletconnect.com
 export const projectId = process.env.NEXT_PUBLIC_APP_ENV === "development" ? "79e38b4593d43c78d7e9ee38f0cdf4ee" : "aa9e5ff297549e8d0cc518d085c28699";
 
-console.log('projectId', projectId);
-
 if (!projectId) throw new Error('Project ID is not defined');
 
 const networks = process.env.NEXT_PUBLIC_APP_ENV === "development" ? [arbitrum, arbitrumSepolia] : [arbitrum];

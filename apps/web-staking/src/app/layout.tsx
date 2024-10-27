@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { headers } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { ContextProvider } from "@/context";
 
 import "./globals.css";
@@ -46,12 +46,19 @@ export default function xRootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookies = headers().get("cookie");
+  // Use the Next.js cookies() function instead of headers
+  const cookieStore = cookies();
+  const allCookies = cookieStore.getAll();
+  
+  // Convert cookies to string format that your ContextProvider expects
+  const cookieString = allCookies
+    .map(cookie => `${cookie.name}=${cookie.value}`)
+    .join('; ');
 
   return (
     <html lang="en">
       <body className="bg-background-image overflow-y-scroll bg-cover bg-fixed bg-center bg-no-repeat">
-        <ContextProvider cookies={cookies}>
+      <ContextProvider cookies={cookieString}>
             <IpLocationChecker>
               <Providers>
                 {/* <ThemeSwitcher /> */}

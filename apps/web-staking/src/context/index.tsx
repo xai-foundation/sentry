@@ -62,7 +62,6 @@ export function ContextProvider({
   const initialState = cookies 
     ? cookieToInitialState(wagmiAdapter.wagmiConfig as Config, cookies)
     : undefined;
-  console.log('initialState', initialState);
 
   return (
     <WagmiProvider config={wagmiConfig} initialState={initialState}>
