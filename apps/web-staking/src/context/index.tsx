@@ -1,11 +1,11 @@
 'use client'
 
-import React, { ReactNode } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import { wagmiAdapter, projectId } from '@/config'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createAppKit } from '@reown/appkit/react'
 import { arbitrum, arbitrumSepolia } from '@reown/appkit/networks'
-import { cookieToInitialState, WagmiProvider, type Config } from 'wagmi'
+import { WagmiProvider, type Config, deserialize, type State } from 'wagmi'
 
 // Create a queryClient instance
 const queryClient = new QueryClient({
@@ -49,22 +49,39 @@ createAppKit({
   }
 })
 
-export function ContextProvider({
-  children,
-  cookies
-}: {
-  children: ReactNode,
-  cookies: string | null
-}) {  
+function getInitialState(): State | undefined {
+  if (typeof window === 'undefined') return undefined
+  
+  try {
+    const persistedState = localStorage.getItem('wagmi')
+    if (!persistedState) return undefined
+    
+    return deserialize(persistedState) as State
+  } catch (error) {
+    console.error('Failed to get initial state from localStorage:', error)
+    return undefined
+  }
+}
 
+export function ContextProvider({
+  children
+}: {
+  children: ReactNode
+}) {  
   const wagmiConfig = wagmiAdapter.wagmiConfig as Config
-  // Parse the initial state from cookies
-  const initialState = cookies 
-    ? cookieToInitialState(wagmiAdapter.wagmiConfig as Config, cookies)
-    : undefined;
+  const [mounted, setMounted] = useState(false)
+  
+  // Wait for component to mount to avoid hydration issues
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
 
   return (
-    <WagmiProvider config={wagmiConfig} initialState={initialState}>
+    <WagmiProvider config={wagmiConfig} initialState={getInitialState()}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   )

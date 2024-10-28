@@ -46,19 +46,10 @@ export default function xRootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // Use the Next.js cookies() function instead of headers
-  const cookieStore = cookies();
-  const allCookies = cookieStore.getAll();
-  
-  // Convert cookies to string format that your ContextProvider expects
-  const cookieString = allCookies
-    .map(cookie => `${cookie.name}=${cookie.value}`)
-    .join('; ');
-
   return (
     <html lang="en">
       <body className="bg-background-image overflow-y-scroll bg-cover bg-fixed bg-center bg-no-repeat">
-      <ContextProvider cookies={cookieString}>
+      <ContextProvider>
             <IpLocationChecker>
               <Providers>
                 {/* <ThemeSwitcher /> */}
