@@ -1,13 +1,13 @@
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { createStorage } from '@wagmi/core'
-import { localStorageProvider } from './storage'
+import { createStorage } from 'wagmi'
 import { networks, projectId } from './constants'
+import { indexedDBStorage } from './storage'
 
 export const wagmiAdapter = new WagmiAdapter({
-    storage: createStorage({
-        storage: localStorageProvider
+    storage: createStorage({ 
+        storage: indexedDBStorage
     }),
     networks,
     projectId,
     ssr: true
-});
+})

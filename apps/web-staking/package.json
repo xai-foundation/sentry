@@ -24,6 +24,7 @@
     "@web3modal/wagmi": "^5.0.11",
     "axios": "^1.6.8",
     "encoding": "^0.1.13",
+    "idb-keyval": "^6.2.1",
     "moment": "^2.30.1",
     "mongoose": "^8.2.1",
     "next": "14.2.4",

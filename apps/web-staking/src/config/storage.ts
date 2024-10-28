@@ -1,7 +1,8 @@
 import { Storage, StorageItemMap } from '@wagmi/core'
+import { del, get, set } from 'idb-keyval'
 
-export const localStorageProvider: Storage = {
-    getItem: <
+export const indexedDBStorage: Storage = {
+    getItem: async <
         TKey extends string = string,
         TValue extends (StorageItemMap & Record<string, unknown>)[TKey] = (StorageItemMap & Record<string, unknown>)[TKey],
         TDefault extends TValue | null | undefined = undefined,
@@ -9,47 +10,43 @@ export const localStorageProvider: Storage = {
         key: TKey,
         defaultValue?: TDefault
     ): Promise<TDefault extends null ? TValue | null : TValue> => {
-        return new Promise((resolve) => {
-            try {
-                if (typeof window !== 'undefined') {
-                    const item = window.localStorage.getItem(key);
-                    if (item === null) {
-                        resolve(defaultValue as TDefault extends null ? TValue | null : TValue);
-                    } else {
-                        resolve(JSON.parse(item) as TDefault extends null ? TValue | null : TValue);
-                    }
-                } else {
-                    resolve(defaultValue as TDefault extends null ? TValue | null : TValue);
+        try {
+            if (typeof window !== 'undefined') {
+                const value = await get(key)
+                if (value === undefined) {
+                    return defaultValue as TDefault extends null ? TValue | null : TValue
                 }
-            } catch (error) {
-                console.error('Error reading from localStorage:', error);
-                resolve(defaultValue as TDefault extends null ? TValue | null : TValue);
+                return value as TDefault extends null ? TValue | null : TValue
             }
-        });
+            return defaultValue as TDefault extends null ? TValue | null : TValue
+        } catch (error) {
+            console.error('Error reading from IndexedDB:', error)
+            return defaultValue as TDefault extends null ? TValue | null : TValue
+        }
     },
-    setItem: <
+    setItem: async <
         TKey extends string = string,
         TValue extends (StorageItemMap & Record<string, unknown>)[TKey] = (StorageItemMap & Record<string, unknown>)[TKey]
     >(
         key: TKey,
         value: TValue
-    ): void => {
+    ): Promise<void> => {
         try {
             if (typeof window !== 'undefined') {
-                window.localStorage.setItem(key, JSON.stringify(value));
+                await set(key, value)
             }
         } catch (error) {
-            console.error('Error writing to localStorage:', error);
+            console.error('Error writing to IndexedDB:', error)
         }
     },
-    removeItem: (key: string): void => {
+    removeItem: async (key: string): Promise<void> => {
         try {
             if (typeof window !== 'undefined') {
-                window.localStorage.removeItem(key);
+                await del(key)
             }
         } catch (error) {
-            console.error('Error removing from localStorage:', error);
+            console.error('Error removing from IndexedDB:', error)
         }
     },
-    key: 'localStorage'
-};
+    key: 'indexedDB'
+}
