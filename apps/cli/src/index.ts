@@ -137,7 +137,7 @@ cli.action(async () => {
             continue;
         }
         
-        // Show help message if the user asks for it
+        // DEV MODE - toggle network switch for using sepolia config
         if (command === 'toggle-switch-network') {
             if(config.defaultNetworkName === "arbitrum"){
                 console.log("==========================================================")
