@@ -9,5 +9,6 @@ export const wagmiAdapter = new WagmiAdapter({
     }),
     networks,
     projectId,
-    ssr: true
+    ssr: true,
+    syncConnectedChain: true
 })

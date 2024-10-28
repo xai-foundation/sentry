@@ -1,5 +1,19 @@
+// storage.ts
 import { Storage, StorageItemMap } from '@wagmi/core'
 import { del, get, set } from 'idb-keyval'
+
+let isInitialized = false
+const initializationPromise = new Promise<void>(resolve => {
+    if (typeof window !== 'undefined') {
+        window.addEventListener('load', () => {
+            isInitialized = true
+            resolve()
+        })
+    } else {
+        isInitialized = true
+        resolve()
+    }
+})
 
 export const indexedDBStorage: Storage = {
     getItem: async <
@@ -12,6 +26,9 @@ export const indexedDBStorage: Storage = {
     ): Promise<TDefault extends null ? TValue | null : TValue> => {
         try {
             if (typeof window !== 'undefined') {
+                if (!isInitialized) {
+                    await initializationPromise
+                }
                 const value = await get(key)
                 if (value === undefined) {
                     return defaultValue as TDefault extends null ? TValue | null : TValue
@@ -33,6 +50,9 @@ export const indexedDBStorage: Storage = {
     ): Promise<void> => {
         try {
             if (typeof window !== 'undefined') {
+                if (!isInitialized) {
+                    await initializationPromise
+                }
                 await set(key, value)
             }
         } catch (error) {
@@ -42,6 +62,9 @@ export const indexedDBStorage: Storage = {
     removeItem: async (key: string): Promise<void> => {
         try {
             if (typeof window !== 'undefined') {
+                if (!isInitialized) {
+                    await initializationPromise
+                }
                 await del(key)
             }
         } catch (error) {
