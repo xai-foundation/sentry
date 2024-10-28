@@ -1,7 +1,13 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { getNetwork } from "@/services/web3.service";
 import { useAccount } from 'wagmi';
 import { getAllRedemptions, OrderedRedemptions, refreshRedemptions } from '@/services/redemptions.service';
+
+interface UseGetRedemptionsResult {
+    redemptions: OrderedRedemptions;
+    loadRedemptions: () => void;
+    redemptionsLoading: boolean;
+}
 
 const INITIAL_REDEMPTIONS: OrderedRedemptions = {
     claimable: [],
@@ -21,38 +27,32 @@ const getStorageValue = <T>(key: string, defaultValue: T): T => {
     }
 };
 
-const useGetRedemptions = () => {
+const useGetRedemptions = (): UseGetRedemptionsResult => {
     const { address, chainId, isConnected } = useAccount();
     const [redemptionsLoading, setRedemptionsLoading] = useState<boolean>(false);
-    
-    const storageKey = address ? `userRedemptions-${address}` : 'userRedemptions';
-    const loadedKey = address ? `redemptionsLoaded-${address}` : 'redemptionsLoaded';
-
     const [redemptions, setRedemptions] = useState<OrderedRedemptions>(() => 
-        getStorageValue(storageKey, INITIAL_REDEMPTIONS)
-    );
-    const [redemptionsLoaded, setRedemptionsLoaded] = useState<boolean>(() => 
-        getStorageValue(loadedKey, false)
+        getStorageValue(`userRedemptions-${address}`, INITIAL_REDEMPTIONS)
     );
 
-    const lastLoadedRef = useRef<number>(Date.now() - THROTTLE_DELAY);
+    const lastLoadTimeRef = useRef<number>(0);
+    const hasMountedRef = useRef(false); // Track mount status to avoid initial storage sync
 
-    // Sync state with session storage
+    // Sync state with session storage after initial mount
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            window.sessionStorage.setItem(storageKey, JSON.stringify(redemptions));
-            window.sessionStorage.setItem(loadedKey, JSON.stringify(redemptionsLoaded));
+        if (typeof window !== 'undefined' && address && hasMountedRef.current) {
+            window.sessionStorage.setItem(`userRedemptions-${address}`, JSON.stringify(redemptions));
         }
-    }, [redemptions, redemptionsLoaded, storageKey, loadedKey]);
+        hasMountedRef.current = true; // Set mounted flag
+    }, [redemptions, address]);
 
-    // Clear state when disconnected
+    // Clear state when address changes, disconnects, or chain changes
     useEffect(() => {
-        if (!isConnected) {
+        if (!address || !isConnected || !chainId) {
             setRedemptions(INITIAL_REDEMPTIONS);
-            setRedemptionsLoaded(false);
             setRedemptionsLoading(false);
+            lastLoadTimeRef.current = 0;
         }
-    }, [isConnected]);
+    }, [address, isConnected, chainId]);
 
     const performLoadRedemptions = async (initialLoad: boolean = false) => {
         if (!address || !chainId || !isConnected) {
@@ -61,21 +61,23 @@ const useGetRedemptions = () => {
         }
 
         const now = Date.now();
-        if (now - lastLoadedRef.current <= THROTTLE_DELAY) return;
-        lastLoadedRef.current = now;
-
-        setRedemptionsLoading(true);
+        if (now - lastLoadTimeRef.current < THROTTLE_DELAY) {
+            return;
+        }
+        lastLoadTimeRef.current = now;
+        
         const currentAddress = address;
 
+        setRedemptionsLoading(true);
+
         try {
-            if (initialLoad || !redemptionsLoaded) {
+            if (initialLoad || redemptions === INITIAL_REDEMPTIONS) {
                 const redemptionsFromChain = await getAllRedemptions(
                     getNetwork(chainId), 
                     currentAddress
                 );
                 if (currentAddress === address) {
                     setRedemptions(redemptionsFromChain);
-                    setRedemptionsLoaded(true);
                 }
             } else {
                 const refreshedRedemptions = await refreshRedemptions(
@@ -87,10 +89,9 @@ const useGetRedemptions = () => {
                     setRedemptions(refreshedRedemptions);
                 }
             }
-        } catch (error) {
-            console.error('Failed to load/update redemptions:', error);
+        } catch (err) {
+            console.error('Failed to load/update redemptions:', err);
             if (currentAddress === address) {
-                setRedemptionsLoaded(false);
                 setRedemptions(INITIAL_REDEMPTIONS);
             }
         } finally {
@@ -100,19 +101,16 @@ const useGetRedemptions = () => {
         }
     };
 
-    // Load redemptions on address/chain change
+    // Load redemptions after address/chain change
     useEffect(() => {
-        performLoadRedemptions(true);
-    }, [address, chainId]);
-
-    // Public trigger function
-    const triggerLoadRedemptions = () => {
-        performLoadRedemptions(false);
-    };
+        if (address && chainId && isConnected) {
+            performLoadRedemptions(true);
+        }
+    }, [address, chainId, isConnected]);
 
     return {
         redemptions,
-        loadRedemptions: triggerLoadRedemptions,
+        loadRedemptions: () => performLoadRedemptions(false),
         redemptionsLoading,
     };
 };
