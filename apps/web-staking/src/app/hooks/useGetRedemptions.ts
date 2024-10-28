@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getNetwork } from "@/services/web3.service";
 import { useAccount } from 'wagmi';
 import { getAllRedemptions, OrderedRedemptions, refreshRedemptions } from '@/services/redemptions.service';
@@ -12,75 +12,85 @@ const INITIAL_REDEMPTIONS: OrderedRedemptions = {
 
 const useGetRedemptions = () => {
     const { address, chainId, isConnected } = useAccount();
-    const [loadedAddress, setLoadedAddress] = useState<`0x${string}` | undefined>(undefined);
     const [redemptionsLoading, setRedemptionsLoading] = useState<boolean>(false);
-    const [redemptions, setRedemptions] = useSessionStorage<OrderedRedemptions>('userRedemptions', INITIAL_REDEMPTIONS);
-    const [redemptionsLoaded, setRedemptionsLoaded] = useSessionStorage<boolean>('redemptionsLoaded', false);
+    
+    // Create wallet-specific storage keys - this ensures each wallet address has its own isolated storage
+    // When address changes, useSessionStorage will automatically reset to INITIAL_REDEMPTIONS
+    const storageKey = address ? `userRedemptions-${address}` : 'userRedemptions';
+    const loadedKey = address ? `redemptionsLoaded-${address}` : 'redemptionsLoaded';
+    
+    const [redemptions, setRedemptions] = useSessionStorage<OrderedRedemptions>(storageKey, INITIAL_REDEMPTIONS);
+    const [redemptionsLoaded, setRedemptionsLoaded] = useSessionStorage<boolean>(loadedKey, false);
+
+    // Track last load time to prevent excessive reloads
     const lastLoadedRef = useRef<number>(Date.now() - 5000);
 
-
-    const loadRedemptions = useCallback(async () => {
-        if (!address || !chainId || !isConnected) {
-            console.log("Cannot load redemptions - missing requirements", { address, chainId, isConnected });
+    const loadRedemptions = async (currentAddress: string, currentChainId: number, currentRedemptions: OrderedRedemptions, redemptionsLoaded: boolean) => {
+        // Return early if requirements are not met
+        if (!currentAddress || !currentChainId || !isConnected) {
             return;
         }
+
+        // Check to prevent stale updates if the address changed while loading
+        // This is required to prevent race conditions when loading redemptions after an address change
+        if (currentAddress !== address) {
+            return;
+        }
+
         const now = Date.now();
-        // Do not reload if already loaded in the last second
+        // Throttle loads to maximum once per second
         if (now - lastLoadedRef.current > 1000) {
             lastLoadedRef.current = now;
-
             setRedemptionsLoading(true);
+
             try {
-                // If address changed or not loaded yet, do a fresh load
-                if (loadedAddress !== address || !redemptionsLoaded) {
-                    const redemptionsFromChain = await getAllRedemptions(getNetwork(chainId), address);
-                    setRedemptions(redemptionsFromChain);
-                    setRedemptionsLoaded(true);
+                if (!redemptionsLoaded) {
+                    // Initial load - get all redemptions
+                    const redemptionsFromChain = await getAllRedemptions(getNetwork(currentChainId), currentAddress);
+                    // Double-check address hasn't changed during the async call. This is required to prevent race conditions when loading redemptions after an address change
+                    if (currentAddress === address) {
+                        setRedemptions(redemptionsFromChain);
+                        setRedemptionsLoaded(true);
+                    }
                 } else {
-                    const refreshedRedemptions = await refreshRedemptions(getNetwork(chainId), address, redemptions);
-                    setRedemptions(refreshedRedemptions);
+                    // Refresh existing redemptions
+                    const refreshedRedemptions = await refreshRedemptions(getNetwork(currentChainId), currentAddress, currentRedemptions);
+                    // Double-check address hasn't changed during the async call. This is required to prevent race conditions when loading redemptions after an address change
+                    if (currentAddress === address) {
+                        setRedemptions(refreshedRedemptions);
+                    }
                 }
             } catch (error) {
                 console.error('Failed to load/update redemptions:', error);
-                setRedemptionsLoaded(false);
-                setRedemptions(INITIAL_REDEMPTIONS);
+                // Only reset if error occurred for current address to avoid clearing new address's data
+                if (currentAddress === address) {
+                    setRedemptionsLoaded(false);
+                    setRedemptions(INITIAL_REDEMPTIONS);
+                }
             } finally {
-                setRedemptionsLoading(false);
+                // Clear loading state if we're still on the same address
+                if (currentAddress === address) {
+                    setRedemptionsLoading(false);
+                }
             }
         }
-    }, [
-        address,
-        chainId,
-        isConnected,
-        loadedAddress,
-        redemptionsLoaded,
-        redemptions,
-        setRedemptions,
-        setRedemptionsLoaded,
-    ]);
+    };
 
     useEffect(() => {
-        // Reset if disconnected or chain changed
+        // Reset loading state when disconnected or requirements not met
         if (!address || !chainId || !isConnected) {
-            setRedemptionsLoaded(false);
-            setRedemptions(INITIAL_REDEMPTIONS);
-            setLoadedAddress(undefined);
+            setRedemptionsLoading(false);
             return;
         }
 
-        // Handle address change
-        if (loadedAddress !== address) {
-            setRedemptionsLoaded(false);
-            setRedemptions(INITIAL_REDEMPTIONS);
-            setLoadedAddress(address);
-        }
-
-        loadRedemptions();
-    }, [address, chainId, isConnected, loadedAddress]);
+        // On address/chain change, pass INITIAL_REDEMPTIONS to force a fresh load
+        // useSessionStorage will have already reset the storage due to key change
+        loadRedemptions(address, chainId, INITIAL_REDEMPTIONS, false);
+    }, [address, chainId, isConnected]);
 
     return {
         redemptions,
-        loadRedemptions,
+        loadRedemptions: () => loadRedemptions(address!, chainId!, redemptions, redemptionsLoaded),
         redemptionsLoading,
     };
 };

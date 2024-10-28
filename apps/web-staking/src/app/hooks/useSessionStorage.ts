@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 function useSessionStorage<T>(key: string, initialValue: T): [T, (value: T) => void] {
+  // Read from storage on mount, supporting SSR
   const readValue = useCallback((): T => {
     if (typeof window === 'undefined') {
       return initialValue;
@@ -17,7 +18,8 @@ function useSessionStorage<T>(key: string, initialValue: T): [T, (value: T) => v
 
   const [storedValue, setStoredValue] = useState<T>(readValue);
 
-  const setValue = (value: T) => {
+  // Handle writing to both state and storage
+  const setValue = useCallback((value: T | ((val: T) => T)) => {
     try {
       // Allow value to be a function so we have same API as useState
       const valueToStore = value instanceof Function ? value(storedValue) : value;
@@ -30,10 +32,12 @@ function useSessionStorage<T>(key: string, initialValue: T): [T, (value: T) => v
     } catch (error) {
       console.warn(`Error setting sessionStorage key "${key}":`, error);
     }
-  };
+  }, [key, storedValue]);
+
+  // Sync storage on key change
   useEffect(() => {
     setStoredValue(readValue());
-  }, []);
+  }, [key, readValue]);
 
   return [storedValue, setValue];
 }
