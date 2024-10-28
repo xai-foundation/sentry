@@ -20,7 +20,7 @@ const THROTTLE_DELAY = 1000;
 const getStorageValue = <T>(key: string, defaultValue: T): T => {
     if (typeof window === 'undefined') return defaultValue;
     try {
-        const stored = window.sessionStorage.getItem(key);
+        const stored = sessionStorage.getItem(key);
         return stored ? JSON.parse(stored) : defaultValue;
     } catch {
         return defaultValue;
@@ -39,8 +39,8 @@ const useGetRedemptions = (): UseGetRedemptionsResult => {
 
     // Sync state with session storage after initial mount
     useEffect(() => {
-        if (typeof window !== 'undefined' && address && hasMountedRef.current) {
-            window.sessionStorage.setItem(`userRedemptions-${address}`, JSON.stringify(redemptions));
+        if (address && hasMountedRef.current) {
+            sessionStorage.setItem(`userRedemptions-${address}`, JSON.stringify(redemptions));
         }
         hasMountedRef.current = true; // Set mounted flag
     }, [redemptions, address]);
