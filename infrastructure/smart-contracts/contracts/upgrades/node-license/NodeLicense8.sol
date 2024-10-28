@@ -7,7 +7,7 @@ import "@openzeppelin/contracts-upgradeable/utils/CountersUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/Base64Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
-import "../../upgrades/referee/Referee9.sol";
+import "../../upgrades/referee/Referee10.sol";
 
 interface IAggregatorV3Interface {
     function latestAnswer() external view returns (int256);
@@ -292,13 +292,13 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
 
     function startAirdrop(address refereeAddress) external onlyRole(AIRDROP_ADMIN_ROLE) {
         mintingPaused = true;
-        Referee9(refereeAddress).setStakingEnabled(false);
+        Referee10(refereeAddress).setStakingEnabled(false);
     }
 
     function finishAirdrop(address refereeAddress, uint256 keyMultiplier) external onlyRole(AIRDROP_ADMIN_ROLE) {
         updatePricingAndQuantity(keyMultiplier);
         mintingPaused = false;
-        Referee9(refereeAddress).setStakingEnabled(true);
+        Referee10(refereeAddress).setStakingEnabled(true);
     }
 
     /**

@@ -6,7 +6,7 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlEnumerableUpgrad
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
-import "../../upgrades/referee/Referee9.sol";
+import "../../upgrades/referee/Referee10.sol";
 import "../../Xai.sol";
 import "../../upgrades/esXai/esXai2.sol";
 import "../../upgrades/node-license/NodeLicense8.sol";
@@ -249,7 +249,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         require(validateShareValues(_shareConfig), "3"); // Validate share configuration
         require(msg.sender != _delegateOwner, "4"); // Delegate cannot be pool creator
 
-        Referee9 referee = Referee9(refereeAddress);
+        Referee10 referee = Referee10(refereeAddress);
         require(referee.isKycApproved(msg.sender), "37"); // Owner must be kyc approved
         
         // This is redundant, but being added in case the approved kyc requirement is ever removed
@@ -423,7 +423,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         address staker,
         bool _asAdmin
     ) internal {
-        Referee9 referee = Referee9(refereeAddress);
+        Referee10 referee = Referee10(refereeAddress);
         require(_asAdmin || referee.stakingEnabled(), "52");
         
         referee.stakeKeys(pool, staker, keyIds, _asAdmin);
@@ -563,7 +563,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     ) external {
         require(poolsCreatedViaFactory[pool], "23"); // Pool must be created via factory
 
-        Referee9(refereeAddress).unstakeKeys(pool, msg.sender, keyIds);
+        Referee10(refereeAddress).unstakeKeys(pool, msg.sender, keyIds);
 
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.unstakeKeys(msg.sender, unstakeRequestIndex, keyIds);
@@ -590,7 +590,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         require(poolsCreatedViaFactory[pool], "27"); // Pool must be created via factory
         require(failedKyc[msg.sender] == false, "38"); // Owner must not have failed kyc
 
-        Referee9(refereeAddress).stakeEsXai(pool, amount);
+        Referee10(refereeAddress).stakeEsXai(pool, amount);
         esXai(esXaiAddress).transferFrom(msg.sender, address(this), amount);
         StakingPool stakingPool = StakingPool(pool);
         stakingPool.stakeEsXai(msg.sender, amount);
@@ -610,7 +610,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
             pool,
             amount,
             stakingPool.getStakedAmounts(msg.sender),
-            Referee9(refereeAddress).stakedAmounts(pool)
+            Referee10(refereeAddress).stakedAmounts(pool)
         );
     }
 
@@ -635,7 +635,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         }
         
         // Reordered to avoid reentrancy
-        Referee9(refereeAddress).unstakeEsXai(pool, amount);
+        Referee10(refereeAddress).unstakeEsXai(pool, amount);
         esXai(esXaiAddress).transfer(msg.sender, amount);
 
         // Update total stake
@@ -657,7 +657,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
             pool,
             amount,
             stakingPool.getStakedAmounts(msg.sender),
-            Referee9(refereeAddress).stakedAmounts(pool)
+            Referee10(refereeAddress).stakedAmounts(pool)
         );
     }
 
@@ -811,7 +811,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
                 i
             );
             if (
-                Referee9(refereeAddress).assignedKeyToPool(keyId) == address(0)
+                Referee10(refereeAddress).assignedKeyToPool(keyId) == address(0)
             ) {
                 unstakedKeyIds[currentIndexUnstaked] = keyId;
                 currentIndexUnstaked++;
@@ -830,7 +830,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         isStaked = new bool[](keyIds.length);
         for (uint256 i; i < keyIds.length; i++) {
             isStaked[i] =
-                Referee9(refereeAddress).assignedKeyToPool(keyIds[i]) !=
+                Referee10(refereeAddress).assignedKeyToPool(keyIds[i]) !=
                 address(0);
         }
     }
