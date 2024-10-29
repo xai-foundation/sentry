@@ -22,7 +22,7 @@ const mainnetConfig = {
   refereeAddress: "0xfD41041180571C5D371BEA3D9550E55653671198",
   refereeDeployedBlockNumber: 157193676,
   refereeImplementationAddress: "0x29A7b907FdF4a9235F46d891b7Aa1e7d3D35A3b6",
-  refereeCalculationsAddress: "", // TODO Add RefereeCalculations address
+  refereeCalculationsAddress: "0xCd62360854aecf6285Fa310D69C5EBaf4Cd5e95F",
   rollupAddress: "0xC47DacFbAa80Bd9D8112F4e8069482c2A3221336",
   xaiAddress: "0x4Cb9a7AE498CEDcBb5EAe9f25736aE7d428C9D66",
   xaiDeployedBlockNumber: 157193610,
