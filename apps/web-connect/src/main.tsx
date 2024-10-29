@@ -19,16 +19,91 @@ const environment = VITE_APP_ENV === "development" ? "development" : "production
 const projectId = environment === "development" ? "79e38b4593d43c78d7e9ee38f0cdf4ee" : "543ba4882fc1d2e9a9ffe8bc1c473cf9"
 
 declare global {
-    interface Window {
-      ethereum?: {
-        on: (event: string, callback: (...args: string[]) => void) => void;
-        removeListener: (event: string, callback: (...args: string[]) => void) => void;
-        request: (args: { method: string; params?: string[] }) => Promise<string>;
-        isMetaMask?: boolean;
-      };
-    }
-  }
-  
+	interface Window {
+		ethereum?: {
+			on: (event: string, callback: (...args: string[]) => void) => void;
+			removeListener: (event: string, callback: (...args: string[]) => void) => void;
+			request: (args: { method: string; params?: string[] }) => Promise<string>;
+			isMetaMask?: boolean;
+		};
+	}
+}
+const createDebouncedStorage = () => {
+	let timeoutId: number | null = null;
+	const pendingWrites = new Map<string, string>();
+
+	const flushWrites = () => {
+		if (timeoutId) {
+			window.clearTimeout(timeoutId);
+			timeoutId = null;
+		}
+
+		pendingWrites.forEach((value, key) => {
+			const { domain, secure, sameSite } = getDomainConfig();
+			const cookieAttributes = [
+				'path=/',
+				domain && `domain=${domain}`,
+				secure && 'secure',
+				`samesite=${sameSite}`,
+				'max-age=2592000'
+			]
+				.filter(Boolean)
+				.join('; ');
+
+			console.group('📝 Setting Cookie (Batched)');
+			console.log('Key:', key);
+			console.log('Value:', value);
+			console.log('Attributes:', cookieAttributes);
+			console.log('Timestamp:', new Date().toISOString());
+
+			document.cookie = `${key}=${value}; ${cookieAttributes}`;
+			pendingWrites.delete(key);
+
+			logCookies('Cookies after batch update');
+			console.groupEnd();
+		});
+	};
+
+	return createStorage({
+		storage: {
+			...cookieStorage,
+			setItem: (key: string, value: string) => {
+				pendingWrites.set(key, value);
+
+				if (timeoutId) {
+					window.clearTimeout(timeoutId);
+				}
+
+				timeoutId = window.setTimeout(flushWrites, 100); // Batch writes within 100ms
+			},
+			removeItem: (key: string) => {
+				if (pendingWrites.has(key)) {
+					pendingWrites.delete(key);
+				}
+
+				const { domain } = getDomainConfig();
+				const cookieAttributes = [
+					'path=/',
+					domain && `domain=${domain}`,
+					'expires=Thu, 01 Jan 1970 00:00:00 GMT',
+					'secure',
+					'samesite=None'
+				]
+					.filter(Boolean)
+					.join('; ');
+
+				console.group('🗑️ Removing Cookie');
+				console.log('Key:', key);
+				console.log('Attributes:', cookieAttributes);
+				console.log('Timestamp:', new Date().toISOString());
+
+				document.cookie = `${key}=; ${cookieAttributes}`;
+				logCookies('Cookies after removal');
+				console.groupEnd();
+			}
+		}
+	});
+};
 
 export const chains: [Chain, ...Chain[]] = [arbitrum as Chain]
 if (environment === "development") chains.push(arbitrumSepolia as Chain)
@@ -79,61 +154,7 @@ const logCookies = (message: string) => {
 	console.groupEnd();
 };
 // Create custom storage with smart cookie handling
-const storage = createStorage({
-	storage: {
-		...cookieStorage,
-		setItem: (key: string, value: string) => {
-			const { domain, secure, sameSite } = getDomainConfig();
-
-			const cookieAttributes = [
-				'path=/',
-				domain && `domain=${domain}`,
-				secure && 'secure',
-				`samesite=${sameSite}`,
-				'max-age=2592000'
-			]
-				.filter(Boolean)
-				.join('; ');
-
-			console.group('📝 Setting Cookie');
-			console.log('Key:', key);
-			console.log('Value:', value);
-			console.log('Attributes:', cookieAttributes);
-			console.log('Domain Config:', getDomainConfig());
-			console.log('Timestamp:', new Date().toISOString());
-
-			document.cookie = `${key}=${value}; ${cookieAttributes}`;
-
-			// Log cookies after setting
-			logCookies('Cookies after setting');
-			console.groupEnd();
-		},
-		removeItem: (key: string) => {
-			const { domain } = getDomainConfig();
-			const cookieAttributes = [
-				'path=/',
-				domain && `domain=${domain}`,
-				'expires=Thu, 01 Jan 1970 00:00:00 GMT',
-				'secure',
-				'samesite=None'
-			]
-				.filter(Boolean)
-				.join('; ');
-
-			console.group('🗑️ Removing Cookie');
-			console.log('Key:', key);
-			console.log('Attributes:', cookieAttributes);
-			console.log('Domain Config:', getDomainConfig());
-			console.log('Timestamp:', new Date().toISOString());
-
-			document.cookie = `${key}=; ${cookieAttributes}`;
-
-			// Log cookies after removal
-			logCookies('Cookies after removal');
-			console.groupEnd();
-		}
-	}
-});
+const storage = createDebouncedStorage();
 
 export const wagmiAdapter = new WagmiAdapter({
 	storage,
