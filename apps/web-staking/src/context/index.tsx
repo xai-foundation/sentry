@@ -89,7 +89,7 @@ export function ContextProvider({
   if (!mounted) return null
 
   return (
-    <WagmiProvider config={wagmiConfig} initialState={getInitialState()}>
+    <WagmiProvider config={wagmiConfig} initialState={getInitialState()} reconnectOnMount={true}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   )
