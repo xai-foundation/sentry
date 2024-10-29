@@ -1,68 +1,116 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { getNetwork } from "@/services/web3.service";
 import { useAccount } from 'wagmi';
 import { getAllRedemptions, OrderedRedemptions, refreshRedemptions } from '@/services/redemptions.service';
-import useSessionStorage from './useSessionStorage';
 
-const useGetRedemptions = () => {
-    const { address, chainId } = useAccount();
+interface UseGetRedemptionsResult {
+    redemptions: OrderedRedemptions;
+    loadRedemptions: () => void;
+    redemptionsLoading: boolean;
+}
+
+const INITIAL_REDEMPTIONS: OrderedRedemptions = {
+    claimable: [],
+    open: [],
+    closed: [],
+};
+
+const THROTTLE_DELAY = 1000;
+
+const getStorageValue = <T>(key: string, defaultValue: T): T => {
+    if (typeof window === 'undefined') return defaultValue;
+    try {
+        const stored = sessionStorage.getItem(key);
+        return stored ? JSON.parse(stored) : defaultValue;
+    } catch {
+        return defaultValue;
+    }
+};
+
+const useGetRedemptions = (): UseGetRedemptionsResult => {
+    const { address, chainId, isConnected } = useAccount();
     const [redemptionsLoading, setRedemptionsLoading] = useState<boolean>(false);
-    const [redemptions, setRedemptions] = useSessionStorage<OrderedRedemptions>('userRedemptions', {
-        claimable: [],
-        open: [],
-        closed: [],
-    });
-    const [redemptionsLoaded, setRedemptionsLoaded] = useSessionStorage<boolean>('redemptionsLoaded', false);
-    const lastLoadedRef = useRef<number>(Date.now() - 5000);
+    const [redemptions, setRedemptions] = useState<OrderedRedemptions>(() => 
+        getStorageValue(`userRedemptions-${address}`, INITIAL_REDEMPTIONS)
+    );
 
-    const updateUserRedemptions = useCallback(async () => {
-        try {
-            if (!address || !chainId) return;
-            const refreshedRedemptions = await refreshRedemptions(getNetwork(chainId), address, redemptions);
-            setRedemptions(refreshedRedemptions);
-        } catch (error) {
-            setRedemptionsLoading(false);
-            console.error('Failed to update user redemptions:', error);
+    const lastLoadTimeRef = useRef<number>(0);
+    const hasMountedRef = useRef(false); // Track mount status to avoid initial storage sync
+
+    // Sync state with session storage after initial mount
+    useEffect(() => {
+        if (address && hasMountedRef.current) {
+            sessionStorage.setItem(`userRedemptions-${address}`, JSON.stringify(redemptions));
         }
-    }, [address, chainId, redemptions, setRedemptions]);
+        hasMountedRef.current = true; // Set mounted flag
+    }, [redemptions, address]);
 
-    const loadAllUserRedemptions = useCallback(async () => {
-        try {
-            if (!address || !chainId) return;
-            const redemptionsFromChain = await getAllRedemptions(getNetwork(chainId), address);
-            setRedemptions(redemptionsFromChain);
-            setRedemptionsLoaded(true);
-        } catch (error) {
-            setRedemptionsLoaded(false);
+    // Clear state when address changes, disconnects, or chain changes
+    useEffect(() => {
+        if (!address || !isConnected || !chainId) {
+            setRedemptions(INITIAL_REDEMPTIONS);
             setRedemptionsLoading(false);
-            console.error('Failed to load user redemptions:', error);
+            lastLoadTimeRef.current = 0;
         }
-    }, [address, chainId, setRedemptions, setRedemptionsLoaded]);
+    }, [address, isConnected, chainId]);
 
-    const loadRedemptions = useCallback(async () => {
-        const now = Date.now();
-        if (now - lastLoadedRef.current < 1000) {
+    const performLoadRedemptions = async (initialLoad: boolean = false) => {
+        if (!address || !chainId || !isConnected) {
+            setRedemptionsLoading(false);
             return;
         }
-        setRedemptionsLoading(true);
-        lastLoadedRef.current = now;
-        if (redemptionsLoaded) {
-            await updateUserRedemptions();
-        } else {
-            await loadAllUserRedemptions();
-        }
-        setRedemptionsLoading(false);
-    }, [redemptionsLoaded, updateUserRedemptions, loadAllUserRedemptions]);
 
-    useEffect(() => {
-        if (address && chainId) {
-            loadRedemptions();
+        const now = Date.now();
+        if (now - lastLoadTimeRef.current < THROTTLE_DELAY) {
+            return;
         }
-    }, [address, chainId, loadRedemptions]);
+        lastLoadTimeRef.current = now;
+        
+        const currentAddress = address;
+
+        setRedemptionsLoading(true);
+
+        try {
+            if (initialLoad || redemptions === INITIAL_REDEMPTIONS) {
+                const redemptionsFromChain = await getAllRedemptions(
+                    getNetwork(chainId), 
+                    currentAddress
+                );
+                if (currentAddress === address) {
+                    setRedemptions(redemptionsFromChain);
+                }
+            } else {
+                const refreshedRedemptions = await refreshRedemptions(
+                    getNetwork(chainId), 
+                    currentAddress, 
+                    redemptions
+                );
+                if (currentAddress === address) {
+                    setRedemptions(refreshedRedemptions);
+                }
+            }
+        } catch (err) {
+            console.error('Failed to load/update redemptions:', err);
+            if (currentAddress === address) {
+                setRedemptions(INITIAL_REDEMPTIONS);
+            }
+        } finally {
+            if (currentAddress === address) {
+                setRedemptionsLoading(false);
+            }
+        }
+    };
+
+    // Load redemptions after address/chain change
+    useEffect(() => {
+        if (address && chainId && isConnected) {
+            performLoadRedemptions(true);
+        }
+    }, [address, chainId, isConnected]);
 
     return {
         redemptions,
-        loadRedemptions,
+        loadRedemptions: () => performLoadRedemptions(false),
         redemptionsLoading,
     };
 };
