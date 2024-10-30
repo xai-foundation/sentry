@@ -117,6 +117,23 @@ const wagmiStorage = createStorage({
   }
 })
 
+const debugWalletConnect = (projectId: string) => {
+  if (environment === 'development') {
+    console.group('🔗 WalletConnect Debug')
+    console.log('Project ID:', projectId)
+    console.log('Origin:', window.location.origin)
+    console.log('Referrer:', document.referrer)
+    console.log('Headers:', {
+      origin: window.location.origin,
+      host: window.location.host,
+      pathname: window.location.pathname
+    })
+    console.groupEnd()
+  }
+}
+
+debugWalletConnect(projectId)
+
 export const wagmiAdapter = new WagmiAdapter({
   storage: wagmiStorage,
   networks: chains,
