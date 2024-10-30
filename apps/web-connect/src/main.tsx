@@ -27,7 +27,7 @@ import { Helmet, HelmetProvider } from 'react-helmet-async'
 import { createAppKit } from '@reown/appkit/react'
 import { arbitrum, arbitrumSepolia } from '@reown/appkit/networks'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { cookieStorage, cookieToInitialState, createStorage } from '@wagmi/core'
+import { cookieStorage, createStorage } from '@wagmi/core'
 
 // Environment and domain configuration
 const environment = import.meta.env.VITE_APP_ENV === "development" ? "development" : "production"
@@ -100,11 +100,26 @@ if (environment === "development") chains.push(arbitrumSepolia as Chain)
 // Safe initial state handling
 const getInitialState = () => {
   try {
-    return cookieToInitialState(wagmiAdapter.wagmiConfig as Config, document.cookie)
-  } catch {
-    return undefined
+    const state = cookieStorage.getItem('wagmi.store');
+    if (!state) return undefined;
+    
+    const parsed = JSON.parse(state);
+    
+    // Ensure the connections Map is properly reconstructed
+    if (parsed?.state?.connections?.__type === 'Map') {
+      const connections = new Map(parsed.state.connections.value);
+      return {
+        ...parsed.state,
+        connections
+      };
+    }
+    
+    return parsed.state;
+  } catch (error) {
+    console.error('Error parsing initial state:', error);
+    return undefined;
   }
-}
+};
 
 // Wagmi Adapter with optimized configuration
 const wagmiStorage = createStorage({
