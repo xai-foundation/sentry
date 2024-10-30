@@ -27,7 +27,7 @@ import { Helmet, HelmetProvider } from 'react-helmet-async'
 import { createAppKit } from '@reown/appkit/react'
 import { arbitrum, arbitrumSepolia } from '@reown/appkit/networks'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { cookieStorage, createStorage } from '@wagmi/core'
+import { cookieStorage, createStorage, cookieToInitialState } from '@wagmi/core'
 
 // Environment and domain configuration
 const environment = import.meta.env.VITE_APP_ENV === "development" ? "development" : "production"
@@ -105,19 +105,10 @@ const getInitialState = () => {
     
     const parsed = JSON.parse(state);
     
-    // Ensure the connections Map is properly reconstructed
-    if (parsed?.state?.connections?.__type === 'Map') {
-      const connections = new Map(parsed.state.connections.value);
-      return {
-        ...parsed.state,
-        connections
-      };
-    }
-    
-    return parsed.state;
+    return parsed.state
   } catch (error) {
-    console.error('Error parsing initial state:', error);
-    return undefined;
+    console.error('Error parsing initial state:', error)
+    return undefined
   }
 };
 
