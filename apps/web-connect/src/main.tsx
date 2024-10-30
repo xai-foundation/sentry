@@ -152,6 +152,23 @@ if (typeof window !== 'undefined') {
   };
 }
 
+const debugState = (label: string) => {
+  if (typeof window !== 'undefined') {
+    const state = cookieStorage.getItem('wagmi.store');
+    console.group(`🔄 Wagmi State: ${label}`);
+    console.log('Raw State:', state);
+    try {
+      console.log('Parsed State:', state ? JSON.parse(state) : null);
+    } catch (e) {
+      console.log('Parse Error:', e);
+    }
+    console.groupEnd();
+  }
+};
+
+// Add in your code:
+debugState('Initial Load');
+
 debugWalletConnect(projectId)
 
 export const wagmiAdapter = new WagmiAdapter({
@@ -161,6 +178,7 @@ export const wagmiAdapter = new WagmiAdapter({
   ssr: true,
   syncConnectedChain: true
 })
+
 // Query Client with error handling
 const queryClient = new QueryClient({
   defaultOptions: {
