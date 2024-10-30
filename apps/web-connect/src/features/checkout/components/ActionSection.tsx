@@ -4,9 +4,9 @@ import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import { mapWeb3Error } from "@/utils/errors";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
-import CrossmintModal from './CrossmintModal';
-import { formatWeiToEther } from '@sentry/core';
-import { useAccount } from 'wagmi';
+import CrossmintModal from './crossmint/CrossmintModal';
+import { formatWeiToEther, isValidNetwork } from '@sentry/core';
+import { useNetworkConfig } from '@/hooks/useNetworkConfig';
 
 /**
  * ActionSection Component
@@ -19,7 +19,7 @@ import { useAccount } from 'wagmi';
  */
 export function ActionSection(): JSX.Element {
     const [creditCardOpen, setCreditCardOpen] = useState(false);
-	const {isConnected} = useAccount();
+    const { isDevelopment} = useNetworkConfig();
 
     // Destructure values and functions from the context
     const {
@@ -33,12 +33,14 @@ export function ActionSection(): JSX.Element {
         approve,
         quantity,
         promoCode,
+        isConnected,
         getApproveButtonText,
         handleApproveClicked,
         handleMintWithEthClicked,
         handleMintWithXaiClicked,
         getEthButtonText,
         calculateTotalPrice,
+        mintWithCrossmint
     } = useWebBuyKeysContext();
 
     /**
@@ -48,7 +50,7 @@ export function ActionSection(): JSX.Element {
      */
     const getTokenButtonText = useCallback(() => {
         if (mintWithEth.isPending || mintWithXai.isPending || approve.isPending) return "WAITING FOR CONFIRMATION..";
-        if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
+        if (!isValidNetwork(chain?.id, isDevelopment)) return "Please Switch to Arbitrum";
         return getApproveButtonText();
     }, [mintWithEth.isPending, mintWithXai.isPending, approve.isPending, chain, getApproveButtonText]);
 
@@ -69,7 +71,7 @@ export function ActionSection(): JSX.Element {
                     <PrimaryButton
                         onClick={() => handleMintWithEthClicked()}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || chain?.id === 42161 || getEthButtonText().startsWith("Insufficient") || !isConnected}
+                        isDisabled={!ready || !isValidNetwork(chain?.id, isDevelopment) || getEthButtonText().startsWith("Insufficient") || !isConnected}
                         btnText={getEthButtonText()}
                     />
                     <br />
@@ -86,7 +88,7 @@ export function ActionSection(): JSX.Element {
                     <PrimaryButton
                         onClick={handleBuyWithXaiClicked}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || chain?.id === 42161 || !userHasTokenBalance || !isConnected}
+                        isDisabled={!ready || !isValidNetwork(chain?.id, isDevelopment) || !userHasTokenBalance || !isConnected}
                         btnText={getTokenButtonText()}
                     />
                 )}
@@ -152,13 +154,29 @@ export function ActionSection(): JSX.Element {
                         )}
                     </div>
                 )}
+                
+                {(mintWithCrossmint.error != "") && (
+                    <div>
+                        <BaseCallout extraClasses={{ calloutWrapper: "md:h-[85px] h-[109px] mt-[12px]", calloutFront: "!justify-start" }} isWarning>
+                            <div className="flex md:gap-[21px] gap-[10px]">
+                                <span className="block mt-2"><WarningIcon /></span>
+                                <div>
+                                    <span className="block font-bold text-lg">Error minting with Credit/Debit Card</span>
+                                    {/* We currently have no way of knowing all the possible errors that could come from minting with crossmint, so we should log in the console and display a generic error rather than the error message. */}
+                                    <span className="block font-medium text-lg">There was an error processing your credit card payment</span>
+                                </div>
+                            </div>
+                        </BaseCallout>
+                    </div>
+                )}
+
             </div>
-            <CrossmintModal 
-            totalPriceInEth={formatWeiToEther(calculateTotalPrice(), 18).toString()} 
-            isOpen={creditCardOpen} 
-            onClose={() => setCreditCardOpen(false)}
-            totalQty={quantity}
-            promoCode={promoCode}
+            <CrossmintModal
+                totalPriceInEth={formatWeiToEther(calculateTotalPrice(), 18).toString()}
+                isOpen={creditCardOpen}
+                onClose={() => setCreditCardOpen(false)}
+                totalQty={quantity}
+                promoCode={promoCode}
             />
         </div>
     );

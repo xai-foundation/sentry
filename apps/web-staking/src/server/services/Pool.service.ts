@@ -31,18 +31,18 @@ type Pagination = {
 export type PagedPools = { count: number, poolInfos: PoolInfo[], totalPoolsInDB: number }
 
 export const findPools = async ({
-									pagination = {
-										limit: 10,
-										page: 1,
-										sort: [['tierIndex', -1], ['name', 1]],
-									},
-									hideFullEsXai = false,
-									hideFullKeys = false,
-									searchName,
-									owner,
-									network,
-									esXaiMinStake
-								}: {
+	pagination = {
+		limit: 10,
+		page: 1,
+		sort: [['tierIndex', -1], ['name', 1]],
+	},
+	hideFullEsXai = false,
+	hideFullKeys = false,
+	searchName,
+	owner,
+	network,
+	esXaiMinStake
+}: {
 	pagination: Pagination;
 	searchName?: string;
 	owner?: string;
@@ -76,10 +76,17 @@ export const findPools = async ({
 			filter.$expr = { $gt: [maxKeyCount, "$keyCount"] };
 		}
 	}
-	
+
 	// Filter by minimum esXAI stake
-	if(esXaiMinStake){
+	if (esXaiMinStake) {
 		filter.totalStakedAmount = { $gte: esXaiMinStake };
+	}
+
+	// For context #188456707
+	// Only sorting by one field if duplicate across documents, mongoDB will not have a consistent order across pages
+	// https://www.mongodb.com/docs/manual/reference/method/cursor.sort/#sort-consistency
+	if (pagination.sort.length == 1) {
+		pagination.sort.push(['_id', -1])
 	}
 
 	try {

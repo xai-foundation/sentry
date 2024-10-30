@@ -1,4 +1,4 @@
-import { MINIMUM_SECONDS_BETWEEN_ASSERTIONS } from "../constants/index.js";
+import { config } from "../config.js";
 import { getLatestChallenge } from "./getLatestChallenge.js";
 import { Challenge } from "./index.js";
 
@@ -9,7 +9,7 @@ export async function isChallengeSubmitTime(): Promise<{isSubmitTime:boolean, cu
 		const lastChallengeTime = Number(currentChallenge.createdTimestamp);
 	
 		// Calculate the minimum time to submit an assertion
-		const minimumTimeToSubmit = lastChallengeTime + MINIMUM_SECONDS_BETWEEN_ASSERTIONS;
+		const minimumTimeToSubmit = lastChallengeTime + config.minSecondsBetweenChallenges;
 
 		const isSubmitTime = Math.floor(Date.now() / 1000) > minimumTimeToSubmit;
 

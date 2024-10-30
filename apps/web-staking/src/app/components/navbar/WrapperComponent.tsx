@@ -17,7 +17,7 @@ export default function WrapperComponent({ children }: { children: React.ReactNo
 	return (
 		<>
 			<AnnouncementBanner
-				activateBanner={true}
+				activateBanner={false}
 				bannerVersion="tk"
 				title={"Announcement title."}
 				text={"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc non porttitor urna."}

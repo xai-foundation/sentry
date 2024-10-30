@@ -6,7 +6,7 @@ import { Config, WagmiProvider } from 'wagmi'
 import { Chain } from 'viem'
 import { createWeb3Modal } from "@web3modal/wagmi/react"
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { arbitrum } from 'wagmi/chains'
+import { arbitrum, arbitrumSepolia } from 'wagmi/chains'
 import './index.css'
 import { IpLocationChecker } from './features/ipchecker/IpLocationChecker'
 import  xaiThumbnail  from './assets/images/xai-preview.jpg'
@@ -15,11 +15,17 @@ import { Helmet, HelmetProvider } from 'react-helmet-async';
 const helmetContext = {};
 
 const projectId = '79e38b4593d43c78d7e9ee38f0cdf4ee'
+const { VITE_APP_ENV } = import.meta.env
+const environment = VITE_APP_ENV === "development" ? "development" : "production";
 
 export const chains: [Chain, ...Chain[]] = [
 	arbitrum as Chain,
-	// arbitrumSepolia as Chain
 ]
+
+if(environment === "development") {
+	chains.push(arbitrumSepolia as Chain)
+}
+
 
 const queryClient = new QueryClient()
 

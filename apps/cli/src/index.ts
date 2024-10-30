@@ -3,7 +3,7 @@ import inquirer from 'inquirer';
 import { addAdmin } from './commands/access-control/add-admin.js';
 import { syncStakingPools } from './commands/sync-staking-pools.js';
 import { bootChallenger } from './commands/boot-challenger.js';
-import { version } from "@sentry/core";
+import { version, config, setConfigByChainId, MAINNET_ID, TESTNET_ID } from "@sentry/core";
 import { processUnclaimedChallenges } from './commands/operator-control/process-unclaimed-challenges.js';
 import { monitorNodeCreated } from './commands/monitor-node-created.js';
 import { startCentralizationRuntime } from './commands/start-centralization-runtime.js';
@@ -134,6 +134,22 @@ cli.action(async () => {
         // Show help message if the user asks for it
         if (command === 'help' || command === '--help') {
             cli.outputHelp();
+            continue;
+        }
+        
+        // DEV MODE - toggle network switch for using sepolia config
+        if (command === 'toggle-switch-network') {
+            if(config.defaultNetworkName === "arbitrum"){
+                console.log("==========================================================")
+                console.log("DEV MODE - SWITCHED TO TESTNET !");
+                console.log("YOU CANNOT EARN ANY REWARDS WHEN RUNNING ON TESTNET !!!");
+                console.log("THIS IS FOR TESTING PURPOSE ONLY !!!");
+                console.log("==========================================================\n")
+                setConfigByChainId(TESTNET_ID);
+            }else{
+                console.log("DEV MODE - switched to mainnet");
+                setConfigByChainId(MAINNET_ID);
+            }
             continue;
         }
 

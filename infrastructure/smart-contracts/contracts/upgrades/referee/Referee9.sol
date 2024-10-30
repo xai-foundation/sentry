@@ -9,7 +9,7 @@ import "../../nitro-contracts/rollup/IRollupCore.sol";
 import "../../NodeLicense.sol";
 import "../../Xai.sol";
 import "../../esXai.sol";
-import "../pool-factory/PoolFactory2.sol";
+import "../../staking-v2/PoolFactory.sol";
 import "../../RefereeCalculations.sol";
 
 // Error Codes
@@ -63,14 +63,6 @@ import "../../RefereeCalculations.sol";
 // 48: Not owner of key.
 // 49: Maximum staking amount exceeded.
 // 50: Invalid amount.
-// 51: Invalid stake rewards tier percentage.
-// 52: Staking Temporarily Disabled.
-// 53: Pool has already been submitted for this challenge.
-// 54: Pool has not submitted for this challenge.
-// 55: Cannot stake mixed keys. All keys must be same status (submitted or not submitted) for the current challenge.
-// 56: Only NodeLicense contract can call this function.
-// 57: You do not have any keys available to submit for.
-// 58: Invalid Bulksubmission claim
 
 contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
@@ -157,10 +149,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     
     // Mapping for amount of assigned keys of a user
     mapping(address => uint256) public assignedKeysOfUserCount;
-
-    // Mapping to store all of the bulk submissions
-    mapping(uint256 => mapping(address => BulkSubmission)) public bulkSubmissions;
-
     // Referee Calculations contract address
     address public refereeCalculationsAddress;
 
@@ -169,7 +157,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[488] private __gap;
+    uint256[489] private __gap;
 
     // Struct for the submissions
     struct Submission {
@@ -177,15 +165,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         bool claimed;
         bool eligibleForPayout;
         uint256 nodeLicenseId;
-        bytes assertionStateRootOrConfirmData;
-    }
-
-    // Struct for BulkSubmissions
-    struct BulkSubmission {
-        bool submitted;
-        bool claimed;
-        uint256 keyCount;
-        uint256 winningKeyCount;
         bytes assertionStateRootOrConfirmData;
     }
 
@@ -207,7 +186,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 amountClaimedByClaimers; // keep track of how much Xai has been claimed by the claimers, primarily used to expire unclaimed rewards 
     }
 
-    // Event Definitions    
+    // Define events
     event ChallengeSubmitted(uint256 indexed challengeNumber);
     event ChallengeClosed(uint256 indexed challengeNumber);
     event AssertionSubmitted(uint256 indexed challengeId, uint256 indexed nodeLicenseId);
@@ -218,31 +197,19 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     event Approval(address indexed owner, address indexed operator, bool approved);
     event KycStatusChanged(address indexed wallet, bool isKycApproved);
     event InvalidSubmission(uint256 indexed challengeId, uint256 nodeLicenseId);
-    event InvalidBatchSubmission(uint256 indexed challengeId, address submissionAddress, address operator, uint256 keysLength);
+    event InvalidBatchSubmission(uint256 indexed challengeId, address operator, uint256 keysLength);
     event RewardsClaimed(uint256 indexed challengeId, uint256 amount);
     event BatchRewardsClaimed(uint256 indexed challengeId, uint256 totalReward, uint256 keysLength);
-    event BulkRewardsClaimed(uint256 indexed challengeId, address indexed bulkAddress, uint256 totalReward, uint256 winningKeys);
     event ChallengeExpired(uint256 indexed challengeId);
-    event StakingEnabled(bool enabled);
+    event StakingEnabled();
     event UpdateMaxStakeAmount(uint256 prevAmount, uint256 newAmount);
     event UpdateMaxKeysPerPool(uint256 prevAmount, uint256 newAmount);
     event StakedV1(address indexed user, uint256 amount, uint256 totalStaked);
     event UnstakeV1(address indexed user, uint256 amount, uint256 totalStaked);
-    event NewBulkSubmission(uint256 indexed challengeId, address indexed bulkAddress, uint256 stakedKeys, uint256 winningKeys);
-    event UpdateBulkSubmission(uint256 indexed challengeId, address indexed bulkAddress, uint256 stakedKeys, uint256 winningKeys, uint256 increase, uint256 decrease);
     event BatchChallenge(uint256 indexed challengeId, uint64[] assertionIds);
 
     function initialize(address _refereeCalculationsAddress) public reinitializer(7) {
         refereeCalculationsAddress = _refereeCalculationsAddress;
-
-        maxStakeAmountPerLicense = 200 * 10 ** 18;
-        maxKeysPerPool = 100_000;
-
-        // Updated base chance to 0.01
-        stakeAmountBoostFactors[0] = 150; // 0.015
-        stakeAmountBoostFactors[1] = 200; // 0.02
-        stakeAmountBoostFactors[2] = 300; // 0.03
-        stakeAmountBoostFactors[3] = 700; // 0.07
     }
 
     modifier onlyPoolFactory() {
@@ -474,7 +441,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
                     require(node.createdAtBlock == _assertionTimestamp, "12");
                     require(node.confirmData == _confirmData, "11");
                 }
-                
+
             }
         }
 
@@ -500,7 +467,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         }
 
         (uint256 challengeEmission, ) = RefereeCalculations(refereeCalculationsAddress).calculateChallengeEmissionAndTier(getCombinedTotalSupply(), Xai(xaiAddress).MAX_SUPPLY(), startTs, block.timestamp);
-    
+
         // mint part of this for the gas subsidy contract
         uint256 amountForGasSubsidy = (challengeEmission * _gasSubsidyPercentage) / 100;
 
@@ -556,6 +523,66 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         return challenges[_challengeId];
     }
 
+    /**
+     * @notice Submits an assertion to a challenge.
+     * @dev This function can only be called by the owner of a NodeLicense or addresses they have approved on this contract.
+     * @param _nodeLicenseId The ID of the NodeLicense.
+     */
+    function submitAssertionToChallenge(
+        uint256 _nodeLicenseId,
+        uint256 _challengeId,
+        bytes memory _confirmData
+    ) public {
+
+        // Check the challenge is open for submissions
+        require(challenges[_challengeId].openForSubmissions, "14");
+        
+        // Check that _nodeLicenseId hasn't already been submitted for this challenge
+        require(!submissions[_challengeId][_nodeLicenseId].submitted, "15");
+
+        // If the submission successor hash, doesn't match the one submitted by the challenger, then end early and emit an event
+        if (keccak256(abi.encodePacked(_confirmData)) != keccak256(abi.encodePacked(challenges[_challengeId].assertionStateRootOrConfirmData))) {
+            emit InvalidSubmission(_challengeId, _nodeLicenseId);
+            return;
+        }
+
+        address licenseOwner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
+        address assignedPool = assignedKeyToPool[_nodeLicenseId];
+        
+        require(isValidOperator(licenseOwner, assignedPool), "17");
+
+        _submitAssertion(_nodeLicenseId, _challengeId, _confirmData, licenseOwner, assignedPool);
+    }
+
+	function submitMultipleAssertions(
+		uint256[] memory _nodeLicenseIds,
+		uint256 _challengeId,
+		bytes memory _confirmData
+	) external {
+        
+		require(challenges[_challengeId].openForSubmissions, "16");
+        
+        uint256 keyLength = _nodeLicenseIds.length;
+
+		if (keccak256(abi.encodePacked(_confirmData)) != keccak256(abi.encodePacked(challenges[_challengeId].assertionStateRootOrConfirmData))) {
+            emit InvalidBatchSubmission(_challengeId, msg.sender, keyLength);
+			return;
+		}
+
+		for (uint256 i = 0; i < keyLength; i++) {
+            uint256 _nodeLicenseId = _nodeLicenseIds[i];
+            if (!submissions[_challengeId][_nodeLicenseId].submitted) {
+                
+                address licenseOwner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
+                address assignedPool = assignedKeyToPool[_nodeLicenseId];
+
+                if(isValidOperator(licenseOwner, assignedPool)){
+                    _submitAssertion(_nodeLicenseId, _challengeId, _confirmData, licenseOwner, assignedPool);
+                }
+            }
+		}
+	}
+
     function isValidOperator(address licenseOwner, address assignedPool) internal view returns (bool) {
         return licenseOwner == msg.sender ||
             isApprovedForOperator(licenseOwner, msg.sender) ||
@@ -564,13 +591,43 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
                 PoolFactory(poolFactoryAddress).isDelegateOfPoolOrOwner(msg.sender, assignedPool)
             );
     }
+    
+    function _submitAssertion(uint256 _nodeLicenseId, uint256 _challengeId, bytes memory _confirmData, address licenseOwner, address assignedPool) internal {
+        
+        // Support v1 (no pools) & v2 (pools)
+		uint256 stakedAmount = stakedAmounts[assignedPool];
+		if (assignedPool == address(0)) {
+			stakedAmount = stakedAmounts[licenseOwner];
+			uint256 ownerUnstakedAmount = NodeLicense(nodeLicenseAddress).balanceOf(licenseOwner) - assignedKeysOfUserCount[licenseOwner];
+			if (ownerUnstakedAmount * maxStakeAmountPerLicense < stakedAmount) {
+				stakedAmount = ownerUnstakedAmount * maxStakeAmountPerLicense;
+			}
+		} else {
+			if (assignedKeysToPoolCount[assignedPool] * maxStakeAmountPerLicense < stakedAmount) {
+				stakedAmount = assignedKeysToPoolCount[assignedPool] * maxStakeAmountPerLicense;
+			}
+		}
 
-    function _validateChallengeIsClaimable(Challenge memory _challenge) internal pure{
-        // Check the challenge exists by checking the timestamp is not 0
-        require(_challenge.createdTimestamp != 0, "18");
-        // Check if the challenge is closed for submissions
-        require(!_challenge.openForSubmissions, "19");
-    }   
+        // Check the user is actually eligible for receiving a reward, do not count them in numberOfEligibleClaimers if they are not able to receive a reward
+        (bool hashEligible, ) = createAssertionHashAndCheckPayout(_nodeLicenseId, _challengeId, _getBoostFactor(stakedAmount), _confirmData, challenges[_challengeId].challengerSignedHash);
+
+        // Store the assertionSubmission to a map
+        submissions[_challengeId][_nodeLicenseId] = Submission({
+            submitted: true,
+            claimed: false,
+            eligibleForPayout: hashEligible,
+            nodeLicenseId: _nodeLicenseId,
+            assertionStateRootOrConfirmData: _confirmData
+        });
+
+        // Keep track of how many submissions submitted were eligible for the reward
+        if (hashEligible) {
+            challenges[_challengeId].numberOfEligibleClaimers++;
+        }
+
+        // Emit the AssertionSubmitted event
+        emit AssertionSubmitted(_challengeId, _nodeLicenseId);
+    }
 
     /**
      * @notice Claims a reward for a successful assertion.
@@ -582,28 +639,80 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 _nodeLicenseId,
         uint256 _challengeId
     ) public {
-        // Call the internal function to claim the reward
-        uint256[] memory keyIds = new uint256[](1);
-        keyIds[0] = _nodeLicenseId;
-        claimMultipleRewards(keyIds, _challengeId, msg.sender);
+        Challenge memory challengeToClaimFor  = challenges[_challengeId];
+        // check the challenge exists by checking the timestamp is not 0
+        require(challengeToClaimFor.createdTimestamp != 0, "18");
+        // Check if the challenge is closed for submissions
+        require(!challengeToClaimFor.openForSubmissions, "19");
+        // expire the challenge if 270 days old
+        if (block.timestamp >= challengeToClaimFor.createdTimestamp + 270 days) {
+            expireChallengeRewards(_challengeId);
+            return;
+        }
+        // Check if the challenge rewards have expired
+        require(!challengeToClaimFor.expiredForRewarding, "20");
+
+        // Get the minting timestamp of the nodeLicenseId
+        uint256 mintTimestamp = NodeLicense(nodeLicenseAddress).getMintTimestamp(_nodeLicenseId);
+
+        // Check if the nodeLicenseId is eligible for a payout
+        require(mintTimestamp < challengeToClaimFor.createdTimestamp, "21");
+
+        // Look up the submission
+        Submission memory submission = submissions[_challengeId][_nodeLicenseId];
+
+        // Check if the owner of the NodeLicense is KYC'd
+        address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
+        require(isKycApproved(owner), "22");
+
+        // Check if the submission has already been claimed
+        require(!submission.claimed, "23");
+
+        require(submission.eligibleForPayout, "24");
+
+        // Take the amount that was allocated for the rewards and divide it by the number of claimers
+        uint256 reward = challengeToClaimFor.rewardAmountForClaimers / challengeToClaimFor.numberOfEligibleClaimers;
+
+        // mark the submission as claimed
+        submissions[_challengeId][_nodeLicenseId].claimed = true;
+
+        // increment the amount claimed on the challenge
+        challenges[_challengeId].amountClaimedByClaimers += reward;
+
+        address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
+        if (rewardReceiver == address(0)) {
+            rewardReceiver = owner;
+        }
+
+        // Mint the reward to the owner of the nodeLicense
+        esXai(esXaiAddress).mint(rewardReceiver, reward);
+
+        // Emit the RewardsClaimed event
+        emit RewardsClaimed(_challengeId, reward);
+
+        // Increment the total claims of this address
+        _lifetimeClaims[rewardReceiver] += reward;
+
+        // unallocate the tokens that have now been converted to esXai
+        _allocatedTokens -= reward;
     }
 
-    function claimMultipleRewards(
+	function claimMultipleRewards(
 		uint256[] memory _nodeLicenseIds,
 		uint256 _challengeId,
         address claimForAddressInBatch
-	) public {
+	) external {
         
-        Challenge storage challengeToClaimFor = challenges[_challengeId];
-        
-        // Validate the challenge is claimable
-        _validateChallengeIsClaimable(challengeToClaimFor);
-        
+        Challenge memory challengeToClaimFor  = challenges[_challengeId];
+        // check the challenge exists by checking the timestamp is not 0
+        require(challengeToClaimFor.createdTimestamp != 0, "25");
+        // Check if the challenge is closed for submissions
+        require(!challengeToClaimFor.openForSubmissions, "26");
         // expire the challenge if 270 days old
-        bool expired = _checkChallengeRewardsExpired(_challengeId);
-
-        // If the challenge has expired, end early
-        if (expired) return;
+        if (block.timestamp >= challengeToClaimFor.createdTimestamp + 270 days) {
+            expireChallengeRewards(_challengeId);
+            return;
+        }
 
         // Check if the challenge rewards have expired
         require(!challengeToClaimFor.expiredForRewarding, "27");
@@ -618,25 +727,25 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
             uint256 mintTimestamp = NodeLicense(nodeLicenseAddress).getMintTimestamp(_nodeLicenseId);
             address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
-            Submission storage submission = submissions[_challengeId][_nodeLicenseId];
-            
-            address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
-            if (rewardReceiver == address(0)) {
-                rewardReceiver = owner;
-            }
+            Submission memory submission = submissions[_challengeId][_nodeLicenseId];
 
             // Check if the nodeLicenseId is eligible for a payout
             if (
+                isKycApproved(owner) &&
                 mintTimestamp < challengeToClaimFor.createdTimestamp && 
                 !submission.claimed &&
                 submission.eligibleForPayout
             ) {
                 // mark the submission as claimed
-                submission.claimed = true;
+                submissions[_challengeId][_nodeLicenseId].claimed = true;
 
                 // increment the amount claimed on the challenge
-                challengeToClaimFor.amountClaimedByClaimers += reward;
+                challenges[_challengeId].amountClaimedByClaimers += reward;
                 
+                address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
+                if (rewardReceiver == address(0)) {
+                    rewardReceiver = owner;
+                }
                 //If we have set the poolAddress we will only claim if the license is staked to that pool
                 if (claimForAddressInBatch != address(0) && rewardReceiver == claimForAddressInBatch) {
                     poolMintAmount += reward;
@@ -647,7 +756,6 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
                 }
 
                 claimCount++;
-                emit RewardsClaimed(_challengeId, reward);
             }
 		}
 
@@ -659,6 +767,33 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         _allocatedTokens -= claimCount * reward;
         emit BatchRewardsClaimed(_challengeId, claimCount * reward, claimCount);
 	}
+
+    /**
+     * @notice Creates an assertion hash and determines if the hash payout is below the threshold.
+     * @dev This function creates a hash of the _nodeLicenseId, _challengeId, challengerSignedHash from the challenge, and _newStateRoot.
+     * It then converts the hash to a number and checks if it is below the threshold.
+     * The threshold is calculated as the maximum uint256 value divided by 100 and then multiplied by the total supply of NodeLicenses.
+     * @param _nodeLicenseId The ID of the NodeLicense.
+     * @param _challengeId The ID of the challenge.
+     * @param _boostFactor The factor controlling the chance of eligibility for payout as a multiplicator (base chance is 1/100 - Example: _boostFactor 200 will double the payout chance to 1/50, _boostFactor 16 maps to 1/6.25).
+     * @param _confirmData The confirm hash, will change to assertionState after BOLD.
+     * @param _challengerSignedHash The signed hash for the challenge
+     * @return a boolean indicating if the hash is eligible, and the assertionHash.
+     */
+    function createAssertionHashAndCheckPayout(
+        uint256 _nodeLicenseId,
+        uint256 _challengeId,
+        uint256 _boostFactor,
+        bytes memory _confirmData,
+        bytes memory _challengerSignedHash
+    ) public pure returns (bool, bytes32) {
+
+        bytes32 assertionHash = keccak256(abi.encodePacked(_nodeLicenseId, _challengeId, _confirmData, _challengerSignedHash));
+        uint256 hashNumber = uint256(assertionHash);
+        // hashNumber % 10_000 equals {0...9999}
+        // hashNumber % 10_000 < 100 means a 100 / 10000 = 1 /100
+        return (hashNumber % 10_000 < _boostFactor, assertionHash);
+    }
 
     /**
      * @notice Returns the submissions for a given array of challenges and a NodeLicense.
@@ -674,12 +809,12 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         return submissionsArray;
     }
 
-    
+
     /**
      * @notice Expires the rewards for a challenge if it is at least 270 days old.
      * @param _challengeId The ID of the challenge.
      */
-    function expireChallengeRewards(uint256 _challengeId) external {
+    function expireChallengeRewards(uint256 _challengeId) public {
         // check the challenge exists by checking the timestamp is not 0
         require(challenges[_challengeId].createdTimestamp != 0, "28");
 
@@ -700,13 +835,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     /**
-     * @dev Looks up payout boostFactor based on the staking tier. 
-     * Boostfactor is based with 4 decimals:
-     *      1     => 0.0001%
-     *      100   => 0.01%
-     *      10000 => 1%
-     *      20000 => 2%
-     * The current base chance for no stae is 100 => 0.01%
+     * @dev Looks up payout boostFactor based on the staking tier.
      * @param stakedAmount The staked amount.
      * @return The payout chance boostFactor.
      */
@@ -757,365 +886,59 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
         stakedAmounts[msg.sender] -= amount;
         emit UnstakeV1(msg.sender, amount, stakedAmounts[msg.sender]);
     }
-    
-    function stakeKeys(address pool, address staker, uint256[] memory keyIds, bool isAdminStake) external onlyPoolFactory {
+
+    function stakeKeys(address pool, address staker, uint256[] memory keyIds) external onlyPoolFactory {
+		require(isKycApproved(staker), "42");
         uint256 keysLength = keyIds.length;
-        // Check if the pool has enough capacity to stake the keys
         require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "43");
 
-        uint256 currentChallenge = challengeCounter - 1;
-
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
-        // Assign the keys to the pool
         for (uint256 i = 0; i < keysLength; i++) {
             uint256 keyId = keyIds[i];
-            // Check if the key is not already assigned to a pool
             require(assignedKeyToPool[keyId] == address(0), "44");
-            if(!isAdminStake){
-                // If not admin stake, check if the staker is the owner of the key
-                require(nodeLicenseContract.ownerOf(keyId) == staker, "45");
-            }
+            require(nodeLicenseContract.ownerOf(keyId) == staker, "45");
             assignedKeyToPool[keyId] = pool;
         }
 
-        // Update the user and pool staked key counts
         assignedKeysToPoolCount[pool] += keysLength;
         assignedKeysOfUserCount[staker] += keysLength;
-
-        // If the pool has submitted for the current challenge, update the pool bulk submission
-        if(bulkSubmissions[currentChallenge][pool].submitted){
-            _updateBulkAssertion(pool, currentChallenge);
-        }
-
-        // If the owner has submitted for the current challenge, update the owner bulk submission 
-        if(bulkSubmissions[currentChallenge][staker].submitted){
-            _updateBulkAssertion(staker, currentChallenge);
-        }
     }
 
     function unstakeKeys(address pool, address staker, uint256[] memory keyIds) external onlyPoolFactory {
         uint256 keysLength = keyIds.length;
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
 
-        // Unassign the keys from the pool
         for (uint256 i = 0; i < keysLength; i++) {
             uint256 keyId = keyIds[i];
-            // Check if the key is assigned to the pool
             require(assignedKeyToPool[keyId] == pool, "47");
-            // Check if the staker is the owner of the key
             require(nodeLicenseContract.ownerOf(keyId) == staker, "48");
-
-            // Unassign the key from the pool
             assignedKeyToPool[keyId] = address(0);
         }
-
-        // Update the user and pool staked key counts
         assignedKeysToPoolCount[pool] -= keysLength;
         assignedKeysOfUserCount[staker] -= keysLength;
-        
-        uint256 currentChallenge = challengeCounter - 1;
-
-        // If the pool has submitted for the current challenge, update the pool bulk submission
-        if(bulkSubmissions[currentChallenge][pool].submitted){
-            _updateBulkAssertion(pool, currentChallenge);
-        }
-
-        // If the owner has submitted for the current challenge, update the owner bulk submission
-        if(bulkSubmissions[currentChallenge][staker].submitted){
-            _updateBulkAssertion(staker, currentChallenge);
-        }
     }
 
     function stakeEsXai(address pool, uint256 amount) external onlyPoolFactory {
         uint256 maxStakedAmount = maxStakeAmountPerLicense * assignedKeysToPoolCount[pool];
         require(stakedAmounts[pool] + amount <= maxStakedAmount, "49");
         stakedAmounts[pool] += amount;
-        
-        uint256 currentChallenge = challengeCounter - 1;
-
-        // If the pool has submitted for the current challenge, update the pool bulk submission
-        if(bulkSubmissions[currentChallenge][pool].submitted){
-            _updateBulkAssertion(pool, currentChallenge);
-        }
     }
 
     function unstakeEsXai(address pool, uint256 amount) external onlyPoolFactory {
         require(stakedAmounts[pool] >= amount, "50");
         stakedAmounts[pool] -= amount;
-        
-        uint256 currentChallenge = challengeCounter - 1;
-
-        // If the pool has submitted for the current challenge, update the pool bulk submission
-        if(bulkSubmissions[currentChallenge][pool].submitted){
-            _updateBulkAssertion(pool, currentChallenge);
-        }
     }
 
-    /**
-     * @dev Admin function to enable or disable staking.
-     * @param enabled The new staking status.
-     */
-    function setStakingEnabled(bool enabled) external {
-        require(msg.sender == nodeLicenseAddress, "56");
-        stakingEnabled = enabled;
-        emit StakingEnabled(enabled);
-    }
-
-    /**
-     * @notice Get winning key count for a bulk submission.
-     * @param keyCount The total number of keys staked in the pool or total un-staked keys owned by wallet.
-     * @param boostFactor the boost factor of the pool/wallet
-     * @param bulkAddress used as parameter for randomization, address of the pool or wallet
-     * @param challengeId used as parameter for radomization
-     * @param _confirmData The confirm data of the assertion.
-     * @param _challengerSignedHash The signed hash for the challenge
-     * @return winningKeyCount The number of winning keys.
-     */
-    function getWinningKeyCount(uint256 keyCount, uint256 boostFactor, address bulkAddress, uint256 challengeId, bytes memory _confirmData, bytes memory _challengerSignedHash) internal view returns (uint256) {
-        return RefereeCalculations(refereeCalculationsAddress).getWinningKeyCount(keyCount, boostFactor, bulkAddress, challengeId, _confirmData, _challengerSignedHash);
-    }
-
-    /**
-    * @notice Update Previously Submitted Bulk assertion to a challenge.
-    * @dev This function is called internally when a user stakes or unstakes keys.
-    * @param _bulkAddress The address of the pool or owner wallet.
-    * @param _challengeId The ID of the challenge.
-    *
-     */
-	function _updateBulkAssertion(
-		address _bulkAddress,
-		uint256 _challengeId
-	) internal {
-        
-        // Initially set the number of keys to the number of keys assigned to the pool (will be 0 if pool does not exist)
-        uint256 numberOfKeys = assignedKeysToPoolCount[_bulkAddress] + assignedKeysOfUserCount[_bulkAddress];
-
-        // Check if the bulk address is a pool
-        bool isPool = PoolFactory(poolFactoryAddress).poolsCreatedViaFactory(_bulkAddress);
-
-        // If bulk address is not a pool, this means it is a wallet owner with unstaked keys
-        if(!isPool){
-            // Determine the number of keys to be submitted for by the owner
-            // This is calculated by taking the total number of keys owned and subtracting the number of keys staked in pools
-            numberOfKeys = NodeLicense(nodeLicenseAddress).balanceOf(_bulkAddress) - assignedKeysOfUserCount[_bulkAddress];
-        }
-
-        uint256 winningKeyCount = 0;
-
-        if(numberOfKeys > 0){
-            // Set the boost factor intially to 100 (0.01%)
-            uint256 boostFactor = 100;
-
-            // If the bulk address is a pool, determine the boost factor
-            if(isPool){
-                // Get the stakedAmount of _poolAddress for determining boostFactor
-                uint256 stakedAmount = getMaxStakedAmount(_bulkAddress, address(0));
-                // Determine the boostFactor
-                boostFactor = _getBoostFactor(stakedAmount);
-            }
-
-            // Determine the number of winning keys
-            winningKeyCount = getWinningKeyCount(numberOfKeys, boostFactor, _bulkAddress, _challengeId, bulkSubmissions[_challengeId][_bulkAddress].assertionStateRootOrConfirmData, challenges[_challengeId].challengerSignedHash);
-        }
-
-        // Determine the winning key count increase or decrease amounts
-        uint256 winningKeysIncreaseAmount = 0;
-        uint256 winningKeysDecreaseAmount = 0;
-
-        uint256 prevWinningCount = bulkSubmissions[_challengeId][_bulkAddress].winningKeyCount;
-
-        // If winning key count has increased, add the difference to the total number of eligible claimers
-        if(winningKeyCount > prevWinningCount){
-            // Determine the increase amount
-            winningKeysIncreaseAmount = winningKeyCount - prevWinningCount;
-            // Update the challenge by adding the increase amount to the total number of eligible claimers
-            challenges[_challengeId].numberOfEligibleClaimers += winningKeysIncreaseAmount;
-
-        // Else winning key count has decreased, subtract the difference from the total number of eligible claimers
-        } else {
-            // Determine the decrease amount
-            winningKeysDecreaseAmount = prevWinningCount - winningKeyCount;
-            // Update the challenge by subtracting the decrease amount from the total number of eligible claimers
-            challenges[_challengeId].numberOfEligibleClaimers -= winningKeysDecreaseAmount;
-
-        }
-
-        // Store the updated pool submission data to the struct
-        bulkSubmissions[_challengeId][_bulkAddress].keyCount = numberOfKeys;
-        bulkSubmissions[_challengeId][_bulkAddress].winningKeyCount = winningKeyCount;
-
-        // Emit the Updated Pool Submission event
-        emit UpdateBulkSubmission(_challengeId, _bulkAddress, numberOfKeys, winningKeyCount, winningKeysIncreaseAmount, winningKeysDecreaseAmount);	
-	}
-
-    /** 
-    * @notice Function to check if challenge rewards are expired
-    * @dev This function is called internally from the claimReward function.
-    * @param _challengeId The ID of the challenge.
-    * @return A boolean indicating if the challenge rewards are expired.
-    */
-    function _checkChallengeRewardsExpired(uint256 _challengeId) internal returns (bool) {
-        // Check if the challenge rewards have expired
-        bool expired = block.timestamp >= challenges[_challengeId].createdTimestamp + 270 days;
-
-        // If the challenge rewards have expired and the mapping has
-        // not been updated, then update the mapping
-        if(expired && !challenges[_challengeId].expiredForRewarding){            
-            // Remove the unclaimed tokens from the allocation
-            _allocatedTokens -= challenges[_challengeId].rewardAmountForClaimers - challenges[_challengeId].amountClaimedByClaimers;
-
-            // Set expiredForRewarding to true
-            challenges[_challengeId].expiredForRewarding = true;
-
-            // Emit the ChallengeExpired event
-            emit ChallengeExpired(_challengeId);
-        }else {
-            // If challenge has expired and mapping has been updated, then revert
-            require(!expired, "20");
-            return false;
-        }
-
-        return expired;
-    }
-
-    /** 
-    * @notice Submit Bulk Assertion
-    * @dev this function is called by a pool owner, an approved operator, or a wallet woner with unstaked keys to submit a bulk assertion to a challenge.
-    * @param _bulkAddress The address of the pool or owner wallet.
-    * @param _challengeId The ID of the challenge.
-    * @param _confirmData The confirm data of the assertion.
-    */
-    function submitBulkAssertion(address _bulkAddress, uint256 _challengeId, bytes memory _confirmData) external {
-        // Confirm the challenge is open for submissions
-		require(challenges[_challengeId].openForSubmissions, "16");
-
-        // Initially set the number of keys to the number of keys assigned to the pool (will be 0 if pool does not exist)
-        uint256 numberOfKeys = assignedKeysToPoolCount[_bulkAddress] + assignedKeysOfUserCount[_bulkAddress];
-
-        // Check if the submission successor hash, doesn't match the one submitted by the challenger, then end early and emit an event
-		if (keccak256(abi.encodePacked(_confirmData)) != keccak256(abi.encodePacked(challenges[_challengeId].assertionStateRootOrConfirmData))) {
-            emit InvalidBatchSubmission(_challengeId, _bulkAddress, msg.sender, numberOfKeys);
-			return;
-		}
-
-        // Check if the bulk address is a pool
-        bool isPool = PoolFactory(poolFactoryAddress).poolsCreatedViaFactory(_bulkAddress);
-
-        // If bulk address is not a pool, this means it is a wallet owner with unstaked keys
-        if(!isPool){
-            // Determine the number of keys to be submitted for by the owner
-            // This is calculated by taking the total number of keys owned and subtracting the number of keys staked in pools
-            numberOfKeys = NodeLicense(nodeLicenseAddress).balanceOf(_bulkAddress) - assignedKeysOfUserCount[_bulkAddress];
-        }else{
-            // If the bulk address is a pool, check if the caller is the pool owner or an approved operator
-            require(PoolFactory2(poolFactoryAddress).validateSubmitPoolAssertion(_bulkAddress, msg.sender), "17");
-        }
-
-        // Confirm not already submitted
-        require(!bulkSubmissions[_challengeId][_bulkAddress].submitted, "54");
-        
-        uint256 winningKeyCount = 0;
-
-        if(numberOfKeys > 0){
-            // Set the boost factor intially to 100 (0.01%)
-            uint256 boostFactor = 100;
-
-            // If the bulk address is a pool, determine the boost factor
-            if(isPool){
-                // Get the stakedAmount of _poolAddress for determining boostFactor
-                uint256 stakedAmount = getMaxStakedAmount(_bulkAddress, address(0));
-
-                // Determine the boost factor
-                boostFactor = _getBoostFactor(stakedAmount);
-            }
-
-            // Determine the number of winning keys
-            winningKeyCount = getWinningKeyCount(numberOfKeys, boostFactor, _bulkAddress, _challengeId, _confirmData, challenges[_challengeId].challengerSignedHash);
-        }
-
-        // Update the challenge by adding the winning key count to the total winning keys
-        challenges[_challengeId].numberOfEligibleClaimers += winningKeyCount;
-
-        // Store the pool submission struct
-        bulkSubmissions[_challengeId][_bulkAddress] = BulkSubmission({
-            submitted: true,
-            claimed: false,
-            keyCount: numberOfKeys,
-            winningKeyCount: winningKeyCount,
-            assertionStateRootOrConfirmData: _confirmData
-        });
-
-        // Emit the New Pool Submission event
-        emit NewBulkSubmission(_challengeId, _bulkAddress, numberOfKeys, winningKeyCount);
-    }
-
-    /**
-    * @notice Claim Bulk rewards for either a pool, or a wallet owner with unstaked keys.
-    * @dev this function is called by the pool owner, an approved operator, or a sentry wallet owner to claim rewards for a bulk submissions.
-    * @param _bulkAddress The address of the pool or owner wallet.
-    * @param _challengeId The ID of the challenge.
-    */
-    function claimBulkRewards(address _bulkAddress, uint256 _challengeId) external {
-
-        // Validate the challenge is claimable
-        _validateChallengeIsClaimable(challenges[_challengeId]);
-
-        Challenge memory challengeToClaimFor  = challenges[_challengeId];
-        
-        // expire the challenge if 270 days old
-        bool expired = _checkChallengeRewardsExpired(_challengeId);
-
-        // If the challenge has expired, end early
-        if (expired) return;
-
-        BulkSubmission storage bulkSubmission = bulkSubmissions[_challengeId][_bulkAddress];
-
-        // Check if the bulk submission is elegible for a payout
-        require(bulkSubmission.submitted && !bulkSubmission.claimed && bulkSubmission.winningKeyCount > 0, "58");
-
-        uint256 reward = challengeToClaimFor.rewardAmountForClaimers / challengeToClaimFor.numberOfEligibleClaimers;
-        uint256 rewardMintAmount = 0;
-
-        // Calculate the amount to mint to the reward address
-        rewardMintAmount = (reward * bulkSubmission.winningKeyCount);     
-
-        // mark the submission as claimed
-        bulkSubmission.claimed = true;
-        // increment the amount claimed on the challenge
-        challenges[_challengeId].amountClaimedByClaimers += rewardMintAmount;    
-    
-        esXai(esXaiAddress).mint(_bulkAddress, rewardMintAmount);
-
-        // Increment the total claims of this address
-        _lifetimeClaims[_bulkAddress] += rewardMintAmount;
-
-        // unallocate the tokens that have now been converted to esXai
-        _allocatedTokens -= rewardMintAmount;
-        emit BulkRewardsClaimed(_challengeId, _bulkAddress, rewardMintAmount, bulkSubmission.winningKeyCount);
-    }
-
-    /**
-    * @notice Get the maximum available stake amount, the lower of the actual stake amount and the maximum capacity amount
-    * @dev this will check the pool or the owners V1 stake
-    * @param assignedPool The address of the assigned pool, can be address(0) for keys that are not assigned.
-    * @param licenseOwner The key owner for V1 stake, can be address(0) if the key is assigned to a pool.
-    */
-    function getMaxStakedAmount(address assignedPool, address licenseOwner) internal view returns (uint256 stakedAmount) {      
-		stakedAmount = stakedAmounts[assignedPool];
-		if (assignedPool == address(0)) {
-			stakedAmount = stakedAmounts[licenseOwner];
-			uint256 ownerUnstakedAmount = NodeLicense(nodeLicenseAddress).balanceOf(licenseOwner) - assignedKeysOfUserCount[licenseOwner];
-			if (ownerUnstakedAmount * maxStakeAmountPerLicense < stakedAmount) {
-				stakedAmount = ownerUnstakedAmount * maxStakeAmountPerLicense;
-			}
-		} else { 
-			if (assignedKeysToPoolCount[assignedPool] * maxStakeAmountPerLicense < stakedAmount) {
-				stakedAmount = assignedKeysToPoolCount[assignedPool] * maxStakeAmountPerLicense;
-			}
-		}
+    function closeCurrentChallenge() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        Challenge storage currentChallenge = challenges[challengeCounter - 1];
+        require(block.timestamp >= currentChallenge.createdTimestamp + 50 minutes, "59");
+        currentChallenge.openForSubmissions = false;
+        // Not emitting an event as it will be emitted when the next challenge is submitted
     }
 
     //TEST FUNCTION this is used only for test coverage
+    // Leaving these functions in the contract for test coverage purposes
+    // In the future these can be removed if size becomes an issue
     // function toggleAssertionChecking() public {
     //     isCheckingAssertions = !isCheckingAssertions;
     //     emit AssertionCheckingToggled(isCheckingAssertions);
@@ -1127,3 +950,4 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     //     emit RollupAddressChanged(newRollupAddress);
     // }
 }
+

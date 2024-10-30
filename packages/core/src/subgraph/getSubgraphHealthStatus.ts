@@ -1,4 +1,5 @@
 import axios from "axios"
+import { config } from "../config.js";
 
 /**
  * 
@@ -7,7 +8,8 @@ import axios from "axios"
 export async function getSubgraphHealthStatus(): Promise<{ healthy: boolean, error?: string }> {
 
     try {
-        const url = `https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry/status`;
+        const subgraphEndpoint = config.subgraphEndpoint;
+        const url = subgraphEndpoint.replace(/\/api$/, "/status");
         const response = await axios.get(url);
         if (response.status === 200) {
             const status = response.data.data.indexingStatusForCurrentVersion.health;

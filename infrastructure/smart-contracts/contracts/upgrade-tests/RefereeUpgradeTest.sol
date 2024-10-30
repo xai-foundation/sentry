@@ -95,12 +95,13 @@ contract RefereeUpgradeTest is AccessControlEnumerableUpgradeable {
     
     // Mapping for amount of assigned keys of a user
     mapping(address => uint256) public assignedKeysOfUserCount;
+    
+    // Referee Calculations contract address
+    address public refereeCalculationsAddress;
 
     // Mapping to store all of the pool submissions
     mapping(uint256 => mapping(address => BulkSubmission)) public bulkSubmissions;
 
-    // Referee Calculations contract address
-    address public refereeCalculationsAddress;
     uint256 private _count;
 
     /**
