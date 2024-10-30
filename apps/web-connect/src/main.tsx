@@ -93,15 +93,6 @@ const debugWalletConnect = (projectId: string) => {
   }
 }
 
-// Add this right after declaring wagmiAdapter
-if (typeof window !== 'undefined') {
-  // Force same-origin context for WalletConnect
-  window.walletConnectProvider = {
-    isSameOrigin: true,
-    shouldShimWeb3: true
-  };
-}
-
 const debugState = (label: string) => {
   if (typeof window !== 'undefined') {
     const state = cookieStorage.getItem('wagmi.store');
