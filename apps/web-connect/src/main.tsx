@@ -153,14 +153,14 @@ const queryClient = new QueryClient({
 })
 
 // Metadata
-const metadata = {
-  name: 'Xai Sentry Node',
-  description: 'Connect your wallet to the Xai Sentry Node',
-  //url: 'https://sentry.xai.games/',
-  url: window.location.origin,
-  icons: ['https://xai.games/images/delta%20med.svg'],
-  verifyUrl: window.location.origin, 
-}
+// const metadata = {
+//   name: 'Xai Sentry Node',
+//   description: 'Connect your wallet to the Xai Sentry Node',
+//   //url: 'https://sentry.xai.games/',
+//   url: window.location.origin,
+//   icons: ['https://xai.games/images/delta%20med.svg'],
+//   verifyUrl: window.location.origin, 
+// }
 
 // Initialize AppKit with error boundaries
 createAppKit({
@@ -168,13 +168,16 @@ createAppKit({
   projectId,
   networks: environment === "development" ? [arbitrum, arbitrumSepolia] : [arbitrum],
   defaultNetwork: arbitrum,
-  metadata,
+  metadata: {
+    name: 'Xai Sentry Node',
+    description: 'Connect your wallet to the Xai Sentry Node',
+    url: window.location.origin,
+    icons: ['https://xai.games/images/delta%20med.svg']
+  },
   features: {
-    socials: ['google', 'x', 'github', 'discord', 'apple', 'facebook', 'farcaster'],
     analytics: true
   }
 })
-
 const headers = {
   'Referer': window.location.origin,
   'Origin': window.location.origin
