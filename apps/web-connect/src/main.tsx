@@ -13,114 +13,68 @@ import { arbitrum, arbitrumSepolia } from '@reown/appkit/networks'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { cookieStorage, cookieToInitialState, createStorage } from '@wagmi/core'
 
-// Environment Configuration
+// Environment and domain configuration
 const environment = import.meta.env.VITE_APP_ENV === "development" ? "development" : "production"
 const projectId = environment === "development" 
   ? "79e38b4593d43c78d7e9ee38f0cdf4ee" 
   : "543ba4882fc1d2e9a9ffe8bc1c473cf9"
 
+// Keep this configuration
+const getDomain = () => {
+  const hostname = window.location.hostname
+  if (hostname === 'localhost') return undefined
+  return hostname.includes('cryptit.at') ? '.cryptit.at' : '.xai.games'
+}
+
+const cookieConfig = {
+  domain: getDomain(),
+  path: '/',
+  sameSite: 'strict' as const,
+  secure: window.location.protocol === 'https:',
+  maxAge: 30 * 24 * 60 * 60 // 30 days
+}
+
 // Chain Configuration
 export const chains: [Chain, ...Chain[]] = [arbitrum as Chain]
 if (environment === "development") chains.push(arbitrumSepolia as Chain)
 
-// Simple Connector ID Management
-const CONNECTOR_KEY = 'wagmi.connector.id'
 
-const getStoredConnectorId = (): string | null => {
-  return localStorage.getItem(CONNECTOR_KEY)
-}
-
-const setStoredConnectorId = (id: string): void => {
-  localStorage.setItem(CONNECTOR_KEY, id)
-}
-
-// Enhanced Storage
-const storage = createStorage({
-  storage: {
-    ...cookieStorage,
-    getItem: async (key: string) => {
-      const value = cookieStorage.getItem(key)
-      if (key === 'wagmi.store' && value) {
-        try {
-          const parsed = JSON.parse(value)
-          const savedConnectorId = getStoredConnectorId()
-          
-          if (savedConnectorId && 
-              parsed?.state?.connections?.__type === 'Map' && 
-              Array.isArray(parsed.state.connections.value) && 
-              parsed.state.connections.value.length > 0) {
-            const connectionData = parsed.state.connections.value[0][1]
-            parsed.state.connections.value = [[savedConnectorId, connectionData]]
-            parsed.state.current = savedConnectorId
-            return JSON.stringify(parsed)
-          }
-        } catch (error) {
-          // Silently handle parse errors
-        }
-      }
-      return value
-    },
-    setItem: (key: string, value: string) => {
-      if (key === 'wagmi.store') {
-        try {
-          const parsed = JSON.parse(value)
-          if (parsed?.state?.connections?.__type === 'Map' && 
-              Array.isArray(parsed.state.connections.value) && 
-              parsed.state.connections.value.length > 0) {
-            const connectorId = parsed.state.connections.value[0][0]
-            if (connectorId) {
-              setStoredConnectorId(connectorId)
-            }
-          }
-        } catch (error) {
-          // Silently handle parse errors
-        }
-      }
-      cookieStorage.setItem(key, value)
-    },
-    removeItem: (key: string) => {
-      if (key === 'wagmi.store') {
-        localStorage.removeItem(CONNECTOR_KEY)
-      }
-      cookieStorage.removeItem(key)
-    }
-  }
-})
-
-// Safe Initial State
+// Safe initial state handling
 const getInitialState = () => {
   try {
-    const state = cookieToInitialState(wagmiAdapter.wagmiConfig as Config, document.cookie)
-    if (!state) return undefined
-
-    const savedConnectorId = getStoredConnectorId()
-    if (!savedConnectorId) return state
-
-    if (state.connections instanceof Map && state.connections.size > 0) {
-      const firstConnection = Array.from(state.connections.values())[0]
-      if (firstConnection) {
-        state.connections.clear()
-        state.connections.set(savedConnectorId, firstConnection)
-        state.current = savedConnectorId
-      }
-    }
-
-    return state
-  } catch (error) {
+    return cookieToInitialState(wagmiAdapter.wagmiConfig as Config, document.cookie)
+  } catch {
     return undefined
   }
 }
 
-// Wagmi Adapter
-export const wagmiAdapter = new WagmiAdapter({
-  storage,
-  networks: chains,
-  projectId,
-  ssr: true
+// Wagmi Adapter with optimized configuration
+const wagmiStorage = createStorage({
+  storage: {
+    ...cookieStorage,
+    setItem: (key: string, value: string) => {
+      document.cookie = `${key}=${value}; path=${cookieConfig.path}${cookieConfig.domain ? `; domain=${cookieConfig.domain}` : ''}; samesite=${cookieConfig.sameSite}${cookieConfig.secure ? '; secure' : ''}; max-age=${cookieConfig.maxAge}`
+    }
+  }
 })
 
-// Query Client
-const queryClient = new QueryClient()
+export const wagmiAdapter = new WagmiAdapter({
+  storage: wagmiStorage,
+  networks: chains,
+  projectId,
+  ssr: true,
+  syncConnectedChain: true
+})
+// Query Client with error handling
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 2,
+      staleTime: 5000,
+      refetchOnWindowFocus: false
+    }
+  }
+})
 
 // Metadata
 const metadata = {
@@ -130,7 +84,7 @@ const metadata = {
   icons: ['https://xai.games/images/delta%20med.svg']
 }
 
-// Initialize AppKit
+// Initialize AppKit with error boundaries
 createAppKit({
   adapters: [wagmiAdapter],
   projectId,
