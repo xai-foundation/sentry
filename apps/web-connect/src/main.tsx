@@ -227,6 +227,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <meta name="twitter:image" content={xaiThumbnail} />
           <meta name="twitter:creator" content="@xai_games" />
           <meta name="referrer" content="origin" />
+          <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
+          <meta httpEquiv="Set-Cookie" content="_sendc; SameSite=None; Secure" />
           <base href={window.location.origin} />
         </Helmet>
         <React.StrictMode>
