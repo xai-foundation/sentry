@@ -100,7 +100,19 @@ const wagmiStorage = createStorage({
   storage: {
     ...cookieStorage,
     setItem: (key: string, value: string) => {
-      document.cookie = `${key}=${value}; path=${cookieConfig.path}${cookieConfig.domain ? `; domain=${cookieConfig.domain}` : ''}; samesite=${cookieConfig.sameSite}${cookieConfig.secure ? '; secure' : ''}; max-age=${cookieConfig.maxAge}`
+      // Different configuration for MetaMask cookies
+      if (key.includes('metamask')) {
+        document.cookie = `${key}=${value}; path=${cookieConfig.path}${
+          cookieConfig.domain ? `; domain=${cookieConfig.domain}` : ''
+        }; samesite=none; secure; max-age=${cookieConfig.maxAge}`
+      } else {
+        // Regular Wagmi cookies
+        document.cookie = `${key}=${value}; path=${cookieConfig.path}${
+          cookieConfig.domain ? `; domain=${cookieConfig.domain}` : ''
+        }; samesite=${cookieConfig.sameSite}${
+          cookieConfig.secure ? '; secure' : ''
+        }; max-age=${cookieConfig.maxAge}`
+      }
     }
   }
 })
