@@ -206,9 +206,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <meta name="twitter:description" content="Xai Sentry Node Key Sale Page" />
           <meta name="twitter:image" content={xaiThumbnail} />
           <meta name="twitter:creator" content="@xai_games" />
-          <meta name="referrer" content="strict-origin-when-cross-origin" />
           <meta name="referrer" content="origin" />
-          <meta httpEquiv="referrer-policy" content="origin" />
           <base href={window.location.origin} />
         </Helmet>
         <React.StrictMode>
