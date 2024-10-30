@@ -144,6 +144,8 @@ createAppKit({
   }
 })
 
+console.log("Project ID:", projectId);
+
 // Render Application
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <HelmetProvider context={{}}>
