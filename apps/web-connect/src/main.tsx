@@ -171,7 +171,7 @@ createAppKit({
   metadata: {
     name: 'Xai Sentry Node',
     description: 'Connect your wallet to the Xai Sentry Node',
-    url: window.location.origin,
+    url: `${window.location.protocol}//${window.location.host}`,
     icons: ['https://xai.games/images/delta%20med.svg']
   },
   features: {
