@@ -139,6 +139,7 @@ createAppKit({
   defaultNetwork: arbitrum,
   metadata,
   features: {
+    socials: ['google', 'x', 'github', 'discord', 'apple', 'facebook', 'farcaster'],
     analytics: true
   }
 })
