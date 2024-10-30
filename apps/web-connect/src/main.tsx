@@ -27,7 +27,7 @@ import { Helmet, HelmetProvider } from 'react-helmet-async'
 import { createAppKit } from '@reown/appkit/react'
 import { arbitrum, arbitrumSepolia } from '@reown/appkit/networks'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { cookieStorage, createStorage, cookieToInitialState } from '@wagmi/core'
+import { cookieStorage, createStorage } from '@wagmi/core'
 
 // Environment and domain configuration
 const environment = import.meta.env.VITE_APP_ENV === "development" ? "development" : "production"
