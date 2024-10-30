@@ -28,7 +28,7 @@ import { cookieStorage, cookieToInitialState, createStorage } from '@wagmi/core'
 // Environment and domain configuration
 const environment = import.meta.env.VITE_APP_ENV === "development" ? "development" : "production"
 const projectId = environment === "development" 
-  ? "79e38b4593d43c78d7e9ee38f0cdf4ee" 
+  ? "aa9e5ff297549e8d0cc518d085c28699" 
   : "543ba4882fc1d2e9a9ffe8bc1c473cf9"
 
 const debugLogger = {
