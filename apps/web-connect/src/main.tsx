@@ -139,7 +139,8 @@ const queryClient = new QueryClient({
 const metadata = {
   name: 'Xai Sentry Node',
   description: 'Connect your wallet to the Xai Sentry Node',
-  url: 'https://sentry.xai.games/',
+  //url: 'https://sentry.xai.games/',
+  url: 'https://web-connect-470.sentry.cryptit.at',
   icons: ['https://xai.games/images/delta%20med.svg']
 }
 
@@ -179,6 +180,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <meta name="twitter:image" content={xaiThumbnail} />
           <meta name="twitter:creator" content="@xai_games" />
           <meta name="referrer" content="strict-origin-when-cross-origin" />
+          <meta name="referrer" content="no-referrer" />
           <base href={window.location.origin} />
         </Helmet>
         <React.StrictMode>
