@@ -157,8 +157,9 @@ const metadata = {
   name: 'Xai Sentry Node',
   description: 'Connect your wallet to the Xai Sentry Node',
   //url: 'https://sentry.xai.games/',
-  url: 'https://web-connect-470.sentry.cryptit.at',
-  icons: ['https://xai.games/images/delta%20med.svg']
+  url: window.location.origin,
+  icons: ['https://xai.games/images/delta%20med.svg'],
+  verifyUrl: window.location.origin, 
 }
 
 // Initialize AppKit with error boundaries
