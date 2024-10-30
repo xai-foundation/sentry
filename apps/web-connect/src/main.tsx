@@ -1,3 +1,4 @@
+
 declare global {
   interface Window {
     ethereum?: {
@@ -5,7 +6,10 @@ declare global {
       removeListener: (event: string, callback: (...args: string[]) => void) => void;
       request: (args: { method: string; params?: string[] }) => Promise<string>;
       isMetaMask?: boolean;
-      chainId?: string;
+    };
+    walletConnectProvider?: {
+      isSameOrigin: boolean;
+      shouldShimWeb3: boolean;
     };
   }
 }
@@ -48,10 +52,17 @@ const debugLogger = {
     if (environment === 'development') {
       console.group(`👛 Wallet State: ${event}`)
       console.log('Ethereum Provider:', window.ethereum?.isMetaMask ? 'MetaMask' : 'Other/None')
-      console.log('Connected Chain:', window.ethereum?.chainId)
+    //  console.log('Connected Chain:', window.ethereum?.chainId)
       console.groupEnd()
     }
   }
+}
+// Then use it
+if (typeof window !== 'undefined') {
+  window.walletConnectProvider = {
+    isSameOrigin: true,
+    shouldShimWeb3: true
+  };
 }
 
 if (typeof window !== 'undefined' && window.ethereum) {
@@ -130,6 +141,15 @@ const debugWalletConnect = (projectId: string) => {
     })
     console.groupEnd()
   }
+}
+
+// Add this right after declaring wagmiAdapter
+if (typeof window !== 'undefined') {
+  // Force same-origin context for WalletConnect
+  window.walletConnectProvider = {
+    isSameOrigin: true,
+    shouldShimWeb3: true
+  };
 }
 
 debugWalletConnect(projectId)
