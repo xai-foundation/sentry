@@ -1,19 +1,4 @@
 
-declare global {
-  interface Window {
-    ethereum?: {
-      on: (event: string, callback: (...args: string[]) => void) => void;
-      removeListener: (event: string, callback: (...args: string[]) => void) => void;
-      request: (args: { method: string; params?: string[] }) => Promise<string>;
-      isMetaMask?: boolean;
-    };
-    walletConnectProvider?: {
-      isSameOrigin: boolean;
-      shouldShimWeb3: boolean;
-    };
-  }
-}
-
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { AppRoutes } from './features/router'
@@ -27,7 +12,7 @@ import { Helmet, HelmetProvider } from 'react-helmet-async'
 import { createAppKit } from '@reown/appkit/react'
 import { arbitrum, arbitrumSepolia } from '@reown/appkit/networks'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
-import { cookieStorage, createStorage } from '@wagmi/core'
+import { cookieStorage, createStorage, cookieToInitialState } from '@wagmi/core'
 
 // Environment and domain configuration
 const environment = import.meta.env.VITE_APP_ENV === "development" ? "development" : "production"
@@ -35,47 +20,6 @@ const projectId = environment === "development"
   ? "aa9e5ff297549e8d0cc518d085c28699" 
   : "543ba4882fc1d2e9a9ffe8bc1c473cf9"
 
-const debugLogger = {
-  logCookies: (event: string) => {
-    if (environment === 'development') {
-      console.group(`🍪 Cookie State: ${event}`)
-      console.log('All Cookies:', document.cookie.split(';').map(c => c.trim()))
-      const wagmiCookies = document.cookie.split(';')
-        .map(c => c.trim())
-        .filter(c => c.startsWith('wagmi.'))
-      console.log('Wagmi Cookies:', wagmiCookies)
-      console.groupEnd()
-    }
-  },
-  
-  logWalletState: (event: string) => {
-    if (environment === 'development') {
-      console.group(`👛 Wallet State: ${event}`)
-      console.log('Ethereum Provider:', window.ethereum?.isMetaMask ? 'MetaMask' : 'Other/None')
-    //  console.log('Connected Chain:', window.ethereum?.chainId)
-      console.groupEnd()
-    }
-  }
-}
-// Then use it
-if (typeof window !== 'undefined') {
-  window.walletConnectProvider = {
-    isSameOrigin: true,
-    shouldShimWeb3: true
-  };
-}
-
-if (typeof window !== 'undefined' && window.ethereum) {
-  window.ethereum.on('chainChanged', () => {
-    debugLogger.logWalletState('Chain Changed')
-    debugLogger.logCookies('After Chain Change')
-  })
-
-  window.ethereum.on('accountsChanged', () => {
-    debugLogger.logWalletState('Accounts Changed')
-    debugLogger.logCookies('After Accounts Change')
-  })
-}
 
 // Keep this configuration
 const getDomain = () => {
@@ -105,7 +49,7 @@ const getInitialState = () => {
     
     const parsed = JSON.parse(state);
     
-    return parsed.state
+    return cookieToInitialState(parsed);
   } catch (error) {
     console.error('Error parsing initial state:', error)
     return undefined
