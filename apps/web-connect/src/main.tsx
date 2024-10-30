@@ -1,3 +1,15 @@
+declare global {
+  interface Window {
+    ethereum?: {
+      on: (event: string, callback: (...args: string[]) => void) => void;
+      removeListener: (event: string, callback: (...args: string[]) => void) => void;
+      request: (args: { method: string; params?: string[] }) => Promise<string>;
+      isMetaMask?: boolean;
+      chainId?: string;
+    };
+  }
+}
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { AppRoutes } from './features/router'
@@ -18,6 +30,41 @@ const environment = import.meta.env.VITE_APP_ENV === "development" ? "developmen
 const projectId = environment === "development" 
   ? "79e38b4593d43c78d7e9ee38f0cdf4ee" 
   : "543ba4882fc1d2e9a9ffe8bc1c473cf9"
+
+const debugLogger = {
+  logCookies: (event: string) => {
+    if (environment === 'development') {
+      console.group(`🍪 Cookie State: ${event}`)
+      console.log('All Cookies:', document.cookie.split(';').map(c => c.trim()))
+      const wagmiCookies = document.cookie.split(';')
+        .map(c => c.trim())
+        .filter(c => c.startsWith('wagmi.'))
+      console.log('Wagmi Cookies:', wagmiCookies)
+      console.groupEnd()
+    }
+  },
+  
+  logWalletState: (event: string) => {
+    if (environment === 'development') {
+      console.group(`👛 Wallet State: ${event}`)
+      console.log('Ethereum Provider:', window.ethereum?.isMetaMask ? 'MetaMask' : 'Other/None')
+      console.log('Connected Chain:', window.ethereum?.chainId)
+      console.groupEnd()
+    }
+  }
+}
+
+if (typeof window !== 'undefined' && window.ethereum) {
+  window.ethereum.on('chainChanged', () => {
+    debugLogger.logWalletState('Chain Changed')
+    debugLogger.logCookies('After Chain Change')
+  })
+
+  window.ethereum.on('accountsChanged', () => {
+    debugLogger.logWalletState('Accounts Changed')
+    debugLogger.logCookies('After Accounts Change')
+  })
+}
 
 // Keep this configuration
 const getDomain = () => {
