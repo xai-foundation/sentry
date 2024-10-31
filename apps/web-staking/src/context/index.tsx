@@ -5,7 +5,6 @@ import { arbitrum } from '@reown/appkit/networks'
 import { cookieToInitialState, WagmiProvider, type Config } from 'wagmi'
 import React, { ReactNode } from 'react'
 import { config, networks, projectId, wagmiAdapter } from '@/config'
-import { cookies, headers } from 'next/headers';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 
@@ -22,7 +21,7 @@ const metadata = {
 }
 
 // Create modal
-const modal = createAppKit({
+createAppKit({
   adapters: [wagmiAdapter],
   projectId,
   networks: networks,
