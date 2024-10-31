@@ -28,8 +28,12 @@ createAppKit({
   defaultNetwork: arbitrum,
   metadata: metadata,
   features: {
-    analytics: true
-  }
+    analytics: true,
+    allWallets: true,
+    email: true,
+    smartSessions: true,
+    socials: ['google', 'discord', 'github'],
+    }
 })
 
 export function ContextProvider({
