@@ -1,36 +1,47 @@
 'use client'
 
+import { createAppKit } from '@reown/appkit/react'
+import { arbitrum } from '@reown/appkit/networks'
+import { cookieToInitialState, WagmiProvider, type Config } from 'wagmi'
 import React, { ReactNode } from 'react'
-import { config, projectId } from '@/config'
-
-import { createWeb3Modal } from '@web3modal/wagmi/react'
-
+import { config, networks, projectId, wagmiAdapter } from '@/config'
+import { cookies, headers } from 'next/headers';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
-import { State, WagmiProvider } from 'wagmi'
 
 // Setup queryClient
 const queryClient = new QueryClient()
 
 if (!projectId) throw new Error('Project ID is not defined')
 
+const metadata = {
+  name: 'Xai App',
+  description: 'Xai Games App',
+  url: typeof window !== 'undefined' ? window.location.origin : 'https://app.xai.games',
+  icons: ['https://xai.games/images/delta%20med.svg']
+}
+
 // Create modal
-createWeb3Modal({
-  wagmiConfig: config,
+const modal = createAppKit({
+  adapters: [wagmiAdapter],
   projectId,
-  enableAnalytics: true, // Optional - defaults to your Cloud configuration
+  networks: networks,
+  defaultNetwork: arbitrum,
+  metadata: metadata,
+  features: {
+    analytics: true
+  }
 })
 
 export function ContextProvider({
   children,
-  // initialState
 }: {
   children: ReactNode
-  // initialState?: State
 }) {
+  const cookies = typeof window !== 'undefined' ? document.cookie : ''
+  const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig as Config, cookies)
   return (
-    // <WagmiProvider config={config} initialState={initialState}>
-    <WagmiProvider config={config}>
+    <WagmiProvider config={config} initialState={initialState}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   )
