@@ -1,4 +1,3 @@
-import { defaultWagmiConfig } from '@web3modal/wagmi/react/config'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { arbitrumSepolia, arbitrum, AppKitNetwork } from '@reown/appkit/networks'
 import { cookieStorage, createStorage } from '@wagmi/core'
