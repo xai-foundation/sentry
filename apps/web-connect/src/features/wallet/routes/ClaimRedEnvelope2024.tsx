@@ -1,5 +1,5 @@
 import {useWriteContract } from "wagmi";
-import {chains} from "../../../main";
+import { chains } from '@/app/App';
 import {useState, useEffect} from "react";
 import {XaiCheckbox} from "@sentry/ui";
 import {useNavigate} from "react-router-dom";
@@ -19,7 +19,7 @@ export function ClaimRedEnvelope2024() {
 	const navigate = useNavigate();
 	const chain = chains.find(chain => chain.id === chainId)
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
-	const ready = checkboxOne && isValidNetwork(chain?.id, isDevelopment);
+	const ready = checkboxOne && isValidNetwork(chain?.id as number, isDevelopment);
 	const [permits, setPermits] = useState<{[key: string]: {r: string, s: string, v: number, amount: string}}>();
 
 	const txData = {
@@ -131,7 +131,7 @@ export function ClaimRedEnvelope2024() {
 													className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 													disabled={!ready}
 												>
-													{isValidNetwork(chain?.id, isDevelopment) ? "Claim" : "Please Switch to Arbitrum"}
+													{isValidNetwork(chain?.id as number, isDevelopment) ? "Claim" : "Please Switch to Arbitrum"}
 												</button>
 											</div>
 											{error && (
