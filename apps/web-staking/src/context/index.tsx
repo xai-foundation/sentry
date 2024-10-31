@@ -19,7 +19,6 @@ const metadata = {
   url: typeof window !== 'undefined' ? window.location.origin : 'https://app.xai.games',
   icons: ['https://xai.games/images/delta%20med.svg']
 }
-
 // Create modal
 createAppKit({
   adapters: [wagmiAdapter],
@@ -30,9 +29,8 @@ createAppKit({
   features: {
     analytics: true,
     allWallets: true,
-    email: true,
     smartSessions: true,
-    socials: ['google', 'discord', 'github'],
+    socials: ['google', 'discord', 'github', 'x', 'facebook', 'apple', 'farcaster'],
     }
 })
 
