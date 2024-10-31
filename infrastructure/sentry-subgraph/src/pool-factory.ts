@@ -175,7 +175,9 @@ export function handleUnstakeKeys(event: UnstakeKeys): void {
     }
 
     // Update the Users Pool Stake 
-    const poolStakeId = event.params.pool.toHexString() + "_" +  event.params.user.toHexString();
+    const poolAddress = event.params.pool.toHexString().toLowerCase();
+    const userAddress = event.params.user.toHexString().toLowerCase();
+    const poolStakeId = poolAddress + "_" +  userAddress;
     const poolStake = PoolStake.load(poolStakeId);
 
     // If the stake does not exist, log a warning
@@ -188,14 +190,14 @@ export function handleUnstakeKeys(event: UnstakeKeys): void {
     }
 
     let index = decoded.toTuple()[1].toBigInt()
-    let unstakeRequest = UnstakeRequest.load(event.params.pool.toHexString() + event.params.user.toHexString() + index.toString())
+    let unstakeRequest = UnstakeRequest.load(poolAddress + userAddress + index.toString())
     if (unstakeRequest) {
       unstakeRequest.open = false
       unstakeRequest.completeTime = event.block.timestamp
       unstakeRequest.save();
     } else {
       log.warning("handleUnstakeKeys - Could not find unstake key request!", [])
-      log.warning("pool: " + event.params.pool.toHexString() + ", user: " + event.params.user.toHexString() + ", index: " + index.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
+      log.warning("pool: " + poolAddress + ", user: " + userAddress + ", index: " + index.toString() + ", TX: " + event.transaction.hash.toHexString(), [])
     }
   } else {
     log.warning("Failed to decode handleUnstakeKeys TX: " + event.transaction.hash.toHexString(), [])
