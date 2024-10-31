@@ -35,7 +35,12 @@ createAppKit({
     projectId,
     networks: chains,
     defaultNetwork: arbitrum,
-    metadata
+    metadata,
+    features: {
+      allWallets: true,
+      smartSessions: true,
+      socials: ['google', 'discord', 'github', 'x', 'facebook', 'apple', 'farcaster'],
+      }
     // themeMode: 'light',
     // themeVariables: {
     //     '--w3m-color-mix': '#00DCFF',
