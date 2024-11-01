@@ -8,7 +8,7 @@ const { VITE_APP_ENV } = import.meta.env
 const environment = VITE_APP_ENV === "development" ? "development" : "production";
 
 // Get projectId at https://cloud.walletconnect.com
-export const projectId = environment === "development" ? "7b8edd4521f6f7e5ab27d84d931ddf9b" : "543ba4882fc1d2e9a9ffe8bc1c473cf9";
+export const projectId = environment === "development" ? "79e38b4593d43c78d7e9ee38f0cdf4ee" : "543ba4882fc1d2e9a9ffe8bc1c473cf9";
 
 if (!projectId) throw new Error('Project ID is not defined');
 
