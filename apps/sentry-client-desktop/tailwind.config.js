@@ -60,7 +60,8 @@ module.exports = {
       drunkenDragonFly: "#3DD68C",
       potBlack: "#191515",
       sunnySide: "#F9CB14",
-      cascadingWhite: "#F7F6F6"
+      cascadingWhite: "#F7F6F6",
+      liquidLava: "#F97316"
       //rebranding colors end
     },
     extend: {},
