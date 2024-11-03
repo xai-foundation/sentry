@@ -14,6 +14,7 @@ import { findSubmissionOnSentryKey } from "./operator-runtime/index.js";
 
 // Set this to the last key ID before the TK Airdrop
 const MAX_KEY_ID_SOLO_SUBMISSIONS = 40_000;
+const GAS_ESTIMATE_CLAIM_ONE_KEY = 1_000_000_000_000n; // ETH gas costs in wei
 
 let cachedLogger: (log: string) => void;
 let cachedSigner: ethers.Signer;
@@ -48,13 +49,6 @@ export async function processUnclaimedChallenges(
         cachedLogger(`Found ${wallets.length} operatorWallets.`);
     }
 
-    const mappedPools: { [poolAddress: string]: PoolInfo } = {};
-
-    if (pools.length) {
-        pools.forEach(p => { mappedPools[p.address] = p });
-        cachedLogger(`Found ${pools.length} pools.`);
-    }
-
     const openChallenge = await retry(() => getLatestChallengeFromGraph());
 
     // Calculate the latest challenge we should load from the graph
@@ -69,7 +63,6 @@ export async function processUnclaimedChallenges(
 
     const sentryKeysMap: { [keyId: string]: SentryKey } = {}
     const nodeLicenseIds: bigint[] = [];
-    const keyPools: Set<string> = new Set();
 
 
     sentryKeys.forEach(s => {
@@ -77,17 +70,7 @@ export async function processUnclaimedChallenges(
         if (!nodeLicenseIds.includes(BigInt(s.keyId))) {
             nodeLicenseIds.push(BigInt(s.keyId));
         }
-        if (s.assignedPool != "0x") {
-            keyPools.add(s.assignedPool);
-        }
     });
-
-    if (keyPools.size) {
-        const keyPoolsData = await retry(() => getPoolInfosFromGraph([...keyPools]));
-        keyPoolsData.pools.forEach(p => {
-            mappedPools[p.address] = p;
-        })
-    }
 
     await processPastChallenges(
         nodeLicenseIds,
@@ -98,7 +81,6 @@ export async function processUnclaimedChallenges(
 
     cachedLogger(`Process unclaimed submissions finished.`);
 }
-
 
 const processPastChallenges = async (
     nodeLicenseIds: bigint[],
@@ -208,5 +190,68 @@ async function processClaimForChallenge(challengeNumber: bigint, eligibleNodeLic
         } catch (error: any) {
             cachedLogger(`Error during bulk claim for address ${claimForAddress} and challenge ${challengeNumber}: ${error.message}`);
         }
+    }
+}
+
+// Helper function to return unclaimed values to display in desktop app
+export async function getUnclaimedChallengeData(
+    operatorAddress: string,
+    allowList?: string[]
+): Promise<{
+    unclaimedEsXai: number,
+    estimateGas: number
+}> {
+
+    const { wallets, pools } = await retry(() => getSentryWalletsForOperator(operatorAddress, {}, allowList));
+
+    if (wallets.length == 0 && pools.length == 0) {
+        return {
+            unclaimedEsXai: 0,
+            estimateGas: 0
+        }
+    }
+
+    const openChallenge = await retry(() => getLatestChallengeFromGraph());
+
+    // Calculate the latest challenge we should load from the graph
+    const latestClaimableChallenge = Number(openChallenge.challengeNumber) <= MAX_CHALLENGE_CLAIM_AMOUNT ? 1 : Number(openChallenge.challengeNumber) - MAX_CHALLENGE_CLAIM_AMOUNT;
+
+    const sentryKeys = await retry(() => getSentryKeysForUnclaimedFromGraph(
+        wallets.map(w => w.address),
+        pools.map(p => p.address),
+        BigInt(latestClaimableChallenge),
+        MAX_KEY_ID_SOLO_SUBMISSIONS
+    ));
+
+    const sentryKeysMap: { [keyId: string]: SentryKey } = {}
+    const nodeLicenseIds: bigint[] = [];
+
+
+    sentryKeys.forEach(s => {
+        sentryKeysMap[s.keyId.toString()] = s;
+        if (!nodeLicenseIds.includes(BigInt(s.keyId))) {
+            nodeLicenseIds.push(BigInt(s.keyId));
+        }
+    });
+
+    let unclaimedEsXai = 0n;
+    let estimateGas = 0n;
+
+    // For each key map all submissions to the challengeNumber
+    for (let i = 0; i < nodeLicenseIds.length; i++) {
+        const keyId = nodeLicenseIds[i].toString();
+
+        if (sentryKeysMap[keyId].submissions.length) {
+            //Map each submission of the key to the challengeNumber
+            sentryKeysMap[keyId].submissions.forEach(s => {
+                unclaimedEsXai += BigInt(s.claimAmount);
+                estimateGas += GAS_ESTIMATE_CLAIM_ONE_KEY;
+            })
+        }
+    }
+
+    return {
+        unclaimedEsXai: Number(ethers.formatEther(unclaimedEsXai)),
+        estimateGas: Number(ethers.formatEther(estimateGas))
     }
 }
