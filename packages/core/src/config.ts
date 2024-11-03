@@ -73,13 +73,13 @@ const testnetConfig: Config = {
   poolFactoryAddress: "0x87Ae2373007C01FBCED0dCCe4a23CA3f17D1fA9A",
   poolFactoryAddressImplementationAddress: "0x87Ae2373007C01FBCED0dCCe4a23CA3f17D1fA9A",
   defaultNetworkName: "arbitrumSepolia",
-  subgraphEndpoint: "https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry-sepolia/version/0.0.25-sepolia-mock-103/api", // TODO Update to point to live
+  subgraphEndpoint: "https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry-sepolia/api",
   publicRPC: "https://arb-sepolia.g.alchemy.com/v2/8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B",
   alchemyApiKey: "8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B",
   crossmintProjectId: "cc616c84-6479-4981-a24e-adb4278df212",
   crossmintCollectionId: "854640e1-149c-4092-a40b-bdf2a3f36e64",
   minSecondsBetweenChallenges: 5 * 60, // 5 minutes on testnet
-  sentryKeySaleURI: "https://sentry.xai.games" // redirect from within desktop client for web3 interaction
+  sentryKeySaleURI: "https://xai-foundation.github.io/sentry-development" // redirect from within desktop client for web3 interaction
 };
 
 export let config: Config = mainnetConfig;
