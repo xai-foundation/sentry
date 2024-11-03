@@ -6,7 +6,7 @@ import {useEffect, useState} from "react";
 import {useStorage} from "@/features/storage";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {useOperator} from "@/features/operator";
-import {HelpIcon, WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
+import {HelpIcon, WarningIcon} from "@sentry/ui/dist/src/rebrand/icons";
 import MainCheckbox from "@sentry/ui/dist/src/rebrand/checkboxes/MainCheckbox";
 import BaseCallout from "@sentry/ui/dist/src/rebrand/callout/BaseCallout";
 import {AiOutlineClose} from "react-icons/ai";

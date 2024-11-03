@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { AiFillInfoCircle } from "react-icons/ai";
 import { PrimaryButton } from "@sentry/ui";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
-import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { WarningIcon } from "@sentry/ui/src/rebrand/icons";
 import { formatWeiToEther } from "@sentry/core";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 

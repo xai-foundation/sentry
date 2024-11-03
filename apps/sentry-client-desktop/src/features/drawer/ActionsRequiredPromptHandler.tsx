@@ -6,7 +6,7 @@ import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
 import {useStorage} from "@/features/storage";
 import BaseCallout from "@sentry/ui/dist/src/rebrand/callout/BaseCallout";
 import {PrimaryButton} from "@sentry/ui";
-import {WarningIcon} from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import {WarningIcon} from "@sentry/ui/src/rebrand/icons";
 
 export function ActionsRequiredPromptHandler() {
 	const setDrawerState = useSetAtom(drawerStateAtom);

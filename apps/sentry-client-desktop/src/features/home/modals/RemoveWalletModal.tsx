@@ -2,8 +2,7 @@ import {useStorage} from "@/features/storage";
 import {useState} from "react";
 import {FaCircleCheck} from "react-icons/fa6";
 import {WalletAssignedMap} from "@/features/keys/Keys";
-import {WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
-import {CloseIcon} from "@sentry/ui/dist/src/rebrand/icons/CloseIcon";
+import {CloseIcon, WarningIcon} from "@sentry/ui/dist/src/rebrand/icons";
 import {PrimaryButton} from "@sentry/ui";
 
 interface ImportSentryAlertModalProps {
