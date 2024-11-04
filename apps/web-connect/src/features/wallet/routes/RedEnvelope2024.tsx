@@ -131,7 +131,7 @@ export function RedEnvelope2024() {
 					</p>
 				)}
 
-				{address && data && !isValidNetwork(chain?.id as number, isDevelopment)  && (
+				{address && data && !isValidNetwork(chain?.id, isDevelopment)  && (
 				// {address && data && chain.id !== 42170 && (
 					<>
 						<p className="text-lg text-[#525252] max-w-[590px] text-center mt-6">
@@ -143,7 +143,7 @@ export function RedEnvelope2024() {
 					</>
 				)}
 
-				{address && data && isValidNetwork(chain?.id as number, isDevelopment) && (
+				{address && data && isValidNetwork(chain?.id, isDevelopment) && (
 				// {address && data && chain.id === 42170 &&(
 					<>
 						{licenseBalanceLoading && (

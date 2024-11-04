@@ -21,7 +21,7 @@ export function ClaimToken() {
 	const navigate = useNavigate();
 	const chain = chains.find(chain => chain.id === chainId)
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
-	const ready = checkboxOne && isValidNetwork(chain?.id as number, isDevelopment);
+	const ready = checkboxOne && isValidNetwork(chain?.id, isDevelopment);
 	const [permits, setPermits] = useState<{[key: string]: {r: string, s: string, v: number, amount: string}}>();
 
 	const txData = {

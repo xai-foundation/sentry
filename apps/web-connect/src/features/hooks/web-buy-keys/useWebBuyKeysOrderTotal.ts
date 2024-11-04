@@ -201,7 +201,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
 
     const getEthButtonText = (): string => {
         if (!isConnected) return "Please Connect Wallet";
-        if (!isValidNetwork(chain?.id as number, isDevelopment)) return "Please Switch to Arbitrum";
+        if (!isValidNetwork(chain?.id, isDevelopment)) return "Please Switch to Arbitrum";
         if (mintWithEth.isPending || ethMintTx.isLoading) {
             return "WAITING FOR CONFIRMATION...";
         }

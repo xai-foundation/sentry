@@ -84,7 +84,7 @@ export function UnassignWallet() {
 								<PrimaryButton
 									onClick={() => writeContract(txData)}
 									isDisabled={isPending || isSuccess || !isValidNetwork(chain?.id  as number, isDevelopment)}
-									btnText={isValidNetwork(chain?.id as number, isDevelopment) ? `Unassign wallet to Sentry (${getShortenedWallet(address)})` : "Please Switch to Arbitrum"}
+									btnText={isValidNetwork(chain?.id, isDevelopment) ? `Unassign wallet to Sentry (${getShortenedWallet(address)})` : "Please Switch to Arbitrum"}
 									colorStyle={"primary"}
 									className={"w-full bg-[#F30919] max-w-[700px] text-white mt-3 text-xl uppercase font-bold disabled:bg-slate-400 h-full global-clip-primary-btn"}
 								/>
