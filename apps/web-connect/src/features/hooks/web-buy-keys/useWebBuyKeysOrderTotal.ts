@@ -5,8 +5,6 @@ import { CURRENCIES, Currency, useContractWrites, UseContractWritesReturn, useCu
 import { useProvider } from "../provider/useProvider";
 import { useNetworkConfig } from '@/hooks/useNetworkConfig';
 import { useCrossmintEvents } from '@crossmint/client-sdk-base';
-import { chains } from '@/app/App';
-import { AppKitNetwork } from '@reown/appkit/networks';
 
 export interface PriceDataInterface {
     price: bigint;
@@ -51,7 +49,7 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
     formatItemPricePer: (item: CheckoutTierSummary) => string;
     displayPricesMayVary: boolean;
     nodesAtEachPrice: Array<CheckoutTierSummary> | undefined;
-    chain: AppKitNetwork | undefined;
+   // chain: AppKitNetwork | undefined;
     discount: { applied: boolean; error: boolean };
     setDiscount: React.Dispatch<React.SetStateAction<{ applied: boolean; error: boolean }>>;
     promoCode: string;
@@ -97,7 +95,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const { data: exchangeRateData, isLoading: isExchangeRateLoading } = useGetExchangeRate();
     const { chainId, isConnected, address, isDevelopment } = useNetworkConfig();
 
-    const chain = chains.find(chain => chain.id === chainId)
+    //const chain = chains.find(chain => chain.id === chainId)
 
     const { data: providerData } = useProvider();
 
@@ -201,7 +199,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
 
     const getEthButtonText = (): string => {
         if (!isConnected) return "Please Connect Wallet";
-        if (!isValidNetwork(chain?.id, isDevelopment)) return "Please Switch to Arbitrum";
+        if (!isValidNetwork(chainId, isDevelopment)) return "Please Switch to Arbitrum";
         if (mintWithEth.isPending || ethMintTx.isLoading) {
             return "WAITING FOR CONFIRMATION...";
         }
@@ -273,7 +271,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         formatItemPricePer,
         displayPricesMayVary,
         nodesAtEachPrice: getPriceData?.nodesAtEachPrice,
-        chain,
+        //chain,
         discount,
         setDiscount,
         promoCode,

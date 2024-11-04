@@ -1,6 +1,5 @@
 import {useNavigate, useParams} from "react-router-dom";
 import {useWriteContract } from "wagmi";
-import { chains } from '@/app/App';
 import {config, isValidNetwork, RefereeAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {ConnectButton, PrimaryButton} from "@sentry/ui";
@@ -12,7 +11,6 @@ export function AssignWallet() {
 	const {open} = useAppKit()
 	const params = useParams<{operatorAddress: string}>();
     const { chainId, isConnected, address, isDevelopment} = useNetworkConfig();
-	const chain = chains.find(chain => chain.id === chainId)
 
 	const txData = {
 		address: config.refereeAddress as `0x${string}`,
@@ -80,8 +78,8 @@ export function AssignWallet() {
 							{isConnected && address ? (
 								<PrimaryButton
 									onClick={() => writeContract(txData)}
-									isDisabled={isLoading || isSuccess || !isValidNetwork(chain?.id  as number, isDevelopment)}
-									btnText={isValidNetwork(chain?.id  as number, isDevelopment) ? `Assign wallet to Sentry (${getShortenedWallet(address)})` : "Please Switch to Arbitrum"}
+									isDisabled={isLoading || isSuccess || !isValidNetwork(chainId  as number, isDevelopment)}
+									btnText={isValidNetwork(chainId as number, isDevelopment) ? `Assign wallet to Sentry (${getShortenedWallet(address)})` : "Please Switch to Arbitrum"}
 									colorStyle={"primary"}
 									className={"w-full bg-[#F30919] max-w-[700px] text-white mt-3 text-xl uppercase font-bold disabled:bg-slate-400 h-full global-clip-primary-btn"}
 								/>

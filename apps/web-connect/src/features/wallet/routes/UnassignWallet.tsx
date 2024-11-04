@@ -6,14 +6,12 @@ import {FaCircleCheck} from "react-icons/fa6";
 import {ConnectButton, PrimaryButton} from "@sentry/ui";
 import { useAppKit } from '@reown/appkit/react';
 import { useNetworkConfig } from "@/hooks/useNetworkConfig";
-import { chains } from '@/app/App';
 
 export function UnassignWallet() {
 	const {open} = useAppKit()
 	const navigate = useNavigate();
 	const params = useParams<{ operatorAddress: string }>();
     const { chainId, isConnected, address, isDevelopment} = useNetworkConfig();
-	const chain = chains.find(chain => chain.id === chainId)
 	
 	const { data, isSuccess, error, isPending, writeContract } = useWriteContract();
 
@@ -83,8 +81,8 @@ export function UnassignWallet() {
 							{isConnected && address ? (
 								<PrimaryButton
 									onClick={() => writeContract(txData)}
-									isDisabled={isPending || isSuccess || !isValidNetwork(chain?.id  as number, isDevelopment)}
-									btnText={isValidNetwork(chain?.id, isDevelopment) ? `Unassign wallet to Sentry (${getShortenedWallet(address)})` : "Please Switch to Arbitrum"}
+									isDisabled={isPending || isSuccess || !isValidNetwork(chainId, isDevelopment)}
+									btnText={isValidNetwork(chainId, isDevelopment) ? `Unassign wallet to Sentry (${getShortenedWallet(address)})` : "Please Switch to Arbitrum"}
 									colorStyle={"primary"}
 									className={"w-full bg-[#F30919] max-w-[700px] text-white mt-3 text-xl uppercase font-bold disabled:bg-slate-400 h-full global-clip-primary-btn"}
 								/>

@@ -1,5 +1,4 @@
 import {useWriteContract } from "wagmi";
-import { chains } from '@/app/App';
 import {useState, useEffect} from "react";
 import {ConnectButton, XaiCheckbox} from "@sentry/ui";
 import {useNavigate} from "react-router-dom";
@@ -19,9 +18,8 @@ export function ClaimToken() {
     const { chainId, address:_address, isDevelopment} = useNetworkConfig();
 	const address = _address?.toLowerCase();
 	const navigate = useNavigate();
-	const chain = chains.find(chain => chain.id === chainId)
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
-	const ready = checkboxOne && isValidNetwork(chain?.id, isDevelopment);
+	const ready = checkboxOne && isValidNetwork(chainId, isDevelopment);
 	const [permits, setPermits] = useState<{[key: string]: {r: string, s: string, v: number, amount: string}}>();
 
 	const txData = {
@@ -132,7 +130,7 @@ export function ClaimToken() {
 													className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 													disabled={!ready}
 												>
-													{(isValidNetwork(chain?.id  as number, isDevelopment)) ? "Claim" : "Please Switch to Arbitrum"}
+													{(isValidNetwork(chainId  as number, isDevelopment)) ? "Claim" : "Please Switch to Arbitrum"}
 												</button>
 											</div>
 											{error && (
