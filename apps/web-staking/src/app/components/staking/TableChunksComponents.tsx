@@ -202,10 +202,11 @@ export function TableRowCapacity({
                     : (pool.maxStakedAmount ? (pool.totalStakedAmount / pool.maxStakedAmount) * 100 : 0)
                   }
                   classNames={{
-                    base: "border border-gray-500",
-                    track: "!h-2",
-                    indicator: "!h-2 bg-white"
+                    track: "!bg-[#201C1C]",
+                    indicator: "!bg-[#F7F6F6] h-[6px]"
                   }}
+                  aria-label="Staking progress"
+                  showValueLabel={false}
                 />
               </div>
             </div>
