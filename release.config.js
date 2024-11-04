@@ -1,7 +1,8 @@
 module.exports = {
     branches: [
         "master",
-        { name: "develop", prerelease: true }
+        { name: "develop", prerelease: true },
+        { name: "feat/fb-tiny-keys-operator-table", prerelease: true },
     ],
     tagFormat: "${version}",
     plugins: [
