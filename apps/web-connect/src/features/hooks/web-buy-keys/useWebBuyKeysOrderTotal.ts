@@ -49,7 +49,6 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
     formatItemPricePer: (item: CheckoutTierSummary) => string;
     displayPricesMayVary: boolean;
     nodesAtEachPrice: Array<CheckoutTierSummary> | undefined;
-   // chain: AppKitNetwork | undefined;
     discount: { applied: boolean; error: boolean };
     setDiscount: React.Dispatch<React.SetStateAction<{ applied: boolean; error: boolean }>>;
     promoCode: string;
@@ -94,8 +93,6 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const { isLoading: isTotalLoading, data: getTotalData } = useGetTotalSupplyAndCap();
     const { data: exchangeRateData, isLoading: isExchangeRateLoading } = useGetExchangeRate();
     const { chainId, isConnected, address, isDevelopment } = useNetworkConfig();
-
-    //const chain = chains.find(chain => chain.id === chainId)
 
     const { data: providerData } = useProvider();
 
