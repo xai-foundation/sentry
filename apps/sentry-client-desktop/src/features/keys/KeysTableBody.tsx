@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BulkOwnerOrPool } from "@sentry/core";
-import { CopyIcon, DefaultPollIcon, KeyIcon, Wallet, WarningIcon } from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
+import { CopyIcon, DefaultPollIcon, KeyIcon, Wallet, WarningIcon } from "@sentry/ui/dist/src/rebrand/icons";
 import { AiFillCheckCircle } from "react-icons/ai";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import CustomTooltip from "@sentry/ui/dist/src/rebrand/tooltip/Tooltip";

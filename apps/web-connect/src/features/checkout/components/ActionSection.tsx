@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { PrimaryButton } from "@sentry/ui";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
-import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { WarningIcon } from "@sentry/ui/src/rebrand/icons";
 import { mapWeb3Error } from "@/utils/errors";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 import CrossmintModal from './crossmint/CrossmintModal';

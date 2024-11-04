@@ -1,4 +1,4 @@
-import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { WarningIcon } from "@sentry/ui/src/rebrand/icons";
 import { Tooltip, XaiNumberInput, InfoPointRed, RedSentryIcon } from "@sentry/ui";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";

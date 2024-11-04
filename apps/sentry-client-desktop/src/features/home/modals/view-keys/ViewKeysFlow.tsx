@@ -9,7 +9,7 @@ import {drawerStateAtom} from "@/features/drawer/DrawerManager";
 import {useOperator} from "@/features/operator";
 import { PrimaryButton } from "@sentry/ui";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
-import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { WarningIcon } from "@sentry/ui/src/rebrand/icons";
 import { getAddress } from "ethers";
 import { config } from "@sentry/core";
 

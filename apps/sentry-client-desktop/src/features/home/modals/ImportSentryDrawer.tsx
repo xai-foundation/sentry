@@ -5,7 +5,7 @@ import {ChangeEvent} from "react";
 import {BiLoaderAlt} from "react-icons/bi";
 import {ImportSentryAlertModal} from "@/features/home/modals/ImportSentryAlertModal";
 import {verifyPrivateKey} from "@sentry/core";
-import {WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
+import {WarningIcon} from "@sentry/ui/dist/src/rebrand/icons";
 
 import React, { useState } from "react";
 import { CiSearch } from "react-icons/ci";
