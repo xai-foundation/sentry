@@ -1,7 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
-import { chains } from "../../../main";
 import { useWaitForTransactionReceipt } from 'wagmi';
-import { Chain } from 'viem';
 import { CheckoutTierSummary, formatWeiToEther, isValidNetwork } from '@sentry/core';
 import { CURRENCIES, Currency, useContractWrites, UseContractWritesReturn, useCurrencyHandler, useGetExchangeRate, useGetPriceForQuantity, useGetTotalSupplyAndCap, usePromoCodeHandler, useUserBalances } from '..';
 import { useProvider } from "../provider/useProvider";
@@ -51,7 +49,6 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
     formatItemPricePer: (item: CheckoutTierSummary) => string;
     displayPricesMayVary: boolean;
     nodesAtEachPrice: Array<CheckoutTierSummary> | undefined;
-    chain: Chain | undefined;
     discount: { applied: boolean; error: boolean };
     setDiscount: React.Dispatch<React.SetStateAction<{ applied: boolean; error: boolean }>>;
     promoCode: string;
@@ -96,8 +93,6 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const { isLoading: isTotalLoading, data: getTotalData } = useGetTotalSupplyAndCap();
     const { data: exchangeRateData, isLoading: isExchangeRateLoading } = useGetExchangeRate();
     const { chainId, isConnected, address, isDevelopment } = useNetworkConfig();
-
-    const chain = chains.find(chain => chain.id === chainId)
 
     const { data: providerData } = useProvider();
 
@@ -201,7 +196,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
 
     const getEthButtonText = (): string => {
         if (!isConnected) return "Please Connect Wallet";
-        if (!isValidNetwork(chain?.id, isDevelopment)) return "Please Switch to Arbitrum";
+        if (!isValidNetwork(chainId, isDevelopment)) return "Please Switch to Arbitrum";
         if (mintWithEth.isPending || ethMintTx.isLoading) {
             return "WAITING FOR CONFIRMATION...";
         }
@@ -273,7 +268,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         formatItemPricePer,
         displayPricesMayVary,
         nodesAtEachPrice: getPriceData?.nodesAtEachPrice,
-        chain,
+        //chain,
         discount,
         setDiscount,
         promoCode,
