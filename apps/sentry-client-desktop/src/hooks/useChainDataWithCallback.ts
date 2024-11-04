@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { StatusMap } from "@/hooks/useKycStatusesWithCallback";
 import { LicenseList, LicenseMap } from "@/hooks/useListNodeLicensesWithCallback";
 import { useGetOperatorAddresses } from "./useGetOperatorAddresses";
-import { BulkOwnerOrPool } from "@sentry/core";
+import { BulkOwnerOrPool, config, MAINNET_ID, setConfigByChainId, TESTNET_ID } from "@sentry/core";
 
 interface ChainState {
 	anyLoading: boolean;
@@ -22,6 +22,7 @@ interface ChainState {
 	operatorWalletData: BulkOwnerOrPool[];
 	totalKeys: number;
 	totalAssignedKeys: number;
+	network: string;
 }
 
 const defaultChainState: ChainState = {
@@ -39,7 +40,8 @@ const defaultChainState: ChainState = {
 	combinedLicensesList: [],
 	operatorWalletData: [],
 	totalKeys: 0,
-	totalAssignedKeys: 0
+	totalAssignedKeys: 0,
+	network: "arbitrum"
 }
 
 export const chainStateAtom = atom<ChainState>(defaultChainState);
@@ -54,9 +56,43 @@ export const chainStateRefreshAtom = atom(0);
 export function useChainDataWithCallback() {
 	const [chainState, setChainState] = useAtom(chainStateAtom);
 	const chainStateRefresh = useAtomValue(chainStateRefreshAtom);
-	const { publicKey } = useOperator();
+	const setChainStateRefresh = useSetAtom(chainStateRefreshAtom);
 
-	const { owners, pools, isLoadingOperatorAddresses: ownersLoading, operatorWalletData, totalKeys, totalAssignedKeys } = useGetOperatorAddresses(publicKey, chainStateRefresh);
+	const { publicKey } = useOperator();
+	const {
+		owners,
+		pools,
+		isLoadingOperatorAddresses: ownersLoading,
+		operatorWalletData,
+		totalKeys,
+		totalAssignedKeys
+	} = useGetOperatorAddresses(publicKey, chainStateRefresh);
+
+	useEffect(() => {
+
+		const handleConfigUpdate = (_event, message) => {
+			if (message === "arbitrumSepolia") {
+				setConfigByChainId(TESTNET_ID);
+			} else {
+				setConfigByChainId(MAINNET_ID);
+			}
+
+			setChainStateRefresh((_value) => {
+				return _value + 1
+			});
+		};
+
+		// Add the event listener
+		window.ipcRenderer.on('config-updated', handleConfigUpdate);
+
+		// Cleanup function to remove the listener
+		return () => {
+			window.ipcRenderer.removeListener('config-updated', handleConfigUpdate);
+		};
+
+	}, []);
+
+
 
 	// set default state
 	useEffect(() => {
@@ -74,7 +110,8 @@ export function useChainDataWithCallback() {
 				owners,
 				operatorWalletData,
 				totalKeys,
-				totalAssignedKeys
+				totalAssignedKeys,
+				network: config.defaultNetworkName 
 			}
 		});
 	}, [ownersLoading]);

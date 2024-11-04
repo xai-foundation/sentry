@@ -1,9 +1,10 @@
-import {app, BrowserWindow, dialog, ipcMain, safeStorage, shell} from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, Menu, MenuItem, safeStorage, shell } from 'electron';
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import log from "electron-log";
-import {autoUpdater} from 'electron-updater';
+import { autoUpdater } from 'electron-updater';
+import { config, MAINNET_ID, setConfigByChainId, TESTNET_ID } from '@sentry/core/src/config';
 
 const isWindows = os.platform() === "win32";
 
@@ -150,12 +151,40 @@ app.on('activate', () => {
 	}
 })
 
-app.on('ready', function()  {
+app.on('ready', function () {
 	autoUpdater.checkForUpdatesAndNotify();
+
+	function toggleSwitchNetwork() {
+		const switchToNetwork = config.defaultNetworkName === "arbitrum" ? "arbitrumSepolia" : "arbitrum";
+
+		win?.webContents.send('config-updated', switchToNetwork);
+
+		//Switch network for main app thread
+		if (switchToNetwork === "arbitrumSepolia") {
+			setConfigByChainId(TESTNET_ID);
+		} else {
+			setConfigByChainId(MAINNET_ID);
+		}
+	}
+
+	// Add submenu to "View" menu item to toggle switch network
+	let menu = Menu.getApplicationMenu();
+	if (menu) {
+		const editMenu = menu?.items.find(item => item.label === 'View');
+
+		if (editMenu && editMenu.submenu) {
+			editMenu.submenu.append(new MenuItem({
+				label: `[DEV] Network switch`,
+				click: toggleSwitchNetwork
+			}));
+		}
+
+		Menu.setApplicationMenu(menu);
+	}
 });
 
 setInterval(() => {
-    autoUpdater.checkForUpdatesAndNotify();
+	autoUpdater.checkForUpdatesAndNotify();
 }, 1000 * 60 * 5);
 
 // autoUpdater.on('checking-for-update', () => {
