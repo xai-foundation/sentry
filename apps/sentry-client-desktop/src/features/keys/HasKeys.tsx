@@ -18,8 +18,7 @@ import {
 import { InfoBanner } from "@/components/InfoBanner";
 import { KeysTableBody } from "./KeysTableBody";
 import { chainStateAtom } from "@/hooks/useChainDataWithCallback";
-import {ClaimBanner} from "@/components/ClaimBanner";
-import ClaimBannerModal from "@/components/ClaimBannerModal";
+import { ClaimBanner } from "@/components/ClaimBanner";
 
 interface HasKeysProps {
 	combinedOwners: string[],
@@ -34,7 +33,6 @@ export function HasKeys({ combinedOwners, isWalletAssignedMap, operatorWalletDat
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isRemoveWalletOpen, setIsRemoveWalletOpen] = useState<boolean>(false);
 	const { isLoading: isOperatorLoading } = useOperator();
-	const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
 
 	const { data: earnedEsxaiBalance } = useGetWalletBalance(combinedOwners);
 	const { data: singleWalletBalance } = useGetSingleWalletBalance(selectedWallet);
@@ -163,22 +161,9 @@ export function HasKeys({ combinedOwners, isWalletAssignedMap, operatorWalletDat
 
 					</div>
 					<div className="px-5 pt-4">
-						<>
-							<ClaimBanner
-								heading="Rewards remaining from a previous version need to be manually claimed"
-								description="123 esXAI remaining" // todo-process-unclaimed need to populate correct esXAI value
-								showModal={() => setIsClaimModalOpen(true)}
-							/>
-							<ClaimBannerModal
-								isOpen={isClaimModalOpen}
-								closeModal={() => setIsClaimModalOpen(false)}
-								onSuccess={() => {}} // todo-process-unclaimed need to add claim functionality
-								isError={false} // todo-process-unclaimed need to add error handling if claim unsuccessful
-								availableBalance={123} // todo-process-unclaimed need to populate correct value
-								claimCost={13} // todo-process-unclaimed need to populate correct value
-								remainingRewards={14} // todo-process-unclaimed need to populate correct value
-							/>
-						</>
+
+						<ClaimBanner />
+
 						<InfoBanner
 							heading="We've revamped how keys are shown on this page"
 							description="This page now shows all your connected wallets, and their respective keys in a single view. "

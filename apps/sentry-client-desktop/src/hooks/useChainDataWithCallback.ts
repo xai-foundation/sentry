@@ -5,6 +5,7 @@ import { StatusMap } from "@/hooks/useKycStatusesWithCallback";
 import { LicenseList, LicenseMap } from "@/hooks/useListNodeLicensesWithCallback";
 import { useGetOperatorAddresses } from "./useGetOperatorAddresses";
 import { BulkOwnerOrPool, config, MAINNET_ID, setConfigByChainId, TESTNET_ID } from "@sentry/core";
+import { useGetUnclaimedChallengeData } from "./useGetUnclaimedChallengeData";
 
 interface ChainState {
 	anyLoading: boolean;
@@ -23,6 +24,8 @@ interface ChainState {
 	totalKeys: number;
 	totalAssignedKeys: number;
 	network: string;
+	unclaimedEsXaiFromSoloSubmission: number;
+	estimateGasForUnclaimed: number;
 }
 
 const defaultChainState: ChainState = {
@@ -41,7 +44,9 @@ const defaultChainState: ChainState = {
 	operatorWalletData: [],
 	totalKeys: 0,
 	totalAssignedKeys: 0,
-	network: "arbitrum"
+	network: "arbitrum",
+	unclaimedEsXaiFromSoloSubmission: 0,
+	estimateGasForUnclaimed: 0
 }
 
 export const chainStateAtom = atom<ChainState>(defaultChainState);
@@ -67,6 +72,8 @@ export function useChainDataWithCallback() {
 		totalKeys,
 		totalAssignedKeys
 	} = useGetOperatorAddresses(publicKey, chainStateRefresh);
+
+	const { unclaimedEsXai, estimateGas, isLoadingUnclaimed } = useGetUnclaimedChallengeData(publicKey, chainStateRefresh);
 
 	useEffect(() => {
 
@@ -111,10 +118,12 @@ export function useChainDataWithCallback() {
 				operatorWalletData,
 				totalKeys,
 				totalAssignedKeys,
-				network: config.defaultNetworkName 
+				network: config.defaultNetworkName,
+				unclaimedEsXaiFromSoloSubmission: unclaimedEsXai,
+				estimateGasForUnclaimed: estimateGas
 			}
 		});
-	}, [ownersLoading]);
+	}, [ownersLoading, isLoadingUnclaimed]);
 
 	return {
 		...chainState,

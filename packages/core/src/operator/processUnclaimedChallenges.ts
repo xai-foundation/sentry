@@ -226,7 +226,6 @@ export async function getUnclaimedChallengeData(
     const sentryKeysMap: { [keyId: string]: SentryKey } = {}
     const nodeLicenseIds: bigint[] = [];
 
-
     sentryKeys.forEach(s => {
         sentryKeysMap[s.keyId.toString()] = s;
         if (!nodeLicenseIds.includes(BigInt(s.keyId))) {
@@ -237,14 +236,13 @@ export async function getUnclaimedChallengeData(
     let unclaimedEsXai = 0n;
     let estimateGas = 0n;
 
-    // For each key map all submissions to the challengeNumber
+    // Look at each keys submissions and sum the claim amounts
     for (let i = 0; i < nodeLicenseIds.length; i++) {
         const keyId = nodeLicenseIds[i].toString();
-
+        
         if (sentryKeysMap[keyId].submissions.length) {
-            //Map each submission of the key to the challengeNumber
             sentryKeysMap[keyId].submissions.forEach(s => {
-                unclaimedEsXai += BigInt(s.claimAmount);
+                unclaimedEsXai += BigInt(s.challenge.rewardAmountForClaimers) / BigInt(s.challenge.numberOfEligibleClaimers);
                 estimateGas += GAS_ESTIMATE_CLAIM_ONE_KEY;
             })
         }

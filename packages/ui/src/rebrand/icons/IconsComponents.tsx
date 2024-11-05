@@ -306,7 +306,7 @@ export const DefaultPollIcon = ({ extraClasses = "" , width = 30, height = 30 })
 
 export const Wallet = ({ extraClasses = "fill-[#A19F9F]" , width = 20, height = 20 }) => {
   return <svg width={width} height={height} viewBox="0 0 16 16" fill="none" className={extraClasses} xmlns="http://www.w3.org/2000/svg">
-      <path fillRule="evenodd" clip-rule="evenodd"
+      <path fillRule="evenodd" clipRule="evenodd"
             d="M12.6667 2H2V11.3333C2 12.8061 3.19391 14 4.66667 14H14V4.66667H3.33333V3.33333H12.6667V2ZM11.6667 10C12.219 10 12.6667 9.55228 12.6667 9C12.6667 8.44772 12.219 8 11.6667 8C11.1144 8 10.6667 8.44772 10.6667 9C10.6667 9.55228 11.1144 10 11.6667 10Z"/>
   </svg>
 

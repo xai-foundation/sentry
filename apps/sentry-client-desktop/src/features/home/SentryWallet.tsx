@@ -27,6 +27,7 @@ import { CopyIcon, HelpIcon } from "@sentry/ui/dist/src/rebrand/icons/IconsCompo
 import { SentryWalletTableBody } from "@/features/home/SentryWalletTableBody";
 import { useBalance } from "@/hooks/useBalance";
 import { InfoBanner } from "@/components/InfoBanner";
+import { ClaimBanner } from "@/components/ClaimBanner";
 
 // TODO -> replace with dynamic value later
 export const recommendedFundingBalance = ethers.parseEther("0.005");
@@ -95,7 +96,7 @@ export function SentryWallet() {
 		let operatorWalletCount = 0;
 
 		sentryAddressStatusMap.forEach(sentryStatus => {
-			if(sentryStatus.keyCount > 0){
+			if (sentryStatus.keyCount > 0) {
 				operatorWalletCount++;
 			}
 		});
@@ -122,7 +123,7 @@ export function SentryWallet() {
 
 	function getOperatorWallets() {
 		const operatorWallets: string[] = pools.concat(owners);
-		if(operatorAddress){
+		if (operatorAddress) {
 			operatorWallets.push(operatorAddress);
 		}
 		return operatorWallets;
@@ -293,6 +294,9 @@ export function SentryWallet() {
 					/>
 
 					<div className="px-5 pt-4 w-full bg-nulnOil pb-[16px]">
+
+						<ClaimBanner />
+						
 						<InfoBanner
 							heading="We've revamped how keys are shown on this page"
 							description="This page now shows all your connected wallets, and their respective keys in a single view. "
