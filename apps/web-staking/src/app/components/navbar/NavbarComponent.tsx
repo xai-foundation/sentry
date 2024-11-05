@@ -31,6 +31,9 @@ export default function NavbarComponent() {
 	}
 
 	const handleToggle = () => {
+		// Delay is to prevent double click on mobile
+		// from opening and closing the menu
+		// Close button is in same position as open button
 		const currentTime = new Date().getTime();
 		if (currentTime - lastToggle > 500) {
 			setIsMenuOpen(!isMenuOpen);
