@@ -19,7 +19,6 @@
     "@sentry/ui": "workspace:*",
     "@tanstack/react-query": "^5.51.15",
     "@wagmi/core": "^2.13.1",
-    "@web3modal/wagmi": "^5.0.11",
     "axios": "^1.6.2",
     "lodash.isequal": "^4.5.0",
     "react": "^18.2.0",

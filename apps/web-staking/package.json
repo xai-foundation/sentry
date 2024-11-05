@@ -21,7 +21,6 @@
     "@reown/appkit-adapter-wagmi": "^1.2.0",
     "@tanstack/react-query": "^5.51.15",
     "@wagmi/core": "^2.13.1",
-    "@web3modal/wagmi": "^5.0.11",
     "axios": "^1.6.8",
     "encoding": "^0.1.13",
     "moment": "^2.30.1",
