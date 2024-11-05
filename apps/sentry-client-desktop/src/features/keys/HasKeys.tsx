@@ -32,7 +32,7 @@ export function HasKeys({ combinedOwners, isWalletAssignedMap, operatorWalletDat
 
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isRemoveWalletOpen, setIsRemoveWalletOpen] = useState<boolean>(false);
-	const { isLoading: isOperatorLoading } = useOperator();
+	const { isLoading: isOperatorLoading, publicKey: operatorAddress } = useOperator();
 
 	const { data: earnedEsxaiBalance } = useGetWalletBalance(combinedOwners);
 	const { data: singleWalletBalance } = useGetSingleWalletBalance(selectedWallet);
@@ -42,10 +42,10 @@ export function HasKeys({ combinedOwners, isWalletAssignedMap, operatorWalletDat
 		totalKeys
 	} = useAtomValue(chainStateAtom);
 
-	function startAssignment(wallet: string) {
+	function startAssignment(_: string) {
 		if (!isOperatorLoading) {
 			setModalState(ModalView.TransactionInProgress);
-			window.electron.openExternal(`${config.sentryKeySaleURI}/#/assign-wallet/${wallet}`);
+			window.electron.openExternal(`${config.sentryKeySaleURI}/#/assign-wallet/${operatorAddress}`);
 		}
 	}
 
@@ -53,7 +53,7 @@ export function HasKeys({ combinedOwners, isWalletAssignedMap, operatorWalletDat
 		setSelectedWallet(wallet);
 		if(isWalletAssignedMap[wallet]){
 			setModalState(ModalView.TransactionInProgress)
-			window.electron.openExternal(`${config.sentryKeySaleURI}/#/unassign-wallet/${wallet}`);
+			window.electron.openExternal(`${config.sentryKeySaleURI}/#/unassign-wallet/${operatorAddress}`);
 			return;
 		}
 		setIsRemoveWalletOpen(true);
