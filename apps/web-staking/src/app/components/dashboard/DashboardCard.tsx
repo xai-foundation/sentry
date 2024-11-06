@@ -1,4 +1,4 @@
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAppKit } from '@reown/appkit/react';
 import Image from "next/image";
 import React from "react";
 
@@ -20,7 +20,7 @@ const DashboardCard = ({
   address,
                          unstakedKeyCount
 }: DashboardCardProps) => {
-  const { open } = useWeb3Modal();
+  const { open } = useAppKit();
   return (
     <>
 

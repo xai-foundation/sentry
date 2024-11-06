@@ -1,5 +1,5 @@
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
-import {WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
+import {WarningIcon} from "@sentry/ui/dist/src/rebrand/icons";
 import {PrimaryButton} from "@sentry/ui";
 
 export function AssignKeysSentryNotRunning() {

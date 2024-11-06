@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { PrimaryButton } from "@sentry/ui";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
-import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { WarningIcon } from "@sentry/ui/src/rebrand/icons";
 import { mapWeb3Error } from "@/utils/errors";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 import CrossmintModal from './crossmint/CrossmintModal';
@@ -25,7 +25,7 @@ export function ActionSection(): JSX.Element {
     const {
         currency,
         ready,
-        chain,
+        chainId,
         userHasTokenBalance,
         mintWithEth,
         mintWithXai,
@@ -50,9 +50,9 @@ export function ActionSection(): JSX.Element {
      */
     const getTokenButtonText = useCallback(() => {
         if (mintWithEth.isPending || mintWithXai.isPending || approve.isPending) return "WAITING FOR CONFIRMATION..";
-        if (!isValidNetwork(chain?.id, isDevelopment)) return "Please Switch to Arbitrum";
+        if (!isValidNetwork(chainId, isDevelopment)) return "Please Switch to Arbitrum";
         return getApproveButtonText();
-    }, [mintWithEth.isPending, mintWithXai.isPending, approve.isPending, chain, getApproveButtonText]);
+    }, [mintWithEth.isPending, mintWithXai.isPending, approve.isPending, chainId, getApproveButtonText]);
 
     const handleBuyWithXaiClicked = async () => { 
         if (getTokenButtonText().startsWith("Approve")) {
@@ -71,7 +71,7 @@ export function ActionSection(): JSX.Element {
                     <PrimaryButton
                         onClick={() => handleMintWithEthClicked()}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || !isValidNetwork(chain?.id, isDevelopment) || getEthButtonText().startsWith("Insufficient") || !isConnected}
+                        isDisabled={!ready || !isValidNetwork(chainId, isDevelopment) || getEthButtonText().startsWith("Insufficient") || !isConnected}
                         btnText={getEthButtonText()}
                     />
                     <br />
@@ -88,7 +88,7 @@ export function ActionSection(): JSX.Element {
                     <PrimaryButton
                         onClick={handleBuyWithXaiClicked}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || !isValidNetwork(chain?.id, isDevelopment) || !userHasTokenBalance || !isConnected}
+                        isDisabled={!ready || !isValidNetwork(chainId, isDevelopment) || !userHasTokenBalance || !isConnected}
                         btnText={getTokenButtonText()}
                     />
                 )}
