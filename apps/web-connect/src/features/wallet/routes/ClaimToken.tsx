@@ -1,5 +1,4 @@
 import {useWriteContract } from "wagmi";
-import {chains} from "../../../main";
 import {useState, useEffect} from "react";
 import {ConnectButton, XaiCheckbox} from "@sentry/ui";
 import {useNavigate} from "react-router-dom";
@@ -7,21 +6,20 @@ import {useBlockIp} from "@/hooks/useBlockIp";
 import {BiLoaderAlt} from "react-icons/bi";
 import { XaiGaslessClaimAbi, config, isValidNetwork} from "@sentry/core";
 import {ethers} from "ethers";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAppKit } from '@reown/appkit/react';
 import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
 import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
 import { useNetworkConfig } from "@/hooks/useNetworkConfig";
 
 
 export function ClaimToken() {
-	const {open} = useWeb3Modal()
+	const {open} = useAppKit()
 	const {blocked, loading} = useBlockIp({blockUsa: true});
     const { chainId, address:_address, isDevelopment} = useNetworkConfig();
 	const address = _address?.toLowerCase();
 	const navigate = useNavigate();
-	const chain = chains.find(chain => chain.id === chainId)
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
-	const ready = checkboxOne && isValidNetwork(chain?.id, isDevelopment);
+	const ready = checkboxOne && isValidNetwork(chainId, isDevelopment);
 	const [permits, setPermits] = useState<{[key: string]: {r: string, s: string, v: number, amount: string}}>();
 
 	const txData = {
@@ -132,7 +130,7 @@ export function ClaimToken() {
 													className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 													disabled={!ready}
 												>
-													{(isValidNetwork(chain?.id, isDevelopment)) ? "Claim" : "Please Switch to Arbitrum"}
+													{(isValidNetwork(chainId  as number, isDevelopment)) ? "Claim" : "Please Switch to Arbitrum"}
 												</button>
 											</div>
 											{error && (

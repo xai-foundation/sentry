@@ -2,6 +2,11 @@ name: Create Signed Test Release
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version for test deploy'
+        required: true
+        type: string
 
 jobs:
   dryrun:
@@ -31,8 +36,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
-    env: # Pass the version as an environment variable to each matrix job
-      VERSION: ${{ needs.dryrun.outputs.version }}
+    env: # Pass test version from inputs
+      VERSION: ${{ inputs.version }} 
 
     steps:
       - name: Checkout code

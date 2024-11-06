@@ -1,5 +1,4 @@
 import {useReadContract } from "wagmi";
-import {chains} from "../../../main";
 import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
 import {BiLoaderAlt} from "react-icons/bi";
 import {useEffect, useState} from "react";
@@ -14,8 +13,6 @@ import { useNetworkConfig } from "@/hooks/useNetworkConfig";
 export function RedEnvelope2024() {
 	const {blocked, loading: loadingGeo} = useBlockIp({blockUsa: true});
     const { chainId, address, isDevelopment} = useNetworkConfig();
-
-	const chain = chains.find(chain => chain.id === chainId)
 
 	// check license balance
 	const {isLoading: licenseBalanceLoading, data} = useListNodeLicenses(address ? [address] : undefined);
@@ -131,7 +128,7 @@ export function RedEnvelope2024() {
 					</p>
 				)}
 
-				{address && data && !isValidNetwork(chain?.id, isDevelopment)  && (
+				{address && data && !isValidNetwork(chainId, isDevelopment)  && (
 				// {address && data && chain.id !== 42170 && (
 					<>
 						<p className="text-lg text-[#525252] max-w-[590px] text-center mt-6">
@@ -143,7 +140,7 @@ export function RedEnvelope2024() {
 					</>
 				)}
 
-				{address && data && isValidNetwork(chain?.id, isDevelopment) && (
+				{address && data && isValidNetwork(chainId, isDevelopment) && (
 				// {address && data && chain.id === 42170 &&(
 					<>
 						{licenseBalanceLoading && (

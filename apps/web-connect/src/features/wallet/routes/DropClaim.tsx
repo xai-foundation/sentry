@@ -1,12 +1,11 @@
 import {useWriteContract } from "wagmi";
-import {chains} from "../../../main";
 import {ConnectButton, PrimaryButton, XaiCheckbox} from "@sentry/ui";
 import {useState} from "react";
 import {BiLoaderAlt} from "react-icons/bi";
 import {config, isValidNetwork, NodeLicenseAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useBlockIp} from "@/hooks/useBlockIp";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAppKit } from '@reown/appkit/react';
 import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
 import { KYCTooltip } from "@/features/checkout/components/KYCTooltip";
 import { useListClaimableAmount } from "@/features/hooks";
@@ -16,13 +15,12 @@ import { useNetworkConfig } from "@/hooks/useNetworkConfig";
 export function DropClaim() {
 	const {blocked, loading} = useBlockIp({blockUsa: true});
 
-	const {open} = useWeb3Modal()
+	const {open} = useAppKit()
     const { chainId, address, isDevelopment} = useNetworkConfig();
-	const chain = chains.find(chain => chain.id === chainId)
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
 	const [checkboxTwo, setCheckboxTwo] = useState<boolean>(false);
 	const [checkboxThree, setCheckboxThree] = useState<boolean>(false);
-	const ready = checkboxOne && checkboxTwo && checkboxThree && isValidNetwork(chain?.id, isDevelopment);
+	const ready = checkboxOne && checkboxTwo && checkboxThree && isValidNetwork(chainId, isDevelopment);
 
 	const {data: claimableAmount, isLoading: isClaimableAmountLoading} = useListClaimableAmount(address);
 
@@ -154,7 +152,7 @@ export function DropClaim() {
 																className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 																disabled={!ready || isRedeemFromWhitelistLoading}
 															>
-																{(isValidNetwork(chain?.id, isDevelopment)) ? "Claim" : "Please Switch to Arbitrum"}
+																{(isValidNetwork(chainId, isDevelopment)) ? "Claim" : "Please Switch to Arbitrum"}
 															</button>
 														</div>
 
