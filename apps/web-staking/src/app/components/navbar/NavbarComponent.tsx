@@ -34,6 +34,7 @@ export default function NavbarComponent() {
 		// Delay is to prevent double click on mobile
 		// from opening and closing the menu
 		// Close button is in same position as open button
+		// Pivotal ticket #188527767 for cleanup
 		const currentTime = new Date().getTime();
 		if (currentTime - lastToggle > 500) {
 			setIsMenuOpen(!isMenuOpen);
