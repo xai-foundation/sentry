@@ -1,11 +1,12 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { PrimaryButton } from "@sentry/ui";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import { mapWeb3Error } from "@/utils/errors";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
-import CrossmintModal from './crossmint/CrossmintModal';
-import { formatWeiToEther, isValidNetwork } from '@sentry/core';
+// import CrossmintModal from './crossmint/CrossmintModal';
+// import { formatWeiToEther, isValidNetwork } from '@sentry/core';
+import { isValidNetwork } from '@sentry/core';
 import { useNetworkConfig } from '@/hooks/useNetworkConfig';
 
 /**
@@ -18,8 +19,8 @@ import { useNetworkConfig } from '@/hooks/useNetworkConfig';
  * @returns {JSX.Element} The rendered ActionSection component
  */
 export function ActionSection(): JSX.Element {
-    const [creditCardOpen, setCreditCardOpen] = useState(false);
-    const { isDevelopment} = useNetworkConfig();
+    // const [creditCardOpen, setCreditCardOpen] = useState(false);
+    const { isDevelopment } = useNetworkConfig();
 
     // Destructure values and functions from the context
     const {
@@ -31,15 +32,15 @@ export function ActionSection(): JSX.Element {
         mintWithXai,
         mintWithEthError,
         approve,
-        quantity,
-        promoCode,
+        // quantity,
+        // promoCode,
         isConnected,
         getApproveButtonText,
         handleApproveClicked,
         handleMintWithEthClicked,
         handleMintWithXaiClicked,
         getEthButtonText,
-        calculateTotalPrice,
+        // calculateTotalPrice,
         mintWithCrossmint
     } = useWebBuyKeysContext();
 
@@ -75,13 +76,15 @@ export function ActionSection(): JSX.Element {
                         btnText={getEthButtonText()}
                     />
                     <br />
-                    { isConnected && <PrimaryButton
-                        onClick={() => setCreditCardOpen(true)}
-                        className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-hornetSting p-2 uppercase font-bold `}
-                        isDisabled={!ready || !isConnected}
-                        colorStyle="outline-2"
-                        btnText={"MINT WITH CREDIT/DEBIT"}
-                    />}
+                    { // Readd with #188538469
+                    // isConnected && <PrimaryButton
+                    //     onClick={() => setCreditCardOpen(true)}
+                    //     className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-hornetSting p-2 uppercase font-bold `}
+                    //     isDisabled={!ready || !isConnected}
+                    //     colorStyle="outline-2"
+                    //     btnText={"MINT WITH CREDIT/DEBIT"}
+                    // />
+                    }
                     
                     </>
                 ) : (
@@ -171,13 +174,14 @@ export function ActionSection(): JSX.Element {
                 )}
 
             </div>
-            <CrossmintModal
+            { // Readd with #188538469
+            /* <CrossmintModal
                 totalPriceInEth={formatWeiToEther(calculateTotalPrice(), 18).toString()}
                 isOpen={creditCardOpen}
                 onClose={() => setCreditCardOpen(false)}
                 totalQty={quantity}
                 promoCode={promoCode}
-            />
+            /> */}
         </div>
     );
 }
