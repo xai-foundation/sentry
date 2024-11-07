@@ -17,6 +17,7 @@ export default function NavbarComponent() {
 	const { open } = useAppKit();
 	const { address, chainId } = useAccount();
 	const [isTestnet, setIsTestnet] = useState(false);
+	const [lastToggle, setLastToggle] = useState<number>(0);
 	const url = usePathname();
 
 	useEffect(() => {
@@ -29,11 +30,23 @@ export default function NavbarComponent() {
       : "";
 	}
 
+	const handleToggle = () => {
+		// Delay is to prevent double click on mobile
+		// from opening and closing the menu
+		// Close button is in same position as open button
+		// Pivotal ticket #188527767 for cleanup
+		const currentTime = new Date().getTime();
+		if (currentTime - lastToggle > 500) {
+			setIsMenuOpen(!isMenuOpen);
+			setLastToggle(currentTime);
+		}
+	}
+
 	return (
 		<Navbar isBordered isBlurred={false} maxWidth="full"
 						className={`flex bg-transparent mb-5 border-0 sticky`}
 			isMenuOpen={isMenuOpen}
-			onMenuOpenChange={() => setIsMenuOpen(!isMenuOpen)}
+			onMenuOpenChange={handleToggle}
 			classNames={{
             wrapper: "pl-0 pr-3",
           }}
@@ -68,13 +81,19 @@ export default function NavbarComponent() {
 			</div>
 			<NavbarContent className="lg:hidden" justify="end">
 				<NavbarMenuToggle className="text-white text-lg w-[64px] items-center h-full"
-													icon={isMenuOpen ? <IoMdClose color="white" size={34} className="z-[40]" /> :
-														<div className="bg-hornetSting h-[64px] w-[64px] flex items-center justify-center">
-															<Burger />
-														</div>} />
+				icon={isMenuOpen ? null :
+					<div className="bg-hornetSting h-[64px] w-[64px] flex items-center justify-center">
+						<Burger />
+						</div>} />
 			</NavbarContent>
 			<NavbarMenu
-				className="lg:hidden flex fixed z-[40] top-0 left-0 flex-col justify-between bg-tourchRed min-h-screen pt-[70px]">
+				className="lg:hidden flex fixed z-[40] top-0 left-0 flex-col justify-between bg-tourchRed min-h-screen pt-[70px] relative">
+				<IoMdClose 
+					color="white" 
+					size={34} 
+					className="absolute right-4 top-4 z-50 cursor-pointer" 
+					onClick={() => handleToggle()}
+				/>
 				<NavbarMenuItem>
 					<div className="">
 						<div className='flex flex-col'>
