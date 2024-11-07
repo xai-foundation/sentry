@@ -41,10 +41,6 @@ export function useGetOperatorAddresses(operatorPublicKey: string | undefined, r
 			wallets.forEach(w => {
 				const address = getAddress(w.address);
 				const keyCount = Number(w.keyCount) - Number(w.stakedKeyCount);
-				if (keyCount == 0) {
-					return;
-				}
-
 				filteredOwners.push(address);
 				mappedAddresses[address] = true;
 				_totalKeys += keyCount;
@@ -74,9 +70,9 @@ export function useGetOperatorAddresses(operatorPublicKey: string | undefined, r
 				filteredPools.push(address);
 				_totalKeys += Number(p.keyCount);
 				_totalAssignedKeys += Number(p.keyCount);
-				operatorWalletData.push({...p, address});
+				operatorWalletData.push({ ...p, address });
 			}
-		})
+		})		
 
 		if (data?.addedWallets) {
 

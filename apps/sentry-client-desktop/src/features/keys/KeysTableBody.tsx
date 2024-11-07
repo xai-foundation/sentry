@@ -100,22 +100,28 @@ export const KeysTableBody = ({ operatorWalletData, isWalletAssignedMap, onRemov
                     <KeyIcon width={19} height={19} /> {poolOrWallet.keyCount}
                 </td>
                 <td className="min-w-[27%] px-2 py-2 text-elementalGrey flex items-center">
-                    {((isWalletAssignedMap[key] || poolOrWallet.isPool) && sentryRunning) && (
-                        <div className="relative flex items-center gap-[5px] text-[18px] text-drunkenDragonFly">
-                            <AiFillCheckCircle className="w-[18px] h-[16px] text-drunkenDragonFly" />
-                            Claiming rewards
-                        </div>
-                    )}
-                    {(!isWalletAssignedMap[key] && !poolOrWallet.isPool) && <div className="relative flex items-center gap-[7px] font-bold text-bananaBoat">
-                        <WarningIcon width={18} height={16} />
-                        Wallet not assigned
-                        <a
-                            onClick={() => startAssignment(poolOrWallet.address)}
-                            className="text-[#F30919] cursor-pointer hover:text-white duration-200 ease-in"
-                        >
-                            Assign
-                        </a>
+                    {poolOrWallet.keyCount > 0 ? <>
+                        {((isWalletAssignedMap[key] || poolOrWallet.isPool) && sentryRunning) && (
+                            <div className="relative flex items-center gap-[5px] text-[18px] text-drunkenDragonFly">
+                                <AiFillCheckCircle className="w-[18px] h-[16px] text-drunkenDragonFly" />
+                                Claiming rewards
+                            </div>
+                        )}
+                        {(!isWalletAssignedMap[key] && !poolOrWallet.isPool) && <div className="relative flex items-center gap-[7px] font-bold text-bananaBoat">
+                            <WarningIcon width={18} height={16} />
+                            Wallet not assigned
+                            <a
+                                onClick={() => startAssignment(poolOrWallet.address)}
+                                className="text-[#F30919] cursor-pointer hover:text-white duration-200 ease-in"
+                            >
+                                Assign
+                            </a>
+                        </div>}
+
+                    </> : <div className="relative flex text-center text-[18px]">
+                        No keys
                     </div>}
+
                 </td>
                 <td className="min-w-[25%] pl-4 pr-2 py-2 text-right text-xl text-white flex flex-col justify-center">
                     <p>{new Intl.NumberFormat('en').format(Number(ethers.formatEther(poolOrWallet.totalAccruedAssertionRewards || "0")))} esXAI</p>
