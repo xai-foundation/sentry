@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { TransactionInProgress } from "./components/TransactionInProgress";
 import { ChooseQuantityRow } from "./components/ChooseQuantityRow";
 import { LogoColumn } from "./components/LogoColumn";
-import { ChooseCurrencyRow } from "./components/ChooseCurrencyRow";
+// import { ChooseCurrencyRow } from "./components/ChooseCurrencyRow";
 import { PricePerKeyRow } from "./components/PricePerKeyRow";
 import { PromoCodeRow } from "./components/PromoCodeRow";
 import { TotalCostRow } from "./components/TotalCostRow";
@@ -50,12 +50,12 @@ export function Checkout() {
         window.location.reload();
     }
 
-	useEffect(() => {
-		if (!stakingTabOpened && (mintWithEth.isSuccess || mintWithXai.isSuccess || mintWithCrossmint.txHash != "")) {	
+    useEffect(() => {
+        if (!stakingTabOpened && (mintWithEth.isSuccess || mintWithXai.isSuccess || mintWithCrossmint.txHash != "")) {
             setStakingTabOpened(true);
-			window.open(stakingPageURL, '_blank');
-		}
-	}, [mintWithEth.isSuccess, mintWithXai.isSuccess, mintWithCrossmint.txHash]);
+            window.open(stakingPageURL, '_blank');
+        }
+    }, [mintWithEth.isSuccess, mintWithXai.isSuccess, mintWithCrossmint.txHash]);
 
     return (
         <div>
@@ -76,7 +76,12 @@ export function Checkout() {
                                     <LoadingState />
                                 ) : (
                                     <>
-                                        <ChooseCurrencyRow />
+                                        {
+                                            // Readd with #188538469
+                                            /* <ChooseCurrencyRow /> */
+                                        }
+
+
                                         <hr className="my-2 border-[#525252]" />
                                         <PricePerKeyRow />
                                         <hr className="my-2 border-[#525252]" />
