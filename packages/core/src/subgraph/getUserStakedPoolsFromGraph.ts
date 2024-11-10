@@ -76,6 +76,7 @@ export async function getUserStakedPoolsFromGraph(
     isPool: true,
     keyCount: s.pool.totalStakedKeyAmount,
     bulkSubmissions: s.pool.submissions,
-    stakedEsXaiAmount: s.pool.totalStakedEsXaiAmount
+    stakedEsXaiAmount: s.pool.totalStakedEsXaiAmount,
+    totalAccruedAssertionRewards: s.pool.totalAccruedAssertionRewards,
   }));
 }

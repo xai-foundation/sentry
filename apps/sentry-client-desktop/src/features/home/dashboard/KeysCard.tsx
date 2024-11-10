@@ -10,13 +10,15 @@ import { useOperatorRuntime } from "@/hooks/useOperatorRuntime";
 import { RiKey2Line } from "react-icons/ri";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 import {TextButton} from "@sentry/ui/dist/src/rebrand/buttons/TextButton";
+import { getKeyCountFromOperatorData } from "@/utils/getKeyCountFromOperatorData";
 
 export function KeysCard() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
-	const {owners, licensesList} = useAtomValue(chainStateAtom);
+	const {owners, operatorWalletData} = useAtomValue(chainStateAtom);
 	const {accruing} = useAtomValue(accruingStateAtom);
-	const keyCount = licensesList.length;
 	const { sentryRunning } = useOperatorRuntime();
+
+	const keyCount = getKeyCountFromOperatorData(operatorWalletData);
 
 	return (
 		<Card width={"341px"} height={"279px"} customClasses="bg-nulnOil shadow-default overflow-visible z-10">

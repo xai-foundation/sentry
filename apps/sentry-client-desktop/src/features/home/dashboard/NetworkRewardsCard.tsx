@@ -13,18 +13,21 @@ import {MdRefresh} from "react-icons/md";
 import { HelpIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import { BiLoaderAlt } from "react-icons/bi";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
+import { getKeyCountFromOperatorData } from "@/utils/getKeyCountFromOperatorData";
 
 export function NetworkRewardsCard() {
-	const {owners, licensesList} = useAtomValue(chainStateAtom);
+	const {owners, operatorWalletData} = useAtomValue(chainStateAtom);
 	const {balances, isBalancesLoading, balancesFetchedLast, accruing, kycRequired} = useAtomValue(accruingStateAtom);
 	const {combinedOwners} = useCombinedOwners(owners);
 	const {data: earnedEsxaiBalance} = useGetWalletBalance(combinedOwners);
 	const [currentTime, setCurrentTime] = useState(new Date());
 	const {refresh} = useChainDataRefresh();
-	const keyCount = licensesList.length;
+	
+	const keyCount = getKeyCountFromOperatorData(operatorWalletData);
 
 	const [esXaiBalance, setEsXaiBalance] = useState("--");
-	const [accruedEsXaiBalance, setAccruedEsXaiBalance] = useState("--");
+	// const [accruedEsXaiBalance, setAccruedEsXaiBalance] = useState("--");
+	const [_, setAccruedEsXaiBalance] = useState("--");
 
 	// Calculate the time difference in minutes
 	const calculateTimeDifference = (currentTime: Date, lastUpdateTime: Date) => {
@@ -88,7 +91,7 @@ export function NetworkRewardsCard() {
 				</div>
 
 				<div className="flex flex-row justify-between items-center gap-1 text-[#A3A3A3]">
-					{!isBalancesLoading && balancesFetchedLast ? (
+					{!isBalancesLoading ? (
 						<div className="flex flex-row justify-center items-center gap-1">
 							<a onClick={refresh} className="cursor-pointer">
 								<MdRefresh size={20} color={"#FF0030"}/>
@@ -133,7 +136,8 @@ export function NetworkRewardsCard() {
 					</div>
 				</div>
 
-				<div className="px-6 py-3 border-b border-chromaphobicBlack">
+				{/* TODO this needs to be readded with #188241567 */}
+				{/* <div className="px-6 py-3 border-b border-chromaphobicBlack">
 					<div className="flex justify-between items-center text-[#A3A3A3]">
 						<div className="flex items-center gap-1 text-lg text-elementalGrey">
 							<h3 className="font-medium">Accrued esXAI</h3>
@@ -156,7 +160,7 @@ export function NetworkRewardsCard() {
 							</p>
 						</div>
 					</div>
-				</div>
+				</div> */}
 
 				<div className="px-6 py-3 border-b border-chromaphobicBlack">
 					<div className="flex items-center gap-1 text-lg text-elementalGrey">

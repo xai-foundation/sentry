@@ -7,7 +7,7 @@ import {GreenPulse, GreyPulse, YellowPulse} from "@/features/keys/StatusPulse.js
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {useAtomValue} from "jotai";
-import { TelegramIcon, WarningIcon, XaiHeaderIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { TelegramIcon, WarningIcon, XaiHeaderIcon } from "@sentry/ui/src/rebrand/icons";
 import DashboardIconWhite from "@/assets/images/dashboard-icon-white.png";
 import DashboardIconGrey from "@/assets/images/dashboard-icon-grey.png";
 import { useStorage } from "@/features/storage";

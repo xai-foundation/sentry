@@ -1,50 +1,54 @@
-import {AiOutlinePlus} from "react-icons/ai";
-import {useState} from "react";
-import {BulkOwnerOrPool, config} from "@sentry/core";
-import {CustomTooltip, PrimaryButton} from "@sentry/ui";
-import {drawerStateAtom, DrawerView} from "@/features/drawer/DrawerManager";
-import {useAtomValue, useSetAtom} from "jotai";
-import {RemoveWalletModal} from "@/features/home/modals/RemoveWalletModal";
-import {WalletAssignedMap} from "@/features/keys/Keys";
-import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
-import {useOperator} from "@/features/operator";
-import {ethers} from "ethers";
-import {useGetWalletBalance} from "@/hooks/useGetWalletBalance";
-import {useGetSingleWalletBalance} from "@/hooks/useGetSingleWalletBalance";
+import { AiOutlinePlus } from "react-icons/ai";
+import { useState } from "react";
+import { BulkOwnerOrPool, config } from "@sentry/core";
 import {
-	HelpIcon,
+	// CustomTooltip, 
+	PrimaryButton
+} from "@sentry/ui";
+import { drawerStateAtom, DrawerView } from "@/features/drawer/DrawerManager";
+import { useAtomValue, useSetAtom } from "jotai";
+import { RemoveWalletModal } from "@/features/home/modals/RemoveWalletModal";
+import { WalletAssignedMap } from "@/features/keys/Keys";
+import { modalStateAtom, ModalView } from "@/features/modal/ModalManager";
+import { useOperator } from "@/features/operator";
+// import {ethers} from "ethers";
+// import {useGetWalletBalance} from "@/hooks/useGetWalletBalance";
+// import {useGetSingleWalletBalance} from "@/hooks/useGetSingleWalletBalance";
+import {
+	// HelpIcon,
 	KeyIcon,
 } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import { InfoBanner } from "@/components/InfoBanner";
 import { KeysTableBody } from "./KeysTableBody";
 import { chainStateAtom } from "@/hooks/useChainDataWithCallback";
+import { ClaimBanner } from "@/components/ClaimBanner";
 
 interface HasKeysProps {
 	combinedOwners: string[],
 	isWalletAssignedMap: WalletAssignedMap,
 	operatorWalletData: BulkOwnerOrPool[]
 }
-
-export function HasKeys({ combinedOwners, isWalletAssignedMap, operatorWalletData }: HasKeysProps) {
+// For #188241567 re add `combinedOwners`
+export function HasKeys({ isWalletAssignedMap, operatorWalletData }: HasKeysProps) {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const setModalState = useSetAtom(modalStateAtom);
 
 	const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
 	const [isRemoveWalletOpen, setIsRemoveWalletOpen] = useState<boolean>(false);
-	const { isLoading: isOperatorLoading } = useOperator();
+	const { isLoading: isOperatorLoading, publicKey: operatorAddress } = useOperator();
 
-	const { data: earnedEsxaiBalance } = useGetWalletBalance(combinedOwners);
-	const { data: singleWalletBalance } = useGetSingleWalletBalance(selectedWallet);
-	const [mouseOverTooltip, setMouseOverTooltip] = useState(false);
+	// const { data: earnedEsxaiBalance } = useGetWalletBalance(combinedOwners);
+	// const { data: singleWalletBalance } = useGetSingleWalletBalance(selectedWallet);
+	// const [mouseOverTooltip, setMouseOverTooltip] = useState(false);
 
 	const {
 		totalKeys
 	} = useAtomValue(chainStateAtom);
 
-	function startAssignment(wallet: string) {
+	function startAssignment(_: string) {
 		if (!isOperatorLoading) {
 			setModalState(ModalView.TransactionInProgress);
-			window.electron.openExternal(`${config.sentryKeySaleURI}/#/assign-wallet/${wallet}`);
+			window.electron.openExternal(`${config.sentryKeySaleURI}/#/assign-wallet/${operatorAddress}`);
 		}
 	}
 
@@ -52,7 +56,7 @@ export function HasKeys({ combinedOwners, isWalletAssignedMap, operatorWalletDat
 		setSelectedWallet(wallet);
 		if(isWalletAssignedMap[wallet]){
 			setModalState(ModalView.TransactionInProgress)
-			window.electron.openExternal(`${config.sentryKeySaleURI}/#/unassign-wallet/${wallet}`);
+			window.electron.openExternal(`${config.sentryKeySaleURI}/#/unassign-wallet/${operatorAddress}`);
 			return;
 		}
 		setIsRemoveWalletOpen(true);
@@ -86,7 +90,8 @@ export function HasKeys({ combinedOwners, isWalletAssignedMap, operatorWalletDat
 							</div>
 						</div>
 
-						<div className="flex flex-col px-6">
+						{/* TODO this needs to be readded with #188241567 */}
+						{/* <div className="flex flex-col px-6">
 							<div className="flex items-center gap-1 text-lg text-elementalGrey">
 								<p>Accrued network rewards</p>
 								<CustomTooltip
@@ -126,7 +131,7 @@ export function HasKeys({ combinedOwners, isWalletAssignedMap, operatorWalletDat
 								</div>
 
 							</div>
-						</div>
+						</div> */}
 
 						{/* TODO this needs to be readded with #188241567 */}
 						{/* <div className="flex flex-col pl-10">
@@ -160,6 +165,9 @@ export function HasKeys({ combinedOwners, isWalletAssignedMap, operatorWalletDat
 
 					</div>
 					<div className="px-5 pt-4">
+
+						<ClaimBanner />
+
 						<InfoBanner
 							heading="We've revamped how keys are shown on this page"
 							description="This page now shows all your connected wallets, and their respective keys in a single view. "
