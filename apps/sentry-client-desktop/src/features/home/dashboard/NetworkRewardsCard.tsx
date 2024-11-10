@@ -201,7 +201,7 @@ export function NetworkRewardsCard() {
 					<div className="flex items-center">
 						<div>
 							<p className="text-2xl font-bold text-white">
-								{keyCount * 7}
+								{Math.floor((keyCount * 7) / 100)}
 							</p>
 							<p className="text-base text-[#726F6F]">
 								times per month (on average)
