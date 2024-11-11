@@ -817,7 +817,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         address to,
         uint256 amount
     ) external onlyRole(ADMIN_MINT_ROLE) {
-        revert("Not implemented")
+        revert("Not implemented");
     }
 
     
@@ -832,6 +832,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         uint256[] memory tokenIds,
         bytes32 transferId
     ) external onlyRole(TRANSFER_ROLE) {
-        revert("Not implemented")
+        revert("Not implemented");
     }
 }
