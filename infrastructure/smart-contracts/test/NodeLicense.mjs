@@ -300,8 +300,7 @@ export function NodeLicenseTests(deployInfrastructure) {
             const {
                 addr1, 
                 addr2,
-                nodeLicense, 
-                nodeLicenseDefaultAdmin, 
+                nodeLicense,
                 fundsReceiver,
                 usdcToken
             } = await loadFixture(deployInfrastructure);
@@ -310,32 +309,32 @@ export function NodeLicenseTests(deployInfrastructure) {
             const callerAddress = await addr1.getAddress();
             const recipientAddress = await addr2.getAddress();
 
-            //mint USDC tokens to caller
+            //mint USDC tokens to caller and approve
             const price = await nodeLicense.price(1, ""); //157945445600000000
-            console.log(`>>> ${price}`);
             const expectedPriceInUSDC = 473_836336800000000000n;
             await usdcToken.mint(callerAddress, expectedPriceInUSDC);
+            await usdcToken.connect(addr1).approve(await nodeLicense.getAddress(), expectedPriceInUSDC);
             
-            //get pre balances
+            //get pre values
             const preFundsReceiverBalance = await usdcToken.balanceOf(fundsReceiver.address);
             const preCallerBalance = await usdcToken.balanceOf(callerAddress);
             const preRecipientBalance = await usdcToken.balanceOf(recipientAddress);
             const preTotalSupply = await nodeLicense.totalSupply();
 
             //mint an NFT with USDC
-            const res = await nodeLicense.connect(addr1).mintToWithUSDC(recipientAddress, 1, "", expectedPriceInUSDC);
+            await nodeLicense.connect(addr1).mintToWithUSDC(recipientAddress, 1, "", expectedPriceInUSDC);
 
             //check the NFT was received
-            // const tokenId = preTotalSupply + BigInt(1);
-            // expect(await nodeLicense.ownerOf(tokenId)).to.equal(recipientAddress);
+            const tokenId = preTotalSupply + BigInt(1);
+            expect(await nodeLicense.ownerOf(tokenId)).to.equal(recipientAddress);
 
             //check the fundsReceiver received the funds
-            // const finalBalance = await ethers.provider.getBalance(fundsReceiver.address);
-            // expect(finalBalance).to.eq(preFundsReceiverBalance + price);
+            const postFundsReceiverBalance = await usdcToken.balanceOf(fundsReceiver.address);
+            expect(postFundsReceiverBalance).to.eq(preFundsReceiverBalance + expectedPriceInUSDC);
 
             //check the total supply increased
-            // const totalSupplyAfterMint = await nodeLicense.totalSupply();
-            // expect(totalSupplyAfterMint).to.eq(preTotalSupply + BigInt(1));
+            const postTotalSupply = await nodeLicense.totalSupply();
+            expect(postTotalSupply).to.eq(preTotalSupply + BigInt(1));
         });
     }
 }

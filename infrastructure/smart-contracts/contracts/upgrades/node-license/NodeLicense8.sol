@@ -311,7 +311,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         _mintNodeLicense(_amount, averageCost, _to);
 
         //calculate referral reward and determine if the promo code is an address
-        //TODO: is the referral reward denominated in eth?
         (uint256 referralReward, address recipientAddress) = _calculateReferralReward(mintPriceInUSDC, _promoCode);
 
         //transfer usdc from caller
