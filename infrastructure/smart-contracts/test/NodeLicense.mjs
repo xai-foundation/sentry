@@ -305,6 +305,7 @@ export function NodeLicenseTests(deployInfrastructure) {
             ).to.equal(false);
 
             const amountToMint = 10;
+            const totalSupplyBefore = await nodeLicense.totalSupply();
             const addr1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
 
             // Verify that we revert with the correct error for access control missing role
@@ -316,6 +317,9 @@ export function NodeLicenseTests(deployInfrastructure) {
             // Check that addr1's balance remains unchanged
             const addr1Balance = await nodeLicense.balanceOf(addr1.address);
             expect(addr1Balance).to.equal(addr1BalanceBefore);
+
+            const totalSupplyAfter = await nodeLicense.totalSupply();
+            expect(totalSupplyAfter).to.equal(totalSupplyBefore);
         });
 
         it("Checks that the admin can mint to a receiver without fee", async function () {
@@ -377,7 +381,7 @@ export function NodeLicenseTests(deployInfrastructure) {
                 await nodeLicense.hasRole(await nodeLicense.ADMIN_MINT_ROLE(), nodeLicenseDefaultAdmin.address)
             ).to.equal(true);
 
-            // Verify mintToFails for maxSupply
+            // Verify mintTo fails for maxSupply
             await expect(
                 nodeLicense.connect(nodeLicenseDefaultAdmin).adminMintTo(addr1.address, 10)
             ).to.be.revertedWith("Exceeds maxSupply");
