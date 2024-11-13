@@ -90,10 +90,14 @@ contract NodeLicenseUpgradeTest is
     
     // Reentrancy guard boolean
     bool private _reentrancyGuardClaimReferralReward;
+    
+    mapping (bytes32 => bool) public usedTransferIds;
 
 
     bytes32 public constant AIRDROP_ADMIN_ROLE =
         keccak256("AIRDROP_ADMIN_ROLE");
+    bytes32 public constant ADMIN_MINT_ROLE = keccak256("ADMIN_MINT_ROLE");
+    bytes32 public constant TRANSFER_ROLE = keccak256("TRANSFER_ROLE");
 
     uint256 private _count;
 
@@ -102,7 +106,7 @@ contract NodeLicenseUpgradeTest is
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[490] private __gap;
+    uint256[489] private __gap;
 
     // Define the pricing tiers
     struct Tier {
