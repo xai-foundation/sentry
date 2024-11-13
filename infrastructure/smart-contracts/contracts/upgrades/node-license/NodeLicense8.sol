@@ -85,7 +85,12 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     // Reentrancy guard boolean
     bool private _reentrancyGuardClaimReferralReward;
 
+    // Used as a safety to mitigate double transfer from admin wallet
+    mapping (bytes32 => bool) public usedTransferIds;
+
     bytes32 public constant AIRDROP_ADMIN_ROLE = keccak256("AIRDROP_ADMIN_ROLE");
+    bytes32 public constant ADMIN_MINT_ROLE = keccak256("ADMIN_MINT_ROLE");
+    bytes32 public constant TRANSFER_ROLE = keccak256("TRANSFER_ROLE");
 
     address public usdcAddress;
 
@@ -94,7 +99,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[490] private __gap;
+    uint256[489] private __gap;
 
     // Define the pricing tiers
     struct Tier {
@@ -843,5 +848,32 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         }
 
         return address(addr);
+    }
+
+
+    /**
+     * @notice Admin function mint tokens to a wallet
+     * @param to The address to mint the tokens to
+     */
+    function adminMintTo(
+        address to,
+        uint256 amount
+    ) external onlyRole(ADMIN_MINT_ROLE) {
+        revert("Not implemented");
+    }
+
+    
+    /**
+     * @notice Admin function to transfer batch. This wil not allow the same transferId to be used multiple times
+     * @param to The address to transfer the tokens to
+     * @param tokenIds The tokenIds to transfer
+     * @param transferId The tranfer id that is used to not allow multiple transers with the same id
+     */
+    function adminTransferBatch(
+        address to,
+        uint256[] memory tokenIds,
+        bytes32 transferId
+    ) external onlyRole(TRANSFER_ROLE) {
+        revert("Not implemented");
     }
 }
