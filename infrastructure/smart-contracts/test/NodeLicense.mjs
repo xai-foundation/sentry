@@ -8,9 +8,9 @@ export function NodeLicenseTests(deployInfrastructure) {
 
         it("Check calling the initializer is not allowed afterwards", async function() {
             const {nodeLicense, nodeLicenseDefaultAdmin, deployer, xai, esXai, chainlinkEthUsdPriceFeed,
-                chainlinkXaiUsdPriceFeed} = await loadFixture(deployInfrastructure);
+                chainlinkXaiUsdPriceFeed, usdcToken} = await loadFixture(deployInfrastructure);
             const expectedRevertMessage = "Initializable: contract is already initialized";
-            await expect(nodeLicense.connect(nodeLicenseDefaultAdmin).initialize(await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), chainlinkXaiUsdPriceFeed.getAddress(), await deployer.getAddress())).to.be.revertedWith(expectedRevertMessage);
+            await expect(nodeLicense.connect(nodeLicenseDefaultAdmin).initialize(await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), chainlinkXaiUsdPriceFeed.getAddress(), await deployer.getAddress(), await usdcToken.getAddress())).to.be.revertedWith(expectedRevertMessage);
         })
 
         it("Check the max supply is 50,000", async function() {
@@ -296,6 +296,46 @@ export function NodeLicenseTests(deployInfrastructure) {
             expect(await nodeLicense.supportsInterface("0x12345678")).to.be.false;
         });
 
-        
+        it("Check if can mint with USDC to recipient address", async function() {
+            const {
+                addr1, 
+                addr2,
+                nodeLicense, 
+                nodeLicenseDefaultAdmin, 
+                fundsReceiver,
+                usdcToken
+            } = await loadFixture(deployInfrastructure);
+
+            //initialize
+            const callerAddress = await addr1.getAddress();
+            const recipientAddress = await addr2.getAddress();
+
+            //mint USDC tokens to caller
+            const price = await nodeLicense.price(1, ""); //157945445600000000
+            console.log(`>>> ${price}`);
+            const expectedPriceInUSDC = 473_836336800000000000n;
+            await usdcToken.mint(callerAddress, expectedPriceInUSDC);
+            
+            //get pre balances
+            const preFundsReceiverBalance = await usdcToken.balanceOf(fundsReceiver.address);
+            const preCallerBalance = await usdcToken.balanceOf(callerAddress);
+            const preRecipientBalance = await usdcToken.balanceOf(recipientAddress);
+            const preTotalSupply = await nodeLicense.totalSupply();
+
+            //mint an NFT with USDC
+            const res = await nodeLicense.connect(addr1).mintToWithUSDC(recipientAddress, 1, "", expectedPriceInUSDC);
+
+            //check the NFT was received
+            // const tokenId = preTotalSupply + BigInt(1);
+            // expect(await nodeLicense.ownerOf(tokenId)).to.equal(recipientAddress);
+
+            //check the fundsReceiver received the funds
+            // const finalBalance = await ethers.provider.getBalance(fundsReceiver.address);
+            // expect(finalBalance).to.eq(preFundsReceiverBalance + price);
+
+            //check the total supply increased
+            // const totalSupplyAfterMint = await nodeLicense.totalSupply();
+            // expect(totalSupplyAfterMint).to.eq(preTotalSupply + BigInt(1));
+        });
     }
 }

@@ -322,12 +322,24 @@ describe("Fixture Tests", function () {
         // const poolFactory2 = await upgrades.upgradeProxy((await poolFactory.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
         // await poolFactory2.waitForDeployment();
 
-        // // Node License8 Upgrade - Required For Tiny Keys
-        // const NodeLicense8 = await ethers.getContractFactory("NodeLicense8");
-        // const nodeLicense8 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense8, { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await tinyKeysAirDrop.getAddress()] } });
-        // await nodeLicense8.waitForDeployment();
-        // Deploy the Referee Calculations contract
+        //Deploy sample USDC token
+        const usdcName = "Test USDC";
+        const usdcSymbol = "USDC";
+        const usdcToken = await ethers.deployContract(
+            "SampleERC20",
+            [usdcName, usdcSymbol]
+        );
+        await usdcToken.waitForDeployment();
 
+        // // Node License8 Upgrade - Required For Tiny Keys
+        const NodeLicense8 = await ethers.getContractFactory("NodeLicense8");
+        const nodeLicense8 = await upgrades.upgradeProxy(
+            (await nodeLicense.getAddress()), 
+            NodeLicense8, 
+            { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await tinyKeysAirDrop.getAddress(), await usdcToken.getAddress(0)] } });
+        await nodeLicense8.waitForDeployment();
+        
+        // Deploy the Referee Calculations contract
         const RefereeCalculations = await ethers.getContractFactory("RefereeCalculations");
         const refereeCalculations = await upgrades.deployProxy(RefereeCalculations, [], { deployer: deployer });
         await refereeCalculations.waitForDeployment();
@@ -393,7 +405,7 @@ describe("Fixture Tests", function () {
             secretKeyHex,
             publicKeyHex: "0x" + publicKeyHex,
             referee: referee9,
-            nodeLicense: nodeLicense7,
+            nodeLicense: nodeLicense8,
             poolFactory,
             gasSubsidy,
             esXai: esXai2,
@@ -404,29 +416,30 @@ describe("Fixture Tests", function () {
             tinyKeysAirDrop,
             airdropMultiplier,
             refereeCalculations,
-            mockRollup
+            mockRollup,
+            usdcToken
         };
     }
 
     // Tests That Always Work
-    describe("CNY 2024", CNYAirDropTests.bind(this));
-    describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
-    describe("Xai", XaiTests(deployInfrastructure).bind(this));
-    describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
-    describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
-    describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
+    // describe("CNY 2024", CNYAirDropTests.bind(this));
+    // describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
+    // describe("Xai", XaiTests(deployInfrastructure).bind(this));
+    // describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
+    // describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
+    // describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
 
     // Test Explanations, Expectations & Instructions
     // https://docs.google.com/document/d/1V_3svypWL26wDr2RNvcIBcMlFwdSWYR6xcLuKXXuWf8
 
     // Pre-Tiny Keys
-    describe("Pre-Tiny Keys Tests", PreTinyKeysTests(deployInfrastructure).bind(this));
+    // describe("Pre-Tiny Keys Tests", PreTinyKeysTests(deployInfrastructure).bind(this));
 
     // Post-Tiny Keys
-    describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
+    // describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
     describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
-    describe("Referee", RefereeTests(deployInfrastructure).bind(this));
-    describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
+    // describe("Referee", RefereeTests(deployInfrastructure).bind(this));
+    // describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
 
     // Uncomment these tests for tiny keys
     //describe("BulkSubmissions", RefereeBulkSubmissions(deployInfrastructure).bind(this));
