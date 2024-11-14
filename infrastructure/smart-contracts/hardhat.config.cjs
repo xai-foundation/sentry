@@ -23,7 +23,12 @@ const config = {
             details: {
               yul: true
             }
-          }
+          },
+          outputSelection: {
+            "*": {
+              "*": ["storageLayout"],
+            },
+          },
         }
       },
       {
@@ -32,7 +37,12 @@ const config = {
           optimizer: {
             enabled: true,
             runs: 200
-          }
+          },
+          outputSelection: {
+            "*": {
+              "*": ["storageLayout"],
+            },
+          },
         }
       }
     ]
