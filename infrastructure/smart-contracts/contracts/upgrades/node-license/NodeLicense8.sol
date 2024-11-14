@@ -126,6 +126,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     event ClaimableChanged(address indexed admin, bool newClaimableState);
     event WhitelistAmountUpdatedByAdmin(address indexed redeemer, uint16 newAmount);
     event WhitelistAmountRedeemed(address indexed redeemer, uint16 newAmount);
+    event RewardClaimedUSDC(address indexed claimer, uint256 usdcAmount);
 
     /**
      * @notice Initializes the NodeLicense contract.
@@ -571,19 +572,22 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         // Pay Xai & esXAI rewards if they exist
         uint256 rewardXai = _referralRewardsXai[msg.sender];
         uint256 rewardEsXai = _referralRewardsEsXai[msg.sender];
+        uint256 rewardUSDC = _referralRewardsUSDC[msg.sender];
 
         // Require that the user has a reward to claim
-        require(reward > 0 || rewardXai > 0 || rewardEsXai > 0, "No referral reward to claim");
+        require(reward > 0 || rewardXai > 0 || rewardEsXai > 0 || rewardUSDC > 0, "No referral reward to claim");
         
         // Reset the referral reward balance
         _referralRewards[msg.sender] = 0;
         _referralRewardsXai[msg.sender] = 0;
         _referralRewardsEsXai[msg.sender] = 0;
+        _referralRewardsUSDC[msg.sender] = 0;
 
         // Transfer the rewards to the caller
         (bool success, ) = msg.sender.call{value: reward}("");
         require(success, "Transfer failed.");
 
+        //transfer ERC20 tokens
         if(rewardXai > 0){
             IERC20 token = IERC20(xaiAddress);
             token.transfer(msg.sender, rewardXai);
@@ -591,6 +595,11 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         if(rewardEsXai > 0){
             IERC20 token = IERC20(esXaiAddress);
             token.transfer(msg.sender, rewardEsXai);
+        }
+        if(rewardUSDC > 0){
+            IERC20 token = IERC20(usdcAddress);
+            token.transfer(msg.sender, rewardUSDC);
+            emit RewardClaimedUSDC(msg.sender, rewardUSDC);
         }
         emit RewardClaimed(msg.sender, reward, rewardXai, rewardEsXai); 
     }
