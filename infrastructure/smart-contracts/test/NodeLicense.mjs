@@ -336,5 +336,53 @@ export function NodeLicenseTests(deployInfrastructure) {
             const postTotalSupply = await nodeLicense.totalSupply();
             expect(postTotalSupply).to.eq(preTotalSupply + BigInt(1));
         });
+
+        it("Check if can mint with USDC to recipient address using a valid promo code", async function() {
+            const {
+                addr1, 
+                addr2,
+                addr3,
+                nodeLicense,
+                fundsReceiver,
+                usdcToken
+            } = await loadFixture(deployInfrastructure);
+
+            //initialize
+            const callerAddress = await addr1.getAddress();
+            const recipientAddress = await addr2.getAddress();
+
+            //mint USDC tokens to caller and approve
+            const price = await nodeLicense.price(1, ""); //157945445600000000
+            const expectedPriceInUSDC = 426_452703120000000000n;
+            const expectedReferralReward = 8_529054062400000000n;
+            await usdcToken.mint(callerAddress, expectedPriceInUSDC);
+            await usdcToken.connect(addr1).approve(await nodeLicense.getAddress(), expectedPriceInUSDC);
+            
+            //get pre values
+            const preFundsReceiverBalance = await usdcToken.balanceOf(fundsReceiver.address);
+            const preCallerBalance = await usdcToken.balanceOf(callerAddress);
+            const preRecipientBalance = await usdcToken.balanceOf(recipientAddress);
+            const preTotalSupply = await nodeLicense.totalSupply();
+
+            //mint an NFT with USDC
+            const validPromoCode = await addr3.getAddress();
+            await nodeLicense.connect(addr1).mintToWithUSDC(recipientAddress, 1, validPromoCode, expectedPriceInUSDC);
+
+            //check the NFT was received
+            const tokenId = preTotalSupply + BigInt(1);
+            expect(await nodeLicense.ownerOf(tokenId)).to.equal(recipientAddress);
+
+            //check the fundsReceiver received the funds
+            const postFundsReceiverBalance = await usdcToken.balanceOf(fundsReceiver.address);
+            expect(postFundsReceiverBalance).to.eq(preFundsReceiverBalance + expectedPriceInUSDC - expectedReferralReward);
+
+            //check the nodeLicense contract rretained the referral reward
+            const referralBalance = await usdcToken.balanceOf(await nodeLicense.getAddress());
+            expect(referralBalance).to.eq(expectedReferralReward);
+
+            //check the total supply increased
+            const postTotalSupply = await nodeLicense.totalSupply();
+            expect(postTotalSupply).to.eq(preTotalSupply + BigInt(1));
+        });
     }
 }
