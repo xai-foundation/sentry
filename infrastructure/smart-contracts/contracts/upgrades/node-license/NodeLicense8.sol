@@ -93,13 +93,15 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     bytes32 public constant TRANSFER_ROLE = keccak256("TRANSFER_ROLE");
 
     address public usdcAddress;
+    mapping (string => PromoCode) private _promoCodesUSDC;
+    mapping (address => uint256) private _referralRewardsUSDC;
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[489] private __gap;
+    uint256[487] private __gap;
 
     // Define the pricing tiers
     struct Tier {
@@ -325,8 +327,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
 
         if (referralReward > 0) {
             //store the referral reward in the appropriate mapping
-            _promoCodesXai[_promoCode].receivedLifetime += referralReward;
-            _referralRewardsXai[recipientAddress] += referralReward;
+            _promoCodesUSDC[_promoCode].receivedLifetime += referralReward;
+            _referralRewardsUSDC[recipientAddress] += referralReward;
         }
     }
 
