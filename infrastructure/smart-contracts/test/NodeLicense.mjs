@@ -2,6 +2,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { parse } from "csv/sync";
 import fs from "fs";
+import { mintBatchedLicenses } from "./utils/mintLicenses.mjs"
 
 export function NodeLicenseTests(deployInfrastructure) {
     return function() {
@@ -106,7 +107,7 @@ export function NodeLicenseTests(deployInfrastructure) {
             const tokenId = await nodeLicense.totalSupply();
 
             // Try to transfer the NFT
-            const expectedRevertMessage = "NodeLicense: transfer is not allowed";
+            const expectedRevertMessage = `AccessControl: account ${addr1.address.toLowerCase()} is missing role ${await nodeLicense.TRANSFER_ROLE()}`;
             await expect(nodeLicense.connect(addr1).transferFrom(addr1.address, addr2.address, tokenId)).to.be.revertedWith(expectedRevertMessage);
         });
 
@@ -392,6 +393,197 @@ export function NodeLicenseTests(deployInfrastructure) {
             const addr1Balance = await nodeLicense.balanceOf(addr1.address);
             expect(addr1Balance).to.equal(addr1BalanceBefore);
 
+        });
+
+        it("Should require TRANSFER_ROLE for any transfers", async function () {
+            const { nodeLicense, addr1, addr2 } = await loadFixture(deployInfrastructure);
+
+            // Verify that the wallet does not have the role
+            expect(
+                await nodeLicense.hasRole(await nodeLicense.TRANSFER_ROLE(), addr1.address)
+            ).to.equal(false);
+
+            const addr1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
+            const addr2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
+            expect(addr1BalanceBefore).to.be.greaterThan(0n);
+
+			const mintedKeyId = await nodeLicense.tokenOfOwnerByIndex(addr1.address, 0n);
+
+            const testTxHash = "0xf63670b4dc0a1468cdf2a37758ea82907655809857c8e5a41cda697152cc7fa8"
+
+            // Verify that we revert with the correct error for access control missing role
+            const expectedRevertMessage = `AccessControl: account ${addr1.address.toLowerCase()} is missing role ${await nodeLicense.TRANSFER_ROLE()}`;
+            
+            await expect(
+                nodeLicense.connect(addr1).adminTransferBatch(addr2.address, [mintedKeyId], testTxHash)
+            ).to.be.revertedWith(expectedRevertMessage);
+
+            await expect(
+                nodeLicense.connect(addr1).safeTransferFrom(addr1.address, addr2.address, mintedKeyId)
+            ).to.be.revertedWith(expectedRevertMessage);
+            
+            await expect(
+                nodeLicense.connect(addr1).transferFrom(addr1.address, addr2.address, mintedKeyId)
+            ).to.be.revertedWith(expectedRevertMessage);
+
+            // Check that balance remains unchanged
+            const addr1Balance = await nodeLicense.balanceOf(addr1.address);
+            expect(addr1Balance).to.equal(addr1BalanceBefore);
+            
+            const addr2Balance = await nodeLicense.balanceOf(addr2.address);
+            expect(addr2Balance).to.equal(addr2BalanceBefore);
+        });
+        
+        it("Should allow safeTransferFrom with TRANSFER_ROLE", async function () {
+            const { nodeLicense, nodeLicenseDefaultAdmin, addr2 } = await loadFixture(deployInfrastructure);
+
+            // Verify that the has the role
+            expect(
+                await nodeLicense.hasRole(await nodeLicense.TRANSFER_ROLE(), nodeLicenseDefaultAdmin.address)
+            ).to.equal(true);
+
+            const keyIds = await mintBatchedLicenses(3n, nodeLicense, nodeLicenseDefaultAdmin);
+
+            const addr1BalanceBefore = await nodeLicense.balanceOf(nodeLicenseDefaultAdmin.address);
+            const addr2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
+
+            await nodeLicense.connect(nodeLicenseDefaultAdmin).safeTransferFrom(nodeLicenseDefaultAdmin.address, addr2.address, keyIds[0])
+
+            // Check that balance remains unchanged
+            const addr1Balance = await nodeLicense.balanceOf(nodeLicenseDefaultAdmin.address);
+            expect(addr1Balance).to.equal(addr1BalanceBefore - BigInt(1));
+            
+            const addr2Balance = await nodeLicense.balanceOf(addr2.address);
+            expect(addr2Balance).to.equal(addr2BalanceBefore + BigInt(1));
+
+            expect(await nodeLicense.ownerOf(keyIds[0])).to.equal(addr2.address);
+        });
+        
+        it("Should allow transferFrom with TRANSFER_ROLE", async function () {
+            const { nodeLicense, nodeLicenseDefaultAdmin, addr2 } = await loadFixture(deployInfrastructure);
+
+            // Verify that the has the role
+            expect(
+                await nodeLicense.hasRole(await nodeLicense.TRANSFER_ROLE(), nodeLicenseDefaultAdmin.address)
+            ).to.equal(true);
+
+            const keyIds = await mintBatchedLicenses(3n, nodeLicense, nodeLicenseDefaultAdmin);
+
+            const addr1BalanceBefore = await nodeLicense.balanceOf(nodeLicenseDefaultAdmin.address);
+            const addr2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
+
+            await nodeLicense.connect(nodeLicenseDefaultAdmin).transferFrom(nodeLicenseDefaultAdmin.address, addr2.address, keyIds[0])
+
+            // Check that balance remains unchanged
+            const addr1Balance = await nodeLicense.balanceOf(nodeLicenseDefaultAdmin.address);
+            expect(addr1Balance).to.equal(addr1BalanceBefore - BigInt(1));
+            
+            const addr2Balance = await nodeLicense.balanceOf(addr2.address);
+            expect(addr2Balance).to.equal(addr2BalanceBefore + BigInt(1));
+
+            expect(await nodeLicense.ownerOf(keyIds[0])).to.equal(addr2.address);
+        });
+        
+        it("Should allow adminTransferBatch with TRANSFER_ROLE", async function () {
+            const { nodeLicense, nodeLicenseDefaultAdmin, addr2 } = await loadFixture(deployInfrastructure);
+
+            // Verify that the has the role
+            expect(
+                await nodeLicense.hasRole(await nodeLicense.TRANSFER_ROLE(), nodeLicenseDefaultAdmin.address)
+            ).to.equal(true);
+
+            const keyIds = await mintBatchedLicenses(3n, nodeLicense, nodeLicenseDefaultAdmin);
+
+            const addr1BalanceBefore = await nodeLicense.balanceOf(nodeLicenseDefaultAdmin.address);
+            const addr2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
+
+            const testTxHash = "0xf63670b4dc0a1468cdf2a37758ea82907655809857c8e5a41cda697152cc7fa8"
+            await nodeLicense.connect(nodeLicenseDefaultAdmin).adminTransferBatch(addr2.address, keyIds, testTxHash)
+
+            // Check that balance got updated
+            const addr1Balance = await nodeLicense.balanceOf(nodeLicenseDefaultAdmin.address);
+            expect(addr1Balance).to.equal(addr1BalanceBefore - BigInt(keyIds.length));
+            
+            const addr2Balance = await nodeLicense.balanceOf(addr2.address);
+            expect(addr2Balance).to.equal(addr2BalanceBefore + BigInt(keyIds.length));
+
+            // Check that the receiver is the owner of the transferred tokens
+            for (let i = 0; i < keyIds.length; i++) {
+                expect(await nodeLicense.ownerOf(keyIds[i])).to.equal(addr2.address);
+            }
+        });
+        
+        it("Should revert transfer of a token not owned by sender", async function () {
+            const { nodeLicense, nodeLicenseDefaultAdmin, addr2 } = await loadFixture(deployInfrastructure);
+
+            // Verify that the has the role
+            expect(
+                await nodeLicense.hasRole(await nodeLicense.TRANSFER_ROLE(), nodeLicenseDefaultAdmin.address)
+            ).to.equal(true);
+
+            const keyIds = await mintBatchedLicenses(3n, nodeLicense, nodeLicenseDefaultAdmin);
+
+            const addr1BalanceBefore = await nodeLicense.balanceOf(nodeLicenseDefaultAdmin.address);
+            const addr2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
+
+            await nodeLicense.connect(nodeLicenseDefaultAdmin).safeTransferFrom(nodeLicenseDefaultAdmin.address, addr2.address, keyIds[0])
+
+            // Check that balance remains unchanged
+            const addr1Balance = await nodeLicense.balanceOf(nodeLicenseDefaultAdmin.address);
+            expect(addr1Balance).to.equal(addr1BalanceBefore - BigInt(1));
+            
+            const addr2Balance = await nodeLicense.balanceOf(addr2.address);
+            expect(addr2Balance).to.equal(addr2BalanceBefore + BigInt(1));
+
+            expect(await nodeLicense.ownerOf(keyIds[0])).to.equal(addr2.address);
+
+            await expect(
+                nodeLicense.connect(nodeLicenseDefaultAdmin).safeTransferFrom(nodeLicenseDefaultAdmin.address, addr2.address, keyIds[0])
+            ).to.be.revertedWith("ERC721: caller is not token owner or approved");
+
+            await expect(
+                nodeLicense.connect(nodeLicenseDefaultAdmin).transferFrom(nodeLicenseDefaultAdmin.address, addr2.address, keyIds[0])
+            ).to.be.revertedWith("ERC721: caller is not token owner or approved");
+            
+            const testTxHash = "0xf63670b4dc0a1468cdf2a37758ea82907655809857c8e5a41cda697152cc7fa8"
+            await expect(
+                nodeLicense.connect(nodeLicenseDefaultAdmin).adminTransferBatch(addr2.address, keyIds, testTxHash)
+            ).to.be.revertedWith("ERC721: caller is not token owner or approved");
+        });
+        
+        it("Should revert adminTransferBatch using the same transferId", async function () {
+            const { nodeLicense, nodeLicenseDefaultAdmin, addr2 } = await loadFixture(deployInfrastructure);
+
+            // Verify that the has the role
+            expect(
+                await nodeLicense.hasRole(await nodeLicense.TRANSFER_ROLE(), nodeLicenseDefaultAdmin.address)
+            ).to.equal(true);
+
+            const keyIdsToTransfer = await mintBatchedLicenses(3n, nodeLicense, nodeLicenseDefaultAdmin);
+
+            const addr1BalanceBefore = await nodeLicense.balanceOf(nodeLicenseDefaultAdmin.address);
+            const addr2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
+
+            const testTxHash = "0xf63670b4dc0a1468cdf2a37758ea82907655809857c8e5a41cda697152cc7fa8"
+            await nodeLicense.connect(nodeLicenseDefaultAdmin).adminTransferBatch(addr2.address, keyIdsToTransfer, testTxHash)
+
+            // Check that balance got updated
+            const addr1Balance = await nodeLicense.balanceOf(nodeLicenseDefaultAdmin.address);
+            expect(addr1Balance).to.equal(addr1BalanceBefore - BigInt(keyIdsToTransfer.length));
+            
+            const addr2Balance = await nodeLicense.balanceOf(addr2.address);
+            expect(addr2Balance).to.equal(addr2BalanceBefore + BigInt(keyIdsToTransfer.length));
+            
+            const keyIdsNonTransfer = await mintBatchedLicenses(3n, nodeLicense, nodeLicenseDefaultAdmin);
+
+            // Make sure we cannot sue the same transferId again
+            await expect(
+                nodeLicense.connect(nodeLicenseDefaultAdmin).adminTransferBatch(addr2.address, keyIdsNonTransfer, testTxHash)
+            ).to.be.revertedWith("TransferId in use");
+            
+            // Check that balance stayed the same
+            expect(addr1Balance + 3n).to.equal(await nodeLicense.balanceOf(nodeLicenseDefaultAdmin.address));
+            expect(addr2Balance).to.equal(await nodeLicense.balanceOf(addr2.address));
         });
 
     }
