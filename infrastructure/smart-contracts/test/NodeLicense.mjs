@@ -429,5 +429,104 @@ export function NodeLicenseTests(deployInfrastructure) {
             expect(postReferralBalance).to.eq(preReferralBalance + expectedReferralReward);
             expect(postNodeLicenseBalance).to.eq(preNodeLicenseBalance - expectedReferralReward);
         });
+        
+        it("Checks calling adminMintTo without ADMIN_MINT_ROLE will fail", async function () {
+            const { nodeLicense, addr1 } = await loadFixture(deployInfrastructure);
+
+            // Verify that the wallet does not have the role
+            expect(
+                await nodeLicense.hasRole(await nodeLicense.ADMIN_MINT_ROLE(), addr1.address)
+            ).to.equal(false);
+
+            const amountToMint = 10;
+            const totalSupplyBefore = await nodeLicense.totalSupply();
+            const addr1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
+
+            // Verify that we revert with the correct error for access control missing role
+            const expectedRevertMessage = `AccessControl: account ${addr1.address.toLowerCase()} is missing role ${await nodeLicense.ADMIN_MINT_ROLE()}`;
+            await expect(
+                nodeLicense.connect(addr1).adminMintTo(addr1.address, amountToMint)
+            ).to.be.revertedWith(expectedRevertMessage);
+
+            // Check that addr1's balance remains unchanged
+            const addr1Balance = await nodeLicense.balanceOf(addr1.address);
+            expect(addr1Balance).to.equal(addr1BalanceBefore);
+
+            const totalSupplyAfter = await nodeLicense.totalSupply();
+            expect(totalSupplyAfter).to.equal(totalSupplyBefore);
+        });
+
+        it("Checks that the admin can mint to a receiver without fee", async function () {
+            const { nodeLicense, nodeLicenseDefaultAdmin, addr1 } = await loadFixture(deployInfrastructure);
+
+            const totalSupplyBefore = await nodeLicense.totalSupply();
+            const addr1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
+            const adminETHBeforeMint = await ethers.provider.getBalance(nodeLicenseDefaultAdmin.address);
+
+            // Verify that the wallet has the role
+            expect(
+                await nodeLicense.hasRole(await nodeLicense.ADMIN_MINT_ROLE(), nodeLicenseDefaultAdmin.address)
+            ).to.equal(true);
+
+            // Call adminMintTo to mint tokens to addr1
+            const amountToMint = 10;
+            const tx = await nodeLicense.connect(nodeLicenseDefaultAdmin).adminMintTo(addr1.address, amountToMint);
+            // Calculate the gas used for checking balance 
+            const receipt = await tx.wait();
+            const gasUsed = receipt.gasUsed;
+            const gasPrice = tx.gasPrice;
+            const gasCost = gasUsed * gasPrice;
+
+            // Verify ETH balance has not changed
+            const adminETHAfterMint = await ethers.provider.getBalance(nodeLicenseDefaultAdmin.address);
+            expect(adminETHBeforeMint - gasCost).to.equal(adminETHAfterMint);
+
+            // Verify the totalSupply updated correctly
+            const totalSupplyAfter = await nodeLicense.totalSupply();
+            expect(totalSupplyAfter).to.equal(totalSupplyBefore + BigInt(amountToMint));
+
+            // Verify addr1 received the correct number of tokens
+            const addr1Balance = await nodeLicense.balanceOf(addr1.address);
+            expect(addr1Balance).to.equal(BigInt(addr1BalanceBefore) + BigInt(amountToMint));
+        });
+
+        it("Should not allow the adminMintTo to exceed the maxSupply", async function () {
+            const { nodeLicense, nodeLicenseDefaultAdmin, addr1 } = await loadFixture(deployInfrastructure);
+
+            const slotIndex = 253; // NodeLicense8 storage slot for maxSupply (Read this from the artifacts json after running compile)
+
+            const totalSupply = await nodeLicense.totalSupply();
+
+            //Set the maxSupply to the current totalSupply
+            const value = ethers.zeroPadValue(ethers.toBeHex(totalSupply), 32);
+            await ethers.provider.send("hardhat_setStorageAt", [
+                nodeLicense.target,
+                ethers.toQuantity(slotIndex),
+                value,
+            ]);
+
+            const maxSupply = await nodeLicense.maxSupply();
+            expect(maxSupply).to.equal(totalSupply);
+
+            const addr1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
+
+            // Verify that the wallet does have the role
+            expect(
+                await nodeLicense.hasRole(await nodeLicense.ADMIN_MINT_ROLE(), nodeLicenseDefaultAdmin.address)
+            ).to.equal(true);
+
+            // Verify mintTo fails for maxSupply
+            await expect(
+                nodeLicense.connect(nodeLicenseDefaultAdmin).adminMintTo(addr1.address, 10)
+            ).to.be.revertedWith("Exceeds maxSupply");
+
+            const totalSupplyAfter = await nodeLicense.totalSupply();
+            expect(totalSupplyAfter).to.equal(totalSupply);
+
+            const addr1Balance = await nodeLicense.balanceOf(addr1.address);
+            expect(addr1Balance).to.equal(addr1BalanceBefore);
+
+        });
+
     }
 }
