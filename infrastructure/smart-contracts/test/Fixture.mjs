@@ -423,23 +423,23 @@ describe("Fixture Tests", function () {
 
     // Tests That Always Work
     // describe("CNY 2024", CNYAirDropTests.bind(this));
-    // describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
-    // describe("Xai", XaiTests(deployInfrastructure).bind(this));
-    // describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
-    // describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
-    // describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
+    describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
+    describe("Xai", XaiTests(deployInfrastructure).bind(this));
+    describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
+    describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
+    describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
 
     // Test Explanations, Expectations & Instructions
     // https://docs.google.com/document/d/1V_3svypWL26wDr2RNvcIBcMlFwdSWYR6xcLuKXXuWf8
 
     // Pre-Tiny Keys
-    // describe("Pre-Tiny Keys Tests", PreTinyKeysTests(deployInfrastructure).bind(this));
+    describe("Pre-Tiny Keys Tests", PreTinyKeysTests(deployInfrastructure).bind(this));
 
     // Post-Tiny Keys
-    // describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
+    describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
     describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
-    // describe("Referee", RefereeTests(deployInfrastructure).bind(this));
-    // describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
+    describe("Referee", RefereeTests(deployInfrastructure).bind(this));
+    describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
 
     // Uncomment these tests for tiny keys
     //describe("BulkSubmissions", RefereeBulkSubmissions(deployInfrastructure).bind(this));
