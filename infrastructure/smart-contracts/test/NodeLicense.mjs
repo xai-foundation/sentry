@@ -528,7 +528,7 @@ export function NodeLicenseTests(deployInfrastructure) {
 
             await nodeLicense.connect(nodeLicenseDefaultAdmin).safeTransferFrom(nodeLicenseDefaultAdmin.address, addr2.address, keyIds[0])
 
-            // Check that balance remains unchanged
+            // Check that balance is updated
             const addr1Balance = await nodeLicense.balanceOf(nodeLicenseDefaultAdmin.address);
             expect(addr1Balance).to.equal(addr1BalanceBefore - BigInt(1));
             
@@ -549,6 +549,42 @@ export function NodeLicenseTests(deployInfrastructure) {
             await expect(
                 nodeLicense.connect(nodeLicenseDefaultAdmin).adminTransferBatch(addr2.address, keyIds, testTxHash)
             ).to.be.revertedWith("ERC721: caller is not token owner or approved");
+        });
+
+        it("Should allow transferFrom with approval", async function () {
+            const { nodeLicense, nodeLicenseDefaultAdmin, addr1, addr2 } = await loadFixture(deployInfrastructure);
+
+            // Verify that the wallet does not have the role
+            expect(
+                await nodeLicense.hasRole(await nodeLicense.TRANSFER_ROLE(), addr1.address)
+            ).to.equal(false);
+
+            const addr1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
+            const addr2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
+            expect(addr1BalanceBefore).to.be.greaterThan(0n);
+
+			const mintedKeyId = await nodeLicense.tokenOfOwnerByIndex(addr1.address, 0n);
+            
+            await expect(
+                nodeLicense.connect(nodeLicenseDefaultAdmin).safeTransferFrom(addr1.address, addr2.address, mintedKeyId)
+            ).to.be.revertedWith("ERC721: caller is not token owner or approved");
+            
+            // Check that balance is unchanged
+            expect(addr1BalanceBefore).to.equal(await nodeLicense.balanceOf(addr1.address));
+            expect(addr2BalanceBefore).to.equal(await nodeLicense.balanceOf(addr2.address));
+
+            // approve the sender for transferFrom
+            await nodeLicense.connect(addr1).approve(nodeLicenseDefaultAdmin.address, mintedKeyId);
+
+            // Call transferFrom should succeed
+            await nodeLicense.connect(nodeLicenseDefaultAdmin).safeTransferFrom(addr1.address, addr2.address, mintedKeyId);
+
+            // Check that balance is updated
+            const addr1Balance = await nodeLicense.balanceOf(addr1.address);
+            expect(addr1Balance).to.equal(addr1BalanceBefore - BigInt(1));
+            
+            const addr2Balance = await nodeLicense.balanceOf(addr2.address);
+            expect(addr2Balance).to.equal(addr2BalanceBefore + BigInt(1));
         });
         
         it("Should revert adminTransferBatch using the same transferId", async function () {
