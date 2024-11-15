@@ -337,14 +337,6 @@ describe("Fixture Tests", function () {
 
         // Setup admin mint to role for nodeLicenseDefaultAdmin
         await nodeLicense8.connect(nodeLicenseDefaultAdmin).grantRole(await nodeLicense8.ADMIN_MINT_ROLE(), nodeLicenseDefaultAdmin.address);
-
-        // // Node License8 Upgrade - Required For Tiny Keys
-        // const NodeLicense8 = await ethers.getContractFactory("NodeLicense8");
-        // const nodeLicense8 = await upgrades.upgradeProxy(
-        //     (await nodeLicense.getAddress()), 
-        //     NodeLicense8, 
-        //     { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await tinyKeysAirDrop.getAddress(), await usdcToken.getAddress()] } });
-        // await nodeLicense8.waitForDeployment();
         
         // Deploy the Referee Calculations contract
         const RefereeCalculations = await ethers.getContractFactory("RefereeCalculations");
