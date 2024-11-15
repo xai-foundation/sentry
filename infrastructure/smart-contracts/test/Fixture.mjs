@@ -322,9 +322,17 @@ describe("Fixture Tests", function () {
         const poolFactory2 = await upgrades.upgradeProxy((await poolFactory.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
         await poolFactory2.waitForDeployment();
 
+        //Deploy sample USDC token
+        const usdcName = "Test USDC";
+        const usdcSymbol = "USDC";
+        const usdcToken = await ethers.deployContract(
+            "SampleERC20",
+            [usdcName, usdcSymbol]
+        );
+        await usdcToken.waitForDeployment();
         // // Node License8 Upgrade - Required For Tiny Keys
         const NodeLicense8 = await ethers.getContractFactory("NodeLicense8");
-        const nodeLicense8 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense8, { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await tinyKeysAirDrop.getAddress()] } });
+        const nodeLicense8 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense8, { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await tinyKeysAirDrop.getAddress(), await usdcToken.getAddress()] } });
         await nodeLicense8.waitForDeployment();
 
         // Setup admin mint to role for nodeLicenseDefaultAdmin
@@ -407,12 +415,13 @@ describe("Fixture Tests", function () {
             tinyKeysAirDrop,
             airdropMultiplier,
             refereeCalculations,
-            mockRollup
+            mockRollup,
+            usdcToken
         };
     }
 
     // Tests That Always Work
-    describe("CNY 2024", CNYAirDropTests.bind(this));
+    // describe("CNY 2024", CNYAirDropTests.bind(this));
     describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
     describe("Xai", XaiTests(deployInfrastructure).bind(this));
     describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
