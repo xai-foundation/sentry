@@ -826,11 +826,12 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     ) external onlyRole(TRANSFER_ROLE) {
         require(to != address(0) && to != address(this), "Invalid to address");
         require(!usedTransferIds[transferId], "TransferId in use");
-        
+
         uint256 tokenIdsLength = tokenIds.length;
         require(tokenIdsLength > 0, "No tokenIds provided");
 
         usedTransferIds[transferId] = true;
+        
         for(uint256 i; i < tokenIds.length; i++){
             super.safeTransferFrom(msg.sender, to, tokenIds[i]);
         }
