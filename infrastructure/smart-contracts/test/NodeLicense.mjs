@@ -8,9 +8,9 @@ export function NodeLicenseTests(deployInfrastructure) {
 
         it("Check calling the initializer is not allowed afterwards", async function() {
             const {nodeLicense, nodeLicenseDefaultAdmin, deployer, xai, esXai, chainlinkEthUsdPriceFeed,
-                chainlinkXaiUsdPriceFeed} = await loadFixture(deployInfrastructure);
+                chainlinkXaiUsdPriceFeed, usdcToken} = await loadFixture(deployInfrastructure);
             const expectedRevertMessage = "Initializable: contract is already initialized";
-            await expect(nodeLicense.connect(nodeLicenseDefaultAdmin).initialize(await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), chainlinkXaiUsdPriceFeed.getAddress(), await deployer.getAddress())).to.be.revertedWith(expectedRevertMessage);
+            await expect(nodeLicense.connect(nodeLicenseDefaultAdmin).initialize(await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), chainlinkXaiUsdPriceFeed.getAddress(), await deployer.getAddress(), await usdcToken.getAddress())).to.be.revertedWith(expectedRevertMessage);
         })
 
         it("Check the max supply is 50,000", async function() {
@@ -294,6 +294,151 @@ export function NodeLicenseTests(deployInfrastructure) {
 
             // Check if supportsInterface returns false for a random interface
             expect(await nodeLicense.supportsInterface("0x12345678")).to.be.false;
+        });
+
+        it("Check if can mint with USDC to recipient address", async function() {
+            const {
+                addr1, 
+                addr2,
+                nodeLicense,
+                fundsReceiver,
+                usdcToken
+            } = await loadFixture(deployInfrastructure);
+
+            //initialize
+            const callerAddress = await addr1.getAddress();
+            const recipientAddress = await addr2.getAddress();
+
+            //mint USDC tokens to caller and approve
+            const price = await nodeLicense.price(1, ""); //157945445600000000
+            const expectedPriceInUSDC = 473_836336800000000000n;
+            await usdcToken.mint(callerAddress, expectedPriceInUSDC);
+            await usdcToken.connect(addr1).approve(await nodeLicense.getAddress(), expectedPriceInUSDC);
+            
+            //get pre values
+            const preFundsReceiverBalance = await usdcToken.balanceOf(fundsReceiver.address);
+            const preCallerBalance = await usdcToken.balanceOf(callerAddress);
+            const preRecipientBalance = await usdcToken.balanceOf(recipientAddress);
+            const preTotalSupply = await nodeLicense.totalSupply();
+
+            //mint an NFT with USDC
+            await nodeLicense.connect(addr1).mintToWithUSDC(recipientAddress, 1, "", expectedPriceInUSDC);
+
+            //check the NFT was received
+            const tokenId = preTotalSupply + BigInt(1);
+            expect(await nodeLicense.ownerOf(tokenId)).to.equal(recipientAddress);
+
+            //check the fundsReceiver received the funds
+            const postFundsReceiverBalance = await usdcToken.balanceOf(fundsReceiver.address);
+            expect(postFundsReceiverBalance).to.eq(preFundsReceiverBalance + expectedPriceInUSDC);
+
+            //check the total supply increased
+            const postTotalSupply = await nodeLicense.totalSupply();
+            expect(postTotalSupply).to.eq(preTotalSupply + BigInt(1));
+        });
+
+        it("Check if can mint with USDC to recipient address using a valid promo code", async function() {
+            const {
+                addr1, 
+                addr2,
+                addr3,
+                nodeLicense,
+                fundsReceiver,
+                usdcToken
+            } = await loadFixture(deployInfrastructure);
+
+            //initialize
+            const callerAddress = await addr1.getAddress();
+            const recipientAddress = await addr2.getAddress();
+
+            //mint USDC tokens to caller and approve
+            const price = await nodeLicense.price(1, ""); //157945445600000000
+            const expectedPriceInUSDC = 426_452703120000000000n;
+            const expectedReferralReward = 8_529054062400000000n;
+            await usdcToken.mint(callerAddress, expectedPriceInUSDC);
+            await usdcToken.connect(addr1).approve(await nodeLicense.getAddress(), expectedPriceInUSDC);
+            
+            //get pre values
+            const preFundsReceiverBalance = await usdcToken.balanceOf(fundsReceiver.address);
+            const preCallerBalance = await usdcToken.balanceOf(callerAddress);
+            const preRecipientBalance = await usdcToken.balanceOf(recipientAddress);
+            const preTotalSupply = await nodeLicense.totalSupply();
+
+            //mint an NFT with USDC using a valid promo code
+            const validPromoCode = await addr3.getAddress();
+            await nodeLicense.connect(addr1).mintToWithUSDC(recipientAddress, 1, validPromoCode, expectedPriceInUSDC);
+
+            //check the NFT was received
+            const tokenId = preTotalSupply + BigInt(1);
+            expect(await nodeLicense.ownerOf(tokenId)).to.equal(recipientAddress);
+
+            //check the fundsReceiver received the funds
+            const postFundsReceiverBalance = await usdcToken.balanceOf(fundsReceiver.address);
+            expect(postFundsReceiverBalance).to.eq(preFundsReceiverBalance + expectedPriceInUSDC - expectedReferralReward);
+
+            //check the nodeLicense contract retained the referral reward
+            const referralBalance = await usdcToken.balanceOf(await nodeLicense.getAddress());
+            expect(referralBalance).to.eq(expectedReferralReward);
+
+            //check the total supply increased
+            const postTotalSupply = await nodeLicense.totalSupply();
+            expect(postTotalSupply).to.eq(preTotalSupply + BigInt(1));
+        });
+
+        it("Check if can claim USDC referral rewards", async function() {
+            const {
+                addr1, 
+                addr2,
+                addr3,
+                nodeLicenseDefaultAdmin,
+                nodeLicense,
+                fundsReceiver,
+                usdcToken
+            } = await loadFixture(deployInfrastructure);
+
+            //set claimable to true
+            await nodeLicense.connect(nodeLicenseDefaultAdmin).setClaimable(true);
+
+            //initialize
+            const callerAddress = await addr1.getAddress();
+            const recipientAddress = await addr2.getAddress();
+
+            //mint USDC tokens to caller and approve
+            const price = await nodeLicense.price(1, ""); //157945445600000000
+            const expectedPriceInUSDC = 426_452703120000000000n;
+            const expectedReferralReward = 8_529054062400000000n;
+            await usdcToken.mint(callerAddress, expectedPriceInUSDC);
+            await usdcToken.connect(addr1).approve(await nodeLicense.getAddress(), expectedPriceInUSDC);
+
+            //mint an NFT with USDC using a valid promo code
+            const validPromoCodeAddress = await addr3.getAddress();
+            await nodeLicense.connect(addr1).mintToWithUSDC(recipientAddress, 1, validPromoCodeAddress, expectedPriceInUSDC);
+
+            //get pre values
+            const preReferralBalance = await usdcToken.balanceOf(validPromoCodeAddress);
+            const preNodeLicenseBalance = await usdcToken.balanceOf(await nodeLicense.getAddress());
+
+            //claim referral rewards
+            const claimReferralTrx = await nodeLicense.connect(addr3).claimReferralReward();
+            const claimReferralRec = await claimReferralTrx.wait();
+
+            //get post values
+            const postReferralBalance = await usdcToken.balanceOf(validPromoCodeAddress);
+            const postNodeLicenseBalance = await usdcToken.balanceOf(await nodeLicense.getAddress());
+
+            //check balances
+            expect(postReferralBalance).to.eq(preReferralBalance + expectedReferralReward);
+            expect(postNodeLicenseBalance).to.eq(preNodeLicenseBalance - expectedReferralReward);
+
+            //check events
+            const rewardsClaimedEventSignature = ethers.keccak256(
+                ethers.toUtf8Bytes(`RewardClaimed(address,uint256,uint256,uint256,uint256)`)
+            );
+            const rewardClaimedLog = claimReferralRec.logs.filter((log) => {
+                return log.topics[0] === rewardsClaimedEventSignature;
+            });
+            expect((rewardClaimedLog[0]).fragment.name).to.equal("RewardClaimed");
+            expect((rewardClaimedLog[0]).args[4]).to.equal(expectedReferralReward);
         });
 
         it("Checks calling adminMintTo without ADMIN_MINT_ROLE will fail", async function () {
