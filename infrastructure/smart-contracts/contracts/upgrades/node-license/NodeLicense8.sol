@@ -127,6 +127,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     event WhitelistAmountUpdatedByAdmin(address indexed redeemer, uint16 newAmount);
     event WhitelistAmountRedeemed(address indexed redeemer, uint16 newAmount);
     event RewardClaimedUSDC(address indexed claimer, uint256 usdcAmount);
+    event AdminMintTo(address indexed admin, address indexed receiver, uint256 amount);
 
     /**
      * @notice Initializes the NodeLicense contract.
@@ -871,7 +872,11 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         address to,
         uint256 amount
     ) external onlyRole(ADMIN_MINT_ROLE) {
-        revert("Not implemented");
+        require(to != address(0) && to != address(this), "Invalid to address");
+        require(amount > 0, "Invalid amount");
+        _validateMint(amount);
+        _mintNodeLicense(amount, 0, to);
+        emit AdminMintTo(msg.sender, to, amount);
     }
 
     
