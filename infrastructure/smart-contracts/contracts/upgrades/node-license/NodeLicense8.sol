@@ -8,6 +8,7 @@ import "@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/Base64Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "../../upgrades/referee/Referee10.sol";
+import "../../RefereeCalculations.sol";
 
 interface IAggregatorV3Interface {
     function latestAnswer() external view returns (int256);
@@ -32,7 +33,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     bool public claimable;
 
     // Mapping from token ID to minting timestamp
-    mapping (uint256 => uint256) private _mintTimestamps;
+    mapping (uint256 => uint256) public _mintTimestamps;
 
     // Mapping from promo code to PromoCode struct
     mapping (string => PromoCode) private _promoCodes;
@@ -41,7 +42,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     mapping (address => uint256) private _referralRewards;
 
     // Mapping from token ID to average cost, this is used for refunds over multiple tiers
-    mapping (uint256 => uint256) private _averageCost;
+    mapping (uint256 => uint256) public _averageCost;
     
     // Mapping for whitelist to claim NFTs without a price
     mapping (address => uint16) public whitelistAmounts;
@@ -362,15 +363,15 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         _mintNodeLicense(_qtyToMint, 0, ownerOf(_keyId));
     }
 
-    /**
-    * @notice Revokes the airdrop admin role for the address passed in
-    * @param _address The address to revoke the airdrop admin role from
-    * @dev Only callable by the airdrop admin
-    */
+    // /**
+    // * @notice Revokes the airdrop admin role for the address passed in
+    // * @param _address The address to revoke the airdrop admin role from
+    // * @dev Only callable by the airdrop admin
+    // */
 
-    function revokeAirdropAdmin(address _address) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        revokeRole(AIRDROP_ADMIN_ROLE, _address);
-    }
+    // function revokeAirdropAdmin(address _address) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    //     revokeRole(AIRDROP_ADMIN_ROLE, _address);
+    // }
     
 
 
@@ -446,7 +447,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         // If promo code does not exist in the mapping
 
         // Check if the promo code is an address
-        address promoCodeAsAddress = validateAndConvertAddress(_promoCode);
+        address promoCodeAsAddress = RefereeCalculations(address(this)).validateAndConvertAddress(_promoCode);
 
         // If the promo code is an address, determine if the recipient has been set
         if(promoCodeAsAddress != address(0)){
@@ -478,39 +479,39 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     }
 
 
-    /**
-     * @notice Public function to redeem tokens from on whitelist.
-     */
-    function redeemFromWhitelist() external {
+    // /**
+    //  * @notice Public function to redeem tokens from on whitelist.
+    //  */
+    // function redeemFromWhitelist() external {
 
-        uint256 startTime = 1703275200; // Fri Dec 22 2023 12:00:00 GMT-0800 (Pacific Standard Time)
-        require(block.timestamp >= startTime, "Redemption is not eligible yet");
-        require(block.timestamp <= startTime + 30 days, "Redemption period has ended");
+    //     uint256 startTime = 1703275200; // Fri Dec 22 2023 12:00:00 GMT-0800 (Pacific Standard Time)
+    //     require(block.timestamp >= startTime, "Redemption is not eligible yet");
+    //     require(block.timestamp <= startTime + 30 days, "Redemption period has ended");
 
-        require(whitelistAmounts[msg.sender] > 0, "Invalid whitelist amount");
+    //     require(whitelistAmounts[msg.sender] > 0, "Invalid whitelist amount");
 
-        uint16 toMint = whitelistAmounts[msg.sender];
+    //     uint16 toMint = whitelistAmounts[msg.sender];
 
-        if(toMint > 50){
-            toMint = 50;
-        }
+    //     if(toMint > 50){
+    //         toMint = 50;
+    //     }
 
-        require(
-            _tokenIds.current() + toMint <= maxSupply,
-            "Exceeds maxSupply"
-        );
+    //     require(
+    //         _tokenIds.current() + toMint <= maxSupply,
+    //         "Exceeds maxSupply"
+    //     );
 
-        for (uint16 i = 0; i < toMint; i++) {
-           _tokenIds.increment();
-            uint256 newItemId = _tokenIds.current();
-            _mint(msg.sender, newItemId);
-            _mintTimestamps[newItemId] = block.timestamp;
-        }
+    //     for (uint16 i = 0; i < toMint; i++) {
+    //        _tokenIds.increment();
+    //         uint256 newItemId = _tokenIds.current();
+    //         _mint(msg.sender, newItemId);
+    //         _mintTimestamps[newItemId] = block.timestamp;
+    //     }
 
-        uint16 newAmount = whitelistAmounts[msg.sender] - toMint;
-        whitelistAmounts[msg.sender] = newAmount;
-        emit WhitelistAmountRedeemed(msg.sender, newAmount);
-    }
+    //     uint16 newAmount = whitelistAmounts[msg.sender] - toMint;
+    //     whitelistAmounts[msg.sender] = newAmount;
+    //     emit WhitelistAmountRedeemed(msg.sender, newAmount);
+    // }
 
     /**
      * @notice Calculates the price for minting NodeLicense tokens.
@@ -549,7 +550,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         }else{
             // Check if the promo code is an address
             // Returns 0 address if not an address
-            address promoCodeAsAddress = validateAndConvertAddress(_promoCode);
+            address promoCodeAsAddress = RefereeCalculations(address(this)).validateAndConvertAddress(_promoCode);
 
             // If the promo code is a valid address, check if it owns a license
             if(promoCodeAsAddress != address(0)){
@@ -615,35 +616,35 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         emit ClaimableChanged(msg.sender, _claimable);
     }
 
-    /**
-     * @notice Sets the fundsReceiver address.
-     * @param _newFundsReceiver The new fundsReceiver address.
-     * @dev The new fundsReceiver address cannot be the zero address.
-     */
-    function setFundsReceiver(
-        address payable _newFundsReceiver
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(_newFundsReceiver != address(0), "New fundsReceiver cannot be the zero address");
-        fundsReceiver = _newFundsReceiver;
-        emit FundsReceiverChanged(msg.sender, _newFundsReceiver);
-    }
+    // /**
+    //  * @notice Sets the fundsReceiver address.
+    //  * @param _newFundsReceiver The new fundsReceiver address.
+    //  * @dev The new fundsReceiver address cannot be the zero address.
+    //  */
+    // function setFundsReceiver(
+    //     address payable _newFundsReceiver
+    // ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    //     require(_newFundsReceiver != address(0), "New fundsReceiver cannot be the zero address");
+    //     fundsReceiver = _newFundsReceiver;
+    //     emit FundsReceiverChanged(msg.sender, _newFundsReceiver);
+    // }
 
-    /**
-     * @notice Sets the referral discount and reward percentages.
-     * @param _referralDiscountPercentage The referral discount percentage.
-     * @param _referralRewardPercentage The referral reward percentage.
-     * @dev The referral discount and reward percentages cannot be greater than 99.
-     */
-    function setReferralPercentages(
-        uint256 _referralDiscountPercentage,
-        uint256 _referralRewardPercentage
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(_referralDiscountPercentage <= 99, "Referral discount percentage cannot be greater than 99");
-        require(_referralRewardPercentage <= 99, "Referral reward percentage cannot be greater than 99");
-        referralDiscountPercentage = _referralDiscountPercentage;
-        referralRewardPercentage = _referralRewardPercentage;
-        emit ReferralRewardPercentagesChanged(_referralDiscountPercentage, _referralRewardPercentage);
-    }
+    // /**
+    //  * @notice Sets the referral discount and reward percentages.
+    //  * @param _referralDiscountPercentage The referral discount percentage.
+    //  * @param _referralRewardPercentage The referral reward percentage.
+    //  * @dev The referral discount and reward percentages cannot be greater than 99.
+    //  */
+    // function setReferralPercentages(
+    //     uint256 _referralDiscountPercentage,
+    //     uint256 _referralRewardPercentage
+    // ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    //     require(_referralDiscountPercentage <= 99, "Referral discount percentage cannot be greater than 99");
+    //     require(_referralRewardPercentage <= 99, "Referral reward percentage cannot be greater than 99");
+    //     referralDiscountPercentage = _referralDiscountPercentage;
+    //     referralRewardPercentage = _referralRewardPercentage;
+    //     emit ReferralRewardPercentagesChanged(_referralDiscountPercentage, _referralRewardPercentage);
+    // }
 
     /**
      * @notice Sets or adds a pricing tier.
@@ -758,25 +759,25 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         return string(abi.encodePacked("data:application/json;base64,", json));
     }
 
-    /**
-     * @notice Returns the average cost of a NodeLicense token. This is primarily used for refunds.
-     * @param _tokenId The ID of the token.
-     * @return The average cost.
-     */
-    function getAverageCost(uint256 _tokenId) public view returns (uint256) {
-        require(_exists(_tokenId), "ERC721Metadata: Query for nonexistent token");
-        return _averageCost[_tokenId];
-    }
+    // /**
+    //  * @notice Returns the average cost of a NodeLicense token. This is primarily used for refunds.
+    //  * @param _tokenId The ID of the token.
+    //  * @return The average cost.
+    //  */
+    // function getAverageCost(uint256 _tokenId) public view returns (uint256) {
+    //     require(_exists(_tokenId), "ERC721Metadata: Query for nonexistent token");
+    //     return _averageCost[_tokenId];
+    // }
 
-    /**
-     * @notice Returns the minting timestamp of a NodeLicense token.
-     * @param _tokenId The ID of the token.
-     * @return The minting timestamp.
-     */
-    function getMintTimestamp(uint256 _tokenId) public view returns (uint256) {
-        require(_exists(_tokenId), "ERC721Metadata: Query for nonexistent token");
-        return _mintTimestamps[_tokenId];
-    }
+    // /**
+    //  * @notice Returns the minting timestamp of a NodeLicense token.
+    //  * @param _tokenId The ID of the token.
+    //  * @return The minting timestamp.
+    //  */
+    // function getMintTimestamp(uint256 _tokenId) public view returns (uint256) {
+    //     require(_exists(_tokenId), "ERC721Metadata: Query for nonexistent token");
+    //     return _mintTimestamps[_tokenId];
+    // }
 
     /**
      * @notice Overrides the supportsInterface function of the AccessControl contract.
@@ -807,46 +808,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         return amountInXai;
     }
 
-    /**
-     * @notice Takes in a string and converts it to an address if valid, otherwise returns the zero address
-     * @param _address The string that is a potential address to validate and convert
-     * @return The address if valid, otherwise the zero address
-     */
-    function validateAndConvertAddress(string memory _address) public pure returns (address) {
-        bytes memory addrBytes = bytes(_address);
 
-        // Check if the length is 42 characters
-        if (addrBytes.length != 42) {
-            return address(0);
-        }
-
-        // Check if it starts with '0x'
-        if (addrBytes[0] != '0' || addrBytes[1] != 'x') {
-            return address(0);
-        }
-
-        uint160 addr = 0;
-
-        // Convert and validate each character
-        for (uint i = 2; i < 42; i++) {
-            uint8 b = uint8(addrBytes[i]);
-            if (b >= 48 && b <= 57) {
-                // '0' to '9'
-                addr = addr * 16 + (b - 48);
-            } else if (b >= 97 && b <= 102) {
-                // 'a' to 'f'
-                addr = addr * 16 + (b - 87);
-            } else if (b >= 65 && b <= 70) {
-                // 'A' to 'F'
-                addr = addr * 16 + (b - 55);
-            } else {
-                // Invalid character found
-                return address(0);
-            }
-        }
-
-        return address(addr);
-    }
 
 
     /**
