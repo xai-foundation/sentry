@@ -419,7 +419,8 @@ export function NodeLicenseTests(deployInfrastructure) {
             const preNodeLicenseBalance = await usdcToken.balanceOf(await nodeLicense.getAddress());
 
             //claim referral rewards
-            await nodeLicense.connect(addr3).claimReferralReward();
+            const claimReferralTrx = await nodeLicense.connect(addr3).claimReferralReward();
+            const claimReferralRec = await claimReferralTrx.wait();
 
             //get post values
             const postReferralBalance = await usdcToken.balanceOf(validPromoCodeAddress);
@@ -428,8 +429,18 @@ export function NodeLicenseTests(deployInfrastructure) {
             //check balances
             expect(postReferralBalance).to.eq(preReferralBalance + expectedReferralReward);
             expect(postNodeLicenseBalance).to.eq(preNodeLicenseBalance - expectedReferralReward);
+
+            //check events
+            const rewardsClaimedEventSignature = ethers.keccak256(
+                ethers.toUtf8Bytes(`RewardClaimed(address,uint256,uint256,uint256,uint256)`)
+            );
+            const rewardClaimedLog = claimReferralRec.logs.filter((log) => {
+                return log.topics[0] === rewardsClaimedEventSignature;
+            });
+            expect((rewardClaimedLog[0]).fragment.name).to.equal("RewardClaimed");
+            expect((rewardClaimedLog[0]).args[4]).to.equal(expectedReferralReward);
         });
-        
+
         it("Checks calling adminMintTo without ADMIN_MINT_ROLE will fail", async function () {
             const { nodeLicense, addr1 } = await loadFixture(deployInfrastructure);
 

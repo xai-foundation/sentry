@@ -118,7 +118,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
 
     event PromoCodeCreated(string promoCode, address recipient);
     event PromoCodeRemoved(string promoCode);
-    event RewardClaimed(address indexed claimer, uint256 ethAmount, uint256 xaiAmount, uint256 esXaiAmount);
+    event RewardClaimed(address indexed claimer, uint256 ethAmount, uint256 xaiAmount, uint256 esXaiAmount, uint256 usdcAmount);
     event PricingTierSetOrAdded(uint256 index, uint256 price, uint256 quantity);
     event ReferralRewardPercentagesChanged(uint256 referralDiscountPercentage, uint256 referralRewardPercentage);
     event ReferralReward(address indexed buyer, address indexed referralAddress, uint256 amount);
@@ -126,7 +126,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     event ClaimableChanged(address indexed admin, bool newClaimableState);
     event WhitelistAmountUpdatedByAdmin(address indexed redeemer, uint16 newAmount);
     event WhitelistAmountRedeemed(address indexed redeemer, uint16 newAmount);
-    event RewardClaimedUSDC(address indexed claimer, uint256 usdcAmount);
     event AdminMintTo(address indexed admin, address indexed receiver, uint256 amount);
 
     /**
@@ -601,9 +600,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         if(rewardUSDC > 0){
             IERC20 token = IERC20(usdcAddress);
             token.transfer(msg.sender, rewardUSDC);
-            emit RewardClaimedUSDC(msg.sender, rewardUSDC);
         }
-        emit RewardClaimed(msg.sender, reward, rewardXai, rewardEsXai); 
+        emit RewardClaimed(msg.sender, reward, rewardXai, rewardEsXai, rewardUSDC); 
     }
 
     /**
