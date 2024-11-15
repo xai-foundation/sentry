@@ -337,8 +337,8 @@ describe("Fixture Tests", function () {
 
         // Setup admin mint to role for nodeLicenseDefaultAdmin
         await nodeLicense8.connect(nodeLicenseDefaultAdmin).grantRole(await nodeLicense8.ADMIN_MINT_ROLE(), nodeLicenseDefaultAdmin.address);
-        
-        // Deploy the Referee Calculations contract
+        await nodeLicense8.connect(nodeLicenseDefaultAdmin).grantRole(await nodeLicense8.TRANSFER_ROLE(), nodeLicenseDefaultAdmin.address);
+
         const RefereeCalculations = await ethers.getContractFactory("RefereeCalculations");
         const refereeCalculations = await upgrades.deployProxy(RefereeCalculations, [], { deployer: deployer });
         await refereeCalculations.waitForDeployment();
@@ -405,7 +405,7 @@ describe("Fixture Tests", function () {
             publicKeyHex: "0x" + publicKeyHex,
             referee: referee10,
             nodeLicense: nodeLicense8,
-            poolFactory,
+            poolFactory: poolFactory2,
             gasSubsidy,
             esXai: esXai3,
             xai,
