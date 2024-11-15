@@ -92,12 +92,16 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     bytes32 public constant ADMIN_MINT_ROLE = keccak256("ADMIN_MINT_ROLE");
     bytes32 public constant TRANSFER_ROLE = keccak256("TRANSFER_ROLE");
 
+    address public usdcAddress;
+    mapping (string => PromoCode) private _promoCodesUSDC;
+    mapping (address => uint256) private _referralRewardsUSDC;
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[490] private __gap;
+    uint256[487] private __gap;
 
     // Define the pricing tiers
     struct Tier {
@@ -114,7 +118,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
 
     event PromoCodeCreated(string promoCode, address recipient);
     event PromoCodeRemoved(string promoCode);
-    event RewardClaimed(address indexed claimer, uint256 ethAmount, uint256 xaiAmount, uint256 esXaiAmount);
+    event RewardClaimed(address indexed claimer, uint256 ethAmount, uint256 xaiAmount, uint256 esXaiAmount, uint256 usdcAmount);
     event PricingTierSetOrAdded(uint256 index, uint256 price, uint256 quantity);
     event ReferralRewardPercentagesChanged(uint256 referralDiscountPercentage, uint256 referralRewardPercentage);
     event ReferralReward(address indexed buyer, address indexed referralAddress, uint256 amount);
@@ -123,21 +127,31 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     event WhitelistAmountUpdatedByAdmin(address indexed redeemer, uint16 newAmount);
     event WhitelistAmountRedeemed(address indexed redeemer, uint16 newAmount);
     event AdminMintTo(address indexed admin, address indexed receiver, uint256 amount);
+    event AdminTransferBatch(address indexed admin, address indexed receiver, bytes32 indexed transferId, uint256[] tokenIds);
 
     /**
      * @notice Initializes the NodeLicense contract.
      * 
      */
 
-    function initialize(address _xaiAddress,  address _esXaiAddress, address ethPriceFeedAddress, address xaiPriceFeedAddress, address airdropAdmin) public reinitializer(3) {
+    function initialize(
+        address _xaiAddress,  
+        address _esXaiAddress, 
+        address ethPriceFeedAddress, 
+        address xaiPriceFeedAddress, 
+        address airdropAdmin,
+        address _usdcAddress
+    ) public reinitializer(3) {
         require(_xaiAddress != address(0), "Invalid xai address");
         require(_esXaiAddress != address(0), "Invalid esXai address");
+        require(_usdcAddress != address(0), "Invalid usdc address");
         require(ethPriceFeedAddress != address(0), "Invalid ethPriceFeed address");
         require(xaiPriceFeedAddress != address(0), "Invalid xaiPriceFeed address");
         ethPriceFeed = IAggregatorV3Interface(ethPriceFeedAddress);
         xaiPriceFeed = IAggregatorV3Interface(xaiPriceFeedAddress);
         xaiAddress = _xaiAddress;
         esXaiAddress = _esXaiAddress;
+        usdcAddress = _usdcAddress;
         
         // Grant the airdrop admin role to the airdrop admin address
         _grantRole(AIRDROP_ADMIN_ROLE, airdropAdmin);
@@ -287,6 +301,38 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
                 _referralRewardsXai[recipientAddress] += referralReward;
             }
         }     
+    }
+
+    /**
+     * @dev Mints a node license to the recipient address where the caller pays in USDC.
+     */
+    function mintToWithUSDC(address _to, uint256 _amount, string calldata _promoCode, uint256 _expectedCostInUSDC) public {
+        //validate
+        _validateMint(_amount);
+
+        //convert the final price to USDC
+        uint256 mintPriceInWei = price(_amount, _promoCode);
+        uint256 ethPriceInUSDC = uint256(ethPriceFeed.latestAnswer()) * 10**10; //convert to 18 decimals
+        uint256 mintPriceInUSDC = (mintPriceInWei * ethPriceInUSDC) / 10**18;
+        require(mintPriceInUSDC <= _expectedCostInUSDC, "Price Exceeds Expected Cost");
+
+        //mint node license tokens
+        uint256 averageCost = mintPriceInWei / _amount;
+        _mintNodeLicense(_amount, averageCost, _to);
+
+        //calculate referral reward and determine if the promo code is an address
+        (uint256 referralReward, address recipientAddress) = _calculateReferralReward(mintPriceInUSDC, _promoCode);
+
+        //transfer usdc from caller
+        IERC20 token = IERC20(usdcAddress);
+        token.transferFrom(msg.sender, address(this), mintPriceInUSDC);
+        token.transfer(fundsReceiver, mintPriceInUSDC - referralReward);
+
+        if (referralReward > 0) {
+            //store the referral reward in the appropriate mapping
+            _promoCodesUSDC[_promoCode].receivedLifetime += referralReward;
+            _referralRewardsUSDC[recipientAddress] += referralReward;
+        }
     }
 
     /**
@@ -528,19 +574,22 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         // Pay Xai & esXAI rewards if they exist
         uint256 rewardXai = _referralRewardsXai[msg.sender];
         uint256 rewardEsXai = _referralRewardsEsXai[msg.sender];
+        uint256 rewardUSDC = _referralRewardsUSDC[msg.sender];
 
         // Require that the user has a reward to claim
-        require(reward > 0 || rewardXai > 0 || rewardEsXai > 0, "No referral reward to claim");
+        require(reward > 0 || rewardXai > 0 || rewardEsXai > 0 || rewardUSDC > 0, "No referral reward to claim");
         
         // Reset the referral reward balance
         _referralRewards[msg.sender] = 0;
         _referralRewardsXai[msg.sender] = 0;
         _referralRewardsEsXai[msg.sender] = 0;
+        _referralRewardsUSDC[msg.sender] = 0;
 
         // Transfer the rewards to the caller
         (bool success, ) = msg.sender.call{value: reward}("");
         require(success, "Transfer failed.");
 
+        //transfer ERC20 tokens
         if(rewardXai > 0){
             IERC20 token = IERC20(xaiAddress);
             token.transfer(msg.sender, rewardXai);
@@ -549,7 +598,11 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
             IERC20 token = IERC20(esXaiAddress);
             token.transfer(msg.sender, rewardEsXai);
         }
-        emit RewardClaimed(msg.sender, reward, rewardXai, rewardEsXai); 
+        if(rewardUSDC > 0){
+            IERC20 token = IERC20(usdcAddress);
+            token.transfer(msg.sender, rewardUSDC);
+        }
+        emit RewardClaimed(msg.sender, reward, rewardXai, rewardEsXai, rewardUSDC); 
     }
 
     /**
@@ -736,20 +789,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         return super.supportsInterface(interfaceId) || ERC721EnumerableUpgradeable.supportsInterface(interfaceId) || AccessControlUpgradeable.supportsInterface(interfaceId);
     }
 
-    /**
-     * @notice Overrides the transfer function of the ERC721 contract to make the token non-transferable.
-     * @param from The current owner of the token.
-     * @param to The address to receive the token.
-     * @param tokenId The token id.
-     */
-    function _transfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal override {
-        revert("NodeLicense: transfer is not allowed");
-    }
-
     /** @notice takes in an amount of Ether in wei and returns the equivalent amount in XAI
      * @param _amount The amount of Ether in wei (18 decimals)
      * @return The equivalent amount in XAI with 18 decimals
@@ -837,6 +876,53 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         uint256[] memory tokenIds,
         bytes32 transferId
     ) external onlyRole(TRANSFER_ROLE) {
-        revert("Not implemented");
+        require(to != address(0) && to != address(this), "Invalid to address");
+        require(!usedTransferIds[transferId], "TransferId in use");
+
+        uint256 tokenIdsLength = tokenIds.length;
+        require(tokenIdsLength > 0, "No tokenIds provided");
+
+        usedTransferIds[transferId] = true;
+        
+        for(uint256 i; i < tokenIds.length; i++){
+            super.safeTransferFrom(msg.sender, to, tokenIds[i]);
+        }
+        emit AdminTransferBatch(msg.sender, to, transferId, tokenIds);
     }
+
+    /**
+     * @notice Overwrite ERC721 tranferFrom require TRANSFER_ROLE on msg.sender
+     */
+    function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public override onlyRole(TRANSFER_ROLE) {
+        super.transferFrom(from, to, tokenId);
+    }
+
+    /**
+     * @notice Overwrite ERC721 safeTransferFrom require TRANSFER_ROLE on msg.sender
+     */
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public override onlyRole(TRANSFER_ROLE) {
+        super.safeTransferFrom(from, to, tokenId);
+    }
+
+    /**
+     * @notice Overwrite ERC721 safeTransferFrom require TRANSFER_ROLE on msg.sender
+     */
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory data
+    ) public override onlyRole(TRANSFER_ROLE) {
+        super.safeTransferFrom(from, to, tokenId, data);
+    }
+	
+	
 }
