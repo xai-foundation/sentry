@@ -10,6 +10,8 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "../../upgrades/referee/Referee10.sol";
 import "../../RefereeCalculations.sol";
 
+import "hardhat/console.sol";
+
 interface IAggregatorV3Interface {
     function latestAnswer() external view returns (int256);
 }
@@ -97,12 +99,14 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     mapping (string => PromoCode) private _promoCodesUSDC;
     mapping (address => uint256) private _referralRewardsUSDC;
 
+    address public refereeCalculationsAddress;
+
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[487] private __gap;
+    uint256[486] private __gap;
 
     // Define the pricing tiers
     struct Tier {
@@ -141,11 +145,13 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         address ethPriceFeedAddress, 
         address xaiPriceFeedAddress, 
         address airdropAdmin,
-        address _usdcAddress
+        address _usdcAddress,
+        address _refereeCalculationsAddress
     ) public reinitializer(3) {
         require(_xaiAddress != address(0), "Invalid xai address");
         require(_esXaiAddress != address(0), "Invalid esXai address");
         require(_usdcAddress != address(0), "Invalid usdc address");
+        require(_refereeCalculationsAddress != address(0), "Invalid referee address");
         require(ethPriceFeedAddress != address(0), "Invalid ethPriceFeed address");
         require(xaiPriceFeedAddress != address(0), "Invalid xaiPriceFeed address");
         ethPriceFeed = IAggregatorV3Interface(ethPriceFeedAddress);
@@ -153,6 +159,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         xaiAddress = _xaiAddress;
         esXaiAddress = _esXaiAddress;
         usdcAddress = _usdcAddress;
+        refereeCalculationsAddress = _refereeCalculationsAddress;
         
         // Grant the airdrop admin role to the airdrop admin address
         _grantRole(AIRDROP_ADMIN_ROLE, airdropAdmin);
@@ -447,7 +454,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         // If promo code does not exist in the mapping
 
         // Check if the promo code is an address
-        address promoCodeAsAddress = RefereeCalculations(address(this)).validateAndConvertAddress(_promoCode);
+        address promoCodeAsAddress = RefereeCalculations(refereeCalculationsAddress).validateAndConvertAddress(_promoCode);
 
         // If the promo code is an address, determine if the recipient has been set
         if(promoCodeAsAddress != address(0)){
@@ -550,8 +557,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         }else{
             // Check if the promo code is an address
             // Returns 0 address if not an address
-            address promoCodeAsAddress = RefereeCalculations(address(this)).validateAndConvertAddress(_promoCode);
-
+            address promoCodeAsAddress = RefereeCalculations(refereeCalculationsAddress).validateAndConvertAddress(_promoCode);
             // If the promo code is a valid address, check if it owns a license
             if(promoCodeAsAddress != address(0)){
 
