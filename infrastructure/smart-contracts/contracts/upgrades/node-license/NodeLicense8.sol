@@ -123,6 +123,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     event WhitelistAmountUpdatedByAdmin(address indexed redeemer, uint16 newAmount);
     event WhitelistAmountRedeemed(address indexed redeemer, uint16 newAmount);
     event AdminMintTo(address indexed admin, address indexed receiver, uint256 amount);
+    event AdminTransferBatch(address indexed admin, address indexed receiver, bytes32 indexed transferId, uint256[] tokenIds);
 
     /**
      * @notice Initializes the NodeLicense contract.
@@ -736,20 +737,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         return super.supportsInterface(interfaceId) || ERC721EnumerableUpgradeable.supportsInterface(interfaceId) || AccessControlUpgradeable.supportsInterface(interfaceId);
     }
 
-    /**
-     * @notice Overrides the transfer function of the ERC721 contract to make the token non-transferable.
-     * @param from The current owner of the token.
-     * @param to The address to receive the token.
-     * @param tokenId The token id.
-     */
-    function _transfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal override {
-        revert("NodeLicense: transfer is not allowed");
-    }
-
     /** @notice takes in an amount of Ether in wei and returns the equivalent amount in XAI
      * @param _amount The amount of Ether in wei (18 decimals)
      * @return The equivalent amount in XAI with 18 decimals
@@ -837,6 +824,52 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         uint256[] memory tokenIds,
         bytes32 transferId
     ) external onlyRole(TRANSFER_ROLE) {
-        revert("Not implemented");
+        require(to != address(0) && to != address(this), "Invalid to address");
+        require(!usedTransferIds[transferId], "TransferId in use");
+        
+        uint256 tokenIdsLength = tokenIds.length;
+        require(tokenIdsLength > 0, "No tokenIds provided");
+
+        usedTransferIds[transferId] = true;
+        for(uint256 i; i < tokenIds.length; i++){
+            super.safeTransferFrom(msg.sender, to, tokenIds[i]);
+        }
+        emit AdminTransferBatch(msg.sender, to, transferId, tokenIds);
     }
+
+    /**
+     * @notice Overwrite ERC721 tranferFrom require TRANSFER_ROLE on msg.sender
+     */
+    function transferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public override onlyRole(TRANSFER_ROLE) {
+        super.transferFrom(from, to, tokenId);
+    }
+
+    /**
+     * @notice Overwrite ERC721 safeTransferFrom require TRANSFER_ROLE on msg.sender
+     */
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId
+    ) public override onlyRole(TRANSFER_ROLE) {
+        super.safeTransferFrom(from, to, tokenId);
+    }
+
+    /**
+     * @notice Overwrite ERC721 safeTransferFrom require TRANSFER_ROLE on msg.sender
+     */
+    function safeTransferFrom(
+        address from,
+        address to,
+        uint256 tokenId,
+        bytes memory data
+    ) public override onlyRole(TRANSFER_ROLE) {
+        super.safeTransferFrom(from, to, tokenId, data);
+    }
+	
+	
 }
