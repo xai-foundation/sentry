@@ -10,8 +10,6 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "../../upgrades/referee/Referee10.sol";
 import "../../RefereeCalculations.sol";
 
-import "hardhat/console.sol";
-
 interface IAggregatorV3Interface {
     function latestAnswer() external view returns (int256);
 }
@@ -91,15 +89,15 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     // Used as a safety to mitigate double transfer from admin wallet
     mapping (bytes32 => bool) public usedTransferIds;
 
-    bytes32 public constant AIRDROP_ADMIN_ROLE = keccak256("AIRDROP_ADMIN_ROLE");
-    bytes32 public constant ADMIN_MINT_ROLE = keccak256("ADMIN_MINT_ROLE");
-    bytes32 public constant TRANSFER_ROLE = keccak256("TRANSFER_ROLE");
-
     address public usdcAddress;
     mapping (string => PromoCode) private _promoCodesUSDC;
     mapping (address => uint256) private _referralRewardsUSDC;
 
     address public refereeCalculationsAddress;
+
+    bytes32 public constant AIRDROP_ADMIN_ROLE = keccak256("AIRDROP_ADMIN_ROLE");
+    bytes32 public constant ADMIN_MINT_ROLE = keccak256("ADMIN_MINT_ROLE");
+    bytes32 public constant TRANSFER_ROLE = keccak256("TRANSFER_ROLE");
 
     /**
      * @dev This empty reserved space is put in place to allow future versions to add new
