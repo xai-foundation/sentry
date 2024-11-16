@@ -330,19 +330,24 @@ describe("Fixture Tests", function () {
             [usdcName, usdcSymbol]
         );
         await usdcToken.waitForDeployment();
-        // // Node License8 Upgrade - Required For Tiny Keys
+
+        //Deploy RefereeCalculations
+        const RefereeCalculations = await ethers.getContractFactory("RefereeCalculations");
+        const refereeCalculations = await upgrades.deployProxy(RefereeCalculations, [], { deployer: deployer });
+        await refereeCalculations.waitForDeployment();
+        
+        // Node License8 Upgrade - Required For Tiny Keys
         const NodeLicense8 = await ethers.getContractFactory("NodeLicense8");
-        const nodeLicense8 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense8, { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await tinyKeysAirDrop.getAddress(), await usdcToken.getAddress()] } });
+        const nodeLicense8 = await upgrades.upgradeProxy(
+            (await nodeLicense.getAddress()), 
+            NodeLicense8, 
+            { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await tinyKeysAirDrop.getAddress(), await usdcToken.getAddress(), await refereeCalculations.getAddress()] } }
+        );
         await nodeLicense8.waitForDeployment();
 
         // Setup admin mint to role for nodeLicenseDefaultAdmin
         await nodeLicense8.connect(nodeLicenseDefaultAdmin).grantRole(await nodeLicense8.ADMIN_MINT_ROLE(), nodeLicenseDefaultAdmin.address);
         await nodeLicense8.connect(nodeLicenseDefaultAdmin).grantRole(await nodeLicense8.TRANSFER_ROLE(), nodeLicenseDefaultAdmin.address);
-
-        const RefereeCalculations = await ethers.getContractFactory("RefereeCalculations");
-        const refereeCalculations = await upgrades.deployProxy(RefereeCalculations, [], { deployer: deployer });
-        await refereeCalculations.waitForDeployment();
-        
 
         // // Upgrade esXai3 upgrade - Required For Tiny Keys
         const maxKeysNonKyc = BigInt(1);

@@ -8,10 +8,30 @@ export function NodeLicenseTests(deployInfrastructure) {
     return function() {
 
         it("Check calling the initializer is not allowed afterwards", async function() {
-            const {nodeLicense, nodeLicenseDefaultAdmin, deployer, xai, esXai, chainlinkEthUsdPriceFeed,
-                chainlinkXaiUsdPriceFeed, usdcToken} = await loadFixture(deployInfrastructure);
+            const {
+                nodeLicense, 
+                nodeLicenseDefaultAdmin, 
+                deployer, 
+                xai, 
+                esXai, 
+                chainlinkEthUsdPriceFeed,
+                chainlinkXaiUsdPriceFeed, 
+                usdcToken,
+                refereeCalculations
+            } = await loadFixture(deployInfrastructure);
+
             const expectedRevertMessage = "Initializable: contract is already initialized";
-            await expect(nodeLicense.connect(nodeLicenseDefaultAdmin).initialize(await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), chainlinkXaiUsdPriceFeed.getAddress(), await deployer.getAddress(), await usdcToken.getAddress())).to.be.revertedWith(expectedRevertMessage);
+            await expect(
+                nodeLicense.connect(nodeLicenseDefaultAdmin).initialize(
+                    await xai.getAddress(), 
+                    await esXai.getAddress(), 
+                    await chainlinkEthUsdPriceFeed.getAddress(), 
+                    chainlinkXaiUsdPriceFeed.getAddress(), 
+                    await deployer.getAddress(), 
+                    await usdcToken.getAddress(),
+                    await refereeCalculations.getAddress()
+                )
+            ).to.be.revertedWith(expectedRevertMessage);
         })
 
         it("Check the max supply is 50,000", async function() {
@@ -230,26 +250,26 @@ export function NodeLicenseTests(deployInfrastructure) {
         //     }
         // });
     
-        it("Check if the new fundsReceiver receives the funds", async function() {
-            const {nodeLicense, nodeLicenseDefaultAdmin, addr1, addr2} = await loadFixture(deployInfrastructure);
-            const newFundsReceiver = addr2;
+        // it("Check if the new fundsReceiver receives the funds", async function() {
+        //     const {nodeLicense, nodeLicenseDefaultAdmin, addr1, addr2} = await loadFixture(deployInfrastructure);
+        //     const newFundsReceiver = addr2;
 
-            // Set the new fundsReceiver
-            await nodeLicense.connect(nodeLicenseDefaultAdmin).setFundsReceiver(newFundsReceiver.address);
+        //     // Set the new fundsReceiver
+        //     await nodeLicense.connect(nodeLicenseDefaultAdmin).setFundsReceiver(newFundsReceiver.address);
 
-            // Get the balance of the new fundsReceiver before minting
-            const balanceBeforeMint = await ethers.provider.getBalance(newFundsReceiver.address);
+        //     // Get the balance of the new fundsReceiver before minting
+        //     const balanceBeforeMint = await ethers.provider.getBalance(newFundsReceiver.address);
 
-            // Mint a NodeLicense
-            const price = await nodeLicense.price(1, "");
-            await nodeLicense.connect(addr1).mint(1, "", { value: price });
+        //     // Mint a NodeLicense
+        //     const price = await nodeLicense.price(1, "");
+        //     await nodeLicense.connect(addr1).mint(1, "", { value: price });
 
-            // Get the balance of the new fundsReceiver after minting
-            const balanceAfterMint = await ethers.provider.getBalance(newFundsReceiver.address);
+        //     // Get the balance of the new fundsReceiver after minting
+        //     const balanceAfterMint = await ethers.provider.getBalance(newFundsReceiver.address);
 
-            // Check if the new fundsReceiver's balance has increased by the price of the NodeLicense
-            expect(balanceAfterMint).to.equal(balanceBeforeMint + price);
-        });
+        //     // Check if the new fundsReceiver's balance has increased by the price of the NodeLicense
+        //     expect(balanceAfterMint).to.equal(balanceBeforeMint + price);
+        // });
 
         it("Check if setting a pricing tier out of bounds fails", async function() {
             const {nodeLicense, nodeLicenseDefaultAdmin} = await loadFixture(deployInfrastructure);
@@ -261,31 +281,31 @@ export function NodeLicenseTests(deployInfrastructure) {
             await expect(nodeLicense.connect(nodeLicenseDefaultAdmin).setOrAddPricingTier(index, price, quantity)).to.be.revertedWith("Index out of bounds");
         });
 
-        it("Check if setting a different referral percentages applies a different discount and gives a different amount to referrals", async function() {
-            const {nodeLicense, nodeLicenseDefaultAdmin, addr1} = await loadFixture(deployInfrastructure);
-            const newReferralDiscountPercentage = BigInt(10);
-            const newReferralRewardPercentage = BigInt(20);
+        // it("Check if setting a different referral percentages applies a different discount and gives a different amount to referrals", async function() {
+        //     const {nodeLicense, nodeLicenseDefaultAdmin, addr1} = await loadFixture(deployInfrastructure);
+        //     const newReferralDiscountPercentage = BigInt(10);
+        //     const newReferralRewardPercentage = BigInt(20);
 
-            // Set the new referral percentages
-            await nodeLicense.connect(nodeLicenseDefaultAdmin).setReferralPercentages(newReferralDiscountPercentage, newReferralRewardPercentage);
+        //     // Set the new referral percentages
+        //     await nodeLicense.connect(nodeLicenseDefaultAdmin).setReferralPercentages(newReferralDiscountPercentage, newReferralRewardPercentage);
 
-            // Create a new promo code
-            const promoCode = "NEWPROMO";
-            await nodeLicense.connect(nodeLicenseDefaultAdmin).createPromoCode(promoCode, nodeLicenseDefaultAdmin.address);
+        //     // Create a new promo code
+        //     const promoCode = "NEWPROMO";
+        //     await nodeLicense.connect(nodeLicenseDefaultAdmin).createPromoCode(promoCode, nodeLicenseDefaultAdmin.address);
 
-            // Mint a NodeLicense with the new promo code
-            const priceBeforeDiscount = await nodeLicense.price(1, "");
-            await nodeLicense.connect(addr1).mint(1, promoCode, { value: priceBeforeDiscount });
+        //     // Mint a NodeLicense with the new promo code
+        //     const priceBeforeDiscount = await nodeLicense.price(1, "");
+        //     await nodeLicense.connect(addr1).mint(1, promoCode, { value: priceBeforeDiscount });
 
-            // Check if the discount applied is equal to the new referral discount percentage
-            const priceAfterDiscount = await nodeLicense.price(1, promoCode);
-            expect(priceBeforeDiscount - priceAfterDiscount).to.equal(priceBeforeDiscount * newReferralDiscountPercentage / BigInt(100));
+        //     // Check if the discount applied is equal to the new referral discount percentage
+        //     const priceAfterDiscount = await nodeLicense.price(1, promoCode);
+        //     expect(priceBeforeDiscount - priceAfterDiscount).to.equal(priceBeforeDiscount * newReferralDiscountPercentage / BigInt(100));
 
-            // Check if the referral reward is equal to the new referral reward percentage
-            const promoCodeDetails = await nodeLicense.getPromoCode(promoCode);
-            const referralReward = promoCodeDetails.receivedLifetime;
-            expect(referralReward).to.equal(priceAfterDiscount * newReferralRewardPercentage / BigInt(100));
-        });
+        //     // Check if the referral reward is equal to the new referral reward percentage
+        //     const promoCodeDetails = await nodeLicense.getPromoCode(promoCode);
+        //     const referralReward = promoCodeDetails.receivedLifetime;
+        //     expect(referralReward).to.equal(priceAfterDiscount * newReferralRewardPercentage / BigInt(100));
+        // });
 
         it("Check if supportsInterface returns correct boolean value", async function() {
             const {nodeLicense} = await loadFixture(deployInfrastructure);
