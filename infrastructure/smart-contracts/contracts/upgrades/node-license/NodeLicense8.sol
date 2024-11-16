@@ -94,6 +94,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     mapping (address => uint256) private _referralRewardsUSDC;
 
     address public refereeCalculationsAddress;
+    address public refereeAddress;
 
     bytes32 public constant AIRDROP_ADMIN_ROLE = keccak256("AIRDROP_ADMIN_ROLE");
     bytes32 public constant ADMIN_MINT_ROLE = keccak256("ADMIN_MINT_ROLE");
@@ -104,7 +105,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[486] private __gap;
+    uint256[485] private __gap;
 
     // Define the pricing tiers
     struct Tier {
@@ -144,7 +145,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         address xaiPriceFeedAddress, 
         address airdropAdmin,
         address _usdcAddress,
-        address _refereeCalculationsAddress
+        address _refereeCalculationsAddress,
+        address _refereeAddress
     ) public reinitializer(3) {
         require(_xaiAddress != address(0), "Invalid xai address");
         require(_esXaiAddress != address(0), "Invalid esXai address");
@@ -161,6 +163,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         
         // Grant the airdrop admin role to the airdrop admin address
         _grantRole(AIRDROP_ADMIN_ROLE, airdropAdmin);
+        refereeAddress = _refereeAddress;
     }
 
     /** 
@@ -347,12 +350,12 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * pauses mintting until completion of the airdrop
      */
 
-    function startAirdrop(address refereeAddress) external onlyRole(AIRDROP_ADMIN_ROLE) {
+    function startAirdrop() external onlyRole(AIRDROP_ADMIN_ROLE) {
         mintingPaused = true;
         Referee10(refereeAddress).setStakingEnabled(false);
     }
 
-    function finishAirdrop(address refereeAddress, uint256 keyMultiplier) external onlyRole(AIRDROP_ADMIN_ROLE) {
+    function finishAirdrop(uint256 keyMultiplier) external onlyRole(AIRDROP_ADMIN_ROLE) {
         updatePricingAndQuantity(keyMultiplier);
         mintingPaused = false;
         Referee10(refereeAddress).setStakingEnabled(true);
@@ -850,7 +853,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
 
         usedTransferIds[transferId] = true;
         
-        for(uint256 i; i < tokenIds.length; i++){
+        for(uint256 i; i < tokenIdsLength; i++){
+            require(Referee10(refereeAddress).assignedKeyToPool(tokenIds[i]) == address(0), "Cannot transfer staked key");
             super.safeTransferFrom(msg.sender, to, tokenIds[i]);
         }
         emit AdminTransferBatch(msg.sender, to, transferId, tokenIds);
@@ -864,6 +868,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         address to,
         uint256 tokenId
     ) public override onlyRole(TRANSFER_ROLE) {
+        require(Referee10(refereeAddress).assignedKeyToPool(tokenId) == address(0), "Cannot transfer staked key");
         super.transferFrom(from, to, tokenId);
     }
 
@@ -875,6 +880,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         address to,
         uint256 tokenId
     ) public override onlyRole(TRANSFER_ROLE) {
+        require(Referee10(refereeAddress).assignedKeyToPool(tokenId) == address(0), "Cannot transfer staked key");
         super.safeTransferFrom(from, to, tokenId);
     }
 
@@ -887,6 +893,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         uint256 tokenId,
         bytes memory data
     ) public override onlyRole(TRANSFER_ROLE) {
+        require(Referee10(refereeAddress).assignedKeyToPool(tokenId) == address(0), "Cannot transfer staked key");
         super.safeTransferFrom(from, to, tokenId, data);
     }
 	

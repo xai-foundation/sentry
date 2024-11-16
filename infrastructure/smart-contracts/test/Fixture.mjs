@@ -335,13 +335,28 @@ describe("Fixture Tests", function () {
         const RefereeCalculations = await ethers.getContractFactory("RefereeCalculations");
         const refereeCalculations = await upgrades.deployProxy(RefereeCalculations, [], { deployer: deployer });
         await refereeCalculations.waitForDeployment();
-        
+
         // Node License8 Upgrade - Required For Tiny Keys
         const NodeLicense8 = await ethers.getContractFactory("NodeLicense8");
         const nodeLicense8 = await upgrades.upgradeProxy(
-            (await nodeLicense.getAddress()), 
-            NodeLicense8, 
-            { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await tinyKeysAirDrop.getAddress(), await usdcToken.getAddress(), await refereeCalculations.getAddress()] } }
+            (await nodeLicense.getAddress()),
+            NodeLicense8,
+            {
+                call:
+                {
+                    fn: "initialize",
+                    args: [
+                        await xai.getAddress(),
+                        await esXai.getAddress(),
+                        await chainlinkEthUsdPriceFeed.getAddress(),
+                        await chainlinkXaiUsdPriceFeed.getAddress(),
+                        await tinyKeysAirDrop.getAddress(),
+                        await usdcToken.getAddress(),
+                        await refereeCalculations.getAddress(),
+                        await referee.getAddress(),
+                    ]
+                }
+            }
         );
         await nodeLicense8.waitForDeployment();
 

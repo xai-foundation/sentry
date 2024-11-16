@@ -98,6 +98,7 @@ contract NodeLicenseUpgradeTest is
     mapping (address => uint256) private _referralRewardsUSDC;
 
     address public refereeCalculationsAddress;
+    address public refereeAddress;
 
     bytes32 public constant AIRDROP_ADMIN_ROLE = keccak256("AIRDROP_ADMIN_ROLE");
     bytes32 public constant ADMIN_MINT_ROLE = keccak256("ADMIN_MINT_ROLE");
@@ -110,7 +111,7 @@ contract NodeLicenseUpgradeTest is
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[485] private __gap;
+    uint256[484] private __gap;
 
     // Define the pricing tiers
     struct Tier {
