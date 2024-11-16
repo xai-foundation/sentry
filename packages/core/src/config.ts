@@ -38,7 +38,8 @@ const mainnetConfig = {
   alchemyApiKey: "oD4X3JXvJclnt36mDkqnp9CO2sZkNhYT",
   crossmintProjectId: "", //TODO Add Production Values
   crossmintCollectionId: "", //TODO Add Production Values
-  minSecondsBetweenChallenges: 50 * 60 // 1 hour
+  minSecondsBetweenChallenges: 50 * 60, // 1 hour
+  usdcContractAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
 };
 
 const testnetConfig: Config = {
@@ -77,7 +78,8 @@ const testnetConfig: Config = {
   alchemyApiKey: "8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B",
   crossmintProjectId: "cc616c84-6479-4981-a24e-adb4278df212",
   crossmintCollectionId: "854640e1-149c-4092-a40b-bdf2a3f36e64",
-  minSecondsBetweenChallenges: 5 * 60 // 5 minutes on testnet
+  minSecondsBetweenChallenges: 5 * 60, // 5 minutes on testnet
+  usdcContractAddress: "0x14196F08a4Fa0B66B7331bC40dd6bCd8A1dEeA9F"
 };
 
 export let config: Config = mainnetConfig;
