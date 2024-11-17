@@ -2,8 +2,9 @@ import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { parse } from "csv/sync";
 import fs from "fs";
-import { mintBatchedLicenses } from "./utils/mintLicenses.mjs"
+import { mintBatchedLicenses, mintSingleLicense } from "./utils/mintLicenses.mjs"
 import { createPool } from "./utils/createPool.mjs"
+import { submitTestChallenge } from "./utils/submitTestChallenge.mjs"
 
 export function NodeLicenseTests(deployInfrastructure) {
     return function() {
@@ -791,40 +792,46 @@ export function NodeLicenseTests(deployInfrastructure) {
         });
 
         it("Should not allow a staked key to be transferred", async function () {
-            const { nodeLicense, addr1, addr2, referee, poolFactory } = await loadFixture(deployInfrastructure);
+            const { nodeLicense, nodeLicenseDefaultAdmin, addr1, addr2, referee, poolFactory, challenger } = await loadFixture(deployInfrastructure);
+
+            await nodeLicense.connect(nodeLicenseDefaultAdmin).grantRole(await nodeLicense.TRANSFER_ROLE(), addr1.address);
 
             // Verify that the wallet does not have the role
             expect(
                 await nodeLicense.hasRole(await nodeLicense.TRANSFER_ROLE(), addr1.address)
-            ).to.equal(false);
+            ).to.equal(true);
+
+            const mintedKeyId = await mintSingleLicense(nodeLicense, addr1);
 
             const addr1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
             const addr2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
             expect(addr1BalanceBefore).to.be.greaterThan(0n);
 
-			const mintedKeyId = await nodeLicense.tokenOfOwnerByIndex(addr1.address, 0n);
-
             // Verify the key not staked
             expect(await referee.assignedKeyToPool(mintedKeyId)).to.equal(ethers.ZeroAddress);
+            
+            // Submit a challenge so pool creation does not break (since TK update)
+            const startingAssertion = 100;
+            await submitTestChallenge(referee, challenger, startingAssertion, "0x0000000000000000000000000000000000000000000000000000000000000000");
 
             // Create pool & stake key
-            await createPool(poolFactory, addr1, [mintedKeyId]);
-			const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
+            const stakingPoolAddress = await createPool(poolFactory, addr1, [mintedKeyId]);
             // Verify the key is assigned to the pool
             expect(await referee.assignedKeyToPool(mintedKeyId)).to.equal(stakingPoolAddress);
 
+            const expectedError = "Cannot transfer staked key"
             const testTxHash = "0xf63670b4dc0a1468cdf2a37758ea82907655809857c8e5a41cda697152cc7fa8"
             await expect(
                 nodeLicense.connect(addr1).adminTransferBatch(addr2.address, [mintedKeyId], testTxHash)
-            ).to.be.revertedWith("Cannot transfer staked key");
+            ).to.be.revertedWith(expectedError);
 
             await expect(
                 nodeLicense.connect(addr1).safeTransferFrom(addr1.address, addr2.address, mintedKeyId)
-            ).to.be.revertedWith("Cannot transfer staked key");
+            ).to.be.revertedWith(expectedError);
             
             await expect(
                 nodeLicense.connect(addr1).transferFrom(addr1.address, addr2.address, mintedKeyId)
-            ).to.be.revertedWith("Cannot transfer staked key");
+            ).to.be.revertedWith(expectedError);
 
             // Check that balance remains unchanged
             const addr1Balance = await nodeLicense.balanceOf(addr1.address);

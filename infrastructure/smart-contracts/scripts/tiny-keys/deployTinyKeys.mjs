@@ -64,7 +64,7 @@ async function main() {
     const NodeLicense8 = await ethers.getContractFactory("NodeLicense8");    
     console.log("Got NodeLicense factory");
 
-    const nodeLicenseUpgradeParams = [config.xaiAddress, config.esXaiAddress, config.chainlinkEthUsdPriceFeed, config.chainlinkXaiUsdPriceFeed, tinyKeysAirdropAddress, config.usdcContractAddress, config.refereeCalculationsAddress];
+    const nodeLicenseUpgradeParams = [config.xaiAddress, config.esXaiAddress, config.chainlinkEthUsdPriceFeed, config.chainlinkXaiUsdPriceFeed, tinyKeysAirdropAddress, config.usdcContractAddress, config.refereeCalculationsAddress, config.refereeAddress];
     const nodeLicense8 = await upgrades.upgradeProxy(config.nodeLicenseAddress, NodeLicense8, { call: {fn: "initialize", args: nodeLicenseUpgradeParams } });
 
     /**
