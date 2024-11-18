@@ -114,6 +114,18 @@ dataSources:
           handler: handleClaimFromPool
         - event: UpdateDelayPeriods()
           handler: handleUpdateDelayPeriods
+        - event: StakeKeysV2(indexed address,indexed address,uint256,uint256,uint256,uint256[])
+          handler: handleStakeKeysV2
+        - event: UnstakeKeysV2(indexed address,indexed address,uint256,uint256,uint256,uint256,uint256[])
+          handler: handleUnstakeKeysV2
+        - event: PoolCreatedV2(indexed uint256,indexed address,indexed address,uint256,address,uint256[],uint32[3],string[3],string[])
+          handler: handlePoolCreatedV2
+        - event: UnstakeEsXaiV2(indexed address,indexed address,uint256,uint256,uint256,uint256)
+          handler: handleUnstakeEsXaiV2
+        - event: UpdateMetadataV2(indexed address,string[3],string[])
+          handler: handleUpdateMetadataV2
+        - event: UpdateSharesV2(indexed address,uint32[3])
+          handler: handleUpdatePendingSharesV2
       file: ./src/pool-factory.ts
   - kind: ethereum
     name: Xai
