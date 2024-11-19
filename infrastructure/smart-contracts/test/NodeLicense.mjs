@@ -332,7 +332,7 @@ export function NodeLicenseTests(deployInfrastructure) {
 
             //mint USDC tokens to caller and approve
             const price = await nodeLicense.price(1, ""); //157945445600000000
-            const expectedPriceInUSDC = 473_836336800000000000n;
+            const expectedPriceInUSDC = 473_836336n;
             await usdcToken.mint(callerAddress, expectedPriceInUSDC);
             await usdcToken.connect(addr1).approve(await nodeLicense.getAddress(), expectedPriceInUSDC);
             
@@ -374,8 +374,8 @@ export function NodeLicenseTests(deployInfrastructure) {
 
             //mint USDC tokens to caller and approve
             const price = await nodeLicense.price(1, ""); //157945445600000000
-            const expectedPriceInUSDC = 426_452703120000000000n;
-            const expectedReferralReward = 8_529054062400000000n;
+            const expectedPriceInUSDC = 426_452703n;
+            const expectedReferralReward = 8_529054n;
             await usdcToken.mint(callerAddress, expectedPriceInUSDC);
             await usdcToken.connect(addr1).approve(await nodeLicense.getAddress(), expectedPriceInUSDC);
             
@@ -426,8 +426,8 @@ export function NodeLicenseTests(deployInfrastructure) {
 
             //mint USDC tokens to caller and approve
             const price = await nodeLicense.price(1, ""); //157945445600000000
-            const expectedPriceInUSDC = 426_452703120000000000n;
-            const expectedReferralReward = 8_529054062400000000n;
+            const expectedPriceInUSDC = 426_452703n;
+            const expectedReferralReward = 8_529054n;
             await usdcToken.mint(callerAddress, expectedPriceInUSDC);
             await usdcToken.connect(addr1).approve(await nodeLicense.getAddress(), expectedPriceInUSDC);
 
