@@ -23,8 +23,17 @@ export function handleTransfer(event: TransferEvent): void {
   
   sentryWallet.keyCount = sentryWallet.keyCount.plus(BigInt.fromI32(1))
   sentryWallet.save();
-
-  //TODO should keys ever be transferable we need to decrease the keyCount of the from address
+  
+  //Decrease the keyCount of the from address if not a mint event
+  if (event.params.from != Address.zero()) {
+    const fromSentryWallet = SentryWallet.load(event.params.from.toHexString());
+    if (fromSentryWallet) {
+      fromSentryWallet.keyCount = fromSentryWallet.keyCount.minus(
+        BigInt.fromI32(1)
+      );
+      fromSentryWallet.save();
+    }
+  }
 
   let sentryKey = SentryKey.load(event.params.tokenId.toString())
   if (!sentryKey) {
