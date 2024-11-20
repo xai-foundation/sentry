@@ -126,6 +126,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     event PricingTierSetOrAdded(uint256 index, uint256 price, uint256 quantity);
     event ReferralRewardPercentagesChanged(uint256 referralDiscountPercentage, uint256 referralRewardPercentage);
     event ReferralReward(address indexed buyer, address indexed referralAddress, uint256 amount);
+    event ReferralRewardV2(address indexed buyer, address indexed referralAddress, address indexed currency, string promoCode, uint256 amount);
     event FundsReceiverChanged(address indexed admin, address newFundsReceiver);
     event ClaimableChanged(address indexed admin, bool newClaimableState);
     event WhitelistAmountUpdatedByAdmin(address indexed redeemer, uint16 newAmount);
@@ -251,7 +252,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         _mintNodeLicense(_amount, averageCost, _mintToAddress);
 
         // Calculate the referral reward and determine if the promo code is an address
-        (uint256 referralReward, address recipientAddress)  = _calculateReferralReward(finalPrice, _promoCode);
+        (uint256 referralReward, address recipientAddress)  = _calculateReferralReward(finalPrice, _promoCode, address(0));
 
         // Update the promo code mappings for Eth rewards
         if(referralReward > 0){
@@ -294,7 +295,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         _mintNodeLicense(_amount, averageCost, msg.sender);
 
         // Calculate the referral reward and determine if the promo code is an address
-        (uint256 referralReward, address recipientAddress)  = _calculateReferralReward(finalPrice, _promoCode);
+        address currency = _useEsXai ? esXaiAddress : xaiAddress;
+        (uint256 referralReward, address recipientAddress)  = _calculateReferralReward(finalPrice, _promoCode, currency);
         
         IERC20 token = IERC20(_useEsXai ? esXaiAddress : xaiAddress);
         token.transferFrom(msg.sender, address(this), finalPrice);
@@ -330,7 +332,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         _mintNodeLicense(_amount, averageCost, _to);
 
         //calculate referral reward and determine if the promo code is an address
-        (uint256 referralReward, address recipientAddress) = _calculateReferralReward(mintPriceInUSDC, _promoCode);
+        (uint256 referralReward, address recipientAddress) = _calculateReferralReward(mintPriceInUSDC, _promoCode, usdcAddress);
 
         //transfer usdc from caller
         IERC20 token = IERC20(usdcAddress);
@@ -423,7 +425,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * @param _promoCode The promo code used
      * @return A tuple containing the referral reward and an address with 0 address indicating the promo code was not an address
      */
-    function _calculateReferralReward(uint256 _finalPrice, string memory _promoCode) internal returns(uint256, address) {
+    function _calculateReferralReward(uint256 _finalPrice, string memory _promoCode, address _currency) internal returns(uint256, address) {
         // If the promo code is empty, return 0
         if(bytes(_promoCode).length == 0){
             return (0, address(0));
@@ -447,7 +449,12 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
 
             // Calculate the referral reward
             referralReward = _finalPrice * referralRewardPercentage / 100;
-            emit ReferralReward(msg.sender, promoCode.recipient, referralReward);
+
+            if(_currency == address(0)){
+                emit ReferralReward(msg.sender, promoCode.recipient, referralReward);
+            }else{
+                emit ReferralRewardV2(msg.sender, promoCode.recipient, _currency, _promoCode, referralReward);
+            }
 
             return (referralReward, promoCode.recipient);
             
@@ -476,7 +483,12 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
 
             // Calculate the referral reward
             referralReward = _finalPrice * referralRewardPercentage / 100;
-            emit ReferralReward(msg.sender, promoCodeAsAddress, referralReward);
+            
+            if(_currency == address(0)){
+                emit ReferralReward(msg.sender, promoCode.recipient, referralReward);
+            }else{
+                emit ReferralRewardV2(msg.sender, promoCode.recipient, _currency, _promoCode, referralReward);
+            }
 
             return (referralReward, promoCodeAsAddress);
         }
