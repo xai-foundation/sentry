@@ -54,15 +54,22 @@ export function handleInitialized(event: Initialized): void {
   const poolFactory = PoolFactory.bind(event.address)
   poolConfig.version = BigInt.fromI32(event.params.version)
 
-  const unstakeKeysDelay = poolFactory.try_unstakeKeysDelayPeriod();
-  const unstakeGenesisKeyDelay = poolFactory.try_unstakeGenesisKeyDelayPeriod();
-  const unstakeEsXaiDelay = poolFactory.try_unstakeEsXaiDelayPeriod();
-  const updateRewardBreakdownDelay = poolFactory.try_updateRewardBreakdownDelayPeriod();
+  poolConfig.unstakeKeysDelayPeriod = poolFactory.unstakeKeysDelayPeriod()
+  poolConfig.unstakeGenesisKeyDelayPeriod = poolFactory.unstakeGenesisKeyDelayPeriod()
+  poolConfig.unstakeEsXaiDelayPeriod = poolFactory.unstakeEsXaiDelayPeriod()
+  poolConfig.updateRewardBreakdownDelayPeriod = poolFactory.updateRewardBreakdownDelayPeriod()
 
-  poolConfig.unstakeKeysDelayPeriod = unstakeKeysDelay.reverted ? BigInt.fromI32(0) : unstakeKeysDelay.value;
-  poolConfig.unstakeGenesisKeyDelayPeriod = unstakeGenesisKeyDelay.reverted ? BigInt.fromI32(0) : unstakeGenesisKeyDelay.value;
-  poolConfig.unstakeEsXaiDelayPeriod = unstakeEsXaiDelay.reverted ? BigInt.fromI32(0) : unstakeEsXaiDelay.value;
-  poolConfig.updateRewardBreakdownDelayPeriod = updateRewardBreakdownDelay.reverted ? BigInt.fromI32(0) : updateRewardBreakdownDelay.value;
+  // Code below was previously required due to Sepolia failing on deployment, but commenting out because mainnet deployment is working
+
+  // const unstakeKeysDelay = poolFactory.try_unstakeKeysDelayPeriod();
+  // const unstakeGenesisKeyDelay = poolFactory.try_unstakeGenesisKeyDelayPeriod();
+  // const unstakeEsXaiDelay = poolFactory.try_unstakeEsXaiDelayPeriod();
+  // const updateRewardBreakdownDelay = poolFactory.try_updateRewardBreakdownDelayPeriod();
+
+  // poolConfig.unstakeKeysDelayPeriod = unstakeKeysDelay.reverted ? BigInt.fromI32(0) : unstakeKeysDelay.value;
+  // poolConfig.unstakeGenesisKeyDelayPeriod = unstakeGenesisKeyDelay.reverted ? BigInt.fromI32(0) : unstakeGenesisKeyDelay.value;
+  // poolConfig.unstakeEsXaiDelayPeriod = unstakeEsXaiDelay.reverted ? BigInt.fromI32(0) : unstakeEsXaiDelay.value;
+  // poolConfig.updateRewardBreakdownDelayPeriod = updateRewardBreakdownDelay.reverted ? BigInt.fromI32(0) : updateRewardBreakdownDelay.value;
 
   poolConfig.save();
 }
