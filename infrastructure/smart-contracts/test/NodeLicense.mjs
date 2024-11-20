@@ -477,11 +477,15 @@ export function NodeLicenseTests(deployInfrastructure) {
             const amountToMint = 10;
             const totalSupplyBefore = await nodeLicense.totalSupply();
             const addr1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
+            
+            // Mock a mint transaction hash            
+            const randomBytes = ethers.randomBytes(32);
+            const sampleMintTxHash = ethers.hexlify(randomBytes);
 
             // Verify that we revert with the correct error for access control missing role
             const expectedRevertMessage = `AccessControl: account ${addr1.address.toLowerCase()} is missing role ${await nodeLicense.ADMIN_MINT_ROLE()}`;
             await expect(
-                nodeLicense.connect(addr1).adminMintTo(addr1.address, amountToMint)
+                nodeLicense.connect(addr1).adminMintTo(addr1.address, amountToMint, sampleMintTxHash)
             ).to.be.revertedWith(expectedRevertMessage);
 
             // Check that addr1's balance remains unchanged
@@ -504,9 +508,13 @@ export function NodeLicenseTests(deployInfrastructure) {
                 await nodeLicense.hasRole(await nodeLicense.ADMIN_MINT_ROLE(), nodeLicenseDefaultAdmin.address)
             ).to.equal(true);
 
+            // Mock a mint transaction hash
+            const randomBytes = ethers.randomBytes(32);
+            const sampleMintTxHash = ethers.hexlify(randomBytes);
+
             // Call adminMintTo to mint tokens to addr1
             const amountToMint = 10;
-            const tx = await nodeLicense.connect(nodeLicenseDefaultAdmin).adminMintTo(addr1.address, amountToMint);
+            const tx = await nodeLicense.connect(nodeLicenseDefaultAdmin).adminMintTo(addr1.address, amountToMint, sampleMintTxHash);
             // Calculate the gas used for checking balance 
             const receipt = await tx.wait();
             const gasUsed = receipt.gasUsed;
@@ -550,10 +558,14 @@ export function NodeLicenseTests(deployInfrastructure) {
             expect(
                 await nodeLicense.hasRole(await nodeLicense.ADMIN_MINT_ROLE(), nodeLicenseDefaultAdmin.address)
             ).to.equal(true);
+            
+            // Mock a mint transaction hash
+            const randomBytes = ethers.randomBytes(32);
+            const sampleMintTxHash = ethers.hexlify(randomBytes);
 
             // Verify mintTo fails for maxSupply
             await expect(
-                nodeLicense.connect(nodeLicenseDefaultAdmin).adminMintTo(addr1.address, 10)
+                nodeLicense.connect(nodeLicenseDefaultAdmin).adminMintTo(addr1.address, 10, sampleMintTxHash)
             ).to.be.revertedWith("Exceeds maxSupply");
 
             const totalSupplyAfter = await nodeLicense.totalSupply();
@@ -781,10 +793,10 @@ export function NodeLicenseTests(deployInfrastructure) {
             
             const keyIdsNonTransfer = await mintBatchedLicenses(3n, nodeLicense, nodeLicenseDefaultAdmin);
 
-            // Make sure we cannot sue the same transferId again
+            // Make sure we cannot sure the same transferId again
             await expect(
                 nodeLicense.connect(nodeLicenseDefaultAdmin).adminTransferBatch(addr2.address, keyIdsNonTransfer, testTxHash)
-            ).to.be.revertedWith("TransferId in use");
+            ).to.be.revertedWithCustomError(nodeLicense, "TxIdPrevUsed");
             
             // Check that balance stayed the same
             expect(addr1Balance + 3n).to.equal(await nodeLicense.balanceOf(nodeLicenseDefaultAdmin.address));
@@ -840,6 +852,28 @@ export function NodeLicenseTests(deployInfrastructure) {
             const addr2Balance = await nodeLicense.balanceOf(addr2.address);
             expect(addr2Balance).to.equal(addr2BalanceBefore);
         });
+        
+        it("Should revert adminMintTo using the same mintTxId", async function () {
+            const { nodeLicense, nodeLicenseDefaultAdmin, addr1 } = await loadFixture(deployInfrastructure);
+
+            // Verify that the wallet has the admin mint role
+            expect(
+                await nodeLicense.hasRole(await nodeLicense.ADMIN_MINT_ROLE(), nodeLicenseDefaultAdmin.address)
+            ).to.equal(true);
+
+            // Mock a mint transaction hash
+            const randomBytes = ethers.randomBytes(32);
+            const sampleMintTxHash = ethers.hexlify(randomBytes);
+
+            // Mint using the tx hash, should succeed the first time
+            nodeLicense.connect(nodeLicenseDefaultAdmin).adminMintTo(addr1.address, 10, sampleMintTxHash)
+
+            // Verify mintTo fails if we attempt to use the same tx hash a second time
+            await expect(
+                nodeLicense.connect(nodeLicenseDefaultAdmin).adminMintTo(addr1.address, 10, sampleMintTxHash)
+            ).to.be.revertedWithCustomError(nodeLicense, "TxIdPrevUsed");
+        });
+
 
     }
 }
