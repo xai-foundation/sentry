@@ -320,9 +320,9 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         _validateMint(_amount);
 
         //convert the final price to USDC
-        uint256 mintPriceInWei = price(_amount, _promoCode);
-        uint256 ethPriceInUSDC = uint256(ethPriceFeed.latestAnswer()) * 10**10; //convert to 18 decimals
-        uint256 mintPriceInUSDC = (mintPriceInWei * ethPriceInUSDC) / 10**18;
+        uint256 mintPriceInWei = price(_amount, _promoCode); //.15 ETH
+        uint256 ethRateInUSDC = uint256(ethPriceFeed.latestAnswer()); //8 decimals
+        uint256 mintPriceInUSDC = (mintPriceInWei * ethRateInUSDC) / (10**20); //(18 + 8) - 20 = 6 decimals
         require(mintPriceInUSDC <= _expectedCostInUSDC, "Price Exceeds Expected Cost");
 
         //mint node license tokens
