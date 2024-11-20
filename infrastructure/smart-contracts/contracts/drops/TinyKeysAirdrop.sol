@@ -90,7 +90,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         // The node license contract will then notify the referee contract
         // This will disable minting in the node license contract
         // This will also disable staking in the referee contract
-        NodeLicense8(nodeLicenseAddress).startAirdrop(refereeAddress);
+        NodeLicense8(nodeLicenseAddress).startAirdrop();
 
         // Set the total supply of node licenses at the start of the airdrop
         totalSupplyAtStart = NodeLicense8(nodeLicenseAddress).totalSupply();
@@ -180,7 +180,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         require(stakeCounter == totalSupplyAtStart + 1, "Staking not complete");
 
         // Notify the node license contract that the airdrop is complete
-        NodeLicense8(nodeLicenseAddress).finishAirdrop(refereeAddress, keyMultiplier + 1);
+        NodeLicense8(nodeLicenseAddress).finishAirdrop(keyMultiplier + 1);
 
         airdropStarted = false;
         airdropEnded = true;

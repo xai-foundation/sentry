@@ -13,7 +13,7 @@ const VALID_SHARE_VALUES = [50_000n, 850_000n, 100_000n];
  * Creates a new pool using the provided pool factory.
  * @param {Contract} poolFactory - The pool factory contract instance.
  * @param {Wallet} poolOwner - The wallet of the pool owner creating the pool.
- * @param {BigInt} keysToStake - The number of keys to stake in the pool.
+ * @param {BigInt[]} keysToStake - The number of keys to stake in the pool.
  * @param {string} [poolDelegate] - The address of the pool delegate. Defaults to zero address if not provided.
  * @returns {Promise<string>} - The address of the newly created pool.
  */
