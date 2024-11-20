@@ -1,4 +1,4 @@
-import { Address, BigInt } from "@graphprotocol/graph-ts"
+import { Address, BigInt, log } from "@graphprotocol/graph-ts"
 import {
   Transfer as TransferEvent,
 } from "../generated/NodeLicense/NodeLicense"
@@ -28,11 +28,12 @@ export function handleTransfer(event: TransferEvent): void {
   if (event.params.from != Address.zero()) {
     const fromSentryWallet = SentryWallet.load(event.params.from.toHexString());
     if (fromSentryWallet) {
-      fromSentryWallet.keyCount = fromSentryWallet.keyCount.minus(
-        BigInt.fromI32(1)
-      );
+      fromSentryWallet.keyCount = fromSentryWallet.keyCount.minus(BigInt.fromI32(1));
       fromSentryWallet.save();
     }
+    }else{
+      log.warning("Failed to find SentryWallet for from address: " + event.params.from.toHexString() + ", TX: " + event.transaction.hash.toHexString(), []);
+      return;
   }
 
   let sentryKey = SentryKey.load(event.params.tokenId.toString())
