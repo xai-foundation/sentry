@@ -96,6 +96,15 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     address public refereeCalculationsAddress;
     address public refereeAddress;
 
+    // Used as a safety to mitigate double minting from admin wallet
+    mapping (bytes32 => bool) public usedAdminMintIds;
+
+    // Custom error messages to be used in lieu of require statements
+    error TxIdPrevUsed();
+    error InvalidAddress();
+    error InvalidAmount();
+    error MissingTokenIds();
+
     bytes32 public constant AIRDROP_ADMIN_ROLE = keccak256("AIRDROP_ADMIN_ROLE");
     bytes32 public constant ADMIN_MINT_ROLE = keccak256("ADMIN_MINT_ROLE");
     bytes32 public constant TRANSFER_ROLE = keccak256("TRANSFER_ROLE");
@@ -105,7 +114,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[485] private __gap;
+    uint256[484] private __gap;
 
     // Define the pricing tiers
     struct Tier {
@@ -149,13 +158,9 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         address _refereeCalculationsAddress,
         address _refereeAddress
     ) public reinitializer(3) {
-        // Comment out for max size
-        // require(_xaiAddress != address(0), "Invalid xai address");
-        // require(_esXaiAddress != address(0), "Invalid esXai address");
-        // require(_usdcAddress != address(0), "Invalid usdc address");
-        // require(_refereeCalculationsAddress != address(0), "Invalid referee address");
-        // require(ethPriceFeedAddress != address(0), "Invalid ethPriceFeed address");
-        // require(xaiPriceFeedAddress != address(0), "Invalid xaiPriceFeed address");
+        if(_xaiAddress == address(0) || _esXaiAddress == address(0) || _usdcAddress == address(0) || _refereeCalculationsAddress == address(0) || ethPriceFeedAddress == address(0) || xaiPriceFeedAddress == address(0)){
+            revert InvalidAddress();
+        }
         ethPriceFeed = IAggregatorV3Interface(ethPriceFeedAddress);
         xaiPriceFeed = IAggregatorV3Interface(xaiPriceFeedAddress);
         xaiAddress = _xaiAddress;
@@ -834,13 +839,20 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     /**
      * @notice Admin function mint tokens to a wallet
      * @param to The address to mint the tokens to
+     * @param amount The amount of tokens to mint
+     * @param mintId The id representing the mint transaction
      */
     function adminMintTo(
         address to,
-        uint256 amount
+        uint256 amount,
+        bytes32 mintId
     ) external onlyRole(ADMIN_MINT_ROLE) {
-        require(to != address(0) && to != address(this), "Invalid to address");
-        require(amount > 0, "Invalid amount");
+        if(to == address(0) || to == address(this)) revert InvalidAddress();
+        if(amount == 0) revert InvalidAmount();
+        if(usedAdminMintIds[mintId]) revert TxIdPrevUsed();
+
+        usedAdminMintIds[mintId] = true;
+
         _validateMint(amount);
         _mintNodeLicense(amount, 0, to);
         emit AdminMintTo(msg.sender, to, amount);
@@ -858,11 +870,11 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         uint256[] memory tokenIds,
         bytes32 transferId
     ) external onlyRole(TRANSFER_ROLE) {
-        require(to != address(0) && to != address(this), "Invalid to address");
-        require(!usedTransferIds[transferId], "TransferId in use");
+        if(to == address(0) || to == address(this)) revert InvalidAddress();
+        if(usedTransferIds[transferId]) revert TxIdPrevUsed();
 
         uint256 tokenIdsLength = tokenIds.length;
-        require(tokenIdsLength > 0, "No tokenIds provided");
+        if(tokenIdsLength == 0) revert MissingTokenIds();
 
         usedTransferIds[transferId] = true;
         
