@@ -31,9 +31,9 @@ export function handleTransfer(event: TransferEvent): void {
       fromSentryWallet.keyCount = fromSentryWallet.keyCount.minus(BigInt.fromI32(1));
       fromSentryWallet.save();
     }
-    }else{
-      log.warning("Failed to find SentryWallet for from address: " + event.params.from.toHexString() + ", TX: " + event.transaction.hash.toHexString(), []);
-      return;
+  }else{
+    log.warning("Failed to find SentryWallet for from address: " + event.params.from.toHexString() + ", TX: " + event.transaction.hash.toHexString(), []);
+    return;
   }
 
   let sentryKey = SentryKey.load(event.params.tokenId.toString())
