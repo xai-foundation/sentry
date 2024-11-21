@@ -840,18 +840,18 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * @notice Admin function mint tokens to a wallet
      * @param to The address to mint the tokens to
      * @param amount The amount of tokens to mint
-     * @param txHash The transaction hash of the mint on mainnet
+     * @param mintId The id representing the mint transaction
      */
     function adminMintTo(
         address to,
         uint256 amount,
-        bytes32 txHash
+        bytes32 mintId
     ) external onlyRole(ADMIN_MINT_ROLE) {
         if(to == address(0) || to == address(this)) revert InvalidAddress();
         if(amount == 0) revert InvalidAmount();
-        if(usedAdminMintIds[txHash]) revert TxIdPrevUsed();
+        if(usedAdminMintIds[mintId]) revert TxIdPrevUsed();
 
-        usedAdminMintIds[txHash] = true;
+        usedAdminMintIds[mintId] = true;
 
         _validateMint(amount);
         _mintNodeLicense(amount, 0, to);
