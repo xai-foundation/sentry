@@ -149,12 +149,13 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         address _refereeCalculationsAddress,
         address _refereeAddress
     ) public reinitializer(3) {
-        require(_xaiAddress != address(0), "Invalid xai address");
-        require(_esXaiAddress != address(0), "Invalid esXai address");
-        require(_usdcAddress != address(0), "Invalid usdc address");
-        require(_refereeCalculationsAddress != address(0), "Invalid referee address");
-        require(ethPriceFeedAddress != address(0), "Invalid ethPriceFeed address");
-        require(xaiPriceFeedAddress != address(0), "Invalid xaiPriceFeed address");
+        // Comment out for max size
+        // require(_xaiAddress != address(0), "Invalid xai address");
+        // require(_esXaiAddress != address(0), "Invalid esXai address");
+        // require(_usdcAddress != address(0), "Invalid usdc address");
+        // require(_refereeCalculationsAddress != address(0), "Invalid referee address");
+        // require(ethPriceFeedAddress != address(0), "Invalid ethPriceFeed address");
+        // require(xaiPriceFeedAddress != address(0), "Invalid xaiPriceFeed address");
         ethPriceFeed = IAggregatorV3Interface(ethPriceFeedAddress);
         xaiPriceFeed = IAggregatorV3Interface(xaiPriceFeedAddress);
         xaiAddress = _xaiAddress;
