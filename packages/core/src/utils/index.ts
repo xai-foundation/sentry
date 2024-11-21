@@ -12,6 +12,7 @@ export * from "./version.js";
 export * from "./retry.js";
 export * from "./resilientEventListener.js";
 export * from "./sendSlackNotification.js";
+export * from "./getEthUsdExchangeRate.js";
 export * from "./getEthXaiExchangeRate.js";
 export * from "./getEsXaiAllowance.js";
 export * from "./getEsXaiBalance.js";

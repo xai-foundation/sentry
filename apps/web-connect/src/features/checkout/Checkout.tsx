@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { TransactionInProgress } from "./components/TransactionInProgress";
 import { ChooseQuantityRow } from "./components/ChooseQuantityRow";
 import { LogoColumn } from "./components/LogoColumn";
-// import { ChooseCurrencyRow } from "./components/ChooseCurrencyRow";
+import { ChooseCurrencyRow } from "./components/ChooseCurrencyRow";
 import { PricePerKeyRow } from "./components/PricePerKeyRow";
 import { PromoCodeRow } from "./components/PromoCodeRow";
 import { TotalCostRow } from "./components/TotalCostRow";
@@ -78,7 +78,7 @@ export function Checkout() {
                                     <>
                                         {
                                             // Readd with #188538469
-                                            /* <ChooseCurrencyRow /> */
+                                            <ChooseCurrencyRow />
                                         }
 
 

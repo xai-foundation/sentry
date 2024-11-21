@@ -23,6 +23,16 @@ export function TotalCostRow(): JSX.Element {
 
     // Determine which balance to display based on whether the user has token balance
     const balance = currency === CURRENCIES.AETH ? ethBalance : tokenBalance;
+    // switch (currency) {
+    //     case CURRENCIES.AETH:
+    //         balance = ethBalance;
+    //         break;
+    //     case CURRENCIES.XAI:
+    //         balance = tokenBalance;
+    //         break;
+    //     default:
+    //         break;
+    // }
 
     return (
         <div className="mt-1">

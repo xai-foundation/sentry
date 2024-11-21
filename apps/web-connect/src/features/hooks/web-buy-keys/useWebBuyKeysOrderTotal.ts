@@ -5,6 +5,7 @@ import { CURRENCIES, Currency, useContractWrites, UseContractWritesReturn, useCu
 import { useProvider } from "../provider/useProvider";
 import { useNetworkConfig } from '@/hooks/useNetworkConfig';
 import { useCrossmintEvents } from '@crossmint/client-sdk-base';
+import {ethers} from 'ethers';
 
 export interface PriceDataInterface {
     price: bigint;
@@ -25,6 +26,7 @@ interface MintWithCrossmintStatus {
 export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
     isTotalLoading: boolean;
     isExchangeRateLoading: boolean;
+    isUsdExchangeRateLoading: boolean;
     isPromoLoading: boolean;
     isPriceLoading: boolean;
     checkboxes: {
@@ -91,7 +93,8 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     });
 
     const { isLoading: isTotalLoading, data: getTotalData } = useGetTotalSupplyAndCap();
-    const { data: exchangeRateData, isLoading: isExchangeRateLoading } = useGetExchangeRate();
+    const { data: exchangeRateData, isLoading: isExchangeRateLoading } = useGetExchangeRate("XAI");
+    const { data: usdExchangeRateData, isLoading: isUsdExchangeRateLoading } = useGetExchangeRate("USD");
     const { chainId, isConnected, address, isDevelopment } = useNetworkConfig();
 
     const { data: providerData } = useProvider();
@@ -120,7 +123,25 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
 
     const ready = checkboxes.one && checkboxes.two && checkboxes.three;
 
-    const decimalPlaces: number = currency === CURRENCIES.AETH ? 9 : 2;
+    let decimalPlaces: number;
+    switch (currency) {
+        case CURRENCIES.AETH:
+            decimalPlaces = 9;
+            break;
+        case CURRENCIES.XAI:
+            decimalPlaces = 2;
+            break;
+        case CURRENCIES.ES_XAI:
+            decimalPlaces = 2;
+            break;
+        case CURRENCIES.USDC:
+            decimalPlaces = 2;
+            break;
+        default:
+            console.log(`unsupported currency: ${currency}`);
+            decimalPlaces = 18;
+            // throw new Error(`unsupported currency: ${currency}`);
+    }
 
     const { data: getPriceData, isLoading: isPriceLoading } = useGetPriceForQuantity(quantity);
     // Retrieve price data for the specified quantity
@@ -131,12 +152,26 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
      */
     const calculateTotalPrice = useMemo(() => {
         return () => {
-            const price = getPriceData?.price ?? 0n;
+            const price = getPriceData?.price ?? 0n; //returns price for node license in wei
             const discountedPrice = discount.applied ? price * BigInt(95) / BigInt(100) : price;
-            if (currency === CURRENCIES.AETH) {
-                return discountedPrice;
+            let exchangeRate: bigint;
+            switch (currency) {
+                case CURRENCIES.AETH:
+                    return discountedPrice;
+                case CURRENCIES.XAI:
+                    exchangeRate = exchangeRateData?.exchangeRate ?? 0n;
+                    break;
+                case CURRENCIES.ES_XAI:
+                    exchangeRate = exchangeRateData?.exchangeRate ?? 0n;
+                    break;
+                case CURRENCIES.USDC:
+                    exchangeRate = usdExchangeRateData?.exchangeRate ?? 0n;
+                    break;
+                default:
+                    exchangeRate = BigInt(0);
+                    console.log(`Unsupported currency: ${currency}`);
+                    // throw new Error(`Unsupported currency: ${currency}`);
             }
-            const exchangeRate = exchangeRateData?.exchangeRate ?? 0n;
             return discountedPrice * exchangeRate;
         };
     }, [getPriceData, discount, currency, exchangeRateData]);
@@ -214,10 +249,29 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
      * @returns The formatted price as a string.
      */
     const formatItemPricePer = (item: CheckoutTierSummary): string => {
-        const price = currency === CURRENCIES.AETH
-            ? item.pricePer
-            : item.pricePer * (exchangeRateData?.exchangeRate ?? 0n);
-        return formatWeiToEther(price, decimalPlaces);
+        let price: bigint;
+        switch (currency) {
+            case CURRENCIES.AETH:
+                price = item.pricePer;
+                return formatWeiToEther(price, decimalPlaces);
+            case CURRENCIES.XAI:
+                price = item.pricePer * (exchangeRateData?.exchangeRate ?? 0n);
+                return formatWeiToEther(price, decimalPlaces);
+            case CURRENCIES.ES_XAI:
+                price = item.pricePer * (exchangeRateData?.exchangeRate ?? 0n);
+                return formatWeiToEther(price, decimalPlaces);
+            case CURRENCIES.USDC:
+                price = item.pricePer * (usdExchangeRateData?.exchangeRate ?? 0n);
+                const priceAdjusted = price / BigInt(1e20);
+                const formatted = ethers.formatUnits(priceAdjusted, 6);
+                console.log(`>>> priceAdjusted: ${priceAdjusted} formatted: ${formatted}`);
+                return formatted;
+            default:
+                price = BigInt(0);
+                console.log(`Unsupported currency: ${currency}`);
+                // throw new Error(`Unsupported currency: ${currency}`);
+        }
+        return "";
     };
 
     const userHasTokenBalance = tokenBalance >= calculateTotalPrice();
@@ -252,6 +306,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     return {
         isTotalLoading,
         isExchangeRateLoading,
+        isUsdExchangeRateLoading,
         isPriceLoading,
         isPromoLoading,
         checkboxes,
