@@ -1,15 +1,13 @@
 import hardhat from "hardhat";
-import { extractAbi } from "../../utils/exportAbi.mjs";
 import { safeVerify } from "../../utils/safeVerify.mjs";
-import { config, createBlsKeyPair, StakingPoolBeaconAbi } from "@sentry/core";
+import { createBlsKeyPair } from "@sentry/core";
 import tiers from "./tiers.json" assert { type: 'json' };
 import crypto from 'crypto';
-import { SEPOLIA_DEPLOY_OPTIONS, CHALLENGER_BLS_PRIVATEKEY, USDC_ADDRESS } from "./configs.mjs";
+import { SEPOLIA_DEPLOY_OPTIONS, CHALLENGER_BLS_PRIVATEKEY } from "./configs.mjs";
 
 const { ethers, upgrades } = hardhat;
 
 const options = SEPOLIA_DEPLOY_OPTIONS;
-
 
 let REFEREE_VERSION = 1;
 
@@ -26,6 +24,16 @@ const WALLET_TO_KEY_IDS = {}
  */
 const KEY_ID_TO_STAKED_POOL = {};
 
+/**
+ * Mapping wallet address to nonce, to manage nonce manually
+ * @type {[wallet: string] => number}
+ */
+const WALLET_TO_NONCE = {};
+
+
+// const BLOCKS_TO_CONFIRM = hre.network.name == "localhost" ? 1 : 3;
+const BLOCKS_TO_CONFIRM = 1;
+
 const log = (...args) => {
   console.log(...args);
 }
@@ -33,11 +41,12 @@ const log = (...args) => {
 let refereeCurrentContract;
 let poolFactoryCurrentContract;
 let nodeLicenseCurrentContract;
-let esXaiCurrentContract;
+
+let deployerAddress;
 
 async function main() {
   const deployer = (await ethers.getSigners())[0];
-  const deployerAddress = await deployer.getAddress();
+  deployerAddress = await deployer.getAddress();
   log("Deployer", deployerAddress);
   log("SELECTED NETWORK", hre.network.name)
 
@@ -56,12 +65,16 @@ async function main() {
   const defaultAdminWallet = new ethers.Wallet(defaultAdmin.privateKey, ethers.provider);
   defaultAdmin.publicKey = await defaultAdminWallet.getAddress();
 
+  const delegatedOperator = options.delegatedOperator;
+  const delegatedOperatorWallet = new ethers.Wallet(delegatedOperator.privateKey, ethers.provider);
+  delegatedOperator.publicKey = await delegatedOperatorWallet.getAddress();
+
 
   //SEND SOME FUNDS, should not be needed on sepolia
   for (let i = 0; i < options.operators.length; i++) {
     await deployer.sendTransaction({
       to: options.operators[i].publicKey,
-      value: ethers.parseEther("0.1"),
+      value: ethers.parseEther("0.3"),
     });
   }
   await deployer.sendTransaction({
@@ -72,11 +85,19 @@ async function main() {
     to: options.defaultAdmin.publicKey,
     value: ethers.parseEther("0.3"),
   });
+  await deployer.sendTransaction({
+    to: options.defaultAdmin.publicKey,
+    value: ethers.parseEther("0.3"),
+  });
+  await deployer.sendTransaction({
+    to: options.delegatedOperator.publicKey,
+    value: ethers.parseEther("0.5"),
+  });
 
   log("///////////////////////////")
   log("/////// INIT DEPLOY ///////")
   log("///////////////////////////")
-  
+
   // Deploy Xai
   const Xai = await ethers.getContractFactory("Xai");
   const xai = await upgrades.deployProxy(Xai, [], { deployer: deployer });
@@ -185,13 +206,13 @@ async function main() {
 
   // Node License5 Upgrade
   const NodeLicense5 = await ethers.getContractFactory("NodeLicense5");
-  const nodeLicense5 = await upgrades.upgradeProxy((await nodeLicenseCurrentContract.getAddress()), NodeLicense5);
-  await nodeLicense5.waitForDeployment();
+  nodeLicenseCurrentContract = await upgrades.upgradeProxy((await nodeLicenseCurrentContract.getAddress()), NodeLicense5);
+  await nodeLicenseCurrentContract.waitForDeployment();
 
   // Node License6 Upgrade
   const NodeLicense6 = await ethers.getContractFactory("NodeLicense6");
-  const nodeLicense6 = await upgrades.upgradeProxy((await nodeLicenseCurrentContract.getAddress()), NodeLicense6);
-  await nodeLicense6.waitForDeployment();
+  nodeLicenseCurrentContract = await upgrades.upgradeProxy((await nodeLicenseCurrentContract.getAddress()), NodeLicense6);
+  await nodeLicenseCurrentContract.waitForDeployment();
 
   // Node License7 Upgrade
   const NodeLicense7 = await ethers.getContractFactory("NodeLicense7");
@@ -221,6 +242,7 @@ async function main() {
 
     // Add KYC to operators
     await refereeCurrentContract.connect(deployer).addKycWallet(await minter.getAddress());
+    await refereeCurrentContract.connect(minter).setApprovalForOperator(delegatedOperator.publicKey, true);
 
     //Mint some esXai to operators
     await esXai.connect(deployer).mint(operator.publicKey, BigInt(10_000_000n * 10n ** 18n));
@@ -232,7 +254,10 @@ async function main() {
   }
 
   // Run 10 challenges
-  await doChallengeRun({ mockRollup, amount: 10 });
+  await doChallengeRun({ mockRollup, amount: 5 });
+  log("//////////////////////////////////")
+  log("/////// FINISHED CHALLENGE RUN ///////")
+  log("//////////////////////////////////")
 
 
   log("//////////////////////////////////")
@@ -257,7 +282,10 @@ async function main() {
   }
 
   // Run 10 challenges with V1 stake & boost
-  await doChallengeRun({ mockRollup, amount: 10 });
+  await doChallengeRun({ mockRollup, amount: 5 });
+  log("//////////////////////////////////")
+  log("/////// FINISHED CHALLENGE RUN ///////")
+  log("//////////////////////////////////")
 
   const Referee3 = await ethers.getContractFactory("Referee3");
   refereeCurrentContract = await upgrades.upgradeProxy((await refereeCurrentContract.getAddress()), Referee3, { call: { fn: "initialize", args: [] } });
@@ -266,6 +294,9 @@ async function main() {
 
   // Run challenges with V1 stake & boost
   await doChallengeRun({ mockRollup, amount: 5 });
+  log("//////////////////////////////////")
+  log("/////// FINISHED CHALLENGE RUN ///////")
+  log("//////////////////////////////////")
 
   const Referee4 = await ethers.getContractFactory("Referee4");
   refereeCurrentContract = await upgrades.upgradeProxy((await refereeCurrentContract.getAddress()), Referee4);
@@ -274,6 +305,9 @@ async function main() {
 
   // Run challenges with V1 stake & boost
   await doChallengeRun({ mockRollup, amount: 5 });
+  log("//////////////////////////////////")
+  log("/////// FINISHED CHALLENGE RUN ///////")
+  log("//////////////////////////////////")
 
   log("//////////////////////////////////")
   log("/////// UPGRADE STAKING V2 ///////")
@@ -294,19 +328,16 @@ async function main() {
   const StakingPool = await ethers.deployContract("StakingPool");
   await StakingPool.waitForDeployment();
   const stakingPoolImplAddress = await StakingPool.getAddress();
-  await extractAbi("StakingPool", StakingPool);
 
   // Deploy the StakingPool's PoolBeacon
   const StakingPoolPoolBeacon = await ethers.deployContract("PoolBeacon", [stakingPoolImplAddress]);
   await StakingPoolPoolBeacon.waitForDeployment();
   const stakingPoolPoolBeaconAddress = await StakingPoolPoolBeacon.getAddress();
-  await extractAbi("PoolBeacon", StakingPoolPoolBeacon);
 
   // Deploy the Key Bucket Tracker (implementation only)
   const KeyBucketTracker = await ethers.deployContract("BucketTracker");
   await KeyBucketTracker.waitForDeployment();
   const keyBucketTrackerImplAddress = await KeyBucketTracker.getAddress();
-  await extractAbi("BucketTracker", KeyBucketTracker);
 
   // Deploy the key BucketTracker's PoolBeacon
   const KeyBucketTrackerPoolBeacon = await ethers.deployContract("PoolBeacon", [keyBucketTrackerImplAddress]);
@@ -360,13 +391,22 @@ async function main() {
 
   await refereeCurrentContract.enableStaking();
 
+  log({
+    referee: await refereeCurrentContract.getAddress(),
+    nodeLicense: await nodeLicenseCurrentContract.getAddress(),
+    esXai: await esXai.getAddress(),
+    xai: await xai.getAddress(),
+    poolFactory: await poolFactoryCurrentContract.getAddress(),
+    mockRollup: await mockRollup.getAddress()
+  });
+
   log("//////////////////////////////////")
   log("/////// POPULATE POOL DATA ///////")
   log("//////////////////////////////////")
 
   // CREATE POOLS
   // STAKE KEYS & EsXAI
-  
+
   for (const operator of options.operators) {
     const operatorWallet = new ethers.Wallet(operator.privateKey, ethers.provider);
     if (operator.poolData) {
@@ -387,6 +427,9 @@ async function main() {
 
   // Run challenges with V2 stake & boost
   await doChallengeRun({ mockRollup, amount: 10 });
+  log("//////////////////////////////////")
+  log("/////// FINISHED CHALLENGE RUN ///////")
+  log("//////////////////////////////////")
 
   // Referee6
   const Referee6 = await ethers.getContractFactory("Referee6");
@@ -395,6 +438,9 @@ async function main() {
 
   // Run challenges with V2 stake & boost
   await doChallengeRun({ mockRollup, amount: 10 });
+  log("//////////////////////////////////")
+  log("/////// FINISHED CHALLENGE RUN ///////")
+  log("//////////////////////////////////")
 
   // Referee7
   const Referee7 = await ethers.getContractFactory("Referee7");
@@ -409,6 +455,9 @@ async function main() {
 
   // Run challenges with V2 stake & boost
   await doChallengeRun({ mockRollup, amount: 10 });
+  log("//////////////////////////////////")
+  log("/////// FINISHED CHALLENGE RUN ///////")
+  log("//////////////////////////////////")
 
   //Deploy RefereeCalculations
   const RefereeCalculations = await ethers.getContractFactory("RefereeCalculations");
@@ -424,6 +473,9 @@ async function main() {
   REFEREE_VERSION = 9;
 
   await doChallengeRun({ mockRollup, amount: 10 });
+  log("//////////////////////////////////")
+  log("/////// FINISHED CHALLENGE RUN ///////")
+  log("//////////////////////////////////")
 
   // Deploy Mock Chainlink Aggregator Price Feeds
   const MockChainlinkPriceFeed = await ethers.getContractFactory("MockChainlinkPriceFeed");
@@ -445,32 +497,37 @@ async function main() {
     chainlinkEthUsdPriceFeed: await chainlinkEthUsdPriceFeed.getAddress(),
     chainlinkXaiUsdPriceFeed: await chainlinkXaiUsdPriceFeed.getAddress(),
     // tinyKeysAirDrop: await tinyKeysAirDrop.getAddress(),
-    refereeCalculations: await refereeCalculations.getAddress(),
+    StakingPool: await StakingPool.getAddress(),
+    KeyBucketTracker: await KeyBucketTracker.getAddress(),
+    EsXaiBucketTracker: await EsXaiBucketTracker.getAddress(),
+    poolProxyDeployer: await poolProxyDeployer.getAddress(),
+    StakingPoolPoolBeacon: await StakingPoolPoolBeacon.getAddress(),
+    KeyBucketTrackerPoolBeacon: await KeyBucketTrackerPoolBeacon.getAddress(),
+    EsXaiBucketTrackerPoolBeacon: await EsXaiBucketTrackerPoolBeacon.getAddress(),
+    KeyBucketBeaconProxy: await KeyBucketBeaconProxy.getAddress(),
+    EsXaiBucketBeaconProxy: await EsXaiBucketBeaconProxy.getAddress(),
   });
 
   if (hre.network.name != "localhost") {
     // Verify the contracts
-    await Promise.all([
-      safeVerify({ contract: refereeCurrentContract }),
-      safeVerify({ contract: nodeLicenseCurrentContract }),
-      safeVerify({ contract: esXai }),
-      safeVerify({ contract: xai }),
-      safeVerify({ contract: poolFactoryCurrentContract }),
-      safeVerify({ contract: mockRollup }),
-      safeVerify({ contract: chainlinkEthUsdPriceFeed }),
-      safeVerify({ contract: chainlinkXaiUsdPriceFeed }),
-      safeVerify({ contract: refereeCalculations }),
-      safeVerify({ contract: stakingPoolImplAddress }),
-      safeVerify({ contract: keyBucketTrackerImplAddress }),
-      safeVerify({ contract: esXaiBucketTrackerImplAddress }),
-
-      safeVerify({ contract: stakingPoolPoolBeaconAddress, constructorArgs: [stakingPoolImplAddress] }),
-      safeVerify({ contract: keyBucketTrackerPoolBeaconAddress, constructorArgs: [keyBucketTrackerImplAddress] }),
-      safeVerify({ contract: esXaiBucketTrackerPoolBeaconAddress, constructorArgs: [esXaiBucketTrackerImplAddress] }),
-      safeVerify({ contract: keyBucketBeaconProxyAddress, constructorArgs: [keyBucketTrackerPoolBeaconAddress, "0x"] }),
-      safeVerify({ contract: esXaiBucketBeaconProxyAddress, constructorArgs: [esXaiBucketTrackerPoolBeaconAddress, "0x"] }),
-      // safeVerify({ contract: tinyKeysAirDrop }),
-    ]);
+    await safeVerify({ skipWaitForDeployTx: true, contract: refereeCurrentContract })
+    await safeVerify({ skipWaitForDeployTx: true, contract: nodeLicenseCurrentContract, contractPath: "contracts/upgrades/node-license/NodeLicense7.sol:NodeLicense7" })
+    await safeVerify({ skipWaitForDeployTx: true, contract: esXai2 })
+    await safeVerify({ skipWaitForDeployTx: true, contract: xai })
+    await safeVerify({ skipWaitForDeployTx: true, contract: poolFactoryCurrentContract })
+    await safeVerify({ skipWaitForDeployTx: true, contract: mockRollup })
+    await safeVerify({ skipWaitForDeployTx: true, contract: chainlinkEthUsdPriceFeed, constructorArgs: [ethPrice] })
+    await safeVerify({ skipWaitForDeployTx: true, contract: chainlinkXaiUsdPriceFeed, constructorArgs: [xaiPrice] })
+    await safeVerify({ skipWaitForDeployTx: true, contract: refereeCalculations })
+    await safeVerify({ skipWaitForDeployTx: true, contract: StakingPool })
+    await safeVerify({ skipWaitForDeployTx: true, contract: KeyBucketTracker })
+    await safeVerify({ skipWaitForDeployTx: true, contract: EsXaiBucketTracker })
+    await safeVerify({ skipWaitForDeployTx: true, contract: poolProxyDeployer })
+    await safeVerify({ skipWaitForDeployTx: true, contract: StakingPoolPoolBeacon, constructorArgs: [stakingPoolImplAddress], contractPath: "contracts/staking-v2/PoolBeacon.sol:PoolBeacon" })
+    await safeVerify({ skipWaitForDeployTx: true, contract: KeyBucketTrackerPoolBeacon, constructorArgs: [keyBucketTrackerImplAddress], contractPath: "contracts/staking-v2/PoolBeacon.sol:PoolBeacon" })
+    await safeVerify({ skipWaitForDeployTx: true, contract: EsXaiBucketTrackerPoolBeacon, constructorArgs: [esXaiBucketTrackerImplAddress], contractPath: "contracts/staking-v2/PoolBeacon.sol:PoolBeacon" })
+    await safeVerify({ skipWaitForDeployTx: true, contract: KeyBucketBeaconProxy, constructorArgs: [keyBucketTrackerPoolBeaconAddress, "0x"] })
+    await safeVerify({ skipWaitForDeployTx: true, contract: EsXaiBucketBeaconProxy, constructorArgs: [esXaiBucketTrackerPoolBeaconAddress, "0x"] })
   }
   log("Contracts verified.");
 
@@ -520,6 +577,7 @@ const getChallenge = async (challengeId, refereeContract) => {
 }
 
 const submitChallenge = async (refereeContract, mockRollup) => {
+  const challengerWallet = new ethers.Wallet(options.challenger.privateKey, ethers.provider);
 
   const counter = Number(await refereeContract.challengeCounter());
 
@@ -534,10 +592,12 @@ const submitChallenge = async (refereeContract, mockRollup) => {
   const blockHash = generateRandomHexHash();
   const sendRoot = generateRandomHexHash();
   const nextAssertionId = BigInt(latestChallenge.assertionId) + BigInt(1);
-  const createTx1 = await mockRollup.createNode(nextAssertionId, blockHash, sendRoot);
-  await createTx1.wait(1);
-  const confirmTx1 = await mockRollup.confirmNode(nextAssertionId, blockHash, sendRoot);
-  await confirmTx1.wait(1);
+  const createTx1 = await mockRollup.createNode(nextAssertionId, blockHash, sendRoot, { nonce: WALLET_TO_NONCE[deployerAddress] });
+  await createTx1.wait(BLOCKS_TO_CONFIRM);
+  WALLET_TO_NONCE[deployerAddress]++;
+  const confirmTx1 = await mockRollup.confirmNode(nextAssertionId, blockHash, sendRoot, { nonce: WALLET_TO_NONCE[deployerAddress] });
+  await confirmTx1.wait(BLOCKS_TO_CONFIRM);
+  WALLET_TO_NONCE[deployerAddress]++;
 
   const [
     stateHash,
@@ -564,15 +624,17 @@ const submitChallenge = async (refereeContract, mockRollup) => {
   }
 
   // Submit the challenge to the Referee contract
-  const tx = await refereeContract.submitChallenge(
+  const tx = await refereeContract.connect(challengerWallet).submitChallenge(
     challenge.assertionId,
     challenge.predecessorAssertionId,
     challenge.confirmData,
     challenge.assertionTimestamp,
     challenge.challengerSignedHash,
+    { nonce: WALLET_TO_NONCE[options.challenger.publicKey] }
   );
 
-  await tx.wait(1);
+  await tx.wait(BLOCKS_TO_CONFIRM);
+  WALLET_TO_NONCE[options.challenger.publicKey]++;
 
   log(`Submitted test challenge ${challenge.challengeNumber}`);
 
@@ -617,28 +679,36 @@ const submitAssertionsForWinningKeys = async (referee, operator, nodeLicenseIds,
     if (winning) {
       winningKeys.push(nodeId);
       if (REFEREE_VERSION < 5) {
-        await referee.connect(operator).submitAssertionToChallenge(nodeId, challengeId, confirmData);
+        const tx = await referee.connect(operator).submitAssertionToChallenge(nodeId, challengeId, confirmData, { nonce: WALLET_TO_NONCE[operator.address] });
+        await tx.wait(BLOCKS_TO_CONFIRM);
+        WALLET_TO_NONCE[operator.address]++;
       }
     }
   }
 
   if (REFEREE_VERSION >= 5) {
-    await referee.connect(operator).submitMultipleAssertions(winningKeys, challengeId, confirmData);
+    const tx = await referee.connect(operator).submitMultipleAssertions(winningKeys, challengeId, confirmData, { nonce: WALLET_TO_NONCE[operator.address] });
+    await tx.wait(BLOCKS_TO_CONFIRM);
+    WALLET_TO_NONCE[operator.address]++;
   }
 
-  log(`Submit assertion to challenge: ${challengeId} - Operator: ${await operator.getAddress()} - WinningKeyCount: ${winningKeys.length}`);
+  log(`Submit assertion to challenge: ${challengeId} - Operator: ${operator.address} - WinningKeyCount: ${winningKeys.length}`);
   return winningKeys;
 }
 
 
 const claimChallengeRewards = async (referee, operator, challengeId, keyIds, claimForAddress) => {
-  // log(`Claim for challenge: ${challengeId} - Operator: ${await operator.getAddress()} - keyIds: ${keyIds.length}`);
+  // log(`Claim for challenge: ${challengeId} - Operator: ${operator.address} - keyIds: ${keyIds.length}`);
 
   if (REFEREE_VERSION >= 5) {
-    await referee.connect(operator).claimMultipleRewards(keyIds, challengeId, claimForAddress)
+    const tx = await referee.connect(operator).claimMultipleRewards(keyIds, challengeId, claimForAddress, { nonce: WALLET_TO_NONCE[operator.address] })
+    await tx.wait(BLOCKS_TO_CONFIRM);
+    WALLET_TO_NONCE[operator.address]++;
   } else {
     for (const key of keyIds) {
-      await referee.connect(operator).claimReward(key, challengeId);
+      const tx = await referee.connect(operator).claimReward(key, challengeId, { nonce: WALLET_TO_NONCE[operator.address] });
+      await tx.wait(BLOCKS_TO_CONFIRM);
+      WALLET_TO_NONCE[operator.address]++;
     }
   }
 }
@@ -656,37 +726,58 @@ function generateRandomHexHash(length) {
 // Create challenges
 // For each challenge submit assertions for each operator's keys
 const doChallengeRun = async ({ mockRollup, amount }) => {
-  const challengerWallet = new ethers.Wallet(options.challenger.privateKey, ethers.provider);
   let challenge;
   let winningKeys = {};
-  for (let challengeCount = 0; challengeCount < 1; challengeCount++) {
 
-    challenge = await submitChallenge(refereeCurrentContract.connect(challengerWallet), mockRollup);
+  //Update chached nonce for smooth submission
+  let deployerNonce = await ethers.provider.getTransactionCount(deployerAddress, "pending");
+  WALLET_TO_NONCE[deployerAddress] = deployerNonce;
+
+  let challengerNonce = await ethers.provider.getTransactionCount(options.challenger.publicKey, "pending");
+  WALLET_TO_NONCE[options.challenger.publicKey] = challengerNonce;
+
+  for (const operator of options.operators) {
+    let nonce = await ethers.provider.getTransactionCount(operator.publicKey, "pending");
+    WALLET_TO_NONCE[operator.publicKey] = nonce;
+  }
+
+  for (let challengeCount = 0; challengeCount < amount; challengeCount++) {
+
+    challenge = await submitChallenge(refereeCurrentContract, mockRollup);
     winningKeys[challenge.challengeNumber] = {}
 
+    const submitPromises = [];
+
     for (const operator of options.operators) {
-      const operatorWallet = new ethers.Wallet(operator.privateKey, ethers.provider);
-      let boostFactor = 0;
-      if (REFEREE_VERSION > 1) {
-        boostFactor = Number(await refereeCurrentContract.getBoostFactorForStaker(operator.publicKey));
-        log(`Found boost ${boostFactor} for operator ${operator.publicKey}`)
+      async function submitForOperator() {
+        const operatorWallet = new ethers.Wallet(operator.privateKey, ethers.provider);
+        let boostFactor = 0;
+        if (REFEREE_VERSION > 1) {
+          boostFactor = Number(await refereeCurrentContract.getBoostFactorForStaker(operator.publicKey));
+          log(`Found boost ${boostFactor} for operator ${operator.publicKey}`)
+        }
+        const keys = await submitAssertionsForWinningKeys(refereeCurrentContract, operatorWallet, WALLET_TO_KEY_IDS[operator.publicKey], challenge.challengeNumber, challenge.confirmData, challenge.challengerSignedHash, boostFactor);
+        winningKeys[challenge.challengeNumber][operator.publicKey] = keys;
       }
-      const keys = await submitAssertionsForWinningKeys(refereeCurrentContract, operatorWallet, WALLET_TO_KEY_IDS[operator.publicKey], challenge.challengeNumber, challenge.confirmData, challenge.challengerSignedHash, boostFactor);
-      winningKeys[challenge.challengeNumber][operator.publicKey] = keys;
+      submitPromises.push(submitForOperator());
     }
+
+    await Promise.all(submitPromises);
 
     //Process previous challenge
     if (challenge.challengeNumber > 0) {
       //Claim previous challenge    
+      const claimPromises = [];
       for (const operator of options.operators) {
         if (winningKeys[challenge.challengeNumber - 1] && winningKeys[challenge.challengeNumber - 1][operator.publicKey]) {
           const winningKeyIds = winningKeys[challenge.challengeNumber - 1][operator.publicKey];
           if (winningKeyIds.length) {
             const operatorWallet = new ethers.Wallet(operator.privateKey, ethers.provider);
-            await claimChallengeRewards(refereeCurrentContract, operatorWallet, challenge.challengeNumber - 1, winningKeyIds, operator.publicKey);
+            claimPromises.push(claimChallengeRewards(refereeCurrentContract, operatorWallet, challenge.challengeNumber - 1, winningKeyIds, operator.publicKey));
           }
         }
       }
+      await Promise.all(claimPromises);
     }
   }
 }
@@ -713,14 +804,15 @@ const createPoolForOperator = async (operatorConfig, poolFactory, keysToStake) =
   const operatorWallet = new ethers.Wallet(operatorConfig.privateKey, ethers.provider);
 
   // Connect the pool factory to the pool owner's signer and create the pool
-  await poolFactory.connect(operatorWallet).createPool(
-    ethers.ZeroAddress,
+  const tx = await poolFactory.connect(operatorWallet).createPool(
+    options.delegatedOperator.publicKey,
     keysToStake,
     operatorConfig.poolData.rewardSplit,
     operatorConfig.poolData.metaData,
     operatorConfig.poolData.socials,
     operatorConfig.poolData.trackerDetails
   );
+  await tx.wait(BLOCKS_TO_CONFIRM);
 
   // Get the number of pools to determine the address of the newly created pool
   const numberOfPools = await poolFactory.getPoolsOfUserCount(operatorConfig.publicKey);

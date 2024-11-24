@@ -78,8 +78,10 @@ export const SEPOLIA_DEPLOY_OPTIONS = {
         publicKey: "",
         privateKey: process.env["DEFAULT_ADMIN_PK"]
     },
+    delegatedOperator: {
+        publicKey: "",
+        privateKey: process.env["DELEGATED_OPERATOR_PK"]
+    },
 }
 
-
 export const CHALLENGER_BLS_PRIVATEKEY = process.env["CHALLENGER_BLS_PRIVATEKEY"];
-export const USDC_ADDRESS = "0x14196F08a4Fa0B66B7331bC40dd6bCd8A1dEeA9F";
