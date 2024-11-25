@@ -93,8 +93,9 @@ async function main() {
     ];
     const nodeLicense8 = await upgrades.upgradeProxy(NODE_LICENSE_ADDRESS, NodeLicense8, { call: { fn: "initialize", args: nodeLicenseUpgradeParams } });
 
-    console.log("Grant AIRDROP_ADMIN_ROLE on NodeLicense to TK Airdrop contract ")
-    await nodeLicense8.grantRole(await nodeLicense8.AIRDROP_ADMIN_ROLE(), tinyKeysAirdropAddress)
+    // Comment out since this is happening already in the initialize of NodeLicense8
+    // console.log("Grant AIRDROP_ADMIN_ROLE on NodeLicense to TK Airdrop contract ")
+    // await nodeLicense8.grantRole(await nodeLicense8.AIRDROP_ADMIN_ROLE(), tinyKeysAirdropAddress)
 
     /**
      * Upgrade PoolFactory Contract
