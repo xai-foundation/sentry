@@ -50,11 +50,11 @@ const web3Instances: { [key in NetworkKey]: Web3Instance } = {
 		web3: new Web3('https://arb-sepolia.g.alchemy.com/v2/8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B'),
 		rpcUrl: 'https://arb-sepolia.g.alchemy.com/v2/8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B',
 		chainId: 421614,
-		refereeAddress: "0xF84D76755a68bE9DFdab9a0b6d934896Ceab957b",
-		xaiAddress: "0x724E98F16aC707130664bb00F4397406F74732D0",
-		esXaiAddress: "0x5776784C2012887D1f2FA17281E406643CBa5330",
-		nodeLicenseAddress: "0x07C05C6459B0F86A6aBB3DB71C259595d22af3C2",
-		poolFactoryAddress: "0x87Ae2373007C01FBCED0dCCe4a23CA3f17D1fA9A",
+		refereeAddress: "0x4be052206043a564206911657DeC698c6d24478C",
+		xaiAddress: "0x7C46a2f269ca1563B0Fc4a414999F31B62F9836A",
+		esXaiAddress: "0x4d40672f77eAE9098d934672cbd7207492CBeb61",
+		nodeLicenseAddress: "0x89F99fE730149B1f1a7cA1E24102F3f7A6E2E98D",
+		poolFactoryAddress: "0x79094A209e4c7AF288F9E4BD6fa32f7cc74740c9",
 		explorer: 'https://sepolia.arbiscan.io/'
 	}
 } as const;

@@ -106,7 +106,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         // Start where we left off
         uint256 startingKeyId = airdropCounter;
         // Ensure we don't go over the total supply
-        uint256 endingKeyId = Math.min(airdropCounter + _qtyToProcess, totalSupplyAtStart);     
+        uint256 endingKeyId = Math.min(airdropCounter + _qtyToProcess - 1, totalSupplyAtStart);     
         // Connect to the referee and node license contracts
         NodeLicense8 nodeLicense = NodeLicense8(nodeLicenseAddress);
 
@@ -132,7 +132,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         uint256 startingKeyId = stakeCounter;
 
         // Ensure we don't go over the total supply
-        uint256 endingKeyId = Math.min(stakeCounter + _qtyToProcess, totalSupplyAtStart);
+        uint256 endingKeyId = Math.min(stakeCounter + _qtyToProcess - 1, totalSupplyAtStart);
 
         // Connect to the referee and node license contracts
         NodeLicense8 nodeLicense = NodeLicense8(nodeLicenseAddress);
