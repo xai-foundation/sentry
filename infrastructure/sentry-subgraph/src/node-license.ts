@@ -8,6 +8,11 @@ import {
 } from "../generated/schema"
 
 export function handleTransfer(event: TransferEvent): void {
+  // We need to ignore keys greater than the totalSupply on deploy of the TK airdrop, so they won't get picked up by the operator
+  if (event.params.tokenId.gt(BigInt.fromI32(35180))) {
+    return;
+  }
+
   let sentryWallet = SentryWallet.load(event.params.to.toHexString())
   if (!sentryWallet) {
     sentryWallet = new SentryWallet(event.params.to.toHexString())
@@ -20,21 +25,9 @@ export function handleTransfer(event: TransferEvent): void {
     sentryWallet.stakedKeyCount = BigInt.fromI32(0)
     sentryWallet.totalAccruedAssertionRewards = BigInt.fromI32(0)
   }
-  
+
   sentryWallet.keyCount = sentryWallet.keyCount.plus(BigInt.fromI32(1))
   sentryWallet.save();
-  
-  //Decrease the keyCount of the from address if not a mint event
-  if (event.params.from != Address.zero()) {
-    const fromSentryWallet = SentryWallet.load(event.params.from.toHexString());
-    if (fromSentryWallet) {
-      fromSentryWallet.keyCount = fromSentryWallet.keyCount.minus(BigInt.fromI32(1));
-      fromSentryWallet.save();
-    }
-  }else{
-    log.warning("Failed to find SentryWallet for from address: " + event.params.from.toHexString() + ", TX: " + event.transaction.hash.toHexString(), []);
-    return;
-  }
 
   let sentryKey = SentryKey.load(event.params.tokenId.toString())
   if (!sentryKey) {
@@ -49,5 +42,16 @@ export function handleTransfer(event: TransferEvent): void {
     sentryKey.owner = event.params.to
     sentryKey.sentryWallet = event.params.to.toHexString()
     sentryKey.save()
+  }
+
+  //Decrease the keyCount of the from address if not a mint event
+  if (event.params.from != Address.zero()) {
+    const fromSentryWallet = SentryWallet.load(event.params.from.toHexString());
+    if (fromSentryWallet) {
+      fromSentryWallet.keyCount = fromSentryWallet.keyCount.minus(BigInt.fromI32(1));
+      fromSentryWallet.save();
+    } else {
+      log.warning("Failed to find SentryWallet for from address: " + event.params.from.toHexString() + ", TX: " + event.transaction.hash.toHexString(), []);
+    }
   }
 }
