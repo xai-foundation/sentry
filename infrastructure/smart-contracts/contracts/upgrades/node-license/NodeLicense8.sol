@@ -794,15 +794,15 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     //     return _averageCost[_tokenId];
     // }
 
-    // /**
-    //  * @notice Returns the minting timestamp of a NodeLicense token.
-    //  * @param _tokenId The ID of the token.
-    //  * @return The minting timestamp.
-    //  */
-    // function getMintTimestamp(uint256 _tokenId) public view returns (uint256) {
-    //     require(_exists(_tokenId), "ERC721Metadata: Query for nonexistent token");
-    //     return _mintTimestamps[_tokenId];
-    // }
+    /**
+     * @notice Returns the minting timestamp of a NodeLicense token.
+     * @param _tokenId The ID of the token.
+     * @return The minting timestamp.
+     */
+    function getMintTimestamp(uint256 _tokenId) public view returns (uint256) {
+        if(!_exists(_tokenId)) revert MissingTokenIds();
+        return _mintTimestamps[_tokenId];
+    }
 
     /**
      * @notice Overrides the supportsInterface function of the AccessControl contract.
