@@ -2333,5 +2333,12 @@ export const RefereeAbi = [
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
-  }
+  },
+  {
+      "inputs": [],
+      "name": "closeCurrentChallenge",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
 ];

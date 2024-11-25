@@ -205,7 +205,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     event RewardsClaimed(uint256 indexed challengeId, uint256 amount);
     event BatchRewardsClaimed(uint256 indexed challengeId, uint256 totalReward, uint256 keysLength);
     event ChallengeExpired(uint256 indexed challengeId);
-    event StakingEnabled();
+    event StakingEnabled(bool enabled);
     event UpdateMaxStakeAmount(uint256 prevAmount, uint256 newAmount);
     event UpdateMaxKeysPerPool(uint256 prevAmount, uint256 newAmount);
     event StakedV1(address indexed user, uint256 amount, uint256 totalStaked);
@@ -839,6 +839,16 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
         // Emit the ChallengeExpired event
         emit ChallengeExpired(_challengeId);
+    }
+
+    /**
+     * @dev Admin function to enable or disable staking.
+     * @param enabled The new staking status.
+     */
+    function setStakingEnabled(bool enabled) external {
+        require(msg.sender == nodeLicenseAddress, "56");
+        stakingEnabled = enabled;
+        emit StakingEnabled(enabled);
     }
 
     /**
