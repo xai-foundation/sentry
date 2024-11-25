@@ -113,12 +113,6 @@ async function main() {
         const adminWalletAddress = signers[i].address;
         console.log(`Granted admin role on TK Airdrop for wallet at index ${i}: ${adminWalletAddress}`);
         await tinyKeysAirdrop.grantRole(tinyKeysAirdropAdminRole, adminWalletAddress);
-
-        // //Transfer funds if needed
-        // await deployer.sendTransaction({
-        //     to: adminWalletAddress,
-        //     value: ethers.parseEther("1.5"),
-        // });
     }
 
     await tinyKeysAirdrop.startAirdrop();
