@@ -29,8 +29,14 @@ WORKDIR /app
 # Copy only the build artifacts from the 'build' stage
 COPY --from=build /app/apps/web-connect/dist ./dist
 
-# Expose port 3000
-EXPOSE 3000
+# Define a build argument for the port
+ARG PORT=3000
 
-# Start the app using "serve" on port 3000
-CMD ["serve", "-s", "dist", "-l", "3000"]
+# Set the environment variable for the port
+ENV PORT=${PORT}
+
+# Expose the port
+EXPOSE ${PORT}
+
+# Start the app using "serve" on the specified port
+CMD ["sh", "-c", "serve -s dist -l ${PORT}"]
