@@ -2,6 +2,14 @@ name: Deploy Web Connect
 
 on:
   workflow_dispatch:
+    inputs:
+      cloudflare_project:
+        description: 'Cloudflare project to deploy to'
+        required: true
+        type: choice
+        options:
+          - sentry
+          - sentry-develop
 
 jobs:
   build:
@@ -26,6 +34,13 @@ jobs:
         run: npx nx run @sentry/web-connect:build
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy to Cloudflare Pages
+        run: |
+          rm apps/web-connect/dist/xai-drop-permits.JSON 
+          npx wrangler pages deploy dist --project-name=${{ github.event.inputs.cloudflare_project }} --branch=main
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
         # Popular action to deploy to GitHub Pages:
         # Docs: https://github.com/peaceiris/actions-gh-pages#%EF%B8%8F-docusaurus
