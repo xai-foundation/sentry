@@ -109,26 +109,20 @@ export function handleStakeKeys(event: StakeKeys): void {
 
   let nodeLicenseIds: BigInt[];
 
-  const signature = getTxSignatureFromEvent(event);
-
-  // Check if this is triggered from the tiny keys airdrop admin stake 
-  // processAirdropSegmentOnlyStake(uint256) => 0x3ada44c1
-  if (signature == "0x3ada44c1") {
-
-    // If the event was triggered by the airdrop admin stake, we ignore as that event is handled separately
-    return;  
-  
-  } else {
-    const dataToDecode = getInputFromEvent(event, true)
-    const decoded = ethereum.decode('(address,uint256[])', dataToDecode);
+    const dataToDecode = getInputFromEvent(event, true);
+    const decoded = ethereum.decode("(address,uint256[])", dataToDecode);
 
     if (decoded) {
       nodeLicenseIds = decoded.toTuple()[1].toBigIntArray();
     } else {
-      log.warning("Failed to decode handleStakeKeys TX: " + event.transaction.hash.toHexString(), [])
+      log.warning(
+        "Failed to decode handleStakeKeys TX: " +
+          event.transaction.hash.toHexString(),
+        []
+      );
       return;
     }
-  }
+  
 
   for (let i = 0; i < nodeLicenseIds.length; i++) {
     let sentryKey = SentryKey.load(nodeLicenseIds[i].toString())
@@ -540,7 +534,7 @@ export function handleStakeKeysV2(event: StakeKeysV2): void {
     //StakeKeys will be emitted before pool creation, so we expect on the pool creation to not find the pool yet, however it will still be initialized correctly in the createPool event
     if (getTxSignatureFromEvent(event) != "0x098e8ae7") {
       log.warning(
-        "handleStakeKeys - pool is undefined " +
+        "handleStakeKeysV2 - pool is undefined " +
           event.params.pool.toHexString() +
           ", TX: " +
           event.transaction.hash.toHexString(),
@@ -571,14 +565,6 @@ export function handleStakeKeysV2(event: StakeKeysV2): void {
     );
   }
 
-  const signature = getTxSignatureFromEvent(event);
-
-  // Check if this is triggered from the tiny keys airdrop admin stake
-  // processAirdropSegmentOnlyStake(uint256) => 0x3ada44c1
-  if (signature == "0x3ada44c1") {
-    // If the event was triggered by the airdrop admin stake, we ignore as that event is handled separately
-    return;
-  }
 
   const nodeLicenseIds: BigInt[] = event.params.keyIds;
 
