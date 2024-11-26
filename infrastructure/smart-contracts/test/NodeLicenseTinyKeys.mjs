@@ -346,13 +346,11 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             await expect(nodeLicense.connect(addr1).mint(1, "", {value: priceBeforeAirdrop})).to.be.revertedWith("Minting is paused");
 
             // Process Airdrop
-            let qtyToProcess = BigInt(5);
+            let qtyToProcess = BigInt(200);
 
             await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(qtyToProcess);
             await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(qtyToProcess);
-            await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(qtyToProcess);
             await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(qtyToProcess);
-            await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(3);
             await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(qtyToProcess);
             await tinyKeysAirDrop.connect(deployer).completeAirDrop();
             

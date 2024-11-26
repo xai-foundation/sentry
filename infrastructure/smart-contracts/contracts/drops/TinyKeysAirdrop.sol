@@ -138,6 +138,8 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         NodeLicense8 nodeLicense = NodeLicense8(nodeLicenseAddress);
         Referee9 referee = Referee9(refereeAddress);
 
+        uint8 poolsProcessed;
+
         // Loop through the range of node licenses
         // Needs to be <= to include the last key
         for (uint256 i = startingKeyId; i <= endingKeyId; i++) {
@@ -148,7 +150,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
             address poolAddress = referee.assignedKeyToPool(i);
 
             // If the pool address is not 0, stake the newly minted keys
-            if(poolAddress != address(0)){                
+            if(poolAddress != address(0)){           
                 uint256[] memory stakeKeyIds = new uint256[](keyMultiplier);
                 // Determine the initial token id for the newly minted keys
                 // Calculate the starting ID for the new batch of tokens
@@ -162,9 +164,15 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
                 
                 // Stake the keys
                 PoolFactory2(poolFactoryAddress).stakeKeysAdmin(poolAddress, stakeKeyIds, owner);
+                poolsProcessed++;
 
                 // Emit the event
                 emit AirdropSegmentStakeComplete(owner, poolAddress, stakeKeyIds[0], stakeKeyIds[stakeKeyIds.length-1]);
+            }
+
+            if (poolsProcessed == 2) {
+                endingKeyId = startingKeyId + (i - startingKeyId);
+                break;
             }
         }
 
