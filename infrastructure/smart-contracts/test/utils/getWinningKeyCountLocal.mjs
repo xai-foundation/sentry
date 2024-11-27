@@ -38,8 +38,6 @@ export function getWinningKeyCountLocal(keyCount, boostFactor, bulkAddress, chal
             }else{
                 return expectedWinningKeys - 1;
             }
-        }else{
-            return expectedWinningKeys;
         }
     }
 
