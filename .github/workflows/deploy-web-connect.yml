@@ -30,10 +30,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Build monorepo
+      - name: Build monorepo for development
+        if: ${{ github.event.inputs.cloudflare_project == 'sentry-develop' }}
         run: npx nx run @sentry/web-connect:build
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }
+          VITE_APP_ENV: development
+
+      - name: Build monorepo for production
+        if: ${{ github.event.inputs.cloudflare_project == 'sentry' }}
+        run: npx nx run @sentry/web-connect:build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }
 
       - name: Deploy to Cloudflare Pages
         run: |
