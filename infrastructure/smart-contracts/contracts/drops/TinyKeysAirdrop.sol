@@ -171,7 +171,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
             }
 
             if (poolsProcessed == 2) {
-                endingKeyId = startingKeyId + (i - startingKeyId);
+                endingKeyId = i;
                 break;
             }
         }
