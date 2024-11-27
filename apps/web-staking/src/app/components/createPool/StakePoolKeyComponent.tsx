@@ -38,7 +38,7 @@ const StakePoolKeyComponent = ({
     setInputValue(roundNum.toString());
   };
 
-  const validationInput = () => Number(inputValue) > Math.min(100, unstakedKeyCount);
+  const validationInput = () => Number(inputValue) > Math.min(200, unstakedKeyCount);
 
   const checkDisabledButton =
     !address || !inputValue || Number(inputValue) <= 0 || validationInput();
@@ -74,18 +74,18 @@ const StakePoolKeyComponent = ({
                 label="You stake"
                 onChange={handleChange}
                 currencyLabel={Number(inputValue) === 1 ? StakingInputCurrency.SENTRY_KEY : StakingInputCurrency.SENTRY_KEYS}
-                error={validationInput() ? { message: Number(inputValue) > 100 ? "Invalid amount" : "Not enough keys" } : {}}
+                error={validationInput() ? { message: Number(inputValue) > 200 ? "Invalid amount" : "Not enough keys" } : {}}
                 extraClasses={{
                   input: "sm:!max-w-[37%] !lg:max-w-[50%] placeholder:!text-foggyLondon",
                   calloutWrapper: "h-[160px]",
                   currency: "sm:text-3xl lg:text-4xl",
                   currencyWrapper: "justify-between"
                 }}
-                availableBalance={Math.min(100, unstakedKeyCount)}
-                availableCurrency={Math.min(100, unstakedKeyCount) === 1 ? "key" : "keys"}
+                availableBalance={Math.min(200, unstakedKeyCount)}
+                availableCurrency={Math.min(200, unstakedKeyCount) === 1 ? "key" : "keys"}
                 withTooltip
                 handleMaxValue={() =>
-                  setInputValue(String(Math.min(100, unstakedKeyCount)))
+                  setInputValue(String(Math.min(200, unstakedKeyCount)))
                 }
               />
               <span
