@@ -891,16 +891,16 @@ contract Referee10 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 winningKeyCount = 0;
 
         if(numberOfKeys > 0){
-            // Set the boost factor intially to 100 (0.01%)
-            uint256 boostFactor = 100;
+            uint256 stakedAmount = 0;
 
-            // If the bulk address is a pool, determine the boost factor
             if(isPool){
-                // Get the stakedAmount of _poolAddress for determining boostFactor
-                uint256 stakedAmount = getMaxStakedAmount(_bulkAddress, address(0));
-                // Determine the boostFactor
-                boostFactor = _getBoostFactor(stakedAmount);
+                stakedAmount = getMaxStakedAmount( _bulkAddress, address(0));
+            } else {
+                stakedAmount = getMaxStakedAmount(address(0), _bulkAddress);
             }
+
+            // Determine the boostFactor
+            uint256 boostFactor = _getBoostFactor(stakedAmount);
 
             // Determine the number of winning keys
             winningKeyCount = getWinningKeyCount(numberOfKeys, boostFactor, _bulkAddress, _challengeId, bulkSubmissions[_challengeId][_bulkAddress].assertionStateRootOrConfirmData, challenges[_challengeId].challengerSignedHash);
@@ -1005,17 +1005,16 @@ contract Referee10 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 winningKeyCount = 0;
 
         if(numberOfKeys > 0){
-            // Set the boost factor intially to 100 (0.01%)
-            uint256 boostFactor = 100;
+            uint256 stakedAmount = 0;
 
-            // If the bulk address is a pool, determine the boost factor
             if(isPool){
-                // Get the stakedAmount of _poolAddress for determining boostFactor
-                uint256 stakedAmount = getMaxStakedAmount(_bulkAddress, address(0));
-
-                // Determine the boost factor
-                boostFactor = _getBoostFactor(stakedAmount);
+                stakedAmount = getMaxStakedAmount( _bulkAddress, address(0));
+            } else {
+                stakedAmount = getMaxStakedAmount(address(0), _bulkAddress);
             }
+
+            // Determine the boostFactor
+            uint256 boostFactor = _getBoostFactor(stakedAmount);
 
             // Determine the number of winning keys
             winningKeyCount = getWinningKeyCount(numberOfKeys, boostFactor, _bulkAddress, _challengeId, _confirmData, challenges[_challengeId].challengerSignedHash);

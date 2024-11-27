@@ -48,8 +48,6 @@ export const getWinningKeyCount = (keyCount: number, boostFactor: number, bulkAd
             } else {
                 return expectedWinningKeys - 1;
             }
-        } else {
-            return expectedWinningKeys;
         }
     }
 
