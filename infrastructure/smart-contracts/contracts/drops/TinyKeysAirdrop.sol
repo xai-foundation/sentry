@@ -102,6 +102,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
     
     function processAirdropSegmentOnlyMint(uint256 _qtyToProcess) external onlyRole(DEFAULT_ADMIN_ROLE)  {
         require(airdropStarted, "Airdrop not started");
+        require(!airdropEnded, "Airdrop already completed");
         require(airdropCounter <= totalSupplyAtStart, "Airdrop complete");
         // Start where we left off
         uint256 startingKeyId = airdropCounter;
@@ -125,8 +126,9 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
 
     function processAirdropSegmentOnlyStake(uint256 _qtyToProcess) external onlyRole(DEFAULT_ADMIN_ROLE)  {
         require(airdropStarted, "Airdrop not started");
-        require(!airdropEnded, "Airdrop already complete");
-        require(stakeCounter <= airdropCounter, "Cannot stake non aidropped keys");
+        require(!airdropEnded, "Airdrop already completed");
+        require(stakeCounter <= totalSupplyAtStart, "Airdrop complete");
+        require(airdropCounter > 1 && stakeCounter <= airdropCounter, "Cannot stake non airdropped keys");
 
         // Start where we left off
         uint256 startingKeyId = stakeCounter;
@@ -190,7 +192,6 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         // Notify the node license contract that the airdrop is complete
         NodeLicense8(nodeLicenseAddress).finishAirdrop(keyMultiplier + 1);
 
-        airdropStarted = false;
         airdropEnded = true;
         emit AirdropEnded();
     }
