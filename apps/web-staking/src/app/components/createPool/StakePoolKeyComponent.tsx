@@ -74,7 +74,7 @@ const StakePoolKeyComponent = ({
                 label="You stake"
                 onChange={handleChange}
                 currencyLabel={Number(inputValue) === 1 ? StakingInputCurrency.SENTRY_KEY : StakingInputCurrency.SENTRY_KEYS}
-                error={validationInput() ? { message: Number(inputValue) > 200 ? "Invalid amount" : "Not enough keys" } : {}}
+                error={validationInput() ? { message: Number(inputValue) > 200 ? "Max 200 Keys per tx" : "Not enough keys" } : {}}
                 extraClasses={{
                   input: "sm:!max-w-[37%] !lg:max-w-[50%] placeholder:!text-foggyLondon",
                   calloutWrapper: "h-[160px]",
