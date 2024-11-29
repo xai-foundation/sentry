@@ -329,8 +329,8 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             // Confirm staking is enabled
             expect(await referee.stakingEnabled()).to.be.true;
 
-            await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(10)).to.be.revertedWith("Airdrop not started");
-            await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(10)).to.be.revertedWith("Airdrop not started");
+            await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(10)).to.be.revertedWith("Invalid airdrop state");
+            await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(10)).to.be.revertedWith("Invalid airdrop state");
 
             // Start Airdrop
             await tinyKeysAirDrop.connect(deployer).startAirdrop();
@@ -360,8 +360,8 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(qtyToProcessMint)).to.be.revertedWith("Airdrop complete");
 
             await tinyKeysAirDrop.connect(deployer).completeAirDrop();
-            await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(qtyToProcessMint)).to.be.revertedWith("Airdrop already completed");
-            await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(qtyToProcessMint)).to.be.revertedWith("Airdrop already completed");
+            await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(qtyToProcessMint)).to.be.revertedWith("Invalid airdrop state");
+            await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(qtyToProcessMint)).to.be.revertedWith("Invalid airdrop state");
 
             // Confirm balances after
             const user1BalanceAfter = await nodeLicense.balanceOf(addr1.address);
