@@ -336,8 +336,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
 
             //Prepare unstake request to test unstake during airdrop
             const unstakeKeysDelayPeriod1 = await poolFactory.unstakeKeysDelayPeriod();
-			await ethers.provider.send("evm_increaseTime", [Number(unstakeKeysDelayPeriod1)]);
-			// await ethers.provider.send("evm_mine");
+            await ethers.provider.send("evm_increaseTime", [Number(unstakeKeysDelayPeriod1)]);
 
             // Start Airdrop
             await tinyKeysAirDrop.connect(deployer).startAirdrop();
@@ -345,9 +344,9 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
 
             // Staking & unstaking keys should revert
             await expect(poolFactory.connect(addr4).stakeKeys(poolAddress, [6])).to.be.revertedWith("52");
-			await expect(
-				poolFactory.connect(addr2).unstakeKeys(poolAddress, 0, [keyIdsStaked[0]])
-			).to.be.revertedWith("52");
+            await expect(
+                poolFactory.connect(addr2).unstakeKeys(poolAddress, 0, [keyIdsStaked[0]])
+            ).to.be.revertedWith("52");
 
             // Confirm Minting Disabled - Expect a mint to be reverted
             const priceBeforeAirdrop = await nodeLicense.price(1, "");
