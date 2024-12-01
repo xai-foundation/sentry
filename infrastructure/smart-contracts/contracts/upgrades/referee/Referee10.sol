@@ -754,7 +754,7 @@ contract Referee10 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function stakeKeys(address pool, address staker, uint256[] memory keyIds, bool isAdminStake) external onlyPoolFactory {
-        require(isAdminStake || stakingEnabled, "51");
+        require(isAdminStake || stakingEnabled, "52");
 
         uint256 keysLength = keyIds.length;
         // Check if the pool has enough capacity to stake the keys
@@ -791,7 +791,7 @@ contract Referee10 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function unstakeKeys(address pool, address staker, uint256[] memory keyIds) external onlyPoolFactory {
-        require(stakingEnabled, "51");
+        require(stakingEnabled, "52");
 
         uint256 keysLength = keyIds.length;
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
