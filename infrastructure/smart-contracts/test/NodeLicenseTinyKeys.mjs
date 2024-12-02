@@ -76,6 +76,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             const totalSupplyAfterMint = await nodeLicense.totalSupply();
             expect(totalSupplyAfterMint).to.eq(totalSupplyBeforeMint + BigInt(1));
         });
+
         it("Check minting an NFT and receiving it with Xai", async function() {
 
             const {nodeLicense, addr1, fundsReceiver, xai, xaiMinter} = await loadFixture(deployInfrastructure);
@@ -437,6 +438,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             const balanceAfter = await nodeLicense.balanceOf(addr1.address);
             expect(balanceAfter).to.eq(BATCH_SIZE + 1);
         });
+
         it("Check the maximum number of keys that can be minted in a single transaction using Xai", async function() {            
             const BATCH_SIZE = 184;
             const {nodeLicense, addr1, xaiMinter, xai} = await loadFixture(deployInfrastructure);
@@ -457,7 +459,6 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             const balanceAfter = await nodeLicense.balanceOf(addr1.address);
             expect(balanceAfter).to.eq(BATCH_SIZE + 1);
         });
-
         
         it("Check minting an NFT and receiving it with ETH using the MintTo Function", async function() {
             const {nodeLicense, addr1, addr2, fundsReceiver} = await loadFixture(deployInfrastructure);
@@ -537,7 +538,18 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             const totalSupplyAfterMint = await nodeLicense.totalSupply();
             expect(totalSupplyAfterMint).to.eq(totalSupplyBeforeMint + BigInt(qtyToMint));
         });
-        
+
+        it("Check minting multiple keys and receiving them using the mintTo Function", async function() {
+            const {nodeLicense, addr1: receiver, addr2: minter, fundsReceiver} = await loadFixture(deployInfrastructure);
+            
+            const updatedPromo = "0xE49C19cB8E68a5D0AE2DdCE8f80e60e2bbd01884";
+            
+            const binancePromo = await nodeLicense.getPromoCode("binance");
+            const baPromo = await nodeLicense.getPromoCode("BA");
+            
+            expect(binancePromo[0]).to.equal(updatedPromo);
+            expect(baPromo[0]).to.equal(updatedPromo);
+        });
 
     }
 }
