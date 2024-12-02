@@ -19,15 +19,15 @@ import { safeVerify } from "../../utils/safeVerify.mjs";
 async function main() {
     const maxKeysNonKyc = 1; //Maximum number of keys that a non-KYC user can own and still complete esXai redemptions
 
-    const NODE_LICENSE_ADDRESS = config.nodeLicenseAddress;
-    const REFEREE_ADDRESS = config.refereeAddress;
-    const POOL_FACTORY_ADDRESS = config.poolFactoryAddress;
-    const ESXAI_ADDRESS = config.esXaiAddress;
-    const XAI_ADDRESS = config.xaiAddress;
-    const ETH_PRICE_FEED_ADDRESS = config.chainlinkEthUsdPriceFeed;
-    const XAI_PRICE_FEED_ADDRESS = config.chainlinkXaiUsdPriceFeed;
-    const USDC_ADDRESS = config.usdcContractAddress;
-    const REF_CALC_ADDRESS = config.refereeCalculationsAddress;
+    const NODE_LICENSE_ADDRESS = "0x3d9b0902720d3e90b829e313E945b51e77848271";
+    const REFEREE_ADDRESS = "0xC1e0E1a0AEC648a484d7c1e318B32F610553BEC3";
+    const POOL_FACTORY_ADDRESS = "0xdA02078f31cB13420684821756a6a6A2F2491e6d";
+    const ESXAI_ADDRESS = "0x3b90b0410687B726fAD8DA02114184adB368fC4A";
+    const XAI_ADDRESS = "0x81753DFD1Db942F2E7b32BE6353f23f80eD09a87";
+    const ETH_PRICE_FEED_ADDRESS = "0x37068923AD25F33d07A5283ceBD094D581bAeFda";
+    const XAI_PRICE_FEED_ADDRESS = "0x5cB2FDEc5B65221b0e5E55384422D6E02A435f6a";
+    const USDC_ADDRESS = "0x14196F08a4Fa0B66B7331bC40dd6bCd8A1dEeA9F";
+    const REF_CALC_ADDRESS = "0x26Be32B925F4B55740840ed6511757A27C72F363";
     const KEY_MULTIPLIER = 99;
 
     // get the deployer
@@ -138,11 +138,11 @@ async function main() {
 
 
     // verify contract
-    await safeVerify({ contract: esXai3 });
-    await safeVerify({ contract: tinyKeysAirdrop });
-    await safeVerify({ contract: nodeLicense8 });
-    await safeVerify({ contract: poolFactory2 });
-    await safeVerify({ contract: referee9 });
+    await safeVerify({ skipWaitForDeployTx: true, contract: esXai3 });
+    await safeVerify({ skipWaitForDeployTx: true, contract: tinyKeysAirdrop });
+    await safeVerify({ skipWaitForDeployTx: true, contract: nodeLicense8 });
+    await safeVerify({ skipWaitForDeployTx: true, contract: poolFactory2 });
+    await safeVerify({ skipWaitForDeployTx: true, contract: referee9 });
 
     console.log("Verification complete ");
 }
