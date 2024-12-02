@@ -350,7 +350,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
 
             // Confirm Minting Disabled - Expect a mint to be reverted
             const priceBeforeAirdrop = await nodeLicense.price(1, "");
-            await expect(nodeLicense.connect(addr1).mint(1, "", { value: priceBeforeAirdrop })).to.be.revertedWith("Minting is paused");
+            await expect(nodeLicense.connect(addr1).mint(1, "", { value: priceBeforeAirdrop })).to.be.revertedWithCustomError(nodeLicense, "MintingPaused");
 
             // Process Airdrop
             let qtyToProcessMint = 10;
