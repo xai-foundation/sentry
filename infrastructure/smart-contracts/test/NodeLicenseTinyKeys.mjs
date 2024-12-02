@@ -285,7 +285,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             expect(priceWithValidCode).to.be.below(priceWithInValidCode);
         });
 
-        it("Process the tiny keys airdrop and confirm balances after", async function () {
+        it("Process the tiny keys airdrop and confirm staking disabled and check balances after", async function () {
             const { nodeLicense, challenger, addr1, addr2, addr3, addr4, tinyKeysAirDrop, deployer, referee, poolFactory, airdropMultiplier, nodeLicenseDefaultAdmin } = await loadFixture(deployInfrastructure);
             //Confirm initial total supply
 
@@ -316,15 +316,15 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             const user1KeyCountStakedBefore = await referee.connect(addr1).assignedKeysOfUserCount(addr1.address);
             expect(user1KeyCountStakedBefore).to.equal(1);
 
-            // User 2 will stake 4 keys in the pool
+            // User 2 will stake minted keys in the pool
             await poolFactory.connect(addr2).stakeKeys(poolAddress, keyIdsStaked);
+
             const user2KeyCountStakedBefore = await referee.connect(addr2).assignedKeysOfUserCount(addr2.address);
             expect(user2KeyCountStakedBefore).to.equal(keyIdsStaked.length);
 
             // User 3 will stake 0 keys in the pool
             const user3KeyCountStakedBefore = await referee.connect(addr3).assignedKeysOfUserCount(addr3.address);
             expect(user3KeyCountStakedBefore).to.equal(0);
-            // Starting Airdrop
 
             // Confirm staking is enabled
             expect(await referee.stakingEnabled()).to.be.true;
@@ -332,12 +332,21 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(10)).to.be.revertedWith("Invalid airdrop state");
             await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(10)).to.be.revertedWith("Invalid airdrop state");
 
+            await poolFactory.connect(addr2).createUnstakeKeyRequest(poolAddress, 1);
+
+            //Prepare unstake request to test unstake during airdrop
+            const unstakeKeysDelayPeriod1 = await poolFactory.unstakeKeysDelayPeriod();
+            await ethers.provider.send("evm_increaseTime", [Number(unstakeKeysDelayPeriod1)]);
+
             // Start Airdrop
             await tinyKeysAirDrop.connect(deployer).startAirdrop();
             await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(10)).to.be.revertedWith("Cannot stake non airdropped keys");
 
-            // Staking Key Should revert
+            // Staking & unstaking keys should revert
             await expect(poolFactory.connect(addr4).stakeKeys(poolAddress, [6])).to.be.revertedWith("52");
+            await expect(
+                poolFactory.connect(addr2).unstakeKeys(poolAddress, 0, [keyIdsStaked[0]])
+            ).to.be.revertedWith("52");
 
             // Confirm Minting Disabled - Expect a mint to be reverted
             const priceBeforeAirdrop = await nodeLicense.price(1, "");
@@ -403,6 +412,10 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             await poolFactory.connect(addr2).stakeKeys(poolAddress, [6]);
             const user2KeyCountStakedAfterMint = await referee.connect(addr2).assignedKeysOfUserCount(addr2.address);
             expect(user2KeyCountStakedAfterMint).to.equal(user2KeyCountStakedAfter + BigInt(1));
+
+            await poolFactory.connect(addr2).unstakeKeys(poolAddress, 0, [keyIdsStaked[0]])
+            const user2KeyCountStakedBeforeUnstake = await referee.connect(addr2).assignedKeysOfUserCount(addr2.address);
+            expect(user2KeyCountStakedBeforeUnstake).to.equal(user2KeyCountStakedAfterMint - BigInt(1));
 
             // Confirm max supply after air drop
             const maxSupplyAfter = await nodeLicense.maxSupply();
