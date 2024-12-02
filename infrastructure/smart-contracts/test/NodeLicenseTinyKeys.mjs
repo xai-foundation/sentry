@@ -539,7 +539,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             expect(totalSupplyAfterMint).to.eq(totalSupplyBeforeMint + BigInt(qtyToMint));
         });
 
-        it("Check minting multiple keys and receiving them using the mintTo Function", async function() {
+        it("Check updated promo code recipient", async function() {
             const {nodeLicense, addr1: receiver, addr2: minter, fundsReceiver} = await loadFixture(deployInfrastructure);
             
             const updatedPromo = "0xE49C19cB8E68a5D0AE2DdCE8f80e60e2bbd01884";
