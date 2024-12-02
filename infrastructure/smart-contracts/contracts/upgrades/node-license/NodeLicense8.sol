@@ -171,6 +171,9 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         // Grant the airdrop admin role to the airdrop admin address
         _grantRole(AIRDROP_ADMIN_ROLE, airdropAdmin);
         refereeAddress = _refereeAddress;
+
+        _promoCodes["binance"].recipient = address(0xE49C19cB8E68a5D0AE2DdCE8f80e60e2bbd01884);
+        _promoCodes["BA"].recipient = address(0xE49C19cB8E68a5D0AE2DdCE8f80e60e2bbd01884);
     }
 
     /** 
