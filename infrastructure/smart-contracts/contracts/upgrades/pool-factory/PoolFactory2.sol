@@ -480,8 +480,8 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         bool _asAdmin
     ) internal {
         Referee10 referee = Referee10(refereeAddress);
-        require(_asAdmin || referee.stakingEnabled(), "52");
         
+        // The Referee will check for stakingEnabled and will only allow the admin to stake if staking is disabled
         referee.stakeKeys(pool, staker, keyIds, _asAdmin);
 
         StakingPool stakingPool = StakingPool(pool);
@@ -631,6 +631,8 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         Referee10(refereeAddress).unstakeKeys(pool, msg.sender, keyIds);
 
         StakingPool stakingPool = StakingPool(pool);
+        
+        // The Referee will check for stakingEnabled and will only allow the admin to stake if staking is disabled
         stakingPool.unstakeKeys(msg.sender, unstakeRequestIndex, keyIds);
 
         if (!stakingPool.isUserEngagedWithPool(msg.sender)) {
