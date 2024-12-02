@@ -223,6 +223,10 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     //  */
     function initialize(address _stakeKeysAdmin) public reinitializer(2) {
         _setupRole(STAKE_KEYS_ADMIN_ROLE, _stakeKeysAdmin);
+		unstakeKeysDelayPeriod = 3 minutes;
+		unstakeGenesisKeyDelayPeriod = 6 minutes;
+		unstakeEsXaiDelayPeriod = 3 minutes;
+        updateRewardBreakdownDelayPeriod = 4 minutes;
     }
 
     /**

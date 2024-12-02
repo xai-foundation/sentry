@@ -175,7 +175,7 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         require(_redemptionActive, "Redemption is currently inactive");
         require(amount > 0, "Invalid Amount");
         require(balanceOf(msg.sender) >= amount, "Insufficient esXai balance");
-        require(duration == 15 days || duration == 90 days || duration == 180 days, "Invalid duration");
+        require(duration == 1 minutes || duration == 5 minutes || duration == 10 minutes, "Invalid duration");
         
         // Check if the sender failed KYC
         bool failedKyc = PoolFactory2(poolFactoryAddress).failedKyc(msg.sender);
@@ -235,9 +235,9 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
 
         // Calculate the conversion ratio based on the duration
         uint256 ratio;
-        if (request.duration == 15 days) {
+        if (request.duration == 1 minutes) {
             ratio = 250;
-        } else if (request.duration == 90 days) {
+        } else if (request.duration == 5 minutes) {
             ratio = 625;
         } else {
             ratio = 1000;

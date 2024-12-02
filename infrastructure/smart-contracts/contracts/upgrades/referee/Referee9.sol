@@ -73,7 +73,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     bytes32 public constant KYC_ADMIN_ROLE = keccak256("KYC_ADMIN_ROLE");
 
     // Used to not allow submissions for keys airdropped by the TK Airdrop
-    uint256 public constant MAX_KEY_SOLO_SUBMISSION = 35180;
+    uint256 public constant MAX_KEY_SOLO_SUBMISSION = 1000;
 
     // The Challenger's public key of their registered BLS-Pair
     bytes public challengerPublicKey;
@@ -948,7 +948,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
 
     function closeCurrentChallenge() external onlyRole(DEFAULT_ADMIN_ROLE) {
         Challenge storage currentChallenge = challenges[challengeCounter - 1];
-        require(block.timestamp >= currentChallenge.createdTimestamp + 50 minutes, "59");
+        // require(block.timestamp >= currentChallenge.createdTimestamp + 50 minutes, "59");
         currentChallenge.openForSubmissions = false;
         // Not emitting an event as it will be emitted when the next challenge is submitted
     }
