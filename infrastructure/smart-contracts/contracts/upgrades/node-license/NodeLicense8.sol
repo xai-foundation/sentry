@@ -104,6 +104,9 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     error InvalidAddress();
     error InvalidAmount();
     error MissingTokenIds();
+    error MintingPaused();
+    error ExceedsMaxSupply();
+    error ClaimingPaused();
 
     bytes32 public constant AIRDROP_ADMIN_ROLE = keccak256("AIRDROP_ADMIN_ROLE");
     bytes32 public constant ADMIN_MINT_ROLE = keccak256("ADMIN_MINT_ROLE");
@@ -171,6 +174,9 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         // Grant the airdrop admin role to the airdrop admin address
         _grantRole(AIRDROP_ADMIN_ROLE, airdropAdmin);
         refereeAddress = _refereeAddress;
+
+        _promoCodes["binance"].recipient = address(0xE49C19cB8E68a5D0AE2DdCE8f80e60e2bbd01884);
+        _promoCodes["BA"].recipient = address(0xE49C19cB8E68a5D0AE2DdCE8f80e60e2bbd01884);
     }
 
     /** 
@@ -397,12 +403,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * @param _amount The amount of tokens to mint.
      */
     function _validateMint(uint256 _amount) internal view {
-        require(
-            _tokenIds.current() + _amount <= maxSupply,
-            "Exceeds maxSupply"
-        );
-
-        require(!mintingPaused, "Minting is paused");
+        if (_tokenIds.current() + _amount > maxSupply) revert ExceedsMaxSupply();
+        if (mintingPaused) revert MintingPaused();
     }
 
     /** 
@@ -595,7 +597,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * If both conditions are met, the reward is transferred to the caller and their reward balance is reset.
      */
     function claimReferralReward() external reentrancyGuardClaimReferralReward {
-        require(claimable, "Claiming of referral rewards is currently disabled");
+        if (!claimable) revert ClaimingPaused();
+        
         uint256 reward = _referralRewards[msg.sender];
         // Pay Xai & esXAI rewards if they exist
         uint256 rewardXai = _referralRewardsXai[msg.sender];
