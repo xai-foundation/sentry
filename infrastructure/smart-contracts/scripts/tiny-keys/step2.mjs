@@ -1,6 +1,6 @@
 import { TinyKeysAirdropAbi } from "@sentry/core";
 
-const TINY_KEYS_AIRDROP_ADDRESS = ""; //TODO Needs to be set after tiny key airdrop contract deployment
+const TINY_KEYS_AIRDROP_ADDRESS = "0xddcC3BdB7838ea4dCc526eec685963b264a1093B"; //TODO Needs to be set after tiny key airdrop contract deployment
 
 /**
  * Mapping wallet address to nonce, to manage nonce manually
@@ -11,10 +11,10 @@ const WALLET_TO_NONCE = {};
 const qtyPerSegment = 2;
 
 //Wallets to be used simultaneously
-const walletCount = 10;
+const walletCount = 5;
 
 //NEED TO LOOK UP MAINNET VALUES ON PROD RUN
-const maxFeePerGas = ethers.parseUnits('0.3', 'gwei');
+const maxFeePerGas = ethers.parseUnits('0.45', 'gwei');
 const maxPriorityFeePerGas = 1n;
 
 async function main() {
@@ -28,6 +28,15 @@ async function main() {
     const deployer = signers[0];
 
     console.log("Running upgrade with deployer admins");
+
+    // for (let i = 0; i < walletCount; i++) {
+    //     // //Transfer funds if needed
+    //     await deployer.sendTransaction({
+    //         to: signers[i].address,
+    //         value: ethers.parseEther("1"),
+    //     });
+    // }
+
 
     for (let i = 0; i < walletCount; i++) {
         const adminWalletAddress = signers[i].address;
@@ -64,8 +73,8 @@ async function main() {
         console.log(`Completed ${walletCount} wallet tx in ${(Date.now() - beforeMint) / 1000} seconds`);
 
         if (res.some(r => r.value != "")) {
-            console.log("One or more errored, waiting 10 seconds...");
-            await new Promise(resolve => setTimeout(resolve, 10000));
+            console.log("One or more errored, waiting 20 seconds...");
+            await new Promise(resolve => setTimeout(resolve, 20000));
         }
 
         nextIndex = Number(await TinyKeysAirdrop.airdropCounter());

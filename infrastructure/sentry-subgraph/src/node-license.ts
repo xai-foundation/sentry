@@ -9,9 +9,9 @@ import {
 
 export function handleTransfer(event: TransferEvent): void {
   // We need to ignore keys greater than the totalSupply on deploy of the TK airdrop, so they won't get picked up by the operator
-  if (event.params.tokenId.gt(BigInt.fromI32(35180))) {
-    return;
-  }
+  // if (event.params.tokenId.gt(BigInt.fromI32(35180))) {
+  //   return;
+  // }
 
   let sentryWallet = SentryWallet.load(event.params.to.toHexString())
   if (!sentryWallet) {

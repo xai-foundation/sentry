@@ -3,7 +3,7 @@ import { safeVerify } from "../../utils/safeVerify.mjs";
 
 async function main() {
 
-    const REFEREE_ADDRESS = config.refereeAddress;
+    const REFEREE_ADDRESS = "0xC1e0E1a0AEC648a484d7c1e318B32F610553BEC3";
     // get the deployer
     const [deployer] = (await ethers.getSigners());
     

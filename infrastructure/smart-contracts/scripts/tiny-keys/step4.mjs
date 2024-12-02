@@ -1,6 +1,6 @@
 import { config, NodeLicenseAbi, TinyKeysAirdropAbi } from "@sentry/core";
 
-const TINY_KEYS_AIRDROP_ADDRESS = ""; //TODO Needs to be set after tiny key airdrop contract deployment
+const TINY_KEYS_AIRDROP_ADDRESS = "0xddcC3BdB7838ea4dCc526eec685963b264a1093B"; //TODO Needs to be set after tiny key airdrop contract deployment
 
 /**
  * Mapping wallet address to nonce, to manage nonce manually
@@ -8,10 +8,10 @@ const TINY_KEYS_AIRDROP_ADDRESS = ""; //TODO Needs to be set after tiny key aird
  */
 const WALLET_TO_NONCE = {};
 
-const qtyPerSegment = 2;
+const qtyPerSegment = 100;
 
 //Wallets to be used simultaneously
-const walletCount = 10;
+const walletCount = 5;
 
 //NEED TO LOOK UP MAINNET VALUES ON PROD RUN
 const maxFeePerGas = ethers.parseUnits('0.3', 'gwei');
@@ -23,7 +23,7 @@ async function main() {
         throw Error("TK Airdrop address needs to be set");
     }
 
-    const NODE_LICENSE_ADDRESS = config.nodeLicenseAddress;
+    const NODE_LICENSE_ADDRESS = "0x3d9b0902720d3e90b829e313E945b51e77848271";
 
     // get the deployer
     const signers = (await ethers.getSigners());
