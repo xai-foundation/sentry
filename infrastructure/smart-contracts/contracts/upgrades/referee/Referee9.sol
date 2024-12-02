@@ -905,6 +905,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function stakeKeys(address pool, address staker, uint256[] memory keyIds) external onlyPoolFactory {
+        require(stakingEnabled, "52");
 		require(isKycApproved(staker), "42");
         uint256 keysLength = keyIds.length;
         require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "43");
@@ -922,6 +923,7 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     function unstakeKeys(address pool, address staker, uint256[] memory keyIds) external onlyPoolFactory {
+        require(stakingEnabled, "52");
         uint256 keysLength = keyIds.length;
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
 
