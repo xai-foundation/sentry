@@ -3,7 +3,7 @@ import {getProvider} from '../utils/getProvider.js';
 import { config } from '../index.js';
 
 /**
- * Fetches the eth price from chainlink and then the xai price from chainlink.
+ * Fetches the eth/usdc price from chainlink returns with 18 decimals.
  * @param quantityOfEth - The quantity of eth to convert to xai.
  * @returns The exchange rate of eth to xai.
  */
