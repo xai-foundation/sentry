@@ -56,11 +56,6 @@
       "kind": "transparent"
     },
     {
-      "address": "0x07C05C6459B0F86A6aBB3DB71C259595d22af3C2",
-      "txHash": "0xe79823f9f559bf65ee6a46ff968bbbcf63fb5c4ac448ce9b0de89a30eb6de4f1",
-      "kind": "transparent"
-    },
-    {
       "address": "0x7eb56EF82E622c56f0127274d8B29e166edcdd61",
       "txHash": "0x3cff9cc0318a2ed1f0a51595a6f6e3030d3768520a9388ab388fbf2cff77c0ee",
       "kind": "transparent"
@@ -228,6 +223,10 @@
     {
       "address": "0xA65E7524b4714d1BB3208aEd9e9fC666806148a5",
       "txHash": "0x42e0e40e1ccffffe35c7a3a5ce2984eaa18115f7a4ec611957b225d4b1505748",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x07C05C6459B0F86A6aBB3DB71C259595d22af3C2",
       "kind": "transparent"
     }
   ],
@@ -68051,6 +68050,4621 @@
             "numberOfBytes": "64"
           },
           "t_struct(Tier)20247_storage": {
+            "label": "struct NodeLicense8.Tier",
+            "members": [
+              {
+                "label": "price",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "quantity",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "cc8d4d1876e8d306926872ed0509a50f10a11d67c3bc0e2d7c4c6a56ba235841": {
+      "address": "0x44426d77843C2798E21cD773A0410272CE23CB85",
+      "layout": {
+        "solcVersion": "0.8.9",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:40"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_name",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_string_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:25"
+          },
+          {
+            "label": "_symbol",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_string_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:28"
+          },
+          {
+            "label": "_owners",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:31"
+          },
+          {
+            "label": "_balances",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:34"
+          },
+          {
+            "label": "_tokenApprovals",
+            "offset": 0,
+            "slot": "105",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:37"
+          },
+          {
+            "label": "_operatorApprovals",
+            "offset": 0,
+            "slot": "106",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_bool))",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:40"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "107",
+            "type": "t_array(t_uint256)44_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:477"
+          },
+          {
+            "label": "_ownedTokens",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:17"
+          },
+          {
+            "label": "_ownedTokensIndex",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:20"
+          },
+          {
+            "label": "_allTokens",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_array(t_uint256)dyn_storage",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:23"
+          },
+          {
+            "label": "_allTokensIndex",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:26"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_array(t_uint256)46_storage",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:171"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)169_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:57"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:260"
+          },
+          {
+            "label": "_tokenIds",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_struct(Counter)3745_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:20"
+          },
+          {
+            "label": "fundsReceiver",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_address_payable",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:22"
+          },
+          {
+            "label": "maxSupply",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:24"
+          },
+          {
+            "label": "pricingTiers",
+            "offset": 0,
+            "slot": "254",
+            "type": "t_array(t_struct(Tier)63460_storage)dyn_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:27"
+          },
+          {
+            "label": "referralDiscountPercentage",
+            "offset": 0,
+            "slot": "255",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:29"
+          },
+          {
+            "label": "referralRewardPercentage",
+            "offset": 0,
+            "slot": "256",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:30"
+          },
+          {
+            "label": "claimable",
+            "offset": 0,
+            "slot": "257",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:33"
+          },
+          {
+            "label": "_mintTimestamps",
+            "offset": 0,
+            "slot": "258",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:36"
+          },
+          {
+            "label": "_promoCodes",
+            "offset": 0,
+            "slot": "259",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)63467_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:39"
+          },
+          {
+            "label": "_referralRewards",
+            "offset": 0,
+            "slot": "260",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:42"
+          },
+          {
+            "label": "_averageCost",
+            "offset": 0,
+            "slot": "261",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:45"
+          },
+          {
+            "label": "whitelistAmounts",
+            "offset": 0,
+            "slot": "262",
+            "type": "t_mapping(t_address,t_uint16)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:48"
+          },
+          {
+            "label": "_promoCodesXai",
+            "offset": 0,
+            "slot": "263",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)63467_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:62"
+          },
+          {
+            "label": "_promoCodesEsXai",
+            "offset": 0,
+            "slot": "264",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)63467_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:65"
+          },
+          {
+            "label": "_referralRewardsXai",
+            "offset": 0,
+            "slot": "265",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:68"
+          },
+          {
+            "label": "_referralRewardsEsXai",
+            "offset": 0,
+            "slot": "266",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:71"
+          },
+          {
+            "label": "ethPriceFeed",
+            "offset": 0,
+            "slot": "267",
+            "type": "t_contract(IAggregatorV3Interface)63316",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:74"
+          },
+          {
+            "label": "xaiPriceFeed",
+            "offset": 0,
+            "slot": "268",
+            "type": "t_contract(IAggregatorV3Interface)63316",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:77"
+          },
+          {
+            "label": "xaiAddress",
+            "offset": 0,
+            "slot": "269",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:80"
+          },
+          {
+            "label": "esXaiAddress",
+            "offset": 0,
+            "slot": "270",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:81"
+          },
+          {
+            "label": "mintingPaused",
+            "offset": 20,
+            "slot": "270",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:84"
+          },
+          {
+            "label": "_reentrancyGuardClaimReferralReward",
+            "offset": 21,
+            "slot": "270",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:87"
+          },
+          {
+            "label": "usedTransferIds",
+            "offset": 0,
+            "slot": "271",
+            "type": "t_mapping(t_bytes32,t_bool)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:90"
+          },
+          {
+            "label": "usdcAddress",
+            "offset": 0,
+            "slot": "272",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:92"
+          },
+          {
+            "label": "_promoCodesUSDC",
+            "offset": 0,
+            "slot": "273",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)63467_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:93"
+          },
+          {
+            "label": "_referralRewardsUSDC",
+            "offset": 0,
+            "slot": "274",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:94"
+          },
+          {
+            "label": "refereeCalculationsAddress",
+            "offset": 0,
+            "slot": "275",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:96"
+          },
+          {
+            "label": "refereeAddress",
+            "offset": 0,
+            "slot": "276",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:97"
+          },
+          {
+            "label": "usedAdminMintIds",
+            "offset": 0,
+            "slot": "277",
+            "type": "t_mapping(t_bytes32,t_bool)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:100"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "278",
+            "type": "t_array(t_uint256)484_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:120"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_address_payable": {
+            "label": "address payable",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_struct(Tier)63460_storage)dyn_storage": {
+            "label": "struct NodeLicense8.Tier[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)44_storage": {
+            "label": "uint256[44]",
+            "numberOfBytes": "1408"
+          },
+          "t_array(t_uint256)46_storage": {
+            "label": "uint256[46]",
+            "numberOfBytes": "1472"
+          },
+          "t_array(t_uint256)484_storage": {
+            "label": "uint256[484]",
+            "numberOfBytes": "15488"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_array(t_uint256)dyn_storage": {
+            "label": "uint256[]",
+            "numberOfBytes": "32"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IAggregatorV3Interface)63316": {
+            "label": "contract IAggregatorV3Interface",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_bool))": {
+            "label": "mapping(address => mapping(address => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
+            "label": "mapping(address => mapping(uint256 => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint16)": {
+            "label": "mapping(address => uint16)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_bool)": {
+            "label": "mapping(bytes32 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)169_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_struct(PromoCode)63467_storage)": {
+            "label": "mapping(string => struct NodeLicense8.PromoCode)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Counter)3745_storage": {
+            "label": "struct CountersUpgradeable.Counter",
+            "members": [
+              {
+                "label": "_value",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PromoCode)63467_storage": {
+            "label": "struct NodeLicense8.PromoCode",
+            "members": [
+              {
+                "label": "recipient",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "active",
+                "type": "t_bool",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "receivedLifetime",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(RoleData)169_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Tier)63460_storage": {
+            "label": "struct NodeLicense8.Tier",
+            "members": [
+              {
+                "label": "price",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "quantity",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "0460ace4560ebca5b11a16d95d1a8f4dd1410703347e3e3620866e70dc784f35": {
+      "address": "0x7ff64932f083fd03b4Ab253FCA732A57B323d84d",
+      "txHash": "0x146a91ed61fd014cbb832dda2496ab41e37f9532944d99f248ff9440be16d1fe",
+      "layout": {
+        "solcVersion": "0.8.9",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:40"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_name",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_string_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:25"
+          },
+          {
+            "label": "_symbol",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_string_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:28"
+          },
+          {
+            "label": "_owners",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:31"
+          },
+          {
+            "label": "_balances",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:34"
+          },
+          {
+            "label": "_tokenApprovals",
+            "offset": 0,
+            "slot": "105",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:37"
+          },
+          {
+            "label": "_operatorApprovals",
+            "offset": 0,
+            "slot": "106",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_bool))",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:40"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "107",
+            "type": "t_array(t_uint256)44_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:477"
+          },
+          {
+            "label": "_ownedTokens",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:17"
+          },
+          {
+            "label": "_ownedTokensIndex",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:20"
+          },
+          {
+            "label": "_allTokens",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_array(t_uint256)dyn_storage",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:23"
+          },
+          {
+            "label": "_allTokensIndex",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:26"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_array(t_uint256)46_storage",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:171"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)169_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:57"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:260"
+          },
+          {
+            "label": "_tokenIds",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_struct(Counter)3484_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:20"
+          },
+          {
+            "label": "fundsReceiver",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_address_payable",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:22"
+          },
+          {
+            "label": "maxSupply",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:24"
+          },
+          {
+            "label": "pricingTiers",
+            "offset": 0,
+            "slot": "254",
+            "type": "t_array(t_struct(Tier)20469_storage)dyn_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:27"
+          },
+          {
+            "label": "referralDiscountPercentage",
+            "offset": 0,
+            "slot": "255",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:29"
+          },
+          {
+            "label": "referralRewardPercentage",
+            "offset": 0,
+            "slot": "256",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:30"
+          },
+          {
+            "label": "claimable",
+            "offset": 0,
+            "slot": "257",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:33"
+          },
+          {
+            "label": "_mintTimestamps",
+            "offset": 0,
+            "slot": "258",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:36"
+          },
+          {
+            "label": "_promoCodes",
+            "offset": 0,
+            "slot": "259",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:39"
+          },
+          {
+            "label": "_referralRewards",
+            "offset": 0,
+            "slot": "260",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:42"
+          },
+          {
+            "label": "_averageCost",
+            "offset": 0,
+            "slot": "261",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:45"
+          },
+          {
+            "label": "whitelistAmounts",
+            "offset": 0,
+            "slot": "262",
+            "type": "t_mapping(t_address,t_uint16)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:48"
+          },
+          {
+            "label": "_promoCodesXai",
+            "offset": 0,
+            "slot": "263",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:62"
+          },
+          {
+            "label": "_promoCodesEsXai",
+            "offset": 0,
+            "slot": "264",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:65"
+          },
+          {
+            "label": "_referralRewardsXai",
+            "offset": 0,
+            "slot": "265",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:68"
+          },
+          {
+            "label": "_referralRewardsEsXai",
+            "offset": 0,
+            "slot": "266",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:71"
+          },
+          {
+            "label": "ethPriceFeed",
+            "offset": 0,
+            "slot": "267",
+            "type": "t_contract(IAggregatorV3Interface)20325",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:74"
+          },
+          {
+            "label": "xaiPriceFeed",
+            "offset": 0,
+            "slot": "268",
+            "type": "t_contract(IAggregatorV3Interface)20325",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:77"
+          },
+          {
+            "label": "xaiAddress",
+            "offset": 0,
+            "slot": "269",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:80"
+          },
+          {
+            "label": "esXaiAddress",
+            "offset": 0,
+            "slot": "270",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:81"
+          },
+          {
+            "label": "mintingPaused",
+            "offset": 20,
+            "slot": "270",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:84"
+          },
+          {
+            "label": "_reentrancyGuardClaimReferralReward",
+            "offset": 21,
+            "slot": "270",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:87"
+          },
+          {
+            "label": "usedTransferIds",
+            "offset": 0,
+            "slot": "271",
+            "type": "t_mapping(t_bytes32,t_bool)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:90"
+          },
+          {
+            "label": "usdcAddress",
+            "offset": 0,
+            "slot": "272",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:92"
+          },
+          {
+            "label": "_promoCodesUSDC",
+            "offset": 0,
+            "slot": "273",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:93"
+          },
+          {
+            "label": "_referralRewardsUSDC",
+            "offset": 0,
+            "slot": "274",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:94"
+          },
+          {
+            "label": "refereeCalculationsAddress",
+            "offset": 0,
+            "slot": "275",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:96"
+          },
+          {
+            "label": "refereeAddress",
+            "offset": 0,
+            "slot": "276",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:97"
+          },
+          {
+            "label": "usedAdminMintIds",
+            "offset": 0,
+            "slot": "277",
+            "type": "t_mapping(t_bytes32,t_bool)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:100"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "278",
+            "type": "t_array(t_uint256)484_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:120"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_address_payable": {
+            "label": "address payable",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_struct(Tier)20469_storage)dyn_storage": {
+            "label": "struct NodeLicense8.Tier[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)44_storage": {
+            "label": "uint256[44]",
+            "numberOfBytes": "1408"
+          },
+          "t_array(t_uint256)46_storage": {
+            "label": "uint256[46]",
+            "numberOfBytes": "1472"
+          },
+          "t_array(t_uint256)484_storage": {
+            "label": "uint256[484]",
+            "numberOfBytes": "15488"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_array(t_uint256)dyn_storage": {
+            "label": "uint256[]",
+            "numberOfBytes": "32"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IAggregatorV3Interface)20325": {
+            "label": "contract IAggregatorV3Interface",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_bool))": {
+            "label": "mapping(address => mapping(address => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
+            "label": "mapping(address => mapping(uint256 => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint16)": {
+            "label": "mapping(address => uint16)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_bool)": {
+            "label": "mapping(bytes32 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)169_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)": {
+            "label": "mapping(string => struct NodeLicense8.PromoCode)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Counter)3484_storage": {
+            "label": "struct CountersUpgradeable.Counter",
+            "members": [
+              {
+                "label": "_value",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PromoCode)20476_storage": {
+            "label": "struct NodeLicense8.PromoCode",
+            "members": [
+              {
+                "label": "recipient",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "active",
+                "type": "t_bool",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "receivedLifetime",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(RoleData)169_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Tier)20469_storage": {
+            "label": "struct NodeLicense8.Tier",
+            "members": [
+              {
+                "label": "price",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "quantity",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "92f1d4840d1018b7e026ad5e292fd51263c8f25f764fd7725e898b156d75e075": {
+      "address": "0x15a916Fa5c2A94cdCbACF25f7552aDcc0a96fB28",
+      "txHash": "0x3cc2630f808614f135e41543aec6211c0c327c6e8d1eba3e3fd4ab2938ffbec3",
+      "layout": {
+        "solcVersion": "0.8.9",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:40"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_name",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_string_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:25"
+          },
+          {
+            "label": "_symbol",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_string_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:28"
+          },
+          {
+            "label": "_owners",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:31"
+          },
+          {
+            "label": "_balances",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:34"
+          },
+          {
+            "label": "_tokenApprovals",
+            "offset": 0,
+            "slot": "105",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:37"
+          },
+          {
+            "label": "_operatorApprovals",
+            "offset": 0,
+            "slot": "106",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_bool))",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:40"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "107",
+            "type": "t_array(t_uint256)44_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:477"
+          },
+          {
+            "label": "_ownedTokens",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:17"
+          },
+          {
+            "label": "_ownedTokensIndex",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:20"
+          },
+          {
+            "label": "_allTokens",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_array(t_uint256)dyn_storage",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:23"
+          },
+          {
+            "label": "_allTokensIndex",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:26"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_array(t_uint256)46_storage",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:171"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)169_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:57"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:260"
+          },
+          {
+            "label": "_tokenIds",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_struct(Counter)3484_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:20"
+          },
+          {
+            "label": "fundsReceiver",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_address_payable",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:22"
+          },
+          {
+            "label": "maxSupply",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:24"
+          },
+          {
+            "label": "pricingTiers",
+            "offset": 0,
+            "slot": "254",
+            "type": "t_array(t_struct(Tier)20469_storage)dyn_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:27"
+          },
+          {
+            "label": "referralDiscountPercentage",
+            "offset": 0,
+            "slot": "255",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:29"
+          },
+          {
+            "label": "referralRewardPercentage",
+            "offset": 0,
+            "slot": "256",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:30"
+          },
+          {
+            "label": "claimable",
+            "offset": 0,
+            "slot": "257",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:33"
+          },
+          {
+            "label": "_mintTimestamps",
+            "offset": 0,
+            "slot": "258",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:36"
+          },
+          {
+            "label": "_promoCodes",
+            "offset": 0,
+            "slot": "259",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:39"
+          },
+          {
+            "label": "_referralRewards",
+            "offset": 0,
+            "slot": "260",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:42"
+          },
+          {
+            "label": "_averageCost",
+            "offset": 0,
+            "slot": "261",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:45"
+          },
+          {
+            "label": "whitelistAmounts",
+            "offset": 0,
+            "slot": "262",
+            "type": "t_mapping(t_address,t_uint16)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:48"
+          },
+          {
+            "label": "_promoCodesXai",
+            "offset": 0,
+            "slot": "263",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:62"
+          },
+          {
+            "label": "_promoCodesEsXai",
+            "offset": 0,
+            "slot": "264",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:65"
+          },
+          {
+            "label": "_referralRewardsXai",
+            "offset": 0,
+            "slot": "265",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:68"
+          },
+          {
+            "label": "_referralRewardsEsXai",
+            "offset": 0,
+            "slot": "266",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:71"
+          },
+          {
+            "label": "ethPriceFeed",
+            "offset": 0,
+            "slot": "267",
+            "type": "t_contract(IAggregatorV3Interface)20325",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:74"
+          },
+          {
+            "label": "xaiPriceFeed",
+            "offset": 0,
+            "slot": "268",
+            "type": "t_contract(IAggregatorV3Interface)20325",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:77"
+          },
+          {
+            "label": "xaiAddress",
+            "offset": 0,
+            "slot": "269",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:80"
+          },
+          {
+            "label": "esXaiAddress",
+            "offset": 0,
+            "slot": "270",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:81"
+          },
+          {
+            "label": "mintingPaused",
+            "offset": 20,
+            "slot": "270",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:84"
+          },
+          {
+            "label": "_reentrancyGuardClaimReferralReward",
+            "offset": 21,
+            "slot": "270",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:87"
+          },
+          {
+            "label": "usedTransferIds",
+            "offset": 0,
+            "slot": "271",
+            "type": "t_mapping(t_bytes32,t_bool)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:90"
+          },
+          {
+            "label": "usdcAddress",
+            "offset": 0,
+            "slot": "272",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:92"
+          },
+          {
+            "label": "_promoCodesUSDC",
+            "offset": 0,
+            "slot": "273",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:93"
+          },
+          {
+            "label": "_referralRewardsUSDC",
+            "offset": 0,
+            "slot": "274",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:94"
+          },
+          {
+            "label": "refereeCalculationsAddress",
+            "offset": 0,
+            "slot": "275",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:96"
+          },
+          {
+            "label": "refereeAddress",
+            "offset": 0,
+            "slot": "276",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:97"
+          },
+          {
+            "label": "usedAdminMintIds",
+            "offset": 0,
+            "slot": "277",
+            "type": "t_mapping(t_bytes32,t_bool)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:100"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "278",
+            "type": "t_array(t_uint256)484_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:120"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_address_payable": {
+            "label": "address payable",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_struct(Tier)20469_storage)dyn_storage": {
+            "label": "struct NodeLicense8.Tier[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)44_storage": {
+            "label": "uint256[44]",
+            "numberOfBytes": "1408"
+          },
+          "t_array(t_uint256)46_storage": {
+            "label": "uint256[46]",
+            "numberOfBytes": "1472"
+          },
+          "t_array(t_uint256)484_storage": {
+            "label": "uint256[484]",
+            "numberOfBytes": "15488"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_array(t_uint256)dyn_storage": {
+            "label": "uint256[]",
+            "numberOfBytes": "32"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IAggregatorV3Interface)20325": {
+            "label": "contract IAggregatorV3Interface",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_bool))": {
+            "label": "mapping(address => mapping(address => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
+            "label": "mapping(address => mapping(uint256 => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint16)": {
+            "label": "mapping(address => uint16)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_bool)": {
+            "label": "mapping(bytes32 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)169_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)": {
+            "label": "mapping(string => struct NodeLicense8.PromoCode)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Counter)3484_storage": {
+            "label": "struct CountersUpgradeable.Counter",
+            "members": [
+              {
+                "label": "_value",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PromoCode)20476_storage": {
+            "label": "struct NodeLicense8.PromoCode",
+            "members": [
+              {
+                "label": "recipient",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "active",
+                "type": "t_bool",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "receivedLifetime",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(RoleData)169_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Tier)20469_storage": {
+            "label": "struct NodeLicense8.Tier",
+            "members": [
+              {
+                "label": "price",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "quantity",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "e80a5b0e23e347acb028b9570b2b76807f0e1ec2248a8e28fec1919638cb86e8": {
+      "address": "0x9216B8E07de95ae515D84c8805FbDAd64F6cd051",
+      "txHash": "0xbab103549d56fabe7b713bcbcc7620988112168c6c40f56391ceb06e6eb47959",
+      "layout": {
+        "solcVersion": "0.8.9",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:40"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_name",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_string_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:25"
+          },
+          {
+            "label": "_symbol",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_string_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:28"
+          },
+          {
+            "label": "_owners",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:31"
+          },
+          {
+            "label": "_balances",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:34"
+          },
+          {
+            "label": "_tokenApprovals",
+            "offset": 0,
+            "slot": "105",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:37"
+          },
+          {
+            "label": "_operatorApprovals",
+            "offset": 0,
+            "slot": "106",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_bool))",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:40"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "107",
+            "type": "t_array(t_uint256)44_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:477"
+          },
+          {
+            "label": "_ownedTokens",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:17"
+          },
+          {
+            "label": "_ownedTokensIndex",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:20"
+          },
+          {
+            "label": "_allTokens",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_array(t_uint256)dyn_storage",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:23"
+          },
+          {
+            "label": "_allTokensIndex",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:26"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_array(t_uint256)46_storage",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:171"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)169_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:57"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:260"
+          },
+          {
+            "label": "_tokenIds",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_struct(Counter)3484_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:20"
+          },
+          {
+            "label": "fundsReceiver",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_address_payable",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:22"
+          },
+          {
+            "label": "maxSupply",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:24"
+          },
+          {
+            "label": "pricingTiers",
+            "offset": 0,
+            "slot": "254",
+            "type": "t_array(t_struct(Tier)20469_storage)dyn_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:27"
+          },
+          {
+            "label": "referralDiscountPercentage",
+            "offset": 0,
+            "slot": "255",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:29"
+          },
+          {
+            "label": "referralRewardPercentage",
+            "offset": 0,
+            "slot": "256",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:30"
+          },
+          {
+            "label": "claimable",
+            "offset": 0,
+            "slot": "257",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:33"
+          },
+          {
+            "label": "_mintTimestamps",
+            "offset": 0,
+            "slot": "258",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:36"
+          },
+          {
+            "label": "_promoCodes",
+            "offset": 0,
+            "slot": "259",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:39"
+          },
+          {
+            "label": "_referralRewards",
+            "offset": 0,
+            "slot": "260",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:42"
+          },
+          {
+            "label": "_averageCost",
+            "offset": 0,
+            "slot": "261",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:45"
+          },
+          {
+            "label": "whitelistAmounts",
+            "offset": 0,
+            "slot": "262",
+            "type": "t_mapping(t_address,t_uint16)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:48"
+          },
+          {
+            "label": "_promoCodesXai",
+            "offset": 0,
+            "slot": "263",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:62"
+          },
+          {
+            "label": "_promoCodesEsXai",
+            "offset": 0,
+            "slot": "264",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:65"
+          },
+          {
+            "label": "_referralRewardsXai",
+            "offset": 0,
+            "slot": "265",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:68"
+          },
+          {
+            "label": "_referralRewardsEsXai",
+            "offset": 0,
+            "slot": "266",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:71"
+          },
+          {
+            "label": "ethPriceFeed",
+            "offset": 0,
+            "slot": "267",
+            "type": "t_contract(IAggregatorV3Interface)20325",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:74"
+          },
+          {
+            "label": "xaiPriceFeed",
+            "offset": 0,
+            "slot": "268",
+            "type": "t_contract(IAggregatorV3Interface)20325",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:77"
+          },
+          {
+            "label": "xaiAddress",
+            "offset": 0,
+            "slot": "269",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:80"
+          },
+          {
+            "label": "esXaiAddress",
+            "offset": 0,
+            "slot": "270",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:81"
+          },
+          {
+            "label": "mintingPaused",
+            "offset": 20,
+            "slot": "270",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:84"
+          },
+          {
+            "label": "_reentrancyGuardClaimReferralReward",
+            "offset": 21,
+            "slot": "270",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:87"
+          },
+          {
+            "label": "usedTransferIds",
+            "offset": 0,
+            "slot": "271",
+            "type": "t_mapping(t_bytes32,t_bool)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:90"
+          },
+          {
+            "label": "usdcAddress",
+            "offset": 0,
+            "slot": "272",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:92"
+          },
+          {
+            "label": "_promoCodesUSDC",
+            "offset": 0,
+            "slot": "273",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:93"
+          },
+          {
+            "label": "_referralRewardsUSDC",
+            "offset": 0,
+            "slot": "274",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:94"
+          },
+          {
+            "label": "refereeCalculationsAddress",
+            "offset": 0,
+            "slot": "275",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:96"
+          },
+          {
+            "label": "refereeAddress",
+            "offset": 0,
+            "slot": "276",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:97"
+          },
+          {
+            "label": "usedAdminMintIds",
+            "offset": 0,
+            "slot": "277",
+            "type": "t_mapping(t_bytes32,t_bool)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:100"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "278",
+            "type": "t_array(t_uint256)484_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:120"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_address_payable": {
+            "label": "address payable",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_struct(Tier)20469_storage)dyn_storage": {
+            "label": "struct NodeLicense8.Tier[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)44_storage": {
+            "label": "uint256[44]",
+            "numberOfBytes": "1408"
+          },
+          "t_array(t_uint256)46_storage": {
+            "label": "uint256[46]",
+            "numberOfBytes": "1472"
+          },
+          "t_array(t_uint256)484_storage": {
+            "label": "uint256[484]",
+            "numberOfBytes": "15488"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_array(t_uint256)dyn_storage": {
+            "label": "uint256[]",
+            "numberOfBytes": "32"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IAggregatorV3Interface)20325": {
+            "label": "contract IAggregatorV3Interface",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_bool))": {
+            "label": "mapping(address => mapping(address => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
+            "label": "mapping(address => mapping(uint256 => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint16)": {
+            "label": "mapping(address => uint16)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_bool)": {
+            "label": "mapping(bytes32 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)169_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)": {
+            "label": "mapping(string => struct NodeLicense8.PromoCode)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Counter)3484_storage": {
+            "label": "struct CountersUpgradeable.Counter",
+            "members": [
+              {
+                "label": "_value",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PromoCode)20476_storage": {
+            "label": "struct NodeLicense8.PromoCode",
+            "members": [
+              {
+                "label": "recipient",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "active",
+                "type": "t_bool",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "receivedLifetime",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(RoleData)169_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Tier)20469_storage": {
+            "label": "struct NodeLicense8.Tier",
+            "members": [
+              {
+                "label": "price",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "quantity",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "62360dffac87e8a59b22eaa0a39d480e2a91a6a6cf9c2a7508e39f6ac9c454e0": {
+      "address": "0x63b9b74DC4FC3eb8C49A5326a7dd6936AECC9DD1",
+      "txHash": "0x8b1592383f8dec865cfb3f11ccdd13fc935def90d4f482b9557188b0e17a09b3",
+      "layout": {
+        "solcVersion": "0.8.9",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:40"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_name",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_string_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:25"
+          },
+          {
+            "label": "_symbol",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_string_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:28"
+          },
+          {
+            "label": "_owners",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:31"
+          },
+          {
+            "label": "_balances",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:34"
+          },
+          {
+            "label": "_tokenApprovals",
+            "offset": 0,
+            "slot": "105",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:37"
+          },
+          {
+            "label": "_operatorApprovals",
+            "offset": 0,
+            "slot": "106",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_bool))",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:40"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "107",
+            "type": "t_array(t_uint256)44_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:477"
+          },
+          {
+            "label": "_ownedTokens",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:17"
+          },
+          {
+            "label": "_ownedTokensIndex",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:20"
+          },
+          {
+            "label": "_allTokens",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_array(t_uint256)dyn_storage",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:23"
+          },
+          {
+            "label": "_allTokensIndex",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:26"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_array(t_uint256)46_storage",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:171"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)169_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:57"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:260"
+          },
+          {
+            "label": "_tokenIds",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_struct(Counter)3484_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:20"
+          },
+          {
+            "label": "fundsReceiver",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_address_payable",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:22"
+          },
+          {
+            "label": "maxSupply",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:24"
+          },
+          {
+            "label": "pricingTiers",
+            "offset": 0,
+            "slot": "254",
+            "type": "t_array(t_struct(Tier)20469_storage)dyn_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:27"
+          },
+          {
+            "label": "referralDiscountPercentage",
+            "offset": 0,
+            "slot": "255",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:29"
+          },
+          {
+            "label": "referralRewardPercentage",
+            "offset": 0,
+            "slot": "256",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:30"
+          },
+          {
+            "label": "claimable",
+            "offset": 0,
+            "slot": "257",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:33"
+          },
+          {
+            "label": "_mintTimestamps",
+            "offset": 0,
+            "slot": "258",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:36"
+          },
+          {
+            "label": "_promoCodes",
+            "offset": 0,
+            "slot": "259",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:39"
+          },
+          {
+            "label": "_referralRewards",
+            "offset": 0,
+            "slot": "260",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:42"
+          },
+          {
+            "label": "_averageCost",
+            "offset": 0,
+            "slot": "261",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:45"
+          },
+          {
+            "label": "whitelistAmounts",
+            "offset": 0,
+            "slot": "262",
+            "type": "t_mapping(t_address,t_uint16)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:48"
+          },
+          {
+            "label": "_promoCodesXai",
+            "offset": 0,
+            "slot": "263",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:62"
+          },
+          {
+            "label": "_promoCodesEsXai",
+            "offset": 0,
+            "slot": "264",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:65"
+          },
+          {
+            "label": "_referralRewardsXai",
+            "offset": 0,
+            "slot": "265",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:68"
+          },
+          {
+            "label": "_referralRewardsEsXai",
+            "offset": 0,
+            "slot": "266",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:71"
+          },
+          {
+            "label": "ethPriceFeed",
+            "offset": 0,
+            "slot": "267",
+            "type": "t_contract(IAggregatorV3Interface)20325",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:74"
+          },
+          {
+            "label": "xaiPriceFeed",
+            "offset": 0,
+            "slot": "268",
+            "type": "t_contract(IAggregatorV3Interface)20325",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:77"
+          },
+          {
+            "label": "xaiAddress",
+            "offset": 0,
+            "slot": "269",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:80"
+          },
+          {
+            "label": "esXaiAddress",
+            "offset": 0,
+            "slot": "270",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:81"
+          },
+          {
+            "label": "mintingPaused",
+            "offset": 20,
+            "slot": "270",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:84"
+          },
+          {
+            "label": "_reentrancyGuardClaimReferralReward",
+            "offset": 21,
+            "slot": "270",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:87"
+          },
+          {
+            "label": "usedTransferIds",
+            "offset": 0,
+            "slot": "271",
+            "type": "t_mapping(t_bytes32,t_bool)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:90"
+          },
+          {
+            "label": "usdcAddress",
+            "offset": 0,
+            "slot": "272",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:92"
+          },
+          {
+            "label": "_promoCodesUSDC",
+            "offset": 0,
+            "slot": "273",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:93"
+          },
+          {
+            "label": "_referralRewardsUSDC",
+            "offset": 0,
+            "slot": "274",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:94"
+          },
+          {
+            "label": "refereeCalculationsAddress",
+            "offset": 0,
+            "slot": "275",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:96"
+          },
+          {
+            "label": "refereeAddress",
+            "offset": 0,
+            "slot": "276",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:97"
+          },
+          {
+            "label": "usedAdminMintIds",
+            "offset": 0,
+            "slot": "277",
+            "type": "t_mapping(t_bytes32,t_bool)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:100"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "278",
+            "type": "t_array(t_uint256)484_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:120"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_address_payable": {
+            "label": "address payable",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_struct(Tier)20469_storage)dyn_storage": {
+            "label": "struct NodeLicense8.Tier[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)44_storage": {
+            "label": "uint256[44]",
+            "numberOfBytes": "1408"
+          },
+          "t_array(t_uint256)46_storage": {
+            "label": "uint256[46]",
+            "numberOfBytes": "1472"
+          },
+          "t_array(t_uint256)484_storage": {
+            "label": "uint256[484]",
+            "numberOfBytes": "15488"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_array(t_uint256)dyn_storage": {
+            "label": "uint256[]",
+            "numberOfBytes": "32"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IAggregatorV3Interface)20325": {
+            "label": "contract IAggregatorV3Interface",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_bool))": {
+            "label": "mapping(address => mapping(address => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
+            "label": "mapping(address => mapping(uint256 => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint16)": {
+            "label": "mapping(address => uint16)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_bool)": {
+            "label": "mapping(bytes32 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)169_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)": {
+            "label": "mapping(string => struct NodeLicense8.PromoCode)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Counter)3484_storage": {
+            "label": "struct CountersUpgradeable.Counter",
+            "members": [
+              {
+                "label": "_value",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PromoCode)20476_storage": {
+            "label": "struct NodeLicense8.PromoCode",
+            "members": [
+              {
+                "label": "recipient",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "active",
+                "type": "t_bool",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "receivedLifetime",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(RoleData)169_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Tier)20469_storage": {
+            "label": "struct NodeLicense8.Tier",
+            "members": [
+              {
+                "label": "price",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "quantity",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "b2cc4b7056cddd37b6eab4eb52840bf71558299c0ac8b326f3ae72bb1c7416c2": {
+      "address": "0xe24c569877818cC2cA0cEB8Bb4A9876Df8A103eb",
+      "txHash": "0x4419e2e65bdaf2664da758df6f44524ed5ac5ab01af02adc164e225e781267cc",
+      "layout": {
+        "solcVersion": "0.8.9",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:40"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_name",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_string_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:25"
+          },
+          {
+            "label": "_symbol",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_string_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:28"
+          },
+          {
+            "label": "_owners",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:31"
+          },
+          {
+            "label": "_balances",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:34"
+          },
+          {
+            "label": "_tokenApprovals",
+            "offset": 0,
+            "slot": "105",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:37"
+          },
+          {
+            "label": "_operatorApprovals",
+            "offset": 0,
+            "slot": "106",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_bool))",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:40"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "107",
+            "type": "t_array(t_uint256)44_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:477"
+          },
+          {
+            "label": "_ownedTokens",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:17"
+          },
+          {
+            "label": "_ownedTokensIndex",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:20"
+          },
+          {
+            "label": "_allTokens",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_array(t_uint256)dyn_storage",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:23"
+          },
+          {
+            "label": "_allTokensIndex",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:26"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_array(t_uint256)46_storage",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:171"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)169_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:57"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:260"
+          },
+          {
+            "label": "_tokenIds",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_struct(Counter)3484_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:20"
+          },
+          {
+            "label": "fundsReceiver",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_address_payable",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:22"
+          },
+          {
+            "label": "maxSupply",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:24"
+          },
+          {
+            "label": "pricingTiers",
+            "offset": 0,
+            "slot": "254",
+            "type": "t_array(t_struct(Tier)20469_storage)dyn_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:27"
+          },
+          {
+            "label": "referralDiscountPercentage",
+            "offset": 0,
+            "slot": "255",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:29"
+          },
+          {
+            "label": "referralRewardPercentage",
+            "offset": 0,
+            "slot": "256",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:30"
+          },
+          {
+            "label": "claimable",
+            "offset": 0,
+            "slot": "257",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:33"
+          },
+          {
+            "label": "_mintTimestamps",
+            "offset": 0,
+            "slot": "258",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:36"
+          },
+          {
+            "label": "_promoCodes",
+            "offset": 0,
+            "slot": "259",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:39"
+          },
+          {
+            "label": "_referralRewards",
+            "offset": 0,
+            "slot": "260",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:42"
+          },
+          {
+            "label": "_averageCost",
+            "offset": 0,
+            "slot": "261",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:45"
+          },
+          {
+            "label": "whitelistAmounts",
+            "offset": 0,
+            "slot": "262",
+            "type": "t_mapping(t_address,t_uint16)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:48"
+          },
+          {
+            "label": "_promoCodesXai",
+            "offset": 0,
+            "slot": "263",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:62"
+          },
+          {
+            "label": "_promoCodesEsXai",
+            "offset": 0,
+            "slot": "264",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:65"
+          },
+          {
+            "label": "_referralRewardsXai",
+            "offset": 0,
+            "slot": "265",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:68"
+          },
+          {
+            "label": "_referralRewardsEsXai",
+            "offset": 0,
+            "slot": "266",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:71"
+          },
+          {
+            "label": "ethPriceFeed",
+            "offset": 0,
+            "slot": "267",
+            "type": "t_contract(IAggregatorV3Interface)20325",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:74"
+          },
+          {
+            "label": "xaiPriceFeed",
+            "offset": 0,
+            "slot": "268",
+            "type": "t_contract(IAggregatorV3Interface)20325",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:77"
+          },
+          {
+            "label": "xaiAddress",
+            "offset": 0,
+            "slot": "269",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:80"
+          },
+          {
+            "label": "esXaiAddress",
+            "offset": 0,
+            "slot": "270",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:81"
+          },
+          {
+            "label": "mintingPaused",
+            "offset": 20,
+            "slot": "270",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:84"
+          },
+          {
+            "label": "_reentrancyGuardClaimReferralReward",
+            "offset": 21,
+            "slot": "270",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:87"
+          },
+          {
+            "label": "usedTransferIds",
+            "offset": 0,
+            "slot": "271",
+            "type": "t_mapping(t_bytes32,t_bool)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:90"
+          },
+          {
+            "label": "usdcAddress",
+            "offset": 0,
+            "slot": "272",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:92"
+          },
+          {
+            "label": "_promoCodesUSDC",
+            "offset": 0,
+            "slot": "273",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:93"
+          },
+          {
+            "label": "_referralRewardsUSDC",
+            "offset": 0,
+            "slot": "274",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:94"
+          },
+          {
+            "label": "refereeCalculationsAddress",
+            "offset": 0,
+            "slot": "275",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:96"
+          },
+          {
+            "label": "refereeAddress",
+            "offset": 0,
+            "slot": "276",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:97"
+          },
+          {
+            "label": "usedAdminMintIds",
+            "offset": 0,
+            "slot": "277",
+            "type": "t_mapping(t_bytes32,t_bool)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:100"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "278",
+            "type": "t_array(t_uint256)484_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:120"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_address_payable": {
+            "label": "address payable",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_struct(Tier)20469_storage)dyn_storage": {
+            "label": "struct NodeLicense8.Tier[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)44_storage": {
+            "label": "uint256[44]",
+            "numberOfBytes": "1408"
+          },
+          "t_array(t_uint256)46_storage": {
+            "label": "uint256[46]",
+            "numberOfBytes": "1472"
+          },
+          "t_array(t_uint256)484_storage": {
+            "label": "uint256[484]",
+            "numberOfBytes": "15488"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_array(t_uint256)dyn_storage": {
+            "label": "uint256[]",
+            "numberOfBytes": "32"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IAggregatorV3Interface)20325": {
+            "label": "contract IAggregatorV3Interface",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_bool))": {
+            "label": "mapping(address => mapping(address => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
+            "label": "mapping(address => mapping(uint256 => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint16)": {
+            "label": "mapping(address => uint16)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_bool)": {
+            "label": "mapping(bytes32 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)169_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)": {
+            "label": "mapping(string => struct NodeLicense8.PromoCode)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Counter)3484_storage": {
+            "label": "struct CountersUpgradeable.Counter",
+            "members": [
+              {
+                "label": "_value",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PromoCode)20476_storage": {
+            "label": "struct NodeLicense8.PromoCode",
+            "members": [
+              {
+                "label": "recipient",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "active",
+                "type": "t_bool",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "receivedLifetime",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(RoleData)169_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Tier)20469_storage": {
+            "label": "struct NodeLicense8.Tier",
+            "members": [
+              {
+                "label": "price",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "quantity",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "a1b70ffd33506dedfe571ba077a9efd9f76b9a70a893e7c70af13f6f05463b35": {
+      "address": "0xC924eD935379aAA7d783d27d190252955a555409",
+      "txHash": "0xbf3a6af5dccdff9ae78c6c44279465b4dd0217bbb2b3c81f349ea930441434eb",
+      "layout": {
+        "solcVersion": "0.8.9",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:40"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_name",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_string_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:25"
+          },
+          {
+            "label": "_symbol",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_string_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:28"
+          },
+          {
+            "label": "_owners",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:31"
+          },
+          {
+            "label": "_balances",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:34"
+          },
+          {
+            "label": "_tokenApprovals",
+            "offset": 0,
+            "slot": "105",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:37"
+          },
+          {
+            "label": "_operatorApprovals",
+            "offset": 0,
+            "slot": "106",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_bool))",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:40"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "107",
+            "type": "t_array(t_uint256)44_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:477"
+          },
+          {
+            "label": "_ownedTokens",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:17"
+          },
+          {
+            "label": "_ownedTokensIndex",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:20"
+          },
+          {
+            "label": "_allTokens",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_array(t_uint256)dyn_storage",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:23"
+          },
+          {
+            "label": "_allTokensIndex",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:26"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_array(t_uint256)46_storage",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:171"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)169_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:57"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:260"
+          },
+          {
+            "label": "_tokenIds",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_struct(Counter)3484_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:20"
+          },
+          {
+            "label": "fundsReceiver",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_address_payable",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:22"
+          },
+          {
+            "label": "maxSupply",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:24"
+          },
+          {
+            "label": "pricingTiers",
+            "offset": 0,
+            "slot": "254",
+            "type": "t_array(t_struct(Tier)20469_storage)dyn_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:27"
+          },
+          {
+            "label": "referralDiscountPercentage",
+            "offset": 0,
+            "slot": "255",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:29"
+          },
+          {
+            "label": "referralRewardPercentage",
+            "offset": 0,
+            "slot": "256",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:30"
+          },
+          {
+            "label": "claimable",
+            "offset": 0,
+            "slot": "257",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:33"
+          },
+          {
+            "label": "_mintTimestamps",
+            "offset": 0,
+            "slot": "258",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:36"
+          },
+          {
+            "label": "_promoCodes",
+            "offset": 0,
+            "slot": "259",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:39"
+          },
+          {
+            "label": "_referralRewards",
+            "offset": 0,
+            "slot": "260",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:42"
+          },
+          {
+            "label": "_averageCost",
+            "offset": 0,
+            "slot": "261",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:45"
+          },
+          {
+            "label": "whitelistAmounts",
+            "offset": 0,
+            "slot": "262",
+            "type": "t_mapping(t_address,t_uint16)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:48"
+          },
+          {
+            "label": "_promoCodesXai",
+            "offset": 0,
+            "slot": "263",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:62"
+          },
+          {
+            "label": "_promoCodesEsXai",
+            "offset": 0,
+            "slot": "264",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:65"
+          },
+          {
+            "label": "_referralRewardsXai",
+            "offset": 0,
+            "slot": "265",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:68"
+          },
+          {
+            "label": "_referralRewardsEsXai",
+            "offset": 0,
+            "slot": "266",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:71"
+          },
+          {
+            "label": "ethPriceFeed",
+            "offset": 0,
+            "slot": "267",
+            "type": "t_contract(IAggregatorV3Interface)20325",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:74"
+          },
+          {
+            "label": "xaiPriceFeed",
+            "offset": 0,
+            "slot": "268",
+            "type": "t_contract(IAggregatorV3Interface)20325",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:77"
+          },
+          {
+            "label": "xaiAddress",
+            "offset": 0,
+            "slot": "269",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:80"
+          },
+          {
+            "label": "esXaiAddress",
+            "offset": 0,
+            "slot": "270",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:81"
+          },
+          {
+            "label": "mintingPaused",
+            "offset": 20,
+            "slot": "270",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:84"
+          },
+          {
+            "label": "_reentrancyGuardClaimReferralReward",
+            "offset": 21,
+            "slot": "270",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:87"
+          },
+          {
+            "label": "usedTransferIds",
+            "offset": 0,
+            "slot": "271",
+            "type": "t_mapping(t_bytes32,t_bool)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:90"
+          },
+          {
+            "label": "usdcAddress",
+            "offset": 0,
+            "slot": "272",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:92"
+          },
+          {
+            "label": "_promoCodesUSDC",
+            "offset": 0,
+            "slot": "273",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:93"
+          },
+          {
+            "label": "_referralRewardsUSDC",
+            "offset": 0,
+            "slot": "274",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:94"
+          },
+          {
+            "label": "refereeCalculationsAddress",
+            "offset": 0,
+            "slot": "275",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:96"
+          },
+          {
+            "label": "refereeAddress",
+            "offset": 0,
+            "slot": "276",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:97"
+          },
+          {
+            "label": "usedAdminMintIds",
+            "offset": 0,
+            "slot": "277",
+            "type": "t_mapping(t_bytes32,t_bool)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:100"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "278",
+            "type": "t_array(t_uint256)484_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:120"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_address_payable": {
+            "label": "address payable",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_struct(Tier)20469_storage)dyn_storage": {
+            "label": "struct NodeLicense8.Tier[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)44_storage": {
+            "label": "uint256[44]",
+            "numberOfBytes": "1408"
+          },
+          "t_array(t_uint256)46_storage": {
+            "label": "uint256[46]",
+            "numberOfBytes": "1472"
+          },
+          "t_array(t_uint256)484_storage": {
+            "label": "uint256[484]",
+            "numberOfBytes": "15488"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_array(t_uint256)dyn_storage": {
+            "label": "uint256[]",
+            "numberOfBytes": "32"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IAggregatorV3Interface)20325": {
+            "label": "contract IAggregatorV3Interface",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_bool))": {
+            "label": "mapping(address => mapping(address => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
+            "label": "mapping(address => mapping(uint256 => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint16)": {
+            "label": "mapping(address => uint16)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_bool)": {
+            "label": "mapping(bytes32 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)169_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)": {
+            "label": "mapping(string => struct NodeLicense8.PromoCode)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Counter)3484_storage": {
+            "label": "struct CountersUpgradeable.Counter",
+            "members": [
+              {
+                "label": "_value",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PromoCode)20476_storage": {
+            "label": "struct NodeLicense8.PromoCode",
+            "members": [
+              {
+                "label": "recipient",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "active",
+                "type": "t_bool",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "receivedLifetime",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(RoleData)169_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Tier)20469_storage": {
+            "label": "struct NodeLicense8.Tier",
+            "members": [
+              {
+                "label": "price",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "quantity",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_uint16": {
+            "label": "uint16",
+            "numberOfBytes": "2"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          },
+          "t_uint8": {
+            "label": "uint8",
+            "numberOfBytes": "1"
+          }
+        },
+        "namespaces": {}
+      }
+    },
+    "42556105e763a50b3ae629a3d94e4f58a5e564c17db5569340506abf5d3c1f87": {
+      "address": "0xdAbC8D6DD8e4CCe51912485E64b46794E698233F",
+      "txHash": "0x0d6bd70b947eadf974c474b27104f7e1e003916b6d597d6e04e84666d3ec2753",
+      "layout": {
+        "solcVersion": "0.8.9",
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint8",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:63",
+            "retypedFrom": "bool"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin\\contracts-upgradeable\\proxy\\utils\\Initializable.sol:68"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\ContextUpgradeable.sol:40"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ERC165Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\utils\\introspection\\ERC165Upgradeable.sol:41"
+          },
+          {
+            "label": "_name",
+            "offset": 0,
+            "slot": "101",
+            "type": "t_string_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:25"
+          },
+          {
+            "label": "_symbol",
+            "offset": 0,
+            "slot": "102",
+            "type": "t_string_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:28"
+          },
+          {
+            "label": "_owners",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:31"
+          },
+          {
+            "label": "_balances",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:34"
+          },
+          {
+            "label": "_tokenApprovals",
+            "offset": 0,
+            "slot": "105",
+            "type": "t_mapping(t_uint256,t_address)",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:37"
+          },
+          {
+            "label": "_operatorApprovals",
+            "offset": 0,
+            "slot": "106",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_bool))",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:40"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "107",
+            "type": "t_array(t_uint256)44_storage",
+            "contract": "ERC721Upgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\ERC721Upgradeable.sol:477"
+          },
+          {
+            "label": "_ownedTokens",
+            "offset": 0,
+            "slot": "151",
+            "type": "t_mapping(t_address,t_mapping(t_uint256,t_uint256))",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:17"
+          },
+          {
+            "label": "_ownedTokensIndex",
+            "offset": 0,
+            "slot": "152",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:20"
+          },
+          {
+            "label": "_allTokens",
+            "offset": 0,
+            "slot": "153",
+            "type": "t_array(t_uint256)dyn_storage",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:23"
+          },
+          {
+            "label": "_allTokensIndex",
+            "offset": 0,
+            "slot": "154",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:26"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "155",
+            "type": "t_array(t_uint256)46_storage",
+            "contract": "ERC721EnumerableUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\token\\ERC721\\extensions\\ERC721EnumerableUpgradeable.sol:171"
+          },
+          {
+            "label": "_roles",
+            "offset": 0,
+            "slot": "201",
+            "type": "t_mapping(t_bytes32,t_struct(RoleData)169_storage)",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:57"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "202",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "AccessControlUpgradeable",
+            "src": "@openzeppelin\\contracts-upgradeable\\access\\AccessControlUpgradeable.sol:260"
+          },
+          {
+            "label": "_tokenIds",
+            "offset": 0,
+            "slot": "251",
+            "type": "t_struct(Counter)3484_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:20"
+          },
+          {
+            "label": "fundsReceiver",
+            "offset": 0,
+            "slot": "252",
+            "type": "t_address_payable",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:22"
+          },
+          {
+            "label": "maxSupply",
+            "offset": 0,
+            "slot": "253",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:24"
+          },
+          {
+            "label": "pricingTiers",
+            "offset": 0,
+            "slot": "254",
+            "type": "t_array(t_struct(Tier)20469_storage)dyn_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:27"
+          },
+          {
+            "label": "referralDiscountPercentage",
+            "offset": 0,
+            "slot": "255",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:29"
+          },
+          {
+            "label": "referralRewardPercentage",
+            "offset": 0,
+            "slot": "256",
+            "type": "t_uint256",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:30"
+          },
+          {
+            "label": "claimable",
+            "offset": 0,
+            "slot": "257",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:33"
+          },
+          {
+            "label": "_mintTimestamps",
+            "offset": 0,
+            "slot": "258",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:36"
+          },
+          {
+            "label": "_promoCodes",
+            "offset": 0,
+            "slot": "259",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:39"
+          },
+          {
+            "label": "_referralRewards",
+            "offset": 0,
+            "slot": "260",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:42"
+          },
+          {
+            "label": "_averageCost",
+            "offset": 0,
+            "slot": "261",
+            "type": "t_mapping(t_uint256,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:45"
+          },
+          {
+            "label": "whitelistAmounts",
+            "offset": 0,
+            "slot": "262",
+            "type": "t_mapping(t_address,t_uint16)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:48"
+          },
+          {
+            "label": "_promoCodesXai",
+            "offset": 0,
+            "slot": "263",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:62"
+          },
+          {
+            "label": "_promoCodesEsXai",
+            "offset": 0,
+            "slot": "264",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:65"
+          },
+          {
+            "label": "_referralRewardsXai",
+            "offset": 0,
+            "slot": "265",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:68"
+          },
+          {
+            "label": "_referralRewardsEsXai",
+            "offset": 0,
+            "slot": "266",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:71"
+          },
+          {
+            "label": "ethPriceFeed",
+            "offset": 0,
+            "slot": "267",
+            "type": "t_contract(IAggregatorV3Interface)20325",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:74"
+          },
+          {
+            "label": "xaiPriceFeed",
+            "offset": 0,
+            "slot": "268",
+            "type": "t_contract(IAggregatorV3Interface)20325",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:77"
+          },
+          {
+            "label": "xaiAddress",
+            "offset": 0,
+            "slot": "269",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:80"
+          },
+          {
+            "label": "esXaiAddress",
+            "offset": 0,
+            "slot": "270",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:81"
+          },
+          {
+            "label": "mintingPaused",
+            "offset": 20,
+            "slot": "270",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:84"
+          },
+          {
+            "label": "_reentrancyGuardClaimReferralReward",
+            "offset": 21,
+            "slot": "270",
+            "type": "t_bool",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:87"
+          },
+          {
+            "label": "usedTransferIds",
+            "offset": 0,
+            "slot": "271",
+            "type": "t_mapping(t_bytes32,t_bool)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:90"
+          },
+          {
+            "label": "usdcAddress",
+            "offset": 0,
+            "slot": "272",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:92"
+          },
+          {
+            "label": "_promoCodesUSDC",
+            "offset": 0,
+            "slot": "273",
+            "type": "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:93"
+          },
+          {
+            "label": "_referralRewardsUSDC",
+            "offset": 0,
+            "slot": "274",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:94"
+          },
+          {
+            "label": "refereeCalculationsAddress",
+            "offset": 0,
+            "slot": "275",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:96"
+          },
+          {
+            "label": "refereeAddress",
+            "offset": 0,
+            "slot": "276",
+            "type": "t_address",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:97"
+          },
+          {
+            "label": "usedAdminMintIds",
+            "offset": 0,
+            "slot": "277",
+            "type": "t_mapping(t_bytes32,t_bool)",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:100"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "278",
+            "type": "t_array(t_uint256)484_storage",
+            "contract": "NodeLicense8",
+            "src": "contracts\\upgrades\\node-license\\NodeLicense8.sol:120"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_address_payable": {
+            "label": "address payable",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_struct(Tier)20469_storage)dyn_storage": {
+            "label": "struct NodeLicense8.Tier[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)44_storage": {
+            "label": "uint256[44]",
+            "numberOfBytes": "1408"
+          },
+          "t_array(t_uint256)46_storage": {
+            "label": "uint256[46]",
+            "numberOfBytes": "1472"
+          },
+          "t_array(t_uint256)484_storage": {
+            "label": "uint256[484]",
+            "numberOfBytes": "15488"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]",
+            "numberOfBytes": "1568"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_array(t_uint256)dyn_storage": {
+            "label": "uint256[]",
+            "numberOfBytes": "32"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_bytes32": {
+            "label": "bytes32",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IAggregatorV3Interface)20325": {
+            "label": "contract IAggregatorV3Interface",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_bool))": {
+            "label": "mapping(address => mapping(address => bool))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
+            "label": "mapping(address => mapping(uint256 => uint256))",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint16)": {
+            "label": "mapping(address => uint16)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_bool)": {
+            "label": "mapping(bytes32 => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_bytes32,t_struct(RoleData)169_storage)": {
+            "label": "mapping(bytes32 => struct AccessControlUpgradeable.RoleData)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_string_memory_ptr,t_struct(PromoCode)20476_storage)": {
+            "label": "mapping(string => struct NodeLicense8.PromoCode)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_address)": {
+            "label": "mapping(uint256 => address)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_string_memory_ptr": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_string_storage": {
+            "label": "string",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Counter)3484_storage": {
+            "label": "struct CountersUpgradeable.Counter",
+            "members": [
+              {
+                "label": "_value",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(PromoCode)20476_storage": {
+            "label": "struct NodeLicense8.PromoCode",
+            "members": [
+              {
+                "label": "recipient",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "active",
+                "type": "t_bool",
+                "offset": 20,
+                "slot": "0"
+              },
+              {
+                "label": "receivedLifetime",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(RoleData)169_storage": {
+            "label": "struct AccessControlUpgradeable.RoleData",
+            "members": [
+              {
+                "label": "members",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "adminRole",
+                "type": "t_bytes32",
+                "offset": 0,
+                "slot": "1"
+              }
+            ],
+            "numberOfBytes": "64"
+          },
+          "t_struct(Tier)20469_storage": {
             "label": "struct NodeLicense8.Tier",
             "members": [
               {
