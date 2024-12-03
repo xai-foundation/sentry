@@ -45,7 +45,7 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalP
         <div className="fixed inset-0 bg-nulnOil bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50">
             <div className="bg-nulnOil p-3 rounded-lg shadow-xl w-full max-w-3xl mx-4">
                 <div className="flex justify-between items-center p-4">
-                    <h2 className="text-xl font-semibold text-white">Pay with Credit Card</h2>
+                    <h2 className="text-xl font-semibold text-white">Pay with Crossmint</h2>
                     <button onClick={onClose} className="text-white hover:text-gray-700">
                         <CloseIcon
                             width={15}
@@ -103,7 +103,6 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalP
                                         accent: styles.colors.accent,                                
                                     },
                                 },
-                                
                             }}
                             recipient={{
                                 walletAddress: address as `0x${string}`
