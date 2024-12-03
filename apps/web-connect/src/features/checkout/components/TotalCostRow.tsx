@@ -6,7 +6,7 @@ import { CURRENCIES } from "@/features/hooks";
 /**
  * TotalCostRow Component
  *
- * This component displays the total cost and available balance for purchasing Xai Sentry Node Keys.
+ * This component displays the total cost and available balance for purchasing Xai Sentry Keys.
  * It uses the WebBuyKeysContext to access shared state and functions.
  *
  * @returns {JSX.Element} The rendered TotalCostRow component
