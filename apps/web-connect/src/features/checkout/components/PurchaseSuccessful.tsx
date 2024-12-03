@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import BackArrow from "@sentry/ui/src/rebrand/icons/BackArrow";
 import { stakingPageURL } from "../Checkout";
 import ShareButton from "@sentry/ui/src/rebrand/buttons/ShareButton";
+const { VITE_APP_ENV } = import.meta.env
 
 let timeoutId: number;
 
@@ -16,7 +17,7 @@ interface IPurchaseSuccessful {
 	returnToClient: (hash: string) => void;
 }
 
-const salePageBaseURL = "https://sentry.xai.games";
+const salePageBaseURL = `https://${VITE_APP_ENV === "development" ? "develop." : ""}sentry.xai.games`;
 const operatorDownloadLink = "https://github.com/xai-foundation/sentry/releases/latest"
 
 const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) => {
