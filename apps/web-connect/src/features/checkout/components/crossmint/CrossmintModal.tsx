@@ -108,29 +108,29 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalP
                                 walletAddress: address as `0x${string}`
                             }}
                             lineItems={{
-                            collectionLocator: `crossmint:${collectionId}`,   
-                            callData: {
-                                _amount: totalQty,
-                                _to: address as `0x${string}`,
-                                _promoCode: promoCode,
-                                _expectedCostInUSDC: (BigInt(totalPriceInUsdc) / BigInt(10 ** 12)).toString(), // 10^12 to reduce 18 decimals to 6 decimals
-                                totalPrice:formatWeiToEther(totalPriceInUsdc, 4), // convert to 4 decimal places for Crossmint
+                                collectionLocator: `crossmint:${collectionId}`,   
+                                callData: {
+                                    _amount: totalQty,
+                                    _to: address as `0x${string}`,
+                                    _promoCode: promoCode,
+                                    _expectedCostInUSDC: (BigInt(totalPriceInUsdc) / BigInt(10 ** 12)).toString(), // 10^12 to reduce 18 decimals to 6 decimals
+                                    totalPrice:formatWeiToEther(totalPriceInUsdc, 4), // convert to 4 decimal places for Crossmint
                             },
                             }}
                             payment={{
-                            crypto: {
-                                enabled: true,
-                                defaultChain: "ethereum",
-                                defaultCurrency: "eth",                        
-                            },
-                            fiat: {
-                                enabled: true,
-                                allowedMethods: {
-                                    card: true,
-                                    googlePay: true,
+                                crypto: {
+                                    enabled: true,
+                                    defaultChain: "ethereum",
+                                    defaultCurrency: "eth",                        
                                 },
-                                defaultCurrency: "usd",
-                            },
+                                fiat: {
+                                    enabled: true,
+                                    allowedMethods: {
+                                        card: true,
+                                        googlePay: true,
+                                    },
+                                    defaultCurrency: "usd",
+                                },
                             }}
                         />
                         </div>
