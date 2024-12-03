@@ -5,7 +5,7 @@ import {BuyFlowBanner} from "@/features/keys/modals/buy-keys/BuyFlowBanner";
 import { RedSentryIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 
 export function BuyKeysFlow() {
-	const [displayQuantity, setDisplayQuantity] = useState<number>(1);
+	const [displayQuantity, setDisplayQuantity] = useState<number>(10);
 	const [queryQuantity, setQueryQuantity] = useState<number>(displayQuantity);
 	const [promoCode, setPromoCode] = useState<string>("");
 

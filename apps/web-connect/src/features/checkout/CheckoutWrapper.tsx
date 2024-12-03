@@ -4,7 +4,7 @@ import { Checkout } from './Checkout';
 export function CheckoutWrapper() {
     const queryString = window.location.search;
     const queryParams = new URLSearchParams(queryString);
-    const prefilledAmount = queryParams.get("quantity") ? parseInt(queryParams.get("quantity") as string) : 1;
+    const prefilledAmount = queryParams.get("quantity") ? parseInt(queryParams.get("quantity") as string) : 10;
 
     return (
         <WebBuyKeysProvider initialQuantity={prefilledAmount}>
