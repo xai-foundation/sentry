@@ -4,8 +4,8 @@ import { config } from '../index.js';
 
 /**
  * Fetches the eth/usdc price from chainlink returns with 18 decimals.
- * @param quantityOfEth - The quantity of eth to convert to xai.
- * @returns The exchange rate of eth to xai.
+ * @param quantityOfEth - The quantity of eth to convert to usdc.
+ * @returns The exchange rate of eth to usdc.
  */
 
 export async function getEthUsdcExchangeRate(): Promise<{ exchangeRate: bigint}> {
