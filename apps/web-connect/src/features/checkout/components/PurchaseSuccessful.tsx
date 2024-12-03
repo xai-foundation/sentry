@@ -88,37 +88,58 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 							</div>
 						</a>
 					</div>
-					<div className="w-full text-elementalGrey text-[18px] flex justify-between border-t border-b border-chromaphobicBlack items-start px-[20px] py-[15px]">
-						<div className="flex flex-col items-end">
-							{address &&
-								<div className="relative">
-									<p className="text-base">Share your referral link with friends!</p>
-									<p className="text-base mb-3">They get 5% off and you get 15% of the sale.</p>
-									<div
-										className={`p-[1px] w-full h-full bg-chromaphobicBlack global-clip-btn`}>
-										<div
-											className={`relative items-center lg:w-[400px] w-full bg-optophobia h-fit flex justify-between text-americanSilver p-2 overflow-hidden text-lg font-medium global-clip-btn`}
-										>
-											<p className="select-none lg:max-w-[300px] sx:max-w-[210px] sm:max-w-[190px] overflow-x-hidden">{`${salePageBaseURL}/${address}`}</p>
+					<div className="w-full text-elementalGrey text-[18px] flex flex-col border-t border-b border-chromaphobicBlack px-[20px] py-[15px]">
+						<p className="text-base">Share your referral link with friends!</p>
+						<p className="text-base mb-3">They get 5% off and you get 15% of the sale.</p>
+						<div className="p-[1px] w-full h-full bg-chromaphobicBlack global-clip-btn">
+						<div
+							className="relative flex items-center lg:w-[408px] w-full bg-optophobia h-fit p-2 gap-2 overflow-hidden text-lg font-medium global-clip-btn"
+						>
+							{/* Referral Link or Copied Text */}
+							{isTooltipAllowedToOpen ? (
+								<div className="text-americanSilver underline flex-grow">
+									Copied!
+								</div>
+							) : (
+								<a
+									href={`${salePageBaseURL}?promoCode=${address}`}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="text-americanSilver underline hover:text-hornetSting truncate flex-grow"
+									onClick={(e) => {
+										e.preventDefault();
+										copyReferralCode();
+									}}
+								>
+									{`${salePageBaseURL}?promoCode=${address}`}
+								</a>
+							)}
 
-										</div>
-									</div>			
-									{canShare ? <div className="mr-3 cursor-pointer absolute right-[10px] sx:top-[73px] sm:top-[96px] z-60">
-										<ShareButton
-										buttonText={"Mint a key on the Xai to stake and start earning rewards and qualify for airdrops."}
-										buttonTitle={"5% Off Sentry Node Key Purchase"}
+							{/* Share or Copy Icon */}
+							<div className="flex-shrink-0">
+								{canShare ? (
+									<ShareButton
+										buttonText="Mint a key on the Xai to stake and start earning rewards and qualify for airdrops."
+										buttonTitle="5% Off Sentry Node Key Purchase"
 										shareUrl={`${salePageBaseURL}?promoCode=${address}`}
-										shareButtonClasses={"w-full"}
-									/></div> : 
-									<div className="mr-3 cursor-pointer absolute right-[10px] sx:top-[73px] sm:top-[96px] z-60" onClick={copyReferralCode}>
-										<Tooltip body="Copied!" open={isTooltipAllowedToOpen} extraClasses={{ content: " max-w-[75px]", body: "!text-black !font-bold" }}>
-											<CopyIcon />
-										</Tooltip>
-									</div>
-									}
-								</div>}
+										shareButtonClasses="w-full"
+									/>
+								) : (
+									<Tooltip
+										body="Copied!"
+										open={isTooltipAllowedToOpen}
+										extraClasses={{
+											content: "max-w-[75px]",
+											body: "!text-black !font-bold",
+										}}
+									>
+										<CopyIcon />
+									</Tooltip>
+								)}
+							</div>
 						</div>
 					</div>
+				</div>
 				</div>
 				<p className="text-elementalGrey my-3 font-bold">Stake key in a pool to start earning rewards</p>
 				<div className="px-[20px] w-full">
