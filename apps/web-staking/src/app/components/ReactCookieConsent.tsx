@@ -18,7 +18,7 @@ export function ReactCookieConsent({ }) {
 		>
 			<div className="cookie-consent flex items-center justify-start text-white/[0.9] md:text-lg sm:text-sm opacity-70 !m-0">
 				<div className="min-w-[30px] mr-2"><WarningIcon fill="#FF0030" width={30} height={25}/></div>
-				<div className="sm:mb-4 md:mb-0 lg:mb-0">This website uses cookies to enhance the user experience. By staying on this website you agree to our <a target="_blank" className="mx-1 hover:text-white duration-200 ease-in font-bold" href="https://xai.games/generalterms">Terms of Agreement</a> and <a target="_blank" className="ml-1 hover:text-white duration-200 ease-in font-bold" href="https://xai.games/privacypolicy">Privacy Policy</a></div>
+				<div className="sm:mb-4 md:mb-0 lg:mb-0">This website uses cookies to enhance the user experience. By staying on this website you agree to our <a target="_blank" className="mx-1 hover:text-white duration-200 ease-in font-bold" href="https://xai.games/generalterms">Terms of Agreement</a> and <a target="_blank" className="ml-1 hover:text-white duration-200 ease-in font-bold" href="https://xai.games/privacy-policy">Privacy Policy</a></div>
 			</div>
 		</CookieConsent>
 	);
