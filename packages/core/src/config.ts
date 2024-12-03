@@ -36,8 +36,9 @@ const mainnetConfig = {
   subgraphEndpoint: "https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry/api",
   publicRPC: "https://arb1.arbitrum.io/rpc",
   alchemyApiKey: "oD4X3JXvJclnt36mDkqnp9CO2sZkNhYT",
-  crossmintProjectId: "", //TODO Add Production Values
-  crossmintCollectionId: "", //TODO Add Production Values
+  crossmintProjectId: "9c2eb81d-3aff-4672-8b69-522c0f6e743a", //Crossmint Production Project ID
+  crossmintCollectionId: "d7e9ae28-7931-48b6-863a-d230f0743df7", //Crossmint Production Collection ID
+  crossmintClientApiKey: "ck_production_6CETYHVga5g646puou8ewwmdgw1aiCaF8rKQ6gWFHCKnhYS4aDUMML9JnTEDWR4Y1jjFCNwGkDPD5a3WdxEPebZBaXvYLmY7B8XjcTGgzz6uoCxGpeJrMrDY3ZNwDTNFqhRzqZH24uDoqSDr7tzKPaPv1Kn6idUPiH8MqF4ovdNBZiER3euXt6bxGsW1qapQFeGwWNsiQsivwBJ7nqSr87Yf", //Crossmint Production Client API Key
   minSecondsBetweenChallenges: 50 * 60, // 1 hour
   usdcContractAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
 };
@@ -78,6 +79,7 @@ const testnetConfig: Config = {
   alchemyApiKey: "8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B",
   crossmintProjectId: "cc616c84-6479-4981-a24e-adb4278df212",
   crossmintCollectionId: "854640e1-149c-4092-a40b-bdf2a3f36e64",
+  crossmintClientApiKey: "ck_staging_9zhFqkBiSWwUeS4HqVvjuqaVtrwgh552SrAQ5aQqrHU7wP4F9PZoyd13WdiEZZQgjbUFKiZbgf6kkJi6XwyoiVjrqgUZ2QM4kxPweju1QNuD9FYWjeLW6f9HUzvD2rzwi3HjYa788s7oPPo5P2oyJiDV36MPNj3HTRHEHmfSEPoHzzYummqrWM6uRw7VbiRgXgjUvmdedqV51PLjuiZbruTx", 
   minSecondsBetweenChallenges: 5 * 60, // 5 minutes on testnet
   usdcContractAddress: "0x14196F08a4Fa0B66B7331bC40dd6bCd8A1dEeA9F"
 };
