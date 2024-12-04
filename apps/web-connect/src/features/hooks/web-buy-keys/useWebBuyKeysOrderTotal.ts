@@ -83,11 +83,6 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
  * @returns An object containing various properties and functions related to the order total.
  */
 export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysOrderTotalReturn {
-    //const environment = VITE_APP_ENV === 'development' ? 'staging' : 'production';
-    // const { listenToMintingEvents } = useCrossmintEvents({
-    //     environment: environment,
-    // });
-
     const { isLoading: isTotalLoading, data: getTotalData } = useGetTotalSupplyAndCap();
     const { data: exchangeRateData, isLoading: isExchangeRateLoading } = useGetExchangeRate();
     const { chainId, isConnected, address, isDevelopment } = useNetworkConfig();
@@ -224,29 +219,6 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const userHasEthBalance = ethBalance >= calculateTotalPrice();
 
     const displayPricesMayVary = (getPriceData?.nodesAtEachPrice?.filter((node: CheckoutTierSummary) => node.quantity !== 0n) ?? []).length >= 2;
-
-    // useEffect(() => {
-    //     if (mintWithCrossmint.orderIdentifier != "") {
-    //         const eventListener = listenToMintingEvents({ orderIdentifier: mintWithCrossmint.orderIdentifier }, (event) => {
-    //             switch (event.type) {
-    //                 case "transaction:fulfillment.succeeded":
-    //                     setMintWithCrossmint({ isPending: false, txHash: event.payload.txId, error: "", orderIdentifier: "" });
-    //                     break;
-    //                 case "transaction:fulfillment.failed":
-    //                     console.error("Crossmint CC Error:", event.payload, event.payload.error.message)
-    //                     setMintWithCrossmint({ isPending: false, error: event.payload.error.message, txHash: "", orderIdentifier: "" });
-    //                     break;
-    //             }
-    //         });
-
-    //         // Clean up the event listener when the component unmounts or status changes
-    //         return () => {
-    //             if (eventListener && typeof eventListener.cleanup === 'function') {
-    //                 eventListener.cleanup();
-    //             }
-    //         };
-    //     }
-    // }, [mintWithCrossmint.orderIdentifier, listenToMintingEvents]);
 
     return {
         isTotalLoading,
