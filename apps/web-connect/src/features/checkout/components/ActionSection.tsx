@@ -11,7 +11,7 @@ import { useNetworkConfig } from '@/hooks/useNetworkConfig';
 /**
  * ActionSection Component
  * 
- * This component renders the main action button for buying Sentry Node Keys
+ * This component renders the main action button for buying Sentry Keys
  * and displays relevant error messages. It uses the WebBuyKeysContext to
  * access shared state and functions.
  * 

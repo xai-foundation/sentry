@@ -74,7 +74,7 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 				<FaCircleCheck color={"#16A34A"} size={64} />
 				<span
 					className="text-3xl text-white text-center uppercase font-bold mt-2">Purchase successful</span>
-				<span className="block text-foggyLondon font-bold text-base max-w-[260px] text-center my-[10px]">You have successfully purchased a Xai Sentry Node Key</span>
+				<span className="block text-foggyLondon font-bold text-base max-w-[260px] text-center my-[10px]">You have successfully purchased a Xai Sentry Key</span>
 				<div className="bg-optophobia w-full ">
 					<div className="flex justify-between border-t border-chromaphobicBlack px-[20px] py-[15px]">
 						<span className="text-[18px] sm:text-center text-elementalGrey ">Transaction ID:</span>
@@ -107,7 +107,7 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 									{canShare ? <div className="mr-3 cursor-pointer absolute right-[10px] sx:top-[73px] sm:top-[96px] z-60">
 										<ShareButton
 										buttonText={"Mint a key on the Xai to stake and start earning rewards and qualify for airdrops."}
-										buttonTitle={"5% Off Sentry Node Key Purchase"}
+										buttonTitle={"5% Off Sentry Key Purchase"}
 										shareUrl={`${salePageBaseURL}?promoCode=${address}`}
 										shareButtonClasses={"w-full"}
 									/></div> : 

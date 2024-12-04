@@ -128,7 +128,7 @@ export function DropClaim() {
 																onClick={() => setCheckboxTwo(!checkboxTwo)}
 																condition={checkboxTwo}
 															>
-																I understand Sentry Node Keys are not transferable
+																I understand Sentry Keys are not transferable
 															</XaiCheckbox>
 
 															<XaiCheckbox

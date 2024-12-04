@@ -6,7 +6,7 @@ import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 /**
  * ChooseQuantityRow Component
  * 
- * This component renders the section for choosing the quantity of XAI Sentry Node Keys to purchase.
+ * This component renders the section for choosing the quantity of XAI Sentry Keys to purchase.
  * It displays information about the keys and provides an input for selecting the quantity.
  * 
  * @returns {JSX.Element} The rendered ChooseQuantityRow component
@@ -35,7 +35,7 @@ export function ChooseQuantityRow(): JSX.Element {
                 <div className="flex flex-row sm:w-full sm:justify-center lg:justify-start items-center gap-1">
                     <RedSentryIcon width={32} height={32} />
                     <p className="sm:text-2xl lg:text-3xl text-white font-bold">
-                        XAI SENTRY NODE KEY
+                        XAI SENTRY KEY
                     </p>
                     {/* Tooltip for additional information */}
                     <span className="h-full flex items-center ml-2">
@@ -48,9 +48,9 @@ export function ChooseQuantityRow(): JSX.Element {
                         </Tooltip>
                     </span>
                 </div>
-                {/* Description of Sentry Node Key functionality */}
+                {/* Description of Sentry Key functionality */}
                 <p className="sm:w-full lg:w-[400px] sm:text-center sm:px-8 lg:px-0 lg:text-left text-[18px] text-elementalGrey font-medium">
-                    Each Sentry Node Key enables you to submit up to 1 reward claim for each network challenge.
+                    Each Sentry Key enables you to submit up to 1 reward claim for each network challenge.
                 </p>     
             </div>
             {/* Quantity input section */}
