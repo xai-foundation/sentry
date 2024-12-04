@@ -79,9 +79,7 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
 export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysOrderTotalReturn {
 
     const [crossmintOpen, setCrossmintOpen] = useState(false);
-    const [currency, setCurrency] = useState<Currency>(CURRENCIES.AETH);
     const { isLoading: isTotalLoading, data: getTotalData } = useGetTotalSupplyAndCap();
-    const { data: exchangeRateData, isLoading: isExchangeRateLoading } = useGetExchangeRate(currency);
     const { chainId, isConnected, address, isDevelopment } = useNetworkConfig();
 
     const { data: providerData } = useProvider();
@@ -95,10 +93,12 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         two: false,
         three: false,
     });
+    const [currency, setCurrency] = useState<Currency>(CURRENCIES.AETH);
     const [quantity, setQuantity] = useState<number>(initialQuantity);
     const { tokenBalance, ethBalance } = useUserBalances(currency);
     const { tokenAllowance, refetchAllowance } = useCurrencyHandler(currency, address);
     const { promoCode, setPromoCode, discount, setDiscount, handleApplyPromoCode, isLoading: isPromoLoading } = usePromoCodeHandler(address);
+    const { data: exchangeRateData, isLoading: isExchangeRateLoading } = useGetExchangeRate(currency);
 
     const ready = checkboxes.one && checkboxes.two && checkboxes.three;
 
