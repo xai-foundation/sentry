@@ -116,7 +116,7 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 							)}
 
 							{/* Share or Copy Icon */}
-							<div className="flex-shrink-0">
+							<div className="flex-shrink-0 flex items-center justify-center">
 								{canShare ? (
 									<ShareButton
 										buttonText="Mint a key on the Xai to stake and start earning rewards and qualify for airdrops."
