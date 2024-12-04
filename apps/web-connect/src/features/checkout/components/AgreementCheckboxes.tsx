@@ -38,7 +38,7 @@ export function AgreementCheckboxes(): JSX.Element {
                         <span className="sm:text-base text-elementalGrey sm:mr-2">I agree with the</span>
                         <a
                             className="cursor-pointer text-[#F30919] text-base"
-                            onClick={() => window.open("https://xai.games/sentrynodeagreement/")}
+                            onClick={() => window.open("https://xai.games/sentry-node-agreement/")}
                         >
                             Sentry Node Agreement
                         </a>

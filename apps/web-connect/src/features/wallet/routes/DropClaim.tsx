@@ -118,7 +118,7 @@ export function DropClaim() {
 																I agree with the
 																<a
 																	className="cursor-pointer text-[#F30919]"
-																	onClick={() => window.open("https://xai.games/sentrynodeagreement/")}>
+																	onClick={() => window.open("https://xai.games/sentry-node-agreement/")}>
 																	Sentry Node Agreement
 																</a>
 															</XaiCheckbox>
