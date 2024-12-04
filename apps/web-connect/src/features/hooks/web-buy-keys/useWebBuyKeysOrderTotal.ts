@@ -14,13 +14,6 @@ export interface UseWebBuyKeysOrderTotalProps {
     initialQuantity: number;
 }
 
-interface MintWithCrossmintStatus {
-    txHash: string,
-    error: string,
-    isPending: boolean,
-    orderIdentifier: string
-}
-
 export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
     isTotalLoading: boolean;
     isExchangeRateLoading: boolean;
@@ -64,17 +57,18 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
     approve: UseContractWritesReturn['approve'];
     mintWithEth: UseContractWritesReturn['mintWithEth'];
     mintWithXai: UseContractWritesReturn['mintWithXai'];
+    mintWithUsdc: UseContractWritesReturn['mintWithUsdc'];
     approveTx: ReturnType<typeof useWaitForTransactionReceipt>;
     ethMintTx: ReturnType<typeof useWaitForTransactionReceipt>;
     xaiMintTx: ReturnType<typeof useWaitForTransactionReceipt>;
     blockExplorer: string;
     handleMintWithEthClicked: () => void;
     handleApproveClicked: () => void;
-    handleMintWithXaiClicked: () => void;
+    handleMintWithTokenClicked: () => void;
     chainId: number | undefined;
     isConnected: boolean;
-    mintWithCrossmint: MintWithCrossmintStatus
-    setMintWithCrossmint: React.Dispatch<React.SetStateAction<MintWithCrossmintStatus>>
+    crossmintOpen: boolean;
+    setCrossmintOpen: (open: boolean) => void;
 }
 
 /**
@@ -83,13 +77,11 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
  * @returns An object containing various properties and functions related to the order total.
  */
 export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysOrderTotalReturn {
-    //const environment = VITE_APP_ENV === 'development' ? 'staging' : 'production';
-    // const { listenToMintingEvents } = useCrossmintEvents({
-    //     environment: environment,
-    // });
 
+    const [crossmintOpen, setCrossmintOpen] = useState(false);
+    const [currency, setCurrency] = useState<Currency>(CURRENCIES.AETH);
     const { isLoading: isTotalLoading, data: getTotalData } = useGetTotalSupplyAndCap();
-    const { data: exchangeRateData, isLoading: isExchangeRateLoading } = useGetExchangeRate();
+    const { data: exchangeRateData, isLoading: isExchangeRateLoading } = useGetExchangeRate(currency);
     const { chainId, isConnected, address, isDevelopment } = useNetworkConfig();
 
     const { data: providerData } = useProvider();
@@ -103,15 +95,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         two: false,
         three: false,
     });
-    const [currency, setCurrency] = useState<Currency>(CURRENCIES.AETH);
     const [quantity, setQuantity] = useState<number>(initialQuantity);
-    const [mintWithCrossmint, setMintWithCrossmint] = useState<MintWithCrossmintStatus>({
-        txHash: "",
-        error: "",
-        orderIdentifier: "",
-        isPending: false
-    });
-
     const { tokenBalance, ethBalance } = useUserBalances(currency);
     const { tokenAllowance, refetchAllowance } = useCurrencyHandler(currency, address);
     const { promoCode, setPromoCode, discount, setDiscount, handleApplyPromoCode, isLoading: isPromoLoading } = usePromoCodeHandler(address);
@@ -134,6 +118,12 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
             if (currency === CURRENCIES.AETH) {
                 return discountedPrice;
             }
+            if(currency === CURRENCIES.USDC) {
+                const exRate = exchangeRateData?.exchangeRate ?? 0n;
+                const usdcAdjustedExRate = BigInt(exRate / BigInt(10 ** 18)); // Remove decimals from exchange rate
+                const usdcPrice18Decimals = discountedPrice * usdcAdjustedExRate; // Calculate price in 18 decimals
+                return usdcPrice18Decimals;
+            }
             const exchangeRate = exchangeRateData?.exchangeRate ?? 0n;
             return discountedPrice * exchangeRate;
         };
@@ -144,15 +134,17 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         mintWithEth,
         approve,
         mintWithXai,
+        mintWithUsdc,
         ethMintTx,
         xaiMintTx,
+        usdcMintTx,
         approveTx,
         clearErrors,
         resetTransactions,
         mintWithEthError,
         handleMintWithEthClicked,
         handleApproveClicked,
-        handleMintWithXaiClicked,
+        handleMintWithTokenClicked,
     } = useContractWrites({
         quantity,
         promoCode,
@@ -178,7 +170,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const getApproveButtonText = (): string => {
         const total = calculateTotalPrice();
 
-        if (approve.isPending || xaiMintTx.isLoading) {
+        if (approve.isPending || xaiMintTx.isLoading || usdcMintTx.isLoading) {
             return "WAITING FOR CONFIRMATION...";
         }
 
@@ -213,9 +205,17 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
      * @returns The formatted price as a string.
      */
     const formatItemPricePer = (item: CheckoutTierSummary): string => {
-        const price = currency === CURRENCIES.AETH
-            ? item.pricePer
-            : item.pricePer * (exchangeRateData?.exchangeRate ?? 0n);
+        let price;
+        switch (currency) {
+            case CURRENCIES.AETH:
+                price = item.pricePer;
+                break;
+            case CURRENCIES.USDC:
+                price = item.pricePer * (exchangeRateData?.exchangeRate ?? 0n) / BigInt(10 ** 18);
+                break;
+            default:
+                price = item.pricePer * (exchangeRateData?.exchangeRate ?? 0n);
+        }
         return formatWeiToEther(price, decimalPlaces);
     };
 
@@ -224,29 +224,6 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const userHasEthBalance = ethBalance >= calculateTotalPrice();
 
     const displayPricesMayVary = (getPriceData?.nodesAtEachPrice?.filter((node: CheckoutTierSummary) => node.quantity !== 0n) ?? []).length >= 2;
-
-    // useEffect(() => {
-    //     if (mintWithCrossmint.orderIdentifier != "") {
-    //         const eventListener = listenToMintingEvents({ orderIdentifier: mintWithCrossmint.orderIdentifier }, (event) => {
-    //             switch (event.type) {
-    //                 case "transaction:fulfillment.succeeded":
-    //                     setMintWithCrossmint({ isPending: false, txHash: event.payload.txId, error: "", orderIdentifier: "" });
-    //                     break;
-    //                 case "transaction:fulfillment.failed":
-    //                     console.error("Crossmint CC Error:", event.payload, event.payload.error.message)
-    //                     setMintWithCrossmint({ isPending: false, error: event.payload.error.message, txHash: "", orderIdentifier: "" });
-    //                     break;
-    //             }
-    //         });
-
-    //         // Clean up the event listener when the component unmounts or status changes
-    //         return () => {
-    //             if (eventListener && typeof eventListener.cleanup === 'function') {
-    //                 eventListener.cleanup();
-    //             }
-    //         };
-    //     }
-    // }, [mintWithCrossmint.orderIdentifier, listenToMintingEvents]);
 
     return {
         isTotalLoading,
@@ -283,8 +260,10 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         mintWithEth,
         approve,
         mintWithXai,
+        mintWithUsdc,
         ethMintTx,
         xaiMintTx,
+        usdcMintTx,
         approveTx,
         address,
         clearErrors,
@@ -293,10 +272,10 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         blockExplorer: providerData?.blockExplorer ?? '',
         handleMintWithEthClicked,
         handleApproveClicked,
-        handleMintWithXaiClicked,
+        handleMintWithTokenClicked,
         chainId,
         isConnected,
-        mintWithCrossmint,
-        setMintWithCrossmint,
+        crossmintOpen,
+        setCrossmintOpen,
     };
 }

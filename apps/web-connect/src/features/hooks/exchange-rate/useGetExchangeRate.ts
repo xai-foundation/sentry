@@ -1,5 +1,6 @@
 import { useQuery } from "react-query";
-import { getEthXaiExchangeRate } from "@sentry/core";
+import { getEthUsdcExchangeRate, getEthXaiExchangeRate } from "@sentry/core";
+import { Currency } from "../shared";
 
 // Define TypeScript type for better type safety
 interface ExchangeRate {
@@ -11,13 +12,18 @@ interface ExchangeRate {
  * Uses react-query for data fetching and caching.
  * @returns An object containing the exchange rate data and query status.
  */
-export function useGetExchangeRate() {
+export function useGetExchangeRate(currency: Currency) {
   return useQuery<ExchangeRate, Error>({
-    queryKey: ["eth-xai-exchange-rate"],
+    queryKey: ["get-exchange-rate", currency], // Include currency in the queryKey
     queryFn: async () => {
       try {
-        const data = await getEthXaiExchangeRate();
-        return { exchangeRate: data.exchangeRate };
+        if (currency === 'XAI' || currency === 'ESXAI') {
+          return await getEthXaiExchangeRate();
+        }
+        if (currency === 'USDC') {
+          return await getEthUsdcExchangeRate();
+        }
+        return { exchangeRate: 0n };
       } catch (error) {
         console.error('Failed to fetch exchange rate:', error);
         throw new Error('Failed to fetch exchange rate');

@@ -1,26 +1,20 @@
 import React, { Suspense } from 'react';
-import { useAccount } from 'wagmi';
 import { config, formatWeiToEther } from "@sentry/core";
 import { CloseIcon } from "@sentry/ui";
 import {
   CrossmintProvider,
   CrossmintEmbeddedCheckout,
 } from "@crossmint/client-sdk-react-ui";
+import { useWebBuyKeysContext } from '../../contexts/useWebBuyKeysContext';
 
-interface CrossmintModalProps {
-    isOpen: boolean;
-    totalQty: number;
-    totalPriceInUsdc: string;
-    promoCode: string;
-    onClose: () => void;
-}
-
-const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalPriceInUsdc, totalQty, promoCode }) => {
+const CrossmintModal: React.FC = () => {
     const collectionId = config.crossmintCollectionId;
     const clientApiKey = config.crossmintClientApiKey;
-    const { address } = useAccount();
+    const { address, calculateTotalPrice, crossmintOpen, quantity, promoCode, setCrossmintOpen } = useWebBuyKeysContext();
 
-    if (!isOpen) return null;
+    if (!crossmintOpen) return null;
+    const totalPriceInUsdc18Decimals = calculateTotalPrice();
+    const priceInUsdcWei6Decimals = totalPriceInUsdc18Decimals / BigInt(10 ** 12);
 
     const styles = {
         fontSizeBase: "0.91rem",
@@ -46,7 +40,7 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalP
             <div className="bg-nulnOil p-3 rounded-lg shadow-xl w-full max-w-3xl mx-4">
                 <div className="flex justify-between items-center p-4">
                     <h2 className="text-xl font-semibold text-white">Pay with Crossmint</h2>
-                    <button onClick={onClose} className="text-white hover:text-gray-700">
+                    <button onClick={() => setCrossmintOpen(false)} className="text-white hover:text-gray-700">
                         <CloseIcon
                             width={15}
                             height={15}
@@ -110,11 +104,12 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalP
                             lineItems={{
                                 collectionLocator: `crossmint:${collectionId}`,   
                                 callData: {
-                                    _amount: totalQty,
+                                    _amount: quantity,
                                     _to: address as `0x${string}`,
                                     _promoCode: promoCode,
-                                    _expectedCostInUSDC: (BigInt(totalPriceInUsdc) / BigInt(10 ** 12)).toString(), // 10^12 to reduce 18 decimals to 6 decimals
-                                    totalPrice: formatWeiToEther(totalPriceInUsdc, 4), // convert to 4 decimal places for Crossmint
+                                    // TODO should we add a small buffer here in expected cost?
+                                    _expectedCostInUSDC: priceInUsdcWei6Decimals.toString(),
+                                    totalPrice: formatWeiToEther(calculateTotalPrice(), 6) // USDC Dollar value as float with 6 decimals
                             },
                             }}
                             payment={{

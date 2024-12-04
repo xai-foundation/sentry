@@ -35,8 +35,8 @@ export function Checkout() {
         handleApplyPromoCode,
         mintWithEth,
         mintWithXai,
+        mintWithUsdc,
         approve,
-        mintWithCrossmint
     } = useWebBuyKeysContext();
 
     useEffect(() => {
@@ -51,18 +51,18 @@ export function Checkout() {
     }
 
     useEffect(() => {
-        if (!stakingTabOpened && (mintWithEth.isSuccess || mintWithXai.isSuccess || mintWithCrossmint.txHash != "")) {
+        if (!stakingTabOpened && (mintWithEth.isSuccess || mintWithXai.isSuccess  || mintWithUsdc.isSuccess)) {
             setStakingTabOpened(true);
             window.open(stakingPageURL, '_blank');
         }
-    }, [mintWithEth.isSuccess, mintWithXai.isSuccess, mintWithCrossmint.txHash]);
+    }, [mintWithEth.isSuccess, mintWithXai.isSuccess, mintWithUsdc.isSuccess]);
 
     return (
         <div>
             <div className="h-full xl:min-h-screen flex-1 flex flex-col justify-center items-center">
-                {mintWithEth.isPending || mintWithXai.isPending || approve.isPending || mintWithCrossmint.isPending ? (
+                {mintWithEth.isPending || mintWithXai.isPending || approve.isPending || mintWithUsdc.isPending ? (
                     <TransactionInProgress />
-                ) : mintWithEth.isSuccess || mintWithXai.isSuccess || mintWithCrossmint.txHash != "" ? (
+                ) : mintWithEth.isSuccess || mintWithXai.isSuccess || mintWithUsdc.isSuccess ? (
                     <PurchaseSuccessful returnToClient={returnToClient} />
                 ) : (
                     <div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-darkLicorice shadow-main md:my-0 my-[24px]">

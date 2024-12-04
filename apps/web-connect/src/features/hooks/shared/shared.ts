@@ -14,11 +14,20 @@ export const getTokenAddress = (currency: string): string => {
   }
 
   // Check if config is properly set up
-  if (!config.xaiAddress || !config.esXaiAddress) {
+  if (!config.xaiAddress || !config.esXaiAddress || !config.usdcContractAddress) {
     throw new Error("Configuration error: Token addresses not found in config.");
   }
 
-  return currency === CURRENCIES.XAI ? config.xaiAddress : config.esXaiAddress;
+  switch (currency) {
+    case CURRENCIES.XAI:
+      return config.xaiAddress;
+    case CURRENCIES.ES_XAI:
+      return config.esXaiAddress;
+    case CURRENCIES.USDC:
+      return config.usdcContractAddress;
+    default:
+      return "";
+  }
 };
 
 // Define supported currencies as constants
@@ -26,6 +35,7 @@ export const CURRENCIES = {
   AETH: "AETH",
   XAI: "XAI",
   ES_XAI: "ESXAI",
+  USDC: "USDC",
 } as const;
 
 // Define a type for supported currencies

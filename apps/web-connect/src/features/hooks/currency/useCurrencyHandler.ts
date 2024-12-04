@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getEsXaiAllowance, getXaiAllowance, config } from "@sentry/core";
+import { getEsXaiAllowance, getXaiAllowance, config, getUsdcAllowance } from "@sentry/core";
 import { CURRENCIES, Currency } from '..';
 
 // Define TypeScript types for better type safety
@@ -28,9 +28,20 @@ export function useCurrencyHandler(currency: Currency, address: string | undefin
       if (currency === CURRENCIES.AETH) {
         setTokenAllowance(0n);
       } else {
-        const allowance: AllowanceResponse = currency === CURRENCIES.XAI
-          ? await getXaiAllowance(address, config.nodeLicenseAddress)
-          : await getEsXaiAllowance(address, config.nodeLicenseAddress);
+        let allowance: AllowanceResponse;
+        switch(currency) {
+          case CURRENCIES.XAI:
+            allowance = await getXaiAllowance(address, config.nodeLicenseAddress);
+            break;
+          case CURRENCIES.ES_XAI:
+            allowance = await getEsXaiAllowance(address, config.nodeLicenseAddress);
+            break;
+          case CURRENCIES.USDC:
+                allowance = {approvalAmount: (await getUsdcAllowance(address, config.nodeLicenseAddress)).approvalAmount * 10n ** 12n}; // Scale USDC allowance to 18 decimals
+            break;
+          default:
+            allowance = {approvalAmount: 0n};
+        }
         setTokenAllowance(allowance.approvalAmount);
       }
     } catch (error) {

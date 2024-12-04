@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 import { PrimaryButton } from "@sentry/ui";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
@@ -7,7 +7,6 @@ import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 import CrossmintModal from './crossmint/CrossmintModal';
 import { isValidNetwork } from '@sentry/core';
 import { useNetworkConfig } from '@/hooks/useNetworkConfig';
-import { convertEthAmountToUsdcAmount } from '@/utils/convertEthAmountToUsdcAmount';
 
 /**
  * ActionSection Component
@@ -19,10 +18,7 @@ import { convertEthAmountToUsdcAmount } from '@/utils/convertEthAmountToUsdcAmou
  * @returns {JSX.Element} The rendered ActionSection component
  */
 export function ActionSection(): JSX.Element {
-    const [creditCardOpen, setCreditCardOpen] = useState(false);
     const { isDevelopment } = useNetworkConfig();
-    const [isInitialized, setIsInitialized] = useState(false);
-    const [totalPriceInUsdc, setTotalPriceInUsdc] = useState<string>("0");
 
     // Destructure values and functions from the context
     const {
@@ -32,18 +28,17 @@ export function ActionSection(): JSX.Element {
         userHasTokenBalance,
         mintWithEth,
         mintWithXai,
+        mintWithUsdc,
         mintWithEthError,
         approve,
-        quantity,
-        promoCode,
         isConnected,
         getApproveButtonText,
         handleApproveClicked,
         handleMintWithEthClicked,
-        handleMintWithXaiClicked,
+        handleMintWithTokenClicked,
         getEthButtonText,
-        calculateTotalPrice,
-        mintWithCrossmint
+        setCurrency,
+        setCrossmintOpen,
     } = useWebBuyKeysContext();
 
     /**
@@ -52,28 +47,24 @@ export function ActionSection(): JSX.Element {
      * @returns {string} The button text
      */
     const getTokenButtonText = useCallback(() => {
-        if (mintWithEth.isPending || mintWithXai.isPending || approve.isPending) return "WAITING FOR CONFIRMATION..";
+        if (mintWithEth.isPending || mintWithXai.isPending || mintWithUsdc.isPending || approve.isPending) return "WAITING FOR CONFIRMATION..";
         if (!isValidNetwork(chainId, isDevelopment)) return "Please Switch to Arbitrum";
         return getApproveButtonText();
-    }, [mintWithEth.isPending, mintWithXai.isPending, approve.isPending, chainId, getApproveButtonText]);
+    }, [mintWithEth.isPending, mintWithXai.isPending, mintWithUsdc.isPending, approve.isPending, chainId, getApproveButtonText]);
 
-    const handleBuyWithXaiClicked = async () => { 
+    const handleTokenMintClicked = async () => { 
         if (getTokenButtonText().startsWith("Approve")) {
             handleApproveClicked();
         } else {
-            handleMintWithXaiClicked();
+            handleMintWithTokenClicked();
         }
     };
 
-    useEffect(() => {
-        async function setUsdcPrice(){
-            setIsInitialized(false);
-            const usdcPrice = await convertEthAmountToUsdcAmount(calculateTotalPrice(), 18); // USDC Price in 18 decimals
-            setTotalPriceInUsdc(usdcPrice.toString());
-            setIsInitialized(true);
-        } 
-        setUsdcPrice();
-    }, [quantity, promoCode]);
+    const handleCrossmintButtonClicked = () => {
+        setCurrency("USDC");
+        setCrossmintOpen(true); 
+    };
+
 
     return (
         <div className="flex flex-col justify-center gap-8 mt-8">
@@ -90,15 +81,15 @@ export function ActionSection(): JSX.Element {
                     </>
                 ) : (
                     <PrimaryButton
-                        onClick={handleBuyWithXaiClicked}
+                        onClick={handleTokenMintClicked}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
                         isDisabled={!ready || !isValidNetwork(chainId, isDevelopment) || !userHasTokenBalance || !isConnected}
                         btnText={getTokenButtonText()}
                     />
                 )}
                 <br />
-                {isConnected && isInitialized && <PrimaryButton
-                    onClick={() => setCreditCardOpen(true)}
+                {isConnected && <PrimaryButton
+                    onClick={() => handleCrossmintButtonClicked()}
                     className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-hornetSting p-2 uppercase font-bold `}
                     isDisabled={!ready || !isConnected}
                     colorStyle="outline-2"
@@ -150,6 +141,23 @@ export function ActionSection(): JSX.Element {
                     </div>
                 )}
 
+                {/* Error section for Xai/esXai transactions */}
+                {mintWithUsdc.error && (
+                    <div>
+                        {mapWeb3Error(mintWithUsdc.error) === "User rejected the request" && (
+                            <BaseCallout extraClasses={{ calloutWrapper: "md:h-[85px] h-[109px] mt-[12px]", calloutFront: "!justify-start" }} isWarning>
+                                <div className="flex md:gap-[21px] gap-[10px]">
+                                    <span className="block mt-2"><WarningIcon /></span>
+                                    <div>
+                                        <span className="block font-bold text-lg">Transaction was cancelled</span>
+                                        <span className="block font-medium text-lg">You have cancelled the transaction in your wallet.</span>
+                                    </div>
+                                </div>
+                            </BaseCallout>
+                        )}
+                    </div>
+                )}
+
                 {/* Error section for allowance approval */}
                 {approve.error && (
                     <div>
@@ -166,29 +174,8 @@ export function ActionSection(): JSX.Element {
                         )}
                     </div>
                 )}
-                
-                {(mintWithCrossmint.error != "") && (
-                    <div>
-                        <BaseCallout extraClasses={{ calloutWrapper: "md:h-[85px] h-[109px] mt-[12px]", calloutFront: "!justify-start" }} isWarning>
-                            <div className="flex md:gap-[21px] gap-[10px]">
-                                <span className="block mt-2"><WarningIcon /></span>
-                                <div>
-                                    <span className="block font-bold text-lg">Error minting with Credit/Debit Card</span>
-                                    {/* We currently have no way of knowing all the possible errors that could come from minting with crossmint, so we should log in the console and display a generic error rather than the error message. */}
-                                    <span className="block font-medium text-lg">There was an error processing your credit card payment</span>
-                                </div>
-                            </div>
-                        </BaseCallout>
-                    </div>
-                )}
             </div>            
-            <CrossmintModal
-                totalPriceInUsdc={totalPriceInUsdc}
-                isOpen={creditCardOpen}
-                onClose={() => setCreditCardOpen(false)}
-                totalQty={quantity}
-                promoCode={promoCode}
-            />
+            <CrossmintModal />
         </div>
     );
 }

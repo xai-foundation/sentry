@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useAccount } from 'wagmi';
-import { getEsXaiBalance, getXaiBalance, getWalletBalance } from "@sentry/core";
+import { getEsXaiBalance, getXaiBalance, getWalletBalance, getUsdcBalance } from "@sentry/core";
 import { CURRENCIES, Currency } from '..';
 
 /**
@@ -33,6 +33,11 @@ export function useUserBalances(currency: Currency) {
         case CURRENCIES.ES_XAI:
           tokenBalance = (await getEsXaiBalance(address)).balance;
           break;
+        case CURRENCIES.USDC:
+          tokenBalance = (await getUsdcBalance(address)).balance * 10n ** 12n; // Scale USDC balance to 18 decimals
+          break;
+        default:
+          tokenBalance = 0n;  
       }
       setTokenBalance(tokenBalance);
     } catch (error) {
