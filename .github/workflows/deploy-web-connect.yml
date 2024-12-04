@@ -46,7 +46,7 @@ jobs:
       - name: Deploy to Cloudflare Pages
         run: |
           rm apps/web-connect/dist/xai-drop-permits.JSON 
-          npx wrangler pages deploy dist --project-name=${{ github.event.inputs.cloudflare_project }} --branch=main
+          npx wrangler pages deploy apps/web-connect/dist --project-name=${{ github.event.inputs.cloudflare_project }} --branch=main
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
