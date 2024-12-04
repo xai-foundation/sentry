@@ -141,7 +141,7 @@ export function ActionSection(): JSX.Element {
                     </div>
                 )}
 
-                {/* Error section for Xai/esXai transactions */}
+                {/* Error section for USDC transactions */}
                 {mintWithUsdc.error && (
                     <div>
                         {mapWeb3Error(mintWithUsdc.error) === "User rejected the request" && (
