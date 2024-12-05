@@ -100,7 +100,7 @@ export function PromoCodeRow() {
                                         <PrimaryButton
                                             onClick={() => handleApplyPromoCode()}
                                             btnText={translate("promoCodeRow.noDiscount.applyPromoCodeButton")}
-                                            className="text-white text-sm !py-2 max-h-[42.5px] max-w-[90px]"
+                                            className="text-white text-sm !py-2 max-h-[42.5px]"
                                         />
                                     </div>
                                 </div>
@@ -108,7 +108,7 @@ export function PromoCodeRow() {
                                     <PrimaryButton
                                         onClick={() => handleApplyPromoCode()}
                                         btnText={translate("promoCodeRow.noDiscount.applyPromoCodeButton")}
-                                        className="text-white text-sm !py-2 max-h-[42.5px] max-w-[90px]"
+                                        className="text-white text-sm !py-2 max-h-[42.5px]"
                                     />
                                 </div>
                             </div>
