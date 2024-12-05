@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import BackArrow from "@sentry/ui/src/rebrand/icons/BackArrow";
 import { stakingPageURL } from "../Checkout";
 import ShareButton from "@sentry/ui/src/rebrand/buttons/ShareButton";
+const { VITE_APP_ENV } = import.meta.env
 
 let timeoutId: number;
 
@@ -16,7 +17,7 @@ interface IPurchaseSuccessful {
 	returnToClient: (hash: string) => void;
 }
 
-const salePageBaseURL = "https://sentry.xai.games";
+const salePageBaseURL = `https://${VITE_APP_ENV === "development" ? "develop." : ""}sentry.xai.games`;
 const operatorDownloadLink = "https://github.com/xai-foundation/sentry/releases/latest"
 
 const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) => {
@@ -73,7 +74,7 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 				<FaCircleCheck color={"#16A34A"} size={64} />
 				<span
 					className="text-3xl text-white text-center uppercase font-bold mt-2">Purchase successful</span>
-				<span className="block text-foggyLondon font-bold text-base max-w-[260px] text-center my-[10px]">You have successfully purchased a Xai Sentry Node Key</span>
+				<span className="block text-foggyLondon font-bold text-base max-w-[260px] text-center my-[10px]">You have successfully purchased a Xai Sentry Key</span>
 				<div className="bg-optophobia w-full ">
 					<div className="flex justify-between border-t border-chromaphobicBlack px-[20px] py-[15px]">
 						<span className="text-[18px] sm:text-center text-elementalGrey ">Transaction ID:</span>

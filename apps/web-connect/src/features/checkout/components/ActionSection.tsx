@@ -1,17 +1,18 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { PrimaryButton } from "@sentry/ui";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import { mapWeb3Error } from "@/utils/errors";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 import CrossmintModal from './crossmint/CrossmintModal';
-import { formatWeiToEther, isValidNetwork } from '@sentry/core';
+import { isValidNetwork } from '@sentry/core';
 import { useNetworkConfig } from '@/hooks/useNetworkConfig';
+import { convertEthAmountToUsdcAmount } from '@/utils/convertEthAmountToUsdcAmount';
 
 /**
  * ActionSection Component
  * 
- * This component renders the main action button for buying Sentry Node Keys
+ * This component renders the main action button for buying Sentry Keys
  * and displays relevant error messages. It uses the WebBuyKeysContext to
  * access shared state and functions.
  * 
@@ -20,6 +21,8 @@ import { useNetworkConfig } from '@/hooks/useNetworkConfig';
 export function ActionSection(): JSX.Element {
     const [creditCardOpen, setCreditCardOpen] = useState(false);
     const { isDevelopment } = useNetworkConfig();
+    const [isInitialized, setIsInitialized] = useState(false);
+    const [totalPriceInUsdc, setTotalPriceInUsdc] = useState<string>("0");
 
     // Destructure values and functions from the context
     const {
@@ -62,6 +65,16 @@ export function ActionSection(): JSX.Element {
         }
     };
 
+    useEffect(() => {
+        async function setUsdcPrice(){
+            setIsInitialized(false);
+            const usdcPrice = await convertEthAmountToUsdcAmount(calculateTotalPrice(), 18); // USDC Price in 18 decimals
+            setTotalPriceInUsdc(usdcPrice.toString());
+            setIsInitialized(true);
+        } 
+        setUsdcPrice();
+    }, [quantity, promoCode]);
+
     return (
         <div className="flex flex-col justify-center gap-8 mt-8">
             <div>
@@ -73,16 +86,7 @@ export function ActionSection(): JSX.Element {
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
                         isDisabled={!ready || !isValidNetwork(chainId, isDevelopment) || getEthButtonText().startsWith("Insufficient") || !isConnected}
                         btnText={getEthButtonText()}
-                    />
-                    <br />
-                    {isConnected && <PrimaryButton
-                        onClick={() => setCreditCardOpen(true)}
-                        className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-hornetSting p-2 uppercase font-bold `}
-                        isDisabled={!ready || !isConnected}
-                        colorStyle="outline-2"
-                        btnText={"MINT WITH CREDIT/DEBIT"}
-                    />}
-                    
+                    />                    
                     </>
                 ) : (
                     <PrimaryButton
@@ -92,6 +96,14 @@ export function ActionSection(): JSX.Element {
                         btnText={getTokenButtonText()}
                     />
                 )}
+                <br />
+                {isConnected && isInitialized && <PrimaryButton
+                    onClick={() => setCreditCardOpen(true)}
+                    className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-hornetSting p-2 uppercase font-bold `}
+                    isDisabled={!ready || !isConnected}
+                    colorStyle="outline-2"
+                    btnText={"Mint - Credit/Debit, SOL, ETH, USDC"}
+                />}
 
                 {/* Error section for ETH transactions */}
                 {mintWithEth.error && (
@@ -171,7 +183,7 @@ export function ActionSection(): JSX.Element {
                 )}
             </div>            
             <CrossmintModal
-                totalPriceInEth={formatWeiToEther(calculateTotalPrice(), 18).toString()}
+                totalPriceInUsdc={totalPriceInUsdc}
                 isOpen={creditCardOpen}
                 onClose={() => setCreditCardOpen(false)}
                 totalQty={quantity}

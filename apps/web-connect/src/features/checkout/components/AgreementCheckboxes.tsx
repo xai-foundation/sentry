@@ -7,7 +7,7 @@ import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
  * AgreementCheckboxes Component
  * 
  * This component renders a set of three checkboxes for user agreements
- * related to Sentry Node Keys. It uses the WebBuyKeysContext to manage
+ * related to Sentry Keys. It uses the WebBuyKeysContext to manage
  * the state of the checkboxes.
  * 
  * @returns {JSX.Element} The rendered AgreementCheckboxes component
@@ -38,7 +38,7 @@ export function AgreementCheckboxes(): JSX.Element {
                         <span className="sm:text-base text-elementalGrey sm:mr-2">I agree with the</span>
                         <a
                             className="cursor-pointer text-[#F30919] text-base"
-                            onClick={() => window.open("https://xai.games/sentrynodeagreement/")}
+                            onClick={() => window.open("https://xai.games/sentry-node-agreement/")}
                         >
                             Sentry Node Agreement
                         </a>
@@ -53,7 +53,7 @@ export function AgreementCheckboxes(): JSX.Element {
                 >
                     <div className="sm:w-[300px] md:w-auto">
                         <span className="sm:text-base text-elementalGrey">
-                            I understand Sentry Node Keys are not transferable
+                            I understand Sentry Keys are not transferable
                         </span>
                     </div>
                 </MainCheckbox>

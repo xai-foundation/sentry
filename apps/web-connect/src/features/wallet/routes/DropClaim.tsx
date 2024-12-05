@@ -118,7 +118,7 @@ export function DropClaim() {
 																I agree with the
 																<a
 																	className="cursor-pointer text-[#F30919]"
-																	onClick={() => window.open("https://xai.games/sentrynodeagreement/")}>
+																	onClick={() => window.open("https://xai.games/sentry-node-agreement/")}>
 																	Sentry Node Agreement
 																</a>
 															</XaiCheckbox>
@@ -128,7 +128,7 @@ export function DropClaim() {
 																onClick={() => setCheckboxTwo(!checkboxTwo)}
 																condition={checkboxTwo}
 															>
-																I understand Sentry Node Keys are not transferable
+																I understand Sentry Keys are not transferable
 															</XaiCheckbox>
 
 															<XaiCheckbox

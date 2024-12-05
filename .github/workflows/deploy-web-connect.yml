@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       cloudflare_project:
-        description: 'Cloudflare project to deploy to'
+        description: "Cloudflare project to deploy to"
         required: true
         type: choice
         options:
@@ -34,19 +34,19 @@ jobs:
         if: ${{ github.event.inputs.cloudflare_project == 'sentry-develop' }}
         run: npx nx run @sentry/web-connect:build
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VITE_APP_ENV: development
 
       - name: Build monorepo for production
         if: ${{ github.event.inputs.cloudflare_project == 'sentry' }}
         run: npx nx run @sentry/web-connect:build
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Deploy to Cloudflare Pages
         run: |
           rm apps/web-connect/dist/xai-drop-permits.JSON 
-          npx wrangler pages deploy dist --project-name=${{ github.event.inputs.cloudflare_project }} --branch=main
+          npx wrangler pages deploy apps/web-connect/dist --project-name=${{ github.event.inputs.cloudflare_project }} --branch=main
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
