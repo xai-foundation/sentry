@@ -12,15 +12,17 @@ import { BiLoaderAlt } from "react-icons/bi";
 import PurchaseSuccessful from "./components/PurchaseSuccessful";
 import { useWebBuyKeysContext } from './contexts/useWebBuyKeysContext';
 const { VITE_APP_ENV } = import.meta.env
+import { useTranslation } from "react-i18next";
 
 export const stakingPageURL = `https://${VITE_APP_ENV === "development" ? "develop." : ""}app.xai.games/staking?modal=true&page=1&showKeys=true&hideFull=true&sort=tierIndex&sortOrder=-1`;
 
-const LoadingState = () => (
-    <div className="w-full h-[365px] flex flex-col justify-center items-center gap-2">
-        <BiLoaderAlt className="animate-spin" color={"#FF0030"} size={32} />
-        <p className="text-base text-white font-semibold">Updating total...</p>
+const LoadingState = () => {
+    const { t: translate } = useTranslation("Checkout");
+    return <div className="w-full h-[365px] flex flex-col justify-center items-center gap-2">
+        <BiLoaderAlt className="animate-spin" color={"#FF0030"} size={32}/>
+        <p className="text-base text-white font-semibold">{translate("updatingTotal")}</p>
     </div>
-);
+};
 
 export function Checkout() {
     const [stakingTabOpened, setStakingTabOpened] = useState(false);

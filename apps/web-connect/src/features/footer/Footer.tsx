@@ -1,6 +1,8 @@
 import { XaiLogoFooter } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { useTranslation } from "react-i18next";
 
 export function Footer() {
+	const { t: translate } = useTranslation("Nav");
 	return (
 		<footer className="w-full flex justify-center items-center bg-white py-6 min-h-[152px] relative">
 			<div className="w-full max-w-[1400px] flex flex-col gap-5 px-[15px]">
@@ -10,7 +12,7 @@ export function Footer() {
 						<XaiLogoFooter svgClassName={"absolute top-[-25px]"} />
 						<ul className="w-full flex lg:flex-row flex-col items-center justify-center mt-[70px] uppercase">
 							<li>
-								<p>©2024 XAI. All Rights Reserved</p>
+								<p>{translate("copyright")}</p>
 							</li>
 
 							<li className="flex items-center gap-2">
@@ -19,7 +21,7 @@ export function Footer() {
 									className="text-blue-500 cursor-pointer hover:underline"
 									onClick={() => window.open("https://xai.games/sentry-node-agreement/", "_blank", "noopener noreferrer")}
 								>
-									Sentry Node Agreement
+									{translate("sentryNodeAgreement")}
 								</a>
 							</li>
 							<li className="flex items-center gap-2">
@@ -28,7 +30,7 @@ export function Footer() {
 									className="text-blue-500 cursor-pointer hover:underline"
 									onClick={() => window.open("https://xai.games/privacy-policy/", "_blank", "noopener noreferrer")}
 								>
-									Privacy Policy Agreement
+									{translate("privacyPolicy")}
 								</a>
 							</li>
 							<li className="flex items-center gap-2">
@@ -37,7 +39,7 @@ export function Footer() {
 									className="text-blue-500 cursor-pointer hover:underline"
 									onClick={() => window.open("https://xai.games/generalterms/", "_blank", "noopener noreferrer")}
 								>
-									General Terms
+									{translate("generalTerms")}
 								</a>
 							</li>
 							<li className="flex items-center gap-2">
@@ -46,7 +48,7 @@ export function Footer() {
 									className="text-blue-500 cursor-pointer hover:underline"
 									onClick={() => window.open("https://xai.games/stakingterms/", "_blank", "noopener noreferrer")}
 								>
-									Staking Terms
+									{translate("stakingTerms")}
 								</a>
 							</li>
 						</ul>

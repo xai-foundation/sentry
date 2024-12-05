@@ -4,6 +4,7 @@ import { CheckoutTierSummary, formatWeiToEther, isValidNetwork } from '@sentry/c
 import { CURRENCIES, Currency, useContractWrites, UseContractWritesReturn, useCurrencyHandler, useGetExchangeRate, useGetPriceForQuantity, useGetTotalSupplyAndCap, usePromoCodeHandler, useUserBalances } from '..';
 import { useProvider } from "../provider/useProvider";
 import { useNetworkConfig } from '@/hooks/useNetworkConfig';
+import { useTranslation } from "react-i18next";
 
 export interface PriceDataInterface {
     price: bigint;
@@ -43,8 +44,8 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
     tokenAllowance: bigint;
     ready: boolean;
     calculateTotalPrice: () => bigint;
-    getApproveButtonText: () => string;
-    getEthButtonText: () => string;
+    getApproveButtonText: () => [string, boolean];
+    getEthButtonText: () => [string, boolean];
     formatItemPricePer: (item: CheckoutTierSummary) => string;
     displayPricesMayVary: boolean;
     nodesAtEachPrice: Array<CheckoutTierSummary> | undefined;
@@ -86,7 +87,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const { isLoading: isTotalLoading, data: getTotalData } = useGetTotalSupplyAndCap();
     const { data: exchangeRateData, isLoading: isExchangeRateLoading } = useGetExchangeRate();
     const { chainId, isConnected, address, isDevelopment } = useNetworkConfig();
-
+    const { t: translate } = useTranslation("WebBuyKeysOrderTotal")
     const { data: providerData } = useProvider();
 
     const maxSupply = getTotalData?.cap && getTotalData?.totalSupply
@@ -168,38 +169,38 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
 
     /**
      * Determines the text to display on the approve button based on the current state.
-     * @returns The approve button text as a string.
+     * @returns The approve button text as a string and a flag if we currently need approval.
      */
-    const getApproveButtonText = (): string => {
+    const getApproveButtonText = (): [string, boolean] => {
         const total = calculateTotalPrice();
 
         if (approve.isPending || xaiMintTx.isLoading) {
-            return "WAITING FOR CONFIRMATION...";
+            return [translate("approveButtonsTexts.isPending"), false];
         }
 
         if (total > tokenBalance) {
-            return `Insufficient ${currency} balance`;
+            return [translate("approveButtonsTexts.insufficientBalance", { currency }), false];
         }
 
         if (total > tokenAllowance) {
-            return `Approve ${currency}`;
+            return [translate("approveButtonsTexts.approveCurrency", { currency }), true];
         }
 
-        return "PURCHASE NOW";
+        return [translate("approveButtonsTexts.purchaseNow"), false];
     };
 
-    const getEthButtonText = (): string => {
-        if (!isConnected) return "Please Connect Wallet";
-        if (!isValidNetwork(chainId, isDevelopment)) return "Please Switch to Arbitrum";
+    const getEthButtonText = (): [string, boolean] => {
+        if (!isConnected) return [translate("ethButtonTexts.connectWallet"), false];
+        if (!isValidNetwork(chainId, isDevelopment)) return [translate("ethButtonTexts.switchToArbitrum"), false];
         if (mintWithEth.isPending || ethMintTx.isLoading) {
-            return "WAITING FOR CONFIRMATION...";
+            return [translate("ethButtonTexts.isPending"), false];
         }
 
         if (calculateTotalPrice() > ethBalance) {
-            return "Insufficient ETH balance";
+            return [translate("ethButtonTexts.insufficientBalance"), true];
         }
 
-        return "MINT NOW";
+        return [translate("ethButtonTexts.mintNow"), false];
     };
 
     /**

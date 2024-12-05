@@ -5,6 +5,7 @@ import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import { formatWeiToEther } from "@sentry/core";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
+import { useTranslation } from "react-i18next";
 
 export function PromoCodeRow() {
     const {
@@ -20,6 +21,7 @@ export function PromoCodeRow() {
     } = useWebBuyKeysContext();
 
     const [promo, setPromo] = useState(false);
+    const { t: translate } = useTranslation("Checkout");
 
     useEffect(() => {
         const queryString = window.location.search;
@@ -37,12 +39,12 @@ export function PromoCodeRow() {
                 <>
                     <div className="flex flex-row items-center justify-between text-lg">
                         <div className="flex flex-row items-center gap-2">
-                            <span className="text-white">Discount (5%)</span>
+                            <span className="text-white">{translate("promoCodeRow.discount.text")}</span>
                             <a
                                 onClick={() => setDiscount({ applied: false, error: false })}
                                 className="text-[#F30919] ml-1 cursor-pointer"
                             >
-                                Remove
+                                {translate("promoCodeRow.discount.removeButton")}
                             </a>
                         </div>
                         <div className="flex flex-row items-center gap-1">
@@ -58,10 +60,10 @@ export function PromoCodeRow() {
                 <div className="w-full flex flex-col bg-bananaBoat/10 px-5 py-4 gap-2 mb-4">
                     <div className="flex items-center gap-2 font-semibold">
                         <AiFillInfoCircle className="w-[20px] h-[20px] text-bananaBoat" />
-                        <p className="text-lg text-bananaBoat">Your transaction may be reverted</p>
+                        <p className="text-lg text-bananaBoat">{translate("promoCodeRow.pricesMayVary.title")}</p>
                     </div>
                     <p className="text-sm text-bananaBoat">
-                        Xai Sentry Key prices vary depending on the quantity of remaining supply. In general, as the quantity of available keys decreases, the price of a key will increase. If you purchase more Keys than are available in the current pricing tier, the transaction may revert. We recommend splitting the purchase into two transactions - one for the current pricing tier and another in the next pricing tier.
+                        {translate("promoCodeRow.pricesMayVary.text")}
                     </p>
                 </div>
             )}
@@ -71,7 +73,7 @@ export function PromoCodeRow() {
                         <div className="w-full flex flex-col items-center py-2 ">
                             <div className="w-full h-auto flex sm:flex-col lg:flex-row sm:justify-center lg:justify-start items-center text-[15px] text-elementalGrey mt-2 sm:mb-2 lg:mb-0">
                                 <div className="w-[300px] h-auto flex flex-row sm:justify-center lg:justify-start items-center text-[15px] text-elementalGrey mt-2 sm:mb-2 lg:mb-0">
-                                    <span className="text-[#F30919] text-base">+ Add promo code</span>
+                                    <span className="text-[#F30919] text-base">{translate("promoCodeRow.noDiscount.addPromoCode")}</span>
                                     <div
                                         className="cursor-pointer z-10"
                                         onClick={() => {
@@ -97,7 +99,7 @@ export function PromoCodeRow() {
                                     <div className="lg:hidden sm:block">
                                         <PrimaryButton
                                             onClick={() => handleApplyPromoCode()}
-                                            btnText="APPLY"
+                                            btnText={translate("promoCodeRow.noDiscount.applyPromoCodeButton")}
                                             className="text-white text-sm !py-2 max-h-[42.5px] max-w-[90px]"
                                         />
                                     </div>
@@ -105,7 +107,7 @@ export function PromoCodeRow() {
                                 <div className="lg:block sm:hidden">
                                     <PrimaryButton
                                         onClick={() => handleApplyPromoCode()}
-                                        btnText="APPLY"
+                                        btnText={translate("promoCodeRow.noDiscount.applyPromoCodeButton")}
                                         className="text-white text-sm !py-2 max-h-[42.5px] max-w-[90px]"
                                     />
                                 </div>
@@ -114,7 +116,7 @@ export function PromoCodeRow() {
                                 <BaseCallout extraClasses={{ calloutWrapper: "h-[50px] w-full mt-2" }} isWarning>
                                     <div className="flex gap-[10px]">
                                         <span className="block"><WarningIcon /></span>
-                                        <span className="block">Invalid referral address</span>
+                                        <span className="block">{translate("promoCodeRow.noDiscount.warning")}</span>
                                     </div>
                                 </BaseCallout>
                             )}
@@ -122,7 +124,7 @@ export function PromoCodeRow() {
                     ) : (
                         <p className="flex sm:justify-center lg:justify-start text-[15px] py-2">
                             <a onClick={() => setPromo(true)} className="text-[#F30919] text-base ml-1 cursor-pointer">
-                                + Add promo code
+                                {translate("promoCodeRow.noDiscount.addPromoCode")}
                             </a>
                         </p>
                     )}

@@ -2,6 +2,7 @@ import { IoMdClose } from "react-icons/io";
 import {ExternalLink} from "@sentry/ui";
 import NavbarTerms from "@/features/header/NavbarTerms";
 import NavbarLinks from "@/features/header/NavbarLinks";
+import { useTranslation } from "react-i18next";
 
 interface MobileNavbarProps {
     isOpened: boolean
@@ -9,6 +10,7 @@ interface MobileNavbarProps {
 }
 
 const MobileNavbar = ({isOpened = false, closeNavbar}: MobileNavbarProps) => {
+    const { t: translate } = useTranslation("Nav");
     return (
         <div className={`w-screen ${isOpened ? "animate-navbar-appear block px-[15px]" : "animate-navbar-disappear hidden"} py-[20px] overflow-hidden min-h-screen bg-bloodThirstyWarlock z-20 absolute top-0 left-0`}>
             <div className="flex justify-end mb-4">
@@ -18,7 +20,7 @@ const MobileNavbar = ({isOpened = false, closeNavbar}: MobileNavbarProps) => {
                 <div className="font-bold text-[24px] uppercase !text-nowrap">
                     <ExternalLink
                         customClass="h-[44px] flex items-center global-clip-path mb-2 no-underline !text-[24px] !font-bold "
-                        content={"DOCS"}
+                        content={translate("docs")}
                         externalTab
                         link={"https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup"}
                     />
@@ -28,7 +30,7 @@ const MobileNavbar = ({isOpened = false, closeNavbar}: MobileNavbarProps) => {
                 <div className="text-white font-bold text-lg uppercase whitespace-nowrap">
                     <NavbarLinks />
                     <NavbarTerms/>
-                    <p>©2024 XAI. All Rights Reserved</p>
+                    <p>{translate("copyright")}</p>
                 </div>
             </div>
         </div>

@@ -2,6 +2,7 @@ import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import { Tooltip, XaiNumberInput, InfoPointRed, RedSentryIcon } from "@sentry/ui";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
+import { useTranslation } from "react-i18next";
 
 /**
  * ChooseQuantityRow Component
@@ -17,6 +18,7 @@ export function ChooseQuantityRow(): JSX.Element {
 
     // Destructure necessary values from the WebBuyKeysContext
     const { quantity, setQuantity, maxSupply } = useWebBuyKeysContext();
+    const { t: translate } = useTranslation("Checkout");
 
     function calculateMaxPurchase():number {
         if(maxSupply >= MAX_PER_PURCHASE) {
@@ -35,13 +37,13 @@ export function ChooseQuantityRow(): JSX.Element {
                 <div className="flex flex-row sm:w-full sm:justify-center lg:justify-start items-center gap-1">
                     <RedSentryIcon width={32} height={32} />
                     <p className="sm:text-2xl lg:text-3xl text-white font-bold">
-                        XAI SENTRY KEY
+                        {translate("chooseQuantity.title")}
                     </p>
                     {/* Tooltip for additional information */}
                     <span className="h-full flex items-center ml-2">
                         <Tooltip
-                            header={"Xai keys are required for nodes to receive $esXAI network rewards."}
-                            body={"All purchases must be made in Arbitrum ETH."}
+                            header={translate("chooseQuantity.tooltip.title")}
+                            body={translate("chooseQuantity.tooltip.text")}
                             width={452}
                         >
                             <InfoPointRed />
@@ -50,7 +52,7 @@ export function ChooseQuantityRow(): JSX.Element {
                 </div>
                 {/* Description of Sentry Key functionality */}
                 <p className="sm:w-full lg:w-[400px] sm:text-center sm:px-8 lg:px-0 lg:text-left text-[18px] text-elementalGrey font-medium">
-                    Each Sentry Key enables you to submit up to 1 reward claim for each network challenge.
+                    {translate("chooseQuantity.description")}
                 </p>     
             </div>
             {/* Quantity input section */}
@@ -69,8 +71,8 @@ export function ChooseQuantityRow(): JSX.Element {
                     <div className="flex md:gap-[21px] gap-[10px]">
                         <span className="block mt-2"><WarningIcon /></span>
                         <div>
-                            <span className="block font-bold text-lg">{MAX_PER_PURCHASE} Maximum Per Transaction</span>
-                            <span className="block font-medium text-lg">A maximum of {MAX_PER_PURCHASE} NodeLicenses can be purchased in a single transaction.</span>
+                            <span className="block font-bold text-lg">{translate("chooseQuantity.maximumPerTransaction", { count: MAX_PER_PURCHASE })}</span>
+                            <span className="block font-medium text-lg">{translate("chooseQuantity.maximumNodeLicenses", { max: MAX_PER_PURCHASE })}</span>
                         </div>
                     </div>
                 </BaseCallout>}

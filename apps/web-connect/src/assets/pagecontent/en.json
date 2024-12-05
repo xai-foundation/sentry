@@ -1,0 +1,128 @@
+{
+	"Nav": {
+		"connectWallet": "CONNECT WALLET",
+		"docs": "DOCS",
+		"sentryNodeAgreement": "Sentry Node Agreement",
+		"privacyPolicy": "Privacy Policy Agreement",
+		"generalTerms": "General Terms",
+		"stakingTerms": "Staking Terms",
+		"copyright": "©2024 XAI. All Rights Reserved",
+		"telegram": "Telegram",
+		"discord": "Discord",
+		"twitter": "X"
+	},
+	"Checkout": {
+		"updatingTotal": "Updating total...",
+		"transactionPending": "Transaction in progress…",
+		"backButton": "Back",
+		"successfulPurchase": {
+			"title": "Purchase successful",
+			"text": "You have successfully purchased a Xai Sentry Key",
+			"transactionId": "Transaction ID:",
+			"promo": {
+				"shareLink": "Share your referral link with friends!",
+				"info": "They get 5% off and you get 15% of the sale."
+			},
+			"shareButton": {
+				"title": "5% Off Sentry Key Purchase",
+				"text": "Mint a key on the Xai to stake and start earning rewards and qualify for airdrops."
+			},
+			"copyTooltip": "Copied!",
+			"stakePromo": {
+				"title": "Stake key in a pool to start earning rewards",
+				"buttonText": "Stake key",
+				"downloadOperator": "Download operator"
+			}
+		},
+		"logoColumn": {
+			"purchaseReady": "YOUR PURCHASE IS READY",
+			"imageAlt": "Sentry Logo"
+		},
+		"chooseQuantity": {
+			"title": "XAI SENTRY KEY",
+			"description": "Each Sentry Key enables you to submit up to 1 reward claim for each network challenge.",
+			"toolTip": {
+				"title": "Xai keys are required for nodes to receive $esXAI network rewards.",
+				"text": "All purchases must be made in Arbitrum ETH."
+			},
+			"maximumPerTransaction": "{{count}} Maximum Per Transaction",
+			"maximumNodeLicenses": "A maximum of {{max}} NodeLicenses can be purchased in a single transaction."
+		},
+		"chooseCurrencyTitle": "Choose payment currency",
+		"priceKeyRow": {
+			"nodeKeyQuantity": "{{quantity}} x Xai Sentry Key",
+			"pricePerKey": "{{price}} {{currency}} per key",
+			"pricePerKeyDesktop": "{{price}} {{currency}} per key"
+		},
+		"promoCodeRow": {
+			"discount": {
+				"text": "Discount (5%)",
+				"removeButton": "Remove"
+			},
+			"pricesMayVary": {
+				"title": "Your transaction may be reverted",
+				"text": "Xai Sentry Key prices vary depending on the quantity of remaining supply. In general, as the quantity of available keys decreases, the price of a key will increase. If you purchase more Keys than are available in the current pricing tier, the transaction may revert. We recommend splitting the purchase into two transactions - one for the current pricing tier and another in the next pricing tier."
+			},
+			"noDiscount": {
+				"addPromoCode": "+ Add promo code",
+				"applyPromoCodeButton": "APPLY",
+				"warning": "Invalid referral address"
+			}
+		},
+		"totalCostRow": {
+			"youPay": "You pay",
+			"balance": "Available balance: {{balance}} {{currency}}"
+		},
+		"agreementCheckboxes": {
+			"iAgreeWith": "I agree with the",
+			"sentryNodeAgreement": "Sentry Node Agreement",
+			"notTransferableKeys": "I understand Sentry Keys are not transferable",
+			"cannotRedeemXAI": "I understand that I cannot redeem esXAI for XAI until I pass KYC",
+			"seeBlockedCountries": "(See blocked countries)"
+		},
+		"actionSection": {
+			"mintWithOptions": "Mint - Credit/Debit, SOL, ETH, USDC",
+			"tokenButtonTexts": {
+				"isPending": "WAITING FOR CONFIRMATION..",
+				"switchToArbitrum": "Please Switch to Arbitrum"
+			},
+			"mintWithEthError": {
+				"insufficientFundsError": {
+					"title": "Insufficient funds to complete transaction",
+					"text": "Make sure your wallet has enough AETH and gas to complete the transaction."
+				},
+				"userRejectedRequest": {
+					"title": "Transaction was cancelled",
+					"text": "You have cancelled the transaction in your wallet."
+				}
+			},
+			"mintWithXaiError": {
+				"userRejectedRequest": {
+					"title": "Transaction was cancelled",
+					"text": "You have cancelled the transaction in your wallet."
+				}
+			},
+			"approveError": {
+				"userRejectedRequest": {
+					"title": "Transaction was cancelled",
+					"text": "You have cancelled the transaction in your wallet."
+				}
+			}
+		}
+	},
+	"WebBuyKeysOrderTotal": {
+		"approveButtonsTexts": {
+			"isPending": "WAITING FOR CONFIRMATION...",
+			"insufficientBalance": "Insufficient {{currency}} balance",
+			"approveCurrency": "Approve {{currency}}",
+			"purchaseNow": "PURCHASE NOW"
+		},
+		"ethButtonTexts": {
+			"connectWallet": "Please Connect Your Wallet",
+			"switchToArbitrum": "Please Switch to Arbitrum",
+			"isPending": "WAITING FOR CONFIRMATION...",
+			"insufficientBalance": "Insufficient ETH balance",
+			"mintNow": "MINT NOW"
+		}
+	}
+}
