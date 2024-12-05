@@ -28,9 +28,13 @@ jobs:
           echo "WEB_STAKING_CONTAINER_NAME=web-staking-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
           
       # Step 3: Build web-connect and web-staking services using docker compose
-      - name: Build Docker services
+      - name: Build Docker web-staking
         run: |
-          docker compose -f .dev-deploy/docker-compose.yml build
+          docker compose -f .dev-deploy/docker-compose.yml build web-staking
+
+      - name: Build Docker web-connect
+        run: |
+          docker compose -f .dev-deploy/docker-compose.yml build web-connect
 
       - name: Check if containers exist and remove them
         run: |
