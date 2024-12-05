@@ -45,7 +45,7 @@ contract esXai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgra
     event XaiAddressChanged(address indexed newXaiAddress);
 
     function initialize (address _xai) public initializer {
-        __ERC20_init("esXai", "esXAI");
+        __ERC20_init("Test EX", "TEX");
         __ERC20Burnable_init();
         __AccessControl_init();
 

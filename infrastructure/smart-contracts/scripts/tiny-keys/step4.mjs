@@ -1,6 +1,6 @@
 import { config, NodeLicenseAbi, TinyKeysAirdropAbi } from "@sentry/core";
 
-const TINY_KEYS_AIRDROP_ADDRESS = ""; //TODO Needs to be set after tiny key airdrop contract deployment
+const TINY_KEYS_AIRDROP_ADDRESS = "0xCD5185126aA1757C8566e9EB7d44c7745c3fB062"; //TODO Needs to be set after tiny key airdrop contract deployment
 
 /**
  * Mapping wallet address to nonce, to manage nonce manually
@@ -11,10 +11,10 @@ const WALLET_TO_NONCE = {};
 const qtyPerSegment = 2;
 
 //Wallets to be used simultaneously
-const walletCount = 10;
+const walletCount = 5;
 
 //NEED TO LOOK UP MAINNET VALUES ON PROD RUN
-const maxFeePerGas = ethers.parseUnits('0.3', 'gwei');
+const maxFeePerGas = ethers.parseUnits('0.03', 'gwei');
 const maxPriorityFeePerGas = 1n;
 
 async function main() {

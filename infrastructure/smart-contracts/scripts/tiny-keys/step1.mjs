@@ -19,11 +19,11 @@ import { safeVerify } from "../../utils/safeVerify.mjs";
 async function main() {
     const maxKeysNonKyc = 1; //Maximum number of keys that a non-KYC user can own and still complete esXai redemptions
 
-    const NODE_LICENSE_ADDRESS = config.nodeLicenseAddress;
-    const REFEREE_ADDRESS = config.refereeAddress;
-    const POOL_FACTORY_ADDRESS = config.poolFactoryAddress;
-    const ESXAI_ADDRESS = config.esXaiAddress;
-    const XAI_ADDRESS = config.xaiAddress;
+    const NODE_LICENSE_ADDRESS = "0xE761aD14F50CA3a28fd58eC4EdEd16c0032cc227";
+    const REFEREE_ADDRESS = "0xeA705181C2d240baD3e2Fe8042fe14894e5482Fc";
+    const POOL_FACTORY_ADDRESS = "0xBBb8ecA42B7f549236A444Fa204Dd92F88C5E08a";
+    const ESXAI_ADDRESS = "0x7ADeAe88081917eC3fa0491FE6BEa0efF75777AF";
+    const XAI_ADDRESS = "0xd8A4e08a87C565eB736c85e17D9bB97a9b5d6b73";
     const ETH_PRICE_FEED_ADDRESS = config.chainlinkEthUsdPriceFeed;
     const XAI_PRICE_FEED_ADDRESS = config.chainlinkXaiUsdPriceFeed;
     const USDC_ADDRESS = config.usdcContractAddress;
@@ -44,6 +44,8 @@ async function main() {
     const Referee9 = await ethers.getContractFactory("Referee9", deployer);
     console.log("Got Referee factory");
     const referee9 = await upgrades.upgradeProxy(REFEREE_ADDRESS, Referee9);
+
+
 
     /**
      * Upgrade esXai3 Contract
@@ -138,11 +140,11 @@ async function main() {
 
 
     // verify contract
-    await safeVerify({ contract: esXai3 });
-    await safeVerify({ contract: tinyKeysAirdrop });
-    await safeVerify({ contract: nodeLicense8 });
-    await safeVerify({ contract: poolFactory2 });
-    await safeVerify({ contract: referee9 });
+    // await safeVerify({ contract: esXai3 });
+    // await safeVerify({ contract: tinyKeysAirdrop });
+    // await safeVerify({ contract: nodeLicense8 });
+    // await safeVerify({ contract: poolFactory2 });
+    // await safeVerify({ contract: referee9 });
 
     console.log("Verification complete ");
 }

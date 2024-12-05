@@ -71,28 +71,28 @@ async function main() {
 
 
   //SEND SOME FUNDS, should not be needed on sepolia
-  for (let i = 0; i < options.operators.length; i++) {
-    await deployer.sendTransaction({
-      to: options.operators[i].publicKey,
-      value: ethers.parseEther("0.3"),
-    });
-  }
-  await deployer.sendTransaction({
-    to: options.challenger.publicKey,
-    value: ethers.parseEther("0.3"),
-  });
-  await deployer.sendTransaction({
-    to: options.defaultAdmin.publicKey,
-    value: ethers.parseEther("0.3"),
-  });
-  await deployer.sendTransaction({
-    to: options.defaultAdmin.publicKey,
-    value: ethers.parseEther("0.3"),
-  });
-  await deployer.sendTransaction({
-    to: options.delegatedOperator.publicKey,
-    value: ethers.parseEther("0.5"),
-  });
+  // for (let i = 0; i < options.operators.length; i++) {
+  //   await deployer.sendTransaction({
+  //     to: options.operators[i].publicKey,
+  //     value: ethers.parseEther("0.005"),
+  //   });
+  // }
+  // await deployer.sendTransaction({
+  //   to: options.challenger.publicKey,
+  //   value: ethers.parseEther("0.005"),
+  // });
+  // await deployer.sendTransaction({
+  //   to: options.defaultAdmin.publicKey,
+  //   value: ethers.parseEther("0.3"),
+  // });
+  // await deployer.sendTransaction({
+  //   to: options.defaultAdmin.publicKey,
+  //   value: ethers.parseEther("0.3"),
+  // });
+  // await deployer.sendTransaction({
+  //   to: options.delegatedOperator.publicKey,
+  //   value: ethers.parseEther("0.5"),
+  // });
 
   log("///////////////////////////")
   log("/////// INIT DEPLOY ///////")
@@ -149,11 +149,11 @@ async function main() {
   const xaiAdminRole = await xai.DEFAULT_ADMIN_ROLE();
   await xai.grantRole(xaiAdminRole, options.defaultAdmin.publicKey);
   await xai.grantRole(xaiAdminRole, deployerAddress);
-  const xaiMinterRole = await xai.MINTER_ROLE();
-  await xai.grantRole(xaiMinterRole, options.defaultAdmin.publicKey);
-  await xai.grantRole(xaiMinterRole, await refereeCurrentContract.getAddress());
-  await xai.grantRole(xaiMinterRole, await esXai.getAddress());
-  await xai.grantRole(xaiMinterRole, deployerAddress);
+  // const xaiMinterRole = await xai.MINTER_ROLE();
+  // await xai.grantRole(xaiMinterRole, options.defaultAdmin.publicKey);
+  // await xai.grantRole(xaiMinterRole, await refereeCurrentContract.getAddress());
+  // await xai.grantRole(xaiMinterRole, await esXai.getAddress());
+  // await xai.grantRole(xaiMinterRole, deployerAddress);
 
   // Setup esXai Roles
   const esXaiAdminRole = await esXai.DEFAULT_ADMIN_ROLE();
@@ -170,11 +170,11 @@ async function main() {
   const nodeLicenseAdminRole = await nodeLicenseCurrentContract.DEFAULT_ADMIN_ROLE();
   await nodeLicenseCurrentContract.grantRole(nodeLicenseAdminRole, options.defaultAdmin.publicKey);
 
-  // Setup Gas Subsidy License Roles
-  const gasSubsidyAdminRole = await gasSubsidy.DEFAULT_ADMIN_ROLE();
-  await gasSubsidy.grantRole(gasSubsidyAdminRole, await deployer.getAddress());
-  const gasSubsidyTransferRole = await gasSubsidy.TRANSFER_ROLE();
-  await gasSubsidy.grantRole(gasSubsidyTransferRole, await deployer.getAddress());
+  // // Setup Gas Subsidy License Roles
+  // const gasSubsidyAdminRole = await gasSubsidy.DEFAULT_ADMIN_ROLE();
+  // await gasSubsidy.grantRole(gasSubsidyAdminRole, await deployer.getAddress());
+  // const gasSubsidyTransferRole = await gasSubsidy.TRANSFER_ROLE();
+  // await gasSubsidy.grantRole(gasSubsidyTransferRole, await deployer.getAddress());
 
   // Setup Referee Roles
   const refereeAdminRole = await refereeCurrentContract.DEFAULT_ADMIN_ROLE();
@@ -189,30 +189,30 @@ async function main() {
   log("/////// NODELICENSE SALE UPGRADES ///////")
   log("/////////////////////////////////////////")
 
-  // Node License2 Upgrade
-  const NodeLicense2 = await ethers.getContractFactory("NodeLicense2");
-  const nodeLicense2 = await upgrades.upgradeProxy((await nodeLicenseCurrentContract.getAddress()), NodeLicense2);
-  await nodeLicense2.waitForDeployment();
+  // // Node License2 Upgrade
+  // const NodeLicense2 = await ethers.getContractFactory("NodeLicense2");
+  // const nodeLicense2 = await upgrades.upgradeProxy((await nodeLicenseCurrentContract.getAddress()), NodeLicense2);
+  // await nodeLicense2.waitForDeployment();
 
-  // Node License3 Upgrade
-  const NodeLicense3 = await ethers.getContractFactory("NodeLicense3");
-  const nodeLicense3 = await upgrades.upgradeProxy((await nodeLicenseCurrentContract.getAddress()), NodeLicense3, { call: { fn: "initialize", args: [] } });
-  await nodeLicense3.waitForDeployment();
+  // // Node License3 Upgrade
+  // const NodeLicense3 = await ethers.getContractFactory("NodeLicense3");
+  // const nodeLicense3 = await upgrades.upgradeProxy((await nodeLicenseCurrentContract.getAddress()), NodeLicense3, { call: { fn: "initialize", args: [] } });
+  // await nodeLicense3.waitForDeployment();
 
-  //     // Node License4 Upgrade
-  const NodeLicense4 = await ethers.getContractFactory("NodeLicense4");
-  const nodeLicense4 = await upgrades.upgradeProxy((await nodeLicenseCurrentContract.getAddress()), NodeLicense4);
-  await nodeLicense4.waitForDeployment();
+  // //     // Node License4 Upgrade
+  // const NodeLicense4 = await ethers.getContractFactory("NodeLicense4");
+  // const nodeLicense4 = await upgrades.upgradeProxy((await nodeLicenseCurrentContract.getAddress()), NodeLicense4);
+  // await nodeLicense4.waitForDeployment();
 
-  // Node License5 Upgrade
-  const NodeLicense5 = await ethers.getContractFactory("NodeLicense5");
-  nodeLicenseCurrentContract = await upgrades.upgradeProxy((await nodeLicenseCurrentContract.getAddress()), NodeLicense5);
-  await nodeLicenseCurrentContract.waitForDeployment();
+  // // Node License5 Upgrade
+  // const NodeLicense5 = await ethers.getContractFactory("NodeLicense5");
+  // nodeLicenseCurrentContract = await upgrades.upgradeProxy((await nodeLicenseCurrentContract.getAddress()), NodeLicense5);
+  // await nodeLicenseCurrentContract.waitForDeployment();
 
-  // Node License6 Upgrade
-  const NodeLicense6 = await ethers.getContractFactory("NodeLicense6");
-  nodeLicenseCurrentContract = await upgrades.upgradeProxy((await nodeLicenseCurrentContract.getAddress()), NodeLicense6);
-  await nodeLicenseCurrentContract.waitForDeployment();
+  // // Node License6 Upgrade
+  // const NodeLicense6 = await ethers.getContractFactory("NodeLicense6");
+  // nodeLicenseCurrentContract = await upgrades.upgradeProxy((await nodeLicenseCurrentContract.getAddress()), NodeLicense6);
+  // await nodeLicenseCurrentContract.waitForDeployment();
 
   // Node License7 Upgrade
   const NodeLicense7 = await ethers.getContractFactory("NodeLicense7");
@@ -244,17 +244,22 @@ async function main() {
     await refereeCurrentContract.connect(deployer).addKycWallet(await minter.getAddress());
     await refereeCurrentContract.connect(minter).setApprovalForOperator(delegatedOperator.publicKey, true);
 
-    //Mint some esXai to operators
-    await esXai.connect(deployer).mint(operator.publicKey, BigInt(10_000_000n * 10n ** 18n));
+    // //Mint some esXai to operators
+    // await esXai.connect(deployer).mint(operator.publicKey, BigInt(10_000_000n * 10n ** 18n));
   }
 
   // Add the pricing tiers to NodeLicense
-  for (let i = 0; i < tiers.length; i++) {
-    await nodeLicenseCurrentContract.setOrAddPricingTier(i, BigInt(tiers[i].price), tiers[i].quantity);
-  }
+  // for (let i = 0; i < tiers.length; i++) {
+  await nodeLicenseCurrentContract.setOrAddPricingTier(0, BigInt(tiers[0].price), tiers[0].quantity);
+  // }
 
   // Run 10 challenges
-  await doChallengeRun({ mockRollup, amount: 5 });
+  // await doChallengeRun({ mockRollup, amount: 1 });
+  try {
+    await submitChallenge(refereeCurrentContract, mockRollup);
+  } catch (error) {
+    console.log("ERR", error);
+  }
   log("//////////////////////////////////")
   log("/////// FINISHED CHALLENGE RUN ///////")
   log("//////////////////////////////////")
@@ -265,46 +270,46 @@ async function main() {
   log("//////////////////////////////////")
 
   //Upgrade Referee
-  const Referee2 = await ethers.getContractFactory("Referee2");
-  refereeCurrentContract = await upgrades.upgradeProxy((await refereeCurrentContract.getAddress()), Referee2, { call: { fn: "initialize", args: [] } });
-  await refereeCurrentContract.waitForDeployment();
-  await refereeCurrentContract.enableStaking();
-  REFEREE_VERSION = 2;
+  // const Referee2 = await ethers.getContractFactory("Referee2");
+  // refereeCurrentContract = await upgrades.upgradeProxy((await refereeCurrentContract.getAddress()), Referee2, { call: { fn: "initialize", args: [] } });
+  // await refereeCurrentContract.waitForDeployment();
+  // await refereeCurrentContract.enableStaking();
+  // REFEREE_VERSION = 2;
 
-  //STAKE V1
-  for (const operator of options.operators) {
-    const operatorWallet = new ethers.Wallet(operator.privateKey, ethers.provider);
-    if (operator.V1StakeAmount > 0n) {
-      await esXai.connect(operatorWallet).approve(await refereeCurrentContract.getAddress(), operator.V1StakeAmount);
-      await refereeCurrentContract.connect(operatorWallet).stake(operator.V1StakeAmount);
-      log(`V1 staked ${operator.V1StakeAmount / 10n ** 18n} esXai for operator: ${operator.publicKey}`);
-    }
-  }
+  // //STAKE V1
+  // for (const operator of options.operators) {
+  //   const operatorWallet = new ethers.Wallet(operator.privateKey, ethers.provider);
+  //   if (operator.V1StakeAmount > 0n) {
+  //     await esXai.connect(operatorWallet).approve(await refereeCurrentContract.getAddress(), operator.V1StakeAmount);
+  //     await refereeCurrentContract.connect(operatorWallet).stake(operator.V1StakeAmount);
+  //     log(`V1 staked ${operator.V1StakeAmount / 10n ** 18n} esXai for operator: ${operator.publicKey}`);
+  //   }
+  // }
 
-  // Run 10 challenges with V1 stake & boost
-  await doChallengeRun({ mockRollup, amount: 5 });
-  log("//////////////////////////////////")
-  log("/////// FINISHED CHALLENGE RUN ///////")
-  log("//////////////////////////////////")
+  // // Run 10 challenges with V1 stake & boost
+  // await doChallengeRun({ mockRollup, amount: 5 });
+  // log("//////////////////////////////////")
+  // log("/////// FINISHED CHALLENGE RUN ///////")
+  // log("//////////////////////////////////")
 
-  const Referee3 = await ethers.getContractFactory("Referee3");
-  refereeCurrentContract = await upgrades.upgradeProxy((await refereeCurrentContract.getAddress()), Referee3, { call: { fn: "initialize", args: [] } });
-  await refereeCurrentContract.waitForDeployment();
-  REFEREE_VERSION = 3;
+  // const Referee3 = await ethers.getContractFactory("Referee3");
+  // refereeCurrentContract = await upgrades.upgradeProxy((await refereeCurrentContract.getAddress()), Referee3, { call: { fn: "initialize", args: [] } });
+  // await refereeCurrentContract.waitForDeployment();
+  // REFEREE_VERSION = 3;
 
-  // Run challenges with V1 stake & boost
-  await doChallengeRun({ mockRollup, amount: 5 });
-  log("//////////////////////////////////")
-  log("/////// FINISHED CHALLENGE RUN ///////")
-  log("//////////////////////////////////")
+  // // Run challenges with V1 stake & boost
+  // await doChallengeRun({ mockRollup, amount: 5 });
+  // log("//////////////////////////////////")
+  // log("/////// FINISHED CHALLENGE RUN ///////")
+  // log("//////////////////////////////////")
 
-  const Referee4 = await ethers.getContractFactory("Referee4");
-  refereeCurrentContract = await upgrades.upgradeProxy((await refereeCurrentContract.getAddress()), Referee4);
-  await refereeCurrentContract.waitForDeployment();
+  // const Referee4 = await ethers.getContractFactory("Referee4");
+  // refereeCurrentContract = await upgrades.upgradeProxy((await refereeCurrentContract.getAddress()), Referee4);
+  // await refereeCurrentContract.waitForDeployment();
   REFEREE_VERSION = 4;
 
   // Run challenges with V1 stake & boost
-  await doChallengeRun({ mockRollup, amount: 5 });
+  // await doChallengeRun({ mockRollup, amount: 5 });
   log("//////////////////////////////////")
   log("/////// FINISHED CHALLENGE RUN ///////")
   log("//////////////////////////////////")
@@ -418,46 +423,46 @@ async function main() {
         KEY_ID_TO_STAKED_POOL[keyId.toString()] = poolAddress;
       }
 
-      await esXai.connect(operatorWallet).approve(await poolFactoryCurrentContract.getAddress(), ethers.MaxUint256);
-      await poolFactoryCurrentContract.connect(operatorWallet).stakeEsXai(poolAddress, operator.V2StakeAmount);
-      log(`V2 staked pool: ${poolAddress}, amount: ${operator.V2StakeAmount / 10n ** 18n} esXai for operator: ${operator.publicKey}`);
+      // await esXai.connect(operatorWallet).approve(await poolFactoryCurrentContract.getAddress(), ethers.MaxUint256);
+      // await poolFactoryCurrentContract.connect(operatorWallet).stakeEsXai(poolAddress, operator.V2StakeAmount);
+      // log(`V2 staked pool: ${poolAddress}, amount: ${operator.V2StakeAmount / 10n ** 18n} esXai for operator: ${operator.publicKey}`);
     }
   }
 
 
-  // Run challenges with V2 stake & boost
-  await doChallengeRun({ mockRollup, amount: 10 });
-  log("//////////////////////////////////")
-  log("/////// FINISHED CHALLENGE RUN ///////")
-  log("//////////////////////////////////")
+  // // Run challenges with V2 stake & boost
+  // await doChallengeRun({ mockRollup, amount: 10 });
+  // log("//////////////////////////////////")
+  // log("/////// FINISHED CHALLENGE RUN ///////")
+  // log("//////////////////////////////////")
 
-  // Referee6
-  const Referee6 = await ethers.getContractFactory("Referee6");
-  refereeCurrentContract = await upgrades.upgradeProxy((await refereeCurrentContract.getAddress()), Referee6, { call: { fn: "initialize", args: [] } });
-  await refereeCurrentContract.waitForDeployment();
+  // // Referee6
+  // const Referee6 = await ethers.getContractFactory("Referee6");
+  // refereeCurrentContract = await upgrades.upgradeProxy((await refereeCurrentContract.getAddress()), Referee6, { call: { fn: "initialize", args: [] } });
+  // await refereeCurrentContract.waitForDeployment();
 
-  // Run challenges with V2 stake & boost
-  await doChallengeRun({ mockRollup, amount: 10 });
-  log("//////////////////////////////////")
-  log("/////// FINISHED CHALLENGE RUN ///////")
-  log("//////////////////////////////////")
+  // // Run challenges with V2 stake & boost
+  // await doChallengeRun({ mockRollup, amount: 10 });
+  // log("//////////////////////////////////")
+  // log("/////// FINISHED CHALLENGE RUN ///////")
+  // log("//////////////////////////////////")
 
-  // Referee7
-  const Referee7 = await ethers.getContractFactory("Referee7");
-  refereeCurrentContract = await upgrades.upgradeProxy((await refereeCurrentContract.getAddress()), Referee7);
-  await refereeCurrentContract.waitForDeployment();
+  // // Referee7
+  // const Referee7 = await ethers.getContractFactory("Referee7");
+  // refereeCurrentContract = await upgrades.upgradeProxy((await refereeCurrentContract.getAddress()), Referee7);
+  // await refereeCurrentContract.waitForDeployment();
 
   // Referee8
-  const Referee8 = await ethers.getContractFactory("Referee8");
-  refereeCurrentContract = await upgrades.upgradeProxy((await refereeCurrentContract.getAddress()), Referee8, { call: { fn: "initialize", args: [] } });
-  await refereeCurrentContract.waitForDeployment();
-  REFEREE_VERSION = 8;
+  // const Referee8 = await ethers.getContractFactory("Referee8");
+  // refereeCurrentContract = await upgrades.upgradeProxy((await refereeCurrentContract.getAddress()), Referee8, { call: { fn: "initialize", args: [] } });
+  // await refereeCurrentContract.waitForDeployment();
+  // REFEREE_VERSION = 8;
 
-  // Run challenges with V2 stake & boost
-  await doChallengeRun({ mockRollup, amount: 10 });
-  log("//////////////////////////////////")
-  log("/////// FINISHED CHALLENGE RUN ///////")
-  log("//////////////////////////////////")
+  // // Run challenges with V2 stake & boost
+  // await doChallengeRun({ mockRollup, amount: 10 });
+  // log("//////////////////////////////////")
+  // log("/////// FINISHED CHALLENGE RUN ///////")
+  // log("//////////////////////////////////")
 
   //Deploy RefereeCalculations
   const RefereeCalculations = await ethers.getContractFactory("RefereeCalculations");
@@ -472,20 +477,20 @@ async function main() {
   await refereeCurrentContract.waitForDeployment();
   REFEREE_VERSION = 9;
 
-  await doChallengeRun({ mockRollup, amount: 10 });
-  log("//////////////////////////////////")
-  log("/////// FINISHED CHALLENGE RUN ///////")
-  log("//////////////////////////////////")
+  // await doChallengeRun({ mockRollup, amount: 10 });
+  // log("//////////////////////////////////")
+  // log("/////// FINISHED CHALLENGE RUN ///////")
+  // log("//////////////////////////////////")
 
   // Deploy Mock Chainlink Aggregator Price Feeds
-  const MockChainlinkPriceFeed = await ethers.getContractFactory("MockChainlinkPriceFeed");
-  const ethPrice = ethers.parseUnits("3000", 8);
-  const chainlinkEthUsdPriceFeed = await MockChainlinkPriceFeed.deploy(ethPrice);
-  await chainlinkEthUsdPriceFeed.waitForDeployment();
+  // const MockChainlinkPriceFeed = await ethers.getContractFactory("MockChainlinkPriceFeed");
+  // const ethPrice = ethers.parseUnits("3000", 8);
+  // const chainlinkEthUsdPriceFeed = await MockChainlinkPriceFeed.deploy(ethPrice);
+  // await chainlinkEthUsdPriceFeed.waitForDeployment();
 
-  const xaiPrice = ethers.parseUnits("1", 8);
-  const chainlinkXaiUsdPriceFeed = await MockChainlinkPriceFeed.deploy(xaiPrice);
-  await chainlinkXaiUsdPriceFeed.waitForDeployment();
+  // const xaiPrice = ethers.parseUnits("1", 8);
+  // const chainlinkXaiUsdPriceFeed = await MockChainlinkPriceFeed.deploy(xaiPrice);
+  // await chainlinkXaiUsdPriceFeed.waitForDeployment();
 
   log({
     referee: await refereeCurrentContract.getAddress(),
@@ -508,28 +513,28 @@ async function main() {
     EsXaiBucketBeaconProxy: await EsXaiBucketBeaconProxy.getAddress(),
   });
 
-  if (hre.network.name != "localhost") {
-    // Verify the contracts
-    await safeVerify({ skipWaitForDeployTx: true, contract: refereeCurrentContract })
-    await safeVerify({ skipWaitForDeployTx: true, contract: nodeLicenseCurrentContract, contractPath: "contracts/upgrades/node-license/NodeLicense7.sol:NodeLicense7" })
-    await safeVerify({ skipWaitForDeployTx: true, contract: esXai2 })
-    await safeVerify({ skipWaitForDeployTx: true, contract: xai })
-    await safeVerify({ skipWaitForDeployTx: true, contract: poolFactoryCurrentContract })
-    await safeVerify({ skipWaitForDeployTx: true, contract: mockRollup })
-    await safeVerify({ skipWaitForDeployTx: true, contract: chainlinkEthUsdPriceFeed, constructorArgs: [ethPrice] })
-    await safeVerify({ skipWaitForDeployTx: true, contract: chainlinkXaiUsdPriceFeed, constructorArgs: [xaiPrice] })
-    await safeVerify({ skipWaitForDeployTx: true, contract: refereeCalculations })
-    await safeVerify({ skipWaitForDeployTx: true, contract: StakingPool })
-    await safeVerify({ skipWaitForDeployTx: true, contract: KeyBucketTracker })
-    await safeVerify({ skipWaitForDeployTx: true, contract: EsXaiBucketTracker })
-    await safeVerify({ skipWaitForDeployTx: true, contract: poolProxyDeployer })
-    await safeVerify({ skipWaitForDeployTx: true, contract: StakingPoolPoolBeacon, constructorArgs: [stakingPoolImplAddress], contractPath: "contracts/staking-v2/PoolBeacon.sol:PoolBeacon" })
-    await safeVerify({ skipWaitForDeployTx: true, contract: KeyBucketTrackerPoolBeacon, constructorArgs: [keyBucketTrackerImplAddress], contractPath: "contracts/staking-v2/PoolBeacon.sol:PoolBeacon" })
-    await safeVerify({ skipWaitForDeployTx: true, contract: EsXaiBucketTrackerPoolBeacon, constructorArgs: [esXaiBucketTrackerImplAddress], contractPath: "contracts/staking-v2/PoolBeacon.sol:PoolBeacon" })
-    await safeVerify({ skipWaitForDeployTx: true, contract: KeyBucketBeaconProxy, constructorArgs: [keyBucketTrackerPoolBeaconAddress, "0x"] })
-    await safeVerify({ skipWaitForDeployTx: true, contract: EsXaiBucketBeaconProxy, constructorArgs: [esXaiBucketTrackerPoolBeaconAddress, "0x"] })
-  }
-  log("Contracts verified.");
+  // if (hre.network.name != "localhost") {
+  //   // Verify the contracts
+  //   await safeVerify({ skipWaitForDeployTx: true, contract: refereeCurrentContract })
+  //   await safeVerify({ skipWaitForDeployTx: true, contract: nodeLicenseCurrentContract, contractPath: "contracts/upgrades/node-license/NodeLicense7.sol:NodeLicense7" })
+  //   await safeVerify({ skipWaitForDeployTx: true, contract: esXai2 })
+  //   await safeVerify({ skipWaitForDeployTx: true, contract: xai })
+  //   await safeVerify({ skipWaitForDeployTx: true, contract: poolFactoryCurrentContract })
+  //   await safeVerify({ skipWaitForDeployTx: true, contract: mockRollup })
+  //   await safeVerify({ skipWaitForDeployTx: true, contract: chainlinkEthUsdPriceFeed, constructorArgs: [ethPrice] })
+  //   await safeVerify({ skipWaitForDeployTx: true, contract: chainlinkXaiUsdPriceFeed, constructorArgs: [xaiPrice] })
+  //   await safeVerify({ skipWaitForDeployTx: true, contract: refereeCalculations })
+  //   await safeVerify({ skipWaitForDeployTx: true, contract: StakingPool })
+  //   await safeVerify({ skipWaitForDeployTx: true, contract: KeyBucketTracker })
+  //   await safeVerify({ skipWaitForDeployTx: true, contract: EsXaiBucketTracker })
+  //   await safeVerify({ skipWaitForDeployTx: true, contract: poolProxyDeployer })
+  //   await safeVerify({ skipWaitForDeployTx: true, contract: StakingPoolPoolBeacon, constructorArgs: [stakingPoolImplAddress], contractPath: "contracts/staking-v2/PoolBeacon.sol:PoolBeacon" })
+  //   await safeVerify({ skipWaitForDeployTx: true, contract: KeyBucketTrackerPoolBeacon, constructorArgs: [keyBucketTrackerImplAddress], contractPath: "contracts/staking-v2/PoolBeacon.sol:PoolBeacon" })
+  //   await safeVerify({ skipWaitForDeployTx: true, contract: EsXaiBucketTrackerPoolBeacon, constructorArgs: [esXaiBucketTrackerImplAddress], contractPath: "contracts/staking-v2/PoolBeacon.sol:PoolBeacon" })
+  //   await safeVerify({ skipWaitForDeployTx: true, contract: KeyBucketBeaconProxy, constructorArgs: [keyBucketTrackerPoolBeaconAddress, "0x"] })
+  //   await safeVerify({ skipWaitForDeployTx: true, contract: EsXaiBucketBeaconProxy, constructorArgs: [esXaiBucketTrackerPoolBeaconAddress, "0x"] })
+  // }
+  // log("Contracts verified.");
 
 }
 
@@ -630,11 +635,11 @@ const submitChallenge = async (refereeContract, mockRollup) => {
     challenge.confirmData,
     challenge.assertionTimestamp,
     challenge.challengerSignedHash,
-    { nonce: WALLET_TO_NONCE[options.challenger.publicKey] }
+    // { nonce: WALLET_TO_NONCE[options.challenger.publicKey] }
   );
 
   await tx.wait(BLOCKS_TO_CONFIRM);
-  WALLET_TO_NONCE[options.challenger.publicKey]++;
+  // WALLET_TO_NONCE[options.challenger.publicKey]++;
 
   log(`Submitted test challenge ${challenge.challengeNumber}`);
 

@@ -3,14 +3,14 @@ import { safeVerify } from "../../utils/safeVerify.mjs";
 
 async function main() {
 
-    const REFEREE_ADDRESS = config.refereeAddress;
+    const REFEREE_ADDRESS = "0xeA705181C2d240baD3e2Fe8042fe14894e5482Fc";
     // get the deployer
     const [deployer] = (await ethers.getSigners());
     
-    console.log("Close Open Challenge...");
-    const referee = await new ethers.Contract(REFEREE_ADDRESS, RefereeAbi, deployer);
-    await referee.closeCurrentChallenge();
-    console.log("Closed Open Challenge");
+    // console.log("Close Open Challenge...");
+    // const referee = await new ethers.Contract(REFEREE_ADDRESS, RefereeAbi, deployer);
+    // await referee.closeCurrentChallenge();
+    // console.log("Closed Open Challenge");
     
     /**
      * Upgrade Referee Contract
@@ -24,9 +24,9 @@ async function main() {
     const referee10 = await upgrades.upgradeProxy(REFEREE_ADDRESS, Referee10, { call: {fn: "initialize", args: [] } });
     console.log("Referee upgraded to version 10");
 
-    console.log("Starting verification... ");
-    await safeVerify({ contract: referee10 });
-    console.log("Verification complete ");
+    // console.log("Starting verification... ");
+    // await safeVerify({ contract: referee10 });
+    // console.log("Verification complete ");
 }
 
 // We recommend this pattern to be able to use async/await everywhere

@@ -27,7 +27,7 @@ contract Xai is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgrade
     event ConvertedToEsXai(address indexed user, uint256 amount);
 
     function initialize() public initializer {
-        __ERC20_init("Xai", "XAI");
+        __ERC20_init("Test X", "TX");
         __ERC20Burnable_init();
         __AccessControl_init();
 
