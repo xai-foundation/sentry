@@ -27,9 +27,9 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 	const { address } = useAccount();
 	const [isTooltipAllowedToOpen, setIsTooltipAllowedToOpen] = useState(false);
 	const [canShare, setCanShare] = useState(false);
-    const { t: translate } = useTranslation("Checkout");
+	const { t: translate } = useTranslation("Checkout");
 
-    useEffect(() => {
+	useEffect(() => {
 		setCanShare(navigator.share !== undefined);
 	}, []);
 
@@ -69,7 +69,7 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 					onClick={handleReturnToClient}
 					className="text-white text-lg flex items-center group hover:text-hornetSting duration-300">
 					<BackArrow height={12} className="group-hover:fill-hornetSting fill-white duration-300" />
-                    {translate("backButton")}
+					{translate("backButton")}
 				</button>
 			</div>
 			<div className="flex flex-col justify-center items-center gap-2">
@@ -91,39 +91,62 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 							</div>
 						</a>
 					</div>
-					<div className="w-full text-elementalGrey text-[18px] flex justify-between border-t border-b border-chromaphobicBlack items-start px-[20px] py-[15px]">
-						<div className="flex flex-col items-end">
-							{address &&
-								<div className="relative">
-									<p className="text-base">{translate("successfulPurchase.promo.shareLink")}</p>
-									<p className="text-base mb-3">{translate("successfulPurchase.promo.info")}</p>
-									<div
-										className={`p-[1px] w-full h-full bg-chromaphobicBlack global-clip-btn`}>
-										<div
-											className={`relative items-center lg:w-[400px] w-full bg-optophobia h-fit flex justify-between text-americanSilver p-2 overflow-hidden text-lg font-medium global-clip-btn`}
-										>
-											<p className="select-none lg:max-w-[300px] sx:max-w-[210px] sm:max-w-[190px] overflow-x-hidden">{`${salePageBaseURL}/${address}`}</p>
+					<div className="w-full text-elementalGrey text-[18px] flex flex-col border-t border-b border-chromaphobicBlack px-[20px] py-[15px]">
 
-										</div>
-									</div>			
-									{canShare ? <div className="mr-3 cursor-pointer absolute right-[10px] sx:top-[73px] sm:top-[96px] z-60">
+						<p className="text-base">{translate("successfulPurchase.promo.shareLink")}</p>
+						<p className="text-base mb-3">{translate("successfulPurchase.promo.info")}</p>
+						<div className="p-[1px] w-full h-full bg-chromaphobicBlack global-clip-btn">
+
+							<div
+								className="relative flex items-center lg:w-[408px] w-full bg-optophobia h-fit p-2 gap-2 overflow-hidden text-lg font-medium global-clip-btn"
+							>
+								{/* Referral Link or Copied Text */}
+
+								<a
+									href={`${salePageBaseURL}?promoCode=${address}`}
+									target="_blank"
+									rel="noopener noreferrer"
+									className="text-americanSilver underline hover:text-hornetSting truncate flex-grow"
+									onClick={(e) => {
+										e.preventDefault();
+										copyReferralCode();
+									}}
+								>
+									{`${salePageBaseURL}?promoCode=${address}`}
+								</a>
+
+								{/* Share or Copy Icon */}
+								<div className="flex-shrink-0 flex items-center justify-center">
+									{canShare ? (
 										<ShareButton
-										buttonText={translate("successfulPurchase.shareButton.text")}
-										buttonTitle={translate("successfulPurchase.shareButton.title")}
-										shareUrl={`${salePageBaseURL}?promoCode=${address}`}
-										shareButtonClasses={"w-full"}
-									/></div> : 
-									<div className="mr-3 cursor-pointer absolute right-[10px] sx:top-[73px] sm:top-[96px] z-60" onClick={copyReferralCode}>
-										<Tooltip body={translate("successfulPurchase.copyTooltip")} open={isTooltipAllowedToOpen} extraClasses={{ content: " max-w-[75px]", body: "!text-black !font-bold" }}>
+											buttonText={translate("successfulPurchase.shareButton.text")}
+											buttonTitle={translate("successfulPurchase.shareButton.title")}
+											shareUrl={`${salePageBaseURL}?promoCode=${address}`}
+											shareButtonClasses="w-full"
+										/>
+									) : (
+										<div className="cursor-pointer" onClick={() => {
+											copyReferralCode();
+										}} >
 											<CopyIcon />
-										</Tooltip>
-									</div>
-									}
-								</div>}
+										</div>
+									)}
+								</div>
+							</div>
 						</div>
+						<Tooltip
+							body={translate("successfulPurchase.copyTooltip")}
+							open={isTooltipAllowedToOpen}
+							position="end"
+							extraClasses={{
+								content: "max-w-[75px]",
+								body: "!text-black !font-bold",
+							}}
+						>
+						</Tooltip>
 					</div>
 				</div>
-				<p className="text-elementalGrey my-3 px-[10px] font-bold">{translate("successfulPurchase.stakePromo.title")}</p>
+				<p className="text-elementalGrey my-3 px-[20px] font-bold">{translate("successfulPurchase.stakePromo.title")}</p>
 				<div className="px-[20px] w-full">
 					<PrimaryButton onClick={() => window.open(stakingPageURL)} btnText={translate("successfulPurchase.stakePromo.buttonText")} colorStyle="primary" className="w-full text-xl font-bold uppercase text-brandyWine" />
 				</div>
