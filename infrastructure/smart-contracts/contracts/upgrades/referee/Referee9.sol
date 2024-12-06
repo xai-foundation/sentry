@@ -958,15 +958,15 @@ contract Referee9 is Initializable, AccessControlEnumerableUpgradeable {
     //TEST FUNCTION this is used only for test coverage
     // Leaving these functions in the contract for test coverage purposes
     // In the future these can be removed if size becomes an issue
-    // function toggleAssertionChecking() public {
-    //     isCheckingAssertions = !isCheckingAssertions;
-    //     emit AssertionCheckingToggled(isCheckingAssertions);
-    // }
+    function toggleAssertionChecking() public {
+        isCheckingAssertions = !isCheckingAssertions;
+        emit AssertionCheckingToggled(isCheckingAssertions);
+    }
 
     //TEST FUNCTION this is used only for test coverage
-    // function setRollupAddress(address newRollupAddress) public {
-    //     rollupAddress = newRollupAddress;
-    //     emit RollupAddressChanged(newRollupAddress);
-    // }
+    function setRollupAddress(address newRollupAddress) public {
+        rollupAddress = newRollupAddress;
+        emit RollupAddressChanged(newRollupAddress);
+    }
 }
 

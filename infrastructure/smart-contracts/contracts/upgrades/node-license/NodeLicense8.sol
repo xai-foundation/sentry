@@ -132,6 +132,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         uint256 receivedLifetime;
     }
 
+    error ReentrantCall();
+
     event PromoCodeCreated(string promoCode, address recipient);
     event PromoCodeRemoved(string promoCode);
     event RewardClaimed(address indexed claimer, uint256 ethAmount, uint256 xaiAmount, uint256 esXaiAmount, uint256 usdcAmount);
@@ -185,7 +187,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     */
     
     modifier reentrancyGuardClaimReferralReward() {
-        require(!_reentrancyGuardClaimReferralReward, "Reentrancy guard: reentrant call");
+        if(_reentrancyGuardClaimReferralReward) revert ReentrantCall();
+        //require(!_reentrancyGuardClaimReferralReward, "Reentrancy guard: reentrant call");
         _reentrancyGuardClaimReferralReward = true;
         _;
         _reentrancyGuardClaimReferralReward = false;
@@ -926,5 +929,12 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         super.safeTransferFrom(from, to, tokenId, data);
     }
 	
-	
+	function _afterTokenTransfer(address from, address to, uint256 firstTokenId, uint256 batchSize) override internal {
+        // Call the parent function
+        super._afterTokenTransfer(from, to, firstTokenId, batchSize);
+
+        Referee10(refereeAddress).updateBulkSubmissionOnTransfer(from, to, firstTokenId);
+    }
+
+
 }
