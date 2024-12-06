@@ -1115,7 +1115,7 @@ contract Referee10 is Initializable, AccessControlEnumerableUpgradeable {
     function updateBulkSubmissionOnTransfer(address from, address to, uint256 keyId) external {
         if(msg.sender != nodeLicenseAddress) revert CallerNotAuthorized();
 
-        uint256 currentChallenge = challengeCounter - 1;  
+        uint256 currentChallenge = challengeCounter == 0 ? 0 : challengeCounter - 1;  
            // If the pool has submitted for the current challenge, update the pool bulk submission
         if(bulkSubmissions[currentChallenge][from].submitted){
             _updateBulkAssertion(from, currentChallenge);
