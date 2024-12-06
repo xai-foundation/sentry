@@ -110,6 +110,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     error ReferrerCannotBeBuyer();
     error CannotTransferStakedKey();
     error TransferFailed();
+    error ReentrantCall();
 
     bytes32 public constant AIRDROP_ADMIN_ROLE = keccak256("AIRDROP_ADMIN_ROLE");
     bytes32 public constant ADMIN_MINT_ROLE = keccak256("ADMIN_MINT_ROLE");
@@ -134,8 +135,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         bool active;
         uint256 receivedLifetime;
     }
-
-    error ReentrantCall();
 
     event PromoCodeCreated(string promoCode, address recipient);
     event PromoCodeRemoved(string promoCode);
