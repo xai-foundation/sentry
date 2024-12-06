@@ -22,3 +22,4 @@ export * from "./getMultipleChallengeConfirmData.js";
 export * from "./getNodeConfirmedEvents.js";
 export * from "./getRefereeCalculationsAddress.js";
 export * from "./isValidNetwork.js";
+export * from "./getEthUsdcExchangeRate.js";

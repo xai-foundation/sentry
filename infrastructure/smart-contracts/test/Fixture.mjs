@@ -318,26 +318,57 @@ describe("Fixture Tests", function () {
         await tinyKeysAirDrop.waitForDeployment();
 
         // // PoolFactory2 Upgrade - Required For Tiny Keys
-        // const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
-        // const poolFactory2 = await upgrades.upgradeProxy((await poolFactory.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
-        // await poolFactory2.waitForDeployment();
+        const PoolFactory2 = await ethers.getContractFactory("PoolFactory2");
+        const poolFactory2 = await upgrades.upgradeProxy((await poolFactory.getAddress()), PoolFactory2, { call: { fn: "initialize", args: [await tinyKeysAirDrop.getAddress()] } });
+        await poolFactory2.waitForDeployment();
 
-        // // Node License8 Upgrade - Required For Tiny Keys
-        // const NodeLicense8 = await ethers.getContractFactory("NodeLicense8");
-        // const nodeLicense8 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense8, { call: { fn: "initialize", args: [await xai.getAddress(), await esXai.getAddress(), await chainlinkEthUsdPriceFeed.getAddress(), await chainlinkXaiUsdPriceFeed.getAddress(), await tinyKeysAirDrop.getAddress()] } });
-        // await nodeLicense8.waitForDeployment();
-        // Deploy the Referee Calculations contract
+        //Deploy sample USDC token
+        const usdcName = "Test USDC";
+        const usdcSymbol = "USDC";
+        const usdcToken = await ethers.deployContract(
+            "SampleERC20",
+            [usdcName, usdcSymbol]
+        );
+        await usdcToken.waitForDeployment();
 
+        //Deploy RefereeCalculations
         const RefereeCalculations = await ethers.getContractFactory("RefereeCalculations");
         const refereeCalculations = await upgrades.deployProxy(RefereeCalculations, [], { deployer: deployer });
         await refereeCalculations.waitForDeployment();
-        
+
+        // Node License8 Upgrade - Required For Tiny Keys
+        const NodeLicense8 = await ethers.getContractFactory("NodeLicense8");
+        const nodeLicense8 = await upgrades.upgradeProxy(
+            (await nodeLicense.getAddress()),
+            NodeLicense8,
+            {
+                call:
+                {
+                    fn: "initialize",
+                    args: [
+                        await xai.getAddress(),
+                        await esXai.getAddress(),
+                        await chainlinkEthUsdPriceFeed.getAddress(),
+                        await chainlinkXaiUsdPriceFeed.getAddress(),
+                        await tinyKeysAirDrop.getAddress(),
+                        await usdcToken.getAddress(),
+                        await refereeCalculations.getAddress(),
+                        await referee.getAddress(),
+                    ]
+                }
+            }
+        );
+        await nodeLicense8.waitForDeployment();
+
+        // Setup admin mint to role for nodeLicenseDefaultAdmin
+        await nodeLicense8.connect(nodeLicenseDefaultAdmin).grantRole(await nodeLicense8.ADMIN_MINT_ROLE(), nodeLicenseDefaultAdmin.address);
+        await nodeLicense8.connect(nodeLicenseDefaultAdmin).grantRole(await nodeLicense8.TRANSFER_ROLE(), nodeLicenseDefaultAdmin.address);
 
         // // Upgrade esXai3 upgrade - Required For Tiny Keys
-        // const maxKeysNonKyc = BigInt(1);
-        // const EsXai3 = await ethers.getContractFactory("esXai3");
-        // const esXai3 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai3, { call: { fn: "initialize", args: [await referee.getAddress(), await nodeLicense.getAddress(), poolFactoryAddress, maxKeysNonKyc] } });
-        // await esXai3.waitForDeployment();
+        const maxKeysNonKyc = BigInt(1);
+        const EsXai3 = await ethers.getContractFactory("esXai3");
+        const esXai3 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai3, { call: { fn: "initialize", args: [await referee.getAddress(), await nodeLicense.getAddress(), poolFactoryAddress, maxKeysNonKyc] } });
+        await esXai3.waitForDeployment();
 
         
         // Referee9
@@ -349,10 +380,10 @@ describe("Fixture Tests", function () {
         
         // // Referee10 upgrade - Required For Tiny Keys
         // // This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
-        // const Referee10 = await ethers.getContractFactory("Referee10");
-        // // Upgrade the Referee
-        // const referee10 = await upgrades.upgradeProxy((await referee.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
-        // await referee10.waitForDeployment();
+        const Referee10 = await ethers.getContractFactory("Referee10");
+        // Upgrade the Referee
+        const referee10 = await upgrades.upgradeProxy((await referee.getAddress()), Referee10, { call: { fn: "initialize", args: [] } });
+        await referee10.waitForDeployment();
 
         // MockRollup
         const MockRollupContractFactory = await ethers.getContractFactory("MockRollup");
@@ -392,11 +423,11 @@ describe("Fixture Tests", function () {
             tiers,
             secretKeyHex,
             publicKeyHex: "0x" + publicKeyHex,
-            referee: referee9,
-            nodeLicense: nodeLicense7,
-            poolFactory,
+            referee: referee10,
+            nodeLicense: nodeLicense8,
+            poolFactory: poolFactory2,
             gasSubsidy,
-            esXai: esXai2,
+            esXai: esXai3,
             xai,
             rollupContract,
             chainlinkEthUsdPriceFeed,
@@ -404,12 +435,13 @@ describe("Fixture Tests", function () {
             tinyKeysAirDrop,
             airdropMultiplier,
             refereeCalculations,
-            mockRollup
+            mockRollup,
+            usdcToken
         };
     }
 
     // Tests That Always Work
-    describe("CNY 2024", CNYAirDropTests.bind(this));
+    // describe("CNY 2024", CNYAirDropTests.bind(this));
     describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
     describe("Xai", XaiTests(deployInfrastructure).bind(this));
     describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
@@ -420,7 +452,7 @@ describe("Fixture Tests", function () {
     // https://docs.google.com/document/d/1V_3svypWL26wDr2RNvcIBcMlFwdSWYR6xcLuKXXuWf8
 
     // Pre-Tiny Keys
-    describe("Pre-Tiny Keys Tests", PreTinyKeysTests(deployInfrastructure).bind(this));
+    // describe("Pre-Tiny Keys Tests", PreTinyKeysTests(deployInfrastructure).bind(this));
 
     // Post-Tiny Keys
     describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
@@ -429,9 +461,9 @@ describe("Fixture Tests", function () {
     describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
 
     // Uncomment these tests for tiny keys
-    //describe("BulkSubmissions", RefereeBulkSubmissions(deployInfrastructure).bind(this));
-    //describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
-    //describe("Failed KYC Tests", FailedKycTests(deployInfrastructure).bind(this));
+    describe("BulkSubmissions", RefereeBulkSubmissions(deployInfrastructure).bind(this));
+    describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
+    describe("Failed KYC Tests", FailedKycTests(deployInfrastructure).bind(this));
     
     //describe("Winning Key Count Simulations", RefereeWinningKeyCountSimulations(deployInfrastructure).bind(this));
 

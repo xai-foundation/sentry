@@ -11,8 +11,9 @@ import { ActionSection } from "./components/ActionSection";
 import { BiLoaderAlt } from "react-icons/bi";
 import PurchaseSuccessful from "./components/PurchaseSuccessful";
 import { useWebBuyKeysContext } from './contexts/useWebBuyKeysContext';
+const { VITE_APP_ENV } = import.meta.env
 
-export const stakingPageURL = "https://app.xai.games/staking?modal=true&page=1&showKeys=true&hideFull=true&sort=tierIndex&sortOrder=-1";
+export const stakingPageURL = `https://${VITE_APP_ENV === "development" ? "develop." : ""}app.xai.games/staking?modal=true&page=1&showKeys=true&hideFull=true&sort=tierIndex&sortOrder=-1`;
 
 const LoadingState = () => (
     <div className="w-full h-[365px] flex flex-col justify-center items-center gap-2">
@@ -50,12 +51,12 @@ export function Checkout() {
         window.location.reload();
     }
 
-	useEffect(() => {
-		if (!stakingTabOpened && (mintWithEth.isSuccess || mintWithXai.isSuccess || mintWithCrossmint.txHash != "")) {	
+    useEffect(() => {
+        if (!stakingTabOpened && (mintWithEth.isSuccess || mintWithXai.isSuccess || mintWithCrossmint.txHash != "")) {
             setStakingTabOpened(true);
-			window.open(stakingPageURL, '_blank');
-		}
-	}, [mintWithEth.isSuccess, mintWithXai.isSuccess, mintWithCrossmint.txHash]);
+            window.open(stakingPageURL, '_blank');
+        }
+    }, [mintWithEth.isSuccess, mintWithXai.isSuccess, mintWithCrossmint.txHash]);
 
     return (
         <div>

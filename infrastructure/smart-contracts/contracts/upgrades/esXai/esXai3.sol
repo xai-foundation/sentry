@@ -303,4 +303,88 @@ contract esXai3 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         maxKeysNonKyc = newMax;
     }
 
+    /**
+    * @notice Retrieves a list of redemption requests for a given user, supporting pagination.
+    * @param account The address of the user whose redemption requests are being queried.
+    * @param maxQty The maximum number of redemption requests to return.
+    * @param offset The offset for pagination, representing the number of requests to skip.
+    * @return redemptions An array of redemption requests matching the query.
+    * @return totalRedemptions The total number of redemption requests matching the criteria.
+    */
+    function getRedemptionsByUser(
+        address account,
+        uint256 maxQty,
+        uint256 offset
+    ) external view returns (RedemptionRequestExt[] memory redemptions, uint256 totalRedemptions) {
+        
+        totalRedemptions = _extRedemptionRequests[account].length; // Get the total number of redemption requests for the user.
+
+        // Early return if maxQty is zero or offset is out of bounds.
+        if (maxQty == 0 || offset >= totalRedemptions) {
+            return (redemptions, 0);
+        }
+
+        // Determine the number of redemption requests to return.
+        uint256 remainingItems = totalRedemptions - offset; // Number of items left after applying the offset.
+
+        // Calculate the quantity of items to return, considering the remaining items and maxQty.
+        uint256 qtyToReturn = maxQty > remainingItems ? remainingItems : maxQty;
+
+        // Initialize arrays with the maximum possible size based on qtyToReturn.
+        redemptions = new RedemptionRequestExt[](qtyToReturn);
+
+        uint256 count = 0; // Counter for the number of items added to the return arrays.
+
+        // Iterate through the array in ascending order to get requests starting from the oldest.
+        for (uint256 i = offset; i < offset + qtyToReturn; i++) {
+            RedemptionRequestExt memory request = _extRedemptionRequests[account][i];
+
+            // Add the request to the return arrays.
+            redemptions[count] = request;
+            count++;
+        }
+
+        return (redemptions, totalRedemptions);
+    }
+
+    /**
+    * @notice Returns a list of redemption requests for a given user at specified indices.
+    * @param account The address of the user whose redemption requests are to be fetched.
+    * @param indices An array of indices representing the specific redemption requests to retrieve.
+    * @return redemptions An array of `RedemptionRequestExt` structs corresponding to the specified indices.
+    * @return totalRedemptions The current total number of redemption requests for the user.
+    */
+    function refreshUserRedemptionsByIndex(
+        address account, 
+        uint256[] memory indices
+    ) 
+        external 
+        view 
+        returns (RedemptionRequestExt[] memory redemptions, uint256 totalRedemptions) 
+    {
+        // Get the total number of redemption requests for the given account
+        totalRedemptions = _extRedemptionRequests[account].length;
+
+        uint256 totalIndicies = indices.length;
+
+        // If no indices provided, return empty
+        if (totalIndicies == 0) {
+            return (redemptions, totalRedemptions);
+        }
+
+        // Initialize an array for the redemption requests with the final required size
+        redemptions = new RedemptionRequestExt[](totalIndicies);
+
+        for (uint256 i = 0; i < totalIndicies; i++) {
+            uint256 index;
+            index = indices[i];
+
+            // Ensure index is within bounds before fetching redemption
+            require(index < totalRedemptions, "Index out of bounds");
+            redemptions[i] = _extRedemptionRequests[account][index];
+        }
+
+        return (redemptions, totalRedemptions);
+    }
+
 }

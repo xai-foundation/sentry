@@ -209,7 +209,7 @@ export function RedEnvelope2024() {
 										<div className="mt-6 mb-6">
 											<a
 												className="twitter-share-button"
-												href="https://twitter.com/intent/tweet?text=Xai is a modular execution layer for game logic built on the Arbitrum Orbit stack to facilitate the onboarding of millions of gamers. And now they’re airdropping $XAI to Sentry Node Key holders to celebrate the Year of the Dragon. 🐉🧧"
+												href="https://twitter.com/intent/tweet?text=Xai is a modular execution layer for game logic built on the Arbitrum Orbit stack to facilitate the onboarding of millions of gamers. And now they’re airdropping $XAI to Sentry Key holders to celebrate the Year of the Dragon. 🐉🧧"
 												target="_blank"
 												rel="noopener noreferrer"
 												data-size="large"

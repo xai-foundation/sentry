@@ -21,7 +21,7 @@ export default function SidebarComponent() {
   }, []);
 
   return (
-    <div className="sticky bg-transparent top-0 flex h-screen w-[245px] flex-col justify-between">
+    <div className="sticky bg-transparent top-0 flex h-screen w-[245px] sm:[w-screen] flex-col justify-between">
       {/* Add your sidebar content here */}
       <div>
         <Link

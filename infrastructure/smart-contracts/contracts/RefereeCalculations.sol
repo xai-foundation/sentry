@@ -271,4 +271,45 @@ contract RefereeCalculations is Initializable, AccessControlUpgradeable {
         confirmHash = keccak256(abi.encodePacked(confirmData));
     }
 
+        /**
+     * @notice Takes in a string and converts it to an address if valid, otherwise returns the zero address
+     * @param _address The string that is a potential address to validate and convert
+     * @return The address if valid, otherwise the zero address
+     */
+    function validateAndConvertAddress(string memory _address) public pure returns (address) {
+        bytes memory addrBytes = bytes(_address);
+
+        // Check if the length is 42 characters
+        if (addrBytes.length != 42) {
+            return address(0);
+        }
+
+        // Check if it starts with '0x'
+        if (addrBytes[0] != '0' || addrBytes[1] != 'x') {
+            return address(0);
+        }
+
+        uint160 addr = 0;
+
+        // Convert and validate each character
+        for (uint i = 2; i < 42; i++) {
+            uint8 b = uint8(addrBytes[i]);
+            if (b >= 48 && b <= 57) {
+                // '0' to '9'
+                addr = addr * 16 + (b - 48);
+            } else if (b >= 97 && b <= 102) {
+                // 'a' to 'f'
+                addr = addr * 16 + (b - 87);
+            } else if (b >= 65 && b <= 70) {
+                // 'A' to 'F'
+                addr = addr * 16 + (b - 55);
+            } else {
+                // Invalid character found
+                return address(0);
+            }
+        }
+
+        return address(addr);
+    }
+
 }

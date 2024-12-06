@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { ethers } from 'ethers';
 import { XaiAbi, NodeLicenseAbi, config } from "@sentry/core";
-import { Abi } from 'viem';
 import { CURRENCIES, Currency, getTokenAddress } from '../shared';
 
 interface UseContractWritesProps {
@@ -46,7 +45,7 @@ export function useContractWrites({
 
   const mintWithEthConfig = {
     address: config.nodeLicenseAddress as `0x${string}`,
-    abi: NodeLicenseAbi as Abi,
+    abi: NodeLicenseAbi,
     functionName: "mint",
     args: [quantity, promoCode],
     value: calculateTotalPrice(),
@@ -64,7 +63,7 @@ export function useContractWrites({
 
   const approveConfig = {
     address: tokenAddress as `0x${string}`,
-    abi: XaiAbi as Abi,
+    abi: XaiAbi,
     functionName: "approve",
     args: [spender, maxAllowanceAmount],
     onSuccess: (data: `0x${string}`) => {
@@ -78,7 +77,7 @@ export function useContractWrites({
 
   const mintWithXaiConfig = {
     address: config.nodeLicenseAddress as `0x${string}`,
-    abi: NodeLicenseAbi as Abi,
+    abi: NodeLicenseAbi,
     functionName: "mintWithXai",
     args: [quantity, promoCode, useEsXai, calculateTotalPrice()],
     onSuccess: (data: `0x${string}`) => {

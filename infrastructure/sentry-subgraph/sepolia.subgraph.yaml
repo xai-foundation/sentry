@@ -8,9 +8,9 @@ dataSources:
     name: Referee
     network: arbitrum-sepolia
     source:
-      address: "0xF84D76755a68bE9DFdab9a0b6d934896Ceab957b"
+      address: "0x4be052206043a564206911657DeC698c6d24478C"
       abi: Referee
-      startBlock: 26974804
+      startBlock: 100245782
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -57,9 +57,9 @@ dataSources:
     name: NodeLicense
     network: arbitrum-sepolia
     source:
-      address: "0x07C05C6459B0F86A6aBB3DB71C259595d22af3C2"
+      address: "0x89F99fE730149B1f1a7cA1E24102F3f7A6E2E98D"
       abi: NodeLicense
-      startBlock: 15609970
+      startBlock: 100245782
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -77,9 +77,9 @@ dataSources:
     name: PoolFactory
     network: arbitrum-sepolia
     source:
-      address: "0x87Ae2373007C01FBCED0dCCe4a23CA3f17D1fA9A"
+      address: "0x79094A209e4c7AF288F9E4BD6fa32f7cc74740c9"
       abi: PoolFactory
-      startBlock: 26975569
+      startBlock: 100245782
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -114,14 +114,26 @@ dataSources:
           handler: handleClaimFromPool
         - event: UpdateDelayPeriods()
           handler: handleUpdateDelayPeriods
+        - event: StakeKeysV2(indexed address,indexed address,uint256,uint256,uint256,uint256[])
+          handler: handleStakeKeysV2
+        - event: UnstakeKeysV2(indexed address,indexed address,uint256,uint256,uint256,uint256,uint256[])
+          handler: handleUnstakeKeysV2
+        - event: PoolCreatedV2(indexed uint256,indexed address,indexed address,uint256,address,uint256[],uint32[3],string[3],string[])
+          handler: handlePoolCreatedV2
+        - event: UnstakeEsXaiV2(indexed address,indexed address,uint256,uint256,uint256,uint256)
+          handler: handleUnstakeEsXaiV2
+        - event: UpdateMetadataV2(indexed address,string[3],string[])
+          handler: handleUpdateMetadataV2
+        - event: UpdateSharesV2(indexed address,uint32[3])
+          handler: handleUpdatePendingSharesV2
       file: ./src/pool-factory.ts
   - kind: ethereum
     name: Xai
     network: arbitrum-sepolia
     source:
-      address: "0x724E98F16aC707130664bb00F4397406F74732D0"
+      address: "0x7C46a2f269ca1563B0Fc4a414999F31B62F9836A"
       abi: Xai
-      startBlock: 26975569
+      startBlock: 100245782
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -139,9 +151,9 @@ dataSources:
     name: Rollup
     network: arbitrum-sepolia
     source:
-      address: "0xC47DacFbAa80Bd9D8112F4e8069482c2A3221336" #TODO: change to sepolia rollup address when deployed in a later ticket
+      address: "0xcC071a98113e1968b21730Ef7d65553a10f71FdC"
       abi: Rollup
-      startBlock: 169689813 #TODO: change to deploy block number when rollup contract is deployed in a later ticket
+      startBlock: 100245782
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.7
@@ -155,23 +167,3 @@ dataSources:
         - event: NodeConfirmed(indexed uint64,bytes32,bytes32)
           handler: handleNodeConfirmed
       file: ./src/referee.ts
-  - kind: ethereum
-    name: TinyKeysAirdrop
-    network: arbitrum-sepolia
-    source:
-      address: "0xA65E7524b4714d1BB3208aEd9e9fC666806148a5"
-      abi: TinyKeysAirdrop
-      startBlock: 62587483
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.7
-      language: wasm/assemblyscript
-      entities:
-        - AirdropSegmentCompleteEvent
-      abis:
-        - name: TinyKeysAirdrop
-          file: ./abis/TinyKeysAirdrop.json
-      eventHandlers:
-        - event: AirdropSegmentStakeComplete(indexed address,indexed address,uint256,uint256)
-          handler: handleAirdropStakeSegmentComplete
-      file: ./src/tiny-keys-airdrop.ts

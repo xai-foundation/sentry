@@ -23,14 +23,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <QueryClientProvider client={queryClient}>
         <Helmet>
           <meta name="title" property="og:title" content="Xai Sentry Node" />
-          <meta name="description" property="og:description" content="Xai Sentry Node Key Sale Page" />
+          <meta name="description" property="og:description" content="Xai Sentry Key Sale Page" />
           <meta name="image" property="og:image" content={xaiThumbnail} />
           <meta name="url" property="og:url" content="https://sentry.xai.games" />
           <meta name="type" property="og:type" content="website" />
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:site" content="https://sentry.xai.games" />
           <meta name="twitter:title" content="Xai Sentry Node" />
-          <meta name="twitter:description" content="Xai Sentry Node Key Sale Page" />
+          <meta name="twitter:description" content="Xai Sentry Key Sale Page" />
           <meta name="twitter:image" content={xaiThumbnail} />
           <meta name="twitter:creator" content="@xai_games" />
           <base href={window.location.origin} />

@@ -56,11 +56,11 @@ export default function StakingKeysDetailComponent({
         unstakeCount -= 1;
       }
     }
-    return Math.min(100, unstakeCount);
+    return Math.min(200, unstakeCount);
   }
 
   const getMaxKeysForStake = (): number => {
-    return Math.min(100, unstakedKeyCount, maxKeyPerPool - userPool.keyCount)
+    return Math.min(200, unstakedKeyCount, maxKeyPerPool - userPool.keyCount)
   }
 
   const isInvalidInput = () => {
@@ -180,7 +180,7 @@ export default function StakingKeysDetailComponent({
                     label={unstakeKey ? "You unstake" : "You stake"}
                     currencyLabel={Number(inputValue) === 1 ? StakingInputCurrency.SENTRY_KEY : StakingInputCurrency.SENTRY_KEYS}
                     onChange={handleChange}
-                    error={isInvalidInput() ? { message: Number(inputValue) > 100 ? "Invalid amount" : "Not enough keys" } : {}}
+                    error={isInvalidInput() ? { message: Number(inputValue) > 200 ? "Max 200 Keys per tx" : "Not enough keys" } : {}}
                     availableCurrency={(unstakeKey ? getMaxKeysForUnstake() : getMaxKeysForStake()) === 1 ? "key" : "keys"}
                     availableBalance={unstakeKey ? getMaxKeysForUnstake() : getMaxKeysForStake()}
                     handleMaxValue={() =>

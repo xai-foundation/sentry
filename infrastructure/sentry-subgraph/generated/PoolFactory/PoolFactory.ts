@@ -80,6 +80,56 @@ export class PoolCreated__Params {
   }
 }
 
+export class PoolCreatedV2 extends ethereum.Event {
+  get params(): PoolCreatedV2__Params {
+    return new PoolCreatedV2__Params(this);
+  }
+}
+
+export class PoolCreatedV2__Params {
+  _event: PoolCreatedV2;
+
+  constructor(event: PoolCreatedV2) {
+    this._event = event;
+  }
+
+  get poolIndex(): BigInt {
+    return this._event.parameters[0].value.toBigInt();
+  }
+
+  get poolAddress(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get poolOwner(): Address {
+    return this._event.parameters[2].value.toAddress();
+  }
+
+  get stakedKeyCount(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+
+  get delegateAddress(): Address {
+    return this._event.parameters[4].value.toAddress();
+  }
+
+  get keyIds(): Array<BigInt> {
+    return this._event.parameters[5].value.toBigIntArray();
+  }
+
+  get shareConfig(): Array<BigInt> {
+    return this._event.parameters[6].value.toBigIntArray();
+  }
+
+  get poolMetadata(): Array<string> {
+    return this._event.parameters[7].value.toStringArray();
+  }
+
+  get poolSocials(): Array<string> {
+    return this._event.parameters[8].value.toStringArray();
+  }
+}
+
 export class PoolProxyDeployerUpdated extends ethereum.Event {
   get params(): PoolProxyDeployerUpdated__Params {
     return new PoolProxyDeployerUpdated__Params(this);
@@ -248,6 +298,44 @@ export class StakeKeys__Params {
   }
 }
 
+export class StakeKeysV2 extends ethereum.Event {
+  get params(): StakeKeysV2__Params {
+    return new StakeKeysV2__Params(this);
+  }
+}
+
+export class StakeKeysV2__Params {
+  _event: StakeKeysV2;
+
+  constructor(event: StakeKeysV2) {
+    this._event = event;
+  }
+
+  get user(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get pool(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get amount(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+
+  get totalUserKeysStaked(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+
+  get totalKeysStaked(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+
+  get keyIds(): Array<BigInt> {
+    return this._event.parameters[5].value.toBigIntArray();
+  }
+}
+
 export class StakingEnabled extends ethereum.Event {
   get params(): StakingEnabled__Params {
     return new StakingEnabled__Params(this);
@@ -296,6 +384,44 @@ export class UnstakeEsXai__Params {
   }
 }
 
+export class UnstakeEsXaiV2 extends ethereum.Event {
+  get params(): UnstakeEsXaiV2__Params {
+    return new UnstakeEsXaiV2__Params(this);
+  }
+}
+
+export class UnstakeEsXaiV2__Params {
+  _event: UnstakeEsXaiV2;
+
+  constructor(event: UnstakeEsXaiV2) {
+    this._event = event;
+  }
+
+  get user(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get pool(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get amount(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+
+  get totalUserEsXaiStaked(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+
+  get totalEsXaiStaked(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+
+  get requestIndex(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+}
+
 export class UnstakeKeys extends ethereum.Event {
   get params(): UnstakeKeys__Params {
     return new UnstakeKeys__Params(this);
@@ -327,6 +453,48 @@ export class UnstakeKeys__Params {
 
   get totalKeysStaked(): BigInt {
     return this._event.parameters[4].value.toBigInt();
+  }
+}
+
+export class UnstakeKeysV2 extends ethereum.Event {
+  get params(): UnstakeKeysV2__Params {
+    return new UnstakeKeysV2__Params(this);
+  }
+}
+
+export class UnstakeKeysV2__Params {
+  _event: UnstakeKeysV2;
+
+  constructor(event: UnstakeKeysV2) {
+    this._event = event;
+  }
+
+  get user(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get pool(): Address {
+    return this._event.parameters[1].value.toAddress();
+  }
+
+  get amount(): BigInt {
+    return this._event.parameters[2].value.toBigInt();
+  }
+
+  get totalUserKeysStaked(): BigInt {
+    return this._event.parameters[3].value.toBigInt();
+  }
+
+  get totalKeysStaked(): BigInt {
+    return this._event.parameters[4].value.toBigInt();
+  }
+
+  get requestIndex(): BigInt {
+    return this._event.parameters[5].value.toBigInt();
+  }
+
+  get keyIds(): Array<BigInt> {
+    return this._event.parameters[6].value.toBigIntArray();
   }
 }
 
@@ -396,6 +564,32 @@ export class UpdateMetadata__Params {
   }
 }
 
+export class UpdateMetadataV2 extends ethereum.Event {
+  get params(): UpdateMetadataV2__Params {
+    return new UpdateMetadataV2__Params(this);
+  }
+}
+
+export class UpdateMetadataV2__Params {
+  _event: UpdateMetadataV2;
+
+  constructor(event: UpdateMetadataV2) {
+    this._event = event;
+  }
+
+  get pool(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get poolMetadata(): Array<string> {
+    return this._event.parameters[1].value.toStringArray();
+  }
+
+  get poolSocials(): Array<string> {
+    return this._event.parameters[2].value.toStringArray();
+  }
+}
+
 export class UpdatePoolDelegate extends ethereum.Event {
   get params(): UpdatePoolDelegate__Params {
     return new UpdatePoolDelegate__Params(this);
@@ -436,6 +630,28 @@ export class UpdateShares__Params {
   }
 }
 
+export class UpdateSharesV2 extends ethereum.Event {
+  get params(): UpdateSharesV2__Params {
+    return new UpdateSharesV2__Params(this);
+  }
+}
+
+export class UpdateSharesV2__Params {
+  _event: UpdateSharesV2;
+
+  constructor(event: UpdateSharesV2) {
+    this._event = event;
+  }
+
+  get pool(): Address {
+    return this._event.parameters[0].value.toAddress();
+  }
+
+  get shareConfig(): Array<BigInt> {
+    return this._event.parameters[1].value.toBigIntArray();
+  }
+}
+
 export class PoolFactory extends ethereum.SmartContract {
   static bind(address: Address): PoolFactory {
     return new PoolFactory("PoolFactory", address);
@@ -455,6 +671,29 @@ export class PoolFactory extends ethereum.SmartContract {
     let result = super.tryCall(
       "DEFAULT_ADMIN_ROLE",
       "DEFAULT_ADMIN_ROLE():(bytes32)",
+      [],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBytes());
+  }
+
+  STAKE_KEYS_ADMIN_ROLE(): Bytes {
+    let result = super.call(
+      "STAKE_KEYS_ADMIN_ROLE",
+      "STAKE_KEYS_ADMIN_ROLE():(bytes32)",
+      [],
+    );
+
+    return result[0].toBytes();
+  }
+
+  try_STAKE_KEYS_ADMIN_ROLE(): ethereum.CallResult<Bytes> {
+    let result = super.tryCall(
+      "STAKE_KEYS_ADMIN_ROLE",
+      "STAKE_KEYS_ADMIN_ROLE():(bytes32)",
       [],
     );
     if (result.reverted) {
@@ -548,6 +787,25 @@ export class PoolFactory extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toAddress());
+  }
+
+  failedKyc(param0: Address): boolean {
+    let result = super.call("failedKyc", "failedKyc(address):(bool)", [
+      ethereum.Value.fromAddress(param0),
+    ]);
+
+    return result[0].toBoolean();
+  }
+
+  try_failedKyc(param0: Address): ethereum.CallResult<boolean> {
+    let result = super.tryCall("failedKyc", "failedKyc(address):(bool)", [
+      ethereum.Value.fromAddress(param0),
+    ]);
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
   getDelegatePools(delegate: Address): Array<Address> {
@@ -758,6 +1016,29 @@ export class PoolFactory extends ethereum.SmartContract {
       "getRoleMemberCount",
       "getRoleMemberCount(bytes32):(uint256)",
       [ethereum.Value.fromFixedBytes(role)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  getTotalesXaiStakedByUser(user: Address): BigInt {
+    let result = super.call(
+      "getTotalesXaiStakedByUser",
+      "getTotalesXaiStakedByUser(address):(uint256)",
+      [ethereum.Value.fromAddress(user)],
+    );
+
+    return result[0].toBigInt();
+  }
+
+  try_getTotalesXaiStakedByUser(user: Address): ethereum.CallResult<BigInt> {
+    let result = super.tryCall(
+      "getTotalesXaiStakedByUser",
+      "getTotalesXaiStakedByUser(address):(uint256)",
+      [ethereum.Value.fromAddress(user)],
     );
     if (result.reverted) {
       return new ethereum.CallResult();
@@ -1063,6 +1344,29 @@ export class PoolFactory extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toBoolean());
   }
 
+  totalEsXaiStakeCalculated(param0: Address): boolean {
+    let result = super.call(
+      "totalEsXaiStakeCalculated",
+      "totalEsXaiStakeCalculated(address):(bool)",
+      [ethereum.Value.fromAddress(param0)],
+    );
+
+    return result[0].toBoolean();
+  }
+
+  try_totalEsXaiStakeCalculated(param0: Address): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      "totalEsXaiStakeCalculated",
+      "totalEsXaiStakeCalculated(address):(bool)",
+      [ethereum.Value.fromAddress(param0)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+
   unstakeEsXaiDelayPeriod(): BigInt {
     let result = super.call(
       "unstakeEsXaiDelayPeriod",
@@ -1179,6 +1483,62 @@ export class PoolFactory extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(value[0].toBigInt());
+  }
+
+  validateSubmitPoolAssertion(pool: Address, user: Address): boolean {
+    let result = super.call(
+      "validateSubmitPoolAssertion",
+      "validateSubmitPoolAssertion(address,address):(bool)",
+      [ethereum.Value.fromAddress(pool), ethereum.Value.fromAddress(user)],
+    );
+
+    return result[0].toBoolean();
+  }
+
+  try_validateSubmitPoolAssertion(
+    pool: Address,
+    user: Address,
+  ): ethereum.CallResult<boolean> {
+    let result = super.tryCall(
+      "validateSubmitPoolAssertion",
+      "validateSubmitPoolAssertion(address,address):(bool)",
+      [ethereum.Value.fromAddress(pool), ethereum.Value.fromAddress(user)],
+    );
+    if (result.reverted) {
+      return new ethereum.CallResult();
+    }
+    let value = result.value;
+    return ethereum.CallResult.fromValue(value[0].toBoolean());
+  }
+}
+
+export class CalculateUserTotalStakeCall extends ethereum.Call {
+  get inputs(): CalculateUserTotalStakeCall__Inputs {
+    return new CalculateUserTotalStakeCall__Inputs(this);
+  }
+
+  get outputs(): CalculateUserTotalStakeCall__Outputs {
+    return new CalculateUserTotalStakeCall__Outputs(this);
+  }
+}
+
+export class CalculateUserTotalStakeCall__Inputs {
+  _call: CalculateUserTotalStakeCall;
+
+  constructor(call: CalculateUserTotalStakeCall) {
+    this._call = call;
+  }
+
+  get users(): Array<Address> {
+    return this._call.inputValues[0].value.toAddressArray();
+  }
+}
+
+export class CalculateUserTotalStakeCall__Outputs {
+  _call: CalculateUserTotalStakeCall;
+
+  constructor(call: CalculateUserTotalStakeCall) {
+    this._call = call;
   }
 }
 
@@ -1436,6 +1796,10 @@ export class InitializeCall__Inputs {
   constructor(call: InitializeCall) {
     this._call = call;
   }
+
+  get version(): i32 {
+    return this._call.inputValues[0].value.toI32();
+  }
 }
 
 export class InitializeCall__Outputs {
@@ -1514,6 +1878,70 @@ export class RevokeRoleCall__Outputs {
   }
 }
 
+export class RevokeStakeKeysAdminRoleCall extends ethereum.Call {
+  get inputs(): RevokeStakeKeysAdminRoleCall__Inputs {
+    return new RevokeStakeKeysAdminRoleCall__Inputs(this);
+  }
+
+  get outputs(): RevokeStakeKeysAdminRoleCall__Outputs {
+    return new RevokeStakeKeysAdminRoleCall__Outputs(this);
+  }
+}
+
+export class RevokeStakeKeysAdminRoleCall__Inputs {
+  _call: RevokeStakeKeysAdminRoleCall;
+
+  constructor(call: RevokeStakeKeysAdminRoleCall) {
+    this._call = call;
+  }
+
+  get account(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+}
+
+export class RevokeStakeKeysAdminRoleCall__Outputs {
+  _call: RevokeStakeKeysAdminRoleCall;
+
+  constructor(call: RevokeStakeKeysAdminRoleCall) {
+    this._call = call;
+  }
+}
+
+export class SetFailedKycCall extends ethereum.Call {
+  get inputs(): SetFailedKycCall__Inputs {
+    return new SetFailedKycCall__Inputs(this);
+  }
+
+  get outputs(): SetFailedKycCall__Outputs {
+    return new SetFailedKycCall__Outputs(this);
+  }
+}
+
+export class SetFailedKycCall__Inputs {
+  _call: SetFailedKycCall;
+
+  constructor(call: SetFailedKycCall) {
+    this._call = call;
+  }
+
+  get user(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get failed(): boolean {
+    return this._call.inputValues[1].value.toBoolean();
+  }
+}
+
+export class SetFailedKycCall__Outputs {
+  _call: SetFailedKycCall;
+
+  constructor(call: SetFailedKycCall) {
+    this._call = call;
+  }
+}
+
 export class StakeEsXaiCall extends ethereum.Call {
   get inputs(): StakeEsXaiCall__Inputs {
     return new StakeEsXaiCall__Inputs(this);
@@ -1578,6 +2006,44 @@ export class StakeKeysCall__Outputs {
   _call: StakeKeysCall;
 
   constructor(call: StakeKeysCall) {
+    this._call = call;
+  }
+}
+
+export class StakeKeysAdminCall extends ethereum.Call {
+  get inputs(): StakeKeysAdminCall__Inputs {
+    return new StakeKeysAdminCall__Inputs(this);
+  }
+
+  get outputs(): StakeKeysAdminCall__Outputs {
+    return new StakeKeysAdminCall__Outputs(this);
+  }
+}
+
+export class StakeKeysAdminCall__Inputs {
+  _call: StakeKeysAdminCall;
+
+  constructor(call: StakeKeysAdminCall) {
+    this._call = call;
+  }
+
+  get pool(): Address {
+    return this._call.inputValues[0].value.toAddress();
+  }
+
+  get keyIds(): Array<BigInt> {
+    return this._call.inputValues[1].value.toBigIntArray();
+  }
+
+  get staker(): Address {
+    return this._call.inputValues[2].value.toAddress();
+  }
+}
+
+export class StakeKeysAdminCall__Outputs {
+  _call: StakeKeysAdminCall;
+
+  constructor(call: StakeKeysAdminCall) {
     this._call = call;
   }
 }

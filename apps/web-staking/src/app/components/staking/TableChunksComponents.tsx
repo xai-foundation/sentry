@@ -193,17 +193,20 @@ export function TableRowCapacity({
               </div>
               <div className={`w-full sm:max-w-[90%] lg:max-w-[50%] mt-1 ${progressClass}`}>
                 <Progress
-                    size="sm"
-                    radius="none"
-                    aria-labelledby="progress"
-                    value={
-                      showTableKeys
-                          ? (pool.keyCount / maxKeyPerPool) * 100 ?? 0
-                          : (pool.totalStakedAmount / pool.maxStakedAmount) * 100 ?? 0
-                    }
-                    classNames={{
-                      indicator: "bg-white"
-                    }}
+                  size="sm"
+                  radius="none"
+                  aria-labelledby="progress"
+                  value={
+                    showTableKeys
+                    ? (maxKeyPerPool ? (pool.keyCount / maxKeyPerPool) * 100 : 0)
+                    : (pool.maxStakedAmount ? (pool.totalStakedAmount / pool.maxStakedAmount) * 100 : 0)
+                  }
+                  classNames={{
+                    track: "!bg-[#201C1C]",
+                    indicator: "!bg-[#F7F6F6] h-[6px]"
+                  }}
+                  aria-label="Staking progress"
+                  showValueLabel={false}
                 />
               </div>
             </div>

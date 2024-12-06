@@ -4,7 +4,7 @@ import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 /**
  * PricePerKeyRow Component
  * 
- * This component renders pricing information for Xai Sentry Node Keys.
+ * This component renders pricing information for Xai Sentry Keys.
  * It displays the quantity, total price, and price per key for each pricing tier.
  * It uses the WebBuyKeysContext to access shared state and functions.
  * 
@@ -33,7 +33,7 @@ export function PricePerKeyRow(): JSX.Element | null {
                         <div className="flex sm:flex-col lg:flex-row items-center justify-between text-xl">
                             {/* Quantity display */}
                             <div className="flex flex-row items-center gap-2 text-elementalGrey font-semibold">
-                                <span className="">{item.quantity.toString()} x Xai Sentry Node Key</span>
+                                <span className="">{item.quantity.toString()} x Xai Sentry Key</span>
                             </div>
                             {/* Price per key (mobile view) */}
                             <p className="text-base text-elementalGrey mb-4 sm:block lg:hidden">

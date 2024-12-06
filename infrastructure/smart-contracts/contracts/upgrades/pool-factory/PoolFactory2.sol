@@ -136,6 +136,17 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         address indexed poolOwner,
         uint256 stakedKeyCount
     );
+    event PoolCreatedV2(
+        uint256 indexed poolIndex,
+        address indexed poolAddress,
+        address indexed poolOwner,
+        uint256 stakedKeyCount,
+        address delegateAddress,
+        uint256[] keyIds,
+        uint32[3] shareConfig,
+        string[3] poolMetadata,
+        string[] poolSocials
+    );
     event StakeEsXai(
         address indexed user,
         address indexed pool,
@@ -150,12 +161,28 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 totalUserEsXaiStaked,
         uint256 totalEsXaiStaked
     );
+    event UnstakeEsXaiV2(
+        address indexed user,
+        address indexed pool,
+        uint256 amount,
+        uint256 totalUserEsXaiStaked,
+        uint256 totalEsXaiStaked,
+        uint256 requestIndex
+    );
     event StakeKeys(
         address indexed user,
         address indexed pool,
         uint256 amount,
         uint256 totalUserKeysStaked,
         uint256 totalKeysStaked
+    );
+    event StakeKeysV2(
+        address indexed user,
+        address indexed pool,
+        uint256 amount,
+        uint256 totalUserKeysStaked,
+        uint256 totalKeysStaked,
+        uint256[] keyIds
     );
     event UnstakeKeys(
         address indexed user,
@@ -164,11 +191,22 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 totalUserKeysStaked,
         uint256 totalKeysStaked
     );
+    event UnstakeKeysV2(
+        address indexed user,
+        address indexed pool,
+        uint256 amount,
+        uint256 totalUserKeysStaked,
+        uint256 totalKeysStaked,
+        uint256 requestIndex,
+        uint256[] keyIds
+    );
 
     event ClaimFromPool(address indexed user, address indexed pool);
     event UpdatePoolDelegate(address indexed delegate, address indexed pool);
     event UpdateShares(address indexed pool);
+    event UpdateSharesV2(address indexed pool, uint32[3] shareConfig);
     event UpdateMetadata(address indexed pool);
+    event UpdateMetadataV2(address indexed pool, string[3] poolMetadata, string[] poolSocials);
 
     event UnstakeRequestStarted(
         address indexed user,
@@ -316,6 +354,18 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
             msg.sender,
             _keyIds.length
         );
+
+        emit PoolCreatedV2(
+            stakingPools.length - 1,
+            poolProxy,
+            msg.sender,
+            _keyIds.length,
+            _delegateOwner,
+            _keyIds,
+            _shareConfig,
+            _poolMetadata,
+            _poolSocials
+        );
     }
 
     /**
@@ -334,6 +384,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         require(stakingPool.getPoolOwner() == msg.sender, "5"); // Only pool owner can update metadata
         stakingPool.updateMetadata(_poolMetadata, _poolSocials);
         emit UpdateMetadata(pool);
+        emit UpdateMetadataV2(pool, _poolMetadata, _poolSocials);
     }
 
     /**
@@ -356,6 +407,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
             updateRewardBreakdownDelayPeriod
         );
         emit UpdateShares(pool);
+        emit UpdateSharesV2(pool, _shareConfig);
     }
 
     /**
@@ -424,8 +476,8 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         bool _asAdmin
     ) internal {
         Referee10 referee = Referee10(refereeAddress);
-        require(_asAdmin || referee.stakingEnabled(), "52");
         
+        // The Referee will check for stakingEnabled and will only allow the admin to stake if staking is disabled
         referee.stakeKeys(pool, staker, keyIds, _asAdmin);
 
         StakingPool stakingPool = StakingPool(pool);
@@ -439,6 +491,15 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
             keyIds.length,
             stakingPool.getStakedKeysCountForUser(staker),
             stakingPool.getStakedKeysCount()
+        );
+
+        emit StakeKeysV2(
+            staker,
+            pool,
+            keyIds.length,
+            stakingPool.getStakedKeysCountForUser(staker),
+            stakingPool.getStakedKeysCount(),
+            keyIds
         );
     }
 
@@ -566,6 +627,8 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         Referee10(refereeAddress).unstakeKeys(pool, msg.sender, keyIds);
 
         StakingPool stakingPool = StakingPool(pool);
+        
+        // The Referee will check for stakingEnabled and will only allow the admin to stake if staking is disabled
         stakingPool.unstakeKeys(msg.sender, unstakeRequestIndex, keyIds);
 
         if (!stakingPool.isUserEngagedWithPool(msg.sender)) {
@@ -578,6 +641,16 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
             keyIds.length,
             stakingPool.getStakedKeysCountForUser(msg.sender),
             stakingPool.getStakedKeysCount()
+        );
+
+        emit UnstakeKeysV2(
+            msg.sender,
+            pool,
+            keyIds.length,
+            stakingPool.getStakedKeysCountForUser(msg.sender),
+            stakingPool.getStakedKeysCount(),
+            unstakeRequestIndex,
+            keyIds
         );
     }
 
@@ -658,6 +731,15 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
             amount,
             stakingPool.getStakedAmounts(msg.sender),
             Referee10(refereeAddress).stakedAmounts(pool)
+        );
+
+        emit UnstakeEsXaiV2(
+            msg.sender,
+            pool,
+            amount,
+            stakingPool.getStakedAmounts(msg.sender),
+            Referee10(refereeAddress).stakedAmounts(pool),
+            unstakeRequestIndex
         );
     }
 

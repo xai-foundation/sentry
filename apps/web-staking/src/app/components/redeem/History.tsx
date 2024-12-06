@@ -16,7 +16,7 @@ import { MODAL_BODY_TEXT } from "./Constants";
 import { WriteFunctions, executeContractWrite } from "@/services/web3.writes";
 import { BaseModal, PrimaryButton } from "@/app/components/ui";
 import { TextButton } from "@/app/components/ui/buttons";
-import { useBlockIp } from "@/app/hooks";
+import { useBlockIp, useGetKYCApprovedForRedemptionClaim } from "@/app/hooks";
 import { listOfCountries } from "../constants/constants";
 import { RedemptionRequest } from "@/services/redemptions.service";
 import useGetRedemptions from "@/app/hooks/useGetRedemptions";
@@ -152,7 +152,7 @@ export default function History() {
     const [isOpen, setIsOpen] = useState<boolean>(false);
 	
 	// Comment out for #188413859 / #188457183, needs to go back in post contract upgrade (for reference search for story id)
-	// const { isApproved } = useGetKYCApprovedForRedemptionClaim();
+	const { isApproved } = useGetKYCApprovedForRedemptionClaim();
 	const { loading } = useBlockIp();
 	const { chainId } = useAccount();	
 	const { redemptions, loadRedemptions, redemptionsLoading } = useGetRedemptions();
@@ -192,10 +192,10 @@ export default function History() {
 
 	const onClaim = async (redemption: RedemptionRequest) => {
 		// Comment out for #188413859 / #188457183, needs to go back in post contract upgrade (for reference search for story id)
-		// if(!isApproved) {
-		// 	setShowKYCModal(true);
-		// 	return
-		// }
+		if(!isApproved) {
+			setShowKYCModal(true);
+			return
+		}
 		setIsCancel(false);
 		setLoadingIndex(redemption.index);
 		toastId.current = loadingNotification("Transaction is pending...");
