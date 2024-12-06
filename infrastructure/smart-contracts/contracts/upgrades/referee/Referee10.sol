@@ -1128,14 +1128,14 @@ contract Referee10 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     //TEST FUNCTION this is used only for test coverage
-    function toggleAssertionChecking() public {
-        isCheckingAssertions = !isCheckingAssertions;
-        emit AssertionCheckingToggled(isCheckingAssertions);
-    }
+    // function toggleAssertionChecking() public {
+    //     isCheckingAssertions = !isCheckingAssertions;
+    //     emit AssertionCheckingToggled(isCheckingAssertions);
+    // }
 
     //TEST FUNCTION this is used only for test coverage
-    function setRollupAddress(address newRollupAddress) public {
-        rollupAddress = newRollupAddress;
-        emit RollupAddressChanged(newRollupAddress);
-    }
+    // function setRollupAddress(address newRollupAddress) public {
+    //     rollupAddress = newRollupAddress;
+    //     emit RollupAddressChanged(newRollupAddress);
+    // }
 }

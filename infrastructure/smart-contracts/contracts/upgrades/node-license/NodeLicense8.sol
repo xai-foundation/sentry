@@ -888,6 +888,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         for(uint256 i; i < tokenIdsLength; i++){
             require(Referee10(refereeAddress).assignedKeyToPool(tokenIds[i]) == address(0), "Cannot transfer staked key");
             super.safeTransferFrom(msg.sender, to, tokenIds[i]);
+            Referee10(refereeAddress).updateBulkSubmissionOnTransfer(msg.sender, to, tokenIds[i]);
         }
         emit AdminTransferBatch(msg.sender, to, transferId, tokenIds);
     }
@@ -902,6 +903,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     ) public override onlyRole(TRANSFER_ROLE) {
         require(Referee10(refereeAddress).assignedKeyToPool(tokenId) == address(0), "Cannot transfer staked key");
         super.transferFrom(from, to, tokenId);
+        Referee10(refereeAddress).updateBulkSubmissionOnTransfer(from, to, tokenId);
     }
 
     /**
@@ -914,6 +916,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     ) public override onlyRole(TRANSFER_ROLE) {
         require(Referee10(refereeAddress).assignedKeyToPool(tokenId) == address(0), "Cannot transfer staked key");
         super.safeTransferFrom(from, to, tokenId);
+        Referee10(refereeAddress).updateBulkSubmissionOnTransfer(from, to, tokenId);
     }
 
     /**
@@ -927,14 +930,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     ) public override onlyRole(TRANSFER_ROLE) {
         require(Referee10(refereeAddress).assignedKeyToPool(tokenId) == address(0), "Cannot transfer staked key");
         super.safeTransferFrom(from, to, tokenId, data);
+        Referee10(refereeAddress).updateBulkSubmissionOnTransfer(from, to, tokenId);
     }
-	
-	function _afterTokenTransfer(address from, address to, uint256 firstTokenId, uint256 batchSize) override internal {
-        // Call the parent function
-        super._afterTokenTransfer(from, to, firstTokenId, batchSize);
-
-        Referee10(refereeAddress).updateBulkSubmissionOnTransfer(from, to, firstTokenId);
-    }
-
 
 }
