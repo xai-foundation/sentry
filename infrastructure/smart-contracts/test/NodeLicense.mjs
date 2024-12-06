@@ -148,7 +148,7 @@ export function NodeLicenseTests(deployInfrastructure) {
             await nodeLicense.connect(addr2).mint(1, promoCode, { value: price });
 
             // Try to claim the referral reward
-            await expect(nodeLicense.connect(addr1).claimReferralReward()).to.be.revertedWith("Claiming of referral rewards is currently disabled");
+            await expect(nodeLicense.connect(addr1).claimReferralReward()).to.be.revertedWithCustomError(nodeLicense, "ClaimingPaused");
 
             // Enable claiming of referral rewards
             await nodeLicense.connect(nodeLicenseDefaultAdmin).setClaimable(true);
@@ -566,7 +566,7 @@ export function NodeLicenseTests(deployInfrastructure) {
             // Verify mintTo fails for maxSupply
             await expect(
                 nodeLicense.connect(nodeLicenseDefaultAdmin).adminMintTo(addr1.address, 10, sampleMintTxHash)
-            ).to.be.revertedWith("Exceeds maxSupply");
+            ).to.be.revertedWithCustomError(nodeLicense, "ExceedsMaxSupply");
 
             const totalSupplyAfter = await nodeLicense.totalSupply();
             expect(totalSupplyAfter).to.equal(totalSupply);
@@ -831,19 +831,19 @@ export function NodeLicenseTests(deployInfrastructure) {
             // Verify the key is assigned to the pool
             expect(await referee.assignedKeyToPool(mintedKeyId)).to.equal(stakingPoolAddress);
 
-            const expectedError = "Cannot transfer staked key"
+            const expectedError = "CannotTransferStakedKey"
             const testTxHash = "0xf63670b4dc0a1468cdf2a37758ea82907655809857c8e5a41cda697152cc7fa8"
             await expect(
                 nodeLicense.connect(addr1).adminTransferBatch(addr2.address, [mintedKeyId], testTxHash)
-            ).to.be.revertedWith(expectedError);
+            ).to.be.revertedWithCustomError(nodeLicense, expectedError);
 
             await expect(
                 nodeLicense.connect(addr1).safeTransferFrom(addr1.address, addr2.address, mintedKeyId)
-            ).to.be.revertedWith(expectedError);
+            ).to.be.revertedWithCustomError(nodeLicense, expectedError);
             
             await expect(
                 nodeLicense.connect(addr1).transferFrom(addr1.address, addr2.address, mintedKeyId)
-            ).to.be.revertedWith(expectedError);
+            ).to.be.revertedWithCustomError(nodeLicense, expectedError);
 
             // Check that balance remains unchanged
             const addr1Balance = await nodeLicense.balanceOf(addr1.address);
