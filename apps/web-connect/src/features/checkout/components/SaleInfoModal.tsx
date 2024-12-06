@@ -12,7 +12,7 @@ const SaleInfoModal = () => {
                     <p>Dec. 13th 11:00pm Buenos Aires, Argentina</p>
                     <p>Dec 14th 2:00am London, England (UTC)</p>
                     <p>Dec 14th 7:30am Mumbai, India</p>
-                    <p>Dec 14th 9:00am Seoul, South Korea</p>
+                    <p>Dec 14th 11:00am Seoul, South Korea</p>
                     <p>Dec 14th 10:00am Hong Kong</p>
                     <p>&#42; please note sale starts at the same time, just different time zones</p>
                 </div>
