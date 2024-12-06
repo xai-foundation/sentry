@@ -310,7 +310,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         address currency = _useEsXai ? esXaiAddress : xaiAddress;
         (uint256 referralReward, address recipientAddress)  = _calculateReferralReward(finalPrice, _promoCode, currency);
         
-        IERC20 token = IERC20(_useEsXai ? esXaiAddress : xaiAddress);
+        IERC20 token = IERC20(currency);
         token.transferFrom(msg.sender, address(this), finalPrice);
         token.transfer(fundsReceiver, finalPrice - referralReward);
 
@@ -431,6 +431,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * as a string to this function
      * @param _finalPrice The final cost of the minting
      * @param _promoCode The promo code used
+     * @param _currency The currency used for payment of the mint
      * @return A tuple containing the referral reward and an address with 0 address indicating the promo code was not an address
      */
     function _calculateReferralReward(uint256 _finalPrice, string memory _promoCode, address _currency) internal returns(uint256, address) {
