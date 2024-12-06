@@ -11,6 +11,7 @@ import { ActionSection } from "./components/ActionSection";
 import { BiLoaderAlt } from "react-icons/bi";
 import PurchaseSuccessful from "./components/PurchaseSuccessful";
 import { useWebBuyKeysContext } from './contexts/useWebBuyKeysContext';
+import SaleInfoModal from "@/features/checkout/components/SaleInfoModal";
 
 export const stakingPageURL = "https://app.xai.games/staking?modal=true&page=1&showKeys=true&hideFull=true&sort=tierIndex&sortOrder=-1";
 
@@ -59,6 +60,7 @@ export function Checkout() {
 
     return (
         <div>
+            <SaleInfoModal />
             <div className="h-full xl:min-h-screen flex-1 flex flex-col justify-center items-center">
                 {mintWithEth.isPending || mintWithXai.isPending || approve.isPending || mintWithCrossmint.isPending ? (
                     <TransactionInProgress />
