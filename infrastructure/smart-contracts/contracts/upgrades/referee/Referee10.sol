@@ -207,6 +207,8 @@ contract Referee10 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 amountClaimedByClaimers; // keep track of how much Xai has been claimed by the claimers, primarily used to expire unclaimed rewards 
     }
 
+    error CallerNotAuthorized();
+
     // Define events
     event ChallengeSubmitted(uint256 indexed challengeNumber);
     event ChallengeClosed(uint256 indexed challengeNumber);
@@ -750,6 +752,10 @@ contract Referee10 is Initializable, AccessControlEnumerableUpgradeable {
         require(stakedAmounts[msg.sender] >= amount, "41");
         esXai(esXaiAddress).transfer(msg.sender, amount);
         stakedAmounts[msg.sender] -= amount;
+        uint256 currentChallenge = challengeCounter - 1;
+        if(bulkSubmissions[currentChallenge][msg.sender].submitted){
+            _updateBulkAssertion(msg.sender, currentChallenge);
+        }
         emit UnstakeV1(msg.sender, amount, stakedAmounts[msg.sender]);
     }
 
@@ -1104,6 +1110,21 @@ contract Referee10 is Initializable, AccessControlEnumerableUpgradeable {
 				stakedAmount = assignedKeysToPoolCount[assignedPool] * maxStakeAmountPerLicense;
 			}
 		}
+    }
+
+    function updateBulkSubmissionOnTransfer(address from, address to) external {
+        if(msg.sender != nodeLicenseAddress) revert CallerNotAuthorized();
+
+        uint256 currentChallenge = challengeCounter == 0 ? 0 : challengeCounter - 1;  
+           // If the pool has submitted for the current challenge, update the pool bulk submission
+        if(bulkSubmissions[currentChallenge][from].submitted){
+            _updateBulkAssertion(from, currentChallenge);
+        }
+
+        // If the owner has submitted for the current challenge, update the owner bulk submission
+        if(bulkSubmissions[currentChallenge][to].submitted){
+            _updateBulkAssertion(to, currentChallenge);
+        }
     }
 
     //TEST FUNCTION this is used only for test coverage

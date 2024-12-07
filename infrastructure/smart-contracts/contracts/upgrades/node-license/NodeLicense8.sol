@@ -107,6 +107,10 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     error MintingPaused();
     error ExceedsMaxSupply();
     error ClaimingPaused();
+    error ReferrerCannotBeBuyer();
+    error CannotTransferStakedKey();
+    error TransferFailed();
+    error ReentrantCall();
 
     bytes32 public constant AIRDROP_ADMIN_ROLE = keccak256("AIRDROP_ADMIN_ROLE");
     bytes32 public constant ADMIN_MINT_ROLE = keccak256("ADMIN_MINT_ROLE");
@@ -185,7 +189,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     */
     
     modifier reentrancyGuardClaimReferralReward() {
-        require(!_reentrancyGuardClaimReferralReward, "Reentrancy guard: reentrant call");
+        if(_reentrancyGuardClaimReferralReward) revert ReentrantCall();
         _reentrancyGuardClaimReferralReward = true;
         _;
         _reentrancyGuardClaimReferralReward = false;
@@ -197,7 +201,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * @param _recipient The recipient address.
      */
     function createPromoCode(string calldata _promoCode, address _recipient) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(_recipient != address(0), "Recipient address cannot be zero");
+        if(_recipient == address(0)) revert InvalidAddress();
         require(_promoCodes[_promoCode].recipient == address(0), "Promo code already exists");
         require(bytes(_promoCode).length > 0, "Promo code cannot be empty");
         _promoCodes[_promoCode] = PromoCode(_recipient, true, 0);
@@ -276,12 +280,12 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         // Send the funds to the fundsReceiver
         uint256 remainder = msg.value - finalPrice;
         (bool sent,) = fundsReceiver.call{value: finalPrice - referralReward}("");
-        require(sent, "Failed to send Ether");
+        if (!sent) revert TransferFailed();
 
         // Send back the remainder amount
         if (remainder > 0) {
             (bool sentRemainder,) = msg.sender.call{value: remainder}("");
-            require(sentRemainder, "Failed to send back the remainder Ether");
+            if(!sentRemainder) revert TransferFailed();
         }
     }
 
@@ -454,7 +458,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
             }
 
             // Confirm the recipient is not the sender
-            require(promoCode.recipient != msg.sender, "Referral address cannot be the sender's address");
+            if(promoCode.recipient == msg.sender) revert ReferrerCannotBeBuyer();
 
             // Calculate the referral reward
             referralReward = _finalPrice * referralRewardPercentage / 100;
@@ -477,7 +481,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         if(promoCodeAsAddress != address(0)){
 
             // Confirm the promo code is not the sender's address
-            require(promoCodeAsAddress != msg.sender, "Referral address cannot be the sender's address");
+            if(promoCode.recipient == msg.sender) revert ReferrerCannotBeBuyer();
 
             // Get the node license balance of the promo code address
             if(this.balanceOf(promoCodeAsAddress) == 0){
@@ -617,7 +621,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
 
         // Transfer the rewards to the caller
         (bool success, ) = msg.sender.call{value: reward}("");
-        require(success, "Transfer failed.");
+        if(!success) revert TransferFailed();
 
         //transfer ERC20 tokens
         if(rewardXai > 0){
@@ -838,8 +842,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     }
 
 
-
-
     /**
      * @notice Admin function mint tokens to a wallet
      * @param to The address to mint the tokens to
@@ -883,9 +885,10 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         usedTransferIds[transferId] = true;
         
         for(uint256 i; i < tokenIdsLength; i++){
-            require(Referee10(refereeAddress).assignedKeyToPool(tokenIds[i]) == address(0), "Cannot transfer staked key");
+            if(Referee10(refereeAddress).assignedKeyToPool(tokenIds[i]) != address(0)) revert CannotTransferStakedKey();
             super.safeTransferFrom(msg.sender, to, tokenIds[i]);
         }
+        Referee10(refereeAddress).updateBulkSubmissionOnTransfer(msg.sender, to);
         emit AdminTransferBatch(msg.sender, to, transferId, tokenIds);
     }
 
@@ -897,8 +900,9 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         address to,
         uint256 tokenId
     ) public override onlyRole(TRANSFER_ROLE) {
-        require(Referee10(refereeAddress).assignedKeyToPool(tokenId) == address(0), "Cannot transfer staked key");
+        if(Referee10(refereeAddress).assignedKeyToPool(tokenId) != address(0)) revert CannotTransferStakedKey();
         super.transferFrom(from, to, tokenId);
+        Referee10(refereeAddress).updateBulkSubmissionOnTransfer(from, to);
     }
 
     /**
@@ -909,8 +913,9 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         address to,
         uint256 tokenId
     ) public override onlyRole(TRANSFER_ROLE) {
-        require(Referee10(refereeAddress).assignedKeyToPool(tokenId) == address(0), "Cannot transfer staked key");
+        if(Referee10(refereeAddress).assignedKeyToPool(tokenId) != address(0)) revert CannotTransferStakedKey();
         super.safeTransferFrom(from, to, tokenId);
+        Referee10(refereeAddress).updateBulkSubmissionOnTransfer(from, to);
     }
 
     /**
@@ -922,9 +927,9 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         uint256 tokenId,
         bytes memory data
     ) public override onlyRole(TRANSFER_ROLE) {
-        require(Referee10(refereeAddress).assignedKeyToPool(tokenId) == address(0), "Cannot transfer staked key");
+        if(Referee10(refereeAddress).assignedKeyToPool(tokenId) != address(0)) revert CannotTransferStakedKey();
         super.safeTransferFrom(from, to, tokenId, data);
+        Referee10(refereeAddress).updateBulkSubmissionOnTransfer(from, to);
     }
-	
-	
+
 }
