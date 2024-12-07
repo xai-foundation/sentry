@@ -30,7 +30,7 @@ describe("Fixture Tests", function () {
             addr1,
             addr2,
             addr3,
-            addr4,
+            addr4, // This address stakes 10M  in the fixture and mints 15000 licenses
             addr5,
             operator,
         ] = await ethers.getSigners();
