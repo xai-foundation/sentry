@@ -842,8 +842,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     }
 
 
-
-
     /**
      * @notice Admin function mint tokens to a wallet
      * @param to The address to mint the tokens to
@@ -889,8 +887,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         for(uint256 i; i < tokenIdsLength; i++){
             if(Referee10(refereeAddress).assignedKeyToPool(tokenIds[i]) != address(0)) revert CannotTransferStakedKey();
             super.safeTransferFrom(msg.sender, to, tokenIds[i]);
-            Referee10(refereeAddress).updateBulkSubmissionOnTransfer(msg.sender, to, tokenIds[i]);
         }
+        Referee10(refereeAddress).updateBulkSubmissionOnTransfer(msg.sender, to);
         emit AdminTransferBatch(msg.sender, to, transferId, tokenIds);
     }
 
@@ -904,7 +902,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     ) public override onlyRole(TRANSFER_ROLE) {
         if(Referee10(refereeAddress).assignedKeyToPool(tokenId) != address(0)) revert CannotTransferStakedKey();
         super.transferFrom(from, to, tokenId);
-        Referee10(refereeAddress).updateBulkSubmissionOnTransfer(from, to, tokenId);
+        Referee10(refereeAddress).updateBulkSubmissionOnTransfer(from, to);
     }
 
     /**
@@ -917,7 +915,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     ) public override onlyRole(TRANSFER_ROLE) {
         if(Referee10(refereeAddress).assignedKeyToPool(tokenId) != address(0)) revert CannotTransferStakedKey();
         super.safeTransferFrom(from, to, tokenId);
-        Referee10(refereeAddress).updateBulkSubmissionOnTransfer(from, to, tokenId);
+        Referee10(refereeAddress).updateBulkSubmissionOnTransfer(from, to);
     }
 
     /**
@@ -931,7 +929,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     ) public override onlyRole(TRANSFER_ROLE) {
         if(Referee10(refereeAddress).assignedKeyToPool(tokenId) != address(0)) revert CannotTransferStakedKey();
         super.safeTransferFrom(from, to, tokenId, data);
-        Referee10(refereeAddress).updateBulkSubmissionOnTransfer(from, to, tokenId);
+        Referee10(refereeAddress).updateBulkSubmissionOnTransfer(from, to);
     }
 
 }

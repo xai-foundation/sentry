@@ -1112,7 +1112,7 @@ contract Referee10 is Initializable, AccessControlEnumerableUpgradeable {
 		}
     }
 
-    function updateBulkSubmissionOnTransfer(address from, address to, uint256 keyId) external {
+    function updateBulkSubmissionOnTransfer(address from, address to) external {
         if(msg.sender != nodeLicenseAddress) revert CallerNotAuthorized();
 
         uint256 currentChallenge = challengeCounter == 0 ? 0 : challengeCounter - 1;  
