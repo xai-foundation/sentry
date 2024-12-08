@@ -5,7 +5,7 @@ import { extractAbi } from "../utils/exportAbi.mjs";
 import { RefereeBulkSubmissionTransfers } from "./tinykeys/RefereeBulkSubmissionTransfers.mjs";
 import { mintBatchedLicenses } from "./utils/mintLicenses.mjs"
 
-describe("Fixture Tests", function () {
+describe("Fixture Tests Post TK Audit", function () {
 
     // We define a fixture to reuse the same setup in every test. We use
     // loadFixture to run this setup once, snapshot that state, and reset Hardhat

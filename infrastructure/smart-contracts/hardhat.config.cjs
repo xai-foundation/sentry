@@ -54,10 +54,6 @@ const config = {
 		  // blockNumber: 184085729,
      // },
       chainId: 1,
-      accounts:{
-        accounts,
-        accountsBalance: "100000000000000000000000000000" 
-      },
       accounts,
       gas: "auto",
     },
