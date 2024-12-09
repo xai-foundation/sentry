@@ -24,7 +24,7 @@ const MainStepper = ({
 
 }: MainStepperProps) => {
   return (
-    <div className={`hover:bg-hornetSting global-cta-clip-path p-[1px] duration-200 ease-in ${wrapperClassName}`}>
+    <div className={`hover:bg-hornetSting bg-[#433F3F] global-cta-clip-path p-[1px] duration-200 ease-in ${wrapperClassName}`}>
       <div className={`flex justify-between items-center bg-nulnOil global-cta-clip-path ${containerClassName}`}>
         <button
           className={`bg-nulnOil px-[20px] py-[25px] global-cta-clip-path hover:bg-velvetBlack duration-200 ease-in ${btnClassName}`}

@@ -74,7 +74,7 @@ export function Checkout() {
                         </div>
                         <div className="h-auto xl:p-12 sm:px-2 sm:py-10">
                             <ChooseQuantityRow />
-                            <div className="min-h-[545px]">
+                            <div className="min-h-[620px] lg:min-w-[620px]">  {/* Required to keep the page from jumping around when loading */}
                                 {isTotalLoading || isExchangeRateLoading || isPriceLoading ? (
                                     <LoadingState />
                                 ) : (
