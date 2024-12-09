@@ -111,7 +111,14 @@ export function ActionSection(): JSX.Element {
                 )}
                 <br />
                 {isConnected && isInitialized && <PrimaryButton
-                    onClick={() => setCreditCardOpen(true)}
+                    onClick={() => {
+                        ReactGA.event({
+                            category: "User",
+                            action: "buttonClick",
+                            label: "mintCrossmint",
+                        });
+                        setCreditCardOpen(true)
+                    }}
                     className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-hornetSting p-2 uppercase font-bold `}
                     isDisabled={!ready || !isConnected}
                     colorStyle="outline-2"
