@@ -71,9 +71,11 @@ function BulkSubmissionTransfers(deployInfrastructure) {
             const isSubmittedBeforeAssertion = submissionBeforeAssertion[0];
             const claimedBeforeAssertion = submissionBeforeAssertion[1];
             const keyCountBeforeAssertion = submissionBeforeAssertion[2];
+            const winningKeyCountBeforeAssertion = submissionBeforeAssertion[3];
             expect(isSubmittedBeforeAssertion).to.equal(false);
             expect(claimedBeforeAssertion).to.equal(false);
             expect(keyCountBeforeAssertion).to.equal(0);
+            expect(winningKeyCountBeforeAssertion).to.equal(0);
     
             // Submit Bulk Assertion
             await referee.connect(owner).submitBulkAssertion(owner.address, 0, stateRoot);
@@ -83,12 +85,19 @@ function BulkSubmissionTransfers(deployInfrastructure) {
             const isSubmittedAfterAssertion = submissionAfterAssertion[0];
             const claimedAfterAssertion = submissionAfterAssertion[1];
             const keyCountAfterAssertion = submissionAfterAssertion[2];
+            const winningKeyCountAfterAssertion = submissionAfterAssertion[3];
             expect(isSubmittedAfterAssertion).to.equal(true);
             expect(claimedAfterAssertion).to.equal(false);
             expect(keyCountAfterAssertion).to.equal(keyBalance);
+            expect(winningKeyCountAfterAssertion).to.gt(0n);            
 
             const randomBytes = ethers.randomBytes(32);
-            const keysToUnstake = [1n, 2n, 3n];
+            let count = 1;
+            let keysToUnstake = [];
+            while(count < 200) {
+                keysToUnstake.push(BigInt(count));                
+                count++;
+            }
 
             const transferRole = await nodeLicense.TRANSFER_ROLE();
             // Grant the transfer role to the owner address
@@ -100,10 +109,13 @@ function BulkSubmissionTransfers(deployInfrastructure) {
             const isSubmittedAfterTransfer = submissionAfterTransfer[0];
             const claimedAfterTransfer = submissionAfterTransfer[1];
             const keyCountAfterTransfer = submissionAfterTransfer[2];
+            const winningKeyCountAfterTransfer = submissionAfterTransfer[3];
             expect(isSubmittedAfterTransfer).to.equal(true);
             expect(claimedAfterTransfer).to.equal(false);
-            expect(keyCountAfterTransfer).to.equal(keyCountAfterAssertion - BigInt(keysToUnstake.length));    
-        });
+            expect(keyCountAfterTransfer).to.equal(keyCountAfterAssertion - BigInt(keysToUnstake.length));
+            expect(winningKeyCountAfterTransfer).to.lt(winningKeyCountAfterAssertion);
+
+        }).timeout(60000);
     }
 }
 
