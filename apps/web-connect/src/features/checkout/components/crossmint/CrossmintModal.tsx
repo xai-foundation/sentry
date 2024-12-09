@@ -3,9 +3,11 @@ import { useAccount } from 'wagmi';
 import { config, formatWeiToEther } from "@sentry/core";
 import { CloseIcon } from "@sentry/ui";
 import {
-  CrossmintProvider,
-  CrossmintEmbeddedCheckout,
+    CrossmintProvider,
+    CrossmintEmbeddedCheckout,
+    useCrossmintCheckout,
 } from "@crossmint/client-sdk-react-ui";
+import ReactGA from "react-ga4";
 
 interface CrossmintModalProps {
     isOpen: boolean;
@@ -13,6 +15,20 @@ interface CrossmintModalProps {
     totalPriceInUsdc: string;
     promoCode: string;
     onClose: () => void;
+}
+
+const CheckoutStatus = () => {
+    const { order } = useCrossmintCheckout();
+
+    if (order && order.phase === 'quote') {
+        ReactGA.event({
+            category: 'User',
+            action: 'buttonClick',
+            label: 'mintCrossmint'
+        });
+    }
+
+    return <></>
 }
 
 const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalPriceInUsdc, totalQty, promoCode }) => {
@@ -133,6 +149,7 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalP
                                 },
                             }}
                         />
+                            <CheckoutStatus />
                         </div>
                     </CrossmintProvider>
                 </Suspense>
