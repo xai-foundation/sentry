@@ -3,8 +3,8 @@ import { useAccount } from 'wagmi';
 import { config, formatWeiToEther } from "@sentry/core";
 import { CloseIcon } from "@sentry/ui";
 import {
-  CrossmintProvider,
-  CrossmintEmbeddedCheckout,
+    CrossmintProvider,
+    CrossmintEmbeddedCheckout,
 } from "@crossmint/client-sdk-react-ui";
 
 interface CrossmintModalProps {
@@ -14,6 +14,7 @@ interface CrossmintModalProps {
     promoCode: string;
     onClose: () => void;
 }
+
 
 const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalPriceInUsdc, totalQty, promoCode }) => {
     const collectionId = config.crossmintCollectionId;

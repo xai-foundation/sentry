@@ -11,6 +11,7 @@ import { stakingPageURL } from "../Checkout";
 import ShareButton from "@sentry/ui/src/rebrand/buttons/ShareButton";
 const { VITE_APP_ENV } = import.meta.env
 import { useTranslation } from "react-i18next";
+import ReactGA from "react-ga4";
 
 let timeoutId: number;
 
@@ -42,12 +43,21 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 	}
 
 	const handleReturnToClient = () => {
+		ReactGA.event({
+			category: "User",
+			action: "buttonClick",
+			label: "confirmationBack",
+		});
 		returnToClient(getHash());
 	}
 
 	const copyReferralCode = () => {
 		if (address) {
-
+			ReactGA.event({
+				category: "User",
+				action: "buttonClick",
+				label: "shareUrlCopy",
+			});
 			navigator.clipboard.writeText(`${salePageBaseURL}?promoCode=${address}`);
 			setIsTooltipAllowedToOpen(true);
 
@@ -119,6 +129,13 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 								<div className="flex-shrink-0 flex items-center justify-center">
 									{canShare ? (
 										<ShareButton
+											onClick={() => {
+												ReactGA.event({
+													category: "User",
+													action: "buttonClick",
+													label: "shareMenuOpen",
+												});
+											}}
 											buttonText={translate("successfulPurchase.shareButton.text")}
 											buttonTitle={translate("successfulPurchase.shareButton.title")}
 											shareUrl={`${salePageBaseURL}?promoCode=${address}`}
@@ -148,7 +165,14 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 				</div>
 				<p className="text-elementalGrey my-3 px-[20px] font-bold">{translate("successfulPurchase.stakePromo.title")}</p>
 				<div className="px-[20px] w-full">
-					<PrimaryButton onClick={() => window.open(stakingPageURL)} btnText={translate("successfulPurchase.stakePromo.buttonText")} colorStyle="primary" className="w-full text-xl font-bold uppercase text-brandyWine" />
+					<PrimaryButton onClick={() => {
+						ReactGA.event({
+							category: "User",
+							action: "buttonClick",
+							label: "confirmationStake",
+						});
+						window.open(stakingPageURL)
+					}} btnText={translate("successfulPurchase.stakePromo.buttonText")} colorStyle="primary" className="w-full text-xl font-bold uppercase text-brandyWine" />
 				</div>
 				<a className="text-elementalGrey font-bold underline mb-5 mt-3" href={operatorDownloadLink} target={"_blank"}>{translate("successfulPurchase.stakePromo.downloadOperator")}</a>
 			</div>

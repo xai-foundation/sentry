@@ -9,6 +9,8 @@ import { isValidNetwork } from '@sentry/core';
 import { useNetworkConfig } from '@/hooks/useNetworkConfig';
 import { convertEthAmountToUsdcAmount } from '@/utils/convertEthAmountToUsdcAmount';
 import { useTranslation } from "react-i18next";
+import ReactGA from "react-ga4";
+
 
 /**
  * ActionSection Component
@@ -86,7 +88,14 @@ export function ActionSection(): JSX.Element {
                 {currency === 'AETH' ? (
                     <>
                     <PrimaryButton
-                        onClick={() => handleMintWithEthClicked()}
+                        onClick={() => {
+                            handleMintWithEthClicked()
+                            ReactGA.event({
+                                category: 'User',
+                                action: 'buttonClick',
+                                label: 'mintNow'
+                            });
+                        }}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
                         isDisabled={!ready || !isValidNetwork(chainId, isDevelopment) || getEthButtonText()[1] || !isConnected}
                         btnText={getEthButtonText()[0]}
@@ -102,7 +111,14 @@ export function ActionSection(): JSX.Element {
                 )}
                 <br />
                 {isConnected && isInitialized && <PrimaryButton
-                    onClick={() => setCreditCardOpen(true)}
+                    onClick={() => {
+                        ReactGA.event({
+                            category: "User",
+                            action: "buttonClick",
+                            label: "mintCrossmint",
+                        });
+                        setCreditCardOpen(true)
+                    }}
                     className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-hornetSting p-2 uppercase font-bold `}
                     isDisabled={!ready || !isConnected}
                     colorStyle="outline-2"

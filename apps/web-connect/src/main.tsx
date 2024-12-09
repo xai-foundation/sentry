@@ -10,6 +10,7 @@ import App, { wagmiAdapter } from './app/App'
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from 'i18next-browser-languagedetector';
+import ReactGA from "react-ga4";
 
 import en from "./assets/pagecontent/en.json";
 import de from "./assets/pagecontent/de.json";
@@ -33,6 +34,8 @@ const queryClient = new QueryClient()
 
 const cookies = typeof window !== 'undefined' ? document.cookie : ''
 const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig as Config, cookies)
+
+ReactGA.initialize('G-GHRFSY1KTW');
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <HelmetProvider context={helmetContext}>
