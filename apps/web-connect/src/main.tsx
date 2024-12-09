@@ -7,12 +7,15 @@ import { IpLocationChecker } from './features/ipchecker/IpLocationChecker'
 import xaiThumbnail from './assets/images/xai-preview.jpg'
 import { Helmet, HelmetProvider } from 'react-helmet-async'
 import App, { wagmiAdapter } from './app/App'
+import ReactGA from "react-ga4";
 
 const helmetContext = {};
 const queryClient = new QueryClient()
 
 const cookies = typeof window !== 'undefined' ? document.cookie : ''
 const initialState = cookieToInitialState(wagmiAdapter.wagmiConfig as Config, cookies)
+
+ReactGA.initialize('G-GHRFSY1KTW');
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <HelmetProvider context={helmetContext}>
