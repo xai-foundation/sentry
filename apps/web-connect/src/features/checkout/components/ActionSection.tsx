@@ -8,6 +8,7 @@ import CrossmintModal from './crossmint/CrossmintModal';
 import { isValidNetwork } from '@sentry/core';
 import { useNetworkConfig } from '@/hooks/useNetworkConfig';
 import { convertEthAmountToUsdcAmount } from '@/utils/convertEthAmountToUsdcAmount';
+import { useTranslation } from "react-i18next";
 
 /**
  * ActionSection Component
@@ -45,6 +46,7 @@ export function ActionSection(): JSX.Element {
         calculateTotalPrice,
         mintWithCrossmint
     } = useWebBuyKeysContext();
+    const { t: translate } = useTranslation("Checkout");
 
     /**
      * Determines the text to display on the main action button for token transactions
@@ -52,13 +54,15 @@ export function ActionSection(): JSX.Element {
      * @returns {string} The button text
      */
     const getTokenButtonText = useCallback(() => {
-        if (mintWithEth.isPending || mintWithXai.isPending || approve.isPending) return "WAITING FOR CONFIRMATION..";
-        if (!isValidNetwork(chainId, isDevelopment)) return "Please Switch to Arbitrum";
-        return getApproveButtonText();
+        if (mintWithEth.isPending || mintWithXai.isPending || approve.isPending) return translate("actionSection.tokenButtonTexts.isPending");
+        if (!isValidNetwork(chainId, isDevelopment)) return translate("actionSection.tokenButtonTexts.switchToArbitrum");
+        const [buttonText] = getApproveButtonText();
+        return buttonText;
     }, [mintWithEth.isPending, mintWithXai.isPending, approve.isPending, chainId, getApproveButtonText]);
 
-    const handleBuyWithXaiClicked = async () => { 
-        if (getTokenButtonText().startsWith("Approve")) {
+    const handleBuyWithXaiClicked = async () => {
+        const [_, isApprove] = getApproveButtonText();
+        if (isApprove) {
             handleApproveClicked();
         } else {
             handleMintWithXaiClicked();
@@ -71,7 +75,7 @@ export function ActionSection(): JSX.Element {
             const usdcPrice = await convertEthAmountToUsdcAmount(calculateTotalPrice(), 18); // USDC Price in 18 decimals
             setTotalPriceInUsdc(usdcPrice.toString());
             setIsInitialized(true);
-        } 
+        }
         setUsdcPrice();
     }, [quantity, promoCode]);
 
@@ -84,9 +88,9 @@ export function ActionSection(): JSX.Element {
                     <PrimaryButton
                         onClick={() => handleMintWithEthClicked()}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
-                        isDisabled={!ready || !isValidNetwork(chainId, isDevelopment) || getEthButtonText().startsWith("Insufficient") || !isConnected}
-                        btnText={getEthButtonText()}
-                    />                    
+                        isDisabled={!ready || !isValidNetwork(chainId, isDevelopment) || getEthButtonText()[1] || !isConnected}
+                        btnText={getEthButtonText()[0]}
+                    />
                     </>
                 ) : (
                     <PrimaryButton
@@ -102,7 +106,7 @@ export function ActionSection(): JSX.Element {
                     className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-hornetSting p-2 uppercase font-bold `}
                     isDisabled={!ready || !isConnected}
                     colorStyle="outline-2"
-                    btnText={"Mint - Credit/Debit, SOL, ETH, USDC"}
+                    btnText={translate("actionSection.mintWithOptions")}
                 />}
 
                 {/* Error section for ETH transactions */}
@@ -113,8 +117,8 @@ export function ActionSection(): JSX.Element {
                                 <div className="flex md:gap-[21px] gap-[10px]">
                                     <span className="block mt-2"><WarningIcon /></span>
                                     <div>
-                                        <span className="block font-bold text-lg">Insufficient funds to complete transaction</span>
-                                        <span className="block font-medium text-lg">Make sure your wallet has enough AETH and gas to complete the transaction.</span>
+                                        <span className="block font-bold text-lg">{translate("actionSection.mintWithEthError.insufficientFundsError.title")}</span>
+                                        <span className="block font-medium text-lg">{translate("actionSection.mintWithEthError.insufficientFundsError.text")}</span>
                                     </div>
                                 </div>
                             </BaseCallout>
@@ -124,8 +128,8 @@ export function ActionSection(): JSX.Element {
                                 <div className="flex md:gap-[21px] gap-[10px]">
                                     <span className="block mt-2"><WarningIcon /></span>
                                     <div>
-                                        <span className="block font-bold text-lg">Transaction was cancelled</span>
-                                        <span className="block font-medium text-lg">You have cancelled the transaction in your wallet.</span>
+                                        <span className="block font-bold text-lg">{translate("actionSection.mintWithEthError.userRejectedRequest.title")}</span>
+                                        <span className="block font-medium text-lg">{translate("actionSection.mintWithEthError.userRejectedRequest.title")}</span>
                                     </div>
                                 </div>
                             </BaseCallout>
@@ -141,8 +145,8 @@ export function ActionSection(): JSX.Element {
                                 <div className="flex md:gap-[21px] gap-[10px]">
                                     <span className="block mt-2"><WarningIcon /></span>
                                     <div>
-                                        <span className="block font-bold text-lg">Transaction was cancelled</span>
-                                        <span className="block font-medium text-lg">You have cancelled the transaction in your wallet.</span>
+                                        <span className="block font-bold text-lg">{translate("actionSection.mintWithXaiError.userRejectedRequest.title")}</span>
+                                        <span className="block font-medium text-lg">{translate("actionSection.mintWithXaiError.userRejectedRequest.title")}</span>
                                     </div>
                                 </div>
                             </BaseCallout>
@@ -158,15 +162,15 @@ export function ActionSection(): JSX.Element {
                                 <div className="flex md:gap-[21px] gap-[10px]">
                                     <span className="block mt-2"><WarningIcon /></span>
                                     <div>
-                                        <span className="block font-bold text-lg">Transaction was cancelled</span>
-                                        <span className="block font-medium text-lg">You have cancelled the transaction in your wallet.</span>
+                                        <span className="block font-bold text-lg">{translate("actionSection.approveError.userRejectedRequest.title")}</span>
+                                        <span className="block font-medium text-lg">{translate("actionSection.approveError.userRejectedRequest.title")}</span>
                                     </div>
                                 </div>
                             </BaseCallout>
                         )}
                     </div>
                 )}
-                
+
                 {(mintWithCrossmint.error != "") && (
                     <div>
                         <BaseCallout extraClasses={{ calloutWrapper: "md:h-[85px] h-[109px] mt-[12px]", calloutFront: "!justify-start" }} isWarning>
@@ -181,7 +185,7 @@ export function ActionSection(): JSX.Element {
                         </BaseCallout>
                     </div>
                 )}
-            </div>            
+            </div>
             <CrossmintModal
                 totalPriceInUsdc={totalPriceInUsdc}
                 isOpen={creditCardOpen}

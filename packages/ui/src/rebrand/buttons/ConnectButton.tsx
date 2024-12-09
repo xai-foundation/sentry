@@ -4,14 +4,16 @@ interface ConnectionButtonProps {
   onOpen: () => void;
   address: string | undefined;
   isFullWidth?: boolean;
-  className?: string
+  className?: string,
+  buttonText?: string
 }
 
 export const ConnectButton = ({
   onOpen,
   address,
   isFullWidth,
-  className
+  className,
+  buttonText = "CONNECT WALLET"
 }: ConnectionButtonProps) => {
   return (
     <button
@@ -29,7 +31,7 @@ export const ConnectButton = ({
         <span className="ml-3">
           {address
             ? `${address.slice(0, 6)}...${address.slice(-4)}`
-            : "CONNECT WALLET"}
+            : buttonText}
         </span>
       </div>
     </button>

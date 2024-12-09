@@ -7,6 +7,26 @@ import { IpLocationChecker } from './features/ipchecker/IpLocationChecker'
 import xaiThumbnail from './assets/images/xai-preview.jpg'
 import { Helmet, HelmetProvider } from 'react-helmet-async'
 import App, { wagmiAdapter } from './app/App'
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
+import LanguageDetector from 'i18next-browser-languagedetector';
+
+import en from "./assets/pagecontent/en.json";
+import de from "./assets/pagecontent/de.json";
+
+i18n
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    resources: {
+      en,
+      de
+    },
+    fallbackLng: "en",
+    interpolation: {
+      escapeValue: false // react already safes from xss => https://www.i18next.com/translation-function/interpolation#unescape
+    }
+  });
 
 const helmetContext = {};
 const queryClient = new QueryClient()
@@ -43,4 +63,4 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       </QueryClientProvider>
     </WagmiProvider>
   </HelmetProvider>
-  )
+)

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 import { CURRENCIES, Currency } from '@/features/hooks';
 import { Dropdown, DropdownItem } from "@sentry/ui";
+import { useTranslation } from "react-i18next";
 
 /**
  * ChooseCurrencyRow Component
@@ -15,6 +16,7 @@ export function ChooseCurrencyRow(): JSX.Element {
     // Destructure setCurrency and currency from the context
     const { setCurrency, currency } = useWebBuyKeysContext();
     const [isOpen, setIsOpen] = useState(false);
+    const { t: translate } = useTranslation("Checkout");
 
     /**
      * Handles the change event of the currency dropdown
@@ -50,7 +52,7 @@ export function ChooseCurrencyRow(): JSX.Element {
                 <hr className="my-2 border-[#525252]" />
                 <div className="flex sm:flex-col lg:flex-row items-center justify-between py-2">
                     <div className="flex flex-row items-center gap-2 sm:text-xl lg:text-2xl">
-                        <span className="text-[18px] text-elementalGrey font-medium">Choose payment currency</span>
+                        <span className="text-[18px] text-elementalGrey font-medium">{translate("chooseCurrencyTitle")}</span>
                     </div>
                     <div className="flex flex-row items-center gap-1 bg-black">
                         <span className="text-white font-bold text-3xl bg-black">

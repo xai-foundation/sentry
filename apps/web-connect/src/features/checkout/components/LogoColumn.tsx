@@ -1,4 +1,5 @@
 import logo from '../../../../public/images/sentry-main.png'
+import { useTranslation } from "react-i18next";
 
 /**
  * LogoColumn Component
@@ -10,6 +11,8 @@ import logo from '../../../../public/images/sentry-main.png'
  * @returns {JSX.Element} The rendered LogoColumn component
  */
 export function LogoColumn(): JSX.Element {
+    const { t: translate } = useTranslation("Checkout");
+
     return (
         <div className="flex flex-col justify-start items-center h-auto sm:px-4 sm:py-4 lg:p-12 xg:pl-[80px] lg:pt-1 ">
             {/* Logo container */}
@@ -17,13 +20,13 @@ export function LogoColumn(): JSX.Element {
                 <img 
                     className="max-w-[390px]" 
                     src={logo} 
-                    alt="Sentry Logo"  // Added alt text for accessibility
+                    alt={translate("logoColumn.imageAlt")}  // Added alt text for accessibility
                 />
             </div>
             {/* Message container */}
             <div className="w-full flex justify-center lg:max-w-[280px]">
                 <span className="sm:text-4xl lg:text-6xl text-center font-bold text-white">
-                    YOUR PURCHASE IS READY
+                    {translate("logoColumn.purchaseReady")}
                 </span>
             </div>
         </div>

@@ -10,6 +10,7 @@ import BackArrow from "@sentry/ui/src/rebrand/icons/BackArrow";
 import { stakingPageURL } from "../Checkout";
 import ShareButton from "@sentry/ui/src/rebrand/buttons/ShareButton";
 const { VITE_APP_ENV } = import.meta.env
+import { useTranslation } from "react-i18next";
 
 let timeoutId: number;
 
@@ -26,6 +27,7 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 	const { address } = useAccount();
 	const [isTooltipAllowedToOpen, setIsTooltipAllowedToOpen] = useState(false);
 	const [canShare, setCanShare] = useState(false);
+	const { t: translate } = useTranslation("Checkout");
 
 	useEffect(() => {
 		setCanShare(navigator.share !== undefined);
@@ -67,17 +69,17 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 					onClick={handleReturnToClient}
 					className="text-white text-lg flex items-center group hover:text-hornetSting duration-300">
 					<BackArrow height={12} className="group-hover:fill-hornetSting fill-white duration-300" />
-					Back
+					{translate("backButton")}
 				</button>
 			</div>
 			<div className="flex flex-col justify-center items-center gap-2">
 				<FaCircleCheck color={"#16A34A"} size={64} />
 				<span
-					className="text-3xl text-white text-center uppercase font-bold mt-2">Purchase successful</span>
-				<span className="block text-foggyLondon font-bold text-base max-w-[260px] text-center my-[10px]">You have successfully purchased a Xai Sentry Key</span>
+					className="text-3xl text-white text-center uppercase font-bold mt-2">{translate("successfulPurchase.title")}</span>
+				<span className="block text-foggyLondon font-bold text-base max-w-[260px] text-center my-[10px]">{translate("successfulPurchase.text")}</span>
 				<div className="bg-optophobia w-full ">
 					<div className="flex justify-between border-t border-chromaphobicBlack px-[20px] py-[15px]">
-						<span className="text-[18px] sm:text-center text-elementalGrey ">Transaction ID:</span>
+						<span className="text-[18px] sm:text-center text-elementalGrey ">{translate("successfulPurchase.transactionId")}</span>
 						<a
 							onClick={() => window.open(`${blockExplorer}/tx/${getHash()}`)}
 							className="group hover:text-hornetSting duration-300 text-wrap text-elementalGrey text-center underline ml-1 cursor-pointer text-[18px] sm:max-w-[260px] lg:max-w-full"
@@ -90,18 +92,16 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 						</a>
 					</div>
 					<div className="w-full text-elementalGrey text-[18px] flex flex-col border-t border-b border-chromaphobicBlack px-[20px] py-[15px]">
-						<p className="text-base">Share your referral link with friends!</p>
-						<p className="text-base mb-3">They get 5% off and you get 15% of the sale.</p>
+
+						<p className="text-base">{translate("successfulPurchase.promo.shareLink")}</p>
+						<p className="text-base mb-3">{translate("successfulPurchase.promo.info")}</p>
 						<div className="p-[1px] w-full h-full bg-chromaphobicBlack global-clip-btn">
-						<div
-							className="relative flex items-center lg:w-[408px] w-full bg-optophobia h-fit p-2 gap-2 overflow-hidden text-lg font-medium global-clip-btn"
-						>
-							{/* Referral Link or Copied Text */}
-							{isTooltipAllowedToOpen ? (
-								<div className="text-americanSilver underline flex-grow">
-									Copied!
-								</div>
-							) : (
+
+							<div
+								className="relative flex items-center lg:w-[408px] w-full bg-optophobia h-fit p-2 gap-2 overflow-hidden text-lg font-medium global-clip-btn"
+							>
+								{/* Referral Link or Copied Text */}
+
 								<a
 									href={`${salePageBaseURL}?promoCode=${address}`}
 									target="_blank"
@@ -114,39 +114,43 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 								>
 									{`${salePageBaseURL}?promoCode=${address}`}
 								</a>
-							)}
 
-							{/* Share or Copy Icon */}
-							<div className="flex-shrink-0 flex items-center justify-center">
-								{canShare ? (
-									<ShareButton
-										buttonText="Mint a key on the Xai to stake and start earning rewards and qualify for airdrops."
-										buttonTitle="5% Off Sentry Node Key Purchase"
-										shareUrl={`${salePageBaseURL}?promoCode=${address}`}
-										shareButtonClasses="w-full"
-									/>
-								) : (
-									<Tooltip
-										body="Copied!"
-										open={isTooltipAllowedToOpen}
-										extraClasses={{
-											content: "max-w-[75px]",
-											body: "!text-black !font-bold",
-										}}
-									>
-										<CopyIcon />
-									</Tooltip>
-								)}
+								{/* Share or Copy Icon */}
+								<div className="flex-shrink-0 flex items-center justify-center">
+									{canShare ? (
+										<ShareButton
+											buttonText={translate("successfulPurchase.shareButton.text")}
+											buttonTitle={translate("successfulPurchase.shareButton.title")}
+											shareUrl={`${salePageBaseURL}?promoCode=${address}`}
+											shareButtonClasses="w-full"
+										/>
+									) : (
+										<div className="cursor-pointer" onClick={() => {
+											copyReferralCode();
+										}} >
+											<CopyIcon />
+										</div>
+									)}
+								</div>
 							</div>
 						</div>
+						<Tooltip
+							body={translate("successfulPurchase.copyTooltip")}
+							open={isTooltipAllowedToOpen}
+							position="end"
+							extraClasses={{
+								content: "max-w-[75px]",
+								body: "!text-black !font-bold",
+							}}
+						>
+						</Tooltip>
 					</div>
 				</div>
-				</div>
-				<p className="text-elementalGrey my-3 font-bold">Stake key in a pool to start earning rewards</p>
+				<p className="text-elementalGrey my-3 px-[20px] font-bold">{translate("successfulPurchase.stakePromo.title")}</p>
 				<div className="px-[20px] w-full">
-					<PrimaryButton onClick={() => window.open(stakingPageURL)} btnText={"Stake key"} colorStyle="primary" className="w-full text-xl font-bold uppercase text-brandyWine" />
+					<PrimaryButton onClick={() => window.open(stakingPageURL)} btnText={translate("successfulPurchase.stakePromo.buttonText")} colorStyle="primary" className="w-full text-xl font-bold uppercase text-brandyWine" />
 				</div>
-				<a className="text-elementalGrey font-bold underline mb-5 mt-3" href={operatorDownloadLink} target={"_blank"}>Download operator</a>
+				<a className="text-elementalGrey font-bold underline mb-5 mt-3" href={operatorDownloadLink} target={"_blank"}>{translate("successfulPurchase.stakePromo.downloadOperator")}</a>
 			</div>
 		</div>
 	);
