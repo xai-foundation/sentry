@@ -10,7 +10,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "deploy:cf:prod": "pnpm build && rm dist/xai-drop-permits.JSON && wrangler pages deploy dist --project-name sentry --branch=main",
-    "deploy:cf:dev": "pnpm build && rm dist/xai-drop-permits.JSON && wrangler pages deploy dist --project-name sentry-develop --branch=main"
+    "deploy:cf:dev": "VITE_APP_ENV=development pnpm build && rm dist/xai-drop-permits.JSON && wrangler pages deploy dist --project-name sentry-develop --branch=main"
   },
   "dependencies": {
     "@crossmint/client-sdk-base": "^1.2.8",
