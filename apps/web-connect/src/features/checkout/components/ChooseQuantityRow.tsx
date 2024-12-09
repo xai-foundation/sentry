@@ -42,8 +42,8 @@ export function ChooseQuantityRow(): JSX.Element {
                     {/* Tooltip for additional information */}
                     <span className="h-full flex items-center ml-2">
                         <Tooltip
-                            header={translate("chooseQuantity.tooltip.title")}
-                            body={translate("chooseQuantity.tooltip.text")}
+                            header={translate("chooseQuantity.toolTip.title")}
+                            body={translate("chooseQuantity.toolTip.text")}
                             width={452}
                         >
                             <InfoPointRed />
