@@ -8,6 +8,7 @@ import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 // import { formatWeiToEther, isValidNetwork } from '@sentry/core';
 import { isValidNetwork } from '@sentry/core';
 import { useNetworkConfig } from '@/hooks/useNetworkConfig';
+import ReactGA from "react-ga4";
 
 /**
  * ActionSection Component
@@ -70,7 +71,14 @@ export function ActionSection(): JSX.Element {
                 {currency === 'AETH' ? (
                     <>
                     <PrimaryButton
-                        onClick={() => handleMintWithEthClicked()}
+                        onClick={() => {
+                            handleMintWithEthClicked()
+                            ReactGA.event({
+                                category: 'User',
+                                action: 'buttonClick',
+                                label: 'mintNow'
+                            });
+                        }}
                         className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-white p-2 uppercase font-bold`}
                         isDisabled={!ready || !isValidNetwork(chainId, isDevelopment) || getEthButtonText().startsWith("Insufficient") || !isConnected}
                         btnText={getEthButtonText()}
