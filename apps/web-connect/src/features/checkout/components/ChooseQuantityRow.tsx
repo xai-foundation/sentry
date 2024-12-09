@@ -50,6 +50,23 @@ export function ChooseQuantityRow(): JSX.Element {
                         </Tooltip>
                     </span>
                 </div>
+                {/* Mobile-only div */}
+                <div className="block lg:hidden w-full text-center text-white mb-4">
+                    <div className="md:px-[25px] px-[12px]">
+                        <div className="bg-dynamicBlack relative z-[20] w-full xl:max-w-[358px] px-[12px] py-[12px] global-cta-clip-path h-auto flex flex-col justify-center">
+                            <div className="px-1">
+                                <p className="font-rajdhani text-[24px] font-bold leading-[28px] text-center decoration-skip-ink-none">
+                                    {translate("logoColumn.networkRewardsAmount")}
+                                    <span className="font-rajdhani text-[24px] font-medium leading-[28px] text-center decoration-skip-ink-none text-[#F7F6F6]">
+                                        {translate("logoColumn.networkRewardsText")}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+            </div>
+
+
                 {/* Description of Sentry Key functionality */}
                 <p className="sm:w-full lg:w-[400px] sm:text-center sm:px-8 lg:px-0 lg:text-left text-[18px] text-elementalGrey font-medium">
                     {translate("chooseQuantity.description")}

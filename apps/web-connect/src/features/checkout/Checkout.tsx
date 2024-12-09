@@ -68,7 +68,7 @@ export function Checkout() {
                 ) : mintWithEth.isSuccess || mintWithXai.isSuccess || mintWithCrossmint.txHash != "" ? (
                     <PurchaseSuccessful returnToClient={returnToClient} />
                 ) : (
-                    <div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-darkLicorice shadow-main md:my-0 my-[24px]">
+                    <div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-nulnOil shadow-main md:my-0 my-[24px]">
                         <div className="hidden lg:block">
                             <LogoColumn />
                         </div>

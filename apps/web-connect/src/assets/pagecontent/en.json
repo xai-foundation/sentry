@@ -35,6 +35,8 @@
 			}
 		},
 		"logoColumn": {
+			"networkRewardsAmount": "~$300M ",
+			"networkRewardsText": "in network rewards to key hodlers so far",
 			"purchaseReady": "YOUR PURCHASE IS READY",
 			"imageAlt": "Sentry Logo"
 		},
