@@ -46,7 +46,8 @@ export function ActionSection(): JSX.Element {
         handleMintWithXaiClicked,
         getEthButtonText,
         calculateTotalPrice,
-        mintWithCrossmint
+        mintWithCrossmint,
+        discount,
     } = useWebBuyKeysContext();
     const { t: translate } = useTranslation("Checkout");
 
@@ -203,7 +204,7 @@ export function ActionSection(): JSX.Element {
                 )}
             </div>
             <CrossmintModal
-                totalPriceInUsdc={totalPriceInUsdc}
+                totalPriceInUsdc={discount.applied ? (BigInt(totalPriceInUsdc) * 95n / 100n).toString() : totalPriceInUsdc}
                 isOpen={creditCardOpen}
                 onClose={() => setCreditCardOpen(false)}
                 totalQty={quantity}
