@@ -79,7 +79,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
 
         it("Check minting an NFT and receiving it with Xai", async function() {
 
-            const {nodeLicense, addr1, fundsReceiver, xai, xaiMinter} = await loadFixture(deployInfrastructure);
+            const {nodeLicense, addr1, addr2, fundsReceiver, xai, xaiMinter} = await loadFixture(deployInfrastructure);
             
             // Check the initial balance of the fundsReceiver
             const initialBalanceFundsReceiver = await xai.balanceOf(fundsReceiver.address);
@@ -101,7 +101,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             await xai.connect(addr1).approve(await nodeLicense.getAddress(), priceInXai);
 
             // Mint an NFT
-            await nodeLicense.connect(addr1).mintWithXai(1, "", false, priceInXai);
+            await nodeLicense.connect(addr1).mintWithXai(addr1.address, 1, "", false, priceInXai);
 
             // Check the NFT was received
             const owner = await nodeLicense.ownerOf(totalSupplyBeforeMint + BigInt(1));
@@ -118,6 +118,12 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             // Check the total supply increased
             const totalSupplyAfterMint = await nodeLicense.totalSupply();
             expect(totalSupplyAfterMint).to.eq(totalSupplyBeforeMint + BigInt(1));
+
+            const initialBalanceNFTReceiver = await nodeLicense.balanceOf(addr2.address);
+            await xai.connect(addr1).approve(await nodeLicense.getAddress(), priceInXai);
+            await nodeLicense.connect(addr1).mintWithXai(addr2.address, 1, "", false, priceInXai);
+
+            expect(await nodeLicense.balanceOf(addr2.address)).to.eq(initialBalanceNFTReceiver + BigInt(1));
         });
 
         it("Check minting with Xai using a string promo code and receiving the correct funds", async function() {
@@ -156,7 +162,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             await xai.connect(minter).approve(await nodeLicense.getAddress(), discountedPriceInXai);
 
             // Mint an NFT with a promo code - false indicates use of Xai instead of esXai
-            await nodeLicense.connect(minter).mintWithXai(1, promoCode, false, discountedPriceInXai);
+            await nodeLicense.connect(minter).mintWithXai(minter.address, 1, promoCode, false, discountedPriceInXai);
 
             // Check the NFT was received
             const owner = await nodeLicense.ownerOf(totalSupplyBeforeMint + BigInt(1));
@@ -229,7 +235,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             await esXai.connect(minter).approve(await nodeLicense.getAddress(), priceInEsXai);
 
             // Mint an NFT with a promo code - true indicates use of esXai
-            await nodeLicense.connect(minter).mintWithXai(1, promoCode, true, priceInEsXai);
+            await nodeLicense.connect(minter).mintWithXai(minter.address, 1, promoCode, true, priceInEsXai);
 
             // Check the NFT was received
             const owner = await nodeLicense.ownerOf(totalSupplyBeforeMint + BigInt(1));
@@ -451,7 +457,7 @@ export function NodeLicenseTinyKeysTest(deployInfrastructure, poolConfigurations
             await xai.connect(addr1).approve(await nodeLicense.getAddress(), xaiPrice);
 
             // Mint the remaining licenses
-            const tx = await nodeLicense.connect(addr1).mintWithXai(BATCH_SIZE, "", false, xaiPrice);
+            const tx = await nodeLicense.connect(addr1).mintWithXai(addr1.address, BATCH_SIZE, "", false, xaiPrice);
             console.log("Gas limit: ", tx.gasLimit.toString());
             const txWait = await tx.wait(1);
             console.log("Gas used: ", txWait.gasUsed.toString());
