@@ -1,3 +1,25 @@
+# [2.0.0](https://github.com/xai-foundation/sentry/compare/1.2.0...2.0.0) (2024-12-10)
+
+
+### Bug Fixes
+
+* **desktop:** Display correct data on the dashboard. ([59e2cf0](https://github.com/xai-foundation/sentry/commit/59e2cf06261dde7e7032dad23ee95dfe52845201))
+* **desktop:** Fill correct operator address on assign new wallet to operator ([0a989bf](https://github.com/xai-foundation/sentry/commit/0a989bf32bb62f8fd7fa08c85f9f78edbd095202))
+* **desktop:** Fix cal average winning per month ([5e97ddf](https://github.com/xai-foundation/sentry/commit/5e97ddf89763fdfc633dc581b4983cdbb7412f4a))
+
+
+### Features
+
+* **cli:** Add network toggle switch command to cli runtime ([0f1d4bd](https://github.com/xai-foundation/sentry/commit/0f1d4bd6f5ce6a227807609d07e264dfe05f27df))
+* **desktop:** Add Process unclaimed submissions banner ([45dc6e2](https://github.com/xai-foundation/sentry/commit/45dc6e2b519174589be0175036823b6622d29520))
+* **desktop:** Add toggle network switch to electron menu ([d86b90e](https://github.com/xai-foundation/sentry/commit/d86b90eb084896029f686df47c0bffa21f645f5b))
+* **desktop:** Add UI banner for claiming previous single key submissions ([b9334c4](https://github.com/xai-foundation/sentry/commit/b9334c4152281bc23cc0a79ae2ddea17a2a69c81))
+
+
+### BREAKING CHANGES
+
+* **smart-contract:** Operator will now render table view for bulkSubmissions
+
 # [1.2.0](https://github.com/xai-foundation/sentry/compare/1.1.14...1.2.0) (2024-10-10)
 
 
