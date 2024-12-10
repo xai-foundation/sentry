@@ -5,11 +5,12 @@ import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import { mapWeb3Error } from "@/utils/errors";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 import CrossmintModal from './crossmint/CrossmintModal';
-import { isValidNetwork } from '@sentry/core';
+import { config, isValidNetwork } from '@sentry/core';
 import { useNetworkConfig } from '@/hooks/useNetworkConfig';
 import { convertEthAmountToUsdcAmount } from '@/utils/convertEthAmountToUsdcAmount';
 import { useTranslation } from "react-i18next";
 import ReactGA from "react-ga4";
+import { CrossmintProvider, CrossmintCheckoutProvider } from "@crossmint/client-sdk-react-ui";
 
 
 /**
@@ -26,6 +27,7 @@ export function ActionSection(): JSX.Element {
     const { isDevelopment } = useNetworkConfig();
     const [isInitialized, setIsInitialized] = useState(false);
     const [totalPriceInUsdc, setTotalPriceInUsdc] = useState<string>("0");
+    const clientApiKey = config.crossmintClientApiKey;
 
     // Destructure values and functions from the context
     const {
@@ -46,7 +48,6 @@ export function ActionSection(): JSX.Element {
         handleMintWithXaiClicked,
         getEthButtonText,
         calculateTotalPrice,
-        mintWithCrossmint
     } = useWebBuyKeysContext();
     const { t: translate } = useTranslation("Checkout");
 
@@ -186,29 +187,19 @@ export function ActionSection(): JSX.Element {
                         )}
                     </div>
                 )}
-
-                {(mintWithCrossmint.error != "") && (
-                    <div>
-                        <BaseCallout extraClasses={{ calloutWrapper: "md:h-[85px] h-[109px] mt-[12px]", calloutFront: "!justify-start" }} isWarning>
-                            <div className="flex md:gap-[21px] gap-[10px]">
-                                <span className="block mt-2"><WarningIcon /></span>
-                                <div>
-                                    <span className="block font-bold text-lg">Error minting with Credit/Debit Card</span>
-                                    {/* We currently have no way of knowing all the possible errors that could come from minting with crossmint, so we should log in the console and display a generic error rather than the error message. */}
-                                    <span className="block font-medium text-lg">There was an error processing your credit card payment</span>
-                                </div>
-                            </div>
-                        </BaseCallout>
-                    </div>
-                )}
             </div>
-            <CrossmintModal
-                totalPriceInUsdc={totalPriceInUsdc}
-                isOpen={creditCardOpen}
-                onClose={() => setCreditCardOpen(false)}
-                totalQty={quantity}
-                promoCode={promoCode}
-            />
+            {/* Providers Required to Use Hooks inside of CrossmintModal */}
+            <CrossmintProvider apiKey={clientApiKey}>
+                <CrossmintCheckoutProvider>
+                    <CrossmintModal
+                        totalPriceInUsdc={totalPriceInUsdc}
+                        isOpen={creditCardOpen}
+                        onClose={() => setCreditCardOpen(false)}
+                        totalQty={quantity}
+                        promoCode={promoCode}
+                    />
+                </CrossmintCheckoutProvider>
+            </CrossmintProvider>
         </div>
     );
 }

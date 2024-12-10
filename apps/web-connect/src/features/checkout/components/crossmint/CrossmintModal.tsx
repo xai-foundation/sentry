@@ -1,11 +1,10 @@
-import React, { Suspense } from 'react';
-import { useAccount } from 'wagmi';
+import React, { Suspense, useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 import { config, formatWeiToEther } from "@sentry/core";
 import { CloseIcon } from "@sentry/ui";
-import {
-    CrossmintProvider,
-    CrossmintEmbeddedCheckout,
-} from "@crossmint/client-sdk-react-ui";
+import { CrossmintEmbeddedCheckout, useCrossmintCheckout } from "@crossmint/client-sdk-react-ui";
+import { MintWithCrossmintStatus } from "@/features/hooks";
+import { useWebBuyKeysContext } from "../../contexts/useWebBuyKeysContext";
 
 interface CrossmintModalProps {
     isOpen: boolean;
@@ -15,11 +14,36 @@ interface CrossmintModalProps {
     onClose: () => void;
 }
 
-
-const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalPriceInUsdc, totalQty, promoCode }) => {
+const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalQty, totalPriceInUsdc, promoCode }) => {
     const collectionId = config.crossmintCollectionId;
-    const clientApiKey = config.crossmintClientApiKey;
     const { address } = useAccount();
+    const { order } = useCrossmintCheckout();
+    const { setMintWithCrossmint } = useWebBuyKeysContext();
+    const [mintTxData, setMintTxData] = useState<MintWithCrossmintStatus>({ txHash: "", orderIdentifier: "" });
+    
+    const handleClose = () => {
+        if (mintTxData.txHash === "") {
+            setMintTxData({ txHash: "", orderIdentifier: "" });
+        } else {
+            setMintWithCrossmint(mintTxData);
+        }
+        onClose();
+    };
+
+    useEffect(() => {
+        // Clear any previous mint tx data when the modal is opened
+        setMintTxData({ txHash: "", orderIdentifier: "" });
+    }, []);
+
+    useEffect(() => {
+        if (!order?.orderId) return;
+            const status = order.lineItems[0].delivery.status;
+        if(status === "completed") {
+            const txHash = order.lineItems[0].delivery.txId;
+            const orderIdentifier = order.orderId;
+            setMintWithCrossmint({ txHash, orderIdentifier });
+        }
+    }, [order]);
 
     if (!isOpen) return null;
 
@@ -47,7 +71,7 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalP
             <div className="bg-nulnOil p-3 rounded-lg shadow-xl w-full max-w-3xl mx-4">
                 <div className="flex justify-between items-center p-4">
                     <h2 className="text-xl font-semibold text-white">Pay with Crossmint</h2>
-                    <button onClick={onClose} className="text-white hover:text-gray-700">
+                    <button onClick={handleClose} className="text-white hover:text-gray-700">
                         <CloseIcon
                             width={15}
                             height={15}
@@ -58,7 +82,6 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalP
                 <div className="p-4">
                     
                 <Suspense fallback={<div>Loading...</div>}>
-                    <CrossmintProvider apiKey={clientApiKey}>
                         <div className=" w-full">
                         <CrossmintEmbeddedCheckout
                             appearance={{
@@ -135,7 +158,6 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalP
                             }}
                         />
                         </div>
-                    </CrossmintProvider>
                 </Suspense>
                 </div>
             </div>
