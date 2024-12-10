@@ -23,7 +23,7 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalQ
     
     const handleClose = () => {
         if (mintTxData.txHash === "") {
-            setMintTxData({ txHash: "", orderIdentifier: "" });
+            setMintWithCrossmint({ txHash: "", orderIdentifier: "" });
         } else {
             setMintWithCrossmint(mintTxData);
         }
