@@ -6,7 +6,7 @@ import {Dispatch, SetStateAction, useState} from "react";
 import {ethers} from "ethers";
 // import {Tooltip} from "@sentry/ui";
 import {getPromoCode} from "@sentry/core";
-import { PlusIcon, WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { PlusIcon, WarningIcon } from "@sentry/ui/src/rebrand/icons";
 import { PrimaryButton } from "@sentry/ui";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 

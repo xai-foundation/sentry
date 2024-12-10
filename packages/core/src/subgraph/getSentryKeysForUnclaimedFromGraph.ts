@@ -63,9 +63,10 @@ export async function getSentryKeysForUnclaimedFromGraph(
             where: { eligibleForPayout: true, claimed: false, challengeNumber_gte: ${latestChallengeNumber.toString()}, challenge_: {status: OpenForClaims} }) { 
             challengeNumber
             nodeLicenseId
-            claimAmount 
-            claimed 
-            eligibleForPayout
+            challenge {
+              rewardAmountForClaimers
+              numberOfEligibleClaimers
+            }
           }
         }
       }

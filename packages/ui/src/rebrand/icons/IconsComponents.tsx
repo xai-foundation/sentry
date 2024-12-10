@@ -1,12 +1,3 @@
-export const WarningIcon = ({ width = 24, height = 24, className, fill = "#ffc53d" }: { width?: number, height?: number, fill?: string, className?: string }) => {
-
-  return (
-    <svg style={{ width: width, height: height }} className={className} xmlns="http://www.w3.org/2000/svg" width="27.789" height="24" viewBox="0 0 27.789 24">
-      <path id="warning_FILL1_wght400_GRAD0_opsz24_4_" data-name="warning_FILL1_wght400_GRAD0_opsz24 (4)" d="M40-856l13.895-24,13.895,24Zm13.895-3.789a1.222,1.222,0,0,0,.9-.363,1.222,1.222,0,0,0,.363-.9,1.222,1.222,0,0,0-.363-.9,1.222,1.222,0,0,0-.9-.363,1.222,1.222,0,0,0-.9.363,1.222,1.222,0,0,0-.363.9,1.222,1.222,0,0,0,.363.9A1.222,1.222,0,0,0,53.895-859.789Zm-1.263-3.789h2.526v-6.316H52.632Z" transform="translate(-40 880)" fill={fill}/>
-    </svg>
-  )
-};
-
 export const XaiLogoFooter = ({ width = 122, height = 97, svgClassName, wrapperClassName = "fill-white", logoClassName }: { width?: number, height?: number, fill?: string, wrapperClassName?: string, logoClassName?: string, svgClassName?: string }) => {
 
   return (
@@ -40,9 +31,6 @@ export const XaiLogoFooter = ({ width = 122, height = 97, svgClassName, wrapperC
 
   )
 };
-
-
-
 
 export function InfoPointRed({
   width = 16,
@@ -205,21 +193,6 @@ l799 -1385 -1076 -3 c-592 -1 -1078 0 -1080 2 -3 2 167 301 376 664 210 363
   );
 };
 
-export const DropdownArrow = ({width = 10, height = 3, className = ""}) => {
-    return <svg
-        width={width} height={height} className={className}
-        fill="#fff"
-        xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 4.8117635 3.2432653" version="1.1" id="svg1" >
-        <defs id="defs1"/>
-        <g  id="layer1"
-           transform="translate(-0.23995138,-1.0242006)"><path  d="M 2.6458332,2.6458333 V -2.3262066 8.1888758" id="path1"/>
-            <g id="g2" transform="translate(-4.1599448,-4.385214)"><rect id="rect2" width="1.2605684" height="3.478761" x="9.7083769" y="-2.1346393" ry="0.13058987" transform="rotate(45)"/>
-                <rect  id="rect2-2" width="1.2605684"
-                      height="3.478761" x="0.083553314" y="7.4901848" ry="0.13058987"
-                      transform="matrix(-0.70710678,0.70710678,0.70710678,0.70710678,0,0)"/></g></g></svg>
-}
-
 export const HelpIcon = ({ width = 20, height = 20, fill = "#D0CFCF" }) => {
     return <svg xmlns="http://www.w3.org/2000/svg" width={width} height={height}
                 viewBox="0 0 14 14">
@@ -289,3 +262,25 @@ export const BlackPyramidIcon = ({ width = 17, height = 17 }) => {
   );
 };
 
+export const KeyIcon = ({ extraClasses = "fill-[#A19F9F]" , width = 16, height = 16 }) => {
+  return <svg className={extraClasses} width={width} height={height} viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fillRule="evenodd" clipRule="evenodd" d="M2.22735 11.9246L6.16358 7.98836C5.45176 6.50343 5.71103 4.66967 6.9414 3.4393C8.50175 1.87896 11.0379 1.87896 12.5983 3.4393C14.1586 4.99965 14.1586 7.53581 12.5983 9.09616C11.3679 10.3265 9.53412 10.5858 8.0492 9.87398L7.88421 10.039V11.9246H5.99859V13.8102L2.2085 13.7913L2.22735 11.9246ZM10.746 6.61471C11.4819 6.61471 12.0785 6.01809 12.0785 5.28213C12.0785 4.54616 11.4819 3.94954 10.746 3.94954C10.01 3.94954 9.41337 4.54616 9.41337 5.28213C9.41337 6.01809 10.01 6.61471 10.746 6.61471Z"/>
+  </svg>
+};
+
+export const DefaultPollIcon = ({ extraClasses = "" , width = 30, height = 30 }) => {
+  return <svg width={width} height={height} viewBox="0 0 24 24" className={extraClasses} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="12" fill="#F7F6F6"/>
+      <path
+          d="M11.9998 12C11.2665 12 10.6387 11.7388 10.1165 11.2166C9.59428 10.6944 9.33317 10.0666 9.33317 9.33329C9.33317 8.59996 9.59428 7.97218 10.1165 7.44996C10.6387 6.92774 11.2665 6.66663 11.9998 6.66663C12.7332 6.66663 13.3609 6.92774 13.8832 7.44996C14.4054 7.97218 14.6665 8.59996 14.6665 9.33329C14.6665 10.0666 14.4054 10.6944 13.8832 11.2166C13.3609 11.7388 12.7332 12 11.9998 12ZM6.6665 17.3333V15.4666C6.6665 15.0888 6.76373 14.7416 6.95817 14.425C7.15262 14.1083 7.41095 13.8666 7.73317 13.7C8.42206 13.3555 9.12206 13.0972 9.83317 12.925C10.5443 12.7527 11.2665 12.6666 11.9998 12.6666C12.7332 12.6666 13.4554 12.7527 14.1665 12.925C14.8776 13.0972 15.5776 13.3555 16.2665 13.7C16.5887 13.8666 16.8471 14.1083 17.0415 14.425C17.2359 14.7416 17.3332 15.0888 17.3332 15.4666V17.3333H6.6665Z"
+          fill="#201C1C"/>
+  </svg>
+};
+
+export const Wallet = ({ extraClasses = "fill-[#A19F9F]" , width = 20, height = 20 }) => {
+  return <svg width={width} height={height} viewBox="0 0 16 16" fill="none" className={extraClasses} xmlns="http://www.w3.org/2000/svg">
+      <path fillRule="evenodd" clipRule="evenodd"
+            d="M12.6667 2H2V11.3333C2 12.8061 3.19391 14 4.66667 14H14V4.66667H3.33333V3.33333H12.6667V2ZM11.6667 10C12.219 10 12.6667 9.55228 12.6667 9C12.6667 8.44772 12.219 8 11.6667 8C11.1144 8 10.6667 8.44772 10.6667 9C10.6667 9.55228 11.1144 10 11.6667 10Z"/>
+  </svg>
+
+};

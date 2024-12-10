@@ -3,8 +3,8 @@ import {useSetAtom} from "jotai";
 import {useOperator} from "@/features/operator";
 import {modalStateAtom, ModalView} from "@/features/modal/ModalManager";
 import {PrimaryButton} from "@sentry/ui";
-import {WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
 import {TextButton} from "@sentry/ui/dist/src/rebrand/buttons/TextButton";
+import { config } from "@sentry/core";
 
 export function AssignKeysFromNewWallet() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
@@ -13,13 +13,12 @@ export function AssignKeysFromNewWallet() {
 
 	function startAssignment() {
 		setModalState(ModalView.TransactionInProgress);
-		window.electron.openExternal(`https://sentry.xai.games/#/assign-wallet/${operatorAddress}`);
+		window.electron.openExternal(`${config.sentryKeySaleURI}/#/assign-wallet/${operatorAddress}`);
 	}
 
 	return (
 		<div className={`flex flex-col justify-center items-center my-[40px]`}>
-			<WarningIcon width={64} height={55} />
-			<p className="text-3xl font-bold uppercase text-white mt-[26px] mb-[13px]">
+			<p className="text-lg font-bold text-white mt-[26px] mb-[5px]">
 				Keys not assigned
 			</p>
 			<p className="text-lg font-medium text-elementalGrey mb-[13px]">
@@ -40,7 +39,7 @@ export function AssignKeysFromNewWallet() {
 
 				<TextButton
 					onClick={() => setDrawerState(DrawerView.BuyKeys)}
-					className="text-pelati font-bold text-lg ml-1 cursor-pointer !py-0"
+					className="text-pelati underline font-normal text-lg cursor-pointer !py-0"
 					buttonText={"Purchase keys"}
 				/>
 			</p>

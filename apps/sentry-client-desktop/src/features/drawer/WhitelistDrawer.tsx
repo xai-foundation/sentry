@@ -6,7 +6,7 @@ import {useEffect, useState} from "react";
 import {useStorage} from "@/features/storage";
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {useOperator} from "@/features/operator";
-import {HelpIcon, WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
+import {HelpIcon, WarningIcon} from "@sentry/ui/dist/src/rebrand/icons";
 import MainCheckbox from "@sentry/ui/dist/src/rebrand/checkboxes/MainCheckbox";
 import BaseCallout from "@sentry/ui/dist/src/rebrand/callout/BaseCallout";
 import {AiOutlineClose} from "react-icons/ai";
@@ -28,10 +28,14 @@ export function WhitelistDrawer() {
 	}, []);
 
 	const toggleSelected = (wallet: string) => {
-		setSelected((prevSelected) => prevSelected.includes(wallet)
-			? prevSelected.filter((item) => item !== wallet)
-			: [...prevSelected, wallet]
-		);
+		const _selected = [...selected];
+		const indexInSelected = _selected.indexOf(wallet);
+		if (indexInSelected > -1) {
+			_selected.splice(indexInSelected, 1);
+		} else {
+			_selected.push(wallet);
+		}
+		setSelected(_selected);
 	};
 
 	const getOperatorItem = () => {
@@ -57,7 +61,7 @@ export function WhitelistDrawer() {
 
 	const getDropdownItems = () => (
 		<div>
-			{owners.map((wallet) => (
+			{owners.filter(o => o != operatorAddress).map((wallet) => (
 				<div
 					className="py-2 cursor-pointer hover:bg-gray-100"
 					key={`whitelist-item-${wallet}`}

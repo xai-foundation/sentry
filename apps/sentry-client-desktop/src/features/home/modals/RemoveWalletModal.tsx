@@ -2,8 +2,7 @@ import {useStorage} from "@/features/storage";
 import {useState} from "react";
 import {FaCircleCheck} from "react-icons/fa6";
 import {WalletAssignedMap} from "@/features/keys/Keys";
-import {WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
-import {CloseIcon} from "@sentry/ui/dist/src/rebrand/icons/CloseIcon";
+import {CloseIcon, WarningIcon} from "@sentry/ui/dist/src/rebrand/icons";
 import {PrimaryButton} from "@sentry/ui";
 
 interface ImportSentryAlertModalProps {
@@ -17,7 +16,7 @@ export function RemoveWalletModal({onClose, selectedWallet, isWalletAssignedMap}
 	const userWallets = data?.addedWallets || [];
 	const indexToRemove = userWallets.findIndex(wallet => wallet === selectedWallet);
 	const [success, setSuccess] = useState<boolean>(false);
-	let isAssigned;
+	let isAssigned: boolean = true;
 
 	if (selectedWallet) {
 		isAssigned = isWalletAssignedMap[selectedWallet];
