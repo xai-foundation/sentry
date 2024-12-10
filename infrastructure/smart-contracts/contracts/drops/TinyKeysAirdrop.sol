@@ -90,7 +90,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         // The node license contract will then notify the referee contract
         // This will disable minting in the node license contract
         // This will also disable staking in the referee contract
-        NodeLicense8(nodeLicenseAddress).startAirdrop(refereeAddress);
+        NodeLicense8(nodeLicenseAddress).startAirdrop();
 
         // Set the total supply of node licenses at the start of the airdrop
         totalSupplyAtStart = NodeLicense8(nodeLicenseAddress).totalSupply();
@@ -101,12 +101,13 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
 
     
     function processAirdropSegmentOnlyMint(uint256 _qtyToProcess) external onlyRole(DEFAULT_ADMIN_ROLE)  {
-        require(airdropStarted, "Airdrop not started");
+        require(airdropStarted && !airdropEnded, "Invalid airdrop state");
+        // require(!airdropEnded, "Airdrop already completed");
         require(airdropCounter <= totalSupplyAtStart, "Airdrop complete");
         // Start where we left off
         uint256 startingKeyId = airdropCounter;
         // Ensure we don't go over the total supply
-        uint256 endingKeyId = Math.min(airdropCounter + _qtyToProcess, totalSupplyAtStart);     
+        uint256 endingKeyId = Math.min(airdropCounter + _qtyToProcess - 1, totalSupplyAtStart);     
         // Connect to the referee and node license contracts
         NodeLicense8 nodeLicense = NodeLicense8(nodeLicenseAddress);
 
@@ -124,19 +125,22 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
     }
 
     function processAirdropSegmentOnlyStake(uint256 _qtyToProcess) external onlyRole(DEFAULT_ADMIN_ROLE)  {
-        require(airdropStarted, "Airdrop not started");
-        require(!airdropEnded, "Airdrop already complete");
-        require(stakeCounter <= airdropCounter, "Cannot stake non aidropped keys");
+        require(airdropStarted && !airdropEnded, "Invalid airdrop state");
+        // require(!airdropEnded, "Airdrop already completed");
+        require(stakeCounter <= totalSupplyAtStart, "Airdrop complete");
+        require(airdropCounter > 1 && stakeCounter <= airdropCounter, "Cannot stake non airdropped keys");
 
         // Start where we left off
         uint256 startingKeyId = stakeCounter;
 
         // Ensure we don't go over the total supply
-        uint256 endingKeyId = Math.min(stakeCounter + _qtyToProcess, totalSupplyAtStart);
+        uint256 endingKeyId = Math.min(stakeCounter + _qtyToProcess - 1, totalSupplyAtStart);
 
         // Connect to the referee and node license contracts
         NodeLicense8 nodeLicense = NodeLicense8(nodeLicenseAddress);
         Referee9 referee = Referee9(refereeAddress);
+
+        uint8 poolsProcessed;
 
         // Loop through the range of node licenses
         // Needs to be <= to include the last key
@@ -148,7 +152,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
             address poolAddress = referee.assignedKeyToPool(i);
 
             // If the pool address is not 0, stake the newly minted keys
-            if(poolAddress != address(0)){                
+            if(poolAddress != address(0)){           
                 uint256[] memory stakeKeyIds = new uint256[](keyMultiplier);
                 // Determine the initial token id for the newly minted keys
                 // Calculate the starting ID for the new batch of tokens
@@ -162,9 +166,15 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
                 
                 // Stake the keys
                 PoolFactory2(poolFactoryAddress).stakeKeysAdmin(poolAddress, stakeKeyIds, owner);
+                poolsProcessed++;
 
                 // Emit the event
                 emit AirdropSegmentStakeComplete(owner, poolAddress, stakeKeyIds[0], stakeKeyIds[stakeKeyIds.length-1]);
+            }
+
+            if (poolsProcessed == 2) {
+                endingKeyId = i;
+                break;
             }
         }
 
@@ -180,9 +190,8 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         require(stakeCounter == totalSupplyAtStart + 1, "Staking not complete");
 
         // Notify the node license contract that the airdrop is complete
-        NodeLicense8(nodeLicenseAddress).finishAirdrop(refereeAddress, keyMultiplier + 1);
+        NodeLicense8(nodeLicenseAddress).finishAirdrop(keyMultiplier + 1);
 
-        airdropStarted = false;
         airdropEnded = true;
         emit AirdropEnded();
     }

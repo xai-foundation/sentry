@@ -3,7 +3,7 @@
 import MainTitle from "../titles/MainTitle";
 import PoolOverviewComponent from "@/app/components/dashboard/PoolOverviewComponent";
 import PoolOverViewCard from "./PoolOverViewCard";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAppKit } from '@reown/appkit/react';
 import { useAccount } from "wagmi";
 import {
   useGetKYCApproved,
@@ -22,8 +22,8 @@ import PoolPanelComponent from "./PoolPanelComponent";
 const PoolComponent = () => {
   const router = useRouter();
   const { address } = useAccount();
-  const { isApproved } = useGetKYCApproved();
-  const { open } = useWeb3Modal();
+  const { isApproved } = useGetKYCApproved(); 
+  const { open } = useAppKit();
   const { tiers } = useGetTiers();
 
   const { userPools, isLoading } = useGetUserInteractedPools();

@@ -8,6 +8,7 @@
       "@sentry/*": ["../../packages/*/src"]
     }
   },
+  "include": ["src/assets/pagecontent/**/*.json", "src/**/*"],
   "references": [
     {
         "path": "../../packages/core/tsconfig.json"

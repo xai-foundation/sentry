@@ -66,8 +66,12 @@ export const loadOperatorWalletsFromRPC = async (
 
     bulkOwnerAndPools.forEach(b => {
         operatorState.sentryAddressStatusMap.set(b.address.toLowerCase(), {
-            ownerPublicKey: b.address,
+            address: b.address,
             status: NodeLicenseStatus.WAITING_IN_QUEUE,
+            keyCount: b.keyCount,
+            isPool: b.isPool,
+            name: b.name,
+            logoUri: b.logoUri
         });
     })
 
@@ -108,6 +112,7 @@ const reloadPoolsFromRPC = async (
                 address: pool,
                 isPool: true,
                 name: poolInfo._name,
+                logoUri: poolInfo._logo,
                 keyCount: Number(poolInfo.baseInfo.keyCount),
                 stakedEsXaiAmount: poolInfo.baseInfo.totalStakedAmount as bigint
             });
@@ -146,6 +151,7 @@ async function getInteractedPools(
                             address: pool,
                             isPool: true,
                             name: poolInfo._name,
+                            logoUri: poolInfo._logo,
                             keyCount: Number(poolInfo.baseInfo.keyCount),
                             stakedEsXaiAmount: poolInfo.baseInfo.totalStakedAmount as bigint
                         });

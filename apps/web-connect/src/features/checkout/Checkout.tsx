@@ -11,15 +11,18 @@ import { ActionSection } from "./components/ActionSection";
 import { BiLoaderAlt } from "react-icons/bi";
 import PurchaseSuccessful from "./components/PurchaseSuccessful";
 import { useWebBuyKeysContext } from './contexts/useWebBuyKeysContext';
+const { VITE_APP_ENV } = import.meta.env
+import { useTranslation } from "react-i18next";
 
-export const stakingPageURL = "https://app.xai.games/staking?modal=true&page=1&showKeys=true&hideFull=true&sort=tierIndex&sortOrder=-1";
+export const stakingPageURL = `https://${VITE_APP_ENV === "development" ? "develop." : ""}app.xai.games/staking?modal=true&page=1&showKeys=true&hideFull=true&sort=tierIndex&sortOrder=-1`;
 
-const LoadingState = () => (
-    <div className="w-full h-[365px] flex flex-col justify-center items-center gap-2">
-        <BiLoaderAlt className="animate-spin" color={"#FF0030"} size={32} />
-        <p className="text-base text-white font-semibold">Updating total...</p>
+const LoadingState = () => {
+    const { t: translate } = useTranslation("Checkout");
+    return <div className="w-full h-[365px] flex flex-col justify-center items-center gap-2">
+        <BiLoaderAlt className="animate-spin" color={"#FF0030"} size={32}/>
+        <p className="text-base text-white font-semibold">{translate("updatingTotal")}</p>
     </div>
-);
+};
 
 export function Checkout() {
     const [stakingTabOpened, setStakingTabOpened] = useState(false);
@@ -36,7 +39,7 @@ export function Checkout() {
         mintWithEth,
         mintWithXai,
         approve,
-        resetTransactions,
+        mintWithCrossmint
     } = useWebBuyKeysContext();
 
     useEffect(() => {
@@ -47,22 +50,22 @@ export function Checkout() {
     }, [prefilledPromoCode, promoCode, setPromoCode]);
 
     function returnToClient() {
-        resetTransactions();
+        window.location.reload();
     }
 
-	useEffect(() => {
-		if (!stakingTabOpened && (mintWithEth.isSuccess || mintWithXai.isSuccess)) {	
+    useEffect(() => {
+        if (!stakingTabOpened && (mintWithEth.isSuccess || mintWithXai.isSuccess || mintWithCrossmint.txHash != "")) {
             setStakingTabOpened(true);
-			window.open(stakingPageURL, '_blank');
-		}
-	}, [mintWithEth.isSuccess, mintWithXai.isSuccess]);
+            window.open(stakingPageURL, '_blank');
+        }
+    }, [mintWithEth.isSuccess, mintWithXai.isSuccess, mintWithCrossmint.txHash]);
 
     return (
         <div>
             <div className="h-full xl:min-h-screen flex-1 flex flex-col justify-center items-center">
-                {mintWithEth.isPending || mintWithXai.isPending || approve.isPending ? (
+                {mintWithEth.isPending || mintWithXai.isPending || approve.isPending || mintWithCrossmint.isPending ? (
                     <TransactionInProgress />
-                ) : mintWithEth.isSuccess || mintWithXai.isSuccess ? (
+                ) : mintWithEth.isSuccess || mintWithXai.isSuccess || mintWithCrossmint.txHash != "" ? (
                     <PurchaseSuccessful returnToClient={returnToClient} />
                 ) : (
                     <div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-darkLicorice shadow-main md:my-0 my-[24px]">

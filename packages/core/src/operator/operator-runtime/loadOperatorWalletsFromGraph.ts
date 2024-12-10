@@ -19,7 +19,7 @@ export const loadOperatorWalletsFromGraph = async (
 ): Promise<BulkOwnerOrPool[]> => {
     operatorState.cachedLogger(`Loading all wallets assigned to the operator.`);
     if (operatorState.passedInOwnersAndPools && operatorState.passedInOwnersAndPools.length) {
-        operatorState.cachedLogger(`Operator owners were passed in.`);
+        operatorState.cachedLogger(`Operator owners were passed in: ` + operatorState.passedInOwnersAndPools.join(", "));
     } else {
         operatorState.cachedLogger(`No operator owners were passed in.`);
     }
@@ -39,10 +39,12 @@ export const loadOperatorWalletsFromGraph = async (
         operatorState.cachedLogger(`Found ${wallets.length} operatorWallets. The addresses are: ${wallets.map(w => w.address).join(', ')}`);
         wallets.forEach(w => {
             operatorState.cachedOperatorWallets.push(w.address.toLowerCase());
-            bulkOwnerAndPools.push({ ...w, keyCount: w.keyCount - w.stakedKeyCount, isPool: false, stakedEsXaiAmount: w.v1EsXaiStakeAmount })
+            bulkOwnerAndPools.push({ ...w, keyCount: Number(w.keyCount) - Number(w.stakedKeyCount), isPool: false, stakedEsXaiAmount: w.v1EsXaiStakeAmount })
             operatorState.sentryAddressStatusMap.set(w.address.toLowerCase(), {
-                ownerPublicKey: w.address,
+                address: w.address,
                 status: NodeLicenseStatus.WAITING_IN_QUEUE,
+                keyCount: Number(w.keyCount) - Number(w.stakedKeyCount),
+                isPool: false
             });
         });
     }
@@ -55,8 +57,12 @@ export const loadOperatorWalletsFromGraph = async (
             mappedPools[p.address] = p;
             bulkOwnerAndPools.push({ ...p, keyCount: p.totalStakedKeyAmount, isPool: true, name: p.metadata[0], bulkSubmissions: p.submissions, stakedEsXaiAmount: p.totalStakedEsXaiAmount })
             operatorState.sentryAddressStatusMap.set(p.address.toLowerCase(), {
-                ownerPublicKey: p.address,
+                address: p.address,
                 status: NodeLicenseStatus.WAITING_IN_QUEUE,
+                keyCount: p.totalStakedKeyAmount,
+                isPool: true,
+                name: p.metadata[0],
+                logoUri: p.metadata[2]
             });
         });
         operatorState.cachedLogger(`Found ${pools.length} owned/delegated pools. The addresses are: ${Object.keys(mappedPools).join(', ')}`);
@@ -78,8 +84,12 @@ export const loadOperatorWalletsFromGraph = async (
             mappedPoolsInteractedPools[p.address.toLowerCase()] = p;
             bulkOwnerAndPools.push(p)
             operatorState.sentryAddressStatusMap.set(p.address.toLowerCase(), {
-                ownerPublicKey: p.address,
+                address: p.address,
                 status: NodeLicenseStatus.WAITING_IN_QUEUE,
+                keyCount: p.keyCount,
+                isPool: true,
+                name: p.name,
+                logoUri: p.logoUri
             });
 
         }

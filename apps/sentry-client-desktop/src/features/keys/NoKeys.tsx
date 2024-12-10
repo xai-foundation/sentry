@@ -1,6 +1,6 @@
 import {useSetAtom} from "jotai";
 import {drawerStateAtom, DrawerView} from "../drawer/DrawerManager";
-import { WarningIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { WarningIcon } from "@sentry/ui/src/rebrand/icons";
 import { PrimaryButton } from "@sentry/ui";
 
 export function NoKeys() {

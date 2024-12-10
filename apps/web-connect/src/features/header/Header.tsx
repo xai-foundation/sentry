@@ -1,15 +1,17 @@
 import {ConnectButton, ExternalLink} from "@sentry/ui";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAppKit } from '@reown/appkit/react';
 import {useAccount} from "wagmi";
 import {DiscordIcon, TelegramIcon, XaiLogo, XIcon} from "@sentry/ui/src/rebrand/icons/IconsComponents";
 import Burger from "@/features/header/Burger";
 import MobileNavbar from "@/features/header/MobileNavbar";
 import { useState} from "react";
+import { useTranslation } from "react-i18next";
 
 export function Header() {
-	const {open} = useWeb3Modal();
+	const {open} = useAppKit();
 	const {address} = useAccount()
 	const [isNavbarOpened, setIsNavbarOpened] = useState(false)
+    const { t: translate } = useTranslation("Nav");
 	
 	function handleConnectClick() {
 		open();
@@ -26,7 +28,7 @@ export function Header() {
 				</a>
 				<div className="font-bold text-xl items-center gap-[20px] uppercase text-white hidden md:flex">
 					<ExternalLink
-						content={"DOCS"}
+						content={translate("docs")}
 						externalTab
 						link={"https://xai-foundation.gitbook.io/xai-network/xai-blockchain/sentry-node-purchase-and-setup"}
 						customClass={"no-underline !font-bold text-xl hover:text-hornetSting"}/>
@@ -62,12 +64,12 @@ export function Header() {
 
 					</div>
 
-					<ConnectButton onOpen={handleConnectClick} address={address}/>
+					<ConnectButton buttonText={translate("connectWallet")} onOpen={handleConnectClick} address={address}/>
 				</div>
 				{/* Burger menu for mobile */}
 				<div className="md:hidden flex items-center">
 					<div className="pr-4">
-						<ConnectButton onOpen={handleConnectClick} address={address} />
+						<ConnectButton buttonText={translate("connectWallet")} onOpen={handleConnectClick} address={address} />
 					</div>
 					<Burger openNavbar={() => setIsNavbarOpened(true)} />
 				</div>

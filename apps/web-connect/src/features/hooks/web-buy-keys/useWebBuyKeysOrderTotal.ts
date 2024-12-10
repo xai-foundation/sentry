@@ -1,11 +1,10 @@
 import { useState, useMemo, useEffect } from 'react';
-import {wagmiConfig, chains} from "../../../main";
-import { useAccount, useWaitForTransactionReceipt } from 'wagmi';
-import { Chain } from 'viem';
-import { CheckoutTierSummary, formatWeiToEther } from '@sentry/core';
+import { useWaitForTransactionReceipt } from 'wagmi';
+import { CheckoutTierSummary, formatWeiToEther, isValidNetwork } from '@sentry/core';
 import { CURRENCIES, Currency, useContractWrites, UseContractWritesReturn, useCurrencyHandler, useGetExchangeRate, useGetPriceForQuantity, useGetTotalSupplyAndCap, usePromoCodeHandler, useUserBalances } from '..';
-import {useProvider} from "../provider/useProvider";
-import { getAccount } from '@wagmi/core'
+import { useProvider } from "../provider/useProvider";
+import { useNetworkConfig } from '@/hooks/useNetworkConfig';
+import { useTranslation } from "react-i18next";
 
 export interface PriceDataInterface {
     price: bigint;
@@ -14,6 +13,13 @@ export interface PriceDataInterface {
 
 export interface UseWebBuyKeysOrderTotalProps {
     initialQuantity: number;
+}
+
+interface MintWithCrossmintStatus {
+    txHash: string,
+    error: string,
+    isPending: boolean,
+    orderIdentifier: string
 }
 
 export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
@@ -38,12 +44,11 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
     tokenAllowance: bigint;
     ready: boolean;
     calculateTotalPrice: () => bigint;
-    getApproveButtonText: () => string;
-    getEthButtonText: () => string;
+    getApproveButtonText: () => [string, boolean];
+    getEthButtonText: () => [string, boolean];
     formatItemPricePer: (item: CheckoutTierSummary) => string;
     displayPricesMayVary: boolean;
     nodesAtEachPrice: Array<CheckoutTierSummary> | undefined;
-    chain: Chain | undefined;
     discount: { applied: boolean; error: boolean };
     setDiscount: React.Dispatch<React.SetStateAction<{ applied: boolean; error: boolean }>>;
     promoCode: string;
@@ -67,6 +72,10 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
     handleMintWithEthClicked: () => void;
     handleApproveClicked: () => void;
     handleMintWithXaiClicked: () => void;
+    chainId: number | undefined;
+    isConnected: boolean;
+    mintWithCrossmint: MintWithCrossmintStatus
+    setMintWithCrossmint: React.Dispatch<React.SetStateAction<MintWithCrossmintStatus>>
 }
 
 /**
@@ -77,11 +86,8 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
 export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysOrderTotalReturn {
     const { isLoading: isTotalLoading, data: getTotalData } = useGetTotalSupplyAndCap();
     const { data: exchangeRateData, isLoading: isExchangeRateLoading } = useGetExchangeRate();
-
-	const { chainId } = getAccount(wagmiConfig);
-	const chain = chains.find(chain => chain.id === chainId)
-
-    const { address } = useAccount();
+    const { chainId, isConnected, address, isDevelopment } = useNetworkConfig();
+    const { t: translate } = useTranslation("WebBuyKeysOrderTotal")
     const { data: providerData } = useProvider();
 
     const maxSupply = getTotalData?.cap && getTotalData?.totalSupply
@@ -95,6 +101,12 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     });
     const [currency, setCurrency] = useState<Currency>(CURRENCIES.AETH);
     const [quantity, setQuantity] = useState<number>(initialQuantity);
+    const [mintWithCrossmint, setMintWithCrossmint] = useState<MintWithCrossmintStatus>({
+        txHash: "",
+        error: "",
+        orderIdentifier: "",
+        isPending: false
+    });
 
     const { tokenBalance, ethBalance } = useUserBalances(currency);
     const { tokenAllowance, refetchAllowance } = useCurrencyHandler(currency, address);
@@ -102,9 +114,9 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
 
     const ready = checkboxes.one && checkboxes.two && checkboxes.three;
 
-    const  decimalPlaces: number = currency  === CURRENCIES.AETH ? 9 : 2;
+    const decimalPlaces: number = currency === CURRENCIES.AETH ? 9 : 2;
 
-    const { data: getPriceData, isLoading: isPriceLoading   } = useGetPriceForQuantity(quantity);
+    const { data: getPriceData, isLoading: isPriceLoading } = useGetPriceForQuantity(quantity);
     // Retrieve price data for the specified quantity
 
     /**
@@ -123,10 +135,11 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         };
     }, [getPriceData, discount, currency, exchangeRateData]);
 
-    const { 
-        mintWithEth, 
-        approve, 
-        mintWithXai, 
+
+    const {
+        mintWithEth,
+        approve,
+        mintWithXai,
         ethMintTx,
         xaiMintTx,
         approveTx,
@@ -156,37 +169,38 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
 
     /**
      * Determines the text to display on the approve button based on the current state.
-     * @returns The approve button text as a string.
+     * @returns The approve button text as a string and a flag if we currently need approval.
      */
-    const getApproveButtonText = (): string => {
+    const getApproveButtonText = (): [string, boolean] => {
         const total = calculateTotalPrice();
 
         if (approve.isPending || xaiMintTx.isLoading) {
-            return "WAITING FOR CONFIRMATION...";
+            return [translate("approveButtonsTexts.isPending"), false];
         }
 
         if (total > tokenBalance) {
-            return `Insufficient ${currency} balance`;
+            return [translate("approveButtonsTexts.insufficientBalance", { currency }), false];
         }
 
         if (total > tokenAllowance) {
-            return `Approve ${currency}`;
+            return [translate("approveButtonsTexts.approveCurrency", { currency }), true];
         }
 
-        return "PURCHASE NOW";
+        return [translate("approveButtonsTexts.purchaseNow"), false];
     };
 
-    const getEthButtonText = (): string => {        
-        if (chain?.id !== 42161) return "Please Switch to Arbitrum One";
+    const getEthButtonText = (): [string, boolean] => {
+        if (!isConnected) return [translate("ethButtonTexts.connectWallet"), false];
+        if (!isValidNetwork(chainId, isDevelopment)) return [translate("ethButtonTexts.switchToArbitrum"), false];
         if (mintWithEth.isPending || ethMintTx.isLoading) {
-            return "WAITING FOR CONFIRMATION...";
+            return [translate("ethButtonTexts.isPending"), false];
         }
 
         if (calculateTotalPrice() > ethBalance) {
-            return "Insufficient ETH balance";
+            return [translate("ethButtonTexts.insufficientBalance"), true];
         }
 
-        return "MINT NOW";
+        return [translate("ethButtonTexts.mintNow"), false];
     };
 
     /**
@@ -206,7 +220,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const userHasEthBalance = ethBalance >= calculateTotalPrice();
 
     const displayPricesMayVary = (getPriceData?.nodesAtEachPrice?.filter((node: CheckoutTierSummary) => node.quantity !== 0n) ?? []).length >= 2;
-    
+
     return {
         isTotalLoading,
         isExchangeRateLoading,
@@ -226,7 +240,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         formatItemPricePer,
         displayPricesMayVary,
         nodesAtEachPrice: getPriceData?.nodesAtEachPrice,
-        chain,
+        //chain,
         discount,
         setDiscount,
         promoCode,
@@ -249,9 +263,13 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         clearErrors,
         resetTransactions,
         mintWithEthError,
-        blockExplorer: providerData?.blockExplorer ?? '',   
+        blockExplorer: providerData?.blockExplorer ?? '',
         handleMintWithEthClicked,
         handleApproveClicked,
-        handleMintWithXaiClicked,     
+        handleMintWithXaiClicked,
+        chainId,
+        isConnected,
+        mintWithCrossmint,
+        setMintWithCrossmint,
     };
 }

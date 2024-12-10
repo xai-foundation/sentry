@@ -29,13 +29,18 @@
     "enable-staking-v2": "hardhat run scripts/enableStakingV2.mjs",
     "deploy-forwarder": "hardhat run scripts/xai-deploy/deployForwarder.mjs",
     "mock-assertion": "hardhat run scripts/mock-assertion-test/mock-assertion-test.mjs --network arbitrumSepolia",
+    "process-tk": "hardhat run scripts/tiny-keys/step1.mjs",
     "fork": "hardhat node --fork https://arb1.arbitrum.io/rpc",
     "local": "hardhat node",
     "test": "hardhat test --network localhost",
     "coverage": "hardhat coverage --network localhost --solcoverjs ./.solcover.cjs --temp artifacts --testfiles \"./test/**/*.mjs\"",
     "clean": "rimraf artifacts && rimraf cache",
     "size": "hardhat size-contracts",
-    "compile": "hardhat compile"
+    "compile": "hardhat compile",
+    "deploy-sepolia": "hardhat run scripts/sepolia-deploy/deployAndPopulateSepolia.mjs",
+    "deploy-tiny-keys": "hardhat run scripts/tiny-keys/deployTinyKeys.mjs",
+    "start-tiny-keys-drop": "hardhat run scripts/tiny-keys/startAirdrop.mjs",
+    "process-tiny-keys-drop": "hardhat run scripts/tiny-keys/processAirdrop.mjs"
   },
   "dependencies": {
     "@sentry/core": "workspace:*",

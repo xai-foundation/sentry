@@ -3,6 +3,7 @@ import {useSetAtom} from "jotai";
 import { PrimaryButton } from "@sentry/ui";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
 import { AiFillCheckCircle } from "react-icons/ai";
+import { config } from "@sentry/core";
 
 interface BuyFlowBanner {
 	quantity: number;
@@ -31,7 +32,7 @@ export function BuyFlowBanner({quantity, promoCode}: BuyFlowBanner) {
 				<PrimaryButton
 					onClick={() => {
 						setModalState(ModalView.TransactionInProgress)
-						window.electron.openExternal(promoCode ? `https://sentry.xai.games/?quantity=${quantity}&promoCode=${promoCode}` : `https://sentry.xai.games/?quantity=${quantity}`)
+						window.electron.openExternal(promoCode ? `${config.sentryKeySaleURI}/?quantity=${quantity}&promoCode=${promoCode}` : `${config.sentryKeySaleURI}/?quantity=${quantity}`)
 					}}
 					className={"w-full h-16 text-lg uppercase !font-bold"}
 					btnText="Continue"

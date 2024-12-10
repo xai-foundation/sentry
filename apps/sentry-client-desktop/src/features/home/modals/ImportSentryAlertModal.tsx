@@ -1,6 +1,6 @@
 import {AiOutlineClose} from "react-icons/ai";
 import {Dispatch, SetStateAction} from "react";
-import {WarningIcon} from "@sentry/ui/dist/src/rebrand/icons/IconsComponents";
+import {WarningIcon} from "@sentry/ui/dist/src/rebrand/icons";
 import {PrimaryButton} from "@sentry/ui";
 import {TextButton} from "@sentry/ui/dist/src/rebrand/buttons/TextButton";
 

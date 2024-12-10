@@ -1,11 +1,10 @@
-import {app, BrowserWindow, dialog, ipcMain, safeStorage, shell} from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, Menu, MenuItem, safeStorage, shell } from 'electron';
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
-import express from 'express';
-import net from "net";
 import log from "electron-log";
-import {autoUpdater} from 'electron-updater';
+import { autoUpdater } from 'electron-updater';
+import { config, MAINNET_ID, setConfigByChainId, TESTNET_ID } from '@sentry/core/src/config';
 
 const isWindows = os.platform() === "win32";
 
@@ -152,48 +151,40 @@ app.on('activate', () => {
 	}
 })
 
-// When the app is ready, we are going to start a local web server to deploy the web-connect project
-app.on('ready', async () => {
-	const isPortOpen = async (port: number): Promise<boolean> => {
-		return new Promise((resolve) => {
-			const s = net.createServer();
-			s.once('error', (err) => {
-				s.close();
-				if (err["code"] == "EADDRINUSE") {
-					resolve(false);
-				} else {
-					resolve(false); // or throw error!!
-					// reject(err);
-				}
-			});
-			s.once('listening', () => {
-				resolve(true);
-				s.close();
-			});
-			s.listen(port);
-		});
-	}
-
-	// on windows, the server gets started multiple times when it shouldn't
-	if (!(await isPortOpen(8080))) {
-		return;
-	}
-
-	const server = express();
-	const publicWebPath = path.join(process.env.VITE_PUBLIC, '/web');
-	server.use(express.static(publicWebPath)); // takes dir, makes root
-	server.get("/*", (_, res) => {
-		res.sendFile(path.join(publicWebPath, "index.html")) // force web to load index.html
-	})
-	server.listen(8080);
-});
-
-app.on('ready', function()  {
+app.on('ready', function () {
 	autoUpdater.checkForUpdatesAndNotify();
+
+	function toggleSwitchNetwork() {
+		const switchToNetwork = config.defaultNetworkName === "arbitrum" ? "arbitrumSepolia" : "arbitrum";
+
+		win?.webContents.send('config-updated', switchToNetwork);
+
+		//Switch network for main app thread
+		if (switchToNetwork === "arbitrumSepolia") {
+			setConfigByChainId(TESTNET_ID);
+		} else {
+			setConfigByChainId(MAINNET_ID);
+		}
+	}
+
+	// Add submenu to "View" menu item to toggle switch network
+	let menu = Menu.getApplicationMenu();
+	if (menu) {
+		const editMenu = menu?.items.find(item => item.label === 'View');
+
+		if (editMenu && editMenu.submenu) {
+			editMenu.submenu.append(new MenuItem({
+				label: `[DEV] Network switch`,
+				click: toggleSwitchNetwork
+			}));
+		}
+
+		Menu.setApplicationMenu(menu);
+	}
 });
 
 setInterval(() => {
-    autoUpdater.checkForUpdatesAndNotify();
+	autoUpdater.checkForUpdatesAndNotify();
 }, 1000 * 60 * 5);
 
 // autoUpdater.on('checking-for-update', () => {

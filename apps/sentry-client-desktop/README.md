@@ -29,6 +29,8 @@ Required build environment variables for signing:
 - `SSL_PASSWORD` SSL.com login password
 - `SSL_TOTP_SECRET` Certificate secret to pull the actual EV certificate from the SSL.com identity
 
+#### For testing Windows signing locally, downloading the CodeSignTool is required, `downloadCodeSignTool.js` can be used to download und extract the tool.
+
 
 ### MacOS
 

@@ -9,6 +9,7 @@ interface ShareButtonProps {
     buttonText: string;             // The text to be shared.
     shareUrl: string;               // The URL to be shared.
     shareButtonClasses?: string;    // Custom CSS classes for the share button.
+    onClick?: () => void;
 }
 
 /**
@@ -24,7 +25,7 @@ interface ShareButtonProps {
  *
  * @returns {JSX.Element} - A button that enables sharing functionality.
  */
-const ShareButton: React.FC<ShareButtonProps> = ({ buttonText, buttonTitle, shareUrl, shareButtonClasses }) => {
+const ShareButton: React.FC<ShareButtonProps> = ({ buttonText, buttonTitle, shareUrl, shareButtonClasses, onClick }) => {
 
     /**
      * handleShare - Triggers the Web Share API to share the provided title, text, and URL.
@@ -34,6 +35,8 @@ const ShareButton: React.FC<ShareButtonProps> = ({ buttonText, buttonTitle, shar
      * @returns {Promise<void>}
      */
     const handleShare = async () => {
+        if (onClick) onClick();
+
         if (navigator.share) {
             try {
                 await navigator.share({

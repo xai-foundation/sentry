@@ -117,55 +117,56 @@ contract NodeLicense7 is ERC721EnumerableUpgradeable, AccessControlUpgradeable {
      * @param _promoCode The promo code.
      */
     function mint(uint256 _amount, string calldata _promoCode) public payable {
-        require(
-            _tokenIds.current() + _amount <= maxSupply,
-            "Exceeds maxSupply"
-        );
-        PromoCode memory promoCode = _promoCodes[_promoCode];
-        require(
-            (promoCode.recipient != address(0) && promoCode.active) || bytes(_promoCode).length == 0,
-            "Invalid or inactive promo code"
-        );
-        require(
-            promoCode.recipient != msg.sender,
-            "Referral address cannot be the sender's address"
-        );
+        revert("Minting temporarily disabled");
+        // require(
+        //     _tokenIds.current() + _amount <= maxSupply,
+        //     "Exceeds maxSupply"
+        // );
+        // PromoCode memory promoCode = _promoCodes[_promoCode];
+        // require(
+        //     (promoCode.recipient != address(0) && promoCode.active) || bytes(_promoCode).length == 0,
+        //     "Invalid or inactive promo code"
+        // );
+        // require(
+        //     promoCode.recipient != msg.sender,
+        //     "Referral address cannot be the sender's address"
+        // );
 
-        uint256 finalPrice = price(_amount, _promoCode);
-        uint256 averageCost = msg.value / _amount;
+        // uint256 finalPrice = price(_amount, _promoCode);
+        // uint256 averageCost = msg.value / _amount;
 
-        require(msg.value >= finalPrice, "Ether value sent is not correct");
+        // require(msg.value >= finalPrice, "Ether value sent is not correct");
 
-        for (uint256 i = 0; i < _amount; i++) {
-            _tokenIds.increment();
-            uint256 newItemId = _tokenIds.current();
-            _mint(msg.sender, newItemId);
+        // for (uint256 i = 0; i < _amount; i++) {
+        //     _tokenIds.increment();
+        //     uint256 newItemId = _tokenIds.current();
+        //     _mint(msg.sender, newItemId);
 
-            // Record the minting timestamp
-            _mintTimestamps[newItemId] = block.timestamp;
+        //     // Record the minting timestamp
+        //     _mintTimestamps[newItemId] = block.timestamp;
 
-            // Record the average cost
-            _averageCost[newItemId] = averageCost;
-        }
+        //     // Record the average cost
+        //     _averageCost[newItemId] = averageCost;
+        // }
 
-        // Calculate the referral reward
-        uint256 referralReward = 0;
-        if (promoCode.recipient != address(0)) {
-            referralReward = finalPrice * referralRewardPercentage / 100;
-            _referralRewards[promoCode.recipient] += referralReward;
-            _promoCodes[_promoCode].receivedLifetime += referralReward;
-            emit ReferralReward(msg.sender, promoCode.recipient, referralReward);
-        }
+        // // Calculate the referral reward
+        // uint256 referralReward = 0;
+        // if (promoCode.recipient != address(0)) {
+        //     referralReward = finalPrice * referralRewardPercentage / 100;
+        //     _referralRewards[promoCode.recipient] += referralReward;
+        //     _promoCodes[_promoCode].receivedLifetime += referralReward;
+        //     emit ReferralReward(msg.sender, promoCode.recipient, referralReward);
+        // }
 
-        uint256 remainder = msg.value - finalPrice;
-        (bool sent, bytes memory data) = fundsReceiver.call{value: finalPrice - referralReward}("");
-        require(sent, "Failed to send Ether");
+        // uint256 remainder = msg.value - finalPrice;
+        // (bool sent, bytes memory data) = fundsReceiver.call{value: finalPrice - referralReward}("");
+        // require(sent, "Failed to send Ether");
 
-        // Send back the remainder amount
-        if (remainder > 0) {
-            (bool sentRemainder, bytes memory dataRemainder) = msg.sender.call{value: remainder}("");
-            require(sentRemainder, "Failed to send back the remainder Ether");
-        }
+        // // Send back the remainder amount
+        // if (remainder > 0) {
+        //     (bool sentRemainder, bytes memory dataRemainder) = msg.sender.call{value: remainder}("");
+        //     require(sentRemainder, "Failed to send back the remainder Ether");
+        // }
     }
 
     

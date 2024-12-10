@@ -8,8 +8,6 @@ on:
 
   pull_request_review:
     types: [submitted]
-    branches:
-        - '*'
 
 jobs:
   build:
@@ -19,7 +17,7 @@ jobs:
     steps:
       # Step 1: Checkout the code from the PR branch
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       # Step 2: Set up environment variables for container names
       - name: Set container names
@@ -28,9 +26,13 @@ jobs:
           echo "WEB_STAKING_CONTAINER_NAME=web-staking-${{ github.event.pull_request.number }}" >> $GITHUB_ENV
           
       # Step 3: Build web-connect and web-staking services using docker compose
-      - name: Build Docker services
+      - name: Build Docker web-staking
         run: |
-          docker compose -f .dev-deploy/docker-compose.yml build
+          docker compose -f .dev-deploy/docker-compose.yml build web-staking
+
+      - name: Build Docker web-connect
+        run: |
+          docker compose -f .dev-deploy/docker-compose.yml build web-connect
 
       - name: Check if containers exist and remove them
         run: |

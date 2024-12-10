@@ -60,6 +60,7 @@ export async function getSentryWalletsForOperator(
         v1EsXaiStakeAmount
         stakedKeyCount
         keyCount
+        totalAccruedAssertionRewards
         ${submissionQueryFilter.length ? bulkSubmissionsFields : ""}
       }
       poolInfos(first: 1000, where: {or: [{owner: "${operator.toLowerCase()}"}, {delegateAddress: "${operator.toLowerCase()}"}]}) {
@@ -69,6 +70,7 @@ export async function getSentryWalletsForOperator(
         totalStakedEsXaiAmount
         totalStakedKeyAmount
         metadata
+        totalAccruedAssertionRewards
         ${submissionQueryFilter.length ? submissionsFields : ""}
       }
       refereeConfig(id: "RefereeConfig") {

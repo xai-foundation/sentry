@@ -40,7 +40,7 @@ export async function findMissedAssertion(): Promise<number | null> {
         }
 
         loopCount++;
-        if (loopCount > 10) {
+        if (loopCount > 30) {
             throw new Error(`Did not find any past assertion events for up to ${loopCount * blockRangePerRequest} blocks - checked until block ${fromBlock}`);
         }
 

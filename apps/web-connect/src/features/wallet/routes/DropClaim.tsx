@@ -1,29 +1,26 @@
-import {useAccount,  useWriteContract } from "wagmi";
-import {wagmiConfig, chains} from "../../../main";
+import {useWriteContract } from "wagmi";
 import {ConnectButton, PrimaryButton, XaiCheckbox} from "@sentry/ui";
 import {useState} from "react";
 import {BiLoaderAlt} from "react-icons/bi";
-import {config, NodeLicenseAbi} from "@sentry/core";
+import {config, isValidNetwork, NodeLicenseAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {useBlockIp} from "@/hooks/useBlockIp";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAppKit } from '@reown/appkit/react';
 import { WarningNotification } from "@sentry/ui/src/rebrand/notifications";
 import { KYCTooltip } from "@/features/checkout/components/KYCTooltip";
 import { useListClaimableAmount } from "@/features/hooks";
-import { getAccount } from '@wagmi/core'
 import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
+import { useNetworkConfig } from "@/hooks/useNetworkConfig";
 
 export function DropClaim() {
 	const {blocked, loading} = useBlockIp({blockUsa: true});
 
-	const {address} = useAccount();
-	const {open} = useWeb3Modal()
-	const { chainId } = getAccount(wagmiConfig);
-	const chain = chains.find(chain => chain.id === chainId)
+	const {open} = useAppKit()
+    const { chainId, address, isDevelopment} = useNetworkConfig();
 	const [checkboxOne, setCheckboxOne] = useState<boolean>(false);
 	const [checkboxTwo, setCheckboxTwo] = useState<boolean>(false);
 	const [checkboxThree, setCheckboxThree] = useState<boolean>(false);
-	const ready = checkboxOne && checkboxTwo && checkboxThree && chain?.id === 42_161;
+	const ready = checkboxOne && checkboxTwo && checkboxThree && isValidNetwork(chainId, isDevelopment);
 
 	const {data: claimableAmount, isLoading: isClaimableAmountLoading} = useListClaimableAmount(address);
 
@@ -121,7 +118,7 @@ export function DropClaim() {
 																I agree with the
 																<a
 																	className="cursor-pointer text-[#F30919]"
-																	onClick={() => window.open("https://xai.games/sentrynodeagreement/")}>
+																	onClick={() => window.open("https://xai.games/sentry-node-agreement/")}>
 																	Sentry Node Agreement
 																</a>
 															</XaiCheckbox>
@@ -131,7 +128,7 @@ export function DropClaim() {
 																onClick={() => setCheckboxTwo(!checkboxTwo)}
 																condition={checkboxTwo}
 															>
-																I understand Sentry Node Keys are not transferable
+																I understand Sentry Keys are not transferable
 															</XaiCheckbox>
 
 															<XaiCheckbox
@@ -155,7 +152,7 @@ export function DropClaim() {
 																className={`w-[576px] h-16 ${ready ? "bg-[#F30919]" : "bg-gray-400 cursor-default"} text-sm text-white p-2 uppercase font-semibold`}
 																disabled={!ready || isRedeemFromWhitelistLoading}
 															>
-																{chain?.id === 42_161 ? "Claim" : "Please Switch to Arbitrum One"}
+																{(isValidNetwork(chainId, isDevelopment)) ? "Claim" : "Please Switch to Arbitrum"}
 															</button>
 														</div>
 

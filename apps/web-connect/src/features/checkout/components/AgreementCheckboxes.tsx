@@ -2,12 +2,13 @@ import { useCallback } from 'react';
 import MainCheckbox from "@sentry/ui/src/rebrand/checkboxes/MainCheckbox";
 import { KYCTooltip } from "./KYCTooltip";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
+import { useTranslation } from "react-i18next";
 
 /**
  * AgreementCheckboxes Component
  * 
  * This component renders a set of three checkboxes for user agreements
- * related to Sentry Node Keys. It uses the WebBuyKeysContext to manage
+ * related to Sentry Keys. It uses the WebBuyKeysContext to manage
  * the state of the checkboxes.
  * 
  * @returns {JSX.Element} The rendered AgreementCheckboxes component
@@ -15,6 +16,7 @@ import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 export function AgreementCheckboxes(): JSX.Element {
     // Destructure the checkboxes state and setter from the context
     const { checkboxes, setCheckboxes } = useWebBuyKeysContext();
+    const { t: translate } = useTranslation("Checkout");
 
     /**
      * Handles the change of a checkbox state
@@ -35,12 +37,12 @@ export function AgreementCheckboxes(): JSX.Element {
                     labelStyle="!items-start"
                 >
                     <div className="sm:w-[200px] md:w-[300px] lg:w-auto">
-                        <span className="sm:text-base text-elementalGrey sm:mr-2">I agree with the</span>
+                        <span className="sm:text-base text-elementalGrey sm:mr-2">{translate("agreementCheckboxes.iAgreeWith")}</span>
                         <a
                             className="cursor-pointer text-[#F30919] text-base"
-                            onClick={() => window.open("https://xai.games/sentrynodeagreement/")}
+                            onClick={() => window.open("https://xai.games/sentry-node-agreement/")}
                         >
-                            Sentry Node Agreement
+                            {translate("agreementCheckboxes.sentryNodeAgreement")}
                         </a>
                     </div>
                 </MainCheckbox>
@@ -53,7 +55,7 @@ export function AgreementCheckboxes(): JSX.Element {
                 >
                     <div className="sm:w-[300px] md:w-auto">
                         <span className="sm:text-base text-elementalGrey">
-                            I understand Sentry Node Keys are not transferable
+                            {translate("agreementCheckboxes.notTransferableKeys")}
                         </span>
                     </div>
                 </MainCheckbox>
@@ -66,11 +68,11 @@ export function AgreementCheckboxes(): JSX.Element {
                 >
                     <div className="flex w-full sm:w-[300px] justify-between md:w-auto sm:flex-col lg:flex-row items-start">
                         <span className="sm:text-base text-elementalGrey lg:mr-2">
-                            I understand that I cannot redeem esXAI for XAI until I pass KYC
+                            {translate("agreementCheckboxes.cannotRedeemXAI")}
                         </span>
                         {/* Tooltip for blocked countries information */}
                         <KYCTooltip width={850}>
-                            <p className="text-[#F30919] text-base">(See blocked countries)</p>
+                            <p className="text-[#F30919] text-base">{translate("agreementCheckboxes.seeBlockedCountries")}</p>
                         </KYCTooltip>
                     </div>
                 </MainCheckbox>

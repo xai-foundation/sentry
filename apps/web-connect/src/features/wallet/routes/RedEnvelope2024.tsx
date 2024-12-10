@@ -1,25 +1,18 @@
-import {useAccount, useReadContract } from "wagmi";
-import {wagmiConfig, chains} from "../../../main";
+import {useReadContract } from "wagmi";
 import {useListNodeLicenses} from "@/hooks/useListNodeLicenses";
 import {BiLoaderAlt} from "react-icons/bi";
 import {useEffect, useState} from "react";
-import {checkKycStatus, xaiRedEnvelopeAbi} from "@sentry/core";
+import {checkKycStatus, isValidNetwork, xaiRedEnvelopeAbi} from "@sentry/core";
 import {useBlockIp} from "@/hooks/useBlockIp";
 import {FaCircleCheck, FaCircleXmark} from "react-icons/fa6";
 import {Link} from "react-router-dom";
 import { config } from "@sentry/core";
-import { getAccount } from '@wagmi/core'
 import IpBlockText from "@sentry/ui/src/rebrand/text/IpBlockText";
+import { useNetworkConfig } from "@/hooks/useNetworkConfig";
 
 export function RedEnvelope2024() {
 	const {blocked, loading: loadingGeo} = useBlockIp({blockUsa: true});
-
-	const {address} = useAccount();
-	console.log("address:", address);
-
-	const { chainId } = getAccount(wagmiConfig);
-	const chain = chains.find(chain => chain.id === chainId)
-	console.log("chain:", chain);
+    const { chainId, address, isDevelopment} = useNetworkConfig();
 
 	// check license balance
 	const {isLoading: licenseBalanceLoading, data} = useListNodeLicenses(address ? [address] : undefined);
@@ -135,11 +128,11 @@ export function RedEnvelope2024() {
 					</p>
 				)}
 
-				{address && data && chain?.id !== 42161 && (
+				{address && data && !isValidNetwork(chainId, isDevelopment)  && (
 				// {address && data && chain.id !== 42170 && (
 					<>
 						<p className="text-lg text-[#525252] max-w-[590px] text-center mt-6">
-							Please switch to Arbitrum One with the button below
+							Please switch to Arbitrum with the button below
 						</p>
 						<div className="m-8">
 							<w3m-button/>
@@ -147,7 +140,7 @@ export function RedEnvelope2024() {
 					</>
 				)}
 
-				{address && data && chain?.id === 42161 && (
+				{address && data && isValidNetwork(chainId, isDevelopment) && (
 				// {address && data && chain.id === 42170 &&(
 					<>
 						{licenseBalanceLoading && (
@@ -216,7 +209,7 @@ export function RedEnvelope2024() {
 										<div className="mt-6 mb-6">
 											<a
 												className="twitter-share-button"
-												href="https://twitter.com/intent/tweet?text=Xai is a modular execution layer for game logic built on the Arbitrum Orbit stack to facilitate the onboarding of millions of gamers. And now they’re airdropping $XAI to Sentry Node Key holders to celebrate the Year of the Dragon. 🐉🧧"
+												href="https://twitter.com/intent/tweet?text=Xai is a modular execution layer for game logic built on the Arbitrum Orbit stack to facilitate the onboarding of millions of gamers. And now they’re airdropping $XAI to Sentry Key holders to celebrate the Year of the Dragon. 🐉🧧"
 												target="_blank"
 												rel="noopener noreferrer"
 												data-size="large"

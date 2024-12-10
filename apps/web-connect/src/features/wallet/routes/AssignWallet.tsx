@@ -1,19 +1,16 @@
 import {useNavigate, useParams} from "react-router-dom";
-import {useAccount, useWriteContract } from "wagmi";
-import {wagmiConfig, chains} from "../../../main";
-import {config, RefereeAbi} from "@sentry/core";
+import {useWriteContract } from "wagmi";
+import {config, isValidNetwork, RefereeAbi} from "@sentry/core";
 import {FaCircleCheck} from "react-icons/fa6";
 import {ConnectButton, PrimaryButton} from "@sentry/ui";
-import {useWeb3Modal} from "@web3modal/wagmi/react";
-import { getAccount } from '@wagmi/core'
+import { useAppKit } from '@reown/appkit/react';
+import { useNetworkConfig } from "@/hooks/useNetworkConfig";
 
 export function AssignWallet() {
 	const navigate = useNavigate();
-	const {open} = useWeb3Modal()
+	const {open} = useAppKit()
 	const params = useParams<{operatorAddress: string}>();
-	const {isConnected, address} = useAccount();
-	const { chainId } = getAccount(wagmiConfig);
-	const chain = chains.find(chain => chain.id === chainId)
+    const { chainId, isConnected, address, isDevelopment} = useNetworkConfig();
 
 	const txData = {
 		address: config.refereeAddress as `0x${string}`,
@@ -81,8 +78,8 @@ export function AssignWallet() {
 							{isConnected && address ? (
 								<PrimaryButton
 									onClick={() => writeContract(txData)}
-									isDisabled={isLoading || isSuccess || chain?.id !== 42_161}
-									btnText={chain?.id === 42_161 ? `Assign wallet to Sentry (${getShortenedWallet(address)})` : "Please Switch to Arbitrum One"}
+									isDisabled={isLoading || isSuccess || !isValidNetwork(chainId  as number, isDevelopment)}
+									btnText={isValidNetwork(chainId as number, isDevelopment) ? `Assign wallet to Sentry (${getShortenedWallet(address)})` : "Please Switch to Arbitrum"}
 									colorStyle={"primary"}
 									className={"w-full bg-[#F30919] max-w-[700px] text-white mt-3 text-xl uppercase font-bold disabled:bg-slate-400 h-full global-clip-primary-btn"}
 								/>
