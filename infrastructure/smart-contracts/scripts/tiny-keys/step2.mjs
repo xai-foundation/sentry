@@ -24,22 +24,25 @@ async function main() {
     }
 
     // get the deployer
-    const signers = (await ethers.getSigners());
-    const deployer = signers[0];
+    const _signers = (await ethers.getSigners());
+    const deployer = _signers[0];
+    const signers = [];
 
     console.log("Running upgrade with deployer admins");
 
-    for (let i = 0; i < walletCount; i++) {
-        const adminWalletAddress = signers[i].address;
+    for (let i = 1; i <= walletCount; i++) {
+        const adminWalletAddress = _signers[i].address;
         let nonce = await ethers.provider.getTransactionCount(adminWalletAddress, "pending");
         WALLET_TO_NONCE[adminWalletAddress] = nonce;
         console.log(`Loaded wallet at index ${i}: ${adminWalletAddress}, currentNonce: ${WALLET_TO_NONCE[adminWalletAddress]}`);
+        signers.push(_signers[i]);
 
-        // //Transfer funds if needed
-        // await deployer.sendTransaction({
-        //     to: adminWalletAddress,
-        //     value: ethers.parseEther("1"),
-        // });
+        //Transfer funds if needed
+        await deployer.sendTransaction({
+            to: adminWalletAddress,
+            value: ethers.parseEther("0.1"),
+        });
+        console.log(`Transferred funds to: ${adminWalletAddress}`);
     }
 
     // Get the total supply of node licenses
