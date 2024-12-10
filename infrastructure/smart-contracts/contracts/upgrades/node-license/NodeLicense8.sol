@@ -295,7 +295,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * @param _promoCode The promo code.
      * @param _useEsXai a boolean to determine if the payment is in XAI or esXai
      */
-    function mintWithXai(uint256 _amount, string calldata _promoCode, bool _useEsXai, uint256 _expectedCost) public {
+    function mintWithXai(address to, uint256 _amount, string calldata _promoCode, bool _useEsXai, uint256 _expectedCost) public {
 
         _validateMint(_amount);
 
@@ -308,7 +308,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
 
         uint256 averageCost = finalEthPrice / _amount;
 
-        _mintNodeLicense(_amount, averageCost, msg.sender);
+        _mintNodeLicense(_amount, averageCost, to);
 
         // Calculate the referral reward and determine if the promo code is an address
         address currency = _useEsXai ? esXaiAddress : xaiAddress;
