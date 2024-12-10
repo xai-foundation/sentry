@@ -3,6 +3,19 @@ const { ethers, upgrades } = hardhat;
 import { config } from "@sentry/core";
 import { safeVerify } from "../../utils/safeVerify.mjs";
 
+const AIRDROP_ADMINS = [
+    "0xd20D67E2A414e8C1D56814db73E4d079CC8C8D2b",
+    "0x2B5193DACcEAd5F9D8D8677fDe61670cAe54544b",
+    "0x3eA5d027Da536e570471112e4EBD7Ef95f2cd3B3",
+    "0x00C7F48cf9ec78A60275259f8E31AD44CcE9E887",
+    "0xB142460be2896773eb0A7b065985956aEa0D0639",
+    "0x300d631da4287fAA3Ddf5eb72C7E411b2720c084",
+    "0xea9d968CAEF533E46dFfEA8E74486eC4b42A62fA",
+    "0x1b2262b8877654A189A7489F8Ea6e63b29AFE2aE",
+    "0xa9BE57745C6277F188bE1e3438B351FA88D29d11",
+    "0x6f7BaDfCA65a56B90CBE9Ca7Edea15f081620c62"
+]
+
 /**
  * Main function to deploy and upgrade contracts
  * @async
@@ -110,8 +123,8 @@ async function main() {
     const poolFactory2 = await upgrades.upgradeProxy(POOL_FACTORY_ADDRESS, PoolFactory2, { call: { fn: "initialize", args: poolFactoryUpgradeParams } });
 
     const tinyKeysAirdropAdminRole = await tinyKeysAirdrop.DEFAULT_ADMIN_ROLE();
-    for (let i = 1; i < 10; i++) {
-        const adminWalletAddress = signers[i].address;
+    for (let i = 0; i < 10; i++) {
+        const adminWalletAddress = AIRDROP_ADMINS[i];
         console.log(`Granted admin role on TK Airdrop for wallet at index ${i}: ${adminWalletAddress}`);
         await tinyKeysAirdrop.grantRole(tinyKeysAirdropAdminRole, adminWalletAddress);
     }
@@ -138,11 +151,11 @@ async function main() {
 
 
     // verify contract
-    await safeVerify({ contract: esXai3 });
-    await safeVerify({ contract: tinyKeysAirdrop });
-    await safeVerify({ contract: nodeLicense8 });
-    await safeVerify({ contract: poolFactory2 });
-    await safeVerify({ contract: referee9 });
+    await safeVerify({ skipWaitForDeployTx: true, contract: esXai3 });
+    await safeVerify({ skipWaitForDeployTx: true, contract: tinyKeysAirdrop });
+    await safeVerify({ skipWaitForDeployTx: true, contract: nodeLicense8 });
+    await safeVerify({ skipWaitForDeployTx: true, contract: poolFactory2 });
+    await safeVerify({ skipWaitForDeployTx: true, contract: referee9 });
 
     console.log("Verification complete ");
 }
