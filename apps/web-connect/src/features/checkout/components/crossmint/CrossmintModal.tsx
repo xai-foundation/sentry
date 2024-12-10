@@ -41,7 +41,7 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalQ
         if(status === "completed") {
             const txHash = order.lineItems[0].delivery.txId;
             const orderIdentifier = order.orderId;
-            setMintWithCrossmint({ txHash, orderIdentifier });
+            setMintTxData({ txHash, orderIdentifier });
         }
     }, [order]);
 
