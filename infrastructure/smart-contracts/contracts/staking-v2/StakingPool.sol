@@ -30,8 +30,10 @@ contract StakingPool is AccessControlUpgradeable {
     BucketTracker public keyBucket;
     BucketTracker public esXaiStakeBucket;
 
+    // DEPRECATED: key are no longer being tracked on stake & unstake
     mapping(address => uint256[]) public stakedKeysOfOwner;
     mapping(uint256 => uint256) public keyIdIndex;
+
     mapping(address => uint256) public stakedAmounts;
 
 	uint256[] public stakedKeys;
@@ -49,7 +51,11 @@ contract StakingPool is AccessControlUpgradeable {
 	// mapping userAddress to requested unstake esXai amount
 	mapping(address => uint256) private userRequestedUnstakeEsXaiAmount;
 
-    uint256[500] __gap;
+    // Used for setting if we already migrated to key amounts instead of ids
+	mapping(address => bool) private hasMigratedToKeyAmount;
+    mapping(address => uint256) public stakedKeyAmounts;
+
+    uint256[498] __gap;
 
 	struct PoolBaseInfo {
 		address poolAddress;
@@ -110,13 +116,18 @@ contract StakingPool is AccessControlUpgradeable {
     function getStakedKeysCountForUser(
         address user
     ) external view returns (uint256) {
-        return stakedKeysOfOwner[user].length;
+        if(!hasMigratedToKeyAmount[user]){
+            return stakedKeysOfOwner[user].length;
+        }
+        return stakedKeyAmounts[user];
     }
 
     function getStakedAmounts(address user) external view returns (uint256) {
         return stakedAmounts[user];
     }
 
+    // DEPRECATED We no longer track keys by their IDs
+    // TODO update core function
 	function getStakedKeys() external view returns (uint256[] memory) {
 		return stakedKeys;
 	}
@@ -209,26 +220,39 @@ contract StakingPool is AccessControlUpgradeable {
 
     function stakeKeys(
         address owner,
-        uint256[] memory keyIds
+        uint256 keyAmount
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        uint256 keyLength = keyIds.length;
-        for (uint i = 0; i < keyLength; i++) {
-			// Update indexes of this user's staked keys
-            keyIdIndex[keyIds[i]] = stakedKeysOfOwner[owner].length;
-            stakedKeysOfOwner[owner].push(keyIds[i]);
 
-			// Update indexes of the pool's staked keys
-			stakedKeysIndices[keyIds[i]] = stakedKeys.length;
-			stakedKeys.push(keyIds[i]);
+        // Handle migration for key amounts
+        if(!hasMigratedToKeyAmount[owner]){
+            stakedKeyAmounts[owner] = stakedKeysOfOwner[owner].length;
+            hasMigratedToKeyAmount[owner] = true;
         }
+
+        // DEPRECATED WE NO LONGER TRACK KEY IDS
+        // uint256 keyLength = keyIds.length;
+        // for (uint i = 0; i < keyLength; i++) {
+		// 	// Update indexes of this user's staked keys
+        //     keyIdIndex[keyIds[i]] = stakedKeysOfOwner[owner].length;
+        //     stakedKeysOfOwner[owner].push(keyIds[i]);
+
+		// 	// Update indexes of the pool's staked keys
+		// 	stakedKeysIndices[keyIds[i]] = stakedKeys.length;
+		// 	stakedKeys.push(keyIds[i]);
+        // }
 
         distributeRewards();
         keyBucket.processAccount(owner);
-        keyBucket.setBalance(owner, stakedKeysOfOwner[owner].length);
+        keyBucket.setBalance(owner, stakedKeyAmounts[owner]);
     }
 
 	function createUnstakeKeyRequest(address user, uint256 keyAmount, uint256 period) external onlyRole(DEFAULT_ADMIN_ROLE) {
-		uint256 stakedKeysCount = stakedKeysOfOwner[user].length;
+        if(!hasMigratedToKeyAmount[user]){
+            stakedKeyAmounts[user] = stakedKeysOfOwner[user].length;
+            hasMigratedToKeyAmount[user] = true;
+        }
+
+		uint256 stakedKeysCount = stakedKeyAmounts[user];
 		uint256 requestKeys = userRequestedUnstakeKeyAmount[user];
 
 		if (poolOwner == user) {
@@ -263,7 +287,11 @@ contract StakingPool is AccessControlUpgradeable {
 
 	function createUnstakeOwnerLastKeyRequest(address owner, uint256 period) external onlyRole(DEFAULT_ADMIN_ROLE) {
 		require(owner == poolOwner, "17");
-		uint256 stakedKeysCount = stakedKeysOfOwner[owner].length;
+        if(!hasMigratedToKeyAmount[owner]){
+            stakedKeyAmounts[owner] = stakedKeysOfOwner[owner].length;
+            hasMigratedToKeyAmount[owner] = true;
+        }
+		uint256 stakedKeysCount = stakedKeyAmounts[owner];
 
 		require(
 			stakedKeysCount == userRequestedUnstakeKeyAmount[owner] + 1,
