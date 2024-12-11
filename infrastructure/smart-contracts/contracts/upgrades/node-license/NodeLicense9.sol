@@ -10,10 +10,6 @@ import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol"
 import "../../upgrades/referee/Referee10.sol";
 import "../../RefereeCalculations.sol";
 
-interface IAggregatorV3Interface {
-    function latestAnswer() external view returns (int256);
-}
-
 contract NodeLicense9 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  {
     using StringsUpgradeable for uint256;
     using CountersUpgradeable for CountersUpgradeable.Counter;
