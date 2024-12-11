@@ -36,6 +36,7 @@ contract StakingPool is AccessControlUpgradeable {
 
     mapping(address => uint256) public stakedAmounts;
 
+    // DEPRECATED: key are no longer being tracked on stake & unstake
 	uint256[] public stakedKeys;
 	mapping(uint256 => uint256) public stakedKeysIndices;
 
@@ -333,48 +334,57 @@ contract StakingPool is AccessControlUpgradeable {
 	}
 
 	function isUserEngagedWithPool(address user) external view returns (bool) {
+		uint256 stakedKeysCount = stakedKeyAmounts[user];
+        if(!hasMigratedToKeyAmount[user]){
+            stakedKeysCount = stakedKeysOfOwner[user].length;
+        }
 		return user == poolOwner ||
 			stakedAmounts[user] > 0 ||
-			stakedKeysOfOwner[user].length > 0;
+			stakedKeysCount > 0;
 	}
 
     function unstakeKeys(
         address owner,
 		uint256 unstakeRequestIndex,
-        uint256[] memory keyIds
+        uint256 keyAmount
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
 		UnstakeRequest storage request = unstakeRequests[owner][unstakeRequestIndex];
-        uint256 keysLength = keyIds.length;
 
 		require(request.open && request.isKeyRequest, "24");
 		require(block.timestamp >= request.lockTime, "25");
-		require(keysLength > 0 && request.amount == keysLength, "26");
+		require(keyAmount > 0 && request.amount == keyAmount, "26");
 
-        for (uint i = 0; i < keysLength; i++) {
-			// Update indexes of this owner's staked keys
-            uint256 indexOfOwnerKeyToRemove = keyIdIndex[keyIds[i]];
-            uint256 lastOwnerKeyId = stakedKeysOfOwner[owner][
-                stakedKeysOfOwner[owner].length - 1
-            ];
-
-            keyIdIndex[lastOwnerKeyId] = indexOfOwnerKeyToRemove;
-            stakedKeysOfOwner[owner][indexOfOwnerKeyToRemove] = lastOwnerKeyId;
-            stakedKeysOfOwner[owner].pop();
-
-			// Update indexes of the pool's staked keys
-			uint256 indexOfStakedKeyToRemove = stakedKeysIndices[keyIds[i]];
-			uint256 lastStakedKeyId = stakedKeys[stakedKeys.length - 1];
-
-			stakedKeysIndices[lastStakedKeyId] = indexOfStakedKeyToRemove;
-			stakedKeys[indexOfStakedKeyToRemove] = lastStakedKeyId;
-			stakedKeys.pop();
+        if(!hasMigratedToKeyAmount[owner]){
+            stakedKeyAmounts[owner] = stakedKeysOfOwner[owner].length;
+            hasMigratedToKeyAmount[owner] = true;
         }
+    	
+        // DEPRECATED WE NO LONGER TRACK KEY IDS
+        // for (uint i = 0; i < keyAmount; i++) {
+		// 	// Update indexes of this owner's staked keys
+        //     uint256 indexOfOwnerKeyToRemove = keyIdIndex[keyIds[i]];
+        //     uint256 lastOwnerKeyId = stakedKeysOfOwner[owner][
+        //         stakedKeysOfOwner[owner].length - 1
+        //     ];
+
+        //     keyIdIndex[lastOwnerKeyId] = indexOfOwnerKeyToRemove;
+        //     stakedKeysOfOwner[owner][indexOfOwnerKeyToRemove] = lastOwnerKeyId;
+        //     stakedKeysOfOwner[owner].pop();
+
+		// 	// Update indexes of the pool's staked keys
+		// 	uint256 indexOfStakedKeyToRemove = stakedKeysIndices[keyIds[i]];
+		// 	uint256 lastStakedKeyId = stakedKeys[stakedKeys.length - 1];
+
+		// 	stakedKeysIndices[lastStakedKeyId] = indexOfStakedKeyToRemove;
+		// 	stakedKeys[indexOfStakedKeyToRemove] = lastStakedKeyId;
+		// 	stakedKeys.pop();
+        // }
 
         distributeRewards();
         keyBucket.processAccount(owner);
-        keyBucket.setBalance(owner, stakedKeysOfOwner[owner].length);
+        keyBucket.setBalance(owner, stakedKeyAmounts[owner]);
 
-		userRequestedUnstakeKeyAmount[owner] -= keysLength;
+		userRequestedUnstakeKeyAmount[owner] -= keyAmount;
 		request.open = false;
 		request.completeTime = block.timestamp;
     }
@@ -501,7 +511,12 @@ contract StakingPool is AccessControlUpgradeable {
         _pendingShares[1] = pendingShares[1];
         _pendingShares[2] = pendingShares[2];
 
-		_ownerStakedKeys = stakedKeysOfOwner[poolOwner].length;
+        if(!hasMigratedToKeyAmount[poolOwner]){
+            _ownerStakedKeys = stakedKeysOfOwner[poolOwner].length;
+        }else{
+		    _ownerStakedKeys = stakedKeyAmounts[poolOwner];
+        }
+
 		_ownerRequestedUnstakeKeyAmount = userRequestedUnstakeKeyAmount[poolOwner];
 
 		if (_ownerStakedKeys == _ownerRequestedUnstakeKeyAmount && _ownerRequestedUnstakeKeyAmount > 0) {
@@ -538,7 +553,15 @@ contract StakingPool is AccessControlUpgradeable {
             userClaimAmount += poolOwnerClaimableRewards + ownerAmount;
         }
 
-        userStakedKeyIds = stakedKeysOfOwner[user];
+
+        uint256 _userStakedKeysCount;
+        if(!hasMigratedToKeyAmount[poolOwner]){
+            _userStakedKeysCount = stakedKeysOfOwner[poolOwner].length;
+        }else{
+		    _userStakedKeysCount = stakedKeyAmounts[poolOwner];
+        }
+        // TODO need to make sure what this will imply on the staking app
+        userStakedKeyIds = new uint256[](_userStakedKeysCount);
         
 		unstakeRequestkeyAmount = userRequestedUnstakeKeyAmount[user];
 		unstakeRequestesXaiAmount = userRequestedUnstakeEsXaiAmount[user];
