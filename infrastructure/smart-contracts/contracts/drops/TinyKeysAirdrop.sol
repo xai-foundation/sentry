@@ -140,7 +140,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         NodeLicense8 nodeLicense = NodeLicense8(nodeLicenseAddress);
         Referee9 referee = Referee9(refereeAddress);
 
-        uint8 poolsProcessed;
+        // uint8 poolsProcessed;
 
         // Loop through the range of node licenses
         // Needs to be <= to include the last key
@@ -167,7 +167,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
                 
                 // Stake the keys
                 PoolFactory2(poolFactoryAddress).stakeKeysAdmin(poolAddress, keyMultiplier, owner);
-                poolsProcessed++;
+                // poolsProcessed++;
 
                 // Emit the event
                 emit AirdropSegmentStakeComplete(owner, poolAddress, i, i);

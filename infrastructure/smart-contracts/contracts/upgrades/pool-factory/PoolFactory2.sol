@@ -624,12 +624,11 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     ) external {
         require(poolsCreatedViaFactory[pool], "23"); // Pool must be created via factory
 
-        Referee10(refereeAddress).unstakeKeys(pool, msg.sender, keyIds.length);
-
         StakingPool stakingPool = StakingPool(pool);
-        
         // The Referee will check for stakingEnabled and will only allow the admin to stake if staking is disabled
         stakingPool.unstakeKeys(msg.sender, unstakeRequestIndex, keyIds.length);
+
+        Referee10(refereeAddress).unstakeKeys(pool, msg.sender, keyIds.length);
 
         if (!stakingPool.isUserEngagedWithPool(msg.sender)) {
             removeUserFromPool(msg.sender, pool);
