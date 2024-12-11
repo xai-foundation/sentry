@@ -242,6 +242,8 @@ contract StakingPool is AccessControlUpgradeable {
 		// 	stakedKeys.push(keyIds[i]);
         // }
 
+		stakedKeyAmounts[owner] += keyAmount;
+
         distributeRewards();
         keyBucket.processAccount(owner);
         keyBucket.setBalance(owner, stakedKeyAmounts[owner]);
@@ -379,6 +381,8 @@ contract StakingPool is AccessControlUpgradeable {
 		// 	stakedKeys[indexOfStakedKeyToRemove] = lastStakedKeyId;
 		// 	stakedKeys.pop();
         // }
+
+		stakedKeyAmounts[owner] -= keyAmount;
 
         distributeRewards();
         keyBucket.processAccount(owner);

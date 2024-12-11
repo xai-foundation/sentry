@@ -276,7 +276,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
      */
     function createPool(
         address _delegateOwner,
-        uint256[] memory _keyIds,
+        uint256[] memory _keyIds, // We no longer track the key Ids, however, to keep the interface we will leave this to be an array and use the length
         uint32[3] memory _shareConfig,
         string[3] memory _poolMetadata,
         string[] memory _poolSocials,
@@ -347,7 +347,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         esXai(esXaiAddress).addToWhitelist(keyBucketProxy);
         esXai(esXaiAddress).addToWhitelist(esXaiBucketProxy);
 
-        _stakeKeys(poolProxy, _keyIds, msg.sender, false);
+        _stakeKeys(poolProxy, _keyIds.length, msg.sender, false);
         emit PoolCreated(
             stakingPools.length - 1,
             poolProxy,
@@ -465,30 +465,30 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     /**
      * @notice Internal function to stake keys in a pool.
      * @param pool The address of the pool.
-     * @param keyIds Array of key IDs to be staked.
+     * @param keyAmounts Amount of keys to be staked.
      * @param staker The address of the staker.
      * @param _asAdmin Boolean indicating if admin is staking on behalf of a user for airdropped keys.
      */
     function _stakeKeys(
         address pool,
-        uint256[] memory keyIds,
+        uint256 keyAmounts,
         address staker,
         bool _asAdmin
     ) internal {
         Referee10 referee = Referee10(refereeAddress);
         
         // The Referee will check for stakingEnabled and will only allow the admin to stake if staking is disabled
-        referee.stakeKeys(pool, staker, keyIds, _asAdmin);
+        referee.stakeKeys(pool, staker, keyAmounts, _asAdmin);
 
         StakingPool stakingPool = StakingPool(pool);
-        stakingPool.stakeKeys(staker, keyIds);
+        stakingPool.stakeKeys(staker, keyAmounts);
 
         associateUserWithPool(staker, pool);
 
         emit StakeKeys(
             staker,
             pool,
-            keyIds.length,
+            keyAmounts,
             stakingPool.getStakedKeysCountForUser(staker),
             stakingPool.getStakedKeysCount()
         );
@@ -496,17 +496,17 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         emit StakeKeysV2(
             staker,
             pool,
-            keyIds.length,
+            keyAmounts,
             stakingPool.getStakedKeysCountForUser(staker),
             stakingPool.getStakedKeysCount(),
-            keyIds
+            new uint256[](keyAmounts)
         );
     }
 
     /**
      * @notice Allows a user to stake keys in a pool.
      * @param pool The address of the pool.
-     * @param keyIds Array of key IDs to be staked.
+     * @param keyIds Array of key IDs to be staked. To keep the interface we will just use array length, no actual key Ids will be tracked anymore
      */
     function stakeKeys(address pool, uint256[] memory keyIds) external {
         require(pool != address(0), "10"); // Invalid pool address
@@ -514,25 +514,25 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         require(poolsCreatedViaFactory[pool], "12"); // Pool must be created via factory
         require(failedKyc[msg.sender] == false, "38"); // Owner must not have failed kyc
 
-        _stakeKeys(pool, keyIds, msg.sender, false);
+        _stakeKeys(pool, keyIds.length, msg.sender, false);
     }
 
     /**
      * @notice Allows an admin to stake keys on behalf of a user.
      * @param pool The address of the pool.
-     * @param keyIds Array of key IDs to be staked.
+     * @param keyAmounts Amount of keys to be staked.
      * @param staker The address of the staker.
      */
     function stakeKeysAdmin(
         address pool,
-        uint256[] memory keyIds,
+        uint256 keyAmounts,
         address staker
     ) external onlyRole(STAKE_KEYS_ADMIN_ROLE) {
         require(pool != address(0), "10"); // Invalid pool address
-        require(keyIds.length > 0, "11"); // At least 1 key required
+        require(keyAmounts > 0, "11"); // At least 1 key required
         require(poolsCreatedViaFactory[pool], "12"); // Pool must be created via factory
 
-        _stakeKeys(pool, keyIds, staker, true);
+        _stakeKeys(pool, keyAmounts, staker, true);
     }
 
     /**
@@ -615,7 +615,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
      * @notice Unstakes keys from a pool.
      * @param pool The address of the pool.
      * @param unstakeRequestIndex The index of the unstake request.
-     * @param keyIds Array of key IDs to be unstaked.
+     * @param keyIds Array of key IDs to be unstaked. To keep the interface we will just use array length, no actual key Ids will be tracked anymore
      */
     function unstakeKeys(
         address pool,
@@ -624,12 +624,12 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     ) external {
         require(poolsCreatedViaFactory[pool], "23"); // Pool must be created via factory
 
-        Referee10(refereeAddress).unstakeKeys(pool, msg.sender, keyIds);
+        Referee10(refereeAddress).unstakeKeys(pool, msg.sender, keyIds.length);
 
         StakingPool stakingPool = StakingPool(pool);
         
         // The Referee will check for stakingEnabled and will only allow the admin to stake if staking is disabled
-        stakingPool.unstakeKeys(msg.sender, unstakeRequestIndex, keyIds);
+        stakingPool.unstakeKeys(msg.sender, unstakeRequestIndex, keyIds.length);
 
         if (!stakingPool.isUserEngagedWithPool(msg.sender)) {
             removeUserFromPool(msg.sender, pool);
@@ -869,6 +869,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     }
 
     /**
+     * @dev DEPRECATED we do no longer track key IDs
      * @notice Returns the list of unstaked key IDs for a user.
      * @param user The address of the user.
      * @param offset The offset for pagination.
@@ -901,21 +902,23 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         }
     }
 
-    /**
-     * @notice Checks if the keys are staked.
-     * @param keyIds Array of key IDs.
-     * @return isStaked Array of booleans indicating if the keys are staked.
-     */
-    function checkKeysAreStaked(
-        uint256[] memory keyIds
-    ) external view returns (bool[] memory isStaked) {
-        isStaked = new bool[](keyIds.length);
-        for (uint256 i; i < keyIds.length; i++) {
-            isStaked[i] =
-                Referee10(refereeAddress).assignedKeyToPool(keyIds[i]) !=
-                address(0);
-        }
-    }
+    // DEPRECATED we do no longer track key IDs
+    // THis function is not used anywhere
+    // /**
+    //  * @notice Checks if the keys are staked.
+    //  * @param keyIds Array of key IDs.
+    //  * @return isStaked Array of booleans indicating if the keys are staked.
+    //  */
+    // function checkKeysAreStaked(
+    //     uint256[] memory keyIds
+    // ) external view returns (bool[] memory isStaked) {
+    //     isStaked = new bool[](keyIds.length);
+    //     for (uint256 i; i < keyIds.length; i++) {
+    //         isStaked[i] =
+    //             Referee10(refereeAddress).assignedKeyToPool(keyIds[i]) !=
+    //             address(0);
+    //     }
+    // }
 
     function validateSubmitPoolAssertion(
         address pool, address user
