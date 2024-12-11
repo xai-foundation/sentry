@@ -49,7 +49,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
     // Events for various actions within the contract
     event AirdropStarted(uint256 totalSupplyAtStart, uint256 keyMultiplier);
     event AirdropSegmentComplete(uint256 startingKeyId, uint256 endingKeyId);
-    event AirdropSegmentStakeComplete(address indexed owner, address indexed poolAddress, uint256 startingKeyId, uint256 endingKeyId);
+    event AirdropSegmentStakeComplete(address indexed owner, address indexed poolAddress, uint256 keyId, uint256 amount);
     event AirdropEnded();
 
     /**
@@ -170,7 +170,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
                 // poolsProcessed++;
 
                 // Emit the event
-                emit AirdropSegmentStakeComplete(owner, poolAddress, i, i);
+                emit AirdropSegmentStakeComplete(owner, poolAddress, i, keyMultiplier);
             }
             
             // This gas exception guard should not be needed anymore since we now process much more keys even if staked
