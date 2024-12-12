@@ -11,6 +11,7 @@ import { convertEthAmountToUsdcAmount } from '@/utils/convertEthAmountToUsdcAmou
 import { useTranslation } from "react-i18next";
 import ReactGA from "react-ga4";
 import { CrossmintProvider, CrossmintCheckoutProvider } from "@crossmint/client-sdk-react-ui";
+import { MAX_BATCH_SIZE } from '@/features/hooks/contract/useMintBatch';
 
 
 /**
@@ -28,9 +29,6 @@ export function ActionSection(): JSX.Element {
     const [isInitialized, setIsInitialized] = useState(false);
     const [totalPriceInUsdc, setTotalPriceInUsdc] = useState<string>("0");
     const clientApiKey = config.crossmintClientApiKey;
-    
-    const MAX_BATCH_SIZE = config.maxBatchMintSize;
-
 
     // Destructure values and functions from the context
     const {

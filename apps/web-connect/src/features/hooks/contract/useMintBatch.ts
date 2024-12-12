@@ -3,7 +3,7 @@ import { useAccount, useWriteContract } from "wagmi";
 import { NodeLicenseAbi, config } from "@sentry/core";
 import { CURRENCIES, Currency } from "../shared";
 
-const MAX_BATCH_SIZE = config.maxBatchMintSize;
+export const MAX_BATCH_SIZE = 175;
 
 interface UseMintBatchProps {
   promoCode: string;
