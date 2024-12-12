@@ -43,8 +43,8 @@ export function ActionSection(): JSX.Element {
         isConnected,
         getApproveButtonText,
         handleApproveClicked,
-        handleMintWithEthClicked,
-        handleMintWithXaiClicked,
+        mintWithEthSingleTx,
+        mintWithXaiSingleTx,
         getEthButtonText,
         calculateTotalPrice,
         setCurrency,
@@ -77,7 +77,7 @@ export function ActionSection(): JSX.Element {
             if(quantity > MAX_BATCH_SIZE) { 
                 mintBatch(quantity);
             }else{
-                handleMintWithXaiClicked();
+                mintWithXaiSingleTx();
             }
         }
     };
@@ -86,7 +86,7 @@ export function ActionSection(): JSX.Element {
         if(quantity > MAX_BATCH_SIZE) { 
             mintBatch(quantity);
         }else{
-            handleMintWithEthClicked();
+            mintWithEthSingleTx();
         }
     }
 
