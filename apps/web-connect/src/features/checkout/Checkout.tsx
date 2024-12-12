@@ -68,13 +68,13 @@ export function Checkout() {
                 ) : mintWithEth.isSuccess || mintWithXai.isSuccess || mintWithCrossmint.txHash != "" ? (
                     <PurchaseSuccessful returnToClient={returnToClient} />
                 ) : (
-                    <div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-darkLicorice shadow-main md:my-0 my-[24px]">
+                    <div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-nulnOil shadow-main md:my-0 my-[24px]">
                         <div className="hidden lg:block">
                             <LogoColumn />
                         </div>
                         <div className="h-auto xl:p-12 sm:px-2 sm:py-10">
                             <ChooseQuantityRow />
-                            <div className="min-h-[545px]">
+                            <div className="min-h-[620px] lg:min-w-[620px]">  {/* Required to keep the page from jumping around when loading */}
                                 {isTotalLoading || isExchangeRateLoading || isPriceLoading ? (
                                     <LoadingState />
                                 ) : (
