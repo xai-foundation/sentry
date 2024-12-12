@@ -27,6 +27,7 @@ export function ActionSection(): JSX.Element {
     const { isDevelopment } = useNetworkConfig();
     const [isInitialized, setIsInitialized] = useState(false);
     const [totalPriceInUsdc, setTotalPriceInUsdc] = useState<string>("0");
+    const clientApiKey = config.crossmintClientApiKey;
     
     const MAX_BATCH_SIZE = config.maxBatchMintSize;
 
