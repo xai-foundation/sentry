@@ -82,9 +82,8 @@ export function ActionSection(): JSX.Element {
         }
     };
 
-    const handleMintWithEthClicked2 = async () => {
-        console.log("quantity: ", quantity);
-        if(quantity > 5) { 
+    const handleMintWithEthButtonClicked = async () => {
+        if(quantity > MAX_BATCH_SIZE) { 
             mintBatch(quantity);
         }else{
             handleMintWithEthClicked();
@@ -109,7 +108,7 @@ export function ActionSection(): JSX.Element {
                     <>
                     <PrimaryButton
                         onClick={() => {
-                            handleMintWithEthClicked2()
+                            handleMintWithEthButtonClicked()
                             ReactGA.event({
                                 category: 'User',
                                 action: 'buttonClick',
