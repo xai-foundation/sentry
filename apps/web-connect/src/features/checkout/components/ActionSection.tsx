@@ -135,7 +135,7 @@ export function ActionSection(): JSX.Element {
                     className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-hornetSting p-2 uppercase font-bold `}
                     isDisabled={!ready || !isConnected || exceedsCrossmintMax}
                     colorStyle="outline-2"
-                    btnText={exceedsCrossmintMax ? translate("actionSection.mintWithOptionsDisabled") : translate("actionSection.mintWithOptions")}
+                    btnText={exceedsCrossmintMax ? translate("actionSection.mintWithOptionsDisabled", { maxKeys: MAX_BATCH_SIZE}) : translate("actionSection.mintWithOptions")}
                 />}
 
                 {/* Error section for ETH transactions */}
