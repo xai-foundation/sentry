@@ -74,7 +74,7 @@ export function ChooseQuantityRow(): JSX.Element {
             </div>
             {/* Quantity input section */}
             <div className="flex w-full justify-end flex-row items-start gap-4 sm:mt-4 lg:mt-10">
-                <div className="flex sm:w-full lg:w-[210px] sm:px-2 lg:px-0">
+                <div className="flex sm:w-full lg:w-[240px] sm:px-2 lg:px-0">
                     {/* Custom number input component for selecting quantity */}
                     <XaiNumberInput
                         quantity={quantity}
