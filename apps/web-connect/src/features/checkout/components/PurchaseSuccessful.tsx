@@ -33,16 +33,13 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 
 	useEffect(() => {
 		setCanShare(navigator.share !== undefined);
-		setAllTxHashes([...txHashes]);
-		if (mintWithEth.data) {
-			setAllTxHashes([...allTxHashes, mintWithEth.data]);
-		}
-		if (mintWithXai.data) {
-			setAllTxHashes([...allTxHashes, mintWithXai.data]);
-		}
-		if (mintWithCrossmint.txHash) {
-			setAllTxHashes([...allTxHashes, mintWithCrossmint.txHash]);
-		}
+		setAllTxHashes([
+			...allTxHashes,
+			...(mintWithEth.data ? [mintWithEth.data] : []),
+			...(mintWithXai.data ? [mintWithXai.data] : []),
+			...(mintWithCrossmint.txHash ? [mintWithCrossmint.txHash] : [])
+		]);
+
 	}, [mintWithEth.data, mintWithXai.data, mintWithCrossmint.txHash, txHashes]);
 
 	const getHash = () => {
