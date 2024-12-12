@@ -135,6 +135,8 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         address indexed poolOwner,
         uint256 stakedKeyCount
     );
+
+    // "keyIds" field is deprecated, we do no longer track key ids on stake
     event PoolCreatedV2(
         uint256 indexed poolIndex,
         address indexed poolAddress,
@@ -175,6 +177,8 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 totalUserKeysStaked,
         uint256 totalKeysStaked
     );
+
+    // "keyIds" field is deprecated, we do no longer track key ids on stake
     event StakeKeysV2(
         address indexed user,
         address indexed pool,
@@ -190,6 +194,8 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 totalUserKeysStaked,
         uint256 totalKeysStaked
     );
+
+    // "keyIds" field is deprecated, we do no longer track key ids on stake
     event UnstakeKeysV2(
         address indexed user,
         address indexed pool,
@@ -498,7 +504,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
             keyAmounts,
             stakingPool.getStakedKeysCountForUser(staker),
             stakingPool.getStakedKeysCount(),
-            new uint256[](keyAmounts)
+            new uint256[](0)
         );
     }
 
@@ -648,7 +654,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
             stakingPool.getStakedKeysCountForUser(msg.sender),
             stakingPool.getStakedKeysCount(),
             unstakeRequestIndex,
-            keyIds
+            new uint256[](0)
         );
     }
 
@@ -923,9 +929,9 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     ) external view returns (bool) {
         require(poolsCreatedViaFactory[pool], "35"); // Pool must be created via factory
 
+            (uint256 userStakedEsXaiAmount, ,uint256 userStakedKeyAmount, ,) = StakingPool2(pool).getUserPoolData(user);
         if(!isDelegateOfPoolOrOwner(user, pool)){
-            (uint256 userStakedEsXaiAmount, ,uint256[] memory userStakedKeyIds, ,) = StakingPool2(pool).getUserPoolData(user);
-            return userStakedEsXaiAmount > 0 || userStakedKeyIds.length > 0;
+            return userStakedEsXaiAmount > 0 || userStakedKeyAmount > 0;
         }
 
         return true;
