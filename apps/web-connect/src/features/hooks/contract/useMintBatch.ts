@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import {  useAccount, useWriteContract } from 'wagmi';
+import { useState } from "react";
+import { useAccount, useWriteContract } from "wagmi";
 import { NodeLicenseAbi, config } from "@sentry/core";
-import { CURRENCIES, Currency } from '../shared';
+import { CURRENCIES, Currency } from "../shared";
 
 //const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export const MAX_BATCH_SIZE = 2; // TODO Update Limit batch size to 175 after testing
+export const MAX_BATCH_SIZE = config.maxBatchMintSize;
 
 interface UseMintBatchProps {
   promoCode: string;
@@ -20,7 +20,7 @@ export interface UseMintBatchReturn {
   clearMintBatchErrors: () => void;
   resetMintBatchTransactions: () => void;
   mintBatch: (qtyToMint: number) => Promise<void>;
-  batchMintTx: ReturnType<typeof useWriteContract>
+  batchMintTx: ReturnType<typeof useWriteContract>;
 }
 
 type MintConfig = {
@@ -31,7 +31,7 @@ type MintConfig = {
   value?: bigint;
   onSuccess: (data: `0x${string}`) => void;
   onError: (error: Error) => void;
-}
+};
 
 export function useMintBatch({
   promoCode,
@@ -39,7 +39,9 @@ export function useMintBatch({
   currency,
 }: UseMintBatchProps): UseMintBatchReturn {
   const [txHashes, setTxHashes] = useState<string[]>([]);
-  const [mintBatchError, setMintBatchError] = useState<Error | undefined>(undefined);
+  const [mintBatchError, setMintBatchError] = useState<Error | undefined>(
+    undefined
+  );
   const [isMinting, setIsMinting] = useState<boolean>(false);
   const { address } = useAccount();
   const batchMintTx = useWriteContract();
@@ -47,8 +49,15 @@ export function useMintBatch({
   const getConfig = (quantity: number) => {
     const functionName = currency === CURRENCIES.AETH ? "mint" : "mintWithXai";
     const mintWithEthArgs = [quantity, promoCode];
-    const mintWithXaiArgs = [address, quantity, promoCode, currency === CURRENCIES.ES_XAI, calculateTotalPrice()];
-    const args = currency === CURRENCIES.AETH ? mintWithEthArgs : mintWithXaiArgs;
+    const mintWithXaiArgs = [
+      address,
+      quantity,
+      promoCode,
+      currency === CURRENCIES.ES_XAI,
+      calculateTotalPrice(),
+    ];
+    const args =
+      currency === CURRENCIES.AETH ? mintWithEthArgs : mintWithXaiArgs;
 
     return {
       address: config.nodeLicenseAddress as `0x${string}`,
@@ -61,27 +70,29 @@ export function useMintBatch({
       },
       onError: (error: Error) => {
         setMintBatchError(error);
-        console.error('Error minting:', error);
+        console.error("Error minting:", error);
       },
-    }
-  }
+    };
+  };
 
   const mintBatch = async (qtyToMint: number) => {
     setTxHashes([]);
     const config = getConfig(qtyToMint);
     executeMint(qtyToMint, config);
-  }
+  };
 
   const executeMint = async (qtyToMint: number, config: MintConfig) => {
-    let qtyRemaining = qtyToMint; 
+    let qtyRemaining = qtyToMint;
     setMintBatchError(undefined);
     const txHashesLocal: string[] = []; // Local variable to accumulate hashes
-    const batches = Math.ceil(qtyToMint / MAX_BATCH_SIZE); // TODO Update Limit batch size to 175
+    const batches = Math.ceil(qtyToMint / MAX_BATCH_SIZE);
 
-  setIsMinting(true);
+    setIsMinting(true);
+    let encounteredError = false; // Local error flag
 
     for (let i = 0; i < batches; i++) {
-      if (mintBatchError) return;
+      if (encounteredError) break; // Exit loop if an error is encountered
+
       const qtyToProcess = Math.min(qtyRemaining, MAX_BATCH_SIZE);
       try {
         // Initiate transaction
@@ -91,25 +102,27 @@ export function useMintBatch({
 
         // Transactions fail if they are sent too quickly when minting with an ERC20 token
         // AETH seems to not experience this issue
-        if(currency !== CURRENCIES.AETH){
+        if (currency !== CURRENCIES.AETH) {
           // If not AETH, wait 3 seconds between transactions
           await new Promise((resolve) => setTimeout(resolve, 3000));
         }
         // Reset for the next iteration
         batchMintTx.reset();
       } catch (error) {
-        console.error('Error minting:', error);
+        console.error("Error minting:", error);
         setMintBatchError(error as Error);
+        encounteredError = true; // Update the local error flag
         setIsMinting(false);
       }
     }
-  
+
     setIsMinting(false);
 
-    setTxHashes(txHashesLocal);
-    console.log("txHashes", txHashes);
+    if (!encounteredError) {
+      setTxHashes(txHashesLocal);
+    }
   };
-  
+
   const clearMintBatchErrors = () => {
     setMintBatchError(undefined);
     batchMintTx.reset();
@@ -120,8 +133,6 @@ export function useMintBatch({
     setTxHashes([]);
     batchMintTx.reset();
   };
-
-
 
   return {
     clearMintBatchErrors,

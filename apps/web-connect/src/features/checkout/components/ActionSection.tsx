@@ -51,7 +51,7 @@ export function ActionSection(): JSX.Element {
         mintWithCrossmint,
         discount,
         mintBatch,
-        //batchMintTx
+        mintBatchError
     } = useWebBuyKeysContext();
 
     const { t: translate } = useTranslation("Checkout");    
@@ -170,7 +170,10 @@ export function ActionSection(): JSX.Element {
                                 </div>
                             </BaseCallout>
                         )}
-                        {/* {mapWeb3Error(batchMintTx.error) === "User rejected the request" && (
+                    </div>
+                )}
+                {/* Error section for Batch transactions */}                
+                {mintBatchError && mapWeb3Error(mintBatchError) === "User rejected the request" && (
                             <BaseCallout extraClasses={{ calloutWrapper: "md:h-[85px] h-[109px] mt-[12px]", calloutFront: "!justify-start" }} isWarning>
                                 <div className="flex md:gap-[21px] gap-[10px]">
                                     <span className="block mt-2"><WarningIcon /></span>
@@ -180,9 +183,7 @@ export function ActionSection(): JSX.Element {
                                     </div>
                                 </div>
                             </BaseCallout>
-                        )} */}
-                    </div>
-                )}
+                        )}
 
                 {/* Error section for Xai/esXai transactions */}
                 {mintWithXai.error && (
