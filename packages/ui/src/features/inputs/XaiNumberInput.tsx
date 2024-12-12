@@ -28,7 +28,7 @@ export function XaiNumberInput({quantity, setQuantity, maxSupply = 50000, wrappe
   };
 
   return (
-    <div className="relative sm:w-full lg:w-auto">
+    <div className="relative sm:w-full">
       <MainStepper onChange={handleInputChange} quantity={quantity} setQuantity={setQuantity} maxSupply={maxSupply} wrapperClassName={wrapperClassName} containerClassName={containerClassName} btnClassName={btnClassName} inputClassName={inputClassName} />
     </div>
   );
