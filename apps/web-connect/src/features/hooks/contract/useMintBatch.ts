@@ -5,7 +5,7 @@ import { CURRENCIES, Currency } from '../shared';
 
 //const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const MAX_BATCH_SIZE = 2; // TODO Update Limit batch size to 175
+export const MAX_BATCH_SIZE = 2; // TODO Update Limit batch size to 175 after testing
 
 interface UseMintBatchProps {
   promoCode: string;

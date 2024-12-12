@@ -10,6 +10,7 @@ import { useNetworkConfig } from '@/hooks/useNetworkConfig';
 import { convertEthAmountToUsdcAmount } from '@/utils/convertEthAmountToUsdcAmount';
 import { useTranslation } from "react-i18next";
 import ReactGA from "react-ga4";
+import { MAX_BATCH_SIZE } from '@/features/hooks/contract/useMintBatch';
 
 
 /**
@@ -53,8 +54,6 @@ export function ActionSection(): JSX.Element {
         //batchMintTx
     } = useWebBuyKeysContext();
 
-    //const mintBatch = useMintBatch({promoCode, calculateTotalPrice, currency, discountInfo: discount});
-
     const { t: translate } = useTranslation("Checkout");    
     const exceedsCrossmintMax = quantity > 175;
 
@@ -75,7 +74,7 @@ export function ActionSection(): JSX.Element {
         if (isApprove) {
             handleApproveClicked();
         } else {
-            if(quantity > 5) { 
+            if(quantity > MAX_BATCH_SIZE) { 
                 mintBatch(quantity);
             }else{
                 handleMintWithXaiClicked();
