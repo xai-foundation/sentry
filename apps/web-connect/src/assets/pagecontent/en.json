@@ -35,6 +35,8 @@
 			}
 		},
 		"logoColumn": {
+			"networkRewardsAmount": "~$300M ",
+			"networkRewardsText": "in network rewards to key hodlers so far",
 			"purchaseReady": "YOUR PURCHASE IS READY",
 			"imageAlt": "Sentry Logo"
 		},
@@ -82,6 +84,7 @@
 		},
 		"actionSection": {
 			"mintWithOptions": "Mint - Credit/Debit, SOL, ETH, USDC",
+			"mintWithOptionsDisabled": "Crossmint Max {{maxKeys}} keys per txn",
 			"tokenButtonTexts": {
 				"isPending": "WAITING FOR CONFIRMATION..",
 				"switchToArbitrum": "Please Switch to Arbitrum"

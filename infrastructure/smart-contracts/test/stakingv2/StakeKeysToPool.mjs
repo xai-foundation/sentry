@@ -34,7 +34,7 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
 	} = poolConfigurations;
 
 	return function () {
-		it("Verify the Pool Info for the staked user (should have keyCount, userStakedKeyIds)", async function () {
+		it("Verify the Pool Info for the staked user (should have keyCount, userStakedKeyAmount)", async function () {
 			const {poolFactory, addr1, nodeLicense, referee, challenger} = await loadFixture(deployInfrastructure);
 
 			// Mint a node key & save the id
@@ -73,7 +73,7 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
 			const userPoolData = await stakingPool.connect(addr1).getUserPoolData(await addr1.getAddress());
 
 			expect(stakedKeysCountForUser).to.equal(1);
-			expect(userPoolData.userStakedKeyIds.length).to.equal(1);
+			expect(userPoolData.userStakedKeyAmount).to.equal(1);
 			
 			const assignedKeysToPoolCount = await referee.assignedKeysToPoolCount(stakingPoolAddress);
 			const assignedKeysOfUserCount = await referee.assignedKeysOfUserCount(addr1.address);

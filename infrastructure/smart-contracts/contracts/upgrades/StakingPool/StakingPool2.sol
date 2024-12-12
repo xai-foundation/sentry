@@ -513,7 +513,7 @@ contract StakingPool2 is AccessControlUpgradeable {
         returns (
             uint256 userStakedEsXaiAmount,
             uint256 userClaimAmount,
-            uint256[] memory userStakedKeyIds,
+            uint256 userStakedKeyAmount,
             uint256 unstakeRequestkeyAmount, 
             uint256 unstakeRequestesXaiAmount
         )
@@ -534,9 +534,7 @@ contract StakingPool2 is AccessControlUpgradeable {
             userClaimAmount += poolOwnerClaimableRewards + ownerAmount;
         }
 
-        uint256 _userStakedKeysCount = getCurrentKeyAmount(user);
-        // TODO need to make sure what this will imply on the staking app
-        userStakedKeyIds = new uint256[](_userStakedKeysCount);
+        userStakedKeyAmount = getCurrentKeyAmount(user);
         
 		unstakeRequestkeyAmount = userRequestedUnstakeKeyAmount[user];
 		unstakeRequestesXaiAmount = userRequestedUnstakeEsXaiAmount[user];
