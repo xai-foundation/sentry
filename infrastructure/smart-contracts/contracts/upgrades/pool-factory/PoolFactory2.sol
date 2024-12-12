@@ -9,7 +9,6 @@ import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "../../upgrades/referee/Referee10.sol";
 import "../../Xai.sol";
 import "../../upgrades/esXai/esXai2.sol";
-import "../../upgrades/node-license/NodeLicense8.sol";
 import "../../staking-v2/StakingPool.sol";
 import "../../staking-v2/PoolProxyDeployer.sol";
 import "../../staking-v2/PoolBeacon.sol";

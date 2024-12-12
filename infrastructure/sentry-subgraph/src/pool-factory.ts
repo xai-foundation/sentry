@@ -264,6 +264,14 @@ export function handlePoolCreated(event: PoolCreated): void {
   pool.totalAccruedAssertionRewards = BigInt.fromI32(0)
   pool.save()
 
+  const poolStakeId = event.params.poolAddress.toHexString() + "_" + event.params.poolOwner.toHexString();
+  const poolStake = new PoolStake(poolStakeId);
+  poolStake.pool = pool.id;
+  poolStake.wallet = event.params.poolOwner.toHexString();
+  poolStake.keyStakeAmount = event.params.stakedKeyCount;
+  poolStake.esXaiStakeAmount = BigInt.fromI32(0);
+  poolStake.save();
+
 
   let sentryWallet = SentryWallet.load(event.params.poolOwner.toHexString())
   if (sentryWallet) {
@@ -808,6 +816,14 @@ export function handlePoolCreatedV2(event: PoolCreatedV2): void {
   pool.createdTimestamp = event.block.timestamp;
   pool.totalAccruedAssertionRewards = BigInt.fromI32(0);
   pool.save();
+  
+  const poolStakeId = event.params.poolAddress.toHexString() + "_" + event.params.poolOwner.toHexString();
+  const poolStake = new PoolStake(poolStakeId);
+  poolStake.pool = pool.id;
+  poolStake.wallet = event.params.poolOwner.toHexString();
+  poolStake.keyStakeAmount = event.params.stakedKeyCount;
+  poolStake.esXaiStakeAmount = BigInt.fromI32(0);
+  poolStake.save();
 
   const sentryWallet = SentryWallet.load(event.params.poolOwner.toHexString());
   if (sentryWallet) {
@@ -844,6 +860,7 @@ export function handlePoolCreatedV2(event: PoolCreatedV2): void {
     }
   }
 }
+
 export function handleUpdateMetadataV2(event: UpdateMetadataV2): void {
   const pool = PoolInfo.load(event.params.pool.toHexString());
   if (!pool) {

@@ -7,11 +7,12 @@ import {GreenPulse, GreyPulse, YellowPulse} from "@/features/keys/StatusPulse.js
 import {useOperatorRuntime} from "@/hooks/useOperatorRuntime";
 import {accruingStateAtom} from "@/hooks/useAccruingInfo";
 import {useAtomValue} from "jotai";
-import { TelegramIcon, XaiHeaderIcon } from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import { TelegramIcon, WarningIcon, XaiHeaderIcon } from "@sentry/ui/src/rebrand/icons";
 import DashboardIconWhite from "@/assets/images/dashboard-icon-white.png";
 import DashboardIconGrey from "@/assets/images/dashboard-icon-grey.png";
 import { useStorage } from "@/features/storage";
 import ExternalLinkIcon from "@sentry/ui/dist/src/rebrand/icons/ExternalLinkIcon";
+import { chainStateAtom } from "@/hooks/useChainDataWithCallback";
 
 /**
  * Sidebar component
@@ -22,6 +23,7 @@ export function Sidebar() {
 	const location = useLocation();
 	const {sentryRunning} = useOperatorRuntime();
 	const { funded, hasAssignedKeys } = useAtomValue(accruingStateAtom);
+	const { network } = useAtomValue(chainStateAtom);
 	const {data} = useStorage();
 	const getActiveLink = (url: string) => {
 		if(location.pathname.includes(url)) {
@@ -41,6 +43,12 @@ export function Sidebar() {
 				>
 					<XaiHeaderIcon width={39} height={34} fill="fill-white" />
 				</div>
+
+				{network === "arbitrumSepolia" &&
+					<div className="text-bananaBoat text-[15px] mt-[20px] px-[17px]">
+						<p className="flex group items-center mb-[20px] text-xl font-bold gap-2"><WarningIcon width={18} height={16} className="fill-bananaBoat" /> TESTNET</p>
+					</div>
+				}
 
 				<div className="w-[237px] mb-[110px]">
 					<Link

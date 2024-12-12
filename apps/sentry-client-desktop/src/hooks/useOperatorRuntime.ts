@@ -1,4 +1,4 @@
-import {Challenge, NodeLicenseInformation, NodeLicenseStatusMap, operatorRuntime, PublicNodeBucketInformation} from "@sentry/core";
+import {Challenge, operatorRuntime, PublicNodeBucketInformation, SentryAddressInformation, SentryAddressStatusMap} from "@sentry/core";
 import {useOperator} from "@/features/operator";
 import {atom, useAtom} from "jotai";
 import {useEffect, useRef, useState} from "react";
@@ -19,13 +19,13 @@ function onAssertionMissMatch(publicNodeData: PublicNodeBucketInformation, chall
 
 let stop: (() => Promise<void>) | undefined;
 export const sentryRunningAtom = atom(stop != null);
-export const nodeLicenseStatusMapAtom = atom<NodeLicenseStatusMap>(new Map<bigint, NodeLicenseInformation>());
+export const sentryAddressStatusMapAtom = atom<SentryAddressStatusMap>(new Map<string, SentryAddressInformation>());
 export const runtimeLogsAtom = atom<string[]>([]);
 
 export function useOperatorRuntime() {
 	const {signer} = useOperator();
 	const [sentryRunning, setSentryRunning] = useAtom(sentryRunningAtom);
-	const [nodeLicenseStatusMap, setNodeLicenseStatusMap] = useAtom(nodeLicenseStatusMapAtom);
+	const [sentryAddressStatusMap, setSentryAddressStatusMap] = useAtom<SentryAddressStatusMap>(sentryAddressStatusMapAtom);
 	const [runtimeLogs, setRuntimeLogs] = useAtom(runtimeLogsAtom);
 	const [, setRerender] = useState(0);
 	const {data, setData} = useStorage();
@@ -65,7 +65,7 @@ export function useOperatorRuntime() {
 			await setData({...data, sentryRunning: true});
 
 			// @ts-ignore
-			stop = await operatorRuntime(signerRef.current, setNodeLicenseStatusMap, writeLog, whitelistedWallets, onAssertionMissMatch);
+			stop = await operatorRuntime(signerRef.current, setSentryAddressStatusMap, writeLog, whitelistedWallets, onAssertionMissMatch);
 			setRerender((_number) => _number + 1);
 		}
 	}
@@ -77,7 +77,7 @@ export function useOperatorRuntime() {
 			stop = undefined;
 
 			await _stop();
-			setNodeLicenseStatusMap(new Map<bigint, NodeLicenseInformation>());
+			setSentryAddressStatusMap(new Map<string, SentryAddressInformation>());
 			setSentryRunning(false);
 			if (passedData) {
 				await setData(passedData);
@@ -91,6 +91,6 @@ export function useOperatorRuntime() {
 		startRuntime: signer && startRuntime,
 		stopRuntime: stop && stopRuntime,
 		sentryRunning,
-		nodeLicenseStatusMap,
+		sentryAddressStatusMap,
 	}
 }

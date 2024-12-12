@@ -6,17 +6,16 @@ import {chainStateAtom} from "@/hooks/useChainDataWithCallback";
 import {useStorage} from "@/features/storage";
 import BaseCallout from "@sentry/ui/dist/src/rebrand/callout/BaseCallout";
 import {PrimaryButton} from "@sentry/ui";
-import {WarningIcon} from "@sentry/ui/src/rebrand/icons/IconsComponents";
+import {WarningIcon} from "@sentry/ui/src/rebrand/icons";
 
 export function ActionsRequiredPromptHandler() {
 	const setDrawerState = useSetAtom(drawerStateAtom);
 	const {accruing, kycRequired} = useAtomValue(accruingStateAtom);
 	const {data} = useStorage();
 
-	const {ownersLoading, ownersKycLoading, licensesLoading, combinedLicensesList} = useAtomValue(chainStateAtom);
-	const keyCount = combinedLicensesList.length;
+	const {ownersLoading, ownersKycLoading, licensesLoading, totalKeys} = useAtomValue(chainStateAtom);
 
-	if (!ownersLoading && !ownersKycLoading && !licensesLoading && keyCount === 0) {
+	if (!ownersLoading && !ownersKycLoading && !licensesLoading && totalKeys === 0) {
 		return (
 			<BaseCallout extraClasses={{calloutWrapper: "h-[60px] w-[308px]"}} isWarning>
 				<div className="flex flex-row gap-2 items-center mr-3">

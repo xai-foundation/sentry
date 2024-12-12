@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagmi';
 import { ethers } from 'ethers';
 import { XaiAbi, NodeLicenseAbi, config } from "@sentry/core";
 import { CURRENCIES, Currency, getTokenAddress } from '../shared';
@@ -41,7 +41,7 @@ export function useContractWrites({
   const [approveHash, setApproveHash] = useState<`0x${string}` | undefined>(undefined);
   const [mintWithXaiHash, setMintWithXaiHash] = useState<`0x${string}` | undefined>(undefined);
   const [mintWithEthError, setMintWithEthError] = useState<Error | null>(null);
-
+  const { address } = useAccount();
 
   const mintWithEthConfig = {
     address: config.nodeLicenseAddress as `0x${string}`,
@@ -79,7 +79,7 @@ export function useContractWrites({
     address: config.nodeLicenseAddress as `0x${string}`,
     abi: NodeLicenseAbi,
     functionName: "mintWithXai",
-    args: [quantity, promoCode, useEsXai, calculateTotalPrice()],
+    args: [address, quantity, promoCode, useEsXai, calculateTotalPrice()],
     onSuccess: (data: `0x${string}`) => {
       setMintWithXaiHash(data);
     },
@@ -93,7 +93,7 @@ export function useContractWrites({
     mintWithEth.writeContract(mintWithEthConfig);
   };
 
-  const mintWithEth = useWriteContract();  
+  const mintWithEth = useWriteContract();
   const ethMintTx = useWaitForTransactionReceipt({
     hash: mintWithEthHash
   });
@@ -104,7 +104,7 @@ export function useContractWrites({
 
   const approve = useWriteContract();
   const approveTx = useWaitForTransactionReceipt({
-     hash: approveHash,
+    hash: approveHash,
   });
 
   const handleMintWithXaiClicked = async () => {
@@ -121,7 +121,7 @@ export function useContractWrites({
     setApproveHash(undefined);
     setMintWithXaiHash(undefined);
     setMintWithEthError(null);
-  };  
+  };
 
   const resetTransactions = () => {
     setMintWithEthHash(undefined);
@@ -132,7 +132,7 @@ export function useContractWrites({
     approve.reset();
     mintWithXai.reset();
   };
-  
+
 
 
   return {

@@ -55,7 +55,7 @@ export function ChooseCurrencyRow(): JSX.Element {
                         <span className="text-[18px] text-elementalGrey font-medium">{translate("chooseCurrencyTitle")}</span>
                     </div>
                     <div className="flex flex-row items-center gap-1 bg-black">
-                        <span className="text-white font-bold text-3xl bg-black">
+                        <span className="text-white font-bold text-3xl bg-black z-0">
                             {/* Form to prevent default submit behavior */}
                             <form onSubmit={(e) => e.preventDefault()}>
                                 <Dropdown

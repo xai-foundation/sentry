@@ -35,6 +35,8 @@
             }
         },
         "logoColumn": {
+            "networkRewardsAmount": "~300 Mio. $",
+            "networkRewardsText": "an Netzwerkbelohnungen für Key-Hodler bisher",
             "purchaseReady": "IHR KAUF IST BEREIT",
             "imageAlt": "Sentry Logo"
         },
