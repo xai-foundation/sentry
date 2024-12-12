@@ -863,7 +863,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         emit AdminMintTo(msg.sender, to, amount);
     }
 
-    
+    // TODO this will not work correctly until we refactor the logic about staked keys, we do not track key ids anymore
     /**
      * @notice Admin function to transfer batch. This wil not allow the same transferId to be used multiple times
      * @param to The address to transfer the tokens to
@@ -891,6 +891,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         emit AdminTransferBatch(msg.sender, to, transferId, tokenIds);
     }
 
+    // TODO this will not work correctly until we refactor the logic about staked keys, we do not track key ids anymore
     /**
      * @notice Overwrite ERC721 tranferFrom require TRANSFER_ROLE on msg.sender
      */
@@ -904,6 +905,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         Referee10(refereeAddress).updateBulkSubmissionOnTransfer(from, to);
     }
 
+    // TODO this will not work correctly until we refactor the logic about staked keys, we do not track key ids anymore
     /**
      * @notice Overwrite ERC721 safeTransferFrom require TRANSFER_ROLE on msg.sender
      */
@@ -917,6 +919,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         Referee10(refereeAddress).updateBulkSubmissionOnTransfer(from, to);
     }
 
+    // TODO this will not work correctly until we refactor the logic about staked keys, we do not track key ids anymore
     /**
      * @notice Overwrite ERC721 safeTransferFrom require TRANSFER_ROLE on msg.sender
      */
