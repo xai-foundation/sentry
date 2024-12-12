@@ -22,9 +22,9 @@ export interface UseContractWritesReturn {
   clearErrors: () => void;
   resetTransactions: () => void;
   mintWithEthError: Error | null;
-  handleMintWithEthClicked: () => void;
+  mintWithEthSingleTx: () => void;
   handleApproveClicked: () => void;
-  handleMintWithXaiClicked: () => void;
+  mintWithXaiSingleTx: () => void;
 }
 
 export function useContractWrites({
@@ -89,7 +89,7 @@ export function useContractWrites({
     },
   };
 
-  const handleMintWithEthClicked = async () => {
+  const mintWithEthSingleTx = async () => {
     mintWithEth.writeContract(mintWithEthConfig);
   };
 
@@ -107,7 +107,7 @@ export function useContractWrites({
     hash: approveHash,
   });
 
-  const handleMintWithXaiClicked = async () => {
+  const mintWithXaiSingleTx = async () => {
     mintWithXai.writeContract(mintWithXaiConfig);
   };
 
@@ -145,8 +145,8 @@ export function useContractWrites({
     clearErrors,
     mintWithEthError,
     resetTransactions,
-    handleMintWithEthClicked,
+    mintWithEthSingleTx,
     handleApproveClicked,
-    handleMintWithXaiClicked,
+    mintWithXaiSingleTx,
   };
 }

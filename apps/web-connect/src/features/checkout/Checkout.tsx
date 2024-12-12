@@ -39,7 +39,10 @@ export function Checkout() {
         mintWithEth,
         mintWithXai,
         approve,
-        mintWithCrossmint
+        mintWithCrossmint,
+        isBatchMinting,
+        txHashes,
+        //batchMintTx
     } = useWebBuyKeysContext();
 
     useEffect(() => {
@@ -63,9 +66,10 @@ export function Checkout() {
     return (
         <div>
             <div className="h-full xl:min-h-screen flex-1 flex flex-col justify-center items-center">
-                {mintWithEth.isPending || mintWithXai.isPending || approve.isPending ? (
+
+                {mintWithEth.isPending || mintWithXai.isPending || approve.isPending || isBatchMinting ? (
                     <TransactionInProgress />
-                ) : mintWithEth.isSuccess || mintWithXai.isSuccess || mintWithCrossmint.txHash != "" ? (
+                ) : mintWithEth.isSuccess || mintWithXai.isSuccess || mintWithCrossmint.txHash != "" || (!isBatchMinting && txHashes.length > 0) ? (
                     <PurchaseSuccessful returnToClient={returnToClient} />
                 ) : (
                     <div className="h-auto sm:w-[90%] lg:w-auto flex sm:flex-col lg:flex-row justify-center bg-nulnOil shadow-main md:my-0 my-[24px]">
