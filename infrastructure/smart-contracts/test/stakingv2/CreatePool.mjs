@@ -213,10 +213,12 @@ export function CreatePool(deployInfrastructure, poolConfigurations) {
 			const stakingPool = new Contract(stakingPoolAddress, StakingPoolAbi);
 
 			// Verify the minted key is assigned to the first pool
-			const assignedKeyPool = await referee.connect(addr1).assignedKeyToPool(mintedKeyId);
 			const assignedKeyCount = await referee.connect(addr1).assignedKeysToPoolCount(stakingPoolAddress);
-			expect(assignedKeyPool).to.equal(stakingPoolAddress);
 			expect(assignedKeyCount).to.equal(1);
+			
+			// This is not tracked in the Referee anymore since removing keyIds for staking
+			// const assignedKeyPool = await referee.connect(addr1).assignedKeyToPool(mintedKeyId);
+			// expect(assignedKeyPool).to.equal(stakingPoolAddress);
 
 			// Verify that the Referee, esXai, and Pool owner are all correct
 			const refereeAddress = await stakingPool.connect(addr1).refereeAddress();
@@ -330,12 +332,14 @@ export function CreatePool(deployInfrastructure, poolConfigurations) {
 			const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
 
 			// Verify the minted keys are assigned to the correct pool
-			const assignedKey1Pool1 = await referee.connect(addr1).assignedKeyToPool(mintedKeyId1);
-			const assignedKey2Pool1 = await referee.connect(addr1).assignedKeyToPool(mintedKeyId2);
 			const assignedKeyCount1 = await referee.connect(addr1).assignedKeysToPoolCount(stakingPoolAddress);
-			expect(assignedKey1Pool1).to.equal(stakingPoolAddress);
-			expect(assignedKey1Pool1).to.equal(assignedKey2Pool1);
 			expect(assignedKeyCount1).to.equal(2);
+			
+			// This is not tracked in the Referee anymore since removing keyIds for staking
+			// const assignedKey1Pool1 = await referee.connect(addr1).assignedKeyToPool(mintedKeyId1);
+			// const assignedKey2Pool1 = await referee.connect(addr1).assignedKeyToPool(mintedKeyId2);
+			// expect(assignedKey1Pool1).to.equal(stakingPoolAddress);
+			// expect(assignedKey1Pool1).to.equal(assignedKey2Pool1);
 
 			// Successfully un-stake 1 key (must wait 30 days)
 			await poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 1);
@@ -344,12 +348,14 @@ export function CreatePool(deployInfrastructure, poolConfigurations) {
 			await poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 0, [mintedKeyId1]);
 
 			// Verify the minted key is assigned to the first pool
-			const assignedKey1Pool2 = await referee.connect(addr1).assignedKeyToPool(mintedKeyId1);
-			const assignedKey2Pool2 = await referee.connect(addr1).assignedKeyToPool(mintedKeyId2);
 			const assignedKeyCount2 = await referee.connect(addr1).assignedKeysToPoolCount(stakingPoolAddress);
-			expect(assignedKey1Pool2).to.equal(ethers.ZeroAddress);
-			expect(assignedKey2Pool2).to.equal(stakingPoolAddress);
 			expect(assignedKeyCount2).to.equal(1);
+			
+			// This is not tracked in the Referee anymore since removing keyIds for staking
+			// const assignedKey1Pool2 = await referee.connect(addr1).assignedKeyToPool(mintedKeyId1);
+			// const assignedKey2Pool2 = await referee.connect(addr1).assignedKeyToPool(mintedKeyId2);
+			// expect(assignedKey1Pool2).to.equal(ethers.ZeroAddress);
+			// expect(assignedKey2Pool2).to.equal(stakingPoolAddress);
 		});
 
 		it("Verify that the owner cannot un-stake all of their staked keys (there has to be at least 1 key of the pool owner staked into the Pool)", async function () {
@@ -386,9 +392,11 @@ export function CreatePool(deployInfrastructure, poolConfigurations) {
 			const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
 
 			// Verify the minted key is assigned to the correct pool
-			const assignedKeyPool1 = await referee.connect(addr1).assignedKeyToPool(mintedKeyId);
 			const assignedKeyCount1 = await referee.connect(addr1).assignedKeysToPoolCount(stakingPoolAddress);
-			expect(assignedKeyPool1).to.equal(stakingPoolAddress);
+			
+			// This is not tracked in the Referee anymore since removing keyIds for staking
+			// const assignedKeyPool1 = await referee.connect(addr1).assignedKeyToPool(mintedKeyId);
+			// expect(assignedKeyPool1).to.equal(stakingPoolAddress);
 			expect(assignedKeyCount1).to.equal(1);
 
 			// Fail to create un-stake request for 1 key because can't go to 0
@@ -397,10 +405,12 @@ export function CreatePool(deployInfrastructure, poolConfigurations) {
 			).to.be.revertedWith("15");
 
 			// Verify the minted key is still assigned to the correct pool
-			const assignedKeyPool2 = await referee.connect(addr1).assignedKeyToPool(mintedKeyId);
 			const assignedKeyCount2 = await referee.connect(addr1).assignedKeysToPoolCount(stakingPoolAddress);
-			expect(assignedKeyPool2).to.equal(stakingPoolAddress);
 			expect(assignedKeyCount2).to.equal(1);
+			
+			// This is not tracked in the Referee anymore since removing keyIds for staking
+			// const assignedKeyPool2 = await referee.connect(addr1).assignedKeyToPool(mintedKeyId);
+			// expect(assignedKeyPool2).to.equal(stakingPoolAddress);
 		});
 
 		it("Verify that only the Referee has access control on the Pool", async function () {
