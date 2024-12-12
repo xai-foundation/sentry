@@ -34,7 +34,7 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 	useEffect(() => {
 		setCanShare(navigator.share !== undefined);
 		setAllTxHashes([
-			...allTxHashes,
+			...txHashes,
 			...(mintWithEth.data ? [mintWithEth.data] : []),
 			...(mintWithXai.data ? [mintWithXai.data] : []),
 			...(mintWithCrossmint.txHash ? [mintWithCrossmint.txHash] : [])
