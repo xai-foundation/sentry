@@ -92,6 +92,9 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalQ
                                         colors:{
                                             text: styles.colors.textPrimary,
                                         },
+                                    },  
+                                    DestinationInput: {
+                                        display: "hidden",
                                     },
                                     Input: {
                                         font:{
