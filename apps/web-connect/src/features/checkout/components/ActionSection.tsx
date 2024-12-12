@@ -46,7 +46,9 @@ export function ActionSection(): JSX.Element {
         handleMintWithXaiClicked,
         getEthButtonText,
         calculateTotalPrice,
-        mintWithCrossmint
+        setCurrency,
+        mintWithCrossmint,
+        discount,
     } = useWebBuyKeysContext();
     const { t: translate } = useTranslation("Checkout");
 
@@ -118,6 +120,7 @@ export function ActionSection(): JSX.Element {
                             label: "mintCrossmint",
                         });
                         setCreditCardOpen(true)
+                        setCurrency("AETH"); // Currency must be AETH for USDC Calculation used in Crossmint
                     }}
                     className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-hornetSting p-2 uppercase font-bold `}
                     isDisabled={!ready || !isConnected}
@@ -203,7 +206,7 @@ export function ActionSection(): JSX.Element {
                 )}
             </div>
             <CrossmintModal
-                totalPriceInUsdc={totalPriceInUsdc}
+                totalPriceInUsdc={discount.applied ? (BigInt(totalPriceInUsdc) * 95n / 100n).toString() : totalPriceInUsdc}
                 isOpen={creditCardOpen}
                 onClose={() => setCreditCardOpen(false)}
                 totalQty={quantity}
