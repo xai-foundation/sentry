@@ -14,7 +14,7 @@ interface IAggregatorV3Interface {
     function latestAnswer() external view returns (int256);
 }
 
-contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  {
+contract NodeLicense9 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  {
     using StringsUpgradeable for uint256;
     using CountersUpgradeable for CountersUpgradeable.Counter;
     CountersUpgradeable.Counter private _tokenIds;
@@ -155,32 +155,8 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * 
      */
 
-    function initialize(
-        address _xaiAddress,  
-        address _esXaiAddress, 
-        address ethPriceFeedAddress, 
-        address xaiPriceFeedAddress, 
-        address airdropAdmin,
-        address _usdcAddress,
-        address _refereeCalculationsAddress,
-        address _refereeAddress
-    ) public reinitializer(3) {
-        if(_xaiAddress == address(0) || _esXaiAddress == address(0) || _usdcAddress == address(0) || _refereeCalculationsAddress == address(0) || ethPriceFeedAddress == address(0) || xaiPriceFeedAddress == address(0)){
-            revert InvalidAddress();
-        }
-        ethPriceFeed = IAggregatorV3Interface(ethPriceFeedAddress);
-        xaiPriceFeed = IAggregatorV3Interface(xaiPriceFeedAddress);
-        xaiAddress = _xaiAddress;
-        esXaiAddress = _esXaiAddress;
-        usdcAddress = _usdcAddress;
-        refereeCalculationsAddress = _refereeCalculationsAddress;
-        
-        // Grant the airdrop admin role to the airdrop admin address
-        _grantRole(AIRDROP_ADMIN_ROLE, airdropAdmin);
-        refereeAddress = _refereeAddress;
-
-        _promoCodes["binance"].recipient = address(0xE49C19cB8E68a5D0AE2DdCE8f80e60e2bbd01884);
-        _promoCodes["BA"].recipient = address(0xE49C19cB8E68a5D0AE2DdCE8f80e60e2bbd01884);
+    function initialize() public reinitializer(4) {
+        mintingPaused = false;
     }
 
     /** 
@@ -361,44 +337,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
             _referralRewardsUSDC[recipientAddress] += referralReward;
         }
     }
-
-    /**
-     * @notice Start the airdrop process
-     * @dev Only callable by the airdrop admin
-     * pauses mintting until completion of the airdrop
-     */
-
-    function startAirdrop() external onlyRole(AIRDROP_ADMIN_ROLE) {
-        mintingPaused = true;
-        Referee10(refereeAddress).setStakingEnabled(false);
-    }
-
-    function finishAirdrop(uint256 keyMultiplier) external onlyRole(AIRDROP_ADMIN_ROLE) {
-        updatePricingAndQuantity(keyMultiplier);
-        Referee10(refereeAddress).setStakingEnabled(true);
-    }
-
-    /**
-     *  @notice Mints new NodeLicense tokens for the tiny keys airdrop
-     *  @param _qtyToMint The qty of tokens to mint.
-     *  @param _keyId The keyId of the node license receiving the airdrop
-     *  @dev Only callable by the airdrop admin
-     */
-    function mintForAirdrop(uint256 _qtyToMint, uint256 _keyId) external onlyRole(AIRDROP_ADMIN_ROLE) {
-        _mintNodeLicense(_qtyToMint, 0, ownerOf(_keyId));
-    }
-
-    // /**
-    // * @notice Revokes the airdrop admin role for the address passed in
-    // * @param _address The address to revoke the airdrop admin role from
-    // * @dev Only callable by the airdrop admin
-    // */
-
-    // function revokeAirdropAdmin(address _address) external onlyRole(DEFAULT_ADMIN_ROLE) {
-    //     revokeRole(AIRDROP_ADMIN_ROLE, _address);
-    // }
-    
-
 
     /**
      * @notice Validate new mint request
@@ -863,7 +801,7 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         emit AdminMintTo(msg.sender, to, amount);
     }
 
-    // TODO this will not work correctly until we refactor the logic about staked keys, we do not track key ids anymore
+    
     /**
      * @notice Admin function to transfer batch. This wil not allow the same transferId to be used multiple times
      * @param to The address to transfer the tokens to
@@ -891,7 +829,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         emit AdminTransferBatch(msg.sender, to, transferId, tokenIds);
     }
 
-    // TODO this will not work correctly until we refactor the logic about staked keys, we do not track key ids anymore
     /**
      * @notice Overwrite ERC721 tranferFrom require TRANSFER_ROLE on msg.sender
      */
@@ -905,7 +842,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         Referee10(refereeAddress).updateBulkSubmissionOnTransfer(from, to);
     }
 
-    // TODO this will not work correctly until we refactor the logic about staked keys, we do not track key ids anymore
     /**
      * @notice Overwrite ERC721 safeTransferFrom require TRANSFER_ROLE on msg.sender
      */
@@ -919,7 +855,6 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         Referee10(refereeAddress).updateBulkSubmissionOnTransfer(from, to);
     }
 
-    // TODO this will not work correctly until we refactor the logic about staked keys, we do not track key ids anymore
     /**
      * @notice Overwrite ERC721 safeTransferFrom require TRANSFER_ROLE on msg.sender
      */
