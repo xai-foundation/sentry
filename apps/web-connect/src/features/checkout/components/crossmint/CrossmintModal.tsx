@@ -153,6 +153,7 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalQ
                                     allowedMethods: {
                                         card: true,
                                         googlePay: true,
+                                        applePay: true,
                                     },
                                     defaultCurrency: "usd",
                                 },
