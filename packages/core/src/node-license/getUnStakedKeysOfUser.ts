@@ -4,6 +4,8 @@ import { config } from '../config.js';
 import { ethers } from 'ethers';
 import { getUserNodeLicenseBalance } from './index.js';
 
+
+// TODO getUnstakedKeyIdsFromUser is deprecated in PoolFactory2
 /**
  * Retrieves a specified number of unstaked keys for a given user.
  * 

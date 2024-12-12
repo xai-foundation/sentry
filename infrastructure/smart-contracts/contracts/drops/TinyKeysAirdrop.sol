@@ -49,7 +49,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
     // Events for various actions within the contract
     event AirdropStarted(uint256 totalSupplyAtStart, uint256 keyMultiplier);
     event AirdropSegmentComplete(uint256 startingKeyId, uint256 endingKeyId);
-    event AirdropSegmentStakeComplete(address indexed owner, address indexed poolAddress, uint256 startingKeyId, uint256 endingKeyId);
+    event AirdropSegmentStakeComplete(address indexed owner, address indexed poolAddress, uint256 keyId, uint256 amount);
     event AirdropEnded();
 
     /**
@@ -140,7 +140,7 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
         NodeLicense8 nodeLicense = NodeLicense8(nodeLicenseAddress);
         Referee9 referee = Referee9(refereeAddress);
 
-        uint8 poolsProcessed;
+        // uint8 poolsProcessed;
 
         // Loop through the range of node licenses
         // Needs to be <= to include the last key
@@ -152,30 +152,32 @@ contract TinyKeysAirdrop is Initializable, AccessControlUpgradeable {
             address poolAddress = referee.assignedKeyToPool(i);
 
             // If the pool address is not 0, stake the newly minted keys
-            if(poolAddress != address(0)){           
-                uint256[] memory stakeKeyIds = new uint256[](keyMultiplier);
+            if(poolAddress != address(0)){
+                // DEPRECATED we do no longer track key IDs
+                // uint256[] memory stakeKeyIds = new uint256[](keyMultiplier);
                 // Determine the initial token id for the newly minted keys
                 // Calculate the starting ID for the new batch of tokens
-                uint256 tokensAlreadyProcessed = (i - 1) * keyMultiplier;
-                uint256 newTokenStartId = totalSupplyAtStart + tokensAlreadyProcessed + 1;
+                // uint256 tokensAlreadyProcessed = (i - 1) * keyMultiplier;
+                // uint256 newTokenStartId = totalSupplyAtStart + tokensAlreadyProcessed + 1;
 
-                // Create an array of key ids to stake
-                for (uint256 j = 0; j < keyMultiplier; j++) {
-                    stakeKeyIds[j] = newTokenStartId + j;
-                }
+                // // Create an array of key ids to stake
+                // for (uint256 j = 0; j < keyMultiplier; j++) {
+                //     stakeKeyIds[j] = newTokenStartId + j;
+                // }
                 
                 // Stake the keys
-                PoolFactory2(poolFactoryAddress).stakeKeysAdmin(poolAddress, stakeKeyIds, owner);
-                poolsProcessed++;
+                PoolFactory2(poolFactoryAddress).stakeKeysAdmin(poolAddress, keyMultiplier, owner);
+                // poolsProcessed++;
 
                 // Emit the event
-                emit AirdropSegmentStakeComplete(owner, poolAddress, stakeKeyIds[0], stakeKeyIds[stakeKeyIds.length-1]);
+                emit AirdropSegmentStakeComplete(owner, poolAddress, i, keyMultiplier);
             }
-
-            if (poolsProcessed == 2) {
-                endingKeyId = i;
-                break;
-            }
+            
+            // This gas exception guard should not be needed anymore since we now process much more keys even if staked
+            // if (poolsProcessed == 2) {
+            //     endingKeyId = i;
+            //     break;
+            // }
         }
 
         // Update the stake counter

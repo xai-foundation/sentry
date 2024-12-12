@@ -423,6 +423,9 @@ export const getMaxKeyCount = async (network: NetworkKey): Promise<number> => {
 	return MAX_KEY_COUNT_PER_POOL;
 }
 
+
+// TODO getUnstakedKeyIdsFromUser is deprecated in PoolFactory2
+// We do no longer track key ids for staking / unstaking
 export const getUnstakedKeysOfUser = async (network: NetworkKey, walletAddress: string, requestedCount: number): Promise<BigInt[]> => {
 	const web3Instance = getWeb3Instance(network);
 	const factoryContract = new web3Instance.web3.eth.Contract(PoolFactoryAbi, web3Instance.poolFactoryAddress);
