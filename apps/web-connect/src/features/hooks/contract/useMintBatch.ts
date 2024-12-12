@@ -3,9 +3,7 @@ import { useAccount, useWriteContract } from "wagmi";
 import { NodeLicenseAbi, config } from "@sentry/core";
 import { CURRENCIES, Currency } from "../shared";
 
-//const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-export const MAX_BATCH_SIZE = config.maxBatchMintSize;
+const MAX_BATCH_SIZE = config.maxBatchMintSize;
 
 interface UseMintBatchProps {
   promoCode: string;

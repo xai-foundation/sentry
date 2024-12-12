@@ -5,12 +5,11 @@ import { WarningIcon } from "@sentry/ui/src/rebrand/icons";
 import { mapWeb3Error } from "@/utils/errors";
 import { useWebBuyKeysContext } from '../contexts/useWebBuyKeysContext';
 import CrossmintModal from './crossmint/CrossmintModal';
-import { isValidNetwork } from '@sentry/core';
+import { config, isValidNetwork } from '@sentry/core';
 import { useNetworkConfig } from '@/hooks/useNetworkConfig';
 import { convertEthAmountToUsdcAmount } from '@/utils/convertEthAmountToUsdcAmount';
 import { useTranslation } from "react-i18next";
 import ReactGA from "react-ga4";
-import { MAX_BATCH_SIZE } from '@/features/hooks/contract/useMintBatch';
 
 
 /**
@@ -27,6 +26,8 @@ export function ActionSection(): JSX.Element {
     const { isDevelopment } = useNetworkConfig();
     const [isInitialized, setIsInitialized] = useState(false);
     const [totalPriceInUsdc, setTotalPriceInUsdc] = useState<string>("0");
+    
+    const MAX_BATCH_SIZE = config.maxBatchMintSize;
 
     // Destructure values and functions from the context
     const {
