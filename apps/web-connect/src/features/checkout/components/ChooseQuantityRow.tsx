@@ -14,7 +14,7 @@ import { useTranslation } from "react-i18next";
  */
 export function ChooseQuantityRow(): JSX.Element {
 
-    const MAX_PER_PURCHASE = 175;
+    const MAX_PER_PURCHASE = 99999;
 
     // Destructure necessary values from the WebBuyKeysContext
     const { quantity, setQuantity, maxSupply } = useWebBuyKeysContext();
@@ -68,13 +68,13 @@ export function ChooseQuantityRow(): JSX.Element {
 
 
                 {/* Description of Sentry Key functionality */}
-                <p className="sm:w-full lg:w-[400px] sm:text-center sm:px-8 lg:px-0 lg:text-left text-[18px] text-elementalGrey font-medium">
+                <p className="sm:w-full lg:w-[330px] sm:text-center sm:px-8 lg:px-0 lg:text-left text-[18px] text-elementalGrey font-medium">
                     {translate("chooseQuantity.description")}
                 </p>     
             </div>
             {/* Quantity input section */}
             <div className="flex w-full justify-end flex-row items-start gap-4 sm:mt-4 lg:mt-10">
-                <div className="flex sm:w-full lg:w-[175px] sm:px-2 lg:px-0 lg:mr-5">
+                <div className="flex sm:w-full lg:w-[200px] sm:px-2 lg:px-0 lg:mr-5">
                     {/* Custom number input component for selecting quantity */}
                     <XaiNumberInput
                         quantity={quantity}

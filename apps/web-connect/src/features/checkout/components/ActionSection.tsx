@@ -49,8 +49,14 @@ export function ActionSection(): JSX.Element {
         setCurrency,
         mintWithCrossmint,
         discount,
+        mintBatch,
+        //batchMintTx
     } = useWebBuyKeysContext();
-    const { t: translate } = useTranslation("Checkout");
+
+    //const mintBatch = useMintBatch({promoCode, calculateTotalPrice, currency, discountInfo: discount});
+
+    const { t: translate } = useTranslation("Checkout");    
+    const exceedsCrossmintMax = quantity > 175;
 
     /**
      * Determines the text to display on the main action button for token transactions
@@ -69,9 +75,22 @@ export function ActionSection(): JSX.Element {
         if (isApprove) {
             handleApproveClicked();
         } else {
-            handleMintWithXaiClicked();
+            if(quantity > 5) { 
+                mintBatch(quantity);
+            }else{
+                handleMintWithXaiClicked();
+            }
         }
     };
+
+    const handleMintWithEthClicked2 = async () => {
+        console.log("quantity: ", quantity);
+        if(quantity > 5) { 
+            mintBatch(quantity);
+        }else{
+            handleMintWithEthClicked();
+        }
+    }
 
     useEffect(() => {
         async function setUsdcPrice(){
@@ -91,7 +110,7 @@ export function ActionSection(): JSX.Element {
                     <>
                     <PrimaryButton
                         onClick={() => {
-                            handleMintWithEthClicked()
+                            handleMintWithEthClicked2()
                             ReactGA.event({
                                 category: 'User',
                                 action: 'buttonClick',
@@ -123,9 +142,9 @@ export function ActionSection(): JSX.Element {
                         setCurrency("AETH"); // Currency must be AETH for USDC Calculation used in Crossmint
                     }}
                     className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-hornetSting p-2 uppercase font-bold `}
-                    isDisabled={!ready || !isConnected}
+                    isDisabled={!ready || !isConnected || exceedsCrossmintMax}
                     colorStyle="outline-2"
-                    btnText={translate("actionSection.mintWithOptions")}
+                    btnText={exceedsCrossmintMax ? translate("actionSection.mintWithOptionsDisabled") : translate("actionSection.mintWithOptions")}
                 />}
 
                 {/* Error section for ETH transactions */}
@@ -153,6 +172,17 @@ export function ActionSection(): JSX.Element {
                                 </div>
                             </BaseCallout>
                         )}
+                        {/* {mapWeb3Error(batchMintTx.error) === "User rejected the request" && (
+                            <BaseCallout extraClasses={{ calloutWrapper: "md:h-[85px] h-[109px] mt-[12px]", calloutFront: "!justify-start" }} isWarning>
+                                <div className="flex md:gap-[21px] gap-[10px]">
+                                    <span className="block mt-2"><WarningIcon /></span>
+                                    <div>
+                                        <span className="block font-bold text-lg">{translate("actionSection.mintWithEthError.userRejectedRequest.title")}</span>
+                                        <span className="block font-medium text-lg">{translate("actionSection.mintWithEthError.userRejectedRequest.title")}</span>
+                                    </div>
+                                </div>
+                            </BaseCallout>
+                        )} */}
                     </div>
                 )}
 

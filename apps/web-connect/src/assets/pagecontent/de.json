@@ -84,6 +84,7 @@
         },
         "actionSection": {
             "mintWithOptions": "Prägen - Kredit/Debit, SOL, ETH, USDC",
+			"mintWithOptionsDisabled": "Crossmint maximal 175 Schlüssel pro Transaktion",
             "tokenButtonTexts": {
                 "isPending": "WARTET AUF BESTÄTIGUNG..",
                 "switchToArbitrum": "Bitte wechseln Sie zu Arbitrum"
