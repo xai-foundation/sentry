@@ -75,20 +75,12 @@ export function ActionSection(): JSX.Element {
         if (isApprove) {
             handleApproveClicked();
         } else {
-            if(quantity > MAX_BATCH_SIZE) { 
-                mintBatch(quantity);
-            }else{
-                mintWithXaiSingleTx();
-            }
+            quantity > MAX_BATCH_SIZE ? mintBatch(quantity) : mintWithXaiSingleTx();
         }
     };
 
     const handleMintWithEthButtonClicked = async () => {
-        if(quantity > MAX_BATCH_SIZE) { 
-            mintBatch(quantity);
-        }else{
-            mintWithEthSingleTx();
-        }
+        quantity > MAX_BATCH_SIZE ? mintBatch(quantity) : mintWithEthSingleTx();
     }
 
     useEffect(() => {
