@@ -391,11 +391,9 @@ describe("Fixture Tests", function () {
 
 
         // Upgrade the StakingPool
-        console.log("Deploying the new StakingPool implementation");
         const NewImplementation = await ethers.deployContract("StakingPool2");
         await NewImplementation.waitForDeployment();
         const newImplementationAddress = await NewImplementation.getAddress();
-        console.log("Updating the StakingPool beacon with the new implementation address");
         await StakingPoolPoolBeacon.update(newImplementationAddress);
 
         config.esXaiAddress = await esXai.getAddress();
