@@ -38,9 +38,9 @@ const MainStepper = ({
           type="number"
           value={quantity}
           min={1}
-          max={99}
+          max={maxSupply ?? 99999}
           onChange={onChange}
-          className={`font-bold text-3xl text-center min-w-[30%] text-white bg-nulnOil py-[7px] focus:outline-none ${inputClassName}`}
+          className={`font-bold text-3xl text-center w-full text-white bg-nulnOil py-[7px] focus:outline-none ${inputClassName}`}
         />
         <button
           className={`bg-nulnOil p-[20px] global-cta-clip-path hover:bg-velvetBlack duration-200 ease-in ${btnClassName}`}
