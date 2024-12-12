@@ -55,7 +55,7 @@ export function ActionSection(): JSX.Element {
     } = useWebBuyKeysContext();
 
     const { t: translate } = useTranslation("Checkout");    
-    const exceedsCrossmintMax = quantity > 175;
+    const exceedsCrossmintMax = quantity > MAX_BATCH_SIZE;
 
     /**
      * Determines the text to display on the main action button for token transactions
