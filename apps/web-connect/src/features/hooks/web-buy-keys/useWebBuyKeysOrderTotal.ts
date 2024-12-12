@@ -1,10 +1,10 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useWaitForTransactionReceipt } from 'wagmi';
 import { CheckoutTierSummary, formatWeiToEther, isValidNetwork } from '@sentry/core';
 import { CURRENCIES, Currency, useContractWrites, UseContractWritesReturn, useCurrencyHandler, useGetExchangeRate, useGetPriceForQuantity, useGetTotalSupplyAndCap, usePromoCodeHandler, useUserBalances } from '..';
 import { useProvider } from "../provider/useProvider";
 import { useNetworkConfig } from '@/hooks/useNetworkConfig';
 import { useTranslation } from "react-i18next";
+import { useMintBatch, UseMintBatchReturn } from '../contract/useMintBatch';
 
 export interface PriceDataInterface {
     price: bigint;
@@ -22,7 +22,7 @@ interface MintWithCrossmintStatus {
     orderIdentifier: string
 }
 
-export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
+export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn, UseMintBatchReturn {
     isTotalLoading: boolean;
     isExchangeRateLoading: boolean;
     isPromoLoading: boolean;
@@ -63,15 +63,7 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn {
     setQuantity: React.Dispatch<React.SetStateAction<number>>;
     handleApplyPromoCode: () => Promise<void>;
     approve: UseContractWritesReturn['approve'];
-    mintWithEth: UseContractWritesReturn['mintWithEth'];
-    mintWithXai: UseContractWritesReturn['mintWithXai'];
-    approveTx: ReturnType<typeof useWaitForTransactionReceipt>;
-    ethMintTx: ReturnType<typeof useWaitForTransactionReceipt>;
-    xaiMintTx: ReturnType<typeof useWaitForTransactionReceipt>;
     blockExplorer: string;
-    handleMintWithEthClicked: () => void;
-    handleApproveClicked: () => void;
-    handleMintWithXaiClicked: () => void;
     chainId: number | undefined;
     isConnected: boolean;
     mintWithCrossmint: MintWithCrossmintStatus
@@ -134,23 +126,9 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
             return discountedPrice * exchangeRate;
         };
     }, [getPriceData, discount, currency, exchangeRateData]);
-
-
-    const {
-        mintWithEth,
-        approve,
-        mintWithXai,
-        ethMintTx,
-        xaiMintTx,
-        approveTx,
-        clearErrors,
-        resetTransactions,
-        mintWithEthError,
-        handleMintWithEthClicked,
-        handleApproveClicked,
-        handleMintWithXaiClicked,
-    } = useContractWrites({
-        quantity,
+    
+    const mintBatch = useMintBatch({promoCode, calculateTotalPrice, currency});
+    const contractWrites = useContractWrites({ quantity,
         promoCode,
         calculateTotalPrice,
         currency,
@@ -159,12 +137,14 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
 
     useEffect(() => {
         refetchAllowance();
-    }, [approveTx.status, refetchAllowance]);
+    }, [contractWrites.approveTx.status, refetchAllowance]);
 
 
     useEffect(() => {
-        clearErrors();
-        resetTransactions();
+        contractWrites.clearErrors();
+        contractWrites.resetTransactions();
+        mintBatch.clearMintBatchErrors();
+        mintBatch.resetMintBatchTransactions();
     }, [currency]);
 
     /**
@@ -174,7 +154,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const getApproveButtonText = (): [string, boolean] => {
         const total = calculateTotalPrice();
 
-        if (approve.isPending || xaiMintTx.isLoading) {
+        if (contractWrites.approve.isPending || contractWrites.xaiMintTx.isLoading) {
             return [translate("approveButtonsTexts.isPending"), false];
         }
 
@@ -192,7 +172,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const getEthButtonText = (): [string, boolean] => {
         if (!isConnected) return [translate("ethButtonTexts.connectWallet"), false];
         if (!isValidNetwork(chainId, isDevelopment)) return [translate("ethButtonTexts.switchToArbitrum"), false];
-        if (mintWithEth.isPending || ethMintTx.isLoading) {
+        if (contractWrites.mintWithEth.isPending || contractWrites.ethMintTx.isLoading) {
             return [translate("ethButtonTexts.isPending"), false];
         }
 
@@ -253,23 +233,13 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         maxSupply,
         setQuantity,
         handleApplyPromoCode,
-        mintWithEth,
-        approve,
-        mintWithXai,
-        ethMintTx,
-        xaiMintTx,
-        approveTx,
         address,
-        clearErrors,
-        resetTransactions,
-        mintWithEthError,
         blockExplorer: providerData?.blockExplorer ?? '',
-        handleMintWithEthClicked,
-        handleApproveClicked,
-        handleMintWithXaiClicked,
         chainId,
         isConnected,
         mintWithCrossmint,
         setMintWithCrossmint,
+        ...mintBatch,
+        ...contractWrites
     };
 }

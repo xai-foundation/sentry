@@ -84,6 +84,7 @@
 		},
 		"actionSection": {
 			"mintWithOptions": "Mint - Credit/Debit, SOL, ETH, USDC",
+			"mintWithOptionsDisabled": "Crossmint Max 175 keys per txn",
 			"tokenButtonTexts": {
 				"isPending": "WAITING FOR CONFIRMATION..",
 				"switchToArbitrum": "Please Switch to Arbitrum"
