@@ -11,7 +11,7 @@ const accounts = {
 };
 
 const config = {
-  defaultNetwork: "arbitrumOne",
+  defaultNetwork: "arbitrumSepolia",
   solidity: {
     compilers: [
       {

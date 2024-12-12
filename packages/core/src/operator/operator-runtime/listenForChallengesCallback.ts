@@ -10,11 +10,11 @@ import { ethers } from "ethers";
 export async function listenForChallengesCallback(challengeNumber: bigint, challenge: Challenge, event?: ethers.EventLog) {
 
     // Add a delay of 1 -300 seconds to the new challenge process so not all operators request the subgraph at the same time
-    const delay = Math.floor(Math.random() * 301);
+    // const delay = Math.floor(Math.random() * 301);
 
-    await new Promise((resolve) => {
-        setTimeout(resolve, delay * 1000);
-    })
+    // await new Promise((resolve) => {
+    //     setTimeout(resolve, delay * 1000);
+    // })
 
     operatorState.cachedLogger(`Received new challenge with number: ${challengeNumber}. Delayed challenges will still accrue rewards.`);
 
