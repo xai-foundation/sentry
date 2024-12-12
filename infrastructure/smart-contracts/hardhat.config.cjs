@@ -68,7 +68,7 @@ const config = {
       accounts,
     },
     arbitrumOne: {
-      url: "https://arb1.arbitrum.io/rpc",
+      url: "https://arb-mainnet.g.alchemy.com/v2/oD4X3JXvJclnt36mDkqnp9CO2sZkNhYT",
       accounts,
       chainId: 42161,
     },
