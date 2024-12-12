@@ -76,7 +76,6 @@ describe("Fixture Tests", function () {
         const StakingPool = await ethers.deployContract("StakingPool");
         await StakingPool.waitForDeployment();
         const stakingPoolImplAddress = await StakingPool.getAddress();
-        await extractAbi("StakingPool", StakingPool);
 
         // Deploy the Key Bucket Tracker (implementation only)
         const KeyBucketTracker = await ethers.deployContract("BucketTracker");
@@ -391,10 +390,11 @@ describe("Fixture Tests", function () {
 
 
         // Upgrade the StakingPool
-        const NewImplementation = await ethers.deployContract("StakingPool2");
-        await NewImplementation.waitForDeployment();
-        const newImplementationAddress = await NewImplementation.getAddress();
-        await StakingPoolPoolBeacon.update(newImplementationAddress);
+        const StakingPool2 = await ethers.deployContract("StakingPool2");
+        await StakingPool2.waitForDeployment();
+        const stakingPool2ImplAddress = await StakingPool2.getAddress();
+        await StakingPoolPoolBeacon.update(stakingPool2ImplAddress);
+        await extractAbi("StakingPool", StakingPool2);
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;

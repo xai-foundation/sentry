@@ -1,7 +1,6 @@
 import { parse } from "csv/sync";
 import fs from "fs";
 import { config, createBlsKeyPair } from "@sentry/core";
-import { extractAbi } from "../utils/exportAbi.mjs";
 import { RefereeBulkSubmissionTransfers } from "./tinykeys/RefereeBulkSubmissionTransfers.mjs";
 import { mintBatchedLicenses } from "./utils/mintLicenses.mjs"
 
@@ -62,13 +61,11 @@ describe("Stake V1 & Transfer keys on Bulksubmissions", function () {
         const StakingPool = await ethers.deployContract("StakingPool");
         await StakingPool.waitForDeployment();
         const stakingPoolImplAddress = await StakingPool.getAddress();
-        await extractAbi("StakingPool", StakingPool);
 
         // Deploy the Key Bucket Tracker (implementation only)
         const KeyBucketTracker = await ethers.deployContract("BucketTracker");
         await KeyBucketTracker.waitForDeployment();
         const keyBucketTrackerImplAddress = await KeyBucketTracker.getAddress();
-        await extractAbi("BucketTracker", KeyBucketTracker);
 
         // Deploy the esXai Bucket Tracker (implementation only)
         const EsXaiBucketTracker = await ethers.deployContract("BucketTracker");
@@ -143,7 +140,6 @@ describe("Stake V1 & Transfer keys on Bulksubmissions", function () {
         const StakingPoolPoolBeacon = await ethers.deployContract("PoolBeacon", [stakingPoolImplAddress]);
         await StakingPoolPoolBeacon.waitForDeployment();
         const stakingPoolPoolBeaconAddress = await StakingPoolPoolBeacon.getAddress();
-        await extractAbi("PoolBeacon", StakingPoolPoolBeacon);
 
         // Deploy the key BucketTracker's PoolBeacon
         const KeyBucketTrackerPoolBeacon = await ethers.deployContract("PoolBeacon", [keyBucketTrackerImplAddress]);
