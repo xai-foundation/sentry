@@ -66,7 +66,8 @@ export function Checkout() {
     return (
         <div>
             <div className="h-full xl:min-h-screen flex-1 flex flex-col justify-center items-center">
-                {mintWithEth.isPending || mintWithXai.isPending || approve.isPending || mintWithCrossmint.isPending || isBatchMinting ? (
+
+                {mintWithEth.isPending || mintWithXai.isPending || approve.isPending || isBatchMinting ? (
                     <TransactionInProgress />
                 ) : mintWithEth.isSuccess || mintWithXai.isSuccess || mintWithCrossmint.txHash != "" || (!isBatchMinting && txHashes.length > 0) ? (
                     <PurchaseSuccessful returnToClient={returnToClient} />

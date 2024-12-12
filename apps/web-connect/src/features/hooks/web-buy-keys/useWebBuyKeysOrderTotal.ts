@@ -15,10 +15,8 @@ export interface UseWebBuyKeysOrderTotalProps {
     initialQuantity: number;
 }
 
-interface MintWithCrossmintStatus {
+export interface MintWithCrossmintStatus {
     txHash: string,
-    error: string,
-    isPending: boolean,
     orderIdentifier: string
 }
 
@@ -93,12 +91,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     });
     const [currency, setCurrency] = useState<Currency>(CURRENCIES.AETH);
     const [quantity, setQuantity] = useState<number>(initialQuantity);
-    const [mintWithCrossmint, setMintWithCrossmint] = useState<MintWithCrossmintStatus>({
-        txHash: "",
-        error: "",
-        orderIdentifier: "",
-        isPending: false
-    });
+    const [mintWithCrossmint, setMintWithCrossmint] = useState<MintWithCrossmintStatus>({ txHash: "", orderIdentifier: "" });
 
     const { tokenBalance, ethBalance } = useUserBalances(currency);
     const { tokenAllowance, refetchAllowance } = useCurrencyHandler(currency, address);
