@@ -84,11 +84,10 @@ export function useMintBatch({
 
   const mintBatch = async (qtyToMint: number) => {
     setTxHashes([]);
-    const config = getConfig(qtyToMint);
-    executeMint(qtyToMint, config);
+    executeMint(qtyToMint);
   };
 
-  const executeMint = async (qtyToMint: number, config: MintConfig) => {
+  const executeMint = async (qtyToMint: number) => {
     let qtyRemaining = qtyToMint;
     setMintBatchError(undefined);
     const txHashesLocal: string[] = []; // Local variable to accumulate hashes
@@ -102,7 +101,8 @@ export function useMintBatch({
 
       const qtyToProcess = Math.min(qtyRemaining, MAX_BATCH_SIZE);
       try {
-        // Initiate transaction
+        // Initiate transaction        
+        const config = getConfig(qtyToProcess);
         const result = await batchMintTx.writeContractAsync(config);
         txHashesLocal.push(result);
         qtyRemaining -= qtyToProcess;
