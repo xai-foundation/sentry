@@ -99,9 +99,14 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 					className="text-3xl text-white text-center uppercase font-bold mt-2">{translate("successfulPurchase.title")}</span>
 				<span className="block text-foggyLondon font-bold text-base max-w-[260px] text-center my-[10px]">{translate("successfulPurchase.text")}</span>
 				<div className="bg-optophobia w-full ">
-				{allTxHashes.map((hash, index) => (
-							<div className="flex justify-between border-t border-chromaphobicBlack px-[20px] py-[15px]" key={index}>
-							<span className="text-[18px] sm:text-center text-elementalGrey ">{translate("successfulPurchase.transactionId")}</span>
+					{allTxHashes.map((hash, index) => (
+						<div
+							key={index}
+							className="flex justify-between border-t border-chromaphobicBlack px-[20px] py-[15px]"
+						>
+							<span className="text-[18px] sm:text-center text-elementalGrey">
+								{translate("successfulPurchase.transactionId")}
+							</span>
 							<a
 								onClick={() => window.open(`${blockExplorer}/tx/${hash}`)}
 								className="group hover:text-hornetSting duration-300 text-wrap text-elementalGrey text-center underline ml-1 cursor-pointer text-[18px] sm:max-w-[260px] lg:max-w-full"
@@ -109,13 +114,15 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 								<div className="flex items-center gap-[10px]">
 									{hash.slice(0, 6)}...{hash.slice(-4)}
 									<ExternalLinkIcon
-										extraClasses={{ svgClasses: "group-hover:fill-hornetSting fill-elementalGrey duration-300" }} />
+										extraClasses={{
+											svgClasses: "group-hover:fill-hornetSting fill-elementalGrey duration-300",
+										}}
+									/>
 								</div>
 							</a>
-					</div>	
-				))}
+						</div>
+					))}
 					<div className="w-full text-elementalGrey text-[18px] flex flex-col border-t border-b border-chromaphobicBlack px-[20px] py-[15px]">
-
 						<p className="text-base">{translate("successfulPurchase.promo.shareLink")}</p>
 						<p className="text-base mb-3">{translate("successfulPurchase.promo.info")}</p>
 						<div className="p-[1px] w-full h-full bg-chromaphobicBlack global-clip-btn">
