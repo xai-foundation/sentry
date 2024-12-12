@@ -1,1135 +1,1199 @@
 export const StakingPoolAbi = [
   {
-    "type": "event",
-    "anonymous": false,
-    "name": "Initialized",
-    "inputs": [
-      {
-        "type": "uint8",
-        "name": "version",
-        "indexed": false
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "RoleAdminChanged",
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role",
-        "indexed": true
-      },
-      {
-        "type": "bytes32",
-        "name": "previousAdminRole",
-        "indexed": true
-      },
-      {
-        "type": "bytes32",
-        "name": "newAdminRole",
-        "indexed": true
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "RoleGranted",
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role",
-        "indexed": true
-      },
-      {
-        "type": "address",
-        "name": "account",
-        "indexed": true
-      },
-      {
-        "type": "address",
-        "name": "sender",
-        "indexed": true
-      }
-    ]
-  },
-  {
-    "type": "event",
-    "anonymous": false,
-    "name": "RoleRevoked",
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role",
-        "indexed": true
-      },
-      {
-        "type": "address",
-        "name": "account",
-        "indexed": true
-      },
-      {
-        "type": "address",
-        "name": "sender",
-        "indexed": true
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "DEFAULT_ADMIN_ROLE",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "bytes32",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "POOL_ADMIN",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "bytes32",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "claimRewards",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "user"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "createUnstakeEsXaiRequest",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "user"
-      },
-      {
-        "type": "uint256",
-        "name": "amount"
-      },
-      {
-        "type": "uint256",
-        "name": "period"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "createUnstakeKeyRequest",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "user"
-      },
-      {
-        "type": "uint256",
-        "name": "keyAmount"
-      },
-      {
-        "type": "uint256",
-        "name": "period"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "createUnstakeOwnerLastKeyRequest",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "owner"
-      },
-      {
-        "type": "uint256",
-        "name": "period"
-      }
-    ],
-    "outputs": []
-  },
-  {
-    "type": "function",
-    "name": "delegateOwner",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "address",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "description",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "string",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "esXaiAddress",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "address",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "esXaiStakeBucket",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "address",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getDelegateOwner",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "address",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getPoolInfo",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "tuple",
-        "name": "baseInfo",
-        "components": [
+      "anonymous": false,
+      "inputs": [
           {
-            "type": "address",
-            "name": "poolAddress"
-          },
-          {
-            "type": "address",
-            "name": "owner"
-          },
-          {
-            "type": "address",
-            "name": "keyBucketTracker"
-          },
-          {
-            "type": "address",
-            "name": "esXaiBucketTracker"
-          },
-          {
-            "type": "uint256",
-            "name": "keyCount"
-          },
-          {
-            "type": "uint256",
-            "name": "totalStakedAmount"
-          },
-          {
-            "type": "uint256",
-            "name": "updateSharesTimestamp"
-          },
-          {
-            "type": "uint32",
-            "name": "ownerShare"
-          },
-          {
-            "type": "uint32",
-            "name": "keyBucketShare"
-          },
-          {
-            "type": "uint32",
-            "name": "stakedBucketShare"
+              "indexed": false,
+              "internalType": "uint8",
+              "name": "version",
+              "type": "uint8"
           }
-        ]
-      },
-      {
-        "type": "string",
-        "name": "_name"
-      },
-      {
-        "type": "string",
-        "name": "_description"
-      },
-      {
-        "type": "string",
-        "name": "_logo"
-      },
-      {
-        "type": "string[]",
-        "name": "_socials"
-      },
-      {
-        "type": "uint32[]",
-        "name": "_pendingShares"
-      },
-      {
-        "type": "uint256",
-        "name": "_ownerStakedKeys"
-      },
-      {
-        "type": "uint256",
-        "name": "_ownerRequestedUnstakeKeyAmount"
-      },
-      {
-        "type": "uint256",
-        "name": "_ownerLatestUnstakeRequestLockTime"
-      }
-    ]
+      ],
+      "name": "Initialized",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "getPoolOwner",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "address",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getRoleAdmin",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bytes32",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getStakedAmounts",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "user"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getStakedKeys",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256[]",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getStakedKeysCount",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getStakedKeysCountForUser",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "user"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getUndistributedClaimAmount",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "user"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": "claimAmountFromKeys"
-      },
-      {
-        "type": "uint256",
-        "name": "claimAmountFromEsXai"
-      },
-      {
-        "type": "uint256",
-        "name": "claimAmount"
-      },
-      {
-        "type": "uint256",
-        "name": "ownerAmount"
-      }
-    ]
-  },
-  {
-    "type": "function",
-    "name": "getUnstakeRequest",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "account"
-      },
-      {
-        "type": "uint256",
-        "name": "index"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "tuple",
-        "name": "",
-        "components": [
+      "anonymous": false,
+      "inputs": [
           {
-            "type": "bool",
-            "name": "open"
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
           },
           {
-            "type": "bool",
-            "name": "isKeyRequest"
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "previousAdminRole",
+              "type": "bytes32"
           },
           {
-            "type": "uint256",
-            "name": "amount"
-          },
-          {
-            "type": "uint256",
-            "name": "lockTime"
-          },
-          {
-            "type": "uint256",
-            "name": "completeTime"
-          },
-          {
-            "type": "uint256[5]",
-            "name": "__gap"
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "newAdminRole",
+              "type": "bytes32"
           }
-        ]
-      }
-    ]
+      ],
+      "name": "RoleAdminChanged",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "getUnstakeRequestCount",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "account"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+          },
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+          },
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+          }
+      ],
+      "name": "RoleGranted",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "getUserPoolData",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "user"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": "userStakedEsXaiAmount"
-      },
-      {
-        "type": "uint256",
-        "name": "userClaimAmount"
-      },
-      {
-        "type": "uint256[]",
-        "name": "userStakedKeyIds"
-      },
-      {
-        "type": "uint256",
-        "name": "unstakeRequestkeyAmount"
-      },
-      {
-        "type": "uint256",
-        "name": "unstakeRequestesXaiAmount"
-      }
-    ]
+      "anonymous": false,
+      "inputs": [
+          {
+              "indexed": true,
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+          },
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+          },
+          {
+              "indexed": true,
+              "internalType": "address",
+              "name": "sender",
+              "type": "address"
+          }
+      ],
+      "name": "RoleRevoked",
+      "type": "event"
   },
   {
-    "type": "function",
-    "name": "getUserRequestedUnstakeAmounts",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "user"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": "keyAmount"
-      },
-      {
-        "type": "uint256",
-        "name": "esXaiAmount"
-      }
-    ]
+      "inputs": [],
+      "name": "DEFAULT_ADMIN_ROLE",
+      "outputs": [
+          {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "grantRole",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role"
-      },
-      {
-        "type": "address",
-        "name": "account"
-      }
-    ],
-    "outputs": []
+      "inputs": [],
+      "name": "POOL_ADMIN",
+      "outputs": [
+          {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "hasRole",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role"
-      },
-      {
-        "type": "address",
-        "name": "account"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bool",
-        "name": ""
-      }
-    ]
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+          }
+      ],
+      "name": "claimRewards",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "initShares",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint32",
-        "name": "_ownerShare"
-      },
-      {
-        "type": "uint32",
-        "name": "_keyBucketShare"
-      },
-      {
-        "type": "uint32",
-        "name": "_stakedBucketShare"
-      }
-    ],
-    "outputs": []
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "period",
+              "type": "uint256"
+          }
+      ],
+      "name": "createUnstakeEsXaiRequest",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "initialize",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "_refereeAddress"
-      },
-      {
-        "type": "address",
-        "name": "_esXaiAddress"
-      },
-      {
-        "type": "address",
-        "name": "_owner"
-      },
-      {
-        "type": "address",
-        "name": "_delegateOwner"
-      },
-      {
-        "type": "address",
-        "name": "_keyBucket"
-      },
-      {
-        "type": "address",
-        "name": "_esXaiStakeBucket"
-      }
-    ],
-    "outputs": []
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "keyAmount",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "period",
+              "type": "uint256"
+          }
+      ],
+      "name": "createUnstakeKeyRequest",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "isUserEngagedWithPool",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "user"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bool",
-        "name": ""
-      }
-    ]
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "period",
+              "type": "uint256"
+          }
+      ],
+      "name": "createUnstakeOwnerLastKeyRequest",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "keyBucket",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "address",
-        "name": ""
-      }
-    ]
+      "inputs": [],
+      "name": "delegateOwner",
+      "outputs": [
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "keyBucketShare",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint32",
-        "name": ""
-      }
-    ]
+      "inputs": [],
+      "name": "description",
+      "outputs": [
+          {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "keyIdIndex",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
+      "inputs": [],
+      "name": "esXaiAddress",
+      "outputs": [
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "logo",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "string",
-        "name": ""
-      }
-    ]
+      "inputs": [],
+      "name": "esXaiStakeBucket",
+      "outputs": [
+          {
+              "internalType": "contract BucketTracker",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "name",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "string",
-        "name": ""
-      }
-    ]
+      "inputs": [],
+      "name": "getDelegateOwner",
+      "outputs": [
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "ownerShare",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint32",
-        "name": ""
-      }
-    ]
+      "inputs": [],
+      "name": "getPoolInfo",
+      "outputs": [
+          {
+              "components": [
+                  {
+                      "internalType": "address",
+                      "name": "poolAddress",
+                      "type": "address"
+                  },
+                  {
+                      "internalType": "address",
+                      "name": "owner",
+                      "type": "address"
+                  },
+                  {
+                      "internalType": "address",
+                      "name": "keyBucketTracker",
+                      "type": "address"
+                  },
+                  {
+                      "internalType": "address",
+                      "name": "esXaiBucketTracker",
+                      "type": "address"
+                  },
+                  {
+                      "internalType": "uint256",
+                      "name": "keyCount",
+                      "type": "uint256"
+                  },
+                  {
+                      "internalType": "uint256",
+                      "name": "totalStakedAmount",
+                      "type": "uint256"
+                  },
+                  {
+                      "internalType": "uint256",
+                      "name": "updateSharesTimestamp",
+                      "type": "uint256"
+                  },
+                  {
+                      "internalType": "uint32",
+                      "name": "ownerShare",
+                      "type": "uint32"
+                  },
+                  {
+                      "internalType": "uint32",
+                      "name": "keyBucketShare",
+                      "type": "uint32"
+                  },
+                  {
+                      "internalType": "uint32",
+                      "name": "stakedBucketShare",
+                      "type": "uint32"
+                  }
+              ],
+              "internalType": "struct StakingPool2.PoolBaseInfo",
+              "name": "baseInfo",
+              "type": "tuple"
+          },
+          {
+              "internalType": "string",
+              "name": "_name",
+              "type": "string"
+          },
+          {
+              "internalType": "string",
+              "name": "_description",
+              "type": "string"
+          },
+          {
+              "internalType": "string",
+              "name": "_logo",
+              "type": "string"
+          },
+          {
+              "internalType": "string[]",
+              "name": "_socials",
+              "type": "string[]"
+          },
+          {
+              "internalType": "uint32[]",
+              "name": "_pendingShares",
+              "type": "uint32[]"
+          },
+          {
+              "internalType": "uint256",
+              "name": "_ownerStakedKeys",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "_ownerRequestedUnstakeKeyAmount",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "_ownerLatestUnstakeRequestLockTime",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "poolOwner",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "address",
-        "name": ""
-      }
-    ]
+      "inputs": [],
+      "name": "getPoolOwner",
+      "outputs": [
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "poolOwnerClaimableRewards",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
+      "inputs": [
+          {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+          }
+      ],
+      "name": "getRoleAdmin",
+      "outputs": [
+          {
+              "internalType": "bytes32",
+              "name": "",
+              "type": "bytes32"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "refereeAddress",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "address",
-        "name": ""
-      }
-    ]
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+          }
+      ],
+      "name": "getStakedAmounts",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "renounceRole",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role"
-      },
-      {
-        "type": "address",
-        "name": "account"
-      }
-    ],
-    "outputs": []
+      "inputs": [],
+      "name": "getStakedKeys",
+      "outputs": [
+          {
+              "internalType": "uint256[]",
+              "name": "",
+              "type": "uint256[]"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "revokeRole",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes32",
-        "name": "role"
-      },
-      {
-        "type": "address",
-        "name": "account"
-      }
-    ],
-    "outputs": []
+      "inputs": [],
+      "name": "getStakedKeysCount",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "socials",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ],
-    "outputs": [
-      {
-        "type": "string",
-        "name": ""
-      }
-    ]
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+          }
+      ],
+      "name": "getStakedKeysCountForUser",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "stakeEsXai",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "owner"
-      },
-      {
-        "type": "uint256",
-        "name": "amount"
-      }
-    ],
-    "outputs": []
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+          }
+      ],
+      "name": "getUndistributedClaimAmount",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "claimAmountFromKeys",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "claimAmountFromEsXai",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "claimAmount",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "ownerAmount",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "stakeKeys",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "owner"
-      },
-      {
-        "type": "uint256[]",
-        "name": "keyIds"
-      }
-    ],
-    "outputs": []
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "index",
+              "type": "uint256"
+          }
+      ],
+      "name": "getUnstakeRequest",
+      "outputs": [
+          {
+              "components": [
+                  {
+                      "internalType": "bool",
+                      "name": "open",
+                      "type": "bool"
+                  },
+                  {
+                      "internalType": "bool",
+                      "name": "isKeyRequest",
+                      "type": "bool"
+                  },
+                  {
+                      "internalType": "uint256",
+                      "name": "amount",
+                      "type": "uint256"
+                  },
+                  {
+                      "internalType": "uint256",
+                      "name": "lockTime",
+                      "type": "uint256"
+                  },
+                  {
+                      "internalType": "uint256",
+                      "name": "completeTime",
+                      "type": "uint256"
+                  },
+                  {
+                      "internalType": "uint256[5]",
+                      "name": "__gap",
+                      "type": "uint256[5]"
+                  }
+              ],
+              "internalType": "struct StakingPool2.UnstakeRequest",
+              "name": "",
+              "type": "tuple"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "stakedAmounts",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": ""
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+          }
+      ],
+      "name": "getUnstakeRequestCount",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "stakedBucketShare",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [],
-    "outputs": [
-      {
-        "type": "uint32",
-        "name": ""
-      }
-    ]
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+          }
+      ],
+      "name": "getUserPoolData",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "userStakedEsXaiAmount",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "userClaimAmount",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "userStakedKeyAmount",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "unstakeRequestkeyAmount",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "unstakeRequestesXaiAmount",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "stakedKeys",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+          }
+      ],
+      "name": "getUserRequestedUnstakeAmounts",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "keyAmount",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "esXaiAmount",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "stakedKeysIndices",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
+      "inputs": [
+          {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+          },
+          {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+          }
+      ],
+      "name": "grantRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "stakedKeysOfOwner",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": ""
-      },
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ],
-    "outputs": [
-      {
-        "type": "uint256",
-        "name": ""
-      }
-    ]
+      "inputs": [
+          {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+          },
+          {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+          }
+      ],
+      "name": "hasRole",
+      "outputs": [
+          {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "supportsInterface",
-    "constant": true,
-    "stateMutability": "view",
-    "payable": false,
-    "inputs": [
-      {
-        "type": "bytes4",
-        "name": "interfaceId"
-      }
-    ],
-    "outputs": [
-      {
-        "type": "bool",
-        "name": ""
-      }
-    ]
+      "inputs": [
+          {
+              "internalType": "uint32",
+              "name": "_ownerShare",
+              "type": "uint32"
+          },
+          {
+              "internalType": "uint32",
+              "name": "_keyBucketShare",
+              "type": "uint32"
+          },
+          {
+              "internalType": "uint32",
+              "name": "_stakedBucketShare",
+              "type": "uint32"
+          }
+      ],
+      "name": "initShares",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "unstakeEsXai",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "owner"
-      },
-      {
-        "type": "uint256",
-        "name": "unstakeRequestIndex"
-      },
-      {
-        "type": "uint256",
-        "name": "amount"
-      }
-    ],
-    "outputs": []
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "_refereeAddress",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "_esXaiAddress",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "_owner",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "_delegateOwner",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "_keyBucket",
+              "type": "address"
+          },
+          {
+              "internalType": "address",
+              "name": "_esXaiStakeBucket",
+              "type": "address"
+          }
+      ],
+      "name": "initialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "unstakeKeys",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "owner"
-      },
-      {
-        "type": "uint256",
-        "name": "unstakeRequestIndex"
-      },
-      {
-        "type": "uint256[]",
-        "name": "keyIds"
-      }
-    ],
-    "outputs": []
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+          }
+      ],
+      "name": "isUserEngagedWithPool",
+      "outputs": [
+          {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "updateDelegateOwner",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "address",
-        "name": "delegate"
-      }
-    ],
-    "outputs": []
+      "inputs": [],
+      "name": "keyBucket",
+      "outputs": [
+          {
+              "internalType": "contract BucketTracker",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "updateMetadata",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "string[3]",
-        "name": "_metaData"
-      },
-      {
-        "type": "string[]",
-        "name": "_socials"
-      }
-    ],
-    "outputs": []
+      "inputs": [],
+      "name": "keyBucketShare",
+      "outputs": [
+          {
+              "internalType": "uint32",
+              "name": "",
+              "type": "uint32"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
   },
   {
-    "type": "function",
-    "name": "updateShares",
-    "constant": false,
-    "payable": false,
-    "inputs": [
-      {
-        "type": "uint32",
-        "name": "_ownerShare"
-      },
-      {
-        "type": "uint32",
-        "name": "_keyBucketShare"
-      },
-      {
-        "type": "uint32",
-        "name": "_stakedBucketShare"
-      },
-      {
-        "type": "uint256",
-        "name": "period"
-      }
-    ],
-    "outputs": []
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "name": "keyIdIndex",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "logo",
+      "outputs": [
+          {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "name",
+      "outputs": [
+          {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "ownerShare",
+      "outputs": [
+          {
+              "internalType": "uint32",
+              "name": "",
+              "type": "uint32"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "poolOwner",
+      "outputs": [
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "poolOwnerClaimableRewards",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "refereeAddress",
+      "outputs": [
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+          },
+          {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+          }
+      ],
+      "name": "renounceRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "bytes32",
+              "name": "role",
+              "type": "bytes32"
+          },
+          {
+              "internalType": "address",
+              "name": "account",
+              "type": "address"
+          }
+      ],
+      "name": "revokeRole",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "name": "socials",
+      "outputs": [
+          {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+          }
+      ],
+      "name": "stakeEsXai",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "keyAmount",
+              "type": "uint256"
+          }
+      ],
+      "name": "stakeKeys",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "name": "stakedAmounts",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [],
+      "name": "stakedBucketShare",
+      "outputs": [
+          {
+              "internalType": "uint32",
+              "name": "",
+              "type": "uint32"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          }
+      ],
+      "name": "stakedKeyAmounts",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "name": "stakedKeys",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "name": "stakedKeysIndices",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "name": "stakedKeysOfOwner",
+      "outputs": [
+          {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "bytes4",
+              "name": "interfaceId",
+              "type": "bytes4"
+          }
+      ],
+      "name": "supportsInterface",
+      "outputs": [
+          {
+              "internalType": "bool",
+              "name": "",
+              "type": "bool"
+          }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "unstakeRequestIndex",
+              "type": "uint256"
+          },
+          {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+          }
+      ],
+      "name": "unstakeEsXai",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "owner",
+              "type": "address"
+          },
+          {
+              "internalType": "uint256",
+              "name": "unstakeRequestIndex",
+              "type": "uint256"
+          }
+      ],
+      "name": "unstakeKeys",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "address",
+              "name": "delegate",
+              "type": "address"
+          }
+      ],
+      "name": "updateDelegateOwner",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "string[3]",
+              "name": "_metaData",
+              "type": "string[3]"
+          },
+          {
+              "internalType": "string[]",
+              "name": "_socials",
+              "type": "string[]"
+          }
+      ],
+      "name": "updateMetadata",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+  },
+  {
+      "inputs": [
+          {
+              "internalType": "uint32",
+              "name": "_ownerShare",
+              "type": "uint32"
+          },
+          {
+              "internalType": "uint32",
+              "name": "_keyBucketShare",
+              "type": "uint32"
+          },
+          {
+              "internalType": "uint32",
+              "name": "_stakedBucketShare",
+              "type": "uint32"
+          },
+          {
+              "internalType": "uint256",
+              "name": "period",
+              "type": "uint256"
+          }
+      ],
+      "name": "updateShares",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
   }
 ];

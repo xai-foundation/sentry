@@ -4,7 +4,8 @@ const { ethers, upgrades } = hardhat;
 import { PoolBeaconAbi } from "@sentry/core";
 
 // Find this in the deployed PoolProxyDeployer's public fields. This should reflect which set of proxies you want to change; staking pools, key buckets, or esXai buckets
-const beaconAddress = "0x27e57D41D633E9ea30326911aC3E19F203099c12";     //TODO Update to the beacon contract that needs to be updated
+// https://arbiscan.io/address/0x68D78D1E81379EfD9C61f8E9131D52CE571AF4fD#readProxyContract
+const beaconAddress = "0x5f9D168d3435747335b1B3dC7e4d42e3510087C7";     //TODO Update to the beacon contract that needs to be updated
 const currentContractImplementationName = "StakingPool";                //TODO Update to the contract name of the previous implementation
 const newContractImplementationName = "StakingPool2";                   //TODO Update to the contract name of the new implementation
 
