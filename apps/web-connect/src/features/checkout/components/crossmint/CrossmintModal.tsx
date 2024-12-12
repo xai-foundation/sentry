@@ -4,7 +4,7 @@ import { config, formatWeiToEther } from "@sentry/core";
 import { CloseIcon } from "@sentry/ui";
 import { CrossmintEmbeddedCheckout, useCrossmintCheckout } from "@crossmint/client-sdk-react-ui";
 import { MintWithCrossmintStatus } from "@/features/hooks";
-import { useWebBuyKeysContext } from "../../contexts/useWebBuyKeysContext";
+import { useWebBuyKeysContext } from "@/features/checkout/contexts/useWebBuyKeysContext";
 
 interface CrossmintModalProps {
     isOpen: boolean;
@@ -22,11 +22,7 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalQ
     const [mintTxData, setMintTxData] = useState<MintWithCrossmintStatus>({ txHash: "", orderIdentifier: "" });
     
     const handleClose = () => {
-        if (mintTxData.txHash === "") {
-            setMintWithCrossmint({ txHash: "", orderIdentifier: "" });
-        } else {
-            setMintWithCrossmint(mintTxData);
-        }
+        setMintWithCrossmint(mintTxData.txHash === "" ? { txHash: "", orderIdentifier: "" } : mintTxData);
         onClose();
     };
 
