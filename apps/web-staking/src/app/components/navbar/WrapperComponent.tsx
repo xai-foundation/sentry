@@ -5,6 +5,7 @@ import NavbarComponent from "./NavbarComponent";
 import SidebarComponent from "./SidebarComponent";
 import { useEffect } from "react";
 import AnnouncementBanner from "@/app/components/AnnouncementBanner";
+import { ThreeStars } from "../icons/IconsComponent";
 
 export default function WrapperComponent({ children }: { children: React.ReactNode }) {
 
@@ -17,11 +18,13 @@ export default function WrapperComponent({ children }: { children: React.ReactNo
 	return (
 		<>
 			<AnnouncementBanner
-				activateBanner={false}
+				icon={<ThreeStars/>}
+				activateBanner={true}
 				bannerVersion="tk"
-				title={"Announcement title."}
-				text={"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc non porttitor urna."}
-				href={"https://xai-foundation.gitbook.io/xai-network"}
+				title={"Sentry Keys have completed a 1:100 split to make them more accessible."}
+				text={""}
+				href={"https://medium.com/@xaifoundation/your-key-to-the-crypto-industry-your-key-to-the-game-industry-your-key-to-success-your-key-to-d9ca387884c1"}
+				href2={"https://malleable-watchmaker-e7f.notion.site/Welcome-Sentry-Key-Ambassador-14f94bd8393a80ef86e1d5ac1eef70ce"}
 			/>
 			<div className="flex">
 				<div className="hidden lg:block">
