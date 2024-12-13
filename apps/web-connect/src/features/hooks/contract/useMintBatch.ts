@@ -62,7 +62,7 @@ export function useMintBatch({
       abi: NodeLicenseAbi,
       functionName,
       args,
-      value: currency === CURRENCIES.AETH ? calculateTotalPrice() : undefined,
+      value: currency === CURRENCIES.AETH ? calculateTotalPrice() : 0n,
       onSuccess: () => {
         setMintBatchError(undefined);
       },
@@ -102,7 +102,7 @@ export function useMintBatch({
         // AETH seems to not experience this issue
         if (currency !== CURRENCIES.AETH) {
           // If not AETH, wait 3 seconds between transactions
-          await new Promise((resolve) => setTimeout(resolve, 3000));
+          await new Promise((resolve) => setTimeout(resolve, 1000));
         }
         // Reset for the next iteration
         batchMintTx.reset();
