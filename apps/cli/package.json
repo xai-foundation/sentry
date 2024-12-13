@@ -21,6 +21,7 @@
     "axios": "^1.6.2",
     "cli-table3": "^0.6.3",
     "commander": "^12.1.0",
+    "csv": "^6.3.5",
     "date-prompt": "^1.0.0",
     "inquirer": "^9.2.12",
     "inquirer-autocomplete-prompt": "^3.0.1",
