@@ -3,7 +3,7 @@ import inquirer from 'inquirer';
 import { getSignerFromPrivateKey, addPromoCode as coreAddPromoCode, getPromoCode, config, retry } from "@sentry/core";
 import fs from 'fs';
 import { parse } from "csv/sync";
-import { ethers, getAddress } from 'ethers';
+import { ethers, getAddress, Wallet } from 'ethers';
 
 /**
  * Function to add promo codes from a csv if the signer has the DEFAULT_ADMIN_ROLE.
@@ -47,12 +47,26 @@ export function addPromoCodeList(cli: Command): void {
             const { privateKey } = await inquirer.prompt({
                 type: 'password',
                 name: 'privateKey',
-                message: 'Enter the private key of the admin wallet that will add the promo code:',
+                message: 'Enter the private key or seed phrase of the admin wallet that will add the promo code:',
                 mask: '*',
             });
 
-            // Get a signer using the private key
-            const { signer } = getSignerFromPrivateKey(privateKey);
+            if (!privateKey) {
+                console.log("Invalid privateKey");
+                return;
+            }
+
+            var isHex = /[0-9A-Fa-f]{6}/g;
+
+            let signer;
+
+            if (isHex.test(privateKey)) {
+                signer = (getSignerFromPrivateKey(privateKey)).signer;
+            } else {
+                signer = Wallet.fromPhrase(privateKey);
+            }
+
+            console.log(`Loaded wallet: ${await signer.getAddress()}`);
 
             let errorCount = 0;
             let successCount = 0;
@@ -73,7 +87,7 @@ export function addPromoCodeList(cli: Command): void {
                     errorCount++;
                     continue;
                 }
-                
+
                 const code = promo.promoCode;
                 const recipient = promo.recipient.trim();
 
