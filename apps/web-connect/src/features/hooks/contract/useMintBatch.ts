@@ -12,6 +12,7 @@ interface UseMintBatchProps {
   promoCode: string;
   calculateTotalPrice: () => bigint;
   currency: Currency;
+  discountApplied: boolean;
 }
 
 export interface UseMintBatchReturn {
@@ -38,6 +39,7 @@ export function useMintBatch({
   promoCode,
   calculateTotalPrice,
   currency,
+  discountApplied,
 }: UseMintBatchProps): UseMintBatchReturn {
   const [txHashes, setTxHashes] = useState<string[]>([]);
   const [mintBatchError, setMintBatchError] = useState<Error | undefined>(
@@ -101,7 +103,8 @@ export function useMintBatch({
       try {
         // Initiate transaction
         const priceResult = await getPriceForQuantityCore(Number(qtyToProcess));
-        const priceToUse =  currency === CURRENCIES.AETH ? priceResult.price : await convertEthAmountToXaiAmount(priceResult.price);
+        const price =  currency === CURRENCIES.AETH ? priceResult.price : await convertEthAmountToXaiAmount(priceResult.price);
+        const priceToUse = discountApplied ? price * BigInt(95) / BigInt(100) : price;
         const itemPriceAvg = priceToUse / BigInt(qtyToProcess);
         if(itemPriceAvg > expectedAveragePrice) {
           errorNotification("Price has changed. Please review and confirm the new price.");

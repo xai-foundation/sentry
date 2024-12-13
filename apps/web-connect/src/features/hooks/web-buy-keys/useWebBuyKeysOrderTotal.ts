@@ -120,7 +120,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         };
     }, [getPriceData, discount, currency, exchangeRateData]);
     
-    const mintBatch = useMintBatch({promoCode, calculateTotalPrice, currency});
+    const mintBatch = useMintBatch({promoCode, calculateTotalPrice, currency, discountApplied: discount.applied});
     const contractWrites = useContractWrites({ quantity,
         promoCode,
         calculateTotalPrice,
