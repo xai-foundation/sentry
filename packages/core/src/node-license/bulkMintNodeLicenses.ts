@@ -106,9 +106,6 @@ export async function bulkMintNodeLicenses(
         allTxReceipts.push(txReceipt);
     };
 
-    const balanceAfter: bigint = await (paymentMethod === 'eth' ? provider.getBalance(address) : paymentMethod === 'xai' ? xaiContract.balanceOf(address) : esXaiContract.balanceOf(address));
-    const totalPricePaid = balanceBefore - balanceAfter;
-
     // Mint full batches
     for (let i = 0; i < fullBatches; i++) {
         await mintBatch(batchAmount);
@@ -118,6 +115,9 @@ export async function bulkMintNodeLicenses(
     if (remainingTokens > 0) {
         await mintBatch(remainingTokens);
     }
+
+    const balanceAfter: bigint = await (paymentMethod === 'eth' ? provider.getBalance(address) : paymentMethod === 'xai' ? xaiContract.balanceOf(address) : esXaiContract.balanceOf(address));
+    const totalPricePaid = balanceBefore - balanceAfter;
 
     return { mintedNftIds: allMintedNftIds, txReceipts: allTxReceipts, totalPricePaid };
 }
