@@ -225,7 +225,6 @@ export function ActionSection(): JSX.Element {
                     />
                 </CrossmintCheckoutProvider>
             </CrossmintProvider>
-            {/* <CrossmintButton /> */}
         </div>
     );
 }
