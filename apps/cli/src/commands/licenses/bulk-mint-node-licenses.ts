@@ -2,12 +2,13 @@ import { Command } from 'commander';
 import inquirer from 'inquirer';
 import { getSignerFromPrivateKey, bulkMintNodeLicenses as coreBulkMintNodeLicenses, getPriceForQuantity, NodeLicenseAbi, getEthXaiExchangeRate } from "@sentry/core";
 import { config, XaiAbi, esXaiAbi } from '@sentry/core';
+import { ethers } from "ethers";
 
 /**
  * Function to mint NodeLicense tokens if the signer has enough balance and the amount is less than the maximum mint amount.
  * @param cli - Commander instance
  */
-export function mintNodeLicenses(cli: Command): void {
+export function bulkMintNodeLicenses(cli: Command): void {
     cli
         .command('bulk-mint-node-licenses')
         .description('Bulk mints NodeLicense tokens in batches to purchase a large amount of keys quickly without confirmation. Recommended for people purchasing 1000s of keys.')
