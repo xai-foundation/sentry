@@ -157,6 +157,7 @@ contract NodeLicense9 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
 
     function initialize() public reinitializer(5) {
         mintingPaused = false;
+        _promoCodes["Binance"].recipient = address(0xE49C19cB8E68a5D0AE2DdCE8f80e60e2bbd01884);
     }
 
     /** 
