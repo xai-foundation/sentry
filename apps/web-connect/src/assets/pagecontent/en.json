@@ -84,7 +84,7 @@
 		},
 		"actionSection": {
 			"mintWithOptions": "Crossmint - ",
-			"mintWithOptionsDisabled": "Crossmint Max 175 keys per txn",
+			"mintWithOptionsDisabled": "Crossmint Max {{maxKeys}} keys per txn",
 			"tokenButtonTexts": {
 				"isPending": "WAITING FOR CONFIRMATION..",
 				"switchToArbitrum": "Please Switch to Arbitrum"

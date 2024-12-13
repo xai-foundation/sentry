@@ -4,6 +4,8 @@ import { getProvider } from '../utils/getProvider.js';
 import { retry } from "../index.js";
 import { StakingPoolAbi } from '../abis/StakingPoolAbi.js';
 
+// TODO REMOVE for deprecation for key id amounts
+
 /**
  * Fetches all keys staked in a pool.
  * @param poolAddress - The address of the pool.

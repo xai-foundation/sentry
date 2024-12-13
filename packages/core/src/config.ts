@@ -42,7 +42,6 @@ const mainnetConfig = {
   minSecondsBetweenChallenges: 50 * 60, // 1 hour
   sentryKeySaleURI: "https://sentry.xai.games", // redirect from within desktop client for web3 interaction
   usdcContractAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
-  maxBatchMintSize: 175,
 };
 
 const testnetConfig: Config = {
@@ -85,7 +84,6 @@ const testnetConfig: Config = {
   minSecondsBetweenChallenges: 5 * 60, // 5 minutes on testnet
   sentryKeySaleURI: "https://develop.sentry.xai.games", // redirect from within desktop client for web3 interaction
   usdcContractAddress: "0x14196F08a4Fa0B66B7331bC40dd6bCd8A1dEeA9F",
-  maxBatchMintSize: 2,
 };
 
 export let config: Config = mainnetConfig;

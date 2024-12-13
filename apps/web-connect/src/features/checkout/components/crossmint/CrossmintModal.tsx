@@ -92,6 +92,9 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalQ
                                         colors:{
                                             text: styles.colors.textPrimary,
                                         },
+                                    },  
+                                    DestinationInput: {
+                                        display: "hidden",
                                     },
                                     Input: {
                                         font:{
@@ -150,6 +153,7 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalQ
                                     allowedMethods: {
                                         card: true,
                                         googlePay: true,
+                                        applePay: true,
                                     },
                                     defaultCurrency: "usd",
                                 },

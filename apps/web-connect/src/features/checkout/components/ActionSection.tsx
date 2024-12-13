@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import ReactGA from "react-ga4";
 import { CrossmintProvider, CrossmintCheckoutProvider } from "@crossmint/client-sdk-react-ui";
 import { CrossmintButton } from './CrossmintButton';
+import { MAX_BATCH_SIZE } from '@/features/hooks/contract/useMintBatch';
 
 
 /**
@@ -29,9 +30,6 @@ export function ActionSection(): JSX.Element {
     const [isInitialized, setIsInitialized] = useState(false);
     const [totalPriceInUsdc, setTotalPriceInUsdc] = useState<string>("0");
     const clientApiKey = config.crossmintClientApiKey;
-    
-    const MAX_BATCH_SIZE = config.maxBatchMintSize;
-
 
     // Destructure values and functions from the context
     const {
@@ -138,7 +136,7 @@ export function ActionSection(): JSX.Element {
                     className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-hornetSting p-2 uppercase font-bold `}
                     isDisabled={!ready || !isConnected || exceedsCrossmintMax}
                     colorStyle="outline-2"
-                    btnText={exceedsCrossmintMax ? translate("actionSection.mintWithOptionsDisabled") : translate("actionSection.mintWithOptions")}
+                    btnText={exceedsCrossmintMax ? translate("actionSection.mintWithOptionsDisabled", { maxKeys: MAX_BATCH_SIZE}) : translate("actionSection.mintWithOptions")}
                 />}
 
                 {/* Error section for ETH transactions */}
