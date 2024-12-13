@@ -11,6 +11,7 @@ import { convertEthAmountToUsdcAmount } from '@/utils/convertEthAmountToUsdcAmou
 import { useTranslation } from "react-i18next";
 import ReactGA from "react-ga4";
 import { CrossmintProvider, CrossmintCheckoutProvider } from "@crossmint/client-sdk-react-ui";
+import { CrossmintButton } from './CrossmintButton';
 
 
 /**
@@ -124,7 +125,7 @@ export function ActionSection(): JSX.Element {
                     />
                 )}
                 <br />
-                {isConnected && isInitialized && <PrimaryButton
+                {isConnected && isInitialized && <CrossmintButton
                     onClick={() => {
                         ReactGA.event({
                             category: "User",
@@ -226,6 +227,7 @@ export function ActionSection(): JSX.Element {
                     />
                 </CrossmintCheckoutProvider>
             </CrossmintProvider>
+            {/* <CrossmintButton /> */}
         </div>
     );
 }
