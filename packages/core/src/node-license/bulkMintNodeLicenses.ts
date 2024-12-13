@@ -77,7 +77,7 @@ export async function bulkMintNodeLicenses(
         const txReceipt = await mintTx.wait();
 
         // Get the "Transfer" events from the transaction receipt logs
-        const transferEvents = txReceipt.logs.filter((log: ethers.Log) => log.topics[0] === ethers.id("Transfer(address,address,uint256)"));
+        const transferEvents = txReceipt.logs.filter((log: ethers.Log) => log.topics[0] === ethers.id("Transfer(address,address,uint256)") && log.address === config.nodeLicenseAddress);
 
         // Extract the mintedNftIds from the transfer events
         const mintedNftIds = transferEvents.map((event: ethers.EventLog) => {
