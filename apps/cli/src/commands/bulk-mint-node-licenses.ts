@@ -78,6 +78,21 @@ export function bulkMintNodeLicenses(cli: Command): void {
             // calculate the price of 1 node license in the selected currency
             const priceInSelectedCurrency = price * exchangeRate;
 
+            // Check and approve the balance if using XAI or esXAI
+            if (paymentMethod === 'xai') {
+                const allowance = await xaiContract.allowance(address, config.nodeLicenseAddress);
+                if (allowance < xaiBalance) {
+                    console.log('Approving XAI balance...');
+                    await xaiContract.approve(config.nodeLicenseAddress, xaiBalance);
+                }
+            } else if (paymentMethod === 'esXai') {
+                const allowance = await esXaiContract.allowance(address, config.nodeLicenseAddress);
+                if (allowance < esXaiBalance) {
+                    console.log('Approving esXAI balance...');
+                    await esXaiContract.approve(config.nodeLicenseAddress, esXaiBalance);
+                }
+            }
+
             // Calculate the maximum amount of tokens the user can purchase based on their balance and selected payment method
             let maxPurchasable: bigint;
             if (paymentMethod === 'eth') {
