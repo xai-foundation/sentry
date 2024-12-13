@@ -44,7 +44,7 @@ export function useMintBatch({
   const { address } = useAccount();
   const batchMintTx = useWriteContract();
 
-  const getConfig = (quantity: number):MintConfig => {
+  const getConfig = (quantity: number): MintConfig => {
     const functionName = currency === CURRENCIES.AETH ? "mint" : "mintWithXai";
     const mintWithEthArgs = [quantity, promoCode];
     const mintWithXaiArgs = [
