@@ -44,42 +44,33 @@ export function useMintBatch({
   const { address } = useAccount();
   const batchMintTx = useWriteContract();
 
-  const getMintWithEthConfig = (quantity: number): MintConfig => {
-    return{
-      address: config.nodeLicenseAddress as `0x${string}`,
-      abi: NodeLicenseAbi,
-      functionName: "mint",
-      args: [quantity, promoCode],
-      value: calculateTotalPrice(),
-      onSuccess: () => {
-        setMintBatchError(undefined);
-      },
-      onError: (error: Error) => {
-        setMintBatchError(error);
-        console.error('Error minting with XAI:', error);
-      },
-    }
-  }
+  const getConfig = (quantity: number):MintConfig => {
+    const functionName = currency === CURRENCIES.AETH ? "mint" : "mintWithXai";
+    const mintWithEthArgs = [quantity, promoCode];
+    const mintWithXaiArgs = [
+      address,
+      quantity,
+      promoCode,
+      currency === CURRENCIES.ES_XAI,
+      calculateTotalPrice(),
+    ];
+    const args =
+      currency === CURRENCIES.AETH ? mintWithEthArgs : mintWithXaiArgs;
 
-
-  const getMintWithXaiConfig = (quantity: number): MintConfig => {
     return {
       address: config.nodeLicenseAddress as `0x${string}`,
       abi: NodeLicenseAbi,
-      functionName: "mintWithXai",
-      args: [address, quantity, promoCode, currency === CURRENCIES.ES_XAI, calculateTotalPrice()],
+      functionName,
+      args,
+      value: currency === CURRENCIES.AETH ? calculateTotalPrice() : undefined,
       onSuccess: () => {
         setMintBatchError(undefined);
       },
       onError: (error: Error) => {
         setMintBatchError(error);
-        console.error('Error minting with XAI:', error);
+        console.error("Error minting:", error);
       },
     };
-  }
-
-  const getConfig = (quantity: number): MintConfig => {
-    return currency === CURRENCIES.AETH ? getMintWithEthConfig(quantity) : getMintWithXaiConfig(quantity);
   };
 
   const mintBatch = async (qtyToMint: number) => {
