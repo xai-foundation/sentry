@@ -11,6 +11,7 @@ const newContractImplementationName = "StakingPool2";
 
 const TINY_KEYS_AIRDROP_ADDRESS = "0x0209a0C0Abfe82916DF492D121667aCcA26C7eb0";
 const REFEREE_ADDRESS = config.refereeAddress;
+const POOL_FACTORY_ADDRESS = config.poolFactoryAddress
 
 async function main() {
 
