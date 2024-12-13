@@ -154,33 +154,37 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * @notice Initializes the NodeLicense contract.
      * 
      */
-
-    function initialize(
-        address _xaiAddress,  
-        address _esXaiAddress, 
-        address ethPriceFeedAddress, 
-        address xaiPriceFeedAddress, 
-        address airdropAdmin,
-        address _usdcAddress,
-        address _refereeCalculationsAddress,
-        address _refereeAddress
-    ) public reinitializer(3) {
-        if(_xaiAddress == address(0) || _esXaiAddress == address(0) || _usdcAddress == address(0) || _refereeCalculationsAddress == address(0) || ethPriceFeedAddress == address(0) || xaiPriceFeedAddress == address(0)){
-            revert InvalidAddress();
-        }
-        ethPriceFeed = IAggregatorV3Interface(ethPriceFeedAddress);
-        xaiPriceFeed = IAggregatorV3Interface(xaiPriceFeedAddress);
-        xaiAddress = _xaiAddress;
-        esXaiAddress = _esXaiAddress;
-        usdcAddress = _usdcAddress;
-        refereeCalculationsAddress = _refereeCalculationsAddress;
+    // Redeployed with initialize disable mint
+    // function initialize(
+    //     address _xaiAddress,  
+    //     address _esXaiAddress, 
+    //     address ethPriceFeedAddress, 
+    //     address xaiPriceFeedAddress, 
+    //     address airdropAdmin,
+    //     address _usdcAddress,
+    //     address _refereeCalculationsAddress,
+    //     address _refereeAddress
+    // ) public reinitializer(3) {
+    //     if(_xaiAddress == address(0) || _esXaiAddress == address(0) || _usdcAddress == address(0) || _refereeCalculationsAddress == address(0) || ethPriceFeedAddress == address(0) || xaiPriceFeedAddress == address(0)){
+    //         revert InvalidAddress();
+    //     }
+    //     ethPriceFeed = IAggregatorV3Interface(ethPriceFeedAddress);
+    //     xaiPriceFeed = IAggregatorV3Interface(xaiPriceFeedAddress);
+    //     xaiAddress = _xaiAddress;
+    //     esXaiAddress = _esXaiAddress;
+    //     usdcAddress = _usdcAddress;
+    //     refereeCalculationsAddress = _refereeCalculationsAddress;
         
-        // Grant the airdrop admin role to the airdrop admin address
-        _grantRole(AIRDROP_ADMIN_ROLE, airdropAdmin);
-        refereeAddress = _refereeAddress;
+    //     // Grant the airdrop admin role to the airdrop admin address
+    //     _grantRole(AIRDROP_ADMIN_ROLE, airdropAdmin);
+    //     refereeAddress = _refereeAddress;
 
-        _promoCodes["binance"].recipient = address(0xE49C19cB8E68a5D0AE2DdCE8f80e60e2bbd01884);
-        _promoCodes["BA"].recipient = address(0xE49C19cB8E68a5D0AE2DdCE8f80e60e2bbd01884);
+    //     _promoCodes["binance"].recipient = address(0xE49C19cB8E68a5D0AE2DdCE8f80e60e2bbd01884);
+    //     _promoCodes["BA"].recipient = address(0xE49C19cB8E68a5D0AE2DdCE8f80e60e2bbd01884);
+    // }
+
+    function initialize() public reinitializer(4) {
+        mintingPaused = true;
     }
 
     /** 
