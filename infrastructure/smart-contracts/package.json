@@ -29,7 +29,7 @@
     "enable-staking-v2": "hardhat run scripts/enableStakingV2.mjs",
     "deploy-forwarder": "hardhat run scripts/xai-deploy/deployForwarder.mjs",
     "mock-assertion": "hardhat run scripts/mock-assertion-test/mock-assertion-test.mjs --network arbitrumSepolia",
-    "process-tk": "hardhat run scripts/tiny-keys/step2.mjs",
+    "process-tk": "hardhat run scripts/tiny-keys/step4.mjs",
     "fork": "hardhat node --fork https://arb1.arbitrum.io/rpc",
     "local": "hardhat node",
     "test": "hardhat test --network localhost",

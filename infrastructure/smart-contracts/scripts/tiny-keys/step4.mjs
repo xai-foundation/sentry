@@ -10,28 +10,38 @@ const slackWebHook = "";
  */
 const WALLET_TO_NONCE = {};
 
-const qtyPerSegment = 2;
+const qtyPerSegment = 200;
 
 //Wallets to be used simultaneously
-const WALLET_COUNT = 3;
+const WALLET_COUNT = 1;
+
+// This is the hard cap on how much we are willing to pay for 
+// '0.03' Will be up to $3
+// '0.09' Will be up to $10 -> when the base fee goes up for much action on arb we need to set to the max value to keep sending tx
+const MAX_GAS_ALLOWED = '0.043';
 
 //NEED TO LOOK UP MAINNET VALUES ON PROD RUN
-const maxFeePerGas = ethers.parseUnits('0.033', 'gwei');
+const maxFeePerGas = ethers.parseUnits(MAX_GAS_ALLOWED, 'gwei');
 const maxPriorityFeePerGas = 1n;
 
-const MAX_GAS_PRICE_FOR_COOL_DOWN_START = 62000000;
-const MAX_GAS_PRICE_FOR_COOL_DOWN_END = 40000000;
+// This is for the coolDown, currently set much higher than the MAX_GAS_ALLOWED would allow, this is mostly used for notifications
+const MAX_GAS_PRICE_FOR_COOL_DOWN_START = 1753828000;
+const MAX_GAS_PRICE_FOR_COOL_DOWN_END = 1603828000;
 
-const WALLET_MIN_FUNDING = 0.1;
-const MIN_MAIN_WALLET_BALLANCE = 15;
+// The script will auto refund the minting wallets to this amount.
+const WALLET_MIN_FUNDING = 0.5;
+
+//The script will stop working if the main wallet (https://arbiscan.io/address/0xd20D67E2A414e8C1D56814db73E4d079CC8C8D2b) will have less funds than this
+const MIN_MAIN_WALLET_BALLANCE = 3;
+
+// Used for tracking the process speed
+const NEXT_STEP = 100;
+let lastStep;
+let processedLastStep = Date.now();
 
 let _signers;
 let deployer;
 let signers = [];
-
-const NEXT_STEP = 100;
-let lastStep;
-let processedLastStep = Date.now();
 
 async function main() {
 
@@ -74,7 +84,7 @@ async function main() {
         let feeData = await ethers.provider.getFeeData();
         await waitForNetworkCoolDown(feeData);
 
-        const beforeStake = Date.now();
+        const beforeMint = Date.now();
         const processPromises = [];
         for (let i = 0; i < WALLET_COUNT; i++) {
             const maxGas = maxFeePerGas < feeData.maxFeePerGas ? maxFeePerGas : feeData.maxFeePerGas;
@@ -82,23 +92,29 @@ async function main() {
         }
 
         const res = await Promise.allSettled(processPromises);
-        console.log(`Completed ${WALLET_COUNT} wallet tx in ${(Date.now() - beforeStake) / 1000} seconds`);
+        await new Promise(resolve => setTimeout(resolve, 2800));
+        console.log(`Completed ${WALLET_COUNT} wallet tx in ${(Date.now() - beforeMint) / 1000} seconds`);
 
         if (res.some(r => r.value != "")) {
             const secondsToWait = 10;
             console.log(`One or more errored, waiting ${secondsToWait} seconds...`);
             await new Promise(resolve => setTimeout(resolve, secondsToWait * 1000));
             errorCount++;
-            if (errorCount > 3) {
-                console.error("Stopping after 3 errors");
-                return "Stopping after errors";
+            if (errorCount > 5) {
+                await fundAndPrepareWallets();
+                errorCount = 0;
+                // console.error("Stopping after 3 errors");
+                // return "Stopping after errors";
             }
+        } else {
+            errorCount = 0;
         }
 
         nextIndex = Number(await TinyKeysAirdrop.stakeCounter());
 
         if (nextIndex > (lastStep + NEXT_STEP)) {
             sendSlackNotification(slackWebHook, `Completed step of ${nextIndex - lastStep} keys in ${(Date.now() - processedLastStep) / 1000} seconds`)
+            console.log(`Completed step of ${nextIndex - lastStep} keys in ${(Date.now() - processedLastStep) / 1000} seconds`)
             processedLastStep = Date.now();
             lastStep = nextIndex;
         }
@@ -109,7 +125,7 @@ async function main() {
 
 const processTransaction = async (signer, maxGas) => {
     const TinyKeysAirdrop = await new ethers.Contract(TINY_KEYS_AIRDROP_ADDRESS, TinyKeysAirdropAbi, signer);
-    const beforeStake = Date.now();
+    const beforeMint = Date.now();
     try {
         const tx = await TinyKeysAirdrop.processAirdropSegmentOnlyStake(qtyPerSegment,
             {
@@ -121,13 +137,13 @@ const processTransaction = async (signer, maxGas) => {
         const receipt = await tx.wait();
         if (receipt.status === 1) {
             WALLET_TO_NONCE[signer.address]++;
-            console.log(`Completed tx with signer ${signer.address} ${(Date.now() - beforeStake) / 1000} seconds`)
+            console.log(`Completed tx with signer ${signer.address} ${(Date.now() - beforeMint) / 1000} seconds`)
         } else {
             throw new Error('Transaction failed');
         }
 
     } catch (error) {
-        console.log(`Failed to process with wallet: ${signer.address}`, (error && error.message ? error.message : error));
+        console.log(`Failed to process with wallet: ${signer.address}`, (error && error.message ? error.message : error), error);
         return "Failed to process";
     }
 
@@ -160,24 +176,24 @@ const fundAndPrepareWallets = async () => {
 const waitForNetworkCoolDown = async (feeData) => {
     console.log(`Feed price at: ${Number(feeData.maxFeePerGas)}, maxFeeAllowed: ${Number(maxFeePerGas)}, coolDown start at ${MAX_GAS_PRICE_FOR_COOL_DOWN_START}`)
     if (Number(feeData.maxFeePerGas) > MAX_GAS_PRICE_FOR_COOL_DOWN_START) {
-        sendSlackNotification(slackWebHook, `Cool down starting with feed price at: ${Number(feeData.maxFeePerGas)}, cool down start at ${MAX_GAS_PRICE_FOR_COOL_DOWN_START}, coolDown end at ${MAX_GAS_PRICE_FOR_COOL_DOWN_END}`)
+        // sendSlackNotification(slackWebHook, `Cool down starting with feed price at: ${Number(feeData.maxFeePerGas)}, cool down start at ${MAX_GAS_PRICE_FOR_COOL_DOWN_START}, coolDown end at ${MAX_GAS_PRICE_FOR_COOL_DOWN_END}`)
         const beforeWait = Date.now();
         let coolDownCount = 0;
         while (Number(feeData.maxFeePerGas) > MAX_GAS_PRICE_FOR_COOL_DOWN_END) {
             coolDownCount++;
             console.warn(`Gas price too high, waiting for ${Number(feeData.maxFeePerGas)} to drop to ${MAX_GAS_PRICE_FOR_COOL_DOWN_END}`)
-            const coolDown = 10000;
+            const coolDown = 3000;
             let remainingSeconds = coolDown;
             const interval = setInterval(async () => {
                 feeData = await ethers.provider.getFeeData();
                 console.log(`Feed price at: ${Number(feeData.maxFeePerGas)}, maxFeeAllowed: ${MAX_GAS_PRICE_FOR_COOL_DOWN_END}`)
-                console.log(`Cool down remaining ${(remainingSeconds -= 2000) / 1000}s`);
-            }, 2000)
+                console.log(`Cool down remaining ${(remainingSeconds -= 1000) / 1000}s`);
+            }, 1000)
             await new Promise(resolve => setTimeout(resolve, coolDown));
             clearInterval(interval);
         }
         console.log(`Completed cool down in ${((Date.now() - beforeWait) / 1000) / 60} minutes`);
-        sendSlackNotification(slackWebHook, `Completed cool down in ${((Date.now() - beforeWait) / 1000) / 60} minutes`)
+        // sendSlackNotification(slackWebHook, `Completed cool down in ${((Date.now() - beforeWait) / 1000) / 60} minutes`)
         coolDownCount = 0;
     }
 }
@@ -205,9 +221,16 @@ const runtime = async () => {
     }
 }
 
+// process.on('SIGINT', async () => {
+//     console.error("Main Runtime SIGINT, restarting...");
+//     sendSlackNotification(slackWebHook, "Main Runtime SIGINT, restarting...");
+//     runtime()
+// });
+
 // We recommend this pattern to be able to use async/await everywhere
 // and properly handle errors.
 runtime().catch((error) => {
-    console.error(error);
-    process.exitCode = 1;
+    sendSlackNotification(slackWebHook, "Main Runtime error, restarting...");
+    console.error("Main Runtime error, restarting...", error);
+    runtime();
 });
