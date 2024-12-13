@@ -19,7 +19,7 @@ interface checkIpProps {
 }
 
 export function useBlockIp({blockUsa}: {blockUsa: boolean}) {
-	const [blocked, setBlocked] = useState(true);
+	const [blocked, setBlocked] = useState(false);
 	const [loading, setLoading] = useState(true);
     const { isDevelopment } = useNetworkConfig();
 
