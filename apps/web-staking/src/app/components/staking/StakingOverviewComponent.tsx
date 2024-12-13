@@ -18,11 +18,13 @@ import { getNetwork, getTotalClaimAmount, mapWeb3Error } from "@/services/web3.s
 import { Id } from "react-toastify";
 import { useGetTiers } from "@/app/hooks/useGetTiers";
 import {BaseModal} from "@/app/components/ui";
+import StakingClaimTinyKeysModalComponent from "../modal/StakingClaimTinyKeysModalComponent";
+
 
 export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPools }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { userPools, isLoading, totalClaimableAmount } = useGetUserInteractedPools();
+  const { userPools, isLoading } = useGetUserInteractedPools();
   const { totalStaked, maxStakedCapacity } = useGetTotalStakedHooks();
   const { tiers } = useGetTiers();
   const { maxKeyPerPool } = useGetMaxKeyPerPool();
@@ -36,14 +38,17 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   const [sort, setSort] = useState(searchParams.get("sort") || "");
   const [sortOrder, setSortOrder] = useState(Number(searchParams.get("sortOrder")) || -1);
 
+  const totalClaimableAmount = 100
+
   const [currentTotalClaimableAmount, setCurrentTotalClaimableAmount] = useState<number>(totalClaimableAmount);
   const { address, chainId } = useAccount();
   const { switchChain } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
   const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
   const toastId = useRef<Id>();
+  const [tempIsSuccess, setTempIsSuccess] = useState(false);
 
-  const isModal = useSearchParams().get("modal");
+  const isModal = useSearchParams().get("modal");  
 
   const onModalSubmit = () => {
     router.replace(`/staking?chainId=${chainId}`);
@@ -67,10 +72,13 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
         chainId
     );
 
-    getTotalClaimAmount(getNetwork(chainId), userPools.map(p => p.address), address!)
-        .then(totalClaim => {
-          setCurrentTotalClaimableAmount(totalClaim);
-        });
+    // getTotalClaimAmount(getNetwork(chainId), userPools.map(p => p.address), address!)
+    //     .then(totalClaim => {
+    //       setCurrentTotalClaimableAmount(totalClaim);
+    //     });
+
+    setTempIsSuccess(true);
+
   }, [receipt, chainId, userPools, address])
 
   const updateOnError = useCallback(() => {
@@ -91,24 +99,25 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
     if (isLoading || transactionLoading) {
       return;
     }
+    updateOnSuccess();
 
-    const poolsToClaim = userPools.filter(p => p.userClaimAmount && p.userClaimAmount > 0).map(p => p.address);
+   // const poolsToClaim = userPools.filter(p => p.userClaimAmount && p.userClaimAmount > 0).map(p => p.address);
 
-    toastId.current = loadingNotification("Transaction pending...");
-    try {
+    //toastId.current = loadingNotification("Transaction pending...");
+    // try {
 
-      setReceipt(await executeContractWrite(
-          WriteFunctions.claimFromPools,
-          [poolsToClaim.slice(0, 10)], //TODO test if this works for more than 10 pools in 1 transaction
-          chainId,
-          writeContractAsync,
-          switchChain
-      ) as `0x${string}`);
+    //   setReceipt(await executeContractWrite(
+    //       WriteFunctions.claimFromPools,
+    //       [poolsToClaim.slice(0, 10)], //TODO test if this works for more than 10 pools in 1 transaction
+    //       chainId,
+    //       writeContractAsync,
+    //       switchChain
+    //   ) as `0x${string}`);
 
-    } catch (ex: unknown) {
-      const error = mapWeb3Error(ex);
-      updateNotification(error, toastId.current as Id, true);
-    }
+    // } catch (ex: unknown) {
+    //   const error = mapWeb3Error(ex);
+    //   updateNotification(error, toastId.current as Id, true);
+    // }
   };
 
   const buildURI = (search: string, page: number, showTable: boolean, hideKeys: boolean, hideEsXai: boolean, sort: string, order: number, esXaiMinStake: number) => {
@@ -168,6 +177,10 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   return (
       <div className="relative flex sm:flex-col items-start lg:px-6 sm:px-0 sm:w-full">
         <AgreeModalComponent address={address} />
+        <StakingClaimTinyKeysModalComponent
+          totalClaimAmount={totalClaimableAmount}
+          isSuccess={tempIsSuccess}
+        />
         <BaseModal
             isOpened={!!isModal}
             modalHeader={"Stake keys in a pool to earn rewards"}
