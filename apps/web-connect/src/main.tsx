@@ -14,6 +14,8 @@ import ReactGA from "react-ga4";
 
 import en from "./assets/pagecontent/en.json";
 import de from "./assets/pagecontent/de.json";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from 'react-toastify'
 
 i18n
   .use(LanguageDetector)
@@ -44,6 +46,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       initialState={initialState}
     >
       <QueryClientProvider client={queryClient}>
+        <ToastContainer className="toast-container" />
         <Helmet>
           <meta name="title" property="og:title" content="Xai Sentry Node" />
           <meta name="description" property="og:description" content="Xai Sentry Key Sale Page" />
