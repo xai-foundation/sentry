@@ -3,6 +3,8 @@ import {findWinningStateRoot} from "../Referee.mjs";
 import { Contract } from "ethers";
 import { StakingPoolAbi } from "@sentry/core";
 import { expect } from "chai";
+import { mintBatchedLicenses } from "../utils/mintLicenses.mjs";
+import { createPool } from "../utils/createPool.mjs";
 
 const mitBatchedLicenses = async (amount, nodeLicenseContract) => {
 
@@ -72,6 +74,12 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
 
 			expect(stakedKeysCountForUser).to.equal(1);
 			expect(userPoolData.userStakedKeyAmount).to.equal(1);
+			
+			const assignedKeysToPoolCount = await referee.assignedKeysToPoolCount(stakingPoolAddress);
+			const assignedKeysOfUserCount = await referee.assignedKeysOfUserCount(addr1.address);
+
+			expect(assignedKeysToPoolCount).to.equal(1n);
+			expect(assignedKeysOfUserCount).to.equal(1n);
 		});
 
 		it("Check that the key is assigned to the pool in the Referee (assignedKeyToPool)", async function () {
@@ -108,8 +116,11 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
 			const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
 
 			// Compare the pool of the assigned key to the just-created pool
-			const assignedKeyPool = await referee.connect(addr1).assignedKeyToPool(mintedKeyId);
-			expect(assignedKeyPool).to.equal(stakingPoolAddress);
+			const assignedKeysToPoolCount = await referee.assignedKeysToPoolCount(stakingPoolAddress);
+			const assignedKeysOfUserCount = await referee.assignedKeysOfUserCount(addr1.address);
+
+			expect(assignedKeysToPoolCount).to.equal(1n);
+			expect(assignedKeysOfUserCount).to.equal(1n);
 		});
 
 		it("Check that the key is assigned to the pool in the Referee for a user (assignedKeysOfUserCount)", async function () {
@@ -152,17 +163,23 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
 			expect(keyCount2).to.equal(1);
 		});
 
-		it("Cannot stake the same key twice", async function () {
-			const {poolFactory, addr1, nodeLicense, referee, challenger} = await loadFixture(deployInfrastructure);
+		it("Cannot stake more than owned keys", async function () {
+			const {poolFactory, addr1, addr2, nodeLicense, referee, challenger} = await loadFixture(deployInfrastructure);
 
 			// Mint 2 node keys & save the ids
 			const price1 = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr1).mint(1, "", {value: price1});
-			const mintedKeyId1 = await nodeLicense.totalSupply();
 			const price2 = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr1).mint(1, "", {value: price2});
-			const mintedKeyId2 = await nodeLicense.totalSupply();
-			
+
+			await mintBatchedLicenses(10n, nodeLicense, addr1);
+
+			const balance = Number(await nodeLicense.balanceOf(addr1.address))
+			const mintedKeyIdsAddr1Unstaked = [];
+			for (let i = 0; i < balance; i++) {
+				mintedKeyIdsAddr1Unstaked.push(await nodeLicense.tokenOfOwnerByIndex(addr1.address, i));
+			}
+
 			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
 
             // Submit two challenges so that the contract tests will run successfully
@@ -174,128 +191,200 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
                 0,
                 "0x0000000000000000000000000000000000000000000000000000000000000000"
             );
+			
+			const mintedKeysAddr2 = await mintBatchedLicenses(10n, nodeLicense, addr2);
+			const poolAddr2 = await createPool(poolFactory, addr2, mintedKeysAddr2);
+
+			const keysToStakeAddr1 = mintedKeyIdsAddr1Unstaked.splice(0, 5);
 
 			// Fail to create a pool
 			await expect(
 				poolFactory.connect(addr1).createPool(
 					noDelegateOwner,
-					[mintedKeyId1, mintedKeyId1],
+					[...keysToStakeAddr1, ...mintedKeyIdsAddr1Unstaked, keysToStakeAddr1[0]],
 					validShareValues,
 					poolMetaData,
 					poolSocials,
 					poolTrackerDetails
 				)
-			).to.be.revertedWith("44");
+			).to.be.revertedWith("45");
 
 			// Create a pool
 			await poolFactory.connect(addr1).createPool(
 				noDelegateOwner,
-				[mintedKeyId1],
+				keysToStakeAddr1,
 				validShareValues,
 				poolMetaData,
 				poolSocials,
 				poolTrackerDetails
 			);
 
-			// Save the new staking pool's address
 			const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
-
-			// Fail to stake a key twice at the same time
-			await expect(
-				poolFactory.connect(addr1).stakeKeys(
-					stakingPoolAddress,
-					[mintedKeyId2, mintedKeyId2]
-				)
-			).to.be.revertedWith("44");
-		});
-
-		it("Cannot stake an already staked key", async function () {
-			const {poolFactory, addr1, nodeLicense, referee, challenger} = await loadFixture(deployInfrastructure);
-
-			// Mint 2 node keys & save the ids
-			const price1 = await nodeLicense.price(1, "");
-			await nodeLicense.connect(addr1).mint(1, "", {value: price1});
-			const mintedKeyId1 = await nodeLicense.totalSupply();
-			const price2 = await nodeLicense.price(1, "");
-			await nodeLicense.connect(addr1).mint(1, "", {value: price2});
-			const mintedKeyId2 = await nodeLicense.totalSupply();
 			
-			const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
-
-            // Submit two challenges so that the contract tests will run successfully
-            const startingAssertion = 100;
-            await referee.connect(challenger).submitChallenge(
-                startingAssertion,
-                startingAssertion - 1,
-                stateRoot,
-                0,
-                "0x0000000000000000000000000000000000000000000000000000000000000000"
-            );
-
-			// Create pool 1
-			await poolFactory.connect(addr1).createPool(
-				noDelegateOwner,
-				[mintedKeyId1],
-				validShareValues,
-				poolMetaData,
-				poolSocials,
-				poolTrackerDetails
-			);
-
-			// Fail to create another pool with the same key id
+			// Fail to create a pool
 			await expect(
 				poolFactory.connect(addr1).createPool(
 					noDelegateOwner,
-					[mintedKeyId1],
+					[...keysToStakeAddr1, ...mintedKeyIdsAddr1Unstaked],
 					validShareValues,
 					poolMetaData,
 					poolSocials,
 					poolTrackerDetails
 				)
-			).to.be.revertedWith("44");
+			).to.be.revertedWith("45");
 
-			// Create pool 2
-			await poolFactory.connect(addr1).createPool(
-				noDelegateOwner,
-				[mintedKeyId2],
-				validShareValues,
-				poolMetaData,
-				poolSocials,
-				poolTrackerDetails
+			// Save the new staking pool's address
+
+			await poolFactory.connect(addr1).stakeKeys(
+				poolAddr2,
+				mintedKeyIdsAddr1Unstaked
+			)
+
+			// Fail to stake a key more than owned
+			await expect(
+				poolFactory.connect(addr1).stakeKeys(
+					stakingPoolAddress,
+					[mintedKeyIdsAddr1Unstaked[0]]
+				)
+			).to.be.revertedWith("45");
+			
+			await expect(
+				poolFactory.connect(addr1).stakeKeys(
+					poolAddr2,
+					[mintedKeyIdsAddr1Unstaked[0]]
+				)
+			).to.be.revertedWith("45");
+
+			// Unstake and make sure we can unstake and stake more
+			await poolFactory.connect(addr1).createUnstakeKeyRequest(poolAddr2, mintedKeyIdsAddr1Unstaked.length);
+            
+			//Verify we cannot create unstake for more than we have staked
+			
+			await expect(
+				poolFactory.connect(addr1).createUnstakeKeyRequest(
+					poolAddr2,
+					5
+				)
+			).to.be.revertedWith("16");
+			
+			const unstakeKeysDelayPeriod1 = await poolFactory.unstakeKeysDelayPeriod();
+            await ethers.provider.send("evm_increaseTime", [Number(unstakeKeysDelayPeriod1)]);
+
+            const user1KeyCountStakedBeforeUnstake = await referee.assignedKeysOfUserCount(addr1.address);
+            const poolKeyCountStakedBeforeUnstake = await referee.assignedKeysToPoolCount(poolAddr2);
+			await poolFactory.connect(addr1).unstakeKeys(poolAddr2, 0, mintedKeyIdsAddr1Unstaked);
+			
+            const user1KeyCountStakedAfterUnstake = await referee.assignedKeysOfUserCount(addr1.address);
+            const poolKeyCountStakedAfterUnstake = await referee.assignedKeysToPoolCount(poolAddr2);
+            expect(user1KeyCountStakedAfterUnstake).to.equal(user1KeyCountStakedBeforeUnstake - BigInt(mintedKeyIdsAddr1Unstaked.length));
+            expect(poolKeyCountStakedAfterUnstake).to.equal(poolKeyCountStakedBeforeUnstake - BigInt(mintedKeyIdsAddr1Unstaked.length));
+
+			await poolFactory.connect(addr1).stakeKeys(
+				poolAddr2,
+				mintedKeyIdsAddr1Unstaked
 			);
-
-			// Save the new staking pool addresses
-			const stakingPoolAddress1 = await poolFactory.connect(addr1).getPoolAddress(0);
-			const stakingPoolAddress2 = await poolFactory.connect(addr1).getPoolAddress(1);
-
-			// Fail to stake key 1 in pool 1
-			await expect(
-				poolFactory.connect(addr1).stakeKeys(
-					stakingPoolAddress1,
-					[mintedKeyId1]
-				)
-			).to.be.revertedWith("44");
-
-			// Fail to stake key 1 in pool 2
-			await expect(
-				poolFactory.connect(addr1).stakeKeys(
-					stakingPoolAddress2,
-					[mintedKeyId1]
-				)
-			).to.be.revertedWith("44");
+		
+            const user1KeyCountStakedAfterStake = await referee.assignedKeysOfUserCount(addr1.address);
+            const poolKeyCountStakedAfterStake = await referee.assignedKeysToPoolCount(poolAddr2);
+            expect(user1KeyCountStakedAfterStake).to.equal(user1KeyCountStakedAfterUnstake + BigInt(mintedKeyIdsAddr1Unstaked.length));
+            expect(poolKeyCountStakedAfterStake).to.equal(poolKeyCountStakedAfterUnstake + BigInt(mintedKeyIdsAddr1Unstaked.length));
 		});
 
-		it("Cannot stake more keys than maxKeysPerPool", async function () {
-			// NOTE: these vars need to replace the exising vars in Referee9 for this test to pass
-            // maxStakeAmountPerLicense = 20000 * 10 ** 18;
-            // maxKeysPerPool = 1000;
+		// This test does not serve any purpose on Referee10 with the upgrade to staked keyAmounts instead of keyIds
+		// it("Cannot stake an already staked key", async function () {
+		// 	const {poolFactory, addr1, nodeLicense, referee, challenger} = await loadFixture(deployInfrastructure);
+
+		// 	// Mint 2 node keys & save the ids
+		// 	const price1 = await nodeLicense.price(1, "");
+		// 	await nodeLicense.connect(addr1).mint(1, "", {value: price1});
+		// 	const mintedKeyId1 = await nodeLicense.totalSupply();
+		// 	const price2 = await nodeLicense.price(1, "");
+		// 	await nodeLicense.connect(addr1).mint(1, "", {value: price2});
+		// 	const mintedKeyId2 = await nodeLicense.totalSupply();
 			
+		// 	const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+
+        //     // Submit two challenges so that the contract tests will run successfully
+        //     const startingAssertion = 100;
+        //     await referee.connect(challenger).submitChallenge(
+        //         startingAssertion,
+        //         startingAssertion - 1,
+        //         stateRoot,
+        //         0,
+        //         "0x0000000000000000000000000000000000000000000000000000000000000000"
+        //     );
+
+		// 	// Create pool 1
+		// 	await poolFactory.connect(addr1).createPool(
+		// 		noDelegateOwner,
+		// 		[mintedKeyId1],
+		// 		validShareValues,
+		// 		poolMetaData,
+		// 		poolSocials,
+		// 		poolTrackerDetails
+		// 	);
+
+		// 	// Fail to create another pool with the same key id
+		// 	await expect(
+		// 		poolFactory.connect(addr1).createPool(
+		// 			noDelegateOwner,
+		// 			[mintedKeyId1],
+		// 			validShareValues,
+		// 			poolMetaData,
+		// 			poolSocials,
+		// 			poolTrackerDetails
+		// 		)
+		// 	).to.be.revertedWith("44");
+
+		// 	// Create pool 2
+		// 	await poolFactory.connect(addr1).createPool(
+		// 		noDelegateOwner,
+		// 		[mintedKeyId2],
+		// 		validShareValues,
+		// 		poolMetaData,
+		// 		poolSocials,
+		// 		poolTrackerDetails
+		// 	);
+
+		// 	// Save the new staking pool addresses
+		// 	const stakingPoolAddress1 = await poolFactory.connect(addr1).getPoolAddress(0);
+		// 	const stakingPoolAddress2 = await poolFactory.connect(addr1).getPoolAddress(1);
+
+		// 	// Fail to stake key 1 in pool 1
+		// 	await expect(
+		// 		poolFactory.connect(addr1).stakeKeys(
+		// 			stakingPoolAddress1,
+		// 			[mintedKeyId1]
+		// 		)
+		// 	).to.be.revertedWith("44");
+
+		// 	// Fail to stake key 1 in pool 2
+		// 	await expect(
+		// 		poolFactory.connect(addr1).stakeKeys(
+		// 			stakingPoolAddress2,
+		// 			[mintedKeyId1]
+		// 		)
+		// 	).to.be.revertedWith("44");
+		// });
+
+		it("Cannot stake more keys than maxKeysPerPool", async function () {
 			const { poolFactory, referee, addr1, nodeLicense, challenger } = await loadFixture(deployInfrastructure);
 
 			//mint max supply + 1 keys
 			const startingSupply = await nodeLicense.totalSupply();
+			const MAX_SUPPLY_FOR_TESTING = 1000n;
+
+			//Set the maxSupply to the current totalSupply
+            const slotIndex = 226; // Referee storage slot for maxKeysPerPool (Read this from the artifacts json after running compile)
+			const value = ethers.zeroPadValue(ethers.toBeHex(MAX_SUPPLY_FOR_TESTING), 32);
+			await ethers.provider.send("hardhat_setStorageAt", [
+				referee.target,
+				ethers.toQuantity(slotIndex),
+				value,
+			]);
 
 			const maxKeysPerPool = await referee.connect(addr1).maxKeysPerPool();
+            expect(maxKeysPerPool).to.equal(MAX_SUPPLY_FOR_TESTING);
 
 			await mitBatchedLicenses(maxKeysPerPool + 1n, nodeLicense.connect(addr1));
 			const endingSupply = await nodeLicense.totalSupply();

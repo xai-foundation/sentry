@@ -325,7 +325,7 @@ type RawPoolInfo = {
 type RawUserInfo = {
 	userStakedEsXaiAmount: BigInt;
 	userClaimAmount: BigInt;
-	userStakedKeyIds: BigInt[];
+	userStakedKeyAmount: BigInt;
 	unstakeRequestkeyAmount: BigInt,
 	unstakeRequestesXaiAmount: BigInt,
 };
@@ -427,29 +427,30 @@ export const getMaxKeyCount = async (network: NetworkKey): Promise<number> => {
 // TODO getUnstakedKeyIdsFromUser is deprecated in PoolFactory2
 // We do no longer track key ids for staking / unstaking
 export const getUnstakedKeysOfUser = async (network: NetworkKey, walletAddress: string, requestedCount: number): Promise<BigInt[]> => {
-	const web3Instance = getWeb3Instance(network);
-	const factoryContract = new web3Instance.web3.eth.Contract(PoolFactoryAbi, web3Instance.poolFactoryAddress);
-	const numNodeLicenses = await getNodeLicenses(network, walletAddress);
-	const availableKeys: BigInt[] = [];
-	try {
-		let offset = 0;
-		while (availableKeys.length < requestedCount) {
-			const keys = await factoryContract.methods.getUnstakedKeyIdsFromUser(walletAddress, BigInt(offset), BigInt(10)).call() as BigInt[];
-			keys.forEach(k => {
-				if (Number(k) != 0) {
-					availableKeys.push(k);
-				}
-			})
-			offset += 10;
+	return Array(requestedCount).fill(0);
+	// const web3Instance = getWeb3Instance(network);
+	// const factoryContract = new web3Instance.web3.eth.Contract(PoolFactoryAbi, web3Instance.poolFactoryAddress);
+	// const numNodeLicenses = await getNodeLicenses(network, walletAddress);
+	// const availableKeys: BigInt[] = [];
+	// try {
+	// 	let offset = 0;
+	// 	while (availableKeys.length < requestedCount) {
+	// 		const keys = await factoryContract.methods.getUnstakedKeyIdsFromUser(walletAddress, BigInt(offset), BigInt(10)).call() as BigInt[];
+	// 		keys.forEach(k => {
+	// 			if (Number(k) != 0) {
+	// 				availableKeys.push(k);
+	// 			}
+	// 		})
+	// 		offset += 10;
 
-			if (offset >= numNodeLicenses) {
-				break;
-			}
-		}
-	} catch (error) {
-		console.error("Failed to load unstaked keys", error);
-	}
-	return availableKeys.slice(0, requestedCount);
+	// 		if (offset >= numNodeLicenses) {
+	// 			break;
+	// 		}
+	// 	}
+	// } catch (error) {
+	// 	console.error("Failed to load unstaked keys", error);
+	// }
+	// return availableKeys.slice(0, requestedCount);
 }
 
 export const getStakedKeysCount = async (network: NetworkKey, walletAddress: string): Promise<number> => {
@@ -465,12 +466,13 @@ export const getAvailableKeysForStaking = async (network: NetworkKey, walletAddr
 	return numNodeLicenses - count;
 }
 
-export const getStakedKeysOfUserInPool = async (network: NetworkKey, poolAddress: string, walletAddress: string): Promise<BigInt[]> => {
-	const web3Instance = getWeb3Instance(network);
-	const stakingPool = new web3Instance.web3.eth.Contract(StakingPoolAbi, poolAddress);
-	const userPoolData = await stakingPool.methods.getUserPoolData(walletAddress).call() as any[];
-	return userPoolData[2] as BigInt[];
-}
+// DEP unused function
+// export const getStakedKeysOfUserInPool = async (network: NetworkKey, poolAddress: string, walletAddress: string): Promise<BigInt[]> => {
+// 	const web3Instance = getWeb3Instance(network);
+// 	const stakingPool = new web3Instance.web3.eth.Contract(StakingPoolAbi, poolAddress);
+// 	const userPoolData = await stakingPool.methods.getUserPoolData(walletAddress).call() as any[];
+// 	return userPoolData[2] as BigInt[];
+// }
 
 export const getUserRequestedUnstakeAmounts = async (network: NetworkKey, poolAddress: string, walletAddress: string): Promise<BigInt[]> => {
 	const web3Instance = getWeb3Instance(network);
@@ -589,7 +591,7 @@ export const toPoolInfo = async (
 
 		maxAvailableUnstakeWei = BigInt(rawUserInfo.userStakedEsXaiAmount.toString()) - BigInt(rawUserInfo.unstakeRequestesXaiAmount.toString());
 		maxAvailableUnstake = Number(web3Instance.web3.utils.fromWei(maxAvailableUnstakeWei.toString(), 'ether'));
-		userStakedKeyIds = rawUserInfo.userStakedKeyIds.map((i: BigInt) => Number(i))
+		userStakedKeyIds = Array(Number(rawUserInfo.userStakedKeyAmount)).fill(0);
 	}
 
 	return {

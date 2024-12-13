@@ -129,8 +129,10 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     });
 
     useEffect(() => {
-        refetchAllowance();
-    }, [contractWrites.approveTx.status, refetchAllowance]);
+        if(contractWrites.approve.isSuccess) {
+            refetchAllowance();
+        }
+    }, [contractWrites.approveTx, contractWrites.approve, refetchAllowance]);
 
 
     useEffect(() => {

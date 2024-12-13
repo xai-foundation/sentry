@@ -45,7 +45,7 @@
 			"description": "Each Sentry Key enables you to submit up to 1 reward claim for each network challenge.",
 			"toolTip": {
 				"title": "Xai keys are required for nodes to receive $esXAI network rewards.",
-				"text": "All purchases must be made in Arbitrum ETH."
+				"text": "Your wallet must be connected to Arbitrum One to be able to purchase Sentry Keys."
 			},
 			"maximumPerTransaction": "{{count}} Maximum Per Transaction",
 			"maximumNodeLicenses": "A maximum of {{max}} NodeLicenses can be purchased in a single transaction."

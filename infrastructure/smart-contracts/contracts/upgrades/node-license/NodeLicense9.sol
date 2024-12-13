@@ -155,7 +155,7 @@ contract NodeLicense9 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * 
      */
 
-    function initialize() public reinitializer(4) {
+    function initialize() public reinitializer(5) {
         mintingPaused = false;
     }
 

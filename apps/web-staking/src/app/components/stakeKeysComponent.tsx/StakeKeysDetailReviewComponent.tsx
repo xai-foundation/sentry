@@ -78,10 +78,10 @@ export default function StakeKeysDetailReviewComponent({ pool, inputValue, onBac
 					) as `0x${string}`);
 				}
 			} else {
-				const keyIds = await getUnstakedKeysOfUser(getNetwork(chainId), address as string, Number(inputValue));
+				// const keyIds = await getUnstakedKeysOfUser(getNetwork(chainId), address as string, Number(inputValue));
 				setReceipt(await executeContractWrite(
 					WriteFunctions.stakeKeys,
-					[pool.address, keyIds],
+					[pool.address, BigInt(inputValue)], 
 					chainId,
 					writeContractAsync,
 					switchChain

@@ -78,14 +78,14 @@ export default function StakeForPoolComponent() {
   const onStakeKeys = async (numKeys: number) => {
     toastId.current = loadingNotification("Transaction pending...");
     try {
-      const keyIds = await getUnstakedKeysOfUser(
-        getNetwork(chainId),
-        address as string,
-        Number(numKeys)
-      );
+      // const keyIds = await getUnstakedKeysOfUser(
+      //   getNetwork(chainId),
+      //   address as string,
+      //   Number(numKeys)
+      // );
       setReceipt(await executeContractWrite(
         WriteFunctions.stakeKeys,
-        [poolAddress, keyIds],
+        [poolAddress, BigInt(numKeys)],
         chainId,
         writeContractAsync,
         switchChain
@@ -100,14 +100,14 @@ export default function StakeForPoolComponent() {
   const onUnstakeKeys = async (numKeys: number) => {
     toastId.current = loadingNotification("Transaction pending...");
     try {
-      const keyIds = await getUnstakedKeysOfUser(
-        getNetwork(chainId),
-        address as string,
-        Number(numKeys)
-      );
+      // const keyIds = await getUnstakedKeysOfUser(
+      //   getNetwork(chainId),
+      //   address as string,
+      //   Number(numKeys)
+      // );
       setReceipt(await executeContractWrite(
         WriteFunctions.stakeKeys,
-        [poolAddress, keyIds],
+        [poolAddress, BigInt(numKeys)],
         chainId,
         writeContractAsync,
         switchChain
