@@ -77,9 +77,9 @@ export function useMintBatch({
   };
 
   const mintBatch = async (qtyToMint: number) => {
-    //const totalEthPriceInWei = calculateTotalPrice();
-    //const expectedAvg = totalEthPriceInWei / BigInt(qtyToMint);
-    //console.log("expectedAvg: ", expectedAvg);
+    const totalEthPriceInWei = calculateTotalPrice();
+    const expectedAvg = totalEthPriceInWei / BigInt(qtyToMint);
+    console.log("expectedAvg: ", expectedAvg);
     setTxHashes([]);
     executeMint(qtyToMint, 0n); // TODO Pass the correct average after testing U/I
   };
