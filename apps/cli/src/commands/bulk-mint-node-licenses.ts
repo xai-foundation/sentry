@@ -27,6 +27,7 @@ export function bulkMintNodeLicenses(cli: Command): void {
 
             // Get the signer's address
             const address = await signer.getAddress();
+            console.log(`Using wallet ${address} for minting.`);
 
             // Get the provider from the signer
             const provider = signer.provider;
@@ -36,8 +37,8 @@ export function bulkMintNodeLicenses(cli: Command): void {
             }
 
             // Create contract instances for XAI and esXAI
-            const xaiContract = new ethers.Contract(config.xaiAddress, XaiAbi, provider);
-            const esXaiContract = new ethers.Contract(config.esXaiAddress, esXaiAbi, provider);
+            const xaiContract = new ethers.Contract(config.xaiAddress, XaiAbi, signer);
+            const esXaiContract = new ethers.Contract(config.esXaiAddress, esXaiAbi, signer);
 
             // Get balances for aETH, XAI, and esXAI
             const aEthBalance = await provider.getBalance(address);
