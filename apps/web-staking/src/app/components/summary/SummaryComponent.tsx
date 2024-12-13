@@ -123,7 +123,7 @@ const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean,
 
     return executeContractWrite(
       WriteFunctions.unstakeKeys,
-      [poolAddress, BigInt(requestIndex), keyIds],
+      [poolAddress, BigInt(requestIndex)],
       chainId,
       writeContractAsync,
       switchChain,
