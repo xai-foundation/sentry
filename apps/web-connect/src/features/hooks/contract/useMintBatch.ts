@@ -99,7 +99,7 @@ export function useMintBatch({
 
       const qtyToProcess = Math.min(qtyRemaining, MAX_BATCH_SIZE);
       try {
-        // // Initiate transaction
+        // Initiate transaction
         const priceResult = await getPriceForQuantityCore(Number(qtyToProcess));
         const priceToUse =  currency === CURRENCIES.AETH ? priceResult.price : await convertEthAmountToXaiAmount(priceResult.price);
         const itemPriceAvg = priceToUse / BigInt(qtyToProcess);
