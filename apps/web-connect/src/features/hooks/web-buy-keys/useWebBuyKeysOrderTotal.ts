@@ -134,6 +134,10 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         }
     }, [contractWrites.approveTx, contractWrites.approve, refetchAllowance]);
 
+    useEffect(() => {
+        handleApplyPromoCode();
+    }, [address]);
+
 
     useEffect(() => {
         contractWrites.clearErrors();

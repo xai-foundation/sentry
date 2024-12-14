@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import { getPromoCode } from "@sentry/core";
 import { useTranslation } from 'react-i18next';
+import { useNetworkConfig } from '@/hooks/useNetworkConfig';
 
 interface DiscountState {
   applied: boolean;
@@ -22,13 +23,19 @@ export function usePromoCodeHandler(address:`0x${string}` | undefined) {
   const [promoCode, setPromoCode] = useState<string>("");
   const [discount, setDiscount] = useState<DiscountState>({ applied: false, error: false, errorMessage: undefined });
   const [isLoading, setIsLoading] = useState<boolean>(false);
-      const { t: translate } = useTranslation("Checkout");
+  const { isConnected } = useNetworkConfig();
+  const { t: translate } = useTranslation("Checkout");
 
   /**
    * Handles the submission of the promo code.
    * Validates the promo code and updates the discount state accordingly.
    */
   const handleApplyPromoCode = useCallback(async () => {
+    if(!isConnected){
+      setPromoCode("");
+      setDiscount({ applied: false, error: true, errorMessage: undefined });
+      return;
+    }
     setIsLoading(true);
     try {
       if(address && address.toLowerCase() === promoCode.toLowerCase()){
@@ -56,7 +63,7 @@ export function usePromoCodeHandler(address:`0x${string}` | undefined) {
     } finally {
       setIsLoading(false);
     }
-  }, [promoCode]);
+  }, [promoCode, address]);
 
   return { promoCode, setPromoCode, discount, setDiscount, handleApplyPromoCode, isLoading };
 }
