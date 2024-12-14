@@ -35,6 +35,8 @@
 			}
 		},
 		"logoColumn": {
+			"networkRewardsAmount": "約$300M",
+			"networkRewardsText": "これまでにキー保有者に対するネットワーク報酬",
 			"purchaseReady": "購入の準備ができました",
 			"imageAlt": "セントリーロゴ"
 		},
@@ -81,7 +83,10 @@
 			"seeBlockedCountries": "（ブロックされている国を見る）"
 		},
 		"actionSection": {
+			"crossmintModalHeading": "Crossmintで支払う",
+			"crossmintModalLoading": "読み込み中...",
 			"mintWithOptions": "発行 - ",
+			"mintWithOptionsDisabled": "Crossmint 1回の取引で最大{{maxKeys}}鍵",
 			"tokenButtonTexts": {
 				"isPending": "確認を待っています…",
 				"switchToArbitrum": "Arbitrumに変更してください"

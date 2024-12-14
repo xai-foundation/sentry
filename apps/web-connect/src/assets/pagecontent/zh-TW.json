@@ -36,7 +36,9 @@
 		},
 		"logoColumn": {
 			"purchaseReady": "您的購買已準備好",
-			"imageAlt": "Sentry 標誌"
+			"imageAlt": "Sentry 標誌",
+			"networkRewardsAmount": "~$300M",
+			"networkRewardsText": "至今為止，金鑰持有者獲得的網路獎勵"
 		},
 		"chooseQuantity": {
 			"title": "XAI SENTRY KEY",
@@ -82,6 +84,9 @@
 		},
 		"actionSection": {
 			"mintWithOptions": "鑄造 - ",
+			"mintWithOptionsDisabled": "Crossmint 每筆交易最多 {{maxKeys}} 個金鑰",
+			"crossmintModalHeading": "使用 Crossmint 支付",
+			"crossmintModalLoading": "加載中...",
 			"tokenButtonTexts": {
 				"isPending": "等待確認中...",
 				"switchToArbitrum": "請切換到 Arbitrum"

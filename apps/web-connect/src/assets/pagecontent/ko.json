@@ -35,6 +35,8 @@
 			}
 		},
 		"logoColumn": {
+			"networkRewardsAmount": "~$300M ",
+			"networkRewardsText": "지금까지 키 보유자에게 지급된 네트워크 보상",
 			"purchaseReady": "구매 물품 준비 완료",
 			"imageAlt": "센트리 로고"
 		},
@@ -81,7 +83,10 @@
 			"seeBlockedCountries": "(차단된 국가 보기)"
 		},
 		"actionSection": {
+			"crossmintModalHeading": "Crossmint로 결제",
+			"crossmintModalLoading": "로딩 중...",
 			"mintWithOptions": "발행 - ",
+			"mintWithOptionsDisabled": "Crossmint 최대 {{maxKeys}} 키당 거래",
 			"tokenButtonTexts": {
 				"isPending": "확인을 기다리는 중...",
 				"switchToArbitrum": "아비트럼으로 전환하세요."

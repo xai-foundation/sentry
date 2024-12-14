@@ -36,7 +36,9 @@
 		},
 		"logoColumn": {
 			"purchaseReady": "您的购买已就绪",
-			"imageAlt": "Sentry标志"
+			"imageAlt": "Sentry标志",
+			"networkRewardsAmount": "约$300M",
+			"networkRewardsText": "迄今为止，密钥持有者获得的网络奖励"
 		},
 		"chooseQuantity": {
 			"title": "XAI Sentry密钥",
@@ -82,6 +84,9 @@
 		},
 		"actionSection": {
 			"mintWithOptions": "铸造 - ",
+			"mintWithOptionsDisabled": "Crossmint 每笔交易最多{{maxKeys}}个密钥",
+			"crossmintModalHeading": "使用Crossmint支付",
+			"crossmintModalLoading": "加载中...",
 			"tokenButtonTexts": {
 				"isPending": "正在等待确认……",
 				"switchToArbitrum": "请切换至Arbitrum"

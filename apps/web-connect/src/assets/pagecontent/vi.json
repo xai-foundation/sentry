@@ -36,7 +36,9 @@
 		},
 		"logoColumn": {
 			"purchaseReady": "LỆNH MUA ĐÃ SẴN SÀNG",
-			"imageAlt": "Logo Sentry"
+			"imageAlt": "Logo Sentry",
+			"networkRewardsAmount": "~$300M",
+			"networkRewardsText": "trong phần thưởng mạng cho những người nắm giữ khóa cho đến nay"
 		},
 		"chooseQuantity": {
 			"title": "KHÓA SENTRY XAI",
@@ -107,7 +109,10 @@
 					"title": "Giao dịch bị hủy",
 					"text": "Bạn đã hủy giao dịch trong ví của mình."
 				}
-			}
+			},
+			"crossmintModalHeading": "Thanh toán bằng Crossmint",
+			"crossmintModalLoading": "Đang tải...",
+			"mintWithOptionsDisabled": "Crossmint Tối đa {{maxKeys}} khóa mỗi giao dịch"
 		}
 	},
 	"WebBuyKeysOrderTotal": {

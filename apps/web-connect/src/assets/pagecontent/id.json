@@ -35,6 +35,8 @@
 			}
 		},
 		"logoColumn": {
+			"networkRewardsAmount": "~$300M ",
+			"networkRewardsText": "dalam imbalan jaringan kepada pemegang kunci sejauh ini",
 			"purchaseReady": "PEMBELIAN ANDA SIAP",
 			"imageAlt": "Logo Sentry"
 		},
@@ -81,7 +83,10 @@
 			"seeBlockedCountries": "(Lihat negara yang diblokir)"
 		},
 		"actionSection": {
+			"crossmintModalHeading": "Bayar dengan Crossmint",
+			"crossmintModalLoading": "Memuat...",
 			"mintWithOptions": "Cetak - ",
+			"mintWithOptionsDisabled": "Crossmint Maks {{maxKeys}} kunci per transaksi",
 			"tokenButtonTexts": {
 				"isPending": "MENUNGGU KONFIRMASI ...",
 				"switchToArbitrum": "Harap Ganti ke Arbitrum"

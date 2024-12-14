@@ -35,6 +35,8 @@
 			}
 		},
 		"logoColumn": {
+			"networkRewardsAmount": "~300 Mio. $ ",
+			"networkRewardsText": "an Netzwerk-Belohnungen bisher an Key-Hodler",
 			"purchaseReady": "IHR KAUF IST BEREIT",
 			"imageAlt": "Sentry-Logo"
 		},
@@ -81,7 +83,10 @@
 			"seeBlockedCountries": "(Siehe blockierte Länder)"
 		},
 		"actionSection": {
+			"crossmintModalHeading": "Mit Crossmint bezahlen",
+			"crossmintModalLoading": "Laden...",
 			"mintWithOptions": "Minten – ",
+			"mintWithOptionsDisabled": "Crossmint Max {{maxKeys}} Schlüssel pro Transaktion",
 			"tokenButtonTexts": {
 				"isPending": "WARTE AUF BESTÄTIGUNG …",
 				"switchToArbitrum": "Bitte zu Arbitrum wechseln"

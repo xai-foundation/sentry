@@ -35,6 +35,8 @@
 			}
 		},
 		"logoColumn": {
+			"networkRewardsAmount": "~$300M ",
+			"networkRewardsText": "şimdiye kadar anahtar sahiplerine ağ ödüllerinde",
 			"purchaseReady": "SATIN ALMA İŞLEMİNİZ HAZIR",
 			"imageAlt": "Sentry Logosu"
 		},
@@ -81,7 +83,10 @@
 			"seeBlockedCountries": "(Blokajlı ülkelere bakın)"
 		},
 		"actionSection": {
+			"crossmintModalHeading": "Crossmint ile Öde",
+			"crossmintModalLoading": "Yükleniyor...",
 			"mintWithOptions": "Para Bas - ",
+			"mintWithOptionsDisabled": "Crossmint Maks {{maxKeys}} anahtar başına işlem",
 			"tokenButtonTexts": {
 				"isPending": "ONAY İÇİN BEKLENİYOR...",
 				"switchToArbitrum": "Lütfen Arbitrum'a Geçiş Yapın"
