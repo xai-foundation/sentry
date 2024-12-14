@@ -81,7 +81,7 @@
 			"seeBlockedCountries": "(Xem các quốc gia bị hạn chế)"
 		},
 		"actionSection": {
-			"mintWithOptions": "Đúc - Tín dụng/Ghi nợ, SOL, ETH, USDC",
+			"mintWithOptions": "Đúc - ",
 			"tokenButtonTexts": {
 				"isPending": "ĐANG CHỜ XÁC NHẬN…",
 				"switchToArbitrum": "Vui lòng chuyển sang Arbitrum"

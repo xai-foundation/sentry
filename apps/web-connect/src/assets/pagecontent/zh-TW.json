@@ -81,7 +81,7 @@
 			"seeBlockedCountries": "(查看受限國家/地區)"
 		},
 		"actionSection": {
-			"mintWithOptions": "鑄造 - 信用卡/簽帳金融卡、SOL、ETH、USDC",
+			"mintWithOptions": "鑄造 - ",
 			"tokenButtonTexts": {
 				"isPending": "等待確認中...",
 				"switchToArbitrum": "請切換到 Arbitrum"

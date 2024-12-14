@@ -81,7 +81,7 @@
 			"seeBlockedCountries": "（ブロックされている国を見る）"
 		},
 		"actionSection": {
-			"mintWithOptions": "発行 - クレジット/デビッド、SOL、ETH、USDC",
+			"mintWithOptions": "発行 - ",
 			"tokenButtonTexts": {
 				"isPending": "確認を待っています…",
 				"switchToArbitrum": "Arbitrumに変更してください"

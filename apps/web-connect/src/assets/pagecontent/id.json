@@ -81,7 +81,7 @@
 			"seeBlockedCountries": "(Lihat negara yang diblokir)"
 		},
 		"actionSection": {
-			"mintWithOptions": "Cetak - Kredit/Debit, SOL, ETH, USDC",
+			"mintWithOptions": "Cetak - ",
 			"tokenButtonTexts": {
 				"isPending": "MENUNGGU KONFIRMASI ...",
 				"switchToArbitrum": "Harap Ganti ke Arbitrum"

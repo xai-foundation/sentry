@@ -81,7 +81,7 @@
 			"seeBlockedCountries": "(Veja os países bloqueados)"
 		},
 		"actionSection": {
-			"mintWithOptions": "Criar - Crédito/Débito, SOL, ETH, USDC",
+			"mintWithOptions": "Criar - ",
 			"tokenButtonTexts": {
 				"isPending": "AGUARDANDO CONFIRMAÇÃO…",
 				"switchToArbitrum": "Mude para a rede Arbitrum"

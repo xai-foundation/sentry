@@ -81,7 +81,7 @@
 			"seeBlockedCountries": "(ब्लॉक किए गए देश देखें)"
 		},
 		"actionSection": {
-			"mintWithOptions": "मिंट करें - क्रेडिट/डेबिट, SOL, ETH, USDC",
+			"mintWithOptions": "मिंट करें - ",
 			"tokenButtonTexts": {
 				"isPending": "पुष्टि का इंतज़ार कर रहे हैं...",
 				"switchToArbitrum": "कृपया Arbitrum पर स्विच करें"

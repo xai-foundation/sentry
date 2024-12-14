@@ -81,7 +81,7 @@
 			"seeBlockedCountries": "(Siehe blockierte Länder)"
 		},
 		"actionSection": {
-			"mintWithOptions": "Minten – Kredit-/Debitkarte, SOL, ETH, USDC",
+			"mintWithOptions": "Minten – ",
 			"tokenButtonTexts": {
 				"isPending": "WARTE AUF BESTÄTIGUNG …",
 				"switchToArbitrum": "Bitte zu Arbitrum wechseln"

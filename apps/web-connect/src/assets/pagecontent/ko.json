@@ -81,7 +81,7 @@
 			"seeBlockedCountries": "(차단된 국가 보기)"
 		},
 		"actionSection": {
-			"mintWithOptions": "발행 - 신용카드/직불카드, SOL, ETH, USDC",
+			"mintWithOptions": "발행 - ",
 			"tokenButtonTexts": {
 				"isPending": "확인을 기다리는 중...",
 				"switchToArbitrum": "아비트럼으로 전환하세요."

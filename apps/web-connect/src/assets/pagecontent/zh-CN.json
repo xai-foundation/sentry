@@ -81,7 +81,7 @@
 			"seeBlockedCountries": "（查看受限国家列表）"
 		},
 		"actionSection": {
-			"mintWithOptions": "铸造 - 信用卡/借记卡、SOL（Solana币）、ETH、USDC（美元稳定币）",
+			"mintWithOptions": "铸造 - ",
 			"tokenButtonTexts": {
 				"isPending": "正在等待确认……",
 				"switchToArbitrum": "请切换至Arbitrum"

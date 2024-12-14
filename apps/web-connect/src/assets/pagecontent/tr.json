@@ -81,7 +81,7 @@
 			"seeBlockedCountries": "(Blokajlı ülkelere bakın)"
 		},
 		"actionSection": {
-			"mintWithOptions": "Para Bas - Kredi/Banka Kartı, SOL, ETH, USDC",
+			"mintWithOptions": "Para Bas - ",
 			"tokenButtonTexts": {
 				"isPending": "ONAY İÇİN BEKLENİYOR...",
 				"switchToArbitrum": "Lütfen Arbitrum'a Geçiş Yapın"
