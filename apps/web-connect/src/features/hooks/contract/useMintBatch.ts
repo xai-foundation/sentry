@@ -134,10 +134,7 @@ export function useMintBatch({
     }
 
     setIsMinting(false);
-
-    if (!encounteredError) {
-      setTxHashes(txHashesLocal);
-    }
+    setTxHashes(txHashesLocal);
   };
 
   const clearMintBatchErrors = () => {
