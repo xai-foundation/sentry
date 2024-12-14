@@ -1,131 +1,133 @@
-{
-    "Nav": {
-        "connectWallet": "WALLET VERBINDEN",
-        "docs": "DOKUMENTE",
-        "sentryNodeAgreement": "Sentry Node Vereinbarung",
-        "privacyPolicy": "Datenschutzrichtlinie",
-        "generalTerms": "Allgemeine Geschäftsbedingungen",
-        "stakingTerms": "Staking-Bedingungen",
-        "copyright": "©2024 XAI. Alle Rechte vorbehalten",
-        "telegram": "Telegram",
-        "discord": "Discord",
-        "twitter": "X"
-    },
-    "Checkout": {
-        "updatingTotal": "Gesamtsumme wird aktualisiert...",
-        "transactionPending": "Transaktion läuft…",
-        "backButton": "Zurück",
-        "successfulPurchase": {
-            "title": "Kauf erfolgreich",
-            "text": "Sie haben erfolgreich einen Xai Sentry Key gekauft",
-            "transactionId": "Transaktions-ID:",
-            "promo": {
-                "shareLink": "Teilen Sie Ihren Empfehlungslink mit Freunden!",
-                "info": "Sie erhalten 5% Rabatt und Sie erhalten 15% des Verkaufs."
-            },
-            "shareButton": {
-                "title": "5% Rabatt auf Sentry Key Kauf",
-                "text": "Prägen Sie einen Schlüssel auf dem Xai, um zu staken und mit dem Verdienen von Belohnungen zu beginnen sowie sich für Airdrops zu qualifizieren."
-            },
-            "copyTooltip": "Kopiert!",
-            "stakePromo": {
-                "title": "Staken Sie den Schlüssel in einem Pool, um Belohnungen zu verdienen",
-                "buttonText": "Schlüssel staken",
-                "downloadOperator": "Operator herunterladen"
-            }
-        },
-        "logoColumn": {
-            "networkRewardsAmount": "~300 Mio. $",
-            "networkRewardsText": "an Netzwerkbelohnungen für Key-Hodler bisher",
-            "purchaseReady": "IHR KAUF IST BEREIT",
-            "imageAlt": "Sentry Logo"
-        },
-        "chooseQuantity": {
-            "title": "XAI SENTRY KEY",
-            "description": "Jeder Sentry Key ermöglicht es Ihnen, bis zu 1 Belohnungsantrag für jede Netzwerk-Herausforderung einzureichen.",
-            "toolTip": {
-                "title": "Xai-Schlüssel sind erforderlich, damit Nodes $esXAI Netzwerk-Belohnungen erhalten.",
-                "text": "Um Sentry Keys kaufen zu können, muss Ihr Wallet mit Arbitrum One verbunden sein."
-            },
-            "maximumPerTransaction": "Maximal {{count}} pro Transaktion",
-            "maximumNodeLicenses": "Maximal {{max}} Node-Lizenzen können in einer einzigen Transaktion gekauft werden."
-        },
-        "chooseCurrencyTitle": "Zahlungswährung wählen",
-        "priceKeyRow": {
-            "nodeKeyQuantity": "{{quantity}} x Xai Sentry Key",
-            "pricePerKey": "{{price}} {{currency}} pro Schlüssel",
-            "pricePerKeyDesktop": "{{price}} {{currency}} pro Schlüssel"
-        },
-        "promoCodeRow": {
-            "discount": {
-                "text": "Rabatt (5%)",
-                "removeButton": "Entfernen"
-            },
-            "pricesMayVary": {
-                "title": "Ihre Transaktion könnte rückgängig gemacht werden",
-                "text": "Die Preise für Xai Sentry Keys variieren je nach Menge des verbleibenden Angebots. Im Allgemeinen steigt der Preis eines Schlüssels, wenn die verfügbare Menge abnimmt. Wenn Sie mehr Keys kaufen, als in der aktuellen Preiskategorie verfügbar sind, könnte die Transaktion rückgängig gemacht werden. Wir empfehlen, den Kauf in zwei Transaktionen aufzuteilen - eine für die aktuelle Preiskategorie und eine weitere in der nächsten Preiskategorie."
-            },
-            "noDiscount": {
-                "addPromoCode": "+ Promo-Code hinzufügen",
-                "applyPromoCodeButton": "ANWENDEN",
-                "warning": "Ungültige Empfehlungsadresse"
-            }
-        },
-        "totalCostRow": {
-            "youPay": "Sie zahlen",
-            "balance": "Verfügbares Guthaben: {{balance}} {{currency}}"
-        },
-        "agreementCheckboxes": {
-            "iAgreeWith": "Ich stimme den",
-            "sentryNodeAgreement": "Sentry Node Vereinbarungen",
-            "notTransferableKeys": "Ich verstehe, dass Sentry Keys nicht übertragbar sind",
-            "cannotRedeemXAI": "Ich verstehe, dass ich es nicht kann, es esXAI für XAI einzulösen, bis ich KYC abgeschlossen habe",
-            "seeBlockedCountries": "(Siehe blockierte Länder)"
-        },
-        "actionSection": {
-            "mintWithOptions": "Prägen - Kredit/Debit, SOL, ETH, USDC",
-            "mintWithOptionsDisabled": "Crossmint maximal {{maxKeys}} Schlüssel pro Transaktion",
-            "tokenButtonTexts": {
-                "isPending": "WARTET AUF BESTÄTIGUNG..",
-                "switchToArbitrum": "Bitte wechseln Sie zu Arbitrum"
-            },
-            "mintWithEthError": {
-                "insufficientFundsError": {
-                    "title": "Unzureichende Mittel für die Transaktion",
-                    "text": "Stellen Sie sicher, dass Ihre Wallet genügend AETH und Gas hat, um die Transaktion abzuschließen."
-                },
-                "userRejectedRequest": {
-                    "title": "Transaktion wurde abgebrochen",
-                    "text": "Sie haben die Transaktion in Ihrer Wallet abgebrochen."
-                }
-            },
-            "mintWithXaiError": {
-                "userRejectedRequest": {
-                    "title": "Transaktion wurde abgebrochen",
-                    "text": "Sie haben die Transaktion in Ihrer Wallet abgebrochen."
-                }
-            },
-            "approveError": {
-                "userRejectedRequest": {
-                    "title": "Transaktion wurde abgebrochen",
-                    "text": "Sie haben die Transaktion in Ihrer Wallet abgebrochen."
-                }
-            }
-        }
-    },
-    "WebBuyKeysOrderTotal": {
-        "approveButtonsTexts": {
-            "isPending": "WARTET AUF BESTÄTIGUNG...",
-            "insufficientBalance": "Unzureichendes {{currency}} Guthaben",
-            "approveCurrency": "{{currency}} genehmigen",
-            "purchaseNow": "JETZT KAUFEN"
-        },
-        "ethButtonTexts": {
-            "connectWallet": "Bitte Wallet verbinden",
-            "switchToArbitrum": "Bitte wechseln Sie zu Arbitrum",
-            "isPending": "WARTET AUF BESTÄTIGUNG...",
-            "insufficientBalance": "Unzureichendes ETH Guthaben",
-            "mintNow": "JETZT MINTEN"
-        }
-    }
+﻿{
+	"Nav": {
+		"connectWallet": "WALLET VERBINDEN",
+		"docs": "DOCS",
+		"sentryNodeAgreement": "Sentry-Node-Vereinbarung",
+		"privacyPolicy": "Datenschutzerklärung",
+		"generalTerms": "Allgemeine Geschäftsbedingungen",
+		"stakingTerms": "Staking-Bestimmungen",
+		"copyright": "©2024 XAI. Alle Rechte vorbehalten",
+		"telegram": "Telegram",
+		"discord": "Discord",
+		"twitter": "X"
+	},
+	"Checkout": {
+		"updatingTotal": "Summe wird aktualisiert …",
+		"transactionPending": "Transaktion läuft …",
+		"backButton": "Zurück",
+		"successfulPurchase": {
+			"title": "Kauf erfolgreich",
+			"text": "Sie haben erfolgreich einen Xai Sentry-Key erworben.",
+			"transactionId": "Transaktions-ID:",
+			"promo": {
+				"shareLink": "Teilen Sie Ihren Empfehlungslink mit Ihren Freunden!",
+				"info": "Sie erhalten 5 % Rabatt und 15 % des Verkaufs."
+			},
+			"shareButton": {
+				"title": "Sentry-Key-Kauf mit 5 % Rabatt",
+				"text": "Minten Sie Xai-Schlüssel, um zu staken und Airdrops zu ermöglichen."
+			},
+			"copyTooltip": "Kopiert!",
+			"stakePromo": {
+				"title": "Staken Sie Schlüssel in einem Pool, um Belohnungen zu erhalten",
+				"buttonText": "Schlüssel staken",
+				"downloadOperator": "Download-Operator"
+			}
+		},
+		"logoColumn": {
+			"networkRewardsAmount": "~300 Mio. $ ",
+			"networkRewardsText": "an Netzwerk-Belohnungen bisher an Key-Hodler",
+			"purchaseReady": "IHR KAUF IST BEREIT",
+			"imageAlt": "Sentry-Logo"
+		},
+		"chooseQuantity": {
+			"title": "XAI SENTRY-KEY",
+			"description": "Mit jedem Sentry-Key können Sie bis zu 1 Belohnungsanforderung für jede Netzwerk-Challenge senden.",
+			"toolTip": {
+				"title": "Xai-Keys sind erforderlich, damit Knoten $esXAI-Netzwerk-Belohnungen erhalten können.",
+				"text": "Alle Käufe müssen in Arbitrum ETH erfolgen."
+			},
+			"maximumPerTransaction": "Max. {{count}} je Transaktion",
+			"maximumNodeLicenses": "Es können je Transaktion bis zu {{max}} NodeLicences erworben werden."
+		},
+		"chooseCurrencyTitle": "Zahlungswährung wählen",
+		"priceKeyRow": {
+			"nodeKeyQuantity": "{{quantity}} x Xai Sentry-Key",
+			"pricePerKey": "{{price}} {{currency}} je Schüssel",
+			"pricePerKeyDesktop": "{{price}} {{currency}} je Schüssel"
+		},
+		"promoCodeRow": {
+			"discount": {
+				"text": "Rabatt (5 %)",
+				"removeButton": "Entfernen"
+			},
+			"pricesMayVary": {
+				"title": "Ihre Transaktion kann rückgängig gemacht werden",
+				"text": "Die Preise für Xai Sentry-Keys variieren abhängig von der Größe des verbleibenden Angebots. Mit abnehmender Anzahl verfügbarer Schlüssel steigt in der Regel auch der Preis eines Schlüssels. Wenn Sie mehr Schlüssel erwerben, als derzeit auf der aktuellen Preisstufe verfügbar sind, kann die Transaktion rückgängig gemacht werden. Wir empfehlen, den Kauf auf zwei Transaktionen aufzuteilen – eine für die aktuelle Preisstufe und eine andere auf der nächsten Preisstufe."
+			},
+			"noDiscount": {
+				"addPromoCode": "+ Promocode hinzufügen",
+				"applyPromoCodeButton": "ANWENDEN",
+				"warning": "Ungültige Empfehlungsadresse"
+			}
+		},
+		"totalCostRow": {
+			"youPay": "Sie zahlen",
+			"balance": "Verfügbares Guthaben: {{balance}} {{currency}}"
+		},
+		"agreementCheckboxes": {
+			"iAgreeWith": "Ich stimme der",
+			"sentryNodeAgreement": "Sentry-Node-Vereinbarung",
+			"notTransferableKeys": "Ich verstehe, dass Sentry-Keys nicht übertragbar sind",
+			"cannotRedeemXAI": "Ich verstehe, dass ich esXAI nicht gegen XAI einlösen kann, sofern ich die KYC-Prüfung nicht bestanden habe",
+			"seeBlockedCountries": "(Siehe blockierte Länder)"
+		},
+		"actionSection": {
+			"crossmintModalHeading": "Mit Crossmint bezahlen",
+			"crossmintModalLoading": "Laden...",
+			"mintWithOptions": "Minten – ",
+			"mintWithOptionsDisabled": "Crossmint Max {{maxKeys}} Schlüssel pro Transaktion",
+			"tokenButtonTexts": {
+				"isPending": "WARTE AUF BESTÄTIGUNG …",
+				"switchToArbitrum": "Bitte zu Arbitrum wechseln"
+			},
+			"mintWithEthError": {
+				"insufficientFundsError": {
+					"title": "Nicht genügend Guthaben, um die Transaktion abzuschließen",
+					"text": "Achten Sie darauf, dass Ihre Wallet genügend AETH und Gas aufweist, um die Transaktion abschließen zu können."
+				},
+				"userRejectedRequest": {
+					"title": "Transaktion wurde abgebrochen",
+					"text": "Sie haben die Transaktion in Ihrer Wallet abgebrochen."
+				}
+			},
+			"mintWithXaiError": {
+				"userRejectedRequest": {
+					"title": "Transaktion wurde abgebrochen",
+					"text": "Sie haben die Transaktion in Ihrer Wallet abgebrochen."
+				}
+			},
+			"approveError": {
+				"userRejectedRequest": {
+					"title": "Transaktion wurde abgebrochen",
+					"text": "Sie haben die Transaktion in Ihrer Wallet abgebrochen."
+				}
+			}
+		}
+	},
+	"WebBuyKeysOrderTotal": {
+		"approveButtonsTexts": {
+			"isPending": "WARTEN AUF BESTÄTIGUNG …",
+			"insufficientBalance": "Nicht genügend {{currency}}-Guthaben",
+			"approveCurrency": "{{currency}} genehmigen",
+			"purchaseNow": "JETZT KAUFEN"
+		},
+		"ethButtonTexts": {
+			"connectWallet": "Bitte mit Wallet verbinden",
+			"switchToArbitrum": "Bitte zu Arbitrum wechseln",
+			"isPending": "WARTEN AUF BESTÄTIGUNG …",
+			"insufficientBalance": "Nicht genügend ETH-Guthaben",
+			"mintNow": "JETZT MINTEN"
+		}
+	}
 }
