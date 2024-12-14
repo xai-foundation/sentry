@@ -1,0 +1,128 @@
+﻿{
+	"Nav": {
+		"connectWallet": "지갑 연결",
+		"docs": "문서",
+		"sentryNodeAgreement": "센트리 노드 계약",
+		"privacyPolicy": "개인정보 보호정책 동의서",
+		"generalTerms": "일반 약관",
+		"stakingTerms": "스테이킹 약관",
+		"copyright": "©2024 XAI. All Rights Reserved",
+		"telegram": "Telegram",
+		"discord": "Discord",
+		"twitter": "X"
+	},
+	"Checkout": {
+		"updatingTotal": "합계 업데이트 중...",
+		"transactionPending": "거래 진행 중...",
+		"backButton": "뒤로",
+		"successfulPurchase": {
+			"title": "구매 완료",
+			"text": "Xai 센트리 키를 구매했습니다.",
+			"transactionId": "거래 ID:",
+			"promo": {
+				"shareLink": "추천인 링크를 친구에게 알려주세요!",
+				"info": "친구는 5% 할인을 받고 본인은 판매액의 15%를 받습니다."
+			},
+			"shareButton": {
+				"title": "센트리 키 5% 할인 구매",
+				"text": "Xai에서 키를 발행하여 스테이킹으로 보상을 받기 시작하고 에어드롭 자격을 얻으세요."
+			},
+			"copyTooltip": "복사 완료!",
+			"stakePromo": {
+				"title": "풀에 키를 스테이킹하고 보상 받기",
+				"buttonText": "키 스테이킹",
+				"downloadOperator": "오퍼레이터 다운로드"
+			}
+		},
+		"logoColumn": {
+			"purchaseReady": "구매 물품 준비 완료",
+			"imageAlt": "센트리 로고"
+		},
+		"chooseQuantity": {
+			"title": "XAI센트리 키",
+			"description": "각 센트리 키로 네트워크 도전과제당 보상 요청 1건을 제출할 수 있습니다.",
+			"toolTip": {
+				"title": "$esXAI 네트워크 보상을 받으려면 노드에 Xai 키가 필요합니다.",
+				"text": "모든 구매는 아비트럼 이더리움(ETH)으로 이루어져야 합니다."
+			},
+			"maximumPerTransaction": "거래당 최대 {{count}}개",
+			"maximumNodeLicenses": "한번 거래할 때 최대 NodeLicense {{max}}개를 구매할 수 있습니다."
+		},
+		"chooseCurrencyTitle": "결제 통화 선택",
+		"priceKeyRow": {
+			"nodeKeyQuantity": "{{quantity}} x Xai 센트리 키",
+			"pricePerKey": "키당 {{price}}{{currency}}",
+			"pricePerKeyDesktop": "키당 {{price}}{{currency}}"
+		},
+		"promoCodeRow": {
+			"discount": {
+				"text": "할인(5%)",
+				"removeButton": "제거"
+			},
+			"pricesMayVary": {
+				"title": "거래가 취소될 수 있습니다.",
+				"text": "Xai 센트리 키의 가격은 남은 물량에 따라 달라집니다. 일반적으로 남은 키 수가 줄어들수록 키 가격은 올라갑니다. 현재 가격 티어에 남은 수량보다 더 많은 키를 구매하는 경우 거래가 취소될 수 있습니다. 저희가 권장하는 것은 거래를 두 개로 나누어 하나는 현재 가격 티어에서 구매하고 다른 하나는 다음 가격 티어에서 구매하는 것입니다."
+			},
+			"noDiscount": {
+				"addPromoCode": "+ 프로모션 코드 추가",
+				"applyPromoCodeButton": "적용",
+				"warning": "잘못된 추천인 주소"
+			}
+		},
+		"totalCostRow": {
+			"youPay": "내가 지불한 금액",
+			"balance": "잔고: {{balance}}{{currency}}"
+		},
+		"agreementCheckboxes": {
+			"iAgreeWith": "다음에 동의합니다.",
+			"sentryNodeAgreement": "센트리 노드 계약",
+			"notTransferableKeys": "센트리 키는 양도 불가함을 이해합니다.",
+			"cannotRedeemXAI": "KYC를 패스하기 전까지는 esXAI를 XAI로 교환할 수 없음을 이해합니다.",
+			"seeBlockedCountries": "(차단된 국가 보기)"
+		},
+		"actionSection": {
+			"mintWithOptions": "발행 - 신용카드/직불카드, SOL, ETH, USDC",
+			"tokenButtonTexts": {
+				"isPending": "확인을 기다리는 중...",
+				"switchToArbitrum": "아비트럼으로 전환하세요."
+			},
+			"mintWithEthError": {
+				"insufficientFundsError": {
+					"title": "거래를 완료할 자금 부족",
+					"text": "지갑에 AETH와 가스가 거래를 완료하기에 충분한지 확인하세요."
+				},
+				"userRejectedRequest": {
+					"title": "거래 취소",
+					"text": "지갑에서 거래를 취소했습니다."
+				}
+			},
+			"mintWithXaiError": {
+				"userRejectedRequest": {
+					"title": "거래 취소",
+					"text": "지갑에서 거래를 취소했습니다."
+				}
+			},
+			"approveError": {
+				"userRejectedRequest": {
+					"title": "거래 취소",
+					"text": "지갑에서 거래를 취소했습니다."
+				}
+			}
+		}
+	},
+	"WebBuyKeysOrderTotal": {
+		"approveButtonsTexts": {
+			"isPending": "확인을 기다리는 중...",
+			"insufficientBalance": "{{currency}} 잔고 부족",
+			"approveCurrency": "{{currency}} 승인",
+			"purchaseNow": "지금 구매"
+		},
+		"ethButtonTexts": {
+			"connectWallet": "지갑을 연결하세요.",
+			"switchToArbitrum": "아비트럼으로 전환하세요.",
+			"isPending": "확인을 기다리는 중...",
+			"insufficientBalance": "ETH 잔고 부족",
+			"mintNow": "지금 발행"
+		}
+	}
+}

@@ -1,0 +1,128 @@
+﻿{
+	"Nav": {
+		"connectWallet": "连接钱包",
+		"docs": "资料",
+		"sentryNodeAgreement": "Sentry节点协议",
+		"privacyPolicy": "隐私政策协议",
+		"generalTerms": "通用条款",
+		"stakingTerms": "质押条款",
+		"copyright": "©2024 XAI 保留所有权利",
+		"telegram": "Telegram",
+		"discord": "Discord",
+		"twitter": "X"
+	},
+	"Checkout": {
+		"updatingTotal": "正在更新总金额……",
+		"transactionPending": "交易处理中……",
+		"backButton": "返回",
+		"successfulPurchase": {
+			"title": "购买成功",
+			"text": "您已成功购买Xai Sentry密钥",
+			"transactionId": "交易ID：",
+			"promo": {
+				"shareLink": "将您的推荐链接分享给好友！",
+				"info": "好友可享受5%优惠，您可以获得15%销售分成。"
+			},
+			"shareButton": {
+				"title": "购买Sentry密钥，立享5%优惠",
+				"text": "在Xai铸造密钥后进行质押，开启奖励并解锁空投资格。"
+			},
+			"copyTooltip": "已复制！",
+			"stakePromo": {
+				"title": "在质押池中质押密钥，开始赚取奖励。",
+				"buttonText": "质押密钥",
+				"downloadOperator": "下载操作工具"
+			}
+		},
+		"logoColumn": {
+			"purchaseReady": "您的购买已就绪",
+			"imageAlt": "Sentry标志"
+		},
+		"chooseQuantity": {
+			"title": "XAI Sentry密钥",
+			"description": "每个Sentry密钥可在每个网络挑战中最多申领1次奖励。",
+			"toolTip": {
+				"title": "只有持有Xai密钥的节点才可接收$esXAI网络奖励。",
+				"text": "所有购买必须使用Arbitrum ETH（以太币）支付。"
+			},
+			"maximumPerTransaction": "单次交易限购{{count}}",
+			"maximumNodeLicenses": "单次交易中最多可购买{{max}}个节点许可证。"
+		},
+		"chooseCurrencyTitle": "选择支付货币",
+		"priceKeyRow": {
+			"nodeKeyQuantity": "{{quantity}} x Xai Sentry密钥",
+			"pricePerKey": "每个密钥{{price}} {{currency}}",
+			"pricePerKeyDesktop": "每个密钥{{price}} {{currency}}"
+		},
+		"promoCodeRow": {
+			"discount": {
+				"text": "折扣（5%）",
+				"removeButton": "移除"
+			},
+			"pricesMayVary": {
+				"title": "您的交易可能会被撤销",
+				"text": "Xai Sentry密钥的价格会随剩余供应量而变化。通常情况下，可供购买的密钥越少，单个密钥的价格就越高。如果您购买的密钥数量超过当前定价区间的剩余供应量，交易可能会被撤销。我们建议分两次购买：一部分密钥在当前定价区间购买，其余部分在下一定价区间购买。"
+			},
+			"noDiscount": {
+				"addPromoCode": "+ 添加优惠码",
+				"applyPromoCodeButton": "应用",
+				"warning": "无效的推荐链接"
+			}
+		},
+		"totalCostRow": {
+			"youPay": "您需支付",
+			"balance": "可用余额：{{balance}} {{currency}}"
+		},
+		"agreementCheckboxes": {
+			"iAgreeWith": "我同意",
+			"sentryNodeAgreement": "Sentry节点协议",
+			"notTransferableKeys": "我了解，Sentry密钥不可转让",
+			"cannotRedeemXAI": "我了解，必须完成KYC（了解你的客户）验证才能将esXAI兑换为XAI",
+			"seeBlockedCountries": "（查看受限国家列表）"
+		},
+		"actionSection": {
+			"mintWithOptions": "铸造 - 信用卡/借记卡、SOL（Solana币）、ETH、USDC（美元稳定币）",
+			"tokenButtonTexts": {
+				"isPending": "正在等待确认……",
+				"switchToArbitrum": "请切换至Arbitrum"
+			},
+			"mintWithEthError": {
+				"insufficientFundsError": {
+					"title": "资金不足，交易无法完成",
+					"text": "请确保您的钱包中有足够的Arbitrum ETH和GAS用以完成交易。"
+				},
+				"userRejectedRequest": {
+					"title": "交易已被取消",
+					"text": "您已在钱包中取消了交易。"
+				}
+			},
+			"mintWithXaiError": {
+				"userRejectedRequest": {
+					"title": "交易已被取消",
+					"text": "您已在钱包中取消了交易。"
+				}
+			},
+			"approveError": {
+				"userRejectedRequest": {
+					"title": "交易已被取消",
+					"text": "您已在钱包中取消了交易。"
+				}
+			}
+		}
+	},
+	"WebBuyKeysOrderTotal": {
+		"approveButtonsTexts": {
+			"isPending": "正在等待验证……",
+			"insufficientBalance": "{{currency}}余额不足",
+			"approveCurrency": "批准{{currency}}",
+			"purchaseNow": "立即购买"
+		},
+		"ethButtonTexts": {
+			"connectWallet": "请连接您的钱包",
+			"switchToArbitrum": "请切换至Arbitrum",
+			"isPending": "正在等待验证……",
+			"insufficientBalance": "ETH余额不足",
+			"mintNow": "立即铸造"
+		}
+	}
+}

@@ -1,0 +1,128 @@
+﻿{
+	"Nav": {
+		"connectWallet": "CÜZDAN BAĞLA",
+		"docs": "BELGELER",
+		"sentryNodeAgreement": "Sentry Düğümü Sözleşmesi",
+		"privacyPolicy": "Gizlilik İlkesi Sözleşmesi",
+		"generalTerms": "Genel Koşullar",
+		"stakingTerms": "Stake Etme Koşulları",
+		"copyright": "©2024 XAI. Tüm Hakları Saklıdır",
+		"telegram": "Telegram",
+		"discord": "Discord",
+		"twitter": "X"
+	},
+	"Checkout": {
+		"updatingTotal": "Toplam güncelleniyor...",
+		"transactionPending": "İşlem devam ediyor...",
+		"backButton": "Geri",
+		"successfulPurchase": {
+			"title": "Satın alma başarılı",
+			"text": "Xai Sentry Anahtarını başarıyla satın aldınız",
+			"transactionId": "İşlem Kimliği:",
+			"promo": {
+				"shareLink": "Davet bağlantınızı arkadaşlarınızla paylaşın.",
+				"info": "Arkadaşlarınız %5 indirim alır ve siz de satıştan %15 alırsınız."
+			},
+			"shareButton": {
+				"title": "%5 İndirimli Sentry Anahtarı Satın Alın",
+				"text": "Para yatırmak için Xai'de bir anahtar basın ve ödül kazanmaya başlayarak airdrop'a hak kazanın."
+			},
+			"copyTooltip": "Kopyalandı!",
+			"stakePromo": {
+				"title": "Ödül kazanmaya başlamak için bir havuza anahtar stake edin",
+				"buttonText": "Anahtar stake et",
+				"downloadOperator": "Operatör indir"
+			}
+		},
+		"logoColumn": {
+			"purchaseReady": "SATIN ALMA İŞLEMİNİZ HAZIR",
+			"imageAlt": "Sentry Logosu"
+		},
+		"chooseQuantity": {
+			"title": "XAİ SENTRY ANAHTARI",
+			"description": "Her bir Sentry Anahtarı, her ağ mücadelesi için en fazla 1 ödül talebi göndermenizi sağlar.",
+			"toolTip": {
+				"title": "Xai anahtarları, düğümlerin $esXAI ağ ödüllerini alabilmesi için gereklidir.",
+				"text": "Tüm satın alımlar Arbitrum ETH'de olmalıdır."
+			},
+			"maximumPerTransaction": "İşlem Başına Maksimum {{count}}",
+			"maximumNodeLicenses": "Tek bir işlemde en fazla {{max}} düğüm lisansı satın alınabilir."
+		},
+		"chooseCurrencyTitle": "Ödeme para birimini seçin",
+		"priceKeyRow": {
+			"nodeKeyQuantity": "{{quantity}} x Xai Sentry Anahtarı",
+			"pricePerKey": "Anahtar başına {{price}} {{currency}}",
+			"pricePerKeyDesktop": "Anahtar başına {{price}} {{currency}}"
+		},
+		"promoCodeRow": {
+			"discount": {
+				"text": "İndirim (%5)",
+				"removeButton": "Kaldır"
+			},
+			"pricesMayVary": {
+				"title": "İşleminiz geri döndürülebilir",
+				"text": "Xai Sentry Anahtarı fiyatları, kalan arz miktarına bağlı olarak değişir. Genel olarak, mevcut anahtarların miktarı azaldıkça, bir anahtarın fiyatı artacaktır. Mevcut fiyatlandırma kademesinde sunulandan daha fazla Anahtar satın alırsanız işlem geri döndürülebilir. Biri mevcut fiyatlandırma katmanı ve diğeri sonraki fiyatlandırma katmanı olmak üzere, satın alımınızı iki işleme bölmenizi öneririz."
+			},
+			"noDiscount": {
+				"addPromoCode": "+ Promosyon kodu ekle",
+				"applyPromoCodeButton": "UYGULA",
+				"warning": "Geçersiz referans adresi"
+			}
+		},
+		"totalCostRow": {
+			"youPay": "Ödemeniz:",
+			"balance": "Mevcut bakiye: {{balance}} {{currency}}"
+		},
+		"agreementCheckboxes": {
+			"iAgreeWith": "Şunu kabul ediyorum:",
+			"sentryNodeAgreement": "Sentry Düğümü Sözleşmesi",
+			"notTransferableKeys": "Sentry Anahtarlarının transfer edilemez olduğunu anladım",
+			"cannotRedeemXAI": "KYC'yi geçene kadar esXAI'yi XAI için kullanamayacağımı anladım",
+			"seeBlockedCountries": "(Blokajlı ülkelere bakın)"
+		},
+		"actionSection": {
+			"mintWithOptions": "Para Bas - Kredi/Banka Kartı, SOL, ETH, USDC",
+			"tokenButtonTexts": {
+				"isPending": "ONAY İÇİN BEKLENİYOR...",
+				"switchToArbitrum": "Lütfen Arbitrum'a Geçiş Yapın"
+			},
+			"mintWithEthError": {
+				"insufficientFundsError": {
+					"title": "İşlemi tamamlamak için yeterli para yok",
+					"text": "İşlemi tamamlamak için cüzdanınızda yeterli AETH ve gas olduğundan emin olun."
+				},
+				"userRejectedRequest": {
+					"title": "İşlem iptal edildi",
+					"text": "Cüzdanınızdaki işlemi iptal ettiniz."
+				}
+			},
+			"mintWithXaiError": {
+				"userRejectedRequest": {
+					"title": "İşlem iptal edildi",
+					"text": "Cüzdanınızdaki işlemi iptal ettiniz."
+				}
+			},
+			"approveError": {
+				"userRejectedRequest": {
+					"title": "İşlem iptal edildi",
+					"text": "Cüzdanınızdaki işlemi iptal ettiniz."
+				}
+			}
+		}
+	},
+	"WebBuyKeysOrderTotal": {
+		"approveButtonsTexts": {
+			"isPending": "ONAY İÇİN BEKLENİYOR...",
+			"insufficientBalance": "{{currency}} bakiyesi yetersiz",
+			"approveCurrency": "{{currency}} cinsinden onayla",
+			"purchaseNow": "ŞİMDİ SATIN AL"
+		},
+		"ethButtonTexts": {
+			"connectWallet": "Lütfen Cüzdanınızı Bağlayın",
+			"switchToArbitrum": "Lütfen Arbitrum'a Geçiş Yapın",
+			"isPending": "ONAY İÇİN BEKLENİYOR...",
+			"insufficientBalance": "ETH bakiyesi yetersiz",
+			"mintNow": "ŞİMDİ PARA BAS"
+		}
+	}
+}
