@@ -22,3 +22,4 @@ export * from "./getUserStakedKeysOfPool.js";
 export * from "./getUnStakedKeysOfUser.js";
 export * from "./getStakedKeyCountOfUserInPool.js";
 export * from "./getUserNodeLicenseBalance.js";
+export * from "./bulkMintNodeLicenses.js";

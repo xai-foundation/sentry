@@ -1,0 +1,133 @@
+﻿{
+	"Nav": {
+		"connectWallet": "HUBUNGKAN DOMPET",
+		"docs": "DOKUMEN",
+		"sentryNodeAgreement": "Perjanjian Node Sentry",
+		"privacyPolicy": "Perjanjian Kebijakan Privasi",
+		"generalTerms": "Ketentuan Umum",
+		"stakingTerms": "Ketentuan Staking",
+		"copyright": "©2024 XAI. Seluruh Hak Cipta Dilindungi Undang-Undang",
+		"telegram": "Telegram",
+		"discord": "Discord",
+		"twitter": "X"
+	},
+	"Checkout": {
+		"updatingTotal": "Memperbarui total ...",
+		"transactionPending": "Transaksi diproses ...",
+		"backButton": "Kembali",
+		"successfulPurchase": {
+			"title": "Pembelian berhasil",
+			"text": "Anda berhasil membeli Kunci Sentry Xai",
+			"transactionId": "ID Transaksi:",
+			"promo": {
+				"shareLink": "Bagikan tautan rujukan Anda kepada teman!",
+				"info": "Teman akan mendapatkan diskon 5% dan Anda akan mendapatkan 15% dari penjualannya."
+			},
+			"shareButton": {
+				"title": "Pembelian Kunci Sentry Diskon 5%",
+				"text": "Cetak kunci di Xai untuk staking agar Anda dapat mulai memperoleh imbalan serta memenuhi syarat untuk mendapatkan airdrop."
+			},
+			"copyTooltip": "Disalin!",
+			"stakePromo": {
+				"title": "Staking kunci di suatu pool untuk mulai mendapatkan imbalan",
+				"buttonText": "Staking kunci",
+				"downloadOperator": "Unduh operator"
+			}
+		},
+		"logoColumn": {
+			"networkRewardsAmount": "~$300M ",
+			"networkRewardsText": "dalam imbalan jaringan kepada pemegang kunci sejauh ini",
+			"purchaseReady": "PEMBELIAN ANDA SIAP",
+			"imageAlt": "Logo Sentry"
+		},
+		"chooseQuantity": {
+			"title": "KUNCI SENTRY XAI",
+			"description": "Setiap Kunci Sentry membuat Anda dapat mengajukan maksimal 1 klaim imbalan untuk setiap tantangan jaringan.",
+			"toolTip": {
+				"title": "Node harus memiliki kunci Xai agar bisa menerima imbalan jaringan $esXAI.",
+				"text": "Semua pembelian harus dilakukan dalam Arbitrum ETH."
+			},
+			"maximumPerTransaction": "Maksimum {{count}} per Transaksi",
+			"maximumNodeLicenses": "Dalam satu transaksi, Anda dapat membeli maksimum {{max}} NodeLicense."
+		},
+		"chooseCurrencyTitle": "Pilih mata uang pembayaran",
+		"priceKeyRow": {
+			"nodeKeyQuantity": "{{quantity}} x Kunci Sentry Xai",
+			"pricePerKey": "{{price}} {{currency}} per kunci",
+			"pricePerKeyDesktop": "{{price}} {{currency}} per kunci"
+		},
+		"promoCodeRow": {
+			"discount": {
+				"text": "Diskon (5%)",
+				"removeButton": "Hapus"
+			},
+			"pricesMayVary": {
+				"title": "Transaksi Anda mungkin dikembalikan",
+				"text": "Harga Kunci Sentry Xai berbeda-beda tergantung jumlah persediaan yang tersisa. Secara umum, makin sedikit jumlah kunci yang tersedia, makin tinggi harga kunci tersebut. Jika Anda membeli lebih banyak Kunci daripada yang tersedia dalam tingkat harga saat ini, transaksi mungkin akan dikembalikan. Sebaiknya pisahkan pembelian menjadi dua transaksi: satu untuk tingkat harga saat ini, dan satu lagi untuk tingkat harga berikutnya."
+			},
+			"noDiscount": {
+				"addPromoCode": "+ Tambahkan kode promo",
+				"applyPromoCodeButton": "TERAPKAN",
+				"warning": "Alamat rujukan tidak valid"
+			}
+		},
+		"totalCostRow": {
+			"youPay": "Anda membayar",
+			"balance": "Saldo tersedia: {{balance}} {{currency}}"
+		},
+		"agreementCheckboxes": {
+			"iAgreeWith": "Saya menyetujui",
+			"sentryNodeAgreement": "Perjanjian Node Sentry",
+			"notTransferableKeys": "Saya memahami bahwa Kunci Sentry tidak dapat ditransfer",
+			"cannotRedeemXAI": "Saya memahami bahwa saya baru dapat menukarkan esXAI dengan XAI setelah lulus KYC",
+			"seeBlockedCountries": "(Lihat negara yang diblokir)"
+		},
+		"actionSection": {
+			"crossmintModalHeading": "Bayar dengan Crossmint",
+			"crossmintModalLoading": "Memuat...",
+			"mintWithOptions": "Cetak - ",
+			"mintWithOptionsDisabled": "Crossmint Maks {{maxKeys}} kunci per transaksi",
+			"tokenButtonTexts": {
+				"isPending": "MENUNGGU KONFIRMASI ...",
+				"switchToArbitrum": "Harap Ganti ke Arbitrum"
+			},
+			"mintWithEthError": {
+				"insufficientFundsError": {
+					"title": "Dana tidak cukup untuk menyelesaikan transaksi",
+					"text": "Pastikan dompet Anda berisi AETH dan token gas yang cukup untuk menyelesaikan transaksi."
+				},
+				"userRejectedRequest": {
+					"title": "Transaksi dibatalkan",
+					"text": "Anda membatalkan transaksi di dompet Anda."
+				}
+			},
+			"mintWithXaiError": {
+				"userRejectedRequest": {
+					"title": "Transaksi dibatalkan",
+					"text": "Anda membatalkan transaksi di dompet Anda."
+				}
+			},
+			"approveError": {
+				"userRejectedRequest": {
+					"title": "Transaksi dibatalkan",
+					"text": "Anda membatalkan transaksi di dompet Anda."
+				}
+			}
+		}
+	},
+	"WebBuyKeysOrderTotal": {
+		"approveButtonsTexts": {
+			"isPending": "MENUNGGU KONFIRMASI ...",
+			"insufficientBalance": "Saldo {{currency}} tidak cukup",
+			"approveCurrency": "Setujui {{currency}}",
+			"purchaseNow": "BELI SEKARANG"
+		},
+		"ethButtonTexts": {
+			"connectWallet": "Harap Hubungkan Dompet Anda",
+			"switchToArbitrum": "Harap Ganti ke Arbitrum",
+			"isPending": "MENUNGGU KONFIRMASI ...",
+			"insufficientBalance": "Saldo ETH tidak cukup",
+			"mintNow": "CETAK SEKARANG"
+		}
+	}
+}

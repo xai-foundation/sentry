@@ -1,0 +1,133 @@
+﻿{
+	"Nav": {
+		"connectWallet": "KẾT NỐI VÍ",
+		"docs": "TÀI LIỆU",
+		"sentryNodeAgreement": "Thỏa thuận Nút Sentry",
+		"privacyPolicy": "Thỏa thuận chính sách bảo mật",
+		"generalTerms": "Điều khoản chung",
+		"stakingTerms": "Điều khoản staking",
+		"copyright": "©2024 XAI. Bảo lưu mọi quyền",
+		"telegram": "Telegram",
+		"discord": "Discord",
+		"twitter": "X"
+	},
+	"Checkout": {
+		"updatingTotal": "Đang cập nhật tổng số...",
+		"transactionPending": "Đang xử lí giao dịch...",
+		"backButton": "Quay lại",
+		"successfulPurchase": {
+			"title": "Mua thành công",
+			"text": "Bạn đã mua thành công một Khóa Sentry Xai",
+			"transactionId": "Mã giao dịch:",
+			"promo": {
+				"shareLink": "Chia sẻ ngay liên kết giới thiệu với bạn bè!",
+				"info": "Họ sẽ được giảm giá 5%, còn bạn sẽ nhận được 15% từ mỗi giao dịch của họ."
+			},
+			"shareButton": {
+				"title": "Giảm giá 5% khi mua Khóa Sentry",
+				"text": "Đúc khóa trên mạng Xai để stake cho phép bạn nhận thưởng và tham gia các đợt airdrop."
+			},
+			"copyTooltip": "Đã sao chép!",
+			"stakePromo": {
+				"title": "Stake khóa trong pool để nhận thưởng",
+				"buttonText": "Stake khóa",
+				"downloadOperator": "Tải phần mềm vận hành"
+			}
+		},
+		"logoColumn": {
+			"purchaseReady": "LỆNH MUA ĐÃ SẴN SÀNG",
+			"imageAlt": "Logo Sentry",
+			"networkRewardsAmount": "~$300M",
+			"networkRewardsText": "trong phần thưởng mạng cho những người nắm giữ khóa cho đến nay"
+		},
+		"chooseQuantity": {
+			"title": "KHÓA SENTRY XAI",
+			"description": "Với mỗi Khóa Sentry, bạn có thể gửi tối đa 1 yêu cầu nhận thưởng tương ứng cho một thử thách của mạng lưới.",
+			"toolTip": {
+				"title": "Các nút phải có Khóa Xai thì mới có thể nhận thưởng $esXAI từ mạng lưới.",
+				"text": "Mọi lệnh mua cần được thanh toán bằng Arbitrum ETH."
+			},
+			"maximumPerTransaction": "Tối đa {{count}} mỗi giao dịch",
+			"maximumNodeLicenses": "Bạn có thể mua tối đa {{max}} Giấy phép chạy nút trong một giao dịch."
+		},
+		"chooseCurrencyTitle": "Chọn loại tiền thanh toán",
+		"priceKeyRow": {
+			"nodeKeyQuantity": "{{quantity}} x Khóa Sentry Xai",
+			"pricePerKey": "{{price}} {{currency}} mỗi khóa",
+			"pricePerKeyDesktop": "{{price}} {{currency}} mỗi khóa"
+		},
+		"promoCodeRow": {
+			"discount": {
+				"text": "Chiết khấu (5%)",
+				"removeButton": "Xóa bỏ"
+			},
+			"pricesMayVary": {
+				"title": "Giao dịch của bạn có thể bị hoàn nguyên",
+				"text": "Giá của Khóa Sentry Xai có thể biến động tùy vào số lượng còn dư từ nguồn cung. Nhìn chung, khi số lượng khóa còn dư giảm đi thì giá mỗi khóa sẽ tăng lên. Nếu bạn mua nhiều Khóa hơn số lượng còn dư ở bậc giá hiện tại, giao dịch của bạn có thể bị hoàn nguyên. Chúng tôi khuyến nghị bạn nên chia thành hai giao dịch, một giao dịch ở bậc giá hiện tại và một giao dịch ở bậc giá kế tiếp."
+			},
+			"noDiscount": {
+				"addPromoCode": "+ Điền mã khuyến mại",
+				"applyPromoCodeButton": "ÁP DỤNG",
+				"warning": "Địa chỉ giới thiệu không hợp lệ"
+			}
+		},
+		"totalCostRow": {
+			"youPay": "Số tiền bạn trả",
+			"balance": "Số dư khả dụng: {{balance}} {{currency}}"
+		},
+		"agreementCheckboxes": {
+			"iAgreeWith": "Tôi đồng ý với",
+			"sentryNodeAgreement": "Thỏa thuận Nút Sentry",
+			"notTransferableKeys": "Tôi hiểu rằng tôi không thể chuyển nhượng Khóa Sentry",
+			"cannotRedeemXAI": "Tôi hiểu rằng tôi không thể đổi esXAI lấy XAI nếu chưa hoàn thành Xác minh Danh tính (KYC)",
+			"seeBlockedCountries": "(Xem các quốc gia bị hạn chế)"
+		},
+		"actionSection": {
+			"mintWithOptions": "Đúc - ",
+			"tokenButtonTexts": {
+				"isPending": "ĐANG CHỜ XÁC NHẬN…",
+				"switchToArbitrum": "Vui lòng chuyển sang Arbitrum"
+			},
+			"mintWithEthError": {
+				"insufficientFundsError": {
+					"title": "Không đủ số dư quỹ để hoàn thành giao dịch",
+					"text": "Hãy đảm bảo rằng ví của bạn có đủ AETH và gas để hoàn thành giao dịch."
+				},
+				"userRejectedRequest": {
+					"title": "Giao dịch bị hủy",
+					"text": "Bạn đã hủy giao dịch trong ví của mình."
+				}
+			},
+			"mintWithXaiError": {
+				"userRejectedRequest": {
+					"title": "Giao dịch bị hủy",
+					"text": "Bạn đã hủy giao dịch trong ví của mình."
+				}
+			},
+			"approveError": {
+				"userRejectedRequest": {
+					"title": "Giao dịch bị hủy",
+					"text": "Bạn đã hủy giao dịch trong ví của mình."
+				}
+			},
+			"crossmintModalHeading": "Thanh toán bằng Crossmint",
+			"crossmintModalLoading": "Đang tải...",
+			"mintWithOptionsDisabled": "Crossmint Tối đa {{maxKeys}} khóa mỗi giao dịch"
+		}
+	},
+	"WebBuyKeysOrderTotal": {
+		"approveButtonsTexts": {
+			"isPending": "ĐANG CHỜ XÁC NHẬN…",
+			"insufficientBalance": "Không đủ số dư {{currency}}",
+			"approveCurrency": "Xác nhận {{currency}}",
+			"purchaseNow": "MUA NGAY"
+		},
+		"ethButtonTexts": {
+			"connectWallet": "Vui lòng kết nối ví của bạn",
+			"switchToArbitrum": "Vui lòng chuyển sang Arbitrum",
+			"isPending": "ĐANG CHỜ XÁC NHẬN…",
+			"insufficientBalance": "Không đủ số dư ETH",
+			"mintNow": "ĐÚC NGAY"
+		}
+	}
+}

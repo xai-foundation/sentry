@@ -1,4 +1,5 @@
-import hardhat, { config } from "hardhat";
+import { config } from "@sentry/core";
+import hardhat from "hardhat";
 const { ethers, upgrades } = hardhat;
 const NODELICENSE_ADDRESS = config.nodeLicenseAddress;
 
@@ -6,9 +7,9 @@ async function main() {
     const [deployer] = (await ethers.getSigners());
     const deployerAddress = await deployer.getAddress();
     console.log("Deployer address", deployerAddress);
-    const NodeLicense = await ethers.getContractFactory("NodeLicense7");
-    console.log("Got factory");   
-    await upgrades.upgradeProxy(NODELICENSE_ADDRESS, NodeLicense);
+    const NodeLicense = await ethers.getContractFactory("NodeLicense9");
+    console.log("Got factory");
+    await upgrades.upgradeProxy(NODELICENSE_ADDRESS, NodeLicense, { call: { fn: "initialize", args: [] } });
     console.log("Upgraded");
 
     await run("verify:verify", {
@@ -23,4 +24,4 @@ async function main() {
 main().catch((error) => {
     console.error(error);
     process.exitCode = 1;
-  });
+});

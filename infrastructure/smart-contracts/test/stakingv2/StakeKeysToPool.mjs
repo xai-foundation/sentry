@@ -368,16 +368,23 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
 		// });
 
 		it("Cannot stake more keys than maxKeysPerPool", async function () {
-			// NOTE: these vars need to replace the exising vars in Referee9 for this test to pass
-            // maxStakeAmountPerLicense = 20000 * 10 ** 18;
-            // maxKeysPerPool = 1000;
-			
 			const { poolFactory, referee, addr1, nodeLicense, challenger } = await loadFixture(deployInfrastructure);
 
 			//mint max supply + 1 keys
 			const startingSupply = await nodeLicense.totalSupply();
+			const MAX_SUPPLY_FOR_TESTING = 1000n;
+
+			//Set the maxSupply to the current totalSupply
+            const slotIndex = 226; // Referee storage slot for maxKeysPerPool (Read this from the artifacts json after running compile)
+			const value = ethers.zeroPadValue(ethers.toBeHex(MAX_SUPPLY_FOR_TESTING), 32);
+			await ethers.provider.send("hardhat_setStorageAt", [
+				referee.target,
+				ethers.toQuantity(slotIndex),
+				value,
+			]);
 
 			const maxKeysPerPool = await referee.connect(addr1).maxKeysPerPool();
+            expect(maxKeysPerPool).to.equal(MAX_SUPPLY_FOR_TESTING);
 
 			await mitBatchedLicenses(maxKeysPerPool + 1n, nodeLicense.connect(addr1));
 			const endingSupply = await nodeLicense.totalSupply();
