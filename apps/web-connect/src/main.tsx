@@ -33,16 +33,15 @@ i18n
     resources: {
       en,
       de,
-      // hi,
-      // id,
-      // ja,
-      // ko,
-      // ["pt-BR"]: ptbr,
-      // pt: ptbr,
-      // tr,
-      // vi,
-      // ["zh-CN"]: zhcn,
-      // ["zh-TW"]: zhtw
+      hi,
+      id,
+      ja,
+      ko,
+      ["pt-BR"]: ptbr,
+      tr,
+      vi,
+      ["zh-CN"]: zhcn,
+      ["zh-TW"]: zhtw
     },
     fallbackLng: "en",
     interpolation: {
