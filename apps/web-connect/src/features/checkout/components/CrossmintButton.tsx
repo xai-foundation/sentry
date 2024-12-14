@@ -65,11 +65,11 @@ export const CrossmintButton = ({
                     {btnText}
                     <VisaIcon />
                     <MasterCardIcon />
-                    <ETHIcon />
+                    {/* <ETHIcon />
                     <SolanaIcon />
                     <USDCIcon />
                     <SuperVerseIcon />
-                    +
+                    + */}
                 </div>
             </button>
         </div>
