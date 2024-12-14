@@ -32,7 +32,12 @@ export function usePromoCodeHandler(address:`0x${string}` | undefined) {
    */
   const handleApplyPromoCode = useCallback(async () => {
     if(!isConnected){
+      setDiscount({ applied: false, error: true, errorMessage: undefined });
       setPromoCode("");
+      return;
+    }
+
+    if(promoCode === ""){
       setDiscount({ applied: false, error: true, errorMessage: undefined });
       return;
     }
@@ -42,6 +47,7 @@ export function usePromoCodeHandler(address:`0x${string}` | undefined) {
         setDiscount({ applied: false, error: true, errorMessage: "promoCodeRow.noDiscount.noSelfPromoCode" }); // "You are unable to use your own promo code"
         return;
       }
+
       
       const validatePromoCode: PromoCodeValidationResponse = await getPromoCode(promoCode);
       const addressIsRecipient = validatePromoCode.recipient && validatePromoCode.recipient.toLowerCase() === address?.toLowerCase();
