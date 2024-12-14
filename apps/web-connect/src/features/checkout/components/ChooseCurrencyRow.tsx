@@ -34,11 +34,12 @@ export function ChooseCurrencyRow(): JSX.Element {
      * @returns {JSX.Element[]} An array of DropdownItem elements
      */
     function getDropdownItems() {
-        return Object.values(CURRENCIES).map((currency, i) => (
+        const filteredCurrencies = Object.values(CURRENCIES).filter(currency => currency !== CURRENCIES.USDC);
+        return filteredCurrencies.map((currency, i) => (
             <DropdownItem
                 key={i.toString()}
                 onClick={() => handleChange(currency)}
-                dropdownOptionsCount={Object.values(CURRENCIES).length}
+                dropdownOptionsCount={filteredCurrencies.length}
                 extraClasses='bg-black text-white hover:bg-gray-700'
             >
                 {currency}

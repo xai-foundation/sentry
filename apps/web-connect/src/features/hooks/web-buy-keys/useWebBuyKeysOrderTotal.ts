@@ -5,6 +5,7 @@ import { useProvider } from "../provider/useProvider";
 import { useNetworkConfig } from '@/hooks/useNetworkConfig';
 import { useTranslation } from "react-i18next";
 import { useMintBatch, UseMintBatchReturn } from '../contract/useMintBatch';
+import { useGetUsdcPrice } from '@/features/hooks/exchange-rate/useGetUsdcPrice';
 
 export interface PriceDataInterface {
     price: bigint;
@@ -96,6 +97,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     const { tokenBalance, ethBalance } = useUserBalances(currency);
     const { tokenAllowance, refetchAllowance } = useCurrencyHandler(currency, address);
     const { promoCode, setPromoCode, discount, setDiscount, handleApplyPromoCode, isLoading: isPromoLoading } = usePromoCodeHandler(address);
+    const { data: totalUsdcPrice } = useGetUsdcPrice(quantity, promoCode);
 
     const ready = checkboxes.one && checkboxes.two && checkboxes.three;
 
@@ -115,7 +117,12 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
             if (currency === CURRENCIES.AETH) {
                 return discountedPrice;
             }
+            if(currency === CURRENCIES.USDC){
+                if(!totalUsdcPrice) return 0n;
+                return discount.applied ? totalUsdcPrice?.totalPrice * BigInt(95) / BigInt(100) : totalUsdcPrice?.totalPrice;
+            }
             const exchangeRate = exchangeRateData?.exchangeRate ?? 0n;
+            console.log('totalPrice2', discountedPrice * exchangeRate);
             return discountedPrice * exchangeRate;
         };
     }, [getPriceData, discount, currency, exchangeRateData]);

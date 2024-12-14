@@ -19,12 +19,13 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalQ
     const collectionId = config.crossmintCollectionId;
     const { address } = useAccount();
     const { order } = useCrossmintCheckout();
-    const { setMintWithCrossmint } = useWebBuyKeysContext();
+    const { setMintWithCrossmint, setCurrency } = useWebBuyKeysContext();
     const [mintTxData, setMintTxData] = useState<MintWithCrossmintStatus>({ txHash: "", orderIdentifier: "" });
     const { t: translate } = useTranslation("Checkout");  
     
     const handleClose = () => {
         setMintWithCrossmint(mintTxData.txHash === "" ? { txHash: "", orderIdentifier: "" } : mintTxData);
+        setCurrency("AETH");
         onClose();
     };
 
@@ -66,7 +67,6 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalQ
             accent: "#FF0030",
         }
     }
-
     return (
         <div className="fixed inset-0 bg-nulnOil bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50">
             <div className="bg-nulnOil p-3 rounded-lg shadow-xl w-full max-w-3xl mx-4">
@@ -140,8 +140,8 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalQ
                                     _amount: totalQty,
                                     _to: address as `0x${string}`,
                                     _promoCode: promoCode,
-                                    _expectedCostInUSDC: ((BigInt(totalPriceInUsdc) * BigInt(105)) / BigInt(100) / BigInt(10 ** 12)).toString(), // 10^12 to reduce 18 decimals to 6 decimals
-                                    totalPrice: formatWeiToEther(totalPriceInUsdc, 6), // convert to 6 decimal places for Crossmint
+                                    _expectedCostInUSDC: (BigInt(totalPriceInUsdc) / BigInt(10 ** 12)).toString(), // 10^12 to reduce 18 decimals to 6 decimals
+                                    totalPrice: formatWeiToEther(totalPriceInUsdc, 6, true), // convert to 6 decimal places for Crossmint
                             },
                             }}
                             payment={{

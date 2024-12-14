@@ -26,6 +26,7 @@ export const CURRENCIES = {
   AETH: "AETH",
   XAI: "XAI",
   ES_XAI: "ESXAI",
+  USDC: "USDC",
 } as const;
 
 // Define a type for supported currencies

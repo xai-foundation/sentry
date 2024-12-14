@@ -131,7 +131,7 @@ export function ActionSection(): JSX.Element {
                             label: "mintCrossmint",
                         });
                         setCreditCardOpen(true)
-                        setCurrency("AETH"); // Currency must be AETH for USDC Calculation used in Crossmint
+                        setCurrency("USDC"); // Currency must be USDC in Crossmint
                     }}
                     className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-hornetSting p-2 uppercase font-bold `}
                     isDisabled={!ready || !isConnected || exceedsCrossmintMax}
