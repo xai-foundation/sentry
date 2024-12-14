@@ -140,7 +140,7 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalQ
                                     _amount: totalQty,
                                     _to: address as `0x${string}`,
                                     _promoCode: promoCode,
-                                    _expectedCostInUSDC: (BigInt(totalPriceInUsdc) / BigInt(10 ** 12)).toString(), // 10^12 to reduce 18 decimals to 6 decimals
+                                    _expectedCostInUSDC: ((BigInt(totalPriceInUsdc) * BigInt(105)) / BigInt(100) / BigInt(10 ** 12)).toString(), // 10^12 to reduce 18 decimals to 6 decimals
                                     totalPrice: formatWeiToEther(totalPriceInUsdc, 6), // convert to 6 decimal places for Crossmint
                             },
                             }}
