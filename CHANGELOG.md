@@ -1,3 +1,14 @@
+# [2.1.0](https://github.com/xai-foundation/sentry/compare/2.0.0...2.1.0) (2024-12-14)
+
+
+### Bug Fixes
+
+
+
+### Features
+
+* **cli:** Add command to process list of promoCodes ([9efb978](https://github.com/xai-foundation/sentry/commit/9efb97873058382cee96c614ca45a77ff5f014dd))
+
 # [2.0.0](https://github.com/xai-foundation/sentry/compare/1.2.0...2.0.0) (2024-12-10)
 
 
