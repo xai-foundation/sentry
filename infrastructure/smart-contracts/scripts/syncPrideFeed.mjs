@@ -4,18 +4,19 @@ const { ethers } = hardhat;
 const contractAddress = "0x07C05C6459B0F86A6aBB3DB71C259595d22af3C2"; // Node license 9
 const rpcURL = "https://arb-sepolia.g.alchemy.com/v2/8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B";
 
-async function syncPrice(provider, signer) {
+//run with: npx hardhat run scripts/syncPriceFeed.mjs --network arbitrumSepolia
+async function syncPrice(signer) {
+    //build function data
     let funcSignature = "updateLatestETHToUSDC()";
     let selector = `${ethers.keccak256(ethers.toUtf8Bytes(funcSignature)).slice(0, 10)}`;
-
+    //write to contract
     try {
         const tx = await signer.sendTransaction({
             to: contractAddress,
             data: selector
         });
         const receipt = await tx.wait();
-
-        console.log(`[${new Date().toISOString()}] updateLatestETHToUSDC transaction mined:`, receipt.transactionHash);
+        console.log(`[${new Date().toISOString()}] updateLatestETHToUSDC transaction mined: ${receipt.transactionHash} status: ${receipt.status}`);
     } catch (error) {
         console.error("Error syncing price:", error);
     }
@@ -30,7 +31,7 @@ async function main() {
 
   //poll on interval
   const pollIntervalMs = 5000; //5 seconds
-  setInterval(() => syncPrice(provider, signer), pollIntervalMs);
+  setInterval(() => syncPrice(signer), pollIntervalMs);
 }
 
 main().catch((error) => {
