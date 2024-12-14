@@ -45,13 +45,12 @@ type UpdateDelegateOwnerArgs = [
 
 type StakeKeysArgs = [
 	poolAddress: string,
-	keyIds: BigInt[],
+	keyAmount: BigInt,
 ];
 
 type UnstakeKeysArgs = [
 	poolAddress: string,
-	unstakeRequestIndex: BigInt,
-	keyIds: BigInt[],
+	unstakeRequestIndex: BigInt
 ];
 
 type StakeEsXaiArgs = [

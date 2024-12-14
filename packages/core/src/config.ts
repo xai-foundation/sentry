@@ -41,7 +41,7 @@ const mainnetConfig = {
   crossmintClientApiKey: "ck_production_32yBiDshXuuH1Cam3g8KoLTSRnCCyjjMsYfsm3chP7kjLRDjPci6G7SuZNHSqRMDi8tr6WyDztunoszrAvyfYsFxTb16Avggt9eXhsBuZfqQU8Y21UA9z3Dk2QQZx9sYSKoQvaV7mbRJJoNiQhGjqjswzrVxyxt9mMp8e7h4wE8aX94K7yviqpBwfH5i715f24u5Q6RXC8chBKSufeCquBD", //Crossmint Production Client API Key
   minSecondsBetweenChallenges: 50 * 60, // 1 hour
   sentryKeySaleURI: "https://sentry.xai.games", // redirect from within desktop client for web3 interaction
-  usdcContractAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831"
+  usdcContractAddress: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
 };
 
 const testnetConfig: Config = {
@@ -83,7 +83,7 @@ const testnetConfig: Config = {
   crossmintClientApiKey: "ck_staging_9zhFqkBiSWwUeS4HqVvjuqaVtrwgh552SrAQ5aQqrHU7wP4F9PZoyd13WdiEZZQgjbUFKiZbgf6kkJi6XwyoiVjrqgUZ2QM4kxPweju1QNuD9FYWjeLW6f9HUzvD2rzwi3HjYa788s7oPPo5P2oyJiDV36MPNj3HTRHEHmfSEPoHzzYummqrWM6uRw7VbiRgXgjUvmdedqV51PLjuiZbruTx", 
   minSecondsBetweenChallenges: 5 * 60, // 5 minutes on testnet
   sentryKeySaleURI: "https://develop.sentry.xai.games", // redirect from within desktop client for web3 interaction
-  usdcContractAddress: "0x14196F08a4Fa0B66B7331bC40dd6bCd8A1dEeA9F"
+  usdcContractAddress: "0x14196F08a4Fa0B66B7331bC40dd6bCd8A1dEeA9F",
 };
 
 export let config: Config = mainnetConfig;

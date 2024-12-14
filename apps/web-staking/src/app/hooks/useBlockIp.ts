@@ -21,7 +21,7 @@ interface checkIpProps {
 }
 
 export function useBlockIp() {
-	const [blocked, setBlocked] = useState(true);
+	const [blocked, setBlocked] = useState(false);
 	const [loading, setLoading] = useState(true);
 
 	const pathname = usePathname();

@@ -23,20 +23,31 @@ const salePageBaseURL = `https://${VITE_APP_ENV === "development" ? "develop." :
 const operatorDownloadLink = "https://github.com/xai-foundation/sentry/releases/latest"
 
 const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) => {
-	const { mintWithEth, mintWithXai, mintWithCrossmint, blockExplorer } = useWebBuyKeysContext();
+	const { mintWithEth, mintWithXai, mintWithCrossmint, blockExplorer, txHashes } = useWebBuyKeysContext();
 
 	const { address } = useAccount();
 	const [isTooltipAllowedToOpen, setIsTooltipAllowedToOpen] = useState(false);
 	const [canShare, setCanShare] = useState(false);
 	const { t: translate } = useTranslation("Checkout");
+	const [allTxHashes, setAllTxHashes] = useState<string[]>([]);
 
 	useEffect(() => {
 		setCanShare(navigator.share !== undefined);
-	}, []);
+		setAllTxHashes([
+			...txHashes,
+			...(mintWithEth.data ? [mintWithEth.data] : []),
+			...(mintWithXai.data ? [mintWithXai.data] : []),
+			...(mintWithCrossmint.txHash ? [mintWithCrossmint.txHash] : [])
+		]);
+
+	}, [mintWithEth.data, mintWithXai.data, mintWithCrossmint.txHash, txHashes]);
 
 	const getHash = () => {
-		const hash = mintWithEth.data ?? mintWithXai.data ?? mintWithCrossmint.txHash;
+		let hash = mintWithEth.data ?? mintWithXai.data ?? mintWithCrossmint.txHash;
 		if (!hash) {
+			hash = txHashes[0];
+		}
+		if (!hash) {			
 			throw new Error("No hash found");
 		}
 		return hash;
@@ -88,21 +99,30 @@ const PurchaseSuccessful: React.FC<IPurchaseSuccessful> = ({ returnToClient }) =
 					className="text-3xl text-white text-center uppercase font-bold mt-2">{translate("successfulPurchase.title")}</span>
 				<span className="block text-foggyLondon font-bold text-base max-w-[260px] text-center my-[10px]">{translate("successfulPurchase.text")}</span>
 				<div className="bg-optophobia w-full ">
-					<div className="flex justify-between border-t border-chromaphobicBlack px-[20px] py-[15px]">
-						<span className="text-[18px] sm:text-center text-elementalGrey ">{translate("successfulPurchase.transactionId")}</span>
-						<a
-							onClick={() => window.open(`${blockExplorer}/tx/${getHash()}`)}
-							className="group hover:text-hornetSting duration-300 text-wrap text-elementalGrey text-center underline ml-1 cursor-pointer text-[18px] sm:max-w-[260px] lg:max-w-full"
+					{allTxHashes.map((hash, index) => (
+						<div
+							key={index}
+							className="flex justify-between border-t border-chromaphobicBlack px-[20px] py-[15px]"
 						>
-							<div className="flex items-center gap-[10px]">
-								{getHash().slice(0, 6)}...{getHash().slice(-4)}
-								<ExternalLinkIcon
-									extraClasses={{ svgClasses: "group-hover:fill-hornetSting fill-elementalGrey duration-300" }} />
-							</div>
-						</a>
-					</div>
+							<span className="text-[18px] sm:text-center text-elementalGrey">
+								{translate("successfulPurchase.transactionId")}
+							</span>
+							<a
+								onClick={() => window.open(`${blockExplorer}/tx/${hash}`)}
+								className="group hover:text-hornetSting duration-300 text-wrap text-elementalGrey text-center underline ml-1 cursor-pointer text-[18px] sm:max-w-[260px] lg:max-w-full"
+							>
+								<div className="flex items-center gap-[10px]">
+									{hash.slice(0, 6)}...{hash.slice(-4)}
+									<ExternalLinkIcon
+										extraClasses={{
+											svgClasses: "group-hover:fill-hornetSting fill-elementalGrey duration-300",
+										}}
+									/>
+								</div>
+							</a>
+						</div>
+					))}
 					<div className="w-full text-elementalGrey text-[18px] flex flex-col border-t border-b border-chromaphobicBlack px-[20px] py-[15px]">
-
 						<p className="text-base">{translate("successfulPurchase.promo.shareLink")}</p>
 						<p className="text-base mb-3">{translate("successfulPurchase.promo.info")}</p>
 						<div className="p-[1px] w-full h-full bg-chromaphobicBlack global-clip-btn">

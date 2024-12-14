@@ -9,8 +9,7 @@ import "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
 import "../../upgrades/referee/Referee10.sol";
 import "../../Xai.sol";
 import "../../upgrades/esXai/esXai2.sol";
-import "../../upgrades/node-license/NodeLicense8.sol";
-import "../../staking-v2/StakingPool.sol";
+import "../../upgrades/StakingPool/StakingPool2.sol";
 import "../../staking-v2/PoolProxyDeployer.sol";
 import "../../staking-v2/PoolBeacon.sol";
 
@@ -136,6 +135,8 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         address indexed poolOwner,
         uint256 stakedKeyCount
     );
+
+    // "keyIds" field is deprecated, we do no longer track key ids on stake
     event PoolCreatedV2(
         uint256 indexed poolIndex,
         address indexed poolAddress,
@@ -176,6 +177,8 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 totalUserKeysStaked,
         uint256 totalKeysStaked
     );
+
+    // "keyIds" field is deprecated, we do no longer track key ids on stake
     event StakeKeysV2(
         address indexed user,
         address indexed pool,
@@ -191,6 +194,8 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 totalUserKeysStaked,
         uint256 totalKeysStaked
     );
+
+    // "keyIds" field is deprecated, we do no longer track key ids on stake
     event UnstakeKeysV2(
         address indexed user,
         address indexed pool,
@@ -276,7 +281,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
      */
     function createPool(
         address _delegateOwner,
-        uint256[] memory _keyIds,
+        uint256[] memory _keyIds, // We no longer track the key Ids, however, to keep the interface we will leave this to be an array and use the length
         uint32[3] memory _shareConfig,
         string[3] memory _poolMetadata,
         string[] memory _poolSocials,
@@ -300,7 +305,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
             address esXaiBucketProxy
         ) = PoolProxyDeployer(deployerAddress).createPool();
 
-        StakingPool(poolProxy).initialize(
+        StakingPool2(poolProxy).initialize(
             refereeAddress,
             esXaiAddress,
             msg.sender,
@@ -309,13 +314,13 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
             esXaiBucketProxy
         );
 
-        StakingPool(poolProxy).initShares(
+        StakingPool2(poolProxy).initShares(
             _shareConfig[0],
             _shareConfig[1],
             _shareConfig[2]
         );
 
-        StakingPool(poolProxy).updateMetadata(_poolMetadata, _poolSocials);
+        StakingPool2(poolProxy).updateMetadata(_poolMetadata, _poolSocials);
 
         BucketTracker(keyBucketProxy).initialize(
             poolProxy,
@@ -347,7 +352,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         esXai(esXaiAddress).addToWhitelist(keyBucketProxy);
         esXai(esXaiAddress).addToWhitelist(esXaiBucketProxy);
 
-        _stakeKeys(poolProxy, _keyIds, msg.sender, false);
+        _stakeKeys(poolProxy, _keyIds.length, msg.sender, false);
         emit PoolCreated(
             stakingPools.length - 1,
             poolProxy,
@@ -379,7 +384,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         string[3] memory _poolMetadata,
         string[] memory _poolSocials
     ) external {
-        StakingPool stakingPool = StakingPool(pool);
+        StakingPool2 stakingPool = StakingPool2(pool);
         require(poolsCreatedViaFactory[pool], "35"); // Pool must be created via factory
         require(stakingPool.getPoolOwner() == msg.sender, "5"); // Only pool owner can update metadata
         stakingPool.updateMetadata(_poolMetadata, _poolSocials);
@@ -396,7 +401,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         address pool,
         uint32[3] memory _shareConfig
     ) external {
-        StakingPool stakingPool = StakingPool(pool);
+        StakingPool2 stakingPool = StakingPool2(pool);
         require(poolsCreatedViaFactory[pool], "35"); // Pool must be created via factory
         require(stakingPool.getPoolOwner() == msg.sender, "6"); // Only pool owner can update shares
         require(validateShareValues(_shareConfig), "7"); // Validate share configuration
@@ -431,7 +436,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
      * @param delegate The address of the new delegate owner.
      */
     function updateDelegateOwner(address pool, address delegate) external {
-        StakingPool stakingPool = StakingPool(pool);
+        StakingPool2 stakingPool = StakingPool2(pool);
         require(poolsCreatedViaFactory[pool], "34"); // Pool must be created via factory
         require(stakingPool.getPoolOwner() == msg.sender, "8"); // Only pool owner can update delegate
         require(msg.sender != delegate, "9"); // New delegate cannot be pool owner
@@ -465,30 +470,30 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     /**
      * @notice Internal function to stake keys in a pool.
      * @param pool The address of the pool.
-     * @param keyIds Array of key IDs to be staked.
+     * @param keyAmounts Amount of keys to be staked.
      * @param staker The address of the staker.
      * @param _asAdmin Boolean indicating if admin is staking on behalf of a user for airdropped keys.
      */
     function _stakeKeys(
         address pool,
-        uint256[] memory keyIds,
+        uint256 keyAmounts,
         address staker,
         bool _asAdmin
     ) internal {
         Referee10 referee = Referee10(refereeAddress);
         
         // The Referee will check for stakingEnabled and will only allow the admin to stake if staking is disabled
-        referee.stakeKeys(pool, staker, keyIds, _asAdmin);
+        referee.stakeKeys(pool, staker, keyAmounts, _asAdmin);
 
-        StakingPool stakingPool = StakingPool(pool);
-        stakingPool.stakeKeys(staker, keyIds);
+        StakingPool2 stakingPool = StakingPool2(pool);
+        stakingPool.stakeKeys(staker, keyAmounts);
 
         associateUserWithPool(staker, pool);
 
         emit StakeKeys(
             staker,
             pool,
-            keyIds.length,
+            keyAmounts,
             stakingPool.getStakedKeysCountForUser(staker),
             stakingPool.getStakedKeysCount()
         );
@@ -496,17 +501,18 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         emit StakeKeysV2(
             staker,
             pool,
-            keyIds.length,
+            keyAmounts,
             stakingPool.getStakedKeysCountForUser(staker),
             stakingPool.getStakedKeysCount(),
-            keyIds
+            new uint256[](0)
         );
     }
 
     /**
+     * @dev DEPRECATED: This function will be removed in a future release. 
      * @notice Allows a user to stake keys in a pool.
      * @param pool The address of the pool.
-     * @param keyIds Array of key IDs to be staked.
+     * @param keyIds Array of key IDs to be staked. To keep the interface we will just use array length, no actual key Ids will be tracked anymore
      */
     function stakeKeys(address pool, uint256[] memory keyIds) external {
         require(pool != address(0), "10"); // Invalid pool address
@@ -514,25 +520,39 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         require(poolsCreatedViaFactory[pool], "12"); // Pool must be created via factory
         require(failedKyc[msg.sender] == false, "38"); // Owner must not have failed kyc
 
-        _stakeKeys(pool, keyIds, msg.sender, false);
+        _stakeKeys(pool, keyIds.length, msg.sender, false);
+    }
+    
+    /**
+     * @notice Allows a user to stake keys in a pool.
+     * @param pool The address of the pool.
+     * @param keyAmount The amount of keys to be staked
+     */
+    function stakeKeys(address pool, uint256 keyAmount) external {
+        require(pool != address(0), "10"); // Invalid pool address
+        require(keyAmount > 0, "11"); // At least 1 key required
+        require(poolsCreatedViaFactory[pool], "12"); // Pool must be created via factory
+        require(failedKyc[msg.sender] == false, "38"); // Owner must not have failed kyc
+
+        _stakeKeys(pool, keyAmount, msg.sender, false);
     }
 
     /**
      * @notice Allows an admin to stake keys on behalf of a user.
      * @param pool The address of the pool.
-     * @param keyIds Array of key IDs to be staked.
+     * @param keyAmounts Amount of keys to be staked.
      * @param staker The address of the staker.
      */
     function stakeKeysAdmin(
         address pool,
-        uint256[] memory keyIds,
+        uint256 keyAmounts,
         address staker
     ) external onlyRole(STAKE_KEYS_ADMIN_ROLE) {
         require(pool != address(0), "10"); // Invalid pool address
-        require(keyIds.length > 0, "11"); // At least 1 key required
+        require(keyAmounts > 0, "11"); // At least 1 key required
         require(poolsCreatedViaFactory[pool], "12"); // Pool must be created via factory
 
-        _stakeKeys(pool, keyIds, staker, true);
+        _stakeKeys(pool, keyAmounts, staker, true);
     }
 
     /**
@@ -553,7 +573,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     function createUnstakeKeyRequest(address pool, uint256 keyAmount) external {
         require(keyAmount > 0, "13"); // At least 1 key required
         require(poolsCreatedViaFactory[pool], "14"); // Pool must be created via factory
-        StakingPool(pool).createUnstakeKeyRequest(
+        StakingPool2(pool).createUnstakeKeyRequest(
             msg.sender,
             keyAmount,
             unstakeKeysDelayPeriod
@@ -562,7 +582,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         emit UnstakeRequestStarted(
             msg.sender,
             pool,
-            StakingPool(pool).getUnstakeRequestCount(msg.sender) - 1,
+            StakingPool2(pool).getUnstakeRequestCount(msg.sender) - 1,
             keyAmount,
             true
         );
@@ -574,7 +594,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
      */
     function createUnstakeOwnerLastKeyRequest(address pool) external {
         require(poolsCreatedViaFactory[pool], "18"); // Pool must be created via factory
-        StakingPool(pool).createUnstakeOwnerLastKeyRequest(
+        StakingPool2(pool).createUnstakeOwnerLastKeyRequest(
             msg.sender,
             unstakeGenesisKeyDelayPeriod
         );
@@ -582,7 +602,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         emit UnstakeRequestStarted(
             msg.sender,
             pool,
-            StakingPool(pool).getUnstakeRequestCount(msg.sender) - 1,
+            StakingPool2(pool).getUnstakeRequestCount(msg.sender) - 1,
             1,
             true
         );
@@ -596,7 +616,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     function createUnstakeEsXaiRequest(address pool, uint256 amount) external {
         require(amount > 0, "20"); // Amount must be greater than 0
         require(poolsCreatedViaFactory[pool], "22"); // Pool must be created via factory
-        StakingPool(pool).createUnstakeEsXaiRequest(
+        StakingPool2(pool).createUnstakeEsXaiRequest(
             msg.sender,
             amount,
             unstakeEsXaiDelayPeriod
@@ -605,17 +625,18 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         emit UnstakeRequestStarted(
             msg.sender,
             pool,
-            StakingPool(pool).getUnstakeRequestCount(msg.sender) - 1,
+            StakingPool2(pool).getUnstakeRequestCount(msg.sender) - 1,
             amount,
             false
         );
     }
 
     /**
+     * @dev DEPRECATED: This function will be removed in a future release. 
      * @notice Unstakes keys from a pool.
      * @param pool The address of the pool.
      * @param unstakeRequestIndex The index of the unstake request.
-     * @param keyIds Array of key IDs to be unstaked.
+     * @param keyIds Array of key IDs to be unstaked. To keep the interface we will just use array length, no actual key Ids will be tracked anymore
      */
     function unstakeKeys(
         address pool,
@@ -624,12 +645,13 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     ) external {
         require(poolsCreatedViaFactory[pool], "23"); // Pool must be created via factory
 
-        Referee10(refereeAddress).unstakeKeys(pool, msg.sender, keyIds);
+        StakingPool2 stakingPool = StakingPool2(pool);
+        StakingPool2.UnstakeRequest memory request = stakingPool.getUnstakeRequest(msg.sender, unstakeRequestIndex);
 
-        StakingPool stakingPool = StakingPool(pool);
-        
         // The Referee will check for stakingEnabled and will only allow the admin to stake if staking is disabled
-        stakingPool.unstakeKeys(msg.sender, unstakeRequestIndex, keyIds);
+        stakingPool.unstakeKeys(msg.sender, unstakeRequestIndex);
+
+        Referee10(refereeAddress).unstakeKeys(pool, msg.sender, request.amount);
 
         if (!stakingPool.isUserEngagedWithPool(msg.sender)) {
             removeUserFromPool(msg.sender, pool);
@@ -638,7 +660,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         emit UnstakeKeys(
             msg.sender,
             pool,
-            keyIds.length,
+            request.amount,
             stakingPool.getStakedKeysCountForUser(msg.sender),
             stakingPool.getStakedKeysCount()
         );
@@ -646,11 +668,53 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         emit UnstakeKeysV2(
             msg.sender,
             pool,
-            keyIds.length,
+            request.amount,
             stakingPool.getStakedKeysCountForUser(msg.sender),
             stakingPool.getStakedKeysCount(),
             unstakeRequestIndex,
-            keyIds
+            new uint256[](0)
+        );
+    }
+
+    /**
+     * @notice Unstakes keys from a pool.
+     * @param pool The address of the pool.
+     * @param unstakeRequestIndex The index of the unstake request.
+     */
+    function unstakeKeys(
+        address pool,
+        uint256 unstakeRequestIndex
+    ) external {
+        require(poolsCreatedViaFactory[pool], "23"); // Pool must be created via factory
+
+        StakingPool2 stakingPool = StakingPool2(pool);
+        StakingPool2.UnstakeRequest memory request = stakingPool.getUnstakeRequest(msg.sender, unstakeRequestIndex);
+
+        // The Referee will check for stakingEnabled and will only allow the admin to stake if staking is disabled
+        stakingPool.unstakeKeys(msg.sender, unstakeRequestIndex);
+
+        Referee10(refereeAddress).unstakeKeys(pool, msg.sender, request.amount);
+
+        if (!stakingPool.isUserEngagedWithPool(msg.sender)) {
+            removeUserFromPool(msg.sender, pool);
+        }
+
+        emit UnstakeKeys(
+            msg.sender,
+            pool,
+            request.amount,
+            stakingPool.getStakedKeysCountForUser(msg.sender),
+            stakingPool.getStakedKeysCount()
+        );
+
+        emit UnstakeKeysV2(
+            msg.sender,
+            pool,
+            request.amount,
+            stakingPool.getStakedKeysCountForUser(msg.sender),
+            stakingPool.getStakedKeysCount(),
+            unstakeRequestIndex,
+            new uint256[](0)
         );
     }
 
@@ -665,7 +729,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
 
         Referee10(refereeAddress).stakeEsXai(pool, amount);
         esXai(esXaiAddress).transferFrom(msg.sender, address(this), amount);
-        StakingPool stakingPool = StakingPool(pool);
+        StakingPool2 stakingPool = StakingPool2(pool);
         stakingPool.stakeEsXai(msg.sender, amount);
 
         associateUserWithPool(msg.sender, pool);
@@ -700,7 +764,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
     ) external {
         require(poolsCreatedViaFactory[pool], "28"); // Pool must be created via factory
 
-        StakingPool stakingPool = StakingPool(pool);
+        StakingPool2 stakingPool = StakingPool2(pool);
         stakingPool.unstakeEsXai(msg.sender, unstakeRequestIndex, amount);
 
         if (!stakingPool.isUserEngagedWithPool(msg.sender)) {
@@ -786,7 +850,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         for (uint i = 0; i < poolsLength; i++) {
             address stakingPool = pools[i];
             require(poolsCreatedViaFactory[stakingPool], "33"); // Pool must be created via factory
-            StakingPool(stakingPool).claimRewards(msg.sender);
+            StakingPool2(stakingPool).claimRewards(msg.sender);
             emit ClaimFromPool(msg.sender, stakingPool);
         }
     }
@@ -815,7 +879,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         return
             (poolsOfDelegate[delegate].length > poolsOfDelegateIndices[pool] &&
                 poolsOfDelegate[delegate][poolsOfDelegateIndices[pool]] ==
-                pool) || StakingPool(pool).getPoolOwner() == delegate;
+                pool) || StakingPool2(pool).getPoolOwner() == delegate;
     }
 
     /**
@@ -868,63 +932,66 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         return interactedPoolsOfUser[user][index];
     }
 
-    /**
-     * @notice Returns the list of unstaked key IDs for a user.
-     * @param user The address of the user.
-     * @param offset The offset for pagination.
-     * @param pageLimit The limit for pagination.
-     * @return unstakedKeyIds Array of unstaked key IDs.
-     */
-    function getUnstakedKeyIdsFromUser(
-        address user,
-        uint16 offset,
-        uint16 pageLimit
-    ) external view returns (uint256[] memory unstakedKeyIds) {
-        uint256 userKeyBalance = NodeLicense(nodeLicenseAddress).balanceOf(
-            user
-        );
-        unstakedKeyIds = new uint256[](pageLimit);
-        uint256 currentIndexUnstaked = 0;
-        uint256 limit = offset + pageLimit;
+    // /**
+    //  * @dev DEPRECATED we do no longer track key IDs
+    //  * @notice Returns the list of unstaked key IDs for a user.
+    //  * @param user The address of the user.
+    //  * @param offset The offset for pagination.
+    //  * @param pageLimit The limit for pagination.
+    //  * @return unstakedKeyIds Array of unstaked key IDs.
+    //  */
+    // function getUnstakedKeyIdsFromUser(
+    //     address user,
+    //     uint16 offset,
+    //     uint16 pageLimit
+    // ) external view returns (uint256[] memory unstakedKeyIds) {
+    //     uint256 userKeyBalance = NodeLicense(nodeLicenseAddress).balanceOf(
+    //         user
+    //     );
+    //     unstakedKeyIds = new uint256[](pageLimit);
+    //     uint256 currentIndexUnstaked = 0;
+    //     uint256 limit = offset + pageLimit;
 
-        for (uint256 i = offset; i < userKeyBalance && i < limit; i++) {
-            uint256 keyId = NodeLicense(nodeLicenseAddress).tokenOfOwnerByIndex(
-                user,
-                i
-            );
-            if (
-                Referee10(refereeAddress).assignedKeyToPool(keyId) == address(0)
-            ) {
-                unstakedKeyIds[currentIndexUnstaked] = keyId;
-                currentIndexUnstaked++;
-            }
-        }
-    }
+    //     for (uint256 i = offset; i < userKeyBalance && i < limit; i++) {
+    //         uint256 keyId = NodeLicense(nodeLicenseAddress).tokenOfOwnerByIndex(
+    //             user,
+    //             i
+    //         );
+    //         if (
+    //             Referee10(refereeAddress).assignedKeyToPool(keyId) == address(0)
+    //         ) {
+    //             unstakedKeyIds[currentIndexUnstaked] = keyId;
+    //             currentIndexUnstaked++;
+    //         }
+    //     }
+    // }
 
-    /**
-     * @notice Checks if the keys are staked.
-     * @param keyIds Array of key IDs.
-     * @return isStaked Array of booleans indicating if the keys are staked.
-     */
-    function checkKeysAreStaked(
-        uint256[] memory keyIds
-    ) external view returns (bool[] memory isStaked) {
-        isStaked = new bool[](keyIds.length);
-        for (uint256 i; i < keyIds.length; i++) {
-            isStaked[i] =
-                Referee10(refereeAddress).assignedKeyToPool(keyIds[i]) !=
-                address(0);
-        }
-    }
+    // DEPRECATED we do no longer track key IDs
+    // THis function is not used anywhere
+    // /**
+    //  * @notice Checks if the keys are staked.
+    //  * @param keyIds Array of key IDs.
+    //  * @return isStaked Array of booleans indicating if the keys are staked.
+    //  */
+    // function checkKeysAreStaked(
+    //     uint256[] memory keyIds
+    // ) external view returns (bool[] memory isStaked) {
+    //     isStaked = new bool[](keyIds.length);
+    //     for (uint256 i; i < keyIds.length; i++) {
+    //         isStaked[i] =
+    //             Referee10(refereeAddress).assignedKeyToPool(keyIds[i]) !=
+    //             address(0);
+    //     }
+    // }
 
     function validateSubmitPoolAssertion(
         address pool, address user
     ) external view returns (bool) {
         require(poolsCreatedViaFactory[pool], "35"); // Pool must be created via factory
 
+            (uint256 userStakedEsXaiAmount, ,uint256 userStakedKeyAmount, ,) = StakingPool2(pool).getUserPoolData(user);
         if(!isDelegateOfPoolOrOwner(user, pool)){
-            (uint256 userStakedEsXaiAmount, ,uint256[] memory userStakedKeyIds, ,) = StakingPool(pool).getUserPoolData(user);
-            return userStakedEsXaiAmount > 0 || userStakedKeyIds.length > 0;
+            return userStakedEsXaiAmount > 0 || userStakedKeyAmount > 0;
         }
 
         return true;
@@ -955,7 +1022,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 totalStakeAmount = 0;
         address[] memory userPools = interactedPoolsOfUser[user];
         for (uint256 i = 0; i < userPools.length; i++) {
-            totalStakeAmount += StakingPool(userPools[i]).getStakedAmounts(user);
+            totalStakeAmount += StakingPool2(userPools[i]).getStakedAmounts(user);
         }
         return totalStakeAmount;
     }
@@ -976,7 +1043,7 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
             address[] storage userPools = interactedPoolsOfUser[users[i]]; // Use storage instead of memory
             uint256 poolCount = userPools.length; // Cache length for gas optimization
             for (uint256 j = 0; j < poolCount; j++) {
-                totalStakeAmount += StakingPool(userPools[j]).getStakedAmounts(users[i]);
+                totalStakeAmount += StakingPool2(userPools[j]).getStakedAmounts(users[i]);
             }
             _totalEsXaiStakeByUser[users[i]] = totalStakeAmount;
             totalEsXaiStakeCalculated[users[i]] = true;

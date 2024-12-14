@@ -35,6 +35,8 @@
 			}
 		},
 		"logoColumn": {
+			"networkRewardsAmount": "~$300M ",
+			"networkRewardsText": "in network rewards to key hodlers so far",
 			"purchaseReady": "YOUR PURCHASE IS READY",
 			"imageAlt": "Sentry Logo"
 		},
@@ -43,7 +45,7 @@
 			"description": "Each Sentry Key enables you to submit up to 1 reward claim for each network challenge.",
 			"toolTip": {
 				"title": "Xai keys are required for nodes to receive $esXAI network rewards.",
-				"text": "All purchases must be made in Arbitrum ETH."
+				"text": "Your wallet must be connected to Arbitrum One to be able to purchase Sentry Keys."
 			},
 			"maximumPerTransaction": "{{count}} Maximum Per Transaction",
 			"maximumNodeLicenses": "A maximum of {{max}} NodeLicenses can be purchased in a single transaction."
@@ -81,7 +83,8 @@
 			"seeBlockedCountries": "(See blocked countries)"
 		},
 		"actionSection": {
-			"mintWithOptions": "Mint - Credit/Debit, SOL, ETH, USDC",
+			"mintWithOptions": "Crossmint - ",
+			"mintWithOptionsDisabled": "Crossmint Max {{maxKeys}} keys per txn",
 			"tokenButtonTexts": {
 				"isPending": "WAITING FOR CONFIRMATION..",
 				"switchToArbitrum": "Please Switch to Arbitrum"
@@ -115,7 +118,7 @@
 			"isPending": "WAITING FOR CONFIRMATION...",
 			"insufficientBalance": "Insufficient {{currency}} balance",
 			"approveCurrency": "Approve {{currency}}",
-			"purchaseNow": "PURCHASE NOW"
+			"purchaseNow": "BUY NOW"
 		},
 		"ethButtonTexts": {
 			"connectWallet": "Please Connect Your Wallet",

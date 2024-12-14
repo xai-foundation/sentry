@@ -1,26 +1,12 @@
-import { NodeLicenseTests } from "./NodeLicense.mjs";
 import { parse } from "csv/sync";
 import fs from "fs";
-import { XaiTests } from "./Xai.mjs";
 import { config, createBlsKeyPair } from "@sentry/core";
-import { RuntimeTests } from "./Runtime.mjs";
-import { UpgradeabilityTests } from "./UpgradeTest.mjs";
-import { RefereeTests } from "./Referee.mjs";
-import { esXaiTests } from "./esXai.mjs";
-import { GasSubsidyTests } from "./GasSubsidy.mjs";
-import { XaiGaslessClaimTests } from "./XaiGaslessClaim.mjs";
-import { CNYAirDropTests } from "./CNYAirDrop.mjs";
-import { getBasicPoolConfiguration, StakingV2 } from "./StakingV2.mjs";
-import { extractAbi } from "../utils/exportAbi.mjs";
-import { Beacons } from "./Beacons.mjs";
-import { RefereeBulkSubmissions } from "./tinykeys/RefereeBulkSubmissions.mjs";
-import { RefereeCloseChallengeTests } from "./referee/RefereeCloseChallengeTests.mjs";
-import { NodeLicenseTinyKeysTest } from "./NodeLicenseTinyKeys.mjs";
-import { FailedKycTests } from "./failed-kyc/FailedKyc.mjs";
-import { RefereeWinningKeyCountSimulations } from "./get-winning-key-count/WinningKeyCountSimulations.mjs";
-import { PreTinyKeysTests } from "./tinykeys/PreTinyKeysTests.mjs";
+import { createPool } from "./utils/createPool.mjs"
+import { mintBatchedLicenses } from "./utils/mintLicenses.mjs"
+import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import { expect } from "chai";
 
-describe("Fixture Tests", function () {
+describe("TinyKeyAirdrop", function () {
 
     // We define a fixture to reuse the same setup in every test. We use
     // loadFixture to run this setup once, snapshot that state, and reset Hardhat
@@ -81,7 +67,6 @@ describe("Fixture Tests", function () {
         const KeyBucketTracker = await ethers.deployContract("BucketTracker");
         await KeyBucketTracker.waitForDeployment();
         const keyBucketTrackerImplAddress = await KeyBucketTracker.getAddress();
-        await extractAbi("BucketTracker", KeyBucketTracker);
 
         // Deploy the esXai Bucket Tracker (implementation only)
         const EsXaiBucketTracker = await ethers.deployContract("BucketTracker");
@@ -131,7 +116,6 @@ describe("Fixture Tests", function () {
         const StakingPoolPoolBeacon = await ethers.deployContract("PoolBeacon", [stakingPoolImplAddress]);
         await StakingPoolPoolBeacon.waitForDeployment();
         const stakingPoolPoolBeaconAddress = await StakingPoolPoolBeacon.getAddress();
-        await extractAbi("PoolBeacon", StakingPoolPoolBeacon);
 
         // Deploy the key BucketTracker's PoolBeacon
         const KeyBucketTrackerPoolBeacon = await ethers.deployContract("PoolBeacon", [keyBucketTrackerImplAddress]);
@@ -265,6 +249,34 @@ describe("Fixture Tests", function () {
         await referee.connect(kycAdmin).addKycWallet(await addr1.getAddress());
         await referee.connect(kycAdmin).addKycWallet(await addr2.getAddress());
 
+        await mintBatchedLicenses(120, nodeLicense, addr1);
+        await mintBatchedLicenses(50, nodeLicense, addr2);
+        const keyIdsStaked = await mintBatchedLicenses(120, nodeLicense, addr2);
+        await mintBatchedLicenses(100, nodeLicense, addr3);
+
+        //Confirm initial total supply
+        const maxSupplyBefore = await nodeLicense.maxSupply();
+        const totalSupplyBefore = await nodeLicense.totalSupply();
+        const user1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
+        const user2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
+        const user3BalanceBefore = await nodeLicense.balanceOf(addr3.address);
+
+        // Submit a challenge so that the contract tests will run successfully
+        const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+        const startingAssertion = 100;
+        await referee.connect(challenger).submitChallenge(
+            startingAssertion,
+            startingAssertion - 1,
+            stateRoot,
+            0,
+            stateRoot
+        );
+
+        const poolAddress = await createPool(poolFactory, addr1, [1]);
+
+        // User 2 will stake minted keys in the pool
+        await poolFactory.connect(addr2).stakeKeys(poolAddress, keyIdsStaked);
+
         // Add addr 1 to the operator
         await referee.connect(addr1).setApprovalForOperator(await operator.getAddress(), true);
 
@@ -369,14 +381,14 @@ describe("Fixture Tests", function () {
         const esXai3 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai3, { call: { fn: "initialize", args: [await referee.getAddress(), await nodeLicense.getAddress(), poolFactoryAddress, maxKeysNonKyc] } });
         await esXai3.waitForDeployment();
 
-        
+
         // Referee9
         // This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
         const Referee9 = await ethers.getContractFactory("Referee9");
         // Upgrade the Referee
         const referee9 = await upgrades.upgradeProxy((await referee.getAddress()), Referee9, { call: { fn: "initialize", args: [await refereeCalculations.getAddress()] } });
         await referee9.waitForDeployment();
-        
+
         // // Referee10 upgrade - Required For Tiny Keys
         // // This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
         const Referee10 = await ethers.getContractFactory("Referee10");
@@ -390,11 +402,10 @@ describe("Fixture Tests", function () {
 
 
         // Upgrade the StakingPool
-        const StakingPool2 = await ethers.deployContract("StakingPool2");
-        await StakingPool2.waitForDeployment();
-        const stakingPool2ImplAddress = await StakingPool2.getAddress();
-        await StakingPoolPoolBeacon.update(stakingPool2ImplAddress);
-        await extractAbi("StakingPool", StakingPool2);
+        const NewImplementation = await ethers.deployContract("StakingPool2");
+        await NewImplementation.waitForDeployment();
+        const newImplementationAddress = await NewImplementation.getAddress();
+        await StakingPoolPoolBeacon.update(newImplementationAddress);
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
@@ -443,39 +454,170 @@ describe("Fixture Tests", function () {
             airdropMultiplier,
             refereeCalculations,
             mockRollup,
-            usdcToken
+            usdcToken,
+            maxSupplyBefore,
+            totalSupplyBefore,
+            user1BalanceBefore,
+            user2BalanceBefore,
+            user3BalanceBefore,
+            poolAddress,
+            keyIdsStaked
         };
     }
 
-    // Tests That Always Work
-    // describe("CNY 2024", CNYAirDropTests.bind(this));
-    describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
-    describe("Xai", XaiTests(deployInfrastructure).bind(this));
-    describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
-    describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
-    describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
-
-    // Test Explanations, Expectations & Instructions
-    // https://docs.google.com/document/d/1V_3svypWL26wDr2RNvcIBcMlFwdSWYR6xcLuKXXuWf8
-
-    // Pre-Tiny Keys
-    // describe("Pre-Tiny Keys Tests", PreTinyKeysTests(deployInfrastructure).bind(this));
-
-    // Post-Tiny Keys
-    describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
-    describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
-    describe("Referee", RefereeTests(deployInfrastructure).bind(this));
-    describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
-
     // Uncomment these tests for tiny keys
-    describe("BulkSubmissions", RefereeBulkSubmissions(deployInfrastructure).bind(this));
-    describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
-    describe("Failed KYC Tests", FailedKycTests(deployInfrastructure).bind(this));
-    
-    //describe("Winning Key Count Simulations", RefereeWinningKeyCountSimulations(deployInfrastructure).bind(this));
-
-
-    // This doesn't work when running coverage
-    //describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));
+    describe("TinyKeysAirdropTest", TinyKeysAirdropTest(deployInfrastructure).bind(this));
 
 })
+
+
+function TinyKeysAirdropTest(deployInfrastructure) {
+
+    return function () {
+
+        it("Process the tiny keys airdrop and confirm staking disabled and check balances after", async function () {
+            const { nodeLicense,
+                addr1,
+                addr2,
+                addr3,
+                addr4,
+                tinyKeysAirDrop,
+                deployer,
+                referee,
+                poolFactory,
+                airdropMultiplier,
+                poolAddress,
+                keyIdsStaked,
+                maxSupplyBefore,
+                totalSupplyBefore,
+                user1BalanceBefore,
+                user2BalanceBefore,
+                user3BalanceBefore,
+            } = await loadFixture(deployInfrastructure);
+
+            // Check the user's updated assigned key count
+            const user1KeyCountStakedBefore = await referee.connect(addr1).assignedKeysOfUserCount(addr1.address);
+            expect(user1KeyCountStakedBefore).to.equal(1);
+
+            const user2KeyCountStakedBefore = await referee.connect(addr2).assignedKeysOfUserCount(addr2.address);
+            expect(user2KeyCountStakedBefore).to.equal(keyIdsStaked.length);
+
+            // User 3 will stake 0 keys in the pool
+            const user3KeyCountStakedBefore = await referee.connect(addr3).assignedKeysOfUserCount(addr3.address);
+            expect(user3KeyCountStakedBefore).to.equal(0);
+
+            // Confirm staking is enabled
+            expect(await referee.stakingEnabled()).to.be.true;
+
+            await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(10)).to.be.revertedWith("Invalid airdrop state");
+            await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(10)).to.be.revertedWith("Invalid airdrop state");
+
+            await poolFactory.connect(addr2).createUnstakeKeyRequest(poolAddress, 1);
+
+            //Prepare unstake request to test unstake during airdrop
+            const unstakeKeysDelayPeriod1 = await poolFactory.unstakeKeysDelayPeriod();
+            await ethers.provider.send("evm_increaseTime", [Number(unstakeKeysDelayPeriod1)]);
+
+            // Start Airdrop
+            await tinyKeysAirDrop.connect(deployer).startAirdrop();
+            await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(10)).to.be.revertedWith("Cannot stake non airdropped keys");
+
+            // Staking & unstaking keys should revert
+            await expect(poolFactory.connect(addr4).stakeKeys(poolAddress, [6])).to.be.revertedWith("52");
+            await expect(
+                poolFactory.connect(addr2).unstakeKeys(poolAddress, 0, [keyIdsStaked[0]])
+            ).to.be.revertedWith("52");
+
+            // Confirm Minting Disabled - Expect a mint to be reverted
+            const priceBeforeAirdrop = await nodeLicense.price(1, "");
+            await expect(nodeLicense.connect(addr1).mint(1, "", { value: priceBeforeAirdrop })).to.be.revertedWithCustomError(nodeLicense, "MintingPaused");
+
+            // Process Airdrop
+            let qtyToProcessMint = 10;
+            let qtyToProcessStake = 200;
+
+            while (await tinyKeysAirDrop.airdropCounter() <= totalSupplyBefore) {
+                await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(qtyToProcessMint);
+            }
+            expect(await tinyKeysAirDrop.airdropCounter()).to.equal(totalSupplyBefore + 1n);
+            await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(qtyToProcessMint)).to.be.revertedWith("Airdrop complete");
+
+            while (await tinyKeysAirDrop.stakeCounter() <= totalSupplyBefore) {
+                await tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(qtyToProcessStake);
+            }
+            expect(await tinyKeysAirDrop.stakeCounter()).to.equal(totalSupplyBefore + 1n);
+            await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(qtyToProcessMint)).to.be.revertedWith("Airdrop complete");
+
+            await tinyKeysAirDrop.connect(deployer).completeAirDrop();
+            await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyMint(qtyToProcessMint)).to.be.revertedWith("Invalid airdrop state");
+            await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(qtyToProcessMint)).to.be.revertedWith("Invalid airdrop state");
+
+            // Confirm balances after
+            const user1BalanceAfter = await nodeLicense.balanceOf(addr1.address);
+            const user2BalanceAfter = await nodeLicense.balanceOf(addr2.address);
+            const user3BalanceAfter = await nodeLicense.balanceOf(addr3.address);
+
+            expect(user1BalanceAfter).to.equal((user1BalanceBefore * airdropMultiplier) + user1BalanceBefore);
+            expect(user2BalanceAfter).to.equal((user2BalanceBefore * airdropMultiplier) + user2BalanceBefore);
+            expect(user3BalanceAfter).to.equal((user3BalanceBefore * airdropMultiplier) + user3BalanceBefore);
+
+            // // Confirm staked balances after
+            const user1KeyCountStakedAfter = await referee.connect(addr1).assignedKeysOfUserCount(addr1.address);
+            expect(user1KeyCountStakedAfter).to.equal((user1KeyCountStakedBefore * airdropMultiplier) + user1KeyCountStakedBefore);
+
+            const user2KeyCountStakedAfter = await referee.connect(addr2).assignedKeysOfUserCount(addr2.address);
+            expect(user2KeyCountStakedAfter).to.equal((user2KeyCountStakedBefore * airdropMultiplier) + user2KeyCountStakedBefore);
+
+            const user3KeyCountStakedAfter = await referee.connect(addr3).assignedKeysOfUserCount(addr3.address);
+
+            expect(user3KeyCountStakedAfter).to.equal((user3KeyCountStakedBefore * airdropMultiplier) + user3KeyCountStakedBefore);
+
+            // // Confirm pricing and supply values updated
+            const priceAfterAirdrop = await nodeLicense.price(1, "");
+            const totalSupplyAfter = await nodeLicense.totalSupply();
+
+            expect(priceAfterAirdrop).to.be.below(priceBeforeAirdrop);
+            expect(totalSupplyAfter).to.equal((totalSupplyBefore * airdropMultiplier) + totalSupplyBefore);
+
+            // // Confirm Staking re-enabled
+            expect(await referee.stakingEnabled()).to.be.true;
+
+            // Node License9 Upgrade
+            const NodeLicense9 = await ethers.getContractFactory("NodeLicense9");
+            const nodeLicense9 = await upgrades.upgradeProxy(
+                (await nodeLicense.getAddress()),
+                NodeLicense9,
+                {
+                    call:
+                    {
+                        fn: "initialize",
+                        args: []
+                    }
+                }
+            );
+            await nodeLicense9.waitForDeployment();
+
+            // // Confirm minting works after airdrop
+            await nodeLicense.connect(addr1).mint(1, "", { value: priceAfterAirdrop });
+            const user1BalanceAfterMint = await nodeLicense.balanceOf(addr1.address);
+            expect(user1BalanceAfterMint).to.equal(user1BalanceAfter + BigInt(1));
+
+            // Confirm staking works after airdrop            
+            await poolFactory.connect(addr2).stakeKeys(poolAddress, [6]);
+            const user2KeyCountStakedAfterMint = await referee.connect(addr2).assignedKeysOfUserCount(addr2.address);
+            expect(user2KeyCountStakedAfterMint).to.equal(user2KeyCountStakedAfter + BigInt(1));
+
+            await poolFactory.connect(addr2).unstakeKeys(poolAddress, 0, [keyIdsStaked[0]])
+            const user2KeyCountStakedBeforeUnstake = await referee.connect(addr2).assignedKeysOfUserCount(addr2.address);
+            expect(user2KeyCountStakedBeforeUnstake).to.equal(user2KeyCountStakedAfterMint - BigInt(1));
+
+            // Confirm max supply after air drop
+            const maxSupplyAfter = await nodeLicense.maxSupply();
+            expect(maxSupplyAfter).to.equal((maxSupplyBefore * airdropMultiplier) + maxSupplyBefore);
+        });
+
+
+
+
+    }
+}

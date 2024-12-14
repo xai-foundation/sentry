@@ -9,6 +9,7 @@ import { ButtonBack, PrimaryButton } from "@/app/components/ui/buttons";
 import { BaseCallout, Checkbox, StakingInput } from "@/app/components/ui";
 import { WarningIcon } from "@/app/components/icons/IconsComponent";
 import { StakingInputCurrency } from "@/app/components/ui/inputs/StakingInput";
+import { MAX_KEYS_STAKE_PER_TX } from "../constants/constants";
 
 interface StakePoolKeytProps {
   userPool: PoolInfo;
@@ -56,11 +57,11 @@ export default function StakingKeysDetailComponent({
         unstakeCount -= 1;
       }
     }
-    return Math.min(200, unstakeCount);
+    return Math.min(MAX_KEYS_STAKE_PER_TX, unstakeCount);
   }
 
   const getMaxKeysForStake = (): number => {
-    return Math.min(200, unstakedKeyCount, maxKeyPerPool - userPool.keyCount)
+    return Math.min(MAX_KEYS_STAKE_PER_TX, unstakedKeyCount, maxKeyPerPool - userPool.keyCount)
   }
 
   const isInvalidInput = () => {
@@ -180,7 +181,7 @@ export default function StakingKeysDetailComponent({
                     label={unstakeKey ? "You unstake" : "You stake"}
                     currencyLabel={Number(inputValue) === 1 ? StakingInputCurrency.SENTRY_KEY : StakingInputCurrency.SENTRY_KEYS}
                     onChange={handleChange}
-                    error={isInvalidInput() ? { message: Number(inputValue) > 200 ? "Max 200 Keys per tx" : "Not enough keys" } : {}}
+                    error={isInvalidInput() ? { message: Number(inputValue) > MAX_KEYS_STAKE_PER_TX ? `Max ${MAX_KEYS_STAKE_PER_TX} Keys per tx` : "Not enough keys" } : {}}
                     availableCurrency={(unstakeKey ? getMaxKeysForUnstake() : getMaxKeysForStake()) === 1 ? "key" : "keys"}
                     availableBalance={unstakeKey ? getMaxKeysForUnstake() : getMaxKeysForStake()}
                     handleMaxValue={() =>

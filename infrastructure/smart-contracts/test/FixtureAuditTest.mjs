@@ -1,31 +1,15 @@
-import { NodeLicenseTests } from "./NodeLicense.mjs";
 import { parse } from "csv/sync";
 import fs from "fs";
-import { XaiTests } from "./Xai.mjs";
 import { config, createBlsKeyPair } from "@sentry/core";
-import { RuntimeTests } from "./Runtime.mjs";
-import { UpgradeabilityTests } from "./UpgradeTest.mjs";
-import { RefereeTests } from "./Referee.mjs";
-import { esXaiTests } from "./esXai.mjs";
-import { GasSubsidyTests } from "./GasSubsidy.mjs";
-import { XaiGaslessClaimTests } from "./XaiGaslessClaim.mjs";
-import { CNYAirDropTests } from "./CNYAirDrop.mjs";
-import { getBasicPoolConfiguration, StakingV2 } from "./StakingV2.mjs";
-import { extractAbi } from "../utils/exportAbi.mjs";
-import { Beacons } from "./Beacons.mjs";
-import { RefereeBulkSubmissions } from "./tinykeys/RefereeBulkSubmissions.mjs";
-import { RefereeCloseChallengeTests } from "./referee/RefereeCloseChallengeTests.mjs";
-import { NodeLicenseTinyKeysTest } from "./NodeLicenseTinyKeys.mjs";
-import { FailedKycTests } from "./failed-kyc/FailedKyc.mjs";
-import { RefereeWinningKeyCountSimulations } from "./get-winning-key-count/WinningKeyCountSimulations.mjs";
-import { PreTinyKeysTests } from "./tinykeys/PreTinyKeysTests.mjs";
+import { RefereeBulkSubmissionTransfers } from "./tinykeys/RefereeBulkSubmissionTransfers.mjs";
+import { mintBatchedLicenses } from "./utils/mintLicenses.mjs"
 
-describe("Fixture Tests", function () {
+describe("Stake V1 & Transfer keys on Bulksubmissions", function () {
 
     // We define a fixture to reuse the same setup in every test. We use
     // loadFixture to run this setup once, snapshot that state, and reset Hardhat
     // Network to that snapshot in every test.
-    async function deployInfrastructure() {
+    async function deployAuditInfrastructure() {
         console.log("Deploying Infrastructure");
 
         // Get addresses to use in the tests
@@ -45,7 +29,8 @@ describe("Fixture Tests", function () {
             addr1,
             addr2,
             addr3,
-            addr4,
+            addr4, // This address stakes 10M  in the fixture and mints 15000 licenses
+            addr5,
             operator,
         ] = await ethers.getSigners();
 
@@ -81,7 +66,6 @@ describe("Fixture Tests", function () {
         const KeyBucketTracker = await ethers.deployContract("BucketTracker");
         await KeyBucketTracker.waitForDeployment();
         const keyBucketTrackerImplAddress = await KeyBucketTracker.getAddress();
-        await extractAbi("BucketTracker", KeyBucketTracker);
 
         // Deploy the esXai Bucket Tracker (implementation only)
         const EsXaiBucketTracker = await ethers.deployContract("BucketTracker");
@@ -116,6 +100,31 @@ describe("Fixture Tests", function () {
         const referralRewardPercentage = BigInt(2);
         const nodeLicense = await upgrades.deployProxy(NodeLicense, [await fundsReceiver.getAddress(), referralDiscountPercentage, referralRewardPercentage], { deployer: deployer });
         await nodeLicense.waitForDeployment();
+
+        await nodeLicense.setOrAddPricingTier(0, 0, 20000);
+        await mintBatchedLicenses(15000, nodeLicense, addr4);        
+
+        // Read the csv from tierUpload.csv, and add the pricing tiers to NodeLicense
+        const tiers = parse(fs.readFileSync('tierUpload.csv'), { columns: true });
+        for (const tier of tiers) {
+            await nodeLicense.setOrAddPricingTier(tier.tierIndex, ethers.parseEther(tier.unitCostInEth.toString()), tier.quantityBeforeNextTier);
+        }
+
+        // Set the Node License Address
+        await referee.setNodeLicenseAddress(await nodeLicense.getAddress());
+
+        const esXaiAdminRole = await esXai.DEFAULT_ADMIN_ROLE();
+        await esXai.grantRole(esXaiAdminRole, await esXaiDefaultAdmin.getAddress());
+        const esXaiMinterRole = await esXai.MINTER_ROLE();
+        await esXai.grantRole(esXaiMinterRole, await esXaiMinter.getAddress());
+
+        const esXaiToMint = ethers.parseEther("10000000");
+        await esXai.connect(esXaiMinter).mint(await addr4.getAddress(), esXaiToMint);
+        await esXai.connect(addr4).approve(await referee.getAddress(), esXaiToMint);
+        await esXai.addToWhitelist(await referee.getAddress());
+        await referee4.connect(addr4).stake(esXaiToMint);
+
+
         // Deploy the Pool Factory
         const PoolFactory = await ethers.getContractFactory("PoolFactory");
         const poolFactory = await upgrades.deployProxy(PoolFactory, [
@@ -131,7 +140,6 @@ describe("Fixture Tests", function () {
         const StakingPoolPoolBeacon = await ethers.deployContract("PoolBeacon", [stakingPoolImplAddress]);
         await StakingPoolPoolBeacon.waitForDeployment();
         const stakingPoolPoolBeaconAddress = await StakingPoolPoolBeacon.getAddress();
-        await extractAbi("PoolBeacon", StakingPoolPoolBeacon);
 
         // Deploy the key BucketTracker's PoolBeacon
         const KeyBucketTrackerPoolBeacon = await ethers.deployContract("PoolBeacon", [keyBucketTrackerImplAddress]);
@@ -186,15 +194,6 @@ describe("Fixture Tests", function () {
         // const RollupUserLogic = await ethers.getContractFactory("RollupUserLogic");
         const rollupContract = await ethers.getContractAt("RollupUserLogic", rollupAddress);
 
-        // Set the Node License Address
-        await referee.setNodeLicenseAddress(await nodeLicense.getAddress());
-
-        // Read the csv from tierUpload.csv, and add the pricing tiers to NodeLicense
-        const tiers = parse(fs.readFileSync('tierUpload.csv'), { columns: true });
-        for (const tier of tiers) {
-            await nodeLicense.setOrAddPricingTier(tier.tierIndex, ethers.parseEther(tier.unitCostInEth.toString()), tier.quantityBeforeNextTier);
-        }
-
         // set a Challenger Public key
         const { secretKeyHex, publicKeyHex } = await createBlsKeyPair("29dba7dc550c653b085e9c067d2b6c3b0859096204b6892c697982ed52e720f5");
         await referee.setChallengerPublicKey("0x" + publicKeyHex);
@@ -208,14 +207,9 @@ describe("Fixture Tests", function () {
         await xai.grantRole(xaiMinterRole, await esXai.getAddress());
 
         // Setup esXai Roles
-        const esXaiAdminRole = await esXai.DEFAULT_ADMIN_ROLE();
-        await esXai.grantRole(esXaiAdminRole, await esXaiDefaultAdmin.getAddress());
         await esXai.grantRole(esXaiAdminRole, await poolFactory.getAddress());
-        const esXaiMinterRole = await esXai.MINTER_ROLE();
-        await esXai.grantRole(esXaiMinterRole, await esXaiMinter.getAddress());
         await esXai.grantRole(esXaiMinterRole, await referee.getAddress());
         await esXai.grantRole(esXaiMinterRole, await xai.getAddress());
-        await esXai.addToWhitelist(await referee.getAddress());
         await esXai.addToWhitelist(await poolFactory.getAddress());
 
         // Setup Node License Roles 
@@ -387,14 +381,12 @@ describe("Fixture Tests", function () {
         // MockRollup
         const MockRollupContractFactory = await ethers.getContractFactory("MockRollup");
         const mockRollup = await MockRollupContractFactory.deploy();
-
-
+        
         // Upgrade the StakingPool
-        const StakingPool2 = await ethers.deployContract("StakingPool2");
-        await StakingPool2.waitForDeployment();
-        const stakingPool2ImplAddress = await StakingPool2.getAddress();
-        await StakingPoolPoolBeacon.update(stakingPool2ImplAddress);
-        await extractAbi("StakingPool", StakingPool2);
+        const NewImplementation = await ethers.deployContract("StakingPool2");
+        await NewImplementation.waitForDeployment();
+        const newImplementationAddress = await NewImplementation.getAddress();
+        await StakingPoolPoolBeacon.update(newImplementationAddress);
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
@@ -425,6 +417,7 @@ describe("Fixture Tests", function () {
             addr2,
             addr3,
             addr4,
+            addr5,
             operator,
             rollupController,
             tiers,
@@ -447,35 +440,7 @@ describe("Fixture Tests", function () {
         };
     }
 
-    // Tests That Always Work
-    // describe("CNY 2024", CNYAirDropTests.bind(this));
-    describe("Xai Gasless Claim", XaiGaslessClaimTests(deployInfrastructure).bind(this));
-    describe("Xai", XaiTests(deployInfrastructure).bind(this));
-    describe("Beacon Tests", Beacons(deployInfrastructure).bind(this));
-    describe("Gas Subsidy", GasSubsidyTests(deployInfrastructure).bind(this));
-    describe("Upgrade Tests", UpgradeabilityTests(deployInfrastructure).bind(this));
-
-    // Test Explanations, Expectations & Instructions
-    // https://docs.google.com/document/d/1V_3svypWL26wDr2RNvcIBcMlFwdSWYR6xcLuKXXuWf8
-
-    // Pre-Tiny Keys
-    // describe("Pre-Tiny Keys Tests", PreTinyKeysTests(deployInfrastructure).bind(this));
-
-    // Post-Tiny Keys
-    describe("EsXai", esXaiTests(deployInfrastructure).bind(this));
-    describe("Node License", NodeLicenseTests(deployInfrastructure).bind(this));
-    describe("Referee", RefereeTests(deployInfrastructure).bind(this));
-    describe("StakingV2", StakingV2(deployInfrastructure).bind(this));
-
     // Uncomment these tests for tiny keys
-    describe("BulkSubmissions", RefereeBulkSubmissions(deployInfrastructure).bind(this));
-    describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
-    describe("Failed KYC Tests", FailedKycTests(deployInfrastructure).bind(this));
-    
-    //describe("Winning Key Count Simulations", RefereeWinningKeyCountSimulations(deployInfrastructure).bind(this));
-
-
-    // This doesn't work when running coverage
-    //describe("Runtime", RuntimeTests(deployInfrastructure).bind(this));
+    describe("BulkSubmissionTransfers", RefereeBulkSubmissionTransfers(deployAuditInfrastructure).bind(this));
 
 })

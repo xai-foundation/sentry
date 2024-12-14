@@ -250,3 +250,6 @@ export const listOfCountries = [
   { value: "ZM", label: "Zambia" },
   { value: "ZW", label: "Zimbabwe" },
 ];
+
+// This should not be a restriction anymore, we do not have key ids for staking and unstaking anymore
+export const MAX_KEYS_STAKE_PER_TX = 100000000000000;

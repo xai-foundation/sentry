@@ -35,6 +35,8 @@
             }
         },
         "logoColumn": {
+            "networkRewardsAmount": "~300 Mio. $",
+            "networkRewardsText": "an Netzwerkbelohnungen für Key-Hodler bisher",
             "purchaseReady": "IHR KAUF IST BEREIT",
             "imageAlt": "Sentry Logo"
         },
@@ -43,7 +45,7 @@
             "description": "Jeder Sentry Key ermöglicht es Ihnen, bis zu 1 Belohnungsantrag für jede Netzwerk-Herausforderung einzureichen.",
             "toolTip": {
                 "title": "Xai-Schlüssel sind erforderlich, damit Nodes $esXAI Netzwerk-Belohnungen erhalten.",
-                "text": "Alle Käufe müssen in Arbitrum ETH erfolgen."
+                "text": "Um Sentry Keys kaufen zu können, muss Ihr Wallet mit Arbitrum One verbunden sein."
             },
             "maximumPerTransaction": "Maximal {{count}} pro Transaktion",
             "maximumNodeLicenses": "Maximal {{max}} Node-Lizenzen können in einer einzigen Transaktion gekauft werden."
@@ -82,6 +84,7 @@
         },
         "actionSection": {
             "mintWithOptions": "Prägen - Kredit/Debit, SOL, ETH, USDC",
+            "mintWithOptionsDisabled": "Crossmint maximal {{maxKeys}} Schlüssel pro Transaktion",
             "tokenButtonTexts": {
                 "isPending": "WARTET AUF BESTÄTIGUNG..",
                 "switchToArbitrum": "Bitte wechseln Sie zu Arbitrum"

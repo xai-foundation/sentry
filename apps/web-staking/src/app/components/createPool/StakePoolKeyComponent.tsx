@@ -8,6 +8,7 @@ import { PrimaryButton, StakingInput, Tooltip } from "../ui";
 import { StakingInputCurrency } from "../ui/inputs/StakingInput";
 import { HelpIcon } from "@/app/components/icons/IconsComponent";
 import TableTooltip from "@/app/components/ui/tooltips/TableTooltip";
+import { MAX_KEYS_STAKE_PER_TX } from "../constants/constants";
 
 interface StakePoolKeyProps {
   poolName: string;
@@ -38,7 +39,7 @@ const StakePoolKeyComponent = ({
     setInputValue(roundNum.toString());
   };
 
-  const validationInput = () => Number(inputValue) > Math.min(200, unstakedKeyCount);
+  const validationInput = () => Number(inputValue) > Math.min(MAX_KEYS_STAKE_PER_TX, unstakedKeyCount);
 
   const checkDisabledButton =
     !address || !inputValue || Number(inputValue) <= 0 || validationInput();
@@ -74,18 +75,18 @@ const StakePoolKeyComponent = ({
                 label="You stake"
                 onChange={handleChange}
                 currencyLabel={Number(inputValue) === 1 ? StakingInputCurrency.SENTRY_KEY : StakingInputCurrency.SENTRY_KEYS}
-                error={validationInput() ? { message: Number(inputValue) > 200 ? "Max 200 Keys per tx" : "Not enough keys" } : {}}
+                error={validationInput() ? { message: Number(inputValue) > MAX_KEYS_STAKE_PER_TX ? `Max ${MAX_KEYS_STAKE_PER_TX} Keys per tx` : "Not enough keys" } : {}}
                 extraClasses={{
                   input: "sm:!max-w-[37%] !lg:max-w-[50%] placeholder:!text-foggyLondon",
                   calloutWrapper: "h-[160px]",
                   currency: "sm:text-3xl lg:text-4xl",
                   currencyWrapper: "justify-between"
                 }}
-                availableBalance={Math.min(200, unstakedKeyCount)}
-                availableCurrency={Math.min(200, unstakedKeyCount) === 1 ? "key" : "keys"}
+                availableBalance={Math.min(MAX_KEYS_STAKE_PER_TX, unstakedKeyCount)}
+                availableCurrency={Math.min(MAX_KEYS_STAKE_PER_TX, unstakedKeyCount) === 1 ? "key" : "keys"}
                 withTooltip
                 handleMaxValue={() =>
-                  setInputValue(String(Math.min(200, unstakedKeyCount)))
+                  setInputValue(String(Math.min(MAX_KEYS_STAKE_PER_TX, unstakedKeyCount)))
                 }
               />
               <span
@@ -93,11 +94,11 @@ const StakePoolKeyComponent = ({
                 <TableTooltip
                   extraClasses={{ tooltipContainer: "lg:left-auto lg:!right-[-38px] xl:left-[-38px] !left-auto !right-[-38px] md:max-w-[456px] max-w-[320px]" }}
                   content={"Your staking capacity is dependent on how many keys you own. Each key will increase your staking capacity by ##MAXSTAKE## esXAI".replace("##MAXSTAKE##", maxStakePerKey.toString())}>
-                <HelpIcon
-                  height={14}
-                  width={14}
-                />
-              </TableTooltip>
+                  <HelpIcon
+                    height={14}
+                    width={14}
+                  />
+                </TableTooltip>
               </span>
             </div>
           </div>
