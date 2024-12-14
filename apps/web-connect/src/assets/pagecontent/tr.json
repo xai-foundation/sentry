@@ -68,7 +68,10 @@
 			"noDiscount": {
 				"addPromoCode": "+ Promosyon kodu ekle",
 				"applyPromoCodeButton": "UYGULA",
-				"warning": "Geçersiz referans adresi"
+				"warning": "Geçersiz referans adresi",
+				"noSelfPromoCode": "Kendi promosyon kodunuzu kullanamazsınız",
+				"promoCodeError": "Promosyon kodu doğrulanırken bir hata oluştu",
+				"promoCodeInvalid": "Promosyon kodu geçersiz veya etkin değil"
 			}
 		},
 		"totalCostRow": {

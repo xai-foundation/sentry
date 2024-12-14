@@ -47,8 +47,8 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn, 
     formatItemPricePer: (item: CheckoutTierSummary) => string;
     displayPricesMayVary: boolean;
     nodesAtEachPrice: Array<CheckoutTierSummary> | undefined;
-    discount: { applied: boolean; error: boolean };
-    setDiscount: React.Dispatch<React.SetStateAction<{ applied: boolean; error: boolean }>>;
+    discount: { applied: boolean; error: boolean, errorMessage: string | undefined };
+    setDiscount: React.Dispatch<React.SetStateAction<{ applied: boolean; error: boolean, errorMessage: string | undefined  }>>;
     promoCode: string;
     setPromoCode: React.Dispatch<React.SetStateAction<string>>;
     userHasTokenBalance: boolean;

@@ -68,7 +68,10 @@
 			"noDiscount": {
 				"addPromoCode": "+ 프로모션 코드 추가",
 				"applyPromoCodeButton": "적용",
-				"warning": "잘못된 추천인 주소"
+				"warning": "잘못된 추천인 주소",
+				"noSelfPromoCode": "자신의 프로모션 코드는 사용할 수 없습니다.",
+				"promoCodeError": "프로모션 코드를 검증하는 동안 오류가 발생했습니다",
+				"promoCodeInvalid": "프로모션 코드가 유효하지 않거나 비활성화되어 있습니다."
 			}
 		},
 		"totalCostRow": {

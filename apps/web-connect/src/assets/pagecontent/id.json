@@ -68,7 +68,10 @@
 			"noDiscount": {
 				"addPromoCode": "+ Tambahkan kode promo",
 				"applyPromoCodeButton": "TERAPKAN",
-				"warning": "Alamat rujukan tidak valid"
+				"warning": "Alamat rujukan tidak valid",
+				"noSelfPromoCode": "Anda tidak dapat menggunakan kode promo Anda sendiri",
+				"promoCodeError": "Terjadi kesalahan saat memvalidasi kode promo",
+				"promoCodeInvalid": "Kode promo tidak valid atau tidak aktif"
 			}
 		},
 		"totalCostRow": {

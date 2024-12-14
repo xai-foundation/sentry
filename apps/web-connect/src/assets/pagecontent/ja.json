@@ -68,7 +68,10 @@
 			"noDiscount": {
 				"addPromoCode": "+ プロモーションコードを追加",
 				"applyPromoCodeButton": "適用",
-				"warning": "無効な紹介リンク"
+				"warning": "無効な紹介リンク",
+				"noSelfPromoCode": "ご自身のプロモコードはご利用いただけません",
+				"promoCodeError": "プロモコードの検証中にエラーが発生しました。",
+				"promoCodeInvalid": "プロモコードが無効または無効化されています。"
 			}
 		},
 		"totalCostRow": {

@@ -41,7 +41,7 @@ export function PromoCodeRow() {
                         <div className="flex flex-row items-center gap-2">
                             <span className="text-white">{translate("promoCodeRow.discount.text")}</span>
                             <a
-                                onClick={() => setDiscount({ applied: false, error: false })}
+                                onClick={() => setDiscount({ applied: false, error: false, errorMessage: undefined })}
                                 className="text-[#F30919] ml-1 cursor-pointer"
                             >
                                 {translate("promoCodeRow.discount.removeButton")}
@@ -92,6 +92,7 @@ export function PromoCodeRow() {
                                             setDiscount({
                                                 applied: false,
                                                 error: false,
+                                                errorMessage: undefined,
                                             });
                                         }}
                                         className={`text-white lg:w-full border-r-0 p-2 bg-darkLicorice border ${discount.error ? "border-[#AB0914]" : "border-[#525252]"}`}
@@ -112,11 +113,12 @@ export function PromoCodeRow() {
                                     />
                                 </div>
                             </div>
-                            {discount.error && (
+                            {discount.error && discount.errorMessage && (
                                 <BaseCallout extraClasses={{ calloutWrapper: "h-[50px] w-full mt-2" }} isWarning>
                                     <div className="flex gap-[10px]">
                                         <span className="block"><WarningIcon /></span>
-                                        <span className="block">{translate("promoCodeRow.noDiscount.warning")}</span>
+                                        {/* <span className="block">{translate("promoCodeRow.noDiscount.warning")}</span> */}
+                                        <span className="block">{translate(discount.errorMessage)}</span>
                                     </div>
                                 </BaseCallout>
                             )}
