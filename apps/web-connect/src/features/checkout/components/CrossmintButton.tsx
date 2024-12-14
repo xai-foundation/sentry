@@ -1,4 +1,7 @@
-import { MasterCardIcon, VisaIcon, ETHIcon, SolanaIcon, USDCIcon, SuperVerseIcon } from "@/svgs/AppIcons";
+import {
+    MasterCardIcon, VisaIcon,
+    ETHIcon, SolanaIcon, USDCIcon, SuperVerseIcon
+} from "@/svgs/AppIcons";
 
 interface CrossmintButtonProps {
     onClick: () => void;
