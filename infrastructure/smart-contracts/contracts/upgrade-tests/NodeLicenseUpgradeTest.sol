@@ -106,6 +106,8 @@ contract NodeLicenseUpgradeTest is
     bytes32 public constant ADMIN_MINT_ROLE = keccak256("ADMIN_MINT_ROLE");
     bytes32 public constant TRANSFER_ROLE = keccak256("TRANSFER_ROLE");
 
+    uint256 private _latestETHToUSDC;
+
     uint256 private _count;
 
     /**
@@ -113,7 +115,7 @@ contract NodeLicenseUpgradeTest is
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[483] private __gap;
+    uint256[482] private __gap;
 
     // Define the pricing tiers
     struct Tier {

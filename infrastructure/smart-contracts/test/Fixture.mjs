@@ -396,6 +396,20 @@ describe("Fixture Tests", function () {
         await StakingPoolPoolBeacon.update(stakingPool2ImplAddress);
         await extractAbi("StakingPool", StakingPool2);
 
+        const NodeLicense9 = await ethers.getContractFactory("NodeLicense9");
+        const nodeLicense9 = await upgrades.upgradeProxy(
+            (await nodeLicense.getAddress()),
+            NodeLicense9,
+            {
+                call:
+                {
+                    fn: "initialize",
+                    args: []
+                }
+            }
+        );
+        await nodeLicense9.waitForDeployment();
+
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
         config.gasSubsidyAddress = await gasSubsidy.getAddress();
@@ -431,7 +445,7 @@ describe("Fixture Tests", function () {
             secretKeyHex,
             publicKeyHex: "0x" + publicKeyHex,
             referee: referee10,
-            nodeLicense: nodeLicense8,
+            nodeLicense: nodeLicense9,
             poolFactory: poolFactory2,
             gasSubsidy,
             esXai: esXai3,

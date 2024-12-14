@@ -99,6 +99,8 @@ contract NodeLicense9 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     // Used as a safety to mitigate double minting from admin wallet
     mapping (bytes32 => bool) public usedAdminMintIds;
 
+    uint256 private _latestETHToUSDC;
+
     // Custom error messages to be used in lieu of require statements
     error TxIdPrevUsed();
     error InvalidAddress();
@@ -121,7 +123,7 @@ contract NodeLicense9 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[484] private __gap;
+    uint256[483] private __gap;
 
     // Define the pricing tiers
     struct Tier {
@@ -150,14 +152,21 @@ contract NodeLicense9 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     event AdminMintTo(address indexed admin, address indexed receiver, uint256 amount);
     event AdminTransferBatch(address indexed admin, address indexed receiver, bytes32 indexed transferId, uint256[] tokenIds);
 
+    // /**
+    //  * @notice Initializes the NodeLicense contract.
+    //  * 
+    //  */
+
+    // function initialize() public reinitializer(5) {
+    //     mintingPaused = false;
+    //     _promoCodes["Binance"].recipient = address(0xE49C19cB8E68a5D0AE2DdCE8f80e60e2bbd01884);
+    // }
     /**
      * @notice Initializes the NodeLicense contract.
      * 
      */
-
-    function initialize() public reinitializer(5) {
-        mintingPaused = false;
-        _promoCodes["Binance"].recipient = address(0xE49C19cB8E68a5D0AE2DdCE8f80e60e2bbd01884);
+    function initialize() public reinitializer(6) {
+        _latestETHToUSDC = uint256(ethPriceFeed.latestAnswer());
     }
 
     /** 
@@ -231,8 +240,14 @@ contract NodeLicense9 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     }
 
     function _mintInternal(address _mintToAddress, uint256 _amount, string calldata _promoCode) internal {
+        
         // Validate the mint data
         _validateMint(_amount);
+
+        uint256 latestUSDValue = latestETHToUSDC();
+        if(latestUSDValue != _latestETHToUSDC){
+            _latestETHToUSDC = latestUSDValue;
+        }
 
         // Calculate the final price and average cost
         uint256 finalPrice = price(_amount, _promoCode);
@@ -276,6 +291,11 @@ contract NodeLicense9 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
 
         _validateMint(_amount);
 
+        uint256 latestUSDValue = latestETHToUSDC();
+        if(latestUSDValue != _latestETHToUSDC){
+            _latestETHToUSDC = latestUSDValue;
+        }
+
         uint256 finalEthPrice = price(_amount, _promoCode);
         // Convert the final price to XAI
         uint256 finalPrice = ethToXai(finalEthPrice);
@@ -316,8 +336,13 @@ contract NodeLicense9 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
 
         //convert the final price to USDC
         uint256 mintPriceInWei = price(_amount, _promoCode); //.15 ETH
-        uint256 ethRateInUSDC = uint256(ethPriceFeed.latestAnswer()); //8 decimals
-        uint256 mintPriceInUSDC = (mintPriceInWei * ethRateInUSDC) / (10**20); //(18 + 8) - 20 = 6 decimals
+
+        uint256 latestUSDValue = latestETHToUSDC();
+        if(latestUSDValue != _latestETHToUSDC){
+            _latestETHToUSDC = latestUSDValue;
+        }
+
+        uint256 mintPriceInUSDC = (mintPriceInWei * _latestETHToUSDC) / (10**20); //(18 + 8) - 20 = 6 decimals
         require(mintPriceInUSDC <= _expectedCostInUSDC, "Price Exceeds Expected Cost");
 
         //mint node license tokens
@@ -870,4 +895,18 @@ contract NodeLicense9 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         Referee10(refereeAddress).updateBulkSubmissionOnTransfer(from, to);
     }
 
+    function latestETHToUSDC() public view returns (uint256) {
+        uint256 ethRateInUSDC = uint256(ethPriceFeed.latestAnswer()); //8 decimals
+        uint256 maxDifferenceUpdate = (ethRateInUSDC * 2) / 1000; // For 0.2%
+        
+        //check if price is off more than
+        if(
+            _latestETHToUSDC > ethRateInUSDC + maxDifferenceUpdate || 
+            _latestETHToUSDC < ethRateInUSDC - maxDifferenceUpdate
+        ) {
+            return ethRateInUSDC;
+        }
+
+        return _latestETHToUSDC;
+    }
 }
