@@ -909,4 +909,10 @@ contract NodeLicense9 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
 
         return _latestETHToUSDC;
     }
+
+    function getPriceInUSDC(uint256 quantity, string calldata promoCode) public view returns (uint256 mintPriceInUSDC) {
+        uint256 priceInETH = price(quantity, promoCode);
+        uint256 currentUSDCRate = latestETHToUSDC();
+        mintPriceInUSDC = (priceInETH * currentUSDCRate) / (10**20); //(18 + 8) - 20 = 6 decimals
+    }
 }
