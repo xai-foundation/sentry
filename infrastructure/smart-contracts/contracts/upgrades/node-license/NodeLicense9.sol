@@ -100,6 +100,7 @@ contract NodeLicense9 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     mapping (bytes32 => bool) public usedAdminMintIds;
 
     uint256 private _latestETHToUSDC;
+    uint256 public _lastUpdatedETHToUSDCRate;
 
     // Custom error messages to be used in lieu of require statements
     error TxIdPrevUsed();
@@ -123,7 +124,7 @@ contract NodeLicense9 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[483] private __gap;
+    uint256[482] private __gap;
 
     // Define the pricing tiers
     struct Tier {
@@ -167,6 +168,7 @@ contract NodeLicense9 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      */
     function initialize() public reinitializer(6) {
         _latestETHToUSDC = uint256(ethPriceFeed.latestAnswer());
+        _lastUpdatedETHToUSDCRate = block.timestamp;
     }
 
     /** 
@@ -244,10 +246,7 @@ contract NodeLicense9 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         // Validate the mint data
         _validateMint(_amount);
 
-        uint256 latestUSDValue = latestETHToUSDC();
-        if(latestUSDValue != _latestETHToUSDC){
-            _latestETHToUSDC = latestUSDValue;
-        }
+        updateLatestETHToUSDC();
 
         // Calculate the final price and average cost
         uint256 finalPrice = price(_amount, _promoCode);
@@ -291,10 +290,7 @@ contract NodeLicense9 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
 
         _validateMint(_amount);
 
-        uint256 latestUSDValue = latestETHToUSDC();
-        if(latestUSDValue != _latestETHToUSDC){
-            _latestETHToUSDC = latestUSDValue;
-        }
+        updateLatestETHToUSDC();
 
         uint256 finalEthPrice = price(_amount, _promoCode);
         // Convert the final price to XAI
@@ -337,10 +333,7 @@ contract NodeLicense9 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         //convert the final price to USDC
         uint256 mintPriceInWei = price(_amount, _promoCode); //.15 ETH
 
-        uint256 latestUSDValue = latestETHToUSDC();
-        if(latestUSDValue != _latestETHToUSDC){
-            _latestETHToUSDC = latestUSDValue;
-        }
+        updateLatestETHToUSDC();
 
         uint256 mintPriceInUSDC = (mintPriceInWei * _latestETHToUSDC) / (10**20); //(18 + 8) - 20 = 6 decimals
         require(mintPriceInUSDC <= _expectedCostInUSDC, "Price Exceeds Expected Cost");
@@ -896,18 +889,17 @@ contract NodeLicense9 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
     }
 
     function latestETHToUSDC() public view returns (uint256) {
-        uint256 ethRateInUSDC = uint256(ethPriceFeed.latestAnswer()); //8 decimals
-        uint256 maxDifferenceUpdate = (ethRateInUSDC * 2) / 1000; // For 0.2%
-        
-        //check if price is off more than
-        if(
-            _latestETHToUSDC > ethRateInUSDC + maxDifferenceUpdate || 
-            _latestETHToUSDC < ethRateInUSDC - maxDifferenceUpdate
-        ) {
-            return ethRateInUSDC;
+        if(block.timestamp - _lastUpdatedETHToUSDCRate > 3 minutes){
+            return uint256(ethPriceFeed.latestAnswer());
         }
-
         return _latestETHToUSDC;
+    }
+
+    function updateLatestETHToUSDC() public {
+        if(block.timestamp - _lastUpdatedETHToUSDCRate > 3 minutes){
+            _latestETHToUSDC = uint256(ethPriceFeed.latestAnswer());
+            _lastUpdatedETHToUSDCRate = block.timestamp;
+        }
     }
 
     function getPriceInUSDC(uint256 quantity, string calldata promoCode) public view returns (uint256 mintPriceInUSDC) {
