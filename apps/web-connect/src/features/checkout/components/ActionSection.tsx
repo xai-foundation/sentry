@@ -11,7 +11,7 @@ import { convertEthAmountToUsdcAmount } from '@/utils/convertEthAmountToUsdcAmou
 import { useTranslation } from "react-i18next";
 import ReactGA from "react-ga4";
 import { CrossmintProvider, CrossmintCheckoutProvider } from "@crossmint/client-sdk-react-ui";
-import { CrossmintButton } from './CrossmintButton';
+//import { CrossmintButton } from './CrossmintButton';
 import { MAX_BATCH_SIZE } from '@/features/hooks/contract/useMintBatch';
 
 
@@ -27,7 +27,7 @@ import { MAX_BATCH_SIZE } from '@/features/hooks/contract/useMintBatch';
 export function ActionSection(): JSX.Element {
     const [creditCardOpen, setCreditCardOpen] = useState(false);
     const { isDevelopment } = useNetworkConfig();
-    const [isInitialized, setIsInitialized] = useState(false);
+    //const [isInitialized, setIsInitialized] = useState(false);
     const [totalPriceInUsdc, setTotalPriceInUsdc] = useState<string>("0");
     const clientApiKey = config.crossmintClientApiKey;
 
@@ -50,14 +50,14 @@ export function ActionSection(): JSX.Element {
         mintWithXaiSingleTx,
         getEthButtonText,
         calculateTotalPrice,
-        setCurrency,
+   //     setCurrency,
         discount,
         mintBatch,
         mintBatchError
     } = useWebBuyKeysContext();
 
     const { t: translate } = useTranslation("Checkout");    
-    const exceedsCrossmintMax = quantity > MAX_BATCH_SIZE;
+    //const exceedsCrossmintMax = quantity > MAX_BATCH_SIZE;
 
     /**
      * Determines the text to display on the main action button for token transactions
@@ -86,10 +86,10 @@ export function ActionSection(): JSX.Element {
 
     useEffect(() => {
         async function setUsdcPrice(){
-            setIsInitialized(false);
+          //  setIsInitialized(false);
             const usdcPrice = await convertEthAmountToUsdcAmount(calculateTotalPrice(), 18); // USDC Price in 18 decimals
             setTotalPriceInUsdc(usdcPrice.toString());
-            setIsInitialized(true);
+           // setIsInitialized(true);
         }
         setUsdcPrice();
     }, [quantity, promoCode]);
@@ -123,7 +123,7 @@ export function ActionSection(): JSX.Element {
                     />
                 )}
                 <br />
-                {isConnected && isInitialized && <CrossmintButton
+                {/* {isConnected && isInitialized && <CrossmintButton
                     onClick={() => {
                         ReactGA.event({
                             category: "User",
@@ -137,7 +137,7 @@ export function ActionSection(): JSX.Element {
                     isDisabled={!ready || !isConnected || exceedsCrossmintMax}
                     colorStyle="outline-2"
                     btnText={exceedsCrossmintMax ? translate("actionSection.mintWithOptionsDisabled", { maxKeys: MAX_BATCH_SIZE}) : translate("actionSection.mintWithOptions")}
-                />}
+                />} */}
 
                 {/* Error section for ETH transactions */}
                 {mintWithEth.error && (
