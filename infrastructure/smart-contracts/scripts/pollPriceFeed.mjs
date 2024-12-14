@@ -1,15 +1,31 @@
 import hardhat from "hardhat";
-import { NodeLicenseAbi } from "@sentry/core";
 const { ethers } = hardhat;
 
 const promoCode = "";
 const contractAddress = "0x07C05C6459B0F86A6aBB3DB71C259595d22af3C2"; // Node license 9
+// const contractAddress = "0xF2ef5ab961a6a69E15530612A3A327e618658f01"; // ethusd price feed
 const priceFeedPair = "ETHUSD";
 const quantity = 1;
 
-async function fetchPrice(nodeLicense) {
+async function fetchPrice(provider) {
   try {
-    const price = await nodeLicense.getPriceInUSD(quantity, promoCode);
+    // Manually encode function call
+    const data = ethers.AbiCoder.defaultAbiCoder().encode(
+      ["uint256", "string"],
+      [quantity, promoCode]
+    );
+    let funcSignature = "getPriceInUSDC(uint256,string)";
+    let selector = `${ethers.keccak256(ethers.toUtf8Bytes(funcSignature)).slice(0, 10)}`;
+    let encodedData = `${selector}${data.slice(2)}`;
+
+    //call contract
+    const result = await provider.call({
+      to: contractAddress,
+      data: encodedData
+    });
+
+    //decode and log result
+    const price = ethers.AbiCoder.defaultAbiCoder().decode(["uint256"], result);
     console.log(`[${new Date().toISOString()}] Price for ${quantity} ${priceFeedPair}:`, price.toString());
   } catch (error) {
     console.error("Error fetching price:", error);
@@ -19,11 +35,11 @@ async function fetchPrice(nodeLicense) {
 async function main() {
   console.log(`Starting price feed poll for: ${priceFeedPair} on contract: ${contractAddress}`);
 
-  const provider = new ethers.JsonRpcProvider(testnetConfig.arbitrumSepolia);
-  const nodeLicense = new ethers.Contract(contractAddress, NodeLicenseAbi, provider);
+  const provider = new ethers.JsonRpcProvider("https://arb-sepolia.g.alchemy.com/v2/8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B");
 
-  // Poll every 10 seconds
-  setInterval(() => fetchPrice(nodeLicense), 10000);
+  // Poll on interval
+  const intervalMS = 5000;
+  setInterval(() => fetchPrice(provider), intervalMS);
 }
 
 main().catch((error) => {
