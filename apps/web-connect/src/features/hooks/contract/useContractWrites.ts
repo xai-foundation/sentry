@@ -79,7 +79,7 @@ export function useContractWrites({
     address: config.nodeLicenseAddress as `0x${string}`,
     abi: NodeLicenseAbi,
     functionName: "mintWithXai",
-    args: [address, quantity, promoCode, useEsXai, calculateTotalPrice()],
+    args: [address, quantity, promoCode, useEsXai, (calculateTotalPrice() * BigInt(105)) / BigInt(100)],
     onSuccess: (data: `0x${string}`) => {
       setMintWithXaiHash(data);
     },

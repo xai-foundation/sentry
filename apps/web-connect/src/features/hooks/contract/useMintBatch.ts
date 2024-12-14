@@ -103,13 +103,15 @@ export function useMintBatch({
         // Initiate transaction
         const priceResult = await getPriceForQuantityCore(Number(qtyToProcess));
         const price =  currency === CURRENCIES.AETH ? priceResult.price : await convertEthAmountToXaiAmount(priceResult.price);
-        const priceToUse = discountApplied ? price * BigInt(95) / BigInt(100) : price;
+        let priceToUse = discountApplied ? price * BigInt(95) / BigInt(100) : price;
         const itemPriceAvg = priceToUse / BigInt(qtyToProcess);
         if(itemPriceAvg > expectedAveragePrice) {
           errorNotification("Price has changed. Please review and confirm the new price.");
           expectedAveragePrice = itemPriceAvg;
         } 
-
+        if(currency !== CURRENCIES.AETH) {
+          priceToUse = (priceToUse * BigInt(105)) / BigInt(100)
+        }
         const config = getConfig(qtyToProcess, priceToUse);
         const result = await batchMintTx.writeContractAsync(config);
         txHashesLocal.push(result);
