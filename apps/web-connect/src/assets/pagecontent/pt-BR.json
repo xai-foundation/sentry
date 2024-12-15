@@ -68,7 +68,10 @@
 			"noDiscount": {
 				"addPromoCode": "+ Adicionar código promocional",
 				"applyPromoCodeButton": "APLICAR",
-				"warning": "Endereço de indicação inválido"
+				"warning": "Endereço de indicação inválido",
+				"noSelfPromoCode": "Você não pode usar o seu próprio código promocional",
+				"promoCodeError": "Ocorreu um erro ao validar o código promocional",
+				"promoCodeInvalid": "O código promocional é inválido ou está inativo."
 			}
 		},
 		"totalCostRow": {

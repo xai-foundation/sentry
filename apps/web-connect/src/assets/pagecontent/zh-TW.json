@@ -68,7 +68,10 @@
 			"noDiscount": {
 				"addPromoCode": "+ 新增優惠碼",
 				"applyPromoCodeButton": "申請",
-				"warning": "無效的推薦地址"
+				"warning": "無效的推薦地址",
+				"noSelfPromoCode": "您無法使用您自己的優惠碼。",
+				"promoCodeError": "驗證優惠碼時發生錯誤。",
+				"promoCodeInvalid": "優惠碼無效或未啟用。"
 			}
 		},
 		"totalCostRow": {

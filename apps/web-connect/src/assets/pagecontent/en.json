@@ -68,7 +68,10 @@
 			"noDiscount": {
 				"addPromoCode": "+ Add promo code",
 				"applyPromoCodeButton": "APPLY",
-				"warning": "Invalid referral address"
+				"warning": "Invalid referral address",
+				"noSelfPromoCode": "You are unable to use your own promo code",
+				"promoCodeError": "An error occurred while validating the promo code",
+				"promoCodeInvalid": "Promo code is invalid or inactive"
 			}
 		},
 		"totalCostRow": {

@@ -68,7 +68,10 @@
 			"noDiscount": {
 				"addPromoCode": "+ प्रोमो कोड जोड़ें",
 				"applyPromoCodeButton": "लागू करें",
-				"warning": "रेफ़रल पता अमान्य है"
+				"warning": "रेफ़रल पता अमान्य है",
+				"noSelfPromoCode": "आप अपना स्वयं का प्रोमो कोड उपयोग नहीं कर सकते हैं।",
+				"promoCodeError": "प्रोमो कोड को मान्य करने के दौरान एक त्रुटि हुई।",
+				"promoCodeInvalid": "प्रोमो कोड अमान्य या निष्क्रिय है।"
 			}
 		},
 		"totalCostRow": {

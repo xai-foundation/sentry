@@ -68,7 +68,10 @@
 			"noDiscount": {
 				"addPromoCode": "+ Điền mã khuyến mại",
 				"applyPromoCodeButton": "ÁP DỤNG",
-				"warning": "Địa chỉ giới thiệu không hợp lệ"
+				"warning": "Địa chỉ giới thiệu không hợp lệ",
+				"noSelfPromoCode": "Bạn không thể sử dụng mã khuyến mãi của chính mình",
+				"promoCodeError": "Đã xảy ra lỗi trong quá trình xác thực mã khuyến mãi",
+				"promoCodeInvalid": "Mã khuyến mãi không hợp lệ hoặc không hoạt động"
 			}
 		},
 		"totalCostRow": {

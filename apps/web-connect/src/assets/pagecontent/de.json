@@ -68,7 +68,10 @@
 			"noDiscount": {
 				"addPromoCode": "+ Promocode hinzufügen",
 				"applyPromoCodeButton": "ANWENDEN",
-				"warning": "Ungültige Empfehlungsadresse"
+				"warning": "Ungültige Empfehlungsadresse",
+				"noSelfPromoCode": "Sie können Ihren eigenen Promo-Code nicht verwenden",
+				"promoCodeError": "Bei der Überprüfung des Promo-Codes ist ein Fehler aufgetreten",
+				"promoCodeInvalid": "Der Promo-Code ist ungültig oder inaktiv."
 			}
 		},
 		"totalCostRow": {

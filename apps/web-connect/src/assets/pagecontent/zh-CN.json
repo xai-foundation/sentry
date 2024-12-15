@@ -68,7 +68,10 @@
 			"noDiscount": {
 				"addPromoCode": "+ 添加优惠码",
 				"applyPromoCodeButton": "应用",
-				"warning": "无效的推荐链接"
+				"warning": "无效的推荐链接",
+				"noSelfPromoCode": "您无法使用您自己的优惠码",
+				"promoCodeError": "验证优惠码时出现错误。",
+				"promoCodeInvalid": "优惠码无效或未激活"
 			}
 		},
 		"totalCostRow": {
