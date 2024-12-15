@@ -43,13 +43,13 @@ export function usePromoCodeHandler(address:`0x${string}` | undefined) {
     }
     setIsLoading(true);
     try {
-      if(address && address.toLowerCase() === promoCode.toLowerCase()){
+      const validatePromoCode: PromoCodeValidationResponse = await getPromoCode(promoCode);
+      
+      if(address && address.toLowerCase() === validatePromoCode.recipient.toLowerCase()){
         setDiscount({ applied: false, error: true, errorMessage: "promoCodeRow.noDiscount.noSelfPromoCode" }); // "You are unable to use your own promo code"
         return;
       }
 
-      
-      const validatePromoCode: PromoCodeValidationResponse = await getPromoCode(promoCode);
       const addressIsRecipient = validatePromoCode.recipient && validatePromoCode.recipient.toLowerCase() === address?.toLowerCase();
       let  errorMessage = !validatePromoCode.active ? "promoCodeRow.noDiscount.promoCodeInvalid" : undefined;
       if(addressIsRecipient){
