@@ -11,8 +11,8 @@ import { convertEthAmountToUsdcAmount } from '@/utils/convertEthAmountToUsdcAmou
 import { useTranslation } from "react-i18next";
 import ReactGA from "react-ga4";
 import { CrossmintProvider, CrossmintCheckoutProvider } from "@crossmint/client-sdk-react-ui";
-//import { CrossmintButton } from './CrossmintButton';
 import { MAX_BATCH_SIZE } from '@/features/hooks/contract/useMintBatch';
+import { CrossmintButton } from './CrossmintButton';
 
 
 /**
@@ -57,7 +57,7 @@ export function ActionSection(): JSX.Element {
     } = useWebBuyKeysContext();
 
     const { t: translate } = useTranslation("Checkout");    
-    //const exceedsCrossmintMax = quantity > MAX_BATCH_SIZE;
+    const exceedsCrossmintMax = quantity > MAX_BATCH_SIZE;
 
     /**
      * Determines the text to display on the main action button for token transactions
@@ -85,14 +85,14 @@ export function ActionSection(): JSX.Element {
     }
 
     useEffect(() => {
-        async function setUsdcPrice(){
-          //  setIsInitialized(false);
-            const usdcPrice = await convertEthAmountToUsdcAmount(calculateTotalPrice(), 18); // USDC Price in 18 decimals
+        async function setUsdcPrice() {
+            //  setIsInitialized(false);
+            const usdcPrice = await convertEthAmountToUsdcAmount(calculateTotalPrice(true), 18); // USDC Price in 18 decimals
             setTotalPriceInUsdc(usdcPrice.toString());
-           // setIsInitialized(true);
+            // setIsInitialized(true);
         }
         setUsdcPrice();
-    }, [quantity, promoCode]);
+    }, [quantity, promoCode, creditCardOpen]);
 
     return (
         <div className="flex flex-col justify-center gap-8 mt-8">
@@ -123,7 +123,7 @@ export function ActionSection(): JSX.Element {
                     />
                 )}
                 <br />
-                {/* {isConnected && isInitialized && <CrossmintButton
+                {isConnected && <CrossmintButton
                     onClick={() => {
                         ReactGA.event({
                             category: "User",
@@ -131,13 +131,13 @@ export function ActionSection(): JSX.Element {
                             label: "mintCrossmint",
                         });
                         setCreditCardOpen(true)
-                        setCurrency("AETH"); // Currency must be AETH for USDC Calculation used in Crossmint
+                        // setCurrency("AETH"); // Currency must be AETH for USDC Calculation used in Crossmint
                     }}
                     className={`w-full h-16 ${ready ? "bg-[#F30919] global-clip-path" : "bg-gray-400 cursor-default !text-[#726F6F]"} text-lg text-hornetSting p-2 uppercase font-bold `}
                     isDisabled={!ready || !isConnected || exceedsCrossmintMax}
                     colorStyle="outline-2"
                     btnText={exceedsCrossmintMax ? translate("actionSection.mintWithOptionsDisabled", { maxKeys: MAX_BATCH_SIZE}) : translate("actionSection.mintWithOptions")}
-                />} */}
+                />}
 
                 {/* Error section for ETH transactions */}
                 {mintWithEth.error && (
@@ -217,6 +217,7 @@ export function ActionSection(): JSX.Element {
             <CrossmintProvider apiKey={clientApiKey}>
                 <CrossmintCheckoutProvider>
                     <CrossmintModal
+                        totalPriceInETH={calculateTotalPrice(true).toString()}
                         totalPriceInUsdc={discount.applied ? (BigInt(totalPriceInUsdc) * 95n / 100n).toString() : totalPriceInUsdc}
                         isOpen={creditCardOpen}
                         onClose={() => setCreditCardOpen(false)}

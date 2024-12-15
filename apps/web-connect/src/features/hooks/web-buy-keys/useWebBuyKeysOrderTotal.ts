@@ -41,7 +41,7 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn, 
     tokenBalance: bigint;
     tokenAllowance: bigint;
     ready: boolean;
-    calculateTotalPrice: () => bigint;
+    calculateTotalPrice: (useEth?: boolean) => bigint;
     getApproveButtonText: () => [string, boolean];
     getEthButtonText: () => [string, boolean];
     formatItemPricePer: (item: CheckoutTierSummary) => string;
@@ -109,10 +109,10 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
      * @returns The total price as a bigint.
      */
     const calculateTotalPrice = useMemo(() => {
-        return () => {
+        return (useETH?: boolean) => {
             const price = getPriceData?.price ?? 0n;
             const discountedPrice = discount.applied ? price * BigInt(95) / BigInt(100) : price;
-            if (currency === CURRENCIES.AETH) {
+            if (currency === CURRENCIES.AETH || useETH === true) {
                 return discountedPrice;
             }
             const exchangeRate = exchangeRateData?.exchangeRate ?? 0n;
