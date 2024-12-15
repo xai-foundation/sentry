@@ -1,0 +1,1 @@
+import{bJ as e,bK as t}from"./index-ce57c66f.js";function o(s,r){if(!e(s,{strict:!1}))throw new t({address:s});if(!e(r,{strict:!1}))throw new t({address:r});return s.toLowerCase()===r.toLowerCase()}export{o as i};
