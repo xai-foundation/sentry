@@ -42,7 +42,7 @@
 		},
 		"chooseQuantity": {
 			"title": "SENTRY KEY DA XAI",
-			"description": "Cada Sentry Key permite que você envie até 1 solicitação de recompensa para cada desafio na rede.",
+			"description": "Quanto mais chaves Sentry você comprar e fizer stake, mais recompensas de rede você receberá do ecossistema Xai.",
 			"toolTip": {
 				"title": "Chaves Xai são necessárias para que os nós recebam recompensas da rede $esXAI.",
 				"text": "Todas as compras devem ser realizadas com Arbitrum ETH."

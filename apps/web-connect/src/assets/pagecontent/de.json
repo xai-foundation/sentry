@@ -42,7 +42,7 @@
 		},
 		"chooseQuantity": {
 			"title": "XAI SENTRY-KEY",
-			"description": "Mit jedem Sentry-Key können Sie bis zu 1 Belohnungsanforderung für jede Netzwerk-Challenge senden.",
+			"description": "Je mehr Sentry-Schlüssel Sie kaufen und staken, desto mehr Netzwerkbelohnungen erhalten Sie aus dem Xai-Ökosystem.",
 			"toolTip": {
 				"title": "Xai-Keys sind erforderlich, damit Knoten $esXAI-Netzwerk-Belohnungen erhalten können.",
 				"text": "Alle Käufe müssen in Arbitrum ETH erfolgen."

@@ -42,7 +42,7 @@
 		},
 		"chooseQuantity": {
 			"title": "XAI SENTRY KEY",
-			"description": "每個 Sentry Key 能讓您在每次網路挑戰中最多提交 1 次獎勵申請。",
+			"description": "您購買並質押的 Sentry 密鑰越多，您從 Xai 生態系統獲得的網路獎勵就越多。",
 			"toolTip": {
 				"title": "節點需要 Xai 金鑰才能接收 $esXAI 網路獎勵。",
 				"text": "所有購買必須使用 Arbitrum ETH。"
