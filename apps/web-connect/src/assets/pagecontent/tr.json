@@ -42,7 +42,7 @@
 		},
 		"chooseQuantity": {
 			"title": "XAİ SENTRY ANAHTARI",
-			"description": "Her bir Sentry Anahtarı, her ağ mücadelesi için en fazla 1 ödül talebi göndermenizi sağlar.",
+			"description": "Ne kadar çok Sentry anahtarı satın alıp stake ederseniz, Xai ekosisteminden o kadar çok ağ ödülü alırsınız.",
 			"toolTip": {
 				"title": "Xai anahtarları, düğümlerin $esXAI ağ ödüllerini alabilmesi için gereklidir.",
 				"text": "Tüm satın alımlar Arbitrum ETH'de olmalıdır."

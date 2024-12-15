@@ -42,7 +42,7 @@
 		},
 		"chooseQuantity": {
 			"title": "XAI Sentry密钥",
-			"description": "每个Sentry密钥可在每个网络挑战中最多申领1次奖励。",
+			"description": "您购买并质押的 Sentry 密钥越多，您从 Xai 生态系统获得的网络奖励就越多。",
 			"toolTip": {
 				"title": "只有持有Xai密钥的节点才可接收$esXAI网络奖励。",
 				"text": "所有购买必须使用Arbitrum ETH（以太币）支付。"

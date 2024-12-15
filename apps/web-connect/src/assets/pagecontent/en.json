@@ -42,7 +42,7 @@
 		},
 		"chooseQuantity": {
 			"title": "XAI SENTRY KEY",
-			"description": "Each Sentry Key enables you to submit up to 1 reward claim for each network challenge.",
+			"description": "The more Sentry keys you buy and stake, the more network rewards you will receive from the Xai ecosystem.",
 			"toolTip": {
 				"title": "Xai keys are required for nodes to receive $esXAI network rewards.",
 				"text": "Your wallet must be connected to Arbitrum One to be able to purchase Sentry Keys."
