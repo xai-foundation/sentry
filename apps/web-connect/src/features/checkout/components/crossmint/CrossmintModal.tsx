@@ -10,19 +10,20 @@ import { useTranslation } from "react-i18next";
 interface CrossmintModalProps {
     isOpen: boolean;
     totalQty: number;
+    totalPriceInETH: string;
     totalPriceInUsdc: string;
     promoCode: string;
     onClose: () => void;
 }
 
-const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalQty, totalPriceInUsdc, promoCode }) => {
+const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalQty, /*totalPriceInUsdc,*/ totalPriceInETH, promoCode }) => {
     const collectionId = config.crossmintCollectionId;
     const { address } = useAccount();
     const { order } = useCrossmintCheckout();
     const { setMintWithCrossmint } = useWebBuyKeysContext();
     const [mintTxData, setMintTxData] = useState<MintWithCrossmintStatus>({ txHash: "", orderIdentifier: "" });
     const { t: translate } = useTranslation("Checkout");  
-    
+
     const handleClose = () => {
         setMintWithCrossmint(mintTxData.txHash === "" ? { txHash: "", orderIdentifier: "" } : mintTxData);
         onClose();
@@ -140,13 +141,15 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalQ
                                     _amount: totalQty,
                                     _to: address as `0x${string}`,
                                     _promoCode: promoCode,
-                                    _expectedCostInUSDC: ((BigInt(totalPriceInUsdc) * BigInt(105)) / BigInt(100) / BigInt(10 ** 12)).toString(), // 10^12 to reduce 18 decimals to 6 decimals
-                                    totalPrice: formatWeiToEther(totalPriceInUsdc, 6), // convert to 6 decimal places for Crossmint
+                                    totalPrice: formatWeiToEther(totalPriceInETH, 18),
+                                    // Left in here if we want to reenable crossmint crypto checkout using USDC
+                                    // _expectedCostInUSDC: (BigInt(totalPriceInUsdc) / BigInt(10 ** 12)).toString(), // 10^12 to reduce 18 decimals to 6 decimals
+                                    // totalPrice: formatWeiToEther(totalPriceInUsdc, 6), // convert to 6 decimal places for Crossmint
                             },
                             }}
                             payment={{
                                 crypto: {
-                                    enabled: true,
+                                    enabled: false,
                                     defaultChain: "ethereum",
                                     defaultCurrency: "eth",                        
                                 },

@@ -42,7 +42,7 @@
 		},
 		"chooseQuantity": {
 			"title": "KUNCI SENTRY XAI",
-			"description": "Setiap Kunci Sentry membuat Anda dapat mengajukan maksimal 1 klaim imbalan untuk setiap tantangan jaringan.",
+			"description": "Semakin banyak kunci Sentry yang Anda beli dan staking, semakin banyak hadiah jaringan yang akan Anda terima dari ekosistem Xai.",
 			"toolTip": {
 				"title": "Node harus memiliki kunci Xai agar bisa menerima imbalan jaringan $esXAI.",
 				"text": "Semua pembelian harus dilakukan dalam Arbitrum ETH."
@@ -68,7 +68,10 @@
 			"noDiscount": {
 				"addPromoCode": "+ Tambahkan kode promo",
 				"applyPromoCodeButton": "TERAPKAN",
-				"warning": "Alamat rujukan tidak valid"
+				"warning": "Alamat rujukan tidak valid",
+				"noSelfPromoCode": "Anda tidak dapat menggunakan kode promo Anda sendiri",
+				"promoCodeError": "Terjadi kesalahan saat memvalidasi kode promo",
+				"promoCodeInvalid": "Kode promo tidak valid atau tidak aktif"
 			}
 		},
 		"totalCostRow": {

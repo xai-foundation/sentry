@@ -42,7 +42,7 @@
 		},
 		"chooseQuantity": {
 			"title": "XAIセントリー鍵",
-			"description": "セントリー鍵1つにつき、各ネットワークチャレンジに対し報酬請求を最大1回行うことができます。",
+			"description": "より多くのSentryキーを購入してステーキングするほど、Xaiエコシステムから受け取るネットワーク報酬は増えます。",
 			"toolTip": {
 				"title": "Xai鍵は、ネットワーク報酬「$esXAI」をノードが受け取るために必要となります。",
 				"text": "購入は全てArbitrum ETHで行う必要があります。"
@@ -68,7 +68,10 @@
 			"noDiscount": {
 				"addPromoCode": "+ プロモーションコードを追加",
 				"applyPromoCodeButton": "適用",
-				"warning": "無効な紹介リンク"
+				"warning": "無効な紹介リンク",
+				"noSelfPromoCode": "ご自身のプロモコードはご利用いただけません",
+				"promoCodeError": "プロモコードの検証中にエラーが発生しました。",
+				"promoCodeInvalid": "プロモコードが無効または無効化されています。"
 			}
 		},
 		"totalCostRow": {

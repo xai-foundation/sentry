@@ -42,7 +42,7 @@
 		},
 		"chooseQuantity": {
 			"title": "SENTRY KEY DA XAI",
-			"description": "Cada Sentry Key permite que você envie até 1 solicitação de recompensa para cada desafio na rede.",
+			"description": "Quanto mais chaves Sentry você comprar e fizer stake, mais recompensas de rede você receberá do ecossistema Xai.",
 			"toolTip": {
 				"title": "Chaves Xai são necessárias para que os nós recebam recompensas da rede $esXAI.",
 				"text": "Todas as compras devem ser realizadas com Arbitrum ETH."
@@ -68,7 +68,10 @@
 			"noDiscount": {
 				"addPromoCode": "+ Adicionar código promocional",
 				"applyPromoCodeButton": "APLICAR",
-				"warning": "Endereço de indicação inválido"
+				"warning": "Endereço de indicação inválido",
+				"noSelfPromoCode": "Você não pode usar o seu próprio código promocional",
+				"promoCodeError": "Ocorreu um erro ao validar o código promocional",
+				"promoCodeInvalid": "O código promocional é inválido ou está inativo."
 			}
 		},
 		"totalCostRow": {

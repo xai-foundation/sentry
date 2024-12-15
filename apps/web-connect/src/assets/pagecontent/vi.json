@@ -42,7 +42,7 @@
 		},
 		"chooseQuantity": {
 			"title": "KHÓA SENTRY XAI",
-			"description": "Với mỗi Khóa Sentry, bạn có thể gửi tối đa 1 yêu cầu nhận thưởng tương ứng cho một thử thách của mạng lưới.",
+			"description": "Bạn mua và stake càng nhiều khóa Sentry, bạn sẽ nhận được càng nhiều phần thưởng mạng từ hệ sinh thái Xai.",
 			"toolTip": {
 				"title": "Các nút phải có Khóa Xai thì mới có thể nhận thưởng $esXAI từ mạng lưới.",
 				"text": "Mọi lệnh mua cần được thanh toán bằng Arbitrum ETH."
@@ -68,7 +68,10 @@
 			"noDiscount": {
 				"addPromoCode": "+ Điền mã khuyến mại",
 				"applyPromoCodeButton": "ÁP DỤNG",
-				"warning": "Địa chỉ giới thiệu không hợp lệ"
+				"warning": "Địa chỉ giới thiệu không hợp lệ",
+				"noSelfPromoCode": "Bạn không thể sử dụng mã khuyến mãi của chính mình",
+				"promoCodeError": "Đã xảy ra lỗi trong quá trình xác thực mã khuyến mãi",
+				"promoCodeInvalid": "Mã khuyến mãi không hợp lệ hoặc không hoạt động"
 			}
 		},
 		"totalCostRow": {

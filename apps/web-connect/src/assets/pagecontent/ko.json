@@ -42,7 +42,7 @@
 		},
 		"chooseQuantity": {
 			"title": "XAI센트리 키",
-			"description": "각 센트리 키로 네트워크 도전과제당 보상 요청 1건을 제출할 수 있습니다.",
+			"description": "Sentry 키를 더 많이 구매하고 스테이킹할수록 Xai 생태계로부터 더 많은 네트워크 보상을 받게 됩니다.",
 			"toolTip": {
 				"title": "$esXAI 네트워크 보상을 받으려면 노드에 Xai 키가 필요합니다.",
 				"text": "모든 구매는 아비트럼 이더리움(ETH)으로 이루어져야 합니다."
@@ -68,7 +68,10 @@
 			"noDiscount": {
 				"addPromoCode": "+ 프로모션 코드 추가",
 				"applyPromoCodeButton": "적용",
-				"warning": "잘못된 추천인 주소"
+				"warning": "잘못된 추천인 주소",
+				"noSelfPromoCode": "자신의 프로모션 코드는 사용할 수 없습니다.",
+				"promoCodeError": "프로모션 코드를 검증하는 동안 오류가 발생했습니다",
+				"promoCodeInvalid": "프로모션 코드가 유효하지 않거나 비활성화되어 있습니다."
 			}
 		},
 		"totalCostRow": {
