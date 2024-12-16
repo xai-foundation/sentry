@@ -12,29 +12,12 @@ export function NodeLicenseTests(deployInfrastructure) {
         it("Check calling the initializer is not allowed afterwards", async function() {
             const {
                 nodeLicense, 
-                nodeLicenseDefaultAdmin, 
-                deployer, 
-                xai, 
-                esXai, 
-                chainlinkEthUsdPriceFeed,
-                chainlinkXaiUsdPriceFeed, 
-                usdcToken,
-                refereeCalculations,
-                referee
+                nodeLicenseDefaultAdmin
             } = await loadFixture(deployInfrastructure);
 
             const expectedRevertMessage = "Initializable: contract is already initialized";
             await expect(
-                nodeLicense.connect(nodeLicenseDefaultAdmin).initialize(
-                    await xai.getAddress(), 
-                    await esXai.getAddress(), 
-                    await chainlinkEthUsdPriceFeed.getAddress(), 
-                    chainlinkXaiUsdPriceFeed.getAddress(), 
-                    await deployer.getAddress(), 
-                    await usdcToken.getAddress(),
-                    await refereeCalculations.getAddress(),
-                    await referee.getAddress(),
-                )
+                nodeLicense.connect(nodeLicenseDefaultAdmin).initialize()
             ).to.be.revertedWith(expectedRevertMessage);
         })
 

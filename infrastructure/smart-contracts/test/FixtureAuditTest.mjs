@@ -381,6 +381,22 @@ describe("Stake V1 & Transfer keys on Bulksubmissions", function () {
         // MockRollup
         const MockRollupContractFactory = await ethers.getContractFactory("MockRollup");
         const mockRollup = await MockRollupContractFactory.deploy();
+
+                
+        // Node License9 Upgrade
+        const NodeLicense9 = await ethers.getContractFactory("NodeLicense9");
+        const nodeLicense9 = await upgrades.upgradeProxy(
+            (await nodeLicense.getAddress()),
+            NodeLicense9,
+            {
+                call:
+                {
+                    fn: "initialize",
+                    args: []
+                }
+            }
+        );
+        await nodeLicense9.waitForDeployment();
         
         // Upgrade the StakingPool
         const NewImplementation = await ethers.deployContract("StakingPool2");
@@ -424,7 +440,7 @@ describe("Stake V1 & Transfer keys on Bulksubmissions", function () {
             secretKeyHex,
             publicKeyHex: "0x" + publicKeyHex,
             referee: referee10,
-            nodeLicense: nodeLicense8,
+            nodeLicense: nodeLicense9,
             poolFactory: poolFactory2,
             gasSubsidy,
             esXai: esXai3,
