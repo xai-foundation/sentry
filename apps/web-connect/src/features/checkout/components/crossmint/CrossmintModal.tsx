@@ -149,7 +149,7 @@ const CrossmintModal: React.FC<CrossmintModalProps> = ({ isOpen, onClose, totalQ
                             }}
                             payment={{
                                 crypto: {
-                                    enabled: false,
+                                    enabled: true,
                                     defaultChain: "ethereum",
                                     defaultCurrency: "eth",                        
                                 },
