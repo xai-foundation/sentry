@@ -29,6 +29,8 @@ export function PromoCodeRow() {
         const prefilledPromoCode = queryParams.get("promoCode");
 
         if (prefilledPromoCode) {
+            setPromoCode(prefilledPromoCode);
+            handleApplyPromoCode();
             setPromo(true);
         }
     }, []);

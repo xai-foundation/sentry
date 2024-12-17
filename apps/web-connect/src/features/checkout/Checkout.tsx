@@ -33,7 +33,6 @@ export function Checkout() {
         isTotalLoading,
         isPriceLoading,
         isExchangeRateLoading,
-        promoCode,
         setPromoCode,
         handleApplyPromoCode,
         mintWithEth,
@@ -50,7 +49,7 @@ export function Checkout() {
             setPromoCode(prefilledPromoCode);
             handleApplyPromoCode();
         }
-    }, [prefilledPromoCode, promoCode, setPromoCode]);
+    }, [prefilledPromoCode]);
 
     function returnToClient() {
         window.location.reload();
