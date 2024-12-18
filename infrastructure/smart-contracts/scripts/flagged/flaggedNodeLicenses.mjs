@@ -1,12 +1,18 @@
 import hardhat from "hardhat";
 import fs from 'fs';
 import { parse } from "csv/sync";
+import inquirer from 'inquirer';
 import { NodeLicenseAbi, config } from "@sentry/core";
 const { ethers } = hardhat;
 
-const pathToList = "scripts/flagged/addressesToCheck.csv";
-
 async function main() {
+    //prompt user for the path to the list
+    const { pathToList } = await inquirer.prompt({
+        type: 'input',
+        name: 'pathToList',
+        message: 'Enter the absolute path to the csv containing addresses to check:',
+    });
+
     //validate csv path
     if (!fs.existsSync(pathToList)) {
         console.log("Invalid file path, file does not exists", pathToList);
