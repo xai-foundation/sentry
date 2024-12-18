@@ -26,15 +26,10 @@ const LoadingState = () => {
 
 export function Checkout() {
     const [stakingTabOpened, setStakingTabOpened] = useState(false);
-    const queryString = window.location.search;
-    const queryParams = new URLSearchParams(queryString);
-    const prefilledPromoCode = queryParams.get("promoCode");
     const {
         isTotalLoading,
         isPriceLoading,
         isExchangeRateLoading,
-        setPromoCode,
-        handleApplyPromoCode,
         mintWithEth,
         mintWithXai,
         approve,
@@ -43,13 +38,6 @@ export function Checkout() {
         txHashes,
         //batchMintTx
     } = useWebBuyKeysContext();
-
-    useEffect(() => {
-        if (prefilledPromoCode) {
-            setPromoCode(prefilledPromoCode);
-            handleApplyPromoCode();
-        }
-    }, [prefilledPromoCode]);
 
     function returnToClient() {
         window.location.reload();
