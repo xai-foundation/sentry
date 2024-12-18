@@ -2,13 +2,17 @@ import { useState } from "react";
 import { useAccount, useWriteContract } from "wagmi";
 import { NodeLicenseAbi, config } from "@sentry/core";
 import { CURRENCIES, Currency } from "../shared";
+import { errorNotification, successNotification } from "@/features/checkout/components/notifications/NotificationsComponent";
+import { getPriceForQuantity as getPriceForQuantityCore } from "@sentry/core";
+import { convertEthAmountToXaiAmount } from "@/utils/convertEthAmountToXaiAmount";
 
-const MAX_BATCH_SIZE = config.maxBatchMintSize;
+export const MAX_BATCH_SIZE = 175;
 
 interface UseMintBatchProps {
   promoCode: string;
   calculateTotalPrice: () => bigint;
   currency: Currency;
+  discountApplied: boolean;
 }
 
 export interface UseMintBatchReturn {
@@ -35,6 +39,7 @@ export function useMintBatch({
   promoCode,
   calculateTotalPrice,
   currency,
+  discountApplied,
 }: UseMintBatchProps): UseMintBatchReturn {
   const [txHashes, setTxHashes] = useState<string[]>([]);
   const [mintBatchError, setMintBatchError] = useState<Error | undefined>(
@@ -44,7 +49,7 @@ export function useMintBatch({
   const { address } = useAccount();
   const batchMintTx = useWriteContract();
 
-  const getConfig = (quantity: number) => {
+  const getConfig = (quantity: number, totalPrice: bigint): MintConfig => {
     const functionName = currency === CURRENCIES.AETH ? "mint" : "mintWithXai";
     const mintWithEthArgs = [quantity, promoCode];
     const mintWithXaiArgs = [
@@ -52,7 +57,7 @@ export function useMintBatch({
       quantity,
       promoCode,
       currency === CURRENCIES.ES_XAI,
-      calculateTotalPrice(),
+      totalPrice,
     ];
     const args =
       currency === CURRENCIES.AETH ? mintWithEthArgs : mintWithXaiArgs;
@@ -62,7 +67,7 @@ export function useMintBatch({
       abi: NodeLicenseAbi,
       functionName,
       args,
-      value: currency === CURRENCIES.AETH ? calculateTotalPrice() : undefined,
+      value: currency === CURRENCIES.AETH ? totalPrice : 0n,
       onSuccess: () => {
         setMintBatchError(undefined);
       },
@@ -74,16 +79,18 @@ export function useMintBatch({
   };
 
   const mintBatch = async (qtyToMint: number) => {
+    const totalEthPriceInWei = calculateTotalPrice();
+    const expectedAvg = totalEthPriceInWei / BigInt(qtyToMint);
     setTxHashes([]);
-    const config = getConfig(qtyToMint);
-    executeMint(qtyToMint, config);
+    executeMintLoop(qtyToMint, expectedAvg);
   };
 
-  const executeMint = async (qtyToMint: number, config: MintConfig) => {
+  const executeMintLoop = async (qtyToMint: number, calculatedAverage: bigint) => {
     let qtyRemaining = qtyToMint;
     setMintBatchError(undefined);
     const txHashesLocal: string[] = []; // Local variable to accumulate hashes
     const batches = Math.ceil(qtyToMint / MAX_BATCH_SIZE);
+    let expectedAveragePrice = calculatedAverage;
 
     setIsMinting(true);
     let encounteredError = false; // Local error flag
@@ -94,9 +101,22 @@ export function useMintBatch({
       const qtyToProcess = Math.min(qtyRemaining, MAX_BATCH_SIZE);
       try {
         // Initiate transaction
+        const priceResult = await getPriceForQuantityCore(Number(qtyToProcess));
+        const price =  currency === CURRENCIES.AETH ? priceResult.price : await convertEthAmountToXaiAmount(priceResult.price);
+        let priceToUse = discountApplied ? price * BigInt(95) / BigInt(100) : price;
+        const itemPriceAvg = priceToUse / BigInt(qtyToProcess);
+        if(itemPriceAvg > expectedAveragePrice) {
+          errorNotification("Price has changed. Please review and confirm the new price.");
+          expectedAveragePrice = itemPriceAvg;
+        } 
+        if(currency !== CURRENCIES.AETH) {
+          priceToUse = (priceToUse * BigInt(105)) / BigInt(100)
+        }
+        const config = getConfig(qtyToProcess, priceToUse);
         const result = await batchMintTx.writeContractAsync(config);
         txHashesLocal.push(result);
         qtyRemaining -= qtyToProcess;
+        successNotification(`Mint Batch ${i + 1} of ${batches} successful`);
 
         // Transactions fail if they are sent too quickly when minting with an ERC20 token
         // AETH seems to not experience this issue
@@ -110,15 +130,13 @@ export function useMintBatch({
         console.error("Error minting:", error);
         setMintBatchError(error as Error);
         encounteredError = true; // Update the local error flag
+        errorNotification("Error minting: " + (error as Error).message);
         setIsMinting(false);
       }
     }
 
     setIsMinting(false);
-
-    if (!encounteredError) {
-      setTxHashes(txHashesLocal);
-    }
+    setTxHashes(txHashesLocal);
   };
 
   const clearMintBatchErrors = () => {

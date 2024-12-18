@@ -66,6 +66,67 @@ export const PoolFactoryAbi = [
         "anonymous": false,
         "inputs": [
             {
+                "indexed": true,
+                "internalType": "uint256",
+                "name": "poolIndex",
+                "type": "uint256"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "poolAddress",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "poolOwner",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "stakedKeyCount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "delegateAddress",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256[]",
+                "name": "keyIds",
+                "type": "uint256[]"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint32[3]",
+                "name": "shareConfig",
+                "type": "uint32[3]"
+            },
+            {
+                "indexed": false,
+                "internalType": "string[3]",
+                "name": "poolMetadata",
+                "type": "string[3]"
+            },
+            {
+                "indexed": false,
+                "internalType": "string[]",
+                "name": "poolSocials",
+                "type": "string[]"
+            }
+        ],
+        "name": "PoolCreatedV2",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
                 "indexed": false,
                 "internalType": "address",
                 "name": "oldDeployer",
@@ -232,6 +293,49 @@ export const PoolFactoryAbi = [
     },
     {
         "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "pool",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "totalUserKeysStaked",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "totalKeysStaked",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256[]",
+                "name": "keyIds",
+                "type": "uint256[]"
+            }
+        ],
+        "name": "StakeKeysV2",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
         "inputs": [],
         "name": "StakingEnabled",
         "type": "event"
@@ -297,6 +401,49 @@ export const PoolFactoryAbi = [
             {
                 "indexed": false,
                 "internalType": "uint256",
+                "name": "totalUserEsXaiStaked",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "totalEsXaiStaked",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "requestIndex",
+                "type": "uint256"
+            }
+        ],
+        "name": "UnstakeEsXaiV2",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "pool",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
                 "name": "totalUserKeysStaked",
                 "type": "uint256"
             },
@@ -308,6 +455,55 @@ export const PoolFactoryAbi = [
             }
         ],
         "name": "UnstakeKeys",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "pool",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "totalUserKeysStaked",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "totalKeysStaked",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "requestIndex",
+                "type": "uint256"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256[]",
+                "name": "keyIds",
+                "type": "uint256[]"
+            }
+        ],
+        "name": "UnstakeKeysV2",
         "type": "event"
     },
     {
@@ -372,6 +568,31 @@ export const PoolFactoryAbi = [
             {
                 "indexed": true,
                 "internalType": "address",
+                "name": "pool",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "string[3]",
+                "name": "poolMetadata",
+                "type": "string[3]"
+            },
+            {
+                "indexed": false,
+                "internalType": "string[]",
+                "name": "poolSocials",
+                "type": "string[]"
+            }
+        ],
+        "name": "UpdateMetadataV2",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
                 "name": "delegate",
                 "type": "address"
             },
@@ -399,8 +620,40 @@ export const PoolFactoryAbi = [
         "type": "event"
     },
     {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "pool",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint32[3]",
+                "name": "shareConfig",
+                "type": "uint32[3]"
+            }
+        ],
+        "name": "UpdateSharesV2",
+        "type": "event"
+    },
+    {
         "inputs": [],
         "name": "DEFAULT_ADMIN_ROLE",
+        "outputs": [
+            {
+                "internalType": "bytes32",
+                "name": "",
+                "type": "bytes32"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "STAKE_KEYS_ADMIN_ROLE",
         "outputs": [
             {
                 "internalType": "bytes32",
@@ -433,20 +686,14 @@ export const PoolFactoryAbi = [
     {
         "inputs": [
             {
-                "internalType": "uint256[]",
-                "name": "keyIds",
-                "type": "uint256[]"
+                "internalType": "address[]",
+                "name": "users",
+                "type": "address[]"
             }
         ],
-        "name": "checkKeysAreStaked",
-        "outputs": [
-            {
-                "internalType": "bool[]",
-                "name": "isStaked",
-                "type": "bool[]"
-            }
-        ],
-        "stateMutability": "view",
+        "name": "calculateUserTotalStake",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
     },
     {
@@ -577,6 +824,25 @@ export const PoolFactoryAbi = [
                 "internalType": "address",
                 "name": "",
                 "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "failedKyc",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
             }
         ],
         "stateMutability": "view",
@@ -763,24 +1029,14 @@ export const PoolFactoryAbi = [
                 "internalType": "address",
                 "name": "user",
                 "type": "address"
-            },
-            {
-                "internalType": "uint16",
-                "name": "offset",
-                "type": "uint16"
-            },
-            {
-                "internalType": "uint16",
-                "name": "pageLimit",
-                "type": "uint16"
             }
         ],
-        "name": "getUnstakedKeyIdsFromUser",
+        "name": "getTotalesXaiStakedByUser",
         "outputs": [
             {
-                "internalType": "uint256[]",
-                "name": "unstakedKeyIds",
-                "type": "uint256[]"
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
             }
         ],
         "stateMutability": "view",
@@ -829,7 +1085,13 @@ export const PoolFactoryAbi = [
         "type": "function"
     },
     {
-        "inputs": [],
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_stakeKeysAdmin",
+                "type": "address"
+            }
+        ],
         "name": "initialize",
         "outputs": [],
         "stateMutability": "nonpayable",
@@ -1011,6 +1273,37 @@ export const PoolFactoryAbi = [
         "inputs": [
             {
                 "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "revokeStakeKeysAdminRole",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            },
+            {
+                "internalType": "bool",
+                "name": "failed",
+                "type": "bool"
+            }
+        ],
+        "name": "setFailedKyc",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
                 "name": "pool",
                 "type": "address"
             },
@@ -1039,6 +1332,47 @@ export const PoolFactoryAbi = [
             }
         ],
         "name": "stakeKeys",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "pool",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "keyAmount",
+                "type": "uint256"
+            }
+        ],
+        "name": "stakeKeys",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "pool",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "keyAmounts",
+                "type": "uint256"
+            },
+            {
+                "internalType": "address",
+                "name": "staker",
+                "type": "address"
+            }
+        ],
+        "name": "stakeKeysAdmin",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -1098,6 +1432,25 @@ export const PoolFactoryAbi = [
         "inputs": [
             {
                 "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "name": "totalEsXaiStakeCalculated",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
                 "name": "pool",
                 "type": "address"
             },
@@ -1141,6 +1494,24 @@ export const PoolFactoryAbi = [
             }
         ],
         "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "pool",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "unstakeRequestIndex",
+                "type": "uint256"
+            }
+        ],
+        "name": "unstakeKeys",
+        "outputs": [],
+        "stateMutability": "nonpayable",
         "type": "function"
     },
     {
@@ -1311,6 +1682,30 @@ export const PoolFactoryAbi = [
                 "internalType": "uint256",
                 "name": "",
                 "type": "uint256"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "pool",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "user",
+                "type": "address"
+            }
+        ],
+        "name": "validateSubmitPoolAssertion",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
             }
         ],
         "stateMutability": "view",

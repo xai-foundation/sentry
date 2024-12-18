@@ -42,10 +42,10 @@
 		},
 		"chooseQuantity": {
 			"title": "XAI SENTRY KEY",
-			"description": "Each Sentry Key enables you to submit up to 1 reward claim for each network challenge.",
+			"description": "The more Sentry keys you buy and stake, the more network rewards you will receive from the Xai ecosystem.",
 			"toolTip": {
 				"title": "Xai keys are required for nodes to receive $esXAI network rewards.",
-				"text": "All purchases must be made in Arbitrum ETH."
+				"text": "Your wallet must be connected to Arbitrum One to be able to purchase Sentry Keys."
 			},
 			"maximumPerTransaction": "{{count}} Maximum Per Transaction",
 			"maximumNodeLicenses": "A maximum of {{max}} NodeLicenses can be purchased in a single transaction."
@@ -68,7 +68,10 @@
 			"noDiscount": {
 				"addPromoCode": "+ Add promo code",
 				"applyPromoCodeButton": "APPLY",
-				"warning": "Invalid referral address"
+				"warning": "Invalid referral address",
+				"noSelfPromoCode": "You are unable to use your own promo code",
+				"promoCodeError": "An error occurred while validating the promo code",
+				"promoCodeInvalid": "Promo code is invalid or inactive"
 			}
 		},
 		"totalCostRow": {
@@ -83,8 +86,10 @@
 			"seeBlockedCountries": "(See blocked countries)"
 		},
 		"actionSection": {
-			"mintWithOptions": "Mint - Credit/Debit, SOL, ETH, USDC",
-			"mintWithOptionsDisabled": "Crossmint Max 175 keys per txn",
+			"crossmintModalHeading": "Pay with Crossmint",
+			"crossmintModalLoading": "Loading...",
+			"mintWithOptions": "Crossmint - ",
+			"mintWithOptionsDisabled": "Crossmint Max {{maxKeys}} keys per txn",
 			"tokenButtonTexts": {
 				"isPending": "WAITING FOR CONFIRMATION..",
 				"switchToArbitrum": "Please Switch to Arbitrum"
@@ -118,7 +123,7 @@
 			"isPending": "WAITING FOR CONFIRMATION...",
 			"insufficientBalance": "Insufficient {{currency}} balance",
 			"approveCurrency": "Approve {{currency}}",
-			"purchaseNow": "PURCHASE NOW"
+			"purchaseNow": "BUY NOW"
 		},
 		"ethButtonTexts": {
 			"connectWallet": "Please Connect Your Wallet",

@@ -1,0 +1,136 @@
+﻿{
+	"Nav": {
+		"connectWallet": "連接錢包",
+		"docs": "文件",
+		"sentryNodeAgreement": "Sentry Node 協議",
+		"privacyPolicy": "隱私權政策協議",
+		"generalTerms": "一般條款",
+		"stakingTerms": "質押條款",
+		"copyright": "©2024 XAI。版權所有",
+		"telegram": "Telegram",
+		"discord": "Discord",
+		"twitter": "X"
+	},
+	"Checkout": {
+		"updatingTotal": "正在更新總數...",
+		"transactionPending": "交易進行中...",
+		"backButton": "返回",
+		"successfulPurchase": {
+			"title": "購買成功",
+			"text": "您已成功購買 Xai Sentry Key",
+			"transactionId": "交易 ID：",
+			"promo": {
+				"shareLink": "與朋友分享您的推薦連結！",
+				"info": "他們可享 5% 折扣，而您可以獲得銷售額的 15%。"
+			},
+			"shareButton": {
+				"title": "Sentry Key 購買享 5% 折扣",
+				"text": "在 Xai 上鑄造金鑰進行質押，即可開始賺取獎勵並獲得空投資格。"
+			},
+			"copyTooltip": "已複製！",
+			"stakePromo": {
+				"title": "將質押金鑰放入礦池以開始賺取獎勵",
+				"buttonText": "質押金鑰",
+				"downloadOperator": "下載操作員"
+			}
+		},
+		"logoColumn": {
+			"purchaseReady": "您的購買已準備好",
+			"imageAlt": "Sentry 標誌",
+			"networkRewardsAmount": "~$300M",
+			"networkRewardsText": "至今為止，金鑰持有者獲得的網路獎勵"
+		},
+		"chooseQuantity": {
+			"title": "XAI SENTRY KEY",
+			"description": "您購買並質押的 Sentry 密鑰越多，您從 Xai 生態系統獲得的網路獎勵就越多。",
+			"toolTip": {
+				"title": "節點需要 Xai 金鑰才能接收 $esXAI 網路獎勵。",
+				"text": "所有購買必須使用 Arbitrum ETH。"
+			},
+			"maximumPerTransaction": "每筆交易 {{count}} 上限",
+			"maximumNodeLicenses": "在一次交易中最多可以購買 {{max}} 個節點授權。"
+		},
+		"chooseCurrencyTitle": "選擇支付貨幣",
+		"priceKeyRow": {
+			"nodeKeyQuantity": "{{quantity}} x Xai Sentry Key",
+			"pricePerKey": "每個金鑰 {{price}} {{currency}}",
+			"pricePerKeyDesktop": "每個金鑰 {{price}} {{currency}}"
+		},
+		"promoCodeRow": {
+			"discount": {
+				"text": "折扣 (5%)",
+				"removeButton": "移除"
+			},
+			"pricesMayVary": {
+				"title": "您的交易可能會被還原",
+				"text": "Xai Sentry Key 的價格會根據剩餘供應量而有所不同。一般來說，隨著可用金鑰數量減少，金鑰價格就會上漲。如果您購買的金鑰數量超過目前價格等級的供應量，交易可能會被還原。建議您將購買分成兩筆交易：一筆用於目前價格等級，另一筆用於下個價格等級。"
+			},
+			"noDiscount": {
+				"addPromoCode": "+ 新增優惠碼",
+				"applyPromoCodeButton": "申請",
+				"warning": "無效的推薦地址",
+				"noSelfPromoCode": "您無法使用您自己的優惠碼。",
+				"promoCodeError": "驗證優惠碼時發生錯誤。",
+				"promoCodeInvalid": "優惠碼無效或未啟用。"
+			}
+		},
+		"totalCostRow": {
+			"youPay": "您支付",
+			"balance": "可用餘額：{{balance}} {{currency}}"
+		},
+		"agreementCheckboxes": {
+			"iAgreeWith": "我同意",
+			"sentryNodeAgreement": "Sentry Node 協議",
+			"notTransferableKeys": "我明白 Sentry Key 不可轉讓。",
+			"cannotRedeemXAI": "我明白在通過 KYC 之前，我無法將 esXAI 兌換為 XAI",
+			"seeBlockedCountries": "(查看受限國家/地區)"
+		},
+		"actionSection": {
+			"mintWithOptions": "鑄造 - ",
+			"mintWithOptionsDisabled": "Crossmint 每筆交易最多 {{maxKeys}} 個金鑰",
+			"crossmintModalHeading": "使用 Crossmint 支付",
+			"crossmintModalLoading": "加載中...",
+			"tokenButtonTexts": {
+				"isPending": "等待確認中...",
+				"switchToArbitrum": "請切換到 Arbitrum"
+			},
+			"mintWithEthError": {
+				"insufficientFundsError": {
+					"title": "資金不足，無法完成交易",
+					"text": "確保您的錢包中有足夠的 AETH 和燃料費以完成交易。"
+				},
+				"userRejectedRequest": {
+					"title": "交易已取消",
+					"text": "您已取消錢包中的交易。"
+				}
+			},
+			"mintWithXaiError": {
+				"userRejectedRequest": {
+					"title": "交易已取消",
+					"text": "您已取消錢包中的交易。"
+				}
+			},
+			"approveError": {
+				"userRejectedRequest": {
+					"title": "交易已取消",
+					"text": "您已取消錢包中的交易。"
+				}
+			}
+		}
+	},
+	"WebBuyKeysOrderTotal": {
+		"approveButtonsTexts": {
+			"isPending": "等待確認中...",
+			"insufficientBalance": "{{currency}} 餘額不足",
+			"approveCurrency": "核准 {{currency}}",
+			"purchaseNow": "立即購買"
+		},
+		"ethButtonTexts": {
+			"connectWallet": "請連接您的錢包",
+			"switchToArbitrum": "請切換到 Arbitrum",
+			"isPending": "等待確認中...",
+			"insufficientBalance": "ETH 餘額不足",
+			"mintNow": "立即鑄造"
+		}
+	}
+}

@@ -57,10 +57,10 @@ import "../../RefereeCalculations.sol";
 // 42: Must complete KYC.
 // 43: Maximum staking amount exceeded.
 // 44: Key already assigned.
-// 45: Not owner of key.
+// 45: Not enough unstaked keys available for stake.
 // 46: Pool owner needs at least 1 staked key.
 // 47: Key not assigned to pool.
-// 48: Not owner of key.
+// 48: Not enough staked keys in pool for unstake.
 // 49: Maximum staking amount exceeded.
 // 50: Invalid amount.
 // 51: Invalid stake rewards tier percentage.
@@ -143,6 +143,7 @@ contract Referee10 is Initializable, AccessControlEnumerableUpgradeable {
     // Enabling staking on the Referee
     bool public stakingEnabled;
 
+    // DEPRECATED We do not track keyIds anymore, this mapping is not updated anymore
     // Mapping for a key id assigned to a staking pool
     mapping(uint256 => address) public assignedKeyToPool;
 
@@ -618,6 +619,7 @@ contract Referee10 is Initializable, AccessControlEnumerableUpgradeable {
             address owner = NodeLicense(nodeLicenseAddress).ownerOf(_nodeLicenseId);
             Submission storage submission = submissions[_challengeId][_nodeLicenseId];
             
+            // TODO we need to find a way to have people claim their old key based submissions and transfer the reward to the right pool / owner
             address rewardReceiver = assignedKeyToPool[_nodeLicenseId];
             if (rewardReceiver == address(0)) {
                 rewardReceiver = owner;
@@ -759,31 +761,35 @@ contract Referee10 is Initializable, AccessControlEnumerableUpgradeable {
         emit UnstakeV1(msg.sender, amount, stakedAmounts[msg.sender]);
     }
 
-    function stakeKeys(address pool, address staker, uint256[] memory keyIds, bool isAdminStake) external onlyPoolFactory {
+    function stakeKeys(address pool, address staker, uint256 keyAmount, bool isAdminStake) external onlyPoolFactory {
         require(isAdminStake || stakingEnabled, "52");
 
-        uint256 keysLength = keyIds.length;
         // Check if the pool has enough capacity to stake the keys
-        require(assignedKeysToPoolCount[pool] + keysLength <= maxKeysPerPool, "43");
-
-        uint256 currentChallenge = challengeCounter - 1;
+        require(assignedKeysToPoolCount[pool] + keyAmount <= maxKeysPerPool, "43");
 
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
+        uint256 ownedKeyAmount = nodeLicenseContract.balanceOf(staker);
+
+        require(ownedKeyAmount >= assignedKeysOfUserCount[staker] + keyAmount, "45");
+
+        // DEPRECATED We do not track keyIds anymore, we only check if the staker has enough unstaked keys available
         // Assign the keys to the pool
-        for (uint256 i = 0; i < keysLength; i++) {
-            uint256 keyId = keyIds[i];
-            // Check if the key is not already assigned to a pool
-            require(assignedKeyToPool[keyId] == address(0), "44");
-            if(!isAdminStake){
-                // If not admin stake, check if the staker is the owner of the key
-                require(nodeLicenseContract.ownerOf(keyId) == staker, "45");
-            }
-            assignedKeyToPool[keyId] = pool;
-        }
+        // for (uint256 i = 0; i < keysLength; i++) {
+        //     uint256 keyId = keyIds[i];
+        //     // Check if the key is not already assigned to a pool
+        //     require(assignedKeyToPool[keyId] == address(0), "44");
+        //     if(!isAdminStake){
+        //         // If not admin stake, check if the staker is the owner of the key
+        //         require(nodeLicenseContract.ownerOf(keyId) == staker, "45");
+        //     }
+        //     assignedKeyToPool[keyId] = pool;
+        // }
 
         // Update the user and pool staked key counts
-        assignedKeysToPoolCount[pool] += keysLength;
-        assignedKeysOfUserCount[staker] += keysLength;
+        assignedKeysToPoolCount[pool] += keyAmount;
+        assignedKeysOfUserCount[staker] += keyAmount;
+
+        uint256 currentChallenge = challengeCounter - 1;
 
         // If the pool has submitted for the current challenge, update the pool bulk submission
         if(bulkSubmissions[currentChallenge][pool].submitted){
@@ -796,20 +802,21 @@ contract Referee10 is Initializable, AccessControlEnumerableUpgradeable {
         }
     }
 
-    function unstakeKeys(address pool, address staker, uint256[] memory keyIds) external onlyPoolFactory {
+    function unstakeKeys(address pool, address staker, uint256 keyAmount) external onlyPoolFactory {
         require(stakingEnabled, "52");
 
-        uint256 keysLength = keyIds.length;
         NodeLicense nodeLicenseContract = NodeLicense(nodeLicenseAddress);
 
-        for (uint256 i = 0; i < keysLength; i++) {
-            uint256 keyId = keyIds[i];
-            require(assignedKeyToPool[keyId] == pool, "47");
-            require(nodeLicenseContract.ownerOf(keyId) == staker, "48");
-            assignedKeyToPool[keyId] = address(0);
-        }
-        assignedKeysToPoolCount[pool] -= keysLength;
-        assignedKeysOfUserCount[staker] -= keysLength;
+        // DEPRECATED We do not track keyIds anymore, we only check if the staker has enough staked keys
+        // for (uint256 i = 0; i < keysLength; i++) {
+        //     uint256 keyId = keyIds[i];
+        //     require(assignedKeyToPool[keyId] == pool, "47");
+        //     require(nodeLicenseContract.ownerOf(keyId) == staker, "48");
+        //     assignedKeyToPool[keyId] = address(0);
+        // }
+
+        assignedKeysToPoolCount[pool] -= keyAmount;
+        assignedKeysOfUserCount[staker] -= keyAmount;
         
         uint256 currentChallenge = challengeCounter - 1;
 
@@ -1004,9 +1011,6 @@ contract Referee10 is Initializable, AccessControlEnumerableUpgradeable {
             // Determine the number of keys to be submitted for by the owner
             // This is calculated by taking the total number of keys owned and subtracting the number of keys staked in pools
             numberOfKeys = NodeLicense(nodeLicenseAddress).balanceOf(_bulkAddress) - assignedKeysOfUserCount[_bulkAddress];
-        }else{
-            // If the bulk address is a pool, check if the caller is the pool owner or an approved operator
-            require(PoolFactory2(poolFactoryAddress).validateSubmitPoolAssertion(_bulkAddress, msg.sender), "17");
         }
 
         // Confirm not already submitted

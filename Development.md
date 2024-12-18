@@ -23,11 +23,8 @@ This monorepo holds the following packages:
 
 ## Development cycle
 
-Ongoing development will be done on the sentry fork https://github.com/xai-foundation/sentry-development (this requires write access on that repo).
-
 - Feature branches for epics will be created on the production repo (`xai-foundation/sentry`) (this requires write access on that repo).
-- Working branches will be created **from** `origin/xai-foundation/sentry/feature-branch` **in** `xai-foundation/sentry-development:working-branch`
-- PRs get created on `xai-foundation/sentry-development:working-branch` back into `xai-foundation/sentry/feature-branch`
+- PRs get created on `xai-foundation/sentry/:working-branch` back into `xai-foundation/sentry/develop`
 - Every PR links to its story and has a description on
   - What has been done
   - How has it been tested
@@ -38,9 +35,7 @@ Ongoing development will be done on the sentry fork https://github.com/xai-found
 
 ## Local development
 
-Currently the monorepo can be installed and built using **pnpm** except `web-staking` that has yet to be integrated and needs to be managed with **npm** (https://www.pivotaltracker.com/story/show/187887214)
-
-[NX](https://nx.dev/features/run-tasks) can be used for local script management, currently for every app except `web-staking`
+[NX](https://nx.dev/features/run-tasks) can be used for local script management.
 
 Run the different apps by their commands in the root's `package.json` like
 
@@ -49,43 +44,32 @@ Run the different apps by their commands in the root's `package.json` like
 - `pnpm web` for running sentry-xai.games locally
 - `pnpm desktop` for running the desktop app locally
 
-For local release building and signing SSL.com access is requires. Currently the credentials are set in the github repositories sentry & sentry-development, however, sentry.development is currently breaking on sign tracked in this story https://www.pivotaltracker.com/story/show/187983657.
+For local release building and signing SSL.com access is requires. Currently the credentials are set in the github secrets.
 
 A local release and a github release can be created without signing the release.
-Currently only the windows release gets signed.
+More information about the signing can be found in the desktop app readme.
 
 ---------------------------------
 
 # Deployments & Releases
 
-## Develop Environment
+## Staging Environments and develop releases
 
-### Operator & Web-Connect
+### Operator & CLI
 
-Push a **tag** on `xai-foundation/sentry-development:working-branch` to trigger the github actions. This will deploy
+- Run the github action `Create Signed Test Release` or `Create Unsigned Test Release` (Note: windows signing costs per signing requests / month) this will upload the release as workflow artifacts for testing. They will be automatically deleted after 30 days !
 
-- **web-connect** to https://xai-foundation.github.io/sentry-development/ (github pages)
-- **CLI & Desktop App (all OS)** to https://github.com/xai-foundation/sentry-development/releases
 
-THIS WILL TRIGGER THE AUTO UPDATE FOR ALL PREVIOUS DESKTOP CLIENTS !
+### Key-sale page (web-connect)
 
-**Important Config Changes That Must be Made To Run on Sepolia testnet:**
-- `packages\core\src\config.ts` needs to be updated, current sepolia testnet config can be found here https://github.com/xai-foundation/sentry-development/blob/build-sepolia/packages/core/src/config.ts
-- `useBlockIp()` hook in `apps/web-connect` needs to set `setBlocked(false);` for any user to disable geo-block
-- currently we still need to comment out hardcoded checks for chainIds and RPCs in web-connect and core. For this we can use the prepared branch `xai-foundation/sentry-development:build-sepolia`. For local testing and test deploys new branches can be created off `build-sepolia` and tags pushed from there.
-- remove `compareWithCDN` in  `packages\core\src\operator\operatorRuntime.ts`, there is no sepolia public node that publishes to the CDN
+- Run the github action `Deploy Web Connect`, set `Cloudflare project to deploy to` to **`sentry-develop`** **(!)**. This will deploy the app to the develop env.
 
-### Staking App
+### Staking App (web-staking)
 
-Push to `xai-foundation/sentry-development:develop` to trigger the cloud deploy of 
-
-- develop.app.xai.games
-- https://console.cloud.google.com/cloud-build/builds?hl=de&project=xai-games Source: `xai-foundation/sentry-development` (Google Cloud access required)
-
-Enabling sepolia testnet for the staking app is managed through environment variables set by the services team. The staking app has both sets of contract addresses and manages the main network through the env variable `NEXT_PUBLIC_APP_ENV=development`. This enables connecting the arbitrum sepolia network and disables the geo-block for the staking app.
+- Push a tag with the prefix `web-staking` **AND the postfix** `develop.{v}` like `web-staking-1.0.0-develop.1`. This will deploy to the develop environment.
 
 Local development requires a local mongoDB instance or access to the develop mongoDB used for develop.app.xai.games.
-A local mongoDB can be synced by running the CLI cmd `sync-staking-pools` with the local mongoDB URI locally with a [sepolia `config.json`](https://github.com/xai-foundation/sentry-development/blob/build-sepolia/packages/core/src/config.ts).
+A local mongoDB can be synced by running the CLI cmd `sync-staking-pools` with the local mongoDB URI locally using `toggle-switch-network` command first.
 The cloud build, build trigger and develop mongoDB is configured, deployed and maintained by the Services Team.
 
 #### Setup local development for web-staking:
@@ -96,33 +80,32 @@ The cloud build, build trigger and develop mongoDB is configured, deployed and m
     * For syncing testnet data ensure the current config file in packages/core/src/config.json is the Sepolia config file.
     * Prepopulate mongoDb by starting the CLI and running the `sync-staking-pools` command.
 
+
 ### Sentry Subgraph
 
-Sentry graph is deployed and hosted by alchemy https://subgraphs.alchemy.com/dashboard (Alchemy access required).
+**IMPORTANT: Always push a tag to mark your subgraph deploy until this is automated !** `subgraph-deploy-{version}` where version is the deployed version on Alchemy
 
+Sentry graph is deployed and hosted by alchemy https://subgraphs.alchemy.com/dashboard (Alchemy access required).
 The sepolia graphs are in `sentry-sepolia` https://subgraphs.alchemy.com/subgraphs/6221
 
-Build and deploy from the local machine in `infrastructure/sentry-subgraph` with `pnpm codegen`, `pnpm build` and the deployment cmd from the alchemy subgraph page. The sepolia sync has sepolia contract specific logic for managing Poolfactory and Referee versions as well as reducing the submissions entity count since sepolia has more challenges than one every hour during specific testing time frames. Sepolia deploys that sync should be done from `xai-foundation/sentry-development:subgraph-sepolia-sync` or a local branch off `xai-foundation/sentry-development:subgraph-sepolia-sync`. `xai-foundation/sentry-development:subgraph-sepolia-sync` needs to be kept up to date with sync script updates.
+Run the alchemy deploy command in `infrastructure/sentry-subgraph` to deploy a new subgraph with a specific version.
 
 For local testing the subgraph endpoint needs to be updated in `packages\sentry-subgraph-client\.graphclientrc.yml` and launched to a local playground by running `pnpm dev` in `packages\sentry-subgraph-client`.
 
-#### Special Instructions For Sepolia Subgraph deployments
+```
+DEPRECATED
 
-1. Make code changes
-2. Generate the types with: `pnpm codegen`
-3. Build the subgraph with: `pnpm build`
-4. Deploy using the deploy command provided by the alchemy dashboard. (Note: ensure to maintain the version name/formatting).
+Build and deploy from the local machine in `infrastructure/sentry-subgraph` with `pnpm codegen`, `pnpm build` and the deployment cmd from the alchemy subgraph page. The sepolia sync has sepolia contract specific logic for managing Poolfactory and Referee versions as well as reducing the submissions entity count since sepolia has more challenges than one every hour during specific testing time frames. Sepolia deploys that sync should be done from `xai-foundation/sentry-development:subgraph-sepolia-sync` or a local branch off `xai-foundation/sentry-development:subgraph-sepolia-sync`. `xai-foundation/sentry-development:subgraph-sepolia-sync` needs to be kept up to date with sync script updates.
+```
+
 
 ### Smart contracts
 
 All Xai ecosystem smart contracts are in `infrastructure/smart-contracts`, the deployments are managed through hardhat.
 
 Sepolia contracts can be deployed & upgraded with the sepolia deployer `0x490A5C858458567Bd58774C123250de11271f165` (Private Key required)
-The current sepolia infrastructure is deployed from `xai-foundation/sentry-development:sepolia-contract-deploy`, deployed hardhat config and .openzeppelin is at 
-- https://github.com/xai-foundation/sentry-development/tree/sepolia-contract-deploy/infrastructure/smart-contracts/sepolia.openzeppelin
-- https://github.com/xai-foundation/sentry-development/blob/sepolia-contract-deploy/infrastructure/smart-contracts/hardhat.config.cjs
-
-For deploying `sepolia.openzeppelin` needs to overwrite the existing `.openzeppelin`.
+The `develop` branch should match what is deployed on testnet.
+In the future, this should be automated and run through a github action.
 
 All deployments and upgrades are managed by scripts in `infrastructure/smart-contracts/scripts`.
 
@@ -137,27 +120,27 @@ Run `pnpm test` to run all tests referenced in `infrastructure\smart-contracts\t
 
 ## Production Environment
 
-### Operator & Web-Connect
+### Operator & CLI
 
-Push a **tag** on `xai-foundation/sentry:master` (default case to deploy a production release will be from `master` however, for special cases we can push a tag from any release-branch) to trigger the github actions. This will deploy
 
-- **web-connect** to https://xai-foundation.github.io/sentry-development/ (github pages)
-- **CLI & Desktop App (all OS)** to https://github.com/xai-foundation/sentry-development/releases
+- Run the github action `Operator - Semantic Release and Build`. This will create a new semantic release on github. THIS WILL TRIGGER THE AUTO UPDATE FOR ALL PREVIOUS DESKTOP CLIENTS !
+
+### Key-sale page (web-connect)
+
+- Run the github action `Deploy Web Connect`, set `Cloudflare project to deploy to` to **`sentry`** **(!)**. This will deploy the app to the production env.
 
 This requires write access to `xai-foundation/sentry`
 
-THIS WILL TRIGGER THE AUTO UPDATE FOR ALL PREVIOUS DESKTOP CLIENTS !
 
-### Staking App
+### Staking App (web-staking)
 
-Push to `xai-foundation/sentry:master` to trigger the cloud deploy of 
-
-- app.xai.games
-- https://console.cloud.google.com/cloud-build/builds?hl=de&project=xai-games Source: `xai-foundation/sentry` (Google Cloud access required)
+- Push a tag with the prefix `web-staking` like `web-staking-1.0.0`. This will deploy to the production environment.
 
 The cloud build, build trigger and production mongoDB is configured, deployed and maintained by the Services Team.
 
 ### Sentry Subgraph
+
+**IMPORTANT: Always push a tag to mark your subgraph deploy until this is automated !** `subgraph-deploy-{version}` where version is the deployed version on Alchemy
 
 Sentry graph is deployed and hosted by alchemy https://subgraphs.alchemy.com/dashboard (Alchemy access required).
 

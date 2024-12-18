@@ -41,14 +41,14 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn, 
     tokenBalance: bigint;
     tokenAllowance: bigint;
     ready: boolean;
-    calculateTotalPrice: () => bigint;
+    calculateTotalPrice: (useEth?: boolean) => bigint;
     getApproveButtonText: () => [string, boolean];
     getEthButtonText: () => [string, boolean];
     formatItemPricePer: (item: CheckoutTierSummary) => string;
     displayPricesMayVary: boolean;
     nodesAtEachPrice: Array<CheckoutTierSummary> | undefined;
-    discount: { applied: boolean; error: boolean };
-    setDiscount: React.Dispatch<React.SetStateAction<{ applied: boolean; error: boolean }>>;
+    discount: { applied: boolean; error: boolean, errorMessage: string | undefined };
+    setDiscount: React.Dispatch<React.SetStateAction<{ applied: boolean; error: boolean, errorMessage: string | undefined  }>>;
     promoCode: string;
     setPromoCode: React.Dispatch<React.SetStateAction<string>>;
     userHasTokenBalance: boolean;
@@ -109,10 +109,10 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
      * @returns The total price as a bigint.
      */
     const calculateTotalPrice = useMemo(() => {
-        return () => {
+        return (useETH?: boolean) => {
             const price = getPriceData?.price ?? 0n;
             const discountedPrice = discount.applied ? price * BigInt(95) / BigInt(100) : price;
-            if (currency === CURRENCIES.AETH) {
+            if (currency === CURRENCIES.AETH || useETH === true) {
                 return discountedPrice;
             }
             const exchangeRate = exchangeRateData?.exchangeRate ?? 0n;
@@ -120,7 +120,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
         };
     }, [getPriceData, discount, currency, exchangeRateData]);
     
-    const mintBatch = useMintBatch({promoCode, calculateTotalPrice, currency});
+    const mintBatch = useMintBatch({promoCode, calculateTotalPrice, currency, discountApplied: discount.applied});
     const contractWrites = useContractWrites({ quantity,
         promoCode,
         calculateTotalPrice,
@@ -129,8 +129,14 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
     });
 
     useEffect(() => {
-        refetchAllowance();
-    }, [contractWrites.approveTx.status, refetchAllowance]);
+        if(contractWrites.approve.isSuccess) {
+            refetchAllowance();
+        }
+    }, [contractWrites.approveTx, contractWrites.approve, refetchAllowance]);
+
+    useEffect(() => {
+        handleApplyPromoCode();
+    }, [address]);
 
 
     useEffect(() => {

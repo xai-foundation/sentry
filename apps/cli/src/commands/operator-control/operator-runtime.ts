@@ -8,7 +8,8 @@ import {
     PublicNodeBucketInformation,
     getSentryWalletsForOperator,
     getSubgraphHealthStatus,
-    loadOperatorWalletsFromRPC
+    loadOperatorWalletsFromRPC,
+    getUserStakedPoolsFromGraph
 } from "@sentry/core";
 import { Signer } from 'ethers';
 
@@ -74,6 +75,14 @@ export function bootOperator(cli: Command): void {
                                 value: p.address
                             });
                         });
+                        const stakedPools = await getUserStakedPoolsFromGraph(wallets.map(w => w.address), pools.map(p => p.address), false, {});
+                        stakedPools.forEach(p => {
+                            choices.push({
+                                name: `Pool: ${p.name} (${p.address})`,
+                                value: p.address
+                            });
+                        });
+
                     } else { // Fetch from RPC
                         const res = await loadOperatorWalletsFromRPC(operatorAddress);
                         res.forEach(a => {

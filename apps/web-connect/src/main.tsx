@@ -14,6 +14,17 @@ import ReactGA from "react-ga4";
 
 import en from "./assets/pagecontent/en.json";
 import de from "./assets/pagecontent/de.json";
+import hi from "./assets/pagecontent/hi.json";
+import id from "./assets/pagecontent/id.json";
+import ja from "./assets/pagecontent/ja.json";
+import ko from "./assets/pagecontent/ko.json";
+import ptbr from "./assets/pagecontent/pt-BR.json";
+import tr from "./assets/pagecontent/tr.json";
+import vi from "./assets/pagecontent/vi.json";
+import zhcn from "./assets/pagecontent/zh-CN.json";
+import zhtw from "./assets/pagecontent/zh-TW.json";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from 'react-toastify'
 
 i18n
   .use(LanguageDetector)
@@ -21,7 +32,16 @@ i18n
   .init({
     resources: {
       en,
-      de
+      de,
+      hi,
+      id,
+      ja,
+      ko,
+      ["pt-BR"]: ptbr,
+      tr,
+      vi,
+      ["zh-CN"]: zhcn,
+      ["zh-TW"]: zhtw
     },
     fallbackLng: "en",
     interpolation: {
@@ -44,6 +64,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       initialState={initialState}
     >
       <QueryClientProvider client={queryClient}>
+        <ToastContainer className="toast-container" />
         <Helmet>
           <meta name="title" property="og:title" content="Xai Sentry Node" />
           <meta name="description" property="og:description" content="Xai Sentry Key Sale Page" />

@@ -1,7 +1,6 @@
 import { parse } from "csv/sync";
 import fs from "fs";
 import { config, createBlsKeyPair } from "@sentry/core";
-import { extractAbi } from "../utils/exportAbi.mjs";
 import { RefereeBulkSubmissionTransfers } from "./tinykeys/RefereeBulkSubmissionTransfers.mjs";
 import { mintBatchedLicenses } from "./utils/mintLicenses.mjs"
 
@@ -62,13 +61,11 @@ describe("Stake V1 & Transfer keys on Bulksubmissions", function () {
         const StakingPool = await ethers.deployContract("StakingPool");
         await StakingPool.waitForDeployment();
         const stakingPoolImplAddress = await StakingPool.getAddress();
-        await extractAbi("StakingPool", StakingPool);
 
         // Deploy the Key Bucket Tracker (implementation only)
         const KeyBucketTracker = await ethers.deployContract("BucketTracker");
         await KeyBucketTracker.waitForDeployment();
         const keyBucketTrackerImplAddress = await KeyBucketTracker.getAddress();
-        await extractAbi("BucketTracker", KeyBucketTracker);
 
         // Deploy the esXai Bucket Tracker (implementation only)
         const EsXaiBucketTracker = await ethers.deployContract("BucketTracker");
@@ -143,7 +140,6 @@ describe("Stake V1 & Transfer keys on Bulksubmissions", function () {
         const StakingPoolPoolBeacon = await ethers.deployContract("PoolBeacon", [stakingPoolImplAddress]);
         await StakingPoolPoolBeacon.waitForDeployment();
         const stakingPoolPoolBeaconAddress = await StakingPoolPoolBeacon.getAddress();
-        await extractAbi("PoolBeacon", StakingPoolPoolBeacon);
 
         // Deploy the key BucketTracker's PoolBeacon
         const KeyBucketTrackerPoolBeacon = await ethers.deployContract("PoolBeacon", [keyBucketTrackerImplAddress]);
@@ -386,6 +382,28 @@ describe("Stake V1 & Transfer keys on Bulksubmissions", function () {
         const MockRollupContractFactory = await ethers.getContractFactory("MockRollup");
         const mockRollup = await MockRollupContractFactory.deploy();
 
+                
+        // Node License9 Upgrade
+        const NodeLicense9 = await ethers.getContractFactory("NodeLicense9");
+        const nodeLicense9 = await upgrades.upgradeProxy(
+            (await nodeLicense.getAddress()),
+            NodeLicense9,
+            {
+                call:
+                {
+                    fn: "initialize",
+                    args: []
+                }
+            }
+        );
+        await nodeLicense9.waitForDeployment();
+        
+        // Upgrade the StakingPool
+        const NewImplementation = await ethers.deployContract("StakingPool2");
+        await NewImplementation.waitForDeployment();
+        const newImplementationAddress = await NewImplementation.getAddress();
+        await StakingPoolPoolBeacon.update(newImplementationAddress);
+
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
         config.gasSubsidyAddress = await gasSubsidy.getAddress();
@@ -422,7 +440,7 @@ describe("Stake V1 & Transfer keys on Bulksubmissions", function () {
             secretKeyHex,
             publicKeyHex: "0x" + publicKeyHex,
             referee: referee10,
-            nodeLicense: nodeLicense8,
+            nodeLicense: nodeLicense9,
             poolFactory: poolFactory2,
             gasSubsidy,
             esXai: esXai3,

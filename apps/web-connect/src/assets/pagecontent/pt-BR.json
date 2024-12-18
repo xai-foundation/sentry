@@ -1,0 +1,136 @@
+﻿{
+	"Nav": {
+		"connectWallet": "CONECTAR CARTEIRA",
+		"docs": "DOCUMENTOS",
+		"sentryNodeAgreement": "Acordo Sentry Node",
+		"privacyPolicy": "Acordo de política de privacidade",
+		"generalTerms": "Termos gerais",
+		"stakingTerms": "Termos de staking",
+		"copyright": "©2024 XAI. Todos os direitos reservados",
+		"telegram": "Telegram",
+		"discord": "Discord",
+		"twitter": "X"
+	},
+	"Checkout": {
+		"updatingTotal": "Atualizando o total...",
+		"transactionPending": "Transação em andamento...",
+		"backButton": "Voltar",
+		"successfulPurchase": {
+			"title": "Compra realizada com sucesso.",
+			"text": "Você comprou uma Sentry Key da Xai",
+			"transactionId": "ID da transação:",
+			"promo": {
+				"shareLink": "Compartilhe seu link de indicação com seus amigos.",
+				"info": "Eles recebem 5% de desconto e você 15% do valor da venda."
+			},
+			"shareButton": {
+				"title": "Desconto de 5% na compra da Sentry Key",
+				"text": "Crie uma chave na Xai para fazer staking, começar a receber recompensas e se qualificar para airdrops."
+			},
+			"copyTooltip": "Copiada!",
+			"stakePromo": {
+				"title": "Faça staking da chave em um pool para começar a ganhar recompensas",
+				"buttonText": "Chave para staking",
+				"downloadOperator": "Baixar operador"
+			}
+		},
+		"logoColumn": {
+			"networkRewardsAmount": "~$300M",
+			"networkRewardsText": "em recompensas de rede para os detentores de chaves até agora",
+			"purchaseReady": "SUA COMPRA ESTÁ PRONTA",
+			"imageAlt": "Logotipo Sentry"
+		},
+		"chooseQuantity": {
+			"title": "SENTRY KEY DA XAI",
+			"description": "Quanto mais chaves Sentry você comprar e fizer stake, mais recompensas de rede você receberá do ecossistema Xai.",
+			"toolTip": {
+				"title": "Chaves Xai são necessárias para que os nós recebam recompensas da rede $esXAI.",
+				"text": "Todas as compras devem ser realizadas com Arbitrum ETH."
+			},
+			"maximumPerTransaction": "Limite máximo de {{count}} por transação",
+			"maximumNodeLicenses": "É possível adquirir no máximo {{max}} NodeLicenses por transação."
+		},
+		"chooseCurrencyTitle": "Escolha a moeda de pagamento.",
+		"priceKeyRow": {
+			"nodeKeyQuantity": "{{quantity}} x Sentry Key da Xai",
+			"pricePerKey": "{{price}} {{currency}} por chave",
+			"pricePerKeyDesktop": "{{price}} {{currency}} por chave"
+		},
+		"promoCodeRow": {
+			"discount": {
+				"text": "Desconto (5%)",
+				"removeButton": "Remover"
+			},
+			"pricesMayVary": {
+				"title": "Sua transação pode ser estornada",
+				"text": "Os preços da Sentry Key da Xai variam conforme a quantidade disponível. Quanto menos chaves restarem, maior será o preço. Se a quantidade de chaves que você comprar ultrapassar o limite do nível de preço atual, a transação poderá ser estornada. Recomendamos dividir a compra em duas transações: uma para o nível de preço atual e outra para o próximo."
+			},
+			"noDiscount": {
+				"addPromoCode": "+ Adicionar código promocional",
+				"applyPromoCodeButton": "APLICAR",
+				"warning": "Endereço de indicação inválido",
+				"noSelfPromoCode": "Você não pode usar o seu próprio código promocional",
+				"promoCodeError": "Ocorreu um erro ao validar o código promocional",
+				"promoCodeInvalid": "O código promocional é inválido ou está inativo."
+			}
+		},
+		"totalCostRow": {
+			"youPay": "Você paga",
+			"balance": "Saldo disponível: {{balance}} {{currency}}"
+		},
+		"agreementCheckboxes": {
+			"iAgreeWith": "Concordo com o",
+			"sentryNodeAgreement": "Acordo Sentry Node",
+			"notTransferableKeys": "Compreendo que as Sentry Keys não podem ser transferidas",
+			"cannotRedeemXAI": "Compreendo que não posso resgatar esXAI em troca de XAI até passar pela verificação KYC",
+			"seeBlockedCountries": "(Veja os países bloqueados)"
+		},
+		"actionSection": {
+			"crossmintModalHeading": "Pagar com Crossmint",
+			"crossmintModalLoading": "Carregando...",
+			"mintWithOptions": "Criar - ",
+			"mintWithOptionsDisabled": "Crossmint Máx {{maxKeys}} chaves por transação",
+			"tokenButtonTexts": {
+				"isPending": "AGUARDANDO CONFIRMAÇÃO…",
+				"switchToArbitrum": "Mude para a rede Arbitrum"
+			},
+			"mintWithEthError": {
+				"insufficientFundsError": {
+					"title": "Fundos insuficientes para concluir a transação.",
+					"text": "Verifique se sua carteira possui AETH e gás suficientes para concluir a transação."
+				},
+				"userRejectedRequest": {
+					"title": "A transação foi cancelada",
+					"text": "Você cancelou a transação em sua carteira."
+				}
+			},
+			"mintWithXaiError": {
+				"userRejectedRequest": {
+					"title": "A transação foi cancelada",
+					"text": "Você cancelou a transação em sua carteira."
+				}
+			},
+			"approveError": {
+				"userRejectedRequest": {
+					"title": "A transação foi cancelada",
+					"text": "Você cancelou a transação em sua carteira."
+				}
+			}
+		}
+	},
+	"WebBuyKeysOrderTotal": {
+		"approveButtonsTexts": {
+			"isPending": "AGUARDANDO CONFIRMAÇÃO...",
+			"insufficientBalance": "Saldo de {{currency}} insuficiente",
+			"approveCurrency": "Aprovar {{currency}}",
+			"purchaseNow": "COMPRAR AGORA"
+		},
+		"ethButtonTexts": {
+			"connectWallet": "Conecte sua carteira",
+			"switchToArbitrum": "Mude para a rede Arbitrum",
+			"isPending": "AGUARDANDO CONFIRMAÇÃO...",
+			"insufficientBalance": "Saldo de ETH insuficiente",
+			"mintNow": "CRIAR AGORA"
+		}
+	}
+}

@@ -1,0 +1,136 @@
+﻿{
+	"Nav": {
+		"connectWallet": "ウォレットに接続",
+		"docs": "文書",
+		"sentryNodeAgreement": "セントリーノード同意書",
+		"privacyPolicy": "プライバシーポリシー同意書",
+		"generalTerms": "一般条項",
+		"stakingTerms": "ステーキング条項",
+		"copyright": "©2024 XAI. All Rights Reserved",
+		"telegram": "Telegram",
+		"discord": "Discord",
+		"twitter": "X"
+	},
+	"Checkout": {
+		"updatingTotal": "進行中のアップデートの合計...",
+		"transactionPending": "取引が進行中...",
+		"backButton": "戻る",
+		"successfulPurchase": {
+			"title": "購入に成功",
+			"text": "Xaiセントリー鍵の購入に成功しました",
+			"transactionId": "取引ID:",
+			"promo": {
+				"shareLink": "紹介リンクをお友達に共有しましょう！",
+				"info": "お友達は5%の割引を受けることができ、あなたは売上の15%を得ます。"
+			},
+			"shareButton": {
+				"title": "5%割引でセントリー鍵を購入",
+				"text": "Xaiで鍵を発行してステークすれば報酬の獲得が始まり、エアドロップを受け取る資格を得ます。"
+			},
+			"copyTooltip": "コピーしました！",
+			"stakePromo": {
+				"title": "鍵をプールにステークして、報酬の獲得を始める",
+				"buttonText": "鍵をステークする",
+				"downloadOperator": "オペレーターをダウンロード"
+			}
+		},
+		"logoColumn": {
+			"networkRewardsAmount": "約$300M",
+			"networkRewardsText": "これまでにキー保有者に対するネットワーク報酬",
+			"purchaseReady": "購入の準備ができました",
+			"imageAlt": "セントリーロゴ"
+		},
+		"chooseQuantity": {
+			"title": "XAIセントリー鍵",
+			"description": "より多くのSentryキーを購入してステーキングするほど、Xaiエコシステムから受け取るネットワーク報酬は増えます。",
+			"toolTip": {
+				"title": "Xai鍵は、ネットワーク報酬「$esXAI」をノードが受け取るために必要となります。",
+				"text": "購入は全てArbitrum ETHで行う必要があります。"
+			},
+			"maximumPerTransaction": "取引1回あたりの最大数: {{count}}",
+			"maximumNodeLicenses": "取引1回につき購入できるノードライセンスの最大数は{{max}}です。"
+		},
+		"chooseCurrencyTitle": "支払い通貨を選択してください",
+		"priceKeyRow": {
+			"nodeKeyQuantity": "Xaiセントリー鍵 x {{quantity}}",
+			"pricePerKey": "鍵1つあたり{{price}} {{currency}}",
+			"pricePerKeyDesktop": "鍵1つあたり{{price}} {{currency}}"
+		},
+		"promoCodeRow": {
+			"discount": {
+				"text": "割引（5%）",
+				"removeButton": "削除"
+			},
+			"pricesMayVary": {
+				"title": "取引が取り消される可能性があります",
+				"text": "Xaiセントリー鍵の価格は供給数量の残数に応じて変動します。通常、購入可能な鍵の数量が減ると、鍵の価格は上がります。現在の価格帯で購入可能な数量以上の鍵を購入すると、取引が取り消される可能性があります。購入を2回の取引に分け、現在の価格帯と次の価格帯の両方で行うことを推奨します。"
+			},
+			"noDiscount": {
+				"addPromoCode": "+ プロモーションコードを追加",
+				"applyPromoCodeButton": "適用",
+				"warning": "無効な紹介リンク",
+				"noSelfPromoCode": "ご自身のプロモコードはご利用いただけません",
+				"promoCodeError": "プロモコードの検証中にエラーが発生しました。",
+				"promoCodeInvalid": "プロモコードが無効または無効化されています。"
+			}
+		},
+		"totalCostRow": {
+			"youPay": "あなたの支払い",
+			"balance": "利用可能残高: {{balance}} {{currency}}"
+		},
+		"agreementCheckboxes": {
+			"iAgreeWith": "次の文書に同意します: ",
+			"sentryNodeAgreement": "セントリーノード同意書",
+			"notTransferableKeys": "セントリー鍵が譲渡可能でないことを理解しています",
+			"cannotRedeemXAI": "本人確認を完了しない限り、esXAIをXAIに償還できないことを理解しています。",
+			"seeBlockedCountries": "（ブロックされている国を見る）"
+		},
+		"actionSection": {
+			"crossmintModalHeading": "Crossmintで支払う",
+			"crossmintModalLoading": "読み込み中...",
+			"mintWithOptions": "発行 - ",
+			"mintWithOptionsDisabled": "Crossmint 1回の取引で最大{{maxKeys}}鍵",
+			"tokenButtonTexts": {
+				"isPending": "確認を待っています…",
+				"switchToArbitrum": "Arbitrumに変更してください"
+			},
+			"mintWithEthError": {
+				"insufficientFundsError": {
+					"title": "取引を完了するための資金が足りません",
+					"text": "ウォレットに取引を完了するのに十分なAETHとガスが存在するか確認してください。"
+				},
+				"userRejectedRequest": {
+					"title": "取引が中止されました",
+					"text": "ウォレットで取引を中止しました。"
+				}
+			},
+			"mintWithXaiError": {
+				"userRejectedRequest": {
+					"title": "取引が中止されました",
+					"text": "ウォレットで取引を中止しました。"
+				}
+			},
+			"approveError": {
+				"userRejectedRequest": {
+					"title": "取引が中止されました",
+					"text": "ウォレットで取引を中止しました。"
+				}
+			}
+		}
+	},
+	"WebBuyKeysOrderTotal": {
+		"approveButtonsTexts": {
+			"isPending": "確認を待っています…",
+			"insufficientBalance": "{{currency}}の残高が不足しています",
+			"approveCurrency": "{{currency}}を承認",
+			"purchaseNow": "今すぐ購入する"
+		},
+		"ethButtonTexts": {
+			"connectWallet": "ウォレットに接続してください",
+			"switchToArbitrum": "Arbitrumに変更してください",
+			"isPending": "確認を待っています…",
+			"insufficientBalance": "ETHの残高が不足しています",
+			"mintNow": "今すぐ発行する"
+		}
+	}
+}

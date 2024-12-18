@@ -1,0 +1,136 @@
+﻿{
+	"Nav": {
+		"connectWallet": "वॉलेट कनेक्ट करें",
+		"docs": "डॉक्यूमेंट्स",
+		"sentryNodeAgreement": "Sentry नोड एग्रीमेंट",
+		"privacyPolicy": "प्राइवेसी पॉलिसी एग्रीमेंट",
+		"generalTerms": "सामान्य शर्तें",
+		"stakingTerms": "स्टेक करने की शर्तें",
+		"copyright": "©2024 XAI. सर्वाधिकार सुरक्षित",
+		"telegram": "Telegram",
+		"discord": "Discord",
+		"twitter": "X"
+	},
+	"Checkout": {
+		"updatingTotal": "कुल अपडेट कर रहे हैं...",
+		"transactionPending": "ट्रांज़ैक्शन हो रहा है…",
+		"backButton": "वापस जाएं",
+		"successfulPurchase": {
+			"title": "खरीदारी सफल रही",
+			"text": "Sentry की आपने एक Xai Sentry की सफलतापूर्वक खरीद ली है",
+			"transactionId": "ट्रांज़ैक्शन ID:",
+			"promo": {
+				"shareLink": "दोस्तों के साथ अपना रेफ़रल लिंक शेयर करें!",
+				"info": "उन्हें सेल पर 5% की और आपको 15% की छूट मिलती है."
+			},
+			"shareButton": {
+				"title": "Sentry की, की खरीदारी पर 5% की छूट",
+				"text": "स्टेक के लिए Xai पर एक की मिंट करके रिवॉर्ड कमाना शुरू करें और एयरड्रॉप के लिए क्वालिफ़ाई करें."
+			},
+			"copyTooltip": "कॉपी किया गया!",
+			"stakePromo": {
+				"title": "किसी पूल में की स्टेक करें और रिवॉर्ड कमाना शुरू करें",
+				"buttonText": "की स्टेक करें",
+				"downloadOperator": "ऑपरेटर डाउनलोड करें"
+			}
+		},
+		"logoColumn": {
+			"networkRewardsAmount": "~$300M ",
+			"networkRewardsText": "अब तक की होडलर्स को नेटवर्क रिवॉर्ड्स में",
+			"purchaseReady": "आपकी खरीदारी तैयार है",
+			"imageAlt": "Sentry लोगो"
+		},
+		"chooseQuantity": {
+			"title": "XAI SENTRY की",
+			"description": "जितनी अधिक Sentry कुंजियाँ आप खरीदकर स्टेक करेंगे, उतने अधिक नेटवर्क पुरस्कार आपको Xai इकोसिस्टम से प्राप्त होंगे।",
+			"toolTip": {
+				"title": "नोड्स द्वारा $esXAI नेटवर्क रिवॉर्ड पाने के लिए Xai की ज़रूरी हैं.",
+				"text": "हर खरीदारी Arbitrum ETH में की जानी चाहिए."
+			},
+			"maximumPerTransaction": "अधिकतम {{count}} प्रति ट्रांज़ैक्शन",
+			"maximumNodeLicenses": "एक ट्रांज़ैक्शन में अधिकतम {{max}} NodeLicenses खरीदे जा सकते हैं."
+		},
+		"chooseCurrencyTitle": "पेमेंट करेंसी चुनें",
+		"priceKeyRow": {
+			"nodeKeyQuantity": "{{quantity}} x Xai Sentry की",
+			"pricePerKey": "{{price}} {{currency}} प्रति की",
+			"pricePerKeyDesktop": "{{price}} {{currency}} प्रति की"
+		},
+		"promoCodeRow": {
+			"discount": {
+				"text": "छूट (5%)",
+				"removeButton": "हटाएं"
+			},
+			"pricesMayVary": {
+				"title": "आपका ट्रांज़ैक्शन वापस किया जा सकता है",
+				"text": "Xai Sentry की, की कीमत बची हुई सप्लाई के हिसाब से अलग-अलग हो सकती है. आमतौर पर, उपलब्ध की, की संख्या घटने के साथ-साथ, इसकी कीमत बढ़ती जाती है. अगर आप मौजूदा प्राइसिंग टियर में उपलब्ध कीमतों से अधिक खरीदते हैं, तो ट्रांज़ैक्शन वापस किया जा सकता है. हम खरीदारी को दो हिस्सों में - एक मौजूदा कीमत के लिए और दूसरा अगली प्राइसिंग टियर के लिए बांटने का सुझाव देते हैं."
+			},
+			"noDiscount": {
+				"addPromoCode": "+ प्रोमो कोड जोड़ें",
+				"applyPromoCodeButton": "लागू करें",
+				"warning": "रेफ़रल पता अमान्य है",
+				"noSelfPromoCode": "आप अपना स्वयं का प्रोमो कोड उपयोग नहीं कर सकते हैं।",
+				"promoCodeError": "प्रोमो कोड को मान्य करने के दौरान एक त्रुटि हुई।",
+				"promoCodeInvalid": "प्रोमो कोड अमान्य या निष्क्रिय है।"
+			}
+		},
+		"totalCostRow": {
+			"youPay": "आप देंगे",
+			"balance": "उपलब्ध बैलेंस: {{balance}} {{currency}}"
+		},
+		"agreementCheckboxes": {
+			"iAgreeWith": "मैं",
+			"sentryNodeAgreement": "Sentry नोड एग्रीमेंट से सहमत हूं",
+			"notTransferableKeys": "मैं समझता हूं कि Sentry की को ट्रांसफ़र नहीं किया जा सकता",
+			"cannotRedeemXAI": "मैं समझता हूं कि मैं KYC पास करने से पहले esXAI को XAI में रिडीम नहीं कर सकता",
+			"seeBlockedCountries": "(ब्लॉक किए गए देश देखें)"
+		},
+		"actionSection": {
+			"crossmintModalHeading": "Crossmint के साथ भुगतान करें",
+			"crossmintModalLoading": "लोड हो रहा है...",
+			"mintWithOptions": "मिंट करें - ",
+			"mintWithOptionsDisabled": "Crossmint अधिकतम {{maxKeys}} की प्रति ट्रांज़ैक्शन",
+			"tokenButtonTexts": {
+				"isPending": "पुष्टि का इंतज़ार कर रहे हैं...",
+				"switchToArbitrum": "कृपया Arbitrum पर स्विच करें"
+			},
+			"mintWithEthError": {
+				"insufficientFundsError": {
+					"title": "ट्रांज़ैक्शन पूरा करने के लिए पर्याप्त फ़ंड नहीं है",
+					"text": "पक्का करें कि आपके वॉलेट में ट्रांज़ैक्शन पूरा करने के लिए पर्याप्त AETH और फ़ंड है."
+				},
+				"userRejectedRequest": {
+					"title": "ट्रांज़ैक्शन रद्द किया गया",
+					"text": "आपने अपने वॉलेट में ट्रांज़ैक्शन को रद्द कर दिया."
+				}
+			},
+			"mintWithXaiError": {
+				"userRejectedRequest": {
+					"title": "ट्रांज़ैक्शन रद्द किया गया",
+					"text": "आपने अपने वॉलेट में ट्रांज़ैक्शन को रद्द कर दिया."
+				}
+			},
+			"approveError": {
+				"userRejectedRequest": {
+					"title": "ट्रांज़ैक्शन रद्द किया गया",
+					"text": "आपने अपने वॉलेट में ट्रांज़ैक्शन को रद्द कर दिया."
+				}
+			}
+		}
+	},
+	"WebBuyKeysOrderTotal": {
+		"approveButtonsTexts": {
+			"isPending": "पुष्टि का इंतज़ार कर रहे हैं...",
+			"insufficientBalance": "अपर्याप्त {{currency}} बैलेंस",
+			"approveCurrency": "{{currency}} अप्रूव करें",
+			"purchaseNow": "अभी खरीदें"
+		},
+		"ethButtonTexts": {
+			"connectWallet": "कृपया अपना वॉलेट कनेक्ट करें",
+			"switchToArbitrum": "कृपया Arbitrum पर स्विच करें",
+			"isPending": "पुष्टि का इंतज़ार कर रहे हैं...",
+			"insufficientBalance": "अपर्याप्त ETH बैलेंस",
+			"mintNow": "अभी मिंट करें"
+		}
+	}
+}
