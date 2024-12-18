@@ -39,9 +39,7 @@ async function main() {
             flaggedCount++;
         }
     }
-    if (flaggedCount > 0) {
-        console.log(`Found ${flaggedCount} addresses with a non-zero balance.`);
-    }
+    console.log(`Found ${flaggedCount} addresses from list with a non-zero balance.`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
