@@ -38,6 +38,7 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   const [sortOrder, setSortOrder] = useState(Number(searchParams.get("sortOrder")) || -1);
 
   const [currentTotalClaimableAmount, setCurrentTotalClaimableAmount] = useState<number>(totalClaimableAmount);
+  const [totalClaimedAmount, setTotalClaimedAmount] = useState<number>(0);
   const { address, chainId } = useAccount();
   const { switchChain } = useSwitchChain();
   const { writeContractAsync } = useWriteContract();
@@ -71,6 +72,7 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
     getTotalClaimAmount(getNetwork(chainId), userPools.map(p => p.address), address!)
         .then(totalClaim => {
           setCurrentTotalClaimableAmount(totalClaim);
+          setTotalClaimedAmount(totalClaim);
         });
   }, [receipt, chainId, userPools, address])
 
@@ -165,12 +167,12 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
         { scroll: false }
     );
   };
-  
+
   return (
       <div className="relative flex sm:flex-col items-start lg:px-6 sm:px-0 sm:w-full">
         <AgreeModalComponent address={address} />
         <StakingClaimModalComponent
-          totalClaimAmount={currentTotalClaimableAmount}
+          totalClaimAmount={totalClaimedAmount}
           isSuccess={isSuccess}
         />
         <BaseModal

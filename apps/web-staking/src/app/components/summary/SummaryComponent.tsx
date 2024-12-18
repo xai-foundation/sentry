@@ -47,6 +47,7 @@ const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean,
   const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
   const toastId = useRef<Id>();
   const [unstakeRequestIndex, setUnstakeRequestIndex] = useState<number>();
+  const [totalClaimedAmount, setTotalClaimedAmount] = useState<number>(0);
 
   // Substitute Timeouts with useWaitForTransaction
   const { data, isError, isLoading, isSuccess, status } = useWaitForTransactionReceipt({
@@ -67,6 +68,7 @@ const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean,
       chainId,
     );
     setRefreshPoolInfo(r => { return !r });
+    setTotalClaimedAmount(poolInfo?.userClaimAmount || 0);
     if (isClaimRequest && typeof unstakeRequestIndex !== undefined) {
       updateRequestClaimed(
         getNetwork(chainId),
@@ -77,7 +79,7 @@ const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean,
       setRefreshUnstakeRequests(r => { return !r });
     }
     setReceipt(undefined); 
-  }, [address, chainId, poolAddress, isClaimRequest, receipt, unstakeRequestIndex]);
+  }, [address, chainId, poolAddress, isClaimRequest, receipt, unstakeRequestIndex, poolInfo?.userClaimAmount]);
 
   const updateOnError = useCallback(() => {
     const error = mapWeb3Error(status);
@@ -168,7 +170,7 @@ const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean,
   return (
     <>
       <StakingClaimModalComponent
-        totalClaimAmount={poolInfo?.userClaimAmount || 0}
+        totalClaimAmount={totalClaimedAmount}
         isSuccess={isSuccess}
       />
       {poolInfo && (

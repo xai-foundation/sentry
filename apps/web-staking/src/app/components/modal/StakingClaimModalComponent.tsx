@@ -10,7 +10,7 @@ import {
 } from "@/services/web3.service";
 import { useAccount } from "wagmi";
 
-interface StakingClaimTinyKeysModalComponentProps {
+interface StakingClaimModalComponentProps {
   totalClaimAmount: number;
   isSuccess: boolean;
 }
@@ -18,7 +18,7 @@ interface StakingClaimTinyKeysModalComponentProps {
 const StakingClaimModalComponent = ({
   totalClaimAmount,
   isSuccess,
-}: StakingClaimTinyKeysModalComponentProps) => {
+}: StakingClaimModalComponentProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [keyPriceInEsXAI, setKeyPriceInEsXAI] = useState(0);
   const { chainId } = useAccount();

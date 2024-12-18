@@ -25,7 +25,7 @@ import MainTitle from "../titles/MainTitle";
 import { Id } from "react-toastify";
 import NetworkStats from "@/app/components/dashboard/NetworkStats";
 import { INetworkData } from "@/server/services/Pool.service";
-import StakingClaimTinyKeysModalComponent from "../modal/StakingClaimModalComponent";
+import StakingClaimModalComponent from "../modal/StakingClaimModalComponent";
 
 interface IDashboardProps {
   networkData: INetworkData;
@@ -44,7 +44,7 @@ export const DashboardComponent = ({
   const { chainId, address } = useAccount();
   const { writeContractAsync } = useWriteContract();
   const { switchChain } = useSwitchChain();
-  const [currentTotalClaimableAmount, setCurrentTotalClaimableAmount] = useState<number>(0);
+  const [totalClaimedAmount, setTotalClaimedAmount] = useState<number>(0);
   const [receipt, setReceipt] = useState<`0x${string}` | undefined>();
   const router = useRouter();
   const { unstakedKeyCount } = useGetUnstakedNodeLicenseCount();
@@ -84,7 +84,7 @@ export const DashboardComponent = ({
     updateNotification(`Successfully claimed`, toastId.current as Id, false, receipt, chainId);
     getTotalClaimAmount(getNetwork(chainId), userPools.map(p => p.address), address!)
       .then(totalClaim => {
-        setCurrentTotalClaimableAmount(totalClaim);
+        setTotalClaimedAmount(totalClaim);
       });
     router.refresh();
   }, [address, receipt, chainId, userPools, router])
@@ -104,14 +104,10 @@ export const DashboardComponent = ({
     }
   }, [isSuccess, isError, updateOnSuccess, updateOnError]);
 
-  // useEffect(() => {
-  //   setCurrentTotalClaimableAmount(totalClaimableAmount);
-  // }, [totalClaimableAmount]);
-
   return (
     <div className="lg:mx-[50px]">
-      <StakingClaimTinyKeysModalComponent
-        totalClaimAmount={currentTotalClaimableAmount}
+      <StakingClaimModalComponent
+        totalClaimAmount={totalClaimedAmount}
         isSuccess={isSuccess}
       />
       <AgreeModalComponent address={address} />
@@ -133,7 +129,7 @@ export const DashboardComponent = ({
           <DashboardStakingInfo
             totalStaked={totalStaked}
             onClaimRewards={onClaimRewards}
-            totalClaimableAmount={currentTotalClaimableAmount}
+            totalClaimableAmount={totalClaimableAmount}
             rewardsTransactionLoading={isLoading}
           />
         )}
