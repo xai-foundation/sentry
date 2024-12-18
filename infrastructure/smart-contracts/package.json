@@ -40,7 +40,8 @@
     "deploy-sepolia": "hardhat run scripts/sepolia-deploy/deployAndPopulateSepolia.mjs",
     "deploy-tiny-keys": "hardhat run scripts/tiny-keys/deployTinyKeys.mjs",
     "start-tiny-keys-drop": "hardhat run scripts/tiny-keys/startAirdrop.mjs",
-    "process-tiny-keys-drop": "hardhat run scripts/tiny-keys/processAirdrop.mjs"
+    "process-tiny-keys-drop": "hardhat run scripts/tiny-keys/processAirdrop.mjs",
+    "check-flagged-accounts": "hardhat run scripts/flagged/flaggedNodeLicenses.mjs"
   },
   "dependencies": {
     "@sentry/core": "workspace:*",
