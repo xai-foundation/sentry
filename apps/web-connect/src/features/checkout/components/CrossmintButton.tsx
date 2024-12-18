@@ -1,6 +1,6 @@
 import {
     MasterCardIcon, VisaIcon,
-    // ETHIcon, SolanaIcon, USDCIcon, SuperVerseIcon
+    ETHIcon, SolanaIcon, USDCIcon, SuperVerseIcon
 } from "@/svgs/AppIcons";
 
 interface CrossmintButtonProps {
@@ -68,11 +68,11 @@ export const CrossmintButton = ({
                     {btnText}
                     <VisaIcon />
                     <MasterCardIcon />
-                    {/* <ETHIcon />
+                    <ETHIcon />
                     <SolanaIcon />
                     <USDCIcon />
                     <SuperVerseIcon />
-                    + */}
+                    +
                 </div>
             </button>
         </div>

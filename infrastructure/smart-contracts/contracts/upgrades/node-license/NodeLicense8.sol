@@ -155,37 +155,39 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
      * 
      */
     // Redeployed with initialize disable mint
-    // function initialize(
-    //     address _xaiAddress,  
-    //     address _esXaiAddress, 
-    //     address ethPriceFeedAddress, 
-    //     address xaiPriceFeedAddress, 
-    //     address airdropAdmin,
-    //     address _usdcAddress,
-    //     address _refereeCalculationsAddress,
-    //     address _refereeAddress
-    // ) public reinitializer(3) {
-    //     if(_xaiAddress == address(0) || _esXaiAddress == address(0) || _usdcAddress == address(0) || _refereeCalculationsAddress == address(0) || ethPriceFeedAddress == address(0) || xaiPriceFeedAddress == address(0)){
-    //         revert InvalidAddress();
-    //     }
-    //     ethPriceFeed = IAggregatorV3Interface(ethPriceFeedAddress);
-    //     xaiPriceFeed = IAggregatorV3Interface(xaiPriceFeedAddress);
-    //     xaiAddress = _xaiAddress;
-    //     esXaiAddress = _esXaiAddress;
-    //     usdcAddress = _usdcAddress;
-    //     refereeCalculationsAddress = _refereeCalculationsAddress;
+    function initialize(
+        address _xaiAddress,  
+        address _esXaiAddress, 
+        address ethPriceFeedAddress, 
+        address xaiPriceFeedAddress, 
+        address airdropAdmin,
+        address _usdcAddress,
+        address _refereeCalculationsAddress,
+        address _refereeAddress
+    ) public reinitializer(3) {
+        if(_xaiAddress == address(0) || _esXaiAddress == address(0) || _usdcAddress == address(0) || _refereeCalculationsAddress == address(0) || ethPriceFeedAddress == address(0) || xaiPriceFeedAddress == address(0)){
+            revert InvalidAddress();
+        }
+        ethPriceFeed = IAggregatorV3Interface(ethPriceFeedAddress);
+        xaiPriceFeed = IAggregatorV3Interface(xaiPriceFeedAddress);
+        xaiAddress = _xaiAddress;
+        esXaiAddress = _esXaiAddress;
+        usdcAddress = _usdcAddress;
+        refereeCalculationsAddress = _refereeCalculationsAddress;
         
-    //     // Grant the airdrop admin role to the airdrop admin address
-    //     _grantRole(AIRDROP_ADMIN_ROLE, airdropAdmin);
-    //     refereeAddress = _refereeAddress;
+        // Grant the airdrop admin role to the airdrop admin address
+        _grantRole(AIRDROP_ADMIN_ROLE, airdropAdmin);
+        refereeAddress = _refereeAddress;
 
-    //     _promoCodes["binance"].recipient = address(0xE49C19cB8E68a5D0AE2DdCE8f80e60e2bbd01884);
-    //     _promoCodes["BA"].recipient = address(0xE49C19cB8E68a5D0AE2DdCE8f80e60e2bbd01884);
-    // }
+        _promoCodes["binance"].recipient = address(0xE49C19cB8E68a5D0AE2DdCE8f80e60e2bbd01884);
+        _promoCodes["BA"].recipient = address(0xE49C19cB8E68a5D0AE2DdCE8f80e60e2bbd01884);
 
-    function initialize() public reinitializer(4) {
         mintingPaused = true;
     }
+
+    // function initialize() public reinitializer(4) {
+    //     mintingPaused = true;
+    // }
 
     /** 
     * @notice Reentrancy guard modifier for the claimReferralReward function
@@ -261,36 +263,36 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         // Validate the mint data
         _validateMint(_amount);
 
-        // Calculate the final price and average cost
-        uint256 finalPrice = price(_amount, _promoCode);
-        uint256 averageCost = finalPrice / _amount;
+        // // Calculate the final price and average cost
+        // uint256 finalPrice = price(_amount, _promoCode);
+        // uint256 averageCost = finalPrice / _amount;
 
-        // Confirm that the ether value sent is correct
-        require(msg.value >= finalPrice, "Ether value sent is not correct");
+        // // Confirm that the ether value sent is correct
+        // require(msg.value >= finalPrice, "Ether value sent is not correct");
 
-        // Mint the NodeLicense tokens
-        _mintNodeLicense(_amount, averageCost, _mintToAddress);
+        // // Mint the NodeLicense tokens
+        // _mintNodeLicense(_amount, averageCost, _mintToAddress);
 
-        // Calculate the referral reward and determine if the promo code is an address
-        (uint256 referralReward, address recipientAddress)  = _calculateReferralReward(finalPrice, _promoCode, address(0));
+        // // Calculate the referral reward and determine if the promo code is an address
+        // (uint256 referralReward, address recipientAddress)  = _calculateReferralReward(finalPrice, _promoCode, address(0));
 
-        // Update the promo code mappings for Eth rewards
-        if(referralReward > 0){
-            // Use promo original code mapping for codes & new mappings for reward tracking
-            _promoCodes[_promoCode].receivedLifetime += referralReward;
-            _referralRewards[recipientAddress] += referralReward;            
-        }
+        // // Update the promo code mappings for Eth rewards
+        // if(referralReward > 0){
+        //     // Use promo original code mapping for codes & new mappings for reward tracking
+        //     _promoCodes[_promoCode].receivedLifetime += referralReward;
+        //     _referralRewards[recipientAddress] += referralReward;            
+        // }
 
-        // Send the funds to the fundsReceiver
-        uint256 remainder = msg.value - finalPrice;
-        (bool sent,) = fundsReceiver.call{value: finalPrice - referralReward}("");
-        if (!sent) revert TransferFailed();
+        // // Send the funds to the fundsReceiver
+        // uint256 remainder = msg.value - finalPrice;
+        // (bool sent,) = fundsReceiver.call{value: finalPrice - referralReward}("");
+        // if (!sent) revert TransferFailed();
 
-        // Send back the remainder amount
-        if (remainder > 0) {
-            (bool sentRemainder,) = msg.sender.call{value: remainder}("");
-            if(!sentRemainder) revert TransferFailed();
-        }
+        // // Send back the remainder amount
+        // if (remainder > 0) {
+        //     (bool sentRemainder,) = msg.sender.call{value: remainder}("");
+        //     if(!sentRemainder) revert TransferFailed();
+        // }
     }
 
     /**
@@ -303,35 +305,35 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
 
         _validateMint(_amount);
 
-        uint256 finalEthPrice = price(_amount, _promoCode);
-        // Convert the final price to XAI
-        uint256 finalPrice = ethToXai(finalEthPrice);
+        // uint256 finalEthPrice = price(_amount, _promoCode);
+        // // Convert the final price to XAI
+        // uint256 finalPrice = ethToXai(finalEthPrice);
 
-        // Confirm the final price does not exceed the expected cost
-        require(finalPrice <= _expectedCost, "Price Exceeds Expected Cost");
+        // // Confirm the final price does not exceed the expected cost
+        // require(finalPrice <= _expectedCost, "Price Exceeds Expected Cost");
 
-        uint256 averageCost = finalEthPrice / _amount;
+        // uint256 averageCost = finalEthPrice / _amount;
 
-        _mintNodeLicense(_amount, averageCost, to);
+        // _mintNodeLicense(_amount, averageCost, to);
 
-        // Calculate the referral reward and determine if the promo code is an address
-        address currency = _useEsXai ? esXaiAddress : xaiAddress;
-        (uint256 referralReward, address recipientAddress)  = _calculateReferralReward(finalPrice, _promoCode, currency);
+        // // Calculate the referral reward and determine if the promo code is an address
+        // address currency = _useEsXai ? esXaiAddress : xaiAddress;
+        // (uint256 referralReward, address recipientAddress)  = _calculateReferralReward(finalPrice, _promoCode, currency);
         
-        IERC20 token = IERC20(currency);
-        token.transferFrom(msg.sender, address(this), finalPrice);
-        token.transfer(fundsReceiver, finalPrice - referralReward);
+        // IERC20 token = IERC20(currency);
+        // token.transferFrom(msg.sender, address(this), finalPrice);
+        // token.transfer(fundsReceiver, finalPrice - referralReward);
 
-        if(referralReward > 0){
-            // Store the referral reward in the appropriate mapping
-            if(_useEsXai){
-                _promoCodesEsXai[_promoCode].receivedLifetime += referralReward;
-                _referralRewardsEsXai[recipientAddress] += referralReward;
-            } else {
-                _promoCodesXai[_promoCode].receivedLifetime += referralReward;
-                _referralRewardsXai[recipientAddress] += referralReward;
-            }
-        }     
+        // if(referralReward > 0){
+        //     // Store the referral reward in the appropriate mapping
+        //     if(_useEsXai){
+        //         _promoCodesEsXai[_promoCode].receivedLifetime += referralReward;
+        //         _referralRewardsEsXai[recipientAddress] += referralReward;
+        //     } else {
+        //         _promoCodesXai[_promoCode].receivedLifetime += referralReward;
+        //         _referralRewardsXai[recipientAddress] += referralReward;
+        //     }
+        // }     
     }
 
     /**
@@ -341,29 +343,29 @@ contract NodeLicense8 is ERC721EnumerableUpgradeable, AccessControlUpgradeable  
         //validate
         _validateMint(_amount);
 
-        //convert the final price to USDC
-        uint256 mintPriceInWei = price(_amount, _promoCode); //.15 ETH
-        uint256 ethRateInUSDC = uint256(ethPriceFeed.latestAnswer()); //8 decimals
-        uint256 mintPriceInUSDC = (mintPriceInWei * ethRateInUSDC) / (10**20); //(18 + 8) - 20 = 6 decimals
-        require(mintPriceInUSDC <= _expectedCostInUSDC, "Price Exceeds Expected Cost");
+        // //convert the final price to USDC
+        // uint256 mintPriceInWei = price(_amount, _promoCode); //.15 ETH
+        // uint256 ethRateInUSDC = uint256(ethPriceFeed.latestAnswer()); //8 decimals
+        // uint256 mintPriceInUSDC = (mintPriceInWei * ethRateInUSDC) / (10**20); //(18 + 8) - 20 = 6 decimals
+        // require(mintPriceInUSDC <= _expectedCostInUSDC, "Price Exceeds Expected Cost");
 
-        //mint node license tokens
-        uint256 averageCost = mintPriceInWei / _amount;
-        _mintNodeLicense(_amount, averageCost, _to);
+        // //mint node license tokens
+        // uint256 averageCost = mintPriceInWei / _amount;
+        // _mintNodeLicense(_amount, averageCost, _to);
 
-        //calculate referral reward and determine if the promo code is an address
-        (uint256 referralReward, address recipientAddress) = _calculateReferralReward(mintPriceInUSDC, _promoCode, usdcAddress);
+        // //calculate referral reward and determine if the promo code is an address
+        // (uint256 referralReward, address recipientAddress) = _calculateReferralReward(mintPriceInUSDC, _promoCode, usdcAddress);
 
-        //transfer usdc from caller
-        IERC20 token = IERC20(usdcAddress);
-        token.transferFrom(msg.sender, address(this), mintPriceInUSDC);
-        token.transfer(fundsReceiver, mintPriceInUSDC - referralReward);
+        // //transfer usdc from caller
+        // IERC20 token = IERC20(usdcAddress);
+        // token.transferFrom(msg.sender, address(this), mintPriceInUSDC);
+        // token.transfer(fundsReceiver, mintPriceInUSDC - referralReward);
 
-        if (referralReward > 0) {
-            //store the referral reward in the appropriate mapping
-            _promoCodesUSDC[_promoCode].receivedLifetime += referralReward;
-            _referralRewardsUSDC[recipientAddress] += referralReward;
-        }
+        // if (referralReward > 0) {
+        //     //store the referral reward in the appropriate mapping
+        //     _promoCodesUSDC[_promoCode].receivedLifetime += referralReward;
+        //     _referralRewardsUSDC[recipientAddress] += referralReward;
+        // }
     }
 
     /**

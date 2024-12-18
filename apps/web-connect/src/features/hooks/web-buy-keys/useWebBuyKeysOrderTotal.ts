@@ -73,7 +73,7 @@ export interface UseWebBuyKeysOrderTotalReturn extends UseContractWritesReturn, 
  * @param initialQuantity - The initial quantity of items to mint.
  * @returns An object containing various properties and functions related to the order total.
  */
-export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysOrderTotalReturn {
+export function useWebBuyKeysOrderTotal(initialQuantity: number, prefilledPromoCode: string): UseWebBuyKeysOrderTotalReturn {
     const { isLoading: isTotalLoading, data: getTotalData } = useGetTotalSupplyAndCap();
     const { data: exchangeRateData, isLoading: isExchangeRateLoading } = useGetExchangeRate();
     const { chainId, isConnected, address, isDevelopment } = useNetworkConfig();
@@ -95,7 +95,7 @@ export function useWebBuyKeysOrderTotal(initialQuantity: number): UseWebBuyKeysO
 
     const { tokenBalance, ethBalance } = useUserBalances(currency);
     const { tokenAllowance, refetchAllowance } = useCurrencyHandler(currency, address);
-    const { promoCode, setPromoCode, discount, setDiscount, handleApplyPromoCode, isLoading: isPromoLoading } = usePromoCodeHandler(address);
+    const { promoCode, setPromoCode, discount, setDiscount, handleApplyPromoCode, isLoading: isPromoLoading } = usePromoCodeHandler(address, prefilledPromoCode);
 
     const ready = checkboxes.one && checkboxes.two && checkboxes.three;
 

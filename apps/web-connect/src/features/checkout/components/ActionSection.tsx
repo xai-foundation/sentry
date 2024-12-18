@@ -159,7 +159,7 @@ export function ActionSection(): JSX.Element {
                                     <span className="block mt-2"><WarningIcon /></span>
                                     <div>
                                         <span className="block font-bold text-lg">{translate("actionSection.mintWithEthError.userRejectedRequest.title")}</span>
-                                        <span className="block font-medium text-lg">{translate("actionSection.mintWithEthError.userRejectedRequest.title")}</span>
+                                        <span className="block font-medium text-lg">{translate("actionSection.mintWithEthError.userRejectedRequest.text")}</span>
                                     </div>
                                 </div>
                             </BaseCallout>
@@ -173,7 +173,7 @@ export function ActionSection(): JSX.Element {
                             <span className="block mt-2"><WarningIcon /></span>
                             <div>
                                 <span className="block font-bold text-lg">{translate("actionSection.mintWithEthError.userRejectedRequest.title")}</span>
-                                <span className="block font-medium text-lg">{translate("actionSection.mintWithEthError.userRejectedRequest.title")}</span>
+                                <span className="block font-medium text-lg">{translate("actionSection.mintWithEthError.userRejectedRequest.text")}</span>
                             </div>
                         </div>
                     </BaseCallout>
@@ -188,7 +188,7 @@ export function ActionSection(): JSX.Element {
                                     <span className="block mt-2"><WarningIcon /></span>
                                     <div>
                                         <span className="block font-bold text-lg">{translate("actionSection.mintWithXaiError.userRejectedRequest.title")}</span>
-                                        <span className="block font-medium text-lg">{translate("actionSection.mintWithXaiError.userRejectedRequest.title")}</span>
+                                        <span className="block font-medium text-lg">{translate("actionSection.mintWithXaiError.userRejectedRequest.text")}</span>
                                     </div>
                                 </div>
                             </BaseCallout>
