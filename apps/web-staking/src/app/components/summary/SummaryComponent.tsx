@@ -25,6 +25,7 @@ import { Id } from "react-toastify";
 import { useGetTiers } from "@/app/hooks/useGetTiers";
 import { ButtonBack } from "@/app/components/ui/buttons";
 import { PoolInfo } from "@/types/Pool";
+import StakingClaimModalComponent from "../modal/StakingClaimModalComponent";
 
 const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean, poolFromDb?: PoolInfo }) => {
   const router = useRouter();
@@ -166,6 +167,10 @@ const SummaryComponent = ({ isBannedPool, poolFromDb }: { isBannedPool: boolean,
 
   return (
     <>
+      <StakingClaimModalComponent
+        totalClaimAmount={poolInfo?.userClaimAmount || 0}
+        isSuccess={isSuccess}
+      />
       {poolInfo && (
         <div className="flex w-full flex-col items-center lg:px-[35px] lg:pb-[50px] xl:pr-[56px] px-0 sm:pb-[70px]">
           <>

@@ -25,7 +25,7 @@ import MainTitle from "../titles/MainTitle";
 import { Id } from "react-toastify";
 import NetworkStats from "@/app/components/dashboard/NetworkStats";
 import { INetworkData } from "@/server/services/Pool.service";
-
+import StakingClaimTinyKeysModalComponent from "../modal/StakingClaimModalComponent";
 
 interface IDashboardProps {
   networkData: INetworkData;
@@ -104,13 +104,16 @@ export const DashboardComponent = ({
     }
   }, [isSuccess, isError, updateOnSuccess, updateOnError]);
 
-  useEffect(() => {
-    setCurrentTotalClaimableAmount(totalClaimableAmount)
-  }, [totalClaimableAmount])
-
+  // useEffect(() => {
+  //   setCurrentTotalClaimableAmount(totalClaimableAmount);
+  // }, [totalClaimableAmount]);
 
   return (
     <div className="lg:mx-[50px]">
+      <StakingClaimTinyKeysModalComponent
+        totalClaimAmount={currentTotalClaimableAmount}
+        isSuccess={isSuccess}
+      />
       <AgreeModalComponent address={address} />
       <div className="flex w-full flex-col items-start px-[17px] lg:px-0 mt-[10px]">
         <MainTitle title={"Dashboard"} />

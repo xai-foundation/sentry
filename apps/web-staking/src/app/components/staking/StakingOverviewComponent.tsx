@@ -18,6 +18,7 @@ import { getNetwork, getTotalClaimAmount, mapWeb3Error } from "@/services/web3.s
 import { Id } from "react-toastify";
 import { useGetTiers } from "@/app/hooks/useGetTiers";
 import {BaseModal} from "@/app/components/ui";
+import StakingClaimModalComponent from "../modal/StakingClaimModalComponent";
 
 export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPools }) => {
   const router = useRouter();
@@ -168,6 +169,10 @@ export const StakingOverviewComponent = ({ pagedPools }: { pagedPools: PagedPool
   return (
       <div className="relative flex sm:flex-col items-start lg:px-6 sm:px-0 sm:w-full">
         <AgreeModalComponent address={address} />
+        <StakingClaimModalComponent
+          totalClaimAmount={currentTotalClaimableAmount}
+          isSuccess={isSuccess}
+        />
         <BaseModal
             isOpened={!!isModal}
             modalHeader={"Stake keys in a pool to earn rewards"}

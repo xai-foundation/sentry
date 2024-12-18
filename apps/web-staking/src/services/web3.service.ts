@@ -6,6 +6,8 @@ import { esXaiAbi } from "@/assets/abi/esXaiAbi";
 import { NodeLicenseAbi } from "@/assets/abi/NodeLicenseAbi";
 import { StakingPoolAbi } from "@/assets/abi/StakingPoolAbi";
 import { PoolInfo } from "@/types/Pool";
+import { getCurrentNodeLicensePrice } from "@/utils/getCurrentNodeLicensePrice";
+import { convertEthToXai } from "@/utils/convertEthToXai";
 
 export type Web3Instance = {
 	name: string,
@@ -17,6 +19,8 @@ export type Web3Instance = {
 	esXaiAddress: string,
 	nodeLicenseAddress: string,
 	poolFactoryAddress: string,
+	ethPriceFeedAddress: string,
+	xaiPriceFeedAddress: string,
 	explorer: string
 }
 
@@ -41,6 +45,8 @@ const web3Instances: { [key in NetworkKey]: Web3Instance } = {
 		esXaiAddress: "0x4C749d097832DE2FEcc989ce18fDc5f1BD76700c",
 		nodeLicenseAddress: "0xbc14d8563b248B79689ECbc43bBa53290e0b6b66",
 		poolFactoryAddress: "0xF9E08660223E2dbb1c0b28c82942aB6B5E38b8E5",
+		ethPriceFeedAddress: "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612",
+		xaiPriceFeedAddress: "0x806c532D543352e7C344ba6C7F3F00Bfbd309Af1",
 		explorer: 'https://arbiscan.io/'
 	},
 	'arbitrumSepolia': {
@@ -55,6 +61,8 @@ const web3Instances: { [key in NetworkKey]: Web3Instance } = {
 		esXaiAddress: "0x5776784C2012887D1f2FA17281E406643CBa5330",
 		nodeLicenseAddress: "0x07C05C6459B0F86A6aBB3DB71C259595d22af3C2",
 		poolFactoryAddress: "0x87Ae2373007C01FBCED0dCCe4a23CA3f17D1fA9A",
+		ethPriceFeedAddress: "0x96452A47527e30a50F238c9867663F7c4D1e8656",
+		xaiPriceFeedAddress: "0x88EBC5D5317BC539efdb01dc8f425808B402D420",
 		explorer: 'https://sepolia.arbiscan.io/'
 	}
 } as const;
@@ -846,3 +854,10 @@ export const getRewardBreakdownUpdateDelay = async (network: NetworkKey) => {
 
 	return unstakeKeysDelayPeriod;
 };
+
+export const getCurrentNodeLicensePriceInXai = async (network: NetworkKey, formatToDecimals: number = 18): Promise<{ price: string }> => {
+	const web3Instance: Web3Instance = getWeb3Instance(network);
+	const nodeLicensePriceInWei = await getCurrentNodeLicensePrice(web3Instance)
+	const nodeLicensePriceInXai = await convertEthToXai(web3Instance, nodeLicensePriceInWei.price, formatToDecimals);
+	return { price: nodeLicensePriceInXai.amountOfXai }
+}
