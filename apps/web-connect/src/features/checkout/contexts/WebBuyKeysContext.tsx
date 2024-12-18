@@ -4,12 +4,13 @@ import React, { createContext, ReactNode } from 'react';
 interface WebBuyKeysProviderProps {
     children: ReactNode;
     initialQuantity: number;
+    prefilledPromoCode: string;
 }
 
 export const WebBuyKeysContext = createContext<UseWebBuyKeysOrderTotalReturn | null>(null);
 
-export const WebBuyKeysProvider: React.FC<WebBuyKeysProviderProps> = ({ children, initialQuantity }) => {
-    const hookData = useWebBuyKeysOrderTotal(initialQuantity);
+export const WebBuyKeysProvider: React.FC<WebBuyKeysProviderProps> = ({ children, initialQuantity, prefilledPromoCode }) => {
+    const hookData = useWebBuyKeysOrderTotal(initialQuantity, prefilledPromoCode);
 
     return (
         <WebBuyKeysContext.Provider value={hookData}>

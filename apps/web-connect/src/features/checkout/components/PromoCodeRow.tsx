@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { AiFillInfoCircle } from "react-icons/ai";
 import { PrimaryButton } from "@sentry/ui";
 import BaseCallout from "@sentry/ui/src/rebrand/callout/BaseCallout";
@@ -20,18 +20,8 @@ export function PromoCodeRow() {
         displayPricesMayVary
     } = useWebBuyKeysContext();
 
-    const [promo, setPromo] = useState(false);
+    const [promo, setPromo] = useState(true);
     const { t: translate } = useTranslation("Checkout");
-
-    useEffect(() => {
-        const queryString = window.location.search;
-        const queryParams = new URLSearchParams(queryString);
-        const prefilledPromoCode = queryParams.get("promoCode");
-
-        if (prefilledPromoCode) {
-            setPromo(true);
-        }
-    }, []);
 
     return (
         <div>
