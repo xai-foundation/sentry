@@ -24,13 +24,13 @@ async function main() {
 
     //connect to arbitrum one
     const provider = new ethers.JsonRpcProvider(config.arbitrumOneJsonRpcUrl);
-
+    
+    //load contract with provider
+    const nodeLicense = await new ethers.Contract(config.nodeLicenseAddress, NodeLicenseAbi, provider);
+    
     console.log("Checking balances of flagged wallets...");
     let flaggedCount = 0
     for (let i = 0; i < addressesToCheck.length; i++) {
-        //load contract with provider
-        const nodeLicense = await new ethers.Contract(config.nodeLicenseAddress, NodeLicenseAbi, provider);
-        
         //query balance
         const bal = await nodeLicense.balanceOf(addressesToCheck[i].address);
 
