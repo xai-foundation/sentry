@@ -65,7 +65,7 @@ export function FailedKycTests(deployInfrastructure) {
             const kycFailAfter = await poolFactory.failedKyc(await failedKycWallet.getAddress());
             expect(kycFailAfter).to.equal(true);
             
-            const failedKeys = [failedKycKeyId];
+            const failedKeys = 1;
             // Check that the failed kyc wallet cannot stake keys in the pool
             await expect(poolFactory.connect(failedKycWallet).stakeKeys(stakingPoolAddress, failedKeys)).to.be.revertedWith("38");
 

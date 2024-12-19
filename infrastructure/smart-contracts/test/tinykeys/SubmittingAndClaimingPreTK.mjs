@@ -31,7 +31,7 @@ export function SubmittingAndClaimingPreTK(deployInfrastructure, poolConfigurati
 			for (let i = addr1MintedKeyId; i < addr1MintedKeyId + keysToMintForAddr2; i++) {
 				addr2MintedKeyIds.push(i + 1n);
 			}
-			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, addr2MintedKeyIds);
+			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, addr2MintedKeyIds.length);
 
 
 			// Make winning state root for both of addr2's keys
@@ -116,14 +116,14 @@ export function SubmittingAndClaimingPreTK(deployInfrastructure, poolConfigurati
 			const addr2KeyMintPrice = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr2).mint(1, "", {value: addr2KeyMintPrice});
 			const addr2MintedKeyId = await nodeLicense.totalSupply();
-			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [addr2MintedKeyId]);
+			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [addr2MintedKeyId].length);
 
 			// Mint a key to addr3 & stake
 			const addr3KeyMintPrice = await nodeLicense.price(1, "");
 			await nodeLicense.connect(addr3).mint(1, "", {value: addr3KeyMintPrice});
 			const addr3MintedKeyId = await nodeLicense.totalSupply();
 			await referee.connect(kycAdmin).addKycWallet(await addr3.getAddress());
-			await poolFactory.connect(addr3).stakeKeys(stakingPoolAddress, [addr3MintedKeyId]);
+			await poolFactory.connect(addr3).stakeKeys(stakingPoolAddress, [addr3MintedKeyId].length);
 
 			// Make winning state root for both of addr2's keys
 			const challengeId = 0;

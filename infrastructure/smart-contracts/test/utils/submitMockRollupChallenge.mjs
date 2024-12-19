@@ -20,16 +20,6 @@ export const submitMockRollupChallenge = async (
     confirmDataOrHash,
     latestNodeBlockNumber
 ) => {
-    //set isCheckingAssertions to true in referee
-    let isAssertionChecking = await referee.isCheckingAssertions();
-    if (!isAssertionChecking) {
-        await referee.toggleAssertionChecking();
-    }
-    
-    //set referee rollup address to mock rollup
-    const prevRollupAddress = await referee.rollupAddress();
-    const mockRollupAddress = await mockRollup.getAddress();
-    await referee.setRollupAddress(mockRollupAddress);
     
     // Create a Node on the MockRollup
     let nodeArray = [];
@@ -61,6 +51,7 @@ export const submitMockRollupChallenge = async (
         confirmData = confirmDataOrHash;
         confirmHash = confirmDataOrHash;
     } else {
+        const mockRollupAddress = await mockRollup.getAddress();
         [confirmData, confirmHash] = await refereeCalculations.getConfirmDataMultipleAssertions(
             assertionArray, 
             mockRollupAddress
@@ -80,15 +71,6 @@ export const submitMockRollupChallenge = async (
         lastNodeBlockNumber, 
         "0x0000000000000000000000000000000000000000000000000000000000000000"
     );
-    
-    // set isCheckingAssertions to false in the Referee
-    isAssertionChecking = await referee.isCheckingAssertions();
-    if (isAssertionChecking) {
-        await referee.toggleAssertionChecking();
-    }
-
-    // set rollup address back to previous rollup address
-    await referee.setRollupAddress(prevRollupAddress);
 
     // Return all Node and Challenge data for further use in the testcase
     return {

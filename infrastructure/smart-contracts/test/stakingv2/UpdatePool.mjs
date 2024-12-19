@@ -83,7 +83,7 @@ export function UpdatePool(deployInfrastructure, poolConfigurations) {
 			await ethers.provider.send("evm_mine");
 
 			// Stake another key to the pool to proc the distributeRewards function, thus updating the share values
-			await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, [mintedKeyId2]);
+			await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, [mintedKeyId2].length);
 
 			// Get & check the updated share values
 			const updatedOwnerShare = await stakingPool.connect(addr1).ownerShare();
