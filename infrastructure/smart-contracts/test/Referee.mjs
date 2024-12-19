@@ -44,6 +44,25 @@ export async function findWinningStateRoot(referee, winnerNodeLicenses, challeng
 	}
 }
 
+const setupRefereeForMockupRollup = async (referee, mockRollup) => {
+	const slotIndexRollupAddress = 202; // Referee storage slot for rollupAddress
+	const slotIndexIsCheckingAssertions = 210; // Referee storage slot for rollupAddress
+
+	const rollupValue = ethers.zeroPadValue(await mockRollup.getAddress(), 32);
+	await ethers.provider.send("hardhat_setStorageAt", [
+		referee.target,
+		ethers.toQuantity(slotIndexRollupAddress),
+		rollupValue,
+	]);
+	const isCheckingAssertionsValue = ethers.zeroPadValue("0x01", 32);
+	await ethers.provider.send("hardhat_setStorageAt", [
+		referee.target,
+		ethers.toQuantity(slotIndexIsCheckingAssertions),
+		isCheckingAssertionsValue,
+	]);
+}
+
+
 export function RefereeTests(deployInfrastructure) {
 
 	const getLocalAssertionHashAndCheck = (nodeLicenseId, challengeId, boostFactor, confirmData, challengerSignedHash) => {
@@ -554,7 +573,11 @@ export function RefereeTests(deployInfrastructure) {
 
 		it("Check creating a node on mock rollup", async function () {
 			const {referee, mockRollup} = await loadFixture(deployInfrastructure);
-			
+
+			await setupRefereeForMockupRollup(referee, mockRollup);
+			assert.equal(await referee.rollupAddress(), await mockRollup.getAddress());
+			assert.equal(await referee.isCheckingAssertions(), true);
+
 			//create mock rollup nodes
 			let currentAssertion = 2;
 			let previousAssertion = 0;
@@ -575,6 +598,10 @@ export function RefereeTests(deployInfrastructure) {
 		it("Check confirming a node on mock rollup", async function () {
 			const {referee, mockRollup, refereeCalculations} = await loadFixture(deployInfrastructure);
 			
+			await setupRefereeForMockupRollup(referee, mockRollup);
+			assert.equal(await referee.rollupAddress(), await mockRollup.getAddress());
+			assert.equal(await referee.isCheckingAssertions(), true);
+
 			//create mock rollup nodes
 			let currentAssertion = 2;
 			let previousAssertion = 0;
@@ -606,11 +633,12 @@ export function RefereeTests(deployInfrastructure) {
 		});
 
 		it("Check submitting a test challenge to mock rollup contract", async function () {
-			//NOTE: this test requires the following functions to exist on the Referee contract:
-			//toggleAssertionChecking()
-			//setRollupAddress(address newRollupAddress)
-			
 			const {referee, challenger, mockRollup, refereeCalculations} = await loadFixture(deployInfrastructure);
+			
+			await setupRefereeForMockupRollup(referee, mockRollup);
+			assert.equal(await referee.rollupAddress(), await mockRollup.getAddress());
+			assert.equal(await referee.isCheckingAssertions(), true);
+			
 			let currentAssertion = 2;
 			let previousAssertion = 0;
 			const res = await submitMockRollupChallenge(
@@ -630,11 +658,12 @@ export function RefereeTests(deployInfrastructure) {
 		});
 
 		it("Check submitting a challenge with an invalid assertion block timestamp", async function () {
-			//NOTE: this test requires the following functions to exist on the Referee contract:
-			//toggleAssertionChecking()
-			//setRollupAddress(address newRollupAddress)
-			
 			const {referee, challenger, mockRollup, refereeCalculations} = await loadFixture(deployInfrastructure);
+			
+			await setupRefereeForMockupRollup(referee, mockRollup);
+			assert.equal(await referee.rollupAddress(), await mockRollup.getAddress());
+			assert.equal(await referee.isCheckingAssertions(), true);
+
 			let currentAssertion = 2;
 			let previousAssertion = 0;
 			await expect(
@@ -653,6 +682,10 @@ export function RefereeTests(deployInfrastructure) {
 
 		it("Check failure to confirm node with wrong blockhash and sendroot", async function () {
 			const {referee, challenger, mockRollup, refereeCalculations} = await loadFixture(deployInfrastructure);
+			
+			await setupRefereeForMockupRollup(referee, mockRollup);
+			assert.equal(await referee.rollupAddress(), await mockRollup.getAddress());
+			assert.equal(await referee.isCheckingAssertions(), true);
 			
 			//submit mock rollup challenge
 			let currentAssertion = 2;
@@ -682,11 +715,12 @@ export function RefereeTests(deployInfrastructure) {
 		});
 
 		it("Check failure to submit a challenge with a skipped previous assertion id", async function () {
-			//NOTE: this test requires the following functions to exist on the Referee contract:
-			//toggleAssertionChecking()
-			//setRollupAddress(address newRollupAddress)
-			
 			const {referee, challenger, mockRollup, refereeCalculations} = await loadFixture(deployInfrastructure);
+			
+			await setupRefereeForMockupRollup(referee, mockRollup);
+			assert.equal(await referee.rollupAddress(), await mockRollup.getAddress());
+			assert.equal(await referee.isCheckingAssertions(), true);
+			
 			let currentAssertion = 2;
 			let previousAssertion = 1;
 			await expect(
@@ -704,11 +738,12 @@ export function RefereeTests(deployInfrastructure) {
 		});
 
 		it("Check failure to submit a challenge with invalid confirmData", async function () {
-			//NOTE: this test requires the following functions to exist on the Referee contract:
-			//toggleAssertionChecking()
-			//setRollupAddress(address newRollupAddress)
-			
 			const {referee, challenger, mockRollup, refereeCalculations} = await loadFixture(deployInfrastructure);
+			
+			await setupRefereeForMockupRollup(referee, mockRollup);
+			assert.equal(await referee.rollupAddress(), await mockRollup.getAddress());
+			assert.equal(await referee.isCheckingAssertions(), true);
+			
 			let currentAssertion = 2;
 			let previousAssertion = 0;
 			await expect(
@@ -752,6 +787,10 @@ export function RefereeTests(deployInfrastructure) {
 			//check emissions and tier again
 			combinedTotalSupply = await referee.getCombinedTotalSupply();
 			assert.equal(combinedTotalSupply, xaiToMint, "Unexpected supply");
+			
+			await setupRefereeForMockupRollup(referee, mockRollup);
+			assert.equal(await referee.rollupAddress(), await mockRollup.getAddress());
+			assert.equal(await referee.isCheckingAssertions(), true);
 		    
 			// Submit a challenge
 			let currentAssertion = 2;
@@ -778,7 +817,7 @@ export function RefereeTests(deployInfrastructure) {
 			assert.equal(totalEmission, tier1Emission, "Unexpected Challenge Emission");
 
 			// Wait some time
-			const blockOffset = 8;
+			const blockOffset = 4;
 			await ethers.provider.send("evm_increaseTime", [3600 - blockOffset]); //3600 seconds = 1 hour
 			await ethers.provider.send("evm_mine"); //mine block to apply new time
 
@@ -838,6 +877,10 @@ export function RefereeTests(deployInfrastructure) {
 			//check emissions and tier again
 			combinedTotalSupply = await referee.getCombinedTotalSupply();
 			assert.equal(combinedTotalSupply, xaiToMint, "Unexpected supply");
+			
+			await setupRefereeForMockupRollup(referee, mockRollup);
+			assert.equal(await referee.rollupAddress(), await mockRollup.getAddress());
+			assert.equal(await referee.isCheckingAssertions(), true);
 		    
 			// Submit a challenge
 			let currentAssertion = 2;
@@ -864,7 +907,7 @@ export function RefereeTests(deployInfrastructure) {
 			assert.equal(totalEmission, tier1Emission, "Unexpected Challenge Emission");
 
 			// Wait some time
-			let blockOffset = 8;
+			let blockOffset = 4;
 			const twoHoursSeconds = 7200; //2 hours
 			await ethers.provider.send("evm_increaseTime", [twoHoursSeconds - blockOffset]);
 			await ethers.provider.send("evm_mine"); //mine block to apply new time
@@ -872,7 +915,7 @@ export function RefereeTests(deployInfrastructure) {
 			//mint more xai to cross into next tier
 			const xaiToMintTier2 = ethers.parseEther("625000000");
 			await xai.connect(xaiMinter).mint(addr1, xaiToMintTier2);
-			
+
 			// Submit another challenge
 			currentAssertion = 4;
 			previousAssertion = 2;
@@ -898,7 +941,7 @@ export function RefereeTests(deployInfrastructure) {
 			assert.equal(totalEmission, tier2Emission * 2n, "Unexpected Challenge Emission");
 
 			// Wait some time
-			const blockOffset2 = 7;
+			const blockOffset2 = 3;
 			const tenHoursSeconds = 36000; //10 hours
 			await ethers.provider.send("evm_increaseTime", [tenHoursSeconds - blockOffset2]);
 			await ethers.provider.send("evm_mine"); //mine block to apply new time

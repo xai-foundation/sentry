@@ -237,21 +237,21 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
 
 			await poolFactory.connect(addr1).stakeKeys(
 				poolAddr2,
-				mintedKeyIdsAddr1Unstaked
+				mintedKeyIdsAddr1Unstaked.length
 			)
 
 			// Fail to stake a key more than owned
 			await expect(
 				poolFactory.connect(addr1).stakeKeys(
 					stakingPoolAddress,
-					[mintedKeyIdsAddr1Unstaked[0]]
+					[mintedKeyIdsAddr1Unstaked[0]].length
 				)
 			).to.be.revertedWith("45");
 			
 			await expect(
 				poolFactory.connect(addr1).stakeKeys(
 					poolAddr2,
-					[mintedKeyIdsAddr1Unstaked[0]]
+					[mintedKeyIdsAddr1Unstaked[0]].length
 				)
 			).to.be.revertedWith("45");
 
@@ -272,7 +272,7 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
 
             const user1KeyCountStakedBeforeUnstake = await referee.assignedKeysOfUserCount(addr1.address);
             const poolKeyCountStakedBeforeUnstake = await referee.assignedKeysToPoolCount(poolAddr2);
-			await poolFactory.connect(addr1).unstakeKeys(poolAddr2, 0, mintedKeyIdsAddr1Unstaked);
+			await poolFactory.connect(addr1).unstakeKeys(poolAddr2, 0);
 			
             const user1KeyCountStakedAfterUnstake = await referee.assignedKeysOfUserCount(addr1.address);
             const poolKeyCountStakedAfterUnstake = await referee.assignedKeysToPoolCount(poolAddr2);
@@ -281,7 +281,7 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
 
 			await poolFactory.connect(addr1).stakeKeys(
 				poolAddr2,
-				mintedKeyIdsAddr1Unstaked
+				mintedKeyIdsAddr1Unstaked.length
 			);
 		
             const user1KeyCountStakedAfterStake = await referee.assignedKeysOfUserCount(addr1.address);
@@ -354,7 +354,7 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
 		// 	await expect(
 		// 		poolFactory.connect(addr1).stakeKeys(
 		// 			stakingPoolAddress1,
-		// 			[mintedKeyId1]
+		// 			[mintedKeyId1].length
 		// 		)
 		// 	).to.be.revertedWith("44");
 
@@ -362,7 +362,7 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
 		// 	await expect(
 		// 		poolFactory.connect(addr1).stakeKeys(
 		// 			stakingPoolAddress2,
-		// 			[mintedKeyId1]
+		// 			[mintedKeyId1].length
 		// 		)
 		// 	).to.be.revertedWith("44");
 		// });
@@ -420,12 +420,12 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
 			const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
 
 			while (keyIds.length > 0) {
-				await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, keyIds.splice(0, 100))
+				await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, keyIds.splice(0, 100).length)
 			}
 
 			//expect to fail for max supply +1 keys
 			await expect(
-				poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, [endingSupply + 1n])
+				poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, [endingSupply + 1n].length)
 			).to.be.revertedWith("43");
 		}).timeout(300_000);
 
@@ -495,8 +495,8 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
 			await ethers.provider.send("evm_mine");
 
 			// Successfully redeem both un-stake requests
-			await poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 0, [mintedKeyId1]);
-			await poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 1, [mintedKeyId2]);
+			await poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 0);
+			await poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 1);
 
 			// Verify user has 0 keys staked
 			const balance2 = await referee.connect(addr1).assignedKeysOfUserCount(address);
@@ -548,7 +548,7 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
 			expect(userPoolAddressOfUser1).to.equal(stakingPoolAddress);
 
 			// Successfully stake second key
-			await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, [mintedKeyId2]);
+			await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, [mintedKeyId2].length);
 
 			// Make sure the user still only has 1 associated pool
 			const userPoolsCount2 = await poolFactory.connect(addr1).getPoolsOfUserCount(address);
@@ -628,8 +628,8 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
 			await referee.connect(kycAdmin).addKycWallet(await addr3.getAddress());
 
 			// Both users stake a key into pool 1
-			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress1, [mintedKeyId3]);
-			await poolFactory.connect(addr3).stakeKeys(stakingPoolAddress1, [mintedKeyId5]);
+			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress1, [mintedKeyId3].length);
+			await poolFactory.connect(addr3).stakeKeys(stakingPoolAddress1, [mintedKeyId5].length);
 
 			// Verify both users have both pool 1 in their lists
 			const user2Address = await addr2.getAddress();
@@ -644,8 +644,8 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
 			expect(addr3Pool1).to.equal(stakingPoolAddress1);
 
 			// Both users stake a key into pool 2
-			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress2, [mintedKeyId4]);
-			await poolFactory.connect(addr3).stakeKeys(stakingPoolAddress2, [mintedKeyId6]);
+			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress2, [mintedKeyId4].length);
+			await poolFactory.connect(addr3).stakeKeys(stakingPoolAddress2, [mintedKeyId6].length);
 
 			// Verify both users have both pool 2 in their lists
 			const addr2PoolCount2 = await poolFactory.connect(addr1).getPoolsOfUserCount(user2Address);
@@ -662,8 +662,8 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
 			await poolFactory.connect(addr3).createUnstakeKeyRequest(stakingPoolAddress1, 1);
 			await ethers.provider.send("evm_increaseTime", [2592000]);
 			await ethers.provider.send("evm_mine");
-			await poolFactory.connect(addr2).unstakeKeys(stakingPoolAddress1, 0, [mintedKeyId3]);
-			await poolFactory.connect(addr3).unstakeKeys(stakingPoolAddress1, 0, [mintedKeyId5]);
+			await poolFactory.connect(addr2).unstakeKeys(stakingPoolAddress1, 0);
+			await poolFactory.connect(addr3).unstakeKeys(stakingPoolAddress1, 0);
 
 			// Verify both users now only have staking pool 2 in their lists
 			const addr2PoolCount3 = await poolFactory.connect(addr1).getPoolsOfUserCount(user2Address);
@@ -680,8 +680,8 @@ export function StakeKeysToPool(deployInfrastructure, poolConfigurations) {
 			await poolFactory.connect(addr3).createUnstakeKeyRequest(stakingPoolAddress2, 1);
 			await ethers.provider.send("evm_increaseTime", [2592000]);
 			await ethers.provider.send("evm_mine");
-			await poolFactory.connect(addr2).unstakeKeys(stakingPoolAddress2, 0, [mintedKeyId4]);
-			await poolFactory.connect(addr3).unstakeKeys(stakingPoolAddress2, 0, [mintedKeyId6]);
+			await poolFactory.connect(addr2).unstakeKeys(stakingPoolAddress2, 0);
+			await poolFactory.connect(addr3).unstakeKeys(stakingPoolAddress2, 0);
 
 			// Verify both users now have no pools in their lists
 			const addr2PoolCount4 = await poolFactory.connect(addr1).getPoolsOfUserCount(user2Address);

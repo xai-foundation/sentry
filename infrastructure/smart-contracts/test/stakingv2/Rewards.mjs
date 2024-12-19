@@ -69,7 +69,7 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const price2 = await nodeLicense.price(addr2KeysToStake, "");
 			await nodeLicense.connect(addr2).mint(addr2KeysToStake, "", {value: price2});
 			const mintedKeyId2 = await nodeLicense.totalSupply();
-			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2]);
+			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2].length);
 
 			// Mint & stake 10 esXai for addr2
 			const addr2EsXaiToStake = 10;
@@ -87,7 +87,7 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 				addr3Keys.push(i + 1n);
 			}
 			await referee.connect(kycAdmin).addKycWallet(addr3Address);
-			await poolFactory.connect(addr3).stakeKeys(stakingPoolAddress, addr3Keys);
+			await poolFactory.connect(addr3).stakeKeys(stakingPoolAddress, addr3Keys.length);
 
 			// Mint & stake 100 esXai for addr3
 			const addr3EsXaiToStake = 100;
@@ -227,7 +227,7 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const price2 = await nodeLicense.price(addr2KeysToStake, "");
 			await nodeLicense.connect(addr2).mint(addr2KeysToStake, "", {value: price2});
 			const mintedKeyId2 = await nodeLicense.totalSupply();
-			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2]);
+			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2].length);
 
 			// Mint & stake 1000 esXai for addr2
 			const addr2EsXaiToStake = 1000;
@@ -329,7 +329,7 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const price2 = await nodeLicense.price(addr2KeysToStake, "");
 			await nodeLicense.connect(addr2).mint(addr2KeysToStake, "", {value: price2});
 			const mintedKeyId2 = await nodeLicense.totalSupply();
-			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2]);
+			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2].length);
 
 			// Mint & stake 1000 esXai for addr2
 			const addr2EsXaiToStake = 1000;
@@ -446,7 +446,7 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const price2 = await nodeLicense.price(addr2KeysToStake, "");
 			await nodeLicense.connect(addr2).mint(addr2KeysToStake, "", {value: price2});
 			const mintedKeyId2 = await nodeLicense.totalSupply();
-			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2]);
+			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2].length);
 
 			// Mint & stake 10 esXai for addr2
 			const addr2EsXaiToStake = 10;
@@ -464,7 +464,7 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 				addr3Keys.push(i + 1n);
 			}
 			await referee.connect(kycAdmin).addKycWallet(addr3Address);
-			await poolFactory.connect(addr3).stakeKeys(stakingPoolAddress, addr3Keys);
+			await poolFactory.connect(addr3).stakeKeys(stakingPoolAddress, addr3Keys.length);
 
 			// Mint & stake 100 esXai for addr3
 			const addr3EsXaiToStake = 100;
@@ -541,7 +541,7 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			await nodeLicense.connect(addr4).mint(addr4KeysToStake, "", {value: price4});
 			const mintedKeyId4 = await nodeLicense.totalSupply();
 			await referee.connect(kycAdmin).addKycWallet(addr4Address);
-			await poolFactory.connect(addr4).stakeKeys(stakingPoolAddress, [mintedKeyId4]);
+			await poolFactory.connect(addr4).stakeKeys(stakingPoolAddress, [mintedKeyId4].length);
 
 			// Stake no esXai as addr4...
 			const addr4EsXaiToStake = 0;
@@ -658,7 +658,7 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const price2 = await nodeLicense.price(addr2KeysToStake, "");
 			await nodeLicense.connect(addr2).mint(addr2KeysToStake, "", {value: price2});
 			const mintedKeyId2 = await nodeLicense.totalSupply();
-			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2]);
+			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2].length);
 
 			// Mint & stake 10_000 esXai for addr2
 			const addr2EsXaiToStake = 10_000;
@@ -672,7 +672,7 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			await nodeLicense.connect(addr3).mint(addr3KeysToStake, "", {value: price3});
 			const mintedKeyId3 = await nodeLicense.totalSupply();
 			await referee.connect(kycAdmin).addKycWallet(addr3Address);
-			await poolFactory.connect(addr3).stakeKeys(stakingPoolAddress, [mintedKeyId3]);
+			await poolFactory.connect(addr3).stakeKeys(stakingPoolAddress, [mintedKeyId3].length);
 
 			// Mint & stake 10_000_000 esXai for addr3
 			const addr3EsXaiToStake = 10_000_000;
@@ -764,7 +764,7 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			const price2 = await nodeLicense.price(addr2KeysToStake, "");
 			await nodeLicense.connect(addr2).mint(addr2KeysToStake, "", {value: price2});
 			const mintedKeyId2 = await nodeLicense.totalSupply();
-			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2]);
+			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2].length);
 
 			// Mint & stake 10_000 esXai for addr2
 			const addr2EsXaiToStake = 10_000;
@@ -778,7 +778,7 @@ export function Rewards(deployInfrastructure, poolConfigurations) {
 			await nodeLicense.connect(addr3).mint(addr3KeysToStake, "", {value: price3});
 			const mintedKeyId3 = await nodeLicense.totalSupply();
 			await referee.connect(kycAdmin).addKycWallet(addr3Address);
-			await poolFactory.connect(addr3).stakeKeys(stakingPoolAddress, [mintedKeyId3]);
+			await poolFactory.connect(addr3).stakeKeys(stakingPoolAddress, [mintedKeyId3].length);
 
 			// Mint & stake 10_000 esXai for addr3
 			const addr3EsXaiToStake = addr2EsXaiToStake;

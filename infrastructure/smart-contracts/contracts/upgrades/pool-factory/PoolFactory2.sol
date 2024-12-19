@@ -507,21 +507,6 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
             new uint256[](0)
         );
     }
-
-    /**
-     * @dev DEPRECATED: This function will be removed in a future release. 
-     * @notice Allows a user to stake keys in a pool.
-     * @param pool The address of the pool.
-     * @param keyIds Array of key IDs to be staked. To keep the interface we will just use array length, no actual key Ids will be tracked anymore
-     */
-    function stakeKeys(address pool, uint256[] memory keyIds) external {
-        require(pool != address(0), "10"); // Invalid pool address
-        require(keyIds.length > 0, "11"); // At least 1 key required
-        require(poolsCreatedViaFactory[pool], "12"); // Pool must be created via factory
-        require(failedKyc[msg.sender] == false, "38"); // Owner must not have failed kyc
-
-        _stakeKeys(pool, keyIds.length, msg.sender, false);
-    }
     
     /**
      * @notice Allows a user to stake keys in a pool.
@@ -628,51 +613,6 @@ contract PoolFactory2 is Initializable, AccessControlEnumerableUpgradeable {
             StakingPool2(pool).getUnstakeRequestCount(msg.sender) - 1,
             amount,
             false
-        );
-    }
-
-    /**
-     * @dev DEPRECATED: This function will be removed in a future release. 
-     * @notice Unstakes keys from a pool.
-     * @param pool The address of the pool.
-     * @param unstakeRequestIndex The index of the unstake request.
-     * @param keyIds Array of key IDs to be unstaked. To keep the interface we will just use array length, no actual key Ids will be tracked anymore
-     */
-    function unstakeKeys(
-        address pool,
-        uint256 unstakeRequestIndex,
-        uint256[] memory keyIds
-    ) external {
-        require(poolsCreatedViaFactory[pool], "23"); // Pool must be created via factory
-
-        StakingPool2 stakingPool = StakingPool2(pool);
-        StakingPool2.UnstakeRequest memory request = stakingPool.getUnstakeRequest(msg.sender, unstakeRequestIndex);
-
-        // The Referee will check for stakingEnabled and will only allow the admin to stake if staking is disabled
-        stakingPool.unstakeKeys(msg.sender, unstakeRequestIndex);
-
-        Referee10(refereeAddress).unstakeKeys(pool, msg.sender, request.amount);
-
-        if (!stakingPool.isUserEngagedWithPool(msg.sender)) {
-            removeUserFromPool(msg.sender, pool);
-        }
-
-        emit UnstakeKeys(
-            msg.sender,
-            pool,
-            request.amount,
-            stakingPool.getStakedKeysCountForUser(msg.sender),
-            stakingPool.getStakedKeysCount()
-        );
-
-        emit UnstakeKeysV2(
-            msg.sender,
-            pool,
-            request.amount,
-            stakingPool.getStakedKeysCountForUser(msg.sender),
-            stakingPool.getStakedKeysCount(),
-            unstakeRequestIndex,
-            new uint256[](0)
         );
     }
 

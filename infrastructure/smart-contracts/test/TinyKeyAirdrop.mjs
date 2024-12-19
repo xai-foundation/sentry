@@ -523,9 +523,9 @@ function TinyKeysAirdropTest(deployInfrastructure) {
             await expect(tinyKeysAirDrop.connect(deployer).processAirdropSegmentOnlyStake(10)).to.be.revertedWith("Cannot stake non airdropped keys");
 
             // Staking & unstaking keys should revert
-            await expect(poolFactory.connect(addr4).stakeKeys(poolAddress, [6])).to.be.revertedWith("52");
+            await expect(poolFactory.connect(addr4).stakeKeys(poolAddress, 1)).to.be.revertedWith("52");
             await expect(
-                poolFactory.connect(addr2).unstakeKeys(poolAddress, 0, [keyIdsStaked[0]])
+                poolFactory.connect(addr2).unstakeKeys(poolAddress, 0)
             ).to.be.revertedWith("52");
 
             // Confirm Minting Disabled - Expect a mint to be reverted
@@ -603,11 +603,11 @@ function TinyKeysAirdropTest(deployInfrastructure) {
             expect(user1BalanceAfterMint).to.equal(user1BalanceAfter + BigInt(1));
 
             // Confirm staking works after airdrop            
-            await poolFactory.connect(addr2).stakeKeys(poolAddress, [6]);
+            await poolFactory.connect(addr2).stakeKeys(poolAddress, [6].length);
             const user2KeyCountStakedAfterMint = await referee.connect(addr2).assignedKeysOfUserCount(addr2.address);
             expect(user2KeyCountStakedAfterMint).to.equal(user2KeyCountStakedAfter + BigInt(1));
 
-            await poolFactory.connect(addr2).unstakeKeys(poolAddress, 0, [keyIdsStaked[0]])
+            await poolFactory.connect(addr2).unstakeKeys(poolAddress, 0)
             const user2KeyCountStakedBeforeUnstake = await referee.connect(addr2).assignedKeysOfUserCount(addr2.address);
             expect(user2KeyCountStakedBeforeUnstake).to.equal(user2KeyCountStakedAfterMint - BigInt(1));
 

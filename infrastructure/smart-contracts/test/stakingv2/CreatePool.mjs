@@ -345,7 +345,7 @@ export function CreatePool(deployInfrastructure, poolConfigurations) {
 			await poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 1);
 			await ethers.provider.send("evm_increaseTime", [2592000 * 2]);
 			await ethers.provider.send("evm_mine");
-			await poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 0, [mintedKeyId1]);
+			await poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 0);
 
 			// Verify the minted key is assigned to the first pool
 			const assignedKeyCount2 = await referee.connect(addr1).assignedKeysToPoolCount(stakingPoolAddress);
