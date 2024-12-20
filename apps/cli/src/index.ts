@@ -54,6 +54,7 @@ import { removePromoCode } from './commands/licenses/remove-promo-code.js';
 import { displayNodeAgreement } from './commands/display-node-agreement.js';
 import { exportChallengeInfo } from './commands/export-challenge-info.js';
 import { startKycProcess } from './commands/kyc/start-kyc-process.js';
+import { checkFlaggedAccounts } from './commands/flagged/checkFlaggedAccounts.js';
 
 const cli = new Command();
 
@@ -115,6 +116,7 @@ syncStakingPools(cli);
 monitorNodeCreated(cli);
 processUnclaimedChallenges(cli);
 startKycProcess(cli);
+checkFlaggedAccounts(cli);
 
 // Default action if no command is specified
 cli.action(async () => {
