@@ -52,7 +52,7 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			const stakingPool = new Contract(stakingPoolAddress, StakingPoolAbi);
 
 			// addr2 stakes a key & begins un-stake request
-			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2]);
+			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2].length);
 			await poolFactory.connect(addr2).createUnstakeKeyRequest(stakingPoolAddress, 1);
 
 			// Get the current un-stake periods
@@ -84,10 +84,10 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			await ethers.provider.send("evm_mine");
 
 			// successfully un-stake addr2 key after only waiting the initial delay period
-			await poolFactory.connect(addr2).unstakeKeys(stakingPoolAddress, 0, [mintedKeyId2]);
+			await poolFactory.connect(addr2).unstakeKeys(stakingPoolAddress, 0);
 
 			// addr2 stakes a key & begins un-stake request again
-			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2]);
+			await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, [mintedKeyId2].length);
 			await poolFactory.connect(addr2).createUnstakeKeyRequest(stakingPoolAddress, 1);
 
 			// Wait (unstakeKeysDelayPeriod1) days
@@ -96,7 +96,7 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 
 			// Fail to un-stake after only waiting the initial delay period
 			await expect(
-				poolFactory.connect(addr2).unstakeKeys(stakingPoolAddress, 1, [mintedKeyId2])
+				poolFactory.connect(addr2).unstakeKeys(stakingPoolAddress, 1)
 			).to.be.revertedWith("25");
 
 			// Wait remainder time
@@ -106,7 +106,7 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			await ethers.provider.send("evm_mine");
 
 			// Successfully un-stake addr2 key after only waiting the remainder time
-			await poolFactory.connect(addr2).unstakeKeys(stakingPoolAddress, 1, [mintedKeyId2]);
+			await poolFactory.connect(addr2).unstakeKeys(stakingPoolAddress, 1);
 
 			// Confirm addr2 has no staked keys
 			const addr2Address = await addr2.getAddress();
@@ -182,10 +182,10 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			await ethers.provider.send("evm_mine");
 
 			// successfully un-stake genesis key after only waiting the initial delay period
-			await poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 0, [mintedKeyId]);
+			await poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 0);
 
 			// addr1 stakes a key & begins un-stake request again
-			await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, [mintedKeyId]);
+			await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, [mintedKeyId].length);
 			await poolFactory.connect(addr1).createUnstakeOwnerLastKeyRequest(stakingPoolAddress);
 
 			// Wait (unstakeGenesisKeyDelayPeriod1) days
@@ -194,7 +194,7 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 
 			// Fail to un-stake after only waiting the initial delay period
 			await expect(
-				poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 1, [mintedKeyId])
+				poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 1)
 			).to.be.revertedWith("25");
 
 			// Wait remainder time
@@ -204,7 +204,7 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			await ethers.provider.send("evm_mine");
 
 			// Successfully un-stake addr2 key after only waiting the remainder time
-			await poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 1, [mintedKeyId]);
+			await poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 1);
 
 			// Confirm addr2 has no staked keys
 			const addr1Address = await addr1.getAddress();
@@ -376,7 +376,7 @@ export function UnStakingPeriods(deployInfrastructure, poolConfigurations) {
 			await ethers.provider.send("evm_mine");
 
 			// Finish the un-stake request & check final pool info
-			await poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 0, [mintedKeyId]);
+			await poolFactory.connect(addr1).unstakeKeys(stakingPoolAddress, 0);
 			const poolInfo3 = await stakingPool.connect(addr1).getPoolInfo();
 			expect(poolInfo3._ownerStakedKeys).to.equal(0);
 			expect(poolInfo3._ownerLatestUnstakeRequestLockTime).to.equal(0);

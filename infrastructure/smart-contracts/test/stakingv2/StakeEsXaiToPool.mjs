@@ -236,7 +236,7 @@ export function StakeEsXaiToPool(deployInfrastructure, poolConfigurations) {
 			).to.be.revertedWith("49");
 
 			// Stake additional key & successfully stake more esXai
-			await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, [mintedKeyId2]);
+			await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, [mintedKeyId2].length);
 			await poolFactory.connect(addr1).stakeEsXai(stakingPoolAddress, maximumWith1Key);
 
 			// Check the PoolFactory's balance after stake & confirm it is correct

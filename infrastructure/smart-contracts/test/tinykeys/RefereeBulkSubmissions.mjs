@@ -75,7 +75,7 @@ function BulkSubmissionsStakeAndUnstake(deployInfrastructure) {
             const poolStakedKeyBalanceBefore = await referee.assignedKeysToPoolCount(stakingPoolAddress);
 
             // Key Owner stakes the key into the pool
-            await poolFactory.connect(keyOwner).stakeKeys(stakingPoolAddress, [addr2MintedKeyId]);
+            await poolFactory.connect(keyOwner).stakeKeys(stakingPoolAddress, [addr2MintedKeyId].length);
 
             // Confirm the pool staked key balance after the key owner stakes the key
             const poolStakedKeyBalanceAfter = await referee.assignedKeysToPoolCount(stakingPoolAddress);
@@ -132,7 +132,7 @@ function BulkSubmissionsStakeAndUnstake(deployInfrastructure) {
             // User stakes not submitted keyID into pool
             await poolFactory.connect(addr2).stakeKeys(
                 stakingPoolAddress,
-                [addr2MintedKeyId]
+                [addr2MintedKeyId].length
             );
             
             const bulkSubmissionAfterStake = await referee.bulkSubmissions(challengeId, stakingPoolAddress);
@@ -187,7 +187,7 @@ function BulkSubmissionsStakeAndUnstake(deployInfrastructure) {
                 const keysToStake = addr2MintedKeyIds.slice(lastStakedKeyId, i);
                 await poolFactory.connect(keyOwner).stakeKeys(
                     stakingPoolAddress,
-                    keysToStake
+                    keysToStake.length
                 );
                 lastStakedKeyId = i;
             }
@@ -221,7 +221,7 @@ function BulkSubmissionsStakeAndUnstake(deployInfrastructure) {
             const ownerUnstakedKeyCountBefore = keyOwnersKeyBalance - keyOwnersStakedKeyCountBefore;
 
             // Complete the unstake request after pool assertion has been submitted
-            await poolFactory.connect(keyOwner).unstakeKeys(stakingPoolAddress, 0, slice2);
+            await poolFactory.connect(keyOwner).unstakeKeys(stakingPoolAddress, 0);
 
             // Confirm owner's unstaked key count after unstake
             const keyOwnersStakedKeyCountAfter = await referee.assignedKeysOfUserCount(keyOwner.address);
@@ -333,7 +333,7 @@ function BulkSubmissionPermissions(deployInfrastructure) {
                 rangeEnd = keysToMintForAddr1;
             }
             let keyIdsToStake = addr1MintedKeyIds.slice(i, rangeEnd);
-            await poolFactory.connect(addr1).stakeKeys(poolAddress, keyIdsToStake);
+            await poolFactory.connect(addr1).stakeKeys(poolAddress, keyIdsToStake.length);
         }
 
         const challengeId = 0;
@@ -408,7 +408,7 @@ function BulkSubmissionPermissions(deployInfrastructure) {
                 if (i + batchSize > keysToMint) {
                     keysToStake = licenseIds.slice(i, keysToMint);
                 }
-                await poolFactory.connect(poolOwner).stakeKeys(poolAddress, keysToStake);
+                await poolFactory.connect(poolOwner).stakeKeys(poolAddress, keysToStake.length);
             }
         }
         
@@ -480,7 +480,7 @@ function BulkSubmissionPermissions(deployInfrastructure) {
                 if (i + batchSize > keysToMintAddr1) {
                     keysToStake = licenseIds.slice(i, keysToMintAddr1);
                 }
-                await poolFactory.connect(poolOwner).stakeKeys(poolAddress, keysToStake);
+                await poolFactory.connect(poolOwner).stakeKeys(poolAddress, keysToStake.length);
             }
         }
 
@@ -491,7 +491,7 @@ function BulkSubmissionPermissions(deployInfrastructure) {
             if (i + batchSize > keysToMintAddr2) {
                 keysToStake = licenseIds2.slice(i, keysToMintAddr2);
             }
-            await poolFactory.connect(keyStaker).stakeKeys(poolAddress, keysToStake);
+            await poolFactory.connect(keyStaker).stakeKeys(poolAddress, keysToStake.length);
         }
 
         // Submit a pool assertion with addr2
@@ -561,7 +561,7 @@ function BulkSubmissionPermissions(deployInfrastructure) {
                 if (i + batchSize > keysToMintAddr1) {
                     keysToStake = licenseIds.slice(i, keysToMintAddr1);
                 }
-                await poolFactory.connect(poolOwner).stakeKeys(poolAddress, keysToStake);
+                await poolFactory.connect(poolOwner).stakeKeys(poolAddress, keysToStake.length);
             }
         }
         
@@ -602,29 +602,30 @@ function BulkSubmissionPermissions(deployInfrastructure) {
 
     });
     
-    it("Check that a pool submission is not allowed if the submitter is not the pool owner, delegate, key staked, or esXai staked ", async function () {
-        const { poolFactory, addr1: poolOwner, addr2: nonOwner, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
+    // This is deprecated with Referee10, we allow anybody to submit a valid assertion for the pool
+    // it("Check that a pool submission is not allowed if the submitter is not the pool owner, delegate, key staked, or esXai staked ", async function () {
+    //     const { poolFactory, addr1: poolOwner, addr2: nonOwner, nodeLicense, referee, esXai, esXaiMinter, challenger } = await loadFixture(deployInfrastructure);
 
-        // Mint some esXai to increase the total supply for submitting the first challenge so that there is available reward
-        await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 1_000_000);
+    //     // Mint some esXai to increase the total supply for submitting the first challenge so that there is available reward
+    //     await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 1_000_000);
 
-        // Mint 1 key for addr1
-        const licenseIds = await mintBatchedLicenses(1, nodeLicense, poolOwner);
+    //     // Mint 1 key for addr1
+    //     const licenseIds = await mintBatchedLicenses(1, nodeLicense, poolOwner);
 
-        // Submit initial challenge
-        const challengeId = 0;
-        const startingAssertion = 100;
-        const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
-        await submitTestChallenge(referee, challenger, startingAssertion, stateRoot);
+    //     // Submit initial challenge
+    //     const challengeId = 0;
+    //     const startingAssertion = 100;
+    //     const stateRoot = "0x0000000000000000000000000000000000000000000000000000000000000000";
+    //     await submitTestChallenge(referee, challenger, startingAssertion, stateRoot);
 
-        // Create a pool with addr1 as the owner
-        const poolAddress = await createPool(poolFactory, poolOwner, licenseIds);
+    //     // Create a pool with addr1 as the owner
+    //     const poolAddress = await createPool(poolFactory, poolOwner, licenseIds);
 
-        // Submit a pool assertion with addr2
-        await expect(referee.connect(nonOwner).submitBulkAssertion(poolAddress, challengeId, stateRoot)).to.be.revertedWith("17");
+    //     // Submit a pool assertion with addr2
+    //     await expect(referee.connect(nonOwner).submitBulkAssertion(poolAddress, challengeId, stateRoot)).to.be.revertedWith("17");
 
-        // Confirm the pool submission was not created/reverted
-    });
+    //     // Confirm the pool submission was not created/reverted
+    // });
 
     }
 

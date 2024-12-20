@@ -64,7 +64,7 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			for (let i = addr1MintedKeyId; i < addr1MintedKeyId + keysToMintForAddr2; i++) {
 				addr2MintedKeyIds.push(i + 1n);
 				if (i % 100n == 0n) {
-					await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, addr2MintedKeyIds);
+					await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, addr2MintedKeyIds.length);
 					addr2MintedKeyIds = [];
 				}
 			}
@@ -161,7 +161,7 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			for (let i = addr1MintedKeyId; i < addr1MintedKeyId + keysToMintForAddr2; i++) {
 				addr2MintedKeyIds.push(i + 1n);
 				if (i % 100n == 0n) {
-					await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, addr2MintedKeyIds);
+					await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, addr2MintedKeyIds.length);
 					addr2MintedKeyIds = [];
 				}
 			}
@@ -171,7 +171,7 @@ export function SubmittingAndClaiming(deployInfrastructure, poolConfigurations) 
 			await nodeLicense.connect(addr3).mint(1, "", {value: addr3KeyMintPrice});
 			const addr3MintedKeyId = await nodeLicense.totalSupply();
 			await referee.connect(kycAdmin).addKycWallet(await addr3.getAddress());
-			await poolFactory.connect(addr3).stakeKeys(stakingPoolAddress, [addr3MintedKeyId]);
+			await poolFactory.connect(addr3).stakeKeys(stakingPoolAddress, [addr3MintedKeyId].length);
 
 			// Mint some esXai to increase the total supply for submitting the first challenge so that there is available reward
 			await esXai.connect(esXaiMinter).mint(await esXaiMinter.getAddress(), 1_000_000);

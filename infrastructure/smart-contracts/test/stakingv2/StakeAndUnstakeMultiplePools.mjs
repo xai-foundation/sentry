@@ -44,11 +44,11 @@ export function StakeAndUnstakeMultiplePools(deployInfrastructure) {
             const stakerPool2TokenIds = [stakerPool2KeyId];
 
             // Staker stakes in Pool 1
-            await poolFactory.connect(staker).stakeKeys(stakingPool1Address, stakerPool1TokenIds);
+            await poolFactory.connect(staker).stakeKeys(stakingPool1Address, stakerPool1TokenIds.length);
             expect(await referee.assignedKeysToPoolCount(stakingPool1Address)).to.equal(2);
 
             // Staker stakes in Pool 2
-            await poolFactory.connect(staker).stakeKeys(stakingPool2Address, stakerPool2TokenIds);
+            await poolFactory.connect(staker).stakeKeys(stakingPool2Address, stakerPool2TokenIds.length);
             expect(await referee.assignedKeysToPoolCount(stakingPool2Address)).to.equal(2);
 
             // Staker requests to un-stake 1 key from Pool 2
@@ -59,11 +59,11 @@ export function StakeAndUnstakeMultiplePools(deployInfrastructure) {
 			await ethers.provider.send("evm_mine");
 
             // Staker un-stakes key from Pool 2
-            await poolFactory.connect(staker).unstakeKeys(stakingPool2Address, 0, stakerPool2TokenIds);
+            await poolFactory.connect(staker).unstakeKeys(stakingPool2Address, 0);
             expect(await referee.assignedKeysToPoolCount(stakingPool2Address)).to.equal(1);
 
             // Staker re-stakes key in Pool 2        
-            await poolFactory.connect(staker).stakeKeys(stakingPool2Address, stakerPool2TokenIds);    
+            await poolFactory.connect(staker).stakeKeys(stakingPool2Address, stakerPool2TokenIds.length);    
             expect(await referee.assignedKeysToPoolCount(stakingPool2Address)).to.equal(2);
 		});
 	}

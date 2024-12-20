@@ -156,7 +156,7 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 				const stakingPoolAddress = await poolFactory.connect(addr1).getPoolAddress(0);
 
 				while (keyIds.length > 0) {
-					await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, keyIds.splice(0, 100))
+					await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, keyIds.splice(0, 100).length)
 				}
 
 			} else {
@@ -239,7 +239,7 @@ export function VerifyBoostFactor(deployInfrastructure, poolConfigurations) {
 				);
 				const stakingPoolAddress = await poolFactory.connect(addr2).getPoolAddress(0);
 				while (_keyIds.length > 0) {
-					await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, _keyIds.splice(0, 100))
+					await poolFactory.connect(addr2).stakeKeys(stakingPoolAddress, _keyIds.splice(0, 100).length)
 				}
 
 			} else {
