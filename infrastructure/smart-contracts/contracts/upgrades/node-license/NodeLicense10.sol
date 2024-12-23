@@ -901,7 +901,20 @@ contract NodeLicense10 is ERC721EnumerableUpgradeable, AccessControlUpgradeable 
         address poolAddress,
         uint256[] memory tokenIds
     ) external onlyRole(TRANSFER_ROLE) {
-        revert("Not implemented");
+        if (to == address(0) || to == address(this)) revert InvalidAddress();
+
+        uint256 tokenIdsLength = tokenIds.length;
+        if (tokenIdsLength == 0) revert MissingTokenIds();
+
+        for (uint256 i; i < tokenIdsLength; i++) {
+            require(super._isApprovedOrOwner(msg.sender, tokenIds[i]), "ERC721: caller is not token owner or approved");
+            super._safeTransfer(from, to, tokenIds[i], "");
+        }
+
+        PoolFactory3(Referee10(refereeAddress).poolFactoryAddress())
+            .transferStakedKeys(from, to, poolAddress, tokenIdsLength);
+        
+        emit TransferStaked(msg.sender, poolAddress);
     }
 
 }

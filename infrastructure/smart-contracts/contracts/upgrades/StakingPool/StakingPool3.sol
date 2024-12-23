@@ -575,4 +575,30 @@ contract StakingPool3 is AccessControlUpgradeable {
         }
         return stakedKeyAmounts[user];
 	}
+    
+    function transferStakedKeys(
+        address from,
+        address to,
+        uint256 amount
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+
+        handleMigrateKeyAmount(from);
+        handleMigrateKeyAmount(to);
+
+        require(stakedKeyAmounts[from] - userRequestedUnstakeKeyAmount[from] >= amount, "39");
+
+        if(from == poolOwner) {
+            require(stakedKeyAmounts[from] > amount, "40");
+        }
+
+		stakedKeyAmounts[from] -= amount;
+		stakedKeyAmounts[to] += amount;
+        
+        distributeRewards();
+
+        keyBucket.processAccount(from);
+        keyBucket.processAccount(to);
+        keyBucket.setBalance(from, stakedKeyAmounts[from]);
+        keyBucket.setBalance(to, stakedKeyAmounts[to]);
+    }
 }

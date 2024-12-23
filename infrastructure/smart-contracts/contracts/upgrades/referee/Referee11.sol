@@ -1130,4 +1130,15 @@ contract Referee11 is Initializable, AccessControlEnumerableUpgradeable {
             _updateBulkAssertion(to, currentChallenge);
         }
     }
+    
+    /**
+    * @notice On transfer staked keys update the Referee state for assignedKeysOfUserCount.
+    * Since the keys stay staked in the pool we do not have to update the owner bulk submissions.
+    */
+    function updateAssignedKeysOfUserCount(address from, address to, uint256 keyAmount) external onlyPoolFactory {
+        require(stakingEnabled, "52");
+
+        assignedKeysOfUserCount[from] -= keyAmount;
+        assignedKeysOfUserCount[to] += keyAmount;
+    }
 }
