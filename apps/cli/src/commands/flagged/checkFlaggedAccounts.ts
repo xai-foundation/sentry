@@ -6,13 +6,13 @@ import inquirer from 'inquirer';
 import {ethers} from "ethers";
 
 /**
- * Function to ...
+ * Function to check SNL balances of a provided list of accounts.
  * @param cli - Commander instance
  */
 export function checkFlaggedAccounts(cli: Command): void {
     cli
         .command('check-flagged-accounts')
-        .description('Lists all wallets and their KYC status in the Referee contract.')
+        .description('Checks accounts for non-zero SNL balance from provided csv.')
         .action(async () => {
             //prompt user for the path to the list
             const { pathToList } = await inquirer.prompt({
@@ -40,11 +40,27 @@ export function checkFlaggedAccounts(cli: Command): void {
             let flaggedCount = 0
             try {
                 for (let i = 0; i < addressesToCheck.length; i++) {
+                    //validate
+                    if (!addressesToCheck[i].address) {
+                        console.error(`ERROR: Invalid address in line ${i}`, addressesToCheck[i]);
+                        continue;
+                    }
+
+                    //trim address
+                    let validAddress = "";
+                    const trimmedAddress = addressesToCheck[i].address.trim();
+                    try {
+                        validAddress = ethers.getAddress(trimmedAddress);
+                    } catch (error) {
+                        console.error(`ERROR: Invalid trimmed address ${trimmedAddress}`);
+                        console.error((error as Error).message);
+                        continue;
+                    }
+                    
                     //query balance
-                    const bal = await nodeLicense.balanceOf(addressesToCheck[i].address);
-    
+                    const bal = await nodeLicense.balanceOf(validAddress);
                     if (bal > 0) {
-                        console.log(`Address: ${addressesToCheck[i].address}   Balance: ${bal}`);
+                        console.log(`Address: ${validAddress}   Balance: ${bal}`);
                         flaggedCount++;
                     }
                 }
