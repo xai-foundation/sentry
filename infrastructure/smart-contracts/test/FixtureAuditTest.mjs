@@ -398,6 +398,11 @@ describe("Stake V1 & Transfer keys on Bulksubmissions", function () {
         );
         await nodeLicense9.waitForDeployment();
         
+        // Upgrade for allow transfer staked keys
+        const NodeLicense10 = await ethers.getContractFactory("NodeLicense10");
+        const nodeLicense10 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense10);
+        await nodeLicense10.waitForDeployment();
+        
         // Upgrade the StakingPool
         const NewImplementation = await ethers.deployContract("StakingPool2");
         await NewImplementation.waitForDeployment();
@@ -440,7 +445,7 @@ describe("Stake V1 & Transfer keys on Bulksubmissions", function () {
             secretKeyHex,
             publicKeyHex: "0x" + publicKeyHex,
             referee: referee10,
-            nodeLicense: nodeLicense9,
+            nodeLicense: nodeLicense10,
             poolFactory: poolFactory2,
             gasSubsidy,
             esXai: esXai3,
