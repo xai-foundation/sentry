@@ -18,11 +18,6 @@ async function main() {
     // get the deployer
     const [deployer] = (await ethers.getSigners());
 
-    /**
-     * Upgrade Referee Contract
-     * @description Upgrades the existing Referee contract to Referee9
-     * @param {string} refereeCalculationsAddress - Address of the RefereeCalculations contract
-     */
     console.log("Upgrading Referee...");
     const Referee11 = await ethers.getContractFactory("Referee11", deployer);
     console.log("Got Referee factory");
