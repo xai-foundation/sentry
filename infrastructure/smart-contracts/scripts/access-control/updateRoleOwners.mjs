@@ -16,14 +16,83 @@ const STAKE_KEYS_ADMIN_ROLE = "0x4744ee11e24f5fc5de82fa6dba03b134899d8fd3405c7e9
 
 const GRANT_ROLE = "grantRole";
 const REVOKE_ROLE = "revokeRole";
-const RENOUNCE_ROLE = "renounceRole";
+const RENOUNCE_ROLE = "renounceRole"; //NOTE: only needed if removing role from self, otherwise revoke
 
+//NOTE: grant new roles first, then revoke old roles
 const JOBS_TO_RUN = [
+    //grants
     {
-        contract: config.esXaiAddress, //contract to call
-        role: MINTER_ROLE, //role being granted/revoked/renounced
-        func: RENOUNCE_ROLE, //function to call
-        account: "0xSignerAddressHere" //account to grant/revoke/renounce
+        contract: config.poolFactoryAddress, //contract to call
+        role: DEFAULT_ADMIN_ROLE, //role being granted/revoked/renounced
+        func: GRANT_ROLE, //function to call
+        account: "0xAccountAddressHere" //account to grant/revoke/renounce
+    },
+    {
+        contract: config.refereeCalculationsAddress,
+        role: DEFAULT_ADMIN_ROLE,
+        func: GRANT_ROLE,
+        account: "0xAccountAddressHere"
+    },
+    //revokes
+    {
+        contract: config.esXaiAddress,
+        role: DEFAULT_ADMIN_ROLE,
+        func: REVOKE_ROLE,
+        account: "0xAccountAddressHere"
+    },
+    {
+        contract: config.gasSubsidyAddress,
+        role: DEFAULT_ADMIN_ROLE,
+        func: REVOKE_ROLE,
+        account: "0xAccountAddressHere"
+    },
+    {
+        contract: config.gasSubsidyAddress,
+        role: TRANSFER_ROLE,
+        func: REVOKE_ROLE,
+        account: "0xAccountAddressHere"
+    },
+    {
+        contract: config.poolFactoryAddress,
+        role: DEFAULT_ADMIN_ROLE,
+        func: REVOKE_ROLE,
+        account: "0xAccountAddressHere"
+    },
+    {
+        contract: config.poolFactoryAddress,
+        role: STAKE_KEYS_ADMIN_ROLE,
+        func: REVOKE_ROLE,
+        account: "0xAccountAddressHere"
+    },
+    {
+        contract: config.refereeAddress,
+        role: DEFAULT_ADMIN_ROLE,
+        func: REVOKE_ROLE,
+        account: "0xAccountAddressHere"
+    },
+    {
+        contract: config.refereeCalculationsAddress,
+        role: DEFAULT_ADMIN_ROLE,
+        func: REVOKE_ROLE,
+        account: "0xAccountAddressHere"
+    },
+    {
+        contract: config.nodeLicenseAddress,
+        role: DEFAULT_ADMIN_ROLE,
+        func: REVOKE_ROLE,
+        account: "0xAccountAddressHere"
+    },
+    {
+        contract: config.xaiGaslessClaimAddress,
+        role: DEFAULT_ADMIN_ROLE,
+        func: REVOKE_ROLE,
+        account: "0xAccountAddressHere"
+    },
+    {
+        contract: config.xaiRedEnvelope2024Address,
+        role: DEFAULT_ADMIN_ROLE,
+        func: REVOKE_ROLE,
+        account: "0xAccountAddressHere"
     },
     // Add more jobs to run here...
 ];
