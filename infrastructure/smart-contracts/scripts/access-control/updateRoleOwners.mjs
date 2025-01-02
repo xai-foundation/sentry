@@ -12,24 +12,28 @@ const KYC_ADMIN_ROLE = "0x811427a0fa4932aef534bba16bc34e9b7b2d7d2a79c475fca1765f
 const AIRDROP_ADMIN_ROLE = "0x786fcfa0099ab9aba15d4b2ccc7ffa9994e7c522c9b340b95e584749e47fcfb9";
 const ADMIN_MINT_ROLE = "0x507caaa5b2a5a027bc340a5334d9220583b7d60d846ee2aabc76e37d69a7253b";
 const TRANSFER_ROLE = "0x8502233096d909befbda0999bb8ea2f3a6be3c138b9fbf003752a4c8bce86f6c";
-const STAKE_KEYS_ADMIN_ROLE = "0x4744ee11e24f5fc5de82fa6dba03b134899d8fd3405c7e9a26e120c89c8d9c28":
+const STAKE_KEYS_ADMIN_ROLE = "0x4744ee11e24f5fc5de82fa6dba03b134899d8fd3405c7e9a26e120c89c8d9c28";
 
 const GRANT_ROLE = "grantRole";
 const REVOKE_ROLE = "revokeRole";
 const RENOUNCE_ROLE = "renounceRole";
 
-// Add jobs to run here...
 const JOBS_TO_RUN = [
     {
         contract: config.esXaiAddress, //contract to call
         role: MINTER_ROLE, //role being granted/revoked/renounced
-        func: GRANT_ROLE, //function to call
-        account: "..." //account to grant/revoke/renounce
-    }
+        func: RENOUNCE_ROLE, //function to call
+        account: "0xSignerAddressHere" //account to grant/revoke/renounce
+    },
+    // Add more jobs to run here...
 ];
 
+const PRIVATE_KEY = "0xPrivateKeyHere";
+
 async function main() {
-    const [signer] = (await ethers.getSigners());
+    // const [signer] = (await ethers.getSigners());
+    const provider = ethers.provider; // Use the provider from Hardhat
+    const signer = new ethers.Wallet(PRIVATE_KEY, provider);
 
     // ABI fragment for AccessControlUpgradeable
     const abiFragment = [
