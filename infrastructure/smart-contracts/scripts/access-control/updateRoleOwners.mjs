@@ -14,10 +14,10 @@ const ADMIN_MINT_ROLE = "0x507caaa5b2a5a027bc340a5334d9220583b7d60d846ee2aabc76e
 const TRANSFER_ROLE = "0x8502233096d909befbda0999bb8ea2f3a6be3c138b9fbf003752a4c8bce86f6c";
 const STAKE_KEYS_ADMIN_ROLE = "0x4744ee11e24f5fc5de82fa6dba03b134899d8fd3405c7e9a26e120c89c8d9c28";
 
-const GRANT_ROLE = "grantRole";
-const REVOKE_ROLE = "revokeRole";
-const RENOUNCE_ROLE = "renounceRole"; //NOTE: only needed if removing role from self, otherwise revoke
-const REVOKE_STAKE_ADMIN = "revokeStakeKeysAdminRole";
+const GRANT_ROLE_FUNC = "function grantRole(bytes32 role, address account) external";
+const REVOKE_ROLE_FUNC = "function revokeRole(bytes32 role, address account) external";
+const RENOUNCE_ROLE_FUNC = "function renounceRole(bytes32 role, address account) external"; //NOTE: only needed if removing role from self, otherwise revoke
+const REVOKE_STAKE_ADMIN_FUNC = "function revokeStakeKeysAdminRole(address account) external";
 
 //NOTE: grant new roles first, then revoke old roles
 const JOBS_TO_RUN = [
@@ -25,74 +25,75 @@ const JOBS_TO_RUN = [
     {
         contract: config.poolFactoryAddress, //contract to call
         role: DEFAULT_ADMIN_ROLE, //role being granted/revoked/renounced
-        func: GRANT_ROLE, //function to call
+        func: GRANT_ROLE_FUNC, //function to call
         account: "0xAccountAddressHere" //account to grant/revoke/renounce
     },
     {
         contract: config.refereeCalculationsAddress,
         role: DEFAULT_ADMIN_ROLE,
-        func: GRANT_ROLE,
+        func: GRANT_ROLE_FUNC,
         account: "0xAccountAddressHere"
     },
     //revokes
     {
         contract: config.esXaiAddress,
         role: DEFAULT_ADMIN_ROLE,
-        func: REVOKE_ROLE,
+        func: REVOKE_ROLE_FUNC,
         account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
     {
         contract: config.gasSubsidyAddress,
         role: DEFAULT_ADMIN_ROLE,
-        func: REVOKE_ROLE,
+        func: REVOKE_ROLE_FUNC,
         account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
     {
         contract: config.gasSubsidyAddress,
         role: TRANSFER_ROLE,
-        func: REVOKE_ROLE,
+        func: REVOKE_ROLE_FUNC,
         account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
     {
         contract: config.poolFactoryAddress,
         role: DEFAULT_ADMIN_ROLE,
-        func: REVOKE_ROLE,
+        func: REVOKE_ROLE_FUNC,
         account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
-    {
-        contract: config.poolFactoryAddress,
-        role: STAKE_KEYS_ADMIN_ROLE,
-        func: REVOKE_STAKE_ADMIN,
-        account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
-    },
+    //NOTE: revoke this role with revokeStakedAdminKeys.mjs script
+    // {
+    //     contract: config.poolFactoryAddress,
+    //     role: STAKE_KEYS_ADMIN_ROLE,
+    //     func: REVOKE_STAKE_ADMIN_FUNC,
+    //     account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
+    // },
     {
         contract: config.refereeAddress,
         role: DEFAULT_ADMIN_ROLE,
-        func: REVOKE_ROLE,
+        func: REVOKE_ROLE_FUNC,
         account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
     {
         contract: config.refereeCalculationsAddress,
         role: DEFAULT_ADMIN_ROLE,
-        func: REVOKE_ROLE,
+        func: REVOKE_ROLE_FUNC,
         account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
     {
         contract: config.nodeLicenseAddress,
         role: DEFAULT_ADMIN_ROLE,
-        func: REVOKE_ROLE,
+        func: REVOKE_ROLE_FUNC,
         account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
     {
         contract: config.xaiGaslessClaimAddress,
         role: DEFAULT_ADMIN_ROLE,
-        func: REVOKE_ROLE,
+        func: REVOKE_ROLE_FUNC,
         account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
     {
         contract: config.xaiRedEnvelope2024Address,
         role: DEFAULT_ADMIN_ROLE,
-        func: REVOKE_ROLE,
+        func: REVOKE_ROLE_FUNC,
         account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
     // Add more jobs to run here...
@@ -108,10 +109,10 @@ async function main() {
 
     // ABI fragment for AccessControlUpgradeable
     const abiFragment = [
-        "function revokeRole(bytes32 role, address account) external",
-        "function grantRole(bytes32 role, address account) external",
-        "function renounceRole(bytes32 role, address account) external",
-        "function revokeStakeKeysAdminRole(address account) external"
+        GRANT_ROLE_FUNC,
+        REVOKE_ROLE_FUNC,
+        RENOUNCE_ROLE_FUNC,
+        REVOKE_STAKE_ADMIN_FUNC
     ];
 
     // Iterate over the list and execute jobs
@@ -127,16 +128,16 @@ async function main() {
         
             //switch on job function
             switch (job.func) {
-                case REVOKE_ROLE:
+                case REVOKE_ROLE_FUNC:
                     tx = await contract.revokeRole(job.role, job.account);
                     break;
-                case RENOUNCE_ROLE:
+                case RENOUNCE_ROLE_FUNC:
                     tx = await contract.renounceRole(job.role, job.account);
                     break;
-                case GRANT_ROLE:
+                case GRANT_ROLE_FUNC:
                     tx = await contract.grantRole(job.role, job.account);
                     break;
-                case REVOKE_STAKE_ADMIN:
+                case REVOKE_STAKE_ADMIN_FUNC:
                     tx = await contract.revokeStakeKeysAdminRole(job.account);
                     break;
                 default:
