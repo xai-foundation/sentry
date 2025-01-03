@@ -224,15 +224,6 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
         bool isKey
     );
 
-    // /**
-    //  * @dev Initializes the contract with the provided addresses.
-    //  * Grants STAKE_KEYS_ADMIN_ROLE.
-    //  * @param _stakeKeysAdmin Address to be granted STAKE_KEYS_ADMIN_ROLE.
-    //  */
-    function initialize(address _stakeKeysAdmin) public reinitializer(2) {
-        _setupRole(STAKE_KEYS_ADMIN_ROLE, _stakeKeysAdmin);
-    }
-
     /**
      * @notice Enables staking on the Factory.
      */
