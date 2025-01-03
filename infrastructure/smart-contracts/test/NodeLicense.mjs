@@ -1253,6 +1253,70 @@ export function NodeLicenseTests(deployInfrastructure) {
             expect(await nodeLicense.balanceOf(addr1.address)).to.equal(addr1BalanceBefore);
             expect(await nodeLicense.balanceOf(addr2.address)).to.equal(addr2BalanceBefore);
         });
+        
+        it("Should fail on transfer from or to failed KYC wallet", async function () {
+            const { nodeLicense, nodeLicenseDefaultAdmin, kycAdmin, refereeDefaultAdmin, addr1, addr2, addr3,referee, poolFactory, challenger, esXaiMinter, esXai } = await loadFixture(deployInfrastructure);
+
+            await nodeLicense.connect(nodeLicenseDefaultAdmin).grantRole(await nodeLicense.TRANSFER_ROLE(), addr1.address);
+
+            // Verify that the wallet does not have the role
+            expect(
+                await nodeLicense.hasRole(await nodeLicense.TRANSFER_ROLE(), addr1.address)
+            ).to.equal(true);
+
+            // mint keys to wallet
+            await mintBatchedLicenses(5n, nodeLicense, addr1);
+
+            const addr1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
+
+            const mintedKeys = [];
+            for (let i = 0; i < addr1BalanceBefore; i++) {
+                mintedKeys.push(await nodeLicense.tokenOfOwnerByIndex(addr1.address, i));
+            }
+
+            expect(addr1BalanceBefore).to.equal(BigInt(mintedKeys.length));
+
+            // Submit a challenge so pool creation does not break (since TK update)
+            await submitTestChallenge(referee, challenger, 100, "0x0000000000000000000000000000000000000000000000000000000000000000");
+
+            // Create pool & stake key
+            await referee.connect(kycAdmin).addKycWallet(await addr3.getAddress());
+            const stakingPoolAddress = await createPool(poolFactory, addr3, [await nodeLicense.tokenOfOwnerByIndex(addr3.address, 0)]);
+            await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, BigInt(mintedKeys.length));
+
+            // Add the address to the failed kyc list
+            await poolFactory.connect(refereeDefaultAdmin).setFailedKyc(await addr1.getAddress(), true);
+            expect(await poolFactory.failedKyc(await addr1.getAddress())).to.equal(true);
+            expect(await poolFactory.failedKyc(await addr2.getAddress())).to.equal(false);
+
+            const addr2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
+
+            await expect(
+                nodeLicense.connect(addr1).transferStakedKeys(addr1.address, addr2.address, stakingPoolAddress, mintedKeys)
+            ).to.be.revertedWith("38");
+
+            // Check that balance is unchanged
+            expect(addr1BalanceBefore).to.equal(await nodeLicense.balanceOf(addr1.address));
+            expect(addr2BalanceBefore).to.equal(await nodeLicense.balanceOf(addr2.address));
+
+            await poolFactory.connect(refereeDefaultAdmin).setFailedKyc(await addr1.getAddress(), false);
+            expect(await poolFactory.failedKyc(await addr1.getAddress())).to.equal(false);
+            await poolFactory.connect(refereeDefaultAdmin).setFailedKyc(await addr2.getAddress(), true);
+            expect(await poolFactory.failedKyc(await addr2.getAddress())).to.equal(true);
+
+            await expect(
+                nodeLicense.connect(addr1).transferStakedKeys(addr1.address, addr2.address, stakingPoolAddress, mintedKeys)
+            ).to.be.revertedWith("38");
+
+            await poolFactory.connect(refereeDefaultAdmin).setFailedKyc(await addr2.getAddress(), false);
+            expect(await poolFactory.failedKyc(await addr2.getAddress())).to.equal(false);
+
+            await nodeLicense.connect(addr1).transferStakedKeys(addr1.address, addr2.address, stakingPoolAddress, mintedKeys);
+
+            expect(await nodeLicense.balanceOf(addr1.address)).to.equal(addr1BalanceBefore - BigInt(mintedKeys.length));
+            expect(await nodeLicense.balanceOf(addr2.address)).to.equal(addr2BalanceBefore + BigInt(mintedKeys.length));
+
+        });
 
         it("Should fail on transfer non owned key", async function () {
             const { nodeLicense, nodeLicenseDefaultAdmin, addr1, addr2, addr3, referee, poolFactory, challenger, esXaiMinter, esXai } = await loadFixture(deployInfrastructure);
