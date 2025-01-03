@@ -17,6 +17,7 @@ const STAKE_KEYS_ADMIN_ROLE = "0x4744ee11e24f5fc5de82fa6dba03b134899d8fd3405c7e9
 const GRANT_ROLE = "grantRole";
 const REVOKE_ROLE = "revokeRole";
 const RENOUNCE_ROLE = "renounceRole"; //NOTE: only needed if removing role from self, otherwise revoke
+const REVOKE_STAKE_ADMIN = "revokeStakeKeysAdminRole";
 
 //NOTE: grant new roles first, then revoke old roles
 const JOBS_TO_RUN = [
@@ -38,65 +39,66 @@ const JOBS_TO_RUN = [
         contract: config.esXaiAddress,
         role: DEFAULT_ADMIN_ROLE,
         func: REVOKE_ROLE,
-        account: "0xAccountAddressHere"
+        account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
     {
         contract: config.gasSubsidyAddress,
         role: DEFAULT_ADMIN_ROLE,
         func: REVOKE_ROLE,
-        account: "0xAccountAddressHere"
+        account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
     {
         contract: config.gasSubsidyAddress,
         role: TRANSFER_ROLE,
         func: REVOKE_ROLE,
-        account: "0xAccountAddressHere"
+        account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
     {
         contract: config.poolFactoryAddress,
         role: DEFAULT_ADMIN_ROLE,
         func: REVOKE_ROLE,
-        account: "0xAccountAddressHere"
+        account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
     {
         contract: config.poolFactoryAddress,
         role: STAKE_KEYS_ADMIN_ROLE,
-        func: REVOKE_ROLE,
-        account: "0xAccountAddressHere"
+        func: REVOKE_STAKE_ADMIN,
+        account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
     {
         contract: config.refereeAddress,
         role: DEFAULT_ADMIN_ROLE,
         func: REVOKE_ROLE,
-        account: "0xAccountAddressHere"
+        account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
     {
         contract: config.refereeCalculationsAddress,
         role: DEFAULT_ADMIN_ROLE,
         func: REVOKE_ROLE,
-        account: "0xAccountAddressHere"
+        account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
     {
         contract: config.nodeLicenseAddress,
         role: DEFAULT_ADMIN_ROLE,
         func: REVOKE_ROLE,
-        account: "0xAccountAddressHere"
+        account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
     {
         contract: config.xaiGaslessClaimAddress,
         role: DEFAULT_ADMIN_ROLE,
         func: REVOKE_ROLE,
-        account: "0xAccountAddressHere"
+        account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
     {
         contract: config.xaiRedEnvelope2024Address,
         role: DEFAULT_ADMIN_ROLE,
         func: REVOKE_ROLE,
-        account: "0xAccountAddressHere"
+        account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
     // Add more jobs to run here...
 ];
 
+//NOTE: this key will sign txs for all jobs
 const PRIVATE_KEY = "0xPrivateKeyHere";
 
 async function main() {
@@ -108,7 +110,8 @@ async function main() {
     const abiFragment = [
         "function revokeRole(bytes32 role, address account) external",
         "function grantRole(bytes32 role, address account) external",
-        "function renounceRole(bytes32 role, address account) external"
+        "function renounceRole(bytes32 role, address account) external",
+        "function revokeStakeKeysAdminRole(address account) external"
     ];
 
     // Iterate over the list and execute jobs
@@ -132,6 +135,9 @@ async function main() {
                     break;
                 case GRANT_ROLE:
                     tx = await contract.grantRole(job.role, job.account);
+                    break;
+                case REVOKE_STAKE_ADMIN:
+                    tx = await contract.revokeStakeKeysAdminRole(job.account);
                     break;
                 default:
                     console.log(`Job function not recognized. Skipping...`);
