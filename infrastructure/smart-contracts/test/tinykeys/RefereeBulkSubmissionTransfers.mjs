@@ -102,7 +102,7 @@ function BulkSubmissionTransfers(deployInfrastructure) {
             const transferRole = await nodeLicense.TRANSFER_ROLE();
             // Grant the transfer role to the owner address
             await nodeLicense.connect(nodeLicenseDefaultAdmin).grantRole(transferRole, owner.address);
-            await nodeLicense.connect(owner).adminTransferBatch(addr2, keysToUnstake, randomBytes);
+            await nodeLicense.connect(owner).adminTransferBatch(owner.address, addr2.address, keysToUnstake, randomBytes);
 
             // Confirm Bulk Submitted Key Count decreased by keys to unstake length    
             const submissionAfterTransfer = await referee.bulkSubmissions(0, owner.address);
