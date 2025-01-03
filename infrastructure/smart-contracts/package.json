@@ -54,7 +54,6 @@
     "ganache-cli": "^6.12.2",
     "hardhat": "^2.2.0",
     "hardhat-contract-sizer": "^2.10.0",
-    "inquirer": "^9.2.12",
     "web3": "^4.3.0"
   },
   "devDependencies": {
