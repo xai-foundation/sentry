@@ -59,13 +59,12 @@ const JOBS_TO_RUN = [
         func: REVOKE_ROLE_FUNC,
         account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
     },
-    //NOTE: revoke this role with revokeStakedAdminKeys.mjs script
-    // {
-    //     contract: config.poolFactoryAddress,
-    //     role: STAKE_KEYS_ADMIN_ROLE,
-    //     func: REVOKE_STAKE_ADMIN_FUNC,
-    //     account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
-    // },
+    {
+        contract: config.poolFactoryAddress,
+        role: STAKE_KEYS_ADMIN_ROLE,
+        func: REVOKE_STAKE_ADMIN_FUNC,
+        account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
+    },
     {
         contract: config.refereeAddress,
         role: DEFAULT_ADMIN_ROLE,
