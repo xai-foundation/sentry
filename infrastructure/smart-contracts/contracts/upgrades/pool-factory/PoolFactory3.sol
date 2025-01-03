@@ -959,9 +959,11 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 amount
     ) external {
 
-        require(msg.sender == nodeLicenseAddress, "41");
-
         require(poolsCreatedViaFactory[pool], "23");
+
+        require(!failedKyc[from] && !failedKyc[to], "38");
+
+        require(msg.sender == nodeLicenseAddress, "41");
 
         StakingPool3 stakingPool = StakingPool3(pool);
         stakingPool.transferStakedKeys(from, to, amount);
