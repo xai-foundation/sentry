@@ -224,15 +224,6 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
         bool isKey
     );
 
-    // /**
-    //  * @dev Initializes the contract with the provided addresses.
-    //  * Grants STAKE_KEYS_ADMIN_ROLE.
-    //  * @param _stakeKeysAdmin Address to be granted STAKE_KEYS_ADMIN_ROLE.
-    //  */
-    function initialize(address _stakeKeysAdmin) public reinitializer(2) {
-        _setupRole(STAKE_KEYS_ADMIN_ROLE, _stakeKeysAdmin);
-    }
-
     /**
      * @notice Enables staking on the Factory.
      */
@@ -939,5 +930,81 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
             _totalEsXaiStakeByUser[users[i]] = totalStakeAmount;
             totalEsXaiStakeCalculated[users[i]] = true;
         }
+    }
+
+    /**
+     * @notice Allow transfer staked keys. this can only be called from the NodeLicense contract on transfer.
+     * Keys from pending unstake requests cannot be transferred.
+     * 
+     * The StakingPool will validate the staked amounts for the from address.
+     *  
+     * @param from The current staker address transferred from
+     * @param to The transfer to address that will be the new staker for the key amount
+     * @param pool The pool address
+     * @param amount The amount of keys to unstake & stake
+     */
+    function transferStakedKeys(
+        address from,
+        address to,
+        address pool,
+        uint256 amount
+    ) external {
+
+        require(poolsCreatedViaFactory[pool], "23");
+
+        require(!failedKyc[from] && !failedKyc[to], "38");
+
+        require(msg.sender == nodeLicenseAddress, "41");
+
+        StakingPool3 stakingPool = StakingPool3(pool);
+        stakingPool.transferStakedKeys(from, to, amount);
+
+        associateUserWithPool(to, pool);
+
+        if (!stakingPool.isUserEngagedWithPool(from)) {
+            removeUserFromPool(from, pool);
+        }
+
+        Referee11(refereeAddress).updateAssignedKeysOfUserCount(from, to, amount);
+
+        uint256 stakeAmountFrom = stakingPool.getStakedKeysCountForUser(from);
+        uint256 stakeAmountTo = stakingPool.getStakedKeysCountForUser(to);
+        uint256 stakeAmountPool = stakingPool.getStakedKeysCount();
+
+        // Emit the standard events to keep compatibility with pool sync and subgraph
+        emit UnstakeKeys(
+            from,
+            pool,
+            amount,
+            stakeAmountFrom,
+            stakeAmountPool
+        );
+
+        emit UnstakeKeysV2(
+            from,
+            pool,
+            amount,
+            stakeAmountFrom,
+            stakeAmountPool,
+            0, //We unstaked without request
+            new uint256[](0)
+        );
+
+        emit StakeKeys(
+            to,
+            pool,
+            amount,
+            stakeAmountTo,
+            stakeAmountPool
+        );
+
+        emit StakeKeysV2(
+            to,
+            pool,
+            amount,
+            stakeAmountTo,
+            stakeAmountPool,
+            new uint256[](0)
+        );
     }
 }
