@@ -1,25 +1,25 @@
 import hardhat from "hardhat";
 const { ethers } = hardhat;
 
-// Run with npx hardhat run scripts/access-control/updateBeaconProxyAdmin.mjs --network arbitrumSepolia
+// Run with npx hardhat run scripts/access-control/transferOwnership.mjs --network arbitrumSepolia
 
 //set these variables before running
 const PRIVATE_KEY = "0xPrivateKeyHere";
 const NEW_OWNER_ACCOUNT = "0xAccountAddressHere";
-const PROXY_ADMIN_ADDRESS = "0xProxyAdminAddressHere";
+const CONTRACT_ADDRESS = "0xContractAddressHere";
 
 async function main() {
     // const [signer] = (await ethers.getSigners());
     const provider = ethers.provider; // Use the provider from Hardhat
     const signer = new ethers.Wallet(PRIVATE_KEY, provider);
 
-    // ABI fragment for ProxyAdmin contract
+    // ABI fragment for Ownable contract
     const abiFragment = [
         "function transferOwnership(address newOwner) public"
     ];
     
-    // Attach to the ProxyAdmin contract
-    const contract = new ethers.Contract(PROXY_ADMIN_ADDRESS, abiFragment, signer);
+    // Attach to the Ownable contract
+    const contract = new ethers.Contract(CONTRACT_ADDRESS, abiFragment, signer);
 
     console.log(`Changing ownership...`);
     const tx = await contract.transferOwnership(NEW_OWNER_ACCOUNT);
