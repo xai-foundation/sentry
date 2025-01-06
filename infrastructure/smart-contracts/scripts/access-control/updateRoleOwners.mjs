@@ -63,7 +63,7 @@ const JOBS_TO_RUN = [
         contract: config.poolFactoryAddress,
         role: STAKE_KEYS_ADMIN_ROLE,
         func: REVOKE_STAKE_ADMIN_FUNC,
-        account: "0x7C94E07bbf73518B0E25D1Be200a5b58F46F9dC7"
+        account: "0x0209a0C0Abfe82916DF492D121667aCcA26C7eb0"
     },
     {
         contract: config.refereeAddress,
