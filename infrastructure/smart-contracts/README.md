@@ -29,7 +29,7 @@ To deploy on a local node start the node with `pnpm run local` and change the `d
 
 ### Upgrade an existing proxy to a new implementation
 
-If the beacon proxy admin owner is a multisig we use `upgrades.upgradeProxy` anymore as it will throw the error `Caller is not owner` fro the beacon proxy contract.
+If the beacon proxy admin owner is a multisig we can't use `upgrades.upgradeProxy` anymore as it will throw the error `Caller is not owner` for the beacon proxy contract.
 For multisig deployments we need to call `upgrades.prepareUpgrade`, then take the implementation and build the transaction on the multisig contract.
 If there is an initialize function to be called with the upgrade, we will call `upgradeAndCall` to the beacon proxy contract, this will require sending the encoded function call. For this we have a helper function `./utils/getUpgradeTransactionData.mjs`. It will create the encoded function call data to be sent with the multisig transaction.
 From `upgrades.prepareUpgrade` we will get the new implementation address to upgrade to, we have to verify this implementation.
