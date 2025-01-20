@@ -408,6 +408,26 @@ describe("Stake V1 & Transfer keys on Bulksubmissions", function () {
         await NewImplementation.waitForDeployment();
         const newImplementationAddress = await NewImplementation.getAddress();
         await StakingPoolPoolBeacon.update(newImplementationAddress);
+        
+        //Deploy sample Xai Voting
+        const voting = await ethers.deployContract(
+            "SampleXaiVoting",
+            []
+        );
+        await voting.waitForDeployment();
+
+        // Update for Voting
+        const EsXai4 = await ethers.getContractFactory("esXai4");
+        const esXai4 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai4, { call: { fn: "initialize", args: [await voting.getAddress()] } });
+        await esXai4.waitForDeployment();
+
+        const Xai2 = await ethers.getContractFactory("Xai2");
+        const xai2 = await upgrades.upgradeProxy((await xai.getAddress()), Xai2, { call: { fn: "initialize", args: [await voting.getAddress()] } });
+        await xai2.waitForDeployment();
+
+        const PoolFactory4 = await ethers.getContractFactory("PoolFactory4");
+        const poolFactory4 = await upgrades.upgradeProxy((await poolFactory2.getAddress()), PoolFactory4, { call: { fn: "initialize", args: [await voting.getAddress()] } });
+        await poolFactory4.waitForDeployment();
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
@@ -446,10 +466,10 @@ describe("Stake V1 & Transfer keys on Bulksubmissions", function () {
             publicKeyHex: "0x" + publicKeyHex,
             referee: referee10,
             nodeLicense: nodeLicense10,
-            poolFactory: poolFactory2,
+            poolFactory: poolFactory4,
             gasSubsidy,
-            esXai: esXai3,
-            xai,
+            esXai: esXai4,
+            xai: xai2,
             rollupContract,
             chainlinkEthUsdPriceFeed,
             chainlinkXaiUsdPriceFeed,

@@ -12,8 +12,10 @@ async function main() {
 
     console.log(`Deploy implementation ${NEW_IMPLEMENTATION_NAME}...`);
     
+
     const contractInstance = await ethers.getContractFactory(NEW_IMPLEMENTATION_NAME);
-    const implementationAddress = await upgrades.prepareUpgrade(PROXY_TO_UPGRADE_ADDRESS, contractInstance);
+    // await upgrades.forceImport(PROXY_TO_UPGRADE_ADDRESS, contractInstance);
+    const implementationAddress = await upgrades.prepareUpgrade(PROXY_TO_UPGRADE_ADDRESS, contractInstance, { kind: "transparent", redeployImplementation: "always" });
 
     console.log(`DEPLOYED IMPLEMENTATION ${NEW_IMPLEMENTATION_NAME}`);
     console.log(implementationAddress);
