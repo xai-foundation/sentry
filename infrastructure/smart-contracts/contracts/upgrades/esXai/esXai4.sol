@@ -150,14 +150,6 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      */
     function transfer(address to, uint256 amount) public override returns (bool) {
         require(_whitelist.contains(msg.sender) || _whitelist.contains(to), "Transfer not allowed: address not in whitelist");
-        
-        try IXaiVoting(xaiVotingAddress).onUpdateBalance(msg.sender, to, amount) {
-        } catch Error(string memory reason) {
-            emit OnTransferUpdateError(msg.sender, to, amount, reason);
-        } catch {
-            emit OnTransferUpdateError(msg.sender, to, amount, "Unknown error in onUpdateBalance");
-        }
-
         return super.transfer(to, amount);
     }
 
@@ -169,14 +161,6 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
      */
     function transferFrom(address from, address to, uint256 amount) public override returns (bool) {
         require(_whitelist.contains(from) || _whitelist.contains(to), "Transfer not allowed: address not in whitelist");
-        
-        try IXaiVoting(xaiVotingAddress).onUpdateBalance(from, to, amount) {
-        } catch Error(string memory reason) {
-            emit OnTransferUpdateError(from, to, amount, reason);
-        } catch {
-            emit OnTransferUpdateError(from, to, amount, "Unknown error in onUpdateBalance");
-        }
-
         return super.transferFrom(from, to, amount);
     }
 
@@ -399,5 +383,20 @@ contract esXai4 is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessControlUpgr
         }
 
         return (redemptions, totalRedemptions);
+    }
+
+    function _afterTokenTransfer(
+        address from,
+        address to,
+        uint256 amount
+    ) internal override {
+        try IXaiVoting(xaiVotingAddress).onUpdateBalance(from, to, amount) {
+        } catch Error(string memory reason) {
+            emit OnTransferUpdateError(from, to, amount, reason);
+        } catch {
+            emit OnTransferUpdateError(from, to, amount, "Unknown error in onUpdateBalance");
+        }
+
+        super._afterTokenTransfer(from, to, amount);
     }
 }
