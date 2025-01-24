@@ -22,7 +22,7 @@ async function main() {
     if(!XAI_VOTING_CONTRACT_ADDRESS){
         throw new Error("Invalid voting contract address");
     }
-    
+
     // get the deployer
     const [deployer] = (await ethers.getSigners());
 
@@ -38,23 +38,23 @@ async function main() {
     const nodeLicense10 = await upgrades.upgradeProxy(NODE_LICENSE_ADDRESS, NodeLicense10);
     console.log("NodeLicense upgraded to version 10");
 
-    console.log("Upgrading PoolFactory...");
+    console.log("Upgrading EsXai4...");
     const EsXai4 = await ethers.getContractFactory("esXai4");
-    console.log("Got PoolFactory factory");
+    console.log("Got EsXai4 factory");
     const esXai4 = await upgrades.upgradeProxy(ESXAI_ADDRESS, EsXai4, { call: { fn: "initialize", args: [XAI_VOTING_CONTRACT_ADDRESS] } });
-    console.log("PoolFactory upgraded to version 3");
+    console.log("EsXai4 upgraded to version 3");
 
-    console.log("Upgrading PoolFactory...");
+    console.log("Upgrading Xai2...");
     const Xai2 = await ethers.getContractFactory("Xai2");
-    console.log("Got PoolFactory factory");
+    console.log("Got Xai2 factory");
     const xai2 = await upgrades.upgradeProxy(XAI_ADDRESS, Xai2, { call: { fn: "initialize", args: [XAI_VOTING_CONTRACT_ADDRESS] } });
-    console.log("PoolFactory upgraded to version 3");
+    console.log("Xai2 upgraded to version 3");
 
-    console.log("Upgrading PoolFactory...");
+    console.log("Upgrading PoolFactory3...");
     const PoolFactory3 = await ethers.getContractFactory("PoolFactory3");
-    console.log("Got PoolFactory factory");
+    console.log("Got PoolFactory3 factory");
     const poolFactory3 = await upgrades.upgradeProxy(POOL_FACTORY_ADDRESS, PoolFactory3, { call: { fn: "initialize", args: [XAI_VOTING_CONTRACT_ADDRESS] } });
-    console.log("PoolFactory upgraded to version 3");
+    console.log("PoolFactory3 upgraded to version 3");
 
     // UPGRADE PoolBeacon
     // Create instance of the beacon
