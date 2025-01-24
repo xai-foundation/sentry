@@ -12,6 +12,7 @@ import "../../upgrades/esXai/esXai2.sol";
 import "../../upgrades/StakingPool/StakingPool3.sol";
 import "../../staking-v2/PoolProxyDeployer.sol";
 import "../../staking-v2/PoolBeacon.sol";
+import "../../utils/IXaiVoting.sol";
 
 // Error Codes
 // 1: Staking must be enabled before creating pool
@@ -118,6 +119,7 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
     // This mapping will only be accurate AFTER a user has interacted with a pool
     mapping(address => uint256) private _totalEsXaiStakeByUser;
 
+    address public xaiVotingAddress;
 
 
     /**
@@ -125,7 +127,7 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[497] private __gap;
+    uint256[496] private __gap;
 
     // Events for various actions within the contract
     event StakingEnabled();
@@ -215,6 +217,7 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
     event UpdateSharesV2(address indexed pool, uint32[3] shareConfig);
     event UpdateMetadata(address indexed pool);
     event UpdateMetadataV2(address indexed pool, string[3] poolMetadata, string[] poolSocials);
+    event OnTransferUpdateError(address indexed from, address indexed to, uint256 amount, string reason);
 
     event UnstakeRequestStarted(
         address indexed user,
@@ -223,6 +226,10 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
         uint256 amount,
         bool isKey
     );
+
+    function initialize(address _xaiVotingAddress) public reinitializer(3) {
+        xaiVotingAddress = _xaiVotingAddress;
+    }
 
     /**
      * @notice Enables staking on the Factory.
@@ -683,6 +690,13 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
             stakingPool.getStakedAmounts(msg.sender),
             Referee11(refereeAddress).stakedAmounts(pool)
         );
+
+        try IXaiVoting(xaiVotingAddress).onUpdateBalance(address(0), msg.sender, amount) {
+        } catch Error(string memory reason) {
+            emit OnTransferUpdateError(address(0), msg.sender, amount, reason);
+        } catch {
+            emit OnTransferUpdateError(address(0), msg.sender, amount, "Unknown error in onUpdateBalance");
+        }
     }
 
     /**
@@ -739,6 +753,13 @@ contract PoolFactory3 is Initializable, AccessControlEnumerableUpgradeable {
             Referee11(refereeAddress).stakedAmounts(pool),
             unstakeRequestIndex
         );
+        
+        try IXaiVoting(xaiVotingAddress).onUpdateBalance(msg.sender, address(0), amount) {
+        } catch Error(string memory reason) {
+            emit OnTransferUpdateError(msg.sender, address(0), amount, reason);
+        } catch {
+            emit OnTransferUpdateError(msg.sender, address(0), amount, "Unknown error in onUpdateBalance");
+        }
     }
 
     /**

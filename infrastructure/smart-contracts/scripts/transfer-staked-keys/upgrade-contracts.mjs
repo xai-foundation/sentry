@@ -12,9 +12,17 @@ const newContractImplementationName = "StakingPool3";
 const REFEREE_ADDRESS = config.refereeAddress;
 const POOL_FACTORY_ADDRESS = config.poolFactoryAddress;
 const NODE_LICENSE_ADDRESS = config.nodeLicenseAddress;
+const ESXAI_ADDRESS = config.esXaiAddress;
+const XAI_ADDRESS = config.xaiAddress;
+
+const XAI_VOTING_CONTRACT_ADDRESS = "";
 
 async function main() {
 
+    if(!XAI_VOTING_CONTRACT_ADDRESS){
+        throw new Error("Invalid voting contract address");
+    }
+    
     // get the deployer
     const [deployer] = (await ethers.getSigners());
 
@@ -24,17 +32,29 @@ async function main() {
     const referee11 = await upgrades.upgradeProxy(REFEREE_ADDRESS, Referee11);
     console.log("Referee upgraded to version 11");
 
-    console.log("Upgrading PoolFactory...");
-    const PoolFactory3 = await ethers.getContractFactory("PoolFactory3");
-    console.log("Got PoolFactory factory");
-    const poolFactory3 = await upgrades.upgradeProxy(POOL_FACTORY_ADDRESS, PoolFactory3);
-    console.log("PoolFactory upgraded to version 3");
-    
     console.log("Upgrading NodeLicense...");
     const NodeLicense10 = await ethers.getContractFactory("NodeLicense10");
     console.log("Got NodeLicense factory");
     const nodeLicense10 = await upgrades.upgradeProxy(NODE_LICENSE_ADDRESS, NodeLicense10);
     console.log("NodeLicense upgraded to version 10");
+
+    console.log("Upgrading PoolFactory...");
+    const EsXai4 = await ethers.getContractFactory("esXai4");
+    console.log("Got PoolFactory factory");
+    const esXai4 = await upgrades.upgradeProxy(ESXAI_ADDRESS, EsXai4, { call: { fn: "initialize", args: [XAI_VOTING_CONTRACT_ADDRESS] } });
+    console.log("PoolFactory upgraded to version 3");
+
+    console.log("Upgrading PoolFactory...");
+    const Xai2 = await ethers.getContractFactory("Xai2");
+    console.log("Got PoolFactory factory");
+    const xai2 = await upgrades.upgradeProxy(XAI_ADDRESS, Xai2, { call: { fn: "initialize", args: [XAI_VOTING_CONTRACT_ADDRESS] } });
+    console.log("PoolFactory upgraded to version 3");
+
+    console.log("Upgrading PoolFactory...");
+    const PoolFactory3 = await ethers.getContractFactory("PoolFactory3");
+    console.log("Got PoolFactory factory");
+    const poolFactory3 = await upgrades.upgradeProxy(POOL_FACTORY_ADDRESS, PoolFactory3, { call: { fn: "initialize", args: [XAI_VOTING_CONTRACT_ADDRESS] } });
+    console.log("PoolFactory upgraded to version 3");
 
     // UPGRADE PoolBeacon
     // Create instance of the beacon
@@ -65,6 +85,8 @@ async function main() {
     await safeVerify({ skipWaitForDeployTx: true, contract: referee11 });
     await safeVerify({ skipWaitForDeployTx: true, contract: nodeLicense10 });
     await safeVerify({ skipWaitForDeployTx: true, contract: poolFactory3 });
+    await safeVerify({ skipWaitForDeployTx: true, contract: esXai4 });
+    await safeVerify({ skipWaitForDeployTx: true, contract: xai2 });
     console.log("Verification complete ");
 }
 
