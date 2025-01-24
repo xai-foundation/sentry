@@ -50,7 +50,7 @@ export function XaiTests(deployInfrastructure) {
         it("Check calling the initializer is not allowed afterwards", async function() {
             const {xai, xaiDefaultAdmin} = await loadFixture(deployInfrastructure);
             const expectedRevertMessage = "Initializable: contract is already initialized";
-            await expect(xai.connect(xaiDefaultAdmin).initialize()).to.be.revertedWith(expectedRevertMessage);
+            await expect(xai.connect(xaiDefaultAdmin).initialize(await xai.getAddress())).to.be.revertedWith(expectedRevertMessage);
         })
 
         it("Check conversion from Xai to esXai", async function() {
