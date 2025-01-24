@@ -425,9 +425,9 @@ describe("Stake V1 & Transfer keys on Bulksubmissions", function () {
         const xai2 = await upgrades.upgradeProxy((await xai.getAddress()), Xai2, { call: { fn: "initialize", args: [await voting.getAddress()] } });
         await xai2.waitForDeployment();
 
-        const PoolFactory4 = await ethers.getContractFactory("PoolFactory4");
-        const poolFactory4 = await upgrades.upgradeProxy((await poolFactory2.getAddress()), PoolFactory4, { call: { fn: "initialize", args: [await voting.getAddress()] } });
-        await poolFactory4.waitForDeployment();
+        const PoolFactory3 = await ethers.getContractFactory("PoolFactory3");
+        const poolFactory3 = await upgrades.upgradeProxy((await poolFactory2.getAddress()), PoolFactory3, { call: { fn: "initialize", args: [await voting.getAddress()] } });
+        await poolFactory3.waitForDeployment();
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
@@ -466,7 +466,7 @@ describe("Stake V1 & Transfer keys on Bulksubmissions", function () {
             publicKeyHex: "0x" + publicKeyHex,
             referee: referee10,
             nodeLicense: nodeLicense10,
-            poolFactory: poolFactory4,
+            poolFactory: poolFactory3,
             gasSubsidy,
             esXai: esXai4,
             xai: xai2,

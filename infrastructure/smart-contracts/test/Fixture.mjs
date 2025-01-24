@@ -416,8 +416,15 @@ describe("Fixture Tests", function () {
         const nodeLicense10 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense10);
         await nodeLicense10.waitForDeployment();
 
+        //Deploy sample Xai Voting
+        const voting = await ethers.deployContract(
+            "SampleXaiVoting",
+            []
+        );
+        await voting.waitForDeployment();
+
         const PoolFactory3 = await ethers.getContractFactory("PoolFactory3");
-        const poolFactory3 = await upgrades.upgradeProxy((await poolFactory2.getAddress()), PoolFactory3);
+        const poolFactory3 = await upgrades.upgradeProxy((await poolFactory2.getAddress()), PoolFactory3, { call: { fn: "initialize", args: [await voting.getAddress()] } });
         await poolFactory3.waitForDeployment();
 
         const Referee11 = await ethers.getContractFactory("Referee11");
@@ -429,13 +436,6 @@ describe("Fixture Tests", function () {
         const stakingPool3ImplAddress = await StakingPool3.getAddress();
         await StakingPoolPoolBeacon.update(stakingPool3ImplAddress);
 
-        //Deploy sample Xai Voting
-        const voting = await ethers.deployContract(
-            "SampleXaiVoting",
-            []
-        );
-        await voting.waitForDeployment();
-
         // Update for Voting
         const EsXai4 = await ethers.getContractFactory("esXai4");
         const esXai4 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai4, { call: { fn: "initialize", args: [await voting.getAddress()] } });
@@ -444,10 +444,6 @@ describe("Fixture Tests", function () {
         const Xai2 = await ethers.getContractFactory("Xai2");
         const xai2 = await upgrades.upgradeProxy((await xai.getAddress()), Xai2, { call: { fn: "initialize", args: [await voting.getAddress()] } });
         await xai2.waitForDeployment();
-
-        const PoolFactory4 = await ethers.getContractFactory("PoolFactory4");
-        const poolFactory4 = await upgrades.upgradeProxy((await poolFactory2.getAddress()), PoolFactory4, { call: { fn: "initialize", args: [await voting.getAddress()] } });
-        await poolFactory4.waitForDeployment();
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
@@ -485,7 +481,7 @@ describe("Fixture Tests", function () {
             publicKeyHex: "0x" + publicKeyHex,
             referee: referee11,
             nodeLicense: nodeLicense10,
-            poolFactory: poolFactory4,
+            poolFactory: poolFactory3,
             gasSubsidy,
             esXai: esXai4,
             xai: xai2,
