@@ -369,14 +369,14 @@ describe("Fixture Tests", function () {
         const esXai3 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai3, { call: { fn: "initialize", args: [await referee.getAddress(), await nodeLicense.getAddress(), poolFactoryAddress, maxKeysNonKyc] } });
         await esXai3.waitForDeployment();
 
-        
+
         // Referee9
         // This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
         const Referee9 = await ethers.getContractFactory("Referee9");
         // Upgrade the Referee
         const referee9 = await upgrades.upgradeProxy((await referee.getAddress()), Referee9, { call: { fn: "initialize", args: [await refereeCalculations.getAddress()] } });
         await referee9.waitForDeployment();
-        
+
         // // Referee10 upgrade - Required For Tiny Keys
         // // This upgrade needs to happen after all the setters are called, Referee 9 will remove the setters that are not needed in prod anymore to save contract size
         const Referee10 = await ethers.getContractFactory("Referee10");
@@ -410,6 +410,40 @@ describe("Fixture Tests", function () {
             }
         );
         await nodeLicense9.waitForDeployment();
+
+        // Upgrade for allow transfer staked keys
+        const NodeLicense10 = await ethers.getContractFactory("NodeLicense10");
+        const nodeLicense10 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense10);
+        await nodeLicense10.waitForDeployment();
+
+        //Deploy sample Xai Voting
+        const voting = await ethers.deployContract(
+            "SampleXaiVoting",
+            []
+        );
+        await voting.waitForDeployment();
+
+        const PoolFactory3 = await ethers.getContractFactory("PoolFactory3");
+        const poolFactory3 = await upgrades.upgradeProxy((await poolFactory2.getAddress()), PoolFactory3, { call: { fn: "initialize", args: [await voting.getAddress()] } });
+        await poolFactory3.waitForDeployment();
+
+        const Referee11 = await ethers.getContractFactory("Referee11");
+        const referee11 = await upgrades.upgradeProxy((await referee.getAddress()), Referee11);
+        await referee11.waitForDeployment();
+
+        const StakingPool3 = await ethers.deployContract("StakingPool3");
+        await StakingPool3.waitForDeployment();
+        const stakingPool3ImplAddress = await StakingPool3.getAddress();
+        await StakingPoolPoolBeacon.update(stakingPool3ImplAddress);
+
+        // Update for Voting
+        const EsXai4 = await ethers.getContractFactory("esXai4");
+        const esXai4 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai4, { call: { fn: "initialize", args: [await voting.getAddress()] } });
+        await esXai4.waitForDeployment();
+
+        const Xai2 = await ethers.getContractFactory("Xai2");
+        const xai2 = await upgrades.upgradeProxy((await xai.getAddress()), Xai2, { call: { fn: "initialize", args: [await voting.getAddress()] } });
+        await xai2.waitForDeployment();
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
@@ -445,12 +479,12 @@ describe("Fixture Tests", function () {
             tiers,
             secretKeyHex,
             publicKeyHex: "0x" + publicKeyHex,
-            referee: referee10,
-            nodeLicense: nodeLicense9,
-            poolFactory: poolFactory2,
+            referee: referee11,
+            nodeLicense: nodeLicense10,
+            poolFactory: poolFactory3,
             gasSubsidy,
-            esXai: esXai3,
-            xai,
+            esXai: esXai4,
+            xai: xai2,
             rollupContract,
             chainlinkEthUsdPriceFeed,
             chainlinkXaiUsdPriceFeed,
@@ -486,7 +520,7 @@ describe("Fixture Tests", function () {
     describe("BulkSubmissions", RefereeBulkSubmissions(deployInfrastructure).bind(this));
     describe("Node License Tiny Keys", NodeLicenseTinyKeysTest(deployInfrastructure, getBasicPoolConfiguration()).bind(this));
     describe("Failed KYC Tests", FailedKycTests(deployInfrastructure).bind(this));
-    
+
     //describe("Winning Key Count Simulations", RefereeWinningKeyCountSimulations(deployInfrastructure).bind(this));
 
 

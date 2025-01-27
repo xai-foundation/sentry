@@ -14,6 +14,7 @@ contract XaiUpgradeTest is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessCon
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     uint256 public constant MAX_SUPPLY = 2500000000 * 10**18; // Max supply of 2,500,000,000 tokens
     address private esXaiAddress;
+    address public xaiVotingAddress;
     uint256 private _count;
 
     /**
@@ -21,7 +22,7 @@ contract XaiUpgradeTest is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessCon
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[499] private __gap;
+    uint256[498] private __gap;
 
     /**
      * @dev Function to increment the count

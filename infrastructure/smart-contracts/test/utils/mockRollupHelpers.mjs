@@ -14,16 +14,6 @@ export const createMockRollupNodes = async (
     currentAssertion,
     previousAssertion
 ) => {
-    //set isCheckingAssertions to true in referee
-    let isAssertionChecking = await referee.isCheckingAssertions();
-    if (!isAssertionChecking) {
-        await referee.toggleAssertionChecking();
-    }
-    
-    //set referee rollup address to mock rollup
-    const prevRollupAddress = await referee.rollupAddress();
-    const mockRollupAddress = await mockRollup.getAddress();
-    await referee.setRollupAddress(mockRollupAddress);
 
     //create node(s) on the MockRollup
     let nodeArray = [];
@@ -50,15 +40,6 @@ export const createMockRollupNodes = async (
         //update last block number
         lastNodeBlockNumber = node.createdAtBlock;
     }
-    
-    //set isCheckingAssertions and referee address back to previous values
-    isAssertionChecking = await referee.isCheckingAssertions();
-    if (isAssertionChecking) {
-        await referee.toggleAssertionChecking();
-    }
-
-    //set rollup address back to previous rollup address
-    await referee.setRollupAddress(prevRollupAddress);
 
     return {
         nodes: nodeArray,
@@ -87,17 +68,6 @@ export const confirmMockRollupNodes = async (
     currentAssertion,
     previousAssertion
 ) => {
-    //set isCheckingAssertions to true in referee
-    let isAssertionChecking = await referee.isCheckingAssertions();
-    if (!isAssertionChecking) {
-        await referee.toggleAssertionChecking();
-    }
-    
-    //set referee rollup address to mock rollup
-    const prevRollupAddress = await referee.rollupAddress();
-    const mockRollupAddress = await mockRollup.getAddress();
-    await referee.setRollupAddress(mockRollupAddress);
-
     //confirm nodes
     let assertionArray = [];
     let trxArray = [];
@@ -111,21 +81,13 @@ export const confirmMockRollupNodes = async (
         assertionArray.push(i);
         trxArray.push(trx);
     }
-
+    
+    const mockRollupAddress = await mockRollup.getAddress();
     //get confirm data and hash from contract
     const [confirmData, confirmHash] = await refereeCalculations.getConfirmDataMultipleAssertions(
         assertionArray, 
         mockRollupAddress
     );
-    
-    //set isCheckingAssertions to false in the Referee
-    isAssertionChecking = await referee.isCheckingAssertions();
-    if (isAssertionChecking) {
-        await referee.toggleAssertionChecking();
-    }
-
-    //set rollup address back to previous rollup address
-    await referee.setRollupAddress(prevRollupAddress);
 
     return {
         confirmData: confirmData,

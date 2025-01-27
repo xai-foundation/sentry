@@ -398,11 +398,36 @@ describe("Stake V1 & Transfer keys on Bulksubmissions", function () {
         );
         await nodeLicense9.waitForDeployment();
         
+        // Upgrade for allow transfer staked keys
+        const NodeLicense10 = await ethers.getContractFactory("NodeLicense10");
+        const nodeLicense10 = await upgrades.upgradeProxy((await nodeLicense.getAddress()), NodeLicense10);
+        await nodeLicense10.waitForDeployment();
+        
         // Upgrade the StakingPool
         const NewImplementation = await ethers.deployContract("StakingPool2");
         await NewImplementation.waitForDeployment();
         const newImplementationAddress = await NewImplementation.getAddress();
         await StakingPoolPoolBeacon.update(newImplementationAddress);
+        
+        //Deploy sample Xai Voting
+        const voting = await ethers.deployContract(
+            "SampleXaiVoting",
+            []
+        );
+        await voting.waitForDeployment();
+
+        // Update for Voting
+        const EsXai4 = await ethers.getContractFactory("esXai4");
+        const esXai4 = await upgrades.upgradeProxy((await esXai.getAddress()), EsXai4, { call: { fn: "initialize", args: [await voting.getAddress()] } });
+        await esXai4.waitForDeployment();
+
+        const Xai2 = await ethers.getContractFactory("Xai2");
+        const xai2 = await upgrades.upgradeProxy((await xai.getAddress()), Xai2, { call: { fn: "initialize", args: [await voting.getAddress()] } });
+        await xai2.waitForDeployment();
+
+        const PoolFactory3 = await ethers.getContractFactory("PoolFactory3");
+        const poolFactory3 = await upgrades.upgradeProxy((await poolFactory2.getAddress()), PoolFactory3, { call: { fn: "initialize", args: [await voting.getAddress()] } });
+        await poolFactory3.waitForDeployment();
 
         config.esXaiAddress = await esXai.getAddress();
         config.esXaiDeployedBlockNumber = (await esXai.deploymentTransaction()).blockNumber;
@@ -440,11 +465,11 @@ describe("Stake V1 & Transfer keys on Bulksubmissions", function () {
             secretKeyHex,
             publicKeyHex: "0x" + publicKeyHex,
             referee: referee10,
-            nodeLicense: nodeLicense9,
-            poolFactory: poolFactory2,
+            nodeLicense: nodeLicense10,
+            poolFactory: poolFactory3,
             gasSubsidy,
-            esXai: esXai3,
-            xai,
+            esXai: esXai4,
+            xai: xai2,
             rollupContract,
             chainlinkEthUsdPriceFeed,
             chainlinkXaiUsdPriceFeed,

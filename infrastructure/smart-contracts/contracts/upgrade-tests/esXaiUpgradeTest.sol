@@ -27,6 +27,7 @@ contract esXaiUpgradeTest is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessC
     address public nodeLicenseAddress;
     uint256 public maxKeysNonKyc;
     address public poolFactoryAddress;
+    address public xaiVotingAddress;
     uint256 private _count;
 
     struct RedemptionRequest {
@@ -51,7 +52,7 @@ contract esXaiUpgradeTest is ERC20Upgradeable, ERC20BurnableUpgradeable, AccessC
      * variables without shifting down storage in the inheritance chain.
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
-    uint256[492] private __gap;
+    uint256[491] private __gap;
 
     /**
      * @dev Function to increment the count

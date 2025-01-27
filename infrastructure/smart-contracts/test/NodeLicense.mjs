@@ -5,6 +5,8 @@ import fs from "fs";
 import { mintBatchedLicenses, mintSingleLicense } from "./utils/mintLicenses.mjs"
 import { createPool } from "./utils/createPool.mjs"
 import { submitTestChallenge } from "./utils/submitTestChallenge.mjs"
+import { Contract } from "ethers";
+import { StakingPoolAbi } from "@sentry/core"
 
 export function NodeLicenseTests(deployInfrastructure) {
     return function() {
@@ -579,7 +581,7 @@ export function NodeLicenseTests(deployInfrastructure) {
             const expectedRevertMessage = `AccessControl: account ${addr1.address.toLowerCase()} is missing role ${await nodeLicense.TRANSFER_ROLE()}`;
             
             await expect(
-                nodeLicense.connect(addr1).adminTransferBatch(addr2.address, [mintedKeyId], testTxHash)
+                nodeLicense.connect(addr1).adminTransferBatch(addr1.address, addr2.address, [mintedKeyId], testTxHash)
             ).to.be.revertedWith(expectedRevertMessage);
 
             await expect(
@@ -662,7 +664,7 @@ export function NodeLicenseTests(deployInfrastructure) {
             const addr2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
 
             const testTxHash = "0xf63670b4dc0a1468cdf2a37758ea82907655809857c8e5a41cda697152cc7fa8"
-            await nodeLicense.connect(nodeLicenseDefaultAdmin).adminTransferBatch(addr2.address, keyIds, testTxHash)
+            await nodeLicense.connect(nodeLicenseDefaultAdmin).adminTransferBatch(nodeLicenseDefaultAdmin.address, addr2.address, keyIds, testTxHash)
 
             // Check that balance got updated
             const addr1Balance = await nodeLicense.balanceOf(nodeLicenseDefaultAdmin.address);
@@ -711,7 +713,7 @@ export function NodeLicenseTests(deployInfrastructure) {
             
             const testTxHash = "0xf63670b4dc0a1468cdf2a37758ea82907655809857c8e5a41cda697152cc7fa8"
             await expect(
-                nodeLicense.connect(nodeLicenseDefaultAdmin).adminTransferBatch(addr2.address, keyIds, testTxHash)
+                nodeLicense.connect(nodeLicenseDefaultAdmin).adminTransferBatch(nodeLicenseDefaultAdmin.address, addr2.address, keyIds, testTxHash)
             ).to.be.revertedWith("ERC721: caller is not token owner or approved");
         });
 
@@ -765,7 +767,7 @@ export function NodeLicenseTests(deployInfrastructure) {
             const addr2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
 
             const testTxHash = "0xf63670b4dc0a1468cdf2a37758ea82907655809857c8e5a41cda697152cc7fa8"
-            await nodeLicense.connect(nodeLicenseDefaultAdmin).adminTransferBatch(addr2.address, keyIdsToTransfer, testTxHash)
+            await nodeLicense.connect(nodeLicenseDefaultAdmin).adminTransferBatch(nodeLicenseDefaultAdmin.address, addr2.address, keyIdsToTransfer, testTxHash)
 
             // Check that balance got updated
             const addr1Balance = await nodeLicense.balanceOf(nodeLicenseDefaultAdmin.address);
@@ -778,15 +780,15 @@ export function NodeLicenseTests(deployInfrastructure) {
 
             // Make sure we cannot sure the same transferId again
             await expect(
-                nodeLicense.connect(nodeLicenseDefaultAdmin).adminTransferBatch(addr2.address, keyIdsNonTransfer, testTxHash)
+                nodeLicense.connect(nodeLicenseDefaultAdmin).adminTransferBatch(nodeLicenseDefaultAdmin.address, addr2.address, keyIdsNonTransfer, testTxHash)
             ).to.be.revertedWithCustomError(nodeLicense, "TxIdPrevUsed");
             
             // Check that balance stayed the same
             expect(addr1Balance + 3n).to.equal(await nodeLicense.balanceOf(nodeLicenseDefaultAdmin.address));
             expect(addr2Balance).to.equal(await nodeLicense.balanceOf(addr2.address));
         });
-
-        it("Should not allow a staked key to be transferred", async function () {
+        
+        it("Should not allow more than unstaked key count to be transferred", async function () {
             const { nodeLicense, nodeLicenseDefaultAdmin, addr1, addr2, referee, poolFactory, challenger } = await loadFixture(deployInfrastructure);
 
             await nodeLicense.connect(nodeLicenseDefaultAdmin).grantRole(await nodeLicense.TRANSFER_ROLE(), addr1.address);
@@ -796,46 +798,60 @@ export function NodeLicenseTests(deployInfrastructure) {
                 await nodeLicense.hasRole(await nodeLicense.TRANSFER_ROLE(), addr1.address)
             ).to.equal(true);
 
-            const mintedKeyId = await mintSingleLicense(nodeLicense, addr1);
+            const mintedKeys = await mintBatchedLicenses(10n, nodeLicense, addr1);
 
             const addr1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
             const addr2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
             expect(addr1BalanceBefore).to.be.greaterThan(0n);
 
-            // Verify the key not staked
-            expect(await referee.assignedKeyToPool(mintedKeyId)).to.equal(ethers.ZeroAddress);
-            
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(0n);
+
             // Submit a challenge so pool creation does not break (since TK update)
-            const startingAssertion = 100;
-            await submitTestChallenge(referee, challenger, startingAssertion, "0x0000000000000000000000000000000000000000000000000000000000000000");
+            await submitTestChallenge(referee, challenger, 100, "0x0000000000000000000000000000000000000000000000000000000000000000");
 
             // Create pool & stake key
-            const stakingPoolAddress = await createPool(poolFactory, addr1, [mintedKeyId]);
+            const stakingPoolAddress = await createPool(poolFactory, addr1, Array(Number(addr1BalanceBefore)).fill(0).map(n => BigInt(n)));
+
             // Verify the key is assigned to the pool
-            expect(await referee.assignedKeyToPool(mintedKeyId)).to.equal(stakingPoolAddress);
+            expect(await referee.assignedKeysToPoolCount(stakingPoolAddress)).to.equal(addr1BalanceBefore);
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(addr1BalanceBefore);
 
             const expectedError = "CannotTransferStakedKey"
             const testTxHash = "0xf63670b4dc0a1468cdf2a37758ea82907655809857c8e5a41cda697152cc7fa8"
             await expect(
-                nodeLicense.connect(addr1).adminTransferBatch(addr2.address, [mintedKeyId], testTxHash)
+                nodeLicense.connect(addr1).adminTransferBatch(addr1.address, addr2.address, mintedKeys, testTxHash)
             ).to.be.revertedWithCustomError(nodeLicense, expectedError);
 
             await expect(
-                nodeLicense.connect(addr1).safeTransferFrom(addr1.address, addr2.address, mintedKeyId)
+                nodeLicense.connect(addr1).safeTransferFrom(addr1.address, addr2.address, mintedKeys[0])
             ).to.be.revertedWithCustomError(nodeLicense, expectedError);
-            
+
             await expect(
-                nodeLicense.connect(addr1).transferFrom(addr1.address, addr2.address, mintedKeyId)
+                nodeLicense.connect(addr1).transferFrom(addr1.address, addr2.address, mintedKeys[0])
             ).to.be.revertedWithCustomError(nodeLicense, expectedError);
 
             // Check that balance remains unchanged
-            const addr1Balance = await nodeLicense.balanceOf(addr1.address);
-            expect(addr1Balance).to.equal(addr1BalanceBefore);
-            
-            const addr2Balance = await nodeLicense.balanceOf(addr2.address);
-            expect(addr2Balance).to.equal(addr2BalanceBefore);
+            expect(await nodeLicense.balanceOf(addr1.address)).to.equal(addr1BalanceBefore);
+            expect(await nodeLicense.balanceOf(addr2.address)).to.equal(addr2BalanceBefore);
+
+            // Mint additional keys, verify the transfer will work properly
+            const mintedKeysAfterStake = await mintBatchedLicenses(2n, nodeLicense, addr1);
+            expect(await nodeLicense.balanceOf(addr1.address)).to.equal(addr1BalanceBefore + 2n);
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(addr1BalanceBefore);
+
+            await nodeLicense.connect(addr1).safeTransferFrom(addr1.address, addr2.address, mintedKeysAfterStake[0]);
+            await nodeLicense.connect(addr1).transferFrom(addr1.address, addr2.address, mintedKeysAfterStake[1]);
+
+            // Check that balance has been updated
+            expect(await nodeLicense.balanceOf(addr1.address)).to.equal(addr1BalanceBefore);
+            expect(await nodeLicense.balanceOf(addr2.address)).to.equal(addr2BalanceBefore + 2n);
+
+            // Verify the staked amounts stay the same
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(addr1BalanceBefore);
+            expect(await referee.assignedKeysToPoolCount(stakingPoolAddress)).to.equal(addr1BalanceBefore);
+
         });
-        
+
         it("Should revert adminMintTo using the same mintTxId", async function () {
             const { nodeLicense, nodeLicenseDefaultAdmin, addr1 } = await loadFixture(deployInfrastructure);
 
@@ -857,6 +873,491 @@ export function NodeLicenseTests(deployInfrastructure) {
             ).to.be.revertedWithCustomError(nodeLicense, "TxIdPrevUsed");
         });
 
+        // Tests transfer staked keys
 
+        it("Should update staked count when transferring all staked keys and claim open dividends", async function () {
+            const { nodeLicense, nodeLicenseDefaultAdmin, addr1, addr2, addr3, referee, poolFactory, challenger, esXaiMinter, esXai, kycAdmin } = await loadFixture(deployInfrastructure);
+
+            await nodeLicense.connect(nodeLicenseDefaultAdmin).grantRole(await nodeLicense.TRANSFER_ROLE(), addr1.address);
+
+            // Verify that the wallet does not have the role
+            expect(
+                await nodeLicense.hasRole(await nodeLicense.TRANSFER_ROLE(), addr1.address)
+            ).to.equal(true);
+
+            // mint keys to wallet
+            await mintBatchedLicenses(20n, nodeLicense, addr1);
+
+            const addr1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
+            const addr2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
+
+            const mintedKeys = [];
+            for (let i = 0; i < addr1BalanceBefore; i++) {
+                mintedKeys.push(await nodeLicense.tokenOfOwnerByIndex(addr1.address, i));
+            }
+
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(0n);
+            expect(await referee.assignedKeysOfUserCount(addr2.address)).to.equal(0n);
+
+            // Submit a challenge so pool creation does not break (since TK update)
+            await submitTestChallenge(referee, challenger, 100, "0x0000000000000000000000000000000000000000000000000000000000000000");
+
+            // Create pool & stake key
+            await referee.connect(kycAdmin).addKycWallet(await addr3.getAddress());
+            //Create pool with addr 3 as owner and stake esXai for precise claimAmount calc
+            const stakingPoolAddress = await createPool(poolFactory, addr3, [await nodeLicense.tokenOfOwnerByIndex(addr3.address, 0)]);
+            await esXai.connect(esXaiMinter).mint(addr3.address, BigInt(100 * 10 ** 18));
+            await esXai.connect(addr3).increaseAllowance(await poolFactory.getAddress(), BigInt(100 * 10 ** 18));
+			await poolFactory.connect(addr3).stakeEsXai(stakingPoolAddress, BigInt(100 * 10 ** 18));
+
+            await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, BigInt(mintedKeys.length));
+
+            // Verify the key is assigned to the pool
+            //Expect user balance + 1, we staked all keys and one on pool create from addr3
+            expect(await referee.assignedKeysToPoolCount(stakingPoolAddress)).to.equal(addr1BalanceBefore + 1n);
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(addr1BalanceBefore);
+
+            const esXaiBalanceAddr1Before = await esXai.balanceOf(addr1.address);
+            const esXaiBalanceAddr2Before = await esXai.balanceOf(addr2.address);
+            const esXaiBalancePoolBefore = await esXai.balanceOf(stakingPoolAddress);
+
+            // Check the user pool info
+            const stakingPool = new Contract(stakingPoolAddress, StakingPoolAbi);
+            const userPoolDataBefore = await stakingPool.connect(addr1).getUserPoolData(addr1.address);
+            expect(userPoolDataBefore.userStakedKeyAmount).to.equal(addr1BalanceBefore);
+            expect(userPoolDataBefore.userClaimAmount).to.equal(0n);
+            expect(esXaiBalancePoolBefore).to.equal(0n);
+
+            // Mint dividends to the pool
+            const poolMintAmount = BigInt(100 * 10 ** 18);
+            await esXai.connect(esXaiMinter).mint(stakingPoolAddress, poolMintAmount);
+
+            // Check the userPoolData after minting dividends to the pool
+            const userPoolDataAfterPoolMint = await stakingPool.connect(addr1).getUserPoolData(addr1.address);
+            expect(userPoolDataAfterPoolMint.userStakedKeyAmount).to.equal(addr1BalanceBefore);
+            expect(userPoolDataAfterPoolMint.userClaimAmount).to.be.greaterThan(0n);
+            expect(await esXai.balanceOf(addr1.address)).to.equal(esXaiBalanceAddr1Before);
+
+            // Transfer the staked keys
+            await nodeLicense.connect(addr1).transferStakedKeys(addr1.address, addr2.address, stakingPoolAddress, mintedKeys);
+
+            // Check that balance has been updated
+            expect(await nodeLicense.balanceOf(addr1.address)).to.equal(addr1BalanceBefore - BigInt(mintedKeys.length));
+            expect(await nodeLicense.balanceOf(addr2.address)).to.equal(addr2BalanceBefore + BigInt(mintedKeys.length));
+
+            // Verify the staked amounts are updated
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(0n);
+            expect(await referee.assignedKeysOfUserCount(addr2.address)).to.equal(BigInt(mintedKeys.length));
+            // Verify the staked amount from the pool stayed the same
+            expect(await referee.assignedKeysToPoolCount(stakingPoolAddress)).to.equal(BigInt(mintedKeys.length + 1));
+
+            const userPoolDataAddr1AfterTransfer = await stakingPool.connect(addr1).getUserPoolData(addr1.address);
+            const userPoolDataAddr2AfterTransfer = await stakingPool.connect(addr1).getUserPoolData(addr2.address);
+            expect(userPoolDataAddr1AfterTransfer.userStakedKeyAmount).to.equal(0n);
+            expect(userPoolDataAddr2AfterTransfer.userStakedKeyAmount).to.equal(BigInt(mintedKeys.length));
+            expect(userPoolDataAddr1AfterTransfer.userClaimAmount).to.equal(0n);
+            expect(userPoolDataAddr2AfterTransfer.userClaimAmount).to.equal(0n);
+
+            // verify dividends payed
+            const esXaiBalanceAddr1After = await esXai.balanceOf(addr1.address);
+            expect(esXaiBalanceAddr1After).to.equal(esXaiBalanceAddr1Before + userPoolDataAfterPoolMint.userClaimAmount);
+            expect(await esXai.balanceOf(addr2.address)).to.equal(esXaiBalanceAddr2Before);
+
+            // mint more dividends verify the claimAmounts
+            await esXai.connect(esXaiMinter).mint(stakingPoolAddress, poolMintAmount);
+            const userPoolDataAddr1AfterSecondMint = await stakingPool.connect(addr1).getUserPoolData(addr1.address);
+            const userPoolDataAddr2AfterSecondMint = await stakingPool.connect(addr1).getUserPoolData(addr2.address);
+            expect(userPoolDataAddr1AfterSecondMint.userClaimAmount).to.equal(0n);
+            expect(userPoolDataAddr2AfterSecondMint.userClaimAmount).to.be.greaterThan(0n);
+
+            // claim from pools verify the updated balance
+            await poolFactory.connect(addr1).claimFromPools([stakingPoolAddress]);
+            await poolFactory.connect(addr2).claimFromPools([stakingPoolAddress]);
+
+            expect(await esXai.balanceOf(addr1.address)).to.equal(esXaiBalanceAddr1After);
+            expect(await esXai.balanceOf(addr2.address)).to.equal(esXaiBalanceAddr2Before + userPoolDataAddr2AfterSecondMint.userClaimAmount);
+        });
+
+        it("Should update staked count when transferring some staked keys and claim open dividends", async function () {
+            const { nodeLicense, nodeLicenseDefaultAdmin, addr1, addr2, addr3, referee, poolFactory, challenger, esXaiMinter, esXai, kycAdmin } = await loadFixture(deployInfrastructure);
+
+            await nodeLicense.connect(nodeLicenseDefaultAdmin).grantRole(await nodeLicense.TRANSFER_ROLE(), addr1.address);
+
+            // Verify that the wallet does not have the role
+            expect(
+                await nodeLicense.hasRole(await nodeLicense.TRANSFER_ROLE(), addr1.address)
+            ).to.equal(true);
+
+            // mint keys to wallet
+            await mintBatchedLicenses(20n, nodeLicense, addr1);
+
+            const addr1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
+            const addr2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
+
+            const mintedKeys = [];
+            for (let i = 0; i < addr1BalanceBefore; i++) {
+                mintedKeys.push(await nodeLicense.tokenOfOwnerByIndex(addr1.address, i));
+            }
+
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(0n);
+            expect(await referee.assignedKeysOfUserCount(addr2.address)).to.equal(0n);
+
+            // Submit a challenge so pool creation does not break (since TK update)
+            await submitTestChallenge(referee, challenger, 100, "0x0000000000000000000000000000000000000000000000000000000000000000");
+
+            // Create pool & stake key
+            await referee.connect(kycAdmin).addKycWallet(await addr3.getAddress());
+            //Create pool with addr 3 as owner and stake esXai for precise claimAmount calc
+            const stakingPoolAddress = await createPool(poolFactory, addr3, [await nodeLicense.tokenOfOwnerByIndex(addr3.address, 0)]);
+            await esXai.connect(esXaiMinter).mint(addr3.address, BigInt(200 * 10 ** 18));
+            await esXai.connect(addr3).increaseAllowance(await poolFactory.getAddress(), BigInt(200 * 10 ** 18));
+			await poolFactory.connect(addr3).stakeEsXai(stakingPoolAddress, BigInt(200 * 10 ** 18));
+
+            await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, BigInt(mintedKeys.length));
+
+            // Verify the key is assigned to the pool
+            //Expect user balance + 1, we staked all keys and one on pool create from addr3
+            expect(await referee.assignedKeysToPoolCount(stakingPoolAddress)).to.equal(addr1BalanceBefore + 1n);
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(addr1BalanceBefore);
+
+            const esXaiBalanceAddr1Before = await esXai.balanceOf(addr1.address);
+            const esXaiBalanceAddr2Before = await esXai.balanceOf(addr2.address);
+            const esXaiBalancePoolBefore = await esXai.balanceOf(stakingPoolAddress);
+
+            // Check the user pool info
+            const stakingPool = new Contract(stakingPoolAddress, StakingPoolAbi);
+            const userPoolDataBefore = await stakingPool.connect(addr1).getUserPoolData(addr1.address);
+            expect(userPoolDataBefore.userStakedKeyAmount).to.equal(addr1BalanceBefore);
+            expect(userPoolDataBefore.userClaimAmount).to.equal(0n);
+            expect(esXaiBalancePoolBefore).to.equal(0n);
+
+            // Mint dividends to the pool
+            const poolMintAmount = BigInt(1000 * 10 ** 18);
+            await esXai.connect(esXaiMinter).mint(stakingPoolAddress, poolMintAmount);
+
+            // Check the userPoolData after minting dividends to the pool
+            const userPoolDataAfterPoolMint = await stakingPool.connect(addr1).getUserPoolData(addr1.address);
+            expect(userPoolDataAfterPoolMint.userStakedKeyAmount).to.equal(addr1BalanceBefore);
+            expect(userPoolDataAfterPoolMint.userClaimAmount).to.be.greaterThan(0n);
+            expect(await esXai.balanceOf(addr1.address)).to.equal(esXaiBalanceAddr1Before);
+
+            const stakedKeysToTransfer = mintedKeys.slice(0, 10);
+
+            // Transfer the staked keys
+            await nodeLicense.connect(addr1).transferStakedKeys(addr1.address, addr2.address, stakingPoolAddress, stakedKeysToTransfer);
+
+            // Check that balance has been updated
+            expect(await nodeLicense.balanceOf(addr1.address)).to.equal(addr1BalanceBefore - BigInt(stakedKeysToTransfer.length));
+            expect(await nodeLicense.balanceOf(addr2.address)).to.equal(addr2BalanceBefore + BigInt(stakedKeysToTransfer.length));
+
+            // Verify the staked amounts are updated
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(BigInt(mintedKeys.length - stakedKeysToTransfer.length));
+            expect(await referee.assignedKeysOfUserCount(addr2.address)).to.equal(BigInt(stakedKeysToTransfer.length));
+            // Verify the staked amount from the pool stayed the same
+            expect(await referee.assignedKeysToPoolCount(stakingPoolAddress)).to.equal(BigInt(mintedKeys.length + 1));
+
+            const userPoolDataAddr1AfterTransfer = await stakingPool.connect(addr1).getUserPoolData(addr1.address);
+            const userPoolDataAddr2AfterTransfer = await stakingPool.connect(addr1).getUserPoolData(addr2.address);
+            expect(userPoolDataAddr1AfterTransfer.userStakedKeyAmount).to.equal(BigInt(mintedKeys.length - stakedKeysToTransfer.length));
+            expect(userPoolDataAddr2AfterTransfer.userStakedKeyAmount).to.equal(BigInt(stakedKeysToTransfer.length));
+            expect(userPoolDataAddr1AfterTransfer.userClaimAmount).to.equal(0n);
+            expect(userPoolDataAddr2AfterTransfer.userClaimAmount).to.equal(0n);
+
+            // verify dividends payed
+            const esXaiBalanceAddr1After = await esXai.balanceOf(addr1.address);
+            const esXaiBalanceAddr2After = await esXai.balanceOf(addr2.address);
+            expect(esXaiBalanceAddr1After).to.equal(esXaiBalanceAddr1Before + userPoolDataAfterPoolMint.userClaimAmount);
+            expect(esXaiBalanceAddr2After).to.equal(esXaiBalanceAddr2Before);
+
+            // mint more dividends verify the claimAmounts
+            await esXai.connect(esXaiMinter).mint(stakingPoolAddress, poolMintAmount);
+            const userPoolDataAddr1AfterSecondMint = await stakingPool.connect(addr1).getUserPoolData(addr1.address);
+            const userPoolDataAddr2AfterSecondMint = await stakingPool.connect(addr1).getUserPoolData(addr2.address);
+            expect(userPoolDataAddr1AfterSecondMint.userClaimAmount).to.be.greaterThan(0n);
+            expect(userPoolDataAddr2AfterSecondMint.userClaimAmount).to.be.greaterThan(0n);
+
+            // claim from pools verify the updated balance
+            await poolFactory.connect(addr1).claimFromPools([stakingPoolAddress]);
+            await poolFactory.connect(addr2).claimFromPools([stakingPoolAddress]);
+
+            //Can be off by 1 wei for rounding error on calculate claim amount in pool
+            expect(await esXai.balanceOf(addr1.address)).to.be.closeTo(esXaiBalanceAddr1After + userPoolDataAddr1AfterSecondMint.userClaimAmount, 1n);
+            expect(await esXai.balanceOf(addr2.address)).to.equal(esXaiBalanceAddr2After + userPoolDataAddr2AfterSecondMint.userClaimAmount);
+        });
+
+        it("Should not allow the owner to transfer staked genesis key", async function () {
+            const { nodeLicense, nodeLicenseDefaultAdmin, addr1, addr2, addr3, referee, poolFactory, challenger, esXaiMinter, esXai } = await loadFixture(deployInfrastructure);
+
+            await nodeLicense.connect(nodeLicenseDefaultAdmin).grantRole(await nodeLicense.TRANSFER_ROLE(), addr1.address);
+
+            // Verify that the wallet does not have the role
+            expect(
+                await nodeLicense.hasRole(await nodeLicense.TRANSFER_ROLE(), addr1.address)
+            ).to.equal(true);
+
+            // mint keys to wallet
+            await mintBatchedLicenses(20n, nodeLicense, addr1);
+
+            const addr1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
+            const addr2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
+
+            const mintedKeys = [];
+            for (let i = 0; i < addr1BalanceBefore; i++) {
+                mintedKeys.push(await nodeLicense.tokenOfOwnerByIndex(addr1.address, i));
+            }
+
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(0n);
+            expect(await referee.assignedKeysOfUserCount(addr2.address)).to.equal(0n);
+
+            // Submit a challenge so pool creation does not break (since TK update)
+            await submitTestChallenge(referee, challenger, 100, "0x0000000000000000000000000000000000000000000000000000000000000000");
+
+            // Create pool & stake keys, stake 1 less than minted
+            const stakingPoolAddress = await createPool(poolFactory, addr1, mintedKeys);
+
+            // Verify the key is assigned to the pool
+            expect(await referee.assignedKeysToPoolCount(stakingPoolAddress)).to.equal(addr1BalanceBefore);
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(addr1BalanceBefore);
+            
+            await expect(
+                nodeLicense.connect(addr1).transferStakedKeys(addr1.address, addr2.address, stakingPoolAddress, mintedKeys)
+            ).to.be.revertedWith("40");
+
+            expect(await referee.assignedKeysToPoolCount(stakingPoolAddress)).to.equal(addr1BalanceBefore);
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(addr1BalanceBefore);
+            expect(await referee.assignedKeysOfUserCount(addr2.address)).to.equal(0n);
+
+            expect(await nodeLicense.balanceOf(addr1.address)).to.equal(addr1BalanceBefore);
+            expect(await nodeLicense.balanceOf(addr2.address)).to.equal(addr2BalanceBefore);
+
+            // Successfully transfer 1 less and leave the genesis key of the owner in the pool
+            const stakedKeysToTransfer = mintedKeys.slice(0, mintedKeys.length - 2);
+            await nodeLicense.connect(addr1).transferStakedKeys(addr1.address, addr2.address, stakingPoolAddress, stakedKeysToTransfer);
+
+            expect(await referee.assignedKeysToPoolCount(stakingPoolAddress)).to.equal(addr1BalanceBefore);
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(addr1BalanceBefore - BigInt(stakedKeysToTransfer.length));
+            expect(await referee.assignedKeysOfUserCount(addr2.address)).to.equal(BigInt(stakedKeysToTransfer.length));
+
+            expect(await nodeLicense.balanceOf(addr1.address)).to.equal(addr1BalanceBefore - BigInt(stakedKeysToTransfer.length));
+            expect(await nodeLicense.balanceOf(addr2.address)).to.equal(addr2BalanceBefore + BigInt(stakedKeysToTransfer.length));
+        });
+        
+        it("Should not allow transfer pending unstake request keys", async function () {
+            const { nodeLicense, nodeLicenseDefaultAdmin, addr1, addr2, addr3, referee, poolFactory, challenger, kycAdmin } = await loadFixture(deployInfrastructure);
+
+            await nodeLicense.connect(nodeLicenseDefaultAdmin).grantRole(await nodeLicense.TRANSFER_ROLE(), addr1.address);
+
+            // Verify that the wallet does not have the role
+            expect(
+                await nodeLicense.hasRole(await nodeLicense.TRANSFER_ROLE(), addr1.address)
+            ).to.equal(true);
+
+            // mint keys to wallet
+            await mintBatchedLicenses(20n, nodeLicense, addr1);
+
+            const addr1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
+            const addr2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
+
+            const mintedKeys = [];
+            for (let i = 0; i < addr1BalanceBefore; i++) {
+                mintedKeys.push(await nodeLicense.tokenOfOwnerByIndex(addr1.address, i));
+            }
+
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(0n);
+            expect(await referee.assignedKeysOfUserCount(addr2.address)).to.equal(0n);
+
+            // Submit a challenge so pool creation does not break (since TK update)
+            await submitTestChallenge(referee, challenger, 100, "0x0000000000000000000000000000000000000000000000000000000000000000");
+
+            // Create pool & stake keys, stake 1 less than minted
+            await referee.connect(kycAdmin).addKycWallet(await addr3.getAddress());
+            const stakingPoolAddress = await createPool(poolFactory, addr3, [await nodeLicense.tokenOfOwnerByIndex(addr3.address, 0)]);
+            await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, BigInt(mintedKeys.length));
+
+            // Verify the key is assigned to the pool
+            //Expect user balance + 1, we staked all keys and one on pool create from addr3
+            expect(await referee.assignedKeysToPoolCount(stakingPoolAddress)).to.equal(addr1BalanceBefore + 1n);
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(addr1BalanceBefore);
+
+            const unstakeRequestAmount = 5n;
+			await poolFactory.connect(addr1).createUnstakeKeyRequest(stakingPoolAddress, 5n);
+            
+            await expect(
+                nodeLicense.connect(addr1).transferStakedKeys(addr1.address, addr2.address, stakingPoolAddress, mintedKeys)
+            ).to.be.revertedWith("39");
+
+            expect(await referee.assignedKeysToPoolCount(stakingPoolAddress)).to.equal(addr1BalanceBefore + 1n);
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(addr1BalanceBefore);
+            expect(await referee.assignedKeysOfUserCount(addr2.address)).to.equal(0n);
+
+            expect(await nodeLicense.balanceOf(addr1.address)).to.equal(addr1BalanceBefore);
+            expect(await nodeLicense.balanceOf(addr2.address)).to.equal(addr2BalanceBefore);
+
+            // Successfully transfer less than pending
+            const stakedKeysToTransfer = mintedKeys.slice(0, mintedKeys.length - Number(unstakeRequestAmount) - 1);
+            await nodeLicense.connect(addr1).transferStakedKeys(addr1.address, addr2.address, stakingPoolAddress, stakedKeysToTransfer);
+
+            expect(await referee.assignedKeysToPoolCount(stakingPoolAddress)).to.equal(addr1BalanceBefore + 1n);
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(addr1BalanceBefore - BigInt(stakedKeysToTransfer.length));
+            expect(await referee.assignedKeysOfUserCount(addr2.address)).to.equal(BigInt(stakedKeysToTransfer.length));
+
+            expect(await nodeLicense.balanceOf(addr1.address)).to.equal(addr1BalanceBefore - BigInt(stakedKeysToTransfer.length));
+            expect(await nodeLicense.balanceOf(addr2.address)).to.equal(addr2BalanceBefore + BigInt(stakedKeysToTransfer.length));
+        });
+        
+        it("Should fail on transfer more than staked keys in a pool", async function () {
+            const { nodeLicense, nodeLicenseDefaultAdmin, addr1, addr2, addr3, referee, poolFactory, challenger, kycAdmin } = await loadFixture(deployInfrastructure);
+
+            await nodeLicense.connect(nodeLicenseDefaultAdmin).grantRole(await nodeLicense.TRANSFER_ROLE(), addr1.address);
+
+            // Verify that the wallet does not have the role
+            expect(
+                await nodeLicense.hasRole(await nodeLicense.TRANSFER_ROLE(), addr1.address)
+            ).to.equal(true);
+
+            // mint keys to wallet
+            await mintBatchedLicenses(20n, nodeLicense, addr1);
+
+            const addr1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
+            const addr2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
+
+            const mintedKeys = [];
+            for (let i = 0; i < addr1BalanceBefore; i++) {
+                mintedKeys.push(await nodeLicense.tokenOfOwnerByIndex(addr1.address, i));
+            }
+
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(0n);
+            expect(await referee.assignedKeysOfUserCount(addr2.address)).to.equal(0n);
+
+            // Submit a challenge so pool creation does not break (since TK update)
+            await submitTestChallenge(referee, challenger, 100, "0x0000000000000000000000000000000000000000000000000000000000000000");
+
+            // Create pool & stake keys, stake 1 less than minted
+            await referee.connect(kycAdmin).addKycWallet(await addr3.getAddress());
+            const stakingPoolAddress = await createPool(poolFactory, addr3, [await nodeLicense.tokenOfOwnerByIndex(addr3.address, 0)]);
+            await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, BigInt(mintedKeys.length - 1));
+
+            // Verify the key is assigned to the pool
+            //Expect user balance, we staked 1 key less and one key on pool create from addr3
+            expect(await referee.assignedKeysToPoolCount(stakingPoolAddress)).to.equal(addr1BalanceBefore); 
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(addr1BalanceBefore - 1n);
+            
+            await expect(
+                nodeLicense.connect(addr1).transferStakedKeys(addr1.address, addr2.address, stakingPoolAddress, mintedKeys)
+            ).to.be.revertedWith("39");
+
+            expect(await referee.assignedKeysToPoolCount(stakingPoolAddress)).to.equal(addr1BalanceBefore);
+            expect(await referee.assignedKeysOfUserCount(addr1.address)).to.equal(addr1BalanceBefore - 1n);
+            expect(await referee.assignedKeysOfUserCount(addr2.address)).to.equal(0n);
+
+            expect(await nodeLicense.balanceOf(addr1.address)).to.equal(addr1BalanceBefore);
+            expect(await nodeLicense.balanceOf(addr2.address)).to.equal(addr2BalanceBefore);
+        });
+        
+        it("Should fail on transfer from or to failed KYC wallet", async function () {
+            const { nodeLicense, nodeLicenseDefaultAdmin, kycAdmin, refereeDefaultAdmin, addr1, addr2, addr3,referee, poolFactory, challenger, esXaiMinter, esXai } = await loadFixture(deployInfrastructure);
+
+            await nodeLicense.connect(nodeLicenseDefaultAdmin).grantRole(await nodeLicense.TRANSFER_ROLE(), addr1.address);
+
+            // Verify that the wallet does not have the role
+            expect(
+                await nodeLicense.hasRole(await nodeLicense.TRANSFER_ROLE(), addr1.address)
+            ).to.equal(true);
+
+            // mint keys to wallet
+            await mintBatchedLicenses(5n, nodeLicense, addr1);
+
+            const addr1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
+
+            const mintedKeys = [];
+            for (let i = 0; i < addr1BalanceBefore; i++) {
+                mintedKeys.push(await nodeLicense.tokenOfOwnerByIndex(addr1.address, i));
+            }
+
+            expect(addr1BalanceBefore).to.equal(BigInt(mintedKeys.length));
+
+            // Submit a challenge so pool creation does not break (since TK update)
+            await submitTestChallenge(referee, challenger, 100, "0x0000000000000000000000000000000000000000000000000000000000000000");
+
+            // Create pool & stake key
+            await referee.connect(kycAdmin).addKycWallet(await addr3.getAddress());
+            const stakingPoolAddress = await createPool(poolFactory, addr3, [await nodeLicense.tokenOfOwnerByIndex(addr3.address, 0)]);
+            await poolFactory.connect(addr1).stakeKeys(stakingPoolAddress, BigInt(mintedKeys.length));
+
+            // Add the address to the failed kyc list
+            await poolFactory.connect(refereeDefaultAdmin).setFailedKyc(await addr1.getAddress(), true);
+            expect(await poolFactory.failedKyc(await addr1.getAddress())).to.equal(true);
+            expect(await poolFactory.failedKyc(await addr2.getAddress())).to.equal(false);
+
+            const addr2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
+
+            await expect(
+                nodeLicense.connect(addr1).transferStakedKeys(addr1.address, addr2.address, stakingPoolAddress, mintedKeys)
+            ).to.be.revertedWith("38");
+
+            // Check that balance is unchanged
+            expect(addr1BalanceBefore).to.equal(await nodeLicense.balanceOf(addr1.address));
+            expect(addr2BalanceBefore).to.equal(await nodeLicense.balanceOf(addr2.address));
+
+            await poolFactory.connect(refereeDefaultAdmin).setFailedKyc(await addr1.getAddress(), false);
+            expect(await poolFactory.failedKyc(await addr1.getAddress())).to.equal(false);
+            await poolFactory.connect(refereeDefaultAdmin).setFailedKyc(await addr2.getAddress(), true);
+            expect(await poolFactory.failedKyc(await addr2.getAddress())).to.equal(true);
+
+            await expect(
+                nodeLicense.connect(addr1).transferStakedKeys(addr1.address, addr2.address, stakingPoolAddress, mintedKeys)
+            ).to.be.revertedWith("38");
+
+            await poolFactory.connect(refereeDefaultAdmin).setFailedKyc(await addr2.getAddress(), false);
+            expect(await poolFactory.failedKyc(await addr2.getAddress())).to.equal(false);
+
+            await nodeLicense.connect(addr1).transferStakedKeys(addr1.address, addr2.address, stakingPoolAddress, mintedKeys);
+
+            expect(await nodeLicense.balanceOf(addr1.address)).to.equal(addr1BalanceBefore - BigInt(mintedKeys.length));
+            expect(await nodeLicense.balanceOf(addr2.address)).to.equal(addr2BalanceBefore + BigInt(mintedKeys.length));
+
+        });
+
+        it("Should fail on transfer non owned key", async function () {
+            const { nodeLicense, nodeLicenseDefaultAdmin, addr1, addr2, addr3, referee, poolFactory, challenger, esXaiMinter, esXai } = await loadFixture(deployInfrastructure);
+
+            await nodeLicense.connect(nodeLicenseDefaultAdmin).grantRole(await nodeLicense.TRANSFER_ROLE(), addr1.address);
+
+            // Verify that the wallet does not have the role
+            expect(
+                await nodeLicense.hasRole(await nodeLicense.TRANSFER_ROLE(), addr1.address)
+            ).to.equal(true);
+
+            // mint keys to wallet
+            await mintBatchedLicenses(5n, nodeLicense, addr1);
+
+            const addr1BalanceBefore = await nodeLicense.balanceOf(addr1.address);
+
+            const mintedKeys = [];
+            for (let i = 0; i < addr1BalanceBefore; i++) {
+                mintedKeys.push(await nodeLicense.tokenOfOwnerByIndex(addr1.address, i));
+            }
+
+            expect(addr1BalanceBefore).to.equal(BigInt(mintedKeys.length));
+            
+            // Submit a challenge so pool creation does not break (since TK update)
+            await submitTestChallenge(referee, challenger, 100, "0x0000000000000000000000000000000000000000000000000000000000000000");
+
+            // Create pool & stake key
+            const stakingPoolAddress = await createPool(poolFactory, addr1, mintedKeys);
+
+
+            const addr2mintedKeys = await mintBatchedLicenses(5n, nodeLicense, addr2);
+            const addr2BalanceBefore = await nodeLicense.balanceOf(addr2.address);
+
+            await expect(
+                nodeLicense.connect(addr1).transferStakedKeys(addr1.address, addr2.address, stakingPoolAddress, addr2mintedKeys)
+            ).to.be.revertedWith("ERC721: caller is not token owner or approved");
+            
+            // Check that balance is unchanged
+            expect(addr1BalanceBefore).to.equal(await nodeLicense.balanceOf(addr1.address));
+            expect(addr2BalanceBefore).to.equal(await nodeLicense.balanceOf(addr2.address));
+        });
+        
     }
 }
