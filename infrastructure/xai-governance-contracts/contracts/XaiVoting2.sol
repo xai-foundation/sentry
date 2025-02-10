@@ -35,6 +35,21 @@ contract XaiVoting2 is Initializable, VotesUpgradeable {
         _;
     }
 
+    function initialize(
+        address _xaiAddress,
+        address _esXaiAddress,
+        address _poolFactoryAddress
+    ) external initializer {
+        __EIP712_init("XaiVoting", "1");
+        xaiAddress = _xaiAddress;
+        esXaiAddress = _esXaiAddress;
+        poolFactoryAddress = _poolFactoryAddress;
+
+        weights[xaiAddress] = 100;
+        weights[esXaiAddress] = 100;
+        weights[poolFactoryAddress] = 100;
+    }
+
     /**
      * @dev Move voting power when tokens are transferred.
      *
