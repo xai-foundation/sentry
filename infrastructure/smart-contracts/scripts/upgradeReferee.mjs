@@ -6,22 +6,22 @@ async function main() {
     const [deployer] = (await ethers.getSigners());
     const deployerAddress = await deployer.getAddress();
     console.log("Deployer address", deployerAddress);
-    const referee = await ethers.getContractFactory("Referee8");
+    const referee = await ethers.getContractFactory("Referee11");
     console.log("Got factory");
     try {
-        await upgrades.upgradeProxy(config.refereeAddress, referee, { call: { fn: "initialize", args: [] } });
+        await upgrades.upgradeProxy(config.refereeAddress, referee, { redeployImplementation: "always", call: { fn: "initialize", args: [] } });
+        console.log("Upgraded");
+
+        await run("verify:verify", {
+            address: config.refereeAddress,
+            constructorArguments: [],
+        });
+        console.log("verified")
 
     } catch (error) {
         console.error("Failed upgrade", error)
         return;
-
-    } console.log("Upgraded");
-
-    await run("verify:verify", {
-        address: config.refereeAddress,
-        constructorArguments: [],
-    });
-    console.log("verified")
+    }
 }
 
 // We recommend this pattern to be able to use async/await everywhere

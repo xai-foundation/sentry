@@ -235,16 +235,27 @@ contract Referee11 is Initializable, AccessControlEnumerableUpgradeable {
     event NewBulkSubmission(uint256 indexed challengeId, address indexed bulkAddress, uint256 stakedKeys, uint256 winningKeys);
     event UpdateBulkSubmission(uint256 indexed challengeId, address indexed bulkAddress, uint256 stakedKeys, uint256 winningKeys, uint256 increase, uint256 decrease);
 
-    function initialize() public reinitializer(8) {
+    // function initialize() public reinitializer(8) {
 
-        maxStakeAmountPerLicense = 200 * 10 ** 18;
-        maxKeysPerPool = 100_000;
+    //     maxStakeAmountPerLicense = 200 * 10 ** 18;
+    //     maxKeysPerPool = 100_000;
 
-        // Updated base chance to 0.01
-        stakeAmountBoostFactors[0] = 150; // 0.015
-        stakeAmountBoostFactors[1] = 200; // 0.02
-        stakeAmountBoostFactors[2] = 300; // 0.03
-        stakeAmountBoostFactors[3] = 700; // 0.07
+    //     // Updated base chance to 0.01
+    //     stakeAmountBoostFactors[0] = 150; // 0.015
+    //     stakeAmountBoostFactors[1] = 200; // 0.02
+    //     stakeAmountBoostFactors[2] = 300; // 0.03
+    //     stakeAmountBoostFactors[3] = 700; // 0.07
+    // }
+
+    function initialize() public reinitializer(9) {
+
+        maxStakeAmountPerLicense = 227 * 10 ** 18;
+        maxKeysPerPool = 131_872;
+
+        stakeAmountTierThresholds[0] = 450_000 * 10 ** 18;
+        stakeAmountTierThresholds[1] = 3_000_000 * 10 ** 18;
+        stakeAmountTierThresholds[2] = 6_000_000 * 10 ** 18;
+        stakeAmountTierThresholds[3] = 12_000_000 * 10 ** 18;
     }
 
     modifier onlyPoolFactory() {
