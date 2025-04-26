@@ -54,6 +54,7 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
             logCb(`[${new Date().toISOString()}] Subscribing to event listener with topic hash(es): ${topicHashes.join(', ')}`);
 
             const requests = topicHashes.map((topicHash, index) => ({
+                jsonrpc: "2.0",
                 id: index + 1,
                 method: "eth_subscribe",
                 params: [
@@ -67,8 +68,9 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
 
             // sending this backs should return a result of true
             const ping = {
+                jsonrpc: "2.0",
                 id: requests.length + 1,
-                method: "net_listening",
+                method: "net_version",
                 params: [],
             };
 
@@ -107,7 +109,7 @@ export function resilientEventListener(args: ResilientEventListenerArgs) {
                     if (requestIndex !== -1) {
                         subscriptionIds.push(parsedData.result);
                         logCb(`[${new Date().toISOString()}] Subscription to event established with subscription ID '${parsedData.result}'.`);
-                    } else if (parsedData?.id === ping.id && parsedData?.result === true) {
+                    } else if (parsedData?.id === ping.id && parsedData?.result && !isNaN(Number(parsedData.result))) {
                         logCb(`[${new Date().toISOString()}] Health check complete, subscription is still active.`)
                         if (pingTimeout) clearTimeout(pingTimeout);
                     } else if (parsedData?.method === 'eth_subscription' && subscriptionIds.includes(parsedData.params.subscription)) {
