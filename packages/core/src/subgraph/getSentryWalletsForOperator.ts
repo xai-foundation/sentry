@@ -34,14 +34,14 @@ export async function getSentryWalletsForOperator(
     }
   }
 
-  const bulkSubmissionsFields = `bulkSubmissions(first: 10000, orderBy: challengeId, orderDirection: desc, where: {${submissionQueryFilter.join(",")}}) {
+  const bulkSubmissionsFields = `bulkSubmissions(first: 1000, orderBy: challengeId, orderDirection: desc, where: {${submissionQueryFilter.join(",")}}) {
     challengeId
     winningKeyCount
     claimed 
   }`
 
   //NOTE: needed because of inconsistent field names
-  const submissionsFields = `submissions(first: 10000, orderBy: challengeId, orderDirection: desc, where: {${submissionQueryFilter.join(",")}}) {
+  const submissionsFields = `submissions(first: 1000, orderBy: challengeId, orderDirection: desc, where: {${submissionQueryFilter.join(",")}}) {
     challengeId
     winningKeyCount
     claimed 

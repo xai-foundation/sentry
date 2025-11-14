@@ -1,4 +1,4 @@
-import { PoolInfo, RefereeConfig } from "@sentry/sentry-subgraph-client";
+import { PoolInfo } from "@sentry/sentry-subgraph-client";
 import { GraphQLClient, gql } from 'graphql-request'
 import { config } from "../config.js";
 
