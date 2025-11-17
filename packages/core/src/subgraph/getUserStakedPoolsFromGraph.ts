@@ -37,7 +37,7 @@ export async function getUserStakedPoolsFromGraph(
     }
 
     submissionQuery = gql`
-        submissions(first: 10000, orderBy: challengeId, orderDirection: desc, where: {${submissionQueryFilter.join(",")}}) { 
+        submissions(first: 1000, orderBy: challengeId, orderDirection: desc, where: {${submissionQueryFilter.join(",")}}) { 
           challengeId
           winningKeyCount
           claimed 

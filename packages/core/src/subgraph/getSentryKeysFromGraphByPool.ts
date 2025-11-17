@@ -34,7 +34,7 @@ export async function getSentryKeysFromGraphByPool(
     }
 
     submissionQuery = gql`
-        submissions(first: 10000, orderBy: challengeNumber, orderDirection: desc, where: {${submissionQueryFilter.join(",")}}) { 
+        submissions(first: 1000, orderBy: challengeNumber, orderDirection: desc, where: {${submissionQueryFilter.join(",")}}) { 
           challengeNumber
           nodeLicenseId
           claimAmount 
@@ -60,7 +60,7 @@ export async function getSentryKeysFromGraphByPool(
 
   const query = gql`
       query SentryKeysQuery {
-        sentryKeys(first: 10000, orderBy: keyId, orderDirection: asc, where: {${filter}} ) {
+        sentryKeys(first: 1000, orderBy: keyId, orderDirection: asc, where: {${filter}} ) {
           assignedPool
           id
           keyId

@@ -47,7 +47,7 @@ export async function getSentryKeysForUnclaimedFromGraph(
 
   const query = gql`
       query SentryKeysQuery {
-        sentryKeys(first: 10000, orderBy: keyId, orderDirection: asc, where: {${filter}} ) {
+        sentryKeys(first: 1000, orderBy: keyId, orderDirection: asc, where: {${filter}} ) {
           assignedPool
           id
           keyId
@@ -59,7 +59,7 @@ export async function getSentryKeysForUnclaimedFromGraph(
             keyCount
             stakedKeyCount
           }
-          submissions(first: 10000, orderBy: challengeNumber, orderDirection: desc, 
+          submissions(first: 1000, orderBy: challengeNumber, orderDirection: desc, 
             where: { eligibleForPayout: true, claimed: false, challengeNumber_gte: ${latestChallengeNumber.toString()}, challenge_: {status: OpenForClaims} }) { 
             challengeNumber
             nodeLicenseId

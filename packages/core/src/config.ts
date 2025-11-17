@@ -33,7 +33,7 @@ const mainnetConfig = {
   poolFactoryAddress: "0xF9E08660223E2dbb1c0b28c82942aB6B5E38b8E5",
   poolFactoryAddressImplementationAddress: "0x21EEC6626f15d02A8896ebB7EDD68ff3CB61e89E",
   defaultNetworkName: "arbitrum",
-  subgraphEndpoint: "https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry/api",
+  subgraphEndpoint: "https://api.goldsky.com/api/public/project_cmh50tw8e0001sqp25vrrff4t/subgraphs/sentry/2.0.1/gn",
   publicRPC: "https://arb1.arbitrum.io/rpc",
   alchemyApiKey: "oD4X3JXvJclnt36mDkqnp9CO2sZkNhYT",
   crossmintProjectId: "c2757aec-d8db-4d93-b928-2e5b0a2bc395", //Crossmint Production Project ID
@@ -75,7 +75,7 @@ const testnetConfig: Config = {
   poolFactoryAddress: "0x87Ae2373007C01FBCED0dCCe4a23CA3f17D1fA9A",
   poolFactoryAddressImplementationAddress: "0x87Ae2373007C01FBCED0dCCe4a23CA3f17D1fA9A",
   defaultNetworkName: "arbitrumSepolia",
-  subgraphEndpoint: "https://subgraph.satsuma-prod.com/f37507ea64fb/xai/sentry-sepolia/api",
+  subgraphEndpoint: "https://api.goldsky.com/api/public/project_cmh50tw8e0001sqp25vrrff4t/subgraphs/sentry-sepolia/1.3.4-sepolia-s4/gn",
   publicRPC: "https://arb-sepolia.g.alchemy.com/v2/8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B",
   alchemyApiKey: "8aXl_Mw4FGFlgxQO8Jz7FVPh2cg5m2_B",
   crossmintProjectId: "cc616c84-6479-4981-a24e-adb4278df212",

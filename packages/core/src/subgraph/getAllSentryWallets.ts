@@ -9,7 +9,7 @@ import { config } from "../config.js";
  */
 export async function getAllSentryWallets(): Promise<SentryWallet[]> {
   const client = new GraphQLClient(config.subgraphEndpoint);
-  const batchSize = 10000;
+  const batchSize = 1000;
   let allWallets: SentryWallet[] = [];
   let hasMore = true;
   let offset = 0;
