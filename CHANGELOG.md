@@ -1,3 +1,13 @@
+# [2.2.0](https://github.com/xai-foundation/sentry/compare/2.1.0...2.2.0) (2025-11-17)
+
+
+### Bug Fixes
+
+* **operator:** Read staked pools on startup for allowlist ([138fdf5](https://github.com/xai-foundation/sentry/commit/138fdf571d19a648a8353206ae5ad8255ef0a324))
+
+
+### Features
+
 # [2.1.0](https://github.com/xai-foundation/sentry/compare/2.0.0...2.1.0) (2024-12-14)
 
 
