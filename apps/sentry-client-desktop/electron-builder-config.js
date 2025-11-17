@@ -16,6 +16,22 @@ module.exports = {
     dmg: {
       sign: false
     },
+    // Mac Signing 
+    // mac: {
+    //   target: [
+    //     "dmg",
+    //     "zip"
+    //   ],
+    //   artifactName: "sentry-client-macos.${ext}",
+    //   icon: "public/xai.png",
+    //   hardenedRuntime: true,
+    //   entitlements: "build-config/entitlements.mac.plist",
+    //   entitlementsInherit: "build-config/entitlements.mac.plist",
+    //   gatekeeperAssess: false,
+    //   notarize: {
+    //     teamId: process.env["APPLE_TEAM_ID"] || ""
+    //   }
+    // },
     mac: {
       target: [
         "dmg",
@@ -23,13 +39,13 @@ module.exports = {
       ],
       artifactName: "sentry-client-macos.${ext}",
       icon: "public/xai.png",
-      hardenedRuntime: true,
-      entitlements: "build-config/entitlements.mac.plist",
-      entitlementsInherit: "build-config/entitlements.mac.plist",
+
+      identity: null,
+      hardenedRuntime: false,
+      entitlements: undefined,
+      entitlementsInherit: undefined,
       gatekeeperAssess: false,
-      notarize: {
-        teamId: process.env["APPLE_TEAM_ID"] || ""
-      }
+      notarize: undefined
     },
     win: {
       target: [
